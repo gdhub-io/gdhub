@@ -1,10 +1,9 @@
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
+import { Button, Space } from 'antd'
 import { NextPage } from 'next'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { AuthContext } from './_app'
-import { Button, Row, Space } from 'antd'
 import { FcGoogle } from 'react-icons/fc'
 
 const Home: NextPage = ({ course, recruitmentGroups, webinarStartedAt }: any) => {

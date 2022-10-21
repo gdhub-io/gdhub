@@ -2,8 +2,6 @@
 import React, { ReactNode, useState } from 'react'
 import ErrorBoundary from '@components/ErrorBoundary'
 import '@styles/globals.less'
-import { Footer } from '@components/Footer'
-import { Header } from '@components/Header'
 import LoadingScreen from '@components/LoadingScreen'
 import { PublicLayout } from '@layouts/PublicLayout'
 import { NextPage } from 'next'
