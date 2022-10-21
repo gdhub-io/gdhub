@@ -1,0 +1,60 @@
+{
+  "ignorePatterns": [
+    "node_modules/*"
+  ],
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "unused-imports",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "@next/next/no-html-link-for-pages": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "unused-imports/no-unused-imports-ts": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "groups": [
+          "builtin",
+          "internal",
+          "external",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "never",
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "builtin",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": [
+          "react"
+        ]
+      }
+    ]
+  }
+}
