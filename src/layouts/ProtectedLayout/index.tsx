@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Button, Layout } from 'antd'
+import { Button, Layout, Row } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -18,13 +18,15 @@ export const ProtectedLayout = ({ children }: any) => {
 	return (
 		<Layout>
 			<Header>
-				<Link href="/hub">
-					<a className={styles.logo}>Game Developers Hub</a>
-				</Link>
-				{!!session && <Button onClick={() => signOut()}>Logout</Button>}
+				<Row align="middle" justify="space-between">
+					<Link href="/hub">
+						<a className={styles.logo}>Game Developers Hub</a>
+					</Link>
+					{!!session && <Button onClick={() => signOut()}>Logout</Button>}
+				</Row>
 			</Header>
 			<Content>{children}</Content>
-			<Footer>Footer</Footer>
+			<Footer></Footer>
 		</Layout>
 	)
 }

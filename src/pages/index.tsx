@@ -4,7 +4,7 @@ import { useSession, signIn, signOut } from 'next-auth/react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { AuthContext } from './_app'
-import { Button } from 'antd'
+import { Button, Row, Space } from 'antd'
 import { FcGoogle } from 'react-icons/fc'
 
 const Home: NextPage = ({ course, recruitmentGroups, webinarStartedAt }: any) => {
@@ -21,14 +21,14 @@ const Home: NextPage = ({ course, recruitmentGroups, webinarStartedAt }: any) =>
 				<title>Home Page</title>
 			</Head>
 			<div className="flex-column flex justify-center items-center h-screen">
-				<h1>Game Developers Hub</h1>
-				<Button
-					type="primary"
-					icon={<FcGoogle />}
-					onClick={() => signIn('google', {}, { prompt: 'select_account consent' })}
-				>
-					Sign in with Google
-				</Button>
+				<Space direction="vertical" align="center">
+					<h1>Game Developers Hub</h1>
+					<Button type="primary" onClick={() => signIn('google', {}, { prompt: 'select_account consent' })}>
+						<Space align="center">
+							<FcGoogle /> Sign in with Google
+						</Space>
+					</Button>
+				</Space>
 			</div>
 		</>
 	)
