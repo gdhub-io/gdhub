@@ -27,9 +27,33 @@ export const isEarlyPeriod = (recruitmentGroup: any) => {
 	return false
 }
 
-export const getActualPrice = (recruitmentGroup: any) => {
-	const price = recruitmentGroup.get('Price') as number
-	const earlyPrice = recruitmentGroup.get('Early Price') as number
+export const createMember = async ({ email, name, image }: any) => {
+	try {
+		let [member] = await AirtableService('Accounts')
+			.select({
+				filterByFormula: `Email = "${email}"`,
+				maxRecords: 1,
+			})
+			.all()
 
-	return isEarlyPeriod(recruitmentGroup) ? earlyPrice : price
+		if (!member) {
+			member = await AirtableService('Accounts').create({
+				Email: email,
+				Name: name,
+				'Image Link': image,
+				Roles: ['Guest'],
+				Active: true,
+			})
+		}
+
+		const roles = member.get('Roles') as string[]
+
+		return {
+			id: member.getId(),
+			roles: roles ? roles.map((role: string) => role.toLowerCase()) : [],
+		}
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
 }

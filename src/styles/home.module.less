@@ -1,0 +1,16 @@
+// flex-column flex justify-center items-center h-screen
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+
+  :global {
+    .login-button {
+      .ant-space-item {
+        display: flex;
+      }
+    }
+  }
+}

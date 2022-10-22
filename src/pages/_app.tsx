@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { ReactNode, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import ErrorBoundary from '@components/ErrorBoundary'
 import '@styles/globals.less'
 import LoadingScreen from '@components/LoadingScreen'
@@ -11,6 +11,10 @@ import { Router } from 'next/router'
 
 export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactNode) => ReactNode
+}
+
+declare type IntrinsicAttributes = {
+	style: any
 }
 
 type AppPropsWithLayout = AppProps<{ session: any }> & {
@@ -27,7 +31,11 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	return (
 		<ErrorBoundary>
-			<SessionProvider session={session}>{getLayout(<Component {...pageProps} />)}</SessionProvider>
+			<SessionProvider session={session}>
+				<div className="app-container" style={{ opacity: loading ? 0 : 1 }}>
+					{getLayout(<Component {...pageProps} />)}
+				</div>
+			</SessionProvider>
 			<LoadingScreen visible={loading} />
 		</ErrorBoundary>
 	)
