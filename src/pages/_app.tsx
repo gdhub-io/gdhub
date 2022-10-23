@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 import ErrorBoundary from '@components/ErrorBoundary'
 import '@styles/globals.less'
 import LoadingScreen from '@components/LoadingScreen'

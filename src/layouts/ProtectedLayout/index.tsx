@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Avatar, Button, Dropdown, Layout, Menu, MenuProps, Row, Space } from 'antd'
+import { Avatar, Button, Dropdown, Grid, Layout, Menu, Row, Space } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/future/image'
 import Link from 'next/link'
@@ -10,6 +10,7 @@ const { Header, Footer, Content } = Layout
 
 export const ProtectedLayout = ({ children }: any) => {
 	const router = useRouter()
+	const screens = Grid.useBreakpoint()
 	const { data: session, status } = useSession()
 
 	const userMenu = (
@@ -32,25 +33,6 @@ export const ProtectedLayout = ({ children }: any) => {
 		/>
 	)
 
-	const mainMenu = [
-		{
-			label: (
-				<Link href="/hub">
-					<a>Home</a>
-				</Link>
-			),
-			key: '/hub',
-		},
-		{
-			label: (
-				<Link href="/hub/specialists">
-					<a>Specialists</a>
-				</Link>
-			),
-			key: '/hub/specialists',
-		},
-	]
-
 	useEffect(() => {
 		console.log('session', status, session)
 		if (!session && status !== 'loading') router.push('/')
@@ -63,12 +45,11 @@ export const ProtectedLayout = ({ children }: any) => {
 					<Link href="/hub">
 						<a className="logo">Game Developers Hub</a>
 					</Link>
-					{/* <Menu items={mainMenu} /> */}
 					{!!session && (
 						<Dropdown overlay={userMenu} trigger={['click']}>
 							<Button type="link" size="large">
 								<Space>
-									<div className="username">{session.user?.name}</div>
+									{screens.sm && <div className="username">{session.user?.name}</div>}
 									<Avatar
 										src={
 											session.user?.image ? (
@@ -83,7 +64,9 @@ export const ProtectedLayout = ({ children }: any) => {
 					)}
 				</Row>
 			</Header>
-			<Content>{children}</Content>
+			<Content>
+				<div className="layout-background">{children}</div>
+			</Content>
 			<Footer></Footer>
 		</Layout>
 	)
