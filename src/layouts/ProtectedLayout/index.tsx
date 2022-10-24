@@ -19,13 +19,13 @@ export const ProtectedLayout = ({ children }: any) => {
 				{
 					label: (
 						<Link href="/profile">
-							<a>Profile</a>
+							<a>Профиль</a>
 						</Link>
 					),
 					key: 'profile',
 				},
 				{
-					label: 'Logout',
+					label: 'Выйти',
 					key: 'logout',
 					onClick: () => signOut(),
 				},

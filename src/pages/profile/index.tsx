@@ -1,29 +1,51 @@
+import GeneralProfileForm from '@components/profile-forms/GeneralProfileForm'
+import PreferencesProfileForm from '@components/profile-forms/PreferencesProfileForm'
+import SpecialitiesProfileForm from '@components/profile-forms/SpecialitiesProfileForm'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
+import { getProfile } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
-import { Button, Card, Form, Input, Space } from 'antd'
+import { authOptions } from 'pages/api/auth/[...nextauth]'
+import { Space } from 'antd'
+import { unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
-import GeneralProfileForm from './general-form'
-import PreferencesProfileForm from './preferences-form'
-import SpecialitiesProfileForm from './specialities-form'
 
-const ProfilePage: NextPageWithLayout = () => {
-	const [form] = Form.useForm()
-
+const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
 	return (
 		<>
 			<Head>
-				<title>Profile</title>
+				<title>Ваш профиль</title>
 			</Head>
-			<h1>Profile Settings</h1>
+			<h1>Настройки профиля</h1>
 			<Space size={24} direction="vertical" style={{ width: '100%' }}>
-				<GeneralProfileForm />
-				<PreferencesProfileForm />
-				<SpecialitiesProfileForm />
+				<GeneralProfileForm profile={profile} />
+				<PreferencesProfileForm profile={profile} />
+				<SpecialitiesProfileForm profile={profile} />
 			</Space>
 		</>
 	)
 }
 
 ProfilePage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
+
+export const getServerSideProps = async (context: any) => {
+	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+
+	if (!session || !session.user.email) {
+		return {
+			redirect: {
+				destination: '/',
+				permanent: false,
+			},
+		}
+	}
+
+	const profile = await getProfile(session.user.email)
+
+	return {
+		props: {
+			profile,
+		},
+	}
+}
 
 export default ProfilePage

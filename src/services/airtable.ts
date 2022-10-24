@@ -9,25 +9,7 @@ const AirtableService = new Airtable({ apiKey: AIRTABLE_API_KEY }).base(AIRTABLE
 
 export default AirtableService
 
-export const isEarlyPeriod = (recruitmentGroup: any) => {
-	const earlyStartedAt = DateTime.fromISO(recruitmentGroup.get('Early started at') as string)
-	const recruitmentStartedAt = DateTime.fromISO(recruitmentGroup.get('Recruitment started at') as string)
-	const recruitmentToNowDiff = recruitmentStartedAt.diffNow().toObject()
-	const recruitmentToEralyDiff = earlyStartedAt.diffNow().toObject()
-
-	if (
-		recruitmentToNowDiff.milliseconds &&
-		recruitmentToEralyDiff.milliseconds &&
-		recruitmentToNowDiff.milliseconds > 0 &&
-		recruitmentToEralyDiff.milliseconds < 0
-	) {
-		return true
-	}
-
-	return false
-}
-
-export const createMember = async ({ email, name, image }: any) => {
+export const findOrCreateMember = async ({ email, name, image }: any) => {
 	try {
 		let [member] = await AirtableService('Accounts')
 			.select({
@@ -39,19 +21,68 @@ export const createMember = async ({ email, name, image }: any) => {
 		if (!member) {
 			member = await AirtableService('Accounts').create({
 				Email: email,
-				Name: name,
 				'Image Link': image,
 				Roles: ['Guest'],
 				Active: true,
+				'Created At': DateTime.now().toISO(),
+			})
+		} else {
+			await AirtableService('Accounts').update(member.getId(), {
+				'Last Visit At': DateTime.now().toISO(),
 			})
 		}
 
 		const roles = member.get('Roles') as string[]
+		const profile = member.get('Profile') as string
+
+		if (!profile) {
+			await createProfile({ name, email })
+		}
 
 		return {
 			id: member.getId(),
 			roles: roles ? roles.map((role: string) => role.toLowerCase()) : [],
 		}
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
+}
+
+export const getProfile = async (email: string) => {
+	try {
+		const [profile] = await AirtableService('Profiles')
+			.select({
+				filterByFormula: `FIND("${email}", Account)`,
+			})
+			.all()
+
+		return { id: profile.getId(), ...profile?.fields }
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
+}
+
+export const createProfile = async ({ name, accountId }: any) => {
+	try {
+		const newProfile = await AirtableService('Profiles').create({
+			Account: [accountId],
+			Name: name,
+		})
+
+		return newProfile?.fields
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
+}
+
+export const updateProfile = async (profileId: string, data: any) => {
+	try {
+		await AirtableService('Profiles').update(profileId, data)
+
+		return true
 	} catch (error: any) {
 		console.error('[AIRTABLE ERROR]', error)
 		return null

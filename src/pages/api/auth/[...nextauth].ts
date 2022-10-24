@@ -1,9 +1,9 @@
 import { env } from 'process'
-import { createMember } from '@services/airtable'
-import NextAuth from 'next-auth'
+import { findOrCreateMember } from '@services/airtable'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
 	secret: env.NEXT_AUTH_SECRET as string,
 	pages: {
 		signIn: '/',
@@ -16,7 +16,7 @@ export default NextAuth({
 	],
 	callbacks: {
 		async session({ session }) {
-			const member = await createMember(session.user)
+			const member = await findOrCreateMember(session.user)
 
 			return {
 				...session,
@@ -28,4 +28,6 @@ export default NextAuth({
 			}
 		},
 	},
-})
+}
+
+export default NextAuth(authOptions)
