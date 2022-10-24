@@ -8,6 +8,16 @@ import Link from 'next/link'
 const HubPage: NextPageWithLayout = () => {
 	const { data: session }: any = useSession()
 
+	const hasRole = (roleName: string) => {
+		if (!session?.user) {
+			return false
+		}
+
+		const role = session.user.roles.find((role: string) => role === roleName.toLowerCase())
+
+		return role ? true : false
+	}
+
 	return (
 		<>
 			<Head>
@@ -17,7 +27,7 @@ const HubPage: NextPageWithLayout = () => {
 				<Link href="/profile">
 					<a>Мой профиль</a>
 				</Link>
-				{session?.user.roles.find((role: string) => role === 'member') && (
+				{hasRole('member') && (
 					<Link href="/hub/specialists">
 						<a>Участники</a>
 					</Link>
