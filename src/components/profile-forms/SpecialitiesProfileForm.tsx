@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, List, message, Space, Spin, Tooltip } from 'antd'
+import { Button, Card, List, message, Space, Spin } from 'antd'
 import { HiOutlineTrash } from 'react-icons/hi'
-import SpecialityModal, { renderSkillLevel } from './modals/SpecialityModal'
+import SpecialityModal from './modals/SpecialityModal'
 
 const SpecialitiesProfileForm = ({ profile }: any) => {
 	const [processing, setProcessing] = useState(true)
