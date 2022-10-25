@@ -92,9 +92,11 @@ const PreferencesProfileForm = ({ profile }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						'Preferred Genres': profile['Preferred Genres'],
-						'Preferred Settings': profile['Preferred Settings'],
-						'Preferred Difficulty Levels': profile['Preferred Difficulty Levels'],
+						'Preferred Genres': profile?.hasOwnProperty('Preferred Genres') ? profile['Preferred Genres'] : [],
+						'Preferred Settings': profile?.hasOwnProperty('Preferred Settings') ? profile['Preferred Settings'] : [],
+						'Preferred Difficulty Levels': profile?.hasOwnProperty('Preferred Difficulty Levels')
+							? profile['Preferred Difficulty Levels']
+							: [],
 					}}
 				>
 					<Form.Item label="Жанры игр, которые вам нравятся" name="Preferred Genres">

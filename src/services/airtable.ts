@@ -31,15 +31,19 @@ export const findOrCreateMember = async ({ email, name, image }: any) => {
 		}
 
 		const roles = member.get('Roles') as string[]
-		const profile = member.get('Profile') as string
+		const profileId = member.get('Profile') as any
+		let profile: any
 
-		if (!profile) {
-			await createProfile({ name, email })
+		if (!profileId) {
+			profile = await createProfile({ name, accountId: member.getId() })
+		} else {
+			profile = await getProfile(email)
 		}
 
 		return {
 			id: member.getId(),
 			roles: roles ? roles.map((role: string) => role.toLowerCase()) : [],
+			name: profile.Name as string,
 		}
 	} catch (error: any) {
 		console.error('[AIRTABLE ERROR]', error)
@@ -57,7 +61,7 @@ export const getProfile = async (email: string) => {
 
 		const timeForWork = profile.get('Time For Work') as string
 
-		return { id: profile.getId(), ...profile.fields, 'Time For Work': timeForWork.split('-') }
+		return { id: profile.getId(), ...profile.fields, 'Time For Work': timeForWork ? timeForWork.split('-') : null }
 	} catch (error: any) {
 		console.error('[AIRTABLE ERROR]', error)
 		return null

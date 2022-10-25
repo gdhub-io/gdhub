@@ -57,8 +57,8 @@ const GeneralProfileForm = ({ profile }: any) => {
 					initialValues={{
 						Name: profile?.Name,
 						Country: profile?.Country,
-						City: profile.City,
-						'Telegram Nickname': profile['Telegram Nickname'],
+						City: profile?.City,
+						'Telegram Nickname': profile?.hasOwnProperty('Telegram Nickname') ? profile['Telegram Nickname'] : null,
 					}}
 				>
 					<Form.Item label="Email" tooltip={{ title: 'Got from your google account' }} required>

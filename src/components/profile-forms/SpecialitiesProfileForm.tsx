@@ -10,7 +10,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
 	useEffect(() => {
-		if (!profile.id) {
+		if (!profile?.id) {
 			return
 		}
 
@@ -23,7 +23,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 
 			fetch('/api/profile/specialities', {
 				method: 'post',
-				body: JSON.stringify({ profileId: profile.id }),
+				body: JSON.stringify({ profileId: profile?.id }),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -125,7 +125,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 				</Space>
 				<SpecialityModal
 					speciality={selectedSpeciality}
-					profileId={profile.id}
+					profileId={profile?.id}
 					open={isModalOpen}
 					onOk={handleOk}
 					onCancel={handleCancel}

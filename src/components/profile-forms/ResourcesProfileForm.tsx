@@ -14,7 +14,7 @@ const ResourcesProfileForm = ({ profile }: any) => {
 		if (profile) {
 			setProcessing(false)
 
-			if (profile['Time For Work']) {
+			if (profile.hasOwnProperty('Time For Work') && profile['Time For Work'] !== null) {
 				setAvaibleHours({ min: profile['Time For Work'][0], max: profile['Time For Work'][1] })
 			}
 		}
@@ -69,7 +69,7 @@ const ResourcesProfileForm = ({ profile }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						'Time For Work': profile['Time For Work'],
+						'Time For Work': [avaibleHours.min, avaibleHours.max],
 					}}
 				>
 					<Form.Item
@@ -84,7 +84,6 @@ const ResourcesProfileForm = ({ profile }: any) => {
 								<Form.Item name="Time For Work" noStyle>
 									<Slider
 										range
-										defaultValue={[avaibleHours.min, avaibleHours.max]}
 										max={56}
 										min={1}
 										marks={{ 1: '1 час', 56: '56 часов' }}
