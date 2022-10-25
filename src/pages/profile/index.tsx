@@ -1,5 +1,6 @@
 import GeneralProfileForm from '@components/profile-forms/GeneralProfileForm'
 import PreferencesProfileForm from '@components/profile-forms/PreferencesProfileForm'
+import ResourcesProfileForm from '@components/profile-forms/ResourcesProfileForm'
 import SpecialitiesProfileForm from '@components/profile-forms/SpecialitiesProfileForm'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { getProfile } from '@services/airtable'
@@ -8,7 +9,6 @@ import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Space } from 'antd'
 import { unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
-import ResourcesProfileForm from '@components/profile-forms/ResourcesProfileForm'
 
 const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
 	return (

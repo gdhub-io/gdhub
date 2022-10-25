@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, List, message, Space, Spin } from 'antd'
+import { Button, Card, List, message, Popconfirm, Space, Spin, Tooltip } from 'antd'
 import { HiOutlineTrash } from 'react-icons/hi'
 import SpecialityModal from './modals/SpecialityModal'
 
@@ -65,7 +65,22 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		setIsModalOpen(true)
 	}
 
-	const handleDeleteSpeciality = (specialityId: string) => {}
+	const handleDeleteSpeciality = async (specialityId: string) => {
+		try {
+			await fetch('/api/profile/speciality/delete', {
+				method: 'post',
+				body: JSON.stringify({ specialityId }),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+
+			fetchSpecialities()
+			message.success('Специальность была удалена')
+		} catch (error: any) {
+			message.error('Error')
+		}
+	}
 
 	return (
 		<Card title="Специальности">
@@ -89,9 +104,16 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 									/>
 									<Space>
 										<Button onClick={() => handleEditSpeciality(speciality)}>Изменить</Button>
-										<Button type="text" danger onClick={() => handleDeleteSpeciality(speciality.id)}>
-											<HiOutlineTrash />
-										</Button>
+										<Popconfirm
+											title="Точно хотите удалить？"
+											okText="Да"
+											cancelText="Нет"
+											onConfirm={() => handleDeleteSpeciality(speciality.id)}
+										>
+											<Button type="text" danger>
+												<HiOutlineTrash />
+											</Button>
+										</Popconfirm>
 									</Space>
 								</List.Item>
 							)}
