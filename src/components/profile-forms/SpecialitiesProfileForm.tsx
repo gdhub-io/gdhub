@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, List, message, Popconfirm, Space, Spin, Tooltip } from 'antd'
+import { Button, Card, List, message, Popconfirm, Space, Spin } from 'antd'
 import { HiOutlineTrash } from 'react-icons/hi'
 import SpecialityModal from './modals/SpecialityModal'
 

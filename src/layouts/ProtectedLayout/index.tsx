@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Avatar, Button, Dropdown, Grid, Layout, Menu, Row, Space } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/future/image'

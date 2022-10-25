@@ -58,6 +58,7 @@ const GeneralProfileForm = ({ profile }: any) => {
 						Name: profile?.Name,
 						Country: profile?.Country,
 						City: profile?.City,
+						'Resume/Portfolio': profile?.hasOwnProperty('Resume/Portfolio') ? profile['Resume/Portfolio'] : null,
 						'Telegram Nickname': profile?.hasOwnProperty('Telegram Nickname') ? profile['Telegram Nickname'] : null,
 					}}
 				>
@@ -86,6 +87,9 @@ const GeneralProfileForm = ({ profile }: any) => {
 						<Input />
 					</Form.Item>
 					<Form.Item label="Telegram Никнейм" name="Telegram Nickname" rules={[{ required: true }]}>
+						<Input />
+					</Form.Item>
+					<Form.Item label="Ссылка на резюме или портфолио" name="Resume/Portfolio" rules={[{ type: 'url' }]}>
 						<Input />
 					</Form.Item>
 					<Button type="primary" onClick={handleForm}>

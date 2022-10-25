@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AutoComplete, Button, Card, Col, Form, Input, message, Row, Slider, Spin } from 'antd'
+import { Button, Card, Col, Form, message, Row, Slider, Spin } from 'antd'
 import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
 
@@ -73,7 +73,7 @@ const ResourcesProfileForm = ({ profile }: any) => {
 					}}
 				>
 					<Form.Item
-						label="Доступное время"
+						label="Доступное время (в неделю)"
 						extra="Сколько часов в неделю вы можете уделять участию в проектах."
 						wrapperCol={{ span: 24 }}
 						required
