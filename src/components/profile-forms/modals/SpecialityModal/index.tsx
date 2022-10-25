@@ -73,6 +73,8 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 			form.setFieldsValue(speciality.fields)
 		}
 
+		setProcessing(false)
+
 		return () => form.resetFields()
 	}, [open, speciality])
 

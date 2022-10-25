@@ -80,7 +80,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 	].map((i) => ({ label: i, value: i }))
 
 	return (
-		<Card title="Предпочтения в играх">
+		<Card title="Предпочтения">
 			<Spin spinning={processing}>
 				<Form
 					form={form}
@@ -99,7 +99,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 							: [],
 					}}
 				>
-					<Form.Item label="Жанры игр, которые вам нравятся" name="Preferred Genres">
+					<Form.Item label="Жанры игр, в разработке которых вам интересно было бы участвовать" name="Preferred Genres">
 						<Select
 							options={gameGenresOptions}
 							mode="multiple"
@@ -109,7 +109,10 @@ const PreferencesProfileForm = ({ profile }: any) => {
 							onChange={() => {}}
 						/>
 					</Form.Item>
-					<Form.Item label="Визуальный сеттинг, который вам нравится" name="Preferred Settings">
+					<Form.Item
+						label="Визуальный сеттинг проектов, с которым вам было бы интересно поработать"
+						name="Preferred Settings"
+					>
 						<Select
 							options={graphicSettingsOptions}
 							mode="multiple"
@@ -119,7 +122,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 							onChange={() => {}}
 						/>
 					</Form.Item>
-					<Form.Item label="Игры какой сложности вам нравятся" name="Preferred Difficulty Levels">
+					<Form.Item label="Игры какой сложности вам хотелось бы разрабатывать" name="Preferred Difficulty Levels">
 						<Select
 							options={gameLevelsOptions}
 							mode="multiple"
