@@ -43,7 +43,7 @@ const GeneralProfileForm = ({ profile }: any) => {
 	}
 
 	return (
-		<Card title="Основные данные">
+		<Card title="Данные пользователя">
 			<Spin spinning={processing}>
 				<Form
 					form={form}

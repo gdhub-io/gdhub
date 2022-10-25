@@ -55,7 +55,9 @@ export const getProfile = async (email: string) => {
 			})
 			.all()
 
-		return { id: profile.getId(), ...profile?.fields }
+		const timeForWork = profile.get('Time For Work') as string
+
+		return { id: profile.getId(), ...profile.fields, 'Time For Work': timeForWork.split('-') }
 	} catch (error: any) {
 		console.error('[AIRTABLE ERROR]', error)
 		return null

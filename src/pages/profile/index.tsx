@@ -8,6 +8,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Space } from 'antd'
 import { unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
+import ResourcesProfileForm from '@components/profile-forms/ResourcesProfileForm'
 
 const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
 	return (
@@ -20,6 +21,7 @@ const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
 				<GeneralProfileForm profile={profile} />
 				<PreferencesProfileForm profile={profile} />
 				<SpecialitiesProfileForm profile={profile} />
+				<ResourcesProfileForm profile={profile} />
 			</Space>
 		</>
 	)
