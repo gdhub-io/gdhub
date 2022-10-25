@@ -1,31 +1,39 @@
-import { env } from 'process'
 import { findOrCreateMember } from '@services/airtable'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
 export const authOptions: NextAuthOptions = {
-	secret: env.NEXT_AUTH_SECRET as string,
+	secret: process.env.NEXT_AUTH_SECRET as string,
 	pages: {
 		signIn: '/',
 	},
 	providers: [
 		GoogleProvider({
-			clientId: env.GOOGLE_OAUTH_CLIENT_ID as string,
-			clientSecret: env.GOOGLE_OAUTH_CLEINT_SECRET as string,
+			clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
+			clientSecret: process.env.GOOGLE_OAUTH_CLEINT_SECRET as string,
 		}),
 	],
 	callbacks: {
-		async session({ session }) {
-			const member = await findOrCreateMember(session.user)
-
+		async session({ session, token }) {
 			return {
 				...session,
 				user: {
-					id: member?.id,
-					roles: member?.roles,
+					id: token.id,
+					roles: token.roles,
 					...session.user,
 				},
 			}
+		},
+		async jwt({ token }) {
+			const { email, name, image } = token
+			const member = await findOrCreateMember({ email, name, image })
+
+			if (member) {
+				token.id = member.id
+				token.roles = member.roles
+			}
+
+			return token
 		},
 	},
 }

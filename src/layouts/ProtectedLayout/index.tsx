@@ -33,11 +33,6 @@ export const ProtectedLayout = ({ children }: any) => {
 		/>
 	)
 
-	useEffect(() => {
-		console.log('session', status, session)
-		if (!session && status !== 'loading') router.push('/')
-	}, [session])
-
 	return (
 		<Layout className={styles.container}>
 			<Header>

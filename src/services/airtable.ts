@@ -1,11 +1,9 @@
-import { env } from '@helpers/env'
 import Airtable from 'airtable'
 import { DateTime } from 'luxon'
 
-const AIRTABLE_API_KEY = env('AIRTABLE_API_KEY')
-const AIRTABLE_BASE_ID = env('AIRTABLE_BASE_ID')
-
-const AirtableService = new Airtable({ apiKey: AIRTABLE_API_KEY }).base(AIRTABLE_BASE_ID)
+const AirtableService = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
+	process.env.AIRTABLE_BASE_ID as string
+)
 
 export default AirtableService
 
