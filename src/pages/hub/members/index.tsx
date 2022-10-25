@@ -10,7 +10,7 @@ const SpecialistsPage: NextPageWithLayout = () => {
 
 	useEffect(() => {
 		if (ref.current) {
-			ref.current.src = 'https://airtable.com/embed/shrWMBMBxLP6o7FY3?backgroundColor=cyan&viewControls=on'
+			ref.current.src = 'https://airtable.com/embed/shrWvxbQDFtvdRHrj?backgroundColor=cyan&viewControls=on'
 		}
 		ref.current?.addEventListener('load', handleLoadIframe)
 
@@ -24,7 +24,7 @@ const SpecialistsPage: NextPageWithLayout = () => {
 	return (
 		<>
 			<Head>
-				<title>Specialists</title>
+				<title>Участники</title>
 			</Head>
 			<div>
 				<Spin spinning={loading}>
