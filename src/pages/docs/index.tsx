@@ -12,10 +12,6 @@ import styles from './style.module.less'
 const DocsPage: NextPageWithLayout = ({ videos, tags }: any) => {
 	const [selectedTags, setSelectedTags] = useState<string[]>([tags[0]])
 
-	useEffect(() => {
-		console.log('selectedTags', selectedTags)
-	}, [selectedTags])
-
 	const checkTag = (tag: string, checked: boolean) => {
 		if (tag === tags[0] && checked) {
 			setSelectedTags([tags[0]])
@@ -23,8 +19,6 @@ const DocsPage: NextPageWithLayout = ({ videos, tags }: any) => {
 		}
 
 		let nextSelectedTags = checked ? [...selectedTags, tag] : selectedTags.filter((t) => t !== tag)
-
-		console.log('checkTag', nextSelectedTags.length > 1 && nextSelectedTags.includes(tags[0]))
 
 		if (nextSelectedTags.length > 1 && nextSelectedTags.includes(tags[0])) {
 			nextSelectedTags = nextSelectedTags.filter((t) => t !== tags[0])
