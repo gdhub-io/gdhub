@@ -21,13 +21,14 @@ export const authOptions: NextAuthOptions = {
 					id: token.id,
 					roles: token.roles,
 					name: token.name,
+					image: token.picture,
 					...session.user,
 				},
 			}
 		},
 		async jwt({ token }) {
-			const { email, name, image } = token
-			const member = await findOrCreateMember({ email, name, image })
+			const { email, name, picture } = token
+			const member = await findOrCreateMember({ email, name, image: picture })
 
 			if (member) {
 				token.id = member.id
