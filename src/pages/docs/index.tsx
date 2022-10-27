@@ -30,9 +30,9 @@ const DocsPage: NextPageWithLayout = ({ videos, tags }: any) => {
 	return (
 		<>
 			<Head>
-				<title>Documentation</title>
+				<title>Полезные материалы</title>
 			</Head>
-			<h1>Documentation</h1>
+			<h1>Полезные материалы</h1>
 			<Row gutter={[2, 6]} style={{ paddingBottom: '12px' }}>
 				{tags.map((tag: string) => (
 					<CheckableTag
