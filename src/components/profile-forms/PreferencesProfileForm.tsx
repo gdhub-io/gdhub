@@ -47,7 +47,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 		'Стратегия в реальном времени / real time strategy (RTS)',
 		'Пошаговые стратегии / turn based strategy',
 		'Ролевые игры / role playing games (RPG)',
-		'Сногопользовательская ролевая онлайн игра / massively multiplayer online role playing game (MMORPG)',
+		'Многопользовательская ролевая онлайн игра / massively multiplayer online role playing game (MMORPG)',
 		'Симуляторы / simulation',
 		'Спортивные / sports',
 		'Танцевальные, ритмичные / dance/rhythm',
