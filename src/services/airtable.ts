@@ -88,3 +88,21 @@ export const updateProfile = async (profileId: string, data: any) => {
 		return null
 	}
 }
+
+export const getDocumentationVideos = async () => {
+	try {
+		const videos = await AirtableService('Documentation').select().all()
+
+		return videos.map((i) => {
+			if (i.fields.hasOwnProperty('Preview')) {
+				const Preview = i.fields.Preview as any[]
+				return { ...i.fields, Preview: Preview[0] }
+			} else {
+				return i.fields
+			}
+		})
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
+}
