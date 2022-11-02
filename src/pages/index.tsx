@@ -1,3 +1,4 @@
+import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import styles from '@styles/home.module.less'
 import { Button, Space } from 'antd'
 import { NextPage } from 'next'
@@ -18,8 +19,10 @@ const Home: NextPage = ({ course, recruitmentGroups, webinarStartedAt }: any) =>
 				<title>Home Page</title>
 			</Head>
 			<div className={styles.container}>
-				<Space direction="vertical" align="center">
-					<h1>Game Developers Hub</h1>
+				<Space direction="vertical" align="center" size="large">
+					<div className="logo">
+						<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
+					</div>
 					<Button type="primary" onClick={() => signIn('google', {}, { prompt: 'select_account consent' })}>
 						<Space className="login-button">
 							<FcGoogle size={16} /> Sign in with Google
