@@ -29,7 +29,7 @@ const HubPage: NextPageWithLayout = () => {
 					предпочтения в играх, а также указать время, которое вы готовы использовать на участие в проектах. Для этого
 					перейдите в ваш Профиль и укажите требуемые данные.
 				</p>
-				<Space>
+				<Space direction="vertical">
 					<Link href="/profile">
 						<Button>Мой профиль</Button>
 					</Link>
@@ -37,6 +37,9 @@ const HubPage: NextPageWithLayout = () => {
 						<>
 							<Link href="/hub/members">
 								<Button>Участники</Button>
+							</Link>
+							<Link href="/hub/docs">
+								<Button type="primary">Документация</Button>
 							</Link>
 							<Link href="/hub/materials">
 								<Button>Полезные материалы</Button>

@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@9gustin/react-notion-render@^3.11.2":
+  version "3.11.2"
+  resolved "https://registry.yarnpkg.com/@9gustin/react-notion-render/-/react-notion-render-3.11.2.tgz#d3b90daa978ef7468a27e0bbd6bc65baba2475f2"
+  integrity sha512-IcuYEvCuvaXO7mbNfDw8/o5+ChFHbqmRDg7oDSR1A3EyMB8j7YgM/HwfmpeD9TwG94L7cV/slvUx5Fm/umfOGQ==
+
 "@ampproject/remapping@^2.1.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.0.tgz#56c133824780de3174aed5ab6834f3026790154d"
@@ -1208,6 +1213,14 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@notionhq/client@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@notionhq/client/-/client-2.2.1.tgz#e2e4db22181990ca00365436ceda409f7a2e4871"
+  integrity sha512-EExR8gCWuqvYQsNw5Z9kvZhRTy7wgioI4ypr5y0dPclvxBXZ7I7Yy509ZbCbeAFes33eLFV8Heu0svQwg8ZSZQ==
+  dependencies:
+    "@types/node-fetch" "^2.5.10"
+    node-fetch "^2.6.1"
+
 "@panva/hkdf@^1.0.1":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@panva/hkdf/-/hkdf-1.0.2.tgz#bab0f09d09de9fd83628220d496627681bc440d6"
@@ -1375,7 +1388,7 @@
   resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.0.2.tgz#11361eb3c8a81e9b8d6b35b6ffe155e8eb95480d"
   integrity sha512-HM2OVWckUMmXbWYZufmWT2XMURGDZ6XbyNyQ+Lx+gCFGFqbZaIjsz7b+AGeGP/AuVYHBiuGY+wXfweP1RremnA==
 
-"@types/node-fetch@^2.6.2":
+"@types/node-fetch@^2.5.10", "@types/node-fetch@^2.6.2":
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.6.2.tgz#d1a9c5fd049d9415dce61571557104dec3ec81da"
   integrity sha512-DHqhlq5jeESLy19TYhLakJ07kNumXWjcDdxXsLUMJZ6ue8VZJj4kLPQVE/2mdHh3xZziNF1xppu5lwmS53HR+A==
@@ -3457,7 +3470,7 @@ node-domexception@^1.0.0:
   resolved "https://registry.yarnpkg.com/node-domexception/-/node-domexception-1.0.0.tgz#6888db46a1f71c0b76b3f7555016b63fe64766e5"
   integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
 
-node-fetch@^2.6.7:
+node-fetch@^2.6.1, node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
