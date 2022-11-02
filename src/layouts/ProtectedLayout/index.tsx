@@ -36,7 +36,7 @@ export const ProtectedLayout = ({ children }: any) => {
 	return (
 		<Layout className={styles.container}>
 			<Header>
-				<Row align="middle" justify="space-between">
+				<Row align="middle" justify="space-between" className="header-wrapper">
 					<Link href="/hub">
 						<a className="logo">
 							<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub

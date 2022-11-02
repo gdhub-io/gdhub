@@ -38,7 +38,7 @@ const HubPage: NextPageWithLayout = () => {
 							<Link href="/hub/members">
 								<Button>Участники</Button>
 							</Link>
-							<Link href="/hub/docs">
+							<Link href="/hub/materials">
 								<Button>Полезные материалы</Button>
 							</Link>
 						</>
