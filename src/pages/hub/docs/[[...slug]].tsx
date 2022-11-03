@@ -114,7 +114,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	return (
 		<>
 			<Head>
-				<title>Полезные материалы</title>
+				<title>{pageProperties?.properties.Name.title[0].plain_text || 'Документация'}</title>
 			</Head>
 			<div className={styles.container}>
 				<Row>

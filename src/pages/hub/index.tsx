@@ -33,13 +33,13 @@ const HubPage: NextPageWithLayout = () => {
 					<Link href="/profile">
 						<Button>Мой профиль</Button>
 					</Link>
+					<Link href="/hub/docs">
+						<Button type="primary">С чего начать</Button>
+					</Link>
 					{hasRole('member') && (
 						<>
 							<Link href="/hub/members">
 								<Button>Участники</Button>
-							</Link>
-							<Link href="/hub/docs">
-								<Button type="primary">Документация</Button>
 							</Link>
 							<Link href="/hub/materials">
 								<Button>Полезные материалы</Button>
