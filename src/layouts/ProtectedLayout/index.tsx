@@ -1,6 +1,6 @@
 import { Avatar, Button, Dropdown, Grid, Layout, Menu, Row, Space } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
-import Image from 'next/future/image'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styles from './style.module.less'
@@ -16,11 +16,7 @@ export const ProtectedLayout = ({ children }: any) => {
 		<Menu
 			items={[
 				{
-					label: (
-						<Link href="/profile">
-							<a>Профиль</a>
-						</Link>
-					),
+					label: <Link href="/profile">Профиль</Link>,
 					key: 'profile',
 				},
 				{
@@ -36,8 +32,8 @@ export const ProtectedLayout = ({ children }: any) => {
 		<Layout className={styles.container}>
 			<Header>
 				<Row align="middle" justify="space-between">
-					<Link href="/hub">
-						<a className="logo">Game Developers Hub</a>
+					<Link href="/hub" className="logo">
+						Game Developers Hub
 					</Link>
 					{!!session && (
 						<Dropdown overlay={userMenu} trigger={['click']}>

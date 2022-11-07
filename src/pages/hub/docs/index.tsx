@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { getDocumentationVideos } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { Card, Col, Row, Tag, Typography } from 'antd'
 import CheckableTag from 'antd/lib/tag/CheckableTag'
-import Image from 'next/future/image'
 import Head from 'next/head'
+import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.less'
 
@@ -49,30 +49,28 @@ const DocsPage: NextPageWithLayout = ({ videos, tags }: any) => {
 					?.filter((v: any) => selectedTags[0] == tags[0] || v.Tags.some((e: any) => selectedTags.includes(e)))
 					.map((video: any, idx: number) => (
 						<Col key={idx} xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }} xl={{ span: 6 }}>
-							<Link href={video.Link}>
-								<a target="_blank">
-									<Card
-										className={styles.card}
-										hoverable
-										cover={video.Preview ? <Image alt="cover" src={video.Preview.url} fill /> : null}
-									>
-										<Card.Meta
-											title={video.Name}
-											description={
-												<>
-													<Typography.Paragraph ellipsis={{ rows: 4 }}>{video.Description}</Typography.Paragraph>
-													<Row gutter={[2, 6]}>
-														{video.Tags.map((tag: any, idx: number) => (
-															<Col key={idx}>
-																<Tag>{tag}</Tag>
-															</Col>
-														))}
-													</Row>
-												</>
-											}
-										/>
-									</Card>
-								</a>
+							<Link href={video.Link} target="_blank">
+								<Card
+									className={styles.card}
+									hoverable
+									cover={video.Preview ? <Image alt="cover" src={video.Preview.url} fill /> : null}
+								>
+									<Card.Meta
+										title={video.Name}
+										description={
+											<>
+												<Typography.Paragraph ellipsis={{ rows: 4 }}>{video.Description}</Typography.Paragraph>
+												<Row gutter={[2, 6]}>
+													{video.Tags.map((tag: any, idx: number) => (
+														<Col key={idx}>
+															<Tag>{tag}</Tag>
+														</Col>
+													))}
+												</Row>
+											</>
+										}
+									/>
+								</Card>
 							</Link>
 						</Col>
 					))}
