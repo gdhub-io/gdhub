@@ -1,3 +1,4 @@
+import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { Avatar, Button, Dropdown, Grid, Layout, Menu, Row, Space } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -31,9 +32,11 @@ export const ProtectedLayout = ({ children }: any) => {
 	return (
 		<Layout className={styles.container}>
 			<Header>
-				<Row align="middle" justify="space-between">
-					<Link href="/hub" className="logo">
-						Game Developers Hub
+				<Row align="middle" justify="space-between" className="header-wrapper">
+					<Link href="/hub">
+						<a className="logo">
+							<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
+						</a>
 					</Link>
 					{!!session && (
 						<Dropdown overlay={userMenu} trigger={['click']}>

@@ -1,13 +1,39 @@
-.card {
-  border: 1px solid #cdcdcd;
+.container {
+	border-top: 1px solid #e2e8f0;
 
 	:global {
-		.ant-card-cover {
-			height: 240px;
+		.main-menu {
 			position: relative;
-      left: 1px;
-      top: 1px;
-      width: 100%;
+			min-height: 500px;
+			height: 100%;
+			padding-top: 20px;
+		}
+
+		.mobile-menu {
+			width: calc(100% - 16px);
+			margin: 16px 0;
+		}
+
+		.main-container {
+			position: relative;
+			min-height: 500px;
+			padding: 32px 64px;
+
+			.content-header {
+				margin-bottom: 32px;
+
+				h1 {
+					font-size: 32px;
+					margin-bottom: 0;
+				}
+			}
 		}
 	}
 }
+
+@import './styles/xs.less'; // screen < 576px
+@import './styles/sm.less'; // screen ≥ 576px
+@import './styles/md.less'; // screen ≥ 768px
+@import './styles/lg.less'; // screen ≥ 992px
+@import './styles/xl.less'; // screen ≥ 1200px
+@import './styles/xxl.less'; // screen ≥ 1600px

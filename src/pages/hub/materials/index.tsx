@@ -9,7 +9,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.less'
 
-const DocsPage: NextPageWithLayout = ({ videos, tags }: any) => {
+const MaterialsPage: NextPageWithLayout = ({ videos, tags }: any) => {
 	const [selectedTags, setSelectedTags] = useState<string[]>([tags[0]])
 
 	const checkTag = (tag: string, checked: boolean) => {
@@ -79,7 +79,7 @@ const DocsPage: NextPageWithLayout = ({ videos, tags }: any) => {
 	)
 }
 
-DocsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
+MaterialsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export const getServerSideProps = async (context: any) => {
 	const videos = await getDocumentationVideos()
@@ -96,4 +96,4 @@ export const getServerSideProps = async (context: any) => {
 	}
 }
 
-export default DocsPage
+export default MaterialsPage

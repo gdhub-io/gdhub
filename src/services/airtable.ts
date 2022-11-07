@@ -24,10 +24,6 @@ export const findOrCreateMember = async ({ email, name, image }: any) => {
 				Active: true,
 				'Created At': DateTime.now().toISO(),
 			})
-		} else {
-			await AirtableService('Accounts').update(member.getId(), {
-				'Last Visit At': DateTime.now().toISO(),
-			})
 		}
 
 		const roles = member.get('Roles') as string[]

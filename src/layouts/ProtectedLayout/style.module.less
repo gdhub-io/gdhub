@@ -1,8 +1,16 @@
 .container {
+	max-width: var(--wrapper-width);
+	
 	:global {
+		.header-wrapper {
+		}
+
 		.logo {
 			font-weight: bold;
 			margin: 0 20px;
+			display: flex;
+			gap: 8px;
+			align-items: center;
 		}
 
 		.username {
