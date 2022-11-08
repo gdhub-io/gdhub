@@ -11,7 +11,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 
 		const seasons = await AirtableService('Seasons')
-			.select({ fields: ['Name', 'Season Stages'] })
+			.select({
+				fields: ['Name', 'Season Stages', 'Started At'],
+				sort: [{ field: 'Started At', direction: 'desc' }],
+				filterByFormula: 'Status != "Not Active"',
+			})
 			.all()
 
 		if (!seasons) {
@@ -30,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						sort: [{ field: 'Order', direction: 'asc' }],
 						fields: ['Name', 'Started At', 'Finished At', 'Status'],
 						filterByFormula: `FIND(RECORD_ID(), "${season.get('Season Stages').join(' ')}")`,
-						// filterByFormula: `AND(Status != "Passive", FIND(RECORD_ID(), "${season.get('Season Stages').join(' ')}"))`,
 					})
 					.all()
 
@@ -51,9 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		)
 
 		res.json({
-			seasons: res.json({
-				seasons: output,
-			}),
+			seasons: output,
 		})
 	} catch (error: any) {
 		res.json({ success: false, error: error.message })

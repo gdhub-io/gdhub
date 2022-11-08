@@ -1,10 +1,7 @@
 .container {
 	max-width: var(--wrapper-width);
-	
-	:global {
-		.header-wrapper {
-		}
 
+	:global {
 		.logo {
 			font-weight: bold;
 			margin: 0 20px;
@@ -25,6 +22,14 @@
 				padding: 24px;
 				min-height: 360px;
 			}
+		}
+	}
+}
+
+.mobileMenuDrawer {
+	:global {
+		.ant-drawer-close {
+			display: none;
 		}
 	}
 }

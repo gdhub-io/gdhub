@@ -1,19 +1,27 @@
 import { useEffect, useState } from 'react'
 import GdhubLogo from '@assets/images/gdhub-icon.svg'
-import { Avatar, Button, Dropdown, Grid, Layout, Menu, Row, Space } from 'antd'
+import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
+import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, Row, Space } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import styles from './style.module.less'
 
 const { Header, Footer, Content } = Layout
 
 export const ProtectedLayout = ({ children }: any) => {
-	const router = useRouter()
+	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const screens = Grid.useBreakpoint()
 	const { data: session, status }: any = useSession()
 	const [headerMenuItems, setHeaderMenuItems] = useState([
+		{
+			label: (
+				<Link href="/hub">
+					<Button type="primary">Главная</Button>
+				</Link>
+			),
+			key: '/hub',
+		},
 		{
 			label: (
 				<Link href="/hub/docs">
@@ -25,77 +33,110 @@ export const ProtectedLayout = ({ children }: any) => {
 	])
 
 	useEffect(() => {
+		if (!screens.md) setOpenMobileMenu(false)
+
 		if (!!session && session?.user?.roles.includes('member')) {
 			setHeaderMenuItems([
 				{
-					label: (
-						<Link href="/hub/members">
-							<Button type="text">Участники</Button>
-						</Link>
-					),
+					label: <Link href="/hub/members">{screens.md ? <Button type="text">Участники</Button> : 'Участники'}</Link>,
 					key: '/hub/members',
 				},
 				{
 					label: (
 						<Link href="/hub/docs">
-							<Button type="primary">С чего начать</Button>
+							{screens.md ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
 						</Link>
 					),
 					key: '/hub/docs',
 				},
 			])
 		}
-	}, [session])
+	}, [session, screens])
 
-	const userMenu = (
-		<Menu
-			items={[
-				{
-					label: <Link href="/profile">Профиль</Link>,
-					key: 'profile',
-				},
-				{
-					label: 'Выйти',
-					key: 'logout',
-					onClick: () => signOut(),
-				},
-			]}
-		/>
-	)
+	const userMenuItems = [
+		{
+			label: <Link href="/profile">Профиль</Link>,
+			key: 'profile',
+		},
+		{
+			label: 'Выйти',
+			key: 'logout',
+			danger: true,
+			onClick: () => signOut(),
+		},
+	]
 
 	return (
-		<Layout className={styles.container}>
-			<Header>
-				<Row align="middle" justify="space-between" className="header-wrapper">
-					<Link href="/hub" className="logo">
-						<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
-					</Link>
-					{!!session && (
-						<>
-							<Menu style={{ flex: 1, justifyContent: 'flex-end' }} mode="horizontal" items={headerMenuItems} />
-							<Dropdown overlay={userMenu} trigger={['click']}>
-								<Button type="link" size="large">
-									<Space>
-										{screens.sm && <div className="username">{session.user?.name}</div>}
-										<Avatar
-											src={
-												session.user?.image ? (
-													<Image src={session.user.image} width={32} height={32} alt="avatar" />
-												) : null
-											}
-											shape="square"
-										/>
-									</Space>
-								</Button>
-							</Dropdown>
-						</>
-					)}
-				</Row>
-			</Header>
-			<Content>
-				<div className="layout-background">{children}</div>
-			</Content>
-			<Footer></Footer>
-		</Layout>
+		<>
+			<Layout className={styles.container}>
+				<Header>
+					<Row align="middle" justify="space-between" className="header-wrapper">
+						<Link href="/hub" className="logo">
+							<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
+						</Link>
+						{!!session && (
+							<>
+								{screens.md ? (
+									<>
+										<Menu style={{ flex: 1, justifyContent: 'flex-end' }} mode="horizontal" items={headerMenuItems} />
+										<Dropdown overlay={<Menu items={userMenuItems} />} trigger={['click']}>
+											<Button type="link" size="large">
+												<Space>
+													{screens.sm && <div className="username">{session.user?.name}</div>}
+													<Avatar
+														src={
+															session.user?.image ? (
+																<Image src={session.user.image} width={32} height={32} alt="avatar" />
+															) : null
+														}
+														shape="square"
+													/>
+												</Space>
+											</Button>
+										</Dropdown>
+									</>
+								) : (
+									<div>
+										<Button type="text" onClick={() => setOpenMobileMenu(true)}>
+											<MenuOutlined />
+										</Button>
+									</div>
+								)}
+							</>
+						)}
+					</Row>
+				</Header>
+				<Content>
+					<div className="layout-background">{children}</div>
+				</Content>
+				<Footer></Footer>
+			</Layout>
+			{!screens.md && (
+				<Drawer
+					className={styles.mobileMenuDrawer}
+					title={
+						<Space>
+							<Avatar
+								src={
+									session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
+								}
+								shape="square"
+							/>
+							<div className="username">{session?.user?.name}</div>
+						</Space>
+					}
+					placement="top"
+					onClose={() => setOpenMobileMenu(false)}
+					open={openMobileMenu}
+					extra={
+						<Button onClick={() => setOpenMobileMenu(false)} type="text">
+							<CloseOutlined />
+						</Button>
+					}
+				>
+					<Menu items={[...headerMenuItems, ...userMenuItems]} onSelect={() => setOpenMobileMenu(false)} />
+				</Drawer>
+			)}
+		</>
 	)
 }

@@ -3,7 +3,7 @@ import DividerIcon from '@assets/images/icons/divider.svg'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { stagesConfig } from 'config/stages'
 import { NextPageWithLayout } from 'pages/_app'
-import { Button, Card, Collapse, Space } from 'antd'
+import { Button, Card, Collapse, Space, Spin } from 'antd'
 import { DateTime } from 'luxon'
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
@@ -58,62 +58,65 @@ const HubPage: NextPageWithLayout = () => {
 					</Space>
 				)}
 
-				<div className="seasons-container">
-					{hasRole('member') &&
-						data?.seasons.map((season: any, idx: number) => (
-							<Card
-								className="season-container"
-								key={`gamelab-season-${idx}`}
-								title={
-									<Space align="center">
-										<div className="title">{season.Name}</div>
-										{isPassiveSeason(season) && (
-											<>
-												<DividerIcon className="divider" />
-												<span>{stagesConfig[season.Stage]?.title}</span>
-											</>
-										)}
-									</Space>
-								}
-							>
-								{isActiveSeason(season) && (
-									<Collapse defaultActiveKey={[season.Stage]} onChange={() => {}} bordered={false}>
-										{season['Season Stages']
-											.filter((s: any) => ['Planning', 'Done'].includes(s.Name) === false)
-											.map((stage: any) => (
-												<Collapse.Panel
-													header={
-														<Space align="center">
-															<strong>{stagesConfig[stage.Name]?.title}</strong>
-															{stage.Status === 'Active' && !!stage['Started At'] && (
-																<>
-																	<DividerIcon className="divider" />
-																	<span>
-																		{DateTime.fromISO(stage['Started At']).toFormat('dd LLL', {
-																			locale: router.locale,
-																		}) +
-																			' - ' +
-																			DateTime.fromISO(stage['Finished At']).toFormat('dd LLL yyyy', {
+				{hasRole('member') && (
+					<Spin spinning={!data}>
+						<div className="seasons-container">
+							{data?.seasons.map((season: any, idx: number) => (
+								<Card
+									className={`season-container ${isPassiveSeason(season) ? 'not-active' : ''}`}
+									key={`gamelab-season-${idx}`}
+									title={
+										<Space align="center">
+											<div className="title">{season.Name}</div>
+											{isPassiveSeason(season) && (
+												<>
+													<DividerIcon className="divider" />
+													<span>{stagesConfig[season.Stage]?.title}</span>
+												</>
+											)}
+										</Space>
+									}
+								>
+									{isActiveSeason(season) && (
+										<Collapse defaultActiveKey={[season.Stage]} onChange={() => {}} bordered={false}>
+											{season['Season Stages']
+												.filter((s: any) => ['Planning', 'Done'].includes(s.Name) === false)
+												.map((stage: any) => (
+													<Collapse.Panel
+														header={
+															<Space align="center">
+																<strong>{stagesConfig[stage.Name]?.title}</strong>
+																{stage.Status === 'Active' && !!stage['Started At'] && (
+																	<>
+																		<DividerIcon className="divider" />
+																		<span>
+																			{DateTime.fromISO(stage['Started At']).toFormat('dd LLL', {
 																				locale: router.locale,
-																			})}
-																	</span>
-																</>
-															)}
-														</Space>
-													}
-													key={stage.Name}
-													collapsible={stage.Status === 'Active' ? 'header' : 'disabled'}
-												>
-													{stagesConfig[stage.Name]?.description}
-													{stagesConfig[stage.Name]?.materials}
-													{stagesConfig[stage.Name]?.actions}
-												</Collapse.Panel>
-											))}
-									</Collapse>
-								)}
-							</Card>
-						))}
-				</div>
+																			}) +
+																				' - ' +
+																				DateTime.fromISO(stage['Finished At']).toFormat('dd LLL yyyy', {
+																					locale: router.locale,
+																				})}
+																		</span>
+																	</>
+																)}
+															</Space>
+														}
+														key={stage.Name}
+														collapsible={stage.Status === 'Active' ? 'header' : 'disabled'}
+													>
+														{stagesConfig[stage.Name]?.description}
+														{stagesConfig[stage.Name]?.materials}
+														{stagesConfig[stage.Name]?.actions}
+													</Collapse.Panel>
+												))}
+										</Collapse>
+									)}
+								</Card>
+							))}
+						</div>
+					</Spin>
+				)}
 			</div>
 		</>
 	)

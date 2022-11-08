@@ -1,22 +1,28 @@
 .container {
-  :global {
-    .season-container {
-      margin-top: 40px;
-      
-      .divider {
-        display: block;
-        stroke: #d6d6d6;
-        width: 24px;
-        height: auto;
+	margin-top: 40px;
+
+	:global {
+		.season-container {
+      margin-bottom: 14px;
+
+      &.not-active {
+        opacity: 0.5;
       }
 
-      .ant-card-body {
-        padding: 0;
+			.divider {
+				display: block;
+				stroke: #d6d6d6;
+				width: 24px;
+				height: auto;
+			}
 
-        .ant-collapse {
-          background-color: #ffffff;
-        }
-      }
-    }
-  }
+			.ant-card-body {
+				padding: 0;
+
+				.ant-collapse {
+					background-color: #ffffff;
+				}
+			}
+		}
+	}
 }
