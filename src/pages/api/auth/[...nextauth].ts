@@ -23,6 +23,12 @@ export const authOptions: NextAuthOptions = {
 					name: token.name,
 					image: token.picture,
 					...session.user,
+					hasRole: (roleName: string) => {
+						const roles = token.roles as string[]
+						const response = roles.find((role: string) => role === roleName.toLowerCase())
+
+						return response ? true : false
+					},
 				},
 			}
 		},

@@ -1,0 +1,32 @@
+import AirtableService from '@services/airtable'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { unstable_getServerSession } from 'next-auth'
+import { authOptions } from '../auth/[...nextauth]'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	try {
+		const { seasonName } = req.body
+		const session: any = await unstable_getServerSession(req, res, authOptions)
+
+		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
+
+		const projectIdeas = await AirtableService('Project Ideas')
+			.select({
+				filterByFormula: `AND(FIND("${seasonName}", Season), FIND("${session.user.email}", Author))`,
+			})
+			.all()
+
+		if (!projectIdeas) {
+			throw new Error('Error')
+		}
+
+		res.json(
+			projectIdeas.map((projectIdea: any) => ({
+				id: projectIdea.id,
+				...projectIdea.fields,
+			}))
+		)
+	} catch (error: any) {
+		res.json({ success: false, error: error.message })
+	}
+}

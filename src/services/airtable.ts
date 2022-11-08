@@ -40,6 +40,7 @@ export const findOrCreateMember = async ({ email, name, image }: any) => {
 			id: member.getId(),
 			roles: roles ? roles.map((role: string) => role.toLowerCase()) : [],
 			name: profile.Name as string,
+			profileId,
 		}
 	} catch (error: any) {
 		console.error('[AIRTABLE ERROR]', error)

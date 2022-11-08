@@ -37,7 +37,6 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 				const data = await response.json()
 
 				setSpecialities(data)
-				console.log('specialities', data)
 			})
 		} catch (error: any) {
 			setProcessing(false)

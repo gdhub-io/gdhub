@@ -1,0 +1,112 @@
+import DividerIcon from '@assets/images/icons/divider.svg'
+import SearchingStageContent from '@components/SearchingStageContent'
+import { Card, Collapse, Space, Spin } from 'antd'
+import { DateTime } from 'luxon'
+import { useRouter } from 'next/router'
+import useSWR from 'swr'
+import styles from './style.module.less'
+
+const fetcher = (url: string) => fetch(url, { method: 'post' }).then((res) => res.json())
+
+const SeasonsList = () => {
+	const router = useRouter()
+	const { data, error } = useSWR('/api/seasons', fetcher)
+
+	const isPassiveSeason = (season: any) => {
+		return ['Planning', 'Done'].includes(season.Stage)
+	}
+
+	const isActiveSeason = (season: any) => {
+		return !isPassiveSeason(season)
+	}
+
+	const stagesDetails = (stageName: string, season?: any) => {
+		const details: any = {
+			Searching: {
+				title: 'Этап исследования',
+				content: <SearchingStageContent season={season} />,
+			},
+			'Pre-production': {
+				title: 'Этап подготовки проекта',
+			},
+			Recruiting: {
+				title: 'Этап набора начальной команды',
+			},
+			Production: {
+				title: 'Этап разработки проекта',
+			},
+			Pitching: {
+				title: 'Питчи проектов',
+			},
+			Planning: {
+				title: 'Планируется',
+			},
+			Done: {
+				title: 'Завершен',
+			},
+		}
+
+		return details[stageName]
+	}
+
+	return (
+		<Spin spinning={!data}>
+			<div className={styles.container}>
+				{data?.seasons.map((season: any, idx: number) => (
+					<Card
+						className={`season-container ${isPassiveSeason(season) ? 'not-active' : ''}`}
+						key={`gamelab-season-${idx}`}
+						title={
+							<Space align="center">
+								<div className="title">{season.Name}</div>
+								{isPassiveSeason(season) && (
+									<>
+										<DividerIcon className="divider" />
+										<span>{stagesDetails(season.Stage, season)?.title}</span>
+									</>
+								)}
+							</Space>
+						}
+					>
+						{isActiveSeason(season) && (
+							// <Collapse defaultActiveKey={['Searching']} onChange={() => {}} bordered={false}>
+							<Collapse defaultActiveKey={[season.Stage]} onChange={() => {}} bordered={false}>
+								{season['Season Stages']
+									.filter((s: any) => ['Planning', 'Done'].includes(s.Name) === false)
+									.map((stage: any) => (
+										<Collapse.Panel
+											header={
+												<Space align="center">
+													<strong>{stagesDetails(stage.Name, season)?.title}</strong>
+													{stage.Status === 'Active' && !!stage['Started At'] && (
+														<>
+															<DividerIcon className="divider" />
+															<span>
+																{DateTime.fromISO(stage['Started At']).toFormat('dd LLL', {
+																	locale: router.locale,
+																}) +
+																	' - ' +
+																	DateTime.fromISO(stage['Finished At']).toFormat('dd LLL yyyy', {
+																		locale: router.locale,
+																	})}
+															</span>
+														</>
+													)}
+												</Space>
+											}
+											key={stage.Name}
+											collapsible={stage.Status === 'Active' ? 'header' : 'disabled'}
+										>
+											{stagesDetails(stage.Name, season)?.content || 'Подробностей нет'}
+										</Collapse.Panel>
+									))}
+							</Collapse>
+						)}
+					</Card>
+				))}
+			</div>
+		</Spin>
+	)
+}
+
+export default SeasonsList
