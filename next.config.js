@@ -9,6 +9,8 @@ const nextConfig = {
 	images: {
 		domains: ['lh3.googleusercontent.com', 'dl.airtable.com', 's3.us-west-2.amazonaws.com'],
 	},
+	locales: ['ru-RU', 'en-US'],
+	defaultLocale: 'ru-RU',
 	webpack: (config) => {
 		config.module.rules.push({
 			test: /\.svg$/,

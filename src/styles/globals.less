@@ -3,7 +3,6 @@
 // @tailwind utilities;
 
 @import url('../assets/fonts/montserrat/montserrat.css');
-
 @import 'antd/dist/antd.less'; // Import Ant Design styles by less entry
 @import 'variables.less'; // variables to override above
 
@@ -13,10 +12,16 @@ body {
 	font-family: 'Montserrat', sans-serif;
 	padding: 0;
 	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-		Helvetica Neue, sans-serif;
 	scroll-behavior: smooth;
-	scroll-padding-top: 50px;
+}
+
+a.text-link {
+	border-bottom: 1px solid #afafaf;
+	transition: border-color 0.5s;
+
+	&:hover {
+		border-color: #000;
+	}
 }
 
 .ant-layout-header {
@@ -27,4 +32,18 @@ body {
 	transition: opacity 0.25s;
 	display: flex;
 	justify-content: center;
+}
+
+.ant-menu-horizontal {
+	border: none;
+}
+.ant-menu-horizontal > .ant-menu-item-selected::after {
+	border: none !important;
+}
+.ant-menu-horizontal > .ant-menu-item::after {
+	border: none !important;
+}
+
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item, .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu {
+	padding: 0 10px;
 }

@@ -9,11 +9,16 @@ const LoadingScreen = ({ visible }: any) => {
 	}, [visible])
 
 	return (
-		<div className={styles.loader} style={{ opacity: enabled ? 1 : 0, zIndex: enabled ? 9999 : -1 }}>
-			<div className={styles.loadThreeBounce}>
-				<div className={`${styles.loadChild} ${styles.bounce1}`}></div>
-				<div className={`${styles.loadChild} ${styles.bounce2}`}></div>
-				<div className={`${styles.loadChild} ${styles.bounce3}`}></div>
+		<div className={styles.pageLoader} style={{ opacity: enabled ? 1 : 0, zIndex: enabled ? 9999 : -1 }}>
+			<div className="loader">
+				<div className="loader-style panelLoad">
+					<div className="cube-face cube-face-front">G</div>
+					<div className="cube-face cube-face-back">D</div>
+					<div className="cube-face cube-face-left">H</div>
+					<div className="cube-face cube-face-right">U</div>
+					<div className="cube-face cube-face-bottom">B</div>
+					<div className="cube-face cube-face-top">.</div>
+				</div>
 			</div>
 		</div>
 	)

@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import ErrorBoundary from '@components/ErrorBoundary'
 import '@styles/globals.less'
 import LoadingScreen from '@components/LoadingScreen'
@@ -6,7 +6,7 @@ import { PublicLayout } from '@layouts/PublicLayout'
 import { NextPage } from 'next'
 import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
-import { Router } from 'next/router'
+import { useRouter } from 'next/router'
 
 export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactNode) => ReactNode
@@ -21,12 +21,29 @@ type AppPropsWithLayout = AppProps<{ session: any }> & {
 }
 
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
-	const [loading, setLoading] = useState(false)
+	const router = useRouter()
+	const [loading, setLoading] = useState(true)
 	const getLayout = Component.getLayout || ((page) => <PublicLayout>{page}</PublicLayout>)
 
-	Router.events.on('routeChangeStart', () => setLoading(true))
-	Router.events.on('routeChangeComplete', () => setLoading(false))
-	Router.events.on('routeChangeError', () => setLoading(false))
+	const setLoadingOff = () => {
+		setTimeout(() => setLoading(false), 1500)
+	}
+
+	useEffect(() => {
+		setLoadingOff()
+	}, [])
+
+	useEffect(() => {
+		router.events.on('routeChangeStart', () => setLoading(true))
+		router.events.on('routeChangeComplete', () => setLoadingOff())
+		router.events.on('routeChangeError', () => setLoadingOff())
+
+		return () => {
+			router.events.off('routeChangeStart', () => setLoading(true))
+			router.events.off('routeChangeComplete', () => setLoadingOff())
+			router.events.off('routeChangeError', () => setLoadingOff())
+		}
+	}, [router.events])
 
 	return (
 		<ErrorBoundary>
