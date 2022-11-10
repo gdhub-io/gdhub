@@ -1,5 +1,5 @@
 import AirtableService from '@services/airtable'
-import TelegramService from '@services/telegram'
+// import TelegramService from '@services/telegram'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth'
@@ -36,16 +36,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			}
 
 			/** Send message to Telegram */
-			await TelegramService.sendPhoto(
-				(account.get('Image Link') as string) || 'https://cdn-icons-png.flaticon.com/512/219/219988.png',
-				`
-К геймхабу присоеденился <b>${profile.get('Name')}</b>
-Специальность: ${speciality.get('Name')} (${speciality.get('Level')})
-Навыки:\n${speciality.get('Skills')}
+			// 			await TelegramService.sendPhoto(
+			// 				(account.get('Image Link') as string) || 'https://cdn-icons-png.flaticon.com/512/219/219988.png',
+			// 				`
+			// К геймхабу присоеденился <b>${profile.get('Name')}</b>
+			// Специальность: ${speciality.get('Name')} (${speciality.get('Level')})
+			// Навыки:\n${speciality.get('Skills')}
 
-Портфолио/резюме:\n${profile.get('Resume/Portfolio')}
-				`
-			)
+			// Портфолио/резюме:\n${profile.get('Resume/Portfolio')}
+			// 				`
+			// 			)
 		} else {
 			speciality = await AirtableService('Specialities').update(id, {
 				...data,
