@@ -97,7 +97,7 @@ const SearchingStageContent = ({ season }: any) => {
 
 				{projectIdeas?.data?.length > 0 && (
 					<List
-						itemLayout="vertical"
+						itemLayout={screens.xs ? 'vertical' : 'horizontal'}
 						loading={isLoadingProjecIdeas}
 						size="small"
 						style={{ marginTop: '20px' }}
@@ -115,7 +115,7 @@ const SearchingStageContent = ({ season }: any) => {
 									description={
 										<>
 											<Typography.Paragraph ellipsis>{projectIdea.Description}</Typography.Paragraph>
-											{screens.xs && (
+											{!screens.md && (
 												<Link
 													href={projectIdea['Document Link']}
 													target="_blank"
