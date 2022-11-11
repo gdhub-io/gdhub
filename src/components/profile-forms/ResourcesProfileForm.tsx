@@ -27,8 +27,6 @@ const ResourcesProfileForm = ({ profile }: any) => {
 
 			setProcessing(true)
 
-			console.log(formData)
-
 			const response: any = await fetch('/api/profile/update', {
 				method: 'post',
 				body: JSON.stringify({ id: profile.id, data: { 'Time For Work': `${timeForWork[0]}-${timeForWork[1]}` } }),

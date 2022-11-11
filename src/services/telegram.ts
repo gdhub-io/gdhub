@@ -28,7 +28,6 @@ export default class TelegramService {
 			})
 				.then((res: any) => res.json())
 				.then((data: any) => {
-					console.log('data', data)
 					console.log('Message successfully send.')
 				})
 				.catch((error) => {
@@ -62,7 +61,6 @@ export default class TelegramService {
 			})
 				.then((res: any) => res.json())
 				.then((data: any) => {
-					console.log('data', data)
 					console.log('Photo successfully send.')
 				})
 				.catch((error) => {

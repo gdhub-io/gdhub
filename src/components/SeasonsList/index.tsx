@@ -1,6 +1,6 @@
 import DividerIcon from '@assets/images/icons/divider.svg'
 import SearchingStageContent from '@components/SearchingStageContent'
-import { Card, Collapse, Space, Spin } from 'antd'
+import { Card, Collapse, Grid, Space, Spin } from 'antd'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
@@ -9,6 +9,7 @@ import styles from './style.module.less'
 const fetcher = (url: string) => fetch(url, { method: 'post' }).then((res) => res.json())
 
 const SeasonsList = () => {
+	const screens = Grid.useBreakpoint()
 	const router = useRouter()
 	const { data, error } = useSWR('/api/seasons', fetcher)
 
@@ -69,18 +70,17 @@ const SeasonsList = () => {
 						}
 					>
 						{isActiveSeason(season) && (
-							// <Collapse defaultActiveKey={['Searching']} onChange={() => {}} bordered={false}>
 							<Collapse defaultActiveKey={[season.Stage]} onChange={() => {}} bordered={false}>
 								{season['Season Stages']
 									.filter((s: any) => ['Planning', 'Done'].includes(s.Name) === false)
 									.map((stage: any) => (
 										<Collapse.Panel
 											header={
-												<Space align="center">
+												<Space align="center" direction={screens.md ? 'horizontal' : 'vertical'}>
 													<strong>{stagesDetails(stage.Name, season)?.title}</strong>
 													{stage.Status === 'Active' && !!stage['Started At'] && (
 														<>
-															<DividerIcon className="divider" />
+															{screens.md && <DividerIcon className="divider" />}
 															<span>
 																{DateTime.fromISO(stage['Started At']).toFormat('dd LLL', {
 																	locale: router.locale,

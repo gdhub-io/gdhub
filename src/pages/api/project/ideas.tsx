@@ -16,16 +16,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			})
 			.all()
 
+		const queryResult = await AirtableService('Project Ideas').select({ fields: [] }).all()
+
 		if (!projectIdeas) {
 			throw new Error('Error')
 		}
 
-		res.json(
-			projectIdeas.map((projectIdea: any) => ({
+		res.json({
+			total: queryResult.length,
+			data: projectIdeas.map((projectIdea: any) => ({
 				id: projectIdea.id,
 				...projectIdea.fields,
-			}))
-		)
+			})),
+		})
 	} catch (error: any) {
 		res.json({ success: false, error: error.message })
 	}

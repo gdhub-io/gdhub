@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		const seasons = await AirtableService('Seasons')
 			.select({
-				fields: ['Name', 'Season Stages', 'Started At'],
+				fields: ['Name', 'Season Stages', 'Started At', 'Slug'],
 				sort: [{ field: 'Started At', direction: 'desc' }],
 				filterByFormula: 'Status != "Not Active"',
 			})

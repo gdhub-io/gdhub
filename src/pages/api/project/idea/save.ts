@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			await AirtableService('Project Ideas').create({
 				...data,
 				Author: [session.user.id],
-				Status: 'Added',
+				Status: 'Registered',
 				Season: [data.Season],
 				'Core Mechanics': data['Core Mechanics'].join('|'),
 			})

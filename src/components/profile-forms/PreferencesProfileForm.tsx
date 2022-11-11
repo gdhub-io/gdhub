@@ -7,7 +7,6 @@ const PreferencesProfileForm = ({ profile }: any) => {
 
 	useEffect(() => {
 		if (profile) {
-			console.log(profile)
 			setProcessing(false)
 		}
 	}, [profile])

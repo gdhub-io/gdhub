@@ -4,28 +4,46 @@ import { Col, Form, Input, message, Modal, Row, Select, Spin } from 'antd'
 const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
+	const [projectIdea, setProjectIdea] = useState<any>()
 
 	useEffect(() => {
-		if (open) form.resetFields()
-
-		console.log(seasonId, projectIdeaId)
-
-		setProcessing(false)
-
-		return () => form.resetFields()
+		if (open && projectIdeaId) {
+			getProjectIdea(projectIdeaId)
+		} else {
+			setProcessing(false)
+		}
 	}, [open])
 
-	const getProjectIdea = async () => {
+	useEffect(() => {
+		if (projectIdea) {
+			form.setFieldsValue({ ...projectIdea, Season: projectIdea.Season[0] })
+		}
+	}, [projectIdea])
+
+	const getProjectIdea = async (projectIdeaId: string) => {
 		try {
-			await fetch('/api/project/idea', {
+			setProcessing(true)
+
+			const response: any = await fetch('/api/project/idea', {
 				method: 'post',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					id: projectIdeaId,
 				}),
 			})
+
+			if (response.error) {
+				throw new Error(response.error.message)
+			}
+
+			const data = await response.json()
+
+			setProjectIdea({ ...data, 'Core Mechanics': data['Core Mechanics'].split('|') })
+			setProcessing(false)
 		} catch (error: any) {
-			//
+			console.log('getProjectIdea', error)
+			message.error(error.message)
+			setProcessing(false)
 		}
 	}
 
@@ -33,7 +51,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 		try {
 			const formData = await form.validateFields()
 			setProcessing(true)
-			const response: any = await fetch('/api/project/save/idea', {
+			const response: any = await fetch('/api/project/idea/save', {
 				method: 'post',
 				body: JSON.stringify({ id: projectIdeaId || null, data: formData }),
 				headers: {
@@ -65,8 +83,15 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 		}
 	}
 
+	const handleCancel = () => {
+		setProjectIdea(null)
+		form.resetFields()
+		onCancel()
+	}
+
 	return (
 		<Modal
+			centered
 			title={projectIdeaId ? 'Изменить идею вашего проекта' : 'Добавить идею вашего проекта'}
 			width={800}
 			destroyOnClose
@@ -75,7 +100,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 			okText="Сохранить"
 			open={open}
 			onOk={handleOk}
-			onCancel={onCancel}
+			onCancel={handleCancel}
 			confirmLoading={processing}
 		>
 			<Spin spinning={processing}>
