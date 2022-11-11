@@ -13,6 +13,7 @@ export default class TelegramService {
 			chat_id: process.env.TELEGRAM_CHAT_ID as string,
 			// message_thread_id: '',
 			parse_mode: 'HTML',
+			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS || false,
 			text: message, //1-4096 characters
 		})
 
@@ -47,6 +48,7 @@ export default class TelegramService {
 			photo: url,
 			caption: message, //0-1024 characters
 			parse_mode: 'HTML',
+			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS || false,
 		})
 
 		try {

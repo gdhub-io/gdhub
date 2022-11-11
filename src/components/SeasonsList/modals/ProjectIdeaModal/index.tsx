@@ -1,27 +1,41 @@
 import { useEffect, useState } from 'react'
 import { Col, Form, Input, message, Modal, Row, Select, Spin } from 'antd'
 
-const ProjectIdeaModal = ({ seasonId, projectIdea, open, onOk, onCancel }: any) => {
+const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
 
 	useEffect(() => {
 		if (open) form.resetFields()
 
-		console.log(seasonId)
+		console.log(seasonId, projectIdeaId)
 
 		setProcessing(false)
 
 		return () => form.resetFields()
 	}, [open])
 
+	const getProjectIdea = async () => {
+		try {
+			await fetch('/api/project/idea', {
+				method: 'post',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					id: projectIdeaId,
+				}),
+			})
+		} catch (error: any) {
+			//
+		}
+	}
+
 	const handleOk = async () => {
 		try {
 			const formData = await form.validateFields()
 			setProcessing(true)
-			const response: any = await fetch('/api/project/save-idea', {
+			const response: any = await fetch('/api/project/save/idea', {
 				method: 'post',
-				body: JSON.stringify({ id: projectIdea?.id || null, data: formData }),
+				body: JSON.stringify({ id: projectIdeaId || null, data: formData }),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -38,7 +52,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdea, open, onOk, onCancel }: any) 
 				throw new Error(response.error.message)
 			}
 
-			message.success(projectIdea ? 'Данные идеи обновлены' : 'Добавлена новая идея игры')
+			message.success(projectIdeaId ? 'Данные идеи обновлены' : 'Добавлена новая идея игры')
 			onOk()
 		} catch (error: any) {
 			setProcessing(false)
@@ -53,7 +67,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdea, open, onOk, onCancel }: any) 
 
 	return (
 		<Modal
-			title={projectIdea ? 'Изменить идею вашего проекта' : 'Добавить идею вашего проекта'}
+			title={projectIdeaId ? 'Изменить идею вашего проекта' : 'Добавить идею вашего проекта'}
 			width={800}
 			destroyOnClose
 			maskClosable={false}

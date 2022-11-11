@@ -3,10 +3,6 @@ import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth'
 
-type PaymentState = {
-	[key: string]: any
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
 		const { specialityId } = req.body

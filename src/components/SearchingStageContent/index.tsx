@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
-import { Button, List, Popconfirm, Space, Spin, Typography } from 'antd'
+import { Button, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { HiOutlineTrash } from 'react-icons/hi'
@@ -15,7 +15,10 @@ const SearchingStageContent = ({ season }: any) => {
 	const session: any = useSession()
 	const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
 	const [selectedProjectIdea, setSelectedProjectIdea] = useState<any>(null)
-	const { data: projectIdeas, error } = useSWR(['/api/project/ideas', { seasonName: season.Name }], fetcher)
+	const { data: projectIdeas, mutate: mutateProjectIdeas } = useSWR(
+		['/api/project/ideas', { seasonName: season.Name }],
+		fetcher
+	)
 
 	const handleAddIdeaClick = () => {
 		setShowProjectIdeaModal(true)
@@ -26,7 +29,24 @@ const SearchingStageContent = ({ season }: any) => {
 		setShowProjectIdeaModal(true)
 	}
 
-	const handleDeleteIdea = (projectIdeaId: string) => {}
+	const handleDeleteIdea = async (projectIdeaId: string) => {
+		try {
+			const response = await fetch('/api/project/idea/delete', {
+				method: 'post',
+				body: JSON.stringify({ projectIdeaId }),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+
+			if (!response.ok) throw new Error()
+
+			await mutateProjectIdeas()
+			message.success('Идея проекта была удалена')
+		} catch (error: any) {
+			message.error('Error')
+		}
+	}
 
 	return (
 		<Spin spinning={!season}>
