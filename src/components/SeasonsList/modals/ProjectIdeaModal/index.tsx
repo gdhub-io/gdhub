@@ -116,7 +116,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdea, open, onOk, onCancel }: any) 
 
 					<Form.Item
 						name="Document Link"
-						label="Ссылка на документ с исследлованием идеи"
+						label="Ссылка на документ с исследованием идеи"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true, type: 'url' }]}
 						required
