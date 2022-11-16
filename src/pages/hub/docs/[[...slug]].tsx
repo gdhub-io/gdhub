@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { getPages } from '@services/notion'
 import { NextPageWithLayout } from 'pages/_app'
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Render } from '@9gustin/react-notion-render'
 import { Col, Menu, message, Row, Select, Spin, Grid } from 'antd'
 import { DateTime } from 'luxon'
+import { unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import styles from './style.module.less'
@@ -13,7 +15,7 @@ import '@9gustin/react-notion-render/dist/index.css'
 const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
-	const { slug } = router.query
+	const { slug: urlSlug } = router.query
 	const [loading, setLoading] = useState(true)
 	const [docsMenu, setDocsMenu] = useState<any[]>()
 	const [pageSlug, setPageSlug] = useState<any>()
@@ -21,34 +23,37 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	const [pageProperties, setPageProperties] = useState<any>()
 
 	useEffect(() => {
-		if (!pages) return
+		if (!pages || pages.length == 0) return
 
 		const {
 			properties: { Slug },
 		} = pages[0]
 
-		const currentPageSlug = slug ? slug[0] : Slug.rich_text[0].plain_text
+		const currentPageSlug = urlSlug ? urlSlug[urlSlug.length - 1] : Slug.rich_text[0].plain_text
 
 		setPageSlug(currentPageSlug)
 		setPageProperties(getPageProperties(currentPageSlug))
 
-		if (!slug) {
+		if (!urlSlug) {
 			router.push('/hub/docs/' + Slug.rich_text[0].plain_text, undefined, { shallow: true })
 		}
-	}, [slug])
+	}, [urlSlug])
 
 	useEffect(() => {
 		setLoading(false)
 		if (!!pages) {
+			console.log(pages)
+
 			setDocsMenu(
 				pages.map((page: any) => {
 					const {
-						properties: { Slug, Name },
+						properties: { Slug, Name, Childrens },
 					} = page
 
 					return {
 						key: Slug.rich_text[0].plain_text,
 						label: Name.title[0].plain_text,
+						// childrens: Childrens.relation.length > 0 ? getChildrens(Childrens.relation) : [],
 					}
 				})
 			)
@@ -60,6 +65,22 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 			fetchPageContent(pageSlug)
 		}
 	}, [pageSlug])
+
+	// const getChildrens = (relationsData: any) => {
+	// 	const ids = relationsData.map((rd: any) => rd.id)
+	// 	const results = pages?.find((p: any) => ids.includes(p.id))
+
+	// 	return results.map((r: any) => {
+	// 		const {
+	// 			properties: { Slug, Name },
+	// 		} = r
+
+	// 		return {
+	// 			kkey: Slug.rich_text[0].plain_text,
+	// 			label: Name.title[0].plain_text,
+	// 		}
+	// 	})
+	// }
 
 	const getPageProperties = (slug: string) => {
 		const currentPage = pages?.find((page: any) => page.properties.Slug.rich_text[0].plain_text === slug)
@@ -139,16 +160,22 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 					</Col>
 					<Col xs={{ span: 24 }} md={{ span: 18 }} xl={{ span: 19 }} xxl={{ span: 20 }}>
 						<Spin spinning={loading}>
-							<section className="main-container">
-								<div className="content-header">
-									<h1>{pageProperties?.properties.Name.title[0].plain_text}</h1>
-									<small>
-										Обновлено{' '}
-										{DateTime.fromISO(pageProperties?.last_edited_time).toFormat('d LLL, yyyy', { locale: 'ru-RU' })}
-									</small>
-								</div>
-								<Render blocks={pageContent} useStyles />
-							</section>
+							{!!pageProperties ? (
+								<section className="main-container">
+									<div className="content-header">
+										<h1>{pageProperties?.properties.Name.title[0].plain_text}</h1>
+										<small>
+											Обновлено{' '}
+											{DateTime.fromISO(pageProperties?.last_edited_time).toFormat('d LLL, yyyy', { locale: 'ru-RU' })}
+										</small>
+									</div>
+									<Render blocks={pageContent} useStyles />
+								</section>
+							) : (
+								<section className="main-container">
+									<p>Страница не существует или у вас нет к ней доступа</p>
+								</section>
+							)}
 						</Spin>
 					</Col>
 				</Row>
@@ -160,7 +187,8 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 DocsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export const getServerSideProps = async (context: any) => {
-	const pages = await getPages()
+	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+	const pages = await getPages({ roles: session.user.roles })
 
 	return {
 		props: {

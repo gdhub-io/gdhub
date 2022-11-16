@@ -5,18 +5,56 @@ const NotionService = new Client({
 	auth: process.env.NOTION_TOKEN,
 })
 
-export const getPages = async () => {
+type GetPagesParams = {
+	roles: string[]
+}
+
+export const getPages = async ({ roles = [] }: GetPagesParams) => {
 	try {
+		const filterParams: any = {
+			and: [
+				{
+					property: 'Published',
+					checkbox: {
+						equals: true,
+					},
+				},
+			],
+		}
+
+		if (roles.length > 0) {
+			filterParams.and.push({
+				or: [
+					{
+						property: 'Access',
+						multi_select: {
+							contains: 'everyone',
+						},
+					},
+					...roles.map((roleName: string) => ({
+						property: 'Access',
+						multi_select: {
+							contains: roleName,
+						},
+					})),
+				],
+			})
+		} else {
+			filterParams.and.push({
+				property: 'Access',
+				multi_select: {
+					contains: 'everyone',
+				},
+			})
+		}
+
 		const pages = await NotionService.databases.query({
 			database_id: process.env.NOTION_DATABASE_DOCS as string,
 			sorts: [{ property: 'Order', direction: 'ascending' }],
-			filter: {
-				property: 'Published',
-				checkbox: {
-					equals: true,
-				},
-			},
+			filter: filterParams,
 		})
+
+		console.log(pages)
 
 		return pages.results
 	} catch (error) {
