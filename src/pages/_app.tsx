@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react'
 import ErrorBoundary from '@components/ErrorBoundary'
 import '@styles/globals.less'
 import LoadingScreen from '@components/LoadingScreen'
-import { GTM_ID } from '@helpers/gtm'
+import { GTM_ID, pageview } from '@helpers/gtm'
 import { PublicLayout } from '@layouts/PublicLayout'
 import { NextPage } from 'next'
 import { SessionProvider } from 'next-auth/react'
@@ -43,12 +43,18 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	useEffect(() => {
 		router.events.on('routeChangeStart', () => setLoading(true))
-		router.events.on('routeChangeComplete', () => setLoadingOff())
+		router.events.on('routeChangeComplete', (url: string) => {
+			pageview(url)
+			setLoadingOff()
+		})
 		router.events.on('routeChangeError', () => setLoadingOff())
 
 		return () => {
 			router.events.off('routeChangeStart', () => setLoading(true))
-			router.events.off('routeChangeComplete', () => setLoadingOff())
+			router.events.off('routeChangeComplete', (url: string) => {
+				pageview(url)
+				setLoadingOff()
+			})
 			router.events.off('routeChangeError', () => setLoadingOff())
 		}
 	}, [router.events])
