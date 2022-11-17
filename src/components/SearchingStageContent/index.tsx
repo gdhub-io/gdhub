@@ -79,7 +79,7 @@ const SearchingStageContent = ({ season }: any) => {
 						Шаблон документа для описания идеи
 					</Link>
 				</p>
-				<Space>
+				<Space wrap>
 					<Button type="primary" onClick={handleAddIdeaClick}>
 						Добавить идею игры
 					</Button>
