@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
-import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, Row, Space } from 'antd'
+import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, Row, Space, Tooltip } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.less'
 
 const { Header, Footer, Content } = Layout
@@ -13,6 +14,24 @@ export const ProtectedLayout = ({ children }: any) => {
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const screens = Grid.useBreakpoint()
 	const { data: session, status }: any = useSession()
+
+	const telegramMenuItem = {
+		label: screens.md ? (
+			<Tooltip title="Чат сообщества в Telegram">
+				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
+					<Button shape="circle" type="text" style={{ top: '6px', position: 'relative' }}>
+						<TbBrandTelegram size={24} />
+					</Button>
+				</Link>
+			</Tooltip>
+		) : (
+			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
+				Чат сообщества в Telegram
+			</Link>
+		),
+		key: 'telegram-join-link',
+	}
+
 	const [headerMenuItems, setHeaderMenuItems] = useState([
 		{
 			label: (
@@ -30,6 +49,7 @@ export const ProtectedLayout = ({ children }: any) => {
 			),
 			key: '/hub/docs',
 		},
+		telegramMenuItem,
 	])
 
 	useEffect(() => {
@@ -49,6 +69,7 @@ export const ProtectedLayout = ({ children }: any) => {
 					),
 					key: '/hub/docs',
 				},
+				telegramMenuItem,
 			])
 		}
 	}, [session, screens])
