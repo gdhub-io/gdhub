@@ -62,11 +62,11 @@ const Home: NextPage = () => {
 						<br />
 						Хочешь получить новый опыт или разработать свою игру? Присоединяйся!
 					</p>
-					{!isOpenedInTelegram ? (
+					{isOpenedInTelegram ? (
 						<>
 							<Link href="https://gdhub.io" target="_blank">
-								<Button type="primary" loading={!signInProcessing}>
-									{!signInProcessing ? 'Авторизация...' : 'Перейти в браузер'}
+								<Button type="primary" loading={signInProcessing}>
+									{signInProcessing ? 'Авторизация...' : 'Перейти в браузер'}
 								</Button>
 							</Link>
 						</>
