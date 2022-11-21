@@ -35,6 +35,10 @@ const GeneralProfileForm = ({ profile }: any) => {
 				throw new Error(response.error.message)
 			}
 
+			let telegramUsername = formData['Telegram Nickname'] as string
+			telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
+			form.setFieldValue('Telegram Nickname', telegramUsername)
+
 			message.success('Данные вашего профиля обновлены')
 		} catch (error: any) {
 			setProcessing(false)
@@ -86,7 +90,12 @@ const GeneralProfileForm = ({ profile }: any) => {
 					<Form.Item label="Город" name="City" rules={[{ required: false }]}>
 						<Input />
 					</Form.Item>
-					<Form.Item label="Telegram Никнейм" name="Telegram Nickname" rules={[{ required: true }]}>
+					<Form.Item
+						label="Telegram Никнейм"
+						name="Telegram Nickname"
+						rules={[{ required: true }]}
+						extra="Указывать без символа @"
+					>
 						<Input />
 					</Form.Item>
 					<Form.Item label="Ссылка на резюме или портфолио" name="Resume/Portfolio" rules={[{ type: 'url' }]}>

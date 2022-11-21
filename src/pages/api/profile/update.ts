@@ -14,7 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	try {
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 
-		const response = await AirtableService('Profiles').update(id, data)
+		let telegramUsername = data['Telegram Nickname'] as string
+		telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
+
+		const response = await AirtableService('Profiles').update(id, { ...data, 'Telegram Nickname': telegramUsername })
 
 		if (!response) {
 			throw new Error('Error')
