@@ -6,7 +6,6 @@
 @import 'antd/dist/antd.less'; // Import Ant Design styles by less entry
 @import 'variables.less'; // variables to override above
 
-
 html,
 body {
 	font-family: 'Montserrat', sans-serif;
@@ -34,7 +33,8 @@ a.text-link {
 	justify-content: center;
 }
 
-.ant-menu-horizontal, .ant-menu-vertical {
+.ant-menu-horizontal,
+.ant-menu-vertical {
 	border: none;
 }
 .ant-menu-horizontal > .ant-menu-item-selected::after {
@@ -44,6 +44,11 @@ a.text-link {
 	border: none !important;
 }
 
-.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item, .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu {
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item,
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu {
 	padding: 0 10px;
+}
+
+.ant-select-multiple .ant-select-selection-item > .ant-select-selection-item-content {
+	max-width: 200px;
 }

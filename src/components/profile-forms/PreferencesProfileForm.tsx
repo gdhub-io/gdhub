@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, Form, message, Select, Spin } from 'antd'
+import { Button, Card, Form, message, Select, Spin, Typography } from 'antd'
 
 const PreferencesProfileForm = ({ profile }: any) => {
 	const [form] = Form.useForm()
@@ -55,7 +55,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 		'Борьба, сражения / fighting',
 		'Ужас выживания / survival horror',
 		'Другие / others',
-	].map((i) => ({ label: i, value: i }))
+	].map((i) => ({ label: <Typography.Paragraph ellipsis>{i}</Typography.Paragraph>, value: i }))
 
 	const graphicSettingsOptions = [
 		'Исторический / Historic',
@@ -68,7 +68,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 		'Реальная жизнь / Real Life',
 		'Фэнтэзи / Fantasy',
 		'Другое / Other',
-	].map((i) => ({ label: i, value: i }))
+	].map((i) => ({ label: <Typography.Paragraph ellipsis>{i}</Typography.Paragraph>, value: i }))
 
 	const gameLevelsOptions = [
 		'Гиперказуальные / Hyper-casual',
@@ -76,7 +76,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 		'Средней сложности / Mid-core',
 		'Сложные / Hard-core',
 		'Другое / Other',
-	].map((i) => ({ label: i, value: i }))
+	].map((i) => ({ label: <Typography.Paragraph ellipsis>{i}</Typography.Paragraph>, value: i }))
 
 	return (
 		<Card title="Предпочтения">

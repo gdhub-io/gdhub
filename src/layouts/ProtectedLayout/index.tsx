@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import GdhubLogo from '@assets/images/gdhub-icon.svg'
+import { useTelegram } from '@helpers/useTelegram'
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, Row, Space, Tooltip } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
@@ -12,6 +13,7 @@ const { Header, Footer, Content } = Layout
 
 export const ProtectedLayout = ({ children }: any) => {
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
+	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session, status }: any = useSession()
 
@@ -74,7 +76,7 @@ export const ProtectedLayout = ({ children }: any) => {
 		}
 	}, [session, screens])
 
-	const userMenuItems = [
+	let userMenuItems = [
 		{
 			label: <Link href="/profile">Профиль</Link>,
 			key: 'profile',
@@ -86,6 +88,10 @@ export const ProtectedLayout = ({ children }: any) => {
 			onClick: () => signOut(),
 		},
 	]
+
+	if (isOpenedInTelegram) {
+		userMenuItems = userMenuItems.slice(0, userMenuItems.length - 3)
+	}
 
 	return (
 		<>

@@ -1,13 +1,15 @@
+@import 'antd/lib/style/themes/default.less';
+
 .container {
 	margin-top: 40px;
 
 	:global {
 		.season-container {
-      margin-bottom: 14px;
+			margin-bottom: 14px;
 
-      &.not-active {
-        opacity: 0.5;
-      }
+			&.not-active {
+				opacity: 0.5;
+			}
 
 			.divider {
 				display: block;
@@ -24,5 +26,11 @@
 				}
 			}
 		}
+	}
+}
+
+@media (max-width: @screen-xs-min) {
+	.container {
+		margin-top: 0;
 	}
 }

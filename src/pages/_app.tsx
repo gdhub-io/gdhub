@@ -61,6 +61,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	return (
 		<>
+			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
 			<Script
 				id="gtag-base"
 				strategy="afterInteractive"

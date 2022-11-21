@@ -12,15 +12,13 @@ import styles from './style.module.less'
 const HubPage: NextPageWithLayout = () => {
 	const session: any = useSession()
 
-	// useEffect(() => console.log(session), [session])
-
 	return (
 		<>
 			<Head>
 				<title>Game Developers Hub</title>
 			</Head>
 			<div className={styles.container}>
-				{!hasRole('member', session) && (
+				{session && !hasRole('member', session) && (
 					<Space direction="vertical">
 						<p>
 							Для того, чтобы стать участников Хаба, необходимо заполнить данные о себе, указать ваши специальности,

@@ -1,5 +1,6 @@
-import { findOrCreateMember } from '@services/airtable'
+import AirtableService, { findOrCreateMember } from '@services/airtable'
 import NextAuth, { NextAuthOptions } from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 
 export const authOptions: NextAuthOptions = {
@@ -11,6 +12,36 @@ export const authOptions: NextAuthOptions = {
 		GoogleProvider({
 			clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_OAUTH_CLEINT_SECRET as string,
+		}),
+		CredentialsProvider({
+			id: 'telegram-web-app',
+			name: 'Sign in with Telegram Web App',
+			credentials: {
+				username: { label: 'Username' },
+			},
+			async authorize(credentials, req) {
+				const { username } = req.query as { username: string }
+
+				if (!username) return null
+
+				const [user] = await AirtableService('Accounts')
+					.select({
+						filterByFormula: `{Telegram Nickname} = "${username}"`,
+						maxRecords: 1,
+					})
+					.all()
+
+				if (!user) return null
+
+				const [profile] = user.get('Profile') as string[]
+
+				return {
+					id: user.id,
+					name: profile || 'Unknown name',
+					email: user.get('Email'),
+					image: user.get('Image Link'),
+				}
+			},
 		}),
 	],
 	callbacks: {
