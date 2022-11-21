@@ -38,8 +38,8 @@ export const authOptions: NextAuthOptions = {
 				return {
 					id: user.id,
 					name: profile || 'Unknown name',
-					email: user.get('Email'),
-					image: user.get('Image Link'),
+					email: user.get('Email') as string,
+					image: user.get('Image Link') as string,
 				}
 			},
 		}),
