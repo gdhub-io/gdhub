@@ -60,13 +60,13 @@ const Home: NextPage = () => {
 						Сообщество специалистов игровой индустрии, участники которого объеденяются в команды, чтобы разрабатывать
 						новые игры.
 						<br />
-						Хочешь получить новый опыт или разработать свою игру? Присоеденяйся!
+						Хочешь получить новый опыт или разработать свою игру? Присоединяйся!
 					</p>
-					{isOpenedInTelegram ? (
+					{!isOpenedInTelegram ? (
 						<>
 							<Link href="https://gdhub.io" target="_blank">
-								<Button type="primary" loading={signInProcessing}>
-									{signInProcessing ? 'Авторизация...' : 'Перейти в браузер'}
+								<Button type="primary" loading={!signInProcessing}>
+									{!signInProcessing ? 'Авторизация...' : 'Перейти в браузер'}
 								</Button>
 							</Link>
 						</>
