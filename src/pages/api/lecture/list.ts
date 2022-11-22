@@ -11,18 +11,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		const lectures = await AirtableService('Lectures')
 			.select({
+				fields: [
+					'Applicants Count',
+					'Direction',
+					'Listeners Accounts',
+					'Name',
+					'Price',
+					'Registration Count',
+					'Requested By',
+					'Created',
+					'Status',
+				],
 				filterByFormula: `{Archived} = FALSE()`,
 			})
 			.all()
+
+		const lecturesWithRelevent = lectures.map((lecture) => {
+			let isRelevant = false
+			const listeners = lecture.get('Listeners Accounts') as string[]
+
+			if (listeners && listeners.includes(session.user.id)) {
+				isRelevant = true
+			}
+
+			return {
+				...lecture.fields,
+				id: lecture.id,
+				isRelevant,
+			}
+		})
 
 		const queryResult = await AirtableService('Lectures').select({ fields: [] }).all()
 
 		res.json({
 			total: queryResult.length,
-			data: lectures.map((lecture: any) => ({
-				id: lecture.id,
-				...lecture.fields,
-			})),
+			data: lecturesWithRelevent,
 		})
 	} catch (error: any) {
 		res.json({ success: false, error: error.message })

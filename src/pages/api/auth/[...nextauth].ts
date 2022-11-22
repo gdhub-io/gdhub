@@ -49,11 +49,11 @@ export const authOptions: NextAuthOptions = {
 			return {
 				...session,
 				user: {
-					id: token.id,
+					...session.user,
 					roles: token.roles,
 					name: token.name,
 					image: token.picture,
-					...session.user,
+					id: token.id,
 					hasRole: (roleName: string) => {
 						const roles = token.roles as string[]
 						const response = roles.find((role: string) => role === roleName.toLowerCase())
