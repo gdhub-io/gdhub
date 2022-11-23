@@ -64,6 +64,10 @@ export const ProtectedLayout = ({ children }: any) => {
 					key: '/hub/members',
 				},
 				{
+					label: <Link href="/hub/lectures">{screens.md ? <Button type="text">Лекции</Button> : 'Лекции'}</Link>,
+					key: '/hub/lectures',
+				},
+				{
 					label: (
 						<Link href="/hub/docs">
 							{screens.md ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
@@ -103,7 +107,7 @@ export const ProtectedLayout = ({ children }: any) => {
 						</Link>
 						{!!session && (
 							<>
-								{screens.md ? (
+								{screens.lg ? (
 									<>
 										<Menu style={{ flex: 1, justifyContent: 'flex-end' }} mode="horizontal" items={headerMenuItems} />
 										<Dropdown overlay={<Menu items={userMenuItems} />} trigger={['click']}>
