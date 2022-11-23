@@ -84,7 +84,7 @@ const LecturesPage: NextPageWithLayout = () => {
 			title: 'Тема лекции',
 			dataIndex: 'Name',
 			key: 'Name',
-			width: '100%',
+			width: screens.lg ? 'auto' : '100%',
 			render: (text, lecture) =>
 				screens.md ? (
 					<strong>{text}</strong>
@@ -103,7 +103,7 @@ const LecturesPage: NextPageWithLayout = () => {
 			responsive: ['md'],
 		},
 		{
-			title: 'Хочешь провести лекцию?',
+			title: screens.lg ? 'Хочешь провести лекцию?' : null,
 			dataIndex: 'Lecturer Name',
 			responsive: ['md'],
 			key: 'Lecturer Name',
