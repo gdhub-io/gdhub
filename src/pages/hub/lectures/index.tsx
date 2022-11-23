@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import LectureDetailsModal from '@components/modals/LectureDetailsModal'
 import LectureRequestModal from '@components/modals/LectureRequestModal'
 import SetLecturerModal from '@components/modals/SetLecturerModal'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
-import { Button, message, Popconfirm, Space, Spin, Table, Tooltip } from 'antd'
+import { Button, Dropdown, Grid, Menu, message, Popconfirm, Space, Spin, Table, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
+import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import { DateTime } from 'luxon'
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
-import { TbHeart, TbHeartOff } from 'react-icons/tb'
+import { TbHeart, TbHeartOff, TbDotsVertical } from 'react-icons/tb'
 import useSWR from 'swr'
 
 type LectureStatus = 'Requested' | 'Relevantized' | 'Canceled' | 'Ready' | 'Held'
@@ -43,6 +44,7 @@ const fetcher = (url: string, data: any) =>
 
 const LecturesPage: NextPageWithLayout = () => {
 	const router = useRouter()
+	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
 	const [loading, setLoading] = useState(true)
 	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false)
@@ -66,21 +68,44 @@ const LecturesPage: NextPageWithLayout = () => {
 		setLoading(false)
 	}, [])
 
+	const mobileMenuForRequested: ItemType[] = [
+		{
+			label: 'Изменить',
+			key: 'edit',
+		},
+		{
+			label: 'Удалить',
+			key: 'delete',
+		},
+	]
+
 	const columnsForRequested: ColumnsType<DataType> = [
 		{
 			title: 'Тема лекции',
 			dataIndex: 'Name',
 			key: 'Name',
-			render: (text) => <strong>{text}</strong>,
+			width: '100%',
+			render: (text, lecture) =>
+				screens.md ? (
+					<strong>{text}</strong>
+				) : (
+					<>
+						<strong>{text}</strong>
+						<br />
+						<small>{lecture.Direction}</small>
+					</>
+				),
 		},
 		{
 			title: 'Направление',
 			dataIndex: 'Direction',
 			key: 'Direction',
+			responsive: ['md'],
 		},
 		{
 			title: 'Хочешь провести лекцию?',
 			dataIndex: 'Lecturer Name',
+			responsive: ['md'],
 			key: 'Lecturer Name',
 			render: (data: any, lecture) => {
 				const applicatnsCount = lecture['Applicants Count'] as number
@@ -101,7 +126,7 @@ const LecturesPage: NextPageWithLayout = () => {
 			},
 		},
 		{
-			title: 'Вам актуальна лекция?',
+			title: null,
 			key: 'join-to-lecture',
 			render: (_, lecture) => (
 				<Space direction="vertical">
@@ -130,7 +155,11 @@ const LecturesPage: NextPageWithLayout = () => {
 		{
 			key: 'actions',
 			render: (_, lecture) =>
-				lecture['Requested By'][0] === session?.user?.id && lecture.Status === 'Requested' ? (
+				!screens.md ? (
+					<Dropdown overlay={<Menu items={mobileMenuForRequested} />} trigger={['click']}>
+						<TbDotsVertical size={16} style={{ position: 'relative', top: 2 }} />
+					</Dropdown>
+				) : lecture['Requested By'][0] === session?.user?.id && lecture.Status === 'Requested' ? (
 					<Space wrap>
 						<Button onClick={() => handleEditLectureRequest(lecture.id)}>Изменить</Button>
 						<Popconfirm
@@ -148,47 +177,69 @@ const LecturesPage: NextPageWithLayout = () => {
 		},
 	]
 
-	const columnsForReady: ColumnsType<DataType> = [
-		{
-			title: 'Тема лекции',
-			dataIndex: 'Name',
-			key: 'Name',
-			render: (text) => <strong>{text}</strong>,
-		},
-		{
-			title: 'Направление',
-			dataIndex: 'Direction',
-			key: 'Direction',
-		},
-		{
-			title: 'Лектор',
-			dataIndex: 'Lecturer Name',
-			key: 'Lecturer Name',
-		},
-		{
-			title: 'Дата',
-			dataIndex: 'Date',
-			key: 'Date',
-			render: (date) => {
-				return DateTime.fromISO(date).toFormat('dd LLL yyyy, t', {
-					locale: router.locale,
-				})
+	const columnsForReady: ColumnsType<DataType> = useMemo(
+		() => [
+			{
+				title: 'Тема лекции',
+				dataIndex: 'Name',
+				key: 'Name',
+				render: (text, lecture) => {
+					const _date = DateTime.fromISO(lecture.Date).toFormat('dd LLL yyyy, T', {
+						locale: router.locale,
+					})
+
+					return screens.md ? (
+						<strong>{text}</strong>
+					) : (
+						<>
+							<strong>{text}</strong>
+							<br />
+							<small>{lecture.Direction}</small>
+							<br />
+							<small>Дата: {_date}</small>
+						</>
+					)
+				},
 			},
-		},
-		{
-			key: 'register-to-lecture',
-			render: (_, lecture) => (
-				<Button
-					onClick={() => {
-						setSelectedLectureId(lecture.id)
-						setShowLectureDetails(true)
-					}}
-				>
-					Подробнее
-				</Button>
-			),
-		},
-	]
+			{
+				title: 'Направление',
+				dataIndex: 'Direction',
+				key: 'Direction',
+				responsive: ['md'],
+			},
+			{
+				title: 'Лектор',
+				dataIndex: 'Lecturer Name',
+				key: 'Lecturer Name',
+				responsive: ['md'],
+			},
+			{
+				title: 'Дата',
+				dataIndex: 'Date',
+				key: 'Date',
+				responsive: ['md'],
+				render: (date) => {
+					return DateTime.fromISO(date).toFormat('dd LLL yyyy, t', {
+						locale: router.locale,
+					})
+				},
+			},
+			{
+				key: 'register-to-lecture',
+				render: (_, lecture) => (
+					<Button
+						onClick={() => {
+							setSelectedLectureId(lecture.id)
+							setShowLectureDetails(true)
+						}}
+					>
+						Подробнее
+					</Button>
+				),
+			},
+		],
+		[screens]
+	)
 
 	const handleSaveLectureRequest = async () => {
 		setShowLectureRequestModal(false)
@@ -285,7 +336,7 @@ const LecturesPage: NextPageWithLayout = () => {
 						Отметьте лекции, которые вам было бы интересно посетить.
 						<Spin spinning={isLoadingRequestedLectures}>
 							<Table
-								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}
+								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px', marginTop: 16 }}
 								columns={columnsForRequested}
 								dataSource={requestedLectures?.data.map((l: any) => ({ ...l, key: l.id }))}
 								pagination={false}
