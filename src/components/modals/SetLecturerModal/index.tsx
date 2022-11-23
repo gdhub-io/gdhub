@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import { DateTime } from 'luxon'
 import moment from 'moment'
+import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 
 const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
 	const [lecture, setLectureId] = useState<any>()
 
@@ -55,9 +58,10 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 	useEffect(() => {
 		if (lecture) {
-			form.setFieldsValue({ ...lecture, Season: lecture.Season[0] })
+			console.log('lecture')
+			form.setFieldsValue({ ...lecture })
 		}
-	}, [lecture])
+	}, [lecture, lectureId])
 
 	const getLecture = async (lectureId: string) => {
 		try {
@@ -77,10 +81,15 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 			const data = await response.json()
 
+			// form.setFieldValue('Date', moment().add({ days: 2 }).format('Y-M-D'))
+			// form.setFieldValue('Time', moment().format('HH:mm'))
+
 			form.setFieldsValue({
 				Name: data.Name,
 				Wishes: data.Wishes,
 				Direction: data.Direction,
+				Date: moment().add({ days: 1 }),
+				Time: moment().add({ hours: 2 }).set({ minutes: 0 }),
 			})
 			setProcessing(false)
 		} catch (error: any) {
@@ -93,10 +102,24 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const handleOk = async () => {
 		try {
 			const formData = await form.validateFields()
+
 			setProcessing(true)
 			const response: any = await fetch('/api/lecture/save', {
 				method: 'post',
-				body: JSON.stringify({ id: lectureId || null, data: formData }),
+				body: JSON.stringify({
+					id: lectureId || null,
+					data: {
+						Lecturer: session?.user.id,
+						Direction: formData.Direction,
+						Description: formData.Description,
+						Link: formData.Link,
+						Date: formData.Date.set({
+							hours: formData.Time.hours(),
+							minutes: formData.Time.minutes(),
+							seconds: 0,
+						}).toISOString(),
+					},
+				}),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -208,7 +231,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						</Col>
 						<Col offset={1}>
 							<Form.Item
-								name="Date"
+								name="Time"
 								label="Время проведения"
 								rules={[{ required: true }]}
 								wrapperCol={{ span: 24 }}
@@ -222,8 +245,16 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					<Form.Item
 						label="Ссылка на лекцию"
 						name="Link"
-						help="Укажите сылку на трансляцию в Zoom, Google Meets, видеочат в Telegram и т.п."
-						rules={[{ required: true }]}
+						extra={
+							<div>
+								Создайте ссылу на трансляцию в{' '}
+								<Link href="https://meet.google.com/" target="_blank">
+									Google Meet
+								</Link>{' '}
+								(или на ином сервисе) и вставьте в это поле.
+							</div>
+						}
+						rules={[{ required: true, type: 'url' }]}
 						required
 						wrapperCol={{ span: 24 }}
 					>

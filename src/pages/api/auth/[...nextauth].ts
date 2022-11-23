@@ -37,6 +37,7 @@ export const authOptions: NextAuthOptions = {
 
 				return {
 					id: user.id,
+					profileId: profile,
 					name: profile || 'Unknown name',
 					email: user.get('Email') as string,
 					image: user.get('Image Link') as string,
@@ -54,6 +55,7 @@ export const authOptions: NextAuthOptions = {
 					name: token.name,
 					image: token.picture,
 					id: token.id,
+					profileId: token.profileId,
 					hasRole: (roleName: string) => {
 						const roles = token.roles as string[]
 						const response = roles.find((role: string) => role === roleName.toLowerCase())
@@ -71,6 +73,7 @@ export const authOptions: NextAuthOptions = {
 				token.id = member.id
 				token.roles = member.roles
 				token.name = member.name
+				token.profileId = member.profileId
 			}
 
 			return token

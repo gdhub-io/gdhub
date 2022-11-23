@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import LectureDetailsModal from '@components/modals/LectureDetailsModal'
 import LectureRequestModal from '@components/modals/LectureRequestModal'
 import SetLecturerModal from '@components/modals/SetLecturerModal'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
@@ -46,13 +47,20 @@ const LecturesPage: NextPageWithLayout = () => {
 	const [loading, setLoading] = useState(true)
 	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false)
 	const [showSetLecturerModal, setShowSetLecturerModal] = useState(false)
+	const [showLectureDetails, setShowLectureDetails] = useState(false)
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 
 	const {
-		data: lectures,
-		mutate: mutateLectures,
-		isValidating: isLoadingLectures,
-	} = useSWR(['/api/lecture/list'], fetcher, { revalidateOnFocus: false })
+		data: requestedLectures,
+		mutate: mutateRequestedLectures,
+		isValidating: isLoadingRequestedLectures,
+	} = useSWR(['/api/lecture/list', { status: ['Requested', 'Actualized'] }], fetcher, { revalidateOnFocus: false })
+
+	const {
+		data: readyLectures,
+		mutate: mutateReadyLectures,
+		isValidating: isLoadingReadyLectures,
+	} = useSWR(['/api/lecture/list', { status: ['Ready'] }], fetcher, { revalidateOnFocus: false })
 
 	useEffect(() => {
 		setLoading(false)
@@ -169,14 +177,23 @@ const LecturesPage: NextPageWithLayout = () => {
 		},
 		{
 			key: 'register-to-lecture',
-			render: () => <Button>Подробнее</Button>,
+			render: (_, lecture) => (
+				<Button
+					onClick={() => {
+						setSelectedLectureId(lecture.id)
+						setShowLectureDetails(true)
+					}}
+				>
+					Подробнее
+				</Button>
+			),
 		},
 	]
 
 	const handleSaveLectureRequest = async () => {
 		setShowLectureRequestModal(false)
 		setSelectedLectureId(undefined)
-		await mutateLectures()
+		await mutateRequestedLectures()
 	}
 
 	const handleEditLectureRequest = (lectureId: string) => {
@@ -196,7 +213,7 @@ const LecturesPage: NextPageWithLayout = () => {
 
 			if (!response.ok) throw new Error()
 
-			await mutateLectures()
+			await mutateRequestedLectures()
 			message.success('Запрос на лецию был удален')
 		} catch (error: any) {
 			message.error('Error')
@@ -219,7 +236,7 @@ const LecturesPage: NextPageWithLayout = () => {
 
 			if (data.error) throw new Error(data.error)
 
-			await mutateLectures()
+			await mutateRequestedLectures()
 			if (isRelevant) {
 				message.success('Ваш голос учтен')
 			} else {
@@ -235,12 +252,19 @@ const LecturesPage: NextPageWithLayout = () => {
 		setShowSetLecturerModal(true)
 	}
 
+	const handleSaveSetLecturer = async () => {
+		setShowSetLecturerModal(false)
+		setSelectedLectureId(undefined)
+		await mutateRequestedLectures()
+		await mutateReadyLectures()
+	}
+
 	return (
 		<>
 			<Head>
 				<title>Лекции</title>
 			</Head>
-			<h1>Лекции</h1>
+			<h1>Лекции (бета)</h1>
 			<Space direction="vertical" size="large">
 				<p>
 					Часто при решении тех или иных задач возникает множество вопросов. Этот раздел поможет найти на них ответы у
@@ -254,31 +278,35 @@ const LecturesPage: NextPageWithLayout = () => {
 				<Button type="primary" onClick={() => setShowLectureRequestModal(true)}>
 					Запросить новую лекцию
 				</Button>
-				<div>
-					<h3>Запросы на лекции</h3>
-					Отметьте лекции, которые вам было бы интересно посетить.
-					<Spin spinning={isLoadingLectures}>
-						<Table
-							style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}
-							columns={columnsForRequested}
-							dataSource={lectures?.data
-								.filter((l: any) => ['Requested', 'Actualized'].includes(l.Status))
-								.map((l: any) => ({ ...l, key: l.id }))}
-							pagination={false}
-						/>
-					</Spin>
-				</div>
-				<div>
-					<h3>Запланированные лекции</h3>
-					<Spin spinning={isLoadingLectures}>
-						<Table
-							style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}
-							columns={columnsForReady}
-							dataSource={lectures?.data.filter((l: any) => l.Status == 'Ready').map((l: any) => ({ ...l, key: l.id }))}
-							pagination={false}
-						/>
-					</Spin>
-				</div>
+
+				{requestedLectures?.data.length > 0 && (
+					<div>
+						<h3>Запросы на лекции</h3>
+						Отметьте лекции, которые вам было бы интересно посетить.
+						<Spin spinning={isLoadingRequestedLectures}>
+							<Table
+								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}
+								columns={columnsForRequested}
+								dataSource={requestedLectures?.data.map((l: any) => ({ ...l, key: l.id }))}
+								pagination={false}
+							/>
+						</Spin>
+					</div>
+				)}
+
+				{readyLectures?.data.length > 0 && (
+					<div>
+						<h3>Запланированные лекции</h3>
+						<Spin spinning={isLoadingReadyLectures}>
+							<Table
+								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}
+								columns={columnsForReady}
+								dataSource={readyLectures?.data.map((l: any) => ({ ...l, key: l.id }))}
+								pagination={false}
+							/>
+						</Spin>
+					</div>
+				)}
 			</Space>
 
 			<LectureRequestModal
@@ -293,9 +321,21 @@ const LecturesPage: NextPageWithLayout = () => {
 			<SetLecturerModal
 				lectureId={selectedLectureId}
 				open={showSetLecturerModal}
-				onOk={handleSaveLectureRequest}
+				onOk={handleSaveSetLecturer}
 				onCancel={() => {
 					setShowSetLecturerModal(false)
+					setSelectedLectureId(undefined)
+				}}
+			/>
+			<LectureDetailsModal
+				lectureId={selectedLectureId}
+				open={showLectureDetails}
+				onOk={() => {
+					setShowLectureDetails(false)
+					setSelectedLectureId(undefined)
+				}}
+				onCancel={() => {
+					setShowLectureDetails(false)
 					setSelectedLectureId(undefined)
 				}}
 			/>

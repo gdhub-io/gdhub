@@ -4,13 +4,14 @@ import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	const { id, data }: any = req.body
+
 	try {
-		const { lectureId, data }: any = req.body
 		const session: any = await unstable_getServerSession(req, res, authOptions)
 
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 
-		if (!lectureId) {
+		if (!id) {
 			const lecture: any = await AirtableService('Lectures').create({
 				...data,
 				Status: 'Requested',
@@ -32,9 +33,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				},
 			})
 		} else {
-			const lecture = await AirtableService('Lectures').update(lectureId, {
+			const lectureData = {
 				...data,
-			})
+				Lecturer: data.Lecturer ? [data.Lecturer] : null,
+				Price: 0,
+			}
+
+			if (data.Lecturer && data.Date && data.Link) {
+				lectureData.Status = 'Ready'
+			}
+
+			const lecture = await AirtableService('Lectures').update(id, lectureData)
 
 			res.json({
 				success: true,
@@ -42,6 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			})
 		}
 	} catch (error: any) {
+		console.log('error', id, error)
 		res.json({ success: false, error: error.message })
 	}
 }

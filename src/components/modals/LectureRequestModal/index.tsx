@@ -114,7 +114,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			}
 
 			form.resetFields()
-			message.success(lectureId ? 'Данные идеи обновлены' : 'Добавлена новая идея игры')
+			message.success(lectureId ? 'Лекция изменена' : 'Добавлена новый запрос на лекцию')
 			onOk()
 		} catch (error: any) {
 			setProcessing(false)
