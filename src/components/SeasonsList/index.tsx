@@ -21,11 +21,11 @@ const SeasonsList = () => {
 		return !isPassiveSeason(season)
 	}
 
-	const stagesDetails = (stageName: string, season?: any) => {
+	const stagesDetails = (stage: any, season?: any) => {
 		const details: any = {
 			Searching: {
 				title: 'Этап исследования',
-				content: <SearchingStageContent season={season} />,
+				content: <SearchingStageContent season={season} stage={stage} />,
 			},
 			'Pre-production': {
 				title: 'Этап подготовки проекта',
@@ -47,7 +47,7 @@ const SeasonsList = () => {
 			},
 		}
 
-		return details[stageName]
+		return details[stage.Name]
 	}
 
 	return (
@@ -63,7 +63,7 @@ const SeasonsList = () => {
 								{isPassiveSeason(season) && (
 									<>
 										<DividerIcon className="divider" />
-										<span>{stagesDetails(season.Stage, season)?.title}</span>
+										<span>{stagesDetails({ Name: season.Stage }, season)?.title}</span>
 									</>
 								)}
 							</Space>
@@ -77,7 +77,7 @@ const SeasonsList = () => {
 										<Collapse.Panel
 											header={
 												<Space align="center" direction={screens.md ? 'horizontal' : 'vertical'}>
-													<strong>{stagesDetails(stage.Name, season)?.title}</strong>
+													<strong>{stagesDetails(stage, season)?.title}</strong>
 													{stage.Status === 'Active' && !!stage['Started At'] && (
 														<>
 															{screens.md && <DividerIcon className="divider" />}
@@ -97,7 +97,7 @@ const SeasonsList = () => {
 											key={stage.Name}
 											collapsible={stage.Status === 'Active' ? 'header' : 'disabled'}
 										>
-											{stagesDetails(stage.Name, season)?.content || 'Подробностей нет'}
+											{stagesDetails(stage, season)?.content || 'Подробностей нет'}
 										</Collapse.Panel>
 									))}
 							</Collapse>
