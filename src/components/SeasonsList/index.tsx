@@ -1,9 +1,10 @@
 import DividerIcon from '@assets/images/icons/divider.svg'
-import SearchingStageContent from '@components/SearchingStageContent'
+import SearchingStageContent from '@components/SeasonsList/stages/SearchingStageContent'
 import { Card, Collapse, Grid, Space, Spin } from 'antd'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
+import PreProductionStageContent from './stages/PreProductionStageContent'
 import styles from './style.module.less'
 
 const fetcher = (url: string) => fetch(url, { method: 'post' }).then((res) => res.json())
@@ -29,6 +30,7 @@ const SeasonsList = () => {
 			},
 			'Pre-production': {
 				title: 'Этап подготовки проекта',
+				content: <PreProductionStageContent season={season} stage={stage} />,
 			},
 			Recruiting: {
 				title: 'Этап набора начальной команды',
@@ -53,7 +55,7 @@ const SeasonsList = () => {
 	return (
 		<Spin spinning={!data}>
 			<div className={styles.container}>
-				{data?.seasons.map((season: any, idx: number) => (
+				{data?.seasons?.map((season: any, idx: number) => (
 					<Card
 						className={`season-container ${isPassiveSeason(season) ? 'not-active' : ''}`}
 						key={`gamelab-season-${idx}`}
