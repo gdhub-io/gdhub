@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import LectureDetailsModal from '@components/modals/LectureDetailsModal'
 import LectureRequestModal from '@components/modals/LectureRequestModal'
+import PropositionLectureModal from '@components/modals/PropositionLectureModal'
 import SetLecturerModal from '@components/modals/SetLecturerModal'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
@@ -15,7 +16,6 @@ import { FaChalkboardTeacher } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
 import { TbHeart, TbHeartOff, TbDotsVertical } from 'react-icons/tb'
 import useSWR from 'swr'
-import PropositionLectureModal from '@components/modals/PropositionLectureModal'
 
 type LectureStatus = 'Requested' | 'Relevantized' | 'Canceled' | 'Ready' | 'Held'
 
