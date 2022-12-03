@@ -14,8 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		if (!id) {
 			const lecture: any = await AirtableService('Lectures').create({
 				...data,
-				Status: 'Requested',
+				Lecturer: data.Lecturer ? [data.Lecturer] : null,
+				Status: data.Lecturer ? 'Actualized' : 'Requested',
 				'Requested By': [session.user.id],
+				Cost: 0,
 			})
 
 			await AirtableService('Lecture Listeners').create({
@@ -36,7 +38,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			const lectureData = {
 				...data,
 				Lecturer: data.Lecturer ? [data.Lecturer] : null,
-				Price: 0,
 			}
 
 			if (data.Lecturer && data.Date && data.Link) {

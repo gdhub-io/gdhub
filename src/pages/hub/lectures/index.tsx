@@ -15,6 +15,7 @@ import { FaChalkboardTeacher } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
 import { TbHeart, TbHeartOff, TbDotsVertical } from 'react-icons/tb'
 import useSWR from 'swr'
+import PropositionLectureModal from '@components/modals/PropositionLectureModal'
 
 type LectureStatus = 'Requested' | 'Relevantized' | 'Canceled' | 'Ready' | 'Held'
 
@@ -50,6 +51,7 @@ const LecturesPage: NextPageWithLayout = () => {
 	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false)
 	const [showSetLecturerModal, setShowSetLecturerModal] = useState(false)
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
+	const [showPropositionLectureModal, setShowPropositionLectureModal] = useState(false)
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 
 	const {
@@ -326,11 +328,15 @@ const LecturesPage: NextPageWithLayout = () => {
 					<br />
 					Делимся знаниями, набираемся мудрости ;)
 				</p>
-				<Button type="primary" onClick={() => setShowLectureRequestModal(true)}>
-					Запросить новую лекцию
-				</Button>
 
-				{requestedLectures?.data.length > 0 && (
+				<Space wrap>
+					<Button type="primary" onClick={() => setShowLectureRequestModal(true)}>
+						Запросить новую лекцию
+					</Button>
+					<Button onClick={() => setShowPropositionLectureModal(true)}>Предложить провести лекцию</Button>
+				</Space>
+
+				{requestedLectures?.data?.length > 0 && (
 					<div>
 						<h3>Запросы на лекции</h3>
 						Отметьте лекции, которые вам было бы интересно посетить.
@@ -345,7 +351,7 @@ const LecturesPage: NextPageWithLayout = () => {
 					</div>
 				)}
 
-				{readyLectures?.data.length > 0 && (
+				{readyLectures?.data?.length > 0 && (
 					<div>
 						<h3>Запланированные лекции</h3>
 						<Spin spinning={isLoadingReadyLectures}>
@@ -389,6 +395,11 @@ const LecturesPage: NextPageWithLayout = () => {
 					setShowLectureDetails(false)
 					setSelectedLectureId(undefined)
 				}}
+			/>
+			<PropositionLectureModal
+				open={showPropositionLectureModal}
+				onOk={() => setShowPropositionLectureModal(false)}
+				onCancel={() => setShowPropositionLectureModal(false)}
 			/>
 		</>
 	)

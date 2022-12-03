@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					'Listeners Accounts',
 					'Registered Accounts',
 					'Name',
-					'Price',
+					'Cost',
 					'Registration Count',
 					'Requested By',
 					'Created',
