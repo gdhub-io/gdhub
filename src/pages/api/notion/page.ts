@@ -10,11 +10,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	try {
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 
-		const response = await getBlocks(pageSlug)
+		let response: any = await getBlocks(pageSlug)
 
 		if (!response) {
 			throw new Error('Error')
 		}
+
+		response = response.map((block: any) => {
+			if (block.type == 'video') {
+				console.log(block.video.external)
+			}
+
+			return block
+		})
 
 		res.json(response)
 	} catch (error: any) {
