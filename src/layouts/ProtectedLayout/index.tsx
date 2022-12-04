@@ -142,7 +142,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				</Content>
 				<Footer></Footer>
 			</Layout>
-			{!screens.md && (
+			{!screens.lg && (
 				<Drawer
 					className={styles.mobileMenuDrawer}
 					title={
