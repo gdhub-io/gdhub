@@ -80,7 +80,7 @@ const SeasonsList = () => {
 											header={
 												<Space align="center" direction={screens.md ? 'horizontal' : 'vertical'}>
 													<strong>{stagesDetails(stage, season)?.title}</strong>
-													{stage.Status === 'Active' && !!stage['Started At'] && (
+													{!!stage['Started At'] && (
 														<>
 															{screens.md && <DividerIcon className="divider" />}
 															<span>
