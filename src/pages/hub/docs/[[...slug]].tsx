@@ -169,7 +169,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 											{DateTime.fromISO(pageProperties?.last_edited_time).toFormat('d LLL, yyyy', { locale: 'ru-RU' })}
 										</small>
 									</div>
-									<Render blocks={pageContent} useStyles />
+									<Render blocks={pageContent} classNames useStyles />
 								</section>
 							) : (
 								<section className="main-container">

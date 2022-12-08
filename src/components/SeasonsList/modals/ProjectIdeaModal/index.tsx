@@ -160,8 +160,20 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 						rules={[{ required: true, type: 'url' }]}
 						required
 					>
-						<Input width={'100%'} />
+						<Input width={'100%'} disabled={projectIdea?.Status !== 'Registered'} />
 					</Form.Item>
+
+					{projectIdea?.Status == 'Approved' && (
+						<Form.Item
+							name="GDD Link"
+							label="Ссылка на геймдизайн-документ (ГДД)"
+							wrapperCol={{ span: 24 }}
+							rules={[{ required: true, type: 'url' }]}
+							required
+						>
+							<Input width={'100%'} />
+						</Form.Item>
+					)}
 
 					<Form.Item name="Genre" label="Жанр" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
 						<Input width={'100%'} placeholder={`Пример: аркадный айдлер + tower defence`} />

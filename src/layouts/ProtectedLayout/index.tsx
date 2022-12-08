@@ -18,7 +18,7 @@ export const ProtectedLayout = ({ children }: any) => {
 	const { data: session, status }: any = useSession()
 
 	const telegramMenuItem = {
-		label: screens.md ? (
+		label: screens.lg ? (
 			<Tooltip title="Чат сообщества в Telegram">
 				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
 					<Button shape="circle" type="text" style={{ top: '6px', position: 'relative' }}>
@@ -55,18 +55,22 @@ export const ProtectedLayout = ({ children }: any) => {
 	])
 
 	useEffect(() => {
-		if (!screens.md) setOpenMobileMenu(false)
+		if (!screens.lg) setOpenMobileMenu(false)
 
 		if (!!session && session?.user?.roles.includes('member')) {
 			setHeaderMenuItems([
 				{
-					label: <Link href="/hub/members">{screens.md ? <Button type="text">Участники</Button> : 'Участники'}</Link>,
+					label: <Link href="/hub/members">{screens.lg ? <Button type="text">Участники</Button> : 'Участники'}</Link>,
 					key: '/hub/members',
+				},
+				{
+					label: <Link href="/hub/lectures">{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}</Link>,
+					key: '/hub/lectures',
 				},
 				{
 					label: (
 						<Link href="/hub/docs">
-							{screens.md ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
+							{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
 						</Link>
 					),
 					key: '/hub/docs',
@@ -103,7 +107,7 @@ export const ProtectedLayout = ({ children }: any) => {
 						</Link>
 						{!!session && (
 							<>
-								{screens.md ? (
+								{screens.lg ? (
 									<>
 										<Menu style={{ flex: 1, justifyContent: 'flex-end' }} mode="horizontal" items={headerMenuItems} />
 										<Dropdown overlay={<Menu items={userMenuItems} />} trigger={['click']}>
@@ -138,7 +142,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				</Content>
 				<Footer></Footer>
 			</Layout>
-			{!screens.md && (
+			{!screens.lg && (
 				<Drawer
 					className={styles.mobileMenuDrawer}
 					title={
