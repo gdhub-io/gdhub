@@ -8,16 +8,20 @@ type PaymentState = {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const { id, data } = req.body
+	let { id, data } = req.body
 	const session = await unstable_getServerSession(req, res, authOptions)
 
 	try {
-		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
+		if (req.method !== 'POST' || !session || !data) throw new Error('Forbidden request')
 
-		let telegramUsername = data['Telegram Nickname'] as string
-		telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
+		if (data.hasOwnProperty('Telegram Nickname')) {
+			let telegramUsername = data['Telegram Nickname'] as string
+			telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
 
-		const response = await AirtableService('Profiles').update(id, { ...data, 'Telegram Nickname': telegramUsername })
+			data['Telegram Nickname'] = telegramUsername
+		}
+
+		const response = await AirtableService('Profiles').update(id, data)
 
 		if (!response) {
 			throw new Error('Error')
