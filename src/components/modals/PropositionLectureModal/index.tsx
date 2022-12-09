@@ -5,7 +5,7 @@ import moment from 'moment'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
-const PropositionLectureModal = ({ open, onOk, onCancel }: any) => {
+const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(false)
@@ -109,12 +109,12 @@ const PropositionLectureModal = ({ open, onOk, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={'Хочу провести лекцию'}
+			title={lectureId ? 'Изменить параметы лекции' : 'Хочу провести лекцию'}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
 			cancelText="Закрыть"
-			okText="Опубликовать"
+			okText={lectureId ? 'Сохранить' : 'Опубликовать'}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}

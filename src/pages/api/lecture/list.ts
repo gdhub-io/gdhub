@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			})
 			.all()
 
-		const lecturesWithRelevent = lectures.map((lecture) => {
+		const lecturesWithRelevant = lectures.map((lecture) => {
 			let isRelevant = false
 			let isRegistered = true
 			const listeners = lecture.get('Listeners Accounts') as string[]
@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		res.json({
 			total: queryResult.length,
-			data: lecturesWithRelevent,
+			data: lecturesWithRelevant,
 		})
 	} catch (error: any) {
 		res.json({ success: false, error: error.message })

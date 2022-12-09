@@ -5,7 +5,7 @@ import PropositionLectureModal from '@components/modals/PropositionLectureModal'
 import SetLecturerModal from '@components/modals/SetLecturerModal'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
-import { Button, Dropdown, Grid, Menu, message, Popconfirm, Space, Spin, Table, Tooltip } from 'antd'
+import { Badge, Button, Dropdown, Grid, Menu, message, Popconfirm, Space, Spin, Table, Tag, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import { DateTime } from 'luxon'
@@ -17,7 +17,7 @@ import { HiOutlineTrash } from 'react-icons/hi'
 import { TbHeart, TbHeartOff, TbDotsVertical } from 'react-icons/tb'
 import useSWR from 'swr'
 
-type LectureStatus = 'Requested' | 'Relevantized' | 'Canceled' | 'Ready' | 'Held'
+type LectureStatus = 'Requested' | 'Proposed' | 'Actualized' | 'Canceled' | 'Ready' | 'Held'
 
 type LectureDirection =
 	| 'Programming'
@@ -36,6 +36,23 @@ interface DataType {
 	Direction: LectureDirection
 	Wishes: string
 	[key: string]: any
+}
+
+const lectureStatusAsText = (status: LectureStatus) => {
+	switch (status) {
+		case 'Requested':
+			return 'Запрос на лекцию'
+		case 'Proposed':
+			return 'Предложение лекции'
+		case 'Actualized':
+			return 'Лекция актуальна'
+		case 'Ready':
+			return 'Готова к проведению'
+		case 'Canceled':
+			return 'Отменена'
+		case 'Held':
+			return 'Проведена'
+	}
 }
 
 const fetcher = (url: string, data: any) =>
@@ -58,7 +75,9 @@ const LecturesPage: NextPageWithLayout = () => {
 		data: requestedLectures,
 		mutate: mutateRequestedLectures,
 		isValidating: isLoadingRequestedLectures,
-	} = useSWR(['/api/lecture/list', { status: ['Requested', 'Actualized'] }], fetcher, { revalidateOnFocus: false })
+	} = useSWR(['/api/lecture/list', { status: ['Requested', 'Proposed', 'Actualized'] }], fetcher, {
+		revalidateOnFocus: false,
+	})
 
 	const {
 		data: readyLectures,
@@ -89,13 +108,30 @@ const LecturesPage: NextPageWithLayout = () => {
 			width: screens.lg ? 'auto' : '100%',
 			render: (text, lecture) =>
 				screens.md ? (
-					<strong>{text}</strong>
+					<Button
+						type="link"
+						style={{ textAlign: 'left' }}
+						onClick={() => {
+							setSelectedLectureId(lecture.id)
+							setShowLectureDetails(true)
+						}}
+					>
+						<strong>{text}</strong>
+						<br />
+						<small>{lectureStatusAsText(lecture.Status)}</small>
+					</Button>
 				) : (
-					<>
+					<Button
+						type="link"
+						onClick={() => {
+							setSelectedLectureId(lecture.id)
+							setShowLectureDetails(true)
+						}}
+					>
 						<strong>{text}</strong>
 						<br />
 						<small>{lecture.Direction}</small>
-					</>
+					</Button>
 				),
 		},
 		{
@@ -105,7 +141,7 @@ const LecturesPage: NextPageWithLayout = () => {
 			responsive: ['md'],
 		},
 		{
-			title: screens.lg ? 'Хочешь провести лекцию?' : null,
+			title: screens.lg ? 'Лектор' : null,
 			dataIndex: 'Lecturer Name',
 			responsive: ['md'],
 			key: 'Lecturer Name',
@@ -122,7 +158,7 @@ const LecturesPage: NextPageWithLayout = () => {
 							</Space>
 						</Button>
 					) : (
-						<small>Ждем больше желающих</small>
+						<small>Пока нет, ждем больше желающих</small>
 					)
 				}
 			},
@@ -161,8 +197,9 @@ const LecturesPage: NextPageWithLayout = () => {
 					<Dropdown overlay={<Menu items={mobileMenuForRequested} />} trigger={['click']}>
 						<TbDotsVertical size={16} style={{ position: 'relative', top: 2 }} />
 					</Dropdown>
-				) : lecture['Requested By'][0] === session?.user?.id && lecture.Status === 'Requested' ? (
-					<Space wrap>
+				) : lecture['Requested By'][0] === session?.user?.id &&
+				  (lecture.Status === 'Requested' || lecture.Status === 'Proposed') ? (
+					<Space wrap={screens.md ? false : true}>
 						<Button onClick={() => handleEditLectureRequest(lecture.id)}>Изменить</Button>
 						<Popconfirm
 							title="Точно хотите удалить？"
@@ -397,6 +434,7 @@ const LecturesPage: NextPageWithLayout = () => {
 				}}
 			/>
 			<PropositionLectureModal
+				lectureId={selectedLectureId}
 				open={showPropositionLectureModal}
 				onOk={() => setShowPropositionLectureModal(false)}
 				onCancel={() => setShowPropositionLectureModal(false)}

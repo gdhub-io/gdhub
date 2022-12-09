@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			const lecture: any = await AirtableService('Lectures').create({
 				...data,
 				Lecturer: data.Lecturer ? [data.Lecturer] : null,
-				Status: data.Lecturer ? 'Actualized' : 'Requested',
+				Status: data.Lecturer ? 'Proposed' : 'Requested',
 				'Requested By': [session.user.id],
 				Cost: 0,
 			})

@@ -12,17 +12,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		if (req.method !== 'POST' || !session || !id) throw new Error('Forbidden request')
 
 		const lecture = await AirtableService('Lectures').find(id)
-		const [lecturerId] = lecture.get('Lecturer') as string[]
+		const lecturerIds = lecture.get('Lecturer') as string[]
 		const registeredListeners = lecture.get('Registered Accounts') as string[]
 
 		data = lecture.fields
 		data.userRegistered = registeredListeners && registeredListeners.includes(session.user.id)
 
-		if (lecturerId) {
+		if (lecturerIds) {
 			const [lecturer]: any = await AirtableService('Profiles')
 				.select({
 					maxRecords: 1,
-					filterByFormula: `{Account ID} = "${lecturerId}"`,
+					filterByFormula: `{Account ID} = "${lecturerIds[0]}"`,
 					fields: [
 						'Specialities',
 						'Name',

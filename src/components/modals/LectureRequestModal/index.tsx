@@ -141,7 +141,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			destroyOnClose
 			maskClosable={false}
 			cancelText="Закрыть"
-			okText="Сохранить"
+			okText={lectureId ? 'Сохранить' : 'Опубликовать'}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
