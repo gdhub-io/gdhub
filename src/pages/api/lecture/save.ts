@@ -1,4 +1,5 @@
 import AirtableService from '@services/airtable'
+import TelegramService from '@services/telegram'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
@@ -25,6 +26,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				Lecture: [lecture.id],
 				Status: 'Intent',
 			})
+
+			// send to telegram
+			await TelegramService.sendMessage(`test\ntest2`)
 
 			res.json({
 				success: true,

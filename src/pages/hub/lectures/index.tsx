@@ -45,9 +45,9 @@ const lectureStatusAsText = (status: LectureStatus) => {
 		case 'Proposed':
 			return 'Предложение лекции'
 		case 'Actualized':
-			return 'Лекция актуальна'
+			return 'Скоро анонс'
 		case 'Ready':
-			return 'Готова к проведению'
+			return 'Идет регистрация'
 		case 'Canceled':
 			return 'Отменена'
 		case 'Held':
@@ -108,9 +108,8 @@ const LecturesPage: NextPageWithLayout = () => {
 			width: screens.lg ? 'auto' : '100%',
 			render: (text, lecture) =>
 				screens.md ? (
-					<Button
-						type="link"
-						style={{ textAlign: 'left' }}
+					<div
+						style={{ cursor: 'pointer' }}
 						onClick={() => {
 							setSelectedLectureId(lecture.id)
 							setShowLectureDetails(true)
@@ -119,10 +118,10 @@ const LecturesPage: NextPageWithLayout = () => {
 						<strong>{text}</strong>
 						<br />
 						<small>{lectureStatusAsText(lecture.Status)}</small>
-					</Button>
+					</div>
 				) : (
-					<Button
-						type="link"
+					<div
+						style={{ cursor: 'pointer' }}
 						onClick={() => {
 							setSelectedLectureId(lecture.id)
 							setShowLectureDetails(true)
@@ -131,7 +130,7 @@ const LecturesPage: NextPageWithLayout = () => {
 						<strong>{text}</strong>
 						<br />
 						<small>{lecture.Direction}</small>
-					</Button>
+					</div>
 				),
 		},
 		{
@@ -228,15 +227,38 @@ const LecturesPage: NextPageWithLayout = () => {
 					})
 
 					return screens.md ? (
-						<strong>{text}</strong>
+						<div
+							style={{ cursor: 'pointer' }}
+							onClick={() => {
+								setSelectedLectureId(lecture.id)
+								setShowLectureDetails(true)
+							}}
+						>
+							<strong>{text}</strong>
+						</div>
 					) : (
-						<>
+						<div
+							style={{ cursor: 'pointer' }}
+							onClick={() => {
+								setSelectedLectureId(lecture.id)
+								setShowLectureDetails(true)
+							}}
+						>
 							<strong>{text}</strong>
 							<br />
 							<small>{lecture.Direction}</small>
 							<br />
 							<small>Дата: {_date}</small>
-						</>
+							<Button
+								style={{ marginTop: '10px' }}
+								onClick={() => {
+									setSelectedLectureId(lecture.id)
+									setShowLectureDetails(true)
+								}}
+							>
+								Регистрация
+							</Button>
+						</div>
 					)
 				},
 			},
@@ -265,6 +287,7 @@ const LecturesPage: NextPageWithLayout = () => {
 			},
 			{
 				key: 'register-to-lecture',
+				responsive: ['md'],
 				render: (_, lecture) => (
 					<Button
 						onClick={() => {
@@ -272,7 +295,7 @@ const LecturesPage: NextPageWithLayout = () => {
 							setShowLectureDetails(true)
 						}}
 					>
-						Подробнее
+						Регистрация
 					</Button>
 				),
 			},
@@ -393,7 +416,7 @@ const LecturesPage: NextPageWithLayout = () => {
 						<h3>Запланированные лекции</h3>
 						<Spin spinning={isLoadingReadyLectures}>
 							<Table
-								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}
+								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px', background: '#c1e994' }}
 								columns={columnsForReady}
 								dataSource={readyLectures?.data.map((l: any) => ({ ...l, key: l.id }))}
 								pagination={false}

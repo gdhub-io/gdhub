@@ -1,12 +1,15 @@
 import { Fragment, useEffect, useState } from 'react'
-import { message, Modal, Spin } from 'antd'
+import { Grid, message, Modal, Spin } from 'antd'
 import { ReadyContent } from './ReadyContent'
 import { RequestedContent } from './RequestedContent'
 import styles from './style.module.less'
 
-const LectureDetailsModal = ({ lectureId, onOk, open, onCancel }: any) => {
+const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
+	const screens = Grid.useBreakpoint()
 	const [processing, setProcessing] = useState(true)
 	const [lecture, setLecture] = useState<any>()
+	const [isReady, setIsReady] = useState(false)
+	const [userIsRegistered, setUserIsRegistered] = useState(false)
 
 	useEffect(() => {
 		if (open && lectureId) {
@@ -33,6 +36,8 @@ const LectureDetailsModal = ({ lectureId, onOk, open, onCancel }: any) => {
 			const data = await response.json()
 
 			setLecture(data)
+			setIsReady(data.Status == 'Ready')
+			setUserIsRegistered(data.userRegistered)
 			setProcessing(false)
 		} catch (error: any) {
 			message.error(error.message)
@@ -58,13 +63,15 @@ const LectureDetailsModal = ({ lectureId, onOk, open, onCancel }: any) => {
 
 			const data = await response.json()
 
-			if (!data.newRegistration) {
+			if (!data.newRegistration || userIsRegistered) {
 				message.info('Вы уже зарегистрированы на эту лекцию')
 				setProcessing(false)
-			} else {
-				// send message
-				onOk()
+				return
 			}
+
+			setProcessing(false)
+			setUserIsRegistered(true)
+			message.success('Регистрация прошла успешно')
 		} catch (error: any) {
 			message.error(error.message)
 			setProcessing(false)
@@ -73,6 +80,7 @@ const LectureDetailsModal = ({ lectureId, onOk, open, onCancel }: any) => {
 
 	const handleCancel = () => {
 		setLecture(null)
+		setIsReady(false)
 		onCancel()
 	}
 
@@ -80,7 +88,7 @@ const LectureDetailsModal = ({ lectureId, onOk, open, onCancel }: any) => {
 		if (!lecture) return null
 
 		if (['Ready'].includes(lecture.Status)) {
-			return lecture.userRegistered ? 'Вы уже зарегистрированы' : 'Регистрация на лекцию'
+			return userIsRegistered ? 'Вы уже зарегистрированы' : 'Регистрация на лекцию'
 		}
 
 		return null
@@ -115,7 +123,7 @@ const LectureDetailsModal = ({ lectureId, onOk, open, onCancel }: any) => {
 			okButtonProps={{ disabled: lecture?.userRegistered }}
 			open={open}
 			onOk={handleOk}
-			footer={lecture?.Status == 'Ready'}
+			footer={isReady ? undefined : null}
 			onCancel={handleCancel}
 			confirmLoading={processing}
 		>
@@ -125,7 +133,7 @@ const LectureDetailsModal = ({ lectureId, onOk, open, onCancel }: any) => {
 						{['Requested', 'Proposed', 'Actualized'].includes(lecture.Status) ? (
 							<RequestedContent lecture={lecture} />
 						) : (
-							<ReadyContent lecture={lecture} />
+							<ReadyContent lecture={lecture} userIsRegistered={userIsRegistered} />
 						)}
 					</>
 				)}
