@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AirtableEmbed } from '@components/AirtableEmbed'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
-import { Alert, Button, Col, Grid, List, Row, Space, Spin, Typography } from 'antd'
+import { Alert, Button, Col, Grid, List, Row, Space, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
 import useSWR from 'swr'
