@@ -28,7 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			})
 
 			// send to telegram
-			await TelegramService.sendMessage(`test\ntest2`)
 
 			res.json({
 				success: true,
