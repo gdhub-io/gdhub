@@ -5,12 +5,15 @@
 
 import fetch from 'node-fetch'
 
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN as string
+const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
 export default class TelegramService {
-	static async sendMessage(message: any) {
+	static async sendMessage(chatId: number, message: any) {
 		const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN as string
 
 		const body = JSON.stringify({
-			chat_id: process.env.TELEGRAM_CHAT_ID as string,
+			chat_id: chatId,
 			// message_thread_id: '',
 			parse_mode: 'HTML',
 			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS || false,
@@ -18,7 +21,7 @@ export default class TelegramService {
 		})
 
 		try {
-			fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+			fetch(`${telegramApiUrl}/sendMessage`, {
 				method: 'post',
 				body: body,
 				headers: {
@@ -38,11 +41,11 @@ export default class TelegramService {
 		}
 	}
 
-	static async sendPhoto(url: string, message?: string) {
+	static async sendPhoto(chatId: number, url: string, message?: string) {
 		const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN as string
 
 		const body = JSON.stringify({
-			chat_id: process.env.TELEGRAM_CHAT_ID as string,
+			chat_id: chatId,
 			// message_thread_id: '',
 			photo: url,
 			caption: message, //0-1024 characters
@@ -51,7 +54,7 @@ export default class TelegramService {
 		})
 
 		try {
-			fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+			fetch(`${telegramApiUrl}/sendPhoto`, {
 				method: 'post',
 				body: body,
 				headers: {
