@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
 import { hasRole } from '@helpers/user'
-import { Button, Grid, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
+import { Alert, Button, Grid, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
+import { DateTime } from 'luxon'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { HiOutlineTrash } from 'react-icons/hi'
@@ -13,7 +14,7 @@ const fetcher = (url: string, data: any) =>
 		(res) => res.json()
 	)
 
-const SearchingStageContent = ({ season }: any) => {
+const SearchingStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
 	const session: any = useSession()
 	const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
@@ -33,6 +34,8 @@ const SearchingStageContent = ({ season }: any) => {
 		setSelectedProjectIdea(projectIdeaId)
 		setShowProjectIdeaModal(true)
 	}
+
+	const isStageExpired = () => DateTime.fromISO(stage['Finished At']).diffNow().toMillis() <= 0
 
 	const handleDeleteIdea = async (projectIdeaId: string) => {
 		try {
@@ -80,9 +83,11 @@ const SearchingStageContent = ({ season }: any) => {
 					</Link>
 				</p>
 				<Space wrap>
-					<Button type="primary" onClick={handleAddIdeaClick}>
-						Добавить идею игры
-					</Button>
+					{!isStageExpired() && (
+						<Button type="primary" onClick={handleAddIdeaClick}>
+							Добавить идею игры
+						</Button>
+					)}
 
 					{hasRole('mentor', session) && (
 						<Link href={`/hub/season/${season.Slug}/ideas`}>
@@ -92,6 +97,14 @@ const SearchingStageContent = ({ season }: any) => {
 
 					{projectIdeas?.total > 3 && (
 						<span className="additional-info">Всего участники предложили {projectIdeas.total} идей</span>
+					)}
+
+					{isStageExpired() && (
+						<Alert
+							type="success"
+							message="На данный момент прием идей завершен. Менторы по геймдизайну обсуждают поданные идеи, общаются с их авторами. По окончании
+							обсуждений будет определен список проектов, которые пойдут далее на этап подготовки проекта"
+						/>
 					)}
 				</Space>
 

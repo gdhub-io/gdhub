@@ -1,9 +1,10 @@
 import DividerIcon from '@assets/images/icons/divider.svg'
-import SearchingStageContent from '@components/SearchingStageContent'
+import SearchingStageContent from '@components/SeasonsList/stages/SearchingStageContent'
 import { Card, Collapse, Grid, Space, Spin } from 'antd'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
+import PreProductionStageContent from './stages/PreProductionStageContent'
 import styles from './style.module.less'
 
 const fetcher = (url: string) => fetch(url, { method: 'post' }).then((res) => res.json())
@@ -21,14 +22,15 @@ const SeasonsList = () => {
 		return !isPassiveSeason(season)
 	}
 
-	const stagesDetails = (stageName: string, season?: any) => {
+	const stagesDetails = (stage: any, season?: any) => {
 		const details: any = {
 			Searching: {
 				title: 'Этап исследования',
-				content: <SearchingStageContent season={season} />,
+				content: <SearchingStageContent season={season} stage={stage} />,
 			},
 			'Pre-production': {
 				title: 'Этап подготовки проекта',
+				content: <PreProductionStageContent season={season} stage={stage} />,
 			},
 			Recruiting: {
 				title: 'Этап набора начальной команды',
@@ -47,13 +49,13 @@ const SeasonsList = () => {
 			},
 		}
 
-		return details[stageName]
+		return details[stage.Name]
 	}
 
 	return (
 		<Spin spinning={!data}>
 			<div className={styles.container}>
-				{data?.seasons.map((season: any, idx: number) => (
+				{data?.seasons?.map((season: any, idx: number) => (
 					<Card
 						className={`season-container ${isPassiveSeason(season) ? 'not-active' : ''}`}
 						key={`gamelab-season-${idx}`}
@@ -63,7 +65,7 @@ const SeasonsList = () => {
 								{isPassiveSeason(season) && (
 									<>
 										<DividerIcon className="divider" />
-										<span>{stagesDetails(season.Stage, season)?.title}</span>
+										<span>{stagesDetails({ Name: season.Stage }, season)?.title}</span>
 									</>
 								)}
 							</Space>
@@ -77,8 +79,8 @@ const SeasonsList = () => {
 										<Collapse.Panel
 											header={
 												<Space align="center" direction={screens.md ? 'horizontal' : 'vertical'}>
-													<strong>{stagesDetails(stage.Name, season)?.title}</strong>
-													{stage.Status === 'Active' && !!stage['Started At'] && (
+													<strong>{stagesDetails(stage, season)?.title}</strong>
+													{!!stage['Started At'] && (
 														<>
 															{screens.md && <DividerIcon className="divider" />}
 															<span>
@@ -97,7 +99,7 @@ const SeasonsList = () => {
 											key={stage.Name}
 											collapsible={stage.Status === 'Active' ? 'header' : 'disabled'}
 										>
-											{stagesDetails(stage.Name, season)?.content || 'Подробностей нет'}
+											{stagesDetails(stage, season)?.content || 'Подробностей нет'}
 										</Collapse.Panel>
 									))}
 							</Collapse>
