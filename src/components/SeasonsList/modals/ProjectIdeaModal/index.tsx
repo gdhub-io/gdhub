@@ -233,7 +233,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 							<Form.Item
 								name="Cover Image"
 								label="Обложка для проекта"
-								valuePropName="fileList"
+								valuePropName="file"
 								getValueFromEvent={normUploadFile}
 								noStyle
 							>
