@@ -135,7 +135,7 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 											Концепт
 										</Link>
 									)}
-									<Button onClick={() => handleEditIdeaClick(projectIdea.id)}>Добавить ГДД</Button>
+									<Button onClick={() => handleEditIdeaClick(projectIdea.id)}>Внести изменения</Button>
 								</Space>
 							</List.Item>
 						)}
@@ -173,8 +173,8 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 							<h4>Список игровых механик:</h4>
 							<p>
 								<ol>
-									{mechanicsList.map((mechanic: string) => (
-										<li key={mechanic}>{mechanic}</li>
+									{mechanicsList.map((mechanic: string, idx: number) => (
+										<li key={mechanic + idx}>{mechanic}</li>
 									))}
 								</ol>
 							</p>
@@ -189,8 +189,8 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 							<h4>Список визуальных стилей:</h4>
 							<p>
 								<ol>
-									{visualSolutionsList.map((vislual: string) => (
-										<li key={vislual}>{vislual}</li>
+									{visualSolutionsList.map((vislual: string, idx: number) => (
+										<li key={vislual + idx}>{vislual}</li>
 									))}
 								</ol>
 							</p>
@@ -203,8 +203,8 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 							<h4>Список жанров:</h4>
 							<p>
 								<ol>
-									{genresList.map((vislual: string) => (
-										<li key={vislual}>{vislual}</li>
+									{genresList.map((vislual: string, idx: number) => (
+										<li key={vislual + idx}>{vislual}</li>
 									))}
 								</ol>
 							</p>

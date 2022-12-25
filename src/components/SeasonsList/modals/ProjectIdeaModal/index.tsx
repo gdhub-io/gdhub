@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react'
-import { Col, Form, Input, message, Modal, Row, Select, Spin } from 'antd'
+import { normUploadFile } from '@helpers/file'
+import { Button, Col, Form, Input, message, Modal, Popover, Row, Select, Spin, Upload, UploadProps } from 'antd'
+import Image from 'next/image'
+import { TbTrash } from 'react-icons/tb'
+import styles from './style.module.less'
 
 const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
 	const [projectIdea, setProjectIdea] = useState<any>()
+	const [cover, setCover] = useState<string | null>()
+	const [coverProcessing, setCoverProcessing] = useState(false)
 
 	useEffect(() => {
 		if (open && projectIdeaId) {
+			setCover(undefined)
 			getProjectIdea(projectIdeaId)
 		} else {
 			setProcessing(false)
@@ -38,7 +45,12 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 
 			const data = await response.json()
 
-			setProjectIdea({ ...data, 'Core Mechanics': data['Core Mechanics'].split('|') })
+			if (data.hasOwnProperty('Cover Image')) {
+				setCover(data['Cover Image'])
+			}
+
+			setProjectIdea({ ...data, 'Core Mechanics': data['Core Mechanics'].split('|'), 'Cover Image': undefined })
+
 			setProcessing(false)
 		} catch (error: any) {
 			console.log('getProjectIdea', error)
@@ -51,9 +63,13 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 		try {
 			const formData = await form.validateFields()
 			setProcessing(true)
+
 			const response: any = await fetch('/api/project/idea/save', {
 				method: 'post',
-				body: JSON.stringify({ id: projectIdeaId || null, data: formData }),
+				body: JSON.stringify({
+					id: projectIdeaId || null,
+					data: { ...formData, 'Cover Image': cover ? cover : null },
+				}),
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -89,6 +105,83 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 		onCancel()
 	}
 
+	const uploadImage = async (file: any) => {
+		try {
+			const data = new FormData()
+			data.append('file', file)
+			data.append('filename', 'project-cover-' + projectIdeaId)
+			data.append('tag', 'project-cover')
+
+			const res = await fetch('/api/file/upload', {
+				method: 'post',
+				body: data,
+			})
+
+			return await res.json()
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const removeImage = async (fileUrl: string) => {
+		try {
+			const res = await fetch('/api/file/delete', {
+				method: 'post',
+				body: JSON.stringify({ fileUrl }),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+
+			return await res.json()
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const uploadProps: UploadProps = {
+		name: 'files',
+		multiple: false,
+		accept: 'image/png, image/jpeg',
+		onChange: async (info) => {
+			const { status } = info.file
+
+			setCoverProcessing(true)
+
+			if (status === 'done') {
+				const uploadedFileData = await uploadImage(info.file.originFileObj)
+				setCover(uploadedFileData.url)
+
+				form.setFieldValue('Cover Image', uploadedFileData.url)
+
+				message.success(`${info.file.name} file uploaded successfully.`)
+			} else if (status === 'error') {
+				message.error(`${info.file.name} file upload failed.`)
+			}
+
+			setCoverProcessing(false)
+		},
+		onDrop: async (e) => {
+			setCoverProcessing(true)
+
+			const uploadedFileData = await uploadImage(e.dataTransfer.files[0])
+			setCover(uploadedFileData.url)
+			setCoverProcessing(false)
+		},
+	}
+
+	const handleCoverDelete = async () => {
+		if (!cover) return
+
+		setCoverProcessing(true)
+
+		await removeImage(cover)
+
+		setCover(undefined)
+		setCoverProcessing(false)
+		form.setFieldValue('Cover Image', undefined)
+	}
+
 	return (
 		<Modal
 			centered
@@ -121,7 +214,37 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 						<Input />
 					</Form.Item>
 
-					<Row gutter={[16, 0]} align="middle">
+					<Spin spinning={coverProcessing}>
+						{!cover ? (
+							<Form.Item
+								name="Cover Image"
+								label="Обложка для проекта"
+								valuePropName="fileList"
+								getValueFromEvent={normUploadFile}
+								noStyle
+							>
+								<Upload.Dragger {...uploadProps}>
+									<p className="ant-upload-text">Добавить обложку проекта</p>
+									<p className="ant-upload-hint">
+										Для загрузки изображения нажмите или перетащите его в это поле.
+										<br />
+										Разрешаются файлы форматов jpg, png. Соотношение сторон 16/9. Например, размер 1920x1080px.
+									</p>
+								</Upload.Dragger>
+							</Form.Item>
+						) : (
+							<div className={styles.cover}>
+								<Image src={cover + '?w=750'} fill alt="" />
+								<Popover content="Удалить обложку проекта">
+									<Button shape="circle" type="primary" className="remove-cover-btn" onClick={handleCoverDelete}>
+										<TbTrash size={18} style={{ marginTop: 2 }} />
+									</Button>
+								</Popover>
+							</div>
+						)}
+					</Spin>
+
+					<Row gutter={[16, 0]} align="middle" style={{ marginTop: 30 }}>
 						<Col flex={1} xs={{ span: 24 }} md={{ span: 16 }}>
 							<Form.Item
 								label="Название проекта"
@@ -155,7 +278,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 
 					<Form.Item
 						name="Document Link"
-						label="Ссылка на документ с исследованием идеи"
+						label="Ссылка концепт-документ"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true, type: 'url' }]}
 						required
@@ -164,15 +287,25 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 					</Form.Item>
 
 					{projectIdea?.Status == 'Approved' && (
-						<Form.Item
-							name="GDD Link"
-							label="Ссылка на геймдизайн-документ (ГДД)"
-							wrapperCol={{ span: 24 }}
-							rules={[{ required: true, type: 'url' }]}
-							required
-						>
-							<Input width={'100%'} />
-						</Form.Item>
+						<>
+							<Form.Item
+								name="GDD Link"
+								label="Ссылка на геймдизайн-документ"
+								wrapperCol={{ span: 24 }}
+								rules={[{ required: true, type: 'url' }]}
+								required
+							>
+								<Input width={'100%'} />
+							</Form.Item>
+							<Form.Item
+								name="Slides Link"
+								label="Ссылка на презентацию (к питчу)"
+								wrapperCol={{ span: 24 }}
+								rules={[{ type: 'url' }]}
+							>
+								<Input width={'100%'} />
+							</Form.Item>
+						</>
 					)}
 
 					<Form.Item name="Genre" label="Жанр" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
