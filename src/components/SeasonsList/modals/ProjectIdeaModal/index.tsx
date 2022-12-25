@@ -157,6 +157,10 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 		name: 'files',
 		multiple: false,
 		accept: 'image/png, image/jpeg',
+		customRequest: ({ onSuccess }) =>
+			setTimeout(() => {
+				if (onSuccess) onSuccess('ok')
+			}, 0),
 		onChange: async (info) => {
 			const { status } = info.file
 
