@@ -15,11 +15,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 
 		if (id) {
-			const response = await AirtableService('Project Ideas').update(id, {
-				...data,
-				Season: [data.Season],
-				'Core Mechanics': data['Core Mechanics'].join('|'),
-			})
+			let requestData = data
+			requestData.Season = [data.Season]
+
+			if (data.hasOwnProperty('Core Mechanics') && Array.isArray(data['Core Mechanics'])) {
+				requestData['Core Mechanics'] = data['Core Mechanics'].join('|')
+			}
+
+			const response = await AirtableService('Project Ideas').update(id, requestData)
 			if (!response) {
 				throw new Error('Error')
 			}

@@ -133,6 +133,20 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 				},
 			})
 
+			// save
+			if (projectIdeaId) {
+				await fetch('/api/project/idea/save', {
+					method: 'post',
+					body: JSON.stringify({
+						id: projectIdeaId,
+						data: { 'Cover Image': null, Season: seasonId },
+					}),
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				})
+			}
+
 			return await res.json()
 		} catch (error) {
 			console.error(error)
