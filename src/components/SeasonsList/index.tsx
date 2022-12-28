@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import PreProductionStageContent from './stages/PreProductionStageContent'
+import RecruitingStageContent from './stages/RecruitingStageContent'
 import styles from './style.module.less'
 
 const fetcher = (url: string) => fetch(url, { method: 'post' }).then((res) => res.json())
@@ -33,7 +34,11 @@ const SeasonsList = () => {
 				content: <PreProductionStageContent season={season} stage={stage} />,
 			},
 			Recruiting: {
-				title: 'Этап набора начальной команды',
+				title: 'Этап набора команды',
+				content: <RecruitingStageContent season={season} stage={stage} />,
+			},
+			Prototyping: {
+				title: 'Этап прототипирования',
 			},
 			Production: {
 				title: 'Этап разработки проекта',
@@ -99,7 +104,7 @@ const SeasonsList = () => {
 											key={stage.Name}
 											collapsible={stage.Status === 'Active' ? 'header' : 'disabled'}
 										>
-											{stagesDetails(stage, season)?.content || 'Подробностей нет'}
+											{stagesDetails(stage, season)?.content || 'Информация по текущему этапу пока еще готовится.'}
 										</Collapse.Panel>
 									))}
 							</Collapse>
