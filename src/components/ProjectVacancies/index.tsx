@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@components/modals/VacancyPreviewModal'
 import { fetcher } from '@helpers/fetcher'
-import { Button, Grid, Space, Table, Tag } from 'antd'
+import { Button, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import moment from 'moment'
 import useSWR from 'swr'
@@ -31,7 +31,6 @@ interface ProjectVacanciesArgs {
 }
 
 const ProjectVacancies = ({ project }: ProjectVacanciesArgs) => {
-	const screens = Grid.useBreakpoint()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 	const {

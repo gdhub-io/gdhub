@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { fetcher } from '@helpers/fetcher'
+import { hasRole } from '@helpers/user'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
 import moment from 'moment'
+import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
 import styles from './style.module.less'
 import SpecialitySelectModal from '../SpecialitySelectModal'
 
 const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) => {
+	const session: any = useSession()
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
@@ -159,6 +162,22 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 		}
 	}
 
+	const statusOkButton = () => {
+		if (hasRole('member', session)) {
+			return vacancy?.memberApply ? 'Отозвать отклик' : 'Откликнуться'
+		}
+
+		return null
+	}
+
+	const functionOkButton = () => {
+		if (hasRole('member', session)) {
+			return vacancy?.memberApply ? withdrawApply(vacancy?.memberApply) : setShowSpecialitySelectModal(true)
+		}
+
+		return null
+	}
+
 	return (
 		<>
 			<Modal
@@ -167,8 +186,8 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 				width={800}
 				destroyOnClose
 				maskClosable={false}
-				okText={vacancy?.memberApply ? 'Отозвать отклик' : 'Откликнуться'}
-				onOk={() => (vacancy?.memberApply ? withdrawApply(vacancy?.memberApply) : setShowSpecialitySelectModal(true))}
+				okText={statusOkButton()}
+				onOk={functionOkButton}
 				cancelText="Закрыть"
 				open={open}
 				onCancel={handleCancel}
@@ -198,11 +217,13 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 				</Spin>
 			</Modal>
 
-			<SpecialitySelectModal
-				open={showSpecialitySelectModal}
-				onOk={handleSpecialitySelect}
-				onCancel={() => setShowSpecialitySelectModal(false)}
-			/>
+			{hasRole('member', session) && (
+				<SpecialitySelectModal
+					open={showSpecialitySelectModal}
+					onOk={handleSpecialitySelect}
+					onCancel={() => setShowSpecialitySelectModal(false)}
+				/>
+			)}
 		</>
 	)
 }

@@ -49,7 +49,7 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Home Page</title>
+				<title>Game Developers Hub</title>
 			</Head>
 			<div className={styles.container}>
 				<Space direction="vertical" align="center" size="large">

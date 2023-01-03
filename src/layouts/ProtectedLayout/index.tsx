@@ -139,6 +139,11 @@ export const ProtectedLayout = ({ children }: any) => {
 								)}
 							</>
 						)}
+						{!session && (
+							<Link href="/">
+								<Button type="primary">Регистрация</Button>
+							</Link>
+						)}
 					</Row>
 				</Header>
 				<Content>
