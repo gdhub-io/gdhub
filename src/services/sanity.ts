@@ -1,4 +1,3 @@
-import { basename } from 'path'
 import client from '@sanity/client'
 
 export default class SanityService {

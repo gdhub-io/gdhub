@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ProjectVacancies from '@components/ProjectVacancies'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
@@ -17,8 +18,6 @@ const SeasonProjectPage: NextPageWithLayout = ({ project }: any) => {
 	useEffect(() => {
 		//
 	}, [])
-
-	const handleLoadIframe = () => setLoading(false)
 
 	const generalData = (
 		<div className={styles.projectMeta}>
@@ -52,17 +51,20 @@ const SeasonProjectPage: NextPageWithLayout = ({ project }: any) => {
 							{project['Description']}
 						</div>
 						{!screens.md && generalData}
-						<div className="project-vacancies">
-							<h2>Вакансии</h2>
-						</div>
 					</Col>
 					<Col xs={{ span: 24, order: 0 }} md={{ span: 11, offset: 1, order: 1 }}>
-						<div className={styles.cover}>
-							<Image src={project['Cover Image']} alt="cover" fill />
-						</div>
+						{!!project['Cover Image'] && (
+							<div className={styles.cover}>
+								<Image src={project['Cover Image']} alt="cover" fill />
+							</div>
+						)}
 						{screens.md && generalData}
 					</Col>
 				</Row>
+
+				<div className="project-vacancies">
+					<ProjectVacancies project={project} />
+				</div>
 			</div>
 		</>
 	)
@@ -82,7 +84,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 		.select({
 			// fields: ['Name', 'Ideas Embed Link', 'Status'],
 			maxRecords: 1,
-			filterByFormula: `Slug = "${projectSlug}"`,
+			filterByFormula: `OR(Slug = "${projectSlug}", RECORD_ID() = "${projectSlug}")`,
 		})
 		.all()
 
@@ -94,7 +96,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 	return {
 		props: {
-			project: project.fields,
+			project: { ...project.fields, id: project.id },
 		},
 	}
 }

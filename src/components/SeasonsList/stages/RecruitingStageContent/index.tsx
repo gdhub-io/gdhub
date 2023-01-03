@@ -92,7 +92,7 @@ const RecruitingStageContent = ({ season, stage }: any) => {
 											<Descriptions layout="vertical" column={1}>
 												<Descriptions.Item label="Визуальный стиль">{project['Visual Style']}</Descriptions.Item>
 											</Descriptions>
-											<Link href={`/hub/season/${season.Slug}/project/${project.Slug}`} target="_blank">
+											<Link href={`/project/${project.Slug}`} target="_blank">
 												<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
 													На страницу проекта
 												</Button>
