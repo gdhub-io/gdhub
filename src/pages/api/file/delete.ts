@@ -1,6 +1,4 @@
-import { promises as fs } from 'fs'
 import SanityService from '@services/sanity'
-import { IncomingForm } from 'formidable'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'

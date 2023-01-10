@@ -86,6 +86,10 @@ export const ProtectedLayout = ({ children }: any) => {
 			key: 'profile',
 		},
 		{
+			label: <Link href="/my/projects">Мои проекты</Link>,
+			key: 'projects',
+		},
+		{
 			label: 'Выйти',
 			key: 'logout',
 			danger: true,
@@ -134,6 +138,11 @@ export const ProtectedLayout = ({ children }: any) => {
 									</div>
 								)}
 							</>
+						)}
+						{!session && (
+							<Link href="/">
+								<Button type="primary">Регистрация</Button>
+							</Link>
 						)}
 					</Row>
 				</Header>

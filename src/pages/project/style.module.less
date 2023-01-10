@@ -1,0 +1,60 @@
+.cover {
+	width: 100%;
+	padding-top: 56.25%; /* 16:9 Aspect Ratio */
+	position: relative;
+	aspect-ratio: 16 / 9;
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.container {
+	h1 {
+		font-size: 42px;
+		margin-bottom: 0;
+		margin-top: 24px;
+		line-height: 120%;
+	}
+
+	:global {
+		.project-author {
+			color: #444;
+
+			span {
+				margin-right: 10px;
+				font-weight: bold;
+			}
+		}
+
+		.project-description {
+			margin-top: 24px;
+			font-size: 16px;
+
+			span {
+				margin-right: 10px;
+				font-weight: bold;
+				display: block;
+			}
+		}
+
+		.project-vacancies {
+			margin-top: 24px;
+		}
+	}
+}
+
+.projectMeta {
+	margin: 24px 0;
+
+	:global {
+		.ant-descriptions-item {
+			&-label {
+				font-size: 14px;
+				color: #666;
+			}
+
+			&-content {
+				font-size: 14px;
+			}
+		}
+	}
+}
