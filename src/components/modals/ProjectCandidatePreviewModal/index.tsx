@@ -85,22 +85,6 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 		onCancel()
 	}
 
-	const handleSpecialitySelect = async (specialityId: any) => {
-		try {
-			await fetcher('/api/vacancy/apply', {
-				specialityId,
-				projectId: project.id,
-				candidateId: candidate.id,
-			})
-
-			message.success('Ваш отклик на выранную вакансию отослан')
-			onCancel()
-		} catch (error: any) {
-			console.log(error)
-			message.error(error.message)
-		}
-	}
-
 	const handleReject = async () => {
 		try {
 			await fetcher('/api/vacancy/candidate/reject', {
@@ -159,12 +143,27 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 						<>
 							<Row gutter={[24, 24]}>
 								<Col xs={{ span: 24, order: 1 }} md={{ span: 18, order: 0 }}>
-									<h1>{candidate?.Name}</h1>
+									<div className={styles.specialityTitle}>
+										<h1>{candidate?.Name}</h1>
+										{candidate?.Speciality.Name} ({candidate?.Speciality.Level})
+									</div>
 
 									<Descriptions layout="horizontal" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
-										<Descriptions.Item contentStyle={{ fontWeight: 'bold' }}>
-											{candidate?.Speciality.Name} ({candidate?.Speciality.Level})
+										<Descriptions.Item label="Интересует вакансия">{candidate['Vacancy Name']}</Descriptions.Item>
+										<Descriptions.Item label="На проекте">{candidate['Project Name']}</Descriptions.Item>
+										<Descriptions.Item label="Создано">
+											{moment(candidate['Created At']).format('DD.MM.YYYY')}
 										</Descriptions.Item>
+									</Descriptions>
+
+									<Descriptions
+										title="Об участнике"
+										className={styles.descriptionBlock}
+										layout="horizontal"
+										column={1}
+										size="small"
+										labelStyle={{ fontWeight: 'bold' }}
+									>
 										<Descriptions.Item label="Резюме/портфолио">
 											<Link href={candidate.Profile['Resume/Portfolio']} target="_blank">
 												<Button size="small">Перейти</Button>
@@ -173,13 +172,8 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 										<Descriptions.Item label="Свободное время">
 											{candidate.Profile['Time For Work']} часов
 										</Descriptions.Item>
-										<Descriptions.Item label="Интересует вакансия">{candidate['Vacancy Name']}</Descriptions.Item>
-										<Descriptions.Item label="На проекте">{candidate['Project Name']}</Descriptions.Item>
 										<Descriptions.Item label="Место проживания">
 											{[candidate.Profile.Country, candidate.Profile.City].join(', ')}
-										</Descriptions.Item>
-										<Descriptions.Item label="Создано">
-											{moment(candidate['Created At']).format('DD.MM.YYYY')}
 										</Descriptions.Item>
 									</Descriptions>
 								</Col>
@@ -205,7 +199,14 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 								</Col>
 							</Row>
 
-							<Descriptions layout="vertical" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
+							<Descriptions
+								title="О специальности"
+								className={styles.descriptionBlock}
+								layout="vertical"
+								column={1}
+								size="small"
+								labelStyle={{ fontWeight: 'bold' }}
+							>
 								<Descriptions.Item label="Специализация">{candidate.Speciality.Specialization}</Descriptions.Item>
 								<Descriptions.Item label="Навыки">{candidate.Speciality.Skills}</Descriptions.Item>
 								<Descriptions.Item label="Использую в работе">
@@ -219,15 +220,28 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 								</Descriptions.Item>
 							</Descriptions>
 
-							<Descriptions layout="vertical" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
+							<Descriptions
+								title="Предпочтения в играх"
+								layout="vertical"
+								column={1}
+								size="small"
+								labelStyle={{ fontWeight: 'bold' }}
+								className={styles.descriptionBlock}
+							>
 								<Descriptions.Item label="Предпочитаю жанры">
-									{candidate.Profile['Preferred Genres'].join(', ')}
+									{candidate.Profile['Preferred Genres']
+										? candidate.Profile['Preferred Genres'].join(', ')
+										: '(не указано)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Предпочитаю сеттинги">
-									{candidate.Profile['Preferred Settings'].join(', ')}
+									{candidate.Profile['Preferred Settings']
+										? candidate.Profile['Preferred Settings'].join(', ')
+										: '(не указано)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Предпочитаю игры следующей сложности">
-									{candidate.Profile['Preferred Difficulty Levels'].join(', ')}
+									{candidate.Profile['Preferred Difficulty Levels']
+										? candidate.Profile['Preferred Difficulty Levels'].join(', ')
+										: '(не указано)'}
 								</Descriptions.Item>
 							</Descriptions>
 						</>
