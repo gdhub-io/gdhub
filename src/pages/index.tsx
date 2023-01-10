@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { useTelegram } from '@helpers/useTelegram'
+import AirtableService from '@services/airtable'
 import styles from '@styles/home.module.less'
-import { Button, Space } from 'antd'
+import { Button, Card, Col, Row, Space, Statistic } from 'antd'
 import { NextPage } from 'next'
 import { unstable_getServerSession } from 'next-auth'
 import { signIn } from 'next-auth/react'
@@ -12,7 +13,7 @@ import { useRouter } from 'next/router'
 import { FcGoogle } from 'react-icons/fc'
 import { authOptions } from './api/auth/[...nextauth]'
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -73,11 +74,34 @@ const Home: NextPage = () => {
 					) : (
 						<Button type="primary" onClick={() => signIn('google', {}, { prompt: 'select_account consent' })}>
 							<Space className="login-button">
-								<FcGoogle size={16} /> Sign in with Google
+								<FcGoogle size={16} /> Войти с помощью Google
 							</Space>
 						</Button>
 					)}
 				</Space>
+
+				<Row align="middle" gutter={[16, 16]} style={{ padding: '60px 20px' }}>
+					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
+						<Card>
+							<Statistic title="Участников сообщества" value={usersCount} style={{ textAlign: 'center' }} />
+						</Card>
+					</Col>
+					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
+						<Card>
+							<Statistic title="Специалистов" value={specialitiesCount} style={{ textAlign: 'center' }} />
+						</Card>
+					</Col>
+					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
+						<Card>
+							<Statistic title="Проектов в работе" value={projectsCount} style={{ textAlign: 'center' }} />
+						</Card>
+					</Col>
+					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
+						<Card>
+							<Statistic title="Вакансий на проектах" value={vacanciesCount} style={{ textAlign: 'center' }} />
+						</Card>
+					</Col>
+				</Row>
 			</div>
 		</>
 	)
@@ -95,7 +119,23 @@ export async function getServerSideProps(context: any) {
 		}
 	}
 
-	return { props: {} }
+	const users = await AirtableService('Accounts').select({ fields: [] }).all()
+	const specialities = await AirtableService('Specialities').select({ fields: [] }).all()
+	const projects = await AirtableService('Project Ideas')
+		.select({ fields: [], filterByFormula: `AND(Status = "Approved")` })
+		.all()
+	const vacancies = await AirtableService('Project Vacancies')
+		.select({ fields: [], filterByFormula: `AND(Status = "Opened")` })
+		.all()
+
+	return {
+		props: {
+			usersCount: users.length,
+			specialitiesCount: specialities.length,
+			projectsCount: projects.length,
+			vacanciesCount: vacancies.length,
+		},
+	}
 }
 
 export default Home
