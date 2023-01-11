@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { TextWithLineBreak } from '@components/TextWithLineBreak'
 import { fetcher } from '@helpers/fetcher'
 import { hasRole } from '@helpers/user'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
@@ -13,50 +14,8 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
-	const directionsOptions = [
-		{
-			value: 'Programming',
-			label: 'Программирование',
-		},
-		{
-			value: 'Game Design',
-			label: 'Геймдизайн',
-		},
-		{
-			value: '2D Art & Animation',
-			label: '2D арт и анимация',
-		},
-		{
-			value: '3D Art & Animation',
-			label: '3D арт и анимация',
-		},
-		{
-			value: 'Project Management',
-			label: 'Управление проектом',
-		},
-		{
-			value: 'Product Management',
-			label: 'Управление продуктом',
-		},
-		{
-			value: 'Technical Art',
-			label: 'Технический арт',
-		},
-		{
-			value: 'Team Management',
-			label: 'Управление командой',
-		},
-		{
-			value: 'Other',
-			label: 'Другое',
-		},
-	]
 
-	const {
-		data: vacancy,
-		mutate: fetchVacancy,
-		isValidating: isLoadingVacancy,
-	} = useSWR(['/api/vacancy/get', { id: vacancyId }], fetcher, {
+	const { data: vacancy, mutate: fetchVacancy } = useSWR(['/api/vacancy/get', { id: vacancyId }], fetcher, {
 		revalidateOnFocus: false,
 		isPaused: () => !vacancyId,
 		onSuccess: (data) => {
@@ -74,12 +33,6 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 			setProcessing(true)
 		}
 	}, [open])
-
-	// useEffect(() => {
-	// 	if (vacancy) {
-	// 		form.setFieldsValue({ ...vacancy, 'Finished At': moment(vacancy['Finished At']) })
-	// 	}
-	// }, [vacancy])
 
 	const handleOk = async (asDraft?: { asDraft: boolean }) => {
 		try {
@@ -198,7 +151,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 						<>
 							<h1>{vacancy.Name}</h1>
 
-							<Descriptions layout="horizontal" column={1}>
+							<Descriptions layout="horizontal" column={1} size="small">
 								<Descriptions.Item label="Проект">{project.Name}</Descriptions.Item>
 								<Descriptions.Item label="Сезон">{project['Season Name']}</Descriptions.Item>
 								<Descriptions.Item label="Вакансия акатуальна до">
@@ -207,7 +160,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 							</Descriptions>
 							<Descriptions layout="vertical" column={1}>
 								<Descriptions.Item className={styles.vacancyDescription} label="Описание вакансии">
-									{vacancy.Description}
+									<TextWithLineBreak text={vacancy.Description} />
 								</Descriptions.Item>
 							</Descriptions>
 

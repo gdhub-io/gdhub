@@ -11,7 +11,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from './style.module.less'
 
-const SeasonProjectPage: NextPageWithLayout = ({ project }: any) => {
+const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 	const [loading, setLoading] = useState(false)
 	const screens = Grid.useBreakpoint()
 
@@ -36,7 +36,12 @@ const SeasonProjectPage: NextPageWithLayout = ({ project }: any) => {
 	return (
 		<>
 			<Head>
-				<title>Проект &quot;{project.Name}&quot;</title>
+				<title>{project.Name}</title>
+				<meta name="description" content={project.Description}></meta>
+				<meta property="og:title" content={project.Name} />
+				<meta property="og:type" content="website" />
+				<meta property="og:url" content={pageUrl} />
+				{!!project.Cover && <meta property="og:image" content={project.Cover} />}
 			</Head>
 			<div className={styles.container}>
 				<Row>
@@ -96,6 +101,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 	return {
 		props: {
+			pageUrl: process.env.NEXT_PUBLIC_APP_URI + context.resolvedUrl,
 			project: { ...project.fields, id: project.id },
 		},
 	}
