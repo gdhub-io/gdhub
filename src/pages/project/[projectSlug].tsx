@@ -41,7 +41,7 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 				<meta property="og:title" content={project.Name} />
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={pageUrl} />
-				{!!project.Cover && <meta property="og:image" content={project.Cover} />}
+				{!!project['Cover Image'] && <meta property="og:image" content={project['Cover Image']} />}
 			</Head>
 			<div className={styles.container}>
 				<Row>
