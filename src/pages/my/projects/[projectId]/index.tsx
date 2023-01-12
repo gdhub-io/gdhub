@@ -13,6 +13,9 @@ import { useRouter } from 'next/router'
 import { HiExternalLink } from 'react-icons/hi'
 import { TbSettings } from 'react-icons/tb'
 import useSWR from 'swr'
+import { GetServerSidePropsContext } from 'next'
+import { unstable_getServerSession } from 'next-auth'
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 
 const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
@@ -79,5 +82,17 @@ const MyProjectPage: NextPageWithLayout = () => {
 }
 
 MyProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+
+	if (session && !session.user.hasRole('member')) {
+		return {
+			notFound: true,
+		}
+	}
+
+	return { props: {} }
+}
 
 export default MyProjectPage
