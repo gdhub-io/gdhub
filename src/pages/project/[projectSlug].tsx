@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ProjectVacancies from '@components/ProjectVacancies'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
