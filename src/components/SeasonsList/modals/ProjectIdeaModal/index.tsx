@@ -315,14 +315,28 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 							>
 								<Input width={'100%'} />
 							</Form.Item>
-							<Form.Item
-								name="Slides Link"
-								label="Ссылка на презентацию (к питчу)"
-								wrapperCol={{ span: 24 }}
-								rules={[{ type: 'url' }]}
-							>
-								<Input width={'100%'} />
-							</Form.Item>
+							<Row gutter={[16, 16]}>
+								<Col md={{ span: 16 }} sm={{ span: 12 }} xs={{ span: 24 }}>
+									<Form.Item
+										name="Slides Link"
+										label="Ссылка на презентацию (к питчу)"
+										wrapperCol={{ span: 24 }}
+										rules={[{ type: 'url' }]}
+									>
+										<Input width={'100%'} />
+									</Form.Item>
+								</Col>
+								<Col md={{ span: 8 }} sm={{ span: 12 }} xs={{ span: 24 }}>
+									<Form.Item
+										name="Youtube Video ID"
+										label="Видео питча"
+										wrapperCol={{ span: 24 }}
+										rules={[{ max: 64, min: 4 }]}
+									>
+										<Input width={'100%'} placeholder="Укажите ID видео: ECxL-7DWVSE" />
+									</Form.Item>
+								</Col>
+							</Row>
 						</>
 					)}
 
