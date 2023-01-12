@@ -1,22 +1,27 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ProjectVacancies from '@components/ProjectVacancies'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { Col, Descriptions, Grid, Row } from 'antd'
+import { Button, Col, Descriptions, Grid, Row } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import { unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Image from 'next/image'
+import YouTube from 'react-youtube'
+import { Options } from 'youtube-player/dist/types'
 import styles from './style.module.less'
 
 const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 	const screens = Grid.useBreakpoint()
+	const [showPitchVideo, setShowPitchVideo] = useState(false)
 
 	useEffect(() => {
 		//
 	}, [])
+
+	const handleCoverClick = () => setShowPitchVideo(true)
 
 	const generalData = (
 		<div className={styles.projectMeta}>
@@ -31,6 +36,8 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 			</Descriptions>
 		</div>
 	)
+
+	const pitchVideoOptions: Options = { playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 } }
 
 	return (
 		<>
@@ -57,10 +64,29 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 						{!screens.md && generalData}
 					</Col>
 					<Col xs={{ span: 24, order: 0 }} md={{ span: 11, offset: 1, order: 1 }}>
-						{!!project['Cover Image'] && (
-							<div className={styles.cover}>
-								<Image src={project['Cover Image']} alt="cover" fill />
-							</div>
+						{!showPitchVideo && (
+							<>
+								{!!project['Cover Image'] && (
+									<div className={styles.cover}>
+										{project['Youtube Video ID'] && (
+											<div className={styles.coverButtonContainer}>
+												<Button onClick={handleCoverClick} type="primary">
+													Смотреть презентацию
+												</Button>
+											</div>
+										)}
+										<Image src={project['Cover Image']} alt="cover" fill />
+									</div>
+								)}
+							</>
+						)}
+						{showPitchVideo && project['Youtube Video ID'] && (
+							<YouTube
+								className={styles.videoCover}
+								videoId={project['Youtube Video ID']}
+								opts={pitchVideoOptions}
+								onEnd={() => setShowPitchVideo(false)}
+							/>
 						)}
 						{screens.md && generalData}
 					</Col>
