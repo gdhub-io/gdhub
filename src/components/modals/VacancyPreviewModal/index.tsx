@@ -34,51 +34,6 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 		}
 	}, [open])
 
-	const handleOk = async (asDraft?: { asDraft: boolean }) => {
-		try {
-			const formData = await form.validateFields()
-			setProcessing(true)
-			const response: any = await fetch('/api/vacancy/save', {
-				method: 'post',
-				body: JSON.stringify({
-					id: vacancyId || null,
-					data: {
-						...formData,
-						'Finished At': formData['Finished At'].format('YYYY-MM-DD'),
-						Status: asDraft ? 'Draft' : 'Opened',
-						Project: [project?.id],
-					},
-				}),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			setProcessing(false)
-
-			if (!response.ok) {
-				throw new Error('Что-то пошло не так')
-			}
-
-			const data = await response.json()
-
-			if (data.error) {
-				throw new Error(response.error.message)
-			}
-
-			form.resetFields()
-			message.success(vacancyId ? 'Вакансия изменена' : 'Добавлена новая вакансия')
-			onOk()
-		} catch (error: any) {
-			setProcessing(false)
-
-			if (!error.hasOwnProperty('errorFields')) {
-				message.error(error.message)
-			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
-			}
-		}
-	}
-
 	const handleCancel = () => {
 		form.resetFields()
 		onCancel()
@@ -120,7 +75,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 			return vacancy?.memberApply ? 'Отозвать отклик' : 'Откликнуться'
 		}
 
-		return null
+		return 'Откликнуться'
 	}
 
 	const functionOkButton = () => {
@@ -141,6 +96,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 				maskClosable={false}
 				okText={statusOkButton()}
 				onOk={functionOkButton}
+				okButtonProps={{ disabled: !session.user }}
 				cancelText="Закрыть"
 				open={open}
 				onCancel={handleCancel}
@@ -165,6 +121,12 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 							</Descriptions>
 
 							{vacancy.memberApply ? <Alert type="success" message="Вы уже отклинкулись на данную вакансию" /> : null}
+							{!session?.user && (
+								<Alert
+									type="error"
+									message="Откликнуться могут только зарегистрированные пользователи с заполненной специальностью"
+								/>
+							)}
 						</>
 					)}
 				</Spin>

@@ -8,17 +8,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const { id }: any = req.body
 		const session: any = await unstable_getServerSession(req, res, authOptions)
 
-		if (req.method !== 'POST' || !session || !id) throw new Error('Forbidden request')
+		if (req.method !== 'POST' || !id) throw new Error('Forbidden request')
 
 		const vacancy = await AirtableService('Project Vacancies').find(id)
 
-		const memberApply = await AirtableService('Project Members')
-			.select({
-				fields: [],
-				maxRecords: 1,
-				filterByFormula: `AND(Status = "Intent", FIND("${session.user.email}", Member), FIND("${id}", {Vacancy ID}))`,
-			})
-			.all()
+		let memberApply: any = []
+
+		if (session) {
+			memberApply = await AirtableService('Project Members')
+				.select({
+					fields: [],
+					maxRecords: 1,
+					filterByFormula: `AND(Status = "Intent", FIND("${session.user.email}", Member), FIND("${id}", {Vacancy ID}))`,
+				})
+				.all()
+		}
 
 		res.json({ id: vacancy.id, memberApply: memberApply.length > 0 ? memberApply[0].id : false, ...vacancy.fields })
 	} catch (error: any) {

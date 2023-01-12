@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import ProjectVacancies from '@components/ProjectVacancies'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
@@ -12,7 +12,6 @@ import Image from 'next/image'
 import styles from './style.module.less'
 
 const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
-	const [loading, setLoading] = useState(false)
 	const screens = Grid.useBreakpoint()
 
 	useEffect(() => {
