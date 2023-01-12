@@ -164,11 +164,13 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 										size="small"
 										labelStyle={{ fontWeight: 'bold' }}
 									>
-										<Descriptions.Item label="Резюме/портфолио">
-											<Link href={candidate.Profile['Resume/Portfolio']} target="_blank">
-												<Button size="small">Перейти</Button>
-											</Link>
-										</Descriptions.Item>
+										{!!candidate?.Profile['Resume/Portfolio'] && (
+											<Descriptions.Item label="Резюме/портфолио">
+												<Link href={candidate.Profile['Resume/Portfolio']} target="_blank">
+													<Button size="small">Перейти</Button>
+												</Link>
+											</Descriptions.Item>
+										)}
 										<Descriptions.Item label="Свободное время">
 											{candidate.Profile['Time For Work']} часов
 										</Descriptions.Item>
