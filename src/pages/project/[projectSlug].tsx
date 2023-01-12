@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import ProjectVacancies from '@components/ProjectVacancies'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
@@ -16,10 +16,6 @@ import styles from './style.module.less'
 const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 	const screens = Grid.useBreakpoint()
 	const [showPitchVideo, setShowPitchVideo] = useState(false)
-
-	useEffect(() => {
-		//
-	}, [])
 
 	const handleCoverClick = () => setShowPitchVideo(true)
 
