@@ -96,7 +96,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 				maskClosable={false}
 				okText={statusOkButton()}
 				onOk={functionOkButton}
-				okButtonProps={{ disabled: !session?.data.user }}
+				okButtonProps={{ disabled: !session?.data?.user }}
 				cancelText="Закрыть"
 				open={open}
 				onCancel={handleCancel}
@@ -121,7 +121,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 							</Descriptions>
 
 							{vacancy.memberApply ? <Alert type="success" message="Вы уже отклинкулись на данную вакансию" /> : null}
-							{!session?.data.user && (
+							{!session?.data?.user && (
 								<Alert
 									type="error"
 									message="Откликнуться могут только зарегистрированные пользователи с заполненной специальностью"
