@@ -120,7 +120,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 								</Descriptions.Item>
 							</Descriptions>
 
-							{vacancy.memberApply ? <Alert type="success" message="Вы уже отклинкулись на данную вакансию" /> : null}
+							{vacancy.memberApply ? <Alert type="success" message="Вы уже откликнулись на данную вакансию" /> : null}
 							{!session?.data?.user && (
 								<Alert
 									type="error"

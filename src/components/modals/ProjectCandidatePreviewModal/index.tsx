@@ -180,24 +180,22 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 									</Descriptions>
 								</Col>
 								<Col xs={{ span: 24, order: 0 }} md={{ span: 6, order: 1 }}>
-									{!!candidate.Avatar && (
-										<Space direction="vertical" align="center" style={{ width: '100%' }}>
+									<Space direction="vertical" align="center" style={{ width: '100%' }}>
+										{!!candidate.Avatar && (
 											<div className={styles.avatar}>
 												<Image src={candidate.Avatar} alt="project member avatar" width={160} height={160} />
 											</div>
-											{!!candidate.Profile['Telegram Nickname'] && (
-												<Link target="_blank" href={'https://t.me/' + candidate.Profile['Telegram Nickname']}>
-													<Button
-														icon={
-															<TbBrandTelegram size={16} style={{ position: 'relative', top: 3, marginRight: 5 }} />
-														}
-													>
-														Связаться
-													</Button>
-												</Link>
-											)}
-										</Space>
-									)}
+										)}
+										{!!candidate.Profile['Telegram Nickname'] && (
+											<Link target="_blank" href={'https://t.me/' + candidate.Profile['Telegram Nickname']}>
+												<Button
+													icon={<TbBrandTelegram size={16} style={{ position: 'relative', top: 3, marginRight: 5 }} />}
+												>
+													Связаться
+												</Button>
+											</Link>
+										)}
+									</Space>
 								</Col>
 							</Row>
 
