@@ -15,7 +15,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			Project: [projectId],
 			Vacancy: [vacancyId],
 			Speciality: [specialityId],
-			Position: vacancy.get('Name'),
 			Status: 'Intent',
 		})
 

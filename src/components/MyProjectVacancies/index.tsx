@@ -4,7 +4,7 @@ import { fetcher } from '@helpers/fetcher'
 import { Button, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import moment from 'moment'
-import { HiOutlineLockClosed, HiOutlineTrash } from 'react-icons/hi'
+import { HiOutlineLockClosed } from 'react-icons/hi'
 import useSWR from 'swr'
 
 interface Vacancy {
