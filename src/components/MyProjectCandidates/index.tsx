@@ -121,7 +121,7 @@ const MyProjectCandidates = ({ project, onUpdate = () => {} }: MyProjectCandidat
 					/>
 				</>
 			) : (
-				<p>На данный момент заявок на участие нет</p>
+				<p style={{ marginTop: 12, color: 'gray' }}>На данный момент заявок на участие нет</p>
 			)}
 		</>
 	)

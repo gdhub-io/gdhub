@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		const vacancies = await AirtableService('Project Vacancies')
 			.select({
-				filterByFormula: `FIND("${projectName}", {Project})`,
+				filterByFormula: `AND(Status != "Closed", FIND("${projectName}", {Project}))`,
 			})
 			.all()
 

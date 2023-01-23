@@ -41,7 +41,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 		setTeam([
 			{
 				Name: project['Author Name'][0],
-				'Vacancy Name': 'Тимлид',
+				Position: 'Тимлид',
 				'Started At': moment(project['Created']),
 				'Finished At': project['Finished'] ? moment(project['Finished']) : undefined,
 			},
@@ -54,7 +54,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 		setTeam((previous) => [
 			{
 				Name: project['Author Name'][0],
-				'Vacancy Name': 'Тимлид',
+				Position: 'Тимлид',
 				'Started At': moment(project['Created']),
 				'Finished At': project['Finished'] ? moment(project['Finished']) : undefined,
 			},
@@ -87,15 +87,15 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 				) : (
 					<>
 						<div>{value}</div>
-						<small>{record['Vacancy Name']}</small>
+						<small>{record['Position']}</small>
 					</>
 				)
 			},
 		},
 		{
 			title: 'Должность',
-			dataIndex: 'Vacancy Name',
-			key: 'Vacancy Name',
+			dataIndex: 'Position',
+			key: 'Position',
 			responsive: ['md'],
 		},
 		{

@@ -11,8 +11,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		if (req.method !== 'POST' || !session || !id) throw new Error('Forbidden request')
 
+		const candidate = await AirtableService('Project Members').find(id)
+
 		await AirtableService('Project Members').update(id, {
 			Status: 'Member',
+			Position: candidate.get('Vacancy Name'),
 			'Started At': moment().format('YYYY-MM-DD'),
 		})
 

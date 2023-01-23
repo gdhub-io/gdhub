@@ -42,7 +42,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 				<Col xs={{ span: 24 }} md={{ span: 12 }}>
 					<h1>{myProject?.Name}</h1>
 				</Col>
-				<Col xs={{ span: 24 }} md={{ span: 12 }}>
+				<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
 					<Space wrap>
 						{myProject?.Status !== 'Closed' && (
 							<Button

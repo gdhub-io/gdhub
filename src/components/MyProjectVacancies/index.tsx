@@ -4,7 +4,7 @@ import { fetcher } from '@helpers/fetcher'
 import { Button, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import moment from 'moment'
-import { HiOutlineTrash } from 'react-icons/hi'
+import { HiOutlineLockClosed, HiOutlineTrash } from 'react-icons/hi'
 import useSWR from 'swr'
 
 interface Vacancy {
@@ -77,13 +77,13 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 				<Space>
 					{screens.md && <Button onClick={() => handleEditVacancy(record.id)}>Изменить</Button>}
 					<Popconfirm
-						title="Точно хотите удалить？"
+						title="Точно хотите закрыть вакансию?"
 						okText="Да"
 						cancelText="Нет"
-						onConfirm={() => handleDeleteVacancy(record.id)}
+						onConfirm={() => handleCloseVacancy(record.id)}
 					>
 						<Button type="text" danger>
-							<HiOutlineTrash />
+							<HiOutlineLockClosed />
 						</Button>
 					</Popconfirm>
 				</Space>
@@ -96,8 +96,8 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 		setShowVacancyModal(true)
 	}
 
-	const handleDeleteVacancy = async (id: string) => {
-		await fetcher('/api/vacancy/delete', { id })
+	const handleCloseVacancy = async (id: string) => {
+		await fetcher('/api/vacancy/close', { id })
 		fetchMyMyProjectVacancies()
 
 		message.success('Вакансия удалена')
@@ -115,14 +115,18 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 				<Button onClick={() => setShowVacancyModal(true)}>Добавить вакансию</Button>
 			</Space>
 
-			<Table
-				showHeader={false}
-				loading={isLoadingMyMyProjectVacancies}
-				style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
-				columns={vacanciesColumns}
-				dataSource={projectVacancies?.data?.map((m: any) => ({ ...m, key: m.id }))}
-				pagination={false}
-			/>
+			{projectVacancies?.data.length > 0 ? (
+				<Table
+					showHeader={false}
+					loading={isLoadingMyMyProjectVacancies}
+					style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
+					columns={vacanciesColumns}
+					dataSource={projectVacancies?.data?.map((m: any) => ({ ...m, key: m.id }))}
+					pagination={false}
+				/>
+			) : (
+				<p style={{ marginTop: 12, color: 'gray' }}>На данный момент открытых вакансий нет</p>
+			)}
 
 			<VacancyModal
 				projectId={project?.id}

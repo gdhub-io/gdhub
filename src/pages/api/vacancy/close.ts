@@ -1,4 +1,5 @@
 import AirtableService from '@services/airtable'
+import moment from 'moment'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
@@ -10,7 +11,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		if (req.method !== 'POST' || !session || !id) throw new Error('Forbidden request')
 
-		await AirtableService('Project Vacancies').destroy(id)
+		await AirtableService('Project Vacancies').update(id, {
+			Status: 'Closed',
+			'Closed At': moment().format('YYYY-MM-DD'),
+		})
 
 		res.json({ success: true })
 	} catch (error: any) {
