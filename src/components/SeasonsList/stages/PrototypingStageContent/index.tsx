@@ -36,8 +36,8 @@ const PrototypingStageContent = ({ season, stage }: any) => {
 					</ul>
 				</p>
 				<p>
-					Так же этот период будет отчетным. Это означает, что каждые 2 недели команда будет отчитываться о проделанной
-					работе. Информация о видеоотчетах будет публиковаться в чате сообщества.
+					Так же на этом этапе команды начнут рассказывать о своем прогрессе в виде онлайн-отчетов. Информация о
+					видеоотчетах будет публиковаться в чате сообщества.
 					<ul>
 						<li>Отчетный день 1: 15 яванря в 20:00 (по Минску)</li>
 						<li>Отчетный день 2: 1 февраля в 20:00 (по Минску)</li>
@@ -45,12 +45,15 @@ const PrototypingStageContent = ({ season, stage }: any) => {
 				</p>
 				<p>
 					Полезный материал:{' '}
-					<Space>
+					<Space wrap>
 						<Link className="text-link" href="/hub/docs/prototyping-start" target="_blank">
 							Разработка прототипа игры
 						</Link>
 						<Link className="text-link" href="/hub/docs/art-direction-start" target="_blank">
 							Разработка визуального решения
+						</Link>
+						<Link className="text-link" href="/hub/docs/spring-reporting" target="_blank">
+							Как готовиться к отчету
 						</Link>
 					</Space>
 				</p>
