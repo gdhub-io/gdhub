@@ -27,25 +27,31 @@ const SeasonsList = () => {
 	const stagesDetails = (stage: any, season?: any) => {
 		const details: any = {
 			Searching: {
+				number: 1,
 				title: 'Этап исследования',
 				content: <SearchingStageContent season={season} stage={stage} />,
 			},
 			'Pre-production': {
+				number: 2,
 				title: 'Этап подготовки проекта',
 				content: <PreProductionStageContent season={season} stage={stage} />,
 			},
 			Recruiting: {
+				number: 3,
 				title: 'Этап набора команды',
 				content: <RecruitingStageContent season={season} stage={stage} />,
 			},
 			Prototyping: {
+				number: 4,
 				title: 'Этап прототипирования',
 				content: <PrototypingStageContent season={season} stage={stage} />,
 			},
 			Production: {
+				number: 5,
 				title: 'Этап разработки проекта',
 			},
 			Pitching: {
+				number: 6,
 				title: 'Питчи проектов',
 			},
 			Planning: {
@@ -69,6 +75,8 @@ const SeasonsList = () => {
 						title={
 							<Space align="center">
 								<div className="title">{season.Name}</div>
+								<DividerIcon className="divider" />
+								<small>Этап {stagesDetails({ Name: season.Stage }, season)?.number}-ый из 6</small>
 								{isPassiveSeason(season) && (
 									<>
 										<DividerIcon className="divider" />
@@ -81,7 +89,7 @@ const SeasonsList = () => {
 						{isActiveSeason(season) && (
 							<Collapse defaultActiveKey={[season.Stage]} onChange={() => {}} bordered={false}>
 								{season['Season Stages']
-									.filter((s: any) => ['Planning', 'Done'].includes(s.Name) === false)
+									.filter((s: any) => ['Planning', 'Done'].includes(s.Name) === false && s.Name == season.Stage)
 									.map((stage: any) => (
 										<Collapse.Panel
 											header={
