@@ -2,7 +2,7 @@ name: New Members Send Message
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 7 */3 * *'
+    - cron: '0 7 * * 1'
 jobs:
   cron:
     runs-on: ubuntu-latest
