@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const telegramBot = TelegramService.init()
 		await telegramBot.sendMessage({
 			chatId,
-			topicId: 126,
+			topicId: process.env.TELEGRAM_TOPIC_NEWS ? Number.parseInt(process.env.TELEGRAM_TOPIC_NEWS) : undefined,
 			message: `<b>Новые участники сообщества</b>\n\nЗа последние 3 дня к сообществу присоединилось <b>+${newMembers.length} участника</b> имеющие такие специальности, как:\n- ${newSpecialitiesRender}\n\n${finishMessage[randomInt]}`,
 		})
 
