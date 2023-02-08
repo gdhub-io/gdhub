@@ -22,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		if (newMembers?.length == 0) {
 			res.json({ success: true })
+			return
 		}
 
 		for (const member of newMembers) {
