@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const newMembers = await AirtableService('Profiles')
 			.select({
 				fields: ['Specialities'],
-				filterByFormula: `AND( DATETIME_DIFF(DATEADD(TODAY(),-1,'days'), Created, 'days') <= 3, Specialities )`,
+				filterByFormula: `AND( DATETIME_DIFF(DATEADD(TODAY(),-1,'days'), Created, 'days') < 3, Specialities )`,
 			})
 			.all()
 
