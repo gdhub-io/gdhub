@@ -32,7 +32,7 @@ export default class TelegramService {
 			chat_id: chatId,
 			message_thread_id: topicId || undefined,
 			parse_mode: 'HTML',
-			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS || false,
+			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS == '1',
 			text: message, //1-4096 characters
 		}
 
@@ -41,7 +41,7 @@ export default class TelegramService {
 		}
 
 		try {
-			fetch(`${this.apiUrl}/sendMessage`, {
+			const res = await fetch(`${this.apiUrl}/sendMessage`, {
 				method: 'post',
 				body: JSON.stringify(body),
 				headers: {
@@ -49,30 +49,37 @@ export default class TelegramService {
 					'content-type': 'application/json',
 				},
 			})
-				.then((res: any) => res.json())
-				.then((data: any) => {
-					console.log('Message successfully send.')
-				})
-				.catch((error) => {
-					console.log(error)
-				})
+
+			if (!res.ok) throw new Error('Telegram sendMessage response is wrong')
+
+			console.log('Message successfully send.')
 		} catch (error: any) {
 			console.log(error)
 		}
 	}
 
-	async sendPhoto(chatId: number, url: string, message?: string) {
+	async sendPhoto({
+		chatId,
+		topicId,
+		url,
+		message,
+	}: {
+		chatId: number
+		topicId?: number
+		url: string
+		message?: string
+	}) {
 		const body = JSON.stringify({
 			chat_id: chatId,
-			// message_thread_id: '',
+			message_thread_id: topicId || undefined,
 			photo: url,
 			caption: message, //0-1024 characters
 			parse_mode: 'HTML',
-			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS || false,
+			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS == '1',
 		})
 
 		try {
-			fetch(`${this.apiUrl}/sendPhoto`, {
+			const res = await fetch(`${this.apiUrl}/sendPhoto`, {
 				method: 'post',
 				body: body,
 				headers: {
@@ -80,13 +87,10 @@ export default class TelegramService {
 					'content-type': 'application/json',
 				},
 			})
-				.then((res: any) => res.json())
-				.then((data: any) => {
-					console.log('Photo successfully send.')
-				})
-				.catch((error) => {
-					console.log(error)
-				})
+
+			if (!res.ok) throw new Error('Telegram sendMessage response is wrong')
+
+			console.log('Message successfully send.')
 		} catch (error: any) {
 			console.log(error)
 		}
