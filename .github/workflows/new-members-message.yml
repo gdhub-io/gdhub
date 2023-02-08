@@ -10,5 +10,5 @@ jobs:
       - name: New Members Send Message
         run: |
           curl --request POST \
-          --url 'http://gdhub.io/api/cron/new-members' \
+          --url 'https://gdhub.io/api/cron/new-members' \
           --header 'Authorization: ${{ secrets.BACKEND_KEY }}'
