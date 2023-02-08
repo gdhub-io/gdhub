@@ -1,0 +1,60 @@
+import AirtableService from '@services/airtable'
+import TelegramService from '@services/telegram'
+import { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	if (req.method !== 'POST' || req.headers['authorization'] !== process.env.BACKEND_KEY)
+		throw new Error('Forbidden request')
+
+	try {
+		const chatId = process.env.TELEGRAM_CHAT_ID ? Number.parseInt(process.env.TELEGRAM_CHAT_ID) : undefined
+		if (!chatId) throw new Error('Unknown chat')
+
+		const newSpecialities = []
+		const newMembers = await AirtableService('Profiles')
+			.select({
+				fields: ['Specialities'],
+				filterByFormula: `AND( DATETIME_DIFF(TODAY(), Created, 'days') <= 3, Specialities )`,
+			})
+			.all()
+
+		if (newMembers?.length == 0) {
+			res.json({ success: true })
+		}
+
+		for (const member of newMembers) {
+			const _specialities = member.fields.Specialities as string[]
+			const specs = await AirtableService('Specialities')
+				.select({
+					fields: ['Name'],
+					filterByFormula: `FIND(RECORD_ID(), "${_specialities.join(' ')}")`,
+				})
+				.all()
+
+			for (const spec of specs) {
+				newSpecialities.push(spec.fields.Name)
+			}
+		}
+
+		const finishMessage = [
+			'Бывает же такое!',
+			'Добро пожаловать в наш хаб!',
+			'Теперь-то начнем делать игры по-серъезному!',
+			'Ура! Своих прибавилось!',
+			'Сообщество растет. Приятно :)',
+		]
+		const randomInt = Math.floor(Math.random() * (finishMessage.length - 1))
+		const newSpecialitiesRender = newSpecialities.join(';\n- ')
+
+		const telegramBot = TelegramService.init()
+		await telegramBot.sendMessage({
+			chatId,
+			topicId: 126,
+			message: `<b>Новые участники сообщества</b>\n\nЗа последние 3 дня к сообществу присоединилось <b>+${newMembers.length} участника</b> имеющие такие специальности, как:\n- ${newSpecialitiesRender}\n\n${finishMessage[randomInt]}`,
+		})
+
+		res.json({ success: true })
+	} catch (error: any) {
+		res.json({ success: false, error: error.message })
+	}
+}
