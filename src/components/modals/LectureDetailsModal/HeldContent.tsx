@@ -1,7 +1,6 @@
 import { Fragment } from 'react'
-import { Alert, Avatar, Button, Card, Space } from 'antd'
+import { Alert, Avatar, Card } from 'antd'
 import { DateTime } from 'luxon'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import YouTube from 'react-youtube'
 import styles from './style.module.less'

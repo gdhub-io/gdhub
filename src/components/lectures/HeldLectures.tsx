@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import LectureDetailsModal from '@components/modals/LectureDetailsModal'
 import { fetcher } from '@helpers/fetcher'
-import { Button, Grid, Spin, Table } from 'antd'
+import { Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'

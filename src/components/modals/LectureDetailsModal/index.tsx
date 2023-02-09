@@ -1,9 +1,9 @@
 import { Fragment, useEffect, useState } from 'react'
 import { Grid, message, Modal, Spin } from 'antd'
+import { HeldContent } from './HeldContent'
 import { ReadyContent } from './ReadyContent'
 import { RequestedContent } from './RequestedContent'
 import styles from './style.module.less'
-import { HeldContent } from './HeldContent'
 
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const screens = Grid.useBreakpoint()
