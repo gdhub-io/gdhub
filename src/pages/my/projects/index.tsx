@@ -21,7 +21,7 @@ const MyProjectsPage: NextPageWithLayout = () => {
 			</Head>
 			<h1>Мои проекты</h1>
 
-			{!!myProjects?.data ? (
+			{myProjects?.data?.length > 0 ? (
 				<List
 					bordered
 					dataSource={myProjects.data}
