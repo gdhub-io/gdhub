@@ -65,7 +65,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 
 	const handleFired = async (projectMemberId: string) => {
 		try {
-			await fetcher('/api/vacancy/candidate/fired', { id: projectMemberId })
+			await fetcher({ url: '/api/vacancy/candidate/fired', data: { id: projectMemberId } })
 			fetchMyProjectTeam()
 
 			message.success('Сотрудник уволен')

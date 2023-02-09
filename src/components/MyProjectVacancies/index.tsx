@@ -101,7 +101,7 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 	}
 
 	const handleCloseVacancy = async (id: string) => {
-		await fetcher('/api/vacancy/close', { id })
+		await fetcher({ url: '/api/vacancy/close', data: { id } })
 		fetchMyMyProjectVacancies()
 
 		message.success('Вакансия удалена')

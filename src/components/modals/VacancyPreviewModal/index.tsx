@@ -45,10 +45,13 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 
 	const handleSpecialitySelect = async (specialityId: any) => {
 		try {
-			await fetcher('/api/vacancy/apply', {
-				specialityId,
-				projectId: project.id,
-				vacancyId: vacancy.id,
+			await fetcher({
+				url: '/api/vacancy/apply',
+				data: {
+					specialityId,
+					projectId: project.id,
+					vacancyId: vacancy.id,
+				},
 			})
 
 			message.success('Ваш отклик на выранную вакансию отослан')
@@ -62,8 +65,11 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 
 	const withdrawApply = async (projectMemberId: string) => {
 		try {
-			await fetcher('/api/vacancy/withdraw', {
-				projectMemberId,
+			await fetcher({
+				url: '/api/vacancy/withdraw',
+				data: {
+					projectMemberId,
+				},
 			})
 
 			message.success('Ваш отклик отозван')
