@@ -12,7 +12,7 @@ const MyProjectsPage: NextPageWithLayout = () => {
 		data: myProjects,
 		mutate: fetchMyProjects,
 		isValidating: isLoadingMyProjects,
-	} = useSWR(['/api/my/projects'], fetcher, { revalidateOnFocus: false })
+	} = useSWR({ url: '/api/my/projects' }, fetcher, { revalidateOnFocus: false })
 
 	return (
 		<>

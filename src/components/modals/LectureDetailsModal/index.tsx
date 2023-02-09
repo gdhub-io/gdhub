@@ -3,6 +3,7 @@ import { Grid, message, Modal, Spin } from 'antd'
 import { ReadyContent } from './ReadyContent'
 import { RequestedContent } from './RequestedContent'
 import styles from './style.module.less'
+import { HeldContent } from './HeldContent'
 
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const screens = Grid.useBreakpoint()
@@ -130,11 +131,9 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			<Spin spinning={processing}>
 				{!!lecture && (
 					<>
-						{['Requested', 'Proposed', 'Actualized'].includes(lecture.Status) ? (
-							<RequestedContent lecture={lecture} />
-						) : (
-							<ReadyContent lecture={lecture} userIsRegistered={userIsRegistered} />
-						)}
+						{['Requested', 'Proposed', 'Actualized'].includes(lecture.Status) && <RequestedContent lecture={lecture} />}
+						{lecture.Status == 'Ready' && <ReadyContent lecture={lecture} userIsRegistered={userIsRegistered} />}
+						{lecture.Status == 'Held' && <HeldContent lecture={lecture} />}
 					</>
 				)}
 			</Spin>

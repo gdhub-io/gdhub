@@ -12,7 +12,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		data: specialities,
 		mutate: fetchSpecialities,
 		isValidating: isLoading,
-	} = useSWR(['/api/my/specialities'], fetcher, {
+	} = useSWR({ url: '/api/my/specialities' }, fetcher, {
 		revalidateOnFocus: false,
 	})
 

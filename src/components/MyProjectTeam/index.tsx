@@ -26,7 +26,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 		data: projectTeam,
 		mutate: fetchMyProjectTeam,
 		isValidating: isLoadingMyMyProjectTeam,
-	} = useSWR(['/api/my/project-team', { projectId: project?.id, projectName: project?.Name }], fetcher, {
+	} = useSWR({ url: '/api/my/project-team', data: { projectId: project?.id, projectName: project?.Name } }, fetcher, {
 		revalidateOnFocus: false,
 		isPaused: () => !project,
 	})

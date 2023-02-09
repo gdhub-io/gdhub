@@ -26,7 +26,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 		data: myProject,
 		mutate: fetchMyProject,
 		isValidating: isLoadingMyProject,
-	} = useSWR(['/api/my/project', { projectId }], fetcher, { revalidateOnFocus: false })
+	} = useSWR({ url: '/api/my/project', data: { projectId } }, fetcher, { revalidateOnFocus: false })
 
 	const handleSaveProject = () => {
 		setShowProjectModal(false)

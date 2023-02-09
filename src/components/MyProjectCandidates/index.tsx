@@ -39,10 +39,14 @@ const MyProjectCandidates = ({ project, onUpdate = () => {} }: MyProjectCandidat
 		data: MyProjectCandidates,
 		mutate: fetchMyProjectCandidates,
 		isValidating: isLoadingMyMyProjectCandidates,
-	} = useSWR(['/api/my/project-candidates', { projectId: project?.id, projectName: project?.Name }], fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !project,
-	})
+	} = useSWR(
+		{ url: '/api/my/project-candidates', data: { projectId: project?.id, projectName: project?.Name } },
+		fetcher,
+		{
+			revalidateOnFocus: false,
+			isPaused: () => !project,
+		}
+	)
 
 	const columns: ColumnsType<Vacancy> = [
 		{

@@ -16,7 +16,7 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 		data: candidate,
 		mutate: fetchCandidate,
 		isValidating: isLoadingCandidate,
-	} = useSWR(['/api/my/project-candidate', { id: candidateId }], fetcher, {
+	} = useSWR({ url: '/api/my/project-candidate', data: { id: candidateId } }, fetcher, {
 		revalidateOnFocus: false,
 		isPaused: () => !candidateId,
 		onSuccess: (data) => {

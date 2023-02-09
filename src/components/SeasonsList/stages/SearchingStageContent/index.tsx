@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
+import { fetcher } from '@helpers/fetcher'
 import { hasRole } from '@helpers/user'
 import { Alert, Button, Grid, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import { DateTime } from 'luxon'
@@ -8,11 +9,6 @@ import Link from 'next/link'
 import { HiOutlineTrash } from 'react-icons/hi'
 import useSWR from 'swr'
 import styles from './style.module.less'
-
-const fetcher = (url: string, data: any) =>
-	fetch(url, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(
-		(res) => res.json()
-	)
 
 const SearchingStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
@@ -23,7 +19,7 @@ const SearchingStageContent = ({ season, stage }: any) => {
 		data: projectIdeas,
 		mutate: mutateProjectIdeas,
 		isValidating: isLoadingProjecIdeas,
-	} = useSWR(['/api/project/ideas', { seasonName: season.Name }], fetcher)
+	} = useSWR({ url: '/api/project/ideas', data: { seasonName: season.Name } }, fetcher)
 
 	const handleAddIdeaClick = () => {
 		setSelectedProjectIdea(null)

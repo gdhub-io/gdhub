@@ -15,14 +15,18 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 	const [processing, setProcessing] = useState(true)
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
 
-	const { data: vacancy, mutate: fetchVacancy } = useSWR(['/api/vacancy/get', { id: vacancyId }], fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !vacancyId,
-		onSuccess: (data) => {
-			setProcessing(false)
-			form.setFieldsValue({ ...data, 'Finished At': moment(data['Finished At']) })
-		},
-	})
+	const { data: vacancy, mutate: fetchVacancy } = useSWR(
+		{ url: '/api/vacancy/get', data: { id: vacancyId } },
+		fetcher,
+		{
+			revalidateOnFocus: false,
+			isPaused: () => !vacancyId,
+			onSuccess: (data) => {
+				setProcessing(false)
+				form.setFieldsValue({ ...data, 'Finished At': moment(data['Finished At']) })
+			},
+		}
+	)
 
 	useEffect(() => {
 		if (open && !vacancyId) {

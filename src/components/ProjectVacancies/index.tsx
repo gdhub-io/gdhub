@@ -38,7 +38,7 @@ const ProjectVacancies = ({ project }: ProjectVacanciesArgs) => {
 		mutate: fetchMyProjectVacancies,
 		isValidating: isLoadingMyProjectVacancies,
 	} = useSWR(
-		['/api/project/vacancies', { projectId: project?.id, projectName: project?.Name, Status: 'Opened' }],
+		{ url: '/api/project/vacancies', data: { projectId: project?.id, projectName: project?.Name, Status: 'Opened' } },
 		fetcher,
 		{
 			revalidateOnFocus: false,

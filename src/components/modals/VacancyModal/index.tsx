@@ -50,7 +50,7 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 		data: vacancy,
 		mutate: fetchVacancy,
 		isValidating: isLoadingVacancy,
-	} = useSWR(['/api/vacancy/get', { id: vacancyId }], fetcher, {
+	} = useSWR({ url: '/api/vacancy/get', data: { id: vacancyId } }, fetcher, {
 		revalidateOnFocus: false,
 		isPaused: () => !vacancyId,
 		onSuccess: (data) => {
