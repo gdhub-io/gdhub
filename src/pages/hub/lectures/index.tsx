@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
+import { HeldLectures } from '@components/lectures/HeldLectures'
 import { ReadyLectures } from '@components/lectures/ReadyLectures'
 import { RequestedLectures } from '@components/lectures/RequestedLectures'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
 import { Space } from 'antd'
 import Head from 'next/head'
-import { HeldLectures } from '@components/lectures/HeldLectures'
 
 const LecturesPage: NextPageWithLayout = () => {
 	const [loading, setLoading] = useState(true)
