@@ -21,5 +21,5 @@ export default withAuth({
 })
 
 export const config = {
-	matcher: ['/hub/:path*', '/profile'],
+	matcher: ['/hub/:path*', '/profile', '/live/:path*'],
 }
