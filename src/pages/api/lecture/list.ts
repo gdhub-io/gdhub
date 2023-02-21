@@ -27,8 +27,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					'Date',
 					'Link',
 				],
-				filterByFormula: `AND({Archived} = FALSE(), FIND(Status, "${status.join(' ')}"))`,
-				sort: [{ field: 'Listeners Accounts', direction: 'desc' }],
+				filterByFormula: `AND(FIND(Status, "${status.join(' ')}"))`,
+				sort: [
+					{ field: 'Date', direction: 'desc' },
+					{ field: 'Listeners Accounts', direction: 'desc' },
+				],
 			})
 			.all()
 

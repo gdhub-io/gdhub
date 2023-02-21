@@ -39,10 +39,14 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 		data: projectVacancies,
 		mutate: fetchMyMyProjectVacancies,
 		isValidating: isLoadingMyMyProjectVacancies,
-	} = useSWR(['/api/my/project-vacancies', { projectId: project?.id, projectName: project?.Name }], fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !project,
-	})
+	} = useSWR(
+		{ url: '/api/my/project-vacancies', data: { projectId: project?.id, projectName: project?.Name } },
+		fetcher,
+		{
+			revalidateOnFocus: false,
+			isPaused: () => !project,
+		}
+	)
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
@@ -97,7 +101,7 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 	}
 
 	const handleCloseVacancy = async (id: string) => {
-		await fetcher('/api/vacancy/close', { id })
+		await fetcher({ url: '/api/vacancy/close', data: { id } })
 		fetchMyMyProjectVacancies()
 
 		message.success('Вакансия удалена')

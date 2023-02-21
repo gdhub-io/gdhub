@@ -2,11 +2,14 @@ import AirtableService from '@services/airtable'
 import TelegramService from '@services/telegram'
 import { NextApiRequest, NextApiResponse } from 'next'
 
+// https://core.telegram.org/bots/api#message
 type TelegramMessage = {
+	[key: string]: any
 	date: number
 	text: string
-	[key: string]: any
 	message_id: number
+	message_thread_id?: number
+	is_topic_message?: boolean
 	from: {
 		[key: string]: any
 		username: string
@@ -37,97 +40,101 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		throw new Error('Forbidden request')
 
 	try {
-		// const { message, callback_query }: TelegramUpdate = req.body
+		const { message, callback_query }: TelegramUpdate = req.body
+		const telegramService = await TelegramService.init()
 
-		// console.log('update', message, callback_query)
+		console.log('update', message, callback_query)
 
-		// if (message?.text === '/syncme' && message.entities[0].type === 'bot_command' && message.chat.type === 'private') {
-		// 	const [userProfile] = await AirtableService('Profiles')
-		// 		.select({
-		// 			maxRecords: 1,
-		// 			filterByFormula: `{Telegram Nickname} = "${message.from.username}"`,
-		// 		})
-		// 		.all()
+		if (message?.text === '/syncme' && message.entities[0].type === 'bot_command' && message.chat.type === 'private') {
+			const [userProfile] = await AirtableService('Profiles')
+				.select({
+					maxRecords: 1,
+					filterByFormula: `{Telegram Nickname} = "${message.from.username}"`,
+				})
+				.all()
 
-		// 	if (!userProfile) {
-		// 		await TelegramService.sendMessage(
-		// 			message.chat.id,
-		// 			'I dont know how are you. You need register to https://gdhuv.io'
-		// 		)
+			if (!userProfile) {
+				await telegramService.sendMessage({
+					chatId: message.chat.id,
+					message: 'I dont know how are you. You need register to https://gdhuv.io',
+				})
 
-		// 		res.end()
-		// 	}
+				res.end()
+			}
 
-		// 	if (userProfile.get('Telegram Chat ID') === message.chat.id) {
-		// 		await TelegramService.sendMessage(message.chat.id, 'Данные уже синхронизированы, ' + userProfile.get('Name'))
-		// 	} else {
-		// 		await AirtableService('Profiles').update(userProfile.id, {
-		// 			'Telegram Chat ID': message.chat.id,
-		// 		})
+			if (userProfile.get('Telegram Chat ID') === message.chat.id) {
+				await telegramService.sendMessage({
+					chatId: message.chat.id,
+					message: 'Данные уже синхронизированы, ' + userProfile.get('Name'),
+				})
+			} else {
+				await AirtableService('Profiles').update(userProfile.id, {
+					'Telegram Chat ID': message.chat.id,
+				})
 
-		// 		await TelegramService.sendMessage(
-		// 			message.chat.id,
-		// 			'Ваш аккаунт синхронизирован, ' + userProfile.get('Name') + '.  Теперь сможем общаться.'
-		// 		)
-		// 	}
-		// }
+				await telegramService.sendMessage({
+					chatId: message.chat.id,
+					message: 'Ваш аккаунт синхронизирован, ' + userProfile.get('Name') + '.  Теперь сможем общаться.',
+				})
+			}
+		}
 
-		// if (message?.text === '/start' && message.entities[0].type === 'bot_command' && message.chat.type === 'private') {
-		// 	const [userProfile] = await AirtableService('Profiles')
-		// 		.select({
-		// 			maxRecords: 1,
-		// 			filterByFormula: `{Telegram Nickname} = "${message.from.username}"`,
-		// 		})
-		// 		.all()
+		if (message?.text === '/start' && message.entities[0].type === 'bot_command' && message.chat.type === 'private') {
+			const [userProfile] = await AirtableService('Profiles')
+				.select({
+					maxRecords: 1,
+					filterByFormula: `{Telegram Nickname} = "${message.from.username}"`,
+				})
+				.all()
 
-		// 	if (!userProfile) {
-		// 		await TelegramService.sendMessage(
-		// 			message.chat.id,
-		// 			`Доброго времени суток, ${message.from.first_name}. Для получения доступа к порталу gdhub.io необходима регистрация.`,
-		// 			{
-		// 				inline_keyboard: [[{ text: 'Зарегистрироваться', url: 'https://gdhub.io/' }]],
-		// 			}
-		// 		)
-		// 	} else {
-		// 		if (userProfile.get('Telegram Chat ID') !== message.chat.id) {
-		// 			await TelegramService.sendMessage(
-		// 				message.chat.id,
-		// 				`Доброго времени суток, ${message.from.first_name}. Для работы с ботом необходимо синхронизировать ваш аккаунт.`,
-		// 				{
-		// 					inline_keyboard: [[{ text: 'Синхронизировать', callback_data: 'syncme' }]],
-		// 				}
-		// 			)
+			if (!userProfile) {
+				await telegramService.sendMessage({
+					chatId: message.chat.id,
+					message: `Доброго времени суток, ${message.from.first_name}. Для получения доступа к порталу gdhub.io необходима регистрация.`,
+					options: {
+						inline_keyboard: [[{ text: 'Зарегистрироваться', url: 'https://gdhub.io/' }]],
+					},
+				})
+			} else {
+				if (userProfile.get('Telegram Chat ID') !== message.chat.id) {
+					await telegramService.sendMessage({
+						chatId: message.chat.id,
+						message: `Доброго времени суток, ${message.from.first_name}. Для работы с ботом необходимо синхронизировать ваш аккаунт.`,
+						options: {
+							inline_keyboard: [[{ text: 'Синхронизировать', callback_data: 'syncme' }]],
+						},
+					})
 
-		// 			return res.end()
-		// 		}
+					return res.end()
+				}
 
-		// 		await TelegramService.sendMessage(
-		// 			message.chat.id,
-		// 			`Доброго времени суток, ${message.from.first_name}. Добро пожаловать в чат бота Геймхаба`,
-		// 			{
-		// 				inline_keyboard: [[{ text: 'Открыть Хаб', web_app: { url: 'https://gdhub.io' } }]],
-		// 			}
-		// 		)
-		// 	}
-		// }
+				await telegramService.sendMessage({
+					chatId: message.chat.id,
+					message: `Доброго времени суток, ${message.from.first_name}. Добро пожаловать в чат бота Геймхаба`,
+					options: {
+						inline_keyboard: [[{ text: 'Открыть Хаб', web_app: { url: 'https://gdhub.io' } }]],
+					},
+				})
+			}
+		}
 
-		// if (callback_query?.data === 'syncme') {
-		// 	const [userProfile] = await AirtableService('Profiles')
-		// 		.select({
-		// 			maxRecords: 1,
-		// 			filterByFormula: `{Telegram Nickname} = "${callback_query.from.username}"`,
-		// 		})
-		// 		.all()
+		if (callback_query?.data === 'syncme') {
+			const [userProfile] = await AirtableService('Profiles')
+				.select({
+					maxRecords: 1,
+					filterByFormula: `{Telegram Nickname} = "${callback_query.from.username}"`,
+				})
+				.all()
 
-		// 	await AirtableService('Profiles').update(userProfile.id, {
-		// 		'Telegram Chat ID': callback_query.message.chat.id,
-		// 	})
+			await AirtableService('Profiles').update(userProfile.id, {
+				'Telegram Chat ID': callback_query.message.chat.id,
+			})
 
-		// 	await TelegramService.sendMessage(
-		// 		callback_query.message.chat.id,
-		// 		'Ваш аккаунт синхронизирован, ' + userProfile.get('Name') + '.  Теперь сможем общаться.'
-		// 	)
-		// }
+			await telegramService.sendMessage({
+				chatId: callback_query.message.chat.id,
+				message: 'Ваш аккаунт синхронизирован, ' + userProfile.get('Name') + '.  Теперь сможем общаться.',
+			})
+		}
 
 		res.end()
 	} catch (error: any) {

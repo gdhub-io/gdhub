@@ -12,7 +12,7 @@ const MyProjectsPage: NextPageWithLayout = () => {
 		data: myProjects,
 		mutate: fetchMyProjects,
 		isValidating: isLoadingMyProjects,
-	} = useSWR(['/api/my/projects'], fetcher, { revalidateOnFocus: false })
+	} = useSWR({ url: '/api/my/projects' }, fetcher, { revalidateOnFocus: false })
 
 	return (
 		<>
@@ -21,7 +21,7 @@ const MyProjectsPage: NextPageWithLayout = () => {
 			</Head>
 			<h1>Мои проекты</h1>
 
-			{!!myProjects?.data ? (
+			{myProjects?.data?.length > 0 ? (
 				<List
 					bordered
 					dataSource={myProjects.data}

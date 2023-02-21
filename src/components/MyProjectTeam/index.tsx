@@ -26,7 +26,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 		data: projectTeam,
 		mutate: fetchMyProjectTeam,
 		isValidating: isLoadingMyMyProjectTeam,
-	} = useSWR(['/api/my/project-team', { projectId: project?.id, projectName: project?.Name }], fetcher, {
+	} = useSWR({ url: '/api/my/project-team', data: { projectId: project?.id, projectName: project?.Name } }, fetcher, {
 		revalidateOnFocus: false,
 		isPaused: () => !project,
 	})
@@ -51,7 +51,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 	useEffect(() => {
 		if (!projectTeam || projectTeam.error) return
 
-		setTeam((previous) => [
+		setTeam(() => [
 			{
 				Name: project['Author Name'][0],
 				Position: 'Тимлид',
@@ -65,7 +65,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 
 	const handleFired = async (projectMemberId: string) => {
 		try {
-			await fetcher('/api/vacancy/candidate/fired', { id: projectMemberId })
+			await fetcher({ url: '/api/vacancy/candidate/fired', data: { id: projectMemberId } })
 			fetchMyProjectTeam()
 
 			message.success('Сотрудник уволен')
@@ -113,7 +113,8 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 			key: 'fire',
 			render: (value, record) => {
 				if (record.id == team[0].id) return null
-				if (record.Status == 'Member') return <Button onClick={() => handleFired(record.id)}>Уволить</Button>
+				if (record.Status == 'Member' && record.isAuthor)
+					return <Button onClick={() => handleFired(record.id)}>Уволить</Button>
 				if (record.Status == 'Fired') return 'Уволен'
 			},
 		},

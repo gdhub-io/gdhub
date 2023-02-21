@@ -15,14 +15,18 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 	const [processing, setProcessing] = useState(true)
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
 
-	const { data: vacancy, mutate: fetchVacancy } = useSWR(['/api/vacancy/get', { id: vacancyId }], fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !vacancyId,
-		onSuccess: (data) => {
-			setProcessing(false)
-			form.setFieldsValue({ ...data, 'Finished At': moment(data['Finished At']) })
-		},
-	})
+	const { data: vacancy, mutate: fetchVacancy } = useSWR(
+		{ url: '/api/vacancy/get', data: { id: vacancyId } },
+		fetcher,
+		{
+			revalidateOnFocus: false,
+			isPaused: () => !vacancyId,
+			onSuccess: (data) => {
+				setProcessing(false)
+				form.setFieldsValue({ ...data, 'Finished At': moment(data['Finished At']) })
+			},
+		}
+	)
 
 	useEffect(() => {
 		if (open && !vacancyId) {
@@ -41,10 +45,13 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 
 	const handleSpecialitySelect = async (specialityId: any) => {
 		try {
-			await fetcher('/api/vacancy/apply', {
-				specialityId,
-				projectId: project.id,
-				vacancyId: vacancy.id,
+			await fetcher({
+				url: '/api/vacancy/apply',
+				data: {
+					specialityId,
+					projectId: project.id,
+					vacancyId: vacancy.id,
+				},
 			})
 
 			message.success('Ваш отклик на выранную вакансию отослан')
@@ -58,8 +65,11 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 
 	const withdrawApply = async (projectMemberId: string) => {
 		try {
-			await fetcher('/api/vacancy/withdraw', {
-				projectMemberId,
+			await fetcher({
+				url: '/api/vacancy/withdraw',
+				data: {
+					projectMemberId,
+				},
 			})
 
 			message.success('Ваш отклик отозван')

@@ -16,7 +16,7 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 		data: candidate,
 		mutate: fetchCandidate,
 		isValidating: isLoadingCandidate,
-	} = useSWR(['/api/my/project-candidate', { id: candidateId }], fetcher, {
+	} = useSWR({ url: '/api/my/project-candidate', data: { id: candidateId } }, fetcher, {
 		revalidateOnFocus: false,
 		isPaused: () => !candidateId,
 		onSuccess: (data) => {
@@ -87,8 +87,11 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 
 	const handleReject = async () => {
 		try {
-			await fetcher('/api/vacancy/candidate/reject', {
-				id: candidateId,
+			await fetcher({
+				url: '/api/vacancy/candidate/reject',
+				data: {
+					id: candidateId,
+				},
 			})
 
 			message.success('Вы отклонили кандидатуру ' + candidate.Name)
@@ -101,8 +104,11 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 
 	const handleApprove = async () => {
 		try {
-			await fetcher('/api/vacancy/candidate/approve', {
-				id: candidateId,
+			await fetcher({
+				url: '/api/vacancy/candidate/approve',
+				data: {
+					id: candidateId,
+				},
 			})
 
 			message.success(`Вы приняли ${candidate.Name} в команду`)

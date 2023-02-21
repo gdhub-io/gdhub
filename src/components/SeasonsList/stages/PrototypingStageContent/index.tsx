@@ -1,14 +1,10 @@
 import { useState } from 'react'
-import { Button, Card, Col, Descriptions, Grid, message, Row, Space, Spin, Typography } from 'antd'
+import { fetcher } from '@helpers/fetcher'
+import { Button, Card, Col, Descriptions, Grid, Row, Space, Spin, Typography } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import useSWR from 'swr'
 import styles from './style.module.less'
-
-const fetcher = (url: string, data: any) =>
-	fetch(url, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(
-		(res) => res.json()
-	)
 
 const PrototypingStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
@@ -18,7 +14,7 @@ const PrototypingStageContent = ({ season, stage }: any) => {
 		data: projects,
 		mutate: mutateProjects,
 		isValidating: isLoadingProjecIdeas,
-	} = useSWR(['/api/season/ideas', { seasonName: season.Name }], fetcher)
+	} = useSWR({ url: '/api/season/ideas', data: { seasonName: season.Name } }, fetcher)
 
 	const handleEditIdeaClick = (projectIdeaId: string) => {
 		setSelectedProjectIdea(projectIdeaId)

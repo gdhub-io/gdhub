@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react'
 import { AirtableEmbed } from '@components/AirtableEmbed'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
+import { fetcher } from '@helpers/fetcher'
 import { Alert, Button, Col, Grid, List, Row, Space, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
 import useSWR from 'swr'
 import styles from './style.module.less'
-
-const fetcher = (url: string, data: any) =>
-	fetch(url, { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(
-		(res) => res.json()
-	)
 
 const PreProductionStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
@@ -21,7 +17,7 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 	const [selectedProjectIdea, setSelectedProjectIdea] = useState<any>(null)
 
 	const { data: projectIdeas, isValidating: isLoadingProjecIdeas } = useSWR(
-		['/api/season/ideas', { seasonName: season.Name, status: 'Approved' }],
+		{ url: '/api/season/ideas', data: { seasonName: season.Name, status: 'Approved' } },
 		fetcher
 	)
 
@@ -29,7 +25,7 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 		data: authorProjectIdeas,
 		mutate: mutateProjectIdeas,
 		isValidating: isLoadingAuthorProjecIdeas,
-	} = useSWR(['/api/project/ideas', { seasonName: season.Name }], fetcher)
+	} = useSWR({ url: '/api/project/ideas', data: { seasonName: season.Name } }, fetcher)
 
 	useEffect(() => {
 		if (!projectIdeas) return

@@ -1,5 +1,6 @@
 import DividerIcon from '@assets/images/icons/divider.svg'
 import SearchingStageContent from '@components/SeasonsList/stages/SearchingStageContent'
+import { fetcher } from '@helpers/fetcher'
 import { Card, Collapse, Grid, Space, Spin } from 'antd'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
@@ -9,12 +10,10 @@ import PrototypingStageContent from './stages/PrototypingStageContent'
 import RecruitingStageContent from './stages/RecruitingStageContent'
 import styles from './style.module.less'
 
-const fetcher = (url: string) => fetch(url, { method: 'post' }).then((res) => res.json())
-
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
-	const { data, error } = useSWR('/api/seasons', fetcher)
+	const { data, error } = useSWR({ url: '/api/seasons' }, fetcher)
 
 	const isPassiveSeason = (season: any) => {
 		return ['Planning', 'Done'].includes(season.Stage)
