@@ -87,7 +87,7 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 							/>
 						)}
 						{screens.md && generalData}
-						{!!project['Author Telegram Nickname'] && (
+						{project['Author Telegram Nickname'] ? (
 							<Link
 								href={`https://t.me/${project['Author Telegram Nickname']}`}
 								target="_blank"
@@ -97,7 +97,7 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 									<TbBrandTelegram size={16} /> Написать автору
 								</Button>
 							</Link>
-						)}
+						) : null}
 					</Col>
 				</Row>
 
