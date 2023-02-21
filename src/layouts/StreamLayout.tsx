@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import DailyIframe, { DailyCall } from '@daily-co/daily-js'
 import { DailyProvider } from '@daily-co/daily-react'
 import { RecoilRoot } from 'recoil'
