@@ -4,11 +4,13 @@ import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { Button, Col, Descriptions, Grid, Row } from 'antd'
+import { Button, Col, Descriptions, Grid, Row, Space } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import { unstable_getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
+import { TbBrandTelegram } from 'react-icons/tb'
 import YouTube from 'react-youtube'
 import { Options } from 'youtube-player/dist/types'
 import styles from './style.module.less'
@@ -49,10 +51,10 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 				<Row>
 					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }}>
 						<h1>{project.Name}</h1>
-						<div className="project-author">
+						<Space className="project-author" align="center">
 							<span>Автор</span>
 							{project['Author Name']}
-						</div>
+						</Space>
 						<div className="project-description">
 							<span>Об игре</span>
 							{project['Description']}
@@ -85,6 +87,17 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 							/>
 						)}
 						{screens.md && generalData}
+						{!!project['Author Telegram Nickname'] && (
+							<Link
+								href={`https://t.me/${project['Author Telegram Nickname']}`}
+								target="_blank"
+								style={{ display: 'block', width: 'fit-content' }}
+							>
+								<Button shape="round" type="ghost" className={styles.writeToAuthorButton}>
+									<TbBrandTelegram size={16} /> Написать автору
+								</Button>
+							</Link>
+						)}
 					</Col>
 				</Row>
 
