@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			throw new Error('Error')
 		}
 
-		res.json({ ...project.fields, id: project.id })
+		res.json({ ...project.fields, id: project.id, isAuthor: project.fields.Author == session.user.id })
 	} catch (error: any) {
 		res.json({ success: false, error: error.message })
 	}
