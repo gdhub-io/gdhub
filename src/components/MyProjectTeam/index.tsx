@@ -113,7 +113,7 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 			key: 'fire',
 			render: (value, record) => {
 				if (record.id == team[0].id) return null
-				if (record.Status == 'Member' && record.isAuthor)
+				if (record.Status == 'Member' && project.isAuthor)
 					return <Button onClick={() => handleFired(record.id)}>Уволить</Button>
 				if (record.Status == 'Fired') return 'Уволен'
 			},
