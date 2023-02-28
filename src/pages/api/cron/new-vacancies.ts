@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		await telegramBot.sendMessage({
 			chatId,
 			topicId: process.env.TELEGRAM_TOPIC_VACANCIES ? Number.parseInt(process.env.TELEGRAM_TOPIC_VACANCIES) : undefined,
-			message: `<b>Новые вакансии на проекты сообщества</b>${newVacanciesRender()}\n\n${finishMessage}`,
+			message: `🔥 <b>Новые вакансии на проекты сообщества</b>${newVacanciesRender()}\n\n${finishMessage}`,
 		})
 
 		res.json({ success: true })
