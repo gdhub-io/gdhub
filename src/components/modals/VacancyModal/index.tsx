@@ -69,12 +69,6 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 		}
 	}, [open])
 
-	// useEffect(() => {
-	// 	if (vacancy) {
-	// 		form.setFieldsValue({ ...vacancy, 'Finished At': moment(vacancy['Finished At']) })
-	// 	}
-	// }, [vacancy])
-
 	const handleOk = async (asDraft?: { asDraft: boolean }) => {
 		try {
 			const formData = await form.validateFields()
@@ -85,6 +79,7 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 					id: vacancyId || null,
 					data: {
 						...formData,
+						'Published At': asDraft ? null : moment().toISOString(),
 						'Finished At': formData['Finished At'].format('YYYY-MM-DD'),
 						Status: asDraft ? 'Draft' : 'Opened',
 						Project: [projectId],

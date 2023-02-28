@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		const newVacancies = await AirtableService('Project Vacancies')
 			.select({
-				filterByFormula: `AND(Status = "Opened", DATETIME_DIFF(TODAY(), {Created At}, 'hours') <= 24)`,
+				filterByFormula: `AND(Status = "Opened", {Published At}, DATETIME_DIFF(TODAY(), {Published At}, 'hours') <= 24)`,
 			})
 			.all()
 
@@ -53,8 +53,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 			return output
 		}
-
-		console.log(newVacanciesRender())
 
 		const telegramBot = TelegramService.init()
 		await telegramBot.sendMessage({

@@ -35,51 +35,6 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 		}
 	}, [open])
 
-	const handleOk = async (asDraft?: { asDraft: boolean }) => {
-		try {
-			const formData = await form.validateFields()
-			setProcessing(true)
-			const response: any = await fetch('/api/vacancy/save', {
-				method: 'post',
-				body: JSON.stringify({
-					id: candidateId || null,
-					data: {
-						...formData,
-						'Finished At': formData['Finished At'].format('YYYY-MM-DD'),
-						Status: asDraft ? 'Draft' : 'Opened',
-						Project: [project?.id],
-					},
-				}),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			setProcessing(false)
-
-			if (!response.ok) {
-				throw new Error('Что-то пошло не так')
-			}
-
-			const data = await response.json()
-
-			if (data.error) {
-				throw new Error(response.error.message)
-			}
-
-			form.resetFields()
-			message.success(candidateId ? 'Вакансия изменена' : 'Добавлена новая вакансия')
-			onOk()
-		} catch (error: any) {
-			setProcessing(false)
-
-			if (!error.hasOwnProperty('errorFields')) {
-				message.error(error.message)
-			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
-			}
-		}
-	}
-
 	const handleCancel = () => {
 		form.resetFields()
 		onCancel()

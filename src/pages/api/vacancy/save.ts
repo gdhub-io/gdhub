@@ -14,7 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		if (!id) {
 			vacancy = await AirtableService('Project Vacancies').create(data)
 		} else {
-			vacancy = await AirtableService('Project Vacancies').update(id, data)
+			vacancy = await AirtableService('Project Vacancies').update(id, {
+				...data,
+				'Closed At': null,
+			})
 		}
 
 		res.json({
