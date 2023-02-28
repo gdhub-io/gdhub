@@ -70,6 +70,7 @@ const SeasonsList = () => {
 				{data?.seasons?.map((season: any, idx: number) => (
 					<Card
 						className={`season-container ${isPassiveSeason(season) ? 'not-active' : ''}`}
+						style={season.Stage == 'Searching' ? { borderColor: '#333', borderWidth: '2px' } : undefined}
 						key={`gamelab-season-${idx}`}
 						title={
 							<Space align="center">

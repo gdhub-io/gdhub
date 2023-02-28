@@ -296,12 +296,12 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 
 					<Form.Item
 						name="Document Link"
-						label="Ссылка концепт-документ"
+						label="Ссылка на концепт-документ (описание идеи)"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true, type: 'url' }]}
 						required
 					>
-						<Input width={'100%'} disabled={projectIdea?.Status !== 'Registered'} />
+						<Input width={'100%'} disabled={!!projectIdea && projectIdea.Status !== 'Registered'} />
 					</Form.Item>
 
 					{projectIdea?.Status == 'Approved' && (

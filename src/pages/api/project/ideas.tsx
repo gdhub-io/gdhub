@@ -16,7 +16,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			})
 			.all()
 
-		const queryResult = await AirtableService('Project Ideas').select({ fields: [] }).all()
+		const queryResult = await AirtableService('Project Ideas')
+			.select({
+				fields: [],
+				filterByFormula: `AND(FIND("${seasonName}", Season), FIND("${session.user.email}", Author))`,
+			})
+			.all()
 
 		if (!projectIdeas) {
 			throw new Error('Error')
