@@ -13,7 +13,7 @@ import styles from './style.module.less'
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
-	const { data, error } = useSWR({ url: '/api/seasons' }, fetcher)
+	const { data, error } = useSWR({ url: '/api/seasons' }, fetcher, { revalidateOnFocus: false })
 
 	const isPassiveSeason = (season: any) => {
 		return ['Planning', 'Done'].includes(season.Stage)
