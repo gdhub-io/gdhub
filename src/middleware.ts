@@ -7,7 +7,8 @@ export default withAuth(
 		if (
 			req.nextUrl.pathname.startsWith('/live/room/reports') &&
 			Array.isArray(token?.roles) &&
-			token?.roles.includes('guest')
+			token?.roles.includes('guest') &&
+			token?.roles.length == 1
 		) {
 			return NextResponse.redirect(new URL('/hub', req.url))
 		}
