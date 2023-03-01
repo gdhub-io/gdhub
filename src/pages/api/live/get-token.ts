@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
 type BodyData = {
@@ -7,7 +7,7 @@ type BodyData = {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const session: any = await unstable_getServerSession(req, res, authOptions)
+	const session: any = await getServerSession(req, res, authOptions)
 	const { roomName }: BodyData = req.body
 
 	try {

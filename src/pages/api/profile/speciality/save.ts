@@ -2,7 +2,7 @@ import AirtableService from '@services/airtable'
 // import TelegramService from '@services/telegram'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 
 type PaymentState = {
 	[key: string]: any
@@ -10,7 +10,7 @@ type PaymentState = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { id, profileId, data } = req.body
-	const session: any = await unstable_getServerSession(req, res, authOptions)
+	const session: any = await getServerSession(req, res, authOptions)
 	let speciality: any
 
 	try {

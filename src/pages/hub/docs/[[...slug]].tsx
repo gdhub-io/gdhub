@@ -6,7 +6,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Render } from '@9gustin/react-notion-render'
 import { Col, Menu, message, Row, Select, Spin, Grid } from 'antd'
 import { DateTime } from 'luxon'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import styles from './style.module.less'
@@ -187,7 +187,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 DocsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export const getServerSideProps = async (context: any) => {
-	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+	const session: any = await getServerSession(context.req, context.res, authOptions)
 	const pages = await getPages({ roles: session.user.roles })
 
 	return {

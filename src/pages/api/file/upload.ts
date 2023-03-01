@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import SanityService from '@services/sanity'
 import { IncomingForm } from 'formidable'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
 /* Don't miss that! */
@@ -14,7 +14,7 @@ export const config = {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
-		const session: any = await unstable_getServerSession(req, res, authOptions)
+		const session: any = await getServerSession(req, res, authOptions)
 
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 

@@ -5,7 +5,7 @@ import AirtableService from '@services/airtable'
 import styles from '@styles/home.module.less'
 import { Button, Card, Col, Row, Space, Statistic } from 'antd'
 import { NextPage } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { signIn } from 'next-auth/react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -108,7 +108,7 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 }
 
 export async function getServerSideProps(context: any) {
-	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+	const session: any = await getServerSession(context.req, context.res, authOptions)
 
 	if (session?.user?.id) {
 		return {

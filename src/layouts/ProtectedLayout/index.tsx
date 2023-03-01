@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { useTelegram } from '@helpers/useTelegram'
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
-import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, Row, Space, Tooltip } from 'antd'
+import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -34,31 +34,31 @@ export const ProtectedLayout = ({ children }: any) => {
 		key: 'telegram-join-link',
 	}
 
-	const [headerMenuItems, setHeaderMenuItems] = useState([
-		{
-			label: (
-				<Link href="/hub">
-					<Button type="primary">Главная</Button>
-				</Link>
-			),
-			key: '/hub',
-		},
-		{
-			label: (
-				<Link href="/hub/docs">
-					<Button type="primary">С чего начать</Button>
-				</Link>
-			),
-			key: '/hub/docs',
-		},
-		telegramMenuItem,
-	])
-
 	useEffect(() => {
 		if (!screens.lg) setOpenMobileMenu(false)
+	}, [session, screens])
+
+	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
+		let menu: MenuProps['items'] = [
+			{
+				style: { display: screens.lg ? 'none' : 'block' },
+				label: <Link href="/hub">{screens.lg ? <Button type="primary">Главная</Button> : 'Главная'}</Link>,
+				key: '/hub',
+			},
+			{
+				label: (
+					<Link href="/hub/docs">
+						{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
+					</Link>
+				),
+				key: '/hub/docs',
+			},
+			telegramMenuItem,
+		]
 
 		if (!!session && session?.user?.roles.includes('member')) {
-			setHeaderMenuItems([
+			menu = [
+				menu[0],
 				{
 					label: <Link href="/hub/members">{screens.lg ? <Button type="text">Участники</Button> : 'Участники'}</Link>,
 					key: '/hub/members',
@@ -67,39 +67,34 @@ export const ProtectedLayout = ({ children }: any) => {
 					label: <Link href="/hub/lectures">{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}</Link>,
 					key: '/hub/lectures',
 				},
-				{
-					label: (
-						<Link href="/hub/docs">
-							{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
-						</Link>
-					),
-					key: '/hub/docs',
-				},
-				telegramMenuItem,
-			])
+				menu[1],
+			]
 		}
-	}, [session, screens])
 
-	let userMenuItems = [
-		{
-			label: <Link href="/profile">Профиль</Link>,
-			key: 'profile',
-		},
-		{
-			label: <Link href="/my/projects">Мои проекты</Link>,
-			key: 'projects',
-		},
-		{
-			label: 'Выйти',
-			key: 'logout',
-			danger: true,
-			onClick: () => signOut(),
-		},
-	]
+		return menu
+	}, [screens, session])
 
-	if (isOpenedInTelegram) {
-		userMenuItems = userMenuItems.slice(0, userMenuItems.length - 3)
-	}
+	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
+		const menu = [
+			{
+				label: <Link href="/profile">Профиль</Link>,
+				key: 'profile',
+			},
+			{
+				label: <Link href="/my/projects">Мои проекты</Link>,
+				key: 'projects',
+			},
+			{
+				style: { display: isOpenedInTelegram ? 'none' : 'block' },
+				label: 'Выйти',
+				key: 'logout',
+				danger: true,
+				onClick: () => signOut(),
+			},
+		]
+
+		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
+	}, [isOpenedInTelegram, screens])
 
 	return (
 		<>
@@ -113,8 +108,10 @@ export const ProtectedLayout = ({ children }: any) => {
 							<>
 								{screens.lg ? (
 									<>
-										<Menu style={{ flex: 1, justifyContent: 'flex-end' }} mode="horizontal" items={headerMenuItems} />
-										<Dropdown overlay={<Menu items={userMenuItems} />} trigger={['click']}>
+										{screens.lg && (
+											<Menu style={{ flex: 1, justifyContent: 'flex-end' }} mode="horizontal" items={inlineMenuItems} />
+										)}
+										<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
 											<Button type="link" size="large">
 												<Space>
 													{screens.sm && <div className="username">{session.user?.name}</div>}
@@ -154,6 +151,7 @@ export const ProtectedLayout = ({ children }: any) => {
 			{!screens.lg && (
 				<Drawer
 					className={styles.mobileMenuDrawer}
+					height={'100%'}
 					title={
 						<Space>
 							<Avatar
@@ -174,7 +172,7 @@ export const ProtectedLayout = ({ children }: any) => {
 						</Button>
 					}
 				>
-					<Menu items={[...headerMenuItems, ...userMenuItems]} onSelect={() => setOpenMobileMenu(false)} />
+					<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 				</Drawer>
 			)}
 		</>

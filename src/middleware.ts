@@ -12,14 +12,19 @@
 // export { default } from 'next-auth/middleware'
 
 import { withAuth } from 'next-auth/middleware'
-export default withAuth({
-	callbacks: {
-		authorized: ({ token }) => {
-			return token?.id ? true : false
-		},
+export default withAuth(
+	function middleware(req) {
+		console.log('middleware', req.nextauth.token)
 	},
-})
+	{
+		callbacks: {
+			authorized: ({ token }) => {
+				return token?.id ? true : false
+			},
+		},
+	}
+)
 
 export const config = {
-	matcher: ['/hub/:path*', '/profile', '/live/:path*'],
+	matcher: ['/hub/:path*', '/profile', '/my/:path*', '/live/:path*'],
 }

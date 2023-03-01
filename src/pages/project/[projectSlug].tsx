@@ -6,7 +6,7 @@ import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Button, Col, Descriptions, Grid, Row, Space } from 'antd'
 import { GetServerSidePropsContext } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -111,7 +111,7 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const { projectSlug }: any = context.params
-	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+	const session: any = await getServerSession(context.req, context.res, authOptions)
 
 	if (session && !session.user.hasRole('member')) {
 		return {

@@ -9,7 +9,7 @@ import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Button, Col, Row, Space, Spin } from 'antd'
 import { GetServerSidePropsContext } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -127,7 +127,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 MyProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+	const session: any = await getServerSession(context.req, context.res, authOptions)
 
 	if (session && !session.user.hasRole('member')) {
 		return {

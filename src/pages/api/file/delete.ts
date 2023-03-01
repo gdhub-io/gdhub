@@ -1,11 +1,11 @@
 import SanityService from '@services/sanity'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
-		const session: any = await unstable_getServerSession(req, res, authOptions)
+		const session: any = await getServerSession(req, res, authOptions)
 		const { fileUrl } = req.body
 
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')

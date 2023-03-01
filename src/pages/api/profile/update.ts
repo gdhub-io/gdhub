@@ -1,6 +1,6 @@
 import AirtableService from '@services/airtable'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
 type PaymentState = {
@@ -9,7 +9,7 @@ type PaymentState = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	let { id, data } = req.body
-	const session = await unstable_getServerSession(req, res, authOptions)
+	const session = await getServerSession(req, res, authOptions)
 
 	try {
 		if (req.method !== 'POST' || !session || !data) throw new Error('Forbidden request')

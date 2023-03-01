@@ -7,7 +7,7 @@ import { getProfile } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Space } from 'antd'
-import { unstable_getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 import Head from 'next/head'
 
 const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
@@ -30,7 +30,7 @@ const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
 ProfilePage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export const getServerSideProps = async (context: any) => {
-	const session: any = await unstable_getServerSession(context.req, context.res, authOptions)
+	const session: any = await getServerSession(context.req, context.res, authOptions)
 
 	if (!session || !session.user.email) {
 		return {
