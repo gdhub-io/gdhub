@@ -4,11 +4,16 @@ import '@styles/globals.less'
 import LoadingScreen from '@components/LoadingScreen'
 import { GTM_ID, pageview } from '@helpers/gtm'
 import { PublicLayout } from '@layouts/PublicLayout'
+// import moment from 'moment'
+import moment from 'moment-timezone'
 import { NextPage } from 'next'
 import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
+import 'moment/locale/ru'
+
+moment.locale('ru')
 
 export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactNode) => ReactNode

@@ -26,6 +26,7 @@
     "jsonwebtoken": "^8.5.1",
     "less-loader": "^11.0.0",
     "luxon": "^3.0.1",
+    "moment-timezone": "^0.5.41",
     "next": "^13.0.4",
     "next-auth": "^4.16.3",
     "next-csrf": "^0.2.1",

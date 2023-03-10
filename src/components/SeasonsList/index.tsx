@@ -6,6 +6,7 @@ import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import PreProductionStageContent from './stages/PreProductionStageContent'
+import ProductionStageContent from './stages/ProductionStageContent'
 import PrototypingStageContent from './stages/PrototypingStageContent'
 import RecruitingStageContent from './stages/RecruitingStageContent'
 import styles from './style.module.less'
@@ -48,6 +49,7 @@ const SeasonsList = () => {
 			Production: {
 				number: 5,
 				title: 'Этап разработки проекта',
+				content: <ProductionStageContent season={season} stage={stage} />,
 			},
 			Pitching: {
 				number: 6,
