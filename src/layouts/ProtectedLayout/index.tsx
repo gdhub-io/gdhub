@@ -46,6 +46,10 @@ export const ProtectedLayout = ({ children }: any) => {
 				key: '/hub',
 			},
 			{
+				label: <Link href="/projects">{screens.lg ? <Button type="text">Проекты</Button> : 'Проекты'}</Link>,
+				key: '/projects',
+			},
+			{
 				label: (
 					<Link href="/hub/docs">
 						{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
@@ -67,7 +71,7 @@ export const ProtectedLayout = ({ children }: any) => {
 					label: <Link href="/hub/lectures">{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}</Link>,
 					key: '/hub/lectures',
 				},
-				menu[1],
+				...menu.slice(1),
 			]
 		}
 
