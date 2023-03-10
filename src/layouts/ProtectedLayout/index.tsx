@@ -38,6 +38,20 @@ export const ProtectedLayout = ({ children }: any) => {
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
 
+	const publicMenuItems: any = useMemo(
+		() => [
+			{
+				label: <Link href="/projects">{screens.lg ? <Button type="text">Проекты</Button> : 'Проекты'}</Link>,
+				key: '/projects',
+			},
+			{
+				label: <Link href="/projects">{screens.lg ? <Button type="text">Вакансии</Button> : 'Вакансии'}</Link>,
+				key: '/vacancies',
+			},
+		],
+		[screens]
+	)
+
 	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = [
 			{
@@ -45,10 +59,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				label: <Link href="/hub">{screens.lg ? <Button type="primary">Главная</Button> : 'Главная'}</Link>,
 				key: '/hub',
 			},
-			{
-				label: <Link href="/projects">{screens.lg ? <Button type="text">Проекты</Button> : 'Проекты'}</Link>,
-				key: '/projects',
-			},
+			...publicMenuItems,
 			{
 				label: (
 					<Link href="/hub/docs">
@@ -108,28 +119,34 @@ export const ProtectedLayout = ({ children }: any) => {
 						<Link href="/hub" className="logo">
 							<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
 						</Link>
-						{!!session && (
+						{
 							<>
 								{screens.lg ? (
 									<>
 										{screens.lg && (
-											<Menu style={{ flex: 1, justifyContent: 'flex-end' }} mode="horizontal" items={inlineMenuItems} />
+											<Menu
+												style={{ flex: 1, justifyContent: 'flex-end' }}
+												mode="horizontal"
+												items={session ? inlineMenuItems : publicMenuItems}
+											/>
 										)}
-										<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
-											<Button type="link" size="large">
-												<Space>
-													{screens.sm && <div className="username">{session.user?.name}</div>}
-													<Avatar
-														src={
-															session.user?.image ? (
-																<Image src={session.user.image} width={32} height={32} alt="avatar" />
-															) : null
-														}
-														shape="square"
-													/>
-												</Space>
-											</Button>
-										</Dropdown>
+										{!!session && (
+											<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
+												<Button type="link" size="large">
+													<Space>
+														{screens.sm && <div className="username">{session?.user?.name}</div>}
+														<Avatar
+															src={
+																session?.user?.image ? (
+																	<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																) : null
+															}
+															shape="square"
+														/>
+													</Space>
+												</Button>
+											</Dropdown>
+										)}
 									</>
 								) : (
 									<div>
@@ -139,7 +156,7 @@ export const ProtectedLayout = ({ children }: any) => {
 									</div>
 								)}
 							</>
-						)}
+						}
 						{!session && (
 							<Link href="/">
 								<Button type="primary">Регистрация</Button>

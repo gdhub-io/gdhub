@@ -92,13 +92,23 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 						</Card>
 					</Col>
 					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
-						<Card>
+						<Card style={{ textAlign: 'center' }}>
 							<Statistic title="Проектов в работе" value={projectsCount} style={{ textAlign: 'center' }} />
+							<Link href="/projects">
+								<Button size="small" type="text">
+									Все проекты
+								</Button>
+							</Link>
 						</Card>
 					</Col>
 					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
-						<Card>
+						<Card style={{ textAlign: 'center' }}>
 							<Statistic title="Вакансий на проектах" value={vacanciesCount} style={{ textAlign: 'center' }} />
+							<Link href="/vacancies">
+								<Button size="small" type="text">
+									Все вакансии
+								</Button>
+							</Link>
 						</Card>
 					</Col>
 				</Row>

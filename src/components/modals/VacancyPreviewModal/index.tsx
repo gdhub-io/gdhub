@@ -9,7 +9,7 @@ import useSWR from 'swr'
 import styles from './style.module.less'
 import SpecialitySelectModal from '../SpecialitySelectModal'
 
-const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) => {
+const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const session: any = useSession()
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
@@ -49,7 +49,7 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 				url: '/api/vacancy/apply',
 				data: {
 					specialityId,
-					projectId: project.id,
+					projectId: vacancy.project.id,
 					vacancyId: vacancy.id,
 				},
 			})
@@ -118,8 +118,8 @@ const VacancyPreviewModal = ({ project, vacancyId, open, onOk, onCancel }: any) 
 							<h1>{vacancy.Name}</h1>
 
 							<Descriptions layout="horizontal" column={1} size="small">
-								<Descriptions.Item label="Проект">{project.Name}</Descriptions.Item>
-								<Descriptions.Item label="Сезон">{project['Season Name']}</Descriptions.Item>
+								<Descriptions.Item label="Проект">{vacancy.project.name}</Descriptions.Item>
+								<Descriptions.Item label="Сезон">{vacancy.project.seasonName}</Descriptions.Item>
 								<Descriptions.Item label="Вакансия акатуальна до">
 									{moment(vacancy['Finished At']).format('DD.MM.YYYY')}
 								</Descriptions.Item>

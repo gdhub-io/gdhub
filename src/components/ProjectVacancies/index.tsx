@@ -115,7 +115,6 @@ const ProjectVacancies = ({ project }: ProjectVacanciesArgs) => {
 					/>
 
 					<VacancyPreviewModal
-						project={project}
 						vacancyId={selectedVacancyId}
 						open={showVacancyPreviewModal}
 						onCancel={() => {
