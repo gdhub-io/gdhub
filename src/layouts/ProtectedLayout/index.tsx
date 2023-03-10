@@ -45,7 +45,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				key: '/projects',
 			},
 			{
-				label: <Link href="/projects">{screens.lg ? <Button type="text">Вакансии</Button> : 'Вакансии'}</Link>,
+				label: <Link href="/vacancies">{screens.lg ? <Button type="text">Вакансии</Button> : 'Вакансии'}</Link>,
 				key: '/vacancies',
 			},
 		],
