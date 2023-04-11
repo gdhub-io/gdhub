@@ -107,3 +107,26 @@ export const getDocumentationVideos = async () => {
 		return null
 	}
 }
+
+export const getWorkedProjects = async () => {
+	try {
+		const projects = await AirtableService('Project Ideas')
+			.select({
+				// fields: ['Name', 'Ideas Embed Link', 'Status'],
+				filterByFormula: `AND(Status = "Approved", FIND(Stage, "${[
+					'Recruiting',
+					'Prototyping',
+					'Production',
+					'Release',
+				].join(' ')}"))`,
+			})
+			.all()
+
+		return projects.map((p) => {
+			return { id: p.id, ...p.fields }
+		})
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}

@@ -89,7 +89,7 @@ const SeasonsList = () => {
 						}
 					>
 						{isActiveSeason(season) && (
-							<Collapse defaultActiveKey={[season.Stage]} onChange={() => {}} bordered={false}>
+							<Collapse activeKey={[season.Stage]} onChange={() => {}} bordered={false}>
 								{season['Season Stages']
 									.filter((s: any) => ['Planning', 'Done'].includes(s.Name) === false && s.Name == season.Stage)
 									.map((stage: any) => (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { useTelegram } from '@helpers/useTelegram'
-import AirtableService from '@services/airtable'
+import AirtableService, { getWorkedProjects } from '@services/airtable'
 import styles from '@styles/home.module.less'
 import { Button, Card, Col, Row, Space, Statistic } from 'antd'
 import { NextPage } from 'next'
@@ -131,9 +131,7 @@ export async function getServerSideProps(context: any) {
 
 	const users = await AirtableService('Accounts').select({ fields: [] }).all()
 	const specialities = await AirtableService('Specialities').select({ fields: [] }).all()
-	const projects = await AirtableService('Project Ideas')
-		.select({ fields: [], filterByFormula: `AND(Status = "Approved")` })
-		.all()
+	const projects = await getWorkedProjects()
 	const vacancies = await AirtableService('Project Vacancies')
 		.select({ fields: [], filterByFormula: `AND(Status = "Opened")` })
 		.all()

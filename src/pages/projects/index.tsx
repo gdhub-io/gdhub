@@ -1,5 +1,5 @@
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
-import AirtableService from '@services/airtable'
+import { getWorkedProjects } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row } from 'antd'
 import { GetServerSidePropsContext } from 'next'
@@ -78,16 +78,11 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 }
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const projects = await AirtableService('Project Ideas')
-		.select({
-			// fields: ['Name', 'Ideas Embed Link', 'Status'],
-			filterByFormula: `Status = "Approved"`,
-		})
-		.all()
+	const projects = await getWorkedProjects()
 
 	return {
 		props: {
-			projects: projects?.map((p: any) => ({ ...p.fields, id: p.id })),
+			projects,
 		},
 	}
 }

@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
-import { AirtableEmbed } from '@components/AirtableEmbed'
+import { ProjectIdeasList } from '@components/ProjectIdeasList'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
 import { fetcher } from '@helpers/fetcher'
-import { Alert, Button, Col, Grid, List, Row, Space, Typography } from 'antd'
+import { Alert, Button, Grid, List, Space, Tag, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
 import useSWR from 'swr'
 import styles from './style.module.less'
 
+const { Text } = Typography
+
 const PreProductionStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
 	const [mechanicsList, setMechanicsList] = useState<string[]>([])
 	const [visualSolutionsList, setVisualSolutionsList] = useState<string[]>([])
-	const [genresList, setGenresList] = useState<string[]>([])
 	const [showProjectGDDModal, setShowProjectGDDModal] = useState(false)
 	const [selectedProjectIdea, setSelectedProjectIdea] = useState<any>(null)
 
@@ -32,17 +33,14 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 
 		let mechanics: string[] = []
 		let visuals: string[] = []
-		let genres: string[] = []
 
 		projectIdeas.map((idea: any) => {
 			mechanics = [...mechanics, ...idea['Core Mechanics'].split('|')]
-			visuals = [...visuals, idea['Visual Style'] + ` (сеттинг: ${idea.Setting})`]
-			genres = [...genres, idea['Genre']]
+			visuals = [...visuals, idea['Visual Style'] + ` (сеттинг: ${idea.Setting}, жанр: ${idea.Genre})`]
 		})
 
 		setMechanicsList(mechanics)
 		setVisualSolutionsList(visuals)
-		setGenresList(genres)
 	}, [projectIdeas])
 
 	const isStageExpired = () => DateTime.fromISO(stage['Finished At']).diffNow().toMillis() <= 0
@@ -59,9 +57,6 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 
 	return (
 		<div className={styles.container}>
-			<h3>Список проектов</h3>
-			<AirtableEmbed embedLink="https://airtable.com/embed/shrOzWIGkyejkoDeR?backgroundColor=cyan&layout=card" />
-
 			<h3>Для авторов</h3>
 			<p>
 				На данном этапе авторы проектов будут прорабатывать все детали своих проектов: описание геймплея, core- и
@@ -146,7 +141,18 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 					формате Челенджа. Прокачать свои навыки, показать на что вы способны и как работаете. <br />
 					Благодаря первому этапу нам известны игровые механики, визуальные стили, платформы, сеттинги будущих игр,
 					которые с высокой долей вероятности необходимо будет реализовывать в будущем.
+					<br />
+					<Alert
+						type="success"
+						style={{ marginTop: 8, display: 'inline-block' }}
+						message={
+							<>
+								ТОП-3 активных участника с интересными работами получат по <strong>1 JAM</strong> ;)
+							</>
+						}
+					/>
 				</p>
+
 				<p>
 					Полезный материал:{' '}
 					<Link className="text-link" href="/hub/docs/about-art-challenge" target="_blank">
@@ -162,54 +168,36 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 					</Link>
 				</p>
 			</Space>
-			<Row wrap>
-				<Col span={12}>
-					{mechanicsList?.length > 0 && (
-						<>
-							<h4>Список игровых механик:</h4>
-							<p>
-								<ol>
-									{mechanicsList.map((mechanic: string, idx: number) => (
-										<li key={mechanic + idx}>{mechanic}</li>
-									))}
-								</ol>
-							</p>
-						</>
-					)}
-				</Col>
-				<Col span={12}>
-					{/* <Row>
-							<Col> */}
-					{visualSolutionsList?.length > 0 && (
-						<>
-							<h4>Список визуальных стилей:</h4>
-							<p>
-								<ol>
-									{visualSolutionsList.map((vislual: string, idx: number) => (
-										<li key={vislual + idx}>{vislual}</li>
-									))}
-								</ol>
-							</p>
-						</>
-					)}
-					{/* </Col>
-							<Col> */}
-					{genresList?.length > 0 && (
-						<>
-							<h4>Список жанров:</h4>
-							<p>
-								<ol>
-									{genresList.map((vislual: string, idx: number) => (
-										<li key={vislual + idx}>{vislual}</li>
-									))}
-								</ol>
-							</p>
-						</>
-					)}
-					{/* </Col>
-						</Row> */}
-				</Col>
-			</Row>
+
+			{mechanicsList?.length > 0 && (
+				<>
+					<h4>Список игровых механик:</h4>
+					<p style={{ lineHeight: '26px' }}>
+						{mechanicsList.map((mechanic: string, idx: number) => (
+							<Tag key={mechanic + idx}>{mechanic}</Tag>
+						))}
+					</p>
+				</>
+			)}
+
+			{visualSolutionsList?.length > 0 && (
+				<>
+					<h4>Список визуальных стилей:</h4>
+					<p>
+						<ol>
+							{visualSolutionsList.map((vislual: string, idx: number) => (
+								<li key={vislual + idx}>
+									<Text code>{vislual}</Text>
+								</li>
+							))}
+						</ol>
+					</p>
+				</>
+			)}
+
+			<h3>Список проектов</h3>
+			<ProjectIdeasList projectIdeas={projectIdeas} />
+
 			{isStageExpired() && (
 				<Alert type="success" message="На данный момент идет оценка проектов и питчей. Встретися на следующем этапе." />
 			)}

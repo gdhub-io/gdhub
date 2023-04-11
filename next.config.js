@@ -4,7 +4,7 @@ const withLess = require('next-with-less')
 
 const nextConfig = {
 	lessLoaderOptions: {},
-	reactStrictMode: false,
+	reactStrictMode: true,
 	output: 'standalone',
 	images: {
 		domains: ['lh3.googleusercontent.com', 'dl.airtable.com', 's3.us-west-2.amazonaws.com', 'cdn.sanity.io'],
