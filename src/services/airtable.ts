@@ -130,3 +130,67 @@ export const getWorkedProjects = async () => {
 		throw error
 	}
 }
+
+export const createProjectReport = async (data: any) => {
+	try {
+		const [newProjectReport] = await AirtableService('Project Reports').create({
+			...data,
+			Project: [data.Project],
+		})
+
+		return { id: newProjectReport.id, ...newProjectReport.fields }
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
+}
+
+export const updateProjectReport = async (reportId: string, data: any) => {
+	try {
+		const projectReport = await AirtableService('Project Reports').update(reportId, data)
+
+		return { id: projectReport.id, ...projectReport.fields }
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}
+
+export const deleteProjectReport = async (id: string) => {
+	try {
+		await AirtableService('Project Reports').destroy(id)
+
+		return true
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
+}
+
+export const getProjectReports = async ({ projectId }: any) => {
+	try {
+		const projectReports = await AirtableService('Project Reports')
+			.select({
+				filterByFormula: `Project = "${projectId}"`,
+			})
+			.all()
+
+		return projectReports?.map((r: any) => ({ id: r.id, ...r.fields }))
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		return null
+	}
+}
+
+export const getProjectReport = async (reportId: string) => {
+	try {
+		const report = await AirtableService('Project Reports').find(reportId)
+
+		if (!report) throw Error('Not found the report')
+
+		return { id: report.id, ...report.fields }
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import MyProjectCandidates from '@components/MyProjectCandidates'
+import MyProjectReports from '@components/MyProjectReports'
 import MyProjectTeam from '@components/MyProjectTeam'
 import MyProjectVacancies from '@components/MyProjectVacancies'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
@@ -26,7 +27,10 @@ const MyProjectPage: NextPageWithLayout = () => {
 		data: myProject,
 		mutate: fetchMyProject,
 		isValidating: isLoadingMyProject,
-	} = useSWR({ url: '/api/my/project', data: { projectId } }, fetcher, { refreshInterval: 60000 * 5 })
+	} = useSWR({ url: '/api/my/project', data: { projectId } }, fetcher, {
+		revalidateOnFocus: false,
+		refreshInterval: 60000 * 5,
+	})
 
 	const handleSaveProject = () => {
 		setShowProjectModal(false)
@@ -73,6 +77,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 							<MyProjectTeam project={myProject} shouldUpdate={projectUpdatedEvent} />
 							<MyProjectVacancies project={myProject} />
 							<MyProjectCandidates project={myProject} onUpdate={() => setProjectUpdatedEvent(!projectUpdatedEvent)} />
+							<MyProjectReports project={myProject} />
 						</>
 					)}
 
