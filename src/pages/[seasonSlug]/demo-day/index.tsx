@@ -141,12 +141,12 @@ const DemoDayPage: NextPageWithLayout = ({ projects }: any) => {
 							</path>
 						</g>
 						<linearGradient id="fade" gradientTransform="rotate(90)">
-							<stop offset="0" stop-color="#00000000" />
-							<stop offset="0.25" stop-color="#000" />
+							<stop offset="0" stopColor="#00000000" />
+							<stop offset="0.25" stopColor="#000" />
 						</linearGradient>
 						<linearGradient id="sky" gradientTransform="rotate(90)">
-							<stop offset="0.5" stop-color="#141417" />
-							<stop offset="1" stop-color="#40354a" />
+							<stop offset="0.5" stopColor="#141417" />
+							<stop offset="1" stopColor="#40354a" />
 						</linearGradient>
 
 						{/* STARS PATTERN */}

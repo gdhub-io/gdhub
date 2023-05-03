@@ -5,6 +5,7 @@ import { Card, Collapse, Grid, Space, Spin } from 'antd'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
+import PitchingStageContent from './stages/PitchingStageContent'
 import PreProductionStageContent from './stages/PreProductionStageContent'
 import ProductionStageContent from './stages/ProductionStageContent'
 import PrototypingStageContent from './stages/PrototypingStageContent'
@@ -54,6 +55,7 @@ const SeasonsList = () => {
 			Pitching: {
 				number: 6,
 				title: 'Питчи проектов',
+				content: <PitchingStageContent season={season} stage={stage} />,
 			},
 			Planning: {
 				title: 'Планируется',
@@ -72,7 +74,11 @@ const SeasonsList = () => {
 				{data?.seasons?.map((season: any, idx: number) => (
 					<Card
 						className={`season-container ${isPassiveSeason(season) ? 'not-active' : ''}`}
-						style={season.Stage == 'Searching' ? { borderColor: '#333', borderWidth: '2px' } : undefined}
+						style={
+							season.Stage == 'Searching' || season.Stage == 'Pitching'
+								? { borderColor: '#333', borderWidth: '2px' }
+								: undefined
+						}
 						key={`gamelab-season-${idx}`}
 						title={
 							<Space align="center">
