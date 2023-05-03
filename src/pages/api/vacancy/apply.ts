@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		await AirtableService('Project Members').create({
 			Member: [session.user.id],
-			Project: [projectId],
+			Project: Array.isArray(projectId) ? projectId : [projectId],
 			Vacancy: [vacancyId],
 			Speciality: [specialityId],
 			Status: 'Intent',
