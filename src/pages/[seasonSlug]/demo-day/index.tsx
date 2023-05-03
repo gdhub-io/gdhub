@@ -1,6 +1,7 @@
+import { DemoDayProjects } from '@components/DemoDayProjects'
 import { DemoTitle } from '@components/DemoTitle'
 import { DemoDayLayout } from '@layouts/DemoDayLayout'
-import { getWorkedProjects } from '@services/airtable'
+import { getPitchedProjects, getSeasonBySlug } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { Grid } from 'antd'
 import { GetServerSidePropsContext } from 'next'
@@ -21,12 +22,6 @@ const DemoDayPage: NextPageWithLayout = ({ projects }: any) => {
 				<meta property="og:url" content={router.asPath} />
 			</Head>
 			<div className={styles.container}>
-				<div className={styles.dateContainer}>
-					<div className={styles.date}>
-						<h1>10 мая</h1>
-					</div>
-				</div>
-				<DemoTitle />
 				<svg width={256} viewBox="0 0 512 512" fill="none" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
 					<use href="#cube" x="128" y="320" stroke-width="2" opacity="0.3">
 						<animate
@@ -257,13 +252,36 @@ const DemoDayPage: NextPageWithLayout = ({ projects }: any) => {
 						</path>
 					</defs>
 				</svg>
+				<div className={styles.dateContainer}>
+					<div className={styles.date}>
+						<h1>10 мая</h1>
+					</div>
+				</div>
+				<DemoTitle />
+				<DemoDayProjects projects={projects} />
 			</div>
 		</>
 	)
 }
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const projects = await getWorkedProjects()
+	const seasonSlug = context.params?.seasonSlug as string
+
+	if (!seasonSlug) {
+		return {
+			notFound: true,
+		}
+	}
+
+	const season = await getSeasonBySlug(seasonSlug)
+
+	if (!season) {
+		return {
+			notFound: true,
+		}
+	}
+
+	const projects = await getPitchedProjects(season.id)
 
 	return {
 		props: {

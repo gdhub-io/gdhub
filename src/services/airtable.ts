@@ -130,3 +130,38 @@ export const getWorkedProjects = async () => {
 		throw error
 	}
 }
+
+export const getPitchedProjects = async (seasonId: string) => {
+	try {
+		const projects = await AirtableService('Project Ideas')
+			.select({
+				// fields: ['Name', 'Ideas Embed Link', 'Status'],
+				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Approved", Stage = "Release")`,
+			})
+			.all()
+
+		return projects.map((p) => {
+			return { id: p.id, ...p.fields }
+		})
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}
+
+export const getSeasonBySlug = async (slug: string) => {
+	try {
+		const [season] = await AirtableService('Seasons')
+			.select({
+				// fields: ['Name', 'Ideas Embed Link', 'Status'],
+				filterByFormula: `Slug = "${slug}"`,
+				maxRecords: 1,
+			})
+			.all()
+
+		return { id: season.id, ...season.fields }
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}

@@ -7,7 +7,13 @@ const nextConfig = {
 	reactStrictMode: true,
 	output: 'standalone',
 	images: {
-		domains: ['lh3.googleusercontent.com', 'dl.airtable.com', 's3.us-west-2.amazonaws.com', 'cdn.sanity.io'],
+		domains: [
+			'images.unsplash.com',
+			'lh3.googleusercontent.com',
+			'dl.airtable.com',
+			's3.us-west-2.amazonaws.com',
+			'cdn.sanity.io',
+		],
 	},
 	webpack: (config) => {
 		config.module.rules.push({
