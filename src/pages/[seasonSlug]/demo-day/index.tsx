@@ -1,15 +1,16 @@
 import { DemoDayProjects } from '@components/DemoDayProjects'
 import { DemoTitle } from '@components/DemoTitle'
 import { DemoDayLayout } from '@layouts/DemoDayLayout'
-import { getPitchedProjects, getSeasonBySlug } from '@services/airtable'
+import { getActiveStage, getPitchedProjects, getSeasonBySlug } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { Grid } from 'antd'
+import moment from 'moment'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import styles from './style.module.less'
 
-const DemoDayPage: NextPageWithLayout = ({ projects }: any) => {
+const DemoDayPage: NextPageWithLayout = ({ projects, season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
 
@@ -254,10 +255,10 @@ const DemoDayPage: NextPageWithLayout = ({ projects }: any) => {
 				</svg>
 				<div className={styles.dateContainer}>
 					<div className={styles.date}>
-						<h1>10 мая</h1>
+						<h1>{moment(stage['Finished At']).format('DD MMM')}</h1>
 					</div>
 				</div>
-				<DemoTitle />
+				<DemoTitle season={season} />
 				<DemoDayProjects projects={projects} />
 			</div>
 		</>
@@ -281,11 +282,14 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 		}
 	}
 
+	const stage = await getActiveStage(season.id)
 	const projects = await getPitchedProjects(season.id)
 
 	return {
 		props: {
 			projects,
+			season,
+			stage,
 		},
 	}
 }

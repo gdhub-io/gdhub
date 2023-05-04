@@ -165,3 +165,19 @@ export const getSeasonBySlug = async (slug: string) => {
 		throw error
 	}
 }
+
+export const getActiveStage = async (seasonId: string) => {
+	try {
+		const [stage] = await AirtableService('Season Stages')
+			.select({
+				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Active")`,
+				maxRecords: 1,
+			})
+			.all()
+
+		return { id: stage.id, ...stage.fields }
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}
