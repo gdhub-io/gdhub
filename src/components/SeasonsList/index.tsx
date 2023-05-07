@@ -9,7 +9,7 @@ import PreProductionStageContent from './stages/PreProductionStageContent'
 import ProductionStageContent from './stages/ProductionStageContent'
 import PrototypingStageContent from './stages/PrototypingStageContent'
 import RecruitingStageContent from './stages/RecruitingStageContent'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()

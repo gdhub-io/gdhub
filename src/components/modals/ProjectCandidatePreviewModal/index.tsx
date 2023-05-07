@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { TbBrandTelegram } from 'react-icons/tb'
 import useSWR from 'swr'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()

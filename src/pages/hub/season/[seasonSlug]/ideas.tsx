@@ -5,8 +5,8 @@ import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Spin } from 'antd'
 import { GetServerSidePropsContext } from 'next'
-import { getServerSession } from 'next-auth'
 import Head from 'next/head'
+import { getServerSession } from 'next-auth'
 
 const SeasonProjectIdeasPage: NextPageWithLayout = ({ season }: any) => {
 	const ref = useRef<any>()

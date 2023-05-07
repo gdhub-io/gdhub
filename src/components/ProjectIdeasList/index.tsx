@@ -1,6 +1,6 @@
 import { Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import Image from 'next/image'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 export const ProjectIdeasList = ({ projectIdeas }: any) => {
 	const screens = Grid.useBreakpoint()

@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 
-const withLess = require('next-with-less')
+// const withLess = require('next-with-less')
 
 const nextConfig = {
-	lessLoaderOptions: {},
+	// lessLoaderOptions: {},
 	reactStrictMode: true,
 	output: 'standalone',
 	images: {
@@ -33,4 +33,4 @@ const nextConfig = {
 	],
 }
 
-module.exports = withLess(nextConfig)
+module.exports = nextConfig

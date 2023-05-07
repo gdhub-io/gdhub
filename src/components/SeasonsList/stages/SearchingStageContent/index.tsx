@@ -4,11 +4,11 @@ import { fetcher } from '@helpers/fetcher'
 import { hasRole } from '@helpers/user'
 import { Alert, Button, Grid, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import { DateTime } from 'luxon'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { HiOutlineTrash } from 'react-icons/hi'
 import useSWR from 'swr'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const SearchingStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()

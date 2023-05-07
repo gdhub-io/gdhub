@@ -6,10 +6,10 @@ import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Render } from '@9gustin/react-notion-render'
 import { Col, Menu, message, Row, Select, Spin, Grid } from 'antd'
 import { DateTime } from 'luxon'
-import { getServerSession } from 'next-auth'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import styles from './style.module.less'
+import { getServerSession } from 'next-auth'
+import styles from './style.module.scss'
 import '@9gustin/react-notion-render/dist/index.css'
 
 const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {

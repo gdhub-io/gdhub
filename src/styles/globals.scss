@@ -2,13 +2,13 @@
 // @tailwind components;
 // @tailwind utilities;
 
-@import url('../assets/fonts/montserrat/montserrat.css');
-@import 'antd/dist/antd.less'; // Import Ant Design styles by less entry
-@import 'variables.less'; // variables to override above
+// @import url('../assets/fonts/montserrat/montserrat.css');
+@import 'antd/dist/reset.css'; // Import Ant Design styles by less entry
+// @import 'variables.scss'; // variables to override above
 
 html,
 body {
-	font-family: 'Montserrat', sans-serif;
+	// font-family: 'Montserrat', sans-serif;
 	padding: 0;
 	margin: 0;
 	scroll-behavior: smooth;

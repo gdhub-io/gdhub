@@ -3,7 +3,7 @@ import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
 import { Grid } from 'antd'
 import Head from 'next/head'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	const screens = Grid.useBreakpoint()

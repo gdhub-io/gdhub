@@ -7,14 +7,14 @@ import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Button, Col, Descriptions, Grid, Row, Space } from 'antd'
 import { GetServerSidePropsContext } from 'next'
-import { getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
 import { TbBrandTelegram } from 'react-icons/tb'
 import YouTube from 'react-youtube'
 import { Options } from 'youtube-player/dist/types'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 	const screens = Grid.useBreakpoint()
@@ -49,8 +49,8 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 				{!!project['Cover Image'] && <meta property="og:image" content={project['Cover Image']} />}
 			</Head>
 			<div className={styles.container}>
-				<Row>
-					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }}>
+				<Row gutter={[32, 16]}>
+					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
 						<h1>{project.Name}</h1>
 						<Space className="project-author" align="center">
 							<span>Автор</span>
@@ -62,7 +62,7 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 						</div>
 						{!screens.md && generalData}
 					</Col>
-					<Col xs={{ span: 24, order: 0 }} md={{ span: 11, offset: 1, order: 1 }}>
+					<Col xs={{ span: 24, order: 0 }} md={{ span: 12, order: 1 }} lg={{ span: 8, order: 1 }}>
 						{!showPitchVideo && (
 							<>
 								{!!project['Cover Image'] && (

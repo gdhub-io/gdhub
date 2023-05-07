@@ -1,18 +1,20 @@
-import { useState } from 'react'
-import VacancyPreviewModal from '@components/modals/VacancyPreviewModal'
+import { useMemo } from 'react'
 import { fetcher } from '@helpers/fetcher'
-import { Button, Space, Table, Tag, Timeline } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
+import { Grid, Space, Timeline, Typography } from 'antd'
 import moment from 'moment'
+import ReactMarkdown from 'react-markdown'
+import YouTube from 'react-youtube'
 import useSWR from 'swr'
+import styles from './style.module.scss'
+
+const { Text } = Typography
 
 interface ProjectReportsArgs {
 	project: any
 }
 
 const ProjectReports = ({ project }: ProjectReportsArgs) => {
-	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
-	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
+	const screen = Grid.useBreakpoint()
 	const {
 		data: projectReports,
 		mutate: fetchMyProjectReports,
@@ -29,32 +31,57 @@ const ProjectReports = ({ project }: ProjectReportsArgs) => {
 		}
 	)
 
-	const items = projectReports?.data.map((report: any) => {
-		return {
-			children: '123',
+	const items = useMemo(() => {
+		let reports: any[] = projectReports?.data.map((report: any) => {
+			return {
+				label: moment(report.Date).format('D MMM YYYY'),
+				children: (
+					<div className={styles.reportItem}>
+						<Text>
+							<ReactMarkdown>{report.Content}</ReactMarkdown>
+						</Text>
+						{!!report['Youtube Video ID'] && (
+							<YouTube className={styles.reportVideo} videoId={report['Youtube Video ID']} />
+						)}
+					</div>
+				),
+			}
+		})
+
+		let reportsWithPeriods = []
+		for (let index = 0; index < reports?.length; index++) {
+			const currentReport = projectReports.data[index]
+			const nextReport = projectReports.data[index + 1]
+			const currentDate = index > 0 ? moment(currentReport.Date).startOf('day') : moment().startOf('day')
+			const dateAfter = !!nextReport ? moment(nextReport.Date).startOf('day') : moment(project.Created).startOf('day')
+			const period = {
+				dot: <span className={styles.periodDot}>{`${currentDate.diff(dateAfter, 'days')} дней`}</span>,
+				children: <div style={{ height: 42 }} />,
+			}
+
+			reportsWithPeriods.push(reports[index])
+			reportsWithPeriods.push(period)
 		}
-	})
+
+		reports = reportsWithPeriods
+		reports.push({
+			label: moment(project.Created).format('D MMM YYYY'),
+			children: 'Старт проекта',
+		})
+
+		return reports
+	}, [projectReports])
 
 	return (
-		<>
+		<div className={styles.component}>
 			<Space direction="vertical" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>Журнал разработки</h3>
+				<h3>Журнал разработки</h3>
 			</Space>
 
-			{projectReports?.data.length > 0 ? (
-				<div>
-					<Timeline mode="left">
-						{projectReports?.data.map((report: any) => (
-							<Timeline.Item label={moment(report.Date).format('D MMM YYYY')} key={report.ID}>
-								{report.Content}
-							</Timeline.Item>
-						))}
-					</Timeline>
-				</div>
-			) : (
-				<p>Проект стартовал {moment(project.Created).format('DD.MM.YYYY')}</p>
-			)}
-		</>
+			<div className={styles.reportsContainer}>
+				<Timeline mode="left" items={items} style={{ margin: '16px 0' }} />
+			</div>
+		</div>
 	)
 }
 

@@ -6,7 +6,7 @@ import { Alert, Button, Grid, List, Space, Tag, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
 import useSWR from 'swr'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const { Text } = Typography
 
