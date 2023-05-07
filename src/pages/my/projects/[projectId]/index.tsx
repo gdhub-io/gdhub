@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import MyProjectCandidates from '@components/MyProjectCandidates'
+import MyProjectReports from '@components/MyProjectReports'
 import MyProjectTeam from '@components/MyProjectTeam'
 import MyProjectVacancies from '@components/MyProjectVacancies'
 import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
@@ -9,10 +10,10 @@ import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Button, Col, Row, Space, Spin } from 'antd'
 import { GetServerSidePropsContext } from 'next'
-import { getServerSession } from 'next-auth'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { getServerSession } from 'next-auth'
 import { HiExternalLink } from 'react-icons/hi'
 import { TbSettings } from 'react-icons/tb'
 import useSWR from 'swr'
@@ -26,7 +27,10 @@ const MyProjectPage: NextPageWithLayout = () => {
 		data: myProject,
 		mutate: fetchMyProject,
 		isValidating: isLoadingMyProject,
-	} = useSWR({ url: '/api/my/project', data: { projectId } }, fetcher, { refreshInterval: 60000 * 5 })
+	} = useSWR({ url: '/api/my/project', data: { projectId } }, fetcher, {
+		revalidateOnFocus: false,
+		refreshInterval: 60000 * 5,
+	})
 
 	const handleSaveProject = () => {
 		setShowProjectModal(false)
@@ -73,6 +77,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 							<MyProjectTeam project={myProject} shouldUpdate={projectUpdatedEvent} />
 							<MyProjectVacancies project={myProject} />
 							<MyProjectCandidates project={myProject} onUpdate={() => setProjectUpdatedEvent(!projectUpdatedEvent)} />
+							<MyProjectReports project={myProject} />
 						</>
 					)}
 

@@ -6,7 +6,7 @@ import { Alert, Button, Grid, List, Space, Tag, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
 import useSWR from 'swr'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const { Text } = Typography
 
@@ -199,7 +199,11 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 			<ProjectIdeasList projectIdeas={projectIdeas} />
 
 			{isStageExpired() && (
-				<Alert type="success" message="На данный момент идет оценка проектов и питчей. Встретися на следующем этапе." />
+				<Alert
+					style={{ marginTop: 16 }}
+					type="success"
+					message="На данный момент идет оценка проектов и питчей. Встретимся на следующем этапе."
+				/>
 			)}
 
 			<ProjectIdeaModal

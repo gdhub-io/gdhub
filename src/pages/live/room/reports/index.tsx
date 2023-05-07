@@ -9,7 +9,7 @@ import { Button, Form, Input, Space, message } from 'antd'
 import { useSession } from 'next-auth/react'
 import useSWRMutation from 'swr/mutation'
 import { v4 as uuidv4 } from 'uuid'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const dailyCallOptions: DailyCallOptions = {
 	showLeaveButton: true,
@@ -26,6 +26,7 @@ const dailyCallOptions: DailyCallOptions = {
 
 const LiveReportsPage = () => {
 	const { data: session } = useSession()
+	const uuid = uuidv4()
 	const callRef = useRef(null)
 	const [form] = Form.useForm()
 	const [callFrame, setCallFrame] = useState<DailyCall>()
@@ -37,27 +38,26 @@ const LiveReportsPage = () => {
 	const { trigger: getUserToken } = useSWRMutation('/api/live/get-token', fetherForMutation)
 
 	useEffect(() => {
-		if (session && !callFrame) createAndJoinCall()
-	}, [callFrame, session])
+		if (session) createAndJoinCall()
+	}, [session])
 
 	const createAndJoinCall = async () => {
 		try {
 			if (!callRef?.current) return
-
-			let newCallFrame: DailyCall
-
-			if (!callFrame) {
-				const { token } = await getUserToken({ roomName: 'reports' })
-
-				newCallFrame = DailyIframe.createFrame(callRef?.current, {
-					...dailyCallOptions,
-					token: token,
-				})
-
-				setCallFrame(newCallFrame)
-			} else {
-				newCallFrame = callFrame
+			if (callFrame) {
+				await callFrame.destroy()
 			}
+
+			console.log('createAndJoinCall', callRef?.current, callFrame)
+
+			const { token } = await getUserToken({ roomName: 'reports' })
+
+			let newCallFrame: DailyCall = DailyIframe.createFrame(callRef?.current, {
+				...dailyCallOptions,
+				token: token,
+			})
+
+			setCallFrame(newCallFrame)
 
 			newCallFrame.on('joined-meeting', joinedMeeting)
 			newCallFrame.on('left-meeting', () => leaveCall(newCallFrame))
@@ -69,8 +69,8 @@ const LiveReportsPage = () => {
 		}
 	}
 
-	const leaveCall = (_callFrame: DailyCall) => {
-		_callFrame.destroy()
+	const leaveCall = async (_callFrame: DailyCall) => {
+		await _callFrame.destroy()
 		setCallFrame(undefined)
 		setMeetingStarted(false)
 	}
@@ -80,12 +80,11 @@ const LiveReportsPage = () => {
 	}
 
 	const startLiveStream = async () => {
-		const uuid = uuidv4()
 		const formValidated = await form.validateFields()
 
 		if (!formValidated || !callFrame) return
 
-		callFrame?.startLiveStreaming({
+		callFrame.startLiveStreaming({
 			instanceId: uuid,
 			rtmpUrl: [`${rtmpUrl}/${streamKey}`],
 			width: 1920,

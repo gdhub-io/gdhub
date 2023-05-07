@@ -6,7 +6,7 @@ import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
 import moment from 'moment'
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 import SpecialitySelectModal from '../SpecialitySelectModal'
 
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {

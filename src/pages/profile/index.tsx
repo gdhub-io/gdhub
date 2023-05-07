@@ -7,8 +7,8 @@ import { getProfile } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { Space } from 'antd'
-import { getServerSession } from 'next-auth'
 import Head from 'next/head'
+import { getServerSession } from 'next-auth'
 
 const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
 	return (

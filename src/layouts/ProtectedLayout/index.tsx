@@ -3,11 +3,11 @@ import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { useTelegram } from '@helpers/useTelegram'
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
-import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { signOut, useSession } from 'next-auth/react'
 import { TbBrandTelegram } from 'react-icons/tb'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
 
