@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown'
 import YouTube from 'react-youtube'
 import useSWR from 'swr'
 import styles from './style.module.scss'
+import dayjs from 'dayjs'
 
 const { Text } = Typography
 
@@ -52,12 +53,14 @@ const ProjectReports = ({ project }: ProjectReportsArgs) => {
 		for (let index = 0; index < reports?.length; index++) {
 			const currentReport = projectReports.data[index]
 			const nextReport = projectReports.data[index + 1]
-			const currentDate = index > 0 ? moment(currentReport.Date).startOf('day') : moment().startOf('day')
-			const dateAfter = !!nextReport ? moment(nextReport.Date).startOf('day') : moment(project.Created).startOf('day')
+			const currentDate = dayjs(currentReport.Date).startOf('day')
+			const dateAfter = !!nextReport ? dayjs(nextReport.Date).startOf('day') : dayjs(project.Created).startOf('day')
 			const period = {
 				dot: <span className={styles.periodDot}>{`${currentDate.diff(dateAfter, 'days')} дней`}</span>,
 				children: <div style={{ height: 42 }} />,
 			}
+
+			console.log('diff', currentDate.toString(), dateAfter.toString())
 
 			reportsWithPeriods.push(reports[index])
 			reportsWithPeriods.push(period)
@@ -65,7 +68,7 @@ const ProjectReports = ({ project }: ProjectReportsArgs) => {
 
 		reports = reportsWithPeriods
 		reports.push({
-			label: moment(project.Created).format('D MMM YYYY'),
+			label: dayjs(project.Created).format('D MMM YYYY'),
 			children: 'Старт проекта',
 		})
 
