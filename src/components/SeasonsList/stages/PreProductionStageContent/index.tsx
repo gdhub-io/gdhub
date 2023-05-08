@@ -174,7 +174,9 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 					<h4>Список игровых механик:</h4>
 					<p style={{ lineHeight: '26px' }}>
 						{mechanicsList.map((mechanic: string, idx: number) => (
-							<Tag key={mechanic + idx}>{mechanic}</Tag>
+							<Text code key={mechanic + idx}>
+								{mechanic}
+							</Text>
 						))}
 					</p>
 				</>
