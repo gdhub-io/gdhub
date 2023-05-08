@@ -1,12 +1,11 @@
 import { useMemo } from 'react'
 import { fetcher } from '@helpers/fetcher'
-import { Grid, Space, Timeline, Typography } from 'antd'
-import moment from 'moment'
+import { Space, Timeline, Typography } from 'antd'
+import dayjs from 'dayjs'
 import ReactMarkdown from 'react-markdown'
 import YouTube from 'react-youtube'
 import useSWR from 'swr'
 import styles from './style.module.scss'
-import dayjs from 'dayjs'
 
 const { Text } = Typography
 
@@ -15,12 +14,7 @@ interface ProjectReportsArgs {
 }
 
 const ProjectReports = ({ project }: ProjectReportsArgs) => {
-	const screen = Grid.useBreakpoint()
-	const {
-		data: projectReports,
-		mutate: fetchMyProjectReports,
-		isValidating: isLoadingMyProjectReports,
-	} = useSWR(
+	const { data: projectReports } = useSWR(
 		{
 			url: '/api/project-report/list',
 			data: { projectId: project?.id },
@@ -35,7 +29,7 @@ const ProjectReports = ({ project }: ProjectReportsArgs) => {
 	const items = useMemo(() => {
 		let reports: any[] = projectReports?.data.map((report: any) => {
 			return {
-				label: moment(report.Date).format('D MMM YYYY'),
+				label: dayjs(report.Date).format('D MMM YYYY'),
 				children: (
 					<div className={styles.reportItem}>
 						<Text>
