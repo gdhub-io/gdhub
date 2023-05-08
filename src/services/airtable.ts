@@ -1,5 +1,5 @@
 import Airtable from 'airtable'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 
 const AirtableService = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
 	process.env.AIRTABLE_BASE_ID as string
@@ -22,7 +22,7 @@ export const findOrCreateMember = async ({ email, name, image }: any) => {
 				'Image Link': image,
 				Roles: ['Guest'],
 				Active: true,
-				'Created At': DateTime.now().toISO(),
+				'Created At': dayjs().toISOString(),
 			})
 		}
 
