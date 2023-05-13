@@ -1,2 +1,35 @@
-.container {
+.seasonContainer {
+  &.seasonActive {
+
+  }
+
+  &:hover,
+  &:focus {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+  }
+
+  :global {
+    .divider {
+      display: block;
+      stroke: #d6d6d6;
+      width: 24px;
+      height: auto;
+    }
+
+    .ant-card-body {
+      padding: 0;
+
+      .ant-collapse {
+        background-color: #ffffff;
+      }
+    }
+  }
+
+}
+
+@media (max-width: 320px) {
+  .seasonContainer {
+    margin-top: 0;
+  }
 }
