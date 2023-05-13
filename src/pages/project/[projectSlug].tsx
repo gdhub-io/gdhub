@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ProjectReports from '@components/ProjectReports'
 import ProjectVacancies from '@components/ProjectVacancies'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
@@ -103,6 +104,10 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 
 				<div className="project-vacancies">
 					<ProjectVacancies project={project} />
+				</div>
+
+				<div className="project-reports">
+					<ProjectReports project={project} />
 				</div>
 			</div>
 		</>
