@@ -3,14 +3,14 @@ import { DemoTitle } from '@components/DemoTitle'
 import { DemoDayLayout } from '@layouts/DemoDayLayout'
 import { getActiveStage, getPitchedProjects, getSeasonBySlug } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
-import { Button, Col, Grid, Row, Space, Typography } from 'antd'
+import { Button, Col, Row, Space, Typography } from 'antd'
 import moment from 'moment'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { TbBrandTelegram } from 'react-icons/tb'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const { Title, Text } = Typography
 

@@ -1,6 +1,6 @@
-import { DailyStreamingLayoutConfig } from '@daily-co/daily-js'
+import { DailyLiveStreamingLayoutConfig } from '@daily-co/daily-js'
 
-export const pipLayout: DailyStreamingLayoutConfig = {
+export const pipLayout: DailyLiveStreamingLayoutConfig = {
 	composition_id: 'daily:baseline',
 	preset: 'custom',
 	session_assets: {

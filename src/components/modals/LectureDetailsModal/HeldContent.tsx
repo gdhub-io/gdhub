@@ -3,7 +3,7 @@ import { Alert, Avatar, Card } from 'antd'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 import YouTube from 'react-youtube'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 export const HeldContent = ({ lecture, userIsRegistered }: any) => {
 	const router = useRouter()

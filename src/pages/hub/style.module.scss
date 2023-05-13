@@ -1,5 +1,3 @@
-@import 'antd/lib/style/themes/default.less';
-
 .container {
 	margin-top: 40px;
 
@@ -29,7 +27,7 @@
 	}
 }
 
-@media (max-width: @screen-xs-min) {
+@media (max-width: 320px) {
 	.container {
 		margin-top: 0;
 	}

@@ -1,4 +1,4 @@
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 export const DemoTitle = ({ season }: any) => {
 	return (

@@ -1,7 +1,7 @@
 import { Button, Spin } from 'antd'
 import moment from 'moment-timezone'
 import Link from 'next/link'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const PitchingStageContent = ({ season, stage }: any) => {
 	return (

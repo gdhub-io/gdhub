@@ -1,16 +1,18 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import ErrorBoundary from '@components/ErrorBoundary'
-import '@styles/globals.less'
+import '@styles/globals.scss'
 import LoadingScreen from '@components/LoadingScreen'
 import { GTM_ID, pageview } from '@helpers/gtm'
 import { PublicLayout } from '@layouts/PublicLayout'
 // import moment from 'moment'
+import { themeConfig } from 'config/theme'
+import { ConfigProvider } from 'antd'
 import moment from 'moment-timezone'
 import { NextPage } from 'next'
-import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
+import { SessionProvider } from 'next-auth/react'
 import 'moment/locale/ru'
 
 moment.locale('ru')
@@ -81,12 +83,17 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 				}}
 			/>
 			<ErrorBoundary>
-				<SessionProvider session={session}>
-					<div className="app-container" style={{ opacity: loading ? 0 : 1 }}>
-						{getLayout(<Component {...pageProps} />)}
-					</div>
-				</SessionProvider>
-				<LoadingScreen visible={loading} />
+				<ConfigProvider theme={themeConfig}>
+					<SessionProvider session={session}>
+						<div
+							className="app-container"
+							style={{ fontFamily: themeConfig.token?.fontFamily, opacity: loading ? 0 : 1 }}
+						>
+							{getLayout(<Component {...pageProps} />)}
+						</div>
+					</SessionProvider>
+					<LoadingScreen visible={loading} />
+				</ConfigProvider>
 			</ErrorBoundary>
 		</>
 	)

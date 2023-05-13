@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const LoadingScreen = ({ visible }: any) => {
 	const [enabled, setEnabled] = useState(true)

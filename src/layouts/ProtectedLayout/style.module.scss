@@ -1,5 +1,7 @@
+@import '../../styles/variables.scss';
+
 .container {
-	max-width: var(--wrapper-width);
+	max-width: $wrapper-width;
 
 	:global {
 		.logo {
@@ -34,9 +36,9 @@
 	}
 }
 
-@import './styles/xs.less'; // screen < 576px
-@import './styles/sm.less'; // screen ≥ 576px
-@import './styles/md.less'; // screen ≥ 768px
-@import './styles/lg.less'; // screen ≥ 992px
-@import './styles/xl.less'; // screen ≥ 1200px
-@import './styles/xxl.less'; // screen ≥ 1600px
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

@@ -7,7 +7,7 @@ import CheckableTag from 'antd/lib/tag/CheckableTag'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from './style.module.less'
+import styles from './style.module.scss'
 
 const MaterialsPage: NextPageWithLayout = ({ videos, tags }: any) => {
 	const [selectedTags, setSelectedTags] = useState<string[]>([tags[0]])

@@ -1,5 +1,5 @@
 import Airtable from 'airtable'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 
 const AirtableService = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
 	process.env.AIRTABLE_BASE_ID as string
@@ -22,7 +22,7 @@ export const findOrCreateMember = async ({ email, name, image }: any) => {
 				'Image Link': image,
 				Roles: ['Guest'],
 				Active: true,
-				'Created At': DateTime.now().toISO(),
+				'Created At': dayjs().toISOString(),
 			})
 		}
 
@@ -131,6 +131,41 @@ export const getWorkedProjects = async () => {
 	}
 }
 
+export const getPitchedProjects = async (seasonId: string) => {
+	try {
+		const projects = await AirtableService('Project Ideas')
+			.select({
+				// fields: ['Name', 'Ideas Embed Link', 'Status'],
+				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Approved", Stage = "Release")`,
+			})
+			.all()
+
+		return projects.map((p) => {
+			return { id: p.id, ...p.fields }
+		})
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}
+
+export const getSeasonBySlug = async (slug: string) => {
+	try {
+		const [season] = await AirtableService('Seasons')
+			.select({
+				// fields: ['Name', 'Ideas Embed Link', 'Status'],
+				filterByFormula: `Slug = "${slug}"`,
+				maxRecords: 1,
+			})
+			.all()
+
+		return { id: season.id, ...season.fields }
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}
+
 export const createProjectReport = async (data: any) => {
 	try {
 		const [newProjectReport] = await AirtableService('Project Reports').create({
@@ -156,18 +191,16 @@ export const updateProjectReport = async (reportId: string, data: any) => {
 	}
 }
 
-export const getPitchedProjects = async (seasonId: string) => {
+export const getActiveStage = async (seasonId: string) => {
 	try {
-		const projects = await AirtableService('Project Ideas')
+		const [stage] = await AirtableService('Season Stages')
 			.select({
-				// fields: ['Name', 'Ideas Embed Link', 'Status'],
-				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Approved", Stage = "Release")`,
+				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Active")`,
+				maxRecords: 1,
 			})
 			.all()
 
-		return projects.map((p) => {
-			return { id: p.id, ...p.fields }
-		})
+		return { id: stage.id, ...stage.fields }
 	} catch (error: any) {
 		console.error('[AIRTABLE ERROR]', error)
 		throw error
@@ -207,39 +240,6 @@ export const getProjectReport = async (reportId: string) => {
 		if (!report) throw Error('Not found the report')
 
 		return { id: report.id, ...report.fields }
-	} catch (error: any) {
-		console.error('[AIRTABLE ERROR]', error)
-		throw error
-	}
-}
-
-export const getSeasonBySlug = async (slug: string) => {
-	try {
-		const [season] = await AirtableService('Seasons')
-			.select({
-				// fields: ['Name', 'Ideas Embed Link', 'Status'],
-				filterByFormula: `Slug = "${slug}"`,
-				maxRecords: 1,
-			})
-			.all()
-
-		return { id: season.id, ...season.fields }
-	} catch (error: any) {
-		console.error('[AIRTABLE ERROR]', error)
-		throw error
-	}
-}
-
-export const getActiveStage = async (seasonId: string) => {
-	try {
-		const [stage] = await AirtableService('Season Stages')
-			.select({
-				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Active")`,
-				maxRecords: 1,
-			})
-			.all()
-
-		return { id: stage.id, ...stage.fields }
 	} catch (error: any) {
 		console.error('[AIRTABLE ERROR]', error)
 		throw error
