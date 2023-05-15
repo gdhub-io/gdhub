@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ProjectIdeaModal from '@components/SeasonsList/modals/ProjectIdeaModal'
+import ProjectIdeaModal from '@components/modals/ProjectIdeaModal'
 import { fetcher } from '@helpers/fetcher'
 import { hasRole } from '@helpers/user'
 import { Alert, Button, Grid, List, message, Popconfirm, Space, Spin, Typography } from 'antd'

@@ -1,25 +1,43 @@
+import { useState } from 'react'
+import ProjectIdeaModal from '@components/modals/ProjectIdeaModal'
 import { fetcher } from '@helpers/fetcher'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
-import { List } from 'antd'
+import { Button, List, Row } from 'antd'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { TbPlus } from 'react-icons/tb'
 import useSWR from 'swr'
 
 const MyProjectsPage: NextPageWithLayout = () => {
+	const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
 	const {
 		data: myProjects,
 		mutate: fetchMyProjects,
 		isValidating: isLoadingMyProjects,
 	} = useSWR({ url: '/api/my/projects' }, fetcher, { revalidateOnFocus: false })
 
+	const handleNewProject = () => {
+		setShowProjectIdeaModal(true)
+	}
+
+	const handleSaveProjectIdea = async () => {
+		setShowProjectIdeaModal(false)
+		await fetchMyProjects()
+	}
+
 	return (
 		<>
 			<Head>
 				<title>Мои проекты</title>
 			</Head>
-			<h1>Мои проекты</h1>
+			<Row align="stretch" justify="space-between">
+				<h1>Мои проекты</h1>
+				<Button type="primary" icon={<TbPlus size={16} />} onClick={handleNewProject}>
+					Создать новый
+				</Button>
+			</Row>
 
 			{myProjects?.data?.length > 0 ? (
 				<List
@@ -37,6 +55,13 @@ const MyProjectsPage: NextPageWithLayout = () => {
 			) : (
 				<p>У вас нет проектов</p>
 			)}
+
+			<ProjectIdeaModal
+				seasonId="indie"
+				open={showProjectIdeaModal}
+				onOk={handleSaveProjectIdea}
+				onCancel={() => setShowProjectIdeaModal(false)}
+			/>
 		</>
 	)
 }

@@ -14,7 +14,7 @@ body {
 	scroll-behavior: smooth;
 }
 
-p > a {
+p>a {
 	text-decoration: underline;
 
 	&:hover {
@@ -79,4 +79,19 @@ a.text-link {
 
 .ant-descriptions-item {
 	padding-bottom: 4px !important;
+}
+
+.ant-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	&>span {
+		line-height: 16px;
+	}
+
+	>svg {
+		position: unset;
+		margin-right: 4px;
+	}
 }
