@@ -1,13 +1,15 @@
 import DividerIcon from '@assets/images/icons/divider.svg'
 import { fetcher } from '@helpers/fetcher'
-import { Card, Descriptions, Space, Spin, Tag, Typography } from 'antd'
+import { Card, Col, Descriptions, Grid, Row, Space, Spin, Tag, Typography } from 'antd'
 import Link from 'next/link'
+import { SlArrowRight } from 'react-icons/sl'
 import useSWR from 'swr'
 import styles from './style.module.scss'
 
 const { Title } = Typography
 
 const SeasonsList = () => {
+	const screens = Grid.useBreakpoint()
 	const { data } = useSWR({ url: '/api/seasons' }, fetcher, { revalidateOnFocus: false })
 
 	const isCompletedSeason = (season: any) => {
@@ -55,6 +57,9 @@ const SeasonsList = () => {
 		return details[stageName]
 	}
 
+	const actionTag = (season: any) =>
+		!isCompletedSeason(season) ? <Tag color="success">Действующий сезон</Tag> : <Tag color="gray">Завершен</Tag>
+
 	return (
 		<>
 			<Title level={3}>Сезоны Gamelab</Title>
@@ -70,26 +75,21 @@ const SeasonsList = () => {
 										: undefined
 								}
 								title={
-									<Space align="center">
+									<Space align="start" direction={screens.md ? 'horizontal' : 'vertical'} size={0}>
 										<div className="title">{season.Name}</div>
-
 										{!isCompletedSeason(season) && (
 											<>
-												<DividerIcon className="divider" />
+												{screens.md && <DividerIcon className="divider" />}
 												<small>Этап {stagesDetails(season.Stage)?.number}-ый из 6</small>
-												<DividerIcon className="divider" />
+												{screens.md && <DividerIcon className="divider" />}
 												<small>{stagesDetails(season.Stage)?.title}</small>
 											</>
 										)}
+
+										{!screens.md && actionTag(season)}
 									</Space>
 								}
-								extra={
-									!isCompletedSeason(season) ? (
-										<Tag color="success">Действующий сезон</Tag>
-									) : (
-										<Tag color="gray">Завершен</Tag>
-									)
-								}
+								extra={screens.md && actionTag(season)}
 							>
 								<Descriptions bordered column={1} size="small">
 									<Descriptions.Item label="Участников">{season.membersCount}</Descriptions.Item>
