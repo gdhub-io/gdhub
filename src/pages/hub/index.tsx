@@ -1,6 +1,5 @@
 // import { useEffect } from 'react'
 import SeasonsList from '@components/SeasonsList'
-import { SubscriptionsList } from '@components/Subscriptions'
 import { hasRole } from '@helpers/user'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
