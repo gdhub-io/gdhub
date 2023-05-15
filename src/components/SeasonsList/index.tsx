@@ -1,8 +1,7 @@
 import DividerIcon from '@assets/images/icons/divider.svg'
 import { fetcher } from '@helpers/fetcher'
-import { Card, Col, Descriptions, Grid, Row, Space, Spin, Tag, Typography } from 'antd'
+import { Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
 import Link from 'next/link'
-import { SlArrowRight } from 'react-icons/sl'
 import useSWR from 'swr'
 import styles from './style.module.scss'
 

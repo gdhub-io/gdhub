@@ -4,9 +4,9 @@ import { hasRole } from '@helpers/user'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
 import { Button, Space } from 'antd'
-import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const HubPage: NextPageWithLayout = () => {
