@@ -1,21 +1,20 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 // import ProjectIdeaModal from '@components/modals/ProjectIdeaModal'
 import { fetcher } from '@helpers/fetcher'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
 import { List, Row } from 'antd'
 import Head from 'next/head'
-import Image from 'next/image'
 import Link from 'next/link'
 // import { TbPlus } from 'react-icons/tb'
 import useSWR from 'swr'
 
 const MyProjectsPage: NextPageWithLayout = () => {
-	const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
+	// const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
 	const {
 		data: myProjects,
-		mutate: fetchMyProjects,
-		isValidating: isLoadingMyProjects,
+		// mutate: fetchMyProjects,
+		// isValidating: isLoadingMyProjects,
 	} = useSWR({ url: '/api/my/projects' }, fetcher, { revalidateOnFocus: false })
 
 	// const handleNewProject = () => {

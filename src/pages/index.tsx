@@ -25,11 +25,6 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
-	const [liveChat, setLiveChat] = useState<any>()
-
-	useEffect(() => {
-		setLiveChat(window.$crisp)
-	}, [window])
 
 	useEffect(() => {
 		if (isOpenedInTelegram) {
@@ -137,11 +132,7 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 						<Text>
 							{/* Для выбора формата работы жмите &quot;Войти с помощью Google&quot; и нажмите &quot;Создать свой
 							проект&quot;. */}
-							Если вас интересует второй вариант, обратитесь за консультацией в{' '}
-							<Button type="link" style={{ padding: 0 }} onClick={() => liveChat?.push(['do', 'chat:open'])}>
-								live-чат
-							</Button>
-							.
+							Если вас интересует второй вариант, обратитесь за консультацией в live-чат.
 						</Text>
 					</Paragraph>
 				</Space>
