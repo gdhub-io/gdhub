@@ -159,7 +159,7 @@ export const ProtectedLayout = ({ children }: any) => {
 						}
 						{!session && (
 							<Link href="/">
-								<Button type="primary">Регистрация</Button>
+								<Button type="primary">Вход/Регистрация</Button>
 							</Link>
 						)}
 					</Row>

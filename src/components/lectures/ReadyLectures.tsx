@@ -59,7 +59,7 @@ export const ReadyLectures = () => {
 									setShowLectureDetails(true)
 								}}
 							>
-								Регистрация
+								Вход/Регистрация
 							</Button>
 						</div>
 					)
@@ -98,7 +98,7 @@ export const ReadyLectures = () => {
 							setShowLectureDetails(true)
 						}}
 					>
-						Регистрация
+						Вход/Регистрация
 					</Button>
 				),
 			},
