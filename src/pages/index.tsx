@@ -29,7 +29,7 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 
 	useEffect(() => {
 		setLiveChat(window.$crisp)
-	}, [])
+	}, [window])
 
 	useEffect(() => {
 		if (isOpenedInTelegram) {
