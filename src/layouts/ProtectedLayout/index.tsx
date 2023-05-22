@@ -121,7 +121,7 @@ export const ProtectedLayout = ({ children }: any) => {
 						</Link>
 						{
 							<>
-								{screens.lg ? (
+								{screens.xl ? (
 									<>
 										{screens.lg && (
 											<Menu

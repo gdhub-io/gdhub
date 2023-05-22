@@ -246,3 +246,21 @@ export const getProjectReport = async (reportId: string) => {
 		throw error
 	}
 }
+
+export const getSeasonsSlugs = async () => {
+	try {
+		const seasonsSlugs = await AirtableService('Seasons')
+			.select({
+				fields: ['Slug'],
+				filterByFormula: `Status = "Active"`,
+			})
+			.all()
+
+		if (!seasonsSlugs) throw Error('Not found the report')
+
+		return seasonsSlugs.map((s) => s.get('Slug'))
+	} catch (error: any) {
+		console.error('[AIRTABLE ERROR]', error)
+		throw error
+	}
+}

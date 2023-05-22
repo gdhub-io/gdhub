@@ -3,7 +3,7 @@ import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { useTelegram } from '@helpers/useTelegram'
 import AirtableService, { getWorkedProjects } from '@services/airtable'
 import styles from '@styles/home.module.scss'
-import { Button, Card, Col, Row, Space, Statistic } from 'antd'
+import { Button, Card, Col, Row, Space, Statistic, Typography } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -13,10 +13,23 @@ import { signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
 import { authOptions } from './api/auth/[...nextauth]'
 
+const { Title, Text, Paragraph } = Typography
+
+declare global {
+	interface Window {
+		$crisp?: any
+	}
+}
+
 const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
+	const [liveChat, setLiveChat] = useState<any>()
+
+	useEffect(() => {
+		setLiveChat(window.$crisp)
+	}, [])
 
 	useEffect(() => {
 		if (isOpenedInTelegram) {
@@ -112,6 +125,26 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 						</Card>
 					</Col>
 				</Row>
+
+				<Space direction="vertical">
+					<Paragraph style={{ textAlign: 'center' }}>
+						<Title level={4}>Хочешь создать свою игру?</Title>
+						<Text>
+							Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
+							инкубационной программы Gamelab, так и работая самостоятельно в своем темпе.
+						</Text>
+						<br />
+						<Text>
+							{/* Для выбора формата работы жмите &quot;Войти с помощью Google&quot; и нажмите &quot;Создать свой
+							проект&quot;. */}
+							Если вас интересует второй вариант, обратитесь за консультацией в{' '}
+							<Button type="link" style={{ padding: 0 }} onClick={() => liveChat?.push(['do', 'chat:open'])}>
+								live-чат
+							</Button>
+							.
+						</Text>
+					</Paragraph>
+				</Space>
 			</div>
 		</>
 	)
