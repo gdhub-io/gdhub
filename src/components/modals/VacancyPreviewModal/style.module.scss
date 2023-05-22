@@ -1,7 +1,7 @@
 .vacancyDescription {
 	:global {
 		.ant-descriptions-item-content {
-			display: block;
+			display: block !important;
 			background-color: #fbfbfb;
 			border: 1px solid #e9e8e8;
 			border-radius: 8px;

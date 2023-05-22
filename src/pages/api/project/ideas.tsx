@@ -13,6 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const projectIdeas = await AirtableService('Project Ideas')
 			.select({
 				filterByFormula: `AND(FIND("${seasonName}", Season), FIND("${session.user.email}", Author))`,
+				sort: [{ field: 'Last Modified', direction: 'desc' }],
 			})
 			.all()
 

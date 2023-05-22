@@ -119,6 +119,7 @@ export const getWorkedProjects = async () => {
 					'Production',
 					'Release',
 				].join(' ')}"))`,
+				sort: [{ field: 'Last Modified', direction: 'desc' }],
 			})
 			.all()
 
