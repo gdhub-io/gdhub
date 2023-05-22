@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import ProjectIdeaModal from '@components/modals/ProjectIdeaModal'
+// import ProjectIdeaModal from '@components/modals/ProjectIdeaModal'
 import { fetcher } from '@helpers/fetcher'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { NextPageWithLayout } from 'pages/_app'
-import { Button, List, Row } from 'antd'
+import { List, Row } from 'antd'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
-import { TbPlus } from 'react-icons/tb'
+// import { TbPlus } from 'react-icons/tb'
 import useSWR from 'swr'
 
 const MyProjectsPage: NextPageWithLayout = () => {
@@ -18,14 +18,14 @@ const MyProjectsPage: NextPageWithLayout = () => {
 		isValidating: isLoadingMyProjects,
 	} = useSWR({ url: '/api/my/projects' }, fetcher, { revalidateOnFocus: false })
 
-	const handleNewProject = () => {
-		setShowProjectIdeaModal(true)
-	}
+	// const handleNewProject = () => {
+	// 	setShowProjectIdeaModal(true)
+	// }
 
-	const handleSaveProjectIdea = async () => {
-		setShowProjectIdeaModal(false)
-		await fetchMyProjects()
-	}
+	// const handleSaveProjectIdea = async () => {
+	// 	setShowProjectIdeaModal(false)
+	// 	await fetchMyProjects()
+	// }
 
 	return (
 		<>
@@ -34,9 +34,9 @@ const MyProjectsPage: NextPageWithLayout = () => {
 			</Head>
 			<Row align="stretch" justify="space-between">
 				<h1>Мои проекты</h1>
-				<Button type="primary" icon={<TbPlus size={16} />} onClick={handleNewProject}>
+				{/* <Button type="primary" icon={<TbPlus size={16} />} onClick={handleNewProject}>
 					Создать новый
-				</Button>
+				</Button> */}
 			</Row>
 
 			{myProjects?.data?.length > 0 ? (
@@ -46,7 +46,11 @@ const MyProjectsPage: NextPageWithLayout = () => {
 					renderItem={(myProject: any) => (
 						<List.Item
 							style={{ cursor: 'pointer' }}
-							extra={myProject['Cover Image'] ? <Image width={272} alt="logo" src={myProject['Cover Image']} /> : null}
+							// extra={
+							// 	myProject['Cover Image'] ? (
+							// 		<Image width={272} height={272 * 0.5625} alt="logo" src={myProject['Cover Image']} />
+							// 	) : null
+							// }
 						>
 							<Link href={`/my/projects/${myProject.id}`}>{myProject.Name}</Link>
 						</List.Item>
@@ -56,12 +60,12 @@ const MyProjectsPage: NextPageWithLayout = () => {
 				<p>У вас нет проектов</p>
 			)}
 
-			<ProjectIdeaModal
+			{/* <ProjectIdeaModal
 				seasonId="indie"
 				open={showProjectIdeaModal}
 				onOk={handleSaveProjectIdea}
 				onCancel={() => setShowProjectIdeaModal(false)}
-			/>
+			/> */}
 		</>
 	)
 }

@@ -18,3 +18,9 @@ interface DataType {
 	Wishes: string
 	[key: string]: any
 }
+
+declare global {
+	interface Window {
+		$crisp?: any
+	}
+}

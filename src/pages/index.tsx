@@ -15,10 +15,21 @@ import { authOptions } from './api/auth/[...nextauth]'
 
 const { Title, Text, Paragraph } = Typography
 
+declare global {
+	interface Window {
+		$crisp?: any
+	}
+}
+
 const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
+	const [liveChat, setLiveChat] = useState<any>()
+
+	useEffect(() => {
+		setLiveChat(window.$crisp)
+	}, [])
 
 	useEffect(() => {
 		if (isOpenedInTelegram) {
@@ -124,8 +135,13 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 						</Text>
 						<br />
 						<Text>
-							Для выбора формата работы жмите &quot;Войти с помощью Google&quot; и нажмите &quot;Создать свой
-							проект&quot;.
+							{/* Для выбора формата работы жмите &quot;Войти с помощью Google&quot; и нажмите &quot;Создать свой
+							проект&quot;. */}
+							Если вас интересует второй вариант, обратитесь за консультацией в{' '}
+							<Button type="link" style={{ padding: 0 }} onClick={() => liveChat?.push(['do', 'chat:open'])}>
+								live-чат
+							</Button>
+							.
 						</Text>
 					</Paragraph>
 				</Space>
