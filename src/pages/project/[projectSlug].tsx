@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ProjectReports from '@components/ProjectReports'
 import ProjectVacancies from '@components/ProjectVacancies'
+import TeamMembers from '@components/TeamMembers'
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import AirtableService from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
@@ -63,6 +64,10 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 							<Paragraph>{project['Description']}</Paragraph>
 						</div>
 						{!screens.md && generalData}
+
+						<div className="project-team">
+							<TeamMembers project={project} />
+						</div>
 					</Col>
 					<Col xs={{ span: 24, order: 0 }} md={{ span: 12, order: 1 }} lg={{ span: 8, order: 1 }}>
 						{!showPitchVideo && (

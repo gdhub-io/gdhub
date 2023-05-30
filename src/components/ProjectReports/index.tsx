@@ -7,7 +7,7 @@ import YouTube from 'react-youtube'
 import useSWR from 'swr'
 import styles from './style.module.scss'
 
-const { Text } = Typography
+const { Text, Title } = Typography
 
 interface ProjectReportsArgs {
 	project: any
@@ -71,13 +71,13 @@ const ProjectReports = ({ project }: ProjectReportsArgs) => {
 
 	return (
 		<div className={styles.component}>
-			<Space direction="vertical" style={{ marginTop: 60 }}>
-				<h3>Журнал разработки</h3>
-			</Space>
+			<Space direction="vertical" style={{ marginTop: 60, width: '100%' }}>
+				<Title level={5}>Журнал разработки</Title>
 
-			<div className={styles.reportsContainer}>
-				<Timeline mode="left" items={items} style={{ margin: '16px 0' }} />
-			</div>
+				<div className={styles.reportsContainer}>
+					<Timeline mode="left" items={items} style={{ margin: '16px 0' }} />
+				</div>
+			</Space>
 		</div>
 	)
 }

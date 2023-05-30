@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@components/modals/VacancyPreviewModal'
 import { fetcher } from '@helpers/fetcher'
-import { Button, Space, Table, Tag } from 'antd'
+import { Button, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import moment from 'moment'
 import useSWR from 'swr'
+
+const { Title } = Typography
 
 interface Vacancy {
 	key: string
@@ -94,14 +96,16 @@ const ProjectVacancies = ({ project }: ProjectVacanciesArgs) => {
 	return (
 		<>
 			<Space direction="vertical" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>Вакансии</h3>
-				<p style={{ fontSize: 12 }}>
-					Все участники проектов, откликаясь на вакансии, принимают условия, что на момент участия в Лаборатории Игр,
-					работа не оплачивается. Затраченное вами время - это инвестиции в проект, который вы выбираете. От того, как
-					каждый член команды, и команда в целом, будет работать на проекте, зависит, смогут ли эти инвестиции
-					конвертироваться в деньги или нет. В любом случае ваше резюме станет более весомым, когда в нем будет
-					информация об участии в реальных проектах.
-				</p>
+				<Title level={5}>Вакансии</Title>
+				{projectVacancies?.data.length > 0 && (
+					<p style={{ fontSize: 12 }}>
+						Все участники проектов, откликаясь на вакансии, принимают условия, что на момент участия в Лаборатории Игр,
+						работа не оплачивается. Затраченное вами время - это инвестиции в проект, который вы выбираете. От того, как
+						каждый член команды, и команда в целом, будет работать на проекте, зависит, смогут ли эти инвестиции
+						конвертироваться в деньги или нет. В любом случае ваше резюме станет более весомым, когда в нем будет
+						информация об участии в реальных проектах.
+					</p>
+				)}
 			</Space>
 
 			{projectVacancies?.data.length > 0 ? (
