@@ -4329,6 +4329,11 @@ next-csrf@^0.2.1:
     csrf "^3.1.0"
     querystring "^0.2.0"
 
+next-seo@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/next-seo/-/next-seo-6.0.0.tgz#4568dc61a44dbdf5fe5ff44156cd0ff8804889a2"
+  integrity sha512-jKKt1p1z4otMA28AyeoAONixVjdYmgFCWwpEFtu+DwRHQDllVX3RjtyXbuCQiUZEfQ9rFPBpAI90vDeLZlMBdg==
+
 next-with-less@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/next-with-less/-/next-with-less-2.0.5.tgz#901dc94918bb19f08e879a5bc7b11b44c9351f6c"

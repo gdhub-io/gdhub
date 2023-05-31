@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import GdhubLogo from '@assets/images/gdhub-icon.svg'
 import { useTelegram } from '@helpers/useTelegram'
 import AirtableService, { getWorkedProjects } from '@services/airtable'
 import styles from '@styles/home.module.scss'
@@ -63,7 +62,7 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 			<div className={styles.container}>
 				<Space direction="vertical" align="center" size="large">
 					<div className="logo">
-						<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
+						<Title>Game Developers Hub</Title>
 					</div>
 					<p>
 						Сообщество специалистов игровой индустрии, участники которого объединяются в команды, чтобы разрабатывать
@@ -102,7 +101,7 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
 						<Card style={{ textAlign: 'center' }}>
 							<Statistic title="Проектов в работе" value={projectsCount} style={{ textAlign: 'center' }} />
-							<Link href="/projects">
+							<Link href="/projects" title="Проекты">
 								<Button size="small" type="text">
 									Все проекты
 								</Button>
@@ -112,7 +111,7 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
 						<Card style={{ textAlign: 'center' }}>
 							<Statistic title="Вакансий на проектах" value={vacanciesCount} style={{ textAlign: 'center' }} />
-							<Link href="/vacancies">
+							<Link href="/vacancies" title="Вакансии">
 								<Button size="small" type="text">
 									Все вакансии
 								</Button>
@@ -121,21 +120,39 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 					</Col>
 				</Row>
 
-				<Space direction="vertical">
-					<Paragraph style={{ textAlign: 'center' }}>
-						<Title level={4}>Хочешь создать свою игру?</Title>
-						<Text>
-							Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
-							инкубационной программы Gamelab, так и работая самостоятельно в своем темпе.
-						</Text>
-						<br />
-						<Text>
-							{/* Для выбора формата работы жмите &quot;Войти с помощью Google&quot; и нажмите &quot;Создать свой
+				<Row gutter={[24, 24]}>
+					<Col xs={24} lg={12}>
+						<Paragraph style={{ textAlign: 'center' }}>
+							<Title level={2} style={{ fontSize: 24 }}>
+								Хочешь создать свою игру?
+							</Title>
+							<Text>
+								Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
+								инкубационной программы Gamelab, так и работая самостоятельно в своем темпе.
+							</Text>
+							<br />
+							<Text>
+								{/* Для выбора формата работы жмите &quot;Войти с помощью Google&quot; и нажмите &quot;Создать свой
 							проект&quot;. */}
-							Если вас интересует второй вариант, обратитесь за консультацией в live-чат.
-						</Text>
-					</Paragraph>
-				</Space>
+								Если вас интересует второй вариант, обратитесь за консультацией в live-чат.
+							</Text>
+						</Paragraph>
+					</Col>
+					<Col xs={24} lg={12}>
+						<Paragraph style={{ textAlign: 'center' }}>
+							<Title level={2} style={{ fontSize: 24 }}>
+								Хочешь участвовать в разработке инди-игр?
+							</Title>
+							<Text>
+								Каждый специалист игровой индустрии (программист, художник, аниматор, саунд-дизайнер, smm-специалист и
+								многие другие) имеет возможность присоединиться к одному из инди-проектов, находящихся в разработке.
+								<br />
+								Для этого переходите на страницу <Link href="/projects">Проекты</Link>, выбирайте понравившиеся и
+								откликайтесь на их вакансии.
+							</Text>
+						</Paragraph>
+					</Col>
+				</Row>
 			</div>
 		</>
 	)

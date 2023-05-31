@@ -1,12 +1,14 @@
 import { ProtectedLayout } from '@layouts/ProtectedLayout'
 import { getWorkedProjects } from '@services/airtable'
 import { NextPageWithLayout } from 'pages/_app'
-import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row } from 'antd'
+import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.scss'
+
+const { Title } = Typography
 
 const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 	const screens = Grid.useBreakpoint()
@@ -15,12 +17,10 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 		<>
 			<Head>
 				<title>Проекты сообщества</title>
-				<meta property="og:title" content="Проекты сообщества" />
-				<meta property="og:type" content="website" />
 				<meta property="og:url" content="/projects" />
 			</Head>
 			<div className={styles.container}>
-				<h3>Проекты сообщества</h3>
+				<Title style={{ fontSize: 24 }}>Проекты сообщества</Title>
 				<Row
 					gutter={[
 						{ md: 24, xs: 24 },
@@ -33,8 +33,8 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 								className={styles.card}
 								cover={
 									project['Cover Image'] ? (
-										<Link href={`/project/${project.Slug}`}>
-											<Image alt="cover" src={project['Cover Image']} fill />
+										<Link href={`/project/${project.Slug}`} title={project.Name}>
+											<Image title={project.Name + ' cover'} alt="cover" src={project['Cover Image']} fill />
 										</Link>
 									) : null
 								}
@@ -46,10 +46,12 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 												title={
 													<>
 														<Breadcrumb className={styles.seasonDetails}>
-															<Breadcrumb.Item>Gamelab 11</Breadcrumb.Item>
-															<Breadcrumb.Item>Production</Breadcrumb.Item>
+															<Breadcrumb.Item>{project['Season Name']}</Breadcrumb.Item>
+															<Breadcrumb.Item>{project.Stage}</Breadcrumb.Item>
 														</Breadcrumb>
-														<div>{project.Name}</div>
+														<Title level={2} style={{ fontSize: 16 }}>
+															{project.Name}
+														</Title>
 													</>
 												}
 												layout={screens.md ? 'horizontal' : 'vertical'}
@@ -60,7 +62,7 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 												<Descriptions.Item label="Сеттинг">{project.Setting}</Descriptions.Item>
 												<Descriptions.Item label="Платформа">{project.Platform}</Descriptions.Item>
 											</Descriptions>
-											<Link href={`/project/${project.Slug}`}>
+											<Link href={`/project/${project.Slug}`} title={project.Name}>
 												<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
 													На страницу проекта
 												</Button>

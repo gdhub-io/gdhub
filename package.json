@@ -31,6 +31,7 @@
     "next": "^13.0.4",
     "next-auth": "^4.16.3",
     "next-csrf": "^0.2.1",
+    "next-seo": "^6.0.0",
     "next-with-less": "^2.0.5",
     "nextjs-cors": "^2.1.1",
     "node-fetch": "^3.2.10",

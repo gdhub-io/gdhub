@@ -38,6 +38,9 @@
       "@layouts/*": [
         "layouts/*"
       ],
+      "@config/*": [
+        "config/*"
+      ],
     }
   },
   "include": [
