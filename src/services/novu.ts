@@ -2,7 +2,7 @@ import { Novu } from '@novu/node'
 
 export type NovuSendArgs = {
 	to: { subscriberId: string; email?: string }
-	payload: Record<string, any>
+	payload: { vacancy: string; project: string; name: string; url: string }
 	template: string
 }
 
@@ -13,10 +13,12 @@ export class NovuService {
 
 	static async send({ to, payload, template }: NovuSendArgs) {
 		try {
-			await novuClient.trigger(template, {
+			const res = await novuClient.trigger(template, {
 				to,
 				payload,
 			})
+
+			console.log({ to, payload, template }, res.status, res.statusText, res.data)
 		} catch (error) {
 			throw error
 		}

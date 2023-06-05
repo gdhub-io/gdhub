@@ -19,7 +19,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		const project = await AirtableService('Project Ideas').find(projectId)
 		const vacancy = await AirtableService('Project Vacancies').find(vacancyId)
-		const [authorId] = project.get('Author ID') as string[]
+		const [authorId] = project.get('Author') as string[]
+
+		const author = await AirtableService('Project Ideas').find(authorId)
+		const authorEmail = author.get('Email') as string
 
 		const candidate = await AirtableService('Project Members').create({
 			Member: [session.user.id],
@@ -29,20 +32,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			Status: 'Intent',
 			'Allowed Contacts': contactType,
 		})
+		const [candiudateName] = candidate.get('Name') as string[]
 
 		await NovuService.send({
 			template: 'new-candidate-to-project',
 			to: {
 				subscriberId: authorId,
-				email: project.get('Author') as string,
+				email: authorEmail,
 			},
 			payload: {
-				name: candidate.get('Name'),
-				vacancy: vacancy.get('Name'),
-				project: project.get('Name'),
+				name: candiudateName,
+				vacancy: vacancy.get('Name') as string,
+				project: project.get('Name') as string,
 				url: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + projectId,
 			},
 		})
+
+		console.info('New notification was sent to ' + authorId)
 
 		res.json({ success: true })
 	} catch (error: any) {

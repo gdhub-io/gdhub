@@ -8,6 +8,7 @@ import { fetcher } from '@/helpers/fetcher'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const [processing, setProcessing] = useState(false)
 	const [selectedItem, setSelectedItem] = useState<string>()
 	const [contactType, setContactType] = useState<CheckboxValueType[]>(['email'])
 	const [telegramNickname, setTelegramNickname] = useState<string>()
@@ -60,6 +61,19 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		setContactType(checkedValue)
 	}
 
+	const handleOk = async () => {
+		try {
+			setProcessing(true)
+
+			await onOk({ specialityId: selectedItem, contactType, telegramNickname })
+
+			setProcessing(false)
+		} catch (error) {
+			console.log(error)
+			setProcessing(false)
+		}
+	}
+
 	return (
 		<>
 			<Modal
@@ -74,13 +88,13 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 				}}
 				maskClosable={false}
 				okText="Выбрать"
-				onOk={() => onOk({ specialityId: selectedItem, contactType, telegramNickname })}
+				onOk={handleOk}
 				cancelText={'Отмена'}
 				open={open}
 				onCancel={handleCancel}
-				confirmLoading={isLoading}
+				confirmLoading={isLoading || isContactsLoading || processing}
 			>
-				<Spin spinning={isLoading || isContactsLoading}>
+				<Spin spinning={isLoading || isContactsLoading || processing}>
 					<p>Выберите вашу специальность, которая соответствует выбранной вакансии</p>
 					<List
 						bordered
