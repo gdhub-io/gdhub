@@ -7,6 +7,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 import GdhubLogo from '@/assets/images/gdhub-icon.svg'
+import { NotificationsBell } from '@/components/NotificationsBell'
 import { useTelegram } from '@/helpers/useTelegram'
 
 const { Header, Footer, Content } = Layout
@@ -151,29 +152,33 @@ export const ProtectedLayout = ({ children }: any) => {
 											/>
 										)}
 										{!!session && (
-											<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
-												<Button type="link" size="large">
-													<Space>
-														{screens.sm && <div className="username">{session?.user?.name}</div>}
-														<Avatar
-															src={
-																session?.user?.image ? (
-																	<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																) : null
-															}
-															shape="square"
-														/>
-													</Space>
-												</Button>
-											</Dropdown>
+											<>
+												<NotificationsBell />
+												<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
+													<Button type="link" size="large">
+														<Space>
+															{screens.sm && <div className="username">{session?.user?.name}</div>}
+															<Avatar
+																src={
+																	session?.user?.image ? (
+																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																	) : null
+																}
+																shape="square"
+															/>
+														</Space>
+													</Button>
+												</Dropdown>
+											</>
 										)}
 									</>
 								) : (
-									<div>
+									<Space>
+										<NotificationsBell />
 										<Button type="text" onClick={() => setOpenMobileMenu(true)}>
 											<MenuOutlined />
 										</Button>
-									</div>
+									</Space>
 								)}
 							</>
 						}
