@@ -1,7 +1,7 @@
 import { verify } from 'jsonwebtoken'
 import { NextApiRequest } from 'next'
-import { AuthUser } from 'types/common'
 import { env } from '@/helpers/env'
+import { AuthUser } from '@/types/common'
 
 export const backendVerify = (req: NextApiRequest) => {
 	const accessToken = Buffer.from(env('BACKEND_KEY')).toString('base64')
