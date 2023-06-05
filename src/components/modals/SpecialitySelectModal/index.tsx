@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react'
-import { fetcher } from '@helpers/fetcher'
-import { Form, List, Modal, Spin } from 'antd'
+import { useEffect, useMemo, useState } from 'react'
+import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
+import { CheckboxValueType } from 'antd/es/checkbox/Group'
 import { BsCheckLg } from 'react-icons/bs'
 import useSWR from 'swr'
+import styles from './style.module.scss'
+import { fetcher } from '@/helpers/fetcher'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const [selectedItem, setSelectedItem] = useState<string>()
+	const [contactType, setContactType] = useState<CheckboxValueType[]>(['email'])
+	const [telegramNickname, setTelegramNickname] = useState<string>()
 
 	const {
 		data: specialities,
@@ -16,16 +20,44 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		revalidateOnFocus: false,
 	})
 
+	const {
+		data: contacts,
+		mutate: fetchContacts,
+		isValidating: isContactsLoading,
+	} = useSWR({ url: '/api/my/contacts' }, fetcher, {
+		revalidateOnFocus: false,
+	})
+
 	useEffect(() => {
 		if (open) {
 			fetchSpecialities()
+			fetchContacts()
 			setSelectedItem(undefined)
 		}
 	}, [open])
 
+	const options = useMemo(
+		() => [
+			{
+				value: 'email',
+				label: `Электронная почта ${contacts?.email ? '(' + contacts?.email + ')' : ''}`,
+				disabled: !contacts?.email,
+			},
+			{
+				value: 'telegram',
+				label: `Телеграм ${contacts?.telegram ? '(@' + contacts?.telegram + ')' : ''}`,
+			},
+		],
+		[contacts]
+	)
+
 	const handleCancel = () => {
 		form.resetFields()
 		onCancel()
+	}
+
+	const handleSetContact = (checkedValue: CheckboxValueType[]) => {
+		setContactType(checkedValue)
 	}
 
 	return (
@@ -34,16 +66,21 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 				centered
 				title="Укажите специальность"
 				destroyOnClose
-				okButtonProps={{ disabled: !selectedItem }}
+				okButtonProps={{
+					disabled:
+						!selectedItem ||
+						!contactType?.length ||
+						(!contacts.telegram && contactType.includes('telegram') && !telegramNickname),
+				}}
 				maskClosable={false}
 				okText="Выбрать"
-				onOk={() => onOk(selectedItem)}
+				onOk={() => onOk({ specialityId: selectedItem, contactType, telegramNickname })}
 				cancelText={'Отмена'}
 				open={open}
 				onCancel={handleCancel}
 				confirmLoading={isLoading}
 			>
-				<Spin spinning={isLoading}>
+				<Spin spinning={isLoading || isContactsLoading}>
 					<p>Выберите вашу специальность, которая соответствует выбранной вакансии</p>
 					<List
 						bordered
@@ -58,6 +95,23 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 							</List.Item>
 						)}
 					/>
+					<br />
+					<p>Как автору проекта связаться с вами?</p>
+					<Checkbox.Group
+						rootClassName={styles.contactTypes}
+						options={options}
+						// defaultValue={contactType}
+						value={contactType}
+						onChange={handleSetContact}
+					/>
+
+					{!contacts?.telegram && contactType.includes('telegram') && (
+						<Input
+							prefix="@"
+							placeholder="Укажите Телеграм-никнейм"
+							onChange={(e) => setTelegramNickname(e.target.value)}
+						/>
+					)}
 				</Spin>
 			</Modal>
 		</>

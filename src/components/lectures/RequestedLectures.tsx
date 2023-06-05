@@ -1,10 +1,4 @@
 import { useState } from 'react'
-import LectureDetailsModal from '@components/modals/LectureDetailsModal'
-import LectureRequestModal from '@components/modals/LectureRequestModal'
-import PropositionLectureModal from '@components/modals/PropositionLectureModal'
-import SetLecturerModal from '@components/modals/SetLecturerModal'
-import { fetcher, fetherForMutation } from '@helpers/fetcher'
-import { lectureStatusAsText } from '@helpers/format'
 import { Button, Dropdown, Grid, Menu, Popconfirm, Space, Spin, Table, Tooltip, message } from 'antd'
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import { ColumnsType } from 'antd/lib/table'
@@ -14,6 +8,12 @@ import { HiOutlineTrash } from 'react-icons/hi'
 import { TbHeartOff, TbHeart, TbDotsVertical } from 'react-icons/tb'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
+import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
+import LectureRequestModal from '@/components/modals/LectureRequestModal'
+import PropositionLectureModal from '@/components/modals/PropositionLectureModal'
+import SetLecturerModal from '@/components/modals/SetLecturerModal'
+import { fetcher, fetherForMutation } from '@/helpers/fetcher'
+import { lectureStatusAsText } from '@/helpers/format'
 
 const mobileMenu: ItemType[] = [
 	{

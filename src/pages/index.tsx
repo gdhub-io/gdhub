@@ -1,7 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useTelegram } from '@helpers/useTelegram'
-import AirtableService, { getWorkedProjects } from '@services/airtable'
-import styles from '@styles/home.module.scss'
 import { Button, Card, Col, Row, Space, Statistic, Typography } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
@@ -11,6 +8,9 @@ import { getServerSession } from 'next-auth'
 import { signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
 import { authOptions } from './api/auth/[...nextauth]'
+import { useTelegram } from '@/helpers/useTelegram'
+import AirtableService, { getWorkedProjects } from '@/services/airtable'
+import styles from '@/styles/home.module.scss'
 
 const { Title, Text, Paragraph } = Typography
 

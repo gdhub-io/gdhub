@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import VacancyPreviewModal from '@components/modals/VacancyPreviewModal'
-import { fetcher } from '@helpers/fetcher'
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import moment from 'moment'
 import Link from 'next/link'
 import useSWR from 'swr'
+import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
+import { fetcher } from '@/helpers/fetcher'
 
 interface Vacancy {
 	key: string

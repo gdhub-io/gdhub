@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import VacancyModal from '@components/modals/VacancyModal'
-import { fetcher } from '@helpers/fetcher'
 import { Button, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import moment from 'moment'
 import { HiOutlineLockClosed } from 'react-icons/hi'
 import useSWR from 'swr'
+import VacancyModal from '@/components/modals/VacancyModal'
+import { fetcher } from '@/helpers/fetcher'
 
 interface Vacancy {
 	key: string

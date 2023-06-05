@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
-import { fetcher } from '@helpers/fetcher'
 import { Space, Timeline, Typography } from 'antd'
 import dayjs from 'dayjs'
 import ReactMarkdown from 'react-markdown'
 import YouTube from 'react-youtube'
 import useSWR from 'swr'
 import styles from './style.module.scss'
+import { fetcher } from '@/helpers/fetcher'
 
 const { Text, Title } = Typography
 

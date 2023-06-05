@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { TextWithLineBreak } from '@components/TextWithLineBreak'
-import { fetcher } from '@helpers/fetcher'
-import { hasRole } from '@helpers/user'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
 import moment from 'moment'
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
 import styles from './style.module.scss'
 import SpecialitySelectModal from '../SpecialitySelectModal'
+import { TextWithLineBreak } from '@/components/TextWithLineBreak'
+import { fetcher } from '@/helpers/fetcher'
+import { hasRole } from '@/helpers/user'
 
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const session: any = useSession()
@@ -43,16 +43,28 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		onCancel()
 	}
 
-	const handleSpecialitySelect = async (specialityId: any) => {
+	const handleSpecialitySelect = async ({
+		specialityId,
+		contactType,
+		telegramNickname,
+	}: {
+		specialityId: any
+		contactType: string[]
+		telegramNickname?: string
+	}) => {
 		try {
-			await fetcher({
+			const res = await fetcher({
 				url: '/api/vacancy/apply',
 				data: {
 					specialityId,
+					contactType,
+					telegramNickname,
 					projectId: vacancy.project.id,
 					vacancyId: vacancy.id,
 				},
 			})
+
+			if (res.error) throw Error(res.error)
 
 			message.success('Ваш отклик на выранную вакансию отослан')
 			setShowSpecialitySelectModal(false)

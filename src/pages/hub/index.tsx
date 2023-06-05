@@ -1,13 +1,13 @@
 // import { useEffect } from 'react'
-import SeasonsList from '@components/SeasonsList'
-import { hasRole } from '@helpers/user'
-import { ProtectedLayout } from '@layouts/ProtectedLayout'
-import { NextPageWithLayout } from 'pages/_app'
 import { Button, Space } from 'antd'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
+import SeasonsList from '@/components/SeasonsList'
+import { hasRole } from '@/helpers/user'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
 
 const HubPage: NextPageWithLayout = () => {
 	const session: any = useSession()

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { fetcher } from '@helpers/fetcher'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
-import { TbBrandTelegram } from 'react-icons/tb'
+import { TbBrandTelegram, TbMail } from 'react-icons/tb'
 import useSWR from 'swr'
 import styles from './style.module.scss'
+import { fetcher } from '@/helpers/fetcher'
 
 const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
@@ -147,12 +147,17 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 												<Image src={candidate.Avatar} alt="project member avatar" width={160} height={160} />
 											</div>
 										)}
-										{!!candidate.Profile['Telegram Nickname'] && (
-											<Link target="_blank" href={'https://t.me/' + candidate.Profile['Telegram Nickname']}>
-												<Button
-													icon={<TbBrandTelegram size={16} style={{ position: 'relative', top: 3, marginRight: 5 }} />}
-												>
-													Связаться
+										{!!candidate.contacts?.email && (
+											<Link target="_blank" href={'mailto:' + candidate.contacts.email}>
+												<Button icon={<TbMail size={16} style={{ position: 'relative', marginRight: 5 }} />}>
+													Email
+												</Button>
+											</Link>
+										)}
+										{!!candidate.contacts?.telegram && (
+											<Link target="_blank" href={'https://t.me/' + candidate.contacts.telegram}>
+												<Button icon={<TbBrandTelegram size={16} style={{ position: 'relative', marginRight: 5 }} />}>
+													Telegram
 												</Button>
 											</Link>
 										)}

@@ -1,6 +1,6 @@
-import AirtableService from '@services/airtable'
-import TelegramService from '@services/telegram'
 import { NextApiRequest, NextApiResponse } from 'next'
+import AirtableService from '@/services/airtable'
+import TelegramService from '@/services/telegram'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method !== 'POST' || req.headers['authorization'] !== process.env.BACKEND_KEY)

@@ -1,5 +1,5 @@
-import { GTM_ID } from '@helpers/gtm'
 import { Html, Head, Main, NextScript } from 'next/document'
+import { GTM_ID } from '@/helpers/gtm'
 
 export default function Document() {
 	return (
