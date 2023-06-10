@@ -1,7 +1,6 @@
 import AirtableService from '@services/airtable'
 import { SearchEngineService } from '@services/typesense'
 import { specialistsSchema } from '@services/typesense/schemes/specialists'
-import dayjs from 'dayjs'
 
 export async function migrate() {
 	try {
@@ -32,9 +31,7 @@ export async function migrate() {
 			})
 			.eachPage(async (specialists: any, next) => {
 				try {
-					let documents: Record<string, any>[] = []
-
-					const list = specialists.map((s: any) => {
+					const documents = specialists.map((s: any) => {
 						for (const property in s.fields) {
 							console.log('key', property)
 
@@ -49,10 +46,6 @@ export async function migrate() {
 
 						return { ...s.fields }
 					}) as any[]
-
-					for (const specialist of list) {
-						documents.push(specialist)
-					}
 
 					await searchService.client.collections('specialists').documents().import(documents)
 
