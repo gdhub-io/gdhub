@@ -86,7 +86,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 		)
 	}
 
-	if (!hasRole('member45', session)) {
+	if (!hasRole('member', session)) {
 		return (
 			<>
 				<Head>
