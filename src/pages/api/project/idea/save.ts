@@ -34,6 +34,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				Season: [data.Season],
 				'Core Mechanics': data['Core Mechanics'].join('|'),
 			})
+
+			// Add role Author for user with a first created project
+			const author = await AirtableService('Accounts').find(session.user.id)
+			const roles = author.get('Roles') as string[]
+
+			if (!roles.includes('Author')) {
+				await AirtableService('Accounts').update(author.id, {
+					Roles: [...roles, 'Author'],
+				})
+			}
 		}
 
 		res.json({ success: true })

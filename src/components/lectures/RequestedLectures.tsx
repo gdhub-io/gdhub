@@ -139,7 +139,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			key: 'actions',
 			render: (_, lecture) =>
 				!screens.md ? (
-					<Dropdown overlay={<Menu items={mobileMenu} />} trigger={['click']}>
+					<Dropdown menu={{ items: mobileMenu }} trigger={['click']}>
 						<TbDotsVertical size={16} style={{ position: 'relative', top: 2 }} />
 					</Dropdown>
 				) : lecture['Requested By'][0] === session?.user?.id &&

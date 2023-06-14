@@ -154,7 +154,7 @@ export const ProtectedLayout = ({ children }: any) => {
 										{!!session && (
 											<>
 												<NotificationsBell />
-												<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
+												<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
 													<Button type="link" size="large">
 														<Space>
 															{screens.sm && <div className="username">{session?.user?.name}</div>}
