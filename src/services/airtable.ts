@@ -117,7 +117,7 @@ export const getWorkedProjects = async () => {
 					'Recruiting',
 					'Prototyping',
 					'Production',
-					'Release',
+					'Graduated',
 				].join(' ')}"))`,
 				sort: [{ field: 'Last Modified', direction: 'desc' }],
 			})
@@ -137,7 +137,7 @@ export const getPitchedProjects = async (seasonId: string) => {
 		const projects = await AirtableService('Project Ideas')
 			.select({
 				// fields: ['Name', 'Ideas Embed Link', 'Status'],
-				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Approved", Stage = "Release")`,
+				filterByFormula: `AND({Season ID} = "${seasonId}", Status = "Approved", Stage = "Graduated")`,
 			})
 			.all()
 

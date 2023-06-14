@@ -1,11 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react'
-import ErrorBoundary from '@components/ErrorBoundary'
-import '@styles/globals.scss'
-import LoadingScreen from '@components/LoadingScreen'
-import { GTM_ID, pageview } from '@helpers/gtm'
-import { PublicLayout } from '@layouts/PublicLayout'
+import '@/styles/globals.scss'
 // import moment from 'moment'
-import { themeConfig } from 'config/theme'
 import { ConfigProvider } from 'antd'
 import moment from 'moment-timezone'
 import { NextPage } from 'next'
@@ -14,6 +9,13 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
 import 'moment/locale/ru'
+import { DefaultSeo } from 'next-seo'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import LoadingScreen from '@/components/LoadingScreen'
+import SEOSettings from '@/config/seo'
+import { themeConfig } from '@/config/theme'
+import { GTM_ID, pageview } from '@/helpers/gtm'
+import { PublicLayout } from '@/layouts/PublicLayout'
 
 moment.locale('ru')
 
@@ -89,6 +91,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 							className="app-container"
 							style={{ fontFamily: themeConfig.token?.fontFamily, opacity: loading ? 0 : 1 }}
 						>
+							<DefaultSeo {...SEOSettings} />
 							{getLayout(<Component {...pageProps} />)}
 						</div>
 					</SessionProvider>

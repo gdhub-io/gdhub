@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@assets/images/gdhub-icon.svg'
-import { useTelegram } from '@helpers/useTelegram'
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
 import Image from 'next/image'
@@ -8,6 +6,9 @@ import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
+import GdhubLogo from '@/assets/images/gdhub-icon.svg'
+import { NotificationsBell } from '@/components/NotificationsBell'
+import { useTelegram } from '@/helpers/useTelegram'
 
 const { Header, Footer, Content } = Layout
 
@@ -20,14 +21,14 @@ export const ProtectedLayout = ({ children }: any) => {
 	const telegramMenuItem = {
 		label: screens.lg ? (
 			<Tooltip title="Чат сообщества в Telegram">
-				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
+				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
 					<Button shape="circle" type="text" style={{ top: '6px', position: 'relative' }}>
 						<TbBrandTelegram size={24} />
 					</Button>
 				</Link>
 			</Tooltip>
 		) : (
-			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
+			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
 				Чат сообщества в Telegram
 			</Link>
 		),
@@ -41,11 +42,19 @@ export const ProtectedLayout = ({ children }: any) => {
 	const publicMenuItems: any = useMemo(
 		() => [
 			{
-				label: <Link href="/projects">{screens.lg ? <Button type="text">Проекты</Button> : 'Проекты'}</Link>,
+				label: (
+					<Link href="/projects" title="Проекты сообщества">
+						{screens.lg ? <Button type="text">Проекты</Button> : 'Проекты'}
+					</Link>
+				),
 				key: '/projects',
 			},
 			{
-				label: <Link href="/vacancies">{screens.lg ? <Button type="text">Вакансии</Button> : 'Вакансии'}</Link>,
+				label: (
+					<Link href="/vacancies" title="Вакансии на инди-проекты">
+						{screens.lg ? <Button type="text">Вакансии</Button> : 'Вакансии'}
+					</Link>
+				),
 				key: '/vacancies',
 			},
 		],
@@ -56,13 +65,17 @@ export const ProtectedLayout = ({ children }: any) => {
 		let menu: MenuProps['items'] = [
 			{
 				style: { display: screens.lg ? 'none' : 'block' },
-				label: <Link href="/hub">{screens.lg ? <Button type="primary">Главная</Button> : 'Главная'}</Link>,
+				label: (
+					<Link href="/hub" title="Главная страница">
+						{screens.lg ? <Button type="primary">Главная</Button> : 'Главная'}
+					</Link>
+				),
 				key: '/hub',
 			},
 			...publicMenuItems,
 			{
 				label: (
-					<Link href="/hub/docs">
+					<Link href="/hub/docs" title="С чего начать">
 						{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
 					</Link>
 				),
@@ -75,11 +88,19 @@ export const ProtectedLayout = ({ children }: any) => {
 			menu = [
 				menu[0],
 				{
-					label: <Link href="/hub/members">{screens.lg ? <Button type="text">Участники</Button> : 'Участники'}</Link>,
+					label: (
+						<Link href="/hub/members" title="Участники сообщества">
+							{screens.lg ? <Button type="text">Участники</Button> : 'Участники'}
+						</Link>
+					),
 					key: '/hub/members',
 				},
 				{
-					label: <Link href="/hub/lectures">{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}</Link>,
+					label: (
+						<Link href="/hub/lectures" title="Лекции сообщества">
+							{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}
+						</Link>
+					),
 					key: '/hub/lectures',
 				},
 				...menu.slice(1),
@@ -131,29 +152,33 @@ export const ProtectedLayout = ({ children }: any) => {
 											/>
 										)}
 										{!!session && (
-											<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
-												<Button type="link" size="large">
-													<Space>
-														{screens.sm && <div className="username">{session?.user?.name}</div>}
-														<Avatar
-															src={
-																session?.user?.image ? (
-																	<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																) : null
-															}
-															shape="square"
-														/>
-													</Space>
-												</Button>
-											</Dropdown>
+											<>
+												<NotificationsBell />
+												<Dropdown overlay={<Menu items={dropdownMenuItems} />} trigger={['click']}>
+													<Button type="link" size="large">
+														<Space>
+															{screens.sm && <div className="username">{session?.user?.name}</div>}
+															<Avatar
+																src={
+																	session?.user?.image ? (
+																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																	) : null
+																}
+																shape="square"
+															/>
+														</Space>
+													</Button>
+												</Dropdown>
+											</>
 										)}
 									</>
 								) : (
-									<div>
+									<Space>
+										<NotificationsBell />
 										<Button type="text" onClick={() => setOpenMobileMenu(true)}>
 											<MenuOutlined />
 										</Button>
-									</div>
+									</Space>
 								)}
 							</>
 						}

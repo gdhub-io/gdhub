@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import VacancyPreviewModal from '@components/modals/VacancyPreviewModal'
-import { fetcher } from '@helpers/fetcher'
 import { Button, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import moment from 'moment'
 import useSWR from 'swr'
+import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
+import { fetcher } from '@/helpers/fetcher'
 
 const { Title } = Typography
 

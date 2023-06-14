@@ -1,14 +1,14 @@
 // import { useEffect } from 'react'
-import SeasonContent from '@components/SeasonContent'
-import { fetcher } from '@helpers/fetcher'
-import { ProtectedLayout } from '@layouts/ProtectedLayout'
-import { getSeasonsSlugs } from '@services/airtable'
-import { NextPageWithLayout } from 'pages/_app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
 import styles from './style.module.scss'
+import SeasonContent from '@/components/SeasonContent'
+import { fetcher } from '@/helpers/fetcher'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
+import { getSeasonsSlugs } from '@/services/airtable'
 
 const SeasonPage: NextPageWithLayout = () => {
 	const router = useRouter()

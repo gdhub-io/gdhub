@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { ProtectedLayout } from '@layouts/ProtectedLayout'
-import { NextPageWithLayout } from 'pages/_app'
 import { Spin } from 'antd'
 import Head from 'next/head'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
 
 const SpecialistsPage: NextPageWithLayout = () => {
 	const ref = useRef<any>()
