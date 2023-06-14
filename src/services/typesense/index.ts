@@ -11,8 +11,14 @@ export class SearchEngineService {
 
 	static async init() {
 		const client = new Client({
-			nodes: [{ host: 'localhost', port: 8108, protocol: 'http' }],
-			apiKey: 'xyz',
+			nodes: [
+				{
+					host: process.env.NEXT_PUBLIC_TYPESENSE_HOST as string,
+					port: Number.parseInt(process.env.NEXT_PUBLIC_TYPESENSE_PORT as string),
+					protocol: process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL as string,
+				},
+			],
+			apiKey: process.env.TYPESENSE_ADMIN_API as string,
 			connectionTimeoutSeconds: 2,
 		})
 
@@ -35,7 +41,14 @@ export class SearchEngineService {
 		return await this.client.collections(name).delete()
 	}
 
-	async addMemberIndex(document: Record<string, any>) {
-		await this.client.collections('members').documents().create(document)
+	async addSpecialist(document: Record<string, any>) {
+		await this.client.collections('specialists').documents().create(document)
+	}
+
+	async deleteSpecialist(specialityId: string) {
+		return await this.client
+			.collections('specialists')
+			.documents()
+			.delete({ filter_by: `ID:${specialityId}` })
 	}
 }

@@ -72,3 +72,43 @@ a.text-link {
 .ant-descriptions-item {
 	padding-bottom: 4px !important;
 }
+
+.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:has(svg) {
+    padding-left: 8px;
+  }
+
+  >svg {
+    position: unset;
+    margin: 0;
+    margin-right: 8px;
+  }
+
+  &.reverse {
+    background-color: #000000;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #F57758;
+      color: #000 !important;
+    }
+  }
+
+  &.outline {
+    background-color: transparent;
+    border: 2px solid #000;
+    color: #000;
+    padding-left: 22px;
+    padding-right: 22px;
+
+    &:hover {
+      background-color: #F57758;
+      border: 2px solid #F57758;
+      color: #000 !important;
+    }
+  }
+}

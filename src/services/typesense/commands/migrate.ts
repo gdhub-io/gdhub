@@ -1,6 +1,7 @@
 import AirtableService from '@services/airtable'
 import { SearchEngineService } from '@services/typesense'
 import { specialistsSchema } from '@services/typesense/schemes/specialists'
+import dayjs from 'dayjs'
 
 export async function migrate() {
 	try {
@@ -27,25 +28,12 @@ export async function migrate() {
 					'Schools',
 					'Country',
 					'City',
+					'Created',
 				],
 			})
 			.eachPage(async (specialists: any, next) => {
 				try {
-					const documents = specialists.map((s: any) => {
-						for (const property in s.fields) {
-							console.log('key', property)
-
-							if (Array.isArray(s.fields[property]) && s.fields[property][0] == null) {
-								s.fields[property] = []
-							}
-
-							if (Array.isArray(s.fields[property]) && s.fields[property].length == 1) {
-								s.fields[property] = s.fields[property][0]
-							}
-						}
-
-						return { ...s.fields }
-					}) as any[]
+					const documents = specialists.map((s: any) => prepareAirtableData(s)) as any[]
 
 					await searchService.client.collections('specialists').documents().import(documents)
 
@@ -59,7 +47,50 @@ export async function migrate() {
 
 		console.info('Finish')
 	} catch (error: any) {
-		console.log(error.importResults())
+		console.log(error.message)
 		console.info('Finish with Error')
 	}
+}
+
+export const prepareAirtableData = (airtableRecord: Record<string, any>) => {
+	for (let property in airtableRecord.fields) {
+		let value: string | string[] | number | undefined = airtableRecord.fields[property]
+
+		if (Array.isArray(value) && value[0] == null) {
+			value = undefined
+		}
+
+		if (Array.isArray(value) && value.length == 1) {
+			value = value[0]
+		}
+
+		if (typeof value == 'string' && (property == 'Skills' || property == 'Workplaces' || property == 'Schools')) {
+			value = value.split('\n')
+
+			if (value[value.length - 1] == '') {
+				value.pop()
+			}
+		}
+
+		if (typeof value == 'string' && property == 'Tools') {
+			value = value.split(',')
+
+			if (value[value.length - 1] == '') {
+				value.pop()
+			}
+		}
+
+		if (property == 'Direction' && !value) {
+			value = 'Other'
+		}
+
+		if (typeof value == 'string' && property == 'Created') {
+			value = dayjs(value).unix()
+			console.log('key', property, value)
+		}
+
+		airtableRecord.fields[property] = value
+	}
+
+	return { ...airtableRecord.fields, ID: airtableRecord.id }
 }

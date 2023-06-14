@@ -1,6 +1,4 @@
-import AirtableService from '@services/airtable'
 import { SearchEngineService } from '@services/typesense'
-import { specialistsSchema } from '@services/typesense/schemes/specialists'
 import { SearchParams } from 'typesense/lib/Typesense/Documents'
 
 export async function search(searchParams: SearchParams) {
