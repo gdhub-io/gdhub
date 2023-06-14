@@ -81,15 +81,15 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 			const data = await response.json()
 
-			// form.setFieldValue('Date', dayjs().add({ days: 2 }).format('Y-M-D'))
+			// form.setFieldValue('Date', dayjs().add(2, 'days').format('Y-M-D'))
 			// form.setFieldValue('Time', dayjs().format('HH:mm'))
 
 			form.setFieldsValue({
 				Name: data.Name,
 				Wishes: data.Wishes,
 				Direction: data.Direction,
-				Date: dayjs().add({ days: 1 }),
-				Time: dayjs().add({ hours: 2 }).set({ minutes: 0 }),
+				Date: dayjs().add(1, 'day'),
+				Time: dayjs().add(2, 'hours').set('minutes', 0),
 			})
 			setProcessing(false)
 		} catch (error: any) {
