@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
+import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 import GdhubLogo from '@/assets/images/gdhub-icon.svg'
@@ -176,7 +176,7 @@ export const ProtectedLayout = ({ children }: any) => {
 									<Space>
 										<NotificationsBell />
 										<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-											<MenuOutlined />
+											<AiOutlineMenu />
 										</Button>
 									</Space>
 								)}
@@ -214,7 +214,7 @@ export const ProtectedLayout = ({ children }: any) => {
 					open={openMobileMenu}
 					extra={
 						<Button onClick={() => setOpenMobileMenu(false)} type="text">
-							<CloseOutlined />
+							<AiOutlineClose />
 						</Button>
 					}
 				>
