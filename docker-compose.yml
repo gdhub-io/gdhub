@@ -18,6 +18,21 @@ services:
       - gamelab-network
     command: yarn dev
 
+  searchengine:
+    container_name: gamelab-searchengine
+    image: typesense/typesense:0.24.1
+    restart: on-failure
+    ports:
+      - "8108:8108"
+    volumes:
+      - gamelab-typesense-data:/data
+    command: '--data-dir /data --api-key=xyz --enable-cors'
+    networks: 
+      - gamelab-network
+
+volumes:
+  gamelab-typesense-data:
+
 networks:
   gamelab-network:
-    name: gamelab-network
+  

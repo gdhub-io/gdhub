@@ -3,10 +3,8 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import AirtableService from '@/services/airtable'
-
-type PaymentState = {
-	[key: string]: any
-}
+import { SearchEngineService } from '@/services/typesense'
+import { prepareAirtableData } from '@/services/typesense/commands/migrate'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { id, profileId, data } = req.body
@@ -27,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				Tools: data.Tools ? data.Tools.join(`\n`) : '',
 			})
 
+			/** Change role for users with specialities */
 			if (!specialities) {
 				const roles = account.get('Roles') as string[]
 
@@ -34,24 +33,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					Roles: [...roles, 'Member'],
 				})
 			}
-
-			/** Send message to Telegram */
-			// 			await TelegramService.sendPhoto(
-			// 				(account.get('Image Link') as string) || 'https://cdn-icons-png.flaticon.com/512/219/219988.png',
-			// 				`
-			// К геймхабу присоеденился <b>${profile.get('Name')}</b>
-			// Специальность: ${speciality.get('Name')} (${speciality.get('Level')})
-			// Навыки:\n${speciality.get('Skills')}
-
-			// Портфолио/резюме:\n${profile.get('Resume/Portfolio')}
-			// 				`
-			// 			)
 		} else {
 			speciality = await AirtableService('Specialities').update(id, {
 				...data,
 				Tools: data.Tools ? data.Tools.join(`\n`) : '',
 			})
+
+			const searchClient = await SearchEngineService.init()
+			await searchClient.deleteSpecialist(speciality.id)
 		}
+
+		await indexNewDocumentToTypesense(speciality)
 
 		if (!speciality) {
 			throw new Error('Error')
@@ -60,5 +52,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		res.json({ success: true })
 	} catch (error: any) {
 		res.json({ success: false, error })
+	}
+}
+
+async function indexNewDocumentToTypesense(speciality: any) {
+	const searchClient = await SearchEngineService.init()
+
+	const {
+		Name,
+		Specialization,
+		Level,
+		Profile,
+		Direction,
+		Skills,
+		Tools,
+		Workplaces,
+		Schools,
+		Country,
+		City,
+		Created,
+	} = speciality.fields
+
+	/** Create document for typense search engine */
+	try {
+		await searchClient.addSpecialist(
+			prepareAirtableData({
+				id: speciality.id,
+				fields: {
+					Name,
+					Specialization,
+					Level,
+					Profile,
+					Direction,
+					Skills,
+					Tools,
+					Workplaces,
+					Schools,
+					Country,
+					City,
+					Created,
+				},
+			})
+		)
+	} catch (error) {
+		console.log(`New record for search engine was not save (id=${speciality.id})`, error)
 	}
 }
