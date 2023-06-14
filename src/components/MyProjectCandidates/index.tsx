@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Avatar, Grid, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import useSWR from 'swr'
 import ProjectCandidatePreviewModal from '@/components/modals/ProjectCandidatePreviewModal'
 import { fetcher } from '@/helpers/fetcher'
@@ -77,7 +77,7 @@ const MyProjectCandidates = ({ project, onUpdate = () => {} }: MyProjectCandidat
 			dataIndex: 'Created At',
 			responsive: ['md'],
 			key: 'Created At',
-			render: (value) => moment(value).format('DD.MM.YYYY'),
+			render: (value) => dayjs(value).format('DD.MM.YYYY'),
 		},
 		{
 			key: 'actions',

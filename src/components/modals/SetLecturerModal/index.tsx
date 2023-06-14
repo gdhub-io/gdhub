@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
-import moment from 'moment'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 
@@ -82,15 +81,15 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 			const data = await response.json()
 
-			// form.setFieldValue('Date', moment().add({ days: 2 }).format('Y-M-D'))
-			// form.setFieldValue('Time', moment().format('HH:mm'))
+			// form.setFieldValue('Date', dayjs().add({ days: 2 }).format('Y-M-D'))
+			// form.setFieldValue('Time', dayjs().format('HH:mm'))
 
 			form.setFieldsValue({
 				Name: data.Name,
 				Wishes: data.Wishes,
 				Direction: data.Direction,
-				Date: moment().add({ days: 1 }),
-				Time: moment().add({ hours: 2 }).set({ minutes: 0 }),
+				Date: dayjs().add({ days: 1 }),
+				Time: dayjs().add({ hours: 2 }).set({ minutes: 0 }),
 			})
 			setProcessing(false)
 		} catch (error: any) {
@@ -225,8 +224,8 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 							<Form.Item name="Date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
 								<DatePicker
 									defaultValue={dayjs().add(1, 'day')}
-									format="D.M.Y"
-									disabledDate={(current) => current && current < moment().endOf('day')}
+									format="DD.MM.YYYY"
+									disabledDate={(current) => current && current < dayjs().endOf('day')}
 								/>
 							</Form.Item>
 						</Col>

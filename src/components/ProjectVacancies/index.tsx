@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import useSWR from 'swr'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import { fetcher } from '@/helpers/fetcher'
@@ -74,7 +74,7 @@ const ProjectVacancies = ({ project }: ProjectVacanciesArgs) => {
 			dataIndex: 'Finished At',
 			responsive: ['md'],
 			key: 'Finished At',
-			render: (value) => moment(value).format('DD.MM.YYYY'),
+			render: (value) => dayjs(value).format('DD.MM.YYYY'),
 		},
 		{
 			key: 'actions',

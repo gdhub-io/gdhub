@@ -1,14 +1,13 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import '@/styles/globals.scss'
-// import moment from 'moment'
 import { ConfigProvider } from 'antd'
-import moment from 'moment-timezone'
+import dayjs from 'dayjs'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
-import 'moment/locale/ru'
+import 'dayjs/locale/ru'
 import { DefaultSeo } from 'next-seo'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
@@ -17,7 +16,7 @@ import { themeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
 import { PublicLayout } from '@/layouts/PublicLayout'
 
-moment.locale('ru')
+dayjs.locale('ru')
 
 export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactNode) => ReactNode

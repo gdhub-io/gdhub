@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Col, DatePicker, Form, Input, InputNumber, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
+import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
-import moment from 'moment'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 
@@ -131,9 +131,9 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						Duration: moment().hour(1).minute(0).second(0),
-						Date: moment().add(1, 'day'),
-						Time: moment().add(2, 'hours').minute(0).second(0),
+						Duration: dayjs().hour(1).minute(0).second(0),
+						Date: dayjs().add(1, 'day'),
+						Time: dayjs().add(2, 'hours').minute(0).second(0),
 					}}
 				>
 					<Form.Item label="Лектор" required wrapperCol={{ span: 24 }}>
@@ -166,7 +166,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					<Row>
 						<Col>
 							<Form.Item name="Date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
-								<DatePicker format="D.M.Y" disabledDate={(current) => current && current < moment().endOf('day')} />
+								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 						<Col offset={1}>

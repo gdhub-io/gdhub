@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, Grid, Popconfirm, Space, Table, message } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { TbTrash } from 'react-icons/tb'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
@@ -40,7 +40,7 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 			dataIndex: 'ID',
 			key: 'ID',
 			width: '100%',
-			render: (value, record) => 'Отчет от ' + moment(record.Date).format('D.M.Y'),
+			render: (value, record) => 'Отчет от ' + dayjs(record.Date).format('D.M.Y'),
 		},
 		{
 			key: 'actions',

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, Card, Col, Descriptions, Grid, Row, Space, Spin, Typography } from 'antd'
-import moment from 'moment-timezone'
+import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import useSWR from 'swr'
@@ -40,9 +40,9 @@ const ProductionStageContent = ({ season, stage }: any) => {
 					<ul>
 						{reportsDates?.map((reportDate: any) => (
 							<li key={`report-date-${reportDate.Date}`}>
-								{moment(reportDate.Date).tz(moment.tz.guess()).format('LLL')}
+								{dayjs(reportDate.Date).format('LLL')}
 								<Typography.Text type="secondary">
-									<small>{' ' + moment(reportDate.Date).tz(moment.tz.guess()).format('z')}</small>
+									<small>{' ' + dayjs(reportDate.Date).format('z')}</small>
 								</Typography.Text>
 							</li>
 						))}

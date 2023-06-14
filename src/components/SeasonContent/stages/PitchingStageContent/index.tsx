@@ -1,5 +1,5 @@
 import { Button, Spin } from 'antd'
-import moment from 'moment-timezone'
+import dayjs from 'dayjs'
 import Link from 'next/link'
 import styles from './style.module.scss'
 
@@ -13,7 +13,7 @@ const PitchingStageContent = ({ season, stage }: any) => {
 					доработку и релиза.
 				</p>
 				<p>
-					Питчи проектов состоятся {moment(stage['Finished At']).format('DD MMM, YYYY')} года н нашем{' '}
+					Питчи проектов состоятся {dayjs(stage['Finished At']).format('DD MMM, YYYY')} года н нашем{' '}
 					<Link href="https://www.youtube.com/channel/UCKesPh-gDVTaHrT_HDUWkeQ" target="_blank">
 						Youtube-канале
 					</Link>

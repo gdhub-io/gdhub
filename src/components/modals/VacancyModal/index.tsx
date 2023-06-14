@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import useSWR from 'swr'
 import { fetcher } from '@/helpers/fetcher'
 
@@ -55,7 +55,7 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 		isPaused: () => !vacancyId,
 		onSuccess: (data) => {
 			setProcessing(false)
-			form.setFieldsValue({ ...data, 'Finished At': moment(data['Finished At']) })
+			form.setFieldsValue({ ...data, 'Finished At': dayjs(data['Finished At']) })
 		},
 	})
 
@@ -79,7 +79,7 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 					id: vacancyId || null,
 					data: {
 						...formData,
-						'Published At': asDraft ? null : moment().toISOString(),
+						'Published At': asDraft ? null : dayjs().toISOString(),
 						'Finished At': formData['Finished At'].format('YYYY-MM-DD'),
 						Status: asDraft ? 'Draft' : 'Opened',
 						Project: [projectId],
@@ -173,7 +173,7 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 						</Col>
 						<Col>
 							<Form.Item name="Finished At" label="Актуальна до" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
-								<DatePicker format="D.M.Y" disabledDate={(current) => current && current < moment().endOf('day')} />
+								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 					</Row>

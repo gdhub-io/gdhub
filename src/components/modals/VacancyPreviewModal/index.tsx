@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
 import styles from './style.module.scss'
@@ -23,7 +23,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			isPaused: () => !vacancyId,
 			onSuccess: (data) => {
 				setProcessing(false)
-				form.setFieldsValue({ ...data, 'Finished At': moment(data['Finished At']) })
+				form.setFieldsValue({ ...data, 'Finished At': dayjs(data['Finished At']) })
 			},
 		}
 	)
@@ -133,7 +133,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 								<Descriptions.Item label="Проект">{vacancy.project.name}</Descriptions.Item>
 								<Descriptions.Item label="Сезон">{vacancy.project.seasonName}</Descriptions.Item>
 								<Descriptions.Item label="Вакансия акатуальна до">
-									{moment(vacancy['Finished At']).format('DD.MM.YYYY')}
+									{dayjs(vacancy['Finished At']).format('DD.MM.YYYY')}
 								</Descriptions.Item>
 							</Descriptions>
 							<Descriptions layout="vertical" column={1}>

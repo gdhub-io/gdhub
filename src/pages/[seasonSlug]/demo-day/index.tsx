@@ -1,5 +1,5 @@
 import { Button, Col, Row, Space, Typography } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -30,7 +30,7 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, stage }: any) => {
 					<Space style={{ width: '100%', justifyContent: 'center' }} align="center" wrap>
 						<div className={styles.dateContainer}>
 							<div className={styles.date}>
-								<h1>{moment(stage['Finished At']).format('DD MMM')}</h1>
+								<h1>{dayjs(stage['Finished At']).format('DD MMM')}</h1>
 							</div>
 						</div>
 					</Space>

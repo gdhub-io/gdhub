@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button, Grid, message, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import useSWR from 'swr'
 import { fetcher } from '@/helpers/fetcher'
 
@@ -42,8 +42,8 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 			{
 				Name: project['Author Name'][0],
 				Position: 'Тимлид',
-				'Started At': moment(project['Created']),
-				'Finished At': project['Finished'] ? moment(project['Finished']) : undefined,
+				'Started At': dayjs(project['Created']),
+				'Finished At': project['Finished'] ? dayjs(project['Finished']) : undefined,
 			},
 		])
 	}, [project])
@@ -55,8 +55,8 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 			{
 				Name: project['Author Name'][0],
 				Position: 'Тимлид',
-				'Started At': moment(project['Created']),
-				'Finished At': project['Finished'] ? moment(project['Finished']) : undefined,
+				'Started At': dayjs(project['Created']),
+				'Finished At': project['Finished'] ? dayjs(project['Finished']) : undefined,
 			},
 			,
 			...projectTeam.data,
@@ -104,8 +104,8 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 			responsive: ['md'],
 			key: 'Started At',
 			render(value, record) {
-				let startedAt = record['Started At'] ? moment(record['Started At']).format('DD.MM.YYYY') : 'незапамятных времен'
-				let finishedAt = record['Finished At'] ? moment(record['Finished At']).format('DD.MM.YYYY') : 'настоящее время'
+				let startedAt = record['Started At'] ? dayjs(record['Started At']).format('DD.MM.YYYY') : 'незапамятных времен'
+				let finishedAt = record['Finished At'] ? dayjs(record['Finished At']).format('DD.MM.YYYY') : 'настоящее время'
 				return `с ${startedAt} по ${finishedAt}`
 			},
 		},

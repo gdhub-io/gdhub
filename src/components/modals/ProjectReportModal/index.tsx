@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DatePicker, Form, Input, message, Modal, Spin } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 import { fetcher, fetherForMutation } from '@/helpers/fetcher'
@@ -15,7 +15,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 		isPaused: () => !reportId,
 		onSuccess: (data) => {
 			setProcessing(false)
-			form.setFieldsValue({ ...data, reportId: data.id, Date: moment(data.Date) })
+			form.setFieldsValue({ ...data, reportId: data.id, Date: dayjs(data.Date) })
 		},
 	})
 
@@ -82,7 +82,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 					requiredMark="optional"
 					initialValues={{
 						Project: projectId,
-						Date: moment(),
+						Date: dayjs(),
 					}}
 				>
 					<Form.Item name="Project" rules={[{ required: true }]} noStyle hidden>
@@ -90,7 +90,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 					</Form.Item>
 
 					<Form.Item name="Date" label="Дата отчета" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
-						<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current > moment().endOf('day')} />
+						<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current > dayjs().endOf('day')} />
 					</Form.Item>
 
 					<Form.Item

@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../auth/[...nextauth]'
@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		await AirtableService('Project Members').update(id, {
 			Status: 'Member',
 			Position: vacancyName || 'Unknown',
-			'Started At': moment().format('YYYY-MM-DD'),
+			'Started At': dayjs().format('YYYY-MM-DD'),
 		})
 
 		res.json({ success: true })

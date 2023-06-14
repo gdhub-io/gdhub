@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { TbBrandTelegram, TbMail } from 'react-icons/tb'
@@ -21,7 +21,7 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 		isPaused: () => !candidateId,
 		onSuccess: (data) => {
 			setProcessing(false)
-			form.setFieldsValue({ ...data, 'Created At': moment(data['Created At']) })
+			form.setFieldsValue({ ...data, 'Created At': dayjs(data['Created At']) })
 		},
 	})
 
@@ -113,7 +113,7 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 										<Descriptions.Item label="Интересует вакансия">{candidate['Vacancy Name']}</Descriptions.Item>
 										<Descriptions.Item label="На проекте">{candidate['Project Name']}</Descriptions.Item>
 										<Descriptions.Item label="Создано">
-											{moment(candidate['Created At']).format('DD.MM.YYYY')}
+											{dayjs(candidate['Created At']).format('DD.MM.YYYY')}
 										</Descriptions.Item>
 									</Descriptions>
 
