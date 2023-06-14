@@ -1,5 +1,5 @@
-import { SearchEngineService } from '@services/typesense'
 import { SearchParams } from 'typesense/lib/Typesense/Documents'
+import { SearchEngineService } from '@/services/typesense'
 
 export async function search(searchParams: SearchParams) {
 	try {

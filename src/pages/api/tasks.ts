@@ -1,9 +1,9 @@
-import { backendVerify } from '@helpers/access'
-import { SearchEngineService } from '@services/typesense'
-import { drop } from '@services/typesense/commands/drop'
-import { migrate } from '@services/typesense/commands/migrate'
-import { search } from '@services/typesense/commands/search'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { backendVerify } from '@/helpers/access'
+import { SearchEngineService } from '@/services/typesense'
+import { drop } from '@/services/typesense/commands/drop'
+import { migrate } from '@/services/typesense/commands/migrate'
+import { search } from '@/services/typesense/commands/search'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {

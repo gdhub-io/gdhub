@@ -1,4 +1,4 @@
-import { SearchEngineService } from '@services/typesense'
+import { SearchEngineService } from '@/services/typesense'
 
 export async function drop() {
 	const searchService = await SearchEngineService.init()

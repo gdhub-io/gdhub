@@ -1,7 +1,7 @@
-import AirtableService from '@services/airtable'
-import { SearchEngineService } from '@services/typesense'
-import { specialistsSchema } from '@services/typesense/schemes/specialists'
 import dayjs from 'dayjs'
+import AirtableService from '@/services/airtable'
+import { SearchEngineService } from '@/services/typesense'
+import { specialistsSchema } from '@/services/typesense/schemes/specialists'
 
 export async function migrate() {
 	try {
