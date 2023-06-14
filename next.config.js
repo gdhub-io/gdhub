@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-// const withLess = require('next-with-less')
-
 const nextConfig = {
-	// lessLoaderOptions: {},
 	reactStrictMode: true,
 	output: 'standalone',
 	images: {
