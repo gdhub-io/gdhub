@@ -1,4 +1,4 @@
-name: New Vacancies Send Message
+name: Build and Deploy Typesense
 on:
   workflow_dispatch:
 jobs:
