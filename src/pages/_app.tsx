@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react'
 import '@/styles/globals.scss'
 import { ConfigProvider } from 'antd'
 import dayjs from 'dayjs'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
@@ -16,6 +17,7 @@ import { themeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
 import { PublicLayout } from '@/layouts/PublicLayout'
 
+dayjs.extend(localizedFormat)
 dayjs.locale('ru')
 
 export type NextPageWithLayout = NextPage & {
