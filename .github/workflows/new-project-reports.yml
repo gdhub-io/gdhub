@@ -1,0 +1,14 @@
+name: New Project Reports Send Message
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 16 * * TUE'
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: New Project Reports Send Message
+        run: |
+          curl --request POST \
+          --url 'https://gdhub.io/api/cron/new-project-reports' \
+          --header 'Authorization: ${{ secrets.BACKEND_KEY }}'
