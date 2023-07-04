@@ -1,4 +1,5 @@
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
+import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -12,6 +13,17 @@ const { Title } = Typography
 
 const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 	const screens = Grid.useBreakpoint()
+
+	const breadcrumbItems = (project: any): ItemType[] => [
+		{
+			title: project['Season Name'],
+			key: project.Name + '-season',
+		},
+		{
+			title: project.Stage,
+			key: project.Name + '-stage',
+		},
+	]
 
 	return (
 		<>
@@ -45,10 +57,7 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 											<Descriptions
 												title={
 													<>
-														<Breadcrumb className={styles.seasonDetails}>
-															<Breadcrumb.Item>{project['Season Name']}</Breadcrumb.Item>
-															<Breadcrumb.Item>{project.Stage}</Breadcrumb.Item>
-														</Breadcrumb>
+														<Breadcrumb items={breadcrumbItems(project)} className={styles.seasonDetails} />
 														<Title level={2} style={{ fontSize: 16 }}>
 															{project.Name}
 														</Title>
@@ -79,13 +88,14 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 	)
 }
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getStaticProps = async (context: GetServerSidePropsContext) => {
 	const projects = await getWorkedProjects()
 
 	return {
 		props: {
 			projects,
 		},
+		revalidate: 60,
 	}
 }
 

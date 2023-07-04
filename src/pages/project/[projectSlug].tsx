@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
-import { GetServerSidePropsContext } from 'next'
+import { GetStaticPropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getServerSession } from 'next-auth'
+import { useRouter } from 'next/router'
 import { TbBrandTelegram } from 'react-icons/tb'
 import YouTube from 'react-youtube'
 import { Options } from 'youtube-player/dist/types'
@@ -14,12 +14,12 @@ import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import AirtableService from '@/services/airtable'
 
 const { Title, Paragraph, Text } = Typography
 
 const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
+	const router = useRouter()
 	const screens = Grid.useBreakpoint()
 	const [showPitchVideo, setShowPitchVideo] = useState(false)
 
@@ -47,8 +47,9 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 				<title>{project.Name}</title>
 				<meta name="description" content={project.Description}></meta>
 				<meta property="og:title" content={project.Name} />
+				<meta property="og:description" content={project.Description} />
 				<meta property="og:type" content="website" />
-				<meta property="og:url" content={pageUrl} />
+				<meta property="og:url" content={router.route} />
 				{!!project['Cover Image'] && <meta property="og:image" content={project['Cover Image']} />}
 			</Head>
 			<div className={styles.container}>
@@ -121,15 +122,23 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 	)
 }
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const { projectSlug }: any = context.params
-	const session: any = await getServerSession(context.req, context.res, authOptions)
+export async function getStaticPaths() {
+	const projectsSlugs = await AirtableService('Project Ideas')
+		.select({
+			fields: ['Slug'],
+			filterByFormula: `Status = "Approved"`,
+		})
+		.all()
 
-	if (session && !session.user.hasRole('member')) {
-		return {
-			notFound: true,
-		}
-	}
+	const paths = projectsSlugs.map((post) => ({
+		params: { projectSlug: post.get('Slug') },
+	}))
+
+	return { paths, fallback: false }
+}
+
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+	const { projectSlug }: any = context.params
 
 	const [project] = await AirtableService('Project Ideas')
 		.select({
@@ -147,9 +156,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 	return {
 		props: {
-			pageUrl: process.env.NEXT_PUBLIC_APP_URI + context.resolvedUrl,
 			project: { ...project.fields, id: project.id },
 		},
+		revalidate: 60,
 	}
 }
 

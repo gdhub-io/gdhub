@@ -4,10 +4,8 @@ import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { getServerSession } from 'next-auth'
 import { signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
-import { authOptions } from './api/auth/[...nextauth]'
 import { useTelegram } from '@/helpers/useTelegram'
 import AirtableService, { getWorkedProjects } from '@/services/airtable'
 import styles from '@/styles/home.module.scss'
@@ -158,17 +156,17 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 	)
 }
 
-export async function getServerSideProps(context: any) {
-	const session: any = await getServerSession(context.req, context.res, authOptions)
+export async function getStaticProps(context: any) {
+	// const session: any = await getServerSession(context.req, context.res, authOptions)
 
-	if (session?.user?.id) {
-		return {
-			redirect: {
-				destination: '/hub',
-				permanent: false,
-			},
-		}
-	}
+	// if (session?.user?.id) {
+	// 	return {
+	// 		redirect: {
+	// 			destination: '/hub',
+	// 			permanent: false,
+	// 		},
+	// 	}
+	// }
 
 	const users = await AirtableService('Accounts').select({ fields: [] }).all()
 	const specialities = await AirtableService('Specialities').select({ fields: [] }).all()
@@ -184,6 +182,7 @@ export async function getServerSideProps(context: any) {
 			projectsCount: projects.length,
 			vacanciesCount: vacancies.length,
 		},
+		revalidate: 60,
 	}
 }
 

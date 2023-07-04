@@ -12,6 +12,10 @@ export default withAuth(
 		) {
 			return NextResponse.redirect(new URL('/hub', req.url))
 		}
+
+		if (token && req.nextUrl.pathname == '/') {
+			return NextResponse.redirect(new URL('/hub', req.url))
+		}
 	},
 	{
 		callbacks: {
@@ -23,5 +27,5 @@ export default withAuth(
 )
 
 export const config = {
-	matcher: ['/hub/:path*', '/profile', '/my/:path*', '/live/:path*'],
+	matcher: ['/', '/hub/:path*', '/profile', '/my/:path*', '/live/:path*'],
 }

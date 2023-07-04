@@ -36,7 +36,7 @@ const VacanciesList = () => {
 		mutate: fetchVacanciesList,
 	} = useSWR({ url: '/api/vacancies' }, fetcher, {
 		revalidateOnFocus: false,
-		refreshInterval: 10000,
+		refreshInterval: 60 * 1000,
 	})
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
