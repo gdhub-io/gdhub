@@ -19,13 +19,18 @@ export default withAuth(
 	},
 	{
 		callbacks: {
-			authorized: ({ token }) => {
-				return token?.id ? true : false
+			authorized: ({ req, token }) => {
+				const pathname = req.nextUrl.pathname
+
+				if (pathname.startsWith('/_next') || pathname === '/favicon.ico') return true
+				if (token) return true
+
+				return false
 			},
 		},
 	}
 )
 
 export const config = {
-	matcher: ['/', '/hub/:path*', '/profile', '/my/:path*', '/live/:path*'],
+	matcher: ['/hub/:path*', '/profile', '/my/:path*', '/live/:path*'],
 }

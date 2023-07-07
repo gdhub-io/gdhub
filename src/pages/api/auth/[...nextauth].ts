@@ -6,7 +6,7 @@ import AirtableService, { findOrCreateMember } from '@/services/airtable'
 export const authOptions: NextAuthOptions = {
 	secret: process.env.NEXT_AUTH_SECRET as string,
 	pages: {
-		signIn: '/',
+		signIn: '/login',
 	},
 	providers: [
 		GoogleProvider({

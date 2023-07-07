@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Button, Card, Col, Row, Space, Statistic, Typography } from 'antd'
+import { Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
-import { FcGoogle } from 'react-icons/fc'
+import StartProjectImage from '@/assets/images/start-indie-game.jpg'
+import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
 import { useTelegram } from '@/helpers/useTelegram'
 import AirtableService, { getWorkedProjects } from '@/services/airtable'
 import styles from '@/styles/home.module.scss'
@@ -77,11 +78,9 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 							</Link>
 						</>
 					) : (
-						<Button type="primary" onClick={() => signIn('google', {}, { prompt: 'select_account consent' })}>
-							<Space className="login-button">
-								<FcGoogle size={16} /> Войти с помощью Google
-							</Space>
-						</Button>
+						<Link href="/login">
+							<Button type="primary">Вход / Регистрация</Button>
+						</Link>
 					)}
 				</Space>
 
@@ -118,37 +117,41 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 					</Col>
 				</Row>
 
-				<Row gutter={[24, 24]}>
+				<Row gutter={[24, 24]} style={{ maxWidth: '1024px' }}>
 					<Col xs={24} lg={12}>
-						<Paragraph style={{ textAlign: 'center' }}>
-							<Title level={2} style={{ fontSize: 24 }}>
-								Хочешь создать свою игру?
-							</Title>
-							<Text>
-								Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
-								инкубационной программы Gamelab, так и работая самостоятельно в своем темпе.
-							</Text>
-							<br />
-							<Text>
-								{/* Для выбора формата работы жмите &quot;Войти с помощью Google&quot; и нажмите &quot;Создать свой
-							проект&quot;. */}
-								Если вас интересует второй вариант, обратитесь за консультацией в live-чат.
-							</Text>
-						</Paragraph>
+						<Card
+							cover={<Image preview={false} src={StartProjectImage.src} alt="start-project" />}
+							actions={[
+								<Link key="start-project" href="https://tally.so/r/w8zl5P" target="_blank">
+									<Button>Запустить свой проект</Button>
+								</Link>,
+							]}
+						>
+							<Card.Meta
+								title="Хочешь создать свою игру?"
+								description="Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
+								инкубационной программы Gamelab, так и работая самостоятельно в своем темпе."
+							/>
+						</Card>
 					</Col>
 					<Col xs={24} lg={12}>
-						<Paragraph style={{ textAlign: 'center' }}>
-							<Title level={2} style={{ fontSize: 24 }}>
-								Хочешь участвовать в разработке инди-игр?
-							</Title>
-							<Text>
-								Каждый специалист игровой индустрии (программист, художник, аниматор, саунд-дизайнер, smm-специалист и
-								многие другие) имеет возможность присоединиться к одному из инди-проектов, находящихся в разработке.
-								<br />
-								Для этого переходите на страницу <Link href="/projects">Проекты</Link>, выбирайте понравившиеся и
-								откликайтесь на их вакансии.
-							</Text>
-						</Paragraph>
+						<Card
+							cover={<Image preview={false} src={TeamProjectImage.src} alt="start-project" />}
+							actions={[
+								<Link key="select-project" href="/projects">
+									<Button>Смотреть проекты</Button>
+								</Link>,
+								<Link key="select-vecencies" href="/vacancies">
+									<Button>Смотреть вакансии</Button>
+								</Link>,
+							]}
+						>
+							<Card.Meta
+								title="Хочешь участвовать в разработке инди-игр?"
+								description="Каждый специалист игровой индустрии (программист, художник, аниматор, саунд-дизайнер, smm-специалист и
+									многие другие) имеет возможность присоединиться к одному из инди-проектов, находящихся в разработке."
+							/>
+						</Card>
 					</Col>
 				</Row>
 			</div>
