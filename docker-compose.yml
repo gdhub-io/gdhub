@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   dev:
-    build: 
+    build:
       context: .
       target: deps
     container_name: gamelab-dev
@@ -23,16 +23,39 @@ services:
     image: typesense/typesense:0.24.1
     restart: on-failure
     ports:
-      - "8108:8108"
+      - '8108:8108'
     volumes:
       - gamelab-typesense-data:/data
     command: '--data-dir /data --api-key=xyz --enable-cors'
-    networks: 
+    networks:
       - gamelab-network
+
+  db:
+    image: postgres:15.3-alpine
+    container_name: gamelab_db
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-postgres}
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - '${DATABASE_PORT:-5432}:5432'
+    volumes:
+      - ./deploy/postgres/init:/docker-entrypoint-initdb.d
+      - gamelab-postgres-data:/var/lib/postgresql/data
+    networks:
+      - gamelab-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME:-postgres} -d ${DATABASE_NAME:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   gamelab-typesense-data:
+  gamelab-postgres-data:
 
 networks:
   gamelab-network:
-  
