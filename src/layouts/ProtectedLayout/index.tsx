@@ -16,7 +16,7 @@ export const ProtectedLayout = ({ children }: any) => {
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
-	const { data: session, status }: any = useSession()
+	const { data: session }: any = useSession()
 
 	const telegramMenuItem = {
 		label: screens.lg ? (
@@ -36,6 +36,7 @@ export const ProtectedLayout = ({ children }: any) => {
 	}
 
 	useEffect(() => {
+		console.log(session)
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
 

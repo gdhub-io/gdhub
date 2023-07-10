@@ -11,9 +11,8 @@ const prismaService = PrismaService.getInstance()
 
 export const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(prismaService.client),
-	secret: process.env.NEXT_AUTH_SECRET as string,
 	pages: {
-		signIn: '/login',
+		signIn: '/signin',
 	},
 	providers: [
 		GoogleProvider({
@@ -56,6 +55,7 @@ export const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async session({ session, user }) {
+			if (!user) return session
 			// Make a profile of the user if he does not exist one
 			if (!user.profileId) {
 				const profile = await prismaService.client.profile.create({
@@ -94,14 +94,14 @@ export const authOptions: NextAuthOptions = {
 						method: 'POST',
 					})
 
-					const tokens: TokenSet = await response.json()
+					const tokens: TokenSet & { expires_in: number } = await response.json()
 
-					if (!response.ok || !tokens.expires_at) throw tokens
+					if (!response.ok || !tokens.expires_in) throw tokens
 
 					await prismaService.client.account.update({
 						data: {
 							access_token: tokens.access_token,
-							expires_at: Math.floor(Date.now() / 1000 + tokens.expires_at),
+							expires_at: Math.floor(Date.now() / 1000 + tokens.expires_in),
 							refresh_token: tokens.refresh_token ?? google.refresh_token,
 						},
 						where: {
@@ -117,6 +117,7 @@ export const authOptions: NextAuthOptions = {
 					session.error = 'RefreshAccessTokenError'
 				}
 			}
+
 			return session
 		},
 	},

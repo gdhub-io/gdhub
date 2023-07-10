@@ -78,7 +78,7 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 							</Link>
 						</>
 					) : (
-						<Link href="/login">
+						<Link href="/signin">
 							<Button type="primary">Вход / Регистрация</Button>
 						</Link>
 					)}
