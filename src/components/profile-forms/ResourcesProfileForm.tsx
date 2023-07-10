@@ -1,58 +1,43 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Col, Form, message, Row, Slider, Spin } from 'antd'
-import { useSession } from 'next-auth/react'
-import countryList from 'react-select-country-list'
+import { useEffect, useState } from 'react'
+import { Profile } from '@prisma/client'
+import { Button, Card, Col, Form, InputNumber, message, Row, Space, Spin, Typography } from 'antd'
 
-const ResourcesProfileForm = ({ profile }: any) => {
+const { Text } = Typography
+
+type ResourcesProfileFormArgs = {
+	profile: Profile
+	saveProfile: (data: { id: string; data: Partial<Profile> }) => Promise<void>
+}
+
+const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs) => {
 	const [form] = Form.useForm()
-	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
-	const countries = useMemo(() => countryList().getData(), [])
-	const [avaibleHours, setAvaibleHours] = useState({ min: 2, max: 4 })
 
 	useEffect(() => {
 		if (profile) {
 			setProcessing(false)
 
-			if (profile.hasOwnProperty('Time For Work') && profile['Time For Work'] !== null) {
-				setAvaibleHours({ min: profile['Time For Work'][0], max: profile['Time For Work'][1] })
+			if (profile.timeForWork && Array.isArray(profile.timeForWork)) {
+				form.setFieldsValue({
+					timeForWorkMin: profile.timeForWork[0],
+					timeForWorkMax: profile.timeForWork[1],
+				})
 			}
 		}
 	}, [profile])
 
 	const handleForm = async () => {
 		try {
-			const formData = await form.validateFields()
-			const timeForWork = formData['Time For Work']
+			const { timeForWorkMin, timeForWorkMax } = await form.validateFields()
+			const timeForWork = [timeForWorkMin, timeForWorkMax]
 
 			setProcessing(true)
-
-			const response: any = await fetch('/api/profile/update', {
-				method: 'post',
-				body: JSON.stringify({ id: profile.id, data: { 'Time For Work': `${timeForWork[0]}-${timeForWork[1]}` } }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-
+			await saveProfile({ id: profile.id, data: { timeForWork } })
 			setProcessing(false)
-
-			if (response.error) {
-				throw new Error(response.error.message)
-			}
 
 			message.success('Данные о ресурсах обновлены')
 		} catch (error: any) {
 			setProcessing(false)
-			message.error(error.message)
-		}
-	}
-
-	const avaibleHoursText = () => {
-		if (avaibleHours.min !== avaibleHours.max) {
-			return `от ${avaibleHours.min} до ${avaibleHours.max} часов в неделю`
-		} else {
-			return `${avaibleHours.min} часов в неделю`
 		}
 	}
 
@@ -66,31 +51,39 @@ const ResourcesProfileForm = ({ profile }: any) => {
 					wrapperCol={{ span: 12 }}
 					autoComplete="off"
 					requiredMark="optional"
-					initialValues={{
-						'Time For Work': [avaibleHours.min, avaibleHours.max],
-					}}
 				>
 					<Form.Item
 						label="Доступное время (в неделю)"
-						extra="Сколько часов в неделю вы можете уделять участию в проектах."
+						tooltip={{ title: 'Сколько часов в неделю вы можете уделять участию в проектах.' }}
 						wrapperCol={{ span: 24 }}
 						required
 						valuePropName="value"
 					>
 						<Row>
 							<Col md={{ span: 12 }} xs={{ span: 24 }}>
-								<Form.Item name="Time For Work" noStyle>
-									<Slider
-										range
-										max={56}
-										min={1}
-										marks={{ 1: '1 час', 56: '56 часов' }}
-										onChange={([min, max]) => setAvaibleHours({ min, max })}
-									/>
-								</Form.Item>
-							</Col>
-							<Col md={{ span: 6, offset: 2 }} xs={{ span: 24 }}>
-								{avaibleHoursText()}
+								<Space>
+									<Text>От </Text>
+									<Form.Item name="timeForWorkMin" noStyle rules={[{ required: true }]}>
+										<InputNumber min={1} max={55} placeholder="минимум" />
+									</Form.Item>
+									<Text>до</Text>
+									<Form.Item
+										name="timeForWorkMax"
+										noStyle
+										rules={[
+											{ required: true },
+											{
+												validator: (_, value) =>
+													form.getFieldValue('timeForWorkMin') > value
+														? Promise.reject('Максимальное значение не может быть меньше минимального')
+														: Promise.resolve(),
+											},
+										]}
+									>
+										<InputNumber min={2} max={56} placeholder="максиммум" />
+									</Form.Item>
+									<Text> часов в неделю</Text>
+								</Space>
 							</Col>
 						</Row>
 					</Form.Item>

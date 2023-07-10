@@ -28,5 +28,8 @@ export const themeConfig: ThemeConfig = {
 			colorPrimaryBorder: '#19384f',
 			controlItemBgActiveHover: '#14293c',
 		},
+		Select: {
+			controlItemBgActive: '#b2f3e9',
+		},
 	},
 }

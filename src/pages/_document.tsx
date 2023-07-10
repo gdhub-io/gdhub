@@ -27,7 +27,7 @@ export default class CustomDocument extends Document {
 					<link rel="icon" href="/favicon.svg" />
 				</Head>
 				<body>
-					{process.env.NODE_ENV !== 'development' && (
+					{process.env.NEXT_PUBLIC_APP_URI !== 'http://localhost:3000' && (
 						<noscript>
 							<iframe
 								src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

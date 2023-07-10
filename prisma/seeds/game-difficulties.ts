@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { ExtendedPrismaClient } from '@/services/prisma'
 
-export const seedGameDifficultyLevels = async (prisma: PrismaClient) => {
+export const seedGameDifficultyLevels = async (prisma: ExtendedPrismaClient) => {
 	return prisma.$transaction([
 		prisma.gameDifficultyLevel.deleteMany(),
 		prisma.gameDifficultyLevel.createMany({

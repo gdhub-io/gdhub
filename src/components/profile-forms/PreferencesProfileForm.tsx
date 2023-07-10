@@ -1,9 +1,27 @@
 import { useEffect, useState } from 'react'
+import { GameDifficultyLevel, GameGenre, GameSetting, Profile } from '@prisma/client'
 import { Button, Card, Form, message, Select, Spin, Typography } from 'antd'
+import axios from 'axios'
+import { useQuery } from 'react-query'
 
-const PreferencesProfileForm = ({ profile }: any) => {
+type PreferencesProfileFormArgs = {
+	profile: Profile & {
+		preferredGenres?: GameGenre[]
+		preferredSettings?: GameSetting[]
+		preferredLevels?: GameDifficultyLevel[]
+	}
+	saveProfile: (data: { id: string; data: Partial<Profile> }) => Promise<void>
+}
+
+const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileFormArgs) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
+
+	const { data: gameGenres } = useQuery('gameGenres', () => axios.get<GameGenre[]>('/api/dictionary/game-genres'))
+	const { data: gameSettings } = useQuery('gameSettings', () =>
+		axios.get<GameSetting[]>('/api/dictionary/game-settings')
+	)
+	const { data: gameLevels } = useQuery('gameLevels', () => axios.get<GameSetting[]>('/api/dictionary/game-levels'))
 
 	useEffect(() => {
 		if (profile) {
@@ -16,20 +34,8 @@ const PreferencesProfileForm = ({ profile }: any) => {
 			const formData = await form.validateFields()
 
 			setProcessing(true)
-
-			const response: any = await fetch('/api/profile/update', {
-				method: 'post',
-				body: JSON.stringify({ id: profile.id, data: formData }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-
+			await saveProfile({ id: profile.id, data: formData })
 			setProcessing(false)
-
-			if (response.error) {
-				throw new Error(response.error.message)
-			}
 
 			message.success('Предпочтения по играм обновлены')
 		} catch (error: any) {
@@ -38,45 +44,20 @@ const PreferencesProfileForm = ({ profile }: any) => {
 		}
 	}
 
-	const gameGenresOptions = [
-		'Шутер / shooter',
-		'Шутер от первого лица / first person shooter(FPS)',
-		'Приключения / adventure',
-		'Приключенческий боевик / action-adventure',
-		'Стратегия в реальном времени / real time strategy (RTS)',
-		'Пошаговые стратегии / turn based strategy',
-		'Ролевые игры / role playing games (RPG)',
-		'Многопользовательская ролевая онлайн игра / massively multiplayer online role playing game (MMORPG)',
-		'Симуляторы / simulation',
-		'Спортивные / sports',
-		'Танцевальные, ритмичные / dance/rhythm',
-		'Пазлы / puzzle',
-		'Платформер / platformer',
-		'Борьба, сражения / fighting',
-		'Ужас выживания / survival horror',
-		'Другие / others',
-	].map((i) => ({ label: <Typography.Paragraph ellipsis>{i}</Typography.Paragraph>, value: i }))
+	const gameGenresOptions = gameGenres?.data.map((i) => ({
+		label: <Typography.Paragraph ellipsis>{i.name}</Typography.Paragraph>,
+		value: i.id,
+	}))
 
-	const graphicSettingsOptions = [
-		'Исторический / Historic',
-		'Научная фантастика / Sci-Fi',
-		'Зомби / Zombie',
-		'Военный / Military',
-		'Сказочный / Fairy',
-		'Азиатская фэнтэзи / Oriental Fantasy',
-		'Спортивный / Sport',
-		'Реальная жизнь / Real Life',
-		'Фэнтэзи / Fantasy',
-		'Другое / Other',
-	].map((i) => ({ label: <Typography.Paragraph ellipsis>{i}</Typography.Paragraph>, value: i }))
+	const graphicSettingsOptions = gameSettings?.data.map((i) => ({
+		label: <Typography.Paragraph ellipsis>{i.name}</Typography.Paragraph>,
+		value: i.id,
+	}))
 
-	const gameLevelsOptions = [
-		'Гиперказуальные / Hyper-casual',
-		'Казуальные / Casual',
-		'Средней сложности / Mid-core',
-		'Сложные / Hard-core',
-		'Другое / Other',
-	].map((i) => ({ label: <Typography.Paragraph ellipsis>{i}</Typography.Paragraph>, value: i }))
+	const gameLevelsOptions = gameLevels?.data.map((i) => ({
+		label: <Typography.Paragraph ellipsis>{i.name}</Typography.Paragraph>,
+		value: i.id,
+	}))
 
 	return (
 		<Card title="Предпочтения">
@@ -91,14 +72,12 @@ const PreferencesProfileForm = ({ profile }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						'Preferred Genres': profile?.hasOwnProperty('Preferred Genres') ? profile['Preferred Genres'] : [],
-						'Preferred Settings': profile?.hasOwnProperty('Preferred Settings') ? profile['Preferred Settings'] : [],
-						'Preferred Difficulty Levels': profile?.hasOwnProperty('Preferred Difficulty Levels')
-							? profile['Preferred Difficulty Levels']
-							: [],
+						preferredGenres: profile?.preferredGenres?.map((d) => d.id) || [],
+						preferredSettings: profile?.preferredSettings?.map((d) => d.id) || [],
+						preferredLevels: profile?.preferredLevels?.map((d) => d.id) || [],
 					}}
 				>
-					<Form.Item label="Жанры игр, в разработке которых вам интересно было бы участвовать" name="Preferred Genres">
+					<Form.Item label="Жанры игр, в разработке которых вам интересно было бы участвовать" name="preferredGenres">
 						<Select
 							options={gameGenresOptions}
 							mode="multiple"
@@ -110,7 +89,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 					</Form.Item>
 					<Form.Item
 						label="Визуальный сеттинг проектов, с которым вам было бы интересно поработать"
-						name="Preferred Settings"
+						name="preferredSettings"
 					>
 						<Select
 							options={graphicSettingsOptions}
@@ -121,7 +100,7 @@ const PreferencesProfileForm = ({ profile }: any) => {
 							onChange={() => {}}
 						/>
 					</Form.Item>
-					<Form.Item label="Игры какой сложности вам хотелось бы разрабатывать" name="Preferred Difficulty Levels">
+					<Form.Item label="Игры какой сложности вам хотелось бы разрабатывать" name="preferredLevels">
 						<Select
 							options={gameLevelsOptions}
 							mode="multiple"

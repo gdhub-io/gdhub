@@ -1,7 +1,6 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { UserRole } from '@prisma/client'
+import { PrismaClient, UserRole } from '@prisma/client'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
-import { AdapterUser } from 'next-auth/adapters'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import AirtableService from '@/services/airtable'
@@ -10,7 +9,7 @@ import { PrismaService } from '@/services/prisma'
 const prismaService = PrismaService.getInstance()
 
 export const authOptions: NextAuthOptions = {
-	adapter: PrismaAdapter(prismaService.client),
+	adapter: PrismaAdapter(prismaService.client as unknown as PrismaClient),
 	pages: {
 		signIn: '/signin',
 	},
@@ -54,25 +53,22 @@ export const authOptions: NextAuthOptions = {
 		}),
 	],
 	callbacks: {
-		async session({ session, user }) {
-			if (!user) return session
-			// Make a profile of the user if he does not exist one
-			if (!user.profileId) {
-				const profile = await prismaService.client.profile.create({
-					data: {
-						userId: user.id,
-					},
-				})
+		async signIn({ user }) {
+			const existProfile = await prismaService.client.user.existProfile(user.id)
 
+			if (!existProfile) {
 				await prismaService.client.user.update({
 					where: { id: user.id },
-					data: { profileId: profile.id },
+					data: { Profile: { create: { name: user.name as string } } },
 				})
-
-				session.user = { ...user, profileId: profile.id } as AdapterUser
-			} else {
-				session.user = user
 			}
+
+			return !!user
+		},
+		async session({ session, user }) {
+			if (!user) return session
+
+			session.user = user
 
 			const [google] = await prismaService.client.account.findMany({
 				where: { userId: user.id, provider: 'google' },

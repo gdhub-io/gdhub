@@ -1,29 +1,36 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
-import AirtableService from '@/services/airtable'
-
-type PaymentState = {
-	[key: string]: any
-}
+import { PrismaService } from '@/services/prisma'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	let { id, data } = req.body
 	const session = await getServerSession(req, res, authOptions)
+	const prismaService = PrismaService.getInstance()
 
 	try {
 		if (req.method !== 'POST' || !session || !data) throw new Error('Forbidden request')
 
-		if (data.hasOwnProperty('Telegram Nickname')) {
-			let telegramUsername = data['Telegram Nickname'] as string
+		if (data.tgNickname) {
+			let telegramUsername = data.tgNickname as string
 			telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
-
-			data['Telegram Nickname'] = telegramUsername
+			data.tgNickname = telegramUsername
 		}
 
-		const response = await AirtableService('Profiles').update(id, data)
+		const { preferredGenres, preferredLevels, preferredSettings, ...othersData } = data
 
-		if (!response) {
+		const updatedProfile = await prismaService.client.profile.update({
+			where: { userId: session.user.id },
+			data: {
+				preferredGenres: {
+					set: preferredGenres?.map((v: string) => ({ id: v })),
+				},
+				preferredLevels: { set: preferredLevels?.map((v: string) => ({ id: v })) },
+				preferredSettings: { set: preferredSettings?.map((v: string) => ({ id: v })) },
+			},
+		})
+
+		if (!updatedProfile) {
 			throw new Error('Error')
 		}
 

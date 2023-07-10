@@ -10,6 +10,7 @@ import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
 import 'dayjs/locale/ru'
 import { DefaultSeo } from 'next-seo'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import SEOSettings from '@/config/seo'
@@ -24,9 +25,7 @@ export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactNode) => ReactNode
 }
 
-declare type IntrinsicAttributes = {
-	style: any
-}
+const queryClient = new QueryClient()
 
 type AppPropsWithLayout = AppProps<{ session: any }> & {
 	Component: NextPageWithLayout
@@ -86,18 +85,20 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 				}}
 			/>
 			<ErrorBoundary>
-				<ConfigProvider theme={themeConfig}>
-					<SessionProvider session={session}>
-						<div
-							className="app-container"
-							style={{ fontFamily: themeConfig.token?.fontFamily, opacity: loading ? 0 : 1 }}
-						>
-							<DefaultSeo {...SEOSettings} />
-							{getLayout(<Component {...pageProps} />)}
-						</div>
-					</SessionProvider>
-					<LoadingScreen visible={loading} />
-				</ConfigProvider>
+				<QueryClientProvider client={queryClient}>
+					<ConfigProvider theme={themeConfig}>
+						<SessionProvider session={session}>
+							<div
+								className="app-container"
+								style={{ fontFamily: themeConfig.token?.fontFamily, opacity: loading ? 0 : 1 }}
+							>
+								<DefaultSeo {...SEOSettings} />
+								{getLayout(<Component {...pageProps} />)}
+							</div>
+						</SessionProvider>
+						<LoadingScreen visible={loading} />
+					</ConfigProvider>
+				</QueryClientProvider>
 			</ErrorBoundary>
 		</>
 	)

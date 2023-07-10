@@ -1,9 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Profile } from '@prisma/client'
 import { AutoComplete, Button, Card, Form, Input, message, Spin } from 'antd'
 import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
 
-const GeneralProfileForm = ({ profile }: any) => {
+type GeneralProfileFormArgs = {
+	profile: Profile
+	saveProfile: (data: { id: string; data: Partial<Profile> }) => Promise<void>
+}
+
+const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
@@ -20,24 +26,12 @@ const GeneralProfileForm = ({ profile }: any) => {
 			const formData = await form.validateFields()
 
 			setProcessing(true)
-
-			const response: any = await fetch('/api/profile/update', {
-				method: 'post',
-				body: JSON.stringify({ id: profile.id, data: formData }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-
+			await saveProfile({ id: profile.id, data: formData })
 			setProcessing(false)
 
-			if (response.error) {
-				throw new Error(response.error.message)
-			}
-
-			let telegramUsername = formData['Telegram Nickname'] as string
+			let telegramUsername = formData.tgNickname as string
 			telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
-			form.setFieldValue('Telegram Nickname', telegramUsername)
+			form.setFieldValue('tgNickname', telegramUsername)
 
 			message.success('Данные вашего профиля обновлены')
 		} catch (error: any) {
@@ -59,20 +53,20 @@ const GeneralProfileForm = ({ profile }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						Name: profile?.Name,
-						Country: profile?.Country,
-						City: profile?.City,
-						'Resume/Portfolio': profile?.hasOwnProperty('Resume/Portfolio') ? profile['Resume/Portfolio'] : null,
-						'Telegram Nickname': profile?.hasOwnProperty('Telegram Nickname') ? profile['Telegram Nickname'] : null,
+						name: profile.name,
+						country: profile.country,
+						city: profile.city,
+						portfolioLink: profile.portfolioLink,
+						tgNickname: profile.tgNickname,
 					}}
 				>
-					<Form.Item label="Email" tooltip={{ title: 'Got from your google account' }} required>
+					<Form.Item label="Электронная почта" tooltip={{ title: 'Получена из вашего Google-аккаунта' }} required>
 						<Input disabled readOnly value={session?.user?.email || ''} />
 					</Form.Item>
-					<Form.Item label="Ваше имя" name="Name" rules={[{ required: true }]} required>
+					<Form.Item label="Ваше имя" name="name" rules={[{ required: true }]} required>
 						<Input />
 					</Form.Item>
-					<Form.Item label="Страна" name="Country" rules={[{ required: true }]} required>
+					<Form.Item label="Страна" name="country" rules={[{ required: true }]} required>
 						<AutoComplete
 							allowClear
 							placeholder="Страна"
@@ -87,18 +81,18 @@ const GeneralProfileForm = ({ profile }: any) => {
 							))}
 						</AutoComplete>
 					</Form.Item>
-					<Form.Item label="Город" name="City" rules={[{ required: false }]}>
+					<Form.Item label="Город" name="city" rules={[{ required: false }]}>
 						<Input />
 					</Form.Item>
 					<Form.Item
 						label="Telegram Никнейм"
-						name="Telegram Nickname"
+						name="tgNickname"
 						rules={[{ required: true }]}
 						extra="Указывать без символа @"
 					>
 						<Input />
 					</Form.Item>
-					<Form.Item label="Ссылка на резюме или портфолио" name="Resume/Portfolio" rules={[{ type: 'url' }]}>
+					<Form.Item label="Ссылка на резюме или портфолио" name="portfolioLink" rules={[{ type: 'url' }]}>
 						<Input />
 					</Form.Item>
 					<Button type="primary" onClick={handleForm}>
