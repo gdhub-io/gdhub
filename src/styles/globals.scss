@@ -1,10 +1,4 @@
-// @tailwind base;
-// @tailwind components;
-// @tailwind utilities;
-
-// @import url('../assets/fonts/montserrat/montserrat.css');
 @import 'antd/dist/reset.css'; // Import Ant Design styles by less entry
-// @import 'variables.scss'; // variables to override above
 
 html,
 body {
@@ -30,7 +24,7 @@ a.text-link {
 	}
 }
 
-.ant-layout-header {
+.ant-layout-header, .ant-layout, .ant-layout-footer {
 	background-color: white;
 }
 

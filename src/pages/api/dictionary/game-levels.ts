@@ -1,19 +1,15 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]'
-import { PrismaService } from '@/services/prisma'
+import { Get, createHandler } from 'next-api-decorators'
+import { NextAuthGuard } from '@/lib/api-middlewares'
+import { prisma } from '@/services/prisma'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const session = await getServerSession(req, res, authOptions)
-	const prismaService = PrismaService.getInstance()
+@NextAuthGuard('user')
+class ApiDictGameLevelsHandler {
+	constructor() {}
 
-	try {
-		if (req.method !== 'GET' || !session) throw new Error('Forbidden request')
-
-		const gameLevels = await prismaService.client.gameDifficultyLevel.findMany()
-
-		res.json(gameLevels)
-	} catch (error: any) {
-		res.json({ success: false, error })
+	@Get()
+	public async get() {
+		return await prisma.gameDifficultyLevel.findMany()
 	}
 }
+
+export default createHandler(ApiDictGameLevelsHandler)

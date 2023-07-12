@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GameDifficultyLevel, GameGenre, GameSetting, Profile } from '@prisma/client'
-import { Button, Card, Form, message, Select, Spin, Typography } from 'antd'
+import { Button, Card, Divider, Form, InputRef, message, Select, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useQuery } from 'react-query'
 
@@ -16,12 +16,17 @@ type PreferencesProfileFormArgs = {
 const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileFormArgs) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
-
-	const { data: gameGenres } = useQuery('gameGenres', () => axios.get<GameGenre[]>('/api/dictionary/game-genres'))
-	const { data: gameSettings } = useQuery('gameSettings', () =>
-		axios.get<GameSetting[]>('/api/dictionary/game-settings')
+	const { data: gameGenres } = useQuery('gameGenres', () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
+		staleTime: Infinity,
+	})
+	const { data: gameSettings } = useQuery(
+		'gameSettings',
+		() => axios.get<GameSetting[]>('/api/dictionary/game-settings'),
+		{ staleTime: Infinity }
 	)
-	const { data: gameLevels } = useQuery('gameLevels', () => axios.get<GameSetting[]>('/api/dictionary/game-levels'))
+	const { data: gameLevels } = useQuery('gameLevels', () => axios.get<GameSetting[]>('/api/dictionary/game-levels'), {
+		staleTime: Infinity,
+	})
 
 	useEffect(() => {
 		if (profile) {
@@ -45,17 +50,17 @@ const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileForm
 	}
 
 	const gameGenresOptions = gameGenres?.data.map((i) => ({
-		label: <Typography.Paragraph ellipsis>{i.name}</Typography.Paragraph>,
+		label: <Typography.Text ellipsis>{i.name}</Typography.Text>,
 		value: i.id,
 	}))
 
 	const graphicSettingsOptions = gameSettings?.data.map((i) => ({
-		label: <Typography.Paragraph ellipsis>{i.name}</Typography.Paragraph>,
+		label: <Typography.Text ellipsis>{i.name}</Typography.Text>,
 		value: i.id,
 	}))
 
 	const gameLevelsOptions = gameLevels?.data.map((i) => ({
-		label: <Typography.Paragraph ellipsis>{i.name}</Typography.Paragraph>,
+		label: <Typography.Text ellipsis>{i.name}</Typography.Text>,
 		value: i.id,
 	}))
 
@@ -110,7 +115,7 @@ const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileForm
 							onChange={() => {}}
 						/>
 					</Form.Item>
-					<Button type="primary" onClick={handleForm}>
+					<Button type="primary" onClick={handleForm} loading={processing}>
 						Сохранить
 					</Button>
 				</Form>

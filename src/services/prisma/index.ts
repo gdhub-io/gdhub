@@ -35,19 +35,10 @@ const extendedPrismaClient = () => {
 
 export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>
 
-export class PrismaService {
-	private static instance: PrismaService
-	public client: ExtendedPrismaClient
-
-	private constructor() {
-		this.client = extendedPrismaClient()
-	}
-
-	public static getInstance(): PrismaService {
-		if (!PrismaService.instance) {
-			PrismaService.instance = new PrismaService()
-		}
-
-		return PrismaService.instance
-	}
+const globalForPrisma = globalThis as unknown as {
+	prisma: ExtendedPrismaClient | undefined
 }
+
+export const prisma = globalForPrisma.prisma ?? extendedPrismaClient()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma

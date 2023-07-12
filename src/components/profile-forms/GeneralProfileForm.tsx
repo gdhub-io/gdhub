@@ -29,9 +29,11 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 			await saveProfile({ id: profile.id, data: formData })
 			setProcessing(false)
 
-			let telegramUsername = formData.tgNickname as string
-			telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
-			form.setFieldValue('tgNickname', telegramUsername)
+			if (formData.tgNickname) {
+				let telegramUsername = formData.tgNickname as string
+				telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
+				form.setFieldValue('tgNickname', telegramUsername)
+			}
 
 			message.success('Данные вашего профиля обновлены')
 		} catch (error: any) {
@@ -56,12 +58,14 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 						name: profile.name,
 						country: profile.country,
 						city: profile.city,
-						portfolioLink: profile.portfolioLink,
 						tgNickname: profile.tgNickname,
 					}}
 				>
 					<Form.Item label="Электронная почта" tooltip={{ title: 'Получена из вашего Google-аккаунта' }} required>
 						<Input disabled readOnly value={session?.user?.email || ''} />
+					</Form.Item>
+					<Form.Item label="Telegram Никнейм" name="tgNickname" extra="Указывать без символа @">
+						<Input />
 					</Form.Item>
 					<Form.Item label="Ваше имя" name="name" rules={[{ required: true }]} required>
 						<Input />
@@ -84,18 +88,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 					<Form.Item label="Город" name="city" rules={[{ required: false }]}>
 						<Input />
 					</Form.Item>
-					<Form.Item
-						label="Telegram Никнейм"
-						name="tgNickname"
-						rules={[{ required: true }]}
-						extra="Указывать без символа @"
-					>
-						<Input />
-					</Form.Item>
-					<Form.Item label="Ссылка на резюме или портфолио" name="portfolioLink" rules={[{ type: 'url' }]}>
-						<Input />
-					</Form.Item>
-					<Button type="primary" onClick={handleForm}>
+					<Button type="primary" onClick={handleForm} loading={processing}>
 						Сохранить
 					</Button>
 				</Form>

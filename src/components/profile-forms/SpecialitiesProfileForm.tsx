@@ -1,48 +1,27 @@
-import { useEffect, useState } from 'react'
-import { Button, Card, List, message, Popconfirm, Space, Spin } from 'antd'
-import { HiOutlineTrash } from 'react-icons/hi'
+import { useState } from 'react'
+import { Speciality } from '@prisma/client'
+import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
+import axios from 'axios'
+import { GiSkills } from 'react-icons/gi'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import SpecialityModal from './modals/SpecialityModal'
+import { GoPlus, GoTrash } from 'react-icons/go'
+
+const { Text } = Typography
 
 const SpecialitiesProfileForm = ({ profile }: any) => {
-	const [processing, setProcessing] = useState(true)
+	const queryClient = useQueryClient()
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const [specialities, setSpecialities] = useState([])
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
-	useEffect(() => {
-		if (!profile?.id) {
-			return
-		}
+	const { data: specialities, isFetching: processing } = useQuery('user-specialities', () =>
+		axios.get<Speciality[]>('/api/user/specialities')
+	)
 
-		fetchSpecialities()
-	}, [profile])
-
-	const fetchSpecialities = () => {
-		try {
-			setProcessing(true)
-
-			fetch('/api/profile/specialities', {
-				method: 'post',
-				body: JSON.stringify({ profileId: profile?.id }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			}).then(async (response: any) => {
-				setProcessing(false)
-
-				if (response.error) {
-					throw new Error(response.error.message)
-				}
-
-				const data = await response.json()
-
-				setSpecialities(data)
-			})
-		} catch (error: any) {
-			setProcessing(false)
-			message.error(error.message)
-		}
-	}
+	const { mutateAsync: deleteSpeciality } = useMutation(
+		(params: any) => axios.delete('/api/user/speciality', { params }),
+		{ onSuccess: () => queryClient.invalidateQueries('user-specialities') }
+	)
 
 	const showModal = () => {
 		setSelectedSpeciality(null)
@@ -50,8 +29,8 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	}
 
 	const handleOk = () => {
-		fetchSpecialities()
 		setIsModalOpen(false)
+		queryClient.invalidateQueries('user-specialities')
 	}
 
 	const handleCancel = () => {
@@ -66,15 +45,8 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 
 	const handleDeleteSpeciality = async (specialityId: string) => {
 		try {
-			await fetch('/api/profile/speciality/delete', {
-				method: 'post',
-				body: JSON.stringify({ specialityId }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
+			await deleteSpeciality({ id: specialityId })
 
-			fetchSpecialities()
 			message.success('Специальность была удалена')
 		} catch (error: any) {
 			message.error('Error')
@@ -85,21 +57,33 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		<Card title="Специальности">
 			<Spin spinning={processing}>
 				<Space direction="vertical" size="large" style={{ width: '100%' }}>
-					{specialities?.length > 0 && (
+					<Text>Специальности позволяют вам откликаться на вакансии с действующих проектов и проводить лекции.</Text>
+					{specialities?.data && (
 						<List
 							size="small"
 							bordered
-							dataSource={specialities}
-							renderItem={(speciality: any) => (
+							locale={{
+								emptyText: (
+									<Space direction="vertical">
+										<GiSkills size={24} />
+										<span>Вы не добавили еще ни одной специальности.</span>
+										<Button type="primary" icon={<GoPlus />} onClick={showModal}>
+											Добавить
+										</Button>
+									</Space>
+								),
+							}}
+							dataSource={specialities.data}
+							renderItem={(speciality: Speciality) => (
 								<List.Item>
 									<List.Item.Meta
 										title={
 											<>
-												{speciality.fields.Name}
-												<div style={{ opacity: 0.5, fontSize: '11px' }}>{speciality.fields.Level}</div>
+												{speciality.name}
+												<div style={{ opacity: 0.5, fontSize: '11px' }}>{speciality.level}</div>
 											</>
 										}
-										description={speciality.fields.Specialization}
+										description={speciality.specialization}
 									/>
 									<Space>
 										<Button onClick={() => handleEditSpeciality(speciality)}>Изменить</Button>
@@ -110,7 +94,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 											onConfirm={() => handleDeleteSpeciality(speciality.id)}
 										>
 											<Button type="text" danger>
-												<HiOutlineTrash />
+												<GoTrash />
 											</Button>
 										</Popconfirm>
 									</Space>
@@ -118,9 +102,11 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 							)}
 						/>
 					)}
-					<Button type="primary" onClick={showModal}>
-						Добавить специальность
-					</Button>
+					{!!specialities?.data.length && (
+						<Button type="primary" onClick={showModal}>
+							Добавить специальность
+						</Button>
+					)}
 				</Space>
 				<SpecialityModal
 					speciality={selectedSpeciality}

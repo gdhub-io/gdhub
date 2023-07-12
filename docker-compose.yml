@@ -18,7 +18,7 @@ services:
       - gamelab-network
     command: yarn dev
 
-  searchengine:
+  searchengine: #dashboard https://bfritscher.github.io
     container_name: gamelab-searchengine
     image: typesense/typesense:0.24.1
     restart: on-failure
@@ -29,6 +29,13 @@ services:
     command: '--data-dir /data --api-key=xyz --enable-cors'
     networks:
       - gamelab-network
+
+  typesense-dashboard: #dashboard https://bfritscher.github.io
+    container_name: gamelab-typesense-dashboard
+    image: ghcr.io/bfritscher/typesense-dashboard:latest
+    restart: on-failure
+    ports:
+      - '8118:80'
 
   db:
     image: postgres:15.3-alpine

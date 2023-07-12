@@ -12,9 +12,9 @@ import { NextPageWithLayout } from '@/pages/_app'
 
 const ProfilePage: NextPageWithLayout = () => {
 	const queryClient = useQueryClient()
-	const { data: profile } = useQuery('profile', () => axios.get<Profile>('/api/profile'))
+	const { data: profile } = useQuery('profile', () => axios.get<Profile>('/api/user/profile'))
 	const { mutateAsync: saveProfile } = useMutation<any, any, any>(
-		(variables: any) => axios.post('/api/profile/update', variables),
+		(variables: any) => axios.put<void>('/api/user/profile', variables),
 		{ onSuccess: () => queryClient.invalidateQueries('profile') }
 	)
 

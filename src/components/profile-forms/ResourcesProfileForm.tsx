@@ -88,7 +88,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 						</Row>
 					</Form.Item>
 
-					<Button type="primary" onClick={handleForm}>
+					<Button type="primary" onClick={handleForm} loading={processing}>
 						Сохранить
 					</Button>
 				</Form>

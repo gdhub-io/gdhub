@@ -4,12 +4,11 @@ import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import AirtableService from '@/services/airtable'
-import { PrismaService } from '@/services/prisma'
-
-const prismaService = PrismaService.getInstance()
+import { prisma } from '@/services/prisma'
+import { redirect } from 'next/navigation'
 
 export const authOptions: NextAuthOptions = {
-	adapter: PrismaAdapter(prismaService.client as unknown as PrismaClient),
+	adapter: PrismaAdapter(prisma as unknown as PrismaClient),
 	pages: {
 		signIn: '/signin',
 	},
@@ -52,25 +51,21 @@ export const authOptions: NextAuthOptions = {
 			},
 		}),
 	],
-	callbacks: {
-		async signIn({ user }) {
-			const existProfile = await prismaService.client.user.existProfile(user.id)
-
-			if (!existProfile) {
-				await prismaService.client.user.update({
-					where: { id: user.id },
-					data: { Profile: { create: { name: user.name as string } } },
-				})
-			}
-
-			return !!user
+	events: {
+		async createUser({ user }) {
+			await prisma.user.update({
+				where: { id: user.id },
+				data: { profile: { create: { name: user.name as string } } },
+			})
 		},
+	},
+	callbacks: {
 		async session({ session, user }) {
-			if (!user) return session
+			if (!user) return redirect('/signin')
 
 			session.user = user
 
-			const [google] = await prismaService.client.account.findMany({
+			const [google] = await prisma.account.findMany({
 				where: { userId: user.id, provider: 'google' },
 			})
 
@@ -94,7 +89,7 @@ export const authOptions: NextAuthOptions = {
 
 					if (!response.ok || !tokens.expires_in) throw tokens
 
-					await prismaService.client.account.update({
+					await prisma.account.update({
 						data: {
 							access_token: tokens.access_token,
 							expires_at: Math.floor(Date.now() / 1000 + tokens.expires_in),
