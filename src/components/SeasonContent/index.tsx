@@ -1,4 +1,6 @@
 import { useMemo } from 'react'
+import DividerIcon from '@/assets/images/icons/divider.svg'
+import SearchingStageContent from '@/components/SeasonContent/stages/SearchingStageContent'
 import { Grid, Space, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
@@ -10,8 +12,6 @@ import ProductionStageContent from './stages/ProductionStageContent'
 import PrototypingStageContent from './stages/PrototypingStageContent'
 import RecruitingStageContent from './stages/RecruitingStageContent'
 import styles from './style.module.scss'
-import DividerIcon from '@/assets/images/icons/divider.svg'
-import SearchingStageContent from '@/components/SeasonContent/stages/SearchingStageContent'
 
 const { Title, Text, Paragraph } = Typography
 

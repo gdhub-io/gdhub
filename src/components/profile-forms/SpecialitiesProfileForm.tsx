@@ -3,9 +3,9 @@ import { Speciality } from '@prisma/client'
 import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { GiSkills } from 'react-icons/gi'
+import { GoPlus, GoTrash } from 'react-icons/go'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import SpecialityModal from './modals/SpecialityModal'
-import { GoPlus, GoTrash } from 'react-icons/go'
 
 const { Text } = Typography
 

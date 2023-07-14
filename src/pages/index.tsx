@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
+import StartProjectImage from '@/assets/images/start-indie-game.jpg'
+import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
+import { useTelegram } from '@/helpers/useTelegram'
+import AirtableService, { getWorkedProjects } from '@/services/airtable'
+import { prisma } from '@/services/prisma'
+import styles from '@/styles/home.module.scss'
 import { Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
-import StartProjectImage from '@/assets/images/start-indie-game.jpg'
-import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
-import { useTelegram } from '@/helpers/useTelegram'
-import AirtableService, { getWorkedProjects } from '@/services/airtable'
-import styles from '@/styles/home.module.scss'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -171,8 +172,9 @@ export async function getStaticProps(context: any) {
 	// 	}
 	// }
 
-	const users = await AirtableService('Accounts').select({ fields: [] }).all()
-	const specialities = await AirtableService('Specialities').select({ fields: [] }).all()
+	const usersCount = await prisma.user.count()
+	const specialitiesCount = await prisma.speciality.count()
+
 	const projects = await getWorkedProjects()
 	const vacancies = await AirtableService('Project Vacancies')
 		.select({ fields: [], filterByFormula: `AND(Status = "Opened")` })
@@ -180,8 +182,8 @@ export async function getStaticProps(context: any) {
 
 	return {
 		props: {
-			usersCount: users.length,
-			specialitiesCount: specialities.length,
+			usersCount,
+			specialitiesCount,
 			projectsCount: projects.length,
 			vacanciesCount: vacancies.length,
 		},

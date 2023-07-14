@@ -1,14 +1,14 @@
-import { Profile } from '@prisma/client'
-import { Space } from 'antd'
-import axios from 'axios'
-import Head from 'next/head'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 import GeneralProfileForm from '@/components/profile-forms/GeneralProfileForm'
 import PreferencesProfileForm from '@/components/profile-forms/PreferencesProfileForm'
 import ResourcesProfileForm from '@/components/profile-forms/ResourcesProfileForm'
 import SpecialitiesProfileForm from '@/components/profile-forms/SpecialitiesProfileForm'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
+import { Profile } from '@prisma/client'
+import { Space } from 'antd'
+import axios from 'axios'
+import Head from 'next/head'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 const ProfilePage: NextPageWithLayout = () => {
 	const queryClient = useQueryClient()

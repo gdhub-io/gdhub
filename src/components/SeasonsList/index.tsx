@@ -1,9 +1,9 @@
+import DividerIcon from '@/assets/images/icons/divider.svg'
+import { fetcher } from '@/helpers/fetcher'
 import { Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
 import Link from 'next/link'
 import useSWR from 'swr'
 import styles from './style.module.scss'
-import DividerIcon from '@/assets/images/icons/divider.svg'
-import { fetcher } from '@/helpers/fetcher'
 
 const { Title } = Typography
 

@@ -1,6 +1,6 @@
-import { Get, Req, createHandler } from 'next-api-decorators'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
+import { Get, Req, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
 class ApiSpecialitiesHandler {

@@ -1,11 +1,11 @@
+import AirtableService from '@/services/airtable'
+import { prisma } from '@/services/prisma'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient, UserRole } from '@prisma/client'
+import { redirect } from 'next/navigation'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
-import AirtableService from '@/services/airtable'
-import { prisma } from '@/services/prisma'
-import { redirect } from 'next/navigation'
 
 export const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(prisma as unknown as PrismaClient),

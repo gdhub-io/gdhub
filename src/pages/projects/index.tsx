@@ -1,3 +1,6 @@
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
+import { getWorkedProjects } from '@/services/airtable'
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import { GetServerSidePropsContext } from 'next'
@@ -5,9 +8,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.scss'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import { getWorkedProjects } from '@/services/airtable'
 
 const { Title } = Typography
 

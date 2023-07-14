@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { fetcher } from '@/helpers/fetcher'
 import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
 import { CheckboxValueType } from 'antd/es/checkbox/Group'
 import { BsCheckLg } from 'react-icons/bs'
 import useSWR from 'swr'
 import styles from './style.module.scss'
-import { fetcher } from '@/helpers/fetcher'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()

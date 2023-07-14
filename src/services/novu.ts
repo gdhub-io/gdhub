@@ -2,7 +2,7 @@ import { Novu } from '@novu/node'
 
 export type NovuSendArgs = {
 	to: { subscriberId: string; email?: string }
-	payload: { vacancy: string; project: string; name: string; url: string }
+	payload: Record<string, any>
 	template: string
 }
 

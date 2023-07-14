@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
-import AirtableService from '@/services/airtable'
 
 type PaymentState = {
 	[key: string]: any
@@ -13,25 +12,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	try {
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 
-		const response = await AirtableService('Specialities')
-			.select({
-				filterByFormula: `FIND("${session.user.profileId}", {Profile ID})`,
-			})
-			.all()
+		// const response = await AirtableService('Specialities')
+		// 	.select({
+		// 		filterByFormula: `FIND("${session.user.profileId}", {Profile ID})`,
+		// 	})
+		// 	.all()
 
-		if (!response) {
-			throw new Error('Error')
-		}
+		// if (!response) {
+		// 	throw new Error('Error')
+		// }
 
-		const specialities = response.map((item: any) => {
-			return {
-				id: item.id,
-				...item._rawJson.fields,
-				Tools: item.get('Tools') ? item.get('Tools').split(`\n`) : [],
-			}
-		})
+		// const specialities = response.map((item: any) => {
+		// 	return {
+		// 		id: item.id,
+		// 		...item._rawJson.fields,
+		// 		Tools: item.get('Tools') ? item.get('Tools').split(`\n`) : [],
+		// 	}
+		// })
 
-		res.json(specialities)
+		res.json({})
 	} catch (error: any) {
 		res.json({ success: false, error })
 	}

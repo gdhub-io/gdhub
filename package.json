@@ -7,7 +7,10 @@
     "build": "next build",
     "export": "next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
     "@9gustin/react-notion-render": "^3.11.2",
@@ -18,7 +21,7 @@
     "@notionhq/client": "^2.2.1",
     "@novu/node": "^0.15.0",
     "@novu/notification-center": "^0.15.0",
-    "@prisma/client": "^4.16.2",
+    "@prisma/client": "^5.0.0",
     "@sanity/client": "^3.4.1",
     "@tailwindcss/forms": "^0.5.3",
     "@types/react-instantsearch-dom": "^6.12.3",
@@ -63,6 +66,7 @@
     "yarn": "^1.22.19"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^13.4.9",
     "@svgr/webpack": "^6.3.1",
     "@types/cookie": "^0.5.1",
     "@types/formidable": "^2.0.5",
@@ -77,13 +81,14 @@
     "@types/youtube-player": "^5.5.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "autoprefixer": "^10.4.8",
+    "cross-env": "^7.0.3",
     "eslint": "^8.44.0",
     "eslint-config-next": "^13.4.9",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "prettier": "^2.8.8",
-    "prisma": "^4.16.2",
+    "prettier": "^3.0.0",
+    "prisma": "^5.0.0",
     "sass": "^1.54.9",
     "tailwindcss": "^3.1.8",
     "typescript": "^5.1.6"

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { SkillLevel, WorkDirection } from '@prisma/client'
-import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
-import axios from 'axios'
-import { useMutation, useQuery } from 'react-query'
 import SkillBeginnerIcon from '@/assets/images/skills/beginner.svg'
 import SkillExperiencedIcon from '@/assets/images/skills/experienced.svg'
 import SkillExpertIcon from '@/assets/images/skills/expert.svg'
 import SkillNoviceIcon from '@/assets/images/skills/novice.svg'
 import SkillSkillfulIcon from '@/assets/images/skills/skillful.svg'
+import { SkillLevel, WorkDirection } from '@prisma/client'
+import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
+import axios from 'axios'
+import { useMutation, useQuery } from 'react-query'
 
 export const skillLevelsList = [
 	{

@@ -1,8 +1,8 @@
 import { seedGameDifficultyLevels } from './seeds/game-difficulties'
 import { seedGameGenres } from './seeds/game-genres'
 import { seedGameSettings } from './seeds/game-settings'
-import { prisma } from '../src/services/prisma'
 import { seedWorkDirections } from './seeds/work-directions'
+import { prisma } from '../src/services/prisma'
 
 async function main() {
 	await seedGameGenres(prisma)

@@ -1,7 +1,7 @@
-import { Body, Get, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
+import { Body, Get, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
 class ApiProfileHandler {

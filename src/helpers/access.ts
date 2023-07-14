@@ -1,6 +1,6 @@
+import { env } from '@/helpers/env'
 import { verify } from 'jsonwebtoken'
 import { NextApiRequest } from 'next'
-import { env } from '@/helpers/env'
 
 export const backendVerify = (req: NextApiRequest) => {
 	const accessToken = Buffer.from(env('BACKEND_KEY')).toString('base64')

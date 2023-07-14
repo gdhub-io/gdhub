@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
+import { TextWithLineBreak } from '@/components/TextWithLineBreak'
+import { fetcher } from '@/helpers/fetcher'
+import { hasRole } from '@/helpers/user'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
 import dayjs from 'dayjs'
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
 import styles from './style.module.scss'
 import SpecialitySelectModal from '../SpecialitySelectModal'
-import { TextWithLineBreak } from '@/components/TextWithLineBreak'
-import { fetcher } from '@/helpers/fetcher'
-import { hasRole } from '@/helpers/user'
 
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const session: any = useSession()

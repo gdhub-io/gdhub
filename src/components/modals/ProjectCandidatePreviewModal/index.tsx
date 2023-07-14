@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { fetcher } from '@/helpers/fetcher'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
 import dayjs from 'dayjs'
 import Image from 'next/image'
@@ -6,7 +7,6 @@ import Link from 'next/link'
 import { TbBrandTelegram, TbMail } from 'react-icons/tb'
 import useSWR from 'swr'
 import styles from './style.module.scss'
-import { fetcher } from '@/helpers/fetcher'
 
 const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()

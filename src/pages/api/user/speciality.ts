@@ -1,9 +1,10 @@
-import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 import { NextAuthGuard } from '@/lib/api-middlewares'
+import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import { SearchEngineService } from '@/services/typesense'
 import { prepareAirtableData } from '@/services/typesense/commands/migrate'
 import { CreateSpecialityDto, DeleteSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
+import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
 class ApiSpecialityHandler {
@@ -30,9 +31,22 @@ class ApiSpecialityHandler {
 		const specialitiesCount = await prisma.speciality.count({ where: { userId: req.user.id } })
 
 		if (specialitiesCount == 1) {
-			await prisma.user.update({
+			const user = await prisma.user.update({
 				where: { id: req.user.id },
 				data: { roles: { push: 'Member' } },
+			})
+
+			await NovuService.send({
+				template: 'default-message',
+				to: {
+					subscriberId: user.id,
+					email: user.email || undefined,
+				},
+				payload: {
+					message: 'Вы добавили специальность и теперь можете откликаться на вакансии с проектов сообщества.',
+					url: process.env.NEXT_PUBLIC_APP_URI + '/vacancies',
+					linkLabel: 'Смотреть вакансии',
+				},
 			})
 		}
 

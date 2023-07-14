@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 
-const nextConfig = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+	enabled: process.env.ANALYZE === 'true',
+})
+
+const nextConfig = withBundleAnalyzer({
 	reactStrictMode: true,
 	output: 'standalone',
 	images: {
@@ -11,6 +15,9 @@ const nextConfig = {
 			's3.us-west-2.amazonaws.com',
 			'cdn.sanity.io',
 		],
+	},
+	env: {
+		NEXT_PUBLIC_ENV: 'PRODUCTION', //your next configs goes here
 	},
 	webpack: (config) => {
 		config.module.rules.push({
@@ -34,6 +41,6 @@ const nextConfig = {
 			],
 		},
 	],
-}
+})
 
 module.exports = nextConfig
