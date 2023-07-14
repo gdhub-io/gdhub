@@ -31,23 +31,29 @@ class ApiSpecialityHandler {
 		const specialitiesCount = await prisma.speciality.count({ where: { userId: req.user.id } })
 
 		if (specialitiesCount == 1) {
-			const user = await prisma.user.update({
-				where: { id: req.user.id },
-				data: { roles: { push: 'Member' } },
+			const userNotMember = await prisma.user.findFirst({
+				where: { AND: [{ id: req.user.id }, { NOT: { roles: { has: 'Member' } } }] },
 			})
 
-			await NovuService.send({
-				template: 'default-message',
-				to: {
-					subscriberId: user.id,
-					email: user.email || undefined,
-				},
-				payload: {
-					message: 'Вы добавили специальность и теперь можете откликаться на вакансии с проектов сообщества.',
-					url: process.env.NEXT_PUBLIC_APP_URI + '/vacancies',
-					linkLabel: 'Смотреть вакансии',
-				},
-			})
+			if (userNotMember) {
+				await prisma.user.update({
+					where: { id: userNotMember.id },
+					data: { roles: { push: 'Member' } },
+				})
+
+				await NovuService.send({
+					template: 'default-message',
+					to: {
+						subscriberId: userNotMember.id,
+						email: userNotMember.email || undefined,
+					},
+					payload: {
+						message: 'Вы добавили специальность и теперь можете откликаться на вакансии с проектов сообщества.',
+						url: process.env.NEXT_PUBLIC_APP_URI + '/vacancies',
+						linkLabel: 'Смотреть вакансии',
+					},
+				})
+			}
 		}
 
 		await indexNewDocumentToTypesense(speciality)

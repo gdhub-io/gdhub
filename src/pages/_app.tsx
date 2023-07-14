@@ -51,6 +51,10 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}, [])
 
 	useEffect(() => {
+		document.body.style.overflow = loading ? 'hidden' : 'unset'
+	}, [loading])
+
+	useEffect(() => {
 		router.events.on('routeChangeStart', () => setLoading(true))
 		router.events.on('routeChangeComplete', (url: string) => {
 			pageview(url)
@@ -70,6 +74,9 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	return (
 		<>
+			{/* <Head>
+				<body style={{ overflow: loading == true ? 'hidden' : 'initial' }} />
+			</Head> */}
 			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
 			<Script
 				id="gtag-base"
@@ -90,7 +97,11 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 						<SessionProvider session={session}>
 							<div
 								className="app-container"
-								style={{ fontFamily: themeConfig.token?.fontFamily, opacity: loading ? 0 : 1 }}
+								style={{
+									fontFamily: themeConfig.token?.fontFamily,
+									opacity: loading ? 0 : 1,
+									overflow: loading ? 'hidden' : 'initial',
+								}}
 							>
 								<DefaultSeo {...SEOSettings} />
 								{getLayout(<Component {...pageProps} />)}
