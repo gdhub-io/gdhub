@@ -7,88 +7,47 @@ const AirtableService = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).b
 
 export default AirtableService
 
-export const findOrCreateMember = async ({ email, name, image }: any) => {
-	try {
-		let [member] = await AirtableService('Accounts')
-			.select({
-				filterByFormula: `Email = "${email}"`,
-				maxRecords: 1,
-			})
-			.all()
+// export const getProfile = async (email: string) => {
+// 	try {
+// 		const [profile] = await AirtableService('Profiles')
+// 			.select({
+// 				filterByFormula: `FIND("${email}", Account)`,
+// 			})
+// 			.all()
 
-		if (!member) {
-			member = await AirtableService('Accounts').create({
-				Email: email,
-				'Image Link': image,
-				Roles: ['Guest'],
-				Active: true,
-				'Created At': dayjs().toISOString(),
-			})
-		}
+// 		const timeForWork = profile.get('Time For Work') as string
 
-		const roles = member.get('Roles') as string[]
-		const profileId = member.get('Profile') as any
-		let profile: any
+// 		return { id: profile.getId(), ...profile.fields, 'Time For Work': timeForWork ? timeForWork.split('-') : null }
+// 	} catch (error: any) {
+// 		console.error('[AIRTABLE ERROR]', error)
+// 		return null
+// 	}
+// }
 
-		if (!profileId) {
-			profile = await createProfile({ name, accountId: member.getId() })
-		} else {
-			profile = await getProfile(email)
-		}
+// export const createProfile = async ({ name, accountId }: any) => {
+// 	try {
+// 		const newProfile = await AirtableService('Profiles').create({
+// 			Account: [accountId],
+// 			Name: name,
+// 		})
 
-		return {
-			id: member.getId(),
-			roles: roles ? roles.map((role: string) => role.toLowerCase()) : [],
-			name: profile.Name as string,
-			profileId: profileId ? profileId[0] : null,
-		}
-	} catch (error: any) {
-		console.error('[AIRTABLE ERROR]', error)
-		return null
-	}
-}
+// 		return newProfile?.fields
+// 	} catch (error: any) {
+// 		console.error('[AIRTABLE ERROR]', error)
+// 		return null
+// 	}
+// }
 
-export const getProfile = async (email: string) => {
-	try {
-		const [profile] = await AirtableService('Profiles')
-			.select({
-				filterByFormula: `FIND("${email}", Account)`,
-			})
-			.all()
+// export const updateProfile = async (profileId: string, data: any) => {
+// 	try {
+// 		await AirtableService('Profiles').update(profileId, data)
 
-		const timeForWork = profile.get('Time For Work') as string
-
-		return { id: profile.getId(), ...profile.fields, 'Time For Work': timeForWork ? timeForWork.split('-') : null }
-	} catch (error: any) {
-		console.error('[AIRTABLE ERROR]', error)
-		return null
-	}
-}
-
-export const createProfile = async ({ name, accountId }: any) => {
-	try {
-		const newProfile = await AirtableService('Profiles').create({
-			Account: [accountId],
-			Name: name,
-		})
-
-		return newProfile?.fields
-	} catch (error: any) {
-		console.error('[AIRTABLE ERROR]', error)
-		return null
-	}
-}
-
-export const updateProfile = async (profileId: string, data: any) => {
-	try {
-		await AirtableService('Profiles').update(profileId, data)
-
-		return true
-	} catch (error: any) {
-		console.error('[AIRTABLE ERROR]', error)
-		return null
-	}
-}
+// 		return true
+// 	} catch (error: any) {
+// 		console.error('[AIRTABLE ERROR]', error)
+// 		return null
+// 	}
+// }
 
 export const getDocumentationVideos = async () => {
 	try {
@@ -219,20 +178,20 @@ export const deleteProjectReport = async (id: string) => {
 	}
 }
 
-export const getProjectReports = async ({ projectId }: any) => {
-	try {
-		const projectReports = await AirtableService('Project Reports')
-			.select({
-				filterByFormula: `Project = "${projectId}"`,
-			})
-			.all()
+// export const getProjectReports = async ({ projectId }: any) => {
+// 	try {
+// 		const projectReports = await AirtableService('Project Reports')
+// 			.select({
+// 				filterByFormula: `Project = "${projectId}"`,
+// 			})
+// 			.all()
 
-		return projectReports?.map((r: any) => ({ id: r.id, ...r.fields }))
-	} catch (error: any) {
-		console.error('[AIRTABLE ERROR]', error)
-		return null
-	}
-}
+// 		return projectReports?.map((r: any) => ({ id: r.id, ...r.fields }))
+// 	} catch (error: any) {
+// 		console.error('[AIRTABLE ERROR]', error)
+// 		return null
+// 	}
+// }
 
 export const getProjectReport = async (reportId: string) => {
 	try {

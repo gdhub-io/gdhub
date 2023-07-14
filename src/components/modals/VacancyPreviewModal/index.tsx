@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { fetcher } from '@/helpers/fetcher'
 import { hasRole } from '@/helpers/user'
+import { UserRole } from '@prisma/client'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
 import dayjs from 'dayjs'
 import { useSession } from 'next-auth/react'
@@ -93,7 +94,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	}
 
 	const statusOkButton = () => {
-		if (hasRole('member', session)) {
+		if (hasRole(UserRole.Member, session)) {
 			return vacancy?.memberApply ? 'Отозвать отклик' : 'Откликнуться'
 		}
 
@@ -101,7 +102,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	}
 
 	const functionOkButton = () => {
-		if (hasRole('member', session)) {
+		if (hasRole(UserRole.Member, session)) {
 			return vacancy?.memberApply ? withdrawApply(vacancy?.memberApply) : setShowSpecialitySelectModal(true)
 		}
 
@@ -154,7 +155,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				</Spin>
 			</Modal>
 
-			{hasRole('member', session) && (
+			{hasRole(UserRole.Member, session) && (
 				<SpecialitySelectModal
 					open={showSpecialitySelectModal}
 					onOk={handleSpecialitySelect}

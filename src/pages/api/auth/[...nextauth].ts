@@ -1,7 +1,6 @@
-import AirtableService from '@/services/airtable'
 import { prisma } from '@/services/prisma'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { PrismaClient, UserRole } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { redirect } from 'next/navigation'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -29,24 +28,17 @@ export const authOptions: NextAuthOptions = {
 
 				if (!username) return null
 
-				const [user] = await AirtableService('Accounts')
-					.select({
-						filterByFormula: `{Telegram Nickname} = "${username}"`,
-						maxRecords: 1,
-					})
-					.all()
+				const profile = await prisma.profile.findFirst({ where: { tgNickname: username }, include: { user: true } })
 
-				if (!user) return null
-
-				const [profile] = user.get('Profile') as string[]
+				if (!profile) return null
 
 				return {
-					id: user.id,
-					profileId: profile,
-					name: profile || 'Unknown name',
-					email: user.get('Email') as string,
-					image: user.get('Image Link') as string,
-					roles: user.get('Roles') as UserRole[],
+					id: profile.user.id,
+					profileId: profile.id,
+					name: profile.name || 'Unknown name',
+					email: profile.user.email,
+					image: profile.user.image,
+					roles: profile.user.roles,
 				}
 			},
 		}),

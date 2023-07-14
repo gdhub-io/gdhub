@@ -5,9 +5,11 @@ import MyProjectReports from '@/components/MyProjectReports'
 import MyProjectTeam from '@/components/MyProjectTeam'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
 import { fetcher } from '@/helpers/fetcher'
+import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { UserRole } from '@prisma/client'
 import { Button, Col, Row, Space, Spin } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
@@ -134,7 +136,7 @@ MyProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const session: any = await getServerSession(context.req, context.res, authOptions)
 
-	if (session && !session.user.hasRole('member')) {
+	if (session && !hasRole(UserRole.Member, session)) {
 		return {
 			notFound: true,
 		}

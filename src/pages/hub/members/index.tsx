@@ -5,6 +5,7 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import AirtableService from '@/services/airtable'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
+import { UserRole } from '@prisma/client'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import Head from 'next/head'
 import { useSession } from 'next-auth/react'
@@ -86,7 +87,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 		)
 	}
 
-	if (!hasRole('author', session)) {
+	if (!hasRole(UserRole.Author, session)) {
 		return (
 			<>
 				<Head>

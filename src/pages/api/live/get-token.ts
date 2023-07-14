@@ -1,3 +1,5 @@
+import { hasRole } from '@/helpers/user'
+import { UserRole } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
@@ -17,8 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			method: 'post',
 			body: JSON.stringify({
 				properties: {
-					room_name: session.user.hasRole('admin') ? undefined : roomName,
-					is_owner: session.user.hasRole('admin'),
+					room_name: hasRole(UserRole.Admin, session) ? undefined : roomName,
+					is_owner: hasRole(UserRole.Admin, session),
 					user_name: session.user.name,
 					enable_screenshare: true,
 				},

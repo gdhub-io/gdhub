@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-icon.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { useTelegram } from '@/helpers/useTelegram'
+import { UserRole } from '@prisma/client'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -85,7 +86,7 @@ export const ProtectedLayout = ({ children }: any) => {
 			telegramMenuItem,
 		]
 
-		if (!!session && session?.user?.roles.includes('member')) {
+		if (!!session && session?.user?.roles.includes(UserRole.Member)) {
 			menu = [
 				menu[0],
 				{

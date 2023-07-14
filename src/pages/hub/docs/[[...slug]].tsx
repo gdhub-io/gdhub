@@ -4,7 +4,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { getPages } from '@/services/notion'
 import { Render } from '@9gustin/react-notion-render'
-import { Col, Menu, message, Row, Select, Spin, Grid } from 'antd'
+import { Col, Menu, message, Row, Select, Spin, Grid, theme, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -12,8 +12,11 @@ import { getServerSession } from 'next-auth'
 import styles from './style.module.scss'
 import '@9gustin/react-notion-render/dist/index.css'
 
+const { Text, Title } = Typography
+
 const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	const screens = Grid.useBreakpoint()
+	const themeToken = theme.useToken()
 	const router = useRouter()
 	const { slug: urlSlug } = router.query
 	const [loading, setLoading] = useState(true)
@@ -53,6 +56,13 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 					return {
 						key: Slug.rich_text[0].plain_text,
 						label: Name.title[0].plain_text,
+						style: {
+							whiteSpace: 'normal',
+							height: 'auto',
+							lineHeight: 'initial',
+							paddingTop: '8px',
+							paddingBottom: '8px',
+						},
 						// childrens: Childrens.relation.length > 0 ? getChildrens(Childrens.relation) : [],
 					}
 				})
@@ -137,7 +147,10 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 			<Head>
 				<title>{pageProperties?.properties.Name.title[0].plain_text || 'Документация'}</title>
 			</Head>
-			<div className={styles.container}>
+			<div
+				className={styles.container}
+				style={{ fontSize: themeToken.token.fontSize, color: themeToken.token.colorText }}
+			>
 				<Row>
 					<Col xs={{ span: 24 }} md={{ span: 6 }} xl={{ span: 5 }} xxl={{ span: 4 }}>
 						{screens.md ? (
@@ -163,11 +176,11 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 							{!!pageProperties ? (
 								<section className="main-container">
 									<div className="content-header">
-										<h1>{pageProperties?.properties.Name.title[0].plain_text}</h1>
-										<small>
+										<Title>{pageProperties?.properties.Name.title[0].plain_text}</Title>
+										<Text type="secondary">
 											Обновлено{' '}
 											{DateTime.fromISO(pageProperties?.last_edited_time).toFormat('d LLL, yyyy', { locale: 'ru-RU' })}
-										</small>
+										</Text>
 									</div>
 									<Render blocks={pageContent} classNames useStyles />
 								</section>

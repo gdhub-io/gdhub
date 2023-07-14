@@ -1,4 +1,5 @@
 import AirtableService from '@/services/airtable'
+import { UserRole } from '@prisma/client'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../auth/[...nextauth]'
@@ -39,9 +40,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			const author = await AirtableService('Accounts').find(session.user.id)
 			const roles = author.get('Roles') as string[]
 
-			if (!roles.includes('Author')) {
+			if (!roles.includes(UserRole.Author)) {
 				await AirtableService('Accounts').update(author.id, {
-					Roles: [...roles, 'Author'],
+					Roles: [...roles, UserRole.Author],
 				})
 			}
 		}

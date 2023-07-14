@@ -74,9 +74,6 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	return (
 		<>
-			{/* <Head>
-				<body style={{ overflow: loading == true ? 'hidden' : 'initial' }} />
-			</Head> */}
 			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
 			<Script
 				id="gtag-base"

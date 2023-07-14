@@ -3,6 +3,7 @@ import SeasonsList from '@/components/SeasonsList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
+import { UserRole } from '@prisma/client'
 import { Button, Space } from 'antd'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -18,7 +19,7 @@ const HubPage: NextPageWithLayout = () => {
 				<title>Game Developers Hub</title>
 			</Head>
 			<div className={styles.container}>
-				{session && !hasRole('member', session) && (
+				{session && !hasRole(UserRole.Member, session) && (
 					<Space direction="vertical">
 						<p>
 							Для того, чтобы стать участников Хаба, необходимо заполнить данные о себе, указать ваши специальности,
@@ -35,7 +36,7 @@ const HubPage: NextPageWithLayout = () => {
 						</Link>
 					</Space>
 				)}
-				{hasRole('member', session) && (
+				{hasRole(UserRole.Member, session) && (
 					<>
 						<SeasonsList />
 					</>

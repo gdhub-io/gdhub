@@ -1,9 +1,11 @@
-export const hasRole = (roleName: string, { data }: any) => {
+import { UserRole } from '@prisma/client'
+
+export const hasRole = (role: UserRole, { data }: any) => {
 	if (!data) {
 		return false
 	}
 
-	const role = data.user.roles.find((role: string) => role === roleName.toLowerCase())
+	const findRole = data.user.roles.find((role: UserRole) => role === role)
 
-	return role ? true : false
+	return findRole ? true : false
 }

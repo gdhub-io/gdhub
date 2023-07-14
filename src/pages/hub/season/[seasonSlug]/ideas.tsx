@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import AirtableService from '@/services/airtable'
+import { UserRole } from '@prisma/client'
 import { Spin } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
@@ -51,7 +53,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const { seasonSlug }: any = context.params
 	const session: any = await getServerSession(context.req, context.res, authOptions)
 
-	if (session && !session.user.hasRole('mentor')) {
+	if (session && !hasRole(UserRole.Mentor, session)) {
 		return {
 			notFound: true,
 		}

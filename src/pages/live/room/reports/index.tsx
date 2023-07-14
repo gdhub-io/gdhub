@@ -5,6 +5,7 @@ import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { StreamLayout } from '@/layouts/StreamLayout'
 import DailyIframe, { DailyCall, DailyCallOptions } from '@daily-co/daily-js'
+import { UserRole } from '@prisma/client'
 import { Button, Form, Input, Space, message } from 'antd'
 import { useSession } from 'next-auth/react'
 import useSWRMutation from 'swr/mutation'
@@ -111,7 +112,7 @@ const LiveReportsPage = () => {
 
 	return (
 		<main className="container">
-			{hasRole('admin', { data: session }) && (
+			{hasRole(UserRole.Admin, { data: session }) && (
 				<Space align="start">
 					{!instanceId ? (
 						<Button onClick={startLiveStream} disabled={!readyToStream} type="primary">

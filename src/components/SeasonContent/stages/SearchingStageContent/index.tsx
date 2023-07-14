@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
 import { fetcher } from '@/helpers/fetcher'
 import { hasRole } from '@/helpers/user'
+import { UserRole } from '@prisma/client'
 import { Alert, Button, Grid, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
@@ -85,7 +86,7 @@ const SearchingStageContent = ({ season, stage }: any) => {
 						</Button>
 					)}
 
-					{hasRole('mentor', session) && (
+					{hasRole(UserRole.Mentor, session) && (
 						<Link href={`/hub/season/${season.Slug}/ideas`}>
 							<Button>Список идей</Button>
 						</Link>
