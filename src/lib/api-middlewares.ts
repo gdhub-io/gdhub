@@ -17,13 +17,15 @@ export const NextAuthGuard = (guardName: 'user' | 'api' | 'any', allowedRoles?: 
 			// Allowed for any user roles
 			if (!allowedRoles) {
 				req.user = session.user
-				next()
+				return next()
 			}
 
 			// Allowed for specific user roles
-			if (allowedRoles?.some((i) => session.user.roles.includes(i))) {
+			if (allowedRoles.some((i) => session.user.roles.includes(i))) {
 				req.user = session.user
-				next()
+				return next()
+			} else {
+				throw new UnauthorizedException()
 			}
 		}
 

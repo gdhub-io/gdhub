@@ -26,7 +26,7 @@ services:
       - '8108:8108'
     volumes:
       - gamelab-typesense-data:/data
-    command: '--data-dir /data --api-key=xyz --enable-cors'
+    command: '--data-dir /data --api-key=${TYPESENSE_ADMIN_API} --enable-cors'
     networks:
       - gamelab-network
 

@@ -10,6 +10,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  Guest
+  Member
+  Author
+  Mentor
+  Admin
+}
+
+enum SkillLevel {
+  Novice
+  Beginner
+  Skillful
+  Experienced
+  Expert
+}
+
+enum ProjectStatus {
+  Registered
+  Approved
+  Rejected
+  Done
+}
+
+enum TeamMemberStatus {
+  Applicant
+  Hired
+  Rejected
+  Fired
+}
+
+enum TeamVacancyStatus {
+  Draft
+  Published
+  Closed
+}
+
+enum LectureStage {
+  Requested
+  Proposed
+  Actualized
+  Ready
+  Held
+  Canceled
+}
+
+enum SeasonStatus {
+  Planning
+  Active
+  Done
+}
+
+enum DefaultSeasonStages {
+  Searching
+  PreProduction
+  Recruiting
+  Prototyping
+  Production
+  Pitching
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -38,18 +98,25 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String?
-  email         String?      @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  roles         UserRole[]   @default([Guest])
-  profile       Profile?
-  specialities  Speciality[]
+  id                 String              @id @default(cuid())
+  name               String?
+  email              String?             @unique
+  emailVerified      DateTime?
+  image              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  profile            Profile?
+  accounts           Account[]
+  sessions           Session[]
+  roles              UserRole[]          @default([Guest])
+  specialities       Speciality[]
+  projects           Project[]
+  memberInTeams      TeamMember[]
+  projectEstimations ProjectEstimation[]
+  projectReports     ProjectReport[]
+  requestedLectures  Lecture[]           @relation(name: "requestedBy")
+  lectures           Lecture[]           @relation(name: "lecturer")
+  listener           LectureListener[]
 }
 
 model Profile {
@@ -76,22 +143,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-enum UserRole {
-  Guest
-  Member
-  Author
-  Mentor
-  Admin
-}
-
-enum SkillLevel {
-  Novice
-  Beginner
-  Skillful
-  Experienced
-  Expert
-}
-
 model Speciality {
   id              String        @id @default(cuid())
   name            String
@@ -111,9 +162,11 @@ model Speciality {
 }
 
 model WorkDirection {
-  id         String       @id @default(cuid())
-  name       String       @unique
-  Speciality Speciality[]
+  id           String        @id @default(cuid())
+  name         String        @unique
+  specialities Speciality[]
+  vacancies    TeamVacancy[]
+  Lecture      Lecture[]
 }
 
 model GameGenre {
@@ -132,4 +185,147 @@ model GameDifficultyLevel {
   id      String    @id @default(cuid())
   name    String    @unique
   Profile Profile[]
+}
+
+model Season {
+  id          String        @id @default(cuid())
+  name        String
+  description String?       @db.Text
+  startedAt   DateTime
+  finishedAt  DateTime
+  isActive    Boolean       @default(false)
+  status      SeasonStatus  @default(Planning)
+  slug        String
+  stages      SeasonStage[]
+}
+
+model SeasonStage {
+  id            String               @id @default(cuid())
+  name          String
+  description   String?              @db.Text
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  order         Int                  @default(0)
+  isCurrent     Boolean              @default(false)
+  seasonId      String
+  season        Season               @relation(fields: [seasonId], references: [id])
+  projects      Project[]
+  streamReports SeasonStreamReport[]
+  estimations   ProjectEstimation[]
+}
+
+model SeasonStreamReport {
+  id      String      @id @default(cuid())
+  date    DateTime
+  stageId String
+  stage   SeasonStage @relation(fields: [stageId], references: [id])
+}
+
+model Project {
+  id          String              @id @default(cuid())
+  name        String
+  description String?             @db.Text
+  status      ProjectStatus       @default(Registered)
+  createdAt   DateTime
+  finishedAt  DateTime?
+  stageId     String
+  stage       SeasonStage         @relation(fields: [stageId], references: [id])
+  authorId    String
+  author      User                @relation(fields: [authorId], references: [id])
+  team        ProjectTeam?
+  estimations ProjectEstimation[]
+  reports     ProjectReport[]
+}
+
+model ProjectEstimation {
+  id         String      @id @default(cuid())
+  projectId  String      @unique
+  project    Project     @relation(fields: [projectId], references: [id])
+  stageId    String
+  stage      SeasonStage @relation(fields: [stageId], references: [id])
+  expertId   String
+  expert     User        @relation(fields: [expertId], references: [id])
+  notes      String      @db.Text
+  isApproved Boolean
+  form       Json
+}
+
+model ProjectTeam {
+  id        String        @id @default(cuid())
+  projectId String        @unique
+  project   Project       @relation(fields: [projectId], references: [id])
+  members   TeamMember[]
+  vacancies TeamVacancy[]
+}
+
+model ProjectReport {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id])
+  publishedAt DateTime
+  content     String   @db.Text
+  video       String?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+}
+
+model TeamMember {
+  id         String           @id @default(cuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id])
+  teamId     String
+  team       ProjectTeam      @relation(fields: [teamId], references: [id])
+  startedAt  DateTime
+  finishedAt DateTime?
+  status     TeamMemberStatus @default(Applicant)
+  position   String
+  vacancyId  String
+  vacancy    TeamVacancy      @relation(fields: [vacancyId], references: [id])
+}
+
+model TeamVacancy {
+  id          String            @id @default(cuid())
+  title       String
+  description String            @db.Text
+  directionId String
+  direction   WorkDirection     @relation(fields: [directionId], references: [id])
+  applicants  TeamMember[]
+  status      TeamVacancyStatus @default(Draft)
+  publishedAt DateTime?
+  finishedAt  DateTime
+  updatedAt   DateTime          @updatedAt
+  teamId      String
+  team        ProjectTeam       @relation(fields: [teamId], references: [id])
+}
+
+model Lecture {
+  id              String            @id @default(cuid())
+  name            String
+  wishes          String            @db.Text
+  requestedById   String
+  requestedBy     User              @relation(fields: [requestedById], references: [id], name: "requestedBy")
+  lecturerId      String
+  lecturer        User              @relation(fields: [lecturerId], references: [id], name: "lecturer")
+  workDirectionId String
+  direction       WorkDirection     @relation(fields: [workDirectionId], references: [id])
+  description     String?           @db.Text
+  date            DateTime?
+  linkToStream    String?
+  recordLink      String?
+  duration        Int?
+  isArchived      Boolean
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  stage           LectureStage
+  listeners       LectureListener[]
+}
+
+model LectureListener {
+  id         String   @id @default(cuid())
+  listenerId String
+  listener   User     @relation(fields: [listenerId], references: [id])
+  lectureId  String
+  lecture    Lecture  @relation(fields: [lectureId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
