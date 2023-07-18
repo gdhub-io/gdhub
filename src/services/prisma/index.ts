@@ -1,34 +1,17 @@
 import { PrismaClient } from '@prisma/client'
-import dayjs from 'dayjs'
+import { profilePrismaExtenstion } from './extenstions/profile'
+import { seasonPrismaExtension } from './extenstions/season'
+import { userPrismaExtension } from './extenstions/user'
 
 const extendedPrismaClient = () => {
 	const prisma = new PrismaClient({
 		log: process.env.DEBUG ? ['query', 'error'] : ['error'],
 	})
 
-	const extendedPrisma = prisma.$extends({
-		model: {
-			user: {
-				existProfile: async (userId: string) => {
-					const existProfile = await prisma.profile.count({ where: { userId } })
-
-					return !!existProfile
-				},
-			},
-		},
-		result: {
-			profile: {
-				createdAt: {
-					needs: { createdAt: true },
-					compute: (model) => dayjs(model.createdAt).toISOString(),
-				},
-				updatedAt: {
-					needs: { updatedAt: true },
-					compute: (model) => dayjs(model.updatedAt).toISOString(),
-				},
-			},
-		},
-	})
+	const extendedPrisma = prisma
+		.$extends(userPrismaExtension)
+		.$extends(profilePrismaExtenstion)
+		.$extends(seasonPrismaExtension)
 
 	return extendedPrisma
 }

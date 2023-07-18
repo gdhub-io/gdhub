@@ -7,25 +7,43 @@ import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { BsCheckSquare, BsSquare } from 'react-icons/bs'
 import { GoTrash } from 'react-icons/go'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import styles from './style.module.scss'
 
 const { Title, Text } = Typography
 
 const SeasonsAdminPage: NextPageWithLayout = () => {
 	const [showModal, setShowModal] = useState(false)
-	const { data: response, error } = useQuery(['admin', 'seasons'], () => axios.get('/api/admin/seasons'))
+	const [seasonId, setSeasonId] = useState<string | undefined>(undefined)
+	const {
+		data: response,
+		refetch: refetchSeasons,
+		isFetching,
+	} = useQuery(['admin', 'seasons'], () => axios.get('/api/admin/seasons'), { refetchOnWindowFocus: false })
+	const { mutateAsync: deleteSeason } = useMutation(
+		({ id }: { id: string }) => axios.delete(`/api/admin/season/${id}`),
+		{
+			onSuccess: () => {
+				refetchSeasons()
+			},
+		}
+	)
 
-	const handleChange = () => {
+	const handleChange = (recordId: string) => {
+		setSeasonId(recordId)
 		setShowModal(true)
 	}
 
-	const handleDelete = () => {}
+	const handleDelete = (recordId: string) => {
+		deleteSeason({ id: recordId })
+		setSeasonId(undefined)
+	}
 
 	const handleSave = () => {
 		setShowModal(false)
+		setSeasonId(undefined)
+		refetchSeasons()
 	}
 
 	const columns: ColumnsType<any> = [
@@ -43,22 +61,14 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 		},
 		{ title: 'Status', dataIndex: 'status', key: 'status' },
 		{
-			title: 'Is Active',
-			dataIndex: 'isActive',
-			key: 'isActive',
-			render(value) {
-				return value ? <BsCheckSquare /> : <BsSquare />
-			},
-		},
-		{
 			key: 'actions',
 			width: '1%',
 			render(value, record) {
 				return (
 					<Space size="large">
 						<Link href={`/admin/season/${record.id}/stages`}>Stages</Link>
-						<Button onClick={handleChange}>Edit</Button>
-						<Popconfirm title="Are you sure you want to delete this entry?" onConfirm={handleDelete}>
+						<Button onClick={() => handleChange(record.id)}>Edit</Button>
+						<Popconfirm title="Are you sure you want to delete this entry?" onConfirm={() => handleDelete(record.id)}>
 							<Button danger type="text">
 								<GoTrash />
 							</Button>
@@ -69,9 +79,9 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 		},
 	]
 
-	if (error || !response?.data) {
-		return <Text>Нет данных</Text>
-	}
+	// if (error || !response?.data) {
+	// 	return <Text>Нет данных</Text>
+	// }
 
 	return (
 		<>
@@ -82,10 +92,10 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 						Add season
 					</Button>
 				</Row>
-				<Table dataSource={response?.data} columns={columns} />
+				<Table loading={isFetching} dataSource={response?.data} columns={columns} />
 			</div>
 
-			<SeasonModal open={showModal} onCancel={() => setShowModal(false)} onOk={handleSave} />
+			<SeasonModal seasonId={seasonId} open={showModal} onCancel={() => setShowModal(false)} onOk={handleSave} />
 		</>
 	)
 }

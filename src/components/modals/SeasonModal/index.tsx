@@ -1,41 +1,54 @@
-import { useEffect, useState } from 'react'
-import { Switch, Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin } from 'antd'
+import { SeasonStatus } from '@prisma/client'
+import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin } from 'antd'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { useMutation, useQuery } from 'react-query'
-
-enum DefaultSeasonStages {
-	Searching,
-	PreProduction,
-	Recruiting,
-	Prototyping,
-	Production,
-	Pitching,
-}
 
 const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { data: response, isLoading: isLoading } = useQuery(
-		['season', seasonId],
-		() => axios.get(`/api/season/${seasonId}`),
+	const { isLoading: isLoading } = useQuery(['season', seasonId], () => axios.get(`/api/admin/season/${seasonId}`), {
+		enabled: !!seasonId,
+		onSuccess({ data }) {
+			form.setFieldsValue({
+				...data,
+				startedAt: dayjs(data.startedAt),
+				finishedAt: data.finishedAt ? dayjs(data.finishedAt) : undefined,
+			})
+		},
+	})
+	const { mutate: createSeason, isLoading: isCreateProcessing } = useMutation(
+		(variables) => axios.post('/api/admin/season', variables),
 		{
-			enabled: !!seasonId,
+			onError(error) {
+				message.error('Something wrong. Try later again.')
+			},
 			onSuccess(data) {
-				form.setFieldsValue(data)
+				message.success('New record was added')
+				form.resetFields()
+				onOk()
 			},
 		}
 	)
-	const { mutate: createSeason, isLoading: isCreateProcessing } = useMutation(() => axios.post('/api/season'))
-	const { mutate: updateSeason, isLoading: isSaveProcessing } = useMutation(() => axios.put(`/api/season/${seasonId}`))
+	const { mutate: updateSeason, isLoading: isSaveProcessing } = useMutation(
+		(variables) => axios.put(`/api/admin/season/${seasonId}`, variables),
+		{
+			onError(error) {
+				message.error('Something wrong. Try later again.')
+			},
+			onSuccess(data) {
+				message.success('Record was updated')
+				form.resetFields()
+				onOk()
+			},
+		}
+	)
 
 	const handleOk = async () => {
 		try {
-			const formData = await form.validateFields()
+			const data = await form.validateFields()
 
-			const action = seasonId ? () => updateSeason(formData) : () => createSeason(formData)
+			const action = seasonId ? () => updateSeason(data) : () => createSeason(data)
 			await action()
-
-			message.success(seasonId ? 'Record was updated' : 'New record was added')
-			onOk()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
@@ -102,7 +115,7 @@ const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 						<Col xs={{ span: 24 }} md={{ span: 6 }}>
 							<Form.Item name="status" label="Status" wrapperCol={{ span: 24 }} rules={[{ required: true }]}>
 								<Select
-									options={Object.values(DefaultSeasonStages)
+									options={Object.values(SeasonStatus)
 										.filter((key) => !Number.isInteger(key))
 										.map((key) => ({ label: key, value: key }))}
 								/>
@@ -125,16 +138,6 @@ const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 
 					<Form.Item name="description" label="Description" wrapperCol={{ span: 24 }}>
 						<Input.TextArea rows={6} />
-					</Form.Item>
-
-					<Form.Item
-						name="isActive"
-						label="Is active?"
-						rules={[{ required: false }]}
-						wrapperCol={{ span: 24 }}
-						valuePropName="checked"
-					>
-						<Switch />
 					</Form.Item>
 				</Form>
 			</Spin>

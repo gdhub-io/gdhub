@@ -61,15 +61,6 @@ enum SeasonStatus {
   Done
 }
 
-enum DefaultSeasonStages {
-  Searching
-  PreProduction
-  Recruiting
-  Prototyping
-  Production
-  Pitching
-}
-
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -192,8 +183,7 @@ model Season {
   name        String
   description String?       @db.Text
   startedAt   DateTime
-  finishedAt  DateTime
-  isActive    Boolean       @default(false)
+  finishedAt  DateTime?
   status      SeasonStatus  @default(Planning)
   slug        String
   stages      SeasonStage[]
@@ -208,7 +198,7 @@ model SeasonStage {
   order         Int                  @default(0)
   isCurrent     Boolean              @default(false)
   seasonId      String
-  season        Season               @relation(fields: [seasonId], references: [id])
+  season        Season               @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   projects      Project[]
   streamReports SeasonStreamReport[]
   estimations   ProjectEstimation[]

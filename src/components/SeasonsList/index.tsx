@@ -1,4 +1,5 @@
 import DividerIcon from '@/assets/images/icons/divider.svg'
+import { Season } from '@prisma/client'
 import { Alert, Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -13,12 +14,12 @@ const SeasonsList = () => {
 		staleTime: Infinity,
 	})
 
-	const isCompletedSeason = (season: any) => {
-		return !season.isActive
+	const isCompletedSeason = (season: Season) => {
+		return season.status == 'Done'
 	}
 
 	const isActiveSeason = (season: any) => {
-		return !isCompletedSeason(season)
+		return season.status == 'Active'
 	}
 
 	const stagesDetails = (stageName: any) => {

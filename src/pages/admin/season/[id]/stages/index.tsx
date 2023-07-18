@@ -30,6 +30,13 @@ const SeasonStagesAdminPage: NextPageWithLayout = () => {
 	const handleDelete = () => {}
 
 	const columns: ColumnsType<any> = [
+		{
+			title: '#',
+			width: '3%',
+			dataIndex: 'order',
+			key: 'order',
+			render: (value) => <Text type="secondary">{value}</Text>,
+		},
 		{ title: 'Title', dataIndex: 'name', key: 'name', render: (value) => <Text strong>{value}</Text> },
 		{
 			title: 'Period (UTC' + dayjs().format('Z') + ')',
@@ -91,7 +98,7 @@ const SeasonStagesAdminPage: NextPageWithLayout = () => {
 					Add stage
 				</Button>
 			</Row>
-			<Table dataSource={response?.data} columns={columns} />
+			<Table dataSource={response?.data} columns={columns} sticky />
 		</div>
 	)
 }

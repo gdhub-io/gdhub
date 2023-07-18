@@ -1,53 +1,10 @@
 import Airtable from 'airtable'
-import dayjs from 'dayjs'
 
 const AirtableService = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
 	process.env.AIRTABLE_BASE_ID as string
 )
 
 export default AirtableService
-
-// export const getProfile = async (email: string) => {
-// 	try {
-// 		const [profile] = await AirtableService('Profiles')
-// 			.select({
-// 				filterByFormula: `FIND("${email}", Account)`,
-// 			})
-// 			.all()
-
-// 		const timeForWork = profile.get('Time For Work') as string
-
-// 		return { id: profile.getId(), ...profile.fields, 'Time For Work': timeForWork ? timeForWork.split('-') : null }
-// 	} catch (error: any) {
-// 		console.error('[AIRTABLE ERROR]', error)
-// 		return null
-// 	}
-// }
-
-// export const createProfile = async ({ name, accountId }: any) => {
-// 	try {
-// 		const newProfile = await AirtableService('Profiles').create({
-// 			Account: [accountId],
-// 			Name: name,
-// 		})
-
-// 		return newProfile?.fields
-// 	} catch (error: any) {
-// 		console.error('[AIRTABLE ERROR]', error)
-// 		return null
-// 	}
-// }
-
-// export const updateProfile = async (profileId: string, data: any) => {
-// 	try {
-// 		await AirtableService('Profiles').update(profileId, data)
-
-// 		return true
-// 	} catch (error: any) {
-// 		console.error('[AIRTABLE ERROR]', error)
-// 		return null
-// 	}
-// }
 
 export const getDocumentationVideos = async () => {
 	try {

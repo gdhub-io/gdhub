@@ -14,7 +14,7 @@ class ApiSeasonStagesAdminHandler {
 
 	@Get()
 	public async list(@Query() params: ParamsDto) {
-		const stages = await prisma.seasonStage.findMany({ where: { seasonId: params.id } })
+		const stages = await prisma.seasonStage.findMany({ where: { seasonId: params.id }, orderBy: { order: 'asc' } })
 
 		return stages
 	}
