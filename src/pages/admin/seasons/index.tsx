@@ -22,7 +22,7 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 		isFetching,
 	} = useQuery(['admin', 'seasons'], () => axios.get('/api/admin/seasons'), { refetchOnWindowFocus: false })
 	const { mutateAsync: deleteSeason } = useMutation(
-		({ id }: { id: string }) => axios.delete(`/api/admin/season/${id}`),
+		({ id }: { id: string }) => axios.delete(`/api/admin/season`, { params: { id } }),
 		{
 			onSuccess: () => {
 				refetchSeasons()
@@ -78,10 +78,6 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 			},
 		},
 	]
-
-	// if (error || !response?.data) {
-	// 	return <Text>Нет данных</Text>
-	// }
 
 	return (
 		<>

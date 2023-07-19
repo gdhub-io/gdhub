@@ -6,16 +6,20 @@ import { useMutation, useQuery } from 'react-query'
 
 const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { isLoading: isLoading } = useQuery(['season', seasonId], () => axios.get(`/api/admin/season/${seasonId}`), {
-		enabled: !!seasonId,
-		onSuccess({ data }) {
-			form.setFieldsValue({
-				...data,
-				startedAt: dayjs(data.startedAt),
-				finishedAt: data.finishedAt ? dayjs(data.finishedAt) : undefined,
-			})
-		},
-	})
+	const { isLoading: isLoading } = useQuery(
+		['season', seasonId],
+		() => axios.get(`/api/admin/season`, { params: { id: seasonId } }),
+		{
+			enabled: !!seasonId,
+			onSuccess({ data }) {
+				form.setFieldsValue({
+					...data,
+					startedAt: dayjs(data.startedAt),
+					finishedAt: data.finishedAt ? dayjs(data.finishedAt) : undefined,
+				})
+			},
+		}
+	)
 	const { mutate: createSeason, isLoading: isCreateProcessing } = useMutation(
 		(variables) => axios.post('/api/admin/season', variables),
 		{
@@ -30,7 +34,7 @@ const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 		}
 	)
 	const { mutate: updateSeason, isLoading: isSaveProcessing } = useMutation(
-		(variables) => axios.put(`/api/admin/season/${seasonId}`, variables),
+		(variables) => axios.put(`/api/admin/season`, variables, { params: { id: seasonId } }),
 		{
 			onError(error) {
 				message.error('Something wrong. Try later again.')
