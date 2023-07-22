@@ -30,8 +30,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const allowedContacts = projectMember.get('Allowed Contacts') as string[]
 		const [email] = profile.get('Email (from Account)') as string[]
 		const contacts = {
-			email: allowedContacts.includes('email') ? email : undefined,
-			telegram: allowedContacts.includes('telegram') ? profile.get('Telegram Nickname') : undefined,
+			email: allowedContacts?.includes('email') ? email : undefined,
+			telegram: allowedContacts?.includes('telegram') ? profile.get('Telegram Nickname') : undefined,
 		}
 
 		res.json({
