@@ -34,6 +34,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			telegram: allowedContacts?.includes('telegram') ? profile.get('Telegram Nickname') : undefined,
 		}
 
+		// Set email if no allowed contacts
+		if (!contacts.email && !contacts.telegram) {
+			contacts.email = email
+		}
+
 		res.json({
 			...projectMember.fields,
 			contacts,
