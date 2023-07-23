@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { SeasonStatus } from '@prisma/client'
+import { SeasonStatus, UserRole } from '@prisma/client'
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -26,7 +26,7 @@ class CreateSeasonDto {
 	finishedAt?: string
 }
 
-@NextAuthGuard('user', ['Admin'])
+@NextAuthGuard('user', [UserRole.Admin])
 class ApiSeasonAdminHandler {
 	constructor() {}
 

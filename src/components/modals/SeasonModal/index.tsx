@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 
 const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { isLoading: isLoading } = useQuery(
+	const { isLoading: isLoading, isPaused } = useQuery(
 		['season', seasonId],
 		() => axios.get(`/api/admin/season`, { params: { id: seasonId } }),
 		{
@@ -80,7 +80,7 @@ const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 			onCancel={handleCancel}
 			confirmLoading={isCreateProcessing || isSaveProcessing}
 		>
-			<Spin spinning={isLoading || isCreateProcessing || isSaveProcessing}>
+			<Spin spinning={(isLoading && isPaused) || isCreateProcessing || isSaveProcessing}>
 				<Form
 					form={form}
 					layout="vertical"
