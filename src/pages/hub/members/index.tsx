@@ -3,7 +3,7 @@ import SpecialistPreviewModal from '@/components/modals/SpecialistPreviewModal'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import AirtableService from '@/services/airtable'
+import { prisma } from '@/services/prisma'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import { UserRole } from '@prisma/client'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
@@ -37,7 +37,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 		return (
 			<Card
 				actions={[
-					<Button key="details" onClick={() => setSelectedSpecialistId(hit.ID)}>
+					<Button key="details" onClick={() => setSelectedSpecialistId(hit.id)}>
 						Подробнее
 					</Button>,
 				]}
@@ -45,49 +45,35 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 				<Card.Meta
 					title={
 						<Title level={4} style={{ whiteSpace: 'initial' }}>
-							<Highlight attribute="Name" hit={hit} />
+							<Highlight attribute="name" hit={hit} />
 						</Title>
 					}
 				/>
-				{!!hit.Direction && (
+				{!!hit.direction && (
 					<Space wrap>
-						<Highlight attribute="Direction" hit={hit} />
+						<Highlight attribute="direction" hit={hit} />
 						<Tag>
-							<Highlight attribute="Level" hit={hit} />
+							<Highlight attribute="level" hit={hit} />
 						</Tag>
 					</Space>
 				)}
-				{!!hit.Skills && (
+				{!!hit.skills && (
 					<div className={styles.hitItem}>
 						<Text strong>Навыки: </Text>
-						<Highlight attribute="Skills" hit={hit} />
+						<Highlight attribute="skills" hit={hit} />
 					</div>
 				)}
-				{!!hit.Tools && (
+				{!!hit.tools && (
 					<div className={styles.hitItem}>
 						<Text strong>Инструменты: </Text>
-						<Highlight attribute="Tools" hit={hit} />
+						<Highlight attribute="tools" hit={hit} />
 					</div>
 				)}
-				{/* {!!hit.Schools && (
-					<div className={styles.hitItem}>
-						<Text strong>Образование</Text>
-						<br />
-						<Highlight attribute="Schools" hit={hit} />
-					</div>
-				)}
-				{!!hit.Workplaces && (
-					<div className={styles.hitItem}>
-						<Text strong>Опыт</Text>
-						<br />
-						<Highlight attribute="Workplaces" hit={hit} />
-					</div>
-				)} */}
 			</Card>
 		)
 	}
 
-	if (!hasRole(UserRole.Author, session)) {
+	if (!hasRole(UserRole.Guest, session)) {
 		return (
 			<>
 				<Head>
@@ -187,13 +173,13 @@ function SearchFilter() {
 	return (
 		<Space direction="vertical" style={{ width: '100%' }}>
 			<Card title="Направление" className={styles.panel}>
-				<RefinementList attribute="Direction" showMore />
+				<RefinementList attribute="direction" showMore />
 			</Card>
 			<Card title="Уровень" className={styles.panel}>
-				<RefinementList attribute="Level" />
+				<RefinementList attribute="level" />
 			</Card>
 			<Card title="Страна" className={styles.panel}>
-				<RefinementList attribute="Country" showMore />
+				<RefinementList attribute="country" showMore />
 			</Card>
 			<ClearRefinements translations={{ resetButtonText: 'Очистить фильтр' }} />
 		</Space>
@@ -231,13 +217,13 @@ function SearchMobileFilter({ onClick }: any) {
 }
 
 export async function getServerSideProps(context: any) {
-	const users = await AirtableService('Accounts').select({ fields: [] }).all()
-	const specialities = await AirtableService('Specialities').select({ fields: [] }).all()
+	const usersCount = await prisma.user.count()
+	const specialitiesCount = await prisma.speciality.count()
 
 	return {
 		props: {
-			usersCount: users.length,
-			specialitiesCount: specialities.length,
+			usersCount,
+			specialitiesCount,
 		},
 	}
 }

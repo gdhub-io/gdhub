@@ -26,7 +26,7 @@ export class InstantsearchAdapter {
 				apiKey: process.env.NEXT_PUBLIC_TYPESENSE_SEARCH_API as string,
 			},
 			additionalSearchParameters: {
-				query_by: 'name,city,country,schools,workplaces,tools,skills,direction,level',
+				query_by: 'name,city,country,schools,jobs,tools,skills,direction,level',
 			},
 		})
 

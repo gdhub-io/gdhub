@@ -1,35 +1,32 @@
 import { useEffect, useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
+import { Profile, Speciality, User, WorkDirection } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Descriptions, Modal, Space, Spin, Typography } from 'antd'
+import axios from 'axios'
 import Link from 'next/link'
 import { TbBrandTelegram, TbMail } from 'react-icons/tb'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 
 const { Paragraph } = Typography
 
 const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => {
-	const [processing, setProcessing] = useState(true)
-
 	const {
 		data: specialist,
-		mutate: fetchSpecialist,
-		isValidating: isLoadingSpecialist,
-	} = useSWR({ url: '/api/specialists/get', data: { id: specialistId } }, fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !specialistId,
-		onSuccess: (data) => {
-			setProcessing(false)
-		},
-	})
+		refetch: fetchSpecialist,
+		isLoading,
+	} = useQuery(
+		['specialist', specialistId],
+		() =>
+			axios.get<Speciality & { direction: WorkDirection; user: User & { profile: Profile & { [key: string]: any } } }>(
+				'/api/specialist',
+				{ params: { id: specialistId } }
+			),
+		{ staleTime: Infinity, enabled: open }
+	)
 
 	useEffect(() => {
-		if (open && !specialistId) {
-			setProcessing(false)
-		}
 		if (open && specialistId) {
 			fetchSpecialist()
-			setProcessing(true)
 		}
 	}, [open])
 
@@ -47,21 +44,19 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 				maskClosable={false}
 				open={open}
 				onCancel={handleCancel}
-				confirmLoading={processing}
 				footer={[
 					<Space key="form-buttons" wrap>
-						<Button key="close" onClick={handleCancel} disabled={processing}>
+						<Button key="close" onClick={handleCancel} disabled={isLoading}>
 							Закрыть
 						</Button>
 					</Space>,
 				]}
 			>
-				<Spin spinning={processing}>
-					{!!specialist && (
+				<Spin spinning={isLoading}>
+					{!!specialist?.data && (
 						<>
 							<div className={styles.specialityTitle}>
-								<h1>{specialist?.Name}</h1>
-								{specialist.Direction} ({specialist.Level})
+								<h1>{specialist?.data.name}</h1>({specialist?.data.level})
 							</div>
 
 							<Descriptions
@@ -71,19 +66,20 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 								size="small"
 								labelStyle={{ fontWeight: 'bold' }}
 							>
-								{!!specialist?.Profile['Resume/Portfolio'] && (
+								{!!specialist.data.portfolioUrl && (
 									<Descriptions.Item label="Резюме/портфолио">
-										<Link href={specialist.Profile['Resume/Portfolio']} target="_blank">
+										<Link href={specialist.data.portfolioUrl} target="_blank">
 											<Button size="small">Перейти</Button>
 										</Link>
 									</Descriptions.Item>
 								)}
 								<Descriptions.Item label="Свободное время">
-									{specialist.Profile['Time For Work']} часов
+									от {specialist.data.user.profile.timeForWork[0]} до {specialist.data.user.profile.timeForWork[1]}{' '}
+									часов в неделю
 								</Descriptions.Item>
-								{!!specialist?.Country && (
+								{!!specialist.data.user.profile.country && (
 									<Descriptions.Item label="Место проживания">
-										{[specialist.Profile.Country, specialist.Profile.City].join(', ')}
+										{[specialist.data.user.profile.country, specialist.data.user.profile.city].join(', ')}
 									</Descriptions.Item>
 								)}
 							</Descriptions>
@@ -95,16 +91,16 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 								size="small"
 								labelStyle={{ fontWeight: 'bold' }}
 							>
-								<Descriptions.Item label="Специализация">{specialist.Specialization}</Descriptions.Item>
-								<Descriptions.Item label="Навыки">{specialist.Skills}</Descriptions.Item>
+								<Descriptions.Item label="Специализация">{specialist.data.specialization}</Descriptions.Item>
+								<Descriptions.Item label="Навыки">{specialist.data.skills}</Descriptions.Item>
 								<Descriptions.Item label="Использую в работе">
-									{specialist.Tools || '(инструменты не указаны)'}
+									{specialist.data.tools || '(инструменты не указаны)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Опыт работы">
-									{specialist.Workplaces || '(места работ не указаны)'}
+									{specialist.data.jobs || '(места работ не указаны)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Где получал знания">
-									{specialist.Schools || '(места обучения не указаны)'}
+									{specialist.data.schools || '(места обучения не указаны)'}
 								</Descriptions.Item>
 							</Descriptions>
 
@@ -117,18 +113,18 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 								className={styles.descriptionBlock}
 							>
 								<Descriptions.Item label="Предпочитаю жанры">
-									{specialist.Profile['Preferred Genres']
-										? specialist.Profile['Preferred Genres'].join(', ')
+									{specialist.data.user.profile.preferredGenres
+										? specialist.data.user.profile.preferredGenres.map((r: any) => r.name).join(', ')
 										: '(не указано)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Предпочитаю сеттинги">
-									{specialist.Profile['Preferred Settings']
-										? specialist.Profile['Preferred Settings'].join(', ')
+									{specialist.data.user.profile.preferredSettings
+										? specialist.data.user.profile.preferredSettings.map((r: any) => r.name).join(', ')
 										: '(не указано)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Предпочитаю игры следующей сложности">
-									{specialist.Profile['Preferred Difficulty Levels']
-										? specialist.Profile['Preferred Difficulty Levels'].join(', ')
+									{specialist.data.user.profile.preferredLevels
+										? specialist.data.user.profile.preferredLevels.map((r: any) => r.name).join(', ')
 										: '(не указано)'}
 								</Descriptions.Item>
 							</Descriptions>
@@ -136,13 +132,13 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 							<div className={styles.descriptionBlock}>
 								<Paragraph strong>Контакты</Paragraph>
 								<Space wrap>
-									{!!specialist.Profile['Telegram Nickname'] && (
-										<Link target="_blank" href={'https://t.me/' + specialist.Profile['Telegram Nickname']}>
+									{!!specialist.data.user.profile.tgNickname && (
+										<Link target="_blank" href={'https://t.me/' + specialist.data.user.profile.tgNickname}>
 											<Button icon={<TbBrandTelegram size={16} />}>Telegram</Button>
 										</Link>
 									)}
-									{!!specialist.Profile['Email (from Account)'] && !specialist.Profile['Telegram Nickname'] && (
-										<Link target="_blank" href={'mailto:' + specialist.Profile['Email (from Account)']}>
+									{!!!specialist.data.user.profile.tgNickname && (
+										<Link target="_blank" href={'mailto:' + specialist.data.user.email}>
 											<Button icon={<TbMail size={16} />}>Email</Button>
 										</Link>
 									)}
