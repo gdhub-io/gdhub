@@ -6,6 +6,8 @@ import SEOSettings from '@/config/seo'
 import { themeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
 import { PublicLayout } from '@/layouts/PublicLayout'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ConfigProvider } from 'antd'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -16,7 +18,6 @@ import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
 import 'dayjs/locale/ru'
 import { DefaultSeo } from 'next-seo'
-import { QueryClient, QueryClientProvider } from 'react-query'
 
 dayjs.extend(localizedFormat)
 dayjs.locale('ru')
@@ -106,6 +107,8 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 						</SessionProvider>
 						<LoadingScreen visible={loading} />
 					</ConfigProvider>
+
+					{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
 				</QueryClientProvider>
 			</ErrorBoundary>
 		</>

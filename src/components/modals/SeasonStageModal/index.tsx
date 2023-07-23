@@ -1,7 +1,7 @@
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, DatePicker, Form, Input, InputNumber, message, Modal, Row, Spin, Switch } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { useMutation, useQuery } from 'react-query'
 
 const StageStageModal = ({ seasonId, stageId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()

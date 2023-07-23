@@ -1,6 +1,8 @@
 import { Client } from 'typesense'
 import { CollectionUpdateSchema } from 'typesense/lib/Typesense/Collection'
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections'
+import { prepareData } from './commands/migrate'
+import { specialistsSchema } from './schemes/specialists'
 
 export class SearchEngineService {
 	client: Client
@@ -42,13 +44,19 @@ export class SearchEngineService {
 	}
 
 	async addSpecialist(document: Record<string, any>) {
-		await this.client.collections('specialists').documents().create(document)
+		const existScheme = await this.existScheme('specialists')
+
+		if (!existScheme) {
+			await this.migrateScheme(specialistsSchema)
+		}
+
+		await this.client.collections('specialists').documents().create(prepareData(document))
 	}
 
 	async deleteSpecialist(specialityId: string) {
 		return await this.client
 			.collections('specialists')
 			.documents()
-			.delete({ filter_by: `ID:${specialityId}` })
+			.delete({ filter_by: `id:${specialityId}` })
 	}
 }

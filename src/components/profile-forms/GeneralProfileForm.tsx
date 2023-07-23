@@ -11,7 +11,7 @@ type GeneralProfileFormArgs = {
 
 const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) => {
 	const [form] = Form.useForm()
-	const { data: session } = useSession()
+	const { data: session, update: sessionUpdate } = useSession()
 	const [processing, setProcessing] = useState(true)
 	const countries = useMemo(() => countryList().getData(), [])
 
@@ -27,6 +27,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 
 			setProcessing(true)
 			await saveProfile({ id: profile.id, data: formData })
+			await sessionUpdate({ user: { name: formData.name } })
 			setProcessing(false)
 
 			if (formData.tgNickname) {

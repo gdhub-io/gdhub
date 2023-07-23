@@ -5,9 +5,9 @@ import SkillExpertIcon from '@/assets/images/skills/expert.svg'
 import SkillNoviceIcon from '@/assets/images/skills/novice.svg'
 import SkillSkillfulIcon from '@/assets/images/skills/skillful.svg'
 import { SkillLevel, WorkDirection } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
 import axios from 'axios'
-import { useMutation, useQuery } from 'react-query'
 
 export const skillLevelsList = [
 	{
@@ -62,7 +62,7 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 	const [processing, setProcessing] = useState(true)
 
 	const { data: workDirections } = useQuery(
-		'workDirections',
+		['workDirections'],
 		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
 		{
 			staleTime: Infinity,

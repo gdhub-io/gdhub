@@ -1,26 +1,28 @@
 import { useState } from 'react'
-import { Speciality } from '@prisma/client'
+import { Speciality, UserRole } from '@prisma/client'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
+import { useSession } from 'next-auth/react'
 import { GiSkills } from 'react-icons/gi'
 import { GoPlus, GoTrash } from 'react-icons/go'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 import SpecialityModal from './modals/SpecialityModal'
 
 const { Text } = Typography
 
 const SpecialitiesProfileForm = ({ profile }: any) => {
+	const session = useSession()
 	const queryClient = useQueryClient()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
-	const { data: specialities, isFetching: processing } = useQuery('user-specialities', () =>
+	const { data: specialities, isFetching: processing } = useQuery(['user-specialities'], () =>
 		axios.get<Speciality[]>('/api/user/specialities')
 	)
 
 	const { mutateAsync: deleteSpeciality } = useMutation(
 		(params: any) => axios.delete('/api/user/speciality', { params }),
-		{ onSuccess: () => queryClient.invalidateQueries('user-specialities') }
+		{ onSuccess: () => queryClient.invalidateQueries(['user-specialities']) }
 	)
 
 	const showModal = () => {
@@ -30,7 +32,8 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 
 	const handleOk = () => {
 		setIsModalOpen(false)
-		queryClient.invalidateQueries('user-specialities')
+		queryClient.invalidateQueries(['user-specialities'])
+		session.update({ roles: session.data?.user.roles.includes(UserRole.Member) })
 	}
 
 	const handleCancel = () => {

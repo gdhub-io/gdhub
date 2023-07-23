@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { GameDifficultyLevel, GameGenre, GameSetting, Profile } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Card, Form, message, Select, Spin, Typography } from 'antd'
 import axios from 'axios'
-import { useQuery } from 'react-query'
 
 type PreferencesProfileFormArgs = {
 	profile: Profile & {
@@ -16,15 +16,15 @@ type PreferencesProfileFormArgs = {
 const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileFormArgs) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
-	const { data: gameGenres } = useQuery('gameGenres', () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
+	const { data: gameGenres } = useQuery(['gameGenres'], () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
 		staleTime: Infinity,
 	})
 	const { data: gameSettings } = useQuery(
-		'gameSettings',
+		['gameSettings'],
 		() => axios.get<GameSetting[]>('/api/dictionary/game-settings'),
 		{ staleTime: Infinity }
 	)
-	const { data: gameLevels } = useQuery('gameLevels', () => axios.get<GameSetting[]>('/api/dictionary/game-levels'), {
+	const { data: gameLevels } = useQuery(['gameLevels'], () => axios.get<GameSetting[]>('/api/dictionary/game-levels'), {
 		staleTime: Infinity,
 	})
 

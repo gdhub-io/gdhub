@@ -2,7 +2,7 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import { SearchEngineService } from '@/services/typesense'
-import { prepareAirtableData } from '@/services/typesense/commands/migrate'
+import { prepareData } from '@/services/typesense/commands/migrate'
 import { CreateSpecialityDto, DeleteSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -26,6 +26,7 @@ class ApiSpecialityHandler {
 
 		const speciality = await prisma.speciality.create({
 			data: { ...data, userId: req.user.id, tools: data.tools ? data.tools.join(`\n`) : '' } as any,
+			include: { direction: true },
 		})
 
 		const specialitiesCount = await prisma.speciality.count({ where: { userId: req.user.id } })
@@ -56,7 +57,11 @@ class ApiSpecialityHandler {
 			}
 		}
 
-		await indexNewDocumentToTypesense(speciality)
+		try {
+			await indexNewDocumentToTypesense(speciality)
+		} catch (e) {
+			console.error(e)
+		}
 	}
 
 	@Put()
@@ -66,11 +71,16 @@ class ApiSpecialityHandler {
 		const speciality = await prisma.speciality.update({
 			where: { id },
 			data: { ...data, tools: data.tools ? data.tools.join(`\n`) : '' } as any,
+			include: { direction: true },
 		})
 
-		const searchClient = await SearchEngineService.init()
-		await searchClient.deleteSpecialist(speciality.id)
-		await indexNewDocumentToTypesense(speciality)
+		try {
+			const searchClient = await SearchEngineService.init()
+			await searchClient.deleteSpecialist(speciality.id)
+			await indexNewDocumentToTypesense(speciality)
+		} catch (e) {
+			console.error(e)
+		}
 	}
 
 	@Delete()
@@ -79,8 +89,12 @@ class ApiSpecialityHandler {
 
 		await prisma.speciality.delete({ where: { id } })
 
-		const searchClient = await SearchEngineService.init()
-		await searchClient.deleteSpecialist(id)
+		try {
+			const searchClient = await SearchEngineService.init()
+			await searchClient.deleteSpecialist(id)
+		} catch (e) {
+			console.error(e)
+		}
 	}
 }
 
@@ -89,27 +103,39 @@ export default createHandler(ApiSpecialityHandler)
 async function indexNewDocumentToTypesense(speciality: any) {
 	const searchClient = await SearchEngineService.init()
 
-	const { id, name, apecialization, level, direction, skills, tools, workplaces, schools, country, city, created } =
-		speciality
+	const {
+		id,
+		name,
+		level,
+		direction,
+		skills,
+		tools,
+		jobs,
+		schools,
+		country,
+		city,
+		createdAt,
+		updatedAt,
+		specialization,
+	} = speciality
 
 	/** Create document for typense search engine */
 	try {
 		await searchClient.addSpecialist(
-			prepareAirtableData({
+			prepareData({
 				id,
-				fields: {
-					name,
-					apecialization,
-					level,
-					direction,
-					skills,
-					tools,
-					workplaces,
-					schools,
-					country,
-					city,
-					created,
-				},
+				name,
+				specialization,
+				level,
+				direction: direction.name,
+				skills,
+				tools,
+				jobs,
+				schools,
+				country,
+				city,
+				createdAt,
+				updatedAt,
 			})
 		)
 	} catch (error) {

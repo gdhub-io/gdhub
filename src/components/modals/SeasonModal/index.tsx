@@ -1,8 +1,8 @@
 import { SeasonStatus } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { useMutation, useQuery } from 'react-query'
 
 const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()

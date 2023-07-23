@@ -1,3 +1,5 @@
+// import { useEffect } from 'react'
+import { useEffect } from 'react'
 import SeasonsList from '@/components/SeasonsList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
@@ -11,6 +13,10 @@ import styles from './style.module.scss'
 
 const HubPage: NextPageWithLayout = () => {
 	const session = useSession()
+
+	useEffect(() => {
+		console.log('session', session, hasRole(UserRole.Member, session))
+	}, [session])
 
 	return (
 		<>

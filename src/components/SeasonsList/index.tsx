@@ -1,16 +1,16 @@
 import DividerIcon from '@/assets/images/icons/divider.svg'
 import { Season } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { Alert, Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
-import { useQuery } from 'react-query'
 import styles from './style.module.scss'
 
 const { Title, Text, Paragraph } = Typography
 
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()
-	const { data: seasons, isFetching: isLoading } = useQuery('seasons', () => axios.get<any[]>('/api/seasons'), {
+	const { data: seasons, isFetching: isLoading } = useQuery(['seasons'], () => axios.get<any[]>('/api/seasons'), {
 		staleTime: Infinity,
 	})
 
