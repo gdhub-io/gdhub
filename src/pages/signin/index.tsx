@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import LogingImageSrc from '@/assets/images/login-image.jpg'
+import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { Button, Image, Space } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { signIn } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
+import { getSession, signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
 import { GoChevronLeft } from 'react-icons/go'
 import styles from './style.module.scss'
@@ -54,6 +56,23 @@ const LoginPage: NextPage = () => {
 			</div>
 		</>
 	)
+}
+
+export const getServerSideProps = async (context: any) => {
+	const session = await getServerSession(context.req, context.res, authOptions)
+
+	if (session?.user) {
+		return {
+			redirect: {
+				destination: '/hub',
+				permanent: false,
+			},
+		}
+	}
+
+	return {
+		props: {},
+	}
 }
 
 export default LoginPage

@@ -1,4 +1,3 @@
-import { prisma } from '@/services/prisma'
 import { Prisma } from '@prisma/client'
 
 export const userPrismaExtension = Prisma.defineExtension((client) => {
@@ -7,7 +6,7 @@ export const userPrismaExtension = Prisma.defineExtension((client) => {
 		model: {
 			user: {
 				existProfile: async (userId: string) => {
-					const existProfile = await prisma.profile.count({ where: { userId } })
+					const existProfile = await client.profile.count({ where: { userId } })
 
 					return !!existProfile
 				},

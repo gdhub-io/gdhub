@@ -161,17 +161,6 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 }
 
 export async function getStaticProps(context: any) {
-	// const session: any = await getServerSession(context.req, context.res, authOptions)
-
-	// if (session?.user?.id) {
-	// 	return {
-	// 		redirect: {
-	// 			destination: '/hub',
-	// 			permanent: false,
-	// 		},
-	// 	}
-	// }
-
 	const usersCount = await prisma.user.count()
 	const specialitiesCount = await prisma.speciality.count()
 

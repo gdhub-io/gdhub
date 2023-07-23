@@ -1,4 +1,3 @@
-import { prisma } from '@/services/prisma'
 import { Prisma, Season, SeasonStage } from '@prisma/client'
 
 enum DefaultSeasonStages {
@@ -21,7 +20,7 @@ export const seasonPrismaExtension = Prisma.defineExtension((client) => {
 						.filter((v) => !Number.isInteger(v))
 						.map((v, idx) => ({ name: v as string, order: idx }))
 
-					const seasonWithStages: Season & { stages?: SeasonStage[] } = await prisma.season.update({
+					const seasonWithStages: Season & { stages?: SeasonStage[] } = await client.season.update({
 						where: { id: season.id },
 						data: { stages: { createMany: { data: defaultStages } } },
 						include: { stages: true },
@@ -37,7 +36,7 @@ export const seasonPrismaExtension = Prisma.defineExtension((client) => {
 					if (['create', 'update', 'upsert'].includes(operation)) {
 						const _args = args as any
 						if (response && _args?.data.isCurrent) {
-							await prisma.seasonStage.updateMany({
+							await client.seasonStage.updateMany({
 								where: { seasonId: response.seasonId, id: { not: { equals: response.id } } },
 								data: { isCurrent: false },
 							})

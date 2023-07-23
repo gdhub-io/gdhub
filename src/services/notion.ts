@@ -28,13 +28,13 @@ export const getPages = async ({ roles = [] }: GetPagesParams) => {
 					{
 						property: 'Access',
 						multi_select: {
-							contains: 'Everyone',
+							contains: 'everyone',
 						},
 					},
 					...roles.map((roleName: string) => ({
 						property: 'Access',
 						multi_select: {
-							contains: roleName,
+							contains: roleName.toLowerCase(),
 						},
 					})),
 				],
@@ -43,7 +43,7 @@ export const getPages = async ({ roles = [] }: GetPagesParams) => {
 			filterParams.and.push({
 				property: 'Access',
 				multi_select: {
-					contains: 'Everyone',
+					contains: 'everyone',
 				},
 			})
 		}

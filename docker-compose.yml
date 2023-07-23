@@ -30,7 +30,7 @@ services:
     networks:
       - gamelab-network
 
-  typesense-dashboard: #dashboard https://bfritscher.github.io
+  searchengine-dashboard: #dashboard https://bfritscher.github.io
     container_name: gamelab-typesense-dashboard
     image: ghcr.io/bfritscher/typesense-dashboard:latest
     restart: on-failure

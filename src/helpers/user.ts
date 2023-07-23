@@ -5,7 +5,7 @@ export const hasRole = (role: UserRole, { data }: any) => {
 		return false
 	}
 
-	const findRole = data.user.roles.find((role: UserRole) => role === role)
+	const findRole = data.user.roles.find((r: UserRole) => r === role)
 
 	return findRole ? true : false
 }

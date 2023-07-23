@@ -1,4 +1,3 @@
-// import { useEffect } from 'react'
 import SeasonsList from '@/components/SeasonsList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
@@ -11,7 +10,7 @@ import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const HubPage: NextPageWithLayout = () => {
-	const session: any = useSession()
+	const session = useSession()
 
 	return (
 		<>
@@ -19,7 +18,7 @@ const HubPage: NextPageWithLayout = () => {
 				<title>Game Developers Hub</title>
 			</Head>
 			<div className={styles.container}>
-				{session && !hasRole(UserRole.Member, session) && (
+				{session.status == 'authenticated' && !hasRole(UserRole.Member, session) && (
 					<Space direction="vertical">
 						<p>
 							Для того, чтобы стать участников Хаба, необходимо заполнить данные о себе, указать ваши специальности,
@@ -36,7 +35,7 @@ const HubPage: NextPageWithLayout = () => {
 						</Link>
 					</Space>
 				)}
-				{hasRole(UserRole.Member, session) && (
+				{session.status == 'authenticated' && hasRole(UserRole.Member, session) && (
 					<>
 						<SeasonsList />
 					</>
