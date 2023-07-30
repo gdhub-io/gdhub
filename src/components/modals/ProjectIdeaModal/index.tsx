@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { normUploadFile } from '@/helpers/file'
+import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Col, Form, Input, message, Modal, Popover, Row, Select, Spin, Upload, UploadProps } from 'antd'
+import axios from 'axios'
 import Image from 'next/image'
 import { TbTrash } from 'react-icons/tb'
 import styles from './style.module.scss'
@@ -8,85 +11,48 @@ import styles from './style.module.scss'
 const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
-	const [projectIdea, setProjectIdea] = useState<any>()
 	const [cover, setCover] = useState<string | null>()
 	const [coverProcessing, setCoverProcessing] = useState(false)
+
+	const { data: project } = useQuery(
+		['user-project', projectIdeaId],
+		() => axios.get<Project & { stage: SeasonStage }>('/api/project', { params: { id: projectIdeaId } }),
+		{
+			refetchOnWindowFocus: false,
+			refetchInterval: Infinity,
+			onSuccess({ data }) {
+				setCover(data.coverImage)
+			},
+		}
+	)
+	const { mutateAsync: createProject } = useMutation((data: any) => axios.post('/api/project', data))
 
 	useEffect(() => {
 		if (open && projectIdeaId) {
 			setCover(undefined)
-			getProjectIdea(projectIdeaId)
 		} else {
 			setProcessing(false)
 		}
 	}, [open])
 
 	useEffect(() => {
-		if (projectIdea) {
-			form.setFieldsValue({ ...projectIdea, Season: projectIdea.Season[0] })
+		if (project) {
+			form.setFieldsValue({ ...project.data, seasonId: project ? project?.data.stage.seasonId : seasonId })
 		}
-	}, [projectIdea])
-
-	const getProjectIdea = async (projectIdeaId: string) => {
-		try {
-			setProcessing(true)
-
-			const response: any = await fetch('/api/project/idea', {
-				method: 'post',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					id: projectIdeaId,
-				}),
-			})
-
-			if (response.error) {
-				throw new Error(response.error.message)
-			}
-
-			const data = await response.json()
-
-			if (data.hasOwnProperty('Cover Image')) {
-				setCover(data['Cover Image'])
-			}
-
-			setProjectIdea({ ...data, 'Core Mechanics': data['Core Mechanics'].split('|'), 'Cover Image': undefined })
-
-			setProcessing(false)
-		} catch (error: any) {
-			console.log('getProjectIdea', error)
-			message.error(error.message)
-			setProcessing(false)
-		}
-	}
+	}, [project])
 
 	const handleOk = async () => {
 		try {
 			const formData = await form.validateFields()
 			setProcessing(true)
 
-			const response: any = await fetch('/api/project/idea/save', {
-				method: 'post',
-				body: JSON.stringify({
-					id: projectIdeaId || null,
-					data: { ...formData, 'Cover Image': cover ? cover : null },
-				}),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			setProcessing(false)
-
-			if (!response.ok) {
-				throw new Error('Something wrong')
+			if (projectIdeaId) {
+				//
+			} else {
+				const data = await createProject({ ...formData, coverImage: cover ? cover : null })
 			}
 
-			const data = await response.json()
-
-			if (data.error) {
-				throw new Error(response.error.message)
-			}
-
-			message.success(projectIdeaId ? 'Данные идеи обновлены' : 'Добавлена новая идея игры')
+			message.success(projectIdeaId ? 'Данные проекта обновлены' : 'Добавлена новый проект игры')
 			onOk()
 		} catch (error: any) {
 			setProcessing(false)
@@ -100,7 +66,6 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 	}
 
 	const handleCancel = () => {
-		setProjectIdea(null)
 		form.resetFields()
 		onCancel()
 	}
@@ -112,12 +77,9 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 			data.append('filename', 'project-cover-' + projectIdeaId)
 			data.append('tag', 'project-cover')
 
-			const res = await fetch('/api/file/upload', {
-				method: 'post',
-				body: data,
-			})
+			const res = await axios.post('/api/file', data)
 
-			return await res.json()
+			return await res.data
 		} catch (error) {
 			console.error(error)
 		}
@@ -125,13 +87,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 
 	const removeImage = async (fileUrl: string) => {
 		try {
-			const res = await fetch('/api/file/delete', {
-				method: 'post',
-				body: JSON.stringify({ fileUrl }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
+			const res = await axios.delete('/api/file', { params: { fileUrl } })
 
 			// save
 			if (projectIdeaId) {
@@ -139,7 +95,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 					method: 'post',
 					body: JSON.stringify({
 						id: projectIdeaId,
-						data: { 'Cover Image': null, Season: seasonId },
+						data: { coverImage: null, seasonId: project ? project.data.stage.seasonId : seasonId },
 					}),
 					headers: {
 						'Content-Type': 'application/json',
@@ -147,7 +103,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 				})
 			}
 
-			return await res.json()
+			return await res
 		} catch (error) {
 			console.error(error)
 		}
@@ -170,7 +126,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 				const uploadedFileData = await uploadImage(info.file.originFileObj)
 				setCover(uploadedFileData.url)
 
-				form.setFieldValue('Cover Image', uploadedFileData.url)
+				form.setFieldValue('coverImage', uploadedFileData.url)
 
 				message.success(`${info.file.name} file uploaded successfully.`)
 			} else if (status === 'error') {
@@ -192,12 +148,11 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 		if (!cover) return
 
 		setCoverProcessing(true)
-
 		await removeImage(cover)
-
-		setCover(undefined)
 		setCoverProcessing(false)
-		form.setFieldValue('Cover Image', undefined)
+
+		form.setFieldValue('coverImage', undefined)
+		setCover(undefined)
 	}
 
 	return (
@@ -225,17 +180,17 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						Season: seasonId,
+						seasonId,
 					}}
 				>
-					<Form.Item name="Season" noStyle hidden>
+					<Form.Item name="seasonId" noStyle hidden>
 						<Input />
 					</Form.Item>
 
 					<Spin spinning={coverProcessing}>
 						{!cover ? (
 							<Form.Item
-								name="Cover Image"
+								name="coverImage"
 								label="Обложка для проекта"
 								valuePropName="file"
 								getValueFromEvent={normUploadFile}
@@ -266,7 +221,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 						<Col flex={1} xs={{ span: 24 }} md={{ span: 16 }}>
 							<Form.Item
 								label="Название проекта"
-								name="Name"
+								name="name"
 								rules={[{ required: true }]}
 								required
 								wrapperCol={{ span: 24 }}
@@ -276,7 +231,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
 							<Form.Item
-								name="Platform"
+								name="platform"
 								label="Платформа"
 								wrapperCol={{ span: 24 }}
 								rules={[{ required: true }]}
@@ -287,7 +242,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 						</Col>
 					</Row>
 
-					<Form.Item name="Description" label="Краткое описание" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+					<Form.Item name="description" label="Краткое описание" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
 						<Input.TextArea
 							rows={6}
 							placeholder={`Например:\nВ роли андроида по имени 2B игрок может путешествовать по открытому миру. Битвы с противниками проходят в реальном времени и персонажи используют оружие ближнего боя. У игрока есть основные и побочные квесты…`}
@@ -295,19 +250,19 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 					</Form.Item>
 
 					<Form.Item
-						name="Document Link"
+						name="conceptLink"
 						label="Ссылка на концепт-документ (описание идеи)"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true, type: 'url' }]}
 						required
 					>
-						<Input width={'100%'} disabled={!!projectIdea && projectIdea.Status !== 'Registered'} />
+						<Input width={'100%'} disabled={!!project && project.data.status !== ProjectStatus.Registered} />
 					</Form.Item>
 
-					{projectIdea?.Status == 'Approved' && (
+					{project?.data.status == ProjectStatus.Approved && (
 						<>
 							<Form.Item
-								name="GDD Link"
+								name="gddLink"
 								label="Ссылка на геймдизайн-документ"
 								wrapperCol={{ span: 24 }}
 								rules={[{ required: true, type: 'url' }]}
@@ -318,7 +273,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 							<Row gutter={[16, 16]}>
 								<Col md={{ span: 16 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item
-										name="Slides Link"
+										name="pitchdeckLink"
 										label="Ссылка на презентацию (к питчу)"
 										wrapperCol={{ span: 24 }}
 										rules={[{ type: 'url' }]}
@@ -328,7 +283,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 								</Col>
 								<Col md={{ span: 8 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item
-										name="Youtube Video ID"
+										name="videoLink"
 										label="Видео питча"
 										wrapperCol={{ span: 24 }}
 										rules={[{ max: 64, min: 4 }]}
@@ -340,14 +295,14 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 						</>
 					)}
 
-					<Form.Item name="Genre" label="Жанр" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
+					<Form.Item name="genre" label="Жанр" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
 						<Input width={'100%'} placeholder={`Пример: аркадный айдлер + tower defence`} />
 					</Form.Item>
-					<Form.Item name="Setting" label="Сеттинг" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
+					<Form.Item name="setting" label="Сеттинг" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
 						<Input width={'100%'} placeholder={`Пример: постапокалипсис/зомби`} />
 					</Form.Item>
 					<Form.Item
-						name="Visual Style"
+						name="visualStyle"
 						label="Визуальный стиль"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
@@ -355,12 +310,12 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 					>
 						<Input width={'100%'} placeholder={`Пример: лоу-поли или что-то напоминающее brawlstars`} />
 					</Form.Item>
-					<Form.Item name="Audition" label="Аудитория" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
+					<Form.Item name="audition" label="Аудитория" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
 						<Input width={'100%'} placeholder={`Пример: мужчины 16-45`} />
 					</Form.Item>
 
 					<Form.Item
-						name="Core Mechanics"
+						name="coreMechanics"
 						label="Core-механики"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}

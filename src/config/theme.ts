@@ -34,8 +34,10 @@ export const themeConfig: ThemeConfig = {
 	// },
 
 	token: {
+		fontFamily: mainFont.style.fontFamily,
 		colorPrimary: '#07ad92',
 		fontSize: 16,
+		lineHeight: 1.5,
 		borderRadius: 8,
 		wireframe: true,
 		colorLink: '#07ad92',

@@ -1,49 +1,17 @@
-import { useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
-import { Button, Card, Col, Descriptions, Grid, message, Row, Spin, Typography } from 'antd'
+import { Project } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
+import { Button, Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
+import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 
 const RecruitingStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
-	const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
-	const [selectedProjectIdea, setSelectedProjectIdea] = useState<any>(null)
-	const {
-		data: projects,
-		mutate: mutateProjects,
-		isValidating: isLoadingProjecIdeas,
-	} = useSWR({ url: '/api/season/ideas', data: { seasonName: season.Name } }, fetcher)
 
-	const handleEditIdeaClick = (projectIdeaId: string) => {
-		setSelectedProjectIdea(projectIdeaId)
-		setShowProjectIdeaModal(true)
-	}
-
-	const handleDeleteIdea = async (projectIdeaId: string) => {
-		try {
-			const response = await fetch('/api/project/idea/delete', {
-				method: 'post',
-				body: JSON.stringify({ projectIdeaId }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-
-			if (!response.ok) throw new Error()
-
-			await mutateProjects()
-			message.success('Идея проекта была удалена')
-		} catch (error: any) {
-			message.error('Error')
-		}
-	}
-
-	const handleSaveProjectIdea = async () => {
-		setShowProjectIdeaModal(false)
-		await mutateProjects()
-	}
+	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery(['season-projects', season.id], () =>
+		axios.get<Project[]>('/api/season/projects', { params: { seasonId: season.id } })
+	)
 
 	return (
 		<div className={styles.container}>
@@ -67,7 +35,7 @@ const RecruitingStageContent = ({ season, stage }: any) => {
 						{ md: 24, xs: 24 },
 					]}
 				>
-					{projects?.map((project: any, idx: number) => (
+					{projects?.data.map((project: any, idx: number) => (
 						<Col key={idx} xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }} xl={{ span: 6 }}>
 							<Card
 								className={styles.card}

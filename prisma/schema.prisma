@@ -212,19 +212,32 @@ model SeasonStreamReport {
 }
 
 model Project {
-  id          String              @id @default(cuid())
-  name        String
-  description String?             @db.Text
-  status      ProjectStatus       @default(Registered)
-  createdAt   DateTime
-  finishedAt  DateTime?
-  stageId     String
-  stage       SeasonStage         @relation(fields: [stageId], references: [id])
-  authorId    String
-  author      User                @relation(fields: [authorId], references: [id])
-  team        ProjectTeam?
-  estimations ProjectEstimation[]
-  reports     ProjectReport[]
+  id            String              @id @default(cuid())
+  name          String
+  description   String?             @db.Text
+  status        ProjectStatus       @default(Registered)
+  coverImage    String?
+  genre         String
+  setting       String
+  platform      String
+  visualStyle   String
+  coreMechanics String[]
+  audition      String?
+  videoLink     String?
+  pitchdeckLink String?
+  gddLink       String?
+  conceptLink   String?
+  finishedAt    DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  slug          String              @default(cuid())
+  stageId       String
+  stage         SeasonStage         @relation(fields: [stageId], references: [id])
+  authorId      String
+  author        User                @relation(fields: [authorId], references: [id])
+  team          ProjectTeam?
+  estimations   ProjectEstimation[]
+  reports       ProjectReport[]
 }
 
 model ProjectEstimation {

@@ -9,7 +9,7 @@ import styles from './style.module.scss'
 const ProductionStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()
 	const { data: projects, isValidating: isLoadingProjecIdeas } = useSWR(
-		{ url: '/api/season/ideas', data: { seasonName: season.Name } },
+		{ url: '/api/season/projects', data: { seasonName: season.Name } },
 		fetcher
 	)
 	const { data: reportsDates } = useSWR(

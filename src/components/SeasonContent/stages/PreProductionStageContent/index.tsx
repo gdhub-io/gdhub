@@ -1,59 +1,17 @@
-import { useEffect, useState } from 'react'
-import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
-import { ProjectIdeasList } from '@/components/ProjectIdeasList'
-import { fetcher } from '@/helpers/fetcher'
-import { Alert, Button, Grid, List, Space, Typography } from 'antd'
-import { DateTime } from 'luxon'
+import { useMemo } from 'react'
+import { SeasonData } from '@/components/SeasonContent'
+import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
+import { UserSeasonProjectsSection } from '@/components/UserSeasonProjectsSection'
+import { Alert, Space } from 'antd'
+import dayjs from 'dayjs'
 import Link from 'next/link'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 
-const { Text } = Typography
-
-const PreProductionStageContent = ({ season, stage }: any) => {
-	const screens = Grid.useBreakpoint()
-	const [mechanicsList, setMechanicsList] = useState<string[]>([])
-	const [visualSolutionsList, setVisualSolutionsList] = useState<string[]>([])
-	const [showProjectGDDModal, setShowProjectGDDModal] = useState(false)
-	const [selectedProjectIdea, setSelectedProjectIdea] = useState<any>(null)
-
-	const { data: projectIdeas, isValidating: isLoadingProjecIdeas } = useSWR(
-		{ url: '/api/season/ideas', data: { seasonName: season.Name, status: 'Approved' } },
-		fetcher
-	)
-
-	const {
-		data: authorProjectIdeas,
-		mutate: mutateProjectIdeas,
-		isValidating: isLoadingAuthorProjecIdeas,
-	} = useSWR({ url: '/api/project/ideas', data: { seasonName: season.Name } }, fetcher)
-
-	useEffect(() => {
-		if (!projectIdeas) return
-
-		let mechanics: string[] = []
-		let visuals: string[] = []
-
-		projectIdeas.map((idea: any) => {
-			mechanics = [...mechanics, ...idea['Core Mechanics'].split('|')]
-			visuals = [...visuals, idea['Visual Style'] + ` (сеттинг: ${idea.Setting}, жанр: ${idea.Genre})`]
-		})
-
-		setMechanicsList(mechanics)
-		setVisualSolutionsList(visuals)
-	}, [projectIdeas])
-
-	const isStageExpired = () => DateTime.fromISO(stage['Finished At']).diffNow().toMillis() <= 0
-
-	const handleEditIdeaClick = (projectIdeaId: string) => {
-		setSelectedProjectIdea(projectIdeaId)
-		setShowProjectGDDModal(true)
-	}
-
-	const handleSaveProjectGDD = async () => {
-		setShowProjectGDDModal(false)
-		await mutateProjectIdeas()
-	}
+const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
+	const stage = useMemo(() => {
+		return season?.stages.find((s) => s.isCurrent)
+	}, [season])
+	const isStageExpired = () => !!stage && dayjs(stage.finishedAt).diff() <= 0
 
 	return (
 		<div className={styles.container}>
@@ -67,12 +25,11 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 			</p>
 			<p>
 				Полезный материал:{' '}
-				<Link className="text-link" href="/hub/docs/how-make-gdd" target="_blank">
+				<Link href="/hub/docs/how-make-gdd" target="_blank">
 					О разработке ГДД
 				</Link>
 				,{' '}
 				<Link
-					className="text-link"
 					href="https://docs.google.com/document/d/1uYZCb0AFouICf_ZYLaTVhSyr7hElQlRSixxFEV_HKgM/edit"
 					target="_blank"
 				>
@@ -80,59 +37,10 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 				</Link>
 			</p>
 
-			{authorProjectIdeas?.data?.length > 0 && (
-				<>
-					<h3>Мои проекты</h3>
-					<List
-						itemLayout={screens.xs ? 'vertical' : 'horizontal'}
-						loading={isLoadingProjecIdeas}
-						size="small"
-						style={{ marginTop: '20px' }}
-						bordered
-						dataSource={authorProjectIdeas?.data}
-						renderItem={(projectIdea: any) => (
-							<List.Item>
-								<List.Item.Meta
-									title={
-										<>
-											{projectIdea.Name}
-											<div style={{ opacity: 0.5, fontSize: '11px' }}>{projectIdea.Genre}</div>
-										</>
-									}
-									description={
-										<>
-											<Typography.Paragraph ellipsis>{projectIdea.Description}</Typography.Paragraph>
-											{!screens.md && !!projectIdea['Document Link'] && (
-												<Link
-													href={projectIdea['Document Link']}
-													target="_blank"
-													className="text-link"
-													style={{ marginRight: '40px' }}
-												>
-													Концепт
-												</Link>
-											)}
-										</>
-									}
-								/>
-								<Space>
-									{screens.md && !!projectIdea['Document Link'] && (
-										<Link
-											href={projectIdea['Document Link']}
-											target="_blank"
-											className="text-link"
-											style={{ marginRight: '40px' }}
-										>
-											Концепт
-										</Link>
-									)}
-									<Button onClick={() => handleEditIdeaClick(projectIdea.id)}>Внести изменения</Button>
-								</Space>
-							</List.Item>
-						)}
-					/>
-				</>
-			)}
+			<>
+				<h3>Мои проекты</h3>
+				<UserSeasonProjectsSection seasonId={season.id} />
+			</>
 
 			<Space wrap style={{ marginTop: 20 }}>
 				<h3>Для специалистов</h3>
@@ -141,35 +49,25 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 					формате Челенджа. Прокачать свои навыки, показать на что вы способны и как работаете. <br />
 					Благодаря первому этапу нам известны игровые механики, визуальные стили, платформы, сеттинги будущих игр,
 					которые с высокой долей вероятности необходимо будет реализовывать в будущем.
-					<br />
-					<Alert
-						type="success"
-						style={{ marginTop: 8, display: 'inline-block' }}
-						message={
-							<>
-								ТОП-3 активных участника с интересными работами получат по <strong>1 JAM</strong> ;)
-							</>
-						}
-					/>
 				</p>
 
 				<p>
 					Полезный материал:{' '}
-					<Link className="text-link" href="/hub/docs/about-art-challenge" target="_blank">
+					<Link href="/hub/docs/about-art-challenge" target="_blank">
 						Для 2D-художников
 					</Link>
 					,{' '}
-					<Link className="text-link" href="/hub/docs/about-3dart-challenge" target="_blank">
+					<Link href="/hub/docs/about-3dart-challenge" target="_blank">
 						Для 3D-художников
 					</Link>
 					,{' '}
-					<Link className="text-link" href="/hub/docs/about-code-challenge" target="_blank">
+					<Link href="/hub/docs/about-code-challenge" target="_blank">
 						Для программистов
 					</Link>
 				</p>
 			</Space>
 
-			{mechanicsList?.length > 0 && (
+			{/* {mechanicsList?.length > 0 && (
 				<>
 					<h4>Список игровых механик:</h4>
 					<p style={{ lineHeight: '26px' }}>
@@ -180,9 +78,9 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 						))}
 					</p>
 				</>
-			)}
+			)} */}
 
-			{visualSolutionsList?.length > 0 && (
+			{/* {visualSolutionsList?.length > 0 && (
 				<>
 					<h4>Список визуальных стилей:</h4>
 					<p>
@@ -195,10 +93,10 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 						</ol>
 					</p>
 				</>
-			)}
+			)} */}
 
 			<h3>Список проектов</h3>
-			<ProjectIdeasList projectIdeas={projectIdeas} />
+			<SeasonProjectsSection seasonId={season.id} />
 
 			{isStageExpired() && (
 				<Alert
@@ -207,14 +105,6 @@ const PreProductionStageContent = ({ season, stage }: any) => {
 					message="На данный момент идет оценка проектов и питчей. Встретимся на следующем этапе."
 				/>
 			)}
-
-			<ProjectIdeaModal
-				seasonId={season.id}
-				projectIdeaId={selectedProjectIdea}
-				open={showProjectGDDModal}
-				onOk={handleSaveProjectGDD}
-				onCancel={() => setShowProjectGDDModal(false)}
-			/>
 		</div>
 	)
 }

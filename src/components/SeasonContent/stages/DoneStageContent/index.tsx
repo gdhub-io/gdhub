@@ -7,7 +7,7 @@ import styles from './style.module.scss'
 
 const DoneStageContent = ({ season }: any) => {
 	const screens = Grid.useBreakpoint()
-	const { data: projects } = useSWR({ url: '/api/season/ideas', data: { seasonName: season.Name } }, fetcher)
+	const { data: projects } = useSWR({ url: '/api/season/projects', data: { seasonName: season.Name } }, fetcher)
 
 	return (
 		<div className={styles.container}>

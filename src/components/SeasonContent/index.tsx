@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import DividerIcon from '@/assets/images/icons/divider.svg'
 import SearchingStageContent from '@/components/SeasonContent/stages/SearchingStageContent'
+import { DefaultSeasonStages } from '@/types/enums'
+import { Season, SeasonStage, SeasonStatus } from '@prisma/client'
 import { Grid, Space, Typography } from 'antd'
 import dayjs from 'dayjs'
-import { DateTime } from 'luxon'
-import { useRouter } from 'next/router'
 import DoneStageContent from './stages/DoneStageContent'
 import PitchingStageContent from './stages/PitchingStageContent'
 import PreProductionStageContent from './stages/PreProductionStageContent'
@@ -13,27 +13,27 @@ import PrototypingStageContent from './stages/PrototypingStageContent'
 import RecruitingStageContent from './stages/RecruitingStageContent'
 import styles from './style.module.scss'
 
+export type SeasonData = Season & { stages: SeasonStage[] }
+
 const { Title, Text, Paragraph } = Typography
 
-const SeasonContent = ({ season }: any) => {
+const SeasonContent = ({ season }: { season: SeasonData }) => {
 	const screens = Grid.useBreakpoint()
-	const router = useRouter()
 	const stage = useMemo(() => {
-		if (!season) return
-
-		return season['Season Stages'].find((s: any) => s.Name == season.Stage)
+		console.log('stage', season?.stages)
+		return season?.stages.find((s) => s.isCurrent)
 	}, [season])
 
 	const finishedAt = useMemo(() => {
-		if (!season || !season['Finished At']) return
+		if (!season || !season.finishedAt) return
 
-		return dayjs(season['Finished At'])
+		return dayjs(season.finishedAt)
 	}, [season])
 
 	const startedAt = useMemo(() => {
-		if (!season || !season['Started At']) return
+		if (!season || !season.startedAt) return
 
-		return dayjs(season['Started At'])
+		return dayjs(season.startedAt)
 	}, [season])
 
 	const peiodAsText = useMemo(() => {
@@ -50,48 +50,27 @@ const SeasonContent = ({ season }: any) => {
 		return 'c ' + startedAt.format('D MMM, YYYY')
 	}, [startedAt, finishedAt])
 
-	const stagesDetails = (stage: any, season?: any) => {
-		const details: any = {
-			Searching: {
-				number: 1,
-				title: 'Этап исследования',
-				content: <SearchingStageContent season={season} stage={stage} />,
-			},
-			'Pre-production': {
-				number: 2,
-				title: 'Этап подготовки проекта',
-				content: <PreProductionStageContent season={season} stage={stage} />,
-			},
-			Recruiting: {
-				number: 3,
-				title: 'Этап набора команды',
-				content: <RecruitingStageContent season={season} stage={stage} />,
-			},
-			Prototyping: {
-				number: 4,
-				title: 'Этап прототипирования',
-				content: <PrototypingStageContent season={season} stage={stage} />,
-			},
-			Production: {
-				number: 5,
-				title: 'Этап разработки проекта',
-				content: <ProductionStageContent season={season} stage={stage} />,
-			},
-			Pitching: {
-				number: 6,
-				title: 'Питчи проектов',
-				content: <PitchingStageContent season={season} stage={stage} />,
-			},
-			Planning: {
-				title: 'Планируется',
-			},
-			Done: {
-				title: 'Завершен',
-				content: <DoneStageContent season={season} stage={stage} />,
-			},
+	const stageContent = (stageName: string) => {
+		if (season.status === SeasonStatus.Done) {
+			return <DoneStageContent season={season} />
 		}
 
-		return details[stage.Name]
+		switch (stageName) {
+			case DefaultSeasonStages.Pitching:
+				return <PitchingStageContent season={season} />
+			case DefaultSeasonStages.Searching:
+				return <SearchingStageContent season={season} />
+			case DefaultSeasonStages.PreProduction:
+				return <PreProductionStageContent season={season} />
+			case DefaultSeasonStages.Prototyping:
+				return <PrototypingStageContent season={season} />
+			case DefaultSeasonStages.Recruiting:
+				return <RecruitingStageContent season={season} />
+			case DefaultSeasonStages.Production:
+				return <ProductionStageContent season={season} />
+			default:
+				return <Text>Информации по текущему этапу нет или еще готовится.</Text>
+		}
 	}
 
 	if (!season) return null
@@ -99,10 +78,8 @@ const SeasonContent = ({ season }: any) => {
 	return (
 		<div className={styles.container}>
 			<Space align="baseline">
-				<Title level={2}>{season.Name}</Title>
-				{season.Stage !== 'Done' && (
-					<Text type="secondary">Этап {stagesDetails({ Name: season.Stage }, season)?.number}-ый из 6</Text>
-				)}
+				<Title level={2}>{season.name}</Title>
+				{season.status !== SeasonStatus.Done && !!stage && <Text type="secondary">Этап {stage.order + 1}-ый из 6</Text>}
 			</Space>
 
 			<Paragraph>Период проведения: {peiodAsText}</Paragraph>
@@ -110,26 +87,18 @@ const SeasonContent = ({ season }: any) => {
 			{!!stage && (
 				<div>
 					<Space align="center" direction={screens.md ? 'horizontal' : 'vertical'}>
-						<Title level={4}>{stagesDetails(stage, season)?.title}</Title>
-						{!!stage['Started At'] && (
+						<Title level={4}>{stage.name}</Title>
+						{!!stage.startedAt && (
 							<Text>
 								{screens.md && <DividerIcon style={{ stroke: 'gray' }} />}
 								<Text type="secondary" style={{ marginBottom: 10, display: 'inline-block' }}>
-									{DateTime.fromISO(stage['Started At']).toFormat('dd LLL', {
-										locale: router.locale,
-									}) +
-										' - ' +
-										DateTime.fromISO(stage['Finished At']).toFormat('dd LLL yyyy', {
-											locale: router.locale,
-										})}
+									{dayjs(stage.startedAt).format('dd LLL') + ' - ' + dayjs(stage.finishedAt).format('dd LLL yyyy')}
 								</Text>
 							</Text>
 						)}
 					</Space>
 
-					<div>
-						{stagesDetails(stage, season)?.content || <Text>Информация по текущему этапу пока еще готовится.</Text>}
-					</div>
+					<div>{stageContent(stage.name)}</div>
 				</div>
 			)}
 		</div>

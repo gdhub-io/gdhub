@@ -1,13 +1,5 @@
+import { DefaultSeasonStages } from '@/types/enums'
 import { Prisma, Season, SeasonStage } from '@prisma/client'
-
-enum DefaultSeasonStages {
-	Searching,
-	PreProduction,
-	Recruiting,
-	Prototyping,
-	Production,
-	Pitching,
-}
 
 export const seasonPrismaExtension = Prisma.defineExtension((client) => {
 	return client.$extends({
@@ -49,3 +41,4 @@ export const seasonPrismaExtension = Prisma.defineExtension((client) => {
 		},
 	})
 })
+export { DefaultSeasonStages }

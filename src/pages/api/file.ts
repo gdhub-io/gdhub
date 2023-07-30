@@ -1,9 +1,14 @@
 import { promises as fs } from 'fs'
+import { NextAuthGuard } from '@/lib/api-middlewares'
 import SanityService from '@/services/sanity'
+import { IsString } from 'class-validator'
 import { IncomingForm } from 'formidable'
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]'
+import { Delete, Post, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+
+class DeleteImageDto {
+	@IsString()
+	fileUrl: string
+}
 
 /* Don't miss that! */
 export const config = {
@@ -12,16 +17,15 @@ export const config = {
 	},
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-	try {
-		const session: any = await getServerSession(req, res, authOptions)
-
-		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
-
+@NextAuthGuard('user')
+class ApiUploadFileHandler {
+	@Post()
+	public async upload(@Req() req: NextApiRequestWithUser) {
 		const fData = await new Promise<{ fields: any; files: any }>((resolve, reject) => {
 			const form = new IncomingForm({
 				multiples: false,
 			})
+
 			form.parse(req, (err, fields, files) => {
 				if (err) return reject(err)
 				resolve({ fields, files })
@@ -37,12 +41,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			fData.fields?.tag
 		)
 
-		res.status(200).json(response)
-	} catch (error: any) {
-		console.log('[API ERROR]', error)
+		return response
+	}
 
-		res.status(200).json({ success: false, error: error?.message })
+	@Delete()
+	public async delete(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { fileUrl }: DeleteImageDto) {
+		return await SanityService.removeFile(fileUrl)
 	}
 }
 
-export default handler
+export default createHandler(ApiUploadFileHandler)

@@ -1,35 +1,31 @@
 // import { useEffect } from 'react'
 import SeasonContent from '@/components/SeasonContent'
-import { fetcher } from '@/helpers/fetcher'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { getSeasonsSlugs } from '@/services/airtable'
+import { prisma } from '@/services/prisma'
+import { Season, SeasonStage } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 
 const SeasonPage: NextPageWithLayout = () => {
 	const router = useRouter()
-	const session: any = useSession()
-	const { seasonSlug } = router.query
-	const { data: season, isLoading } = useSWR(
-		!!seasonSlug && { url: '/api/season/get', data: { slug: seasonSlug } },
-		fetcher,
-		{
-			revalidateOnFocus: false,
-		}
+	const seasonSlug = router.query.seasonSlug as string
+
+	const { data: season } = useQuery(
+		['season', seasonSlug],
+		() => axios.get<Season & { stages: SeasonStage[] }>('/api/season', { params: { slug: seasonSlug } }),
+		{ enabled: !!seasonSlug, refetchOnWindowFocus: false }
 	)
 
 	return (
 		<>
 			<Head>
-				<title>{season?.Name || 'Season'}</title>
+				<title>{season?.data.name || 'Season'}</title>
 			</Head>
-			<div className={styles.container}>
-				<SeasonContent season={season} />
-			</div>
+			<div className={styles.container}>{!!season && <SeasonContent season={season?.data} />}</div>
 		</>
 	)
 }
@@ -39,10 +35,10 @@ SeasonPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 export default SeasonPage
 
 export async function getStaticPaths() {
-	const slugs = await getSeasonsSlugs()
+	const slugs = await prisma.season.findMany({ select: { slug: true } })
 
 	return {
-		paths: slugs.map((slug) => ({ params: { seasonSlug: slug } })), //[{ params: { id: '1' } }, { params: { id: '2' } }],
+		paths: slugs.map((season) => ({ params: { seasonSlug: season.slug } })),
 		fallback: false, // can also be true or 'blocking'
 	}
 }

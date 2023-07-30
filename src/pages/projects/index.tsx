@@ -1,6 +1,6 @@
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { getWorkedProjects } from '@/services/airtable'
+import { getWorkedProjects } from '@/services/prisma/queries'
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import { GetServerSidePropsContext } from 'next'
@@ -9,7 +9,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.scss'
 
-const { Title } = Typography
+const { Title, Paragraph } = Typography
 
 const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 	const screens = Grid.useBreakpoint()
@@ -39,6 +39,7 @@ const ProjectsPage: NextPageWithLayout = ({ projects }: any) => {
 						{ md: 24, xs: 24 },
 					]}
 				>
+					{!projects.length && <Paragraph type="secondary">There are no projects available to view</Paragraph>}
 					{projects?.map((project: any, idx: number) => (
 						<Col key={idx} xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }} xl={{ span: 6 }}>
 							<Card

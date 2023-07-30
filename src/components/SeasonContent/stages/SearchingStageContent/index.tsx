@@ -1,26 +1,30 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
+import { SeasonData } from '@/components/SeasonContent'
 import { fetcher } from '@/helpers/fetcher'
 import { hasRole } from '@/helpers/user'
 import { UserRole } from '@prisma/client'
 import { Alert, Button, Grid, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { HiOutlineTrash } from 'react-icons/hi'
 import useSWR from 'swr'
 import styles from './style.module.scss'
 
-const SearchingStageContent = ({ season, stage }: any) => {
+const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 	const screens = Grid.useBreakpoint()
 	const session: any = useSession()
+	const stage = useMemo(() => {
+		return season?.stages.find((s) => s.isCurrent)
+	}, [season])
 	const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
 	const [selectedProjectIdea, setSelectedProjectIdea] = useState<any>(null)
 	const {
 		data: projectIdeas,
 		mutate: mutateProjectIdeas,
 		isValidating: isLoadingProjecIdeas,
-	} = useSWR({ url: '/api/project/ideas', data: { seasonName: season.Name } }, fetcher)
+	} = useSWR({ url: '/api/project/ideas', data: { seasonName: season.name } }, fetcher)
 
 	const handleAddIdeaClick = () => {
 		setSelectedProjectIdea(null)
@@ -32,7 +36,7 @@ const SearchingStageContent = ({ season, stage }: any) => {
 		setShowProjectIdeaModal(true)
 	}
 
-	const isStageExpired = () => DateTime.fromISO(stage['Finished At']).diffNow().toMillis() <= 0
+	const isStageExpired = () => dayjs(stage?.finishedAt).diff() <= 0
 
 	const handleDeleteIdea = async (projectIdeaId: string) => {
 		try {
@@ -67,12 +71,11 @@ const SearchingStageContent = ({ season, stage }: any) => {
 				</p>
 				<p>
 					Полезный материал:{' '}
-					<Link className="text-link" href="/hub/docs/work-with-ideas" target="_blank">
+					<Link href="/hub/docs/work-with-ideas" target="_blank">
 						Работа с идеями
 					</Link>
 					,{' '}
 					<Link
-						className="text-link"
 						href="https://docs.google.com/document/d/1O99XaTb__f3rL8biPGDEf4H6U7xKQKQag5oWCp3ljhk/edit?usp=sharing"
 						target="_blank"
 					>
@@ -87,7 +90,7 @@ const SearchingStageContent = ({ season, stage }: any) => {
 					)}
 
 					{hasRole(UserRole.Mentor, session) && (
-						<Link href={`/hub/season/${season.Slug}/ideas`}>
+						<Link href={`/hub/season/${season.slug}/ideas`}>
 							<Button>Список идей</Button>
 						</Link>
 					)}
@@ -126,12 +129,7 @@ const SearchingStageContent = ({ season, stage }: any) => {
 										<>
 											<Typography.Paragraph ellipsis>{projectIdea.Description}</Typography.Paragraph>
 											{!screens.md && (
-												<Link
-													href={projectIdea['Document Link']}
-													target="_blank"
-													className="text-link"
-													style={{ marginRight: '40px' }}
-												>
+												<Link href={projectIdea['Document Link']} target="_blank" style={{ marginRight: '40px' }}>
 													Ссылка на документ
 												</Link>
 											)}
@@ -140,12 +138,7 @@ const SearchingStageContent = ({ season, stage }: any) => {
 								/>
 								<Space>
 									{screens.md && (
-										<Link
-											href={projectIdea['Document Link']}
-											target="_blank"
-											className="text-link"
-											style={{ marginRight: '40px' }}
-										>
+										<Link href={projectIdea['Document Link']} target="_blank" style={{ marginRight: '40px' }}>
 											Ссылка на документ
 										</Link>
 									)}
