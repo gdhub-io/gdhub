@@ -4,7 +4,7 @@ import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin } from 
 import axios from 'axios'
 import dayjs from 'dayjs'
 
-const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
+const ProjectModal = ({ seasonId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { isLoading: isLoading, isPaused } = useQuery(
 		['season', seasonId],
@@ -149,4 +149,4 @@ const ProjectIdeaModal = ({ seasonId, open, onOk, onCancel }: any) => {
 	)
 }
 
-export default ProjectIdeaModal
+export default ProjectModal

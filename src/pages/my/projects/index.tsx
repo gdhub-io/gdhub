@@ -1,5 +1,5 @@
 // import { useState } from 'react'
-// import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
+// import ProjectModal from '@/components/modals/ProjectModal'
 import { fetcher } from '@/helpers/fetcher'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -10,7 +10,7 @@ import Link from 'next/link'
 import useSWR from 'swr'
 
 const MyProjectsPage: NextPageWithLayout = () => {
-	// const [showProjectIdeaModal, setShowProjectIdeaModal] = useState(false)
+	// const [showProjectModal, setShowProjectModal] = useState(false)
 	const {
 		data: myProjects,
 		// mutate: fetchMyProjects,
@@ -18,11 +18,11 @@ const MyProjectsPage: NextPageWithLayout = () => {
 	} = useSWR({ url: '/api/my/projects' }, fetcher, { revalidateOnFocus: false })
 
 	// const handleNewProject = () => {
-	// 	setShowProjectIdeaModal(true)
+	// 	setShowProjectModal(true)
 	// }
 
 	// const handleSaveProjectIdea = async () => {
-	// 	setShowProjectIdeaModal(false)
+	// 	setShowProjectModal(false)
 	// 	await fetchMyProjects()
 	// }
 
@@ -59,11 +59,11 @@ const MyProjectsPage: NextPageWithLayout = () => {
 				<p>У вас нет проектов</p>
 			)}
 
-			{/* <ProjectIdeaModal
+			{/* <ProjectModal
 				seasonId="indie"
-				open={showProjectIdeaModal}
+				open={showProjectModal}
 				onOk={handleSaveProjectIdea}
-				onCancel={() => setShowProjectIdeaModal(false)}
+				onCancel={() => setShowProjectModal(false)}
 			/> */}
 		</>
 	)

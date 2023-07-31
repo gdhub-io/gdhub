@@ -8,16 +8,24 @@ import Image from 'next/image'
 import { TbTrash } from 'react-icons/tb'
 import styles from './style.module.scss'
 
-const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any) => {
+type ProjectModalParams = {
+	seasonId?: string
+	projectId?: string
+	open: boolean
+	onOk: () => void
+	onCancel: () => void
+}
+
+const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModalParams) => {
 	const [form] = Form.useForm()
-	const [processing, setProcessing] = useState(true)
 	const [cover, setCover] = useState<string | null>()
 	const [coverProcessing, setCoverProcessing] = useState(false)
 
-	const { data: project } = useQuery(
-		['user-project', projectIdeaId],
-		() => axios.get<Project & { stage: SeasonStage }>('/api/project', { params: { id: projectIdeaId } }),
+	const { data: project, isLoading } = useQuery(
+		['user-project', projectId],
+		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { projectId } }),
 		{
+			enabled: !!projectId,
 			refetchOnWindowFocus: false,
 			refetchInterval: Infinity,
 			onSuccess({ data }) {
@@ -25,38 +33,37 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 			},
 		}
 	)
-	const { mutateAsync: createProject } = useMutation((data: any) => axios.post('/api/project', data))
+	const { mutateAsync: createProject, isLoading: isCreating } = useMutation((data: any) =>
+		axios.post<Project>('/api/user/project', data)
+	)
+	const { mutateAsync: updateProject, isLoading: isUpdating } = useMutation((data: any) =>
+		axios.put<Project>('/api/user/project', data, { params: { id: projectId } })
+	)
 
 	useEffect(() => {
-		if (open && projectIdeaId) {
+		if (open && projectId) {
 			setCover(undefined)
-		} else {
-			setProcessing(false)
 		}
 	}, [open])
 
 	useEffect(() => {
 		if (project) {
-			form.setFieldsValue({ ...project.data, seasonId: project ? project?.data.stage.seasonId : seasonId })
+			form.setFieldsValue({ ...project.data, seasonId: project?.data.stage.seasonId || seasonId })
 		}
 	}, [project])
 
 	const handleOk = async () => {
 		try {
 			const formData = await form.validateFields()
-			setProcessing(true)
-
-			if (projectIdeaId) {
-				//
+			if (projectId) {
+				await updateProject({ ...formData, coverImage: cover ? cover : null })
 			} else {
-				const data = await createProject({ ...formData, coverImage: cover ? cover : null })
+				await createProject({ ...formData, seasonId, coverImage: cover ? cover : null })
 			}
 
-			message.success(projectIdeaId ? 'Данные проекта обновлены' : 'Добавлена новый проект игры')
+			message.success(projectId ? 'Данные проекта обновлены' : 'Добавлена новый проект игры')
 			onOk()
 		} catch (error: any) {
-			setProcessing(false)
-
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
@@ -74,7 +81,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 		try {
 			const data = new FormData()
 			data.append('file', file)
-			data.append('filename', 'project-cover-' + projectIdeaId)
+			data.append('filename', 'project-cover-' + projectId)
 			data.append('tag', 'project-cover')
 
 			const res = await axios.post('/api/file', data)
@@ -90,12 +97,12 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 			const res = await axios.delete('/api/file', { params: { fileUrl } })
 
 			// save
-			if (projectIdeaId) {
+			if (projectId) {
 				await fetch('/api/project/idea/save', {
 					method: 'post',
 					body: JSON.stringify({
-						id: projectIdeaId,
-						data: { coverImage: null, seasonId: project ? project.data.stage.seasonId : seasonId },
+						id: projectId,
+						data: { coverImage: null, seasonId: project?.data.stage.seasonId || seasonId },
 					}),
 					headers: {
 						'Content-Type': 'application/json',
@@ -158,7 +165,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 	return (
 		<Modal
 			centered
-			title={projectIdeaId ? 'Изменить идею вашего проекта' : 'Добавить идею вашего проекта'}
+			title={projectId ? 'Изменить идею вашего проекта' : 'Добавить идею вашего проекта'}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
@@ -167,9 +174,9 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
-			confirmLoading={processing}
+			confirmLoading={isCreating || isUpdating}
 		>
-			<Spin spinning={processing}>
+			<Spin spinning={isLoading || isCreating || isUpdating}>
 				<Form
 					form={form}
 					layout="vertical"
@@ -179,14 +186,7 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 					onFinishFailed={() => {}}
 					autoComplete="off"
 					requiredMark="optional"
-					initialValues={{
-						seasonId,
-					}}
 				>
-					<Form.Item name="seasonId" noStyle hidden>
-						<Input />
-					</Form.Item>
-
 					<Spin spinning={coverProcessing}>
 						{!cover ? (
 							<Form.Item
@@ -334,4 +334,4 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 	)
 }
 
-export default ProjectIdeaModal
+export default ProjectModal

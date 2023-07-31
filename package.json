@@ -53,6 +53,7 @@
     "react-linkify-it": "^1.0.7",
     "react-markdown": "^8.0.7",
     "react-select-country-list": "^2.2.3",
+    "react-trello-ts": "^2.0.14",
     "react-youtube": "^10.1.0",
     "recoil": "^0.7.6",
     "swagger-ui-react": "^5.2.0",

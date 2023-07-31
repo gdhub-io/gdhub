@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
 import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
-import { UserSeasonProjectsSection } from '@/components/UserSeasonProjectsSection'
+import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
 import { Alert, Space } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -39,7 +39,7 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 
 			<>
 				<h3>Мои проекты</h3>
-				<UserSeasonProjectsSection seasonId={season.id} />
+				<UserSeasonProjectsList seasonId={season.id} />
 			</>
 
 			<Space wrap style={{ marginTop: 20 }}>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
+import ProjectModal from '@/components/modals/ProjectModal'
 import MyProjectCandidates from '@/components/MyProjectCandidates'
 import MyProjectReports from '@/components/MyProjectReports'
 import MyProjectTeam from '@/components/MyProjectTeam'
@@ -83,7 +83,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 						</>
 					)}
 
-					<ProjectIdeaModal
+					<ProjectModal
 						seasonId={myProject?.Season[0]}
 						projectIdeaId={projectId}
 						open={showProjectModal}
