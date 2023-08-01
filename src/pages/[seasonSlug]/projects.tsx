@@ -82,6 +82,7 @@ const SeasonProjectIdeasPage: NextPageWithLayout = () => {
 							backgroundColor: '#eee',
 							borderRadius: 16,
 							height: 600,
+							maxWidth: '100%',
 						}}
 						cardStyle={{
 							borderRadius: 8,

@@ -1,21 +1,20 @@
 // import { useState } from 'react'
 // import ProjectModal from '@/components/modals/ProjectModal'
-import { fetcher } from '@/helpers/fetcher'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
+import { useQuery } from '@tanstack/react-query'
 import { List, Row } from 'antd'
+import axios from 'axios'
 import Head from 'next/head'
 import Link from 'next/link'
 // import { TbPlus } from 'react-icons/tb'
-import useSWR from 'swr'
 
 const MyProjectsPage: NextPageWithLayout = () => {
 	// const [showProjectModal, setShowProjectModal] = useState(false)
-	const {
-		data: myProjects,
-		// mutate: fetchMyProjects,
-		// isValidating: isLoadingMyProjects,
-	} = useSWR({ url: '/api/my/projects' }, fetcher, { revalidateOnFocus: false })
+
+	const { data: myProjects } = useQuery(['user-projects'], () => axios.get('/api/user/projects'), {
+		refetchOnWindowFocus: false,
+	})
 
 	// const handleNewProject = () => {
 	// 	setShowProjectModal(true)
@@ -41,7 +40,7 @@ const MyProjectsPage: NextPageWithLayout = () => {
 			{myProjects?.data?.length > 0 ? (
 				<List
 					bordered
-					dataSource={myProjects.data}
+					dataSource={myProjects?.data}
 					renderItem={(myProject: any) => (
 						<List.Item
 							style={{ cursor: 'pointer' }}

@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { pipLayout } from '@/config/daily'
-import { fetherForMutation } from '@/helpers/fetcher'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { StreamLayout } from '@/layouts/StreamLayout'
 import DailyIframe, { DailyCall, DailyCallOptions } from '@daily-co/daily-js'
 import { UserRole } from '@prisma/client'
+import { useMutation } from '@tanstack/react-query'
 import { Button, Form, Input, Space, message } from 'antd'
+import axios from 'axios'
 import { useSession } from 'next-auth/react'
-import useSWRMutation from 'swr/mutation'
 import { v4 as uuidv4 } from 'uuid'
 import styles from './style.module.scss'
 
@@ -36,7 +36,9 @@ const LiveReportsPage = () => {
 	const [streamKey, setStreamKey] = useState<string>('rmv8-528k-updh-kf1r-1hx8')
 	const [meetingStarted, setMeetingStarted] = useState(false)
 
-	const { trigger: getUserToken } = useSWRMutation('/api/live/get-token', fetherForMutation)
+	const { mutateAsync: getUserToken } = useMutation((data: { roomName: string }) =>
+		axios.get<{ token: string }>('/api/live/token', { params: data })
+	)
 
 	useEffect(() => {
 		if (session) createAndJoinCall()
@@ -45,13 +47,16 @@ const LiveReportsPage = () => {
 	const createAndJoinCall = async () => {
 		try {
 			if (!callRef?.current) return
+
 			if (callFrame) {
 				await callFrame.destroy()
 			}
 
 			console.log('createAndJoinCall', callRef?.current, callFrame)
 
-			const { token } = await getUserToken({ roomName: 'reports' })
+			const {
+				data: { token },
+			} = await getUserToken({ roomName: 'reports' })
 
 			let newCallFrame: DailyCall = DailyIframe.createFrame(callRef?.current, {
 				...dailyCallOptions,
@@ -112,7 +117,7 @@ const LiveReportsPage = () => {
 
 	return (
 		<main className="container">
-			{hasRole(UserRole.Admin, { data: session }) && (
+			{session?.user.roles.includes(UserRole.Admin) && (
 				<Space align="start">
 					{!instanceId ? (
 						<Button onClick={startLiveStream} disabled={!readyToStream} type="primary">

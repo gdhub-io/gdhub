@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
+import { useQuery } from '@tanstack/react-query'
 import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
 import { CheckboxValueType } from 'antd/es/checkbox/Group'
+import axios from 'axios'
 import { BsCheckLg } from 'react-icons/bs'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
@@ -15,19 +15,15 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 
 	const {
 		data: specialities,
-		mutate: fetchSpecialities,
-		isValidating: isLoading,
-	} = useSWR({ url: '/api/my/specialities' }, fetcher, {
-		revalidateOnFocus: false,
-	})
+		isLoading,
+		refetch: fetchSpecialities,
+	} = useQuery(['user-specialities'], () => axios.get('/api/user/specialities'))
 
 	const {
 		data: contacts,
-		mutate: fetchContacts,
-		isValidating: isContactsLoading,
-	} = useSWR({ url: '/api/my/contacts' }, fetcher, {
-		revalidateOnFocus: false,
-	})
+		isLoading: isContactsLoading,
+		refetch: fetchContacts,
+	} = useQuery(['user-contacts'], () => axios.get('/api/user/contacts'))
 
 	useEffect(() => {
 		if (open) {
@@ -41,12 +37,12 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		() => [
 			{
 				value: 'email',
-				label: `Электронная почта ${contacts?.email ? '(' + contacts?.email + ')' : ''}`,
-				disabled: !contacts?.email,
+				label: `Электронная почта ${contacts?.data.email ? '(' + contacts?.data.email + ')' : ''}`,
+				disabled: !contacts?.data.email,
 			},
 			{
 				value: 'telegram',
-				label: `Телеграм ${contacts?.telegram ? '(@' + contacts?.telegram + ')' : ''}`,
+				label: `Телеграм ${contacts?.data.telegram ? '(@' + contacts?.data.telegram + ')' : ''}`,
 			},
 		],
 		[contacts]
@@ -84,7 +80,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 					disabled:
 						!selectedItem ||
 						!contactType?.length ||
-						(!contacts.telegram && contactType.includes('telegram') && !telegramNickname),
+						(!contacts?.data.telegram && contactType.includes('telegram') && !telegramNickname),
 				}}
 				maskClosable={false}
 				okText="Выбрать"
@@ -98,7 +94,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 					<p>Выберите вашу специальность, которая соответствует выбранной вакансии</p>
 					<List
 						bordered
-						dataSource={specialities}
+						dataSource={specialities?.data}
 						renderItem={(speciality: any) => (
 							<List.Item
 								style={{ cursor: 'pointer', fontWeight: selectedItem == speciality.id ? 'bold' : 'normal' }}
@@ -119,7 +115,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 						onChange={handleSetContact}
 					/>
 
-					{!contacts?.telegram && contactType.includes('telegram') && (
+					{!contacts?.data.telegram && contactType.includes('telegram') && (
 						<Input
 							prefix="@"
 							placeholder="Укажите Телеграм-никнейм"
