@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import DailyIframe, { DailyCall, DailyCallOptions } from '@daily-co/daily-js'
 import { Button, Form, Input, Space, message } from 'antd'
 import { useSession } from 'next-auth/react'
-import useSWRMutation from 'swr/mutation'
+import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
 import styles from './style.module.scss'
 import { pipLayout } from '@/config/daily'
-import { fetherForMutation } from '@/helpers/fetcher'
+import { fetcher } from '@/helpers/fetcher'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { StreamLayout } from '@/layouts/StreamLayout'
 
 const dailyCallOptions: DailyCallOptions = {
 	showLeaveButton: true,
@@ -35,47 +34,85 @@ const LiveReportsPage = () => {
 	const [streamKey, setStreamKey] = useState<string>('rmv8-528k-updh-kf1r-1hx8')
 	const [meetingStarted, setMeetingStarted] = useState(false)
 
-	const { trigger: getUserToken } = useSWRMutation('/api/live/get-token', fetherForMutation)
+	const { data, isLoading, mutate } = useSWR({ url: '/api/live/get-token', data: { roomName: 'reports' } }, fetcher, {
+		evalidateIfStale: false,
+		revalidateOnFocus: false,
+		revalidateOnReconnect: false,
+		onSuccess: ({ token }) => {
+			createCall({ token })
+		},
+	})
 
 	useEffect(() => {
-		if (session) createAndJoinCall()
-	}, [session])
+		console.log('data', data)
+	}, [])
 
-	const createAndJoinCall = async () => {
-		try {
-			if (!callRef?.current) return
+	const createCall = useCallback(
+		async ({ token }: any) => {
+			console.log('start', callRef?.current, token)
+
+			if (!callRef?.current || !token) return
+
 			if (callFrame) {
-				await callFrame.destroy()
+				console.log('callFrame already set', callRef?.current, callFrame)
+				return
 			}
 
-			console.log('createAndJoinCall', callRef?.current, callFrame)
-
-			const { token } = await getUserToken({ roomName: 'reports' })
-
 			let newCallFrame: DailyCall = DailyIframe.createFrame(callRef?.current, {
+				strictMode: true,
 				...dailyCallOptions,
-				token: token,
+				token,
 			})
 
 			setCallFrame(newCallFrame)
 
-			newCallFrame.on('joined-meeting', joinedMeeting)
+			newCallFrame.setTheme({
+				colors: {
+					accent: '#1BEBB9',
+					accentText: '#121A24',
+					background: '#121A24',
+					backgroundAccent: '#1F2D3D',
+					baseText: '#FFFFFF',
+					border: '#2B3F56',
+					mainAreaBg: '#121A24',
+					mainAreaBgAccent: '#2B3F56',
+					mainAreaText: '#FFFFFF',
+					supportiveText: '#C8D1DC',
+				},
+			})
+
+			newCallFrame.on('joined-meeting', () => joinedMeeting())
 			newCallFrame.on('left-meeting', () => leaveCall(newCallFrame))
+			newCallFrame.on('live-streaming-started', () => message.info('Live streaming started'))
+			newCallFrame.on('live-streaming-stopped', () => message.info('Live streaming stopped'))
+
+			console.log('createAndJoinCall', callRef?.current, newCallFrame)
 
 			await newCallFrame.join({ url: `https://gdhub.daily.co/reports` })
-		} catch (error: any) {
-			message.error(error.message)
-			console.error(error)
-		}
-	}
+		},
+		[callRef, callFrame]
+	)
+
+	// useEffect(() => {
+	// 	if (callFrame) return
+
+	// 	createAndJoinCall()
+	// }, [callFrame, data, createAndJoinCall])
 
 	const leaveCall = async (_callFrame: DailyCall) => {
 		await _callFrame.destroy()
+		await mutate()
+
 		setCallFrame(undefined)
 		setMeetingStarted(false)
+
+		console.log('left room')
+
+		if (data?.token) createCall({ token: data.token })
 	}
 
 	const joinedMeeting = () => {
+		console.log('joined')
 		setMeetingStarted(true)
 	}
 
@@ -109,6 +146,10 @@ const LiveReportsPage = () => {
 		return !!rtmpUrl && !!streamKey && meetingStarted
 	}, [rtmpUrl, streamKey, meetingStarted])
 
+	if (!data && !isLoading) {
+		return <p>No access</p>
+	}
+
 	return (
 		<main className="container">
 			{hasRole('admin', { data: session }) && (
@@ -141,10 +182,6 @@ const LiveReportsPage = () => {
 	)
 }
 
-LiveReportsPage.getLayout = (page: any) => (
-	<ProtectedLayout>
-		<StreamLayout>{page}</StreamLayout>
-	</ProtectedLayout>
-)
+LiveReportsPage.getLayout = (page: any) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default LiveReportsPage

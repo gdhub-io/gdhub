@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	try {
 		if (req.method !== 'POST' || !session) throw new Error('Forbidden request')
 
-		const response = await fetch('https://api.daily.co/v1/meeting-tokens', {
+		const dailyRes = await fetch('https://api.daily.co/v1/meeting-tokens', {
 			method: 'post',
 			body: JSON.stringify({
 				properties: {
@@ -28,9 +28,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			},
 		})
 
-		const data = await response.json()
+		const { token, error } = await dailyRes.json()
 
-		res.json({ token: data.token })
+		if (error) {
+			return res.status(500).json({ error })
+		}
+
+		res.json({ token })
 	} catch (error: any) {
 		res.json({ success: false, error: error.message })
 	}
