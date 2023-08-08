@@ -47,7 +47,7 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, currentStage }: any
 							Присоединяйтесь к нашему <span style={{ color: '#ffbb33' }}>{`{ сообществу }`}</span>
 						</Title>
 						<Space direction="vertical" size="large">
-							<Space direction="vertical">
+							<Space direction="vertical" key="space-reg">
 								<Text>
 									Регистрируйтесь на gdhub.io — укажите ваши специальности, отзывайтесь на вакансии инди-проектов или
 									запускайте свои.
@@ -56,7 +56,7 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, currentStage }: any
 									<Button type="text">gdhub.io</Button>
 								</Link>
 							</Space>
-							<Space direction="vertical">
+							<Space direction="vertical" key="space-chat">
 								<Text>Присоединяйтесь к нам в чат сообщества, общайтесь и узнавайте последние новости с проектов.</Text>
 								<Link href="https://t.me/+STkVL-tU8NnOtoV2">
 									<Button type="text" icon={<TbBrandTelegram size={16} />}>
