@@ -1,58 +1,62 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ProjectModal from '@/components/modals/ProjectModal'
-import MyProjectCandidates from '@/components/MyProjectCandidates'
-import MyProjectReports from '@/components/MyProjectReports'
 import MyProjectTeam from '@/components/MyProjectTeam'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
-import { fetcher } from '@/helpers/fetcher'
-import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
-import { UserRole } from '@prisma/client'
+import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Col, Row, Space, Spin } from 'antd'
-import { GetServerSidePropsContext } from 'next'
+import axios from 'axios'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { getServerSession } from 'next-auth'
 import { HiExternalLink } from 'react-icons/hi'
 import { TbSettings } from 'react-icons/tb'
-import useSWR from 'swr'
 
 const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
-	const { projectId } = router.query
+	const projectId = router.query.projectId as string
 	const [showProjectModal, setShowProjectModal] = useState(false)
 	const [projectUpdatedEvent, setProjectUpdatedEvent] = useState(false)
+
+	useEffect(() => {
+		console.log('projectId', projectId)
+	}, [router])
+
 	const {
 		data: myProject,
-		mutate: fetchMyProject,
-		isValidating: isLoadingMyProject,
-	} = useSWR({ url: '/api/my/project', data: { projectId } }, fetcher, {
-		revalidateOnFocus: false,
-		refreshInterval: 60000 * 5,
-	})
+		isLoading: isLoadingMyProject,
+		refetch: fetchMyProject,
+	} = useQuery(
+		['user-project', projectId],
+		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { projectId } }),
+		{
+			enabled: !!projectId,
+			refetchInterval: 60000 * 5,
+			refetchOnWindowFocus: false,
+		}
+	)
 
 	const handleSaveProject = () => {
 		setShowProjectModal(false)
 		fetchMyProject()
 	}
 
-	if (myProject?.isAuthor) {
+	if (myProject?.data) {
 		return (
 			<>
 				<Head>
-					<title>Проект {myProject?.Name}</title>
+					<title>Проект {myProject?.data.name}</title>
 				</Head>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">
 						<Col xs={{ span: 24 }} md={{ span: 12 }}>
-							<h1>{myProject?.Name}</h1>
+							<h1>{myProject?.data.name}</h1>
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
 							<Space wrap>
-								{myProject?.Status !== 'Closed' && (
+								{myProject?.data.status !== ProjectStatus.Rejected && (
 									<Button
 										onClick={() => setShowProjectModal(true)}
 										icon={<TbSettings size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
@@ -60,7 +64,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 										Внести изменения
 									</Button>
 								)}
-								<Link href={`/project/${myProject?.Slug || myProject?.id}`} target="_blank">
+								<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
 									<Button
 										type="primary"
 										icon={<HiExternalLink size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
@@ -72,20 +76,23 @@ const MyProjectPage: NextPageWithLayout = () => {
 						</Col>
 					</Row>
 
-					<p style={{ marginTop: 20 }}>{myProject?.Description}</p>
+					<p style={{ marginTop: 20 }}>{myProject?.data.description}</p>
 
-					{!!myProject && (
+					{!!myProject.data && (
 						<>
-							<MyProjectTeam project={myProject} shouldUpdate={projectUpdatedEvent} />
-							<MyProjectVacancies project={myProject} />
-							<MyProjectCandidates project={myProject} onUpdate={() => setProjectUpdatedEvent(!projectUpdatedEvent)} />
-							<MyProjectReports project={myProject} />
+							<MyProjectTeam teamId={myProject.data.teamId} shouldUpdate={projectUpdatedEvent} />
+							<MyProjectVacancies teamId={myProject.data.teamId} />
+							{/* <MyProjectCandidates
+								project={myProject.data}
+								onUpdate={() => setProjectUpdatedEvent(!projectUpdatedEvent)}
+							/> */}
+							{/* <MyProjectReports project={myProject.data} /> */}
 						</>
 					)}
 
 					<ProjectModal
-						seasonId={myProject?.Season[0]}
-						projectIdeaId={projectId}
+						seasonId={myProject?.data.stage.seasonId}
+						projectId={projectId as string}
 						open={showProjectModal}
 						onOk={handleSaveProject}
 						onCancel={() => setShowProjectModal(false)}
@@ -97,16 +104,16 @@ const MyProjectPage: NextPageWithLayout = () => {
 		return (
 			<>
 				<Head>
-					<title>Проект {myProject?.Name}</title>
+					<title>Проект {myProject?.data.name}</title>
 				</Head>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">
 						<Col xs={{ span: 24 }} md={{ span: 12 }}>
-							<h1>{myProject?.Name}</h1>
+							<h1>{myProject?.data.name}</h1>
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
 							<Space wrap>
-								<Link href={`/project/${myProject?.Slug || myProject?.id}`} target="_blank">
+								<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
 									<Button
 										type="primary"
 										icon={<HiExternalLink size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
@@ -118,12 +125,10 @@ const MyProjectPage: NextPageWithLayout = () => {
 						</Col>
 					</Row>
 
-					<p style={{ marginTop: 20 }}>{myProject?.Description}</p>
+					<p style={{ marginTop: 20 }}>{myProject?.data.description}</p>
 
-					{!!myProject && (
-						<>
-							<MyProjectTeam project={myProject} shouldUpdate={projectUpdatedEvent} />
-						</>
+					{!!myProject?.data && (
+						<>{/* <MyProjectTeam project={myProject.data} shouldUpdate={projectUpdatedEvent} /> */}</>
 					)}
 				</Spin>
 			</>
@@ -132,17 +137,5 @@ const MyProjectPage: NextPageWithLayout = () => {
 }
 
 MyProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
-
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const session: any = await getServerSession(context.req, context.res, authOptions)
-
-	if (session && !hasRole(UserRole.Member, session)) {
-		return {
-			notFound: true,
-		}
-	}
-
-	return { props: {} }
-}
 
 export default MyProjectPage

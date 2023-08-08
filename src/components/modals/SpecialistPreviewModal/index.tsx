@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Profile, Speciality, User, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Descriptions, Modal, Space, Spin, Typography } from 'antd'

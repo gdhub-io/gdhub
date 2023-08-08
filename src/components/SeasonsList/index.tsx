@@ -1,5 +1,6 @@
 import DividerIcon from '@/assets/images/icons/divider.svg'
-import { Season } from '@prisma/client'
+import { DefaultSeasonStages } from '@/types/enums'
+import { SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Alert, Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
 import axios from 'axios'
@@ -8,15 +9,24 @@ import styles from './style.module.scss'
 
 const { Title, Text, Paragraph } = Typography
 
+type SeasonGeneralData = {
+	name: string
+	slug: string
+	startedAt: string
+	currentStage: SeasonStage & { isCompleted: boolean }
+	projectsCount: number
+	membersCount: number
+}
+
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()
-	const { data: seasons, isFetching: isLoading } = useQuery(['seasons'], () => axios.get<any[]>('/api/seasons'), {
-		staleTime: Infinity,
-	})
-
-	const isCompletedSeason = (season: Season) => {
-		return season.status == 'Done'
-	}
+	const { data: seasons, isFetching: isLoading } = useQuery(
+		['seasons'],
+		() => axios.get<SeasonGeneralData[]>('/api/seasons'),
+		{
+			staleTime: Infinity,
+		}
+	)
 
 	const isActiveSeason = (season: any) => {
 		return season.status == 'Active'
@@ -60,7 +70,7 @@ const SeasonsList = () => {
 	}
 
 	const actionTag = (season: any) =>
-		!isCompletedSeason(season) ? <Tag color="success">Действующий сезон</Tag> : <Tag color="gray">Завершен</Tag>
+		!season.currentStage.isCompleted ? <Tag color="success">Действующий сезон</Tag> : <Tag color="gray">Завершен</Tag>
 
 	return (
 		<>
@@ -86,24 +96,25 @@ const SeasonsList = () => {
 						/>
 					)}
 					{!!seasons?.data &&
-						seasons.data.map((season: any, idx: number) => (
+						seasons.data.map((season, idx: number) => (
 							<Link href={`/${season.slug}`} key={`gamelab-season-${idx}`}>
 								<Card
 									className={`${styles.seasonContainer} ${isActiveSeason(season) ? styles.seasonActive : ''}`}
 									style={
-										season.currentStageName == 'Searching' || season.currentStageName == 'Pitching'
+										season.currentStage.name == DefaultSeasonStages.Searching ||
+										season.currentStage.name == DefaultSeasonStages.Pitching
 											? { borderColor: '#333', borderWidth: '2px' }
 											: undefined
 									}
 									title={
 										<Space align="start" direction={screens.md ? 'horizontal' : 'vertical'} size={0}>
 											<div className="title">{season.name}</div>
-											{!isCompletedSeason(season) && (
+											{!season.currentStage.isCompleted && (
 												<>
 													{screens.md && <DividerIcon className="divider" />}
-													<small>Этап {stagesDetails(season.currentStageName)?.number}-ый из 6</small>
+													<small>Этап {stagesDetails(season.currentStage.name)?.number}-ый из 6</small>
 													{screens.md && <DividerIcon className="divider" />}
-													<small>{stagesDetails(season.currentStageName)?.title}</small>
+													<small>{stagesDetails(season.currentStage.name)?.title}</small>
 												</>
 											)}
 
@@ -112,10 +123,16 @@ const SeasonsList = () => {
 									}
 									extra={screens.md && actionTag(season)}
 								>
-									<Descriptions bordered column={1} size="small">
-										<Descriptions.Item label="Участников">{season.membersCount}</Descriptions.Item>
-										<Descriptions.Item label="Проектов">{season.projectsCount}</Descriptions.Item>
-									</Descriptions>
+									{season.currentStage.name === DefaultSeasonStages.Searching ? (
+										<Paragraph>
+											Идет набор проектов. <Link href={`/${season.slug}`}>Узнать подробнее</Link>
+										</Paragraph>
+									) : (
+										<Descriptions bordered column={1} size="small">
+											<Descriptions.Item label="Участников">{season.membersCount}</Descriptions.Item>
+											<Descriptions.Item label="Проектов">{season.projectsCount}</Descriptions.Item>
+										</Descriptions>
+									)}
 								</Card>
 							</Link>
 						))}

@@ -24,7 +24,9 @@ class SeasonProjectsDto {
 @NextAuthGuard('user')
 class ApiSeasonProjectsHandler {
 	@Get()
-	public async get(@Query(ValidationPipe) { stageId, status = 'Approved', onlyCount = false }: SeasonProjectsDto) {
+	public async get(
+		@Query(ValidationPipe) { stageId, status = ProjectStatus.Approved, onlyCount = false }: SeasonProjectsDto
+	) {
 		if (onlyCount) {
 			const projectsCount = await prisma.project.count({
 				where: { stageId, status: { equals: status } },

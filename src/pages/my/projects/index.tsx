@@ -1,11 +1,13 @@
 // import { useState } from 'react'
 // import ProjectModal from '@/components/modals/ProjectModal'
+import { useEffect } from 'react'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { useQuery } from '@tanstack/react-query'
 import { List, Row } from 'antd'
 import axios from 'axios'
 import Head from 'next/head'
+import Image from 'next/image'
 import Link from 'next/link'
 // import { TbPlus } from 'react-icons/tb'
 
@@ -15,6 +17,10 @@ const MyProjectsPage: NextPageWithLayout = () => {
 	const { data: myProjects } = useQuery(['user-projects'], () => axios.get('/api/user/projects'), {
 		refetchOnWindowFocus: false,
 	})
+
+	useEffect(() => {
+		console.log(myProjects)
+	}, [myProjects])
 
 	// const handleNewProject = () => {
 	// 	setShowProjectModal(true)
@@ -44,13 +50,13 @@ const MyProjectsPage: NextPageWithLayout = () => {
 					renderItem={(myProject: any) => (
 						<List.Item
 							style={{ cursor: 'pointer' }}
-							// extra={
-							// 	myProject['Cover Image'] ? (
-							// 		<Image width={272} height={272 * 0.5625} alt="logo" src={myProject['Cover Image']} />
-							// 	) : null
-							// }
+							extra={
+								myProject.coverImage ? (
+									<Image width={272} height={272 * 0.5625} alt="logo" src={myProject.coverImage} />
+								) : null
+							}
 						>
-							<Link href={`/my/projects/${myProject.id}`}>{myProject.Name}</Link>
+							<Link href={`/my/projects/${myProject.id}`}>{myProject.name}</Link>
 						</List.Item>
 					)}
 				/>

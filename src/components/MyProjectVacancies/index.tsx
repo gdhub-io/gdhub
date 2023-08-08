@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
 import { fetcher } from '@/helpers/fetcher'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { HiOutlineLockClosed } from 'react-icons/hi'
-import useSWR from 'swr'
 
 interface Vacancy {
 	key: string
@@ -28,23 +29,39 @@ const vacancyStatusToText = (status: string) => {
 }
 
 interface MyProjectVacanciesArgs {
-	project: any
+	teamId: string
 }
 
-const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
+const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
 	const [showVacancyModal, setShowVacancyModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
+	// const {
+	// 	data: projectVacancies,
+	// 	mutate: fetchMyMyProjectVacancies,
+	// 	isValidating: isLoadingMyMyProjectVacancies,
+	// } = useSWR(
+	// 	{ url: '/api/my/project-vacancies', data: { projectId: project?.id, projectName: project?.Name } },
+	// 	fetcher,
+	// 	{
+	// 		revalidateOnFocus: false,
+	// 		isPaused: () => !project,
+	// 	}
+	// )
+
 	const {
 		data: projectVacancies,
-		mutate: fetchMyMyProjectVacancies,
-		isValidating: isLoadingMyMyProjectVacancies,
-	} = useSWR(
-		{ url: '/api/my/project-vacancies', data: { projectId: project?.id, projectName: project?.Name } },
-		fetcher,
+		refetch: fetchMyMyProjectVacancies,
+		isLoading: isLoadingMyMyProjectVacancies,
+	} = useQuery(
+		['project-team-vacancies', teamId],
+		() =>
+			axios.get('/api/user/project/vacancies', {
+				params: { teamId },
+			}),
 		{
-			revalidateOnFocus: false,
-			isPaused: () => !project,
+			enabled: !!teamId,
+			refetchOnWindowFocus: false,
 		}
 	)
 
@@ -133,8 +150,6 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 			)}
 
 			<VacancyModal
-				projectId={project?.id}
-				projectName={project?.Name}
 				vacancyId={selectedVacancyId}
 				open={showVacancyModal}
 				onCancel={() => {

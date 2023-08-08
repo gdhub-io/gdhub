@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
-import { fetcher } from '@/helpers/fetcher'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import useSWR from 'swr'
 
 interface Vacancy {
 	key: string
@@ -31,12 +31,12 @@ const VacanciesList = () => {
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 	const {
-		data: VacanciesList,
-		isValidating: isLoadingMyVacanciesList,
-		mutate: fetchVacanciesList,
-	} = useSWR({ url: '/api/vacancies' }, fetcher, {
-		revalidateOnFocus: false,
-		refreshInterval: 60 * 1000,
+		data: vacancies,
+		isLoading: isLoadingMyVacanciesList,
+		refetch: refetchVacanciesList,
+	} = useQuery(['vacancies'], () => axios.get('/api/vacancies'), {
+		refetchOnWindowFocus: false,
+		refetchInterval: 60000,
 	})
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
@@ -88,7 +88,7 @@ const VacanciesList = () => {
 
 	const handleSaveVacancy = () => {
 		setShowVacancyPreviewModal(false)
-		fetchVacanciesList()
+		refetchVacanciesList()
 	}
 
 	return (
@@ -103,13 +103,13 @@ const VacanciesList = () => {
 				</p>
 			</Space>
 
-			{VacanciesList?.data.length > 0 ? (
+			{vacancies?.data.length > 0 ? (
 				<>
 					<Table
 						loading={isLoadingMyVacanciesList}
 						style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
 						columns={vacanciesColumns}
-						dataSource={VacanciesList?.data?.map((m: any) => ({ ...m, key: m.id }))}
+						dataSource={vacancies?.data.map((m: any) => ({ ...m, key: m.id }))}
 						pagination={false}
 					/>
 

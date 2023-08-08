@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
 import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
+import { ProjectStatus } from '@prisma/client'
 import { Alert, Space } from 'antd'
-import dayjs from 'dayjs'
 import Link from 'next/link'
 import styles from './style.module.scss'
 
@@ -11,7 +11,6 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 	const stage = useMemo(() => {
 		return season?.stages.find((s) => s.isCurrent)
 	}, [season])
-	const isStageExpired = () => !!stage && dayjs(stage.finishedAt).diff() <= 0
 
 	return (
 		<div className={styles.container}>
@@ -39,7 +38,7 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 
 			<>
 				<h3>Мои проекты</h3>
-				<UserSeasonProjectsList seasonId={season.id} />
+				<UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />
 			</>
 
 			<Space wrap style={{ marginTop: 20 }}>
@@ -96,9 +95,9 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 			)} */}
 
 			<h3>Список проектов</h3>
-			<SeasonProjectsSection seasonId={season.id} />
+			{!!stage && <SeasonProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 
-			{isStageExpired() && (
+			{stage?.isCompleted && (
 				<Alert
 					style={{ marginTop: 16 }}
 					type="success"

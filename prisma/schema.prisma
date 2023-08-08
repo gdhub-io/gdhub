@@ -34,6 +34,7 @@ enum ProjectStatus {
 }
 
 enum TeamMemberStatus {
+  Founder
   Applicant
   Hired
   Rejected
@@ -235,7 +236,8 @@ model Project {
   stage         SeasonStage         @relation(fields: [stageId], references: [id])
   authorId      String
   author        User                @relation(fields: [authorId], references: [id])
-  team          ProjectTeam?
+  teamId        String              @unique
+  team          ProjectTeam         @relation(fields: [teamId], references: [id])
   estimations   ProjectEstimation[]
   reports       ProjectReport[]
 }
@@ -255,8 +257,7 @@ model ProjectEstimation {
 
 model ProjectTeam {
   id        String        @id @default(cuid())
-  projectId String        @unique
-  project   Project       @relation(fields: [projectId], references: [id])
+  project   Project?
   members   TeamMember[]
   vacancies TeamVacancy[]
 }
@@ -282,8 +283,8 @@ model TeamMember {
   finishedAt DateTime?
   status     TeamMemberStatus @default(Applicant)
   position   String
-  vacancyId  String
-  vacancy    TeamVacancy      @relation(fields: [vacancyId], references: [id])
+  vacancyId  String?
+  vacancy    TeamVacancy?     @relation(fields: [vacancyId], references: [id])
 }
 
 model TeamVacancy {

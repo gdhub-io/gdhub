@@ -1,5 +1,6 @@
 import { DefaultSeasonStages } from '@/types/enums'
 import { Prisma, Season, SeasonStage } from '@prisma/client'
+import dayjs from 'dayjs'
 
 export const seasonPrismaExtension = Prisma.defineExtension((client) => {
 	return client.$extends({
@@ -36,6 +37,18 @@ export const seasonPrismaExtension = Prisma.defineExtension((client) => {
 					}
 
 					return response
+				},
+			},
+		},
+		result: {
+			seasonStage: {
+				isCompleted: {
+					needs: { isCurrent: true, finishedAt: true },
+					compute: ({ isCurrent, finishedAt }) => {
+						if (!finishedAt || isCurrent) return false
+
+						return dayjs(finishedAt).diff() < 0
+					},
 				},
 			},
 		},

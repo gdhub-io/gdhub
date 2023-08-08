@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { pipLayout } from '@/config/daily'
-import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { StreamLayout } from '@/layouts/StreamLayout'
 import DailyIframe, { DailyCall, DailyCallOptions } from '@daily-co/daily-js'

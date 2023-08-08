@@ -22,7 +22,7 @@ import { DefaultSeo } from 'next-seo'
 dayjs.extend(localizedFormat)
 dayjs.locale('ru')
 
-export type NextPageWithLayout = NextPage & {
+export type NextPageWithLayout<P = {}> = NextPage<P> & {
 	getLayout?: (page: ReactNode) => ReactNode
 }
 

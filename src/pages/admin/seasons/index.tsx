@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { GoTrash } from 'react-icons/go'
 import styles from './style.module.scss'
 
-const { Title, Text } = Typography
+const { Title, Text, Paragraph } = Typography
 
 const SeasonsAdminPage: NextPageWithLayout = () => {
 	const [showModal, setShowModal] = useState(false)
@@ -47,7 +47,23 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 	}
 
 	const columns: ColumnsType<any> = [
-		{ title: 'Title', dataIndex: 'name', key: 'name', render: (value) => <Text strong>{value}</Text> },
+		{
+			title: 'Title',
+			dataIndex: 'name',
+			key: 'name',
+			render: (value, record) => (
+				<>
+					<Paragraph strong style={{ marginBottom: 0 }}>
+						{value}
+					</Paragraph>
+					<Space size="large">
+						<Link href={`/admin/season/${record.id}/stages`}>Stages</Link>
+						<Link href={`/admin/season/${record.id}/projects`}>Projects</Link>
+						<Link href={`/admin/season/${record.id}/reports`}>Reports</Link>
+					</Space>
+				</>
+			),
+		},
 		{
 			title: 'Period (UTC' + dayjs().format('Z') + ')',
 			dataIndex: 'startedAt',
@@ -66,7 +82,6 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 			render(value, record) {
 				return (
 					<Space size="large">
-						<Link href={`/admin/season/${record.id}/stages`}>Stages</Link>
 						<Button onClick={() => handleChange(record.id)}>Edit</Button>
 						<Popconfirm title="Are you sure you want to delete this entry?" onConfirm={() => handleDelete(record.id)}>
 							<Button danger type="text">

@@ -1,25 +1,21 @@
-import AirtableService from '@/services/airtable'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { prisma } from '@/services/prisma'
+import { Get, createHandler } from 'next-api-decorators'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	try {
-		if (req.method !== 'POST') throw new Error('Forbidden request')
+class ApiSpecialistHandler {
+	constructor() {}
 
-		const vacancies = await AirtableService('Project Vacancies')
-			.select({
-				filterByFormula: `Status = "Opened"`,
-				sort: [{ field: 'Published At', direction: 'desc' }],
-			})
-			.all()
-
-		res.json({
-			total: vacancies ? vacancies.length : 0,
-			data: vacancies.map((vacancy: any) => ({
-				id: vacancy.id,
-				...vacancy.fields,
-			})),
+	@Get()
+	public async list() {
+		const vacancies = await prisma.teamVacancy.findMany({
+			where: { status: 'Published' },
+			orderBy: { publishedAt: 'desc' },
 		})
-	} catch (error: any) {
-		res.json({ success: false, error: error.message })
+
+		return {
+			total: vacancies.length,
+			data: vacancies,
+		}
 	}
 }
+
+export default createHandler(ApiSpecialistHandler)

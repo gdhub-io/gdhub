@@ -1,7 +1,8 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus, UserRole } from '@prisma/client'
+import { ProjectStatus, TeamMemberStatus, UserRole } from '@prisma/client'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
+import dayjs from 'dayjs'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class CreateProjectDto {
@@ -146,6 +147,8 @@ class ApiProjectHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Body(ValidationPipe) { seasonId, ...data }: CreateProjectDto
 	) {
+		if (!req.user.id) throw Error('Unknown user')
+
 		const season = await prisma.season.findFirst({
 			where: { id: seasonId },
 			include: { stages: { where: { isCurrent: { equals: true } } } },
@@ -157,6 +160,18 @@ class ApiProjectHandler {
 				author: { connect: { id: req.user.id } },
 				status: ProjectStatus.Registered,
 				stage: { connect: { id: season?.stages[0].id } },
+				team: {
+					create: {
+						members: {
+							create: {
+								position: 'Founder',
+								startedAt: dayjs().toISOString(),
+								status: TeamMemberStatus.Founder,
+								userId: req.user.id,
+							},
+						},
+					},
+				},
 			},
 			include: {
 				author: { select: { name: true, image: true, id: true, roles: true, profile: { select: { id: true } } } },

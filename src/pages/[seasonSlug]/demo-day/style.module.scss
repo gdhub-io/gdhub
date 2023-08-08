@@ -42,14 +42,12 @@
 }
 
 .actionButton {
-	// background-color: #fff;
-	color: #fff;
+	background-color: #fb3;
 
 	&:hover,
 	&:active,
 	&:focus {
-		background-color: #fff;
-		color: #000;
+		background-color: #ffd072 !important;
 	}
 }
 
@@ -66,10 +64,15 @@
 	}
 
 	a > button {
+		border-color: #ffffff;
 		&:hover {
-			background-color: #fff;
+			background-color: #fb3 !important;
+			border-color: #fb3;
 			span {
 				color: #000;
+			}
+			svg {
+				stroke: #000;
 			}
 		}
 	}

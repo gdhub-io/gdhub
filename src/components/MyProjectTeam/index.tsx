@@ -1,67 +1,39 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { fetcher } from '@/helpers/fetcher'
+import { ProjectTeam, TeamMember, TeamMemberStatus, User } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Grid, message, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
+import axios from 'axios'
 import dayjs from 'dayjs'
-import useSWR from 'swr'
-
-interface TeamMember {
-	key: string
-	Name: string
-	Position: string
-	StartedAt: string
-	FinishedAt: string
-	[key: string]: any
-}
 
 interface ProjectVacanciesArgs {
-	project: any
+	teamId: string
 	shouldUpdate?: boolean
 }
 
-const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) => {
+const MyProjectTeam = ({ teamId, shouldUpdate = false }: ProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
-	const [team, setTeam] = useState<any[]>([])
+
 	const {
 		data: projectTeam,
-		mutate: fetchMyProjectTeam,
-		isValidating: isLoadingMyMyProjectTeam,
-	} = useSWR({ url: '/api/my/project-team', data: { projectId: project?.id, projectName: project?.Name } }, fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !project,
-	})
+		refetch: fetchMyProjectTeam,
+		isLoading: isLoadingMyProjectTeam,
+	} = useQuery(
+		['user-project-team', teamId],
+		() =>
+			axios.get<ProjectTeam & { members: (TeamMember & { user: User })[] }>('/api/user/project/team', {
+				params: { teamId },
+			}),
+		{
+			enabled: !!teamId,
+			refetchOnWindowFocus: false,
+		}
+	)
 
 	useEffect(() => {
 		fetchMyProjectTeam()
 	}, [shouldUpdate])
-
-	useEffect(() => {
-		if (!project) return
-
-		setTeam([
-			{
-				Name: project['Author Name'][0],
-				Position: 'Тимлид',
-				'Started At': dayjs(project['Created']),
-				'Finished At': project['Finished'] ? dayjs(project['Finished']) : undefined,
-			},
-		])
-	}, [project])
-
-	useEffect(() => {
-		if (!projectTeam || projectTeam.error) return
-
-		setTeam(() => [
-			{
-				Name: project['Author Name'][0],
-				Position: 'Тимлид',
-				'Started At': dayjs(project['Created']),
-				'Finished At': project['Finished'] ? dayjs(project['Finished']) : undefined,
-			},
-			,
-			...projectTeam.data,
-		])
-	}, [projectTeam])
 
 	const handleFired = async (projectMemberId: string) => {
 		try {
@@ -76,46 +48,51 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 		}
 	}
 
-	const columns: ColumnsType<TeamMember> = [
+	const columns: ColumnsType<TeamMember & { user: User }> = [
 		{
 			title: 'Имя',
-			dataIndex: 'Name',
-			key: 'Name',
-			render: (value, record) => {
+			key: 'userName',
+			render: (_, member) => {
 				return screens.md ? (
-					value
+					member.user.name
 				) : (
 					<>
-						<div>{value}</div>
-						<small>{record['Position']}</small>
+						<div>{member.user.name}</div>
+						<small>
+							{member.status == TeamMemberStatus.Founder ? `${member.position} (founder)` : member.position}
+						</small>
 					</>
 				)
 			},
 		},
 		{
-			title: 'Должность',
-			dataIndex: 'Position',
-			key: 'Position',
+			title: 'Роль на проекте',
+			dataIndex: 'position',
+			key: 'position',
 			responsive: ['md'],
+			render: (value, member) => {
+				return member.status == TeamMemberStatus.Founder ? `${value} (founder)` : value
+			},
 		},
 		{
 			title: 'Период участия',
-			dataIndex: 'Started At',
+			dataIndex: 'startedAt',
 			responsive: ['md'],
-			key: 'Started At',
-			render(value, record) {
-				let startedAt = record['Started At'] ? dayjs(record['Started At']).format('DD.MM.YYYY') : 'незапамятных времен'
-				let finishedAt = record['Finished At'] ? dayjs(record['Finished At']).format('DD.MM.YYYY') : 'настоящее время'
+			key: 'startedAt',
+			render(value, member) {
+				let startedAt = dayjs(member.startedAt).format('DD.MM.YYYY')
+				let finishedAt = member.finishedAt ? dayjs(member.finishedAt).format('DD.MM.YYYY') : 'настоящее время'
 				return `с ${startedAt} по ${finishedAt}`
 			},
 		},
 		{
 			key: 'fire',
-			render: (value, record) => {
-				if (record.id == team[0].id) return null
-				if (record.Status == 'Member' && project.isAuthor)
-					return <Button onClick={() => handleFired(record.id)}>Уволить</Button>
-				if (record.Status == 'Fired') return 'Уволен'
+			render: (value, member) => {
+				if (member.status == TeamMemberStatus.Founder) return null
+
+				if (member.status == TeamMemberStatus.Hired)
+					return <Button onClick={() => handleFired(member.id)}>Уволить</Button>
+				if (member.status == TeamMemberStatus.Fired) return 'Уволен'
 			},
 		},
 	]
@@ -128,10 +105,10 @@ const MyProjectTeam = ({ project, shouldUpdate = false }: ProjectVacanciesArgs) 
 
 			<Table
 				showHeader={false}
-				loading={isLoadingMyMyProjectTeam}
+				loading={isLoadingMyProjectTeam}
 				style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
 				columns={columns}
-				dataSource={team.map((m: any) => ({ ...m, key: m.id }))}
+				dataSource={projectTeam?.data.members.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}
 			/>
 		</>

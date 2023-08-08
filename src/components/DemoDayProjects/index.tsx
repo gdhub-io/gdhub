@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Project } from '@prisma/client'
 import { Typography } from 'antd'
 import Image from 'next/image'
 import styles from './style.module.scss'
@@ -36,26 +37,30 @@ export const DemoDayProjects = ({ projects }: { projects: any[] }) => {
 			<Title level={3}>Проекты, которые готовятся к питчу</Title>
 			<section className={styles.carousel}>
 				<ul className="carousel__list">
-					{slides?.map((project: any, idx: number) => (
-						<li
-							key={project.id}
-							className="carousel__item"
-							tabIndex={0}
-							data-active={idx == activatedIndex && 'data-active'}
-							onFocus={() => handleSlideClick(idx)}
-						>
-							<div className="carousel__box">
-								<div className="carousel__image">
-									<Image src={project['Cover Image']} width="720" height="480" alt="" />
-								</div>
-								<div className="carousel__contents">
-									<h2 className="user__name">{project.Name}</h2>
-									<h3 className="user__title">
-										{project.Genre} для {project.Platform}
-									</h3>
-								</div>
-							</div>
-						</li>
+					{slides?.map((project: Project, idx: number) => (
+						<>
+							{!!project.coverImage && (
+								<li
+									key={project.id}
+									className="carousel__item"
+									tabIndex={0}
+									data-active={idx == activatedIndex && 'data-active'}
+									onFocus={() => handleSlideClick(idx)}
+								>
+									<div className="carousel__box">
+										<div className="carousel__image">
+											<Image src={project.coverImage} width="720" height="480" alt="" />
+										</div>
+										<div className="carousel__contents">
+											<h2 className="user__name">{project.name}</h2>
+											<h3 className="user__title">
+												{project.genre} для {project.platform}
+											</h3>
+										</div>
+									</div>
+								</li>
+							)}
+						</>
 					))}
 				</ul>
 			</section>

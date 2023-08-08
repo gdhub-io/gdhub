@@ -15,7 +15,14 @@ class ApiSeasonsHandler {
 			select: {
 				name: true,
 				stages: {
-					include: {
+					select: {
+						id: true,
+						isCurrent: true,
+						startedAt: true,
+						finishedAt: true,
+						name: true,
+						order: true,
+						description: true,
 						projects: {
 							where: { status: { in: ['Approved', 'Done'] } },
 							select: { team: { select: { members: true } } },
@@ -41,7 +48,7 @@ class ApiSeasonsHandler {
 
 		for (const season of seasons) {
 			const { name, slug, startedAt, stages } = season
-			const currentStageName = stages.find((stage) => stage.isCurrent)?.name
+			const currentStage = stages.find((stage) => stage.isCurrent)
 			const projectsCount = stages.reduce((result, stage) => result + stage.projects.length, 0)
 			const membersCount = stages.reduce(
 				(result, stage) =>
@@ -52,7 +59,7 @@ class ApiSeasonsHandler {
 				name,
 				slug,
 				startedAt,
-				currentStageName,
+				currentStage,
 				projectsCount,
 				membersCount,
 			}

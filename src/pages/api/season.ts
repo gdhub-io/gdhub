@@ -5,7 +5,12 @@ import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorat
 
 class ParamSlugDto {
 	@IsString()
-	slug: string
+	@IsOptional()
+	slug?: string
+
+	@IsString()
+	@IsOptional()
+	id?: string
 
 	@IsBoolean()
 	@IsOptional()
@@ -17,15 +22,23 @@ class ApiSpecialistHandler {
 	constructor() {}
 
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { slug, withProjects }: ParamSlugDto) {
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { id, slug, withProjects }: ParamSlugDto
+	) {
+		if (!id && !slug) throw Error('No id or slug value')
+
 		const season = await prisma.season.findFirst({
-			where: { slug },
+			where: { id, slug },
 			include: { stages: { include: { projects: withProjects } } },
+			orderBy: { stages: { _count: 'asc' } },
 		})
 
 		if (!season) {
 			throw new Error('Not found the season data')
 		}
+
+		season.stages.sort((a, b) => a.order - b.order)
 
 		return season
 	}

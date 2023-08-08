@@ -1,6 +1,9 @@
+import { Season } from '@prisma/client'
 import styles from './style.module.scss'
 
-export const DemoTitle = ({ season }: any) => {
+export const DemoTitle = ({ season }: { season: Season }) => {
+	if (!season) return null
+
 	return (
 		<div className={styles.content}>
 			<h1 className={styles.title}>
@@ -14,7 +17,7 @@ export const DemoTitle = ({ season }: any) => {
 				</div>
 			</h1>
 			<p className={styles.subtitle}>
-				Команды из <span style={{ color: '#ffbb33' }}>{`{ ${season?.Name} }`}</span> расскажут о своих инди-проектах
+				Команды из <span style={{ color: '#ffbb33' }}>{`{ ${season?.name} }`}</span> расскажут о своих инди-проектах
 				<br />в виде коротких питчей
 			</p>
 		</div>

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import StartProjectImage from '@/assets/images/start-indie-game.jpg'
 import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
 import { useTelegram } from '@/helpers/useTelegram'
-import AirtableService, { getWorkedProjects } from '@/services/airtable'
 import { prisma } from '@/services/prisma'
 import styles from '@/styles/home.module.scss'
 import { Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
@@ -164,17 +163,15 @@ export async function getStaticProps(context: any) {
 	const usersCount = await prisma.user.count()
 	const specialitiesCount = await prisma.speciality.count()
 
-	const projects = await getWorkedProjects()
-	const vacancies = await AirtableService('Project Vacancies')
-		.select({ fields: [], filterByFormula: `AND(Status = "Opened")` })
-		.all()
+	const projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
+	const vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
 
 	return {
 		props: {
 			usersCount,
 			specialitiesCount,
-			projectsCount: projects.length,
-			vacanciesCount: vacancies.length,
+			projectsCount,
+			vacanciesCount,
 		},
 		revalidate: 60,
 	}

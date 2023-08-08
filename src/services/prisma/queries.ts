@@ -10,5 +10,9 @@ export const getWorkedProjects = async () => {
 				name: { in: [DefaultSeasonStages.Recruiting, DefaultSeasonStages.Prototyping, DefaultSeasonStages.Production] },
 			},
 		},
+		include: {
+			stage: { select: { id: true, name: true, season: { select: { id: true, name: true } } } },
+			author: { select: { name: true } },
+		},
 	})
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import SeasonStageModal from '@/components/modals/SeasonStageModal'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
+import { SeasonStage } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Popconfirm, Row, Space, Switch, Table, Typography, message } from 'antd'
 import { ColumnsType } from 'antd/es/table'
@@ -24,7 +25,7 @@ const SeasonStagesAdminPage: NextPageWithLayout = () => {
 		error,
 		refetch,
 	} = useQuery(['admin', 'seasons'], () =>
-		axios.get(`/api/admin/season/stages`, { params: { seasonId: router.query.id } })
+		axios.get<SeasonStage[]>(`/api/admin/season/stages`, { params: { seasonId: router.query.id } })
 	)
 
 	const { mutate: updateStage, isLoading: isUpdatig } = useMutation(

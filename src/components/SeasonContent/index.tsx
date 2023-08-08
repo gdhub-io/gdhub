@@ -13,7 +13,7 @@ import PrototypingStageContent from './stages/PrototypingStageContent'
 import RecruitingStageContent from './stages/RecruitingStageContent'
 import styles from './style.module.scss'
 
-export type SeasonData = Season & { stages: SeasonStage[] }
+export type SeasonData = Season & { stages: (SeasonStage & { isCompleted: boolean })[] }
 
 const { Title, Text, Paragraph } = Typography
 

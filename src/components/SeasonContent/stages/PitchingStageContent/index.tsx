@@ -1,9 +1,17 @@
+import { useMemo } from 'react'
+import { SeasonData } from '@/components/SeasonContent'
 import { Button, Spin } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import styles from './style.module.scss'
 
-const PitchingStageContent = ({ season, stage }: any) => {
+const PitchingStageContent = ({ season }: { season: SeasonData }) => {
+	const stage = useMemo(() => {
+		return season?.stages.find((s) => s.isCurrent)
+	}, [season])
+
+	if (!season) return null
+
 	return (
 		<div className={styles.container}>
 			<Spin spinning={!season}>
@@ -13,13 +21,13 @@ const PitchingStageContent = ({ season, stage }: any) => {
 					доработку и релиза.
 				</p>
 				<p>
-					Питчи проектов состоятся {dayjs(stage['Finished At']).format('DD MMM, YYYY')} года н нашем{' '}
+					Питчи проектов состоятся {dayjs(stage?.finishedAt).format('DD MMM, YYYY')} года н нашем{' '}
 					<Link href="https://www.youtube.com/channel/UCKesPh-gDVTaHrT_HDUWkeQ" target="_blank">
 						Youtube-канале
 					</Link>
 					.
 				</p>
-				<Link href={`/${season.Slug}/demo-day`} target="_blank">
+				<Link href={`/${season.slug}/demo-day`} target="_blank">
 					<Button type="primary">Регистрация на Demo Day</Button>
 				</Link>
 			</Spin>

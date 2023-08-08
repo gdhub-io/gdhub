@@ -1,21 +1,41 @@
-import { fetcher } from '@/helpers/fetcher'
-import { Button, Card, Col, Descriptions, Grid, Row, Space, Spin, Typography } from 'antd'
+import { useMemo } from 'react'
+import { SeasonData } from '@/components/SeasonContent'
+import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
+import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
+import { Space, Spin, Typography } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
-import Image from 'next/image'
 import Link from 'next/link'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 
-const PrototypingStageContent = ({ season, stage }: any) => {
-	const screens = Grid.useBreakpoint()
-	const { data: projects, isValidating: isLoadingProjecIdeas } = useSWR(
-		{ url: '/api/season/projects', data: { seasonName: season.Name } },
-		fetcher
+const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
+	const stage = useMemo(() => {
+		return season?.stages.find((s) => s.isCurrent)
+	}, [season])
+
+	const { data: reportsDates } = useQuery(
+		['season-reports', stage?.id],
+		() => axios.get<SeasonStreamReport[]>('/api/season/stream-reports', { params: { stageId: stage?.id } }),
+		{ enabled: !!stage, refetchOnWindowFocus: false, staleTime: Infinity }
 	)
-	const { data: reportsDates } = useSWR(
-		{ url: '/api/season/reports-dates', data: { seasonName: season.Name, stage: stage.Name } },
-		fetcher
-	)
+
+	// const { data: projects, isValidating: isLoadingProjecIdeas } = useSWR(
+	// 	{ url: '/api/season/projects', data: { seasonName: season.name } },
+	// 	fetcher
+	// )
+	// const { data: reportsDates } = useSWR(
+	// 	{ url: '/api/season/reports-dates', data: { seasonName: season.Name, stage: stage.Name } },
+	// 	fetcher
+	// )
+
+	// const { data: seasonReports, isFetching: isLoading } = useQuery(
+	// 	['season-reports', season.id],
+	// 	() => axios.get<any[]>('/api/season/reports/dates'),
+	// 	{
+	// 		staleTime: Infinity,
+	// 	}
+	// )
 
 	return (
 		<div className={styles.container}>
@@ -31,11 +51,11 @@ const PrototypingStageContent = ({ season, stage }: any) => {
 					Так же на этом этапе команды начнут рассказывать о своем прогрессе в виде онлайн-отчетов. Информация о
 					видеоотчетах будет публиковаться в чате сообщества.
 					<ul>
-						{reportsDates?.map((reportDate: any) => (
-							<li key={`report-date-${reportDate.Date}`}>
-								{dayjs(reportDate.Date).format('LLL')}
+						{reportsDates?.data.map((reportDate, index) => (
+							<li key={`report-date-${index}`}>
+								{dayjs(reportDate.date).format('LLL')}
 								<Typography.Text type="secondary">
-									<small>{' ' + dayjs(reportDate.Date).format('Z')}</small>
+									<small>{' ' + dayjs(reportDate.date).format('Z')}</small>
 								</Typography.Text>
 							</li>
 						))}
@@ -57,47 +77,7 @@ const PrototypingStageContent = ({ season, stage }: any) => {
 				</p>
 
 				<h3>Проекты в разработке</h3>
-				<Spin spinning={isLoadingProjecIdeas} style={{ minHeight: 60 }}>
-					<Row
-						gutter={[
-							{ md: 24, xs: 24 },
-							{ md: 24, xs: 24 },
-						]}
-					>
-						{projects?.map((project: any, idx: number) => (
-							<Col key={idx} xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }} xl={{ span: 6 }}>
-								<Card
-									className={styles.card}
-									cover={project['Cover Image'] ? <Image alt="cover" src={project['Cover Image']} fill /> : null}
-								>
-									<Card.Meta
-										description={
-											<div className={styles.projectDescriptions}>
-												<Descriptions title={project.Name} layout={screens.md ? 'horizontal' : 'vertical'} column={1}>
-													<Descriptions.Item>
-														<Typography.Paragraph ellipsis={{ rows: 4 }}>{project.Description}</Typography.Paragraph>
-													</Descriptions.Item>
-													<Descriptions.Item label="Автор">{project['Author Name']} </Descriptions.Item>
-													<Descriptions.Item label="Жанр">{project.Genre}</Descriptions.Item>
-													<Descriptions.Item label="Сеттинг">{project.Setting}</Descriptions.Item>
-													<Descriptions.Item label="Платформа">{project.Platform}</Descriptions.Item>
-												</Descriptions>
-												<Descriptions layout="vertical" column={1}>
-													<Descriptions.Item label="Визуальный стиль">{project['Visual Style']}</Descriptions.Item>
-												</Descriptions>
-												<Link href={`/project/${project.Slug}`} target="_blank">
-													<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
-														На страницу проекта
-													</Button>
-												</Link>
-											</div>
-										}
-									/>
-								</Card>
-							</Col>
-						))}
-					</Row>
-				</Spin>
+				{!!stage && <SeasonProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 			</Spin>
 		</div>
 	)

@@ -1,4 +1,4 @@
-import { Project, User } from '@prisma/client'
+import { Project, ProjectStatus, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Col, Card, Descriptions, Typography, Button, Row, Grid } from 'antd'
 import axios from 'axios'
@@ -7,14 +7,17 @@ import Link from 'next/link'
 import styles from './style.module.scss'
 
 type ProjectsSectionArgs = {
-	seasonId: string
+	stageId: string
+	status?: ProjectStatus
 }
 
-export const SeasonProjectsSection = ({ seasonId }: ProjectsSectionArgs) => {
+export const SeasonProjectsSection = ({ stageId, status = ProjectStatus.Registered }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
 
-	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery(['projects', seasonId], () =>
-		axios.get<(Project & { author: User })[]>('/api/season/projects', { params: { seasonId } })
+	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery(['projects', stageId], () =>
+		axios.get<(Project & { author: User })[]>('/api/season/projects', {
+			params: { stageId, status },
+		})
 	)
 
 	if (!projects?.data.length) {
