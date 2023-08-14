@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			.select({
 				fields: ['Name', 'Season Stages', 'Started At', 'Slug', 'Project Ideas', 'Members', 'Approved Projects'],
 				sort: [{ field: 'Started At', direction: 'desc' }],
-				filterByFormula: 'Status != "Not Active"',
+				filterByFormula: 'AND(Status != "Not Active", Name != "Indie")',
 			})
 			.all()
 
