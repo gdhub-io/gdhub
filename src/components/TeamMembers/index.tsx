@@ -1,31 +1,39 @@
 import { useMemo } from 'react'
-import { fetcher } from '@/helpers/fetcher'
+import { ProjectTeam, TeamMember, User } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { Avatar, List, Space, Typography } from 'antd'
-import useSWR from 'swr'
+import axios from 'axios'
 
 const { Title } = Typography
 
 interface TeamMembersArgs {
-	project: any
+	teamId: string
 }
 
-const TeamMembers = ({ project }: TeamMembersArgs) => {
-	const { data: teamMembers } = useSWR({ url: '/api/project/members', data: { projectId: project?.id } }, fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !project?.id,
-	})
+const TeamMembers = ({ teamId }: TeamMembersArgs) => {
+	const { data: team } = useQuery(
+		['team-members', teamId],
+		() =>
+			axios.get<ProjectTeam & { members: (TeamMember & { user: User })[] }>('/api/project/team', {
+				params: { teamId },
+			}),
+		{
+			enabled: !!teamId,
+			refetchOnWindowFocus: false,
+		}
+	)
 
-	const data: any[] = useMemo(() => {
-		if (!teamMembers) return undefined
+	const data: { title: string | null; description: string; avatar: string | null }[] | undefined = useMemo(() => {
+		if (!team?.data) return []
 
-		return teamMembers?.data.map((member: any) => ({
-			title: member.Name,
-			description: member.Position,
-			avatar: member.Avatar,
+		return team.data.members.map((member: TeamMember & { user: User }) => ({
+			title: member.user.name,
+			description: member.position,
+			avatar: member.user.image,
 		}))
-	}, [teamMembers])
+	}, [team])
 
-	if (teamMembers && teamMembers.length == 0) return null
+	if (team && team?.data.members.length == 0) return null
 
 	return (
 		<>

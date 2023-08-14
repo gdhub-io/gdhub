@@ -172,6 +172,13 @@ class ApiProjectHandler {
 						},
 					},
 				},
+				reports: {
+					create: {
+						content: 'Registration of the project on the service',
+						publishedAt: dayjs().toISOString(),
+						authorId: req.user.id,
+					},
+				},
 			},
 			include: {
 				author: { select: { name: true, image: true, id: true, roles: true, profile: { select: { id: true } } } },

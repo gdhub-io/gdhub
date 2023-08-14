@@ -57,18 +57,12 @@ const MyProjectPage: NextPageWithLayout = () => {
 						<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
 							<Space wrap>
 								{myProject?.data.status !== ProjectStatus.Rejected && (
-									<Button
-										onClick={() => setShowProjectModal(true)}
-										icon={<TbSettings size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
-									>
-										Внести изменения
+									<Button onClick={() => setShowProjectModal(true)} icon={<TbSettings size={16} />}>
+										Настройки
 									</Button>
 								)}
 								<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
-									<Button
-										type="primary"
-										icon={<HiExternalLink size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
-									>
+									<Button type="primary" icon={<HiExternalLink size={16} />}>
 										Страница проекта
 									</Button>
 								</Link>
@@ -92,7 +86,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					<ProjectModal
 						seasonId={myProject?.data.stage.seasonId}
-						projectId={projectId as string}
+						projectId={projectId}
 						open={showProjectModal}
 						onOk={handleSaveProject}
 						onCancel={() => setShowProjectModal(false)}

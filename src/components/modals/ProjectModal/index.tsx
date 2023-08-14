@@ -2,9 +2,26 @@ import { useEffect, useState } from 'react'
 import { normUploadFile } from '@/helpers/file'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Col, Form, Input, message, Modal, Popover, Row, Select, Spin, Upload, UploadProps } from 'antd'
+import {
+	Button,
+	Col,
+	Form,
+	Input,
+	message,
+	Modal,
+	Popover,
+	Row,
+	Select,
+	Space,
+	Spin,
+	theme,
+	Tooltip,
+	Upload,
+	UploadProps,
+} from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
+import { GoCheckCircleFill } from 'react-icons/go'
 import { TbTrash } from 'react-icons/tb'
 import styles from './style.module.scss'
 
@@ -17,6 +34,7 @@ type ProjectModalParams = {
 }
 
 const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModalParams) => {
+	const { token } = theme.useToken()
 	const [form] = Form.useForm()
 	const [cover, setCover] = useState<string | null>()
 	const [coverProcessing, setCoverProcessing] = useState(false)
@@ -25,9 +43,9 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 		['user-project', projectId],
 		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { projectId } }),
 		{
-			enabled: !!projectId,
+			enabled: !!projectId && open,
 			refetchOnWindowFocus: false,
-			refetchInterval: Infinity,
+			refetchInterval: false,
 			onSuccess({ data }) {
 				setCover(data.coverImage)
 			},
@@ -98,16 +116,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 
 			// save
 			if (projectId) {
-				await fetch('/api/project/idea/save', {
-					method: 'post',
-					body: JSON.stringify({
-						id: projectId,
-						data: { coverImage: null, seasonId: project?.data.stage.seasonId || seasonId },
-					}),
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				})
+				await updateProject({ coverImage: null })
 			}
 
 			return await res
@@ -251,12 +260,19 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 
 					<Form.Item
 						name="conceptLink"
-						label="Ссылка на концепт-документ (описание идеи)"
+						label={
+							<Space>
+								Ссылка на концепт-документ (описание идеи)
+								<Tooltip title="You can't change the link. It was approved already.">
+									<GoCheckCircleFill color={token.colorSuccess} />
+								</Tooltip>
+							</Space>
+						}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true, type: 'url' }]}
 						required
 					>
-						<Input width={'100%'} disabled={!!project && project.data.status !== ProjectStatus.Registered} />
+						<Input width={'100%'} disabled={project?.data.status !== ProjectStatus.Registered} />
 					</Form.Item>
 
 					{project?.data.status == ProjectStatus.Approved && (

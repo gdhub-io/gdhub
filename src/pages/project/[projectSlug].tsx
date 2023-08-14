@@ -4,7 +4,8 @@ import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import AirtableService from '@/services/airtable'
+import { prisma } from '@/services/prisma'
+import { Profile, Project, ProjectStatus, User } from '@prisma/client'
 import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
 import { GetStaticPropsContext } from 'next'
 import Head from 'next/head'
@@ -18,23 +19,29 @@ import styles from './style.module.scss'
 
 const { Title, Paragraph, Text } = Typography
 
-const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
+type ProjectPageParams = {
+	project: Project & { author: User & { profile: { tgNickname: Profile['tgNickname'] } } }
+}
+
+const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 	const router = useRouter()
 	const screens = Grid.useBreakpoint()
 	const [showPitchVideo, setShowPitchVideo] = useState(false)
 
 	const handleCoverClick = () => setShowPitchVideo(true)
 
+	if (!project) return null
+
 	const generalData = (
 		<div className={styles.projectMeta}>
 			<Descriptions size="small" layout={screens.md ? 'horizontal' : 'vertical'} column={1}>
-				<Descriptions.Item label="Жанр">{project.Genre}</Descriptions.Item>
-				<Descriptions.Item label="Сеттинг">{project.Setting}</Descriptions.Item>
-				<Descriptions.Item label="Аудитория">{project.Audition}</Descriptions.Item>
-				<Descriptions.Item label="Платформа">{project.Platform}</Descriptions.Item>
+				<Descriptions.Item label="Жанр">{project.genre}</Descriptions.Item>
+				<Descriptions.Item label="Сеттинг">{project.setting}</Descriptions.Item>
+				<Descriptions.Item label="Аудитория">{project.audition}</Descriptions.Item>
+				<Descriptions.Item label="Платформа">{project.platform}</Descriptions.Item>
 			</Descriptions>
 			<Descriptions size="small" layout="vertical" column={1}>
-				<Descriptions.Item label="Визуальный стиль">{project['Visual Style']}</Descriptions.Item>
+				<Descriptions.Item label="Визуальный стиль">{project.visualStyle}</Descriptions.Item>
 			</Descriptions>
 		</div>
 	)
@@ -44,61 +51,61 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 	return (
 		<>
 			<Head>
-				<title>{project.Name}</title>
-				<meta name="description" content={project.Description}></meta>
-				<meta property="og:title" content={project.Name} />
-				<meta property="og:description" content={project.Description} />
+				<title>{project.name}</title>
+				<meta name="description" content={project.description as string}></meta>
+				<meta property="og:title" content={project.name} />
+				<meta property="og:description" content={project.description as string} />
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={router.route} />
-				{!!project['Cover Image'] && <meta property="og:image" content={project['Cover Image']} />}
+				{!!project.coverImage && <meta property="og:image" content={project.coverImage} />}
 			</Head>
 			<div className={styles.container}>
 				<Row gutter={[32, 16]}>
 					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
-						<Title>{project.Name}</Title>
+						<Title>{project.name}</Title>
 						<Space className="project-author" align="center">
 							<span>Автор</span>
-							<Text>{project['Author Name']}</Text>
+							<Text>{project.author.name}</Text>
 						</Space>
 						<div className="project-description">
 							<Title level={5}>Об игре</Title>
-							<Paragraph>{project['Description']}</Paragraph>
+							<Paragraph>{project.description}</Paragraph>
 						</div>
 						{!screens.md && generalData}
 
 						<div className="project-team">
-							<TeamMembers project={project} />
+							<TeamMembers teamId={project.teamId} />
 						</div>
 					</Col>
 					<Col xs={{ span: 24, order: 0 }} md={{ span: 12, order: 1 }} lg={{ span: 8, order: 1 }}>
 						{!showPitchVideo && (
 							<>
-								{!!project['Cover Image'] && (
+								{!!project.coverImage && (
 									<div className={styles.cover}>
-										{project['Youtube Video ID'] && (
+										{project.videoLink && (
 											<div className={styles.coverButtonContainer}>
 												<Button onClick={handleCoverClick} type="primary">
 													Смотреть презентацию
 												</Button>
 											</div>
 										)}
-										<Image src={project['Cover Image']} alt="cover" fill />
+										<Image src={project.coverImage} alt="cover" fill />
 									</div>
 								)}
 							</>
 						)}
-						{showPitchVideo && project['Youtube Video ID'] && (
+						{showPitchVideo && project.videoLink && (
 							<YouTube
 								className={styles.videoCover}
-								videoId={project['Youtube Video ID']}
+								videoId={project.videoLink}
 								opts={pitchVideoOptions}
 								onEnd={() => setShowPitchVideo(false)}
 							/>
 						)}
 						{screens.md && generalData}
-						{project['Author Telegram Nickname'] ? (
+						{project.author.profile.tgNickname ? (
 							<Link
-								href={`https://t.me/${project['Author Telegram Nickname']}`}
+								href={`https://t.me/${project.author.profile.tgNickname}`}
 								target="_blank"
 								style={{ display: 'block', width: 'fit-content' }}
 							>
@@ -111,11 +118,11 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 				</Row>
 
 				<div className="project-vacancies">
-					<ProjectVacancies project={project} />
+					<ProjectVacancies teamId={project.teamId} />
 				</div>
 
 				<div className="project-reports">
-					<ProjectReports project={project} />
+					<ProjectReports projectId={project.id} projectStartedAt={project.createdAt} />
 				</div>
 			</div>
 		</>
@@ -123,15 +130,13 @@ const SeasonProjectPage: NextPageWithLayout = ({ pageUrl, project }: any) => {
 }
 
 export async function getStaticPaths() {
-	const projectsSlugs = await AirtableService('Project Ideas')
-		.select({
-			fields: ['Slug'],
-			filterByFormula: `Status = "Approved"`,
-		})
-		.all()
+	const projects = await prisma.project.findMany({
+		where: { status: { not: ProjectStatus.Rejected } },
+		select: { slug: true },
+	})
 
-	const paths = projectsSlugs.map((post) => ({
-		params: { projectSlug: post.get('Slug') },
+	const paths = projects.map(({ slug }) => ({
+		params: { projectSlug: slug },
 	}))
 
 	return { paths, fallback: false }
@@ -140,13 +145,10 @@ export async function getStaticPaths() {
 export const getStaticProps = async (context: GetStaticPropsContext) => {
 	const { projectSlug }: any = context.params
 
-	const [project] = await AirtableService('Project Ideas')
-		.select({
-			// fields: ['Name', 'Ideas Embed Link', 'Status'],
-			maxRecords: 1,
-			filterByFormula: `OR(Slug = "${projectSlug}", RECORD_ID() = "${projectSlug}")`,
-		})
-		.all()
+	const project = await prisma.project.findFirst({
+		where: { slug: projectSlug },
+		include: { author: { select: { name: true, profile: { select: { tgNickname: true } } } } },
+	})
 
 	if (!project) {
 		return {
@@ -156,12 +158,12 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 
 	return {
 		props: {
-			project: { ...project.fields, id: project.id },
+			project: { ...project, createdAt: project.createdAt.toISOString(), updatedAt: project.updatedAt.toISOString() },
 		},
 		revalidate: 60,
 	}
 }
 
-SeasonProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
+ProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
-export default SeasonProjectPage
+export default ProjectPage

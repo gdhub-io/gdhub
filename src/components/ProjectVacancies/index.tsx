@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
-import { fetcher } from '@/helpers/fetcher'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
+import axios from 'axios'
 import dayjs from 'dayjs'
-import useSWR from 'swr'
 
 const { Title } = Typography
 
@@ -29,24 +29,20 @@ const vacancyStatusToText = (status: string) => {
 }
 
 interface ProjectVacanciesArgs {
-	project: any
+	teamId: string
 }
 
-const ProjectVacancies = ({ project }: ProjectVacanciesArgs) => {
+const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
+
 	const {
 		data: projectVacancies,
-		mutate: fetchMyProjectVacancies,
-		isValidating: isLoadingMyProjectVacancies,
-	} = useSWR(
-		{ url: '/api/project/vacancies', data: { projectId: project?.id, projectName: project?.Name, Status: 'Opened' } },
-		fetcher,
-		{
-			revalidateOnFocus: false,
-			isPaused: () => !project,
-		}
-	)
+		refetch: fetchMyProjectVacancies,
+		isFetching: isLoadingMyProjectVacancies,
+	} = useQuery(['team-vacancy', teamId], () => axios.get('/api/project/vacancies', { params: { teamId: teamId } }), {
+		enabled: !!teamId,
+	})
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{

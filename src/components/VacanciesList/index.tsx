@@ -1,20 +1,12 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
+import { TeamVacancy } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-
-interface Vacancy {
-	key: string
-	Name: string
-	Description: string
-	FinishedAt: string
-	Status: string
-	[key: string]: any
-}
 
 const vacancyStatusToText = (status: string) => {
 	switch (status) {
@@ -34,16 +26,20 @@ const VacanciesList = () => {
 		data: vacancies,
 		isLoading: isLoadingMyVacanciesList,
 		refetch: refetchVacanciesList,
-	} = useQuery(['vacancies'], () => axios.get('/api/vacancies'), {
-		refetchOnWindowFocus: false,
-		refetchInterval: 60000,
-	})
+	} = useQuery(
+		['vacancies'],
+		() => axios.get<TeamVacancy & { team: { project: { slug: string; name: string } } }[]>('/api/vacancies'),
+		{
+			refetchOnWindowFocus: false,
+			refetchInterval: 60000,
+		}
+	)
 
-	const vacanciesColumns: ColumnsType<Vacancy> = [
+	const vacanciesColumns: ColumnsType<TeamVacancy & { team: { project: { slug: string; name: string } } }> = [
 		{
 			title: 'Название',
-			dataIndex: 'Name',
-			key: 'Name',
+			dataIndex: 'name',
+			key: 'name',
 			width: '40%',
 			render: (value, record) => (
 				<>
@@ -55,13 +51,13 @@ const VacanciesList = () => {
 		},
 		{
 			title: 'Проект',
-			dataIndex: 'Project',
-			key: 'Project',
+			dataIndex: 'teamId',
+			key: 'teamId',
 			width: '40%',
-			render: (value, record) => (
+			render: (record) => (
 				<>
-					<Link href={`/project/${record['Project Slug'][0]}`}>
-						<Button type="text">{record['Project Name']}</Button>
+					<Link href={`/project/${record.team.project.slug}`}>
+						<Button type="text">{record.team.project.name}</Button>
 					</Link>
 				</>
 			),
@@ -103,13 +99,13 @@ const VacanciesList = () => {
 				</p>
 			</Space>
 
-			{vacancies?.data.length > 0 ? (
+			{!!vacancies?.data ? (
 				<>
 					<Table
 						loading={isLoadingMyVacanciesList}
 						style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
 						columns={vacanciesColumns}
-						dataSource={vacancies?.data.map((m: any) => ({ ...m, key: m.id }))}
+						dataSource={vacancies.data as any[]}
 						pagination={false}
 					/>
 
