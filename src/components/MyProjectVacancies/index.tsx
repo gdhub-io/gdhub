@@ -68,8 +68,8 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
 			title: 'Название',
-			dataIndex: 'Name',
-			key: 'Name',
+			dataIndex: 'title',
+			key: 'title',
 			width: '100%',
 			render: (value, data) => (
 				<>
@@ -80,14 +80,14 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 		},
 		{
 			title: 'Направление',
-			dataIndex: 'Direction',
-			key: 'Direction',
+			dataIndex: 'direction',
+			key: 'direction',
 			responsive: ['md'],
 		},
 		{
 			title: 'Действует до',
-			dataIndex: 'Finished At',
-			key: 'Finished At',
+			dataIndex: 'finishedAt',
+			key: 'finishedAt',
 			responsive: ['md'],
 			render: (value) => dayjs(value).format('DD.MM.YYYY'),
 		},
@@ -118,7 +118,7 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 	}
 
 	const handleCloseVacancy = async (id: string) => {
-		await fetcher({ url: '/api/vacancy/close', data: { id } })
+		await fetcher({ url: '/api/user/project/vacancy/close', data: { id } })
 		fetchMyMyProjectVacancies()
 
 		message.success('Вакансия удалена')
@@ -150,6 +150,7 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 			)}
 
 			<VacancyModal
+				teamId={teamId}
 				vacancyId={selectedVacancyId}
 				open={showVacancyModal}
 				onCancel={() => {
