@@ -1,5 +1,5 @@
-import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 import { GTM_ID } from '@/helpers/gtm'
+import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 
 export default class CustomDocument extends Document {
 	static async getInitialProps(ctx: DocumentContext) {

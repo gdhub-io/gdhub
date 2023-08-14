@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'react'
+import SpecialistPreviewModal from '@/components/modals/SpecialistPreviewModal'
+import { hasRole } from '@/helpers/user'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
+import AirtableService from '@/services/airtable'
+import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import Head from 'next/head'
 import { useSession } from 'next-auth/react'
@@ -15,12 +21,6 @@ import {
 	useInstantSearch,
 } from 'react-instantsearch-hooks-web'
 import styles from './style.module.scss'
-import SpecialistPreviewModal from '@/components/modals/SpecialistPreviewModal'
-import { hasRole } from '@/helpers/user'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import AirtableService from '@/services/airtable'
-import { InstantsearchAdapter } from '@/services/typesense/adapter'
 
 const { Paragraph, Text, Title } = Typography
 

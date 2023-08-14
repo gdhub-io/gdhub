@@ -1,8 +1,8 @@
+import { fetcher } from '@/helpers/fetcher'
 import { IMessage, NotificationBell, NovuProvider, PopoverNotificationCenter } from '@novu/notification-center'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import useSWRImmutable from 'swr/immutable'
-import { fetcher } from '@/helpers/fetcher'
 
 export const NotificationsBell = () => {
 	const router = useRouter()
