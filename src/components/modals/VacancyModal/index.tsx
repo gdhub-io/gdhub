@@ -1,63 +1,63 @@
-import { useEffect, useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
+import { useEffect, useMemo, useState } from 'react'
+import { TeamVacancy, TeamVacancyStatus, WorkDirection } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
-import useSWR from 'swr'
 
-const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel }: any) => {
+const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
-	const directionsOptions = [
+
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
 		{
-			value: 'Programming',
-			label: 'Программирование',
-		},
-		{
-			value: 'Game Design',
-			label: 'Геймдизайн',
-		},
-		{
-			value: '2D Art & Animation',
-			label: '2D арт и анимация',
-		},
-		{
-			value: '3D Art & Animation',
-			label: '3D арт и анимация',
-		},
-		{
-			value: 'Project Management',
-			label: 'Управление проектом',
-		},
-		{
-			value: 'Product Management',
-			label: 'Управление продуктом',
-		},
-		{
-			value: 'Technical Art',
-			label: 'Технический арт',
-		},
-		{
-			value: 'Team Management',
-			label: 'Управление командой',
-		},
-		{
-			value: 'Other',
-			label: 'Другое',
-		},
-	]
+			staleTime: Infinity,
+		}
+	)
 
 	const {
 		data: vacancy,
-		mutate: fetchVacancy,
-		isValidating: isLoadingVacancy,
-	} = useSWR({ url: '/api/vacancy/get', data: { id: vacancyId } }, fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !vacancyId,
-		onSuccess: (data) => {
-			setProcessing(false)
-			form.setFieldsValue({ ...data, 'Finished At': dayjs(data['Finished At']) })
-		},
-	})
+		refetch: fetchVacancy,
+		isLoading: isLoadingVacancy,
+	} = useQuery(
+		['vacancy', vacancyId],
+		() => axios.get<TeamVacancy>('/api/user/project/vacancy', { params: { id: vacancyId } }),
+		{
+			enabled: !!vacancyId,
+			staleTime: Infinity,
+			onSuccess: ({ data }) => {
+				form.setFieldsValue(data)
+			},
+		}
+	)
+
+	const { mutateAsync: createVacancy } = useMutation((data: Record<string, any>) =>
+		axios.post('/api/user/project/vacancy', data)
+	)
+	const { mutateAsync: saveVacancy } = useMutation((params: { id: string; data: Record<string, any> }) =>
+		axios.put('/api/user/project/vacancy', params.data, { params: { id: params.id } })
+	)
+
+	const directionsOptions = useMemo(() => {
+		if (!workDirections) return
+
+		return workDirections.data.map((dir) => ({ value: dir.id, label: dir.name }))
+	}, [workDirections])
+
+	// const {
+	// 	data: vacancy,
+	// 	mutate: fetchVacancy,
+	// 	isValidating: isLoadingVacancy,
+	// } = useSWR({ url: '/api/vacancy/get', data: { id: vacancyId } }, fetcher, {
+	// 	revalidateOnFocus: false,
+	// 	isPaused: () => !vacancyId,
+	// 	onSuccess: (data) => {
+	// 		setProcessing(false)
+	// 		form.setFieldsValue({ ...data, finishedAt: dayjs(data.finishedAt) })
+	// 	},
+	// })
 
 	useEffect(() => {
 		if (open && !vacancyId) {
@@ -73,33 +73,53 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 		try {
 			const formData = await form.validateFields()
 			setProcessing(true)
-			const response: any = await fetch('/api/vacancy/save', {
-				method: 'post',
-				body: JSON.stringify({
-					id: vacancyId || null,
+
+			if (vacancyId) {
+				await saveVacancy({
+					id: vacancyId,
 					data: {
 						...formData,
-						'Published At': asDraft ? null : dayjs().toISOString(),
-						'Finished At': formData['Finished At'].format('YYYY-MM-DD'),
-						Status: asDraft ? 'Draft' : 'Opened',
-						Project: [projectId],
+						publishedAt: asDraft ? null : dayjs().toISOString(),
+						status: asDraft ? TeamVacancyStatus.Draft : TeamVacancyStatus.Published,
+						teamId,
 					},
-				}),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
+				})
+			} else {
+				await createVacancy({
+					...formData,
+					publishedAt: asDraft ? null : dayjs().toISOString(),
+					status: asDraft ? TeamVacancyStatus.Draft : TeamVacancyStatus.Published,
+					teamId,
+				})
+			}
+
+			// const response: any = await fetch('/api/vacancy/save', {
+			// 	method: 'post',
+			// 	body: JSON.stringify({
+			// 		id: vacancyId || null,
+			// 		data: {
+			// 			...formData,
+			// 			'Published At': asDraft ? null : dayjs().toISOString(),
+			// 			'Finished At': formData['Finished At'].format('YYYY-MM-DD'),
+			// 			Status: asDraft ? 'Draft' : 'Opened',
+			// 			Project: [projectId],
+			// 		},
+			// 	}),
+			// 	headers: {
+			// 		'Content-Type': 'application/json',
+			// 	},
+			// })
 			setProcessing(false)
 
-			if (!response.ok) {
-				throw new Error('Что-то пошло не так')
-			}
+			// if (!response.ok) {
+			// 	throw new Error('Что-то пошло не так')
+			// }
 
-			const data = await response.json()
+			// const data = await response.json()
 
-			if (data.error) {
-				throw new Error(response.error.message)
-			}
+			// if (data.error) {
+			// 	throw new Error(response.error.message)
+			// }
 
 			form.resetFields()
 			message.success(vacancyId ? 'Вакансия изменена' : 'Добавлена новая вакансия')
@@ -156,14 +176,14 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						Project: projectId,
+						teamId,
 					}}
 				>
 					<Row gutter={[16, 16]}>
 						<Col flex={1}>
 							<Form.Item
 								label="Название вакансии"
-								name="Name"
+								name="title"
 								rules={[{ required: true }]}
 								required
 								wrapperCol={{ span: 24 }}
@@ -172,18 +192,14 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 							</Form.Item>
 						</Col>
 						<Col>
-							<Form.Item name="Finished At" label="Актуальна до" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item name="finishedAt" label="Актуальна до" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
 								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 					</Row>
 
-					<Form.Item hidden name="Project" label="Проект" wrapperCol={{ span: 24 }} required>
-						<Select disabled style={{ width: '100%' }} options={[{ value: projectId, label: projectName }]} />
-					</Form.Item>
-
 					<Form.Item
-						name="Direction"
+						name="directionId"
 						label="К какому направлению относится данная вакансия"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
@@ -193,7 +209,7 @@ const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel 
 					</Form.Item>
 
 					<Form.Item
-						name="Description"
+						name="description"
 						label="Описание вакансии"
 						help="Опишите требования/пожелания к кандидату, опишите какурю работу ему предстоит делать"
 						rules={[{ required: true }]}
