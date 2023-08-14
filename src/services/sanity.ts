@@ -5,6 +5,7 @@ export default class SanityService {
 		return new client({
 			projectId: process.env.SANITY_PROJECT_ID,
 			dataset: process.env.SANITY_DATASET,
+			apiVersion: '2021-08-31',
 			token: process.env.SANITY_TOKEN, // or leave blank for unauthenticated usage
 			useCdn: true,
 		})
