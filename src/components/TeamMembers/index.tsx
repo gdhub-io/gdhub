@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { fetcher } from '@/helpers/fetcher'
 import { Avatar, List, Space, Typography } from 'antd'
 import useSWR from 'swr'
+import { fetcher } from '@/helpers/fetcher'
 
 const { Title } = Typography
 

@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
 import { Button, Card, Col, Descriptions, Grid, message, Row, Spin, Typography } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import useSWR from 'swr'
 import styles from './style.module.scss'
+import { fetcher } from '@/helpers/fetcher'
 
 const RecruitingStageContent = ({ season, stage }: any) => {
 	const screens = Grid.useBreakpoint()

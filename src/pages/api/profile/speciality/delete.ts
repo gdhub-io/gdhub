@@ -1,8 +1,8 @@
+import { NextApiRequest, NextApiResponse } from 'next'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import AirtableService from '@/services/airtable'
 import { SearchEngineService } from '@/services/typesense'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { getServerSession } from 'next-auth'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {

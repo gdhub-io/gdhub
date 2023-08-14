@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
-import { ProjectIdeasList } from '@/components/ProjectIdeasList'
-import { fetcher } from '@/helpers/fetcher'
 import { Alert, Button, Grid, List, Space, Typography } from 'antd'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
 import useSWR from 'swr'
 import styles from './style.module.scss'
+import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
+import { ProjectIdeasList } from '@/components/ProjectIdeasList'
+import { fetcher } from '@/helpers/fetcher'
 
 const { Text } = Typography
 

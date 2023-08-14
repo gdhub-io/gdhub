@@ -1,10 +1,10 @@
 // import TelegramService from '@/services/telegram'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { getServerSession } from 'next-auth'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import AirtableService from '@/services/airtable'
 import { SearchEngineService } from '@/services/typesense'
 import { prepareAirtableData } from '@/services/typesense/commands/migrate'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { getServerSession } from 'next-auth'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { id, profileId, data } = req.body

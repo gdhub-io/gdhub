@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
 import { Button, Grid, message, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import useSWR from 'swr'
+import { fetcher } from '@/helpers/fetcher'
 
 interface TeamMember {
 	key: string

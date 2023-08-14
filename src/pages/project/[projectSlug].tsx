@@ -1,10 +1,4 @@
 import { useState } from 'react'
-import ProjectReports from '@/components/ProjectReports'
-import ProjectVacancies from '@/components/ProjectVacancies'
-import TeamMembers from '@/components/TeamMembers'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import AirtableService from '@/services/airtable'
 import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
 import { GetStaticPropsContext } from 'next'
 import Head from 'next/head'
@@ -15,6 +9,12 @@ import { TbBrandTelegram } from 'react-icons/tb'
 import YouTube from 'react-youtube'
 import { Options } from 'youtube-player/dist/types'
 import styles from './style.module.scss'
+import ProjectReports from '@/components/ProjectReports'
+import ProjectVacancies from '@/components/ProjectVacancies'
+import TeamMembers from '@/components/TeamMembers'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
+import AirtableService from '@/services/airtable'
 
 const { Title, Paragraph, Text } = Typography
 

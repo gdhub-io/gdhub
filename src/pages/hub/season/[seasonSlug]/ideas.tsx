@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
-import AirtableService from '@/services/airtable'
 import { Spin } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import { getServerSession } from 'next-auth'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
+import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import AirtableService from '@/services/airtable'
 
 const SeasonProjectIdeasPage: NextPageWithLayout = ({ season }: any) => {
 	const ref = useRef<any>()

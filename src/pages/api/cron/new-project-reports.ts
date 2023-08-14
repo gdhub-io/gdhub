@@ -1,8 +1,8 @@
-import AirtableService from '@/services/airtable'
-import TelegramService from '@/services/telegram'
 import dayjs from 'dayjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 import voca from 'voca'
+import AirtableService from '@/services/airtable'
+import TelegramService from '@/services/telegram'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {

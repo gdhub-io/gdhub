@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { normUploadFile } from '@/helpers/file'
 import { Button, Col, Form, Input, message, Modal, Popover, Row, Select, Spin, Upload, UploadProps } from 'antd'
 import Image from 'next/image'
 import { TbTrash } from 'react-icons/tb'
 import styles from './style.module.scss'
+import { normUploadFile } from '@/helpers/file'
 
 const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()

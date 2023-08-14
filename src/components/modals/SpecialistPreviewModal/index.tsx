@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
 import { Button, Descriptions, Modal, Space, Spin, Typography } from 'antd'
 import Link from 'next/link'
 import { TbBrandTelegram, TbMail } from 'react-icons/tb'
 import useSWR from 'swr'
 import styles from './style.module.scss'
+import { fetcher } from '@/helpers/fetcher'
 
 const { Paragraph } = Typography
 

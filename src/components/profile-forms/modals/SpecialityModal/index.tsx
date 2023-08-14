@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
 import SkillBeginnerIcon from '@/assets/images/skills/beginner.svg'
 import SkillExperiencedIcon from '@/assets/images/skills/experienced.svg'
 import SkillExpertIcon from '@/assets/images/skills/expert.svg'
 import SkillNoviceIcon from '@/assets/images/skills/novice.svg'
 import SkillSkillfulIcon from '@/assets/images/skills/skillful.svg'
-import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
 
 export enum SkillLevelEnum {
 	NOVICE = 'Новичок / Novice',

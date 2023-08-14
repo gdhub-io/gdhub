@@ -1,7 +1,7 @@
-import AirtableService, { findOrCreateMember } from '@/services/airtable'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
+import AirtableService, { findOrCreateMember } from '@/services/airtable'
 
 export const authOptions: NextAuthOptions = {
 	secret: process.env.NEXT_AUTH_SECRET as string,

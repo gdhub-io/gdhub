@@ -1,6 +1,6 @@
+import { NextApiRequest, NextApiResponse } from 'next'
 import AirtableService from '@/services/airtable'
 import TelegramService from '@/services/telegram'
-import { NextApiRequest, NextApiResponse } from 'next'
 
 // https://core.telegram.org/bots/api#message
 type TelegramMessage = {

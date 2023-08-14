@@ -1,3 +1,6 @@
+import { Space } from 'antd'
+import Head from 'next/head'
+import { getServerSession } from 'next-auth'
 import GeneralProfileForm from '@/components/profile-forms/GeneralProfileForm'
 import PreferencesProfileForm from '@/components/profile-forms/PreferencesProfileForm'
 import ResourcesProfileForm from '@/components/profile-forms/ResourcesProfileForm'
@@ -6,9 +9,6 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { getProfile } from '@/services/airtable'
-import { Space } from 'antd'
-import Head from 'next/head'
-import { getServerSession } from 'next-auth'
 
 const ProfilePage: NextPageWithLayout = ({ profile }: any) => {
 	return (
