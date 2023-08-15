@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import Head from 'next/head'
 import { useSession } from 'next-auth/react'
@@ -14,23 +14,35 @@ import {
 	Stats,
 	useInstantSearch,
 } from 'react-instantsearch-hooks-web'
+import useSWR from 'swr'
 import styles from './style.module.scss'
 import SpecialistPreviewModal from '@/components/modals/SpecialistPreviewModal'
+import { fetcher } from '@/helpers/fetcher'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import AirtableService from '@/services/airtable'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
 
 const { Paragraph, Text, Title } = Typography
 
 const searchAdapter = new InstantsearchAdapter()
 
-const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: any) => {
+const SpecialistsPage: NextPageWithLayout = () => {
 	const session = useSession()
 	const [openedFilter, setOpenFilter] = useState(false)
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<string | undefined>()
 	const screens = Grid.useBreakpoint()
+
+	const allowAccess = useMemo(() => {
+		return hasRole('author', session)
+	}, [session])
+
+	const { data: specialistsCount } = useSWR({ url: '/api/specialists/count' }, fetcher, {
+		revalidateOnFocus: false,
+	})
+	const { data: usersCount } = useSWR({ url: '/api/account/count' }, fetcher, {
+		revalidateOnFocus: false,
+	})
 
 	const Hit = ({ hit }: any) => {
 		return (
@@ -86,7 +98,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 		)
 	}
 
-	if (!hasRole('author', session)) {
+	if (!allowAccess) {
 		return (
 			<>
 				<Head>
@@ -100,7 +112,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 					</p>
 					<p>
 						Те из нас, кто указал специальности в своем профиле, считаются участниками, которые открыты для предложений
-						участвовать в разработке инди-проектов. На сегодня зарегистрировано <strong>{specialitiesCount}</strong>{' '}
+						участвовать в разработке инди-проектов. На сегодня зарегистрировано <strong>{specialistsCount}</strong>{' '}
 						специалиста.
 					</p>
 					<p>Авторы инди-проектов имеют доступ к базе специалистов и могут приглашать их на свои проекты.</p>
@@ -227,16 +239,4 @@ function SearchMobileFilter({ onClick }: any) {
 			{count > 0 && <ClearRefinements translations={{ resetButtonText: 'Очистить фильтр' }} />}
 		</Space>
 	)
-}
-
-export async function getServerSideProps(context: any) {
-	const users = await AirtableService('Accounts').select({ fields: [] }).all()
-	const specialities = await AirtableService('Specialities').select({ fields: [] }).all()
-
-	return {
-		props: {
-			usersCount: users.length,
-			specialitiesCount: specialities.length,
-		},
-	}
 }
