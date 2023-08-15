@@ -7,11 +7,13 @@ import { search } from '@/services/typesense/commands/search'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
+		const { task } = req.query
 		const { query } = req.body
-		const searchClient = await SearchEngineService.init()
-		if (req.method !== 'POST' || !backendVerify(req)) return res.status(404).end()
 
-		switch (req.body.task) {
+		const searchClient = await SearchEngineService.init()
+		if (req.method !== 'POST' || !backendVerify(req)) throw Error('No access')
+
+		switch (task) {
 			case 'health':
 				const health = await searchClient.client.health.retrieve()
 				return res.json(health)
