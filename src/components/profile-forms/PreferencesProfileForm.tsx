@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button, Card, Form, message, Select, Spin, Typography } from 'antd'
 
-const PreferencesProfileForm = ({ profile }: any) => {
+const PreferencesProfileForm = ({ profile, onUpdate }: any) => {
 	const [form] = Form.useForm()
 	const [processing, setProcessing] = useState(true)
 
@@ -24,6 +24,8 @@ const PreferencesProfileForm = ({ profile }: any) => {
 					'Content-Type': 'application/json',
 				},
 			})
+
+			onUpdate()
 
 			setProcessing(false)
 

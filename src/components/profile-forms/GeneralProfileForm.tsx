@@ -3,7 +3,7 @@ import { AutoComplete, Button, Card, Form, Input, message, Spin } from 'antd'
 import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
 
-const GeneralProfileForm = ({ profile }: any) => {
+const GeneralProfileForm = ({ profile, onUpdate }: any) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
@@ -28,6 +28,8 @@ const GeneralProfileForm = ({ profile }: any) => {
 					'Content-Type': 'application/json',
 				},
 			})
+
+			onUpdate()
 
 			setProcessing(false)
 
