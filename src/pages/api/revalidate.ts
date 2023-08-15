@@ -1,11 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import { getServerSession } from 'next-auth'
+import { authOptions } from './auth/[...nextauth]'
 import { env } from '@/helpers/env'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	const session = await getServerSession(req, res, authOptions)
 	const accessToken = Buffer.from(env('BACKEND_KEY')).toString('base64')
 	// Check for secret to confirm this is a valid request
-	if (req.method !== 'POST' || req.query.secret !== accessToken || !req.query.slug) {
+	if (req.method !== 'POST' || !req.query.slug) {
 		return res.status(401).json({ message: 'Invalid data' })
+	}
+
+	if (!session && req.query.secret !== accessToken) {
+		return res.status(401).json({ message: 'Invalid token' })
 	}
 
 	try {

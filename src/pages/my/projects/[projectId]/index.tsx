@@ -1,19 +1,21 @@
-import { useState } from 'react'
-import { Button, Col, Row, Space, Spin } from 'antd'
+import { useCallback, useState } from 'react'
+import { Button, Col, message, Popover, Row, Space, Spin } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
+import { GrUpdate } from 'react-icons/gr'
 import { HiExternalLink } from 'react-icons/hi'
 import { TbSettings } from 'react-icons/tb'
 import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
 import ProjectIdeaModal from '@/components/modals/ProjectIdeaModal'
 import MyProjectCandidates from '@/components/MyProjectCandidates'
 import MyProjectReports from '@/components/MyProjectReports'
 import MyProjectTeam from '@/components/MyProjectTeam'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
-import { fetcher } from '@/helpers/fetcher'
+import { fetcher, fetherForMutation } from '@/helpers/fetcher'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
@@ -32,10 +34,22 @@ const MyProjectPage: NextPageWithLayout = () => {
 		refreshInterval: 60000 * 5,
 	})
 
+	const { trigger: revalidateProjectPage, isMutating: isRevalidating } = useSWRMutation(
+		'/api/revalidate',
+		fetherForMutation
+	)
+
 	const handleSaveProject = () => {
 		setShowProjectModal(false)
 		fetchMyProject()
 	}
+
+	const handleRevalidatePage = useCallback(async () => {
+		if (!myProject) return null
+
+		await revalidateProjectPage({ slug: `/project/${myProject.Slug}` })
+		message.success(`Project page "/project/${myProject.Slug}" was refreshed`)
+	}, [myProject])
 
 	if (myProject?.isAuthor) {
 		return (
@@ -51,21 +65,24 @@ const MyProjectPage: NextPageWithLayout = () => {
 						<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
 							<Space wrap>
 								{myProject?.Status !== 'Closed' && (
-									<Button
-										onClick={() => setShowProjectModal(true)}
-										icon={<TbSettings size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
-									>
+									<Button onClick={() => setShowProjectModal(true)} icon={<TbSettings size={16} />}>
 										Внести изменения
 									</Button>
 								)}
 								<Link href={`/project/${myProject?.Slug || myProject?.id}`} target="_blank">
-									<Button
-										type="primary"
-										icon={<HiExternalLink size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
-									>
+									<Button type="primary" icon={<HiExternalLink size={16} />}>
 										Страница проекта
 									</Button>
 								</Link>
+								<Popover content="Refresh data of the project public page">
+									<Button
+										type="text"
+										onClick={() => handleRevalidatePage()}
+										disabled={!myProject}
+										loading={isRevalidating}
+										icon={<GrUpdate size={16} />}
+									></Button>
+								</Popover>
 							</Space>
 						</Col>
 					</Row>
