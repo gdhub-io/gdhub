@@ -22,12 +22,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				requestData['Core Mechanics'] = data['Core Mechanics'].join('|')
 			}
 
-			const response = await AirtableService('Project Ideas').update(id, requestData)
-			if (!response) {
+			const project = await AirtableService('Project Ideas').update(id, requestData)
+			if (!project) {
 				throw new Error('Error')
 			}
+
+			await res.revalidate(`/project/${project.get('Slug')}`)
 		} else {
-			await AirtableService('Project Ideas').create({
+			const [project] = await AirtableService('Project Ideas').create({
 				...data,
 				Author: [session.user.id],
 				Status: 'Registered',
@@ -44,6 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					Roles: [...roles, 'Author'],
 				})
 			}
+
+			await res.revalidate(`/project/${project.get('Slug')}`)
 		}
 
 		res.json({ success: true })

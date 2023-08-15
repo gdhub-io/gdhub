@@ -10,7 +10,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		if (req.method !== 'POST' || !session || !projectIdeaId) throw new Error('Forbidden request')
 
+		const [project] = await AirtableService('Project Ideas')
+			.select({
+				fields: ['Slug'],
+				maxRecords: 1,
+				filterByFormula: `RECORD_ID() = "${projectIdeaId}"`,
+			})
+			.all()
+
 		await AirtableService('Project Ideas').destroy(projectIdeaId)
+		await res.revalidate(`/project/${project.get('Slug')}`)
 
 		res.json({ success: true })
 	} catch (error: any) {

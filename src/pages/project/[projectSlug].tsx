@@ -126,7 +126,7 @@ export async function getStaticPaths() {
 	const projectsSlugs = await AirtableService('Project Ideas')
 		.select({
 			fields: ['Slug'],
-			filterByFormula: `Status = "Approved"`,
+			filterByFormula: `OR(Status = "Approved", Status = "Done")`,
 		})
 		.all()
 
@@ -134,7 +134,7 @@ export async function getStaticPaths() {
 		params: { projectSlug: post.get('Slug') },
 	}))
 
-	return { paths, fallback: false }
+	return { paths, fallback: 'blocking' }
 }
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
