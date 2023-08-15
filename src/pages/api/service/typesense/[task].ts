@@ -8,7 +8,7 @@ import { search } from '@/services/typesense/commands/search'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
 		const { task } = req.query
-		const { query } = req.body
+		const { query, queryBy } = req.body
 
 		const searchClient = await SearchEngineService.init()
 		if (req.method !== 'POST' || !backendVerify(req)) throw Error('No access')
@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			case 'search':
 				const result = await search({
 					q: query,
-					query_by: 'Name,Direction,Schools',
+					query_by: queryBy || 'Name,Direction,Schools',
 				})
 				return res.json(result)
 			default:
