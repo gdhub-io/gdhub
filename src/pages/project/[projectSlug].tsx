@@ -142,9 +142,8 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 
 	const [project] = await AirtableService('Project Ideas')
 		.select({
-			// fields: ['Name', 'Ideas Embed Link', 'Status'],
 			maxRecords: 1,
-			filterByFormula: `OR(Slug = "${projectSlug}", RECORD_ID() = "${projectSlug}")`,
+			filterByFormula: `Slug = "${projectSlug}"`,
 		})
 		.all()
 
