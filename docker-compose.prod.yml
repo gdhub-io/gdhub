@@ -6,6 +6,35 @@ services:
       context: .
       target: runner
     container_name: gdhub-prod
+    environment:
+      - NEXT_PUBLIC_TYPESENSE_SEARCH_API
+      - NEXT_PUBLIC_TYPESENSE_PROTOCOL
+      - NEXT_PUBLIC_TYPESENSE_PORT
+      - NEXT_PUBLIC_TYPESENSE_HOST
+      - TYPESENSE_ADMIN_API
+      - AIRTABLE_API_KEY
+      - TELEGRAM_TOPIC_REPORTS
+      - NEXT_PUBLIC_NOVU_CLIENT_APP_ID
+      - NOVU_CLIENT_APP_ID
+      - NOVU_API_SECRET
+      - DAILY_API_KEY
+      - DAILY_DOMAIN
+      - TELEGRAM_CHAT_ID
+      - TELEGRAM_TOPIC_NEWS
+      - SANITY_PROJECT_ID
+      - SANITY_DATASET
+      - SANITY_TOKEN
+      - NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID
+      - TELEGRAM_BOT_TOKEN
+      - NEXT_PUBLIC_APP_URI
+      - NOTION_DATABASE_DOCS
+      - AIRTABLE_BASE_ID
+      - NEXTAUTH_SECRET
+      - BACKEND_KEY
+      - CSRF_SECRET
+      - JWT_SECRET
+      - GOOGLE_OAUTH_CLEINT_SECRET
+      - GOOGLE_OAUTH_CLIENT_ID
     expose:
       - '${PORT:-3000}'
     ports:
