@@ -10,6 +10,7 @@ import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
 import 'dayjs/locale/ru'
 import { DefaultSeo } from 'next-seo'
+import CookieConsent from '@/components/CookieConsent'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import SEOSettings from '@/config/seo'
@@ -96,6 +97,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 							{getLayout(<Component {...pageProps} />)}
 						</div>
 					</SessionProvider>
+					<CookieConsent />
 					<LoadingScreen visible={loading} />
 				</ConfigProvider>
 			</ErrorBoundary>

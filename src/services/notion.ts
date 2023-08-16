@@ -63,9 +63,24 @@ export const getPages = async ({ roles = [] }: GetPagesParams) => {
 	}
 }
 
+export const getPage = async ({ pageId }: { pageId: string }) => {
+	try {
+		const page = await NotionService.pages.retrieve({
+			page_id: pageId,
+		})
+
+		console.log('page', page)
+
+		return page
+	} catch (error) {
+		console.error(error)
+		return null
+	}
+}
+
 export const getBlocks = async (pageSlug: string) => {
 	try {
-		const response: any = await NotionService.databases.query({
+		const response = await NotionService.databases.query({
 			database_id: process.env.NOTION_DATABASE_DOCS as string,
 			filter: {
 				and: [
