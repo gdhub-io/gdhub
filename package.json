@@ -50,6 +50,7 @@
     "react-select-country-list": "^2.2.3",
     "react-youtube": "^10.1.0",
     "recoil": "^0.7.6",
+    "sharp": "^0.32.5",
     "swr": "^2.0.3",
     "typesense": "^1.5.3",
     "typesense-instantsearch-adapter": "^2.7.0",
