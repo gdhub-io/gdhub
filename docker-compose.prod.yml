@@ -6,8 +6,6 @@ services:
       context: .
       target: runner
     container_name: gdhub-prod
-    env_file:
-      - .env
     expose:
       - '${PORT:-3000}'
     ports:
