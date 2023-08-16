@@ -3,65 +3,78 @@ name: Deploy to GHCR
 on:
   workflow_dispatch:
 
-jobs:
-  deploy:
-    runs-on: ubuntu-22.04
-    env:
-      # APP
-      JWT_SECRET: ${{ vars.JWT_SECRET }}
-      CSRF_SECRET: ${{ vars.CSRF_SECRET }}
-      NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
-      NEXTAUTH_SECRET: ${{ vars.NEXTAUTH_SECRET }}
-      BACKEND_KEY: ${{ vars.BACKEND_KEY }}
-      NEXT_PUBLIC_APP_URI: ${{ vars.NEXT_PUBLIC_APP_URI }}
-      NEXT_PUBLIC_AUTH_COOKIE_NAME: ${{ vars.NEXT_PUBLIC_AUTH_COOKIE_NAME }}
-      # AIRTABLE
-      AIRTABLE_API_KEY: ${{ vars.AIRTABLE_API_KEY }}
-      AIRTABLE_BASE_ID: ${{ vars.AIRTABLE_BASE_ID }}
-      # GOOGLE OAUTH
-      GOOGLE_OAUTH_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
-      GOOGLE_OAUTH_CLEINT_SECRET: ${{ vars.GOOGLE_OAUTH_CLEINT_SECRET }}
-      # NOTION
-      NOTION_TOKEN: ${{ vars.NOTION_TOKEN }}
-      NOTION_DATABASE_DOCS: ${{ vars.NOTION_DATABASE_DOCS }}
-      # TELEGRAM
-      TELEGRAM_BOT_TOKEN: ${{ vars.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ vars.TELEGRAM_CHAT_ID }}
-      TELEGRAM_DISABLE_NOTIFICATIONS: ${{ vars.TELEGRAM_DISABLE_NOTIFICATIONS }}
-      TELEGRAM_TOPIC_NEWS: ${{ vars.TELEGRAM_TOPIC_NEWS }}
-      TELEGRAM_TOPIC_VACANCIES: ${{ vars.TELEGRAM_TOPIC_VACANCIES }}
-      TELEGRAM_TOPIC_REPORTS: ${{ vars.TELEGRAM_TOPIC_REPORTS }}
-      # SANITY
-      SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
-      SANITY_DATASET: ${{ vars.SANITY_DATASET }}
-      SANITY_TOKEN: ${{ vars.SANITY_TOKEN }}
-      # DAILY
-      DAILY_API_KEY: ${{ vars.DAILY_API_KEY }}
-      # NOVU
-      NOVU_API_SECRET: ${{ vars.NOVU_API_SECRET }}
-      NOVU_CLIENT_APP_ID: ${{ vars.NOVU_CLIENT_APP_ID }}
-      NEXT_PUBLIC_NOVU_CLIENT_APP_ID: ${{ vars.NEXT_PUBLIC_NOVU_CLIENT_APP_ID }}
-      # MAILGUN
-      MAILGUN_API_KEY:  ${{ vars.MAILGUN_API_KEY }}
-      # TYPESENSE
-      TYPESENSE_ADMIN_API:  ${{ vars.TYPESENSE_ADMIN_API }}
-      NEXT_PUBLIC_TYPESENSE_SEARCH_API:  ${{ vars.NEXT_PUBLIC_TYPESENSE_SEARCH_API }}
-      NEXT_PUBLIC_TYPESENSE_HOST:  ${{ vars.NEXT_PUBLIC_TYPESENSE_HOST }}
-      NEXT_PUBLIC_TYPESENSE_PORT:  ${{ vars.NEXT_PUBLIC_TYPESENSE_PORT }}
-      NEXT_PUBLIC_TYPESENSE_PROTOCOL:  ${{ vars.NEXT_PUBLIC_TYPESENSE_PROTOCOL }}
-    steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@main
+env:
+  # APP
+  JWT_SECRET: ${{ vars.JWT_SECRET }}
+  CSRF_SECRET: ${{ vars.CSRF_SECRET }}
+  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
+  NEXTAUTH_SECRET: ${{ vars.NEXTAUTH_SECRET }}
+  BACKEND_KEY: ${{ vars.BACKEND_KEY }}
+  NEXT_PUBLIC_APP_URI: ${{ vars.NEXT_PUBLIC_APP_URI }}
+  NEXT_PUBLIC_AUTH_COOKIE_NAME: ${{ vars.NEXT_PUBLIC_AUTH_COOKIE_NAME }}
+  # AIRTABLE
+  AIRTABLE_API_KEY: ${{ vars.AIRTABLE_API_KEY }}
+  AIRTABLE_BASE_ID: ${{ vars.AIRTABLE_BASE_ID }}
+  # GOOGLE OAUTH
+  GOOGLE_OAUTH_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
+  GOOGLE_OAUTH_CLEINT_SECRET: ${{ vars.GOOGLE_OAUTH_CLEINT_SECRET }}
+  # NOTION
+  NOTION_TOKEN: ${{ vars.NOTION_TOKEN }}
+  NOTION_DATABASE_DOCS: ${{ vars.NOTION_DATABASE_DOCS }}
+  # TELEGRAM
+  TELEGRAM_BOT_TOKEN: ${{ vars.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ vars.TELEGRAM_CHAT_ID }}
+  TELEGRAM_DISABLE_NOTIFICATIONS: ${{ vars.TELEGRAM_DISABLE_NOTIFICATIONS }}
+  TELEGRAM_TOPIC_NEWS: ${{ vars.TELEGRAM_TOPIC_NEWS }}
+  TELEGRAM_TOPIC_VACANCIES: ${{ vars.TELEGRAM_TOPIC_VACANCIES }}
+  TELEGRAM_TOPIC_REPORTS: ${{ vars.TELEGRAM_TOPIC_REPORTS }}
+  # SANITY
+  SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+  SANITY_DATASET: ${{ vars.SANITY_DATASET }}
+  SANITY_TOKEN: ${{ vars.SANITY_TOKEN }}
+  # DAILY
+  DAILY_API_KEY: ${{ vars.DAILY_API_KEY }}
+  # NOVU
+  NOVU_API_SECRET: ${{ vars.NOVU_API_SECRET }}
+  NOVU_CLIENT_APP_ID: ${{ vars.NOVU_CLIENT_APP_ID }}
+  NEXT_PUBLIC_NOVU_CLIENT_APP_ID: ${{ vars.NEXT_PUBLIC_NOVU_CLIENT_APP_ID }}
+  # MAILGUN
+  MAILGUN_API_KEY:  ${{ vars.MAILGUN_API_KEY }}
+  # TYPESENSE
+  TYPESENSE_ADMIN_API:  ${{ vars.TYPESENSE_ADMIN_API }}
+  NEXT_PUBLIC_TYPESENSE_SEARCH_API:  ${{ vars.NEXT_PUBLIC_TYPESENSE_SEARCH_API }}
+  NEXT_PUBLIC_TYPESENSE_HOST:  ${{ vars.NEXT_PUBLIC_TYPESENSE_HOST }}
+  NEXT_PUBLIC_TYPESENSE_PORT:  ${{ vars.NEXT_PUBLIC_TYPESENSE_PORT }}
+  NEXT_PUBLIC_TYPESENSE_PROTOCOL:  ${{ vars.NEXT_PUBLIC_TYPESENSE_PROTOCOL }}
 
-      - name: 'Build image'
-        run: docker compose -f docker-compose.prod.yml build
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       
-      - name: 'Login to GitHub Container Registry'
-        uses: docker/login-action@v1
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{github.actor}}
           password: ${{secrets.GH_TOKEN}}
 
-      - name: Push image to Container Registry
-        run: docker compose -f docker-compose.prod.yml push
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}
+          labels: ${{ steps.meta.outputs.labels }}
