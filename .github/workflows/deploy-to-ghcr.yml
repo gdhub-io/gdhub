@@ -29,8 +29,6 @@ jobs:
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
-        env:
-          NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL }}
         with:
           context: .
           push: true
@@ -39,7 +37,7 @@ jobs:
           secrets: |
             "JWT_SECRET=${{ vars.JWT_SECRET }}"
             "CSRF_SECRET=${{ vars.CSRF_SECRET }}"
-            "NEXTAUTH_URL=${{ vars.NEXTAUTH_URL }}"
+            "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}"
             "NEXTAUTH_SECRET=${{ vars.NEXTAUTH_SECRET }}"
             "BACKEND_KEY=${{ vars.BACKEND_KEY }}"
             "NEXT_PUBLIC_APP_URI=${{ vars.NEXT_PUBLIC_APP_URI }}"
