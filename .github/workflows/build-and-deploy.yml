@@ -31,13 +31,12 @@ jobs:
       - name: Check lint
         run: yarn lint
         env:
-          NEXT_PUBLIC_AUTH_COOKIE_NAME: ${{ secrets.NEXT_PUBLIC_AUTH_COOKIE_NAME }}
+          NEXT_PUBLIC_AUTH_COOKIE_NAME: ${{ vars.NEXT_PUBLIC_AUTH_COOKIE_NAME }}
           
       - name: Build
         run: yarn build
         env:
-          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
-          NEXT_PUBLIC_AUTH_COOKIE_NAME: ${{ secrets.NEXT_PUBLIC_AUTH_COOKIE_NAME }}
+          NEXT_PUBLIC_AUTH_COOKIE_NAME: ${{ vars.NEXT_PUBLIC_AUTH_COOKIE_NAME }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,6 +47,6 @@ jobs:
         uses: appleboy/ssh-action@v0.1.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           #passphrase: ${{ secrets.SSH_PASSPHRASE }}
