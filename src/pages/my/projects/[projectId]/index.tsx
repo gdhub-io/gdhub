@@ -148,16 +148,4 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 MyProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const session: any = await getServerSession(context.req, context.res, authOptions)
-
-	if (session && !session.user.hasRole('member')) {
-		return {
-			notFound: true,
-		}
-	}
-
-	return { props: {} }
-}
-
 export default MyProjectPage
