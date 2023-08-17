@@ -1,10 +1,8 @@
 import { useCallback, useState } from 'react'
 import { Button, Col, message, Popover, Row, Space, Spin } from 'antd'
-import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { getServerSession } from 'next-auth'
 import { GrUpdate } from 'react-icons/gr'
 import { HiExternalLink } from 'react-icons/hi'
 import { TbSettings } from 'react-icons/tb'
@@ -18,7 +16,6 @@ import MyProjectVacancies from '@/components/MyProjectVacancies'
 import { fetcher, fetherForMutation } from '@/helpers/fetcher'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
 
 const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
