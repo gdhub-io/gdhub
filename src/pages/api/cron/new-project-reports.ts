@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		const newProjectReports = await AirtableService('Project Reports')
 			.select({
-				filterByFormula: `AND(DATETIME_DIFF(TODAY(), {Created}, 'days') < 7)`,
+				filterByFormula: `AND(DATETIME_DIFF(TODAY(), {Created}, 'days') <= 1)`,
 			})
 			.all()
 
