@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-icon.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
+import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
@@ -113,7 +114,17 @@ export const ProtectedLayout = ({ children }: any) => {
 	}, [screens, session])
 
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
-		const menu = [
+		let menu: MenuProps['items'] = []
+
+		if (hasRole(UserRole.Admin, { data: session })) {
+			menu.push({
+				label: <Link href="/admin/seasons">Админка</Link>,
+				key: '/admin/seasons',
+			})
+		}
+
+		menu = [
+			...menu,
 			{
 				label: <Link href="/profile">Профиль</Link>,
 				key: 'profile',
