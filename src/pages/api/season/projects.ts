@@ -1,42 +1,29 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus } from '@prisma/client'
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class SeasonProjectsDto {
 	@IsString()
-	stageId: string
-
-	@IsEnum(ProjectStatus)
 	@IsOptional()
-	status?: ProjectStatus
+	seasonId?: string
 
 	@IsString()
 	@IsOptional()
-	userId?: string
-
-	@IsBoolean()
-	@IsOptional()
-	onlyCount: boolean
+	seasonSlug?: string
 }
 
 @NextAuthGuard('user')
 class ApiSeasonProjectsHandler {
 	@Get()
-	public async get(
-		@Query(ValidationPipe) { stageId, status = ProjectStatus.Approved, onlyCount = false }: SeasonProjectsDto
-	) {
-		if (onlyCount) {
-			const projectsCount = await prisma.project.count({
-				where: { stageId, status: { equals: status } },
-			})
-
-			return { count: projectsCount }
+	public async get(@Query(ValidationPipe) { seasonId, seasonSlug }: SeasonProjectsDto) {
+		if (seasonSlug) {
+			const season = await prisma.season.findFirst({ where: { slug: seasonSlug }, select: { id: true } })
+			seasonId = season?.id
 		}
 
 		const projects = await prisma.project.findMany({
-			where: { stageId, status: { equals: status } },
+			where: { stage: { seasonId } },
 			include: { author: { select: { image: true, name: true, id: true } } },
 		})
 

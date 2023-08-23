@@ -1,3 +1,4 @@
+import { env } from '@/helpers/env'
 import { PrismaClient } from '@prisma/client'
 import { profilePrismaExtenstion } from './extenstions/profile'
 import { seasonPrismaExtension } from './extenstions/season'
@@ -5,6 +6,7 @@ import { userPrismaExtension } from './extenstions/user'
 
 const extendedPrismaClient = () => {
 	const prisma = new PrismaClient({
+		datasourceUrl: env('DATABASE_URL'),
 		log: process.env.DEBUG ? ['query', 'error'] : ['error'],
 	})
 

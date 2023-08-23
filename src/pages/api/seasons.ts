@@ -11,7 +11,7 @@ class ApiSeasonsHandler {
 		let output: any[] = []
 
 		const seasons = await prisma.season.findMany({
-			where: { status: 'Active' },
+			where: { status: 'Active', name: { not: 'Indie' } },
 			select: {
 				name: true,
 				stages: {

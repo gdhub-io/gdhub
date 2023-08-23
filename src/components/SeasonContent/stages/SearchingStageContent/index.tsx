@@ -24,7 +24,7 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 	const { data: seasonProjects } = useQuery(
 		['season-projects-count', stage?.id],
 		() =>
-			axios.get<{ count: number }>('/api/season/projects', {
+			axios.get<{ count: number }>('/api/season/stage/projects', {
 				params: { stageId: stage?.id, status: ProjectStatus.Registered, onlyCount: true },
 			}),
 		{ enabled: !!stage }

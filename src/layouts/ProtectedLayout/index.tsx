@@ -143,7 +143,7 @@ export const ProtectedLayout = ({ children }: any) => {
 		]
 
 		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
-	}, [isOpenedInTelegram, screens])
+	}, [isOpenedInTelegram, screens, session])
 
 	return (
 		<>

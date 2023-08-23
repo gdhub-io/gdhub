@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 
 const StageStageModal = ({ seasonId, stageId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { isLoading: isLoading } = useQuery(
+	const { isFetching: isLoading } = useQuery(
 		['seasonStage', stageId],
 		() => axios.get(`/api/admin/season/stage`, { params: { id: stageId } }),
 		{

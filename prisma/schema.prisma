@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,6 +5,277 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  name               String?
+  email              String?             @unique
+  emailVerified      DateTime?
+  image              String?
+  createdAt          DateTime            @default(now())
+  roles              UserRole[]          @default([Guest])
+  updatedAt          DateTime            @updatedAt
+  accounts           Account[]
+  lectures           Lecture[]           @relation("lecturer")
+  requestedLectures  Lecture[]           @relation("requestedBy")
+  listener           LectureListener[]
+  profile            Profile?
+  projects           Project[]
+  projectEstimations ProjectEstimation[]
+  projectReports     ProjectReport[]
+  sessions           Session[]
+  specialities       Speciality[]
+  memberInTeams      TeamMember[]
+}
+
+model Profile {
+  id                String                @id @default(cuid())
+  userId            String                @unique
+  tgNickname        String?               @unique
+  country           String?
+  city              String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  timeForWork       Int[]
+  name              String
+  user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredLevels   GameDifficultyLevel[] @relation("GameDifficultyLevelToProfile")
+  preferredGenres   GameGenre[]           @relation("GameGenreToProfile")
+  preferredSettings GameSetting[]         @relation("GameSettingToProfile")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Speciality {
+  id              String        @id @default(cuid())
+  name            String
+  specialization  String
+  level           SkillLevel
+  workDirectionId String
+  portfolioUrl    String?
+  skills          String?
+  tools           String?
+  jobs            String?
+  schools         String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  direction       WorkDirection @relation(fields: [workDirectionId], references: [id])
+}
+
+model WorkDirection {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  Lecture      Lecture[]
+  specialities Speciality[]
+  vacancies    TeamVacancy[]
+}
+
+model GameGenre {
+  id      String    @id @default(cuid())
+  name    String    @unique
+  Profile Profile[] @relation("GameGenreToProfile")
+}
+
+model GameSetting {
+  id      String    @id @default(cuid())
+  name    String    @unique
+  Profile Profile[] @relation("GameSettingToProfile")
+}
+
+model GameDifficultyLevel {
+  id      String    @id @default(cuid())
+  name    String    @unique
+  Profile Profile[] @relation("GameDifficultyLevelToProfile")
+}
+
+model Season {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  startedAt   DateTime
+  finishedAt  DateTime?
+  status      SeasonStatus  @default(Planning)
+  slug        String
+  stages      SeasonStage[]
+}
+
+model SeasonStage {
+  id            String               @id @default(cuid())
+  name          String
+  description   String?
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  order         Int                  @default(0)
+  isCurrent     Boolean              @default(false)
+  seasonId      String
+  projects      Project[]
+  estimations   ProjectEstimation[]
+  season        Season               @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  streamReports SeasonStreamReport[]
+}
+
+model SeasonStreamReport {
+  id      String      @id @default(cuid())
+  date    DateTime
+  stageId String
+  stage   SeasonStage @relation(fields: [stageId], references: [id])
+}
+
+model Project {
+  id            String             @id @default(cuid())
+  name          String
+  description   String?
+  status        ProjectStatus      @default(Registered)
+  createdAt     DateTime           @default(now())
+  finishedAt    DateTime?
+  stageId       String
+  authorId      String
+  coverImage    String?
+  genre         String
+  platform      String
+  setting       String
+  visualStyle   String
+  slug          String             @default(cuid())
+  audition      String?
+  conceptLink   String?
+  gddLink       String?
+  pitchdeckLink String?
+  videoLink     String?
+  coreMechanics String[]
+  updatedAt     DateTime           @updatedAt
+  teamId        String             @unique
+  author        User               @relation(fields: [authorId], references: [id])
+  stage         SeasonStage        @relation(fields: [stageId], references: [id])
+  team          ProjectTeam        @relation(fields: [teamId], references: [id])
+  estimations   ProjectEstimation?
+  reports       ProjectReport?
+}
+
+model ProjectEstimation {
+  id         String      @id @default(cuid())
+  projectId  String      @unique
+  stageId    String
+  expertId   String
+  notes      String
+  isApproved Boolean
+  form       Json
+  expert     User        @relation(fields: [expertId], references: [id])
+  project    Project     @relation(fields: [projectId], references: [id])
+  stage      SeasonStage @relation(fields: [stageId], references: [id])
+}
+
+model ProjectTeam {
+  id        String        @id @default(cuid())
+  project   Project?
+  members   TeamMember[]
+  vacancies TeamVacancy[]
+}
+
+model ProjectReport {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  publishedAt DateTime
+  content     String
+  video       String?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  project     Project  @relation(fields: [projectId], references: [id])
+}
+
+model TeamMember {
+  id         String           @id @default(cuid())
+  userId     String
+  teamId     String
+  startedAt  DateTime
+  finishedAt DateTime?
+  status     TeamMemberStatus @default(Applicant)
+  position   String
+  vacancyId  String?
+  team       ProjectTeam      @relation(fields: [teamId], references: [id])
+  user       User             @relation(fields: [userId], references: [id])
+  vacancy    TeamVacancy?     @relation(fields: [vacancyId], references: [id])
+}
+
+model TeamVacancy {
+  id          String            @id @default(cuid())
+  title       String
+  description String
+  directionId String
+  status      TeamVacancyStatus @default(Draft)
+  publishedAt DateTime?
+  finishedAt  DateTime
+  updatedAt   DateTime          @updatedAt
+  teamId      String
+  applicants  TeamMember[]
+  direction   WorkDirection     @relation(fields: [directionId], references: [id])
+  team        ProjectTeam       @relation(fields: [teamId], references: [id])
+}
+
+model Lecture {
+  id              String            @id @default(cuid())
+  name            String
+  wishes          String
+  requestedById   String
+  lecturerId      String
+  workDirectionId String
+  description     String?
+  date            DateTime?
+  linkToStream    String?
+  recordLink      String?
+  duration        Int?
+  isArchived      Boolean
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  stage           LectureStage
+  lecturer        User              @relation("lecturer", fields: [lecturerId], references: [id])
+  requestedBy     User              @relation("requestedBy", fields: [requestedById], references: [id])
+  direction       WorkDirection     @relation(fields: [workDirectionId], references: [id])
+  listeners       LectureListener[]
+}
+
+model LectureListener {
+  id         String   @id @default(cuid())
+  listenerId String
+  lectureId  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lecture    Lecture  @relation(fields: [lectureId], references: [id])
+  listener   User     @relation(fields: [listenerId], references: [id])
 }
 
 enum UserRole {
@@ -34,11 +302,11 @@ enum ProjectStatus {
 }
 
 enum TeamMemberStatus {
-  Founder
   Applicant
   Hired
   Rejected
   Fired
+  Founder
 }
 
 enum TeamVacancyStatus {
@@ -60,276 +328,4 @@ enum SeasonStatus {
   Planning
   Active
   Done
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id                 String              @id @default(cuid())
-  name               String?
-  email              String?             @unique
-  emailVerified      DateTime?
-  image              String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  profile            Profile?
-  accounts           Account[]
-  sessions           Session[]
-  roles              UserRole[]          @default([Guest])
-  specialities       Speciality[]
-  projects           Project[]
-  memberInTeams      TeamMember[]
-  projectEstimations ProjectEstimation[]
-  projectReports     ProjectReport[]
-  requestedLectures  Lecture[]           @relation(name: "requestedBy")
-  lectures           Lecture[]           @relation(name: "lecturer")
-  listener           LectureListener[]
-}
-
-model Profile {
-  id                String                @id @default(cuid())
-  userId            String                @unique
-  user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name              String
-  tgNickname        String?               @unique
-  country           String?
-  city              String?
-  createdAt         DateTime              @default(now())
-  updatedAt         DateTime              @updatedAt
-  timeForWork       Int[]
-  preferredGenres   GameGenre[]
-  preferredSettings GameSetting[]
-  preferredLevels   GameDifficultyLevel[]
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Speciality {
-  id              String        @id @default(cuid())
-  name            String
-  specialization  String
-  level           SkillLevel
-  direction       WorkDirection @relation(fields: [workDirectionId], references: [id])
-  workDirectionId String
-  portfolioUrl    String?
-  skills          String?       @db.Text
-  tools           String?       @db.Text
-  jobs            String?       @db.Text
-  schools         String?       @db.Text
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  userId          String
-  user            User          @relation(fields: [userId], references: [id])
-}
-
-model WorkDirection {
-  id           String        @id @default(cuid())
-  name         String        @unique
-  specialities Speciality[]
-  vacancies    TeamVacancy[]
-  Lecture      Lecture[]
-}
-
-model GameGenre {
-  id      String    @id @default(cuid())
-  name    String    @unique
-  Profile Profile[]
-}
-
-model GameSetting {
-  id      String    @id @default(cuid())
-  name    String    @unique
-  Profile Profile[]
-}
-
-model GameDifficultyLevel {
-  id      String    @id @default(cuid())
-  name    String    @unique
-  Profile Profile[]
-}
-
-model Season {
-  id          String        @id @default(cuid())
-  name        String
-  description String?       @db.Text
-  startedAt   DateTime
-  finishedAt  DateTime?
-  status      SeasonStatus  @default(Planning)
-  slug        String
-  stages      SeasonStage[]
-}
-
-model SeasonStage {
-  id            String               @id @default(cuid())
-  name          String
-  description   String?              @db.Text
-  startedAt     DateTime?
-  finishedAt    DateTime?
-  order         Int                  @default(0)
-  isCurrent     Boolean              @default(false)
-  seasonId      String
-  season        Season               @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  projects      Project[]
-  streamReports SeasonStreamReport[]
-  estimations   ProjectEstimation[]
-}
-
-model SeasonStreamReport {
-  id      String      @id @default(cuid())
-  date    DateTime
-  stageId String
-  stage   SeasonStage @relation(fields: [stageId], references: [id])
-}
-
-model Project {
-  id            String              @id @default(cuid())
-  name          String
-  description   String?             @db.Text
-  status        ProjectStatus       @default(Registered)
-  coverImage    String?
-  genre         String
-  setting       String
-  platform      String
-  visualStyle   String
-  coreMechanics String[]
-  audition      String?
-  videoLink     String?
-  pitchdeckLink String?
-  gddLink       String?
-  conceptLink   String?
-  finishedAt    DateTime?
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  slug          String              @default(cuid())
-  stageId       String
-  stage         SeasonStage         @relation(fields: [stageId], references: [id])
-  authorId      String
-  author        User                @relation(fields: [authorId], references: [id])
-  teamId        String              @unique
-  team          ProjectTeam         @relation(fields: [teamId], references: [id])
-  estimations   ProjectEstimation[]
-  reports       ProjectReport[]
-}
-
-model ProjectEstimation {
-  id         String      @id @default(cuid())
-  projectId  String      @unique
-  project    Project     @relation(fields: [projectId], references: [id])
-  stageId    String
-  stage      SeasonStage @relation(fields: [stageId], references: [id])
-  expertId   String
-  expert     User        @relation(fields: [expertId], references: [id])
-  notes      String      @db.Text
-  isApproved Boolean
-  form       Json
-}
-
-model ProjectTeam {
-  id        String        @id @default(cuid())
-  project   Project?
-  members   TeamMember[]
-  vacancies TeamVacancy[]
-}
-
-model ProjectReport {
-  id          String   @id @default(cuid())
-  projectId   String   @unique
-  project     Project  @relation(fields: [projectId], references: [id])
-  publishedAt DateTime
-  content     String   @db.Text
-  video       String?
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-}
-
-model TeamMember {
-  id         String           @id @default(cuid())
-  userId     String
-  user       User             @relation(fields: [userId], references: [id])
-  teamId     String
-  team       ProjectTeam      @relation(fields: [teamId], references: [id])
-  startedAt  DateTime
-  finishedAt DateTime?
-  status     TeamMemberStatus @default(Applicant)
-  position   String
-  vacancyId  String?
-  vacancy    TeamVacancy?     @relation(fields: [vacancyId], references: [id])
-}
-
-model TeamVacancy {
-  id          String            @id @default(cuid())
-  title       String
-  description String            @db.Text
-  directionId String
-  direction   WorkDirection     @relation(fields: [directionId], references: [id])
-  applicants  TeamMember[]
-  status      TeamVacancyStatus @default(Draft)
-  publishedAt DateTime?
-  finishedAt  DateTime
-  updatedAt   DateTime          @updatedAt
-  teamId      String
-  team        ProjectTeam       @relation(fields: [teamId], references: [id])
-}
-
-model Lecture {
-  id              String            @id @default(cuid())
-  name            String
-  wishes          String            @db.Text
-  requestedById   String
-  requestedBy     User              @relation(fields: [requestedById], references: [id], name: "requestedBy")
-  lecturerId      String
-  lecturer        User              @relation(fields: [lecturerId], references: [id], name: "lecturer")
-  workDirectionId String
-  direction       WorkDirection     @relation(fields: [workDirectionId], references: [id])
-  description     String?           @db.Text
-  date            DateTime?
-  linkToStream    String?
-  recordLink      String?
-  duration        Int?
-  isArchived      Boolean
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  stage           LectureStage
-  listeners       LectureListener[]
-}
-
-model LectureListener {
-  id         String   @id @default(cuid())
-  listenerId String
-  listener   User     @relation(fields: [listenerId], references: [id])
-  lectureId  String
-  lecture    Lecture  @relation(fields: [lectureId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 }

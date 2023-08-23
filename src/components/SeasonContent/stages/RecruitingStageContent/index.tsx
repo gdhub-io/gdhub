@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
 import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
+import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { Spin } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -26,7 +27,7 @@ const RecruitingStageContent = ({ season }: { season: SeasonData }) => {
 				</p>
 
 				<h3>Проекты</h3>
-				{!!stage && <SeasonProjectsSection stageId={stage.id} />}
+				{!!stage && <StageProjectsSection stageId={stage.id} />}
 			</Spin>
 		</div>
 	)

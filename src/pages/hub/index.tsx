@@ -1,5 +1,6 @@
 // import { useEffect } from 'react'
 import { useEffect } from 'react'
+import { IndieList } from '@/components/IndieList'
 import SeasonsList from '@/components/SeasonsList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
@@ -44,6 +45,7 @@ const HubPage: NextPageWithLayout = () => {
 				{session.status == 'authenticated' && hasRole(UserRole.Member, session) && (
 					<>
 						<SeasonsList />
+						<IndieList />
 					</>
 				)}
 			</div>

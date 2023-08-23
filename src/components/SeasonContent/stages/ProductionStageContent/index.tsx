@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
-import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
+import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Space, Spin, Typography } from 'antd'
@@ -61,7 +61,7 @@ const ProductionStageContent = ({ season }: { season: SeasonData }) => {
 				</p>
 
 				<h3>Проекты в разработке</h3>
-				{!!stage && <SeasonProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
+				{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 			</Spin>
 		</div>
 	)

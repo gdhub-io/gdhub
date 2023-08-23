@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
-import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
+import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Space, Spin, Typography } from 'antd'
@@ -19,23 +19,6 @@ const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
 		() => axios.get<SeasonStreamReport[]>('/api/season/stream-reports', { params: { stageId: stage?.id } }),
 		{ enabled: !!stage, refetchOnWindowFocus: false, staleTime: Infinity }
 	)
-
-	// const { data: projects, isValidating: isLoadingProjecIdeas } = useSWR(
-	// 	{ url: '/api/season/projects', data: { seasonName: season.name } },
-	// 	fetcher
-	// )
-	// const { data: reportsDates } = useSWR(
-	// 	{ url: '/api/season/reports-dates', data: { seasonName: season.Name, stage: stage.Name } },
-	// 	fetcher
-	// )
-
-	// const { data: seasonReports, isFetching: isLoading } = useQuery(
-	// 	['season-reports', season.id],
-	// 	() => axios.get<any[]>('/api/season/reports/dates'),
-	// 	{
-	// 		staleTime: Infinity,
-	// 	}
-	// )
 
 	return (
 		<div className={styles.container}>
@@ -77,7 +60,7 @@ const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
 				</p>
 
 				<h3>Проекты в разработке</h3>
-				{!!stage && <SeasonProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
+				{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 			</Spin>
 		</div>
 	)

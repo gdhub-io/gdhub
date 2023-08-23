@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
-import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
+import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
 import { ProjectStatus } from '@prisma/client'
 import { Alert, Space } from 'antd'
@@ -95,7 +95,7 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 			)} */}
 
 			<h3>Список проектов</h3>
-			{!!stage && <SeasonProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
+			{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 
 			{stage?.isCompleted && (
 				<Alert

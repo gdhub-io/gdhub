@@ -1,0 +1,12 @@
+.card {
+	border: 1px solid #cdcdcd;
+
+	:global {
+		.ant-card-cover {
+			width: 100%;
+			padding-top: 56.25%; /* 16:9 Aspect Ratio */
+			position: relative;
+			aspect-ratio: 16 / 9;
+		}
+	}
+}

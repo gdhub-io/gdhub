@@ -7,17 +7,20 @@ import Link from 'next/link'
 import styles from './style.module.scss'
 
 type ProjectsSectionArgs = {
-	stageId: string
-	status?: ProjectStatus
+	seasonId?: string
+	seasonSlug?: string
 }
 
-export const SeasonProjectsSection = ({ stageId, status = ProjectStatus.Registered }: ProjectsSectionArgs) => {
+export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
 
-	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery(['projects', stageId], () =>
-		axios.get<(Project & { author: User })[]>('/api/season/projects', {
-			params: { stageId, status },
-		})
+	const { data: projects, isFetching: isLoadingProjecs } = useQuery(
+		['projects', seasonId],
+		() =>
+			axios.get<(Project & { author: User })[]>('/api/season/projects', {
+				params: { seasonId, seasonSlug },
+			}),
+		{ enabled: !!seasonId || !!seasonSlug }
 	)
 
 	if (!projects?.data.length) {
@@ -52,7 +55,7 @@ export const SeasonProjectsSection = ({ stageId, status = ProjectStatus.Register
 								<Descriptions layout="vertical" column={1}>
 									<Descriptions.Item label="Визуальный стиль">{project.visualStyle}</Descriptions.Item>
 								</Descriptions>
-								<Link href={`/project/${project.slug}`} target="_blank">
+								<Link href={`/project/${project.slug}`}>
 									<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
 										На страницу проекта
 									</Button>
