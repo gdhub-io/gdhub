@@ -6,7 +6,7 @@ import { Get, Query, createHandler } from 'next-api-decorators'
 
 class ParamsDto {
 	@IsString()
-	id: string
+	seasonId: string
 }
 
 @NextAuthGuard('user', [UserRole.Admin])
@@ -14,8 +14,11 @@ class ApiSeasonStagesAdminHandler {
 	constructor() {}
 
 	@Get()
-	public async list(@Query() params: ParamsDto) {
-		const stages = await prisma.seasonStage.findMany({ where: { seasonId: params.id }, orderBy: { order: 'asc' } })
+	public async list(@Query() { seasonId }: ParamsDto) {
+		const stages = await prisma.seasonStage.findMany({
+			where: { seasonId },
+			orderBy: { order: 'asc' },
+		})
 
 		return stages
 	}

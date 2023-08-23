@@ -24,8 +24,10 @@ const SeasonStagesAdminPage: NextPageWithLayout = () => {
 		data: response,
 		error,
 		refetch,
-	} = useQuery(['admin', 'seasons'], () =>
-		axios.get<SeasonStage[]>(`/api/admin/season/stages`, { params: { seasonId: router.query.id } })
+	} = useQuery(
+		['admin', 'seasons'],
+		() => axios.get<SeasonStage[]>(`/api/admin/season/stages`, { params: { seasonId: router.query.id } }),
+		{ enabled: !!router.query.id }
 	)
 
 	const { mutate: updateStage, isLoading: isUpdatig } = useMutation(

@@ -10,6 +10,9 @@
     "lint": "next lint",
     "prepare": "husky install"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} -r tsconfig-paths/register prisma/seed.ts"
+  },
   "dependencies": {
     "@9gustin/react-notion-render": "^3.11.2",
     "@daily-co/daily-js": "^0.48.0",
@@ -99,8 +102,5 @@
     "sass": "^1.54.9",
     "tailwindcss": "^3.1.8",
     "typescript": "^5.1.6"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }
