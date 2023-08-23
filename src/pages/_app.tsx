@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import '@/styles/globals.scss'
+import { CookieConsent } from '@/components/CookieConsent'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import SEOSettings from '@/config/seo'
@@ -105,6 +106,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 								{getLayout(<Component {...pageProps} />)}
 							</div>
 						</SessionProvider>
+						<CookieConsent />
 						<LoadingScreen visible={loading} />
 					</ConfigProvider>
 
