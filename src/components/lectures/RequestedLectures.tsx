@@ -3,16 +3,18 @@ import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
 import LectureRequestModal from '@/components/modals/LectureRequestModal'
 import PropositionLectureModal from '@/components/modals/PropositionLectureModal'
 import SetLecturerModal from '@/components/modals/SetLecturerModal'
-import { fetcher, fetherForMutation } from '@/helpers/fetcher'
+import { fetherForMutation } from '@/helpers/fetcher'
 import { lectureStatusAsText } from '@/helpers/format'
+import { Lecture, LectureListener, LectureStage, User, WorkDirection } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Dropdown, Grid, Popconfirm, Space, Spin, Table, Tooltip, message } from 'antd'
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import { ColumnsType } from 'antd/lib/table'
+import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
 import { TbHeartOff, TbHeart, TbDotsVertical } from 'react-icons/tb'
-import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 
 const mobileMenu: ItemType[] = [
@@ -36,21 +38,56 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false)
 	const [showPropositionLectureModal, setShowPropositionLectureModal] = useState(false)
 	// Queries & mutations
-	const {
-		data,
-		mutate: updateList,
-		isValidating: isLoading,
-	} = useSWR({ url: '/api/lecture/list', data: { status: ['Requested'] } }, fetcher, {
-		revalidateOnFocus: false,
-	})
+	// const {
+	// 	data,
+	// 	mutate: updateList,
+	// 	isValidating: isLoading,
+	// } = useSWR({ url: '/api/lecture/list', data: { status: ['Requested'] } }, fetcher, {
+	// 	revalidateOnFocus: false,
+	// })
 	const { trigger: updateReleventForListener } = useSWRMutation('/api/lecture/listener', fetherForMutation)
-	const { trigger: deleteLecture } = useSWRMutation('/api/lecture/delete', fetherForMutation)
+	// const { trigger: deleteLecture } = useSWRMutation('/api/lecture/delete', fetherForMutation)
 
-	const columns: ColumnsType<DataType> = [
+	const { mutateAsync: deleteLecture } = useMutation(
+		({ id }: { id: string }) => axios.delete('/api/user/lecture', { params: { id } }),
+		{
+			onSuccess: () => {
+				updateList()
+			},
+		}
+	)
+
+	const {
+		data: requestedLectures,
+		refetch: updateList,
+		isLoading,
+	} = useQuery(['lectures', 'requested'], () =>
+		axios.get<
+			(Lecture & {
+				listeners: LectureListener[]
+				direction: WorkDirection
+				lecturer: User
+				isRelevant: boolean
+				isAuthor: boolean
+			})[]
+		>('/api/lectures', {
+			params: { stage: LectureStage.Requested },
+		})
+	)
+
+	const columns: ColumnsType<
+		Lecture & {
+			listeners: LectureListener[]
+			direction: WorkDirection
+			lecturer: User
+			isRelevant: boolean
+			isAuthor: boolean
+		}
+	> = [
 		{
 			title: 'Тема лекции',
-			dataIndex: 'Name',
-			key: 'Name',
+			dataIndex: 'name',
+			key: 'name',
 			width: screens.lg ? 'auto' : '100%',
 			render: (text, lecture) =>
 				screens.md ? (
@@ -63,7 +100,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					>
 						<strong>{text}</strong>
 						<br />
-						<small>{lectureStatusAsText(lecture.Status)}</small>
+						<small>{lectureStatusAsText(lecture.stage)}</small>
 					</div>
 				) : (
 					<div
@@ -75,23 +112,23 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					>
 						<strong>{text}</strong>
 						<br />
-						<small>{lecture.Direction}</small>
+						<small>{lecture.direction.name}</small>
 					</div>
 				),
 		},
 		{
 			title: 'Направление',
-			dataIndex: 'Direction',
-			key: 'Direction',
+			dataIndex: 'directionId',
+			key: 'directionId',
 			responsive: ['md'],
 		},
 		{
 			title: screens.lg ? 'Лектор' : null,
-			dataIndex: 'Lecturer Name',
+			dataIndex: 'lectuerId',
 			responsive: ['md'],
 			key: 'Lecturer Name',
 			render: (data: any, lecture) => {
-				const applicatnsCount = lecture['Applicants Count'] as number
+				const applicatnsCount = lecture.listeners?.length || 0
 
 				if (data) {
 					return data
@@ -129,9 +166,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 							</Space>
 						</Button>
 					)}
-					{(lecture['Applicants Count'] as number) >= 3 && (
-						<small>актульно {lecture['Applicants Count']} участникам</small>
-					)}
+					{lecture.listeners.length >= 3 && <small>актульно {lecture.listeners.length} участникам</small>}
 				</Space>
 			),
 		},
@@ -142,8 +177,8 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					<Dropdown menu={{ items: mobileMenu }} trigger={['click']}>
 						<TbDotsVertical size={16} style={{ position: 'relative', top: 2 }} />
 					</Dropdown>
-				) : lecture['Requested By'][0] === session?.user?.id &&
-				  (lecture.Status === 'Requested' || lecture.Status === 'Proposed') ? (
+				) : lecture.requestedById === session?.user?.id &&
+				  (lecture.stage === LectureStage.Requested || lecture.stage === LectureStage.Proposed) ? (
 					<Space wrap={screens.md ? false : true}>
 						<Button onClick={() => handleEditLectureRequest(lecture.id)}>Изменить</Button>
 						<Popconfirm
@@ -174,9 +209,6 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 	const handleDeleteLectureRequest = async (lectureId: string) => {
 		try {
 			await deleteLecture({ id: lectureId })
-			const { error } = await updateList()
-
-			if (error) throw new Error(error)
 
 			message.success('Запрос на лецию был удален')
 		} catch (error: any) {
@@ -223,7 +255,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				<Button onClick={() => setShowPropositionLectureModal(true)}>Предложить провести лекцию</Button>
 			</Space>
 
-			{data?.data?.length ? (
+			{requestedLectures?.data?.length ? (
 				<>
 					<div>
 						<h3>Запросы на лекции</h3>
@@ -232,7 +264,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 							<Table
 								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px', marginTop: 16 }}
 								columns={columns}
-								dataSource={data.data.map((l: any) => ({ ...l, key: l.id }))}
+								dataSource={requestedLectures.data.map((l: any) => ({ ...l, key: l.id }))}
 								pagination={false}
 							/>
 						</Spin>

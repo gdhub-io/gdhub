@@ -19,7 +19,7 @@ const LecturesPage: NextPageWithLayout = () => {
 			<Head>
 				<title>Лекции</title>
 			</Head>
-			<h1>Лекции (бета)</h1>
+			<h1>Лекции</h1>
 			<Space direction="vertical" size="large">
 				<p>
 					Часто при решении тех или иных задач возникает множество вопросов. Этот раздел поможет найти на них ответы у

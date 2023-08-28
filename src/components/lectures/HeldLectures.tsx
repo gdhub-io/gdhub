@@ -1,22 +1,29 @@
 import { useMemo, useState } from 'react'
 import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
-import { fetcher } from '@/helpers/fetcher'
+import { LectureStage } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
+import axios from 'axios'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
-import useSWR from 'swr'
 
 export const HeldLectures = () => {
 	const router = useRouter()
 	const screens = Grid.useBreakpoint()
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
+	// const {
+	// 	data,
+	// 	mutate: updateList,
+	// 	isValidating: isLoading,
+	// } = useSWR({ url: '/api/lecture/list', data: { status: ['Held'] } }, fetcher, { revalidateOnFocus: false })
+
 	const {
-		data,
-		mutate: updateList,
-		isValidating: isLoading,
-	} = useSWR({ url: '/api/lecture/list', data: { status: ['Held'] } }, fetcher, { revalidateOnFocus: false })
+		data: lectures,
+		refetch: updateList,
+		isLoading,
+	} = useQuery(['lectures'], () => axios.get('/api/lectures', { params: { stage: LectureStage.Held } }))
 
 	const columns: ColumnsType<DataType> = useMemo(
 		() => [
@@ -85,14 +92,14 @@ export const HeldLectures = () => {
 
 	return (
 		<>
-			{data?.data?.length > 0 ? (
+			{lectures?.data?.length > 0 ? (
 				<div>
 					<h3>Прошедшие лекции</h3>
 					<Spin spinning={isLoading}>
 						<Table
 							style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}
 							columns={columns}
-							dataSource={data.data.map((l: any) => ({ ...l, key: l.id }))}
+							dataSource={lectures?.data.map((l: any) => ({ ...l, key: l.id }))}
 							pagination={false}
 						/>
 					</Spin>

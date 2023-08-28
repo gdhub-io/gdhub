@@ -1,134 +1,67 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { Lecture, LectureStage, WorkDirection } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Form, Input, message, Modal, Select, Spin } from 'antd'
+import axios from 'axios'
 
 const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const [processing, setProcessing] = useState(true)
-	const [lecture, setLectureId] = useState<any>()
+	// const [processing, setProcessing] = useState(true)
+	// const [lecture, setLectureId] = useState<any>()
 
-	const directionsOptions = [
-		{
-			value: 'Programming',
-			label: 'Программирование',
-		},
-		{
-			value: 'Game Design',
-			label: 'Геймдизайн',
-		},
-		{
-			value: '2D Art & Animation',
-			label: '2D арт и анимация',
-		},
-		{
-			value: '3D Art & Animation',
-			label: '3D арт и анимация',
-		},
-		{
-			value: 'Project Management',
-			label: 'Управление проектом',
-		},
-		{
-			value: 'Product Management',
-			label: 'Управление продуктом',
-		},
-		{
-			value: 'Technical Art',
-			label: 'Технический арт',
-		},
-		{
-			value: 'Team Management',
-			label: 'Управление командой',
-		},
-		{
-			value: 'Other',
-			label: 'Другое',
-		},
-	]
-
-	useEffect(() => {
-		if (open && lectureId) {
-			getLecture(lectureId)
-		} else {
-			setProcessing(false)
-		}
-	}, [open])
-
-	useEffect(() => {
-		if (lecture) {
-			form.setFieldsValue({ ...lecture, Season: lecture.Season[0] })
-		}
-	}, [lecture])
-
-	const getLecture = async (lectureId: string) => {
-		try {
-			setProcessing(true)
-
-			const response: any = await fetch('/api/lecture/get', {
-				method: 'post',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					id: lectureId,
-				}),
-			})
-
-			if (response.error) {
-				throw new Error(response.error.message)
-			}
-
-			const data = await response.json()
-
+	const {
+		data: lecture,
+		refetch: fetchLecture,
+		isFetching,
+		isPaused,
+	} = useQuery(['lecture', lectureId], () => axios.get<Lecture>('/api/lecture', { params: { id: lectureId } }), {
+		enabled: !!lectureId,
+		onSuccess({ data }) {
 			form.setFieldsValue({
-				Name: data.Name,
-				Wishes: data.Wishes,
-				Direction: data.Direction,
+				name: data.name,
+				wishes: data.wishes,
+				directionId: data.directionId,
 			})
-			setProcessing(false)
-		} catch (error: any) {
-			console.log('getlecture', error)
-			message.error(error.message)
-			setProcessing(false)
+		},
+	})
+
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		{
+			staleTime: Infinity,
 		}
-	}
+	)
+
+	const { mutateAsync: createLecture } = useMutation((data: Partial<Lecture>) =>
+		axios.post<Lecture>('/api/user/lecture', { ...data, stage: LectureStage.Requested })
+	)
+	const { mutateAsync: updateLecture } = useMutation(({ id, data }: { id: string; data: Partial<Lecture> }) =>
+		axios.put<Lecture>('/api/user/lecture', data, { params: { id } })
+	)
+
+	const workDirectionOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
 
 	const handleOk = async () => {
 		try {
 			const formData = await form.validateFields()
-			setProcessing(true)
-			const response: any = await fetch('/api/lecture/save', {
-				method: 'post',
-				body: JSON.stringify({ id: lectureId || null, data: formData }),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			setProcessing(false)
 
-			if (!response.ok) {
-				throw new Error('Something wrong')
-			}
-
-			const data = await response.json()
-
-			if (data.error) {
-				throw new Error(response.error.message)
+			if (lectureId) {
+				await updateLecture({ id: lectureId, data: formData })
+				message.success('Лекция изменена')
+			} else {
+				await createLecture(formData)
+				message.success('Добавлена новый запрос на лекцию')
 			}
 
 			form.resetFields()
-			message.success(lectureId ? 'Лекция изменена' : 'Добавлена новый запрос на лекцию')
 			onOk()
 		} catch (error: any) {
-			setProcessing(false)
-
-			if (!error.hasOwnProperty('errorFields')) {
-				message.error(error.message)
-			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
-			}
+			message.error(error.message)
 		}
 	}
 
 	const handleCancel = () => {
-		setLectureId(null)
 		form.resetFields()
 		onCancel()
 	}
@@ -145,9 +78,9 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
-			confirmLoading={processing}
+			confirmLoading={isFetching}
 		>
-			<Spin spinning={processing}>
+			<Spin spinning={isFetching}>
 				<Form
 					form={form}
 					layout="vertical"
@@ -158,22 +91,22 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 				>
-					<Form.Item label="Тема лекции" name="Name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
+					<Form.Item label="Тема лекции" name="name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
 						<Input width={'100%'} placeholder={`Например: Как проводить анализ проекта`} />
 					</Form.Item>
 
 					<Form.Item
-						name="Direction"
+						name="directionId"
 						label="К какому направлению относится данная лекция"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
 					>
-						<Select style={{ width: '100%' }} placeholder={`Например: геймдизайн`} options={directionsOptions} />
+						<Select style={{ width: '100%' }} placeholder={`Например: геймдизайн`} options={workDirectionOptions} />
 					</Form.Item>
 
 					<Form.Item
-						name="Wishes"
+						name="wishes"
 						label="Пожелания по содержанию лекции"
 						help="Чтобы вы хотели узнать на данной лекции?"
 						rules={[{ required: true }]}
