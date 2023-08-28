@@ -1,7 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { LectureStage } from '@prisma/client'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
+import { IsEnum, IsOptional } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class ParamDto {
@@ -21,7 +21,7 @@ class ApiLecturesHandler {
 			include: {
 				lecturer: true,
 				direction: true,
-				listeners: { select: { id: true } },
+				listeners: { select: { listenerId: true } },
 			},
 			orderBy: [{ date: { sort: 'desc' } }, { listeners: { _count: 'desc' } }],
 		})
@@ -29,7 +29,7 @@ class ApiLecturesHandler {
 		const lecturesWithRelevant = lectures.map((lecture) => {
 			let isRelevant = false
 
-			if (req.user.id && lecture.listeners.includes({ id: req.user.id })) {
+			if (lecture.listeners.find((r) => r.listenerId == req.user.id)) {
 				isRelevant = true
 			}
 

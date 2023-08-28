@@ -1,7 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { Lecture, Prisma } from '@prisma/client'
-import { Body, Delete, Get, Post, Put, Query, Req, createHandler } from 'next-api-decorators'
+import { Body, Delete, Get, Param, Post, Put, Query, Req, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
 class ApiLectureHandler {
@@ -9,6 +8,16 @@ class ApiLectureHandler {
 
 	@Get()
 	public async get(@Req() req: NextApiRequestWithUser, @Query() { id }: { id: string }) {
+		const lecture = await prisma.lecture.findFirst({
+			where: { id },
+			include: { listeners: { select: { id: true } } },
+		})
+
+		return lecture
+	}
+
+	@Get('/:id/show')
+	public async show(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
 		const lecture = await prisma.lecture.findFirst({
 			where: { id },
 			include: { listeners: { select: { id: true } } },

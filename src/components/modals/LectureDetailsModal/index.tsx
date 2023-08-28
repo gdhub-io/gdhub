@@ -1,5 +1,8 @@
 import { Fragment, useEffect, useState } from 'react'
+import { Lecture, LectureStage, Speciality, User } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Grid, message, Modal, Spin } from 'antd'
+import axios from 'axios'
 import { HeldContent } from './HeldContent'
 import { ReadyContent } from './ReadyContent'
 import { RequestedContent } from './RequestedContent'
@@ -7,88 +10,58 @@ import styles from './style.module.scss'
 
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const screens = Grid.useBreakpoint()
-	const [processing, setProcessing] = useState(true)
-	const [lecture, setLecture] = useState<any>()
+	// const [processing, setProcessing] = useState(true)
+	// const [lecture, setLecture] = useState<any>()
 	const [isReady, setIsReady] = useState(false)
 	const [userIsRegistered, setUserIsRegistered] = useState(false)
 
+	const {
+		data: lecture,
+		isLoading: processing,
+		refetch,
+	} = useQuery(
+		['lecture-data', lectureId],
+		() =>
+			axios.get<Lecture & { lecturer: User & { specialities: Speciality[] } }>(`/api/user/lecture/${lectureId}/show`),
+		{
+			enabled: false,
+		}
+	)
+	const { mutateAsync: registrationToLecture, isLoading: registrationProcessing } = useMutation(
+		(params: { lectureId: string }) => axios.post<any>(`/api/user/lecture/${lectureId}/registration`)
+	)
+
 	useEffect(() => {
 		if (open && lectureId) {
-			getLecture(lectureId)
+			refetch()
 		}
 	}, [open])
 
-	const getLecture = async (lectureId: string) => {
-		try {
-			setProcessing(true)
-
-			const response: any = await fetch('/api/lecture/show', {
-				method: 'post',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					id: lectureId,
-				}),
-			})
-
-			if (response.error) {
-				throw new Error(response.error.message)
-			}
-
-			const data = await response.json()
-
-			setLecture(data)
-			setIsReady(data.Status == 'Ready')
-			setUserIsRegistered(data.userRegistered)
-			setProcessing(false)
-		} catch (error: any) {
-			message.error(error.message)
-			setProcessing(false)
-		}
-	}
-
 	const handleOk = async () => {
 		try {
-			setProcessing(true)
+			const data = await registrationToLecture({ lectureId })
 
-			const response: any = await fetch('/api/lecture/registration', {
-				method: 'post',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					id: lectureId,
-				}),
-			})
+			// if (!data.newRegistration || userIsRegistered) {
+			// 	message.info('Вы уже зарегистрированы на эту лекцию')
+			// 	return
+			// }
 
-			if (!response.ok || response.error) {
-				throw new Error(response.error || 'Something wrong')
-			}
-
-			const data = await response.json()
-
-			if (!data.newRegistration || userIsRegistered) {
-				message.info('Вы уже зарегистрированы на эту лекцию')
-				setProcessing(false)
-				return
-			}
-
-			setProcessing(false)
 			setUserIsRegistered(true)
 			message.success('Регистрация прошла успешно')
 		} catch (error: any) {
 			message.error(error.message)
-			setProcessing(false)
 		}
 	}
 
 	const handleCancel = () => {
-		setLecture(null)
 		setIsReady(false)
 		onCancel()
 	}
 
 	const okText = () => {
-		if (!lecture) return null
+		if (!lecture?.data) return null
 
-		if (['Ready'].includes(lecture.Status)) {
+		if (lecture.data.stage == LectureStage.Ready) {
 			return userIsRegistered ? 'Вы уже зарегистрированы' : 'Регистрация на лекцию'
 		}
 
@@ -98,13 +71,13 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const modalTitle = () => {
 		const defaultTitle = 'Информация о лекции'
 
-		if (!lecture) return defaultTitle
+		if (!lecture?.data) return defaultTitle
 
-		if (['Requested', 'Actualized'].includes(lecture.Status)) {
+		if (['Requested', 'Actualized'].includes(lecture.data.stage)) {
 			return 'Информация о запросе лекции'
 		}
 
-		if (['Proposed'].includes(lecture.Status)) {
+		if (['Proposed'].includes(lecture.data.stage)) {
 			return 'Информация о предложении лекции'
 		}
 
@@ -121,19 +94,25 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			maskClosable={true}
 			cancelText="Закрыть"
 			okText={okText()}
-			okButtonProps={{ disabled: lecture?.userRegistered }}
+			// okButtonProps={{ disabled: lecture?.userRegistered }}
 			open={open}
 			onOk={handleOk}
 			footer={isReady ? undefined : null}
 			onCancel={handleCancel}
-			confirmLoading={processing}
+			confirmLoading={registrationProcessing}
 		>
 			<Spin spinning={processing}>
 				{!!lecture && (
 					<>
-						{['Requested', 'Proposed', 'Actualized'].includes(lecture.Status) && <RequestedContent lecture={lecture} />}
-						{lecture.Status == 'Ready' && <ReadyContent lecture={lecture} userIsRegistered={userIsRegistered} />}
-						{lecture.Status == 'Held' && <HeldContent lecture={lecture} />}
+						{[
+							LectureStage.Requested as string,
+							LectureStage.Proposed as string,
+							LectureStage.Actualized as string,
+						].includes(lecture.data.stage) && <RequestedContent lecture={lecture.data} />}
+						{lecture.data.stage == LectureStage.Ready && (
+							<ReadyContent lecture={lecture.data} userIsRegistered={userIsRegistered} />
+						)}
+						{lecture.data.stage == LectureStage.Held && <HeldContent lecture={lecture.data} />}
 					</>
 				)}
 			</Spin>

@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Lecture, LectureStage, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Form, Input, message, Modal, Select, Spin } from 'antd'
@@ -6,8 +5,6 @@ import axios from 'axios'
 
 const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	// const [processing, setProcessing] = useState(true)
-	// const [lecture, setLectureId] = useState<any>()
 
 	const {
 		data: lecture,

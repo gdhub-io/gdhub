@@ -6,17 +6,17 @@ import { seedDefaultSeasons } from './seeds/seasons'
 import { seedWorkDirections } from './seeds/work-directions'
 
 async function main() {
-	// await seedGameGenres(prisma)
-	// console.log('Game Genres were sown')
+	await seedGameGenres(prisma)
+	console.log('Game Genres were sown')
 
-	// await seedGameSettings(prisma)
-	// console.log('Game Settings were sown')
+	await seedGameSettings(prisma)
+	console.log('Game Settings were sown')
 
-	// await seedGameDifficultyLevels(prisma)
-	// console.log('Game Difficulty Level were sown')
+	await seedGameDifficultyLevels(prisma)
+	console.log('Game Difficulty Level were sown')
 
-	// await seedWorkDirections(prisma)
-	// console.log('Work directions were sown')
+	await seedWorkDirections(prisma)
+	console.log('Work directions were sown')
 
 	await seedDefaultSeasons(prisma)
 	console.log('Seasons were sown')

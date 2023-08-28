@@ -1,4 +1,4 @@
-import { Project, ProjectStatus, User } from '@prisma/client'
+import { Project, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Col, Card, Descriptions, Typography, Button, Row, Grid } from 'antd'
 import axios from 'axios'

@@ -1,34 +1,38 @@
 import { Fragment } from 'react'
+import { Lecture, Speciality, User } from '@prisma/client'
 import { Avatar, Card } from 'antd'
 
-export const RequestedContent = ({ lecture }: any) => {
+export const RequestedContent = ({
+	lecture,
+}: {
+	lecture: Lecture & { lecturer: User & { specialities: Speciality[] } }
+}) => {
 	const lectureAvatar = () => {
-		const [image] = lecture.Lecturer['Image Link (from Account)']
-		return image ? <Avatar shape="square" size={64} src={image} /> : null
+		return lecture.lecturer.image ? <Avatar shape="square" size={64} src={lecture.lecturer.image} /> : null
 	}
 
 	return (
 		<>
 			<small>Тема</small>
-			<h2>{lecture.Name}</h2>
+			<h2>{lecture.name}</h2>
 			<small style={{ marginTop: 16 }}>
-				{lecture.Status == 'Proposed' ? 'Лектор предлагает:' : 'Автора запроса интересует:'}
+				{lecture.stage == 'Proposed' ? 'Лектор предлагает:' : 'Автора запроса интересует:'}
 			</small>
-			<div className="lecture-description">{lecture.Status == 'Proposed' ? lecture.Description : lecture.Wishes}</div>
+			<div className="lecture-description">{lecture.stage == 'Proposed' ? lecture.description : lecture.wishes}</div>
 
-			{!!lecture.Lecturer && (
+			{!!lecture.lecturer && (
 				<>
 					<div style={{ marginTop: 16 }}>Лектор:</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
-							title={lecture.Lecturer.Name}
+							title={lecture.lecturer.name}
 							description={
 								<>
-									{lecture.Lecturer.Specialities
-										? lecture.Lecturer.Specialities.map((s: any) => (
-												<Fragment key={s.Name}>
-													{s.Name} ({s.Level})
+									{lecture.lecturer.specialities
+										? lecture.lecturer.specialities.map((s: Speciality) => (
+												<Fragment key={s.name}>
+													{s.name} ({s.level})
 													<br />
 												</Fragment>
 										  ))

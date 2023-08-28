@@ -3,11 +3,10 @@ import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
 import LectureRequestModal from '@/components/modals/LectureRequestModal'
 import PropositionLectureModal from '@/components/modals/PropositionLectureModal'
 import SetLecturerModal from '@/components/modals/SetLecturerModal'
-import { fetherForMutation } from '@/helpers/fetcher'
 import { lectureStatusAsText } from '@/helpers/format'
 import { Lecture, LectureListener, LectureStage, User, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Dropdown, Grid, Popconfirm, Space, Spin, Table, Tooltip, message } from 'antd'
+import { Button, Dropdown, Grid, Popconfirm, Space, Spin, Table, Tooltip, Typography, message } from 'antd'
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -15,7 +14,8 @@ import { useSession } from 'next-auth/react'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
 import { TbHeartOff, TbHeart, TbDotsVertical } from 'react-icons/tb'
-import useSWRMutation from 'swr/mutation'
+
+const { Title } = Typography
 
 const mobileMenu: ItemType[] = [
 	{
@@ -38,16 +38,23 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false)
 	const [showPropositionLectureModal, setShowPropositionLectureModal] = useState(false)
 	// Queries & mutations
-	// const {
-	// 	data,
-	// 	mutate: updateList,
-	// 	isValidating: isLoading,
-	// } = useSWR({ url: '/api/lecture/list', data: { status: ['Requested'] } }, fetcher, {
-	// 	revalidateOnFocus: false,
-	// })
-	const { trigger: updateReleventForListener } = useSWRMutation('/api/lecture/listener', fetherForMutation)
-	// const { trigger: deleteLecture } = useSWRMutation('/api/lecture/delete', fetherForMutation)
-
+	const { mutateAsync: createListener } = useMutation(
+		(params: { lectureId: string }) => axios.post('/api/user/lecture/listener', undefined, { params }),
+		{
+			onSuccess: () => {
+				updateList()
+			},
+		}
+	)
+	const { mutateAsync: deleteListener } = useMutation(
+		(params: { lectureId: string }) => axios.delete('/api/user/lecture/listener', { params }),
+		{
+			onSuccess: () => {
+				updateList()
+			},
+		}
+	)
+	// const { trigger: updateReleventForListener } = useSWRMutation('/api/lecture/listener', fetherForMutation)
 	const { mutateAsync: deleteLecture } = useMutation(
 		({ id }: { id: string }) => axios.delete('/api/user/lecture', { params: { id } }),
 		{
@@ -56,7 +63,13 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			},
 		}
 	)
-
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		{
+			staleTime: Infinity,
+		}
+	)
 	const {
 		data: requestedLectures,
 		refetch: updateList,
@@ -121,6 +134,10 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			dataIndex: 'directionId',
 			key: 'directionId',
 			responsive: ['md'],
+			render(value) {
+				const direction = workDirections?.data.find((direction) => direction.id == value)
+				return direction?.name || 'unknown'
+			},
 		},
 		{
 			title: screens.lg ? 'Лектор' : null,
@@ -133,7 +150,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				if (data) {
 					return data
 				} else {
-					return applicatnsCount >= 10 ? (
+					return applicatnsCount >= 1 ? (
 						<Button type="primary" onClick={() => handleSetLecturer(lecture.id)}>
 							<Space align="center">
 								<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> Стать лектором
@@ -218,9 +235,11 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 
 	const handleSetRelevantForMe = async (lectureId: string, isRelevant: boolean) => {
 		try {
-			const data = await updateReleventForListener({ lectureId, isRelevant })
-
-			if (!data || data.error) throw new Error(data.error)
+			if (isRelevant) {
+				await createListener({ lectureId })
+			} else {
+				await deleteListener({ lectureId })
+			}
 
 			await updateList()
 			if (isRelevant) {
@@ -257,8 +276,8 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 
 			{requestedLectures?.data?.length ? (
 				<>
-					<div>
-						<h3>Запросы на лекции</h3>
+					<div style={{ marginTop: 32 }}>
+						<Title level={4}>Запросы на лекции</Title>
 						Отметьте лекции, которые вам было бы интересно посетить.
 						<Spin spinning={isLoading}>
 							<Table
