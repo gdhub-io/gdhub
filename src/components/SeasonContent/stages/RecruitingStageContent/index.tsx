@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
-import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { Spin } from 'antd'
 import Link from 'next/link'
