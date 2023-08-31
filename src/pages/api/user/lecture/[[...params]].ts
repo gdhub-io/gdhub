@@ -1,5 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
+import { LectureStage } from '@prisma/client'
 import { Body, Delete, Get, Param, Post, Put, Query, Req, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
@@ -28,14 +29,16 @@ class ApiLectureHandler {
 
 	@Post()
 	public async create(@Req() req: NextApiRequestWithUser, @Body() data: any) {
-		const { directionId, ...other } = data
+		const { directionId, lecturerId, ...other } = data
 
 		const lecture = await prisma.lecture.create({
 			data: {
 				...other,
-				requestedBy: { connect: { id: req.user.id as string } },
+				requestedBy: other.stage == LectureStage.Requested ? { connect: { id: req.user.id as string } } : undefined,
+				lecturer: other.stage == LectureStage.Proposed ? { connect: { id: lecturerId } } : undefined,
 				direction: { connect: { id: directionId } },
 				isArchived: false,
+				wishes: other.wishes || undefined,
 			},
 		})
 

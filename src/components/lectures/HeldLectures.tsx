@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
-import { LectureStage } from '@prisma/client'
+import { Lecture, LectureListener, LectureStage, User, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
@@ -29,8 +29,8 @@ export const HeldLectures = () => {
 		() => [
 			{
 				title: 'Тема лекции',
-				dataIndex: 'Name',
-				key: 'Name',
+				dataIndex: 'name',
+				key: 'name',
 				render: (text, lecture) => {
 					const _date = DateTime.fromISO(lecture.Date).toFormat('dd LLL yyyy', {
 						locale: router.locale,
@@ -65,20 +65,20 @@ export const HeldLectures = () => {
 			},
 			{
 				title: 'Направление',
-				dataIndex: 'Direction',
-				key: 'Direction',
+				dataIndex: 'directionId',
+				key: 'directionId',
 				responsive: ['md'],
 			},
 			{
 				title: 'Лектор',
-				dataIndex: 'Lecturer Name',
-				key: 'Lecturer Name',
+				dataIndex: 'lecturerId',
+				key: 'lecturerId',
 				responsive: ['md'],
 			},
 			{
 				title: 'Дата',
-				dataIndex: 'Date',
-				key: 'Date',
+				dataIndex: 'date',
+				key: 'date',
 				responsive: ['md'],
 				render: (date) => {
 					return DateTime.fromISO(date).toFormat('dd LLL yyyy', {

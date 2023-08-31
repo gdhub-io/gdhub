@@ -249,8 +249,8 @@ model TeamVacancy {
 model Lecture {
   id            String            @id @default(cuid())
   name          String
-  wishes        String
-  requestedById String
+  wishes        String?
+  requestedById String?
   lecturerId    String?
   directionId   String
   description   String?
@@ -263,7 +263,7 @@ model Lecture {
   updatedAt     DateTime          @updatedAt
   stage         LectureStage
   lecturer      User?             @relation("lecturer", fields: [lecturerId], references: [id])
-  requestedBy   User              @relation("requestedBy", fields: [requestedById], references: [id])
+  requestedBy   User?              @relation("requestedBy", fields: [requestedById], references: [id])
   direction     WorkDirection     @relation(fields: [directionId], references: [id])
   listeners     LectureListener[]
 }

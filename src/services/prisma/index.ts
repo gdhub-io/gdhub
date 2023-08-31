@@ -8,6 +8,7 @@ const extendedPrismaClient = () => {
 	const prisma = new PrismaClient({
 		datasourceUrl: env('DATABASE_URL'),
 		log: process.env.DEBUG ? ['query', 'error'] : ['error'],
+		errorFormat: 'pretty',
 	})
 
 	const extendedPrisma = prisma

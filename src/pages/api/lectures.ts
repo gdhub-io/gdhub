@@ -1,13 +1,13 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { LectureStage } from '@prisma/client'
-import { IsEnum, IsOptional } from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class ParamDto {
-	@IsEnum(LectureStage)
+	@IsString()
 	@IsOptional()
-	stage?: LectureStage
+	stage?: string
 }
 
 @NextAuthGuard('user')
@@ -16,8 +16,10 @@ class ApiLecturesHandler {
 
 	@Get()
 	public async list(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { stage }: ParamDto) {
+		const stages = stage?.split(',') as LectureStage[]
+
 		const lectures = await prisma.lecture.findMany({
-			where: { stage },
+			where: { stage: stages ? { in: stages } : undefined },
 			include: {
 				lecturer: true,
 				direction: true,

@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { Lecture, LectureStage, WorkDirection } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, DatePicker, Form, Input, InputNumber, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
@@ -8,91 +11,96 @@ import { useSession } from 'next-auth/react'
 const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
-	const [processing, setProcessing] = useState(false)
 
-	const directionsOptions = [
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
 		{
-			value: 'Programming',
-			label: 'Программирование',
-		},
-		{
-			value: 'Game Design',
-			label: 'Геймдизайн',
-		},
-		{
-			value: '2D Art & Animation',
-			label: '2D арт и анимация',
-		},
-		{
-			value: '3D Art & Animation',
-			label: '3D арт и анимация',
-		},
-		{
-			value: 'Project Management',
-			label: 'Управление проектом',
-		},
-		{
-			value: 'Product Management',
-			label: 'Управление продуктом',
-		},
-		{
-			value: 'Technical Art',
-			label: 'Технический арт',
-		},
-		{
-			value: 'Team Management',
-			label: 'Управление командой',
-		},
-		{
-			value: 'Other',
-			label: 'Другое',
-		},
-	]
+			staleTime: Infinity,
+		}
+	)
+	const { mutateAsync: createLecture, isLoading: isCreating } = useMutation((data: Partial<Lecture>) =>
+		axios.post<Lecture>('/api/user/lecture', { ...data, stage: LectureStage.Proposed })
+	)
+	const { mutateAsync: updateLecture, isLoading: isUpdating } = useMutation(
+		({ id, data }: { id: string; data: Partial<Lecture> }) =>
+			axios.put<Lecture>('/api/user/lecture', data, { params: { id } })
+	)
+
+	const directionsOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
+
+	// const directionsOptions = [
+	// 	{
+	// 		value: 'Programming',
+	// 		label: 'Программирование',
+	// 	},
+	// 	{
+	// 		value: 'Game Design',
+	// 		label: 'Геймдизайн',
+	// 	},
+	// 	{
+	// 		value: '2D Art & Animation',
+	// 		label: '2D арт и анимация',
+	// 	},
+	// 	{
+	// 		value: '3D Art & Animation',
+	// 		label: '3D арт и анимация',
+	// 	},
+	// 	{
+	// 		value: 'Project Management',
+	// 		label: 'Управление проектом',
+	// 	},
+	// 	{
+	// 		value: 'Product Management',
+	// 		label: 'Управление продуктом',
+	// 	},
+	// 	{
+	// 		value: 'Technical Art',
+	// 		label: 'Технический арт',
+	// 	},
+	// 	{
+	// 		value: 'Team Management',
+	// 		label: 'Управление командой',
+	// 	},
+	// 	{
+	// 		value: 'Other',
+	// 		label: 'Другое',
+	// 	},
+	// ]
 
 	const handleOk = async () => {
 		try {
-			const formData = await form.validateFields()
+			const { name, lecturerId, directionId, description, linkToStream, date, time, duration } =
+				await form.validateFields()
 
-			setProcessing(true)
-			const response: any = await fetch('/api/lecture/save', {
-				method: 'post',
-				body: JSON.stringify({
-					data: {
-						Name: formData.Name || undefined,
-						Lecturer: session?.user.id,
-						Direction: formData.Direction,
-						Description: formData.Description,
-						Link: formData.Link,
-						Duration: formData.Duration.hours() * 60 * 60 + formData.Duration.minutes() * 60,
-						Date: formData.Date.set({
-							hours: formData.Time.hours(),
-							minutes: formData.Time.minutes(),
-							seconds: 0,
-						}).toISOString(),
-					},
-				}),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			setProcessing(false)
-
-			if (!response.ok) {
-				throw new Error('Something wrong')
+			const newData: Partial<Lecture> = {
+				name,
+				lecturerId,
+				directionId,
+				description,
+				linkToStream,
+				date: date
+					.set({
+						hours: time.hour(),
+						minutes: time.minute(),
+						seconds: 0,
+					})
+					.toISOString(),
+				duration: duration.hour() * 60 * 60 + duration.minute() * 60,
+				wishes: null,
 			}
 
-			const data = await response.json()
-
-			if (data.error) {
-				throw new Error(response.error.message)
+			if (lectureId) {
+				await updateLecture({ id: lectureId, data: newData })
+				message.success('Предложение лекции создано')
+			} else {
+				await createLecture(newData)
+				message.success('Предложение лекции обновлено')
 			}
 
 			form.resetFields()
-			message.success('Предложение лекции создано')
 			onOk()
 		} catch (error: any) {
-			setProcessing(false)
-
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error?.message)
 			} else {
@@ -118,9 +126,9 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
-			confirmLoading={processing}
+			confirmLoading={isCreating || isUpdating}
 		>
-			<Spin spinning={processing}>
+			<Spin spinning={isCreating || isUpdating}>
 				<Form
 					form={form}
 					layout="vertical"
@@ -131,21 +139,25 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
-						Duration: dayjs().hour(1).minute(0).second(0),
-						Date: dayjs().add(1, 'day'),
-						Time: dayjs().add(2, 'hours').minute(0).second(0),
+						lecturerId: session?.user.id,
+						duration: dayjs().hour(1).minute(0).second(0),
+						date: dayjs().add(1, 'day'),
+						time: dayjs().add(2, 'hours').minute(0).second(0),
 					}}
 				>
+					<Form.Item name="lecturerId" required hidden noStyle>
+						<Input />
+					</Form.Item>
 					<Form.Item label="Лектор" required wrapperCol={{ span: 24 }}>
 						<Input style={{ color: '#666' }} width={'100%'} readOnly disabled value={session?.user.name || ''} />
 					</Form.Item>
 
-					<Form.Item label="Тема лекции" name="Name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
+					<Form.Item label="Тема лекции" name="name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
 						<Input width={'100%'} placeholder={`Например: Как проводить анализ проекта`} />
 					</Form.Item>
 
 					<Form.Item
-						name="Direction"
+						name="directionId"
 						label="К какому направлению относится данная лекция"
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
@@ -155,7 +167,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Form.Item>
 
 					<Form.Item
-						name="Description"
+						name="description"
 						label="План лекции. О чем планируете рассказывать"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
@@ -165,13 +177,13 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Row>
 						<Col>
-							<Form.Item name="Date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item name="date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
 								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 						<Col offset={1}>
 							<Form.Item
-								name="Time"
+								name="time"
 								label="Время проведения"
 								rules={[{ required: true }]}
 								wrapperCol={{ span: 24 }}
@@ -184,7 +196,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						label="Ссылка на лекцию"
-						name="Link"
+						name="linkToStream"
 						extra={
 							<div>
 								Создайте ссылу на трансляцию в{' '}
@@ -201,12 +213,8 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						<Input width={'100%'} />
 					</Form.Item>
 
-					<Form.Item name="Duration" label="Длительность лекции" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+					<Form.Item name="duration" label="Длительность лекции" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
 						<TimePicker format="HH:mm" minuteStep={10} />
-					</Form.Item>
-
-					<Form.Item label="Стоимость" rules={[{ required: true }]} required>
-						<InputNumber disabled readOnly min={0} defaultValue={0} onChange={() => {}} /> TON
 					</Form.Item>
 				</Form>
 			</Spin>
