@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Button, Dropdown, Grid, Popconfirm, Space, Spin, Table, Tooltip, message } from 'antd'
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
 import { ColumnsType } from 'antd/lib/table'
+import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { FaChalkboardTeacher } from 'react-icons/fa'
 import { HiOutlineTrash } from 'react-icons/hi'
 import { TbHeartOff, TbHeart, TbDotsVertical } from 'react-icons/tb'
 import useSWR from 'swr'
@@ -14,7 +14,6 @@ import PropositionLectureModal from '@/components/modals/PropositionLectureModal
 import SetLecturerModal from '@/components/modals/SetLecturerModal'
 import { fetcher, fetherForMutation } from '@/helpers/fetcher'
 import { lectureStatusAsText } from '@/helpers/format'
-import Link from 'next/link'
 
 const mobileMenu: ItemType[] = [
 	{
