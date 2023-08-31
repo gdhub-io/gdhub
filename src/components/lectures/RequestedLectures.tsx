@@ -14,6 +14,7 @@ import PropositionLectureModal from '@/components/modals/PropositionLectureModal
 import SetLecturerModal from '@/components/modals/SetLecturerModal'
 import { fetcher, fetherForMutation } from '@/helpers/fetcher'
 import { lectureStatusAsText } from '@/helpers/format'
+import Link from 'next/link'
 
 const mobileMenu: ItemType[] = [
 	{
@@ -40,7 +41,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		data,
 		mutate: updateList,
 		isValidating: isLoading,
-	} = useSWR({ url: '/api/lecture/list', data: { status: ['Requested'] } }, fetcher, {
+	} = useSWR({ url: '/api/lecture/list', data: { status: ['Requested', 'Actualized'] } }, fetcher, {
 		revalidateOnFocus: false,
 	})
 	const { trigger: updateReleventForListener } = useSWRMutation('/api/lecture/listener', fetherForMutation)
@@ -97,11 +98,22 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					return data
 				} else {
 					return applicatnsCount >= 10 ? (
-						<Button type="primary" onClick={() => handleSetLecturer(lecture.id)}>
-							<Space align="center">
-								<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> Стать лектором
-							</Space>
-						</Button>
+						// <Button type="primary" onClick={() => handleSetLecturer(lecture.id)}>
+						// 	<Space align="center">
+						// 		<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> Стать лектором
+						// 	</Space>
+						// </Button>
+						<small>
+							<strong>Идет поиск эксперта по этой теме.</strong>
+							<br />
+							Если у вас есть экспертиза в данном вопросе,
+							<br />
+							можете предлоджить себя в качестве лектора через{' '}
+							<Link href="https://t.me/+HD91s6-i7uAwZDIy" className="text-link">
+								Телеграм-чат
+							</Link>
+							.
+						</small>
 					) : (
 						<small>Пока нет, ждем больше желающих</small>
 					)
