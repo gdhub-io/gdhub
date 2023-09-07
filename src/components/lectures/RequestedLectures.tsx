@@ -3,8 +3,9 @@ import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
 import LectureRequestModal from '@/components/modals/LectureRequestModal'
 import PropositionLectureModal from '@/components/modals/PropositionLectureModal'
 import SetLecturerModal from '@/components/modals/SetLecturerModal'
+import { env } from '@/helpers/env'
 import { lectureStatusAsText } from '@/helpers/format'
-import { Lecture, LectureListener, LectureStage, User, WorkDirection } from '@prisma/client'
+import { Lecture, LectureListener, LectureStage, LecturerRequest, User, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Dropdown, Grid, Popconfirm, Space, Spin, Table, Tooltip, Typography, message } from 'antd'
 import { ItemType } from 'antd/lib/menu/hooks/useItems'
@@ -12,7 +13,7 @@ import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { FaChalkboardTeacher } from 'react-icons/fa'
-import { HiOutlineTrash } from 'react-icons/hi'
+import { HiOutlineTrash, HiOutlineX } from 'react-icons/hi'
 import { TbHeartOff, TbHeart, TbDotsVertical } from 'react-icons/tb'
 
 const { Title } = Typography
@@ -54,7 +55,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			},
 		}
 	)
-	// const { trigger: updateReleventForListener } = useSWRMutation('/api/lecture/listener', fetherForMutation)
+
 	const { mutateAsync: deleteLecture } = useMutation(
 		({ id }: { id: string }) => axios.delete('/api/user/lecture', { params: { id } }),
 		{
@@ -63,6 +64,17 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			},
 		}
 	)
+
+	const { mutateAsync: deleteLecturerRequest } = useMutation(
+		({ id, lectureId }: { id: string; lectureId: string }) =>
+			axios.delete(`/api/user/lecture/${lectureId}/lecturer/${id}`),
+		{
+			onSuccess: () => {
+				updateList()
+			},
+		}
+	)
+
 	const { data: workDirections } = useQuery(
 		['workDirections'],
 		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
@@ -70,6 +82,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			staleTime: Infinity,
 		}
 	)
+
 	const {
 		data: requestedLectures,
 		refetch: updateList,
@@ -79,12 +92,12 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			(Lecture & {
 				listeners: LectureListener[]
 				direction: WorkDirection
-				lecturer: User
+				lecturerRequests: (LecturerRequest & { user: User })[]
 				isRelevant: boolean
 				isAuthor: boolean
 			})[]
 		>('/api/lectures', {
-			params: { stage: LectureStage.Requested },
+			params: { stage: [LectureStage.Requested, LectureStage.Actualized].join(',') },
 		})
 	)
 
@@ -92,7 +105,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		Lecture & {
 			listeners: LectureListener[]
 			direction: WorkDirection
-			lecturer: User
+			lecturerRequests: (LecturerRequest & { user: User })[]
 			isRelevant: boolean
 			isAuthor: boolean
 		}
@@ -141,21 +154,52 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		},
 		{
 			title: screens.lg ? 'Лектор' : null,
-			dataIndex: 'lectuerId',
 			responsive: ['md'],
 			key: 'Lecturer Name',
 			render: (data: any, lecture) => {
 				const applicatnsCount = lecture.listeners?.length || 0
+				const speaker = lecture.lecturerRequests?.find((l) => l.isSpeaker)
+				const myLecturerRequest = lecture.lecturerRequests.find((r) => r.userId == session?.user.id)
 
-				if (data) {
-					return data
+				if (speaker) {
+					return speaker.user.name
 				} else {
 					return applicatnsCount >= 1 ? (
-						<Button type="primary" onClick={() => handleSetLecturer(lecture.id)}>
-							<Space align="center">
-								<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> Стать лектором
-							</Space>
-						</Button>
+						<>
+							{myLecturerRequest ? (
+								<Space>
+									<Button
+										type="primary"
+										onClick={(e) => {
+											e.preventDefault()
+											handleSetLecturer(lecture?.id)
+										}}
+									>
+										<Space align="center">
+											<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> Мое предложение
+										</Space>
+									</Button>
+									<Popconfirm
+										title="Уверены?"
+										okText="Да"
+										cancelText="Нет"
+										onConfirm={() => handleDeleteLecturerRequest(lecture.id, myLecturerRequest.id)}
+									>
+										<Tooltip title="Не хочу быть лектором">
+											<Button type="text">
+												<HiOutlineX />
+											</Button>
+										</Tooltip>
+									</Popconfirm>
+								</Space>
+							) : (
+								<Button type="primary" onClick={() => handleSetLecturer(lecture?.id)}>
+									<Space align="center">
+										<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> Стать лектором
+									</Space>
+								</Button>
+							)}
+						</>
 					) : (
 						<small>Пока нет, ждем больше желающих</small>
 					)
@@ -233,6 +277,16 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		}
 	}
 
+	const handleDeleteLecturerRequest = async (lectureId: string, currentLecturerRequestId: string) => {
+		try {
+			await deleteLecturerRequest({ id: currentLecturerRequestId, lectureId })
+
+			message.success('Запрос на лецию был удален')
+		} catch (error: any) {
+			message.error('Error')
+		}
+	}
+
 	const handleSetRelevantForMe = async (lectureId: string, isRelevant: boolean) => {
 		try {
 			if (isRelevant) {
@@ -271,7 +325,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				<Button type="primary" onClick={() => setShowLectureRequestModal(true)}>
 					Запросить новую лекцию
 				</Button>
-				<Button onClick={() => setShowPropositionLectureModal(true)}>Предложить провести лекцию</Button>
+				{/* <Button onClick={() => setShowPropositionLectureModal(true)}>Предложить провести лекцию</Button>*/}
 			</Space>
 
 			{requestedLectures?.data?.length ? (

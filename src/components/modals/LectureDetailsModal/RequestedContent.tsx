@@ -1,14 +1,18 @@
-import { Fragment } from 'react'
-import { Lecture, Speciality, User } from '@prisma/client'
+import { Fragment, useMemo } from 'react'
+import { Lecture, LecturerRequest, Speciality, User } from '@prisma/client'
 import { Avatar, Card } from 'antd'
+import { useSession } from 'next-auth/react'
 
 export const RequestedContent = ({
 	lecture,
 }: {
-	lecture: Lecture & { lecturer: User & { specialities: Speciality[] } }
+	lecture: Lecture & { lecturerRequests: (LecturerRequest & { user: User & { specialities: Speciality[] } })[] }
 }) => {
+	const { data: session } = useSession()
+	const lecturer = useMemo(() => lecture.lecturerRequests.find((r) => r.userId == session?.user.id), [lecture])
+
 	const lectureAvatar = () => {
-		return lecture.lecturer.image ? <Avatar shape="square" size={64} src={lecture.lecturer.image} /> : null
+		return lecturer?.user.image ? <Avatar shape="square" size={64} src={lecturer.user.image} /> : null
 	}
 
 	return (
@@ -20,17 +24,17 @@ export const RequestedContent = ({
 			</small>
 			<div className="lecture-description">{lecture.stage == 'Proposed' ? lecture.description : lecture.wishes}</div>
 
-			{!!lecture.lecturer && (
+			{!!lecturer && (
 				<>
 					<div style={{ marginTop: 16 }}>Лектор:</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
-							title={lecture.lecturer.name}
+							title={lecturer.user.name}
 							description={
 								<>
-									{lecture.lecturer.specialities
-										? lecture.lecturer.specialities.map((s: Speciality) => (
+									{lecturer.user.specialities
+										? lecturer.user.specialities.map((s: Speciality) => (
 												<Fragment key={s.name}>
 													{s.name} ({s.level})
 													<br />

@@ -21,7 +21,7 @@ class ApiLecturesHandler {
 		const lectures = await prisma.lecture.findMany({
 			where: { stage: stages ? { in: stages } : undefined },
 			include: {
-				lecturer: true,
+				lecturerRequests: { include: { user: true } },
 				direction: true,
 				listeners: { select: { listenerId: true } },
 			},

@@ -1,52 +1,55 @@
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
+import { Lecture, LecturerRequest, Speciality, User } from '@prisma/client'
 import { Alert, Avatar, Card } from 'antd'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import YouTube from 'react-youtube'
 import styles from './style.module.scss'
 
-export const HeldContent = ({ lecture, userIsRegistered }: any) => {
+export const HeldContent = ({
+	lecture,
+}: {
+	lecture: Lecture & { lecturerRequests: (LecturerRequest & { user: User & { specialities: Speciality[] } })[] }
+}) => {
 	const router = useRouter()
+	const { data: session } = useSession()
+	const lecturer = useMemo(() => lecture.lecturerRequests?.find((r) => r.userId == session?.user.id), [lecture])
 
 	const lectureAvatar = () => {
-		const [image] = lecture.Lecturer['Image Link (from Account)']
+		const image = lecturer?.user.image
 		return image ? <Avatar shape="square" size={64} src={image} /> : null
 	}
 
 	return (
 		<>
-			{lecture['Youtube Video ID']?.length > 0 ? (
+			{lecture.recordLink ? (
 				<YouTube
 					className={styles.videoCover}
-					videoId={lecture['Youtube Video ID']}
+					videoId={lecture.recordLink}
 					opts={{ playerVars: { disablekb: 1, autoplay: 0 } }}
 				/>
 			) : (
 				<Alert type="warning" message="Видеозаписи еще нет" style={{ marginBottom: 16 }} />
 			)}
-			<h2>{lecture.Name}</h2>
-			<div className="lecture-date">
-				Прошло:{' '}
-				{DateTime.fromISO(lecture['Date']).toFormat('dd LLL yyyy', {
-					locale: router.locale,
-				})}
-			</div>
+			<h2>{lecture.name}</h2>
+			<div className="lecture-date">Прошло: {!!lecturer?.date ? dayjs(lecturer.date).format('dd LLL yyyy') : null}</div>
 			<div style={{ marginTop: 16 }}>Содержание лекции:</div>
-			<div className="lecture-description">{lecture.Description}</div>
+			<div className="lecture-description">{lecturer?.curriculum}</div>
 
-			{!!lecture.Lecturer && (
+			{!!lecturer && (
 				<>
 					<div style={{ marginTop: 16 }}>Лектор:</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
-							title={lecture.Lecturer.Name}
+							title={lecturer.user.name}
 							description={
 								<>
-									{lecture.Lecturer.Specialities
-										? lecture.Lecturer.Specialities.map((s: any) => (
-												<Fragment key={s.Name}>
-													{s.Name} ({s.Level})
+									{lecturer.user.specialities
+										? lecturer.user.specialities.map((s: any) => (
+												<Fragment key={s.name}>
+													{s.name} ({s.level})
 													<br />
 												</Fragment>
 										  ))

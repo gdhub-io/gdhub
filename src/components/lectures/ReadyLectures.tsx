@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
-import { Lecture, LectureListener, LectureStage, User, WorkDirection } from '@prisma/client'
+import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
+import { Lecture, LectureListener, LectureStage, LecturerRequest, User, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
@@ -15,28 +15,20 @@ export const ReadyLectures = () => {
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
 	const { data: readyLectures, isLoading: isLoadingReadyLectures } = useQuery(['lectures', 'ready'], () =>
-		axios.get<
-			(Lecture & {
-				listeners: LectureListener[]
-				direction: WorkDirection
-				lecturer: User
-				isRelevant: boolean
-				isAuthor: boolean
-			})[]
-		>('/api/lectures', {
+		axios.get<LectureDetails[]>('/api/lectures', {
 			params: { stage: [LectureStage.Ready, LectureStage.Proposed].join(',') },
 		})
 	)
 
-	const columns: ColumnsType<
-		Lecture & {
-			listeners: LectureListener[]
-			direction: WorkDirection
-			lecturer: User
-			isRelevant: boolean
-			isAuthor: boolean
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		{
+			staleTime: Infinity,
 		}
-	> = useMemo(
+	)
+
+	const columns: ColumnsType<LectureDetails> = useMemo(
 		() => [
 			{
 				title: 'Тема лекции',
@@ -68,15 +60,6 @@ export const ReadyLectures = () => {
 							<small>{lecture.directionId}</small>
 							<br />
 							<small>Дата: {_date}</small>
-							<Button
-								style={{ marginTop: '10px' }}
-								onClick={() => {
-									setSelectedLectureId(lecture.id)
-									setShowLectureDetails(true)
-								}}
-							>
-								Вход/Регистрация
-							</Button>
 						</div>
 					)
 				},
@@ -86,12 +69,21 @@ export const ReadyLectures = () => {
 				dataIndex: 'directionId',
 				key: 'directionId',
 				responsive: ['md'],
+				render(value) {
+					const direction = workDirections?.data.find((direction) => direction.id == value)
+					return direction?.name || 'unknown'
+				},
 			},
 			{
 				title: 'Лектор',
 				dataIndex: 'lecturerId',
-				key: 'Lecturer Name',
+				key: 'lecturerId',
 				responsive: ['md'],
+				render(data, record) {
+					const speaker = record.lecturerRequests?.find((l) => l.isSpeaker)
+
+					return speaker?.user.name
+				},
 			},
 			{
 				title: 'Дата',
@@ -114,7 +106,7 @@ export const ReadyLectures = () => {
 							setShowLectureDetails(true)
 						}}
 					>
-						Вход/Регистрация
+						Узнать больше
 					</Button>
 				),
 			},

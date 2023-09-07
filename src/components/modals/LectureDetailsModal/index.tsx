@@ -1,15 +1,31 @@
 import { Fragment, useEffect, useState } from 'react'
-import { Lecture, LectureStage, Speciality, User } from '@prisma/client'
+import {
+	Lecture,
+	LectureListener,
+	LectureStage,
+	LecturerRequest,
+	Speciality,
+	User,
+	WorkDirection,
+} from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Grid, message, Modal, Spin } from 'antd'
 import axios from 'axios'
+import { useSession } from 'next-auth/react'
 import { HeldContent } from './HeldContent'
 import { ReadyContent } from './ReadyContent'
 import { RequestedContent } from './RequestedContent'
 import styles from './style.module.scss'
 
+export type LectureDetails = Lecture & {
+	lecturerRequests: (LecturerRequest & { user: User & { specialities: Speciality[] } })[]
+	listeners: LectureListener[]
+	direction: WorkDirection
+}
+
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const screens = Grid.useBreakpoint()
+	const { data: session } = useSession()
 	// const [processing, setProcessing] = useState(true)
 	// const [lecture, setLecture] = useState<any>()
 	const [isReady, setIsReady] = useState(false)
@@ -19,14 +35,13 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 		data: lecture,
 		isLoading: processing,
 		refetch,
-	} = useQuery(
-		['lecture-data', lectureId],
-		() =>
-			axios.get<Lecture & { lecturer: User & { specialities: Speciality[] } }>(`/api/user/lecture/${lectureId}/show`),
-		{
-			enabled: false,
-		}
-	)
+	} = useQuery(['lecture-data', lectureId], () => axios.get<LectureDetails>(`/api/user/lecture/${lectureId}/show`), {
+		enabled: false,
+		onSuccess(data) {
+			setIsReady(true)
+			setUserIsRegistered(!!data.data.listeners.find((l) => l.listenerId == session?.user.id))
+		},
+	})
 	const { mutateAsync: registrationToLecture, isLoading: registrationProcessing } = useMutation(
 		(params: { lectureId: string }) => axios.post<any>(`/api/user/lecture/${lectureId}/registration`)
 	)
@@ -109,9 +124,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 							LectureStage.Proposed as string,
 							LectureStage.Actualized as string,
 						].includes(lecture.data.stage) && <RequestedContent lecture={lecture.data} />}
-						{lecture.data.stage == LectureStage.Ready && (
-							<ReadyContent lecture={lecture.data} userIsRegistered={userIsRegistered} />
-						)}
+						{lecture.data.stage == LectureStage.Ready && <ReadyContent lecture={lecture.data} />}
 						{lecture.data.stage == LectureStage.Held && <HeldContent lecture={lecture.data} />}
 					</>
 				)}

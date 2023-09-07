@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { Lecture, LecturerRequest, WorkDirection } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
@@ -8,140 +11,97 @@ import { useSession } from 'next-auth/react'
 const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
-	const [processing, setProcessing] = useState(true)
-	const [lecture, setLectureId] = useState<any>()
+	const [speakerRequest, setSpeakerRequest] = useState<LecturerRequest>()
 
-	const directionsOptions = [
+	const { isLoading: isLoadingLecture } = useQuery(
+		['lecturer-requestv', lectureId],
+		() =>
+			axios.get<Lecture & { lecturerRequests: LecturerRequest[] }>('/api/user/lecture', { params: { id: lectureId } }),
 		{
-			value: 'Programming',
-			label: 'Программирование',
-		},
-		{
-			value: 'Game Design',
-			label: 'Геймдизайн',
-		},
-		{
-			value: '2D Art & Animation',
-			label: '2D арт и анимация',
-		},
-		{
-			value: '3D Art & Animation',
-			label: '3D арт и анимация',
-		},
-		{
-			value: 'Project Management',
-			label: 'Управление проектом',
-		},
-		{
-			value: 'Product Management',
-			label: 'Управление продуктом',
-		},
-		{
-			value: 'Technical Art',
-			label: 'Технический арт',
-		},
-		{
-			value: 'Team Management',
-			label: 'Управление командой',
-		},
-		{
-			value: 'Other',
-			label: 'Другое',
-		},
-	]
+			enabled: !!lectureId,
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
+			refetchOnMount: false,
+			onSuccess: ({ data }) => {
+				form.setFieldsValue({
+					name: data.name,
+					wishes: data.wishes,
+					directionId: data.directionId,
+				})
 
-	useEffect(() => {
-		if (open && lectureId) {
-			getLecture(lectureId)
+				if (session) {
+					const speakerRequest = data.lecturerRequests?.find((r) => r.userId == session.user.id)
+
+					if (speakerRequest) {
+						setSpeakerRequest(speakerRequest)
+
+						form.setFieldsValue({
+							linkToStream: speakerRequest.linkToStream,
+							curriculum: speakerRequest.curriculum,
+							date: speakerRequest.date ? dayjs(speakerRequest.date) : undefined,
+							time: speakerRequest.date ? dayjs(speakerRequest.date) : undefined,
+						})
+					}
+				}
+			},
 		}
-	}, [open])
+	)
 
-	useEffect(() => {
-		if (lecture) {
-			console.log('lecture')
-			form.setFieldsValue({ ...lecture })
+	const { mutateAsync: createLecturerRequest } = useMutation((data: Partial<LecturerRequest>) =>
+		axios.post<any>(`/api/user/lecture/${lectureId}/lecturer`, data)
+	)
+	const { mutateAsync: updateLecturerRequest } = useMutation(
+		({ lecturerRequestId, data }: { lecturerRequestId: string; data: Partial<LecturerRequest> }) =>
+			axios.put<any>(`/api/user/lecture/${lectureId}/lecturer/${lecturerRequestId}`, data)
+	)
+
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		{
+			staleTime: Infinity,
 		}
-	}, [lecture, lectureId])
+	)
 
-	const getLecture = async (lectureId: string) => {
-		try {
-			setProcessing(true)
-
-			const response: any = await fetch('/api/lecture/get', {
-				method: 'post',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					id: lectureId,
-				}),
-			})
-
-			if (response.error) {
-				throw new Error(response.error.message)
-			}
-
-			const data = await response.json()
-
-			// form.setFieldValue('Date', dayjs().add(2, 'days').format('Y-M-D'))
-			// form.setFieldValue('Time', dayjs().format('HH:mm'))
-
-			form.setFieldsValue({
-				Name: data.Name,
-				Wishes: data.Wishes,
-				Direction: data.Direction,
-				Date: dayjs().add(1, 'day'),
-				Time: dayjs().add(2, 'hours').set('minutes', 0),
-			})
-			setProcessing(false)
-		} catch (error: any) {
-			console.log('getlecture', error)
-			message.error(error.message)
-			setProcessing(false)
-		}
-	}
+	const directionsOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
 
 	const handleOk = async () => {
 		try {
 			const formData = await form.validateFields()
+			const date = formData.date
+				.set('hour', formData.time.hour())
+				.set('minute', formData.time ? formData.time?.minute() : 0)
+				.set('second', 0)
 
-			setProcessing(true)
-			const response: any = await fetch('/api/lecture/save', {
-				method: 'post',
-				body: JSON.stringify({
-					id: lectureId || null,
+			if (!!speakerRequest) {
+				await updateLecturerRequest({
+					lecturerRequestId: speakerRequest.id,
 					data: {
-						Lecturer: session?.user.id,
-						Direction: formData.Direction,
-						Description: formData.Description,
-						Link: formData.Link,
-						Date: formData.Date.set({
-							hours: formData.Time.hours(),
-							minutes: formData.Time.minutes(),
-							seconds: 0,
-						}).toISOString(),
+						directionId: formData.directionId,
+						lectureId,
+						curriculum: formData.curriculum,
+						linkToStream: formData.linkToStream,
+						date: date.toISOString(),
 					},
-				}),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-			setProcessing(false)
+				})
 
-			if (!response.ok) {
-				throw new Error('Something wrong')
-			}
+				message.success('Ваше предложение обновлено')
+			} else {
+				await createLecturerRequest({
+					directionId: formData.directionId,
+					lectureId,
+					curriculum: formData.curriculum,
+					linkToStream: formData.linkToStream,
+					date: date.toISOString(),
+				})
 
-			const data = await response.json()
-
-			if (data.error) {
-				throw new Error(response.error.message)
+				message.success('Ваше предложение провести лекцию отправлено')
 			}
 
 			form.resetFields()
-			message.success(lectureId ? 'Данные идеи обновлены' : 'Добавлена новая идея игры')
+
 			onOk()
 		} catch (error: any) {
-			setProcessing(false)
-
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
@@ -151,7 +111,6 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	}
 
 	const handleCancel = () => {
-		setLectureId(null)
 		form.resetFields()
 		onCancel()
 	}
@@ -164,13 +123,13 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			destroyOnClose
 			maskClosable={false}
 			cancelText="Закрыть"
-			okText="Опубликовать"
+			okText={speakerRequest ? 'Сохранить' : 'Предложить'}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
-			confirmLoading={processing}
+			confirmLoading={isLoadingLecture}
 		>
-			<Spin spinning={processing}>
+			<Spin spinning={isLoadingLecture}>
 				<Form
 					form={form}
 					layout="vertical"
@@ -181,10 +140,13 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					autoComplete="off"
 					requiredMark="optional"
 				>
-					<Form.Item label="Тема лекции" name="Name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
+					<Form.Item name="lecturerId" hidden noStyle>
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="Тема лекции" name="name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
 						<Input
 							width={'100%'}
-							placeholder={`Например: Как проводить анализ проекта`}
 							readOnly
 							disabled
 							style={{ color: '#000', padding: 0, fontWeight: 'bold' }}
@@ -193,7 +155,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Form.Item>
 
 					<Form.Item
-						name="Wishes"
+						name="wishes"
 						label="Пожелания по содержанию лекции"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
@@ -202,7 +164,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Form.Item>
 
 					<Form.Item
-						name="Direction"
+						name="directionId"
 						label="К какому направлению относится данная лекция"
 						wrapperCol={{ span: 24 }}
 						required
@@ -211,7 +173,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Form.Item>
 
 					<Form.Item
-						name="Description"
+						name="curriculum"
 						label="План лекции. О чем планируете рассказывать"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
@@ -221,30 +183,26 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Row>
 						<Col>
-							<Form.Item name="Date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
-								<DatePicker
-									defaultValue={dayjs().add(1, 'day')}
-									format="DD.MM.YYYY"
-									disabledDate={(current) => current && current < dayjs().endOf('day')}
-								/>
+							<Form.Item name="date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 						<Col offset={1}>
 							<Form.Item
-								name="Time"
+								name="time"
 								label="Время проведения"
 								rules={[{ required: true }]}
 								wrapperCol={{ span: 24 }}
 								extra={<small>Временная зона {DateTime.now().offsetNameShort}</small>}
 							>
-								<TimePicker defaultValue={dayjs()} format="HH:mm" minuteStep={30} />
+								<TimePicker format="HH:mm" minuteStep={15} />
 							</Form.Item>
 						</Col>
 					</Row>
 
 					<Form.Item
 						label="Ссылка на лекцию"
-						name="Link"
+						name="linkToStream"
 						extra={
 							<div>
 								Создайте ссылу на трансляцию в{' '}
@@ -254,8 +212,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 								(или на ином сервисе) и вставьте в это поле.
 							</div>
 						}
-						rules={[{ required: true, type: 'url' }]}
-						required
+						rules={[{ type: 'url' }]}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input width={'100%'} />

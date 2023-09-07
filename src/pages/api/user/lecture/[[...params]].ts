@@ -11,7 +11,10 @@ class ApiLectureHandler {
 	public async get(@Req() req: NextApiRequestWithUser, @Query() { id }: { id: string }) {
 		const lecture = await prisma.lecture.findFirst({
 			where: { id },
-			include: { listeners: { select: { id: true } } },
+			include: {
+				listeners: { select: { id: true } },
+				lecturerRequests: { include: { user: { select: { id: true, name: true, image: true } } } },
+			},
 		})
 
 		return lecture
@@ -21,10 +24,25 @@ class ApiLectureHandler {
 	public async show(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
 		const lecture = await prisma.lecture.findFirst({
 			where: { id },
-			include: { listeners: { select: { id: true } } },
+			include: {
+				listeners: { select: { id: true, lectureId: true } },
+				lecturerRequests: { include: { user: { select: { id: true, name: true, image: true } } } },
+			},
 		})
 
 		return lecture
+	}
+
+	@Post('/:id/registration')
+	public async registration(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
+		const lectureListener = await prisma.lectureListener.create({
+			data: {
+				lecture: { connect: { id } },
+				listener: { connect: { id: req.user.id } },
+			},
+		})
+
+		return lectureListener
 	}
 
 	@Post()
@@ -57,6 +75,42 @@ class ApiLectureHandler {
 	public async delete(@Query() { id }: { id: string }) {
 		await prisma.lecture.delete({
 			where: { id },
+		})
+	}
+
+	@Post('/:id/lecturer')
+	public async createLecturerRequest(@Req() req: NextApiRequestWithUser, @Body() data: any) {
+		const { lectureId, ...other } = data
+
+		const lecture = await prisma.lecturerRequest.create({
+			data: {
+				user: { connect: { id: req.user.id } },
+				lecture: { connect: { id: lectureId } },
+				...other,
+			},
+		})
+
+		return lecture
+	}
+
+	@Put('/:id/lecturer/:requestId')
+	public async updateLecturerRequest(
+		@Req() req: NextApiRequestWithUser,
+		@Body() data: any,
+		@Param('requestId') requestId: string
+	) {
+		const lecture = await prisma.lecturerRequest.update({
+			where: { id: requestId },
+			data,
+		})
+
+		return lecture
+	}
+
+	@Delete('/:lectureId/lecturer/:requestId')
+	public async deleteLecturerRequest(@Param('requestId') requestId: string, @Param('lectureId') lectureId: string) {
+		await prisma.lecturerRequest.delete({
+			where: { id: requestId, lectureId },
 		})
 	}
 }

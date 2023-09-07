@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
-import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
-import { Lecture, LectureListener, LectureStage, User, WorkDirection } from '@prisma/client'
+import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
+import { LectureStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 
 export const HeldLectures = () => {
@@ -25,16 +25,14 @@ export const HeldLectures = () => {
 		isLoading,
 	} = useQuery(['lectures'], () => axios.get('/api/lectures', { params: { stage: LectureStage.Held } }))
 
-	const columns: ColumnsType<DataType> = useMemo(
+	const columns: ColumnsType<LectureDetails> = useMemo(
 		() => [
 			{
 				title: 'Тема лекции',
 				dataIndex: 'name',
 				key: 'name',
 				render: (text, lecture) => {
-					const _date = DateTime.fromISO(lecture.Date).toFormat('dd LLL yyyy', {
-						locale: router.locale,
-					})
+					const _date = dayjs(lecture.date).format('dd LLL YYYY')
 
 					return screens.md ? (
 						<div
@@ -56,7 +54,7 @@ export const HeldLectures = () => {
 						>
 							<strong>{text}</strong>
 							<br />
-							<small>{lecture.Direction}</small>
+							<small>{lecture.directionId}</small>
 							<br />
 							<small>Дата: {_date}</small>
 						</div>
@@ -64,16 +62,15 @@ export const HeldLectures = () => {
 				},
 			},
 			{
-				title: 'Направление',
-				dataIndex: 'directionId',
-				key: 'directionId',
-				responsive: ['md'],
-			},
-			{
 				title: 'Лектор',
 				dataIndex: 'lecturerId',
 				key: 'lecturerId',
 				responsive: ['md'],
+				render(data, record) {
+					const speaker = record.lecturerRequests?.find((l) => l.isSpeaker)
+
+					return speaker?.user.name
+				},
 			},
 			{
 				title: 'Дата',
@@ -81,9 +78,7 @@ export const HeldLectures = () => {
 				key: 'date',
 				responsive: ['md'],
 				render: (date) => {
-					return DateTime.fromISO(date).toFormat('dd LLL yyyy', {
-						locale: router.locale,
-					})
+					return dayjs(date).format('dd LLL YYYY')
 				},
 			},
 		],

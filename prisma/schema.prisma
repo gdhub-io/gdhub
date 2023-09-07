@@ -43,7 +43,6 @@ model User {
   roles              UserRole[]          @default([Guest])
   updatedAt          DateTime            @updatedAt
   accounts           Account[]
-  lectures           Lecture[]           @relation("lecturer")
   requestedLectures  Lecture[]           @relation("requestedBy")
   listener           LectureListener[]
   profile            Profile?
@@ -53,6 +52,7 @@ model User {
   sessions           Session[]
   specialities       Speciality[]
   memberInTeams      TeamMember[]
+  lecturerRequests   LecturerRequest[]
 }
 
 model Profile {
@@ -247,25 +247,40 @@ model TeamVacancy {
 }
 
 model Lecture {
-  id            String            @id @default(cuid())
-  name          String
-  wishes        String?
-  requestedById String?
-  lecturerId    String?
-  directionId   String
-  description   String?
-  date          DateTime?
-  linkToStream  String?
-  recordLink    String?
-  duration      Int?
-  isArchived    Boolean           @default(false)
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  stage         LectureStage
-  lecturer      User?             @relation("lecturer", fields: [lecturerId], references: [id])
-  requestedBy   User?              @relation("requestedBy", fields: [requestedById], references: [id])
-  direction     WorkDirection     @relation(fields: [directionId], references: [id])
-  listeners     LectureListener[]
+  id               String            @id @default(cuid())
+  name             String
+  wishes           String?
+  requestedById    String?
+  // lecturerId         String?
+  // lecturer           LecturerRequest?  @relation(name: "selectedLecturer", fields: [lecturerId], references: [id], onDelete: Cascade)
+  directionId      String
+  description      String?
+  date             DateTime?
+  linkToStream     String?
+  recordLink       String?
+  duration         Int?
+  isArchived       Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  stage            LectureStage
+  requestedBy      User?             @relation("requestedBy", fields: [requestedById], references: [id])
+  direction        WorkDirection     @relation(fields: [directionId], references: [id])
+  listeners        LectureListener[]
+  lecturerRequests LecturerRequest[]
+}
+
+model LecturerRequest {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  directionId  String
+  curriculum   String    @db.Text
+  date         DateTime?
+  duration     Int?
+  lectureId    String
+  linkToStream String?
+  isSpeaker    Boolean   @default(false)
+  lecture      Lecture   @relation(fields: [lectureId], references: [id], onDelete: Cascade)
 }
 
 model LectureListener {

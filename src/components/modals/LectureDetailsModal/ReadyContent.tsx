@@ -1,41 +1,46 @@
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
+import { LecturerRequest } from '@prisma/client'
 import { Avatar, Button, Card, Space } from 'antd'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
+import { LectureDetails } from '.'
 
-export const ReadyContent = ({ lecture, userIsRegistered }: any) => {
+export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 	const router = useRouter()
+	const { data: session } = useSession()
+	const lecturer = useMemo(
+		() => lecture.lecturerRequests.find((r: LecturerRequest) => r.userId == session?.user.id),
+		[lecture]
+	)
+	const userIsRegistered = useMemo(() => lecture.listeners.find((r) => r.listenerId == session?.user.id), [lecture])
 
 	const lectureAvatar = () => {
-		const [image] = lecture.Lecturer['Image Link (from Account)']
+		const image = lecturer?.user.image
 		return image ? <Avatar shape="square" size={64} src={image} /> : null
 	}
 
 	return (
 		<>
-			<h2>{lecture.Name}</h2>
+			<h2>{lecture.name}</h2>
 			<div className="lecture-date">
-				Когда:{' '}
-				{DateTime.fromISO(lecture['Date']).toFormat('dd LLL yyyy, t z', {
-					locale: router.locale,
-				})}{' '}
-				(онлайн)
+				Когда: {!!lecturer?.date && dayjs(lecturer.date).format('dd LLL YYYY, hh:mm')} (онлайн)
 			</div>
 			<div style={{ marginTop: 16 }}>Что будет:</div>
-			<div className="lecture-description">{lecture.Description}</div>
+			<div className="lecture-description">{lecturer?.curriculum}</div>
 
-			{!!lecture.Lecturer && (
+			{!!lecturer && (
 				<>
 					<div style={{ marginTop: 16 }}>Лектор:</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
-							title={lecture.Lecturer.Name}
+							title={lecturer.user.name}
 							description={
 								<>
-									{lecture.Lecturer.Specialities
-										? lecture.Lecturer.Specialities.map((s: any) => (
+									{lecturer.user.specialities
+										? lecturer.user.specialities.map((s: any) => (
 												<Fragment key={s.Name}>
 													{s.Name} ({s.Level})
 													<br />
@@ -49,10 +54,9 @@ export const ReadyContent = ({ lecture, userIsRegistered }: any) => {
 				</>
 			)}
 
-			<div style={{ marginTop: 16 }}>Стоимость: бесплатно</div>
-			{!!lecture.Link && userIsRegistered && (
+			{!!lecturer?.linkToStream && userIsRegistered && (
 				<Space wrap direction="vertical">
-					<Link href={lecture.Link} target="_blank">
+					<Link href={lecturer.linkToStream} target="_blank">
 						<Button type="primary" style={{ marginTop: 16 }}>
 							Ссылка на стрим
 						</Button>
