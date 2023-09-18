@@ -39,7 +39,7 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "prisma/**/*.ts"
-  ],
+, "src/pages/admin/lecture/[id]"  ],
   "exclude": [
     "node_modules",
     "tsconfig.json"
