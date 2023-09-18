@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { GoLinkExternal } from 'react-icons/go'
+import styles from './style.module.scss'
 
 const { Paragraph, Title, Text } = Typography
 
@@ -111,7 +112,9 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 			}
 		>
 			<Spin spinning={isLoading}>
-				{!!project?.data.coverImage && <Image src={project?.data.coverImage} alt="" />}
+				<div className={styles.cover}>
+					{!!project?.data.coverImage && <Image src={project?.data.coverImage} alt="" fill />}
+				</div>
 				<Descriptions column={1}>
 					<Descriptions.Item label="Name">
 						<strong>{project?.data.name}</strong>

@@ -1,22 +1,15 @@
 .cover {
 	background-color: #161616;
 	width: 100%;
-	padding-top: 56.25%; /* 16:9 Aspect Ratio */
+	padding-top: 56.25%;
+	/* 16:9 Aspect Ratio */
 	position: relative;
 	aspect-ratio: 16 / 9;
-	border: 1px solid #000;
 	border-radius: 8px;
 	overflow: hidden;
+	margin-bottom: 24px;
 
 	img {
 		object-fit: contain;
-	}
-
-	:global {
-		.remove-cover-btn {
-			position: absolute;
-			top: 5px;
-			right: 5px;
-		}
 	}
 }
