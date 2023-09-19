@@ -1,6 +1,7 @@
 import { Button, Col, Row, Space, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
+import { Rubik } from 'next/font/google'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -12,7 +13,9 @@ import { DemoDayLayout } from '@/layouts/DemoDayLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { getActiveStage, getPitchedProjects, getSeasonBySlug } from '@/services/airtable'
 
-const { Title, Text } = Typography
+const { Title, Text, Paragraph } = Typography
+
+const demodayFont = Rubik({ weight: ['400'], subsets: ['latin', 'cyrillic'] })
 
 const DemoDayPage: NextPageWithLayout = ({ projects, season, stage }: any) => {
 	const router = useRouter()
@@ -25,8 +28,8 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, stage }: any) => {
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={router.asPath} />
 			</Head>
-			<div className={styles.container}>
-				<Space direction="vertical" size={64}>
+			<div className={`${demodayFont.className} ${styles.container}`}>
+				<Space direction="vertical" size={64} style={{ maxWidth: '1080px' }}>
 					<Space style={{ width: '100%', justifyContent: 'center' }} align="center" wrap>
 						<div className={styles.dateContainer}>
 							<div className={styles.date}>
@@ -37,13 +40,21 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, stage }: any) => {
 					<DemoTitle season={season} />
 					<Link href="https://tally.so/r/nprjx1">
 						<Button type="ghost" size="large" className={styles.actionButton}>
-							Регистрация на питч
+							Регистрация на мероприятие
 						</Button>
 					</Link>
-					<DemoDayProjects projects={projects} />
+					<div>
+						<DemoDayProjects projects={projects} />
+						<Paragraph style={{ color: '#fff', opacity: 0.7 }}>
+							Дневники разработки данных игр можно посмотреть на нашем{' '}
+							<Link href="https://www.youtube.com/@gamedev_hub" target="_blank">
+								Youtube канале
+							</Link>
+						</Paragraph>
+					</div>
 					<div className={styles.about}>
 						<Title level={3}>
-							Присоединяйтесь к нашему <span style={{ color: '#ffbb33' }}>{`{ сообществу }`}</span>
+							а также присоединяйтесь к нашему <span style={{ color: '#ffbb33' }}>{`{ сообществу }`}</span>
 						</Title>
 						<Row gutter={[32, 32]}>
 							<Col xs={{ span: 24 }} md={{ span: 12 }}>
@@ -63,11 +74,8 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, stage }: any) => {
 										Присоединяйтесь к нам в чат сообщества, общайтесь и узнавайте последние новости с проектов.
 									</Text>
 									<Link href="https://t.me/+STkVL-tU8NnOtoV2">
-										<Button
-											type="ghost"
-											icon={<TbBrandTelegram size={16} style={{ position: 'relative', top: 3, marginRight: 5 }} />}
-										>
-											Связаться
+										<Button type="ghost" icon={<TbBrandTelegram size={16} />}>
+											Чат в Telegram
 										</Button>
 									</Link>
 								</Space>
