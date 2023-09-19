@@ -24,9 +24,17 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, stage }: any) => {
 		<>
 			<Head>
 				<title>День питчей на Game Developers Hub</title>
-				<meta property="og:title" content="Проекты расскажут о себе в формате коротких питчей" />
+				<meta property="description" content="Проекты расскажут о себе в формате коротких питчей" />
+				<meta property="og:title" content="День питчей на Game Developers Hub" />
+				<meta property="og:description" content="Проекты расскажут о себе в формате коротких питчей" />
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={router.asPath} />
+				<meta property="og:image" content={season?.seoImage} />
+				<meta name="robots" content="noindex, nofollow" />
+				<meta name="twitter:title" content="День питчей на Game Developers Hub" />
+				<meta name="twitter:description" content="Проекты расскажут о себе в формате коротких питчей" />
+				<meta name="twitter:image" content={season?.seoImage} />
+				<meta name="twitter:card" content="summary_large_image" />
 			</Head>
 			<div className={`${demodayFont.className} ${styles.container}`}>
 				<Space direction="vertical" size={64} style={{ maxWidth: '1080px' }}>
