@@ -39,13 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			}
 		}
 
-		const finishMessage = [
-			'Бывает же такое!',
-			'Добро пожаловать в наш хаб!',
-			'Теперь-то начнем делать игры по-серъезному!',
-			'Ура! Своих прибавилось!',
-			'Сообщество растет. Приятно :)',
-		]
+		const finishMessage = ['Добро пожаловать в наш хаб!']
 		const randomInt = Math.floor(Math.random() * (finishMessage.length - 1))
 		const newSpecialitiesRender = newSpecialities.join(';\n- ')
 
