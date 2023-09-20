@@ -1,9 +1,8 @@
 // import { useEffect } from 'react'
-import SeasonContent from '@/components/SeasonContent'
+import SeasonContent, { SeasonData } from '@/components/SeasonContent'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
-import { Season, SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import Head from 'next/head'
@@ -16,7 +15,10 @@ const SeasonPage: NextPageWithLayout = () => {
 
 	const { data: season } = useQuery(
 		['season', seasonSlug],
-		() => axios.get<Season & { stages: SeasonStage[] }>('/api/season', { params: { slug: seasonSlug } }),
+		() =>
+			axios.get<SeasonData>('/api/season', {
+				params: { slug: seasonSlug },
+			}),
 		{ enabled: !!seasonSlug, refetchOnWindowFocus: false }
 	)
 
