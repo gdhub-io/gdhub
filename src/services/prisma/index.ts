@@ -6,7 +6,7 @@ import { userPrismaExtension } from './extenstions/user'
 
 const extendedPrismaClient = () => {
 	const prisma = new PrismaClient({
-		datasourceUrl: env('DATABASE_URL'),
+		datasourceUrl: env('POSTGRES_PRISMA_URL'),
 		log: process.env.DEBUG ? ['query', 'error'] : ['error'],
 		errorFormat: 'pretty',
 	})
