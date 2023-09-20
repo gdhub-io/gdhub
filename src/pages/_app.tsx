@@ -11,8 +11,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ConfigProvider } from 'antd'
 import dayjs from 'dayjs'
+import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import weekday from 'dayjs/plugin/weekday'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
@@ -22,7 +24,9 @@ import 'dayjs/locale/ru'
 import { DefaultSeo } from 'next-seo'
 
 dayjs.extend(localizedFormat)
+dayjs.extend(localeData)
 dayjs.extend(relativeTime)
+dayjs.extend(weekday)
 dayjs.locale('ru')
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {

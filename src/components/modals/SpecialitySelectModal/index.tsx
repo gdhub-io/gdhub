@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Speciality } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
 import { CheckboxValueType } from 'antd/es/checkbox/Group'
@@ -17,7 +18,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		data: specialities,
 		isLoading,
 		refetch: fetchSpecialities,
-	} = useQuery(['user-specialities'], () => axios.get('/api/user/specialities'))
+	} = useQuery(['user-specialities'], () => axios.get<Speciality[]>('/api/user/specialities'))
 
 	const {
 		data: contacts,
@@ -95,13 +96,13 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 					<List
 						bordered
 						dataSource={specialities?.data}
-						renderItem={(speciality: any) => (
+						renderItem={(speciality) => (
 							<List.Item
 								style={{ cursor: 'pointer', fontWeight: selectedItem == speciality.id ? 'bold' : 'normal' }}
 								onClick={() => setSelectedItem(speciality.id)}
 								actions={selectedItem == speciality.id ? [<BsCheckLg color="#000" key="icon-check-speciality" />] : []}
 							>
-								{speciality.Name}
+								{speciality.name}
 							</List.Item>
 						)}
 					/>

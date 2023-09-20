@@ -1,7 +1,5 @@
-import { useEffect } from 'react'
-import { fetcher } from '@/helpers/fetcher'
 import { ProjectTeam, TeamMember, TeamMemberStatus, User } from '@prisma/client'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Grid, message, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -9,10 +7,9 @@ import dayjs from 'dayjs'
 
 interface ProjectVacanciesArgs {
 	teamId: string
-	shouldUpdate?: boolean
 }
 
-const MyProjectTeam = ({ teamId, shouldUpdate = false }: ProjectVacanciesArgs) => {
+const MyProjectTeam = ({ teamId }: ProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
 
 	const {
@@ -31,13 +28,18 @@ const MyProjectTeam = ({ teamId, shouldUpdate = false }: ProjectVacanciesArgs) =
 		}
 	)
 
-	useEffect(() => {
-		fetchMyProjectTeam()
-	}, [shouldUpdate])
+	const { mutateAsync: fireMember, isLoading: isFiring } = useMutation(
+		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/fire', data),
+		{
+			onSuccess: () => {
+				fetchMyProjectTeam()
+			},
+		}
+	)
 
-	const handleFired = async (projectMemberId: string) => {
+	const handleFired = async (teamMemberId: string) => {
 		try {
-			await fetcher({ url: '/api/vacancy/candidate/fired', data: { id: projectMemberId } })
+			await fireMember({ id: teamMemberId })
 			fetchMyProjectTeam()
 
 			message.success('Сотрудник уволен')
@@ -108,7 +110,7 @@ const MyProjectTeam = ({ teamId, shouldUpdate = false }: ProjectVacanciesArgs) =
 				loading={isLoadingMyProjectTeam}
 				style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
 				columns={columns}
-				dataSource={projectTeam?.data.members.map((m: any) => ({ ...m, key: m.id }))}
+				dataSource={projectTeam?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}
 			/>
 		</>

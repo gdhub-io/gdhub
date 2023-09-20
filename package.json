@@ -8,7 +8,8 @@
     "export": "next export",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "npx prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} -r tsconfig-paths/register prisma/seed.ts"
@@ -26,9 +27,6 @@
     "@sanity/client": "^3.4.1",
     "@tailwindcss/forms": "^0.5.3",
     "@tanstack/react-query": "^4.32.0",
-    "@types/js-cookie": "^3.0.3",
-    "@types/react-instantsearch-dom": "^6.12.3",
-    "@types/voca": "^1.4.2",
     "airtable": "^0.11.4",
     "antd": "^5.4.7",
     "axios": "^1.4.0",
@@ -84,6 +82,9 @@
     "@types/node-fetch": "^2.6.2",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
+    "@types/js-cookie": "^3.0.3",
+    "@types/react-instantsearch-dom": "^6.12.3",
+    "@types/voca": "^1.4.2",
     "@types/react-select-country-list": "^2.2.0",
     "@types/swagger-ui-react": "^4.18.0",
     "@types/uuid": "^9.0.0",

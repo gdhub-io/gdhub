@@ -1,7 +1,6 @@
-import { useState } from 'react'
 import { Lecture, LectureStage, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Col, DatePicker, Form, Input, InputNumber, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
+import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { DateTime } from 'luxon'

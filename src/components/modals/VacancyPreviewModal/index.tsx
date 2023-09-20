@@ -1,41 +1,52 @@
 import { useEffect, useState } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
-import { fetcher } from '@/helpers/fetcher'
 import { hasRole } from '@/helpers/user'
-import { UserRole } from '@prisma/client'
+import { Season, SeasonStage, TeamVacancy, UserRole } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { useSession } from 'next-auth/react'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 import SpecialitySelectModal from '../SpecialitySelectModal'
 
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const session: any = useSession()
 	const [form] = Form.useForm()
-	const [processing, setProcessing] = useState(true)
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
 
-	const { data: vacancy, mutate: fetchVacancy } = useSWR(
-		{ url: '/api/vacancy/get', data: { id: vacancyId } },
-		fetcher,
+	const {
+		data: vacancy,
+		refetch: refetchVacancy,
+		isFetching: processing,
+	} = useQuery(
+		['vacancy', vacancyId],
+		() =>
+			axios.get<
+				TeamVacancy & {
+					team: { project: { id: string; slug: string; name: string; stage: SeasonStage & { season: Season } } }
+					myTeamMemberId: string
+				}
+			>('/api/vacancy', {
+				params: { id: vacancyId },
+			}),
 		{
-			revalidateOnFocus: false,
-			isPaused: () => !vacancyId,
-			onSuccess: (data) => {
-				setProcessing(false)
-				form.setFieldsValue({ ...data, 'Finished At': dayjs(data['Finished At']) })
-			},
+			enabled: !!vacancyId,
 		}
 	)
 
+	const { mutateAsync: withdrawApply } = useMutation((data: { teamMemberId: string }) =>
+		axios.put<void>('/api/user/project/vacancy/withdraw', data)
+	)
+
+	const { mutateAsync: vacancyApply } = useMutation(
+		(data: { specialityId: string; contactType: string[]; telegramNickname?: string; vacancyId: string }) =>
+			axios.post<void>('/api/user/project/vacancy/apply', data)
+	)
+
 	useEffect(() => {
-		if (open && !vacancyId) {
-			setProcessing(false)
-		}
 		if (open && vacancyId) {
-			fetchVacancy()
-			setProcessing(true)
+			refetchVacancy()
 		}
 	}, [open])
 
@@ -53,19 +64,15 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		contactType: string[]
 		telegramNickname?: string
 	}) => {
-		try {
-			const res = await fetcher({
-				url: '/api/vacancy/apply',
-				data: {
-					specialityId,
-					contactType,
-					telegramNickname,
-					projectId: vacancy.project.id,
-					vacancyId: vacancy.id,
-				},
-			})
+		if (!vacancy) return
 
-			if (res.error) throw Error(res.error)
+		try {
+			await vacancyApply({
+				specialityId,
+				contactType,
+				telegramNickname,
+				vacancyId: vacancy.data.id,
+			})
 
 			message.success('Ваш отклик на выранную вакансию отослан')
 			setShowSpecialitySelectModal(false)
@@ -76,14 +83,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		}
 	}
 
-	const withdrawApply = async (projectMemberId: string) => {
+	const withdrawApplyHandler = async (data: { teamMemberId: string }) => {
 		try {
-			await fetcher({
-				url: '/api/vacancy/withdraw',
-				data: {
-					projectMemberId,
-				},
-			})
+			await withdrawApply(data)
 
 			message.success('Ваш отклик отозван')
 			onCancel()
@@ -95,7 +97,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 
 	const statusOkButton = () => {
 		if (hasRole(UserRole.Member, session)) {
-			return vacancy?.memberApply ? 'Отозвать отклик' : 'Откликнуться'
+			return vacancy?.data.myTeamMemberId ? 'Отозвать отклик' : 'Откликнуться'
 		}
 
 		return 'Откликнуться'
@@ -103,7 +105,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 
 	const functionOkButton = () => {
 		if (hasRole(UserRole.Member, session)) {
-			return vacancy?.memberApply ? withdrawApply(vacancy?.memberApply) : setShowSpecialitySelectModal(true)
+			return vacancy?.data.myTeamMemberId
+				? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
+				: setShowSpecialitySelectModal(true)
 		}
 
 		return null
@@ -128,22 +132,27 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				<Spin spinning={processing}>
 					{!!vacancy && (
 						<>
-							<h1>{vacancy.Name}</h1>
+							<h1>{vacancy.data.title}</h1>
 
 							<Descriptions layout="horizontal" column={1} size="small">
-								<Descriptions.Item label="Проект">{vacancy.project.name}</Descriptions.Item>
-								<Descriptions.Item label="Сезон">{vacancy.project.seasonName}</Descriptions.Item>
+								<Descriptions.Item label="Проект">{vacancy.data.team.project.name}</Descriptions.Item>
+								<Descriptions.Item label="Пайплайн">{vacancy.data.team.project.stage.season.name}</Descriptions.Item>
 								<Descriptions.Item label="Вакансия акатуальна до">
-									{dayjs(vacancy['Finished At']).format('DD.MM.YYYY')}
+									{dayjs(vacancy.data.finishedAt).format('LL')}
 								</Descriptions.Item>
 							</Descriptions>
 							<Descriptions layout="vertical" column={1}>
 								<Descriptions.Item className={styles.vacancyDescription} label="Описание вакансии">
-									<TextWithLineBreak text={vacancy.Description} />
+									<TextWithLineBreak text={vacancy.data.description} />
 								</Descriptions.Item>
 							</Descriptions>
 
-							{vacancy.memberApply ? <Alert type="success" message="Вы уже откликнулись на данную вакансию" /> : null}
+							{vacancy.data.myTeamMemberId ? (
+								<Alert
+									type="success"
+									message="Вы уже откликнулись на данную вакансию. Автор проекта должен связаться с вами в ближайшее время."
+								/>
+							) : null}
 							{!session?.data?.user && (
 								<Alert
 									type="error"

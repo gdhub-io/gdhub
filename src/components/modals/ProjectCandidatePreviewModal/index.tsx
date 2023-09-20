@@ -1,37 +1,91 @@
-import { useEffect, useState } from 'react'
-import { fetcher } from '@/helpers/fetcher'
+import { useEffect } from 'react'
+import { useGameDifficulties, useGameGenres, useGameSettings } from '@/hooks/library'
+import {
+	GameDifficultyLevel,
+	GameGenre,
+	GameSetting,
+	Profile,
+	Speciality,
+	TeamMember,
+	TeamVacancy,
+	User,
+} from '@prisma/client'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { TbBrandTelegram, TbMail } from 'react-icons/tb'
-import useSWR from 'swr'
 import styles from './style.module.scss'
 
-const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCancel }: any) => {
+const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any) => {
+	const queryClient = useQueryClient()
 	const [form] = Form.useForm()
-	const [processing, setProcessing] = useState(true)
+	const { getGameGenreName } = useGameGenres()
+	const { getGameSettingName } = useGameSettings()
+	const { getGameDifficultyName } = useGameDifficulties()
+	// const [processing, setProcessing] = useState(true)
+
+	// const {
+	// 	data: candidate,
+	// 	mutate: fetchCandidate,
+	// 	isValidating: isLoadingCandidate,
+	// } = useSWR({ url: '/api/my/project-candidate', data: { id: candidateId } }, fetcher, {
+	// 	revalidateOnFocus: false,
+	// 	isPaused: () => !candidateId,
+	// 	onSuccess: (data) => {
+	// 		setProcessing(false)
+	// 		form.setFieldsValue({ ...data, 'Created At': dayjs(data['Created At']) })
+	// 	},
+	// })
 
 	const {
 		data: candidate,
-		mutate: fetchCandidate,
-		isValidating: isLoadingCandidate,
-	} = useSWR({ url: '/api/my/project-candidate', data: { id: candidateId } }, fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !candidateId,
-		onSuccess: (data) => {
-			setProcessing(false)
-			form.setFieldsValue({ ...data, 'Created At': dayjs(data['Created At']) })
-		},
-	})
+		refetch: refetchCandidate,
+		isFetching: processing,
+	} = useQuery(
+		['candidate', candidateId],
+		() =>
+			axios.get<
+				TeamMember & {
+					vacancy: TeamVacancy
+					speciality: Speciality
+					user: User & {
+						specialities: Speciality[]
+						profile: Profile & {
+							preferedGenres: GameGenre[]
+							preferedSettings: GameSetting[]
+							preferedDifficulties: GameDifficultyLevel[]
+						}
+					}
+				}
+			>('/api/user/project/candidate', {
+				params: { id: candidateId },
+			}),
+		{ enabled: !!candidateId }
+	)
+
+	const { mutateAsync: rejectCandidate, isLoading: isRejecting } = useMutation(
+		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/reject', data),
+		{
+			onSuccess: () => {
+				queryClient.invalidateQueries(['user-project-team', candidate?.data.teamId])
+			},
+		}
+	)
+	const { mutateAsync: hireCandidate, isLoading: isHiring } = useMutation(
+		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/hire', data),
+		{
+			onSuccess: () => {
+				queryClient.invalidateQueries(['user-project-team', candidate?.data.teamId])
+			},
+		}
+	)
 
 	useEffect(() => {
-		if (open && !candidateId) {
-			setProcessing(false)
-		}
 		if (open && candidateId) {
-			fetchCandidate()
-			setProcessing(true)
+			refetchCandidate()
 		}
 	}, [open])
 
@@ -42,14 +96,9 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 
 	const handleReject = async () => {
 		try {
-			await fetcher({
-				url: '/api/vacancy/candidate/reject',
-				data: {
-					id: candidateId,
-				},
-			})
+			await rejectCandidate({ id: candidateId })
 
-			message.success('Вы отклонили кандидатуру ' + candidate.Name)
+			message.success('Вы отклонили кандидатуру ' + candidate?.data.user.name)
 			onOk()
 		} catch (error: any) {
 			console.log(error)
@@ -59,14 +108,9 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 
 	const handleApprove = async () => {
 		try {
-			await fetcher({
-				url: '/api/vacancy/candidate/approve',
-				data: {
-					id: candidateId,
-				},
-			})
+			await hireCandidate({ id: candidateId })
 
-			message.success(`Вы приняли ${candidate.Name} в команду`)
+			message.success(`Вы приняли ${candidate?.data.user.name} в команду`)
 			onOk()
 		} catch (error: any) {
 			console.log(error)
@@ -105,15 +149,15 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 							<Row gutter={[24, 24]}>
 								<Col xs={{ span: 24, order: 1 }} md={{ span: 18, order: 0 }}>
 									<div className={styles.specialityTitle}>
-										<h1>{candidate?.Name}</h1>
-										{candidate?.Speciality.Name} ({candidate?.Speciality.Level})
+										<h1>{candidate?.data.user.name}</h1>
+										{candidate?.data.speciality.name} ({candidate?.data.speciality.level})
 									</div>
 
 									<Descriptions layout="horizontal" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
-										<Descriptions.Item label="Интересует вакансия">{candidate['Vacancy Name']}</Descriptions.Item>
-										<Descriptions.Item label="На проекте">{candidate['Project Name']}</Descriptions.Item>
+										<Descriptions.Item label="Интересует вакансия">{candidate.data.vacancy.title}</Descriptions.Item>
+										<Descriptions.Item label="На проекте">{candidate.data.teamId}</Descriptions.Item>
 										<Descriptions.Item label="Создано">
-											{dayjs(candidate['Created At']).format('DD.MM.YYYY')}
+											{dayjs(candidate.data.createdAt).format('LLL')}
 										</Descriptions.Item>
 									</Descriptions>
 
@@ -125,37 +169,39 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 										size="small"
 										labelStyle={{ fontWeight: 'bold' }}
 									>
-										{!!candidate?.Profile['Resume/Portfolio'] && (
+										{!!candidate?.data.speciality.portfolioUrl && (
 											<Descriptions.Item label="Резюме/портфолио">
-												<Link href={candidate.Profile['Resume/Portfolio']} target="_blank">
+												<Link href={candidate?.data.speciality.portfolioUrl} target="_blank">
 													<Button size="small">Перейти</Button>
 												</Link>
 											</Descriptions.Item>
 										)}
 										<Descriptions.Item label="Свободное время">
-											{candidate.Profile['Time For Work']} часов
+											от {candidate.data.user.profile.timeForWork[0]} до {candidate.data.user.profile.timeForWork[1]}{' '}
+											часов
 										</Descriptions.Item>
 										<Descriptions.Item label="Место проживания">
-											{[candidate.Profile.Country, candidate.Profile.City].join(', ')}
+											{[candidate.data.user.profile.country, candidate.data.user.profile.city].join(', ')}
 										</Descriptions.Item>
 									</Descriptions>
 								</Col>
 								<Col xs={{ span: 24, order: 0 }} md={{ span: 6, order: 1 }}>
 									<Space direction="vertical" align="center" style={{ width: '100%' }}>
-										{!!candidate.Avatar && (
+										{!!candidate.data.user.image && (
 											<div className={styles.avatar}>
-												<Image src={candidate.Avatar} alt="project member avatar" width={160} height={160} />
+												<Image src={candidate.data.user.image} alt="project member avatar" width={160} height={160} />
 											</div>
 										)}
-										{!!candidate.contacts?.email && (
-											<Link target="_blank" href={'mailto:' + candidate.contacts.email}>
+										{!!candidate.data?.allowedContacts.includes('email') && (
+											<Link target="_blank" href={'mailto:' + candidate.data.user.email}>
 												<Button icon={<TbMail size={16} style={{ position: 'relative', marginRight: 5 }} />}>
 													Email
 												</Button>
 											</Link>
 										)}
-										{!!candidate.contacts?.telegram && (
-											<Link target="_blank" href={'https://t.me/' + candidate.contacts.telegram}>
+
+										{!!candidate.data?.allowedContacts.includes('telegram') && (
+											<Link target="_blank" href={'https://t.me/' + candidate.data?.user.profile.tgNickname}>
 												<Button icon={<TbBrandTelegram size={16} style={{ position: 'relative', marginRight: 5 }} />}>
 													Telegram
 												</Button>
@@ -173,16 +219,16 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 								size="small"
 								labelStyle={{ fontWeight: 'bold' }}
 							>
-								<Descriptions.Item label="Специализация">{candidate.Speciality.Specialization}</Descriptions.Item>
-								<Descriptions.Item label="Навыки">{candidate.Speciality.Skills}</Descriptions.Item>
+								<Descriptions.Item label="Специализация">{candidate.data.speciality.specialization}</Descriptions.Item>
+								<Descriptions.Item label="Навыки">{candidate.data.speciality.skills}</Descriptions.Item>
 								<Descriptions.Item label="Использую в работе">
-									{candidate.Speciality.Tools || '(инструменты не указаны)'}
+									{candidate.data.speciality.tools || '(инструменты не указаны)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Опыт работы">
-									{candidate.Speciality.Workplaces || '(места работ не указаны)'}
+									{candidate.data.speciality.jobs || '(места работ не указаны)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Где получал знания">
-									{candidate.Speciality.Schools || '(места обучения не указаны)'}
+									{candidate.data.speciality.schools || '(места обучения не указаны)'}
 								</Descriptions.Item>
 							</Descriptions>
 
@@ -195,18 +241,20 @@ const ProjectCandidatePreviewModal = ({ project, candidateId, open, onOk, onCanc
 								className={styles.descriptionBlock}
 							>
 								<Descriptions.Item label="Предпочитаю жанры">
-									{candidate.Profile['Preferred Genres']
-										? candidate.Profile['Preferred Genres'].join(', ')
+									{candidate.data.user.profile.preferedGenres
+										? candidate.data.user.profile.preferedGenres.map((r) => getGameGenreName(r.id)).join(', ')
 										: '(не указано)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Предпочитаю сеттинги">
-									{candidate.Profile['Preferred Settings']
-										? candidate.Profile['Preferred Settings'].join(', ')
+									{candidate.data.user.profile.preferedSettings
+										? candidate.data.user.profile.preferedSettings.map((r) => getGameSettingName(r.id)).join(', ')
 										: '(не указано)'}
 								</Descriptions.Item>
 								<Descriptions.Item label="Предпочитаю игры следующей сложности">
-									{candidate.Profile['Preferred Difficulty Levels']
-										? candidate.Profile['Preferred Difficulty Levels'].join(', ')
+									{candidate.data.user.profile.preferedDifficulties
+										? candidate.data.user.profile.preferedDifficulties
+												.map((r) => getGameDifficultyName(r.id))
+												.join(', ')
 										: '(не указано)'}
 								</Descriptions.Item>
 							</Descriptions>

@@ -95,6 +95,7 @@ model Speciality {
   userId          String
   user            User          @relation(fields: [userId], references: [id])
   direction       WorkDirection @relation(fields: [workDirectionId], references: [id])
+  teamMembers     TeamMember[]
 }
 
 model WorkDirection {
@@ -218,17 +219,22 @@ model ProjectReport {
 }
 
 model TeamMember {
-  id         String           @id @default(cuid())
-  userId     String
-  teamId     String
-  startedAt  DateTime
-  finishedAt DateTime?
-  status     TeamMemberStatus @default(Applicant)
-  position   String
-  vacancyId  String?
-  team       ProjectTeam      @relation(fields: [teamId], references: [id])
-  user       User             @relation(fields: [userId], references: [id])
-  vacancy    TeamVacancy?     @relation(fields: [vacancyId], references: [id])
+  id              String           @id @default(cuid())
+  userId          String
+  teamId          String
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  status          TeamMemberStatus @default(Applicant)
+  position        String
+  allowedContacts String[]
+  specialityId    String
+  speciality      Speciality       @relation(fields: [specialityId], references: [id])
+  vacancyId       String?
+  team            ProjectTeam      @relation(fields: [teamId], references: [id])
+  user            User             @relation(fields: [userId], references: [id])
+  vacancy         TeamVacancy?     @relation(fields: [vacancyId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt @default(now())
 }
 
 model TeamVacancy {
@@ -282,7 +288,7 @@ model LecturerRequest {
   isSpeaker    Boolean   @default(false)
   lecture      Lecture   @relation(fields: [lectureId], references: [id], onDelete: Cascade)
   createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
 }
 
 model LectureListener {

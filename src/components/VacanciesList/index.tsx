@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
+import { useWorkDirections } from '@/hooks/library'
 import { TeamVacancy } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Space, Table } from 'antd'
@@ -8,18 +9,8 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
-const vacancyStatusToText = (status: string) => {
-	switch (status) {
-		case 'Draft':
-			return 'Черновик'
-		case 'Opened':
-			return 'Размещена'
-		case 'Closed':
-			return 'Закрыта'
-	}
-}
-
 const VacanciesList = () => {
+	const { data: workDirections, getDirectionName } = useWorkDirections()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 	const {
@@ -28,54 +19,57 @@ const VacanciesList = () => {
 		refetch: refetchVacanciesList,
 	} = useQuery(
 		['vacancies'],
-		() => axios.get<TeamVacancy & { team: { project: { slug: string; name: string } } }[]>('/api/vacancies'),
+		() =>
+			axios.get<(TeamVacancy & { team: { project: { id: string; slug: string; name: string } } })[]>('/api/vacancies'),
 		{
 			refetchOnWindowFocus: false,
 			refetchInterval: 60000,
 		}
 	)
 
-	const vacanciesColumns: ColumnsType<TeamVacancy & { team: { project: { slug: string; name: string } } }> = [
-		{
-			title: 'Название',
-			dataIndex: 'name',
-			key: 'name',
-			width: '40%',
-			render: (value, record) => (
-				<>
-					<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
-						{value}
-					</span>
-				</>
-			),
-		},
-		{
-			title: 'Проект',
-			dataIndex: 'teamId',
-			key: 'teamId',
-			width: '40%',
-			render: (record) => (
-				<>
-					<Link href={`/project/${record.team.project.slug}`}>
-						<Button type="text">{record.team.project.name}</Button>
-					</Link>
-				</>
-			),
-		},
-		{
-			title: 'Направление',
-			dataIndex: 'Direction',
-			responsive: ['md'],
-			key: 'Direction',
-		},
-		{
-			title: 'Действует до',
-			dataIndex: 'Finished At',
-			responsive: ['md'],
-			key: 'Finished At',
-			render: (value) => dayjs(value).format('DD.MM.YYYY'),
-		},
-	]
+	const vacanciesColumns: ColumnsType<TeamVacancy & { team: { project: { id: string; slug: string; name: string } } }> =
+		[
+			{
+				title: 'Название',
+				dataIndex: 'title',
+				key: 'title',
+				width: '40%',
+				render: (value, record) => (
+					<>
+						<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
+							{value}
+						</span>
+					</>
+				),
+			},
+			{
+				title: 'Проект',
+				dataIndex: 'teamId',
+				key: 'teamId',
+				// width: '40%',
+				render: (value, record) => (
+					<>
+						<Link href={`/project/${record.team.project.slug}`}>
+							<Button type="text">{record.team.project.name}</Button>
+						</Link>
+					</>
+				),
+			},
+			{
+				title: 'Направление',
+				dataIndex: 'directionId',
+				responsive: ['md'],
+				key: 'directionId',
+				render: (value) => getDirectionName(value),
+			},
+			{
+				title: 'Действует до',
+				dataIndex: 'finishedAt',
+				responsive: ['md'],
+				key: 'finishedAt',
+				render: (value) => dayjs(value).format('DD.MM.YYYY'),
+			},
+		]
 
 	const handleEditVacancy = (id: string) => {
 		setSelectedVacancyId(id)
@@ -106,7 +100,7 @@ const VacanciesList = () => {
 						loading={isLoadingMyVacanciesList}
 						style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
 						columns={vacanciesColumns}
-						dataSource={vacancies.data as any[]}
+						dataSource={vacancies.data}
 						pagination={false}
 					/>
 

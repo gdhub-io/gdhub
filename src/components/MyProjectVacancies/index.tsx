@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
-import { fetcher } from '@/helpers/fetcher'
-import { useQuery } from '@tanstack/react-query'
+import { TeamVacancyStatus } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -13,17 +13,17 @@ interface Vacancy {
 	Name: string
 	Description: string
 	FinishedAt: string
-	Status: string
+	Status: TeamVacancyStatus
 	[key: string]: any
 }
 
-const vacancyStatusToText = (status: string) => {
+const vacancyStatusToText = (status: TeamVacancyStatus) => {
 	switch (status) {
-		case 'Draft':
+		case TeamVacancyStatus.Draft:
 			return 'Черновик'
-		case 'Opened':
+		case TeamVacancyStatus.Published:
 			return 'Размещена'
-		case 'Closed':
+		case TeamVacancyStatus.Closed:
 			return 'Закрыта'
 	}
 }
@@ -65,16 +65,20 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 		}
 	)
 
+	const { mutateAsync: cancelVacany } = useMutation((data: { id: string }) =>
+		axios.delete<any>('/api/user/project/vacancy', { params: data })
+	)
+
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
 			title: 'Название',
 			dataIndex: 'title',
 			key: 'title',
-			width: '100%',
+			width: '50%',
 			render: (value, data) => (
 				<>
 					<span onClick={() => handleEditVacancy(data.id)}>{value}</span>{' '}
-					{data.Status == 'Draft' && <Tag color="lime">{vacancyStatusToText(data.Status)}</Tag>}
+					{data.status == 'Draft' && <Tag color="lime">{vacancyStatusToText(data.status)}</Tag>}
 				</>
 			),
 		},
@@ -89,11 +93,11 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 			dataIndex: 'finishedAt',
 			key: 'finishedAt',
 			responsive: ['md'],
-			render: (value) => dayjs(value).format('DD.MM.YYYY'),
+			render: (value) => (value ? 'до ' + dayjs(value).format('LLL') : undefined),
 		},
 		{
 			key: 'actions',
-			width: 1,
+			width: '1%',
 			render: (value, record) => (
 				<Space>
 					{screens.md && <Button onClick={() => handleEditVacancy(record.id)}>Изменить</Button>}
@@ -118,14 +122,17 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 	}
 
 	const handleCloseVacancy = async (id: string) => {
-		await fetcher({ url: '/api/user/project/vacancy/close', data: { id } })
+		// await fetcher({ url: '/api/user/project/vacancy/close', data: { id } })
+		await cancelVacany({ id })
+		setSelectedVacancyId(undefined)
 		fetchMyMyProjectVacancies()
 
-		message.success('Вакансия удалена')
+		message.success('Вакансия закрыта')
 	}
 
 	const handleSaveVacancy = () => {
 		setShowVacancyModal(false)
+		setSelectedVacancyId(undefined)
 		fetchMyMyProjectVacancies()
 	}
 

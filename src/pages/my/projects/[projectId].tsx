@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import ProjectModal from '@/components/modals/ProjectModal'
+import MyProjectCandidates from '@/components/MyProjectCandidates'
 import MyProjectTeam from '@/components/MyProjectTeam'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
@@ -18,7 +19,6 @@ const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
 	const projectId = router.query.projectId as string
 	const [showProjectModal, setShowProjectModal] = useState(false)
-	const [projectUpdatedEvent, setProjectUpdatedEvent] = useState(false)
 
 	useEffect(() => {
 		console.log('projectId', projectId)
@@ -47,7 +47,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 		return (
 			<>
 				<Head>
-					<title>Проект {myProject?.data.name}</title>
+					<title>Управление проектом</title>
 				</Head>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">
@@ -74,12 +74,9 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					{!!myProject.data && (
 						<>
-							<MyProjectTeam teamId={myProject.data.teamId} shouldUpdate={projectUpdatedEvent} />
+							<MyProjectTeam teamId={myProject.data.teamId} />
 							<MyProjectVacancies teamId={myProject.data.teamId} />
-							{/* <MyProjectCandidates
-								project={myProject.data}
-								onUpdate={() => setProjectUpdatedEvent(!projectUpdatedEvent)}
-							/> */}
+							<MyProjectCandidates project={myProject.data} />
 							{/* <MyProjectReports project={myProject.data} /> */}
 						</>
 					)}
@@ -98,7 +95,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 		return (
 			<>
 				<Head>
-					<title>Проект {myProject?.data.name}</title>
+					<title>Управление проектом</title>
 				</Head>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">

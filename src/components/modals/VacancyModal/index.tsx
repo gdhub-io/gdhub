@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
-import { TeamVacancy, TeamVacancyStatus, WorkDirection } from '@prisma/client'
+import { useEffect } from 'react'
+import { useWorkDirections } from '@/hooks/library'
+import { TeamVacancy, TeamVacancyStatus } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
 import axios from 'axios'
@@ -7,20 +8,12 @@ import dayjs from 'dayjs'
 
 const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const [processing, setProcessing] = useState(true)
-
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { options: directionsOptions } = useWorkDirections()
 
 	const {
 		data: vacancy,
 		refetch: fetchVacancy,
-		isLoading: isLoadingVacancy,
+		isFetching: isLoadingVacancy,
 	} = useQuery(
 		['vacancy', vacancyId],
 		() => axios.get<TeamVacancy>('/api/user/project/vacancy', { params: { id: vacancyId } }),
@@ -28,51 +21,28 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			enabled: !!vacancyId,
 			staleTime: Infinity,
 			onSuccess: ({ data }) => {
-				form.setFieldsValue(data)
+				form.setFieldsValue({ ...data, finishedAt: dayjs(data.finishedAt) })
 			},
 		}
 	)
 
-	const { mutateAsync: createVacancy } = useMutation((data: Record<string, any>) =>
-		axios.post('/api/user/project/vacancy', data)
+	const { mutateAsync: createVacancy, isLoading: isCreating } = useMutation((data: Record<string, any>) =>
+		axios.post<any>('/api/user/project/vacancy', data)
 	)
-	const { mutateAsync: saveVacancy } = useMutation((params: { id: string; data: Record<string, any> }) =>
-		axios.put('/api/user/project/vacancy', params.data, { params: { id: params.id } })
+	const { mutateAsync: saveVacancy, isLoading: isUpdating } = useMutation(
+		(params: { id: string; data: Record<string, any> }) =>
+			axios.put<any>('/api/user/project/vacancy', params.data, { params: { id: params.id } })
 	)
-
-	const directionsOptions = useMemo(() => {
-		if (!workDirections) return
-
-		return workDirections.data.map((dir) => ({ value: dir.id, label: dir.name }))
-	}, [workDirections])
-
-	// const {
-	// 	data: vacancy,
-	// 	mutate: fetchVacancy,
-	// 	isValidating: isLoadingVacancy,
-	// } = useSWR({ url: '/api/vacancy/get', data: { id: vacancyId } }, fetcher, {
-	// 	revalidateOnFocus: false,
-	// 	isPaused: () => !vacancyId,
-	// 	onSuccess: (data) => {
-	// 		setProcessing(false)
-	// 		form.setFieldsValue({ ...data, finishedAt: dayjs(data.finishedAt) })
-	// 	},
-	// })
 
 	useEffect(() => {
-		if (open && !vacancyId) {
-			setProcessing(false)
-		}
 		if (open && vacancyId) {
 			fetchVacancy()
-			setProcessing(true)
 		}
 	}, [open])
 
 	const handleOk = async (asDraft?: { asDraft: boolean }) => {
 		try {
 			const formData = await form.validateFields()
-			setProcessing(true)
 
 			if (vacancyId) {
 				await saveVacancy({
@@ -93,40 +63,10 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 				})
 			}
 
-			// const response: any = await fetch('/api/vacancy/save', {
-			// 	method: 'post',
-			// 	body: JSON.stringify({
-			// 		id: vacancyId || null,
-			// 		data: {
-			// 			...formData,
-			// 			'Published At': asDraft ? null : dayjs().toISOString(),
-			// 			'Finished At': formData['Finished At'].format('YYYY-MM-DD'),
-			// 			Status: asDraft ? 'Draft' : 'Opened',
-			// 			Project: [projectId],
-			// 		},
-			// 	}),
-			// 	headers: {
-			// 		'Content-Type': 'application/json',
-			// 	},
-			// })
-			setProcessing(false)
-
-			// if (!response.ok) {
-			// 	throw new Error('Что-то пошло не так')
-			// }
-
-			// const data = await response.json()
-
-			// if (data.error) {
-			// 	throw new Error(response.error.message)
-			// }
-
 			form.resetFields()
 			message.success(vacancyId ? 'Вакансия изменена' : 'Добавлена новая вакансия')
 			onOk()
 		} catch (error: any) {
-			setProcessing(false)
-
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
@@ -147,25 +87,33 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			width={800}
 			destroyOnClose
 			maskClosable={false}
-			okText={vacancyId ? 'Сохранить' : 'Опубликовать'}
 			open={open}
 			onCancel={handleCancel}
-			confirmLoading={processing}
+			confirmLoading={isLoadingVacancy || isUpdating || isCreating}
 			footer={[
 				<Space key="form-buttons" wrap>
-					<Button key="close" onClick={handleCancel} disabled={processing}>
+					<Button key="close" onClick={handleCancel} disabled={isLoadingVacancy || isUpdating || isCreating}>
 						Закрыть
 					</Button>
-					<Button key="draft" disabled={processing} onClick={() => handleOk({ asDraft: true })}>
+					<Button
+						key="draft"
+						disabled={isLoadingVacancy || isUpdating || isCreating}
+						onClick={() => handleOk({ asDraft: true })}
+					>
 						Сохранить как черновик
 					</Button>
-					<Button key="public" disabled={processing} type="primary" onClick={() => handleOk()}>
-						Опубликовать
+					<Button
+						key="public"
+						disabled={isLoadingVacancy || isUpdating || isCreating}
+						type="primary"
+						onClick={() => handleOk()}
+					>
+						{vacancy?.data.status == TeamVacancyStatus.Published ? 'Сохранить' : 'Опубликовать'}
 					</Button>
 				</Space>,
 			]}
 		>
-			<Spin spinning={processing}>
+			<Spin spinning={isLoadingVacancy}>
 				<Form
 					form={form}
 					layout="vertical"

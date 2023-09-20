@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
-import { Lecture, LectureListener, LectureStage, LecturerRequest, User, WorkDirection } from '@prisma/client'
+import { LectureStage, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
