@@ -74,7 +74,6 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 			const newData: Partial<Lecture> = {
 				name,
-				lecturerId,
 				directionId,
 				description,
 				linkToStream,
