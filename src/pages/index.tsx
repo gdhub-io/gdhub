@@ -4,7 +4,7 @@ import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
 import { useTelegram } from '@/helpers/useTelegram'
 import { prisma } from '@/services/prisma'
 import styles from '@/styles/home.module.scss'
-import { Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
+import { Alert, Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -19,7 +19,7 @@ declare global {
 	}
 }
 
-const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
+const Home: NextPage = ({ isHealthy, usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -51,6 +51,28 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 			telegramApp.showAlert(error.message)
 			setSignInProcessing(false)
 		}
+	}
+
+	if (!isHealthy) {
+		return (
+			<>
+				<Head>
+					<title>Game Developers Hub</title>
+				</Head>
+				<div className={styles.container}>
+					<Space direction="vertical" align="center" size="large">
+						<div className="logo">
+							<Title>Game Developers Hub</Title>
+						</div>
+						<p>
+							Сообщество специалистов игровой индустрии, участники которого объединяются в команды, чтобы разрабатывать
+							новые игры.
+						</p>
+						<Alert type="error" message="No connection. Try later." showIcon />
+					</Space>
+				</div>
+			</>
+		)
 	}
 
 	return (
@@ -160,6 +182,12 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 }
 
 export async function getStaticProps(context: any) {
+	const isHealthy = await prisma.$isHealthy()
+
+	if (!isHealthy) {
+		return { props: { isHealthy: false } }
+	}
+
 	const usersCount = await prisma.user.count()
 	const specialitiesCount = await prisma.speciality.count()
 
@@ -168,6 +196,7 @@ export async function getStaticProps(context: any) {
 
 	return {
 		props: {
+			isHealthy: true,
 			usersCount,
 			specialitiesCount,
 			projectsCount,
