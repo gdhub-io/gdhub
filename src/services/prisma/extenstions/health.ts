@@ -6,9 +6,7 @@ export const healthExtension = Prisma.defineExtension((client) => {
 		client: {
 			async $isHealthy() {
 				try {
-					const result = await client.$queryRaw`SELECT 1`
-					console.log(result)
-
+					await client.$queryRaw`SELECT 1`
 					return true
 				} catch (e) {
 					return false
