@@ -1,0 +1,59 @@
+@import '../../styles/variables.scss';
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  // display: flex;
+  // align-items: center;
+}
+
+.headerContainer {
+  height: 120px;
+}
+
+.container {
+  max-width: $wrapper-width;
+  margin: 0 auto;
+
+  :global {
+    .logo {
+      font-weight: bold;
+      margin: 0 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .username {
+      font-size: 14px;
+      color: var(--dark-grey);
+    }
+
+    .ant-layout-content {
+      padding: 0 50px;
+
+      .layout-background {
+        padding: 24px;
+        min-height: 360px;
+      }
+    }
+  }
+}
+
+.mobileMenuDrawer {
+  :global {
+    .ant-drawer-close {
+      display: none;
+    }
+  }
+}
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

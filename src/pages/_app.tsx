@@ -51,7 +51,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	const getLayout = Component.getLayout || ((page) => <PublicLayout>{page}</PublicLayout>)
 
 	const setLoadingOff = () => {
-		setTimeout(() => setLoading(false), 1500)
+		setTimeout(() => setLoading(false), 900)
 	}
 
 	useEffect(() => {

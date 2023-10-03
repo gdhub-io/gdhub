@@ -5,7 +5,7 @@
 	width: 100%;
 	min-height: 100%;
 	z-index: 99999;
-	background: var(--white);
+	background: #0C0202;
 	transition: opacity 0.3s;
 
 	display: flex;
@@ -31,7 +31,7 @@
 			-webkit-transition: -webkit-transform 0.5s 0.1s;
 			transition: transform 0.5s 0.1s;
 			perspective: 9999px;
-			color: #aaa;
+			color: #999;
 			margin: -30px 0 0 -30px;
 			margin: 0 auto;
 			position: absolute;
@@ -49,15 +49,15 @@
 		}
 
 		.loader-style.panelLoad .cube-face {
-			box-shadow: inset 0 0 0 1px #aaa, 0 0 1px 1px #aaa;
+			box-shadow: inset 0 0 0 1px #393939, 0 0 1px 1px #393939;
 		}
 
 		.loader-style .cube-face {
 			width: inherit;
 			height: inherit;
 			position: absolute;
-			background: white;
-			box-shadow: inset 0 0 0 1px #aaa, 0 0 1px 1px #aaa;
+			background: #0C0202;
+			box-shadow: inset 0 0 0 1px #393939, 0 0 1px 1px #393939;
 			opacity: 1;
 			font-family: Arial, Helvetica, sans-serif;
 		}

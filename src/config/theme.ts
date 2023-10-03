@@ -1,10 +1,10 @@
 import { ThemeConfig, theme } from 'antd'
-import { Rubik as AppFont } from 'next/font/google'
+import { Lora as AppFont } from 'next/font/google'
 
 const mainFont = AppFont({ weight: ['400'], subsets: ['latin', 'cyrillic'] })
 
 export const themeConfig: ThemeConfig = {
-	algorithm: theme.defaultAlgorithm,
+	algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
 	// token: {
 	// 	fontFamily: mainFont.style.fontFamily,
 	// 	colorPrimary: '#0e0e0e',
@@ -35,16 +35,38 @@ export const themeConfig: ThemeConfig = {
 
 	token: {
 		fontFamily: mainFont.style.fontFamily,
-		colorPrimary: '#07ad92',
+		colorPrimary: '#F15541',
+		colorInfo: '#F15541',
+		colorBgBase: '#050505',
+		colorTextBase: '#ffffff',
 		fontSize: 16,
-		lineHeight: 1.5,
-		borderRadius: 8,
-		wireframe: true,
-		colorLink: '#07ad92',
-		colorLinkHover: '#25ba9c',
-		colorLinkActive: '#008775',
+		sizeStep: 4,
+		sizeUnit: 4,
+		borderRadius: 2,
+		wireframe: false,
 	},
 	components: {
+		Button: {
+			size: 16,
+			sizeLG: 18,
+			controlHeight: 52,
+			controlHeightLG: 72,
+			controlHeightSM: 36,
+			fontSize: 16,
+			fontSizeLG: 18,
+			colorBgContainer: 'transparent',
+			colorBorder: '#F15541',
+			paddingContentHorizontal: 32,
+			paddingContentVertical: 16,
+		},
+		Typography: {
+			fontSize: 16,
+		},
+		Layout: {
+			colorBgBody: 'transparent',
+			colorBgHeader: 'transparent',
+		},
+		Menu: { colorBgContainer: 'transparent' },
 		Spin: {
 			fontSize: 16,
 			controlHeight: 48,

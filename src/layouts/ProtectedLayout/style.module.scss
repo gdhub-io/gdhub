@@ -1,5 +1,9 @@
 @import '../../styles/variables.scss';
 
+.header {
+	height: 120px;
+}
+
 .container {
 	max-width: $wrapper-width;
 

@@ -1,0 +1,34 @@
+.section {}
+
+.heroImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 120px 60px 60px;
+  aspect-ratio: 16/9;
+}
+
+.heroMain {
+  :global {
+    h1 {
+      font-size: 80px;
+      font-weight: 700;
+    }
+
+    ul {
+      margin-left: 0;
+
+      >li {
+        margin-bottom: 32px;
+        max-width: 482px;
+
+        
+
+        span {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}

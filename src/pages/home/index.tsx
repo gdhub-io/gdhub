@@ -1,0 +1,132 @@
+import { useEffect, useState } from 'react'
+import { LandingContactsSection } from '@/components/landing/LandingContactsSection'
+import { LandingFeedbackSection } from '@/components/landing/LandingFeedbackSection'
+import { LandingForAuthorsSection } from '@/components/landing/LandingForAuthorsSection'
+import { LandingForSpecialistsSection } from '@/components/landing/LandingForSpecialistsSection'
+import { LandingHeroSection } from '@/components/landing/LandingHeroSection'
+import { LandingWhoWeAreSection } from '@/components/landing/LandingWhoWeAreSection'
+import { useTelegram } from '@/helpers/useTelegram'
+import { LandingLayout } from '@/layouts/LandingLayout'
+import { prisma } from '@/services/prisma'
+import { Alert, Space, Typography } from 'antd'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { signIn } from 'next-auth/react'
+import styles from './home.module.scss'
+import { NextPageWithLayout } from '../_app'
+
+const { Title, Text, Paragraph } = Typography
+
+declare global {
+	interface Window {
+		$crisp?: any
+	}
+}
+
+const LandingPage: NextPageWithLayout = ({
+	isHealthy,
+	usersCount,
+	specialitiesCount,
+	projectsCount,
+	vacanciesCount,
+}: any) => {
+	const router = useRouter()
+	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
+	const [signInProcessing, setSignInProcessing] = useState(false)
+
+	useEffect(() => {
+		if (isOpenedInTelegram) {
+			handleSignInTelegram()
+		}
+	}, [isOpenedInTelegram])
+
+	const handleSignInTelegram = async () => {
+		if (!isOpenedInTelegram) return
+
+		try {
+			setSignInProcessing(true)
+			const res = await signIn('telegram-web-app', { redirect: false }, { username: telegramUser.username })
+
+			if (!res?.ok) {
+				if (res?.status == 401) {
+					setSignInProcessing(false)
+					return
+				} else {
+					throw new Error(`Error ${res?.status}. ${res?.error}`)
+				}
+			}
+
+			router.push('/hub')
+		} catch (error: any) {
+			telegramApp.showAlert(error.message)
+			setSignInProcessing(false)
+		}
+	}
+
+	if (!isHealthy) {
+		return (
+			<>
+				<Head>
+					<title>Game Developers Hub</title>
+				</Head>
+				<div className={styles.container}>
+					<Space direction="vertical" align="center" size="large">
+						<div className="logo">
+							<Title>Game Developers Hub</Title>
+						</div>
+						<p>
+							Сообщество специалистов игровой индустрии, участники которого объединяются в команды, чтобы разрабатывать
+							новые игры.
+						</p>
+						<Alert type="error" message="No connection. Try later." showIcon />
+					</Space>
+				</div>
+			</>
+		)
+	}
+
+	return (
+		<>
+			<Head>
+				<title>Game Developers Hub</title>
+			</Head>
+			<div className={styles.container}>
+				<LandingHeroSection />
+				<LandingWhoWeAreSection />
+				<LandingForAuthorsSection />
+				<LandingForSpecialistsSection />
+				<LandingFeedbackSection />
+				<LandingContactsSection />
+			</div>
+		</>
+	)
+}
+
+LandingPage.getLayout = (page) => <LandingLayout>{page}</LandingLayout>
+
+export async function getStaticProps(context: any) {
+	const isHealthy = await prisma.$isHealthy()
+
+	if (!isHealthy) {
+		return { props: { isHealthy: false } }
+	}
+
+	const usersCount = await prisma.user.count()
+	const specialitiesCount = await prisma.speciality.count()
+
+	const projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
+	const vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
+
+	return {
+		props: {
+			isHealthy: true,
+			usersCount,
+			specialitiesCount,
+			projectsCount,
+			vacanciesCount,
+		},
+		revalidate: 60,
+	}
+}
+
+export default LandingPage

@@ -6,6 +6,7 @@ body {
 	padding: 0;
 	margin: 0;
 	scroll-behavior: smooth;
+	background-color: #0d0201;
 }
 
 p>a {
@@ -25,14 +26,16 @@ a.text-link {
 	}
 }
 
-.ant-layout-header, .ant-layout, .ant-layout-footer {
-	background-color: white;
-}
+// .ant-layout-header,
+// .ant-layout,
+// .ant-layout-footer {
+// 	background-color: transparent;
+// }
 
 .app-container {
 	transition: opacity 0.25s;
-	display: flex;
-	justify-content: center;
+	// display: flex;
+	// justify-content: center;
 }
 
 .ant-menu-horizontal,
@@ -79,7 +82,6 @@ a.text-link {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 4px 8px;
 
 	&>span {
 		line-height: 16px;

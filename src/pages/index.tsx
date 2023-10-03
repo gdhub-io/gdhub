@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import StartProjectImage from '@/assets/images/start-indie-game.jpg'
 import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
 import { useTelegram } from '@/helpers/useTelegram'
+import { LandingLayout } from '@/layouts/LandingLayout'
 import { prisma } from '@/services/prisma'
 import styles from '@/styles/home.module.scss'
 import { Alert, Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
@@ -10,6 +11,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
+import { NextPageWithLayout } from './_app'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -19,7 +21,7 @@ declare global {
 	}
 }
 
-const Home: NextPage = ({ isHealthy, usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
+const Home: NextPageWithLayout = ({ isHealthy, usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -180,6 +182,8 @@ const Home: NextPage = ({ isHealthy, usersCount, specialitiesCount, projectsCoun
 		</>
 	)
 }
+
+Home.getLayout = (page) => <LandingLayout>{page}</LandingLayout>
 
 export async function getStaticProps(context: any) {
 	const isHealthy = await prisma.$isHealthy()

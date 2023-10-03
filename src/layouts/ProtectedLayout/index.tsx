@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-icon.svg'
+import GdhubLogo from '@/assets/images/gdhub-logo.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
@@ -148,10 +148,10 @@ export const ProtectedLayout = ({ children }: any) => {
 	return (
 		<>
 			<Layout className={styles.container}>
-				<Header>
-					<Row align="middle" justify="space-between" className="header-wrapper">
+				<Header className="header">
+					<Row align="middle" justify="space-between">
 						<Link href="/hub" className="logo">
-							<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
+							<GdhubLogo style={{ width: '120px', height: '31px' }} />
 						</Link>
 						{
 							<>
@@ -197,7 +197,7 @@ export const ProtectedLayout = ({ children }: any) => {
 						}
 						{!session && (
 							<Link href="/signin">
-								<Button type="primary">Вход/Регистрация</Button>
+								<Button>Log in</Button>
 							</Link>
 						)}
 					</Row>
