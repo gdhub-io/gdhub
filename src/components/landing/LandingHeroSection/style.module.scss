@@ -1,11 +1,13 @@
-.section {}
+.section {
+  margin-top: 135px;
+}
 
 .heroImage {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 120px 60px 60px;
+  padding: 120px 60px 165px;
   aspect-ratio: 16/9;
 }
 
@@ -13,17 +15,21 @@
   :global {
     h1 {
       font-size: 80px;
-      font-weight: 700;
+      font-weight: 800;
+      line-height: 96px;
     }
 
     ul {
-      margin-left: 0;
+      list-style: none;
+      padding-left: 0;
 
       >li {
         margin-bottom: 32px;
-        max-width: 482px;
+        max-width: 516px;
 
-        
+        svg {
+          margin: 14px;
+        }
 
         span {
           font-size: 16px;
@@ -32,3 +38,10 @@
     }
   }
 }
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

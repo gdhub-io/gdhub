@@ -1,0 +1,9 @@
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .section {
+    :global {
+      .ant-timeline-item-content {
+        width: 50% !important;
+      }
+    }
+  }
+}

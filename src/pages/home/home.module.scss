@@ -1,4 +1,5 @@
-// flex-column flex justify-center items-center h-screen
+@import '../../styles/variables.scss';
+
 .container {
-	
+	max-width: $wrapper-width;
 }

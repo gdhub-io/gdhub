@@ -13,11 +13,11 @@ export const LandingHeroSection = () => {
 	return (
 		<div className={styles.section}>
 			<div className={styles.heroImage}>
-				<Image src={heroBgImage} fill={true} alt={'Background Image'} />
+				<Image src={heroBgImage} fill={true} alt={'hero image'} />
 			</div>
 			<Row gutter={[16, 16]} wrap>
 				<Col xs={{ span: 24 }} xl={{ span: 16 }}>
-					<Space size="large" direction="vertical" className={styles.heroMain}>
+					<Space size={['large', 'large']} direction="vertical" className={styles.heroMain}>
 						<Title>
 							Game developers hub for everyone who wants to make{' '}
 							<span style={{ color: token.colorPrimary }}>video games</span>

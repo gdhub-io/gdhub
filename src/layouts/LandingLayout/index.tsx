@@ -13,12 +13,26 @@ const { Paragraph, Text, Title } = Typography
 
 export const LandingLayout = ({ children }: any) => {
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
+	const [scrollY, setScrollY] = useState(0)
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
 
 	useEffect(() => {
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
+
+	useEffect(() => {
+		const handleScroll = () => {
+			setScrollY(window.scrollY)
+		}
+
+		handleScroll()
+
+		window.addEventListener('scroll', handleScroll)
+		return () => {
+			window.removeEventListener('scroll', handleScroll)
+		}
+	}, [])
 
 	const headerMenu: MenuProps['items'] = useMemo(
 		() => [
@@ -60,43 +74,43 @@ export const LandingLayout = ({ children }: any) => {
 
 	return (
 		<>
-			<Layout className={styles.container}>
-				<Header className={styles.header}>
-					<Row align="middle" justify="space-between" className={styles.headerContainer}>
-						<Link href="/" className="logo">
-							<GdhubLogo style={{ width: '120px', height: '31px' }} />
-						</Link>
+			<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
+				<Row align="middle" justify="space-between" className={styles.headerContainer}>
+					<Link href="/" className="logo">
+						<GdhubLogo style={{ width: '120px', height: '31px' }} />
+					</Link>
 
-						{screens.lg ? (
-							<>
-								{screens.lg && (
-									<Menu style={{ flex: 1, justifyContent: 'center' }} mode="horizontal" items={headerMenu} />
-								)}
-								{!!session && (
-									<Button type="link" size="large">
-										Go to app
-									</Button>
-								)}
-							</>
-						) : (
-							<div style={{ flex: 1, justifyContent: 'flex-end', display: 'inline-flex' }}>
-								<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-									<AiOutlineMenu />
+					{screens.lg ? (
+						<>
+							{screens.lg && (
+								<Menu style={{ flex: 1, justifyContent: 'center' }} mode="horizontal" items={headerMenu} />
+							)}
+							{!!session && (
+								<Button type="link" size="large">
+									Go to app
 								</Button>
-							</div>
-						)}
+							)}
+						</>
+					) : (
+						<div style={{ flex: 1, justifyContent: 'flex-end', display: 'inline-flex' }}>
+							<Button type="text" onClick={() => setOpenMobileMenu(true)}>
+								<AiOutlineMenu />
+							</Button>
+						</div>
+					)}
 
-						{!session && (
-							<Link href="/signin">
-								<Button>Log in</Button>
-							</Link>
-						)}
-					</Row>
-				</Header>
+					{!session && (
+						<Link href="/signin">
+							<Button>Log in</Button>
+						</Link>
+					)}
+				</Row>
+			</Header>
+			<Layout className={styles.container}>
 				<Content>
 					<div className="layout-background">{children}</div>
 				</Content>
-				<Footer style={{ position: 'relative' }}>
+				<Footer className={styles.footer}>
 					<Space direction="vertical" align="center" style={{ width: '100%' }}>
 						<Paragraph>Contacts</Paragraph>
 						<Title level={2}>Get in touch</Title>

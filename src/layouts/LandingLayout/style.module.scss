@@ -1,13 +1,17 @@
 @import '../../styles/variables.scss';
 
-.header {
+.header, .fixedHeader {
   position: sticky;
+  padding: 0 160px;
   top: 0;
   z-index: 1;
-  width: 100%;
   height: auto;
-  // display: flex;
-  // align-items: center;
+  background-color: transparent;
+  transition: background-color 0.5s;
+}
+
+.fixedHeader {
+  background-color: #0C0202;
 }
 
 .headerContainer {
@@ -20,8 +24,8 @@
 
   :global {
     .logo {
+      height: 31px;
       font-weight: bold;
-      margin: 0 20px;
       display: flex;
       gap: 8px;
       align-items: center;
@@ -36,8 +40,8 @@
       padding: 0 50px;
 
       .layout-background {
-        padding: 24px;
-        min-height: 360px;
+        // padding: 24px;
+        // min-height: 360px;
       }
     }
   }
@@ -49,6 +53,10 @@
       display: none;
     }
   }
+}
+
+.footer {
+  position: relative;
 }
 
 @import './styles/xs.scss'; // screen < 576px
