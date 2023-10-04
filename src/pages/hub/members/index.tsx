@@ -1,4 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import SpecialistPreviewModal from '@/components/modals/SpecialistPreviewModal'
+import { fetcher } from '@/helpers/fetcher'
+import { hasRole } from '@/helpers/user'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { NextPageWithLayout } from '@/pages/_app'
+import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import Head from 'next/head'
 import { useSession } from 'next-auth/react'
@@ -16,12 +22,6 @@ import {
 } from 'react-instantsearch-hooks-web'
 import useSWR from 'swr'
 import styles from './style.module.scss'
-import SpecialistPreviewModal from '@/components/modals/SpecialistPreviewModal'
-import { fetcher } from '@/helpers/fetcher'
-import { hasRole } from '@/helpers/user'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import { InstantsearchAdapter } from '@/services/typesense/adapter'
 
 const { Paragraph, Text, Title } = Typography
 

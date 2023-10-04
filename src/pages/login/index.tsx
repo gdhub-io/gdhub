@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import LogingImageSrc from '@/assets/images/login-image.jpg'
 import { Button, Image, Space } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
@@ -8,7 +9,6 @@ import { signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
 import { GoChevronLeft } from 'react-icons/go'
 import styles from './style.module.scss'
-import LogingImageSrc from '@/assets/images/login-image.jpg'
 
 declare global {
 	interface Window {

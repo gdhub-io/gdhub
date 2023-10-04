@@ -1,10 +1,10 @@
 import { useState } from 'react'
+import ProjectCandidatePreviewModal from '@/components/modals/ProjectCandidatePreviewModal'
+import { fetcher } from '@/helpers/fetcher'
 import { Avatar, Grid, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import useSWR from 'swr'
-import ProjectCandidatePreviewModal from '@/components/modals/ProjectCandidatePreviewModal'
-import { fetcher } from '@/helpers/fetcher'
 
 interface Vacancy {
 	key: string

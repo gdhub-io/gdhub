@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import GdhubLogo from '@/assets/images/gdhub-icon.svg'
+import { NotificationsBell } from '@/components/NotificationsBell'
+import { useTelegram } from '@/helpers/useTelegram'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -6,9 +9,6 @@ import { signOut, useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
-import GdhubLogo from '@/assets/images/gdhub-icon.svg'
-import { NotificationsBell } from '@/components/NotificationsBell'
-import { useTelegram } from '@/helpers/useTelegram'
 
 const { Header, Footer, Content } = Layout
 

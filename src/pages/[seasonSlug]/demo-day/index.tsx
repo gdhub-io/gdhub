@@ -1,3 +1,8 @@
+import { DemoDayProjects } from '@/components/DemoDayProjects'
+import { DemoTitle } from '@/components/DemoTitle'
+import { DemoDayLayout } from '@/layouts/DemoDayLayout'
+import { NextPageWithLayout } from '@/pages/_app'
+import { getActiveStage, getPitchedProjects, getSeasonBySlug } from '@/services/airtable'
 import { Button, Col, Row, Space, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
@@ -7,11 +12,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
-import { DemoDayProjects } from '@/components/DemoDayProjects'
-import { DemoTitle } from '@/components/DemoTitle'
-import { DemoDayLayout } from '@/layouts/DemoDayLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import { getActiveStage, getPitchedProjects, getSeasonBySlug } from '@/services/airtable'
 
 const { Title, Text, Paragraph } = Typography
 

@@ -1,7 +1,3 @@
-import { Space, Spin } from 'antd'
-import Head from 'next/head'
-import { getServerSession } from 'next-auth'
-import useSWR from 'swr'
 import GeneralProfileForm from '@/components/profile-forms/GeneralProfileForm'
 import PreferencesProfileForm from '@/components/profile-forms/PreferencesProfileForm'
 import ResourcesProfileForm from '@/components/profile-forms/ResourcesProfileForm'
@@ -10,6 +6,10 @@ import { fetcher } from '@/helpers/fetcher'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { Space, Spin } from 'antd'
+import Head from 'next/head'
+import { getServerSession } from 'next-auth'
+import useSWR from 'swr'
 
 const ProfilePage: NextPageWithLayout = () => {
 	const {

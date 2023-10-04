@@ -1,10 +1,10 @@
-import { Render } from '@9gustin/react-notion-render'
-import { Typography } from 'antd'
-import Head from 'next/head'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import NotionService, { getPage } from '@/services/notion'
 import styles from '@/styles/cookie-policy.module.scss'
+import { Render } from '@9gustin/react-notion-render'
+import { Typography } from 'antd'
+import Head from 'next/head'
 import '@9gustin/react-notion-render/dist/index.css'
 
 const { Title, Paragraph, Text } = Typography

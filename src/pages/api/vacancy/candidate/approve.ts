@@ -1,8 +1,8 @@
+import AirtableService from '@/services/airtable'
 import dayjs from 'dayjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../auth/[...nextauth]'
-import AirtableService from '@/services/airtable'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {

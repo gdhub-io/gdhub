@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
+import { fetcher } from '@/helpers/fetcher'
 import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
 import dayjs from 'dayjs'
 import useSWR from 'swr'
-import { fetcher } from '@/helpers/fetcher'
 
 const VacancyModal = ({ projectId, projectName, vacancyId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
