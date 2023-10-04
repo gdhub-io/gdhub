@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { Alert, Avatar, Card } from 'antd'
 import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
@@ -32,7 +33,9 @@ export const HeldContent = ({ lecture, userIsRegistered }: any) => {
 				})}
 			</div>
 			<div style={{ marginTop: 16 }}>Содержание лекции:</div>
-			<div className="lecture-description">{lecture.Description}</div>
+			<div className="lecture-description">
+				<TextWithLineBreak text={lecture.Description} />
+			</div>
 
 			{!!lecture.Lecturer && (
 				<>

@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { Avatar, Card } from 'antd'
 
 export const RequestedContent = ({ lecture }: any) => {
@@ -14,7 +15,13 @@ export const RequestedContent = ({ lecture }: any) => {
 			<small style={{ marginTop: 16 }}>
 				{lecture.Status == 'Proposed' ? 'Лектор предлагает:' : 'Автора запроса интересует:'}
 			</small>
-			<div className="lecture-description">{lecture.Status == 'Proposed' ? lecture.Description : lecture.Wishes}</div>
+			<div className="lecture-description">
+				{lecture.Status == 'Proposed' ? (
+					<TextWithLineBreak text={lecture.Description} />
+				) : (
+					<TextWithLineBreak text={lecture.Wishes} />
+				)}
+			</div>
 
 			{!!lecture.Lecturer && (
 				<>
