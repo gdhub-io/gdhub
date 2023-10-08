@@ -1,5 +1,7 @@
 .section {
-  margin-top: 135px;
+  margin-top: 105px;
+  margin-bottom: 145px;
+  overflow: hidden;
 }
 
 .heroImage {
@@ -7,11 +9,37 @@
   top: 0;
   left: 0;
   width: 100%;
-  padding: 120px 60px 165px;
+  padding: 120px 60px 0px;
   aspect-ratio: 16/9;
 }
 
-.heroMain {
+.heroMain {  
+  .heroButton {
+    color: #fff;
+    border-color: #F15541;
+    padding: 24px 134px 24px 62px;
+    height: auto;
+    font-size: 20px;
+
+    &:hover, &:active, &:focus {
+      color: #fff !important;
+      background-color: #F15541;
+      border-color: #F15541 !important;
+    }
+
+    :global {
+      .icon-right {
+        position: absolute;
+        display: inline-block;
+        right: 0;
+        height: 100%;
+        padding: 24px;
+        background-color: #F15541;
+
+      }
+    }
+  }
+
   :global {
     h1 {
       font-size: 80px;

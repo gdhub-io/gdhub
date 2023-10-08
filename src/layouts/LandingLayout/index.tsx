@@ -77,7 +77,7 @@ export const LandingLayout = ({ children }: any) => {
 			<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
 				<Row align="middle" justify="space-between" className={styles.headerContainer}>
 					<Link href="/" className="logo">
-						<GdhubLogo style={{ width: '120px', height: '31px' }} />
+						<GdhubLogo style={{ width: '120px', height: '29px' }} />
 					</Link>
 
 					{screens.lg ? (

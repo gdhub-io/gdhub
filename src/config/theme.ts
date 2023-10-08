@@ -19,6 +19,9 @@ export const themeConfig: ThemeConfig = {
 		wireframe: false,
 	},
 	components: {
+		Avatar: {
+			groupOverlapping: -16,
+		},
 		Button: {
 			size: 16,
 			sizeLG: 18,

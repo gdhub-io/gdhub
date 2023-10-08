@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
-.header, .fixedHeader {
+.header,
+.fixedHeader {
   position: sticky;
   padding: 0 160px;
   top: 0;
@@ -11,11 +12,22 @@
 }
 
 .fixedHeader {
-  background-color: #0C0202;
+  background-color: #0C0202aa;
 }
 
 .headerContainer {
   height: 120px;
+
+  :global {
+    .logo {
+      height: 29px;
+      line-height: initial;
+      font-weight: bold;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+  }
 }
 
 .container {
@@ -23,14 +35,6 @@
   margin: 0 auto;
 
   :global {
-    .logo {
-      height: 31px;
-      font-weight: bold;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
     .username {
       font-size: 14px;
       color: var(--dark-grey);
