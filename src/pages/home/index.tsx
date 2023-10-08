@@ -15,7 +15,7 @@ import { signIn } from 'next-auth/react'
 import styles from './home.module.scss'
 import { NextPageWithLayout } from '../_app'
 
-const { Title, Text, Paragraph } = Typography
+const { Title } = Typography
 
 declare global {
 	interface Window {
@@ -23,13 +23,7 @@ declare global {
 	}
 }
 
-const LandingPage: NextPageWithLayout = ({
-	isHealthy,
-	usersCount,
-	specialitiesCount,
-	projectsCount,
-	vacanciesCount,
-}: any) => {
+const LandingPage: NextPageWithLayout = ({ isHealthy }: any) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -90,21 +84,21 @@ const LandingPage: NextPageWithLayout = ({
 			<Head>
 				<title>Game Developers Hub</title>
 			</Head>
-			<div className={styles.container}>
-				<LandingHeroSection />
-				<LandingWhoWeAreSection />
-				<LandingForAuthorsSection />
-				<LandingForSpecialistsSection />
-				<LandingFeedbackSection />
-				<LandingContactsSection />
-			</div>
+			<LandingLayout>
+				<div className={styles.container}>
+					<LandingHeroSection />
+					<LandingWhoWeAreSection />
+					<LandingForAuthorsSection />
+					<LandingForSpecialistsSection />
+					<LandingFeedbackSection />
+					<LandingContactsSection />
+				</div>
+			</LandingLayout>
 		</>
 	)
 }
 
-LandingPage.getLayout = (page) => <LandingLayout>{page}</LandingLayout>
-
-export async function getStaticProps(context: any) {
+export async function getStaticProps() {
 	const isHealthy = await prisma.$isHealthy()
 
 	if (!isHealthy) {

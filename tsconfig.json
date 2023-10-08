@@ -35,11 +35,12 @@
   },
   "include": [
     "next-env.d.ts",
+    "src/types/common.d.ts",
     "src/**/*.ts",
-    "src/**/*.d.ts",
     "src/**/*.tsx",
-    "prisma/**/*.ts"
-, "src/pages/admin/lecture/[id]"  ],
+    "prisma/**/*.ts",
+    "src/pages/admin/lecture/[id]"
+  ],
   "exclude": [
     "node_modules",
     "tsconfig.json"

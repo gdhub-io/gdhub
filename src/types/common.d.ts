@@ -16,3 +16,9 @@ declare global {
 		access_token?: string
 	}
 }
+
+declare global {
+	interface Window {
+		$crisp?: any
+	}
+}

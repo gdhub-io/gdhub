@@ -1,12 +1,12 @@
-import React, { ReactNode, useEffect, useState } from 'react'
 import '@/styles/globals.scss'
+import React, { ReactNode, useEffect, useState } from 'react'
+import CheckHealth from '@/components/CheckHealth'
 import { CookieConsent } from '@/components/CookieConsent'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import SEOSettings from '@/config/seo'
 import { themeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
-import { PublicLayout } from '@/layouts/PublicLayout'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ConfigProvider } from 'antd'
@@ -27,13 +27,21 @@ dayjs.extend(localizedFormat)
 dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
-dayjs.locale('ru')
+dayjs.locale('en')
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
 	getLayout?: (page: ReactNode) => ReactNode
 }
 
-const queryClient = new QueryClient()
+// const twentyFourHoursInMs = 1000 * 60 * 60 * 24
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			// refetchInterval: false,
+			// staleTime: twentyFourHoursInMs,
+		},
+	},
+})
 
 type AppPropsWithLayout = AppProps<{ session: any }> & {
 	Component: NextPageWithLayout
@@ -48,7 +56,7 @@ export function reportWebVitals(metric: any) {
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
 	const router = useRouter()
 	const [loading, setLoading] = useState(true)
-	const getLayout = Component.getLayout || ((page) => <PublicLayout>{page}</PublicLayout>)
+	const getLayout = Component.getLayout || ((page) => <>{page}</>)
 
 	const setLoadingOff = () => {
 		setTimeout(() => setLoading(false), 900)
@@ -99,19 +107,21 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 			<ErrorBoundary>
 				<QueryClientProvider client={queryClient}>
 					<ConfigProvider theme={themeConfig}>
-						<SessionProvider session={session}>
-							<div
-								className="app-container"
-								style={{
-									fontFamily: themeConfig.token?.fontFamily,
-									opacity: loading ? 0 : 1,
-									overflow: loading ? 'hidden' : 'initial',
-								}}
-							>
-								<DefaultSeo {...SEOSettings} />
-								{getLayout(<Component {...pageProps} />)}
-							</div>
-						</SessionProvider>
+						<CheckHealth>
+							<SessionProvider session={session}>
+								<div
+									className="app-container"
+									style={{
+										fontFamily: themeConfig.token?.fontFamily,
+										opacity: loading ? 0 : 1,
+										overflow: loading ? 'hidden' : 'initial',
+									}}
+								>
+									<DefaultSeo {...SEOSettings} />
+									{getLayout(<Component {...pageProps} />)}
+								</div>
+							</SessionProvider>
+						</CheckHealth>
 						<CookieConsent />
 						<LoadingScreen visible={loading} />
 					</ConfigProvider>
