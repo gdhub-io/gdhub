@@ -157,20 +157,24 @@ const Home: NextPageWithLayout = ({ usersCount, specialitiesCount, projectsCount
 Home.getLayout = (page) => <LandingLayout>{page}</LandingLayout>
 
 export async function getStaticProps(context: any) {
-	const usersCount = await prisma.user.count()
-	const specialitiesCount = await prisma.speciality.count()
+	try {
+		const usersCount = await prisma.user.count()
+		const specialitiesCount = await prisma.speciality.count()
 
-	const projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
-	const vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
+		const projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
+		const vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
 
-	return {
-		props: {
-			usersCount,
-			specialitiesCount,
-			projectsCount,
-			vacanciesCount,
-		},
-		revalidate: 60,
+		return {
+			props: {
+				usersCount,
+				specialitiesCount,
+				projectsCount,
+				vacanciesCount,
+			},
+			revalidate: 60,
+		}
+	} catch (error: any) {
+		return { props: { error: error.message } }
 	}
 }
 

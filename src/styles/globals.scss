@@ -40,7 +40,7 @@ a.text-link {
 
 .ant-menu-horizontal,
 .ant-menu-vertical {
-	border: none;
+	border: none !important;
 }
 
 .ant-menu-horizontal>.ant-menu-item-selected::after {
@@ -91,4 +91,9 @@ a.text-link {
 		position: unset;
 		margin-right: 4px;
 	}
+}
+
+.ant-typography {
+	font-size: 16px;
+	font-weight: 200;
 }

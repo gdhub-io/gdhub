@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@9gustin/react-notion-render": "^3.11.2",
+    "@ant-design/icons": "^5.2.6",
     "@daily-co/daily-js": "^0.48.0",
     "@daily-co/daily-react": "^0.11.0",
     "@headlessui/react": "1.7.1",

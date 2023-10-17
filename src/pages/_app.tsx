@@ -9,7 +9,7 @@ import { themeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, theme } from 'antd'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -17,6 +17,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import weekday from 'dayjs/plugin/weekday'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
+import { Lora } from 'next/font/google'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
@@ -28,6 +29,8 @@ dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale('en')
+
+const secondFont = Lora({ subsets: ['latin', 'cyrillic'], weight: ['400', '700'], style: ['normal', 'italic'] })
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
 	getLayout?: (page: ReactNode) => ReactNode
@@ -90,6 +93,12 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	return (
 		<>
+			<style jsx global>{`
+				:root {
+					--main-font-family: ${themeConfig?.token?.fontFamily}, sans-serif;
+					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
+				}
+			`}</style>
 			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
 			<Script
 				id="gtag-base"

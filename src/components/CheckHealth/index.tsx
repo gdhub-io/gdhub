@@ -1,3 +1,4 @@
+import GdhubLogo from '@/assets/images/gdhub-logo.svg'
 import { useQuery } from '@tanstack/react-query'
 import { Alert, Space, Typography } from 'antd'
 import axios from 'axios'
@@ -24,9 +25,9 @@ const CheckHealth = ({ children }: any) => {
 			<div className={styles.container}>
 				<Space direction="vertical" align="center" size="large">
 					<div className="logo">
-						<Title>Game Developers Hub</Title>
+						<GdhubLogo style={{ width: '120px', height: '31px' }} />
 					</div>
-					<p>This is a community of gaming industry professionals whose members form teams to develop new games..</p>
+					<p>This is a game developers hub for industry professionals whose members form teams to develop new games.</p>
 					<Alert type="error" message="No connection. Try later." showIcon />
 				</Space>
 			</div>

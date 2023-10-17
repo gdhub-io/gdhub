@@ -1,4 +1,8 @@
+@import '../../../styles/variables.scss';
+
 .section {
+  max-width: $wrapper-width;
+  margin: 0 auto;
   margin-top: 105px;
   margin-bottom: 145px;
   overflow: hidden;

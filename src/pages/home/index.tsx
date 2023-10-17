@@ -84,8 +84,8 @@ const LandingPage: NextPageWithLayout = ({ isHealthy }: any) => {
 			<Head>
 				<title>Game Developers Hub</title>
 			</Head>
-			<LandingLayout>
-				<div className={styles.container}>
+			<LandingLayout className={styles.container}>
+				<div className={styles.main}>
 					<LandingHeroSection />
 					<LandingWhoWeAreSection />
 					<LandingForAuthorsSection />

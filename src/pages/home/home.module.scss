@@ -1,7 +1,13 @@
 @import '../../styles/variables.scss';
 
 .container {
-	max-width: $wrapper-width;
+	width: 100%;
+	margin: 0 auto;
+}
+
+.main {
+	width: 100%;
+	margin: 0 auto;
 }
 
 .noConnectionContainer {

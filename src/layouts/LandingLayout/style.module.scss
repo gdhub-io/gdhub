@@ -3,7 +3,7 @@
 .header,
 .fixedHeader {
   position: sticky;
-  padding: 0 160px;
+  padding: 0 $landing-padding;
   top: 0;
   z-index: 1;
   height: auto;
@@ -12,10 +12,12 @@
 }
 
 .fixedHeader {
-  background-color: #0C0202aa;
+  background-color: #0C0202ee;
 }
 
 .headerContainer {
+  max-width: $wrapper-width;
+  margin: 0 auto;
   height: 120px;
 
   :global {
@@ -31,22 +33,10 @@
 }
 
 .container {
-  max-width: $wrapper-width;
-  margin: 0 auto;
-
   :global {
     .username {
       font-size: 14px;
       color: var(--dark-grey);
-    }
-
-    .ant-layout-content {
-      padding: 0 50px;
-
-      .layout-background {
-        // padding: 24px;
-        // min-height: 360px;
-      }
     }
   }
 }

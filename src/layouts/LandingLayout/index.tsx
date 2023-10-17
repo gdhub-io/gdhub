@@ -74,41 +74,41 @@ export const LandingLayout = ({ children }: any) => {
 
 	return (
 		<>
-			<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
-				<Row align="middle" justify="space-between" className={styles.headerContainer}>
-					<Link href="/" className="logo">
-						<GdhubLogo style={{ width: '120px', height: '29px' }} />
-					</Link>
-
-					{screens.lg ? (
-						<>
-							{screens.lg && (
-								<Menu style={{ flex: 1, justifyContent: 'center' }} mode="horizontal" items={headerMenu} />
-							)}
-							{!!session && (
-								<Button type="link" size="large">
-									Go to app
-								</Button>
-							)}
-						</>
-					) : (
-						<div style={{ flex: 1, justifyContent: 'flex-end', display: 'inline-flex' }}>
-							<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-								<AiOutlineMenu />
-							</Button>
-						</div>
-					)}
-
-					{!session && (
-						<Link href="/signin">
-							<Button>Log in</Button>
-						</Link>
-					)}
-				</Row>
-			</Header>
 			<Layout className={styles.container}>
+				<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
+					<Row align="middle" justify="space-between" className={styles.headerContainer}>
+						<Link href="/" className="logo">
+							<GdhubLogo style={{ width: '120px', height: '29px' }} />
+						</Link>
+
+						{screens.lg ? (
+							<>
+								{screens.lg && (
+									<Menu style={{ flex: 1, justifyContent: 'center' }} mode="horizontal" items={headerMenu} />
+								)}
+								{!!session && (
+									<Button type="link" size="large">
+										Go to app
+									</Button>
+								)}
+							</>
+						) : (
+							<div style={{ flex: 1, justifyContent: 'flex-end', display: 'inline-flex' }}>
+								<Button type="text" onClick={() => setOpenMobileMenu(true)}>
+									<AiOutlineMenu />
+								</Button>
+							</div>
+						)}
+
+						{!session && screens.xl && (
+							<Link href="/signin">
+								<Button>Log in</Button>
+							</Link>
+						)}
+					</Row>
+				</Header>
 				<Content>
-					<div className="layout-background">{children}</div>
+					<div className={styles.content}>{children}</div>
 				</Content>
 				<Footer className={styles.footer}>
 					<Space direction="vertical" align="center" style={{ width: '100%' }}>
@@ -176,28 +176,36 @@ export const LandingLayout = ({ children }: any) => {
 					</Row>
 				</Footer>
 			</Layout>
+
 			{!screens.lg && (
 				<Drawer
 					className={styles.mobileMenuDrawer}
 					height={'100%'}
 					title={
-						<Space>
-							<Avatar
-								src={
-									session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
-								}
-								shape="square"
-							/>
-							<div className="username">{session?.user?.name}</div>
-						</Space>
+						!!session && (
+							<Space align="center">
+								<Avatar
+									src={
+										session.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
+									}
+									shape="square"
+								/>
+								<div className="username">{session.user?.name}</div>
+							</Space>
+						)
 					}
 					placement="top"
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
 					extra={
-						<Button onClick={() => setOpenMobileMenu(false)} type="text">
-							<AiOutlineClose />
-						</Button>
+						<Space>
+							<Link href="/signin">
+								<Button size="small">Log in</Button>
+							</Link>
+							<Button size="small" onClick={() => setOpenMobileMenu(false)} type="text">
+								<AiOutlineClose />
+							</Button>
+						</Space>
 					}
 				>
 					<Menu items={headerMenu} onSelect={() => setOpenMobileMenu(false)} />

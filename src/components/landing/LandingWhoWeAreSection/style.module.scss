@@ -1,7 +1,134 @@
+@import '../../../styles/variables.scss';
+
 .section {
-  position: absolute;
-  left: 0;
-  width: 100%;
+  position: relative;
   background-color: #F15541;
-  min-height: 1395px;
+  padding: 96px 165px;
+}
+
+.tooltip {
+  :global {
+    .ant-tooltip-inner {
+      background: #fff;
+      color: #F15541;
+      padding: 8px 16px;
+      font-size: 16px;
+      text-align: center;
+      font-family: var(--second-font-family);
+      font-style: italic;
+    }
+
+    .ant-tooltip-arrow {
+
+      &::before,
+      &::after {
+        background: #fff;
+      }
+    }
+  }
+}
+
+.container {
+  max-width: $wrapper-width;
+
+  .preTitle {
+    color: #FFBB55;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 700;
+  }
+
+  .subTitle {
+    color: #FFFDFC;
+    font-family: var(--second-font-family);
+    font-style: italic;
+    font-size: 16px;
+    max-width: 440px;
+    margin: 0 auto;
+    margin-bottom: 80px;
+  }
+
+  .preTitle,
+  h2,
+  h3,
+  .subTitle {
+    text-align: center !important;
+  }
+
+  .content {
+    margin-bottom: 40px;
+  }
+
+  :global {
+    .ant-typography {
+      text-align: justify;
+    }
+
+    .member-point {
+      display: block;
+      position: fixed;
+      width: 0px;
+      height: 0px;
+      left: 0;
+      top: 0;
+    }
+  }
+}
+
+.valuesLine {
+  display: block;
+  width: calc(100% / 24 * 20 + 26px);
+  height: 1px;
+  background: #fff;
+  margin-bottom: 40px;
+  margin-inline: auto;
+}
+
+.valuesBlock {
+  border: 1px solid #fff;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 1px;
+    height: 40px;
+    border-left: 1px solid #fff;
+    top: -40px;
+    left: 50%;
+  }
+
+  // &:first-child {
+  //   &::before {
+  //     content: "";
+  //     position: absolute;
+  //     display: block;
+  //     width: 1px;
+  //     height: 40px;
+  //     border-left: 4px solid #0a5dda;
+  //     top: -40px;
+  //     left: 50%;
+  //   }
+  // }
+
+  :global {
+    span.anticon {
+      background: #fff;
+      padding: 15px;
+      font-size: 40px;
+    }
+
+    span.ant-typography {
+      text-align: center;
+      width: 100%;
+    }
+  }
 }
