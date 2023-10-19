@@ -1,0 +1,85 @@
+@import '../../../styles/variables.scss';
+
+.section {
+  position: relative;
+  background-color: #0b0b0d;
+  padding: 96px 165px;
+  background-position-x: left;
+  background-repeat: no-repeat;
+}
+
+.container {
+  max-width: $wrapper-width;
+
+  .preTitle {
+    color: #FFBB55;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 700;
+  }
+
+  .content {
+    margin-top: 126px;
+    margin-bottom: 40px;
+
+    :global {
+      span.ant-typography {
+        font-size: 18px;
+      }
+    }
+
+    .star {
+      width: 70px;
+      height: 70px;
+      border: 2px solid #FFBB55;
+      border-image: linear-gradient(45deg, #FFBB55, #C66C19) 1;
+      box-shadow:
+        0 0 50px rgba(255, 187, 85, 0.2),
+        inset 0 0 50px rgba(255, 187, 85, 0.2);
+
+      svg {
+        padding: 18px;
+        fill: #FFBB55;
+      }
+    }
+
+    span {
+      max-width: 480px;
+      display: block;
+    }
+
+    .heroButton {
+      color: #fff;
+      border-color: #FFBB55;
+      padding: 24px 104px 24px 32px;
+      height: auto;
+      font-size: 20px;
+      margin-top: 70px;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: #fff !important;
+        background-color: #FFBB55;
+        border-color: #FFBB55 !important;
+      }
+
+      :global {
+        .icon-right {
+          position: absolute;
+          display: inline-block;
+          right: 0;
+          height: 100%;
+          padding: 24px;
+          background-color: #FFBB55;
+
+        }
+      }
+    }
+  }
+}

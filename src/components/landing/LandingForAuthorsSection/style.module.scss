@@ -1,0 +1,82 @@
+@import '../../../styles/variables.scss';
+
+.section {
+  position: relative;
+  background-color: #0b0b0d;
+  padding: 96px 165px;
+  background-position-x: right;
+}
+
+.container {
+  max-width: $wrapper-width;
+
+  .preTitle {
+    color: #FFBB55;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 700;
+  }
+
+  .content {
+    margin-top: 110px;
+    margin-bottom: 24px;
+
+    :global {
+      span.ant-typography {
+        font-size: 18px;
+      }
+    }
+
+    .star {
+      width: 70px;
+      height: 70px;
+      border: 2px solid rgb(255, 255, 255);
+      border-image: linear-gradient(45deg, #F8442C, #811812) 1;
+      box-shadow:
+        0 0 50px rgba(186, 54, 21, 0.2),
+        inset 0 0 50px rgba(186, 54, 21, 0.2);
+
+      svg {
+        padding: 18px;
+        fill: #F15541;
+      }
+    }
+
+    span {
+      max-width: 480px;
+      display: block;
+    }
+
+    .heroButton {
+      color: #fff;
+      border-color: #F15541;
+      padding: 24px 104px 24px 32px;
+      height: auto;
+      font-size: 20px;
+      margin-top: 70px;
+  
+      &:hover, &:active, &:focus {
+        color: #fff !important;
+        background-color: #F15541;
+        border-color: #F15541 !important;
+      }
+  
+      :global {
+        .icon-right {
+          position: absolute;
+          display: inline-block;
+          right: 0;
+          height: 100%;
+          padding: 24px;
+          background-color: #F15541;
+  
+        }
+      }
+    }
+  }
+}

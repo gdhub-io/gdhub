@@ -57,7 +57,7 @@ export const LandingWhoWeAreSection = () => {
 	}, [])
 
 	return (
-		<div className={styles.section}>
+		<div id="about" className={styles.section}>
 			<div className={styles.container}>
 				<div className={styles.preTitle}>Know about us</div>
 				<Title level={2}>WHO WE ARE</Title>
