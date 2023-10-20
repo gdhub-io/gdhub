@@ -66,7 +66,7 @@ export const LandingWhoWeAreSection = () => {
 					We are a community of professionals from the gaming world who don’t want to be limited to traditional
 					employment.
 				</div>
-				<Row gutter={[135, 48]} justify="space-between" align="middle" className={styles.content}>
+				<Row gutter={[screens.xs ? 0 : 135, 48]} justify="space-between" align="middle" className={styles.content}>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Paragraph>
 							We started our journey in 2015 when we organized a game development incubator, where we trained and

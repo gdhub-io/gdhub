@@ -27,7 +27,7 @@ export const HeroStats = ({
 					</Space>
 
 					<Avatar.Group size={72}>
-						{screen.lg && (
+						{screen.xxl && (
 							<>
 								<Avatar src={heroStatsImage1.src} />
 								<Avatar src={heroStatsImage2.src} />

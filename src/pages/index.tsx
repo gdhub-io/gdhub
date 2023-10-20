@@ -1,20 +1,34 @@
 import { useEffect, useState } from 'react'
-import StartProjectImage from '@/assets/images/start-indie-game.jpg'
-import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
+import { LandingContactsSection } from '@/components/landing/LandingContactsSection'
+import { LandingFeedbackSection } from '@/components/landing/LandingFeedbackSection'
+import { LandingForAuthorsSection } from '@/components/landing/LandingForAuthorsSection'
+import { LandingForSpecialistsSection } from '@/components/landing/LandingForSpecialistsSection'
+import { LandingHeroSection } from '@/components/landing/LandingHeroSection'
+import { LandingWhoWeAreSection } from '@/components/landing/LandingWhoWeAreSection'
 import { useTelegram } from '@/helpers/useTelegram'
 import { LandingLayout } from '@/layouts/LandingLayout'
 import { prisma } from '@/services/prisma'
-import styles from '@/styles/home.module.scss'
-import { Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
+import { Alert, Space, Typography } from 'antd'
 import Head from 'next/head'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
 import { NextPageWithLayout } from './_app'
+import styles from './home.module.scss'
 
 const { Title } = Typography
 
-const Home: NextPageWithLayout = ({ usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
+declare global {
+	interface Window {
+		$crisp?: any
+	}
+}
+
+interface LandingPageParams {
+	isHealthy: boolean
+	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
+}
+
+const LandingPage: NextPageWithLayout<LandingPageParams> = ({ isHealthy, stats }) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -48,134 +62,72 @@ const Home: NextPageWithLayout = ({ usersCount, specialitiesCount, projectsCount
 		}
 	}
 
+	if (!isHealthy) {
+		return (
+			<>
+				<Head>
+					<title>Game Developers Hub</title>
+				</Head>
+				<div className={styles.container}>
+					<Space direction="vertical" align="center" size="large">
+						<div className="logo">
+							<Title>Game Developers Hub</Title>
+						</div>
+						<p>
+							Сообщество специалистов игровой индустрии, участники которого объединяются в команды, чтобы разрабатывать
+							новые игры.
+						</p>
+						<Alert type="error" message="No connection. Try later." showIcon />
+					</Space>
+				</div>
+			</>
+		)
+	}
+
 	return (
 		<>
 			<Head>
 				<title>Game Developers Hub</title>
 			</Head>
-			<div className={styles.container}>
-				<Space direction="vertical" align="center" size="large">
-					<div className="logo">
-						<Title>Game Developers Hub</Title>
-					</div>
-					<p>
-						Сообщество специалистов игровой индустрии, участники которого объединяются в команды, чтобы разрабатывать
-						новые игры.
-						<br />
-						Хочешь получить новый опыт или разработать свою игру? Присоединяйся!
-					</p>
-					{isOpenedInTelegram ? (
-						<>
-							<Link href="https://gdhub.io" target="_blank">
-								<Button type="primary" loading={signInProcessing}>
-									{signInProcessing ? 'Авторизация...' : 'Перейти в браузер'}
-								</Button>
-							</Link>
-						</>
-					) : (
-						<Link href="/signin">
-							<Button type="primary">Вход / Регистрация</Button>
-						</Link>
-					)}
-				</Space>
-
-				<Row align="middle" gutter={[16, 16]} style={{ padding: '60px 20px' }}>
-					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
-						<Card>
-							<Statistic title="Участников сообщества" value={usersCount} style={{ textAlign: 'center' }} />
-						</Card>
-					</Col>
-					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
-						<Card>
-							<Statistic title="Специалистов" value={specialitiesCount} style={{ textAlign: 'center' }} />
-						</Card>
-					</Col>
-					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
-						<Card style={{ textAlign: 'center' }}>
-							<Statistic title="Проектов в работе" value={projectsCount} style={{ textAlign: 'center' }} />
-							<Link href="/projects" title="Проекты">
-								<Button size="small" type="text">
-									Все проекты
-								</Button>
-							</Link>
-						</Card>
-					</Col>
-					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
-						<Card style={{ textAlign: 'center' }}>
-							<Statistic title="Вакансий на проектах" value={vacanciesCount} style={{ textAlign: 'center' }} />
-							<Link href="/vacancies" title="Вакансии">
-								<Button size="small" type="text">
-									Все вакансии
-								</Button>
-							</Link>
-						</Card>
-					</Col>
-				</Row>
-
-				<Row gutter={[24, 24]} style={{ maxWidth: '1024px' }}>
-					<Col xs={24} lg={12}>
-						<Card
-							cover={<Image preview={false} src={StartProjectImage.src} alt="start-project" />}
-							actions={[
-								<Link key="start-project" href="https://tally.so/r/w8zl5P" target="_blank">
-									<Button>Запустить свой проект</Button>
-								</Link>,
-							]}
-						>
-							<Card.Meta
-								title="Хочешь создать свою игру?"
-								description="Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
-								инкубационной программы Gamelab, так и работая самостоятельно в своем темпе."
-							/>
-						</Card>
-					</Col>
-					<Col xs={24} lg={12}>
-						<Card
-							cover={<Image preview={false} src={TeamProjectImage.src} alt="start-project" />}
-							actions={[
-								<Link key="select-project" href="/projects">
-									<Button>Смотреть проекты</Button>
-								</Link>,
-								<Link key="select-vecencies" href="/vacancies">
-									<Button>Смотреть вакансии</Button>
-								</Link>,
-							]}
-						>
-							<Card.Meta
-								title="Хочешь участвовать в разработке инди-игр?"
-								description="Каждый специалист игровой индустрии (программист, художник, аниматор, саунд-дизайнер, smm-специалист и
-									многие другие) имеет возможность присоединиться к одному из инди-проектов, находящихся в разработке."
-							/>
-						</Card>
-					</Col>
-				</Row>
-			</div>
+			<LandingLayout className={styles.container}>
+				<div className={styles.main}>
+					<LandingHeroSection stats={stats} />
+					<LandingWhoWeAreSection />
+					<LandingForAuthorsSection />
+					<LandingForSpecialistsSection />
+					<LandingFeedbackSection />
+					<LandingContactsSection />
+				</div>
+			</LandingLayout>
 		</>
 	)
 }
 
-Home.getLayout = (page) => <LandingLayout>{page}</LandingLayout>
+export async function getStaticProps() {
+	const isHealthy = await prisma.$isHealthy()
 
-export async function getStaticProps(context: any) {
-	try {
-		const usersCount = await prisma.user.count()
-		const specialitiesCount = await prisma.speciality.count()
+	if (!isHealthy) {
+		return { props: { isHealthy: false } }
+	}
 
-		const projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
-		const vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
+	const usersCount = await prisma.user.count()
+	const specialitiesCount = await prisma.speciality.count()
 
-		return {
-			props: {
+	const projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
+	const vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
+
+	return {
+		props: {
+			isHealthy: true,
+			stats: {
 				usersCount,
 				specialitiesCount,
 				projectsCount,
 				vacanciesCount,
 			},
-			revalidate: 60,
-		}
-	} catch (error: any) {
-		return { props: { error: error.message } }
+		},
+		revalidate: 360,
 	}
 }
 
-export default Home
+export default LandingPage
