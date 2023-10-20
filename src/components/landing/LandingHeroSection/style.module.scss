@@ -1,23 +1,19 @@
 @import '../../../styles/variables.scss';
 
 .section {
+  position: relative;
+  background-color: #0b0b0d;
+  padding: calc($landing-header-height + 96px) 165px 96px;
+  background-position-x: left;
+  background-repeat: no-repeat;
+  background-position-x: right;
+}
+
+.container {
   max-width: $wrapper-width;
-  margin: 0 auto;
-  margin-top: 105px;
-  margin-bottom: 145px;
-  overflow: hidden;
 }
 
-.heroImage {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 120px 60px 0px;
-  aspect-ratio: 16/9;
-}
-
-.heroMain {  
+.heroMain {
   .heroButton {
     color: #fff;
     border-color: #F15541;
@@ -25,7 +21,9 @@
     height: auto;
     font-size: 20px;
 
-    &:hover, &:active, &:focus {
+    &:hover,
+    &:active,
+    &:focus {
       color: #fff !important;
       background-color: #F15541;
       border-color: #F15541 !important;

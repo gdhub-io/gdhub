@@ -17,6 +17,7 @@ export const themeConfig: ThemeConfig = {
 		sizeUnit: 4,
 		borderRadius: 2,
 		wireframe: false,
+		colorBgElevated: '#050505',
 	},
 	components: {
 		Avatar: {
@@ -25,6 +26,7 @@ export const themeConfig: ThemeConfig = {
 		Button: {
 			size: 16,
 			sizeLG: 18,
+			colorTextBase: '#FFFDFC',
 			controlHeight: 52,
 			controlHeightLG: 72,
 			controlHeightSM: 36,
@@ -42,7 +44,7 @@ export const themeConfig: ThemeConfig = {
 			colorBgBody: 'transparent',
 			colorBgHeader: 'transparent',
 		},
-		Menu: { colorBgContainer: 'transparent' },
+		Menu: { colorBgContainer: 'transparent', darkItemBg: '#050505' },
 		Spin: {
 			fontSize: 16,
 			controlHeight: 48,

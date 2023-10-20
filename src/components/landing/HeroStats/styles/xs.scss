@@ -1,0 +1,17 @@
+@media screen and (max-width: 575px) {
+	.container {
+		justify-content: center;
+
+		span {
+			font-size: 14px !important;
+		}
+	}
+
+	.stats {
+    :global {
+      span.ant-typography>strong {
+        font-size: 40px !important;
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ import PeopleIcon from '@/assets/images/icons/people.svg'
 import StarIcon from '@/assets/images/icons/star.svg'
 import TeamMap from '@/assets/images/landing/team.svg'
 import Icon from '@ant-design/icons'
-import { Col, Row, Tooltip, Typography } from 'antd'
+import { Col, Grid, Row, Tooltip, Typography } from 'antd'
 import styles from './style.module.scss'
 
 const { Title, Paragraph, Text } = Typography
@@ -23,6 +23,7 @@ const members: any = {
 }
 
 export const LandingWhoWeAreSection = () => {
+	const screens = Grid.useBreakpoint()
 	const tooltipMemberRef = useRef<any>()
 	const [member, setMember] = useState()
 
@@ -65,7 +66,7 @@ export const LandingWhoWeAreSection = () => {
 					We are a community of professionals from the gaming world who don’t want to be limited to traditional
 					employment.
 				</div>
-				<Row gutter={[135, 135]} justify="space-between" align="middle" className={styles.content}>
+				<Row gutter={[135, 48]} justify="space-between" align="middle" className={styles.content}>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Paragraph>
 							We started our journey in 2015 when we organized a game development incubator, where we trained and
@@ -89,12 +90,12 @@ export const LandingWhoWeAreSection = () => {
 						</div>
 					</Col>
 				</Row>
-				<Title level={3} style={{ marginBottom: 48 }}>
+				<Title level={3} style={{ marginBottom: screens.xs ? 12 : 48 }}>
 					Our Core Values
 				</Title>
 				<div className={styles.valuesLine} />
 				<Row gutter={[32, 32]}>
-					<Col lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
 						<Tooltip title="The need for liberty" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={LightingIcon} rev="span" size={40} />
@@ -102,7 +103,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
 						<Tooltip title="The power of self-identity" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={DiamondIcon} rev="span" size={40} />
@@ -110,7 +111,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
 						<Tooltip title="Pursuing oppurtunities instead of settling" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={ClockIcon} rev="span" size={40} />
@@ -118,7 +119,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
 						<Tooltip title="Setting goals and working towards them" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={GoalIcon} rev="span" size={40} />
@@ -126,7 +127,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
 						<Tooltip title="Taking risks and making mistakes" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={StarIcon} rev="span" size={40} />
@@ -134,7 +135,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
 						<Tooltip title="Mastering communication and networking skills" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={PeopleIcon} rev="span" />

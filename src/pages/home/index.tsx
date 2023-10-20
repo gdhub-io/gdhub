@@ -23,7 +23,12 @@ declare global {
 	}
 }
 
-const LandingPage: NextPageWithLayout = ({ isHealthy }: any) => {
+interface LandingPageParams {
+	isHealthy: boolean
+	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
+}
+
+const LandingPage: NextPageWithLayout<LandingPageParams> = ({ isHealthy, stats }) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -86,7 +91,7 @@ const LandingPage: NextPageWithLayout = ({ isHealthy }: any) => {
 			</Head>
 			<LandingLayout className={styles.container}>
 				<div className={styles.main}>
-					<LandingHeroSection />
+					<LandingHeroSection stats={stats} />
 					<LandingWhoWeAreSection />
 					<LandingForAuthorsSection />
 					<LandingForSpecialistsSection />
@@ -114,12 +119,14 @@ export async function getStaticProps() {
 	return {
 		props: {
 			isHealthy: true,
-			usersCount,
-			specialitiesCount,
-			projectsCount,
-			vacanciesCount,
+			stats: {
+				usersCount,
+				specialitiesCount,
+				projectsCount,
+				vacanciesCount,
+			},
 		},
-		revalidate: 60,
+		revalidate: 360,
 	}
 }
 

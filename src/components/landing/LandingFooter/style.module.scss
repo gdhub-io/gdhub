@@ -1,0 +1,72 @@
+@import '../../../styles/variables.scss';
+
+.section {
+  position: relative;
+  background-color: #0b0b0d;
+  padding: 48px 165px 24px;
+}
+
+.container {
+  max-width: $wrapper-width;
+
+  a {
+    font-size: 16px;
+    color: #FFFDFC;
+    font-weight: 400;
+    border-bottom: 1px solid transparent;
+
+    &:hover {
+      border-bottom: 1px solid #FFFDFC;
+    }
+  }
+
+  :global {
+    h5.ant-typography {
+      font-weight: 700;
+    }
+
+    .ant-anchor {
+      display: inline-flex;
+      flex-direction: column;
+      column-gap: 8px;
+      row-gap: 8px;
+
+      &::before {
+        content: none !important;
+      }
+
+      .ant-anchor-ink {
+        display: none !important;
+      }
+
+      .ant-anchor-link {
+        font-size: 16px;
+        padding: 0 !important;
+
+        a {
+          color: #FFFDFC !important;
+          font-weight: 400 !important;
+          display: inline;
+          border-bottom: 1px solid transparent;
+
+          &:hover {
+            border-bottom: 1px solid #FFFDFC;
+          }
+        }
+      }
+    }
+  }
+}
+
+.copyright {
+  text-align: center;
+  font-size: 14px;
+  color: #9f9f9f;
+}
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

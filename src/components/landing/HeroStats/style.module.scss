@@ -32,7 +32,7 @@
 
   :global {
     .ant-divider {
-      border-color: #FBFAF9;
+      border-color: #6d6d6d;
     }
 
     .ant-space-item:has(.divider) {
@@ -40,3 +40,10 @@
     }
   }
 }
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

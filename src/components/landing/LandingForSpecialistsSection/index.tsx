@@ -1,12 +1,14 @@
 import Star2Icon from '@/assets/images/icons/star-2.svg'
 import BgImage from '@/assets/images/landing/bg-image-for-specialists-section.png'
-import { Button, Col, Row, Space, Typography } from 'antd'
+import { Button, Col, Grid, Row, Space, Typography } from 'antd'
 import { BsCaretRightFill } from 'react-icons/bs'
 import styles from './style.module.scss'
 
 const { Title, Text } = Typography
 
 export const LandingForSpecialistsSection = () => {
+	const screens = Grid.useBreakpoint()
+
 	return (
 		<div id="for-specialists" className={styles.section} style={{ backgroundImage: `url(${BgImage.src})` }}>
 			<div className={styles.container}>
@@ -18,7 +20,7 @@ export const LandingForSpecialistsSection = () => {
 
 						<div className={styles.content}>
 							<Space direction="vertical" size={46}>
-								<Space size={32} align="center">
+								<Space size={32} align="center" direction={screens.xs ? 'vertical' : 'horizontal'}>
 									<div className={styles.star}>
 										<Star2Icon />
 									</div>
@@ -27,7 +29,7 @@ export const LandingForSpecialistsSection = () => {
 										development in order to gain experience and make new friends.
 									</Text>
 								</Space>
-								<Space size={32} align="center">
+								<Space size={32} align="center" direction={screens.xs ? 'vertical' : 'horizontal'}>
 									<div className={styles.star}>
 										<Star2Icon />
 									</div>

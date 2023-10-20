@@ -11,6 +11,22 @@
   transition: background-color 0.5s, backdrop-filter 0.4s;
 }
 
+.mobileMenuBtn {
+  display: flex;
+  justify-content: flex-end;
+  flex: 1;
+
+  button {
+    padding: 10px;
+    height: 40px;
+  }
+}
+
+.content {
+  position: relative;
+  top: -$landing-header-height;
+}
+
 .fixedHeader {
   background-color: #0b0b0dee;
   backdrop-filter: blur(8px) saturate(200%);
@@ -19,7 +35,7 @@
 .headerContainer {
   max-width: $wrapper-width;
   margin: 0 auto;
-  height: 120px;
+  height: $landing-header-height;
 
   :global {
     .logo {
@@ -51,7 +67,7 @@
 }
 
 .footer {
-  position: relative;
+  padding: 0;
 }
 
 @import './styles/xs.scss'; // screen < 576px

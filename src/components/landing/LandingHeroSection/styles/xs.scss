@@ -1,6 +1,9 @@
 @media screen and (max-width: 575px) {
   .section {
-    margin-top: 24px;
+    padding: calc($landing-header-height + 48px) 24px 48px;
+    text-align: center;
+    background-position-x: center;
+    background-size: cover;
   }
 
   .heroMain {

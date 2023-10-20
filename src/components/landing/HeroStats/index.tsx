@@ -3,26 +3,36 @@ import heroStatsImage2 from '@/assets/images/landing/hero-stats-member-2.png'
 import heroStatsImage3 from '@/assets/images/landing/hero-stats-member-3.png'
 import heroStatsImage4 from '@/assets/images/landing/hero-stats-member-4.png'
 import heroStatsImage5 from '@/assets/images/landing/hero-stats-member-5.png'
-import { Avatar, Divider, Space, Typography } from 'antd'
+import { Avatar, Divider, Grid, Space, Typography } from 'antd'
 import styles from './style.module.scss'
 
 const { Text } = Typography
 
-export const HeroStats = () => {
+export const HeroStats = ({
+	stats,
+}: {
+	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
+}) => {
+	const screen = Grid.useBreakpoint()
+
 	return (
 		<div className={styles.container}>
 			<Space direction="vertical" align="center" className={styles.component}>
 				<Space style={{ width: '100%' }} size="large" className={styles.members}>
 					<Space direction="vertical" align="center">
 						<Text strong style={{ fontSize: 24 }}>
-							500+
+							{stats?.usersCount}+
 						</Text>
 						<Text>community members</Text>
 					</Space>
 
 					<Avatar.Group size={72}>
-						<Avatar src={heroStatsImage1.src} />
-						<Avatar src={heroStatsImage2.src} />
+						{screen.lg && (
+							<>
+								<Avatar src={heroStatsImage1.src} />
+								<Avatar src={heroStatsImage2.src} />
+							</>
+						)}
 						<Avatar src={heroStatsImage3.src} />
 						<Avatar src={heroStatsImage4.src} />
 						<Avatar src={heroStatsImage5.src} />
@@ -31,17 +41,17 @@ export const HeroStats = () => {
 				<Divider style={{ margin: '24px 0' }} className="divider" />
 				<Space className={styles.stats}>
 					<Space direction="vertical" align="center">
-						<Text strong>250+</Text>
+						<Text strong>{stats?.specialitiesCount}+</Text>
 						<Text>qualified specialists</Text>
 					</Space>
 					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
 					<Space direction="vertical" align="center">
-						<Text strong>8+</Text>
+						<Text strong>{stats?.projectsCount}+</Text>
 						<Text>current projects</Text>
 					</Space>
 					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
 					<Space direction="vertical" align="center">
-						<Text strong>10+</Text>
+						<Text strong>{stats?.vacanciesCount}+</Text>
 						<Text>actual vacancies</Text>
 					</Space>
 				</Space>

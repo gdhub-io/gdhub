@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo.svg'
-import { Avatar, Button, Col, Drawer, Grid, Layout, Menu, MenuProps, Row, Space, Typography } from 'antd'
+import { LandingFooter } from '@/components/landing/LandingFooter'
+import { Avatar, Button, Drawer, Grid, Layout, Menu, MenuProps, Row, Space, Typography } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
-import { BsDiscord, BsMailbox, BsTelegram } from 'react-icons/bs'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
-const { Paragraph, Text, Title } = Typography
 
 export const LandingLayout = ({ children }: any) => {
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -33,6 +32,24 @@ export const LandingLayout = ({ children }: any) => {
 			window.removeEventListener('scroll', handleScroll)
 		}
 	}, [])
+
+	// hide main scroll on open menu
+	useEffect(() => {
+		const body = document?.querySelector('body')
+
+		if (openMobileMenu) {
+			body?.style.setProperty('overflow', 'hidden')
+		}
+	}, [openMobileMenu])
+
+	// show main scroll on open menu
+	const handleOpenMobileMenu = (open: boolean) => {
+		const body = document?.querySelector('body')
+
+		if (!open) {
+			body?.style.setProperty('overflow', 'inherit')
+		}
+	}
 
 	const headerMenu: MenuProps['items'] = useMemo(
 		() => [
@@ -93,7 +110,7 @@ export const LandingLayout = ({ children }: any) => {
 								)}
 							</>
 						) : (
-							<div style={{ flex: 1, justifyContent: 'flex-end', display: 'inline-flex' }}>
+							<div className={styles.mobileMenuBtn}>
 								<Button type="text" onClick={() => setOpenMobileMenu(true)}>
 									<AiOutlineMenu />
 								</Button>
@@ -107,73 +124,9 @@ export const LandingLayout = ({ children }: any) => {
 						)}
 					</Row>
 				</Header>
-				<Content>
-					<div className={styles.content}>{children}</div>
-				</Content>
+				<Content className={styles.content}>{children}</Content>
 				<Footer className={styles.footer}>
-					<Space direction="vertical" align="center" style={{ width: '100%' }}>
-						<Paragraph>Contacts</Paragraph>
-						<Title level={2}>Get in touch</Title>
-						<Paragraph>Join us and become a part of new era in the gaming industry!</Paragraph>
-						<Row>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsMailbox />
-									</div>
-									<Text>Email</Text>
-									<Text>info@gdhub.io</Text>
-								</Space>
-							</Col>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsTelegram />
-									</div>
-									<Text>Telegram</Text>
-									<Text>Game Developers Hub</Text>
-								</Space>
-							</Col>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsDiscord />
-									</div>
-									<Text>Discord</Text>
-									<Text>Game Developers Hub</Text>
-								</Space>
-							</Col>
-						</Row>
-					</Space>
-
-					<Row>
-						<Col span={12}>
-							<GdhubLogo style={{ width: '120px', height: '31px' }} />
-							<Paragraph>
-								A community of game industry professionals whose members form teams to develop new games. Do you want to
-								get a new experience or develop your own game? Join now!
-							</Paragraph>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>Company</Title>
-								<Text>About us</Text>
-							</Space>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>For Users</Title>
-								<Text>For Authors</Text>
-								<Text>For Specialists</Text>
-							</Space>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>Support</Title>
-								<Text>Cookie Policy</Text>
-							</Space>
-						</Col>
-					</Row>
+					<LandingFooter />
 				</Footer>
 			</Layout>
 
@@ -181,6 +134,7 @@ export const LandingLayout = ({ children }: any) => {
 				<Drawer
 					className={styles.mobileMenuDrawer}
 					height={'100%'}
+					afterOpenChange={handleOpenMobileMenu}
 					title={
 						!!session && (
 							<Space align="center">
@@ -194,11 +148,11 @@ export const LandingLayout = ({ children }: any) => {
 							</Space>
 						)
 					}
-					placement="top"
+					placement="right"
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
 					extra={
-						<Space>
+						<Space size={32}>
 							<Link href="/signin">
 								<Button size="small">Log in</Button>
 							</Link>
@@ -208,7 +162,7 @@ export const LandingLayout = ({ children }: any) => {
 						</Space>
 					}
 				>
-					<Menu items={headerMenu} onSelect={() => setOpenMobileMenu(false)} />
+					<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
 				</Drawer>
 			)}
 		</>
