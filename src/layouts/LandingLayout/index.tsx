@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo.svg'
 import { LandingFooter } from '@/components/landing/LandingFooter'
-import { Avatar, Button, Drawer, Grid, Layout, Menu, MenuProps, Row, Space, Typography } from 'antd'
+import { Avatar, Button, Drawer, Grid, Layout, Menu, MenuProps, Row, Space } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
