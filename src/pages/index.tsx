@@ -62,7 +62,7 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ isHealthy, stats }
 		}
 	}
 
-	if (!isHealthy) {
+	if (isHealthy === false) {
 		return (
 			<>
 				<Head>
