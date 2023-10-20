@@ -8,11 +8,12 @@
   z-index: 1;
   height: auto;
   background-color: transparent;
-  transition: background-color 0.5s;
+  transition: background-color 0.5s, backdrop-filter 0.4s;
 }
 
 .fixedHeader {
   background-color: #0b0b0dee;
+  backdrop-filter: blur(8px) saturate(200%);
 }
 
 .headerContainer {
