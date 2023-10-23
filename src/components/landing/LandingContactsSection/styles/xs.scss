@@ -1,0 +1,50 @@
+@media screen and (max-width: 575px) {
+	.section {
+		padding: 48px 24px;
+		text-align: center;
+	}
+
+	.container {
+		.subTitle {
+			margin-bottom: 30px;
+		}
+
+		h2 {
+			font-size: 36px;
+		}
+	}
+
+	.content {
+		.contactItem {
+
+			span {
+				display: none;
+			}
+
+			&:hover {
+				.contactIcon {
+					box-shadow: none !important;
+				}
+			}
+
+			.contactIcon {
+				width: 48px !important;
+        height: 48px !important;
+				border: none !important;
+				background: none !important;
+
+				&:hover {
+					svg {
+						text-shadow:
+            0 0 50px rgba(255, 187, 85, 0.2);
+					}
+				}
+
+				svg {
+					padding: 4px !important;
+				}
+			}
+		}
+	}
+
+}
