@@ -17,8 +17,12 @@
   flex: 1;
 
   button {
-    padding: 10px;
+    padding: 0px 4px;
     height: 40px;
+
+    &>svg {
+      margin: 0;
+    }
   }
 }
 

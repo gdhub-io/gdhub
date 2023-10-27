@@ -112,7 +112,7 @@ export const LandingLayout = ({ children }: any) => {
 						) : (
 							<div className={styles.mobileMenuBtn}>
 								<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-									<AiOutlineMenu />
+									<AiOutlineMenu size={32} />
 								</Button>
 							</div>
 						)}
@@ -152,17 +152,19 @@ export const LandingLayout = ({ children }: any) => {
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
 					extra={
-						<Space size={32}>
-							<Link href="/signin">
-								<Button size="small">Log in</Button>
-							</Link>
-							<Button size="small" onClick={() => setOpenMobileMenu(false)} type="text">
-								<AiOutlineClose />
-							</Button>
-						</Space>
+						<Button size="small" onClick={() => setOpenMobileMenu(false)} type="text">
+							<AiOutlineClose size={24} />
+						</Button>
 					}
 				>
-					<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
+					<Space direction="vertical" size={32} style={{ width: '100%' }}>
+						<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
+						<Link href="/signin">
+							<Button size="small" type="primary" style={{ width: '100%' }}>
+								Log in
+							</Button>
+						</Link>
+					</Space>
 				</Drawer>
 			)}
 		</>
