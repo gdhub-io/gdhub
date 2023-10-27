@@ -17,7 +17,7 @@ export const LandingLayout = ({ children }: any) => {
 	const { data: session }: any = useSession()
 
 	useEffect(() => {
-		if (!screens.lg) setOpenMobileMenu(false)
+		if (!screens.xl) setOpenMobileMenu(false)
 	}, [session, screens])
 
 	useEffect(() => {

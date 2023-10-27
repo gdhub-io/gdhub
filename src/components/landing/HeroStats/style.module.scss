@@ -9,6 +9,7 @@
 
 .component {
   .members {
+    justify-content: space-around;
     text-align: center;
 
     :global {
@@ -23,6 +24,8 @@
   }
 
   .stats {
+    text-align: center;
+    
     :global {
       span.ant-typography>strong {
         font-size: 48px;

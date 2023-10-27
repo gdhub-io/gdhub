@@ -17,22 +17,16 @@ export const HeroStats = ({
 
 	return (
 		<div className={styles.container}>
-			<Space direction="vertical" align="center" className={styles.component}>
+			<Space direction="vertical" className={styles.component}>
 				<Space style={{ width: '100%' }} size="large" className={styles.members}>
 					<Space direction="vertical" align="center">
-						<Text strong style={{ fontSize: 24 }}>
-							{stats?.usersCount}+
-						</Text>
+						<Text strong>{stats?.usersCount}+</Text>
 						<Text>community members</Text>
 					</Space>
 
-					<Avatar.Group size={72}>
-						{screen.xxl && (
-							<>
-								<Avatar src={heroStatsImage1.src} />
-								<Avatar src={heroStatsImage2.src} />
-							</>
-						)}
+					<Avatar.Group size={screen.md ? 72 : 56}>
+						<Avatar src={heroStatsImage1.src} />
+						<Avatar src={heroStatsImage2.src} />
 						<Avatar src={heroStatsImage3.src} />
 						<Avatar src={heroStatsImage4.src} />
 						<Avatar src={heroStatsImage5.src} />
@@ -46,7 +40,7 @@ export const HeroStats = ({
 					</Space>
 					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
 					<Space direction="vertical" align="center">
-						<Text strong>{stats?.projectsCount}+</Text>
+						<Text strong>{stats?.projectsCount}</Text>
 						<Text>current projects</Text>
 					</Space>
 					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
