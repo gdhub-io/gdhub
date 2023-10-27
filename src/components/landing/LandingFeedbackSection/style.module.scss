@@ -1,0 +1,86 @@
+@import '../../../styles/variables.scss';
+
+.section {
+  background-color: #F15541;
+  position: relative;
+  padding: 96px 165px;
+  padding-bottom: 156px;
+  max-height: 1218px;
+  transition: max-height 0.5s;
+}
+
+.container {
+  max-width: $wrapper-width;
+
+  .preTitle {
+    color: #FFBB55;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .subTitle {
+    color: #FFFDFC;
+    font-family: var(--second-font-family);
+    font-style: italic;
+    font-size: 18px;
+    max-width: 500px;
+    margin: 0 auto;
+    margin-bottom: 80px;
+  }
+
+  .preTitle,
+  h2,
+  h3,
+  .subTitle {
+    text-align: center !important;
+  }
+
+  .content {
+
+    .feedbackCard {
+      background-color: #FFFDFC;
+      color: #111 !important;
+      border: none;
+      border-radius: 6px;
+      box-shadow: 0 0 30px -10px #33170D;
+
+      :global {
+        .ant-card-body {
+          padding: 40px;
+        }
+
+        .ant-card-meta {
+          align-items: center;
+          margin-bottom: 14px;
+        }
+
+        .ant-card-meta-detail>* {
+          color: #111 !important;
+        }
+      }
+    }
+  }
+
+  .readMoreBtn {
+    position: absolute;
+    bottom: 90px;
+    background: #000;
+    width: 140px;
+    left: calc(50% - 70px);
+    border: none;
+  }
+}
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px
