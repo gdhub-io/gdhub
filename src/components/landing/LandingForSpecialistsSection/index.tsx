@@ -35,11 +35,8 @@ export const LandingForSpecialistsSection = () => {
 									</div>
 									<Text>You can become a part of a new video game or share your expertise as a Mentor</Text>
 								</Space>
-								<Button className={styles.heroButton}>
+								<Button className={styles.heroButton} type="primary">
 									Join the team
-									<span className="icon-right">
-										<BsCaretRightFill />
-									</span>
 								</Button>
 							</Space>
 						</div>

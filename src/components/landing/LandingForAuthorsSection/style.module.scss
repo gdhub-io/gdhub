@@ -55,27 +55,20 @@
     .heroButton {
       color: #fff;
       border-color: #F15541;
-      padding: 24px 104px 24px 32px;
+      background-color: #F15541;
+      padding: 24px 62px;
+      width: 100%;
+      max-width: 236px;
       height: auto;
       font-size: 20px;
-      margin-top: 70px;
+      outline: 0px solid #333;
   
-      &:hover, &:active, &:focus {
-        color: #fff !important;
-        background-color: #F15541;
-        border-color: #F15541 !important;
-      }
-  
-      :global {
-        .icon-right {
-          position: absolute;
-          display: inline-block;
-          right: 0;
-          height: 100%;
-          padding: 24px;
-          background-color: #F15541;
-  
-        }
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: #F15541 !important;
+        outline: 1px solid #F15541;
+        outline-offset: 3px;
       }
     }
   }

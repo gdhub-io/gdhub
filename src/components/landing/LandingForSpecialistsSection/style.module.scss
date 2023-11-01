@@ -53,32 +53,53 @@
       display: block;
     }
 
+    // .heroButton {
+    //   color: #fff;
+    //   border-color: #FFBB55;
+    //   padding: 24px 104px 24px 32px;
+    //   height: auto;
+    //   font-size: 20px;
+    //   margin-top: 70px;
+
+    //   &:hover,
+    //   &:active,
+    //   &:focus {
+    //     color: #fff !important;
+    //     background-color: #FFBB55;
+    //     border-color: #FFBB55 !important;
+    //   }
+
+    //   :global {
+    //     .icon-right {
+    //       position: absolute;
+    //       display: inline-block;
+    //       right: 0;
+    //       height: 100%;
+    //       padding: 24px;
+    //       background-color: #FFBB55;
+
+    //     }
+    //   }
+    // }
+
     .heroButton {
-      color: #fff;
+      color: #111;
       border-color: #FFBB55;
-      padding: 24px 104px 24px 32px;
+      background-color: #FFBB55;
+      padding: 24px 62px;
+      width: 100%;
+      max-width: 236px;
       height: auto;
       font-size: 20px;
-      margin-top: 70px;
-
+      outline: 0px solid #333;
+  
       &:hover,
       &:active,
       &:focus {
-        color: #fff !important;
-        background-color: #FFBB55;
-        border-color: #FFBB55 !important;
-      }
-
-      :global {
-        .icon-right {
-          position: absolute;
-          display: inline-block;
-          right: 0;
-          height: 100%;
-          padding: 24px;
-          background-color: #FFBB55;
-
-        }
+        color: #111 !important;
+        background-color: #FFBB55 !important;
+        outline: 1px solid #FFBB55;
+        outline-offset: 3px;
       }
     }
   }

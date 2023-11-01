@@ -48,7 +48,9 @@ export const LandingHeroSection = ({
 									</Space>
 								</li>
 							</ul>
-							<Button className={styles.heroButton}>Get started</Button>
+							<Button className={styles.heroButton} type="primary">
+								Get started
+							</Button>
 						</Space>
 					</Col>
 					<Col xs={{ span: 24 }} xl={{ span: 9 }} style={{ position: 'relative' }}>

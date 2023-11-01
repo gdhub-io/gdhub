@@ -5,12 +5,17 @@
 	}
 
 	.container {
+		.preTitle {
+			font-size: 12px;
+		}
+
 		.subTitle {
-			margin-bottom: 30px;
+			font-size: 14px;
+			margin-bottom: 40px;
 		}
 
 		h2 {
-			font-size: 36px;
+			font-size: 32px;
 		}
 	}
 
@@ -29,14 +34,14 @@
 
 			.contactIcon {
 				width: 48px !important;
-        height: 48px !important;
+				height: 48px !important;
 				border: none !important;
 				background: none !important;
 
 				&:hover {
 					svg {
 						text-shadow:
-            0 0 50px rgba(255, 187, 85, 0.2);
+							0 0 50px rgba(255, 187, 85, 0.2);
 					}
 				}
 

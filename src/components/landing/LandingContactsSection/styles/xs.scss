@@ -1,6 +1,6 @@
 @media screen and (max-width: 575px) {
 	.section {
-		padding: 48px 24px;
+		padding: 40px 16px;
 		text-align: center;
 	}
 
@@ -10,7 +10,16 @@
 		}
 
 		h2 {
-			font-size: 36px;
+			font-size: 32px;
+		}
+
+		.preTitle {
+			font-size: 12px;
+		}
+
+		.subTitle {
+			font-size: 14px;
+			margin-bottom: 40px;
 		}
 	}
 

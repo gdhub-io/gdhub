@@ -9,6 +9,7 @@
   .heroMain {
     .heroButton {
       padding: 18px 32px;
+      max-width: inherit;
     }
 
     :global {

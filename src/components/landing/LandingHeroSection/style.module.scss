@@ -20,27 +20,17 @@
     background-color: #F15541;
     padding: 24px 62px;
     width: 100%;
+    max-width: 236px;
     height: auto;
     font-size: 20px;
+    outline: 0px solid #333;
 
     &:hover,
     &:active,
     &:focus {
-      color: #fff !important;
-      background-color: #F15541;
-      border-color: #F15541 !important;
-    }
-
-    :global {
-      .icon-right {
-        position: absolute;
-        display: inline-block;
-        right: 0;
-        height: 100%;
-        padding: 24px;
-        background-color: #F15541;
-
-      }
+      background-color: #F15541 !important;
+      outline: 1px solid #F15541;
+      outline-offset: 3px;
     }
   }
 
@@ -49,15 +39,21 @@
       font-size: 80px;
       font-weight: 800;
       line-height: 96px;
+      margin-bottom: 0;
     }
 
     ul {
       list-style: none;
       padding-left: 0;
+      margin-bottom: 0;
 
       >li {
         margin-bottom: 32px;
         max-width: 516px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
 
         svg {
           margin: 14px;

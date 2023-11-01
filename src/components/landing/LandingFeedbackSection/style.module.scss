@@ -44,6 +44,20 @@
 
   .content {
 
+    :global {
+      .ant-btn {
+        outline: 0px solid #111;
+
+        &:hover,
+        &:active,
+        &:focus {
+          color: #fff;
+          outline: 2px solid #111;
+          outline-offset: 2px;
+        }
+      }
+    }
+
     .feedbackCard {
       background-color: #FFFDFC;
       color: #111 !important;

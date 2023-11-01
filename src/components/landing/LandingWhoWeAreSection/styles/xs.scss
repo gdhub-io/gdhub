@@ -1,18 +1,39 @@
 @media screen and (max-width: 575px) {
 	.section {
-		padding: 48px 24px;
+		padding: 40px 24px;
 		text-align: center;
+	}
+
+	.container {
+		.preTitle {
+			font-size: 12px;
+		}
+
+		h2 {
+			font-size: 32px;
+		}
+
+		.subTitle {
+			font-size: 14px;
+			margin-bottom: 40px;
+		}
 	}
 
 	.content {
 		.heroButton {
 			margin-top: 30px !important;
 		}
+
+		:global {
+      .ant-typography {
+        font-size: 14px !important;
+      }
+    }
 	}
 
 	.valuesLine {
 		margin-bottom: 32px;
-		width: calc(100% / 24 * 12);
+		width: calc(50% + 16px);
 	}
 
 	.valuesBlock {
@@ -20,6 +41,19 @@
 			content: "";
 			height: 32px;
 			top: -32px;
+		}
+
+		:global {
+			span.anticon {
+				background: unset;
+				padding: 12px;
+				font-size: 18px;
+				border-right: 1px solid #fff;
+
+				&>svg>path {
+					fill: #fff;
+				}
+			}
 		}
 	}
 }

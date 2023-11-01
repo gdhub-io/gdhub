@@ -66,7 +66,12 @@ export const LandingWhoWeAreSection = () => {
 					We are a community of professionals from the gaming world who don’t want to be limited to traditional
 					employment.
 				</div>
-				<Row gutter={[screens.xs ? 0 : 135, 48]} justify="space-between" align="middle" className={styles.content}>
+				<Row
+					gutter={[screens.xs ? 0 : 135, screens.md ? 48 : 40]}
+					justify="space-between"
+					align="middle"
+					className={styles.content}
+				>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Paragraph>
 							We started our journey in 2015 when we organized a game development incubator, where we trained and
@@ -95,7 +100,7 @@ export const LandingWhoWeAreSection = () => {
 				</Title>
 				<div className={styles.valuesLine} />
 				<Row gutter={[32, 32]}>
-					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
 						<Tooltip title="The need for liberty" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={LightingIcon} rev="span" size={40} />
@@ -103,7 +108,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
 						<Tooltip title="The power of self-identity" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={DiamondIcon} rev="span" size={40} />
@@ -111,7 +116,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
 						<Tooltip title="Pursuing oppurtunities instead of settling" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={ClockIcon} rev="span" size={40} />
@@ -119,7 +124,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
 						<Tooltip title="Setting goals and working towards them" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={GoalIcon} rev="span" size={40} />
@@ -127,7 +132,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
 						<Tooltip title="Taking risks and making mistakes" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={StarIcon} rev="span" size={40} />
@@ -135,7 +140,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 24 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
 						<Tooltip title="Mastering communication and networking skills" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={PeopleIcon} rev="span" />
