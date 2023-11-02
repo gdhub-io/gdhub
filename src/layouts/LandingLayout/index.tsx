@@ -135,6 +135,7 @@ export const LandingLayout = ({ children }: any) => {
 					className={styles.mobileMenuDrawer}
 					height={'100%'}
 					afterOpenChange={handleOpenMobileMenu}
+					closeIcon={<AiOutlineClose size={24} />}
 					title={
 						!!session && (
 							<Space align="center">
@@ -151,11 +152,6 @@ export const LandingLayout = ({ children }: any) => {
 					placement="right"
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
-					extra={
-						<Button size="small" onClick={() => setOpenMobileMenu(false)} type="text">
-							<AiOutlineClose size={24} />
-						</Button>
-					}
 				>
 					<Space direction="vertical" size={32} style={{ width: '100%' }}>
 						<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />

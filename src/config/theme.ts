@@ -36,6 +36,7 @@ export const themeConfig: ThemeConfig = {
 			colorBorder: '#F15541',
 			paddingContentHorizontal: 32,
 			paddingContentVertical: 16,
+			borderRadius: 0,
 		},
 		Typography: {
 			fontSize: 16,

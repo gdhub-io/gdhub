@@ -13,7 +13,7 @@ export const LandingContactsSection = () => {
 	const screens = Grid.useBreakpoint()
 
 	return (
-		<div id="about" className={styles.section} style={{ backgroundImage: `url(${BgImage.src})` }}>
+		<div id="contacts" className={styles.section} style={{ backgroundImage: `url(${BgImage.src})` }}>
 			<div className={styles.container}>
 				<div className={styles.preTitle}>Contacts</div>
 				<Title level={2}>Get in touch</Title>
@@ -21,7 +21,7 @@ export const LandingContactsSection = () => {
 				<div className={styles.content}>
 					<Row align="middle" justify="center">
 						<Col>
-							<Space style={{ width: '100%', justifyContent: 'center' }} size={screens.lg ? 56 : 8} wrap>
+							<Space style={{ width: '100%', justifyContent: 'center' }} size={screens.lg ? 56 : 24} wrap>
 								<div className={styles.contactItem}>
 									<Link href="mailto:info@gdhub.io" target="_blank">
 										<Space direction="vertical" size={32}>

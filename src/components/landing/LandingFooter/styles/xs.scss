@@ -2,5 +2,17 @@
 	.section {
 		padding: 40px 16px;
 		text-align: center;
+
+		:global {
+
+			div.ant-typography,
+			a {
+				font-size: 12px;
+			}
+
+			.ant-anchor {
+				row-gap: 16px;
+			}
+		}
 	}
 }

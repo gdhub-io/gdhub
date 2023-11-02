@@ -22,8 +22,8 @@ export const LandingForAuthorsSection = () => {
 					<Title level={2}>FOR AUTHORS</Title>
 
 					<div className={styles.content}>
-						<Space direction="vertical" size={46}>
-							<Space size={32} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
+						<Space direction="vertical" size={screens.lg ? 46 : 32}>
+							<Space size={screens.lg ? 32 : 16} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
 								<div className={styles.star}>
 									<Star2Icon />
 								</div>
@@ -32,13 +32,13 @@ export const LandingForAuthorsSection = () => {
 									programmers, artists, animators, etc.
 								</Text>
 							</Space>
-							<Space size={32} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
+							<Space size={screens.lg ? 32 : 16} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
 								<div className={styles.star}>
 									<Star2Icon />
 								</div>
 								<Text>Specialists of your team will develop a video game for free</Text>
 							</Space>
-							<Space size={32} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
+							<Space size={screens.lg ? 32 : 16} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
 								<div className={styles.star}>
 									<Star2Icon />
 								</div>

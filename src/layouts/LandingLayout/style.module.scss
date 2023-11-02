@@ -62,9 +62,24 @@
 }
 
 .mobileMenuDrawer {
+  background: linear-gradient(-90deg, rgba(6, 22, 41, 1) 0%, rgba(4, 13, 20, 1) 50%, rgba(1, 11, 22, 1) 100%) !important;
+
   :global {
-    .ant-drawer-close {
-      display: none;
+    .ant-menu {
+      background: transparent;
+    }
+
+    .ant-drawer-body {
+      padding: 0 40px;
+    }
+
+    .ant-drawer-header {
+      border: 0;
+      padding: 24px 32px;
+    }
+
+    .ant-drawer-header-title {
+      justify-content: end;
     }
   }
 }

@@ -7,6 +7,7 @@
   padding-bottom: 156px;
   max-height: 1218px;
   transition: max-height 0.5s;
+  overflow: hidden;
 }
 
 .container {
@@ -62,12 +63,82 @@
       background-color: #FFFDFC;
       color: #111 !important;
       border: none;
-      border-radius: 6px;
+      border-radius: 0px;
       box-shadow: 0 0 30px -10px #33170D;
 
       :global {
         .ant-card-body {
           padding: 40px;
+        }
+
+        .ant-card-meta {
+          align-items: center;
+          margin-bottom: 14px;
+        }
+
+        .ant-card-meta-detail>* {
+          color: #111 !important;
+        }
+      }
+    }
+
+    .feedbackCarousel {
+      margin: 0 -24px;
+      margin-bottom: 48px;
+      text-align: left;
+
+      :global {
+        .slick-list {
+          padding: 0px 24px;
+        }
+
+        .slick-dots-bottom {
+          bottom: -30px;
+        }
+
+        .slick-slide {
+          transition: opacity 0.2s;
+        }
+
+        .slick-slide:not(.slick-active) {
+          opacity: 0.7;
+        }
+      }
+
+      .feedbackDot {
+        :global {
+          li>button {
+            background-color: #fff;
+            width: 8px;
+            height: 8px;
+            border-radius: 8px;
+          }
+
+          .slick-active {
+            width: 32px;
+
+            button {
+              width: 24px;
+            }
+          }
+        }
+      }
+    }
+
+    .feedbackSlideContainer {
+      padding: 24px 16px;
+    }
+
+    .feedbackSlide {
+      background-color: #FFFDFC;
+      color: #111 !important;
+      border: none;
+      border-radius: 0px;
+      box-shadow: 0 0 30px -10px #33170D;
+
+      :global {
+        .ant-card-body {
+          padding: 24px;
         }
 
         .ant-card-meta {
@@ -91,6 +162,8 @@
     border: none;
   }
 }
+
+
 
 @import './styles/xs.scss'; // screen < 576px
 @import './styles/sm.scss'; // screen ≥ 576px
