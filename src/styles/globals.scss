@@ -82,6 +82,7 @@ a.text-link {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	border-width: 2px;
 
 	&>span {
 		line-height: 16px;
@@ -90,6 +91,24 @@ a.text-link {
 	>svg {
 		position: unset;
 		margin-right: 4px;
+	}
+
+	&.btn-default-on-white {
+		color: #F15541;
+	}
+
+	outline: 0px solid #333;
+
+	&:hover,
+	&:active,
+	&:focus {
+		border-color: transparent !important;
+		outline: 2px solid #F15541;
+		outline-offset: 1px;
+	}
+
+	&.ant-btn-primary {
+		outline-offset: 2px;
 	}
 }
 
