@@ -52,6 +52,31 @@
   }
 }
 
+.headerMenu {
+  font-size: 16px;
+
+  :global {
+    .ant-menu-item {
+      order: 1 !important;
+
+      a {
+        border-bottom: 2px solid transparent;
+        font-weight: 700;
+
+        &:hover {
+          border-color: #F15541;
+        }
+      }
+    }
+
+    .ant-menu-item-selected {
+      a {
+        border-color: #F15541;
+      }
+    }
+  }
+}
+
 .container {
   :global {
     .username {

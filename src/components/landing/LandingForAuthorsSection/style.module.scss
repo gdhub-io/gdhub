@@ -9,6 +9,7 @@
 
 .container {
   max-width: $wrapper-width;
+  text-align: left;
 
   .preTitle {
     color: #FFBB55;
@@ -59,6 +60,7 @@
       padding: 24px 62px;
       width: 100%;
       max-width: 236px;
+      margin-top: 34px;
       height: auto;
       font-size: 20px;
       outline: 0px solid #333;

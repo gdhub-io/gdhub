@@ -26,7 +26,7 @@ export const LandingForSpecialistsSection = () => {
 
 							<div className={styles.content}>
 								<Space direction="vertical" size={screens.lg ? 46 : 32}>
-									<Space size={screens.lg ? 32 : 16} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
+									<Space size={screens.lg ? 32 : 16} align="center">
 										<div className={styles.star}>
 											<Star2Icon />
 										</div>
@@ -35,7 +35,7 @@ export const LandingForSpecialistsSection = () => {
 											development in order to gain experience and make new friends.
 										</Text>
 									</Space>
-									<Space size={screens.lg ? 32 : 16} align="center" direction={screens.lg ? 'vertical' : 'horizontal'}>
+									<Space size={screens.lg ? 32 : 16} align="center">
 										<div className={styles.star}>
 											<Star2Icon />
 										</div>

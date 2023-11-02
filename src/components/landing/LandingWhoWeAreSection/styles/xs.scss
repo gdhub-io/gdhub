@@ -25,10 +25,10 @@
 		}
 
 		:global {
-      .ant-typography {
-        font-size: 14px !important;
-      }
-    }
+			.ant-typography {
+				font-size: 14px !important;
+			}
+		}
 	}
 
 	.valuesLine {
@@ -46,8 +46,8 @@
 		:global {
 			span.anticon {
 				background: unset;
-				padding: 12px;
-				font-size: 18px;
+				padding: 8px;
+				font-size: 24px;
 				border-right: 1px solid #fff;
 
 				&>svg>path {

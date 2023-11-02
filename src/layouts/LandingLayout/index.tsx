@@ -56,7 +56,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#about" title="About us">
-						{screens.lg ? <Button type="text">About us</Button> : 'About us'}
+						About us
 					</Link>
 				),
 				key: '#about',
@@ -64,7 +64,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#for-authors" title="For Authors">
-						{screens.lg ? <Button type="text">For Authors</Button> : 'For Authors'}
+						For Authors
 					</Link>
 				),
 				key: '#for-authors',
@@ -72,7 +72,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#for-specialists" title="For Specialists">
-						{screens.lg ? <Button type="text">For Specialists</Button> : 'For Specialists'}
+						For Specialists
 					</Link>
 				),
 				key: '#for-specialists',
@@ -80,7 +80,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#contacts" title="Contacts">
-						{screens.lg ? <Button type="text">Contacts</Button> : 'Contacts'}
+						Contacts
 					</Link>
 				),
 				key: '#contacts',
@@ -101,7 +101,12 @@ export const LandingLayout = ({ children }: any) => {
 						{screens.lg ? (
 							<>
 								{screens.lg && (
-									<Menu style={{ flex: 1, justifyContent: 'center' }} mode="horizontal" items={headerMenu} />
+									<Menu
+										className={styles.headerMenu}
+										style={{ flex: 1, justifyContent: 'center', columnGap: screens.lg ? 64 : 32 }}
+										mode="horizontal"
+										items={headerMenu}
+									/>
 								)}
 								{!!session && (
 									<Button type="link" size="large">
