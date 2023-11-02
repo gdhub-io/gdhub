@@ -1,6 +1,6 @@
 import GdhubLogo from '@/assets/images/gdhub-logo.svg'
 import { useQuery } from '@tanstack/react-query'
-import { Alert, Space, Spin, Typography } from 'antd'
+import { Alert, Space, Typography } from 'antd'
 import axios from 'axios'
 import Head from 'next/head'
 import styles from './style.module.scss'
