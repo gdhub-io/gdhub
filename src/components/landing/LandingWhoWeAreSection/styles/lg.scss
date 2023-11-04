@@ -1,2 +1,32 @@
 @media screen and (min-width: 992px) and (max-width: 1199px) {
+  .section {
+		padding: 48px;
+		text-align: center;
+
+    .valuesLine {
+      margin-bottom: 32px;
+      width: calc(50% + 16px);
+    }
+
+    .valuesBlock {
+      &::before {
+        content: "";
+        height: 32px;
+        top: -32px;
+      }
+  
+      :global {
+        span.anticon {
+          background: unset;
+          padding: 8px;
+          font-size: 32px;
+          border-right: 1px solid #fff;
+  
+          &>svg>path {
+            fill: #fff;
+          }
+        }
+      }
+    }
+	}
 }

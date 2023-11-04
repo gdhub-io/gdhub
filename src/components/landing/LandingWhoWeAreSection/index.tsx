@@ -95,12 +95,12 @@ export const LandingWhoWeAreSection = () => {
 						</div>
 					</Col>
 				</Row>
-				<Title level={3} style={{ marginBottom: screens.xs ? 12 : 48 }}>
+				<Title level={3} style={{ textTransform: 'uppercase', marginBottom: screens.xs ? 12 : 48 }}>
 					Our Core Values
 				</Title>
 				<div className={styles.valuesLine} />
 				<Row gutter={[32, 32]}>
-					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title="The need for liberty" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={LightingIcon} rev="span" size={40} />
@@ -108,7 +108,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title="The power of self-identity" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={DiamondIcon} rev="span" size={40} />
@@ -116,7 +116,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title="Pursuing oppurtunities instead of settling" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={ClockIcon} rev="span" size={40} />
@@ -124,7 +124,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title="Setting goals and working towards them" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={GoalIcon} rev="span" size={40} />
@@ -132,7 +132,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title="Taking risks and making mistakes" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={StarIcon} rev="span" size={40} />
@@ -140,7 +140,7 @@ export const LandingWhoWeAreSection = () => {
 							</div>
 						</Tooltip>
 					</Col>
-					<Col xs={{ span: 12 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title="Mastering communication and networking skills" overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
 								<Icon component={PeopleIcon} rev="span" />

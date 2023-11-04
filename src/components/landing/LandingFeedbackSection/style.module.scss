@@ -159,7 +159,14 @@
     background: #000;
     width: 140px;
     left: calc(50% - 70px);
+    outline: none !important;
     border: none;
+
+    &:hover,
+    &:active {
+      background-color: #000 !important;
+      box-shadow: 0 0 20px -6px #000;
+    }
   }
 }
 

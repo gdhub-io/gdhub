@@ -100,14 +100,13 @@ export const LandingLayout = ({ children }: any) => {
 
 						{screens.lg ? (
 							<>
-								{screens.lg && (
-									<Menu
-										className={styles.headerMenu}
-										style={{ flex: 1, justifyContent: 'center', columnGap: screens.lg ? 64 : 32 }}
-										mode="horizontal"
-										items={headerMenu}
-									/>
-								)}
+								<Menu
+									className={styles.headerMenu}
+									style={{ flex: 1, justifyContent: 'center', columnGap: screens.xl ? 64 : 32 }}
+									mode="horizontal"
+									items={headerMenu}
+								/>
+
 								{!!session && (
 									<Button type="link" size="large">
 										Go to app
@@ -122,7 +121,7 @@ export const LandingLayout = ({ children }: any) => {
 							</div>
 						)}
 
-						{!session && screens.xl && (
+						{!session && screens.lg && (
 							<Link href="/signin">
 								<Button>Log in</Button>
 							</Link>

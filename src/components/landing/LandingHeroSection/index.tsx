@@ -22,12 +22,11 @@ export const LandingHeroSection = ({
 			style={{ backgroundImage: `url(${screens.lg ? heroBgImage.src : heroBgImageXS.src})` }}
 		>
 			<div className={styles.container}>
-				<Row gutter={[screens.xs ? 0 : 64, 64]}>
+				<Row gutter={[screens.xl ? 64 : 0, 64]}>
 					<Col xs={{ span: 24 }} xl={{ span: 15 }}>
 						<Space size={[64, 64]} direction="vertical" className={styles.heroMain}>
 							<Title>
-								Game Developers Hub for everyone who wants to make{' '}
-								<span style={{ color: token.colorPrimary }}>video games</span>
+								Game Developers Hub for everyone who wants to make <span style={{ color: '#F15541' }}>video games</span>
 							</Title>
 							<ul>
 								<li>
