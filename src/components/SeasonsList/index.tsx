@@ -79,6 +79,13 @@ const SeasonsList = () => {
 						<Link href={`/${season.Slug}`} key={`gamelab-season-${idx}`}>
 							<Card
 								className={`${styles.seasonContainer} ${isActiveSeason(season) ? styles.seasonActive : ''}`}
+								cover={
+									isActiveSeason(season) ? (
+										<div className={styles.gamelabCover}>
+											<Image src={season.seoImage} alt="gamelab-banner" fill />
+										</div>
+									) : null
+								}
 								style={
 									season.Stage == 'Searching' || season.Stage == 'Pitching'
 										? { borderColor: '#333', borderWidth: '2px' }
@@ -101,10 +108,12 @@ const SeasonsList = () => {
 								}
 								extra={screens.md && actionTag(season)}
 							>
-								<Descriptions bordered column={1} size="small">
-									<Descriptions.Item label="Участников">{season.membersCount}</Descriptions.Item>
-									<Descriptions.Item label="Проектов">{season.projectsCount}</Descriptions.Item>
-								</Descriptions>
+								{season.Stage !== 'Planning' && (
+									<Descriptions bordered column={1} size="small">
+										<Descriptions.Item label="Участников">{season.membersCount}</Descriptions.Item>
+										<Descriptions.Item label="Проектов">{season.projectsCount}</Descriptions.Item>
+									</Descriptions>
+								)}
 							</Card>
 						</Link>
 					))}

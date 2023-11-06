@@ -12,7 +12,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 		const seasons = await AirtableService('Seasons')
 			.select({
-				fields: ['Name', 'Season Stages', 'Started At', 'Slug', 'Project Ideas', 'Members', 'Approved Projects'],
+				fields: [
+					'Name',
+					'Season Stages',
+					'Started At',
+					'Slug',
+					'Project Ideas',
+					'Members',
+					'Approved Projects',
+					'seoImage',
+				],
 				sort: [{ field: 'Started At', direction: 'desc' }],
 				filterByFormula: 'AND(Status != "Not Active", Name != "Indie")',
 			})
@@ -57,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				const members = await AirtableService('Project Members')
 					.select({
 						fields: [],
-						filterByFormula: `AND(FIND(Status, "Member Fired"), FIND(RECORD_ID(), "${membersIds.join(' ')}"))`,
+						filterByFormula: `AND(FIND(Status, "Member, Fired"), FIND(RECORD_ID(), "${membersIds.join(' ')}"))`,
 					})
 					.all()
 
@@ -66,6 +75,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 			output.push(_output)
 		}
+
+		output.sort((a, b) => (a.Stage == 'Planning' ? -1 : 1))
 
 		res.json({
 			seasons: output,

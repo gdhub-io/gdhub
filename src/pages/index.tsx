@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import GamelabBannerImage from '@/assets/images/gamelab-banner.png'
+import GDHubLogo from '@/assets/images/gdhub-logo-v2b.svg'
 import StartProjectImage from '@/assets/images/start-indie-game.jpg'
 import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
 import { useTelegram } from '@/helpers/useTelegram'
@@ -61,27 +63,18 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 			<div className={styles.container}>
 				<Space direction="vertical" align="center" size="large">
 					<div className="logo">
-						<Title>Game Developers Hub</Title>
+						<GDHubLogo style={{ width: 156, height: 42 }} />
 					</div>
 					<p>
-						Сообщество специалистов игровой индустрии, участники которого объединяются в команды, чтобы разрабатывать
-						новые игры.
+						<Text strong>Game Developers Hub</Text> - сообщество специалистов игровой индустрии, участники которого
+						объединяются в команды, чтобы разрабатывать новые игры.
 						<br />
 						Хочешь получить новый опыт или разработать свою игру? Присоединяйся!
 					</p>
-					{isOpenedInTelegram ? (
-						<>
-							<Link href="https://gdhub.io" target="_blank">
-								<Button type="primary" loading={signInProcessing}>
-									{signInProcessing ? 'Авторизация...' : 'Перейти в браузер'}
-								</Button>
-							</Link>
-						</>
-					) : (
-						<Link href="/login">
-							<Button type="primary">Вход / Регистрация</Button>
-						</Link>
-					)}
+
+					<Row>
+						<Image className={styles.mainBanner} src={GamelabBannerImage.src} alt="" preview={false} />
+					</Row>
 				</Space>
 
 				<Row align="middle" gutter={[16, 16]} style={{ padding: '60px 20px' }}>
@@ -98,32 +91,38 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
 						<Card style={{ textAlign: 'center' }}>
 							<Statistic title="Проектов в работе" value={projectsCount} style={{ textAlign: 'center' }} />
-							<Link href="/projects" title="Проекты">
-								<Button size="small" type="text">
-									Все проекты
-								</Button>
-							</Link>
 						</Card>
 					</Col>
 					<Col xs={{ span: 24 }} sm={{ span: 12 }} md={{ span: 6 }}>
 						<Card style={{ textAlign: 'center' }}>
 							<Statistic title="Вакансий на проектах" value={vacanciesCount} style={{ textAlign: 'center' }} />
-							<Link href="/vacancies" title="Вакансии">
-								<Button size="small" type="text">
-									Все вакансии
-								</Button>
-							</Link>
 						</Card>
 					</Col>
 				</Row>
 
-				<Row gutter={[24, 24]} style={{ maxWidth: '1024px' }}>
+				{isOpenedInTelegram ? (
+					<>
+						<Link href="https://gdhub.io" target="_blank">
+							<Button type="primary" size="large" loading={signInProcessing}>
+								{signInProcessing ? 'Авторизация...' : 'Перейти в браузер'}
+							</Button>
+						</Link>
+					</>
+				) : (
+					<Link href="/login">
+						<Button type="primary" size="large">
+							Вход / Регистрация
+						</Button>
+					</Link>
+				)}
+
+				<Row gutter={[24, 24]} style={{ maxWidth: '1024px', marginTop: 64 }}>
 					<Col xs={24} lg={12}>
 						<Card
 							cover={<Image preview={false} src={StartProjectImage.src} alt="start-project" />}
 							actions={[
 								<Link key="start-project" href="https://tally.so/r/w8zl5P" target="_blank">
-									<Button>Запустить свой проект</Button>
+									<Button type="primary">Запустить свой проект</Button>
 								</Link>,
 							]}
 						>
@@ -139,10 +138,10 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 							cover={<Image preview={false} src={TeamProjectImage.src} alt="start-project" />}
 							actions={[
 								<Link key="select-project" href="/projects">
-									<Button>Смотреть проекты</Button>
+									<Button type="primary">Смотреть проекты</Button>
 								</Link>,
 								<Link key="select-vecencies" href="/vacancies">
-									<Button>Смотреть вакансии</Button>
+									<Button type="primary">Смотреть вакансии</Button>
 								</Link>,
 							]}
 						>

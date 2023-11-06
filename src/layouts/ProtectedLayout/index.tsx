@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-icon.svg'
+import GdhubLogo from '@/assets/images/gdhub-logo-v2b.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { useTelegram } from '@/helpers/useTelegram'
 import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
@@ -138,7 +138,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				<Header>
 					<Row align="middle" justify="space-between" className="header-wrapper">
 						<Link href="/hub" className="logo">
-							<GdhubLogo style={{ width: '32px', height: '32px' }} /> Game Developers Hub
+							<GdhubLogo style={{ width: 120, height: 'auto' }} />
 						</Link>
 						{
 							<>
