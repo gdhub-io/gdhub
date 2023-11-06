@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo.svg'
+import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
@@ -151,7 +151,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				<Header className="header">
 					<Row align="middle" justify="space-between">
 						<Link href="/hub" className="logo">
-							<GdhubLogo style={{ width: '120px', height: '31px' }} />
+							<GdhubLogo style={{ width: '156px', height: '42px' }} />
 						</Link>
 						{
 							<>

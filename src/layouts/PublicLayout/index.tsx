@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo.svg'
+import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
@@ -166,7 +166,7 @@ export const PublicLayout = ({ children }: any) => {
 				<Header className={styles.header}>
 					<Row align="middle" justify="space-between" className={styles.headerContainer}>
 						<Link href="/" className="logo">
-							<GdhubLogo style={{ width: '120px', height: '31px' }} />
+							<GdhubLogo style={{ width: '156px', height: '42px' }} />
 						</Link>
 						{
 							<>

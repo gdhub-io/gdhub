@@ -5,7 +5,7 @@ const config: DefaultSeoProps = {
 	description: 'Веб-сервис & сообщество для всех, кто хочет создавать инди-игры или участвовать в их разработке',
 	openGraph: {
 		type: 'website',
-		locale: 'ru_RU',
+		locale: 'en-US',
 		url: 'https://gdhub.io/',
 		siteName: 'Game Developers Hub',
 		images: [

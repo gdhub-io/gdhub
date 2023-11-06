@@ -1,4 +1,4 @@
-import GdhubLogo from '@/assets/images/gdhub-logo.svg'
+import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { Anchor, Col, Divider, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
