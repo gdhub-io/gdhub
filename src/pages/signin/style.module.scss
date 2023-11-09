@@ -9,6 +9,11 @@
   height: 100vh;
 
   :global {
+    h1 {
+      font-size: 48px;
+      font-weight: 800;
+    }
+
     .ant-typography {
       color: #000;
     }
@@ -19,14 +24,12 @@
       align-items: center;
       flex-direction: row-reverse;
       background-color: white;
-      margin: 0 auto;
     }
 
     .login-form {
       flex: 1 0 100%;
-      max-width: 480px;
       width: 100%;
-      padding: 60px;
+      padding: 96px 132px;
     }
 
     .login-form p.form-title {

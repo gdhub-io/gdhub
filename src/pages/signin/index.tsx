@@ -11,7 +11,7 @@ import { signIn } from 'next-auth/react'
 import { FaGoogle } from 'react-icons/fa'
 import styles from './style.module.scss'
 
-const { Paragraph } = Typography
+const { Paragraph, Title } = Typography
 
 declare global {
 	interface Window {
@@ -31,21 +31,25 @@ const LoginPage: NextPage = () => {
 			<div className={styles.container} style={{ backgroundImage: `url(${LogingBgImage.src})` }}>
 				<div className="login-box">
 					<div className="login-form">
-						<p className="form-title">Log in</p>
+						<Space direction="vertical" size={64}>
+							<Title>Log in</Title>
 
-						<Space direction="vertical" size="large">
-							<Button
-								type="primary"
-								icon={<FaGoogle size={16} />}
-								onClick={() => signIn('google', { callbackUrl: '/hub' }, { prompt: 'select_account consent' })}
-							>
-								Log in with Google
-							</Button>
-							<Link href="/">
-								<Button className="btn-default-on-white">Вернуться на главную</Button>
-							</Link>
+							<Space direction="vertical" size="large">
+								<Button
+									type="primary"
+									style={{ width: '100%' }}
+									icon={<FaGoogle size={16} />}
+									onClick={() => signIn('google', { callbackUrl: '/hub' }, { prompt: 'select_account consent' })}
+								>
+									Log in with Google
+								</Button>
+								<Link href="/">
+									<Button className="btn-default-on-white" style={{ width: '100%' }}>
+										Return to main
+									</Button>
+								</Link>
+							</Space>
 						</Space>
-						<Paragraph>We use Cookie policy to improve our website and offer a personalised experience.</Paragraph>
 					</div>
 				</div>
 			</div>

@@ -94,6 +94,14 @@ a.text-link {
 		color: #FFFDFC;
 	}
 
+	&:not(.ant-btn-icon-only)>.ant-btn-icon:not(:last-child) {
+		margin-inline-end: 37px;
+	}
+
+	&:not(.ant-btn-icon-only):has(.ant-btn-icon) {
+		padding-left: 24px;
+	}
+
 	&.tertiary-blue-btn {
 		background-color: #031321;
 		color: #FFFDFC;
