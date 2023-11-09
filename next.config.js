@@ -3,6 +3,16 @@
 const nextConfig = {
 	reactStrictMode: true,
 	output: 'standalone',
+	experimental: {
+		turbo: {
+			rules: {
+				'*.svg': {
+					loaders: ['@svgr/webpack'],
+					as: '*.js',
+				},
+			},
+		},
+	},
 	images: {
 		domains: [
 			'images.unsplash.com',

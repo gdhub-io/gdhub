@@ -59,10 +59,14 @@ export function reportWebVitals(metric: any) {
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
 	const router = useRouter()
 	const [loading, setLoading] = useState(true)
+	const [showContent, setShowContent] = useState(false)
 	const getLayout = Component.getLayout || ((page) => <>{page}</>)
 
 	const setLoadingOff = () => {
-		setTimeout(() => setLoading(false), 900)
+		setTimeout(() => {
+			setLoading(false)
+			setTimeout(() => setShowContent(true), 300)
+		}, 300)
 	}
 
 	useEffect(() => {
@@ -70,11 +74,14 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}, [])
 
 	useEffect(() => {
-		document.body.style.overflow = loading ? 'hidden' : 'unset'
-	}, [loading])
+		document.body.style.overflow = showContent ? 'unset' : 'hidden'
+	}, [showContent])
 
 	useEffect(() => {
-		router.events.on('routeChangeStart', () => setLoading(true))
+		router.events.on('routeChangeStart', () => {
+			setShowContent(false)
+			setLoading(true)
+		})
 		router.events.on('routeChangeComplete', (url: string) => {
 			pageview(url)
 			setLoadingOff()
@@ -82,7 +89,10 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 		router.events.on('routeChangeError', () => setLoadingOff())
 
 		return () => {
-			router.events.off('routeChangeStart', () => setLoading(true))
+			router.events.off('routeChangeStart', () => {
+				setShowContent(false)
+				setLoading(true)
+			})
 			router.events.off('routeChangeComplete', (url: string) => {
 				pageview(url)
 				setLoadingOff()
@@ -122,8 +132,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 									className="app-container"
 									style={{
 										fontFamily: themeConfig.token?.fontFamily,
-										opacity: loading ? 0 : 1,
-										overflow: loading ? 'hidden' : 'initial',
+										opacity: showContent ? 1 : 0,
 									}}
 								>
 									<DefaultSeo {...SEOSettings} />
