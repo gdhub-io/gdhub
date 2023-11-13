@@ -1,0 +1,23 @@
+.cookieContainer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  background-color: #0b0b0dee;
+  backdrop-filter: blur(8px) saturate(200%);
+  border-top: 2px solid #232323;
+  width: 100%;
+  padding: 45px 165px;
+
+  :global {
+    .ant-typography {
+      font-weight: 300;
+    }
+  }
+}
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

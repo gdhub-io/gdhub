@@ -1,8 +1,8 @@
 import { MouseEvent, useEffect, useState } from 'react'
-import { Button, notification, Space, Typography } from 'antd'
+import { Button, Flex, Grid, Space, Typography } from 'antd'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
-import { BiCookie } from 'react-icons/bi'
+import styles from './style.module.scss'
 
 const { Text } = Typography
 
@@ -10,44 +10,13 @@ const USER_CONSENT_COOKIE_KEY = 'cookie_consent_is_true'
 const USER_CONSENT_COOKIE_EXPIRE_DATE = 365
 
 export const CookieConsent = () => {
-	const [api, contextHolder] = notification.useNotification()
+	const screens = Grid.useBreakpoint()
 	const [cookieConsentIsTrue, setCookieConsentIsTrue] = useState(true)
 
 	useEffect(() => {
 		const consentIsTrue = Cookies.get(USER_CONSENT_COOKIE_KEY) === 'true'
 		setCookieConsentIsTrue(consentIsTrue)
 	}, [])
-
-	useEffect(() => {
-		if (!cookieConsentIsTrue) {
-			api.open({
-				key: 'cookie-consent',
-				message: 'Соглашение о куках',
-				placement: 'bottom',
-				icon: <BiCookie />,
-				description: (
-					<Text>
-						Этот веб-сайт использует файлы cookie для улучшения взаимодействия с пользователем. Используя наш веб-сайт,
-						вы соглашаетесь на использование всех файлов cookie в в соответствии с нашей Политикой в отношении файлов
-						cookie.
-					</Text>
-				),
-				duration: 0,
-				btn: (
-					<Space size="large">
-						<Link href="/cookie-policy">Подробнее</Link>
-						<Button type="primary" onClick={onClick}>
-							Согласен
-						</Button>
-					</Space>
-				),
-				closeIcon: null,
-				style: {
-					width: 600,
-				},
-			})
-		}
-	}, [cookieConsentIsTrue])
 
 	const onClick = (e: MouseEvent<any>) => {
 		e.preventDefault()
@@ -57,7 +26,6 @@ export const CookieConsent = () => {
 				expires: USER_CONSENT_COOKIE_EXPIRE_DATE,
 			})
 			setCookieConsentIsTrue(true)
-			api.destroy('cookie-consent')
 		}
 	}
 
@@ -65,5 +33,23 @@ export const CookieConsent = () => {
 		return null
 	}
 
-	return contextHolder
+	return (
+		<div className={styles.cookieContainer}>
+			<Flex gap={32} align="center" vertical={screens.lg ? false : true}>
+				<Text>
+					This website uses cookies to improve the user experience. By using our website you agree to the use of all
+					cookies in accordance with our Cookie policy.
+				</Text>
+
+				<Space size="large" wrap={screens.xl ? false : true}>
+					<Link href="/cookie-policy">
+						<Button>Read more</Button>
+					</Link>
+					<Button type="primary" onClick={onClick}>
+						I accept
+					</Button>
+				</Space>
+			</Flex>
+		</div>
+	)
 }
