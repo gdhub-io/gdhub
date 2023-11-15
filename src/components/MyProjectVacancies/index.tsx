@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
 import { fetcher } from '@/helpers/fetcher'
-import { Button, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
+import { Button, Col, Grid, message, Popconfirm, Row, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import dayjs from 'dayjs'
 import { HiOutlineLockClosed } from 'react-icons/hi'
 import useSWR from 'swr'
+import VacancyArchiveModal from '../modals/VacancyArchiveModal'
 
 interface Vacancy {
 	key: string
@@ -34,6 +35,7 @@ interface MyProjectVacanciesArgs {
 const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
 	const [showVacancyModal, setShowVacancyModal] = useState(false)
+	const [showVacancyArchiveModal, setShowVacancyArchiveModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 	const {
 		data: projectVacancies,
@@ -112,12 +114,29 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 		fetchMyMyProjectVacancies()
 	}
 
+	const handleRestoreVacation = (vacancyId: string) => {
+		setShowVacancyArchiveModal(false)
+		fetchMyMyProjectVacancies()
+
+		setSelectedVacancyId(vacancyId)
+		setShowVacancyModal(!!vacancyId)
+	}
+
 	return (
 		<>
-			<Space align="center" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>Вакансии</h3>
-				<Button onClick={() => setShowVacancyModal(true)}>Добавить вакансию</Button>
-			</Space>
+			<Row style={{ marginTop: 60 }}>
+				<Col flex={1}>
+					<Space align="center">
+						<h3 style={{ margin: 0 }}>Вакансии</h3>
+						<Button onClick={() => setShowVacancyModal(true)}>Добавить вакансию</Button>
+					</Space>
+				</Col>
+				<Col>
+					<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
+						Архив
+					</Button>
+				</Col>
+			</Row>
 
 			{projectVacancies?.data.length > 0 ? (
 				<Table
@@ -142,6 +161,16 @@ const MyProjectVacancies = ({ project }: MyProjectVacanciesArgs) => {
 					setSelectedVacancyId(undefined)
 				}}
 				onOk={handleSaveVacancy}
+			/>
+
+			<VacancyArchiveModal
+				projectId={project?.id}
+				projectName={project?.Name}
+				open={showVacancyArchiveModal}
+				onCancel={() => {
+					setShowVacancyArchiveModal(false)
+				}}
+				onRestore={handleRestoreVacation}
 			/>
 		</>
 	)

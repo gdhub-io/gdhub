@@ -5,14 +5,15 @@ import { authOptions } from '../auth/[...nextauth]'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	try {
-		const { projectId, projectName } = req.body
+		const { projectId, projectName, archived = false } = req.body
 		const session: any = await getServerSession(req, res, authOptions)
+		const statusCondition = archived ? 'Status = "Closed"' : 'Status != "Closed"'
 
 		if (req.method !== 'POST' || !session || !projectId) throw new Error('Forbidden request')
 
 		const vacancies = await AirtableService('Project Vacancies')
 			.select({
-				filterByFormula: `AND(Status != "Closed", FIND("${projectName}", {Project}))`,
+				filterByFormula: `AND(${statusCondition}, FIND("${projectName}", {Project}))`,
 			})
 			.all()
 
