@@ -24,6 +24,18 @@ export const NotificationsBell = () => {
 			subscriberId={session?.user.id}
 			applicationIdentifier={process.env.NEXT_PUBLIC_NOVU_CLIENT_APP_ID as string}
 			subscriberHash={signature?.data.signature}
+			styles={{
+				bellButton: {
+					root: {
+						borderRadius: '50%',
+						// padding: 2,
+						height: 36,
+						width: 36,
+						':hover': { backgroundColor: '#F33921', svg: { color: '#fff' } },
+						svg: { color: '#111111', scale: 2 },
+					},
+				},
+			}}
 		>
 			<PopoverNotificationCenter onNotificationClick={handleClick} colorScheme="light">
 				{({ unseenCount }) => <NotificationBell unseenCount={unseenCount} />}

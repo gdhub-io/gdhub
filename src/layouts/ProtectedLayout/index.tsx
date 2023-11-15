@@ -110,13 +110,13 @@ export const ProtectedLayout = ({ children }: any) => {
 			...publicMenuItems,
 			{
 				label: (
-					<Link href="/hub/docs" title="С чего начать">
+					<Link href="/hub/docs">
 						{screens.lg ? (
-							<Button type="primary" size="small">
-								С чего начать
+							<Button type="primary" size="small" className="tertiary-blue-btn">
+								Documentation
 							</Button>
 						) : (
-							<strong>С чего начать</strong>
+							<strong>Documentation</strong>
 						)}
 					</Link>
 				),
