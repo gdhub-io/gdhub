@@ -51,6 +51,7 @@
     "node-fetch": "^3.2.10",
     "nodemailer": "^6.9.7",
     "path-to-regexp": "^6.2.1",
+    "prisma": "^5.5.2",
     "react": "^18.2.0",
     "react-country-flag": "^3.0.2",
     "react-dom": "^18.2.0",
@@ -100,7 +101,6 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^8.0.0",
     "prettier": "^3.0.0",
-    "prisma": "^5.5.2",
     "sass": "^1.54.9",
     "typescript": "^5.1.6"
   }
