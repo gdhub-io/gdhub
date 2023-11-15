@@ -18,7 +18,7 @@ export class NovuService {
 				payload,
 			})
 
-			console.log({ to, payload, template }, res.status, res.statusText, res.data)
+			console.log('NovuService', { to, payload, template }, res.status, res.statusText, res.data)
 		} catch (error) {
 			throw error
 		}

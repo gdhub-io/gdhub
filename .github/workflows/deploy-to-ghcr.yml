@@ -61,7 +61,7 @@ jobs:
             "NOVU_API_SECRET=${{ vars.NOVU_API_SECRET }}"
             "NOVU_CLIENT_APP_ID=${{ vars.NOVU_CLIENT_APP_ID }}"
             "NEXT_PUBLIC_NOVU_CLIENT_APP_ID=${{ vars.NEXT_PUBLIC_NOVU_CLIENT_APP_ID }}"
-            "MAILGUN_API_KEY=${{ vars.MAILGUN_API_KEY }}"
+            "BREVO_API_KEY=${{ vars.BREVO_API_KEY }}"
             "TYPESENSE_ADMIN_API=${{ vars.TYPESENSE_ADMIN_API }}"
             "NEXT_PUBLIC_TYPESENSE_SEARCH_API=${{ vars.NEXT_PUBLIC_TYPESENSE_SEARCH_API }}"
             "NEXT_PUBLIC_TYPESENSE_HOST=${{ vars.NEXT_PUBLIC_TYPESENSE_HOST }}"
