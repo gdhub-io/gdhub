@@ -1,9 +1,11 @@
+import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
 import { redirect } from 'next/navigation'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import EmailProvider from 'next-auth/providers/email'
 import GoogleProvider from 'next-auth/providers/google'
 
 export const authOptions: NextAuthOptions = {
@@ -16,6 +18,28 @@ export const authOptions: NextAuthOptions = {
 			clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_OAUTH_CLEINT_SECRET as string,
 			authorization: { params: { access_type: 'offline', prompt: 'consent' } },
+		}),
+		EmailProvider({
+			from: process.env.EMAIL_FROM as string,
+			server: process.env.EMAIL_SERVER as string,
+			async sendVerificationRequest({ identifier: email, url, provider: { server, from } }) {
+				try {
+					const result = await brevoApi.smtp.sendTransacEmail({
+						subject: 'Sign in',
+						to: [{ email }],
+						templateId: 1,
+						params: {
+							link: url,
+						},
+					})
+
+					if (result.error) throw Error(result.error.message)
+
+					console.log('sendVerificationRequest was sent')
+				} catch (error: any) {
+					console.error('', error)
+				}
+			},
 		}),
 		CredentialsProvider({
 			id: 'telegram-web-app',

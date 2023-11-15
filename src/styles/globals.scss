@@ -135,3 +135,15 @@ a.text-link {
 	font-size: 16px;
 	font-weight: 200;
 }
+
+
+.bright-container {
+	input {
+		background-color: #fff;
+		color: #333;
+	}
+
+	.ant-form-item .ant-form-item-label >label {
+		color: #333;
+	}
+}

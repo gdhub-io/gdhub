@@ -29,7 +29,7 @@
     .login-form {
       flex: 1 0 100%;
       width: 100%;
-      padding: 96px 132px;
+      padding: 96px 193px 123px;
     }
 
     .login-form p.form-title {
@@ -37,6 +37,16 @@
       font-size: 42px;
       font-weight: bold;
       margin-bottom: 0;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    input {
+      height: 52px;
+      font-size: 18px;
     }
 
     @media screen and (max-width: 767px) {
@@ -50,4 +60,16 @@
       }
     }
   }
+}
+
+.createAccountLink {
+  margin: 16px 0;
+  display: inline-block;
+  border-bottom: 1px solid transparent;
+
+  &:hover {
+    color: #F33921;
+    border-bottom: 1px solid #F33921;
+  }
+
 }

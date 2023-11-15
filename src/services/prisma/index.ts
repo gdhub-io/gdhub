@@ -5,6 +5,11 @@ import { profilePrismaExtenstion } from './extenstions/profile'
 import { seasonPrismaExtension } from './extenstions/season'
 import { userPrismaExtension } from './extenstions/user'
 
+declare global {
+	// eslint-disable-next-line no-var
+	var cachedPrisma: ExtendedPrismaClient
+}
+
 const extendedPrismaClient = () => {
 	const prisma = new PrismaClient({
 		datasourceUrl: env('POSTGRES_PRISMA_URL'),
@@ -23,10 +28,16 @@ const extendedPrismaClient = () => {
 
 export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>
 
-const globalForPrisma = globalThis as unknown as {
-	prisma: ExtendedPrismaClient | undefined
+let prisma: ReturnType<typeof extendedPrismaClient>
+
+if (process.env.NODE_ENV === 'production') {
+	prisma = extendedPrismaClient()
+} else {
+	if (!global.cachedPrisma) {
+		global.cachedPrisma = extendedPrismaClient()
+	}
+
+	prisma = global.cachedPrisma
 }
 
-export const prisma = globalForPrisma.prisma ?? extendedPrismaClient()
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+export { prisma }
