@@ -2,7 +2,7 @@ import heroBgImageXS from '@/assets/images/landing/hero-bg-xs.png'
 import heroBgImage from '@/assets/images/landing/hero-bg.png'
 import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
-import { Button, Col, Grid, Row, Space, Typography, theme } from 'antd'
+import { Button, Col, Grid, Row, Space, Typography } from 'antd'
 import styles from './style.module.scss'
 import { HeroStats } from '../HeroStats'
 
@@ -14,7 +14,6 @@ export const LandingHeroSection = ({
 	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
 }) => {
 	const screens = Grid.useBreakpoint()
-	const { token } = theme.useToken()
 
 	return (
 		<div

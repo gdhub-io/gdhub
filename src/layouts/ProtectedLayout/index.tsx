@@ -1,10 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import GdhubLogo from '@/assets/images/gdhub-logo-v2b.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
+import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
-import { Avatar, Button, Drawer, Dropdown, Grid, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd'
+import {
+	Avatar,
+	Button,
+	ConfigProvider,
+	Drawer,
+	Dropdown,
+	Grid,
+	Layout,
+	Menu,
+	MenuProps,
+	Row,
+	Space,
+	Tooltip,
+} from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
@@ -23,8 +37,8 @@ export const ProtectedLayout = ({ children }: any) => {
 	const telegramMenuItem = {
 		label: screens.lg ? (
 			<Tooltip title="Чат сообщества в Telegram">
-				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
-					<Button shape="circle" type="text" style={{ top: '6px', position: 'relative' }}>
+				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
+					<Button shape="circle" type="text" size="small" style={{ top: '6px', position: 'relative' }}>
 						<TbBrandTelegram size={24} />
 					</Button>
 				</Link>
@@ -47,7 +61,13 @@ export const ProtectedLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="/projects" title="Проекты сообщества">
-						{screens.lg ? <Button type="text">Проекты</Button> : 'Проекты'}
+						{screens.lg ? (
+							<Button type="text" size="small">
+								Проекты
+							</Button>
+						) : (
+							'Проекты'
+						)}
 					</Link>
 				),
 				key: '/projects',
@@ -55,7 +75,13 @@ export const ProtectedLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="/vacancies" title="Вакансии на инди-проекты">
-						{screens.lg ? <Button type="text">Вакансии</Button> : 'Вакансии'}
+						{screens.lg ? (
+							<Button type="text" size="small">
+								Вакансии
+							</Button>
+						) : (
+							'Вакансии'
+						)}
 					</Link>
 				),
 				key: '/vacancies',
@@ -70,7 +96,13 @@ export const ProtectedLayout = ({ children }: any) => {
 				style: { display: screens.lg ? 'none' : 'block' },
 				label: (
 					<Link href="/hub" title="Главная страница">
-						{screens.lg ? <Button type="primary">Главная</Button> : 'Главная'}
+						{screens.lg ? (
+							<Button type="primary" size="small">
+								Главная
+							</Button>
+						) : (
+							'Главная'
+						)}
 					</Link>
 				),
 				key: '/hub',
@@ -79,7 +111,13 @@ export const ProtectedLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="/hub/docs" title="С чего начать">
-						{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
+						{screens.lg ? (
+							<Button type="primary" size="small">
+								С чего начать
+							</Button>
+						) : (
+							<strong>С чего начать</strong>
+						)}
 					</Link>
 				),
 				key: '/hub/docs',
@@ -93,7 +131,13 @@ export const ProtectedLayout = ({ children }: any) => {
 				{
 					label: (
 						<Link href="/hub/members" title="Участники сообщества">
-							{screens.lg ? <Button type="text">Участники</Button> : 'Участники'}
+							{screens.lg ? (
+								<Button type="text" size="small">
+									Участники
+								</Button>
+							) : (
+								'Участники'
+							)}
 						</Link>
 					),
 					key: '/hub/members',
@@ -101,7 +145,13 @@ export const ProtectedLayout = ({ children }: any) => {
 				{
 					label: (
 						<Link href="/hub/lectures" title="Лекции сообщества">
-							{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}
+							{screens.lg ? (
+								<Button type="text" size="small">
+									Лекции
+								</Button>
+							) : (
+								'Лекции'
+							)}
 						</Link>
 					),
 					key: '/hub/lectures',
@@ -146,12 +196,17 @@ export const ProtectedLayout = ({ children }: any) => {
 	}, [isOpenedInTelegram, screens, session])
 
 	return (
-		<>
+		<ConfigProvider theme={appThemeConfig}>
+			<style jsx global>{`
+				:root {
+					--background-color: #fff;
+				}
+			`}</style>
 			<Layout className={styles.container}>
 				<Header className="header">
 					<Row align="middle" justify="space-between">
 						<Link href="/hub" className="logo">
-							<GdhubLogo style={{ width: '156px', height: '42px' }} />
+							<GdhubLogo style={{ width: '126px' }} />
 						</Link>
 						{
 							<>
@@ -165,10 +220,10 @@ export const ProtectedLayout = ({ children }: any) => {
 											/>
 										)}
 										{!!session && (
-											<>
+											<Space>
 												<NotificationsBell />
 												<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-													<Button type="link" size="large">
+													<Button type="link" size="small">
 														<Space>
 															{screens.sm && <div className="username">{session?.user?.name}</div>}
 															<Avatar
@@ -182,13 +237,13 @@ export const ProtectedLayout = ({ children }: any) => {
 														</Space>
 													</Button>
 												</Dropdown>
-											</>
+											</Space>
 										)}
 									</>
 								) : (
 									<Space>
 										<NotificationsBell />
-										<Button type="text" onClick={() => setOpenMobileMenu(true)}>
+										<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
 											<AiOutlineMenu />
 										</Button>
 									</Space>
@@ -197,7 +252,7 @@ export const ProtectedLayout = ({ children }: any) => {
 						}
 						{!session && (
 							<Link href="/signin">
-								<Button>Log in</Button>
+								<Button size="small">Log in</Button>
 							</Link>
 						)}
 					</Row>
@@ -226,7 +281,7 @@ export const ProtectedLayout = ({ children }: any) => {
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
 					extra={
-						<Button onClick={() => setOpenMobileMenu(false)} type="text">
+						<Button onClick={() => setOpenMobileMenu(false)} type="text" size="small">
 							<AiOutlineClose />
 						</Button>
 					}
@@ -234,6 +289,6 @@ export const ProtectedLayout = ({ children }: any) => {
 					<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 				</Drawer>
 			)}
-		</>
+		</ConfigProvider>
 	)
 }
