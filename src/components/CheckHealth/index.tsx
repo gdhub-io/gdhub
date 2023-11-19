@@ -1,5 +1,6 @@
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Alert, Space, Typography } from 'antd'
 import axios from 'axios'
 import Head from 'next/head'
@@ -29,9 +30,15 @@ const CheckHealth = ({ children }: any) => {
 							<GdhubLogo style={{ width: '120px', height: '31px' }} />
 						</div>
 						<p>
-							This is a game developers hub for industry professionals whose members form teams to develop new games.
+							<T keyName="checkhealth.description">
+								This is a game developers hub for industry professionals whose members form teams to develop new games.
+							</T>
 						</p>
-						<Alert type="error" message="No connection. Try later." showIcon />
+						<Alert
+							type="error"
+							message={<T keyName="checkhealth.error_no_connection">No connection. Try later.</T>}
+							showIcon
+						/>
 					</Space>
 				</div>
 			</>

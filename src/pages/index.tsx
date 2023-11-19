@@ -8,7 +8,7 @@ import { LandingWhoWeAreSection } from '@/components/landing/LandingWhoWeAreSect
 import { useTelegram } from '@/helpers/useTelegram'
 import { LandingLayout } from '@/layouts/LandingLayout'
 import { prisma } from '@/services/prisma'
-import { Alert, Space, Typography } from 'antd'
+import { Typography } from 'antd'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
@@ -28,7 +28,7 @@ interface LandingPageParams {
 	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
 }
 
-const LandingPage: NextPageWithLayout<LandingPageParams> = ({ isHealthy, stats }) => {
+const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -60,28 +60,6 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ isHealthy, stats }
 			telegramApp.showAlert(error.message)
 			setSignInProcessing(false)
 		}
-	}
-
-	if (isHealthy === false) {
-		return (
-			<>
-				<Head>
-					<title>Game Developers Hub</title>
-				</Head>
-				<div className={styles.container}>
-					<Space direction="vertical" align="center" size="large">
-						<div className="logo">
-							<Title>Game Developers Hub</Title>
-						</div>
-						<p>
-							Сообщество специалистов игровой индустрии, участники которого объединяются в команды, чтобы разрабатывать
-							новые игры.
-						</p>
-						<Alert type="error" message="No connection. Try later." showIcon />
-					</Space>
-				</div>
-			</>
-		)
 	}
 
 	return (
@@ -118,7 +96,6 @@ export async function getStaticProps() {
 
 	return {
 		props: {
-			isHealthy: true,
 			stats: {
 				usersCount,
 				specialitiesCount,

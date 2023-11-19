@@ -7,8 +7,10 @@ import LoadingScreen from '@/components/LoadingScreen'
 import SEOSettings from '@/config/seo'
 import { themeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
+import { tolgeeService } from '@/services/tolgee'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { TolgeeProvider, useTolgeeSSR } from '@tolgee/react'
 import { ConfigProvider } from 'antd'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
@@ -61,6 +63,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	const [loading, setLoading] = useState(true)
 	const [showContent, setShowContent] = useState(false)
 	const getLayout = Component.getLayout || ((page) => <>{page}</>)
+	const ssrTolgee = useTolgeeSSR(tolgeeService, router.locale)
 
 	const setLoadingOff = () => {
 		setTimeout(() => {
@@ -123,30 +126,32 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
           `,
 				}}
 			/>
-			<ErrorBoundary>
-				<QueryClientProvider client={queryClient}>
-					<ConfigProvider theme={themeConfig}>
-						<CheckHealth>
-							<SessionProvider session={session}>
-								<div
-									className="app-container"
-									style={{
-										fontFamily: themeConfig.token?.fontFamily,
-										opacity: showContent ? 1 : 0,
-									}}
-								>
-									<DefaultSeo {...SEOSettings} />
-									{getLayout(<Component {...pageProps} />)}
-								</div>
-							</SessionProvider>
-						</CheckHealth>
-						<CookieConsent />
-						<LoadingScreen visible={loading} />
-					</ConfigProvider>
+			<TolgeeProvider tolgee={ssrTolgee}>
+				<ErrorBoundary>
+					<QueryClientProvider client={queryClient}>
+						<ConfigProvider theme={themeConfig}>
+							<CheckHealth>
+								<SessionProvider session={session}>
+									<div
+										className="app-container"
+										style={{
+											fontFamily: themeConfig.token?.fontFamily,
+											opacity: showContent ? 1 : 0,
+										}}
+									>
+										<DefaultSeo {...SEOSettings} />
+										{getLayout(<Component {...pageProps} />)}
+									</div>
+								</SessionProvider>
+							</CheckHealth>
+							<CookieConsent />
+							<LoadingScreen visible={loading} />
+						</ConfigProvider>
 
-					{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
-				</QueryClientProvider>
-			</ErrorBoundary>
+						{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+					</QueryClientProvider>
+				</ErrorBoundary>
+			</TolgeeProvider>
 		</>
 	)
 }

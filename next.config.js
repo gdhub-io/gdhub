@@ -13,6 +13,11 @@ const nextConfig = {
 			},
 		},
 	},
+	i18n: {
+		locales: ['en', 'ru'],
+		defaultLocale: 'en',
+		localeDetection: false,
+	},
 	images: {
 		remotePatterns: [
 			{ protocol: 'https', hostname: 'images.unsplash.com' },

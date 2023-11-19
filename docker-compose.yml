@@ -60,9 +60,20 @@ services:
       retries: 5
       start_period: 10s
 
+  translation-app:
+    image: tolgee/tolgee
+    volumes:
+      - gamelab-tolgee-data:/data
+    ports:
+      - '25432:25432' # if you would like to access the DB
+      - '8080:8080'
+    env_file:
+      - .env
+
 volumes:
   gamelab-typesense-data:
   gamelab-postgres-data:
+  gamelab-tolgee-data:
 
 networks:
   gamelab-network:
