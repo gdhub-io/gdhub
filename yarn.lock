@@ -2084,6 +2084,25 @@
     "@tanstack/query-core" "4.32.6"
     use-sync-external-store "^1.2.0"
 
+"@tolgee/core@5.16.2":
+  version "5.16.2"
+  resolved "https://registry.yarnpkg.com/@tolgee/core/-/core-5.16.2.tgz#8f4615a6d6011fb2b3a28c3a04a531e24dd68297"
+  integrity sha512-gnZWb7G5mk6WVVpcuLwJkm8vxteNLzeVMh2KxBq6tMmAkeFpQhOuAhyGMAoqGQndGmrfuIaTwQcOw/sISJGoTQ==
+
+"@tolgee/react@^5.16.2":
+  version "5.16.2"
+  resolved "https://registry.yarnpkg.com/@tolgee/react/-/react-5.16.2.tgz#0e9f3597d0e15f14b8bc4f3c657e0848d3249512"
+  integrity sha512-XXaluho1dP1jYthkAqA8aTIp/Pld6aEe1htKokxsauUEtY66Fn264U7jZFsITyXfVQ3zNN6ZK0hJtUMWiOzkxQ==
+  dependencies:
+    "@tolgee/web" "5.16.2"
+
+"@tolgee/web@5.16.2":
+  version "5.16.2"
+  resolved "https://registry.yarnpkg.com/@tolgee/web/-/web-5.16.2.tgz#7bdf030bff0d34af4404b0af9bc4ee322e3e8d04"
+  integrity sha512-dpSFvzIjrxtQTP3DI5GnBrQdFIMFBCM2SyBSHVAMskM/jQHv33Mw90D6+Ibc2Zyj6gtxAoVcpWGBVtn4jDVXBQ==
+  dependencies:
+    "@tolgee/core" "5.16.2"
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
@@ -2431,10 +2450,10 @@ add@^2.0.6:
   resolved "https://registry.yarnpkg.com/add/-/add-2.0.6.tgz#248f0a9f6e5a528ef2295dbeec30532130ae2235"
   integrity sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==
 
-airtable@^0.11.4:
-  version "0.11.6"
-  resolved "https://registry.yarnpkg.com/airtable/-/airtable-0.11.6.tgz#3b90f9c671ee93c4ad647eb131d630dea9f1f84a"
-  integrity sha512-Na67L2TO1DflIJ1yOGhQG5ilMfL2beHpsR+NW/jhaYOa4QcoxZOtDFs08cpSd1tBMsLpz5/rrz/VMX/pGL/now==
+airtable@^0.12.2:
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/airtable/-/airtable-0.12.2.tgz#e53e66db86744f9bc684faa58881d6c9c12f0e6f"
+  integrity sha512-HS3VytUBTKj8A0vPl7DDr5p/w3IOGv6RXL0fv7eczOWAtj9Xe8ri4TAiZRXoOyo+Z/COADCj+oARFenbxhmkIg==
   dependencies:
     "@types/node" ">=8.0.0 <15"
     abort-controller "^3.0.0"
