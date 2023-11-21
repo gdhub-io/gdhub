@@ -4,6 +4,7 @@ import { transferAccounts } from './data-transfer/accounts'
 import { transferLectures } from './data-transfer/lectures'
 import { transferProjects } from './data-transfer/projects'
 import { transferSeasons } from './data-transfer/seasons'
+import { transferTeamMembers } from './data-transfer/team-members'
 import { transferVacancies } from './data-transfer/vacancies'
 
 async function main() {
@@ -14,7 +15,8 @@ async function main() {
 	// await transferSeasons(airtableService, prisma)
 	// await transferAccounts(airtableService, prisma)
 	// await transferProjects(airtableService, prisma)
-	await transferVacancies(airtableService, prisma)
+	// await transferVacancies(airtableService, prisma)
+	await transferTeamMembers(airtableService, prisma)
 	// await transferLectures(airtableService, prisma)
 }
 

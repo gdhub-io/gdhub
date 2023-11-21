@@ -59,7 +59,7 @@ model User {
 model Profile {
   id                String                @id @default(cuid())
   userId            String                @unique
-  tgNickname        String?               @unique
+  tgNickname        String?
   country           String?
   city              String?
   createdAt         DateTime              @default(now())
@@ -250,6 +250,8 @@ model TeamVacancy {
   status      TeamVacancyStatus @default(Draft)
   publishedAt DateTime?
   finishedAt  DateTime
+  closedAt    DateTime?
+  createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   teamId      String
   applicants  TeamMember[]

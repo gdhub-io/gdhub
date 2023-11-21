@@ -18,6 +18,7 @@ export const authOptions: NextAuthOptions = {
 			clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_OAUTH_CLEINT_SECRET as string,
 			authorization: { params: { access_type: 'offline', prompt: 'consent' } },
+			allowDangerousEmailAccountLinking: true,
 		}),
 		EmailProvider({
 			from: process.env.EMAIL_FROM as string,

@@ -7,7 +7,7 @@ export const IndieList = () => {
 	return (
 		<>
 			<Title level={3} style={{ marginTop: 60 }}>
-				Другие проекты
+				Other Game Projects
 			</Title>
 			<Paragraph>
 				Проекты разрабатываемые участниками сообщества самостоятельно (вне инкубационной программы).

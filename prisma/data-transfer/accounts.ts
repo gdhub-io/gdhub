@@ -18,6 +18,10 @@ export const transferAccounts = async (airtableService: AirtableBase, prisma: Ex
 				if (records.length) {
 					for (const record of records) {
 						try {
+							const existedUser = await prisma.user.findFirst({ where: { email: record.get('Email') as string } })
+
+							if (existedUser) continue
+
 							/** PROFILE */
 							const [profile] = await airtableService('Profiles')
 								.select({
@@ -160,7 +164,6 @@ export const transferAccounts = async (airtableService: AirtableBase, prisma: Ex
 									},
 								},
 							})
-
 							if (createdUser) {
 								countCreatedRecords++
 							}
