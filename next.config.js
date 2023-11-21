@@ -3,16 +3,6 @@
 const nextConfig = {
 	reactStrictMode: true,
 	output: 'standalone',
-	experimental: {
-		turbo: {
-			rules: {
-				'*.svg': {
-					loaders: ['@svgr/webpack'],
-					as: '*.js',
-				},
-			},
-		},
-	},
 	i18n: {
 		locales: ['en', 'ru'],
 		defaultLocale: 'en',

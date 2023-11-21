@@ -160,11 +160,11 @@ model SeasonStreamReport {
 }
 
 model Project {
-  id            String             @id @default(cuid())
+  id            String              @id @default(cuid())
   name          String
   description   String?
-  status        ProjectStatus      @default(Registered)
-  startedAt     DateTime           @default(now())
+  status        ProjectStatus       @default(Registered)
+  startedAt     DateTime            @default(now())
   finishedAt    DateTime?
   stageId       String
   authorId      String
@@ -173,37 +173,37 @@ model Project {
   platform      String
   setting       String
   visualStyle   String
-  slug          String             @default(cuid())
+  slug          String              @default(cuid())
   audition      String?
   conceptLink   String?
   gddLink       String?
   pitchdeckLink String?
   videoLink     String?
   coreMechanics String[]
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
   teamId        String
-  author        User               @relation(fields: [authorId], references: [id])
-  stage         SeasonStage        @relation(fields: [stageId], references: [id])
-  team          ProjectTeam        @relation(fields: [teamId], references: [id])
-  estimations   ProjectEstimation?
-  reports       ProjectReport?
+  author        User                @relation(fields: [authorId], references: [id])
+  stage         SeasonStage         @relation(fields: [stageId], references: [id])
+  team          Team                @relation(fields: [teamId], references: [id])
+  estimations   ProjectEstimation[]
+  reports       ProjectReport[]
 }
 
 model ProjectEstimation {
   id         String      @id @default(cuid())
-  projectId  String      @unique
+  projectId  String
   stageId    String
   expertId   String
   notes      String
   isApproved Boolean
-  form       Json
+  data       Json
   expert     User        @relation(fields: [expertId], references: [id])
-  project    Project     @relation(fields: [projectId], references: [id])
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   stage      SeasonStage @relation(fields: [stageId], references: [id])
 }
 
-model ProjectTeam {
+model Team {
   id        String        @id @default(cuid())
   name      String        @unique
   slug      String        @unique @default(cuid())
@@ -214,13 +214,13 @@ model ProjectTeam {
 
 model ProjectReport {
   id          String   @id @default(cuid())
-  projectId   String   @unique
+  projectId   String
   publishedAt DateTime
   content     String
   video       String?
   authorId    String
   author      User     @relation(fields: [authorId], references: [id])
-  project     Project  @relation(fields: [projectId], references: [id])
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model TeamMember {
@@ -235,7 +235,7 @@ model TeamMember {
   specialityId    String
   speciality      Speciality       @relation(fields: [specialityId], references: [id])
   vacancyId       String?
-  team            ProjectTeam      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team            Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
   user            User             @relation(fields: [userId], references: [id])
   vacancy         TeamVacancy?     @relation(fields: [vacancyId], references: [id])
   createdAt       DateTime         @default(now())
@@ -254,7 +254,7 @@ model TeamVacancy {
   teamId      String
   applicants  TeamMember[]
   direction   WorkDirection     @relation(fields: [directionId], references: [id])
-  team        ProjectTeam       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team        Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 model Lecture {

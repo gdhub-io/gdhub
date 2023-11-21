@@ -1,8 +1,10 @@
 import { prisma } from '@/services/prisma'
 import Airtable from 'airtable'
 import { transferAccounts } from './data-transfer/accounts'
+import { transferLectures } from './data-transfer/lectures'
 import { transferProjects } from './data-transfer/projects'
 import { transferSeasons } from './data-transfer/seasons'
+import { transferVacancies } from './data-transfer/vacancies'
 
 async function main() {
 	const airtableService = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
@@ -11,7 +13,9 @@ async function main() {
 
 	// await transferSeasons(airtableService, prisma)
 	// await transferAccounts(airtableService, prisma)
-	await transferProjects(airtableService, prisma)
+	// await transferProjects(airtableService, prisma)
+	await transferVacancies(airtableService, prisma)
+	// await transferLectures(airtableService, prisma)
 }
 
 main()
