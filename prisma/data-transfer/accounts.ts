@@ -2,6 +2,7 @@ import { ExtendedPrismaClient } from '@/services/prisma'
 import { SkillLevel, UserRole } from '@prisma/client'
 import { AirtableBase } from 'airtable/lib/airtable_base'
 import dayjs from 'dayjs'
+import { trim } from 'voca'
 
 export const transferAccounts = async (airtableService: AirtableBase, prisma: ExtendedPrismaClient) => {
 	const workDirections = await prisma.workDirection.findMany()
@@ -9,6 +10,7 @@ export const transferAccounts = async (airtableService: AirtableBase, prisma: Ex
 	await airtableService('Accounts')
 		.select({
 			pageSize: 100,
+			// maxRecords: 10,
 			sort: [{ field: 'Created', direction: 'asc' }],
 		})
 		.eachPage(
@@ -46,6 +48,53 @@ export const transferAccounts = async (airtableService: AirtableBase, prisma: Ex
 								})
 								.all()
 
+							/** Preffered Fields */
+							let preferredGenres = profile.get('Preferred Genres') as string[]
+							let preferredLevels = profile.get('Preferred Difficulty Levels') as string[]
+							let preferredSettings = profile.get('Preferred Settings') as string[]
+
+							preferredGenres = preferredGenres?.map((item) => {
+								let [, name] = item.split('/')
+								name = trim(name.toLowerCase())
+
+								switch (name) {
+									case 'first person shooter(FPS)':
+										name = 'fps'
+										break
+									case 'real time strategy (RTS)':
+										name = 'rts'
+										break
+									case 'turn based strategy':
+										name = 'tbs'
+										break
+									case 'role playing games (RPG)':
+										name = 'rpg'
+										break
+									case 'massively multiplayer online role playing game (MMORPG)':
+										name = 'mmorpg'
+										break
+									case 'others':
+										name = 'other'
+										break
+								}
+
+								return name
+							})
+
+							preferredLevels = preferredLevels?.map((item) => {
+								let [, name] = item.split('/')
+								name = trim(name.toLowerCase())
+
+								return name
+							})
+
+							preferredSettings = preferredSettings?.map((item) => {
+								let [, name] = item.split('/')
+								name = trim(name.toLowerCase())
+
+								return name
+							})
+
 							const createdUser = await prisma.user.create({
 								data: {
 									email: record.get('Email') as string,
@@ -62,6 +111,24 @@ export const transferAccounts = async (airtableService: AirtableBase, prisma: Ex
 											country: profile.get('Country') as string,
 											city: profile.get('City') as string,
 											timeForWork,
+											preferredGenres: {
+												connectOrCreate: preferredGenres?.map((name) => ({
+													where: { name },
+													create: { name },
+												})),
+											},
+											preferredLevels: {
+												connectOrCreate: preferredLevels?.map((name) => ({
+													where: { name },
+													create: { name },
+												})),
+											},
+											preferredSettings: {
+												connectOrCreate: preferredSettings?.map((name) => ({
+													where: { name },
+													create: { name },
+												})),
+											},
 										},
 									},
 									specialities: {
@@ -166,6 +233,8 @@ export const transferAccounts = async (airtableService: AirtableBase, prisma: Ex
 							})
 							if (createdUser) {
 								countCreatedRecords++
+
+								console.log(`user`, createdUser.id, createdUser.email)
 							}
 						} catch (err: any) {
 							console.error(err.message)

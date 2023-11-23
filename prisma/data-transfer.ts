@@ -13,10 +13,10 @@ async function main() {
 	)
 
 	// await transferSeasons(airtableService, prisma)
-	// await transferAccounts(airtableService, prisma)
+	await transferAccounts(airtableService, prisma)
 	// await transferProjects(airtableService, prisma)
 	// await transferVacancies(airtableService, prisma)
-	await transferTeamMembers(airtableService, prisma)
+	// await transferTeamMembers(airtableService, prisma)
 	// await transferLectures(airtableService, prisma)
 }
 
