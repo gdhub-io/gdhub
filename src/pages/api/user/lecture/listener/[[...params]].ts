@@ -9,7 +9,7 @@ class ApiLectureListenerHandler {
 	@Post()
 	public async create(@Req() req: NextApiRequestWithUser, @Query() { lectureId }: { lectureId: string }) {
 		const lectureListener = await prisma.lectureListener.create({
-			data: { lecture: { connect: { id: lectureId } }, listener: { connect: { id: req.user.id } } },
+			data: { lecture: { connect: { id: lectureId } }, user: { connect: { id: req.user.id } } },
 		})
 
 		return lectureListener
@@ -18,7 +18,7 @@ class ApiLectureListenerHandler {
 	@Delete()
 	public async delete(@Req() req: NextApiRequestWithUser, @Query() { lectureId }: { lectureId: string }) {
 		await prisma.lectureListener.deleteMany({
-			where: { lectureId, listenerId: req.user.id },
+			where: { lectureId, userId: req.user.id },
 		})
 	}
 }

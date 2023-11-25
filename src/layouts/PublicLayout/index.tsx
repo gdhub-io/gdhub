@@ -256,7 +256,7 @@ export const PublicLayout = ({ children }: any) => {
 
 					<Row>
 						<Col span={12}>
-							<GdhubLogo style={{ width: '120px', height: '31px' }} />
+							<GdhubLogo style={{ width: '100px' }} />
 							<Paragraph>
 								A community of game industry professionals whose members form teams to develop new games. Do you want to
 								get a new experience or develop your own game? Join now!

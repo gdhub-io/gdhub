@@ -23,7 +23,7 @@ class ApiLecturesHandler {
 			include: {
 				lecturerRequests: { include: { user: true } },
 				direction: true,
-				listeners: { select: { listenerId: true } },
+				listeners: { select: { userId: true } },
 			},
 			orderBy: [{ date: { sort: 'desc' } }, { listeners: { _count: 'desc' } }],
 		})
@@ -31,7 +31,7 @@ class ApiLecturesHandler {
 		const lecturesWithRelevant = lectures.map((lecture) => {
 			let isRelevant = false
 
-			if (lecture.listeners.find((r) => r.listenerId == req.user.id)) {
+			if (lecture.listeners.find((r) => r.userId == req.user.id)) {
 				isRelevant = true
 			}
 

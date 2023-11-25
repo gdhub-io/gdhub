@@ -4,6 +4,7 @@ import { SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Alert, Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
 import axios from 'axios'
+import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.scss'
 
@@ -16,6 +17,7 @@ type SeasonGeneralData = {
 	currentStage: SeasonStage & { isCompleted: boolean }
 	projectsCount: number
 	membersCount: number
+	coverImage?: string
 }
 
 const SeasonsList = () => {
@@ -24,12 +26,16 @@ const SeasonsList = () => {
 		['seasons'],
 		() => axios.get<SeasonGeneralData[]>('/api/seasons'),
 		{
-			staleTime: Infinity,
+			refetchInterval: false,
 		}
 	)
 
 	const isActiveSeason = (season: any) => {
 		return season.status == 'Active'
+	}
+
+	const isPlannedSeason = (season: any) => {
+		return season.currentStage.name == 'Planning'
 	}
 
 	const stagesDetails = (stageName: any) => {
@@ -97,9 +103,22 @@ const SeasonsList = () => {
 					)}
 					{!!seasons?.data &&
 						seasons.data.map((season, idx: number) => (
-							<Link href={`/${season.slug}`} key={`gamelab-season-${idx}`}>
+							<Link
+								href={`/${season.slug}`}
+								key={`gamelab-season-${idx}`}
+								style={{
+									pointerEvents: isPlannedSeason(season) ? 'none' : 'auto',
+								}}
+							>
 								<Card
 									className={`${styles.seasonContainer} ${isActiveSeason(season) ? styles.seasonActive : ''}`}
+									cover={
+										(isActiveSeason(season) || isPlannedSeason(season)) && season.coverImage ? (
+											<div className={styles.gamelabCover}>
+												<Image src={season.coverImage} alt="gamelab-banner" fill />
+											</div>
+										) : null
+									}
 									style={
 										season.currentStage.name == DefaultSeasonStages.Searching ||
 										season.currentStage.name == DefaultSeasonStages.Pitching
@@ -123,11 +142,13 @@ const SeasonsList = () => {
 									}
 									extra={screens.md && actionTag(season)}
 								>
-									{season.currentStage.name === DefaultSeasonStages.Searching ? (
+									{season.currentStage.name === DefaultSeasonStages.Searching && (
 										<Paragraph>
 											Идет набор проектов. <Link href={`/${season.slug}`}>Узнать подробнее</Link>
 										</Paragraph>
-									) : (
+									)}
+
+									{season.currentStage.name !== DefaultSeasonStages.Searching && !isPlannedSeason(season) && (
 										<Descriptions bordered column={1} size="small">
 											<Descriptions.Item label="Участников">{season.membersCount}</Descriptions.Item>
 											<Descriptions.Item label="Проектов">{season.projectsCount}</Descriptions.Item>

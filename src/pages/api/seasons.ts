@@ -11,9 +11,10 @@ class ApiSeasonsHandler {
 		let output: any[] = []
 
 		const seasons = await prisma.season.findMany({
-			where: { status: 'Active', name: { not: 'Indie' } },
+			where: { status: { in: ['Active', 'Planning'] }, name: { not: 'Indie' } },
 			select: {
 				name: true,
+				coverImage: true,
 				stages: {
 					select: {
 						id: true,
@@ -32,6 +33,7 @@ class ApiSeasonsHandler {
 				startedAt: true,
 				slug: true,
 			},
+			orderBy: [{ startedAt: 'desc' }],
 		})
 
 		// const seasons = await AirtableService('Seasons')
@@ -47,7 +49,7 @@ class ApiSeasonsHandler {
 		}
 
 		for (const season of seasons) {
-			const { name, slug, startedAt, stages } = season
+			const { name, slug, startedAt, stages, coverImage } = season
 			const currentStage = stages.find((stage) => stage.isCurrent)
 			const projectsCount = stages.reduce((result, stage) => result + stage.projects.length, 0)
 			const membersCount = stages.reduce(
@@ -62,6 +64,7 @@ class ApiSeasonsHandler {
 				currentStage,
 				projectsCount,
 				membersCount,
+				coverImage,
 			}
 			// 	const approvedProjectsIds = season.get('Approved Projects') as string[]
 			// 	const _output: Record<string, any> = {

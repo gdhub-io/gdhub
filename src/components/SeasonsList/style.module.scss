@@ -18,7 +18,7 @@
     }
 
     .ant-card-body {
-      // padding: 0;
+      padding: 0;
 
       .ant-collapse {
         background-color: #ffffff;
@@ -32,6 +32,12 @@
     .ant-card-head-title {}
   }
 
+}
+
+.gamelabCover {
+  position: relative;
+  aspect-ratio: 16/9;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
 }
 
 @media (max-width: 320px) {

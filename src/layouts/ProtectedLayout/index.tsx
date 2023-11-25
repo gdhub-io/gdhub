@@ -206,7 +206,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				<Header className="header">
 					<Row align="middle" justify="space-between">
 						<Link href="/hub" className="logo">
-							<GdhubLogo style={{ width: '126px' }} />
+							<GdhubLogo style={{ width: '100px' }} />
 						</Link>
 						{
 							<>

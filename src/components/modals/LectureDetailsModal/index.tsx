@@ -39,7 +39,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 		enabled: false,
 		onSuccess(data) {
 			setIsReady(true)
-			setUserIsRegistered(!!data.data.listeners.find((l) => l.listenerId == session?.user.id))
+			setUserIsRegistered(!!data.data.listeners.find((l) => l.userId == session?.user.id))
 		},
 	})
 	const { mutateAsync: registrationToLecture, isLoading: registrationProcessing } = useMutation(

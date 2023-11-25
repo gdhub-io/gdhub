@@ -38,7 +38,7 @@ class ApiLectureHandler {
 		const lectureListener = await prisma.lectureListener.create({
 			data: {
 				lecture: { connect: { id } },
-				listener: { connect: { id: req.user.id } },
+				user: { connect: { id: req.user.id } },
 			},
 		})
 

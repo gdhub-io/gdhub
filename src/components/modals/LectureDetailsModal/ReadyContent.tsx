@@ -14,7 +14,7 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 		() => lecture.lecturerRequests.find((r: LecturerRequest) => r.userId == session?.user.id),
 		[lecture]
 	)
-	const userIsRegistered = useMemo(() => lecture.listeners.find((r) => r.listenerId == session?.user.id), [lecture])
+	const userIsRegistered = useMemo(() => lecture.listeners.find((r) => r.userId == session?.user.id), [lecture])
 
 	const lectureAvatar = () => {
 		const image = lecturer?.user.image
