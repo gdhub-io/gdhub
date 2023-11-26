@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import ProjectModal from '@/components/modals/ProjectModal'
 import MyProjectCandidates from '@/components/MyProjectCandidates'
-import MyProjectTeam from '@/components/MyProjectTeam'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
+import MyTeam from '@/components/MyTeam'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
@@ -74,7 +74,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					{!!myProject.data && (
 						<>
-							<MyProjectTeam teamId={myProject.data.teamId} />
+							<MyTeam teamId={myProject.data.teamId} />
 							<MyProjectVacancies teamId={myProject.data.teamId} />
 							<MyProjectCandidates project={myProject.data} />
 							{/* <MyProjectReports project={myProject.data} /> */}
@@ -118,9 +118,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					<p style={{ marginTop: 20 }}>{myProject?.data.description}</p>
 
-					{!!myProject?.data && (
-						<>{/* <MyProjectTeam project={myProject.data} shouldUpdate={projectUpdatedEvent} /> */}</>
-					)}
+					{!!myProject?.data && <>{/* <MyTeam project={myProject.data} shouldUpdate={projectUpdatedEvent} /> */}</>}
 				</Spin>
 			</>
 		)

@@ -2,6 +2,7 @@ import heroBgImageXS from '@/assets/images/landing/hero-bg-xs.png'
 import heroBgImage from '@/assets/images/landing/hero-bg.png'
 import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
+import { T } from '@tolgee/react'
 import { Button, Col, Grid, Row, Space, Typography } from 'antd'
 import styles from './style.module.scss'
 import { HeroStats } from '../HeroStats'
@@ -25,15 +26,20 @@ export const LandingHeroSection = ({
 					<Col xs={{ span: 24 }} xl={{ span: 15 }}>
 						<Space size={[64, 64]} direction="vertical" className={styles.heroMain}>
 							<Title>
-								Game Developers Hub for everyone who wants to make <span style={{ color: '#F15541' }}>video games</span>
+								<T>Game Developers Hub for everyone who wants to make</T>{' '}
+								<span style={{ color: '#F15541' }}>
+									<T>video games</T>
+								</span>
 							</Title>
 							<ul>
 								<li>
 									<Space>
 										<Icon component={StarIcon} rev="item" style={{ fontSize: screens.md ? 32 : 19 }} />
 										<Text>
-											We help Authors of new video games to assemble a team of game designers, programmers, artists,
-											animators, etc.
+											<T>
+												We help Authors of new video games to assemble a team of game designers, programmers, artists,
+												animators, etc.
+											</T>
 										</Text>
 									</Space>
 								</li>
@@ -41,13 +47,15 @@ export const LandingHeroSection = ({
 									<Space>
 										<Icon component={StarIcon} rev="span" style={{ fontSize: screens.md ? 32 : 19 }} />
 										<Text>
-											We help game industry professionals find an interesting role for themselves in new projects.
+											<T>
+												We help game industry professionals find an interesting role for themselves in new projects.
+											</T>
 										</Text>
 									</Space>
 								</li>
 							</ul>
 							<Button className={styles.heroButton} type="primary">
-								Get started
+								<T>Get started</T>
 							</Button>
 						</Space>
 					</Col>

@@ -164,6 +164,7 @@ class ApiProjectHandler {
 				stage: { connect: { id: season?.stages[0].id } },
 				team: {
 					create: {
+						name: `${user?.name}'s Team`,
 						members: {
 							create: {
 								position: 'Founder',

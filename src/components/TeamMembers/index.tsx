@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ProjectTeam, TeamMember, User } from '@prisma/client'
+import { Team, TeamMember, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Avatar, List, Space, Typography } from 'antd'
 import axios from 'axios'
@@ -14,7 +14,7 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	const { data: team } = useQuery(
 		['team-members', teamId],
 		() =>
-			axios.get<ProjectTeam & { members: (TeamMember & { user: User })[] }>('/api/project/team', {
+			axios.get<Team & { members: (TeamMember & { user: User })[] }>('/api/project/team', {
 				params: { teamId },
 			}),
 		{

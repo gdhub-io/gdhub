@@ -41,6 +41,10 @@ export const transferVacancies = async (airtableService: AirtableBase, prisma: E
 							where: { projects: { some: { slug: airtableVacancy['Project Slug'][0] } } },
 						})
 
+						const project = await prisma.project.findFirst({
+							where: { slug: airtableVacancy['Project Slug'][0] },
+						})
+
 						const airtableDirectionText = (airtableVacancy.Direction as string).toLowerCase()
 						let directionName = airtableDirectionText
 
@@ -79,6 +83,7 @@ export const transferVacancies = async (airtableService: AirtableBase, prisma: E
 							status,
 							directionId: direction!.id,
 							teamId: team!.id,
+							projectId: project!.id,
 							publishedAt: airtableVacancy['Published At']
 								? dayjs(airtableVacancy['Published At']).toISOString()
 								: undefined,

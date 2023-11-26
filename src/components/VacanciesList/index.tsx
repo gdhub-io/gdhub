@@ -19,57 +19,55 @@ const VacanciesList = () => {
 		refetch: refetchVacanciesList,
 	} = useQuery(
 		['vacancies'],
-		() =>
-			axios.get<(TeamVacancy & { team: { project: { id: string; slug: string; name: string } } })[]>('/api/vacancies'),
+		() => axios.get<(TeamVacancy & { project: { id: string; slug: string; name: string } })[]>('/api/vacancies'),
 		{
 			refetchOnWindowFocus: false,
 			refetchInterval: 60000,
 		}
 	)
 
-	const vacanciesColumns: ColumnsType<TeamVacancy & { team: { project: { id: string; slug: string; name: string } } }> =
-		[
-			{
-				title: 'Название',
-				dataIndex: 'title',
-				key: 'title',
-				width: '40%',
-				render: (value, record) => (
-					<>
-						<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
-							{value}
-						</span>
-					</>
-				),
-			},
-			{
-				title: 'Проект',
-				dataIndex: 'teamId',
-				key: 'teamId',
-				// width: '40%',
-				render: (value, record) => (
-					<>
-						<Link href={`/project/${record.team.project.slug}`}>
-							<Button type="text">{record.team.project.name}</Button>
-						</Link>
-					</>
-				),
-			},
-			{
-				title: 'Направление',
-				dataIndex: 'directionId',
-				responsive: ['md'],
-				key: 'directionId',
-				render: (value) => getDirectionName(value),
-			},
-			{
-				title: 'Действует до',
-				dataIndex: 'finishedAt',
-				responsive: ['md'],
-				key: 'finishedAt',
-				render: (value) => dayjs(value).format('DD.MM.YYYY'),
-			},
-		]
+	const vacanciesColumns: ColumnsType<TeamVacancy & { project: { id: string; slug: string; name: string } }> = [
+		{
+			title: 'Название',
+			dataIndex: 'title',
+			key: 'title',
+			width: '40%',
+			render: (value, record) => (
+				<>
+					<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
+						{value}
+					</span>
+				</>
+			),
+		},
+		{
+			title: 'Проект',
+			dataIndex: 'teamId',
+			key: 'teamId',
+			// width: '40%',
+			render: (value, record) => (
+				<>
+					<Link href={`/project/${record.project.slug}`}>
+						<Button type="text">{record.project.name}</Button>
+					</Link>
+				</>
+			),
+		},
+		{
+			title: 'Направление',
+			dataIndex: 'directionId',
+			responsive: ['md'],
+			key: 'directionId',
+			render: (value) => getDirectionName(value),
+		},
+		{
+			title: 'Действует до',
+			dataIndex: 'finishedAt',
+			responsive: ['md'],
+			key: 'finishedAt',
+			render: (value) => dayjs(value).format('DD.MM.YYYY'),
+		},
+	]
 
 	const handleEditVacancy = (id: string) => {
 		setSelectedVacancyId(id)

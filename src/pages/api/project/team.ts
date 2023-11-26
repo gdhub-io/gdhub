@@ -2,15 +2,15 @@ import { prisma } from '@/services/prisma'
 import { IsString } from 'class-validator'
 import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
 
-class UserProjectTeamDto {
+class UserTeamDto {
 	@IsString()
 	teamId: string
 }
 
-class ApiUserProjectTeamHandler {
+class ApiUserTeamHandler {
 	@Get()
-	public async get(@Query(ValidationPipe) { teamId }: UserProjectTeamDto) {
-		const team = await prisma.projectTeam.findFirst({
+	public async get(@Query(ValidationPipe) { teamId }: UserTeamDto) {
+		const team = await prisma.team.findFirst({
 			where: { id: teamId },
 			include: { members: { include: { user: { select: { name: true, image: true } } } } },
 		})
@@ -19,4 +19,4 @@ class ApiUserProjectTeamHandler {
 	}
 }
 
-export default createHandler(ApiUserProjectTeamHandler)
+export default createHandler(ApiUserTeamHandler)

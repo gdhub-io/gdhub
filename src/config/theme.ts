@@ -41,8 +41,8 @@ export const themeConfig: ThemeConfig = {
 			fontSize: 16,
 		},
 		Layout: {
-			colorBgBody: 'transparent',
-			colorBgHeader: 'transparent',
+			bodyBg: 'transparent',
+			headerBg: 'transparent',
 		},
 		Menu: { colorBgContainer: 'transparent', darkItemBg: '#050505' },
 		Spin: {
@@ -93,8 +93,8 @@ export const appThemeConfig: ThemeConfig = {
 			fontSize: 16,
 		},
 		Layout: {
-			colorBgBody: 'transparent',
-			colorBgHeader: 'transparent',
+			bodyBg: 'transparent',
+			headerBg: 'transparent',
 		},
 		Menu: {
 			colorBgContainer: 'transparent',

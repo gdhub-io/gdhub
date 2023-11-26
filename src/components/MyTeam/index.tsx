@@ -1,4 +1,4 @@
-import { ProjectTeam, TeamMember, TeamMemberStatus, User } from '@prisma/client'
+import { Team, TeamMember, TeamMemberStatus, User } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Grid, message, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
@@ -9,17 +9,17 @@ interface ProjectVacanciesArgs {
 	teamId: string
 }
 
-const MyProjectTeam = ({ teamId }: ProjectVacanciesArgs) => {
+const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
 
 	const {
-		data: projectTeam,
-		refetch: fetchMyProjectTeam,
-		isLoading: isLoadingMyProjectTeam,
+		data: team,
+		refetch: fetchMyTeam,
+		isLoading: isLoadingMyTeam,
 	} = useQuery(
 		['user-project-team', teamId],
 		() =>
-			axios.get<ProjectTeam & { members: (TeamMember & { user: User })[] }>('/api/user/project/team', {
+			axios.get<Team & { members: (TeamMember & { user: User })[] }>('/api/user/project/team', {
 				params: { teamId },
 			}),
 		{
@@ -32,7 +32,7 @@ const MyProjectTeam = ({ teamId }: ProjectVacanciesArgs) => {
 		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/fire', data),
 		{
 			onSuccess: () => {
-				fetchMyProjectTeam()
+				fetchMyTeam()
 			},
 		}
 	)
@@ -40,7 +40,7 @@ const MyProjectTeam = ({ teamId }: ProjectVacanciesArgs) => {
 	const handleFired = async (teamMemberId: string) => {
 		try {
 			await fireMember({ id: teamMemberId })
-			fetchMyProjectTeam()
+			fetchMyTeam()
 
 			message.success('Сотрудник уволен')
 		} catch (error: any) {
@@ -107,14 +107,14 @@ const MyProjectTeam = ({ teamId }: ProjectVacanciesArgs) => {
 
 			<Table
 				showHeader={false}
-				loading={isLoadingMyProjectTeam}
+				loading={isLoadingMyTeam}
 				style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
 				columns={columns}
-				dataSource={projectTeam?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
+				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}
 			/>
 		</>
 	)
 }
 
-export default MyProjectTeam
+export default MyTeam

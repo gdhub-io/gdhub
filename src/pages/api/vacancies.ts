@@ -9,7 +9,7 @@ class ApiSpecialistHandler {
 		const vacancies = await prisma.teamVacancy.findMany({
 			where: { status: 'Published' },
 			orderBy: { publishedAt: 'desc' },
-			include: { team: { select: { project: { select: { id: true, name: true, slug: true } } } } },
+			include: { project: { select: { id: true, name: true, slug: true } } },
 		})
 
 		return vacancies

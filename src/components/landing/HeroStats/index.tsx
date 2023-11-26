@@ -3,6 +3,7 @@ import heroStatsImage2 from '@/assets/images/landing/hero-stats-member-2.png'
 import heroStatsImage3 from '@/assets/images/landing/hero-stats-member-3.png'
 import heroStatsImage4 from '@/assets/images/landing/hero-stats-member-4.png'
 import heroStatsImage5 from '@/assets/images/landing/hero-stats-member-5.png'
+import { T } from '@tolgee/react'
 import { Avatar, Divider, Grid, Space, Typography } from 'antd'
 import styles from './style.module.scss'
 
@@ -21,7 +22,9 @@ export const HeroStats = ({
 				<Space style={{ width: '100%' }} size="large" className={styles.members}>
 					<Space direction="vertical" align="center">
 						<Text strong>{stats?.usersCount}+</Text>
-						<Text>community members</Text>
+						<Text>
+							<T>community members</T>
+						</Text>
 					</Space>
 
 					<Avatar.Group size={screen.md ? 72 : 56}>
@@ -36,17 +39,23 @@ export const HeroStats = ({
 				<Space className={styles.stats}>
 					<Space direction="vertical" align="center">
 						<Text strong>{stats?.specialitiesCount}+</Text>
-						<Text>qualified specialists</Text>
+						<Text>
+							<T>qualified specialists</T>
+						</Text>
 					</Space>
 					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
 					<Space direction="vertical" align="center">
 						<Text strong>{stats?.projectsCount}</Text>
-						<Text>current projects</Text>
+						<Text>
+							<T>current projects</T>
+						</Text>
 					</Space>
 					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
 					<Space direction="vertical" align="center">
 						<Text strong>{stats?.vacanciesCount}+</Text>
-						<Text>actual vacancies</Text>
+						<Text>
+							<T>actual vacancies</T>
+						</Text>
 					</Space>
 				</Space>
 			</Space>

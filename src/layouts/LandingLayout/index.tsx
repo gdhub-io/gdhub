@@ -1,16 +1,21 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { LandingFooter } from '@/components/landing/LandingFooter'
-import { Avatar, Button, Drawer, Grid, Layout, Menu, MenuProps, Row, Space } from 'antd'
+import { useTolgee } from '@tolgee/react'
+import { Avatar, Button, Drawer, Grid, Layout, Menu, MenuProps, Row, Select, Space, Typography } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
+const { Text } = Typography
 
 export const LandingLayout = ({ children }: any) => {
+	const router = useRouter()
+	const tolgee = useTolgee(['language'])
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [scrollY, setScrollY] = useState(0)
 	const screens = Grid.useBreakpoint()
@@ -108,9 +113,9 @@ export const LandingLayout = ({ children }: any) => {
 								/>
 
 								{!!session && (
-									<Button type="link" size="large">
-										Go to app
-									</Button>
+									<Link href="/hub">
+										<Button>Go to app</Button>
+									</Link>
 								)}
 							</>
 						) : (
@@ -126,6 +131,25 @@ export const LandingLayout = ({ children }: any) => {
 								<Button>Log in</Button>
 							</Link>
 						)}
+
+						<Select
+							style={{ marginLeft: 16 }}
+							bordered={false}
+							value={tolgee.getLanguage()}
+							options={[
+								{
+									label: <Text>En</Text>,
+									value: 'en',
+								},
+								{
+									label: <Text>Ру</Text>,
+									value: 'ru',
+								},
+							]}
+							onSelect={(value) => {
+								router.replace(router.pathname, undefined, { locale: value })
+							}}
+						/>
 					</Row>
 				</Header>
 				<Content className={styles.content}>{children}</Content>

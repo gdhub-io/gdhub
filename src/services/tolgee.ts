@@ -8,13 +8,13 @@ declare global {
 }
 
 const createTolgeeService = () => {
-	return Tolgee()
+	const tolgee = Tolgee()
 		.use(DevTools())
 		.use(FormatSimple())
 		.use(LanguageStorage())
 		.init({
 			defaultLanguage: 'en',
-			availableLanguages: ['en', 'ru'],
+			// availableLanguages: ['en', 'ru'],
 			// for dev mode
 			apiKey: process.env.NEXT_PUBLIC_TOLGEE_API_KEY as string,
 			apiUrl: process.env.NEXT_PUBLIC_TOLGEE_API_URL as string,
@@ -25,6 +25,8 @@ const createTolgeeService = () => {
 				ru: ruLocale,
 			},
 		})
+
+	return tolgee
 }
 
 let tolgeeService: TolgeeInstance

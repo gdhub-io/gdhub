@@ -12,6 +12,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { TolgeeProvider, useTolgeeSSR } from '@tolgee/react'
 import { ConfigProvider } from 'antd'
+import enLocale from 'antd/locale/en_US'
+import ruLocale from 'antd/locale/ru_RU'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -126,10 +128,10 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
           `,
 				}}
 			/>
-			<TolgeeProvider tolgee={ssrTolgee}>
+			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
 				<ErrorBoundary>
 					<QueryClientProvider client={queryClient}>
-						<ConfigProvider theme={themeConfig}>
+						<ConfigProvider theme={themeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
 							<CheckHealth>
 								<SessionProvider session={session}>
 									<div
