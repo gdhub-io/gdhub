@@ -11,6 +11,7 @@ import {
 	ConfigProvider,
 	Drawer,
 	Dropdown,
+	FloatButton,
 	Grid,
 	Layout,
 	Menu,
@@ -23,6 +24,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
+import { GoArrowUp } from 'react-icons/go'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
@@ -289,6 +291,7 @@ export const ProtectedLayout = ({ children }: any) => {
 					<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 				</Drawer>
 			)}
+			<FloatButton.BackTop icon={<GoArrowUp />} rootClassName={styles.backTop} description="Scroll to up" />
 		</ConfigProvider>
 	)
 }

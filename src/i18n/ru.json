@@ -1,1 +1,15 @@
-{}
+{
+  "Game Developers Hub for everyone who wants to make" : "Хаб разработчиков игр, которые хотят создавать",
+  "Get started" : "Начать",
+  "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc" : {
+    "" : "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
+  },
+  "We help game industry professionals find an interesting role for themselves in new projects" : {
+    "" : "Мы помогаем профессионалам игровой индустрии найти для себя интересную роль в новых проектах."
+  },
+  "actual vacancies" : "открытых вакансий",
+  "community members" : "участников сообщества",
+  "current projects" : "текущих проектов",
+  "qualified specialists" : "специалистов",
+  "video games" : "видео игры"
+}

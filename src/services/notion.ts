@@ -54,8 +54,6 @@ export const getPages = async ({ roles = [] }: GetPagesParams) => {
 			filter: filterParams,
 		})
 
-		console.log(pages)
-
 		return pages.results
 	} catch (error) {
 		console.error(error)

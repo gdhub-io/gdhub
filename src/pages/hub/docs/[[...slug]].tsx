@@ -4,7 +4,9 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { getPages } from '@/services/notion'
 import { Render } from '@9gustin/react-notion-render'
-import { Col, Menu, message, Row, Select, Spin, Grid, theme, Typography } from 'antd'
+import { useQuery } from '@tanstack/react-query'
+import { Col, Menu, Row, Select, Spin, Grid, theme, Typography, Affix } from 'antd'
+import axios from 'axios'
 import { DateTime } from 'luxon'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -19,10 +21,8 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	const themeToken = theme.useToken()
 	const router = useRouter()
 	const { slug: urlSlug } = router.query
-	const [loading, setLoading] = useState(true)
 	const [docsMenu, setDocsMenu] = useState<any[]>()
 	const [pageSlug, setPageSlug] = useState<any>()
-	const [pageContent, setPageContent] = useState<any>(null)
 	const [pageProperties, setPageProperties] = useState<any>()
 
 	useEffect(() => {
@@ -43,64 +43,82 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	}, [urlSlug])
 
 	useEffect(() => {
-		setLoading(false)
 		if (!!pages) {
-			console.log(pages)
-
 			setDocsMenu(
-				pages.map((page: any) => {
-					const {
-						properties: { Slug, Name, Childrens },
-					} = page
+				pages
+					.filter((p: any) => p.properties.Parent.relation.length == 0)
+					.map((page: any, idx) => {
+						const {
+							properties: { Slug, Name, Childrens },
+						} = page
 
-					return {
-						key: Slug.rich_text[0].plain_text,
-						label: Name.title[0].plain_text,
-						style: {
-							whiteSpace: 'normal',
-							height: 'auto',
-							lineHeight: 'initial',
-							paddingTop: '8px',
-							paddingBottom: '8px',
-						},
-						// childrens: Childrens.relation.length > 0 ? getChildrens(Childrens.relation) : [],
-					}
-				})
+						return {
+							key: Slug.rich_text[0] ? Slug.rich_text[0].plain_text : 'menu-' + idx,
+							label: Name.title[0].plain_text,
+							style: {
+								whiteSpace: 'normal',
+								height: 'auto',
+								lineHeight: 'initial',
+								paddingTop: '8px',
+								paddingBottom: '8px',
+							},
+							children: Childrens.relation.length > 0 ? getChildrens(Childrens.relation) : undefined,
+						}
+					})
 			)
 		}
 	}, [])
 
 	useEffect(() => {
 		if (pageSlug) {
-			fetchPageContent(pageSlug)
+			refetchPage()
 		}
 	}, [pageSlug])
 
-	// const getChildrens = (relationsData: any) => {
-	// 	const ids = relationsData.map((rd: any) => rd.id)
-	// 	const results = pages?.find((p: any) => ids.includes(p.id))
+	const getChildrens = (relationsData: any) => {
+		const ids = relationsData.map((rd: any) => rd.id)
+		const children: any[] = []
 
-	// 	return results.map((r: any) => {
-	// 		const {
-	// 			properties: { Slug, Name },
-	// 		} = r
+		for (const _id of ids) {
+			const result = pages?.find((p: any) => p.id == _id)
+			const resultIndex = pages?.findIndex((p: any) => p.id == _id)
 
-	// 		return {
-	// 			kkey: Slug.rich_text[0].plain_text,
-	// 			label: Name.title[0].plain_text,
-	// 		}
-	// 	})
-	// }
+			if (!result || !resultIndex) continue
+
+			// pages?.splice(resultIndex, 1)
+
+			const {
+				properties: { Slug, Name },
+			} = result
+
+			children.push({
+				key: Slug.rich_text[0].plain_text,
+				label: Name.title[0].plain_text,
+				style: {
+					whiteSpace: 'normal',
+					height: 'auto',
+					lineHeight: 'initial',
+					paddingTop: '8px',
+					paddingBottom: '8px',
+				},
+			})
+		}
+
+		console.log(children)
+
+		return children
+	}
 
 	const getPageProperties = (slug: string) => {
-		const currentPage = pages?.find((page: any) => page.properties.Slug.rich_text[0].plain_text === slug)
+		const currentPage = pages?.find((page: any) => page.properties.Slug.rich_text[0]?.plain_text === slug)
 
 		return currentPage
 	}
 
 	const handleMainMenuSelect = async ({ key }: any) => {
 		try {
-			await fetchPageContent(key)
+			setPageSlug(key)
+			await refetchPage()
 			await router.push('/hub/docs/' + key, undefined, { shallow: true })
 			setPageProperties(getPageProperties(key))
 		} catch (error: any) {}
@@ -108,39 +126,25 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 
 	const handleMobileMenuSelect = async (value: any) => {
 		try {
-			await fetchPageContent(value)
+			setPageSlug(value)
+			await refetchPage()
 			await router.push('/hub/docs/' + value, undefined, { shallow: true })
 			setPageProperties(getPageProperties(value))
 		} catch (error: any) {}
 	}
 
-	const fetchPageContent = async (pageSlug: string) => {
-		try {
-			setLoading(true)
-
-			const response = await fetch('/api/notion/page', {
-				method: 'post',
-				headers: {
-					'Type-Content': 'application/json',
-				},
-				body: new URLSearchParams({
-					pageSlug,
-				}),
-			})
-
-			if (!response.ok) {
-				throw new Error()
-			}
-
-			const page = await response.json()
-			setPageContent(page)
+	const {
+		data: pageContent,
+		isLoading,
+		refetch: refetchPage,
+	} = useQuery(['documentation', pageSlug], () => axios.post(`/api/notion/page`, { pageSlug }), {
+		enabled: !!pageSlug,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+		onSuccess: () => {
 			setPageProperties(getPageProperties(pageSlug))
-			setLoading(false)
-		} catch (error: any) {
-			setLoading(false)
-			message.error(`The page didn't found`)
-		}
-	}
+		},
+	})
 
 	return (
 		<>
@@ -154,14 +158,16 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 				<Row>
 					<Col xs={{ span: 24 }} md={{ span: 6 }} xl={{ span: 5 }} xxl={{ span: 4 }}>
 						{screens.md ? (
-							<Menu
-								className="main-menu"
-								defaultSelectedKeys={[pageSlug]}
-								mode="vertical"
-								theme="light"
-								items={docsMenu}
-								onSelect={handleMainMenuSelect}
-							/>
+							<Affix offsetTop={0}>
+								<Menu
+									className="main-menu"
+									selectedKeys={[pageSlug]}
+									mode="inline"
+									theme="light"
+									items={docsMenu}
+									onSelect={handleMainMenuSelect}
+								/>
+							</Affix>
 						) : (
 							<Select
 								defaultValue={pageSlug}
@@ -172,7 +178,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 						)}
 					</Col>
 					<Col xs={{ span: 24 }} md={{ span: 18 }} xl={{ span: 19 }} xxl={{ span: 20 }}>
-						<Spin spinning={loading}>
+						<Spin spinning={isLoading}>
 							{!!pageProperties ? (
 								<section className="main-container">
 									<div className="content-header">
@@ -182,7 +188,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 											{DateTime.fromISO(pageProperties?.last_edited_time).toFormat('d LLL, yyyy', { locale: 'ru-RU' })}
 										</Text>
 									</div>
-									<Render blocks={pageContent} classNames useStyles />
+									<Render blocks={pageContent?.data} classNames useStyles />
 								</section>
 							) : (
 								<section className="main-container">
@@ -201,7 +207,7 @@ DocsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export const getServerSideProps = async (context: any) => {
 	const session: any = await getServerSession(context.req, context.res, authOptions)
-	const pages = await getPages({ roles: session.user.roles })
+	let pages: any = await getPages({ roles: session.user.roles })
 
 	return {
 		props: {

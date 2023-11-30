@@ -40,6 +40,18 @@
 	}
 }
 
+.backTop {
+	background-color: transparent;
+	box-shadow: none;
+
+
+	:global {
+		.ant-float-btn-body:hover {
+			background-color: transparent;
+		}
+	}
+}
+
 @import './styles/xs.scss'; // screen < 576px
 @import './styles/sm.scss'; // screen ≥ 576px
 @import './styles/md.scss'; // screen ≥ 768px
