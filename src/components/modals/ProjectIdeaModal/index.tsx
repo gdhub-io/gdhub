@@ -39,8 +39,8 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 				}),
 			})
 
-			if (response.error) {
-				throw new Error(response.error.message)
+			if (response.error && Object.entries(response.error).length != 0) {
+				throw new Error(response.error)
 			}
 
 			const data = await response.json()
@@ -82,8 +82,8 @@ const ProjectIdeaModal = ({ seasonId, projectIdeaId, open, onOk, onCancel }: any
 
 			const data = await response.json()
 
-			if (data.error) {
-				throw new Error(response.error.message)
+			if (data.error && Object.entries(data.error).length != 0) {
+				throw new Error(data.error)
 			}
 
 			message.success(projectIdeaId ? 'Данные идеи обновлены' : 'Добавлена новая идея игры')
