@@ -170,7 +170,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 			</Head>
 			<div className={styles.container}>
 				<Row>
-					<Col xs={{ span: 24 }} md={{ span: 6 }} xl={{ span: 5 }} xxl={{ span: 4 }}>
+					<Col xs={{ span: 24 }} md={{ span: 6 }}>
 						{screens.md ? (
 							<Affix offsetTop={0}>
 								<div className={styles.menuContainer}>
@@ -193,7 +193,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 							/>
 						)}
 					</Col>
-					<Col xs={{ span: 24 }} md={{ span: 18 }} xl={{ span: 19 }} xxl={{ span: 20 }}>
+					<Col xs={{ span: 24 }} md={{ span: 18 }}>
 						<Spin spinning={loading}>
 							{!!pageProperties ? (
 								<section className="main-container">
