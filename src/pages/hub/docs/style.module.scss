@@ -1,12 +1,22 @@
 .container {
 	border-top: 1px solid #e2e8f0;
 
+	.menuContainer {
+		overflow-y: auto;
+		position: relative;
+		height: 100vh;
+	}
+
 	:global {
 		.main-menu {
 			position: relative;
 			min-height: 500px;
 			height: 100%;
 			padding-top: 20px;
+		}
+
+		.ant-menu-light .ant-menu-item-selected {
+			background-color: #ededed;
 		}
 
 		.mobile-menu {

@@ -4,7 +4,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { getPages } from '@/services/notion'
 import { Render } from '@9gustin/react-notion-render'
-import { Col, Menu, message, Row, Select, Spin, Grid } from 'antd'
+import { Col, Menu, message, Row, Select, Spin, Grid, Affix } from 'antd'
 import { DateTime } from 'luxon'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -45,17 +45,27 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 			console.log(pages)
 
 			setDocsMenu(
-				pages.map((page: any) => {
-					const {
-						properties: { Slug, Name, Childrens },
-					} = page
+				pages
+					.filter((p: any) => p.properties.Parent.relation.length == 0)
+					.map((page: any, idx) => {
+						const {
+							properties: { Slug, Name, Childrens },
+						} = page
 
-					return {
-						key: Slug.rich_text[0].plain_text,
-						label: Name.title[0].plain_text,
-						// childrens: Childrens.relation.length > 0 ? getChildrens(Childrens.relation) : [],
-					}
-				})
+						return {
+							key: Slug.rich_text[0] ? Slug.rich_text[0].plain_text : 'menu-' + idx,
+							label: Name.title[0].plain_text,
+							type: Childrens.relation.length > 0 ? 'group' : undefined,
+							style: {
+								whiteSpace: 'normal',
+								height: 'auto',
+								lineHeight: 'initial',
+								paddingTop: '8px',
+								paddingBottom: '8px',
+							},
+							children: Childrens.relation.length > 0 ? getChildrens(Childrens.relation) : undefined,
+						}
+					})
 			)
 		}
 	}, [])
@@ -66,24 +76,42 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		}
 	}, [pageSlug])
 
-	// const getChildrens = (relationsData: any) => {
-	// 	const ids = relationsData.map((rd: any) => rd.id)
-	// 	const results = pages?.find((p: any) => ids.includes(p.id))
+	const getChildrens = (relationsData: any) => {
+		const ids = relationsData.map((rd: any) => rd.id)
+		const children: any[] = []
 
-	// 	return results.map((r: any) => {
-	// 		const {
-	// 			properties: { Slug, Name },
-	// 		} = r
+		for (const _id of ids) {
+			const result = pages?.find((p: any) => p.id == _id)
+			const resultIndex = pages?.findIndex((p: any) => p.id == _id)
 
-	// 		return {
-	// 			kkey: Slug.rich_text[0].plain_text,
-	// 			label: Name.title[0].plain_text,
-	// 		}
-	// 	})
-	// }
+			if (!result || !resultIndex) continue
+
+			// pages?.splice(resultIndex, 1)
+
+			const {
+				properties: { Slug, Name },
+			} = result
+
+			children.push({
+				key: Slug.rich_text[0].plain_text,
+				label: Name.title[0].plain_text,
+				style: {
+					whiteSpace: 'normal',
+					height: 'auto',
+					lineHeight: 'initial',
+					paddingTop: '8px',
+					paddingBottom: '8px',
+				},
+			})
+		}
+
+		console.log(children)
+
+		return children
+	}
 
 	const getPageProperties = (slug: string) => {
-		const currentPage = pages?.find((page: any) => page.properties.Slug.rich_text[0].plain_text === slug)
+		const currentPage = pages?.find((page: any) => page.properties.Slug.rich_text[0]?.plain_text === slug)
 
 		return currentPage
 	}
@@ -105,6 +133,8 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	}
 
 	const fetchPageContent = async (pageSlug: string) => {
+		if (!pageSlug) return
+
 		try {
 			setLoading(true)
 
@@ -123,6 +153,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 			}
 
 			const page = await response.json()
+
 			setPageContent(page)
 			setPageProperties(getPageProperties(pageSlug))
 			setLoading(false)
@@ -141,14 +172,18 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 				<Row>
 					<Col xs={{ span: 24 }} md={{ span: 6 }} xl={{ span: 5 }} xxl={{ span: 4 }}>
 						{screens.md ? (
-							<Menu
-								className="main-menu"
-								defaultSelectedKeys={[pageSlug]}
-								mode="vertical"
-								theme="light"
-								items={docsMenu}
-								onSelect={handleMainMenuSelect}
-							/>
+							<Affix offsetTop={0}>
+								<div className={styles.menuContainer}>
+									<Menu
+										className="main-menu"
+										defaultSelectedKeys={[pageSlug]}
+										mode="inline"
+										theme="light"
+										items={docsMenu}
+										onSelect={handleMainMenuSelect}
+									/>
+								</div>
+							</Affix>
 						) : (
 							<Select
 								defaultValue={pageSlug}
