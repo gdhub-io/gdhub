@@ -39,7 +39,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 	const [cover, setCover] = useState<string | null>()
 	const [coverProcessing, setCoverProcessing] = useState(false)
 
-	const { data: project, isLoading } = useQuery(
+	const { data: project, isFetching } = useQuery(
 		['user-project', projectId],
 		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { projectId } }),
 		{
@@ -51,6 +51,9 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 			},
 		}
 	)
+
+	console.log('projectId', projectId, isFetching)
+
 	const { mutateAsync: createProject, isLoading: isCreating } = useMutation((data: any) =>
 		axios.post<Project>('/api/user/project', data)
 	)
@@ -185,7 +188,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 			onCancel={handleCancel}
 			confirmLoading={isCreating || isUpdating}
 		>
-			<Spin spinning={isLoading || isCreating || isUpdating}>
+			<Spin spinning={isFetching || isCreating || isUpdating}>
 				<Form
 					form={form}
 					layout="vertical"
@@ -263,16 +266,18 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 						label={
 							<Space>
 								Ссылка на концепт-документ (описание идеи)
-								<Tooltip title="You can't change the link. It was approved already.">
-									<GoCheckCircleFill color={token.colorSuccess} />
-								</Tooltip>
+								{project?.data.status == ProjectStatus.Approved && (
+									<Tooltip title="You can't change the link. It was approved already.">
+										<GoCheckCircleFill color={token.colorSuccess} />
+									</Tooltip>
+								)}
 							</Space>
 						}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true, type: 'url' }]}
 						required
 					>
-						<Input width={'100%'} disabled={project?.data.status !== ProjectStatus.Registered} />
+						<Input width={'100%'} disabled={project?.data.status == ProjectStatus.Approved} />
 					</Form.Item>
 
 					{project?.data.status == ProjectStatus.Approved && (

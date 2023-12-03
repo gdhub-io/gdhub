@@ -149,7 +149,10 @@ class ApiProjectHandler {
 	) {
 		if (!req.user.id) throw Error('Unknown user')
 
-		const user = await prisma.user.findUnique({ where: { id: req.user.id }, include: { specialities: true } })
+		const user = await prisma.user.findUnique({
+			where: { id: req.user.id },
+			include: { specialities: true, memberInTeams: { where: { status: TeamMemberStatus.Founder } } },
+		})
 
 		const season = await prisma.season.findFirst({
 			where: { id: seasonId },
@@ -163,15 +166,18 @@ class ApiProjectHandler {
 				status: ProjectStatus.Registered,
 				stage: { connect: { id: season?.stages[0].id } },
 				team: {
-					create: {
-						name: `${user?.name}'s Team`,
-						members: {
-							create: {
-								position: 'Founder',
-								specialityId: user?.specialities[0].id!,
-								startedAt: dayjs().toISOString(),
-								status: TeamMemberStatus.Founder,
-								userId: req.user.id,
+					connectOrCreate: {
+						where: { id: user?.memberInTeams[0].teamId },
+						create: {
+							name: `${user?.name}'s Team`,
+							members: {
+								create: {
+									position: 'Founder',
+									specialityId: user?.specialities[0].id!,
+									startedAt: dayjs().toISOString(),
+									status: TeamMemberStatus.Founder,
+									userId: req.user.id,
+								},
 							},
 						},
 					},

@@ -2,69 +2,36 @@ import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
+import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus } from '@prisma/client'
-import { Alert, Space } from 'antd'
-import Link from 'next/link'
+import { useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
+import { Alert } from 'antd'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
+	const router = useRouter()
 	const stage = useMemo(() => {
 		return season?.stages.find((s) => s.isCurrent)
 	}, [season])
 
+	const { data: stageContent, isLoading } = useQuery(
+		['gamelab-preproduction-content'],
+		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', lang: router.locale, pageSlug: stage?.name }),
+		{
+			enabled: !!stage,
+			refetchInterval: false,
+			refetchOnWindowFocus: false,
+		}
+	)
+
 	return (
 		<div className={styles.container}>
-			<h3>Для авторов</h3>
-			<p>
-				На данном этапе авторы проектов будут прорабатывать все детали своих проектов: описание геймплея, core- и
-				meta-механик, интерфейса, персонажей, визуального оформления, монетизации и т.д.
-				<br />
-				По окончанию текущего этапа мы получим на каждый проект документацию на разработку проекта, а также
-				подготовленный питчи проекта для привлечения в команды специалистов на этапе Рекрутинг.
-			</p>
-			<p>
-				Полезный материал:{' '}
-				<Link href="/hub/docs/how-make-gdd" target="_blank">
-					О разработке ГДД
-				</Link>
-				,{' '}
-				<Link
-					href="https://docs.google.com/document/d/1uYZCb0AFouICf_ZYLaTVhSyr7hElQlRSixxFEV_HKgM/edit"
-					target="_blank"
-				>
-					Шаблон геймдизайн-документа
-				</Link>
-			</p>
+			<Render blocks={stageContent?.data} classNames useStyles />
 
-			<>
-				<h3>Мои проекты</h3>
-				<UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />
-			</>
-
-			<Space wrap style={{ marginTop: 20 }}>
-				<h3>Для специалистов</h3>
-				<p>
-					Для других специалистов (2D и 3D художников, программистов) на данном этапе есть возможность испытать себя в
-					формате Челенджа. Прокачать свои навыки, показать на что вы способны и как работаете. <br />
-					Благодаря первому этапу нам известны игровые механики, визуальные стили, платформы, сеттинги будущих игр,
-					которые с высокой долей вероятности необходимо будет реализовывать в будущем.
-				</p>
-
-				<p>
-					Полезный материал:{' '}
-					<Link href="/hub/docs/about-art-challenge" target="_blank">
-						Для 2D-художников
-					</Link>
-					,{' '}
-					<Link href="/hub/docs/about-3dart-challenge" target="_blank">
-						Для 3D-художников
-					</Link>
-					,{' '}
-					<Link href="/hub/docs/about-code-challenge" target="_blank">
-						Для программистов
-					</Link>
-				</p>
-			</Space>
+			<UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />
 
 			{/* {mechanicsList?.length > 0 && (
 				<>
@@ -94,15 +61,10 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 				</>
 			)} */}
 
-			<h3>Список проектов</h3>
 			{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 
 			{stage?.isCompleted && (
-				<Alert
-					style={{ marginTop: 16 }}
-					type="success"
-					message="На данный момент идет оценка проектов и питчей. Встретимся на следующем этапе."
-				/>
+				<Alert style={{ marginTop: 16 }} type="success" message={<T keyName="projects-currently-being-assessed" />} />
 			)}
 		</div>
 	)

@@ -3,17 +3,20 @@ import ProjectModal from '@/components/modals/ProjectModal'
 import { SeasonData } from '@/components/SeasonContent'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
 import { hasRole } from '@/helpers/user'
+import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus, UserRole } from '@prisma/client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Alert, Button, Grid, Space, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const SearchingStageContent = ({ season }: { season: SeasonData }) => {
-	const screens = Grid.useBreakpoint()
+	const router = useRouter()
 	const queryClient = useQueryClient()
 	const session: any = useSession()
 	const stage = useMemo(() => {
@@ -30,6 +33,16 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 		{ enabled: !!stage }
 	)
 
+	const { data: stageContent, isLoading } = useQuery(
+		['gamelab-searching-content'],
+		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', lang: router.locale, pageSlug: stage?.name }),
+		{
+			enabled: !!stage,
+			refetchInterval: false,
+			refetchOnWindowFocus: false,
+		}
+	)
+
 	const handleAddIdeaClick = () => {
 		setShowProjectModal(true)
 	}
@@ -43,49 +56,37 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 
 	return (
 		<div className={styles.container}>
-			<Spin spinning={!season}>
-				<p>
-					<strong>Стань геймдизайнером/автором нового проекта!</strong> Исследуй тренды, генерируй идеи, анализируй
-					существующие игры. Лучшие свои идеи игр регистрируй нажав кнопку &quot;Добавить идею игры&quot;
-				</p>
-				<p>
-					Полезный материал:{' '}
-					<Link href="/hub/docs/work-with-ideas" target="_blank">
-						Работа с идеями
-					</Link>
-					,{' '}
-					<Link
-						href="https://docs.google.com/document/d/1O99XaTb__f3rL8biPGDEf4H6U7xKQKQag5oWCp3ljhk/edit?usp=sharing"
-						target="_blank"
-					>
-						Шаблон документа для описания идеи
-					</Link>
-				</p>
+			<Spin spinning={!season || isLoading}>
+				<Render blocks={stageContent?.data} classNames useStyles />
 				<Space wrap>
 					{!isStageExpired() && (
 						<Button type="primary" onClick={handleAddIdeaClick}>
-							Добавить идею игры
+							<T keyName="add-new-concept" />
 						</Button>
 					)}
 
 					{hasRole(UserRole.Mentor, session) && (
 						<Link href={`/${season.slug}/projects`}>
-							<Button>Список идей</Button>
+							<Button>
+								<T keyName="concept-list" />
+							</Button>
 						</Link>
 					)}
 
-					{seasonProjects?.data && seasonProjects?.data.count > 3 && (
-						<span className="additional-info">Всего участники предложили {seasonProjects.data.count} идей</span>
-					)}
-
-					{isStageExpired() && (
-						<Alert
-							type="success"
-							message="На данный момент прием идей завершен. Менторы по геймдизайну обсуждают поданные идеи, общаются с их авторами. По окончании
-							обсуждений будет определен список проектов, которые пойдут далее на этап подготовки проекта"
-						/>
+					{seasonProjects?.data && seasonProjects?.data.count > 0 && (
+						<span className="additional-info">
+							<T keyName="users-proposed-concepts-total" params={{ total: seasonProjects.data.count }} />
+						</span>
 					)}
 				</Space>
+
+				{isStageExpired() && (
+					<Alert
+						type="success"
+						message="На данный момент прием идей завершен. Менторы по геймдизайну обсуждают поданные идеи, общаются с их авторами. По окончании
+							обсуждений будет определен список проектов, которые пойдут далее на этап подготовки проекта"
+					/>
+				)}
 
 				{!isStageExpired() && <UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />}
 

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Project, ProjectStatus } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Typography, Button, Grid, List, Space, Popconfirm, Badge } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -13,6 +14,8 @@ type ProjectsSectionArgs = {
 	seasonId: string
 	status: ProjectStatus
 }
+
+const { Title } = Typography
 
 export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
@@ -54,16 +57,22 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 	}
 
 	if (!projects?.data.length) {
-		return <p>No project yet.</p>
+		return (
+			<p>
+				<T keyName="no-user-projects" />
+			</p>
+		)
 	}
 
 	return (
-		<>
+		<Space style={{ width: '100%', marginTop: 32 }} direction="vertical">
+			<Title level={5}>
+				<T keyName="userProjectList" />
+			</Title>
 			<List
 				itemLayout={screens.xs ? 'vertical' : 'horizontal'}
 				loading={isLoadingUserSeasonProjects}
 				size="small"
-				style={{ marginTop: '20px' }}
 				bordered
 				dataSource={projects?.data}
 				renderItem={(userProject) => (
@@ -80,7 +89,7 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 									<Typography.Paragraph ellipsis>{userProject.description}</Typography.Paragraph>
 									{!screens.md && !!userProject.conceptLink && (
 										<Link href={userProject.conceptLink} target="_blank" style={{ marginRight: '40px' }}>
-											Ссылка на документ
+											<T keyName="concept-link" />
 										</Link>
 									)}
 								</>
@@ -90,20 +99,20 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 							{screens.md && !!userProject.conceptLink && (
 								<Badge count={<GoLinkExternal size={12} color="#afafaf" />} offset={[-32, 4]}>
 									<Link href={userProject.conceptLink} target="_blank" style={{ marginRight: '40px' }}>
-										Концепт
+										<T keyName="concept-link" />
 									</Link>
 								</Badge>
 							)}
-							<Button onClick={() => handleEditUserProject(userProject.id)}>Изменить</Button>
+							<Button onClick={() => handleEditUserProject(userProject.id)}>
+								<T keyName="change" />
+							</Button>
 							<Popconfirm
-								title="Точно хотите удалить？"
-								okText="Да"
-								cancelText="Нет"
+								title={<T keyName="are-you-sure-you-want-to-delete-it" />}
+								okText={<T keyName="yes" />}
+								cancelText={<T keyName="no" />}
 								onConfirm={() => handleDeleteIdea(userProject.id)}
 							>
-								<Button type="text" danger>
-									<HiOutlineTrash />
-								</Button>
+								<Button type="text" danger icon={<HiOutlineTrash />} />
 							</Popconfirm>
 						</Space>
 					</List.Item>
@@ -116,6 +125,6 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 				onOk={handleSaveUserProject}
 				onCancel={() => setShowUserProjectModal(false)}
 			/>
-		</>
+		</Space>
 	)
 }

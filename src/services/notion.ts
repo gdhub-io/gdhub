@@ -74,7 +74,7 @@ export const getPage = async ({ pageId }: { pageId: string }) => {
 	}
 }
 
-export const getBlocks = async (pageSlug: string) => {
+export const getBlocks = async (pageSlug: string, lang = 'en') => {
 	try {
 		const response = await NotionService.databases.query({
 			database_id: process.env.NOTION_DATABASE_DOCS as string,
@@ -91,6 +91,37 @@ export const getBlocks = async (pageSlug: string) => {
 						rich_text: {
 							equals: pageSlug,
 						},
+					},
+				],
+			},
+		})
+
+		const blocks = await NotionService.blocks.children.list({
+			block_id: response.results[0].id,
+		})
+
+		return blocks.results
+	} catch (error) {
+		console.error(error)
+		return null
+	}
+}
+
+export const getGamelabStageBlocks = async (stageName: string, lang = 'en') => {
+	try {
+		const response = await NotionService.databases.query({
+			database_id: process.env.NOTION_GL_STAGES_DOCS as string,
+			filter: {
+				and: [
+					{
+						property: 'stage',
+						rich_text: {
+							equals: stageName.toLowerCase(),
+						},
+					},
+					{
+						property: 'lang',
+						select: { equals: lang.toLowerCase() },
 					},
 				],
 			},

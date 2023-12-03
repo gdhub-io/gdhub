@@ -1,6 +1,6 @@
 export enum DefaultSeasonStages {
 	Searching = 'Searching',
-	PreProduction = 'PreProduction',
+	PreProduction = 'Pre-production',
 	Recruiting = 'Recruiting',
 	Prototyping = 'Prototyping',
 	Production = 'Production',
