@@ -103,7 +103,10 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 			</Head>
 			<div className={styles.container}>
 				<h1>Участники</h1>
-				<InstantSearch searchClient={searchAdapter.searchClient} indexName="specialists">
+				<InstantSearch
+					searchClient={searchAdapter.searchClient}
+					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
+				>
 					<SearchBox placeholder="Type search query..." />
 					<Row justify="end" className={styles.stats}>
 						<Stats />

@@ -23,7 +23,10 @@ class ApiSpecialistHandler {
 				await migrate()
 				break
 			case 'specialists':
-				const docs = await searchClient.client.collections('specialists').documents().export()
+				const docs = await searchClient.client
+					.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+					.documents()
+					.export()
 				return docs
 			case 'drop':
 				await drop()
@@ -31,7 +34,7 @@ class ApiSpecialistHandler {
 			case 'search':
 				const result = await search({
 					q: query,
-					query_by: 'Name,Direction,Schools',
+					query_by: 'name,direction,schools',
 				})
 				return result
 			default:

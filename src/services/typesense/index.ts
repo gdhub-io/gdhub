@@ -44,18 +44,21 @@ export class SearchEngineService {
 	}
 
 	async addSpecialist(document: Record<string, any>) {
-		const existScheme = await this.existScheme('specialists')
+		const existScheme = await this.existScheme(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 
 		if (!existScheme) {
 			await this.migrateScheme(specialistsSchema)
 		}
 
-		await this.client.collections('specialists').documents().create(prepareData(document))
+		await this.client
+			.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+			.documents()
+			.create(prepareData(document))
 	}
 
 	async deleteSpecialist(specialityId: string) {
 		return await this.client
-			.collections('specialists')
+			.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 			.documents()
 			.delete({ filter_by: `id:${specialityId}` })
 	}

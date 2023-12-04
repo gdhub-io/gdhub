@@ -5,7 +5,10 @@ export async function search(searchParams: SearchParams) {
 	try {
 		const searchService = await SearchEngineService.init()
 
-		const response = await searchService.client.collections('specialists').documents().search(searchParams)
+		const response = await searchService.client
+			.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+			.documents()
+			.search(searchParams)
 
 		return response
 	} catch (error: any) {

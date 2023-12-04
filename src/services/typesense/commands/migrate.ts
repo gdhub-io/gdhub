@@ -6,7 +6,9 @@ import dayjs from 'dayjs'
 export async function migrate() {
 	try {
 		const searchService = await SearchEngineService.init()
-		const existSpecialists = await searchService.existScheme('specialists')
+		const existSpecialists = await searchService.existScheme(
+			process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string
+		)
 
 		if (!existSpecialists) {
 			await searchService.migrateScheme(specialistsSchema)
@@ -22,7 +24,10 @@ export async function migrate() {
 
 		try {
 			const documents = specialists.map((s) => prepareData({ ...s, direction: s.direction.name })) as any[]
-			await searchService.client.collections('specialists').documents().import(documents)
+			await searchService.client
+				.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+				.documents()
+				.import(documents)
 
 			console.info('Added')
 		} catch (error: any) {
