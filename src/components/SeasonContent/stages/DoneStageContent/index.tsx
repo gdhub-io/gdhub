@@ -1,29 +1,36 @@
 import { useMemo } from 'react'
 import { SeasonProjectsSection } from '@/components/SeasonProjectsSection'
-import { fetcher } from '@/helpers/fetcher'
-import { Grid, Spin } from 'antd'
-import useSWR from 'swr'
+import { Render } from '@9gustin/react-notion-render'
+import { useQuery } from '@tanstack/react-query'
+import { Grid, Skeleton, Spin } from 'antd'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const DoneStageContent = ({ season }: any) => {
+	const router = useRouter()
 	const screens = Grid.useBreakpoint()
 	const stage = useMemo(() => {
 		return season?.stages.find((s: { isCurrent: boolean }) => s.isCurrent)
 	}, [season])
 
-	const { data: projects } = useSWR({ url: '/api/season/projects', data: { seasonName: season.Name } }, fetcher)
+	const { data: stageContent, isLoading } = useQuery(
+		['gamelab-recruiting-content'],
+		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', lang: router.locale, pageSlug: stage?.name }),
+		{
+			enabled: !!stage,
+			refetchInterval: false,
+			refetchOnWindowFocus: false,
+		}
+	)
 
 	return (
 		<div className={styles.container}>
 			<Spin spinning={!season}>
-				<p>
-					Данный сезон подошел к концу. Большое спасибо всем участникам.
-					<br />
-					Ниже можно посмотреть проекты, которые запустились в рамках текущго сезона. А также следите за обновлениями
-					понравившихся проектов и инвестируйте в них ;)
-				</p>
+				<Skeleton active title={false} paragraph={{ rows: 4 }} loading={isLoading}>
+					<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
+				</Skeleton>
 
-				<h3>Проекты</h3>
 				{!!stage && <SeasonProjectsSection seasonId={season.id} />}
 			</Spin>
 		</div>

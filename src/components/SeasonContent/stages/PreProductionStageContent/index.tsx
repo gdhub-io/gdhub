@@ -6,7 +6,7 @@ import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
-import { Alert } from 'antd'
+import { Alert, Skeleton } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
@@ -29,7 +29,9 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 
 	return (
 		<div className={styles.container}>
-			<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
+			<Skeleton active title={false} paragraph={{ rows: 4 }} loading={isLoading}>
+				<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
+			</Skeleton>
 
 			<UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />
 

@@ -102,6 +102,7 @@ const SeasonProjectIdeasPage: NextPageWithLayout = () => {
 			<div className={styles.board}>
 				{!!data && (
 					<Board
+						id="season-projects-board"
 						data={data}
 						cardDraggable={false}
 						editable={false}

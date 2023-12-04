@@ -5,4 +5,5 @@ export enum DefaultSeasonStages {
 	Prototyping = 'Prototyping',
 	Production = 'Production',
 	Pitching = 'Pitching',
+	Done = 'Done',
 }

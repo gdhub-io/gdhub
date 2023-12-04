@@ -7,7 +7,7 @@ import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus, UserRole } from '@prisma/client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
-import { Alert, Button, Grid, Space, Spin } from 'antd'
+import { Alert, Button, Grid, Skeleton, Space, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -57,7 +57,9 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 	return (
 		<div className={styles.container}>
 			<Spin spinning={!season || isLoading}>
-				<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
+				<Skeleton active title={false} paragraph={{ rows: 4 }} loading={isLoading}>
+					<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
+				</Skeleton>
 				<Space wrap>
 					{!isStageExpired() && (
 						<Button type="primary" onClick={handleAddIdeaClick}>

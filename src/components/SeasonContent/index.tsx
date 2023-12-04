@@ -68,6 +68,8 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 				return <RecruitingStageContent season={season} />
 			case DefaultSeasonStages.Production:
 				return <ProductionStageContent season={season} />
+			case DefaultSeasonStages.Done:
+				return <DoneStageContent season={season} />
 			default:
 				return <Text>Информации по текущему этапу нет или еще готовится.</Text>
 		}

@@ -1,15 +1,18 @@
 import { useMemo } from 'react'
 import { SeasonData } from '@/components/SeasonContent'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
+import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { Space, Spin, Typography } from 'antd'
+import { Skeleton, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
+	const router = useRouter()
 	const stage = useMemo(() => {
 		return season?.stages.find((s) => s.isCurrent)
 	}, [season])
@@ -20,46 +23,39 @@ const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
 		{ enabled: !!stage, refetchOnWindowFocus: false, staleTime: Infinity }
 	)
 
+	const { data: stageContent, isLoading } = useQuery(
+		['gamelab-recruiting-content'],
+		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', lang: router.locale, pageSlug: stage?.name }),
+		{
+			enabled: !!stage,
+			refetchInterval: false,
+			refetchOnWindowFocus: false,
+		}
+	)
+
 	return (
 		<div className={styles.container}>
 			<Spin spinning={!season}>
-				<p>
-					Ура! У нас сформированы команды. Пора приступать к разработке игр. А именно начнем мы с разрабокти:
-					<ul>
-						<li>Прототипов игровых механик</li>
-						<li>Поиска визуального решения для игры и отрисовка фейкового скриншота (фейкшота)</li>
-					</ul>
-				</p>
-				<p>
-					Так же на этом этапе команды начнут рассказывать о своем прогрессе в виде онлайн-отчетов. Информация о
-					видеоотчетах будет публиковаться в чате сообщества.
-					<ul>
-						{reportsDates?.data.map((reportDate, index) => (
-							<li key={`report-date-${index}`}>
-								{dayjs(reportDate.date).format('LLL')}
-								<Typography.Text type="secondary">
-									<small>{' ' + dayjs(reportDate.date).format('Z')}</small>
-								</Typography.Text>
-							</li>
-						))}
-					</ul>
-				</p>
-				<p>
-					Полезный материал:{' '}
-					<Space wrap>
-						<Link className="text-link" href="/hub/docs/prototyping-start" target="_blank">
-							Разработка прототипа игры
-						</Link>
-						<Link className="text-link" href="/hub/docs/art-direction-start" target="_blank">
-							Разработка визуального решения
-						</Link>
-						<Link className="text-link" href="/hub/docs/spring-reporting" target="_blank">
-							Как готовиться к отчету
-						</Link>
-					</Space>
-				</p>
+				<Skeleton active title={false} paragraph={{ rows: 4 }} loading={isLoading}>
+					<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
+				</Skeleton>
 
-				<h3>Проекты в разработке</h3>
+				{!!reportsDates?.data.length && (
+					<>
+						<h3>Отчетные дни</h3>
+						<ul>
+							{reportsDates?.data.map((reportDate, index) => (
+								<li key={`report-date-${index}`}>
+									{dayjs(reportDate.date).format('LLL')}
+									<Typography.Text type="secondary">
+										<small>{' ' + dayjs(reportDate.date).format('Z')}</small>
+									</Typography.Text>
+								</li>
+							))}
+						</ul>
+					</>
+				)}
+
 				{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 			</Spin>
 		</div>
