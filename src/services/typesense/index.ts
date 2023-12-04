@@ -60,6 +60,6 @@ export class SearchEngineService {
 		return await this.client
 			.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 			.documents()
-			.delete({ filter_by: `id:${specialityId}` })
+			.delete({ filter_by: `externalId:${specialityId}` })
 	}
 }

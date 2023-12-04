@@ -23,7 +23,9 @@ export async function migrate() {
 		})
 
 		try {
-			const documents = specialists.map((s) => prepareData({ ...s, direction: s.direction.name })) as any[]
+			const documents = specialists.map((s) =>
+				prepareData({ ...s, externalId: s.id, direction: s.direction.name })
+			) as any[]
 			await searchService.client
 				.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 				.documents()

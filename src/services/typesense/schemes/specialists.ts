@@ -3,7 +3,7 @@ import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections'
 export const specialistsSchema: CollectionCreateSchema = {
 	name: process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string,
 	fields: [
-		{ name: 'id', type: 'string', index: true },
+		{ name: 'externalId', type: 'string', index: true },
 		{ name: 'city', type: 'string', facet: true, optional: true },
 		{ name: 'country', type: 'string', facet: true, optional: true },
 		{ name: 'direction', type: 'string', facet: true },
