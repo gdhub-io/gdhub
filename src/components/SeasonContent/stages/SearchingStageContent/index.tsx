@@ -57,7 +57,7 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 	return (
 		<div className={styles.container}>
 			<Spin spinning={!season || isLoading}>
-				<Render blocks={stageContent?.data} classNames useStyles />
+				<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
 				<Space wrap>
 					{!isStageExpired() && (
 						<Button type="primary" onClick={handleAddIdeaClick}>

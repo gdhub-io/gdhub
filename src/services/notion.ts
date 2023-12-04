@@ -107,7 +107,10 @@ export const getBlocks = async (pageSlug: string, lang = 'en') => {
 	}
 }
 
-export const getGamelabStageBlocks = async (stageName: string, lang = 'en') => {
+export const getGamelabStageBlocks = async (
+	stageName: string,
+	lang = process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string
+) => {
 	try {
 		const response = await NotionService.databases.query({
 			database_id: process.env.NOTION_GL_STAGES_DOCS as string,

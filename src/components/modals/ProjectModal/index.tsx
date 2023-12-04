@@ -178,7 +178,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 		<Modal
 			centered
 			title={projectId ? 'Изменить идею вашего проекта' : 'Добавить идею вашего проекта'}
-			width={800}
+			width={900}
 			destroyOnClose
 			maskClosable={false}
 			cancelText="Закрыть"

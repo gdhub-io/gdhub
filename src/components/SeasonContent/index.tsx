@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import DividerIcon from '@/assets/images/icons/divider.svg'
 import SearchingStageContent from '@/components/SeasonContent/stages/SearchingStageContent'
 import { DefaultSeasonStages } from '@/types/enums'
 import { Season, SeasonStage, SeasonStatus } from '@prisma/client'
 import { Grid, Space, Typography } from 'antd'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import DoneStageContent from './stages/DoneStageContent'
 import PitchingStageContent from './stages/PitchingStageContent'
 import PreProductionStageContent from './stages/PreProductionStageContent'
@@ -36,19 +36,19 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 		return dayjs(season.startedAt)
 	}, [season])
 
-	const peiodAsText = useMemo(() => {
-		if (!startedAt) return
+	const datePeiodtoText = ({ start, finish }: { start?: Dayjs; finish?: Dayjs }) => {
+		if (!start) return
 
-		if (finishedAt && startedAt.year() === finishedAt.year()) {
-			return startedAt.format('D MMM') + ' - ' + finishedAt.format('D MMM, YYYY')
+		if (finish && start.year() === finish.year()) {
+			return start.format('D MMM') + ' - ' + finish.format('ll')
 		}
 
-		if (finishedAt && startedAt.year() != finishedAt.year()) {
-			return startedAt.format('D MMM, YYYY') + ' - ' + finishedAt.format('D MMM, YYYY')
+		if (finish && start.year() != finish.year()) {
+			return start.format('ll') + ' - ' + finish.format('ll')
 		}
 
-		return 'c ' + startedAt.format('D MMM, YYYY')
-	}, [startedAt, finishedAt])
+		return 'c ' + start.format('ll')
+	}
 
 	const stageContent = (stageName: string) => {
 		if (season.status === SeasonStatus.Done) {
@@ -82,7 +82,7 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 				{season.status !== SeasonStatus.Done && !!stage && <Text type="secondary">Этап {stage.order + 1}-ый из 6</Text>}
 			</Space>
 
-			<Paragraph>Период проведения: {peiodAsText}</Paragraph>
+			<Paragraph>Период проведения: {datePeiodtoText({ start: startedAt, finish: finishedAt })}</Paragraph>
 
 			{!!stage && (
 				<div>
@@ -92,7 +92,7 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 							<Text>
 								{screens.md && <DividerIcon style={{ stroke: 'gray' }} />}
 								<Text type="secondary" style={{ marginBottom: 10, display: 'inline-block' }}>
-									{dayjs(stage.startedAt).format('dd LLL') + ' - ' + dayjs(stage.finishedAt).format('dd LLL yyyy')}
+									{datePeiodtoText({ start: dayjs(stage.startedAt), finish: dayjs(stage.finishedAt) })}
 								</Text>
 							</Text>
 						)}

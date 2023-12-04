@@ -158,7 +158,13 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 
 	return {
 		props: {
-			project: { ...project, createdAt: project.createdAt.toISOString(), updatedAt: project.updatedAt.toISOString() },
+			project: {
+				...project,
+				createdAt: project.createdAt.toISOString(),
+				updatedAt: project.updatedAt.toISOString(),
+				startedAt: project.startedAt?.toISOString(),
+				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
+			},
 		},
 		revalidate: 60,
 	}

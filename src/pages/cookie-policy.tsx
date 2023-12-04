@@ -18,7 +18,7 @@ const PrivacyPolicyPage: NextPageWithLayout = ({ page, blocks }: any) => {
 
 			<div className={styles.container}>
 				<Title>{page?.properties.title.title[0].plain_text}</Title>
-				<Render blocks={blocks.results} />
+				<Render blocks={blocks.results} simpleTitles />
 			</div>
 		</>
 	)

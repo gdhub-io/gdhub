@@ -13,8 +13,8 @@ const createTolgeeService = () => {
 		.use(FormatSimple())
 		.use(LanguageStorage())
 		.init({
-			defaultLanguage: 'en',
-			// availableLanguages: ['en', 'ru'],
+			defaultLanguage: process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string,
+			availableLanguages: ['en', 'ru'],
 			// for dev mode
 			apiKey: process.env.NEXT_PUBLIC_TOLGEE_API_KEY as string,
 			apiUrl: process.env.NEXT_PUBLIC_TOLGEE_API_URL as string,

@@ -29,7 +29,7 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 
 	return (
 		<div className={styles.container}>
-			<Render blocks={stageContent?.data} classNames useStyles />
+			<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
 
 			<UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />
 

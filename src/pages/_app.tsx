@@ -32,7 +32,7 @@ dayjs.extend(localizedFormat)
 dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
-dayjs.locale('en')
+dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
 
 const secondFont = Lora({ subsets: ['latin', 'cyrillic'], weight: ['400', '700'], style: ['normal', 'italic'] })
 
