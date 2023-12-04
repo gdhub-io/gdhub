@@ -102,6 +102,7 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 				...p,
 				createdAt: p.createdAt?.toISOString() || null,
 				updatedAt: p.updatedAt?.toISOString() || null,
+				startedAt: p.startedAt?.toISOString() || null,
 				finishedAt: p.finishedAt?.toISOString() || null,
 			})),
 		},

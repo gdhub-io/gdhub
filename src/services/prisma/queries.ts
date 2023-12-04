@@ -7,7 +7,7 @@ export const getWorkedProjects = async () => {
 		where: {
 			status: { in: [ProjectStatus.Approved, ProjectStatus.Done] },
 			stage: {
-				name: { in: [DefaultSeasonStages.Recruiting, DefaultSeasonStages.Prototyping, DefaultSeasonStages.Production] },
+				name: { notIn: [DefaultSeasonStages.Searching, DefaultSeasonStages.PreProduction] },
 			},
 		},
 		include: {
