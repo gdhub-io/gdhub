@@ -96,9 +96,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 											cancelText="Нет"
 											onConfirm={() => handleDeleteSpeciality(speciality.id)}
 										>
-											<Button type="text" danger>
-												<GoTrash />
-											</Button>
+											<Button type="text" danger icon={<GoTrash />} />
 										</Popconfirm>
 									</Space>
 								</List.Item>

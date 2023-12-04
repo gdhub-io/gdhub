@@ -1,4 +1,5 @@
 import { Fragment, useMemo } from 'react'
+import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { Lecture, LecturerRequest, Speciality, User } from '@prisma/client'
 import { Alert, Avatar, Card } from 'antd'
 import dayjs from 'dayjs'
@@ -14,7 +15,7 @@ export const HeldContent = ({
 }) => {
 	const router = useRouter()
 	const { data: session } = useSession()
-	const lecturer = useMemo(() => lecture.lecturerRequests?.find((r) => r.userId == session?.user.id), [lecture])
+	const lecturer = useMemo(() => lecture.lecturerRequests?.find((r) => r.isSpeaker == true), [lecture])
 
 	const lectureAvatar = () => {
 		const image = lecturer?.user.image
@@ -33,9 +34,11 @@ export const HeldContent = ({
 				<Alert type="warning" message="Видеозаписи еще нет" style={{ marginBottom: 16 }} />
 			)}
 			<h2>{lecture.name}</h2>
-			<div className="lecture-date">Прошло: {!!lecturer?.date ? dayjs(lecturer.date).format('dd LLL yyyy') : null}</div>
+			<div className="lecture-date">Прошло: {!!lecture?.date ? dayjs(lecture.date).format('lll') : null}</div>
 			<div style={{ marginTop: 16 }}>Содержание лекции:</div>
-			<div className="lecture-description">{lecturer?.curriculum}</div>
+			<div className="lecture-description">
+				<TextWithLineBreak text={lecturer?.curriculum} />
+			</div>
 
 			{!!lecturer && (
 				<>

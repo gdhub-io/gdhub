@@ -221,9 +221,13 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 							<div className={styles.cover}>
 								<Image src={cover + '?w=750'} fill alt="" />
 								<Popover content="Удалить обложку проекта">
-									<Button shape="circle" type="primary" className="remove-cover-btn" onClick={handleCoverDelete}>
-										<TbTrash size={18} style={{ marginTop: 2 }} />
-									</Button>
+									<Button
+										shape="circle"
+										type="primary"
+										className="remove-cover-btn"
+										onClick={handleCoverDelete}
+										icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+									/>
 								</Popover>
 							</div>
 						)}

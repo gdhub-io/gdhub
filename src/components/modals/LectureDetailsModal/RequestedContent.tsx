@@ -1,4 +1,5 @@
 import { Fragment, useMemo } from 'react'
+import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { Lecture, LecturerRequest, Speciality, User } from '@prisma/client'
 import { Avatar, Card } from 'antd'
 import { useSession } from 'next-auth/react'
@@ -22,7 +23,9 @@ export const RequestedContent = ({
 			<small style={{ marginTop: 16 }}>
 				{lecture.stage == 'Proposed' ? 'Лектор предлагает:' : 'Автора запроса интересует:'}
 			</small>
-			<div className="lecture-description">{lecture.stage == 'Proposed' ? lecture.description : lecture.wishes}</div>
+			<div className="lecture-description">
+				<TextWithLineBreak text={lecture.stage == 'Proposed' ? lecturer?.curriculum : lecture.wishes} />
+			</div>
 
 			{!!lecturer && (
 				<>

@@ -1,4 +1,5 @@
 import { Fragment, useMemo } from 'react'
+import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { LecturerRequest } from '@prisma/client'
 import { Avatar, Button, Card, Space } from 'antd'
 import dayjs from 'dayjs'
@@ -28,7 +29,9 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 				Когда: {!!lecturer?.date && dayjs(lecturer.date).format('dd LLL YYYY, hh:mm')} (онлайн)
 			</div>
 			<div style={{ marginTop: 16 }}>Что будет:</div>
-			<div className="lecture-description">{lecturer?.curriculum}</div>
+			<div className="lecture-description">
+				<TextWithLineBreak text={lecturer?.curriculum} />
+			</div>
 
 			{!!lecturer && (
 				<>

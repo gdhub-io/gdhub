@@ -6,8 +6,7 @@ import { T } from '@tolgee/react'
 import { Typography, Button, Grid, List, Space, Popconfirm, Badge } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
-import { GoLinkExternal } from 'react-icons/go'
-import { HiOutlineTrash } from 'react-icons/hi'
+import { GoLinkExternal, GoTrash } from 'react-icons/go'
 import ProjectModal from '../modals/ProjectModal'
 
 type ProjectsSectionArgs = {
@@ -112,7 +111,7 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 								cancelText={<T keyName="no" />}
 								onConfirm={() => handleDeleteIdea(userProject.id)}
 							>
-								<Button type="text" danger icon={<HiOutlineTrash />} />
+								<Button type="text" danger icon={<GoTrash />} />
 							</Popconfirm>
 						</Space>
 					</List.Item>

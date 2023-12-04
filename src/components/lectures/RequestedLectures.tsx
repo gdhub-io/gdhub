@@ -185,9 +185,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 										onConfirm={() => handleDeleteLecturerRequest(lecture.id, myLecturerRequest.id)}
 									>
 										<Tooltip title="Не хочу быть лектором">
-											<Button type="text">
-												<HiOutlineX />
-											</Button>
+											<Button type="text" icon={<HiOutlineX />} />
 										</Tooltip>
 									</Popconfirm>
 								</Space>
@@ -214,9 +212,11 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 						<Space align="center">
 							Aктуально
 							<Tooltip title="Уже не актуально">
-								<Button type="text" onClick={() => handleSetRelevantForMe(lecture.id, false)}>
-									<TbHeartOff style={{ position: 'relative', top: '2px' }} />
-								</Button>
+								<Button
+									type="text"
+									onClick={() => handleSetRelevantForMe(lecture.id, false)}
+									icon={<TbHeartOff style={{ position: 'relative', top: '2px' }} />}
+								/>
 							</Tooltip>
 						</Space>
 					) : (

@@ -105,11 +105,11 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			centered
 			title={modalTitle()}
 			destroyOnClose
-			width={600}
+			width="90vw"
 			maskClosable={true}
 			cancelText="Закрыть"
 			okText={okText()}
-			// okButtonProps={{ disabled: lecture?.userRegistered }}
+			okButtonProps={{ hidden: lecture?.data.stage !== LectureStage.Ready }}
 			open={open}
 			onOk={handleOk}
 			footer={isReady ? undefined : null}

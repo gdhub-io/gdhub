@@ -84,9 +84,7 @@ const SeasonsAdminPage: NextPageWithLayout = () => {
 					<Space size="large">
 						<Button onClick={() => handleChange(record.id)}>Edit</Button>
 						<Popconfirm title="Are you sure you want to delete this entry?" onConfirm={() => handleDelete(record.id)}>
-							<Button danger type="text">
-								<GoTrash />
-							</Button>
+							<Button type="text" danger icon={<GoTrash />} />
 						</Popconfirm>
 					</Space>
 				)

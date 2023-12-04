@@ -1,7 +1,7 @@
 import parse from 'html-react-parser'
 import { LinkItUrl } from 'react-linkify-it'
 
-export const TextWithLineBreak = ({ text }: { text: string }) => {
+export const TextWithLineBreak = ({ text }: { text?: string | null }) => {
 	if (!text) return null
 
 	const parseText = (t: string) => t.replace(/\n/g, '<br />')

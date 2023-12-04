@@ -26,7 +26,18 @@ class ApiLectureHandler {
 			where: { id },
 			include: {
 				listeners: { select: { id: true, lectureId: true } },
-				lecturerRequests: { include: { user: { select: { id: true, name: true, image: true } } } },
+				lecturerRequests: {
+					include: {
+						user: {
+							select: {
+								id: true,
+								name: true,
+								image: true,
+								specialities: { select: { id: true, name: true, level: true } },
+							},
+						},
+					},
+				},
 			},
 		})
 
