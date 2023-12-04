@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
+import { WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Button, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
@@ -10,10 +11,10 @@ const { Title } = Typography
 
 interface Vacancy {
 	key: string
-	Name: string
-	Description: string
-	FinishedAt: string
-	Status: string
+	title: string
+	description: string
+	finishedAt: string
+	status: string
 	[key: string]: any
 }
 
@@ -36,6 +37,14 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		{
+			staleTime: Infinity,
+		}
+	)
+
 	const {
 		data: projectVacancies,
 		refetch: fetchMyProjectVacancies,
@@ -47,29 +56,33 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
 			title: 'Название',
-			dataIndex: 'Name',
-			key: 'Name',
+			dataIndex: 'title',
+			key: 'title',
 			width: '60%',
 			render: (value, record) => (
 				<>
 					<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
 						{value}
 					</span>{' '}
-					{record.Status == 'Draft' && <Tag color="lime">{vacancyStatusToText(record.Status)}</Tag>}
+					{record.Status == 'draft' && <Tag color="lime">{vacancyStatusToText(record.Status)}</Tag>}
 				</>
 			),
 		},
 		{
 			title: 'Направление',
-			dataIndex: 'Direction',
+			dataIndex: 'directionId',
 			responsive: ['md'],
-			key: 'Direction',
+			key: 'directionId',
+			render(value) {
+				const direction = workDirections?.data.find((direction) => direction.id == value)
+				return direction?.name || 'unknown'
+			},
 		},
 		{
 			title: 'Действует до',
-			dataIndex: 'Finished At',
+			dataIndex: 'finishedAt',
 			responsive: ['md'],
-			key: 'Finished At',
+			key: 'finishedAt',
 			render: (value) => dayjs(value).format('DD.MM.YYYY'),
 		},
 		{

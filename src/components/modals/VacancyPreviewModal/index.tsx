@@ -27,7 +27,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 					project: { id: string; slug: string; name: string; stage: SeasonStage & { season: Season } }
 					myTeamMemberId: string
 				}
-			>('/api/vacancy', {
+			>('/api/user/project/vacancy', {
 				params: { id: vacancyId },
 			}),
 		{
