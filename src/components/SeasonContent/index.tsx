@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import DividerIcon from '@/assets/images/icons/divider.svg'
 import SearchingStageContent from '@/components/SeasonContent/stages/SearchingStageContent'
 import { DefaultSeasonStages } from '@/types/enums'

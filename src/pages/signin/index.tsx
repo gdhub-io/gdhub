@@ -66,7 +66,7 @@ const LoginPage: NextPage = () => {
 										</Link>
 										<Link href="/">
 											<Button className="btn-default-on-white" style={{ width: '100%' }}>
-												Return to main
+												Back to main
 											</Button>
 										</Link>
 									</Space>

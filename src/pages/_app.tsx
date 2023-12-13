@@ -5,7 +5,7 @@ import { CookieConsent } from '@/components/CookieConsent'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import SEOSettings from '@/config/seo'
-import { themeConfig } from '@/config/theme'
+import { publicThemeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
 import { tolgeeService } from '@/services/tolgee'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -110,7 +110,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 		<>
 			<style jsx global>{`
 				:root {
-					--main-font-family: ${themeConfig?.token?.fontFamily}, sans-serif;
+					--main-font-family: ${publicThemeConfig?.token?.fontFamily}, sans-serif;
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
 				}
 			`}</style>
@@ -131,16 +131,10 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
 				<ErrorBoundary>
 					<QueryClientProvider client={queryClient}>
-						<ConfigProvider theme={themeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
+						<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
 							<CheckHealth>
 								<SessionProvider session={session}>
-									<div
-										className="app-container"
-										style={{
-											fontFamily: themeConfig.token?.fontFamily,
-											opacity: showContent ? 1 : 0,
-										}}
-									>
+									<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
 										<DefaultSeo {...SEOSettings} />
 										{getLayout(<Component {...pageProps} />)}
 									</div>

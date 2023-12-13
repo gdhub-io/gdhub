@@ -26,6 +26,13 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model Registration {
+  id                String   @id @default(cuid())
+  registrationToken String   @unique
+  expires           DateTime
+  createdAt         DateTime @default(now())
+}
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique

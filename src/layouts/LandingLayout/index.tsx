@@ -1,8 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+import { landingThemeConfig } from '@/config/theme'
 import { useTolgee } from '@tolgee/react'
-import { Avatar, Button, Drawer, Grid, Layout, Menu, MenuProps, Row, Select, Space, Typography } from 'antd'
+import {
+	Avatar,
+	Button,
+	ConfigProvider,
+	Drawer,
+	Grid,
+	Layout,
+	Menu,
+	MenuProps,
+	Row,
+	Select,
+	Space,
+	Typography,
+} from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -95,7 +109,7 @@ export const LandingLayout = ({ children }: any) => {
 	)
 
 	return (
-		<>
+		<ConfigProvider theme={landingThemeConfig}>
 			<Layout className={styles.container}>
 				<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
 					<Row align="middle" justify="space-between" className={styles.headerContainer}>
@@ -191,6 +205,6 @@ export const LandingLayout = ({ children }: any) => {
 					</Space>
 				</Drawer>
 			)}
-		</>
+		</ConfigProvider>
 	)
 }
