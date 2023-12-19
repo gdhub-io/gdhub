@@ -6,12 +6,13 @@ import TeamProjectImage from '@/assets/images/team-indie-game.jpg'
 import { useTelegram } from '@/helpers/useTelegram'
 import AirtableService, { getWorkedProjects } from '@/services/airtable'
 import styles from '@/styles/home.module.scss'
-import { Button, Card, Col, Image, Row, Space, Statistic, Typography } from 'antd'
+import { Button, Card, Col, Grid, Image, Row, Space, Statistic, Typography } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
+import { TbBrandTelegram } from 'react-icons/tb'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -23,6 +24,7 @@ declare global {
 
 const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacanciesCount }: any) => {
 	const router = useRouter()
+	const screens = Grid.useBreakpoint()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
 
@@ -109,16 +111,28 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 						</Link>
 					</>
 				) : (
-					<Link href="/login">
-						<Button type="primary" size="large">
-							Вход / Регистрация
-						</Button>
-					</Link>
+					<Space wrap style={{ width: '100%', justifyContent: 'center', flexDirection: screens.md ? 'row' : 'column' }}>
+						<Link href="/login">
+							<Button type="primary" size="large">
+								Вход / Регистрация
+							</Button>
+						</Link>
+						или
+						<Link target="_blank" href="https://t.me/gdhub_io">
+							<Button
+								size="large"
+								icon={<TbBrandTelegram size={24} style={{ position: 'relative', marginRight: 5 }} />}
+							>
+								Наш чат в Telegram
+							</Button>
+						</Link>
+					</Space>
 				)}
 
 				<Row gutter={[24, 24]} style={{ maxWidth: '1024px', marginTop: 64 }}>
 					<Col xs={24} lg={12}>
 						<Card
+							title="Хочешь создать свою игру?"
 							cover={<Image preview={false} src={StartProjectImage.src} alt="start-project" />}
 							actions={[
 								<Link key="start-project" href="https://tally.so/r/w8zl5P" target="_blank">
@@ -126,15 +140,13 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 								</Link>,
 							]}
 						>
-							<Card.Meta
-								title="Хочешь создать свою игру?"
-								description="Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
-								инкубационной программы Gamelab, так и работая самостоятельно в своем темпе."
-							/>
+							Каждый автор может выбрать формат работы на нашем сервисе. Проект можно разрабатывать как в формате
+							инкубационной программы Gamelab, так и работая самостоятельно в своем темпе.
 						</Card>
 					</Col>
 					<Col xs={24} lg={12}>
 						<Card
+							title={<Text ellipsis>Хочешь участвовать в разработке инди-игр?</Text>}
 							cover={<Image preview={false} src={TeamProjectImage.src} alt="start-project" />}
 							actions={[
 								<Link key="select-project" href="/projects">
@@ -145,11 +157,8 @@ const Home: NextPage = ({ usersCount, specialitiesCount, projectsCount, vacancie
 								</Link>,
 							]}
 						>
-							<Card.Meta
-								title="Хочешь участвовать в разработке инди-игр?"
-								description="Каждый специалист игровой индустрии (программист, художник, аниматор, саунд-дизайнер, smm-специалист и
-									многие другие) имеет возможность присоединиться к одному из инди-проектов, находящихся в разработке."
-							/>
+							Каждый специалист игровой индустрии (программист, художник, аниматор, саунд-дизайнер, smm-специалист и
+							многие другие) имеет возможность присоединиться к одному из инди-проектов, находящихся в разработке.
 						</Card>
 					</Col>
 				</Row>

@@ -12,6 +12,7 @@ body {
 	padding: 0;
 	margin: 0;
 	scroll-behavior: smooth;
+	width: 100%;
 }
 
 p>a {
@@ -39,6 +40,7 @@ a.text-link {
 	transition: opacity 0.25s;
 	display: flex;
 	justify-content: center;
+	width: 100vw;
 }
 
 .ant-menu-horizontal,
@@ -94,5 +96,17 @@ a.text-link {
 	>svg {
 		position: unset;
 		margin-right: 4px;
+	}
+}
+
+.ant-card-bordered .ant-card-cover {
+	margin-inline-start: unset;
+	margin-inline-end: unset;
+}
+
+
+@media screen and (max-width: 575px) {
+	.app-container {
+		justify-content: unset;
 	}
 }
