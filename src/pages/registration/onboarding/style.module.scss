@@ -1,11 +1,33 @@
+.completedBox {
+  background-color: white;
+  width: 1216px;
+  max-width: 34vw;
+
+  :global {
+    .completed-content {
+      padding: 32px;
+      background-color: #FFFDFC;
+      margin: 40px;
+      box-shadow: 0px 10px 124px 0px #DCD6D62E;
+    }
+
+    h1 {
+      font-size: 40px !important;
+      font-weight: 800;
+    }
+  }
+}
+
+
+
 .container {
   background-size: cover;
   background-position: center;
-
+  background-attachment: fixed;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   padding: 64px 0;
 

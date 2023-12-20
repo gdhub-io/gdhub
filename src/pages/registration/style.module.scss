@@ -1,12 +1,13 @@
 .container {
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   text-align: center;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   width: 100%;
 
   :global {

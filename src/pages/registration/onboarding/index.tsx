@@ -33,6 +33,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { FiChevronDown } from 'react-icons/fi'
@@ -152,6 +153,32 @@ const OnboardingPage: NextPage = () => {
 		setOnboardingStep((prev) => prev - 1)
 	}
 
+	if (isCompleted) {
+		return (
+			<>
+				<Head>
+					<title>Registration Completed</title>
+				</Head>
+				<div
+					className={`${styles.container}`}
+					style={{ backgroundImage: `url(${LogingBgImage.src})`, alignItems: 'center' }}
+				>
+					<div className={styles.completedBox}>
+						<div className="completed-content" style={{ textAlign: 'center' }}>
+							<Space direction="vertical" size={56}>
+								<Title>Registration completed successfully!</Title>
+								<Paragraph>Welcome to the community where games are made.</Paragraph>
+								<Link href="/hub">
+									<Button style={{ width: '300px' }}>Go to GDHub</Button>
+								</Link>
+							</Space>
+						</div>
+					</div>
+				</div>
+			</>
+		)
+	}
+
 	return (
 		<>
 			<Head>
@@ -189,6 +216,7 @@ const OnboardingPage: NextPage = () => {
 								</div>
 							</Col>
 							<Col md={{ span: 19 }}>
+								{/* Profile */}
 								{onboardingStep == 0 && (
 									<div className="onboarding-content">
 										<div className="onboarding-form">
@@ -321,6 +349,7 @@ const OnboardingPage: NextPage = () => {
 									</div>
 								)}
 
+								{/* Speciality */}
 								{onboardingStep == 1 && (
 									<div className="onboarding-content">
 										<div className="onboarding-form">
@@ -442,6 +471,7 @@ const OnboardingPage: NextPage = () => {
 									</div>
 								)}
 
+								{/* Interests */}
 								{onboardingStep == 2 && (
 									<div className="onboarding-content">
 										<div className="onboarding-form">
@@ -590,6 +620,7 @@ const OnboardingPage: NextPage = () => {
 									</div>
 								)}
 
+								{/* Resource */}
 								{onboardingStep == 3 && (
 									<div className="onboarding-content">
 										<div className="onboarding-form">
