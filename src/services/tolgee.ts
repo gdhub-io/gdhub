@@ -8,25 +8,26 @@ declare global {
 }
 
 const createTolgeeService = () => {
-	const tolgee = Tolgee()
-		.use(DevTools())
-		.use(FormatSimple())
-		.use(LanguageStorage())
-		.init({
-			defaultLanguage: process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string,
-			availableLanguages: ['en', 'ru'],
-			// for dev mode
-			apiKey: process.env.NEXT_PUBLIC_TOLGEE_API_KEY as string,
-			apiUrl: process.env.NEXT_PUBLIC_TOLGEE_API_URL as string,
-			projectId: process.env.NEXT_PUBLIC_TOLGEE_PROJECT_ID as string,
-			// for production and server
-			staticData: {
-				en: enLocale,
-				ru: ruLocale,
-			},
-		})
+	const tolgee = Tolgee().use(DevTools()).use(FormatSimple())
 
-	return tolgee
+	if ('undefined' !== typeof window) {
+		console.log('createTolgeeService', typeof window)
+		tolgee.use(LanguageStorage())
+	}
+
+	return tolgee.init({
+		defaultLanguage: process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string,
+		availableLanguages: ['en', 'ru'],
+		// for dev mode
+		apiKey: process.env.NEXT_PUBLIC_TOLGEE_API_KEY as string,
+		apiUrl: process.env.NEXT_PUBLIC_TOLGEE_API_URL as string,
+		projectId: process.env.NEXT_PUBLIC_TOLGEE_PROJECT_ID as string,
+		// for production and server
+		staticData: {
+			en: enLocale,
+			ru: ruLocale,
+		},
+	})
 }
 
 let tolgeeService: TolgeeInstance
