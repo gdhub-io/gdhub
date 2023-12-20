@@ -20,8 +20,11 @@ import {
 	Space,
 	Tooltip,
 } from 'antd'
+import enLocale from 'antd/locale/en_US'
+import ruLocale from 'antd/locale/ru_RU'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { GoArrowUp } from 'react-icons/go'
@@ -31,6 +34,7 @@ import styles from './style.module.scss'
 const { Header, Footer, Content } = Layout
 
 export const ProtectedLayout = ({ children }: any) => {
+	const router = useRouter()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
@@ -198,7 +202,7 @@ export const ProtectedLayout = ({ children }: any) => {
 	}, [isOpenedInTelegram, screens, session])
 
 	return (
-		<ConfigProvider theme={appThemeConfig}>
+		<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
 			<style jsx global>{`
 				:root {
 					--background-color: #fff;

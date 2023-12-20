@@ -1,15 +1,143 @@
 {
+  "Beginner" : "Начинающий",
+  "Experienced" : "Опытный",
+  "Expert" : "Эксперт",
   "Game Developers Hub for everyone who wants to make" : "Хаб разработчиков игр, которые хотят создавать",
+  "General information about new member" : "Общая информация о новом участнике",
   "Get started" : "Начать",
+  "How can you be useful to teams?" : "Чем вы можете быть полезны командам?",
+  "How many hours a week can you devote to projects?" : "Сколько часов в неделю вы можете уделять участию в проектах?",
+  "I'm available for offering" : "Я доступен для предложений участия в проектах",
+  "Infomation about your preferences" : "Информация о ваших предпочтениях",
+  "Information about your main speciality" : "Информация о вас, как специалисте в геймдеве",
+  "Novice" : "Без опыта",
+  "Skillful" : "Средний уровень",
+  "The main resource is your time, which you are willing to spend on participating in projects" : {
+    " You can also provide additional information" : "Главный ресурс – это ваше время, которое вы готовы потратить на участие в проектах. Вы также можете предоставить дополнительную информацию"
+  },
+  "The maximum value cannot be less than the minimum" : "Максимальное значение не может быть меньше минимального",
   "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc" : {
     "" : "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
   },
   "We help game industry professionals find an interesting role for themselves in new projects" : {
     "" : "Мы помогаем профессионалам игровой индустрии найти для себя интересную роль в новых проектах."
   },
+  "Will help the service and project authors offer solutions that are interesting to you" : "Поможем авторам сервиса и проекта предложить интересные вам решения",
+  "You can change it or add more ones after" : "Вы сможете изменить эти данные позже",
+  "action-adventure" : "Приключенческий боевик",
   "actual vacancies" : "открытых вакансий",
+  "add-new-concept" : "Предложить новый кноцепт игры",
+  "additionalInformation" : "Дополнительная информация",
+  "adventure" : "Приключения",
+  "agreements" : "Соглашения",
+  "are-you-sure-you-want-to-delete-it" : "Точно хотите удалить?",
+  "availableTime" : "Доступное время",
+  "back" : "Назад",
+  "casual" : "Казуальные",
+  "change" : "Изменить",
+  "city" : "Город",
+  "city-placeholder" : "Укажите город",
+  "city.placeholder" : "Введите название вашего города",
   "community members" : "участников сообщества",
+  "concept-link" : "Ссылка на концепт",
+  "concept-list" : "Список концептов игр",
+  "confirmUserData" : "Я подтверждаю достоверность введенной информации",
+  "country" : "Страна",
+  "country.placeholder" : "Выберите страну",
   "current projects" : "текущих проектов",
+  "cvLink" : "Ссылка на резюме/портфолио",
+  "cvLink.plachehloder" : "Ссылка на Linkedin, Artstation или другой сервис",
+  "dance" : "Танцевальные, ритмичные",
+  "education" : "Учебные заведения, где вы получили знания по этой специальности",
+  "education.plachehloder" : "Например:\n2000-2010 гг., Гимназия № 145; \n2011, Курс на Udemy «Как стать тестировщиком»",
+  "email" : "Электронная почта",
+  "experience" : "Ваш опыт работы по этой специальности",
+  "experience.plachehloder" : "Например:\n2015-2020, ООО «Геймбук», Unity разработчик \n2020-настоящее время, ООО «Лукоморье», Звукорежиссер\nEсть только опыт выполнения учебных работ",
+  "fairy" : "Сказочный",
+  "fantasy" : "Фэнтэзи",
+  "fighting" : "Борьба, сражения",
+  "firstName" : "Имя",
+  "firstName.plachehloder" : "Максим",
+  "form" : {
+    "difficulty" : {
+      "label" : "Сложность игры, которую вы хотите разработать"
+    },
+    "genres" : {
+      "label" : "Жанры игр, в разработке которых вы хотите поучаствовать"
+    },
+    "settings" : {
+      "label" : "Игровой сеттинг, с которыми вы хотите работать"
+    }
+  },
+  "fps" : "Шутер от первого лица (FPS)",
+  "hard-core" : "Сложные",
+  "historic" : "Исторический",
+  "hours" : "часов",
+  "hyper-casual" : "Гиперказуальные",
+  "interest" : "Основной интерес",
+  "interests" : "Интересы",
+  "lastName" : "Фамилия",
+  "lastName.plachehloder" : "Пень",
+  "mid-core" : "Средней сложности",
+  "military" : "Военный",
+  "mmorpg" : "Многопользовательская ролевая онлайн игра (MMORPG)",
+  "no" : "Нет",
+  "no-projects-yet" : "Проектов для этой стадии не найдено",
+  "no-user-projects" : "Здесь будет отображаться список ваших проектов.",
+  "oriental fantasy" : "Азиатская фэнтэзи",
+  "other" : "Другие",
+  "pitches-will-at-date-on-our-channel" : "Питчи проектов состоятся {date} года на нашем канале в",
+  "platformer" : "Платформер",
+  "projectListByStage" : "Список проектов на текущей стадии",
+  "puzzle" : "Пазлы",
   "qualified specialists" : "специалистов",
-  "video games" : "видео игры"
+  "real life" : "Реальная жизнь",
+  "registration" : "Регистрация",
+  "resigration-to-demoday" : "Регистрация на Demo Day",
+  "resources" : "Ресурсы",
+  "rpg" : "Ролевые игры (RPG)",
+  "rts" : "Стратегия в реальном времени (RTS)",
+  "save" : "Сохранить",
+  "saveAndContinue" : "Сохранить и продолжить",
+  "sci-fi" : "Научная фантастика",
+  "select" : "Выберите",
+  "shooter" : "Шутер",
+  "simulation" : "Симуляторы",
+  "skill" : {
+    "beginner" : {
+      "description" : "Вы знаете, как выполнять работу, у вас уже есть некоторый опыт"
+    },
+    "experienced" : {
+      "description" : "В своей работе вы используете интуицию, основанную на своем опыте"
+    },
+    "expert" : {
+      "description" : "У вас есть огромная библиотека различных ситуаций (кейсов), построенная на основе вашего опыта"
+    },
+    "novice" : {
+      "description" : "Вы знаете, как выполнять работу, но у вас еще нет опыта"
+    },
+    "skillful" : {
+      "description" : "Принимаете на себя ответственность за выбор способа выполнения работы и можете расставлять приоритеты в работе по уровню важности"
+    }
+  },
+  "skillList" : "Список навыков",
+  "skillList.extra" : "Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение",
+  "skillList.plachehloder" : "Например:\nрисовать концепты мультяшных персонажей\nразрабатывать диалоговые системы",
+  "specialisation" : "Специализация",
+  "specialisation.plachehloder" : "Я специализируюсь на...",
+  "specialityLevel" : "Уровень владения",
+  "specialityName" : "Название специальности",
+  "specialityName.plachehloder" : "Например: Unity разработчик",
+  "specilaity" : "Специальность",
+  "sport" : "Спортивный",
+  "sports" : "Спортивные",
+  "survival horror" : "Ужас выживания",
+  "tbs" : "Пошаговые стратегии",
+  "user-profile" : "Профиль пользователя",
+  "userProjectList" : "Список ваших проектов",
+  "users-proposed-concepts-total" : "Участники предложили {total} концептов игр",
+  "video games" : "видео игры",
+  "yearOfBirth" : "Год рождения",
+  "yes" : "Да",
+  "zombie" : "Зомби"
 }

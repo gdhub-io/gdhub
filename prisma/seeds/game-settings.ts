@@ -11,7 +11,7 @@ export const seedGameSettings = async (prisma: ExtendedPrismaClient) => {
 				{ name: 'historic' },
 				{ name: 'military' },
 				{ name: 'real life' },
-				{ name: 'aci-fi' },
+				{ name: 'sci-fi' },
 				{ name: 'sport' },
 				{ name: 'zombie' },
 				{ name: 'other' },

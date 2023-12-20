@@ -54,7 +54,7 @@ export const landingThemeConfig: ThemeConfig = {
 }
 
 export const publicThemeConfig: ThemeConfig = {
-	algorithm: [theme.defaultAlgorithm, theme.compactAlgorithm],
+	algorithm: [theme.defaultAlgorithm],
 	token: {
 		fontFamily: mainFont.style.fontFamily,
 		colorPrimary: 'rgb(241,85,65)',
@@ -75,6 +75,23 @@ export const publicThemeConfig: ThemeConfig = {
 		Avatar: {
 			groupOverlapping: -16,
 		},
+		Input: {
+			controlHeight: 52,
+			paddingBlock: 12,
+			paddingInline: 16,
+		},
+		InputNumber: { controlHeight: 52, paddingBlock: 12, paddingInline: 16 },
+		DatePicker: {
+			controlHeight: 52,
+			paddingBlock: 12,
+			paddingInline: 16,
+		},
+		Select: {
+			controlHeight: 52,
+			fontSizeIcon: 18,
+			multipleItemHeight: 32,
+			multipleItemBg: '#FFEBEB',
+		},
 		Button: {
 			size: 16,
 			sizeLG: 18,
@@ -86,7 +103,7 @@ export const publicThemeConfig: ThemeConfig = {
 			fontSizeLG: 20,
 			colorBgContainer: 'transparent',
 			colorBorder: '#050505',
-			paddingContentHorizontal: 64,
+			paddingContentHorizontal: 24,
 			paddingContentVertical: 16,
 		},
 		Typography: {
@@ -96,12 +113,16 @@ export const publicThemeConfig: ThemeConfig = {
 			bodyBg: 'transparent',
 			headerBg: 'transparent',
 		},
-		Menu: {
-			colorBgContainer: 'transparent',
-			darkItemBg: '#050505',
+		Checkbox: {
+			controlInteractiveSize: 24,
 			fontSize: 16,
-			itemPaddingInline: 16,
 		},
+		// Menu: {
+		// 	colorBgContainer: 'transparent',
+		// 	darkItemBg: '#050505',
+		// 	fontSize: 16,
+		// 	itemPaddingInline: 16,
+		// },
 		Dropdown: { fontSize: 16 },
 		Spin: {
 			fontSize: 16,

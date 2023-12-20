@@ -68,6 +68,11 @@ a.text-link {
 
 .ant-select-multiple .ant-select-selection-item>.ant-select-selection-item-content {
 	max-width: 200px;
+
+	span.ant-typography {
+		position: relative;
+		top: -3px;
+	}
 }
 
 .rnr-container {

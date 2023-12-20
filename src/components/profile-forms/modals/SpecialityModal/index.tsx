@@ -1,61 +1,9 @@
 import { useEffect, useState } from 'react'
-import SkillBeginnerIcon from '@/assets/images/skills/beginner.svg'
-import SkillExperiencedIcon from '@/assets/images/skills/experienced.svg'
-import SkillExpertIcon from '@/assets/images/skills/expert.svg'
-import SkillNoviceIcon from '@/assets/images/skills/novice.svg'
-import SkillSkillfulIcon from '@/assets/images/skills/skillful.svg'
-import { SkillLevel, WorkDirection } from '@prisma/client'
+import { skillLevelsList } from '@/components/ui/skillLevel'
+import { WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
 import axios from 'axios'
-
-export const skillLevelsList = [
-	{
-		index: 1,
-		label: SkillLevel?.Novice,
-		icon: <SkillNoviceIcon />,
-		color: '#ffeb3b',
-		description: 'Знаете как выполнить работу, но опыт еще нет',
-	},
-	{
-		index: 2,
-		label: SkillLevel?.Beginner,
-		icon: <SkillBeginnerIcon />,
-		color: '#FF9159',
-		description: 'Знаете как выполнить работу, оределенный опыт уже есть',
-	},
-	{
-		index: 3,
-		label: SkillLevel?.Skillful,
-		icon: <SkillSkillfulIcon />,
-		color: '#F3B721',
-		description:
-			'Принимаете на себя ответвенность за выбор метода выполнения работы и можете приоритизировать работу по уровням важности',
-	},
-	{
-		index: 4,
-		label: SkillLevel?.Experienced,
-		icon: <SkillExperiencedIcon />,
-		color: '#80CC14',
-		description: 'В работе используете интуицию, основанную на вашем опыте',
-	},
-	{
-		index: 5,
-		label: SkillLevel?.Expert,
-		icon: <SkillExpertIcon />,
-		color: '#25B869',
-		description: 'Имеете огромную библиотеку различимых ситуаций(кейсов), построенную на основе вашего опыта',
-	},
-]
-
-export const renderSkillLevel = (levelName: SkillLevel) => {
-	const level = skillLevelsList.find((i) => i.label == levelName)
-	return (
-		<Tooltip title={level?.description}>
-			{level?.icon} {level?.label}
-		</Tooltip>
-	)
-}
 
 const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()

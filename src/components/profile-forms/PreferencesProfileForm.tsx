@@ -24,9 +24,13 @@ const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileForm
 		() => axios.get<GameSetting[]>('/api/dictionary/game-settings'),
 		{ staleTime: Infinity }
 	)
-	const { data: gameLevels } = useQuery(['gameLevels'], () => axios.get<GameSetting[]>('/api/dictionary/game-levels'), {
-		staleTime: Infinity,
-	})
+	const { data: gameLevels } = useQuery(
+		['gameLevels'],
+		() => axios.get<GameDifficultyLevel[]>('/api/dictionary/game-levels'),
+		{
+			staleTime: Infinity,
+		}
+	)
 
 	useEffect(() => {
 		if (profile) {

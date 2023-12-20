@@ -1,15 +1,143 @@
 {
+  "Beginner" : "Beginner",
+  "Experienced" : "Experienced",
+  "Expert" : "Expert",
   "Game Developers Hub for everyone who wants to make" : "Game Developers Hub for everyone who wants to make",
+  "General information about new member" : "General information about new member",
   "Get started" : "Get started",
+  "How can you be useful to teams?" : "How can you be useful to teams?",
+  "How many hours a week can you devote to projects?" : "How many hours a week can you devote to projects?",
+  "I'm available for offering" : "I am available for offers of participation in projects",
+  "Infomation about your preferences" : "Infomation about your preferences",
+  "Information about your main speciality" : "Information about your main speciality",
+  "Novice" : "Novice",
+  "Skillful" : "Skillful",
+  "The main resource is your time, which you are willing to spend on participating in projects" : {
+    " You can also provide additional information" : "The main resource is your time, which you are willing to spend on participating in projects. You can also provide additional information"
+  },
+  "The maximum value cannot be less than the minimum" : "The maximum value cannot be less than the minimum",
   "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc" : {
     "" : "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc."
   },
   "We help game industry professionals find an interesting role for themselves in new projects" : {
     "" : "We help game industry professionals find an interesting role for themselves in new projects."
   },
+  "Will help the service and project authors offer solutions that are interesting to you" : "Will help the service and project authors offer solutions that are interesting to you",
+  "You can change it or add more ones after" : "You can change it or add more ones after",
+  "action-adventure" : "Action adventure",
   "actual vacancies" : "actual vacancies",
+  "add-new-concept" : "Propose a new game concept",
+  "additionalInformation" : "Additional information",
+  "adventure" : "Adventure",
+  "agreements" : "Agreenments",
+  "are-you-sure-you-want-to-delete-it" : "Are you sure you want to delete it?",
+  "availableTime" : "Available Time",
+  "back" : "Back",
+  "casual" : "Casual",
+  "change" : "Edit",
+  "city" : "City",
+  "city-placeholder" : "Enter city",
+  "city.placeholder" : "Enter your city name",
   "community members" : "community members",
+  "concept-link" : "Link to the concept",
+  "concept-list" : "Concept list",
+  "confirmUserData" : "I confirm the accuracy of the information entered",
+  "country" : "Country",
+  "country.placeholder" : "Select country",
   "current projects" : "current projects",
+  "cvLink" : "CV/Portfolio link",
+  "cvLink.plachehloder" : "Linkedin, Artstation or other links",
+  "dance" : "Dance/rhythm",
+  "education" : "Education",
+  "education.plachehloder" : "For example:\n2000-2010, Gymnasium No. 145; \n2011, Course on Udemy “How to become a tester”",
+  "email" : "Email",
+  "experience" : "Experience",
+  "experience.plachehloder" : "For example: \n2015-2020, GameBook LLC, Unity developer \n2020-present, Lukomorye LLC, Sound designer\nI only have experience doing academic work",
+  "fairy" : "Fairy",
+  "fantasy" : "Fantasy",
+  "fighting" : "Fighting",
+  "firstName" : "First Name",
+  "firstName.plachehloder" : "Max",
+  "form" : {
+    "difficulty" : {
+      "label" : "Difficulty of the game you want to develop"
+    },
+    "genres" : {
+      "label" : "Genres of games in the development of which you want to participate"
+    },
+    "settings" : {
+      "label" : "Visual setting of games you want to work with"
+    }
+  },
+  "fps" : "First person shooter (FPS)",
+  "hard-core" : "Hard-core",
+  "historic" : "Historic",
+  "hours" : "hours",
+  "hyper-casual" : "Hyper-casual",
+  "interest" : "Main interest",
+  "interests" : "Interests",
+  "lastName" : "Last Name",
+  "lastName.plachehloder" : "Pain",
+  "mid-core" : "Mid-core",
+  "military" : "Military",
+  "mmorpg" : "Massively multiplayer online role playing game (MMORPG)",
+  "no" : "No",
+  "no-projects-yet" : "No projects found for this stage",
+  "no-user-projects" : "No project yet.",
+  "oriental fantasy" : "Oriental Fantasy",
+  "other" : "Other",
+  "pitches-will-at-date-on-our-channel" : "Project pitches will take place on {date} of the year on our channel in",
+  "platformer" : "Platformer",
+  "projectListByStage" : "List of projects at the current stage",
+  "puzzle" : "Puzzle",
   "qualified specialists" : "qualified specialists",
-  "video games" : "video games"
+  "real life" : "Real Life",
+  "registration" : "Registration",
+  "resigration-to-demoday" : "Registration for Demo Day",
+  "resources" : "Recources",
+  "rpg" : "Role playing games",
+  "rts" : "Real time strategy (RTS)",
+  "save" : "Save",
+  "saveAndContinue" : "Save and continue",
+  "sci-fi" : "Sci-Fi",
+  "select" : "Select",
+  "shooter" : "Shooter",
+  "simulation" : "Simulation",
+  "skill" : {
+    "beginner" : {
+      "description" : "You know how to do the job, you already have some experience"
+    },
+    "experienced" : {
+      "description" : "In your work you use intuition based on your experience"
+    },
+    "expert" : {
+      "description" : "You have a huge library of distinct situations (cases), built on the basis of your experience"
+    },
+    "novice" : {
+      "description" : "You know how to do the job, but you don’t have experience yet"
+    },
+    "skillful" : {
+      "description" : "Accept responsibility for choosing how work will be done and can prioritize work by level of importance"
+    }
+  },
+  "skillList" : "Skills",
+  "skillList.extra" : "Write each skill on a new line. Enter in the format: verb + definition",
+  "skillList.plachehloder" : "For example:\ndraw concepts of cartoon characters\ndevelop dialogue systems",
+  "specialisation" : "Specialization",
+  "specialisation.plachehloder" : "I specialize in...",
+  "specialityLevel" : "Level",
+  "specialityName" : "Specialty Name",
+  "specialityName.plachehloder" : "Example: Unity developer",
+  "specilaity" : "Speciality",
+  "sport" : "Sport",
+  "sports" : "Sports",
+  "survival horror" : "Survival horror",
+  "tbs" : "Turn based strategy",
+  "user-profile" : "User Profile",
+  "userProjectList" : "Your game projects",
+  "users-proposed-concepts-total" : "In total, members proposed {total} ideas",
+  "video games" : "video games",
+  "yearOfBirth" : "Year of Birth",
+  "yes" : "Yes",
+  "zombie" : "Zombie"
 }

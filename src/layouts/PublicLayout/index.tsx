@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import { publicThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
@@ -7,6 +8,7 @@ import {
 	Avatar,
 	Button,
 	Col,
+	ConfigProvider,
 	Drawer,
 	Dropdown,
 	Grid,
@@ -18,8 +20,11 @@ import {
 	Tooltip,
 	Typography,
 } from 'antd'
+import enLocale from 'antd/locale/en_US'
+import ruLocale from 'antd/locale/ru_RU'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { BsDiscord, BsMailbox, BsTelegram } from 'react-icons/bs'
@@ -30,6 +35,7 @@ const { Header, Footer, Content } = Layout
 const { Paragraph, Text, Title } = Typography
 
 export const PublicLayout = ({ children }: any) => {
+	const router = useRouter()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
@@ -161,7 +167,7 @@ export const PublicLayout = ({ children }: any) => {
 	}, [isOpenedInTelegram, screens, session])
 
 	return (
-		<>
+		<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
 			<Layout className={styles.container}>
 				<Header className={styles.header}>
 					<Row align="middle" justify="space-between" className={styles.headerContainer}>
@@ -311,6 +317,6 @@ export const PublicLayout = ({ children }: any) => {
 					<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 				</Drawer>
 			)}
-		</>
+		</ConfigProvider>
 	)
 }
