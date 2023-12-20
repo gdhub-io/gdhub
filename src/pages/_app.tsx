@@ -79,6 +79,10 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}, [])
 
 	useEffect(() => {
+		console.log('ssrTolgee', ssrTolgee)
+	}, [ssrTolgee])
+
+	useEffect(() => {
 		document.body.style.overflow = showContent ? 'unset' : 'hidden'
 	}, [showContent])
 
