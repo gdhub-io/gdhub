@@ -1,4 +1,5 @@
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Alert, Space, Typography } from 'antd'
@@ -20,7 +21,7 @@ const CheckHealth = ({ children }: any) => {
 
 	if (data?.data === false && isFetched) {
 		return (
-			<>
+			<EmptyLayout>
 				<Head>
 					<title>Game Developers Hub</title>
 				</Head>
@@ -41,7 +42,7 @@ const CheckHealth = ({ children }: any) => {
 						/>
 					</Space>
 				</div>
-			</>
+			</EmptyLayout>
 		)
 	}
 

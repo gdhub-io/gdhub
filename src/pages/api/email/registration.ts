@@ -19,13 +19,14 @@ class ApiDictGameGenresHandler {
 	public async sendRegistrationLink(@Body(ValidationPipe) { email }: SendRegistrationLinkArgs) {
 		// Encrypt email
 		const cryptr = new Cryptr(process.env.NEXTAUTH_SECRET as string)
-		const sugar = cryptoRandomString({ length: 32, type: 'alphanumeric' })
+		const signature = cryptoRandomString({ length: 32, type: 'alphanumeric' })
 		const createdAt = dayjs()
-		const registrationToken = cryptr.encrypt(email + createdAt.unix() + sugar)
+		const registrationToken = cryptr.encrypt(email + createdAt.unix() + signature)
 
 		await prisma.registration.create({
 			data: {
 				registrationToken,
+				signature,
 				expires: dayjs().add(7, 'day').toISOString(),
 				createdAt: createdAt.toISOString(),
 			},

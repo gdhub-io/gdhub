@@ -6,6 +6,7 @@ declare module 'next-auth/jwt' {
 	interface JWT {
 		id: string
 		roles: UserRole[]
+		onboardingDone: boolean
 		error?: 'RefreshAccessTokenError'
 	}
 }
@@ -16,11 +17,13 @@ declare module 'next-auth' {
 		user: {
 			id: string
 			roles: UserRole[]
+			onboardingDone: boolean
 		} & DefaultSession['user']
 	}
 
 	interface User {
 		id: string
 		roles: UserRole[]
+		onboardingDone: boolean
 	}
 }

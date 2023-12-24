@@ -45,7 +45,6 @@ a.text-link {
 .app-container {
 	transition: opacity 0.25s;
 	display: flex;
-	justify-content: center;
 }
 
 .ant-menu-horizontal,
@@ -163,4 +162,10 @@ a.text-link {
 
 .ant-modal .ant-modal-footer {
 	margin-top: 52px;
+}
+
+@media screen and (max-width: 575px) {
+	.app-container {
+		justify-content: unset;
+	}
 }

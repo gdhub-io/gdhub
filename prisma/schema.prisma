@@ -29,6 +29,7 @@ model Account {
 model Registration {
   id                String   @id @default(cuid())
   registrationToken String   @unique
+  signature         String
   expires           DateTime
   createdAt         DateTime @default(now())
 }
@@ -47,6 +48,7 @@ model User {
   email              String?             @unique
   emailVerified      DateTime?
   image              String?
+  onboardingDone     Boolean             @default(false)
   createdAt          DateTime            @default(now())
   roles              UserRole[]          @default([Guest])
   updatedAt          DateTime            @updatedAt
@@ -69,10 +71,12 @@ model Profile {
   tgNickname        String?
   country           String?
   city              String?
+  yearOfBirth       Int                   @default(0)
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
   timeForWork       Int[]
   name              String
+  agreements        Json                  @default("{ \"confirmUserData\": false, \"agreeWithTermsAndPrivacy\": false, \"needSubscribeToNewsletter\": false }")
   user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   preferredLevels   GameDifficultyLevel[] @relation("GameDifficultyLevelToProfile")
   preferredGenres   GameGenre[]           @relation("GameGenreToProfile")

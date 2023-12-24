@@ -2,8 +2,14 @@ import { env } from '@/helpers/env'
 import { verify } from 'jsonwebtoken'
 import { NextApiRequest } from 'next'
 
-export const backendVerify = (req: NextApiRequest) => {
+export const backendApiVerify = (req: NextApiRequest) => {
 	const accessToken = Buffer.from(env('BACKEND_KEY')).toString('base64')
+
+	return req.headers['authorization'] && req.headers['authorization'] === 'Bearer ' + accessToken
+}
+
+export const publicApiVerify = (req: NextApiRequest) => {
+	const accessToken = Buffer.from(env('NEXT_PUBLIC_API_KEY')).toString('base64')
 
 	return req.headers['authorization'] && req.headers['authorization'] === 'Bearer ' + accessToken
 }

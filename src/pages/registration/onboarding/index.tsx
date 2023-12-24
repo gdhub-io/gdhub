@@ -4,7 +4,9 @@ import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
 import LogingBgImage from '@/assets/images/login-bg.jpg'
 import { skillLevelsList } from '@/components/ui/skillLevel'
+import { env } from '@/helpers/env'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { prisma } from '@/services/prisma'
 import { GameDifficultyLevel, GameGenre, GameSetting } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -27,11 +29,12 @@ import {
 	Tooltip,
 	Segmented,
 	InputNumber,
+	message,
 } from 'antd'
 import { ItemType } from 'antd/es/menu/hooks/useItems'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { NextPage } from 'next'
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -49,7 +52,7 @@ declare global {
 	}
 }
 
-const OnboardingPage: NextPage = () => {
+const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const [formProfile] = Form.useForm()
@@ -61,8 +64,10 @@ const OnboardingPage: NextPage = () => {
 	const [isCompleted, setIsCompleted] = useState(false)
 	const countries = useMemo(() => countryList().getData(), [])
 
-	const { mutateAsync: sendRegistrationLink, isLoading: isRegistration } = useMutation((data: { email: string }) =>
-		axios.post<void>('/api/email/registration', data)
+	const { mutateAsync: saveUserProfile, isLoading: isProfileSaving } = useMutation((data: any) =>
+		axios.post<any>('/api/auth/registration/onboarding/profile', data, {
+			headers: { Authorization: `Bearer ${publicAccessToken}` },
+		})
 	)
 	const { data: gameGenres } = useQuery(['gameGenres'], () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
 		staleTime: Infinity,
@@ -114,12 +119,18 @@ const OnboardingPage: NextPage = () => {
 	// }
 
 	const handleSaveProfileAndNextStep = async () => {
-		// const { data } = await formProfile.validateFields()
+		try {
+			const { yearOfBirth, ...data } = await formProfile.validateFields()
 
-		console.log('formProfile', formProfile.getFieldsValue())
+			console.log('formProfile', data)
 
-		setOnboardingStep(1)
-		setLastCompletedStep(1)
+			const res = await saveUserProfile({ ...data, yearOfBirth: dayjs(yearOfBirth).year() })
+
+			setOnboardingStep(1)
+			setLastCompletedStep(1)
+		} catch (error: any) {
+			message.error(error.response.data?.message || error.message)
+		}
 	}
 
 	const handleSaveSpecialityAndNextStep = async () => {
@@ -153,11 +164,11 @@ const OnboardingPage: NextPage = () => {
 		setOnboardingStep((prev) => prev - 1)
 	}
 
-	if (isCompleted) {
+	if (error) {
 		return (
 			<>
 				<Head>
-					<title>Registration Completed</title>
+					<title>{t('meta.registration.header', 'Registration')}</title>
 				</Head>
 				<div
 					className={`${styles.container}`}
@@ -166,10 +177,48 @@ const OnboardingPage: NextPage = () => {
 					<div className={styles.completedBox}>
 						<div className="completed-content" style={{ textAlign: 'center' }}>
 							<Space direction="vertical" size={56}>
-								<Title>Registration completed successfully!</Title>
-								<Paragraph>Welcome to the community where games are made.</Paragraph>
+								<Title>
+									<T>Error!</T>
+								</Title>
+								<Paragraph>
+									<T>{error}</T>
+								</Paragraph>
+								<Link href="/registration">
+									<Button style={{ width: '300px' }}>
+										<T>Go to registration</T>
+									</Button>
+								</Link>
+							</Space>
+						</div>
+					</div>
+				</div>
+			</>
+		)
+	}
+
+	if (isCompleted) {
+		return (
+			<>
+				<Head>
+					<title>{t('meta.registration.header', 'Registration')}</title>
+				</Head>
+				<div
+					className={`${styles.container}`}
+					style={{ backgroundImage: `url(${LogingBgImage.src})`, alignItems: 'center' }}
+				>
+					<div className={styles.completedBox}>
+						<div className="completed-content" style={{ textAlign: 'center' }}>
+							<Space direction="vertical" size={56}>
+								<Title>
+									<T>Registration completed successfully!</T>
+								</Title>
+								<Paragraph>
+									<T>Welcome to the community where games are made.</T>
+								</Paragraph>
 								<Link href="/hub">
-									<Button style={{ width: '300px' }}>Go to GDHub</Button>
+									<Button style={{ width: '300px' }}>
+										<T>Go to GDHub</T>
+									</Button>
 								</Link>
 							</Space>
 						</div>
@@ -182,7 +231,7 @@ const OnboardingPage: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Registration</title>
+				<title>{t('meta.registration.header', 'Registration')}</title>
 			</Head>
 			<div className={`${styles.container} bright-container`} style={{ backgroundImage: `url(${LogingBgImage.src})` }}>
 				<div className="onboarding-box">
@@ -235,7 +284,12 @@ const OnboardingPage: NextPage = () => {
 												requiredMark="optional"
 												autoComplete="off"
 												scrollToFirstError
+												initialValues={{ registrationToken: router.query.token as string }}
 											>
+												<Form.Item name="registrationToken" hidden>
+													<Input />
+												</Form.Item>
+
 												<Space direction="vertical" size={16} style={{ width: '100%' }}>
 													<Row gutter={[32, 16]}>
 														<Col xs={24} lg={12}>
@@ -301,7 +355,10 @@ const OnboardingPage: NextPage = () => {
 																validator: (_, value) => {
 																	if (!value) {
 																		notification.error({
-																			message: 'You should confirm the accuracy of the information entered',
+																			message: t(
+																				'confirmUserData.error',
+																				'You should confirm the accuracy of the information entered'
+																			),
 																		})
 																	}
 																	return value ? Promise.resolve() : Promise.reject()
@@ -313,15 +370,21 @@ const OnboardingPage: NextPage = () => {
 															<T keyName="confirmUserData">I confirm the accuracy of the information entered</T>
 														</Checkbox>
 													</Form.Item>
+
 													<Form.Item
-														name="agreement2"
+														name="agreeWithTermsAndPrivacy"
 														valuePropName="checked"
 														noStyle
 														rules={[
 															{
 																validator: (_, value) => {
 																	if (!value) {
-																		notification.error({ message: 'Should accept agreement 2' })
+																		notification.error({
+																			message: t(
+																				'agreeWithTermsAndPrivacy.error',
+																				'You should confirm the accuracy of the information entered'
+																			),
+																		})
 																	}
 																	return value ? Promise.resolve() : Promise.reject()
 																},
@@ -329,12 +392,15 @@ const OnboardingPage: NextPage = () => {
 														]}
 													>
 														<Checkbox>
-															I have read the <a href="">agreement 2</a>
+															<T keyName="agreeWithTermsAndPrivacy">
+																By joining, you agree to our Terms of Service and Privacy Policy
+															</T>
 														</Checkbox>
 													</Form.Item>
-													<Form.Item name="agreement3" valuePropName="checked" noStyle>
+
+													<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
 														<Checkbox>
-															I have read the <a href="">agreement 3</a>
+															<T keyName="subscribeToNewsletter">Receive platform news</T>
 														</Checkbox>
 													</Form.Item>
 												</Space>
@@ -499,7 +565,7 @@ const OnboardingPage: NextPage = () => {
 												requiredMark="optional"
 												autoComplete="off"
 												scrollToFirstError
-												initialValues={{ mainInterest: 'specialist' }}
+												initialValues={{ mainInterest: router.query.interest || 'specialist' }}
 											>
 												<Space direction="vertical" size={16} style={{ width: '100%' }}>
 													<Row gutter={[32, 16]}>
@@ -716,10 +782,34 @@ const OnboardingPage: NextPage = () => {
 	)
 }
 
-export const getServerSideProps = async (context: any) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const session = await getServerSession(context.req, context.res, authOptions)
+	const registrationToken = context.query.token as string
 
-	if (session?.user) {
+	if (!registrationToken && !session?.user.id) {
+		return {
+			props: { error: 'Registration token is wrong. Go to Signup page before.' },
+		}
+	}
+
+	if (registrationToken) {
+		const registration = await prisma.registration.findUnique({ where: { registrationToken } })
+
+		if (!registration) {
+			return {
+				props: { error: 'The registration link is incorrect or has already been used' },
+			}
+		}
+
+		if (dayjs(registration.expires).diff() <= 0) {
+			await prisma.registration.delete({ where: { id: registration?.id } })
+			return {
+				props: { error: 'Registration token expired' },
+			}
+		}
+	}
+
+	if (session?.user && session.user.onboardingDone) {
 		return {
 			redirect: {
 				destination: '/hub',
@@ -728,8 +818,13 @@ export const getServerSideProps = async (context: any) => {
 		}
 	}
 
+	const publicAccessToken = Buffer.from(env('NEXT_PUBLIC_API_KEY')).toString('base64')
+
 	return {
-		props: {},
+		props: {
+			userId: session?.user.id,
+			publicAccessToken,
+		},
 	}
 }
 
