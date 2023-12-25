@@ -11,7 +11,7 @@ export const LandingForAuthorsSection = () => {
 	const screens = Grid.useBreakpoint()
 
 	return (
-		<>
+		<div>
 			<div
 				id="for-authors"
 				className={styles.section}
@@ -59,6 +59,6 @@ export const LandingForAuthorsSection = () => {
 					<Image src={BgImageXS} alt="" fill />
 				</div>
 			)}
-		</>
+		</div>
 	)
 }

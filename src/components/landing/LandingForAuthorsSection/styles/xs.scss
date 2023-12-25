@@ -21,13 +21,13 @@
 		margin-bottom: 0px !important;
 
 		.star {
-      width: 60px !important;
-      height: 60px !important;
+			width: 60px !important;
+			height: 60px !important;
 
-      svg {
-        padding: 14px !important;
-      }
-    }
+			svg {
+				padding: 14px !important;
+			}
+		}
 
 		:global {
 			.ant-typography {
@@ -36,16 +36,16 @@
 		}
 	}
 
-	.sectionImageXS {
-		position: relative;
-		width: 100%;
-		// aspect-ratio: 3/2 auto;
-		padding-top: 85%;
-		/* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
-	}
-
 	.heroButton {
 		max-width: none !important;
 		margin-top: 36px;
 	}
+}
+
+.sectionImageXS {
+	position: relative;
+	width: 100%;
+	// aspect-ratio: 3/2 auto;
+	padding-top: 85%;
+	/* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
 }
