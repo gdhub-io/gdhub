@@ -3,7 +3,7 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import Cryptr from 'cryptr'
 import dayjs from 'dayjs'
-import { BadRequestException, Body, Get, Param, Post, Query, Req, createHandler } from 'next-api-decorators'
+import { BadRequestException, Body, Get, Post, Query, Req, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('public_api')
 class ApiRegistrationHandler {
