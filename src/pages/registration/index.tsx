@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import LogingBgImage from '@/assets/images/login-bg.jpg'
+import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { useMutation } from '@tanstack/react-query'
@@ -48,7 +48,10 @@ const RegistrationPage: NextPage = () => {
 			<Head>
 				<title>Registration</title>
 			</Head>
-			<div className={`${styles.container} bright-container`} style={{ backgroundImage: `url(${LogingBgImage.src})` }}>
+			<div
+				className={`${styles.container} bright-container`}
+				style={{ backgroundImage: `url(${RegistrationBgImage.src})` }}
+			>
 				<div className="login-box">
 					<div className="login-form">
 						<Space direction="vertical" size={40}>

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
-import LogingBgImage from '@/assets/images/login-bg.jpg'
+import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { env } from '@/helpers/env'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
@@ -30,6 +30,7 @@ import {
 	Segmented,
 	InputNumber,
 	message,
+	Spin,
 } from 'antd'
 import { ItemType } from 'antd/es/menu/hooks/useItems'
 import axios from 'axios'
@@ -63,6 +64,40 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 	const [lastCompletedStep, setLastCompletedStep] = useState(0)
 	const [isCompleted, setIsCompleted] = useState(false)
 	const countries = useMemo(() => countryList().getData(), [])
+
+	const { data: userProfile, isLoading: isProfileLoading } = useQuery(
+		['registration', router.query.token],
+		() =>
+			axios.get<any>('/api/auth/registration/onboarding/profile', {
+				params: { registrationToken: router.query.token },
+				headers: { Authorization: `Bearer ${publicAccessToken}` },
+			}),
+		{
+			enabled: !!router.query.token,
+			refetchInterval: false,
+			refetchOnWindowFocus: false,
+			onSuccess: (response) => {
+				if (!response.data) return
+
+				const [firstName, lastName] = response?.data.name.split(' ')
+				formProfile.setFieldsValue({
+					userId: response?.data.id,
+					firstName,
+					lastName,
+					email: response?.data.email,
+					yearOfBirth: response?.data.profile.yearOfBirth,
+					country: response?.data.profile.country,
+					city: response?.data.profile.city,
+					confirmUserData: response?.data.profile.agreements.confirmUserData,
+					agreeWithTermsAndPrivacy: response?.data.profile.agreements.agreeWithTermsAndPrivacy,
+					needSubscribeToNewsletter: response?.data.profile.agreements.needSubscribeToNewsletter,
+				})
+
+				setLastCompletedStep(1)
+				setOnboardingStep(1)
+			},
+		}
+	)
 
 	const { mutateAsync: saveUserProfile, isLoading: isProfileSaving } = useMutation((data: any) =>
 		axios.post<any>('/api/auth/registration/onboarding/profile', data, {
@@ -120,16 +155,18 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 
 	const handleSaveProfileAndNextStep = async () => {
 		try {
-			const { yearOfBirth, ...data } = await formProfile.validateFields()
+			const data = await formProfile.validateFields()
 
 			console.log('formProfile', data)
 
-			const res = await saveUserProfile({ ...data, yearOfBirth: dayjs(yearOfBirth).year() })
+			const res = await saveUserProfile(data)
 
 			setOnboardingStep(1)
 			setLastCompletedStep(1)
 		} catch (error: any) {
-			message.error(error.response.data?.message || error.message)
+			if (!error.response || !error.message) return
+
+			message.error(error.response?.data?.message || error.message)
 		}
 	}
 
@@ -164,6 +201,15 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 		setOnboardingStep((prev) => prev - 1)
 	}
 
+	const yearOptions = useMemo(
+		() =>
+			new Array(84).fill(0).map((r, i) => {
+				const _year = dayjs().year() - i - 16
+				return { label: _year, value: _year }
+			}),
+		[]
+	)
+
 	if (error) {
 		return (
 			<>
@@ -172,7 +218,7 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 				</Head>
 				<div
 					className={`${styles.container}`}
-					style={{ backgroundImage: `url(${LogingBgImage.src})`, alignItems: 'center' }}
+					style={{ backgroundImage: `url(${RegistrationBgImage.src})`, alignItems: 'center' }}
 				>
 					<div className={styles.completedBox}>
 						<div className="completed-content" style={{ textAlign: 'center' }}>
@@ -204,7 +250,7 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 				</Head>
 				<div
 					className={`${styles.container}`}
-					style={{ backgroundImage: `url(${LogingBgImage.src})`, alignItems: 'center' }}
+					style={{ backgroundImage: `url(${RegistrationBgImage.src})`, alignItems: 'center' }}
 				>
 					<div className={styles.completedBox}>
 						<div className="completed-content" style={{ textAlign: 'center' }}>
@@ -233,7 +279,10 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 			<Head>
 				<title>{t('meta.registration.header', 'Registration')}</title>
 			</Head>
-			<div className={`${styles.container} bright-container`} style={{ backgroundImage: `url(${LogingBgImage.src})` }}>
+			<div
+				className={`${styles.container} bright-container`}
+				style={{ backgroundImage: `url(${RegistrationBgImage.src})` }}
+			>
 				<div className="onboarding-box">
 					<div className="onboarding-header">
 						<Flex align="center">
@@ -267,152 +316,158 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 							<Col md={{ span: 19 }}>
 								{/* Profile */}
 								{onboardingStep == 0 && (
-									<div className="onboarding-content">
-										<div className="onboarding-form">
-											<div className="onboarding-form-title">
-												<Title level={2}>
-													<T keyName="user-profile">User Profile</T>
-												</Title>
-												<Paragraph italic>
-													<T>General information about new member</T>
-												</Paragraph>
-											</div>
+									<Spin spinning={isProfileLoading}>
+										<div className="onboarding-content">
+											<div className="onboarding-form">
+												<div className="onboarding-form-title">
+													<Title level={2}>
+														<T keyName="user-profile">User Profile</T>
+													</Title>
+													<Paragraph italic>
+														<T>General information about new member</T>
+													</Paragraph>
+												</div>
 
-											<Form
-												form={formProfile}
-												layout="vertical"
-												requiredMark="optional"
-												autoComplete="off"
-												scrollToFirstError
-												initialValues={{ registrationToken: router.query.token as string }}
-											>
-												<Form.Item name="registrationToken" hidden>
-													<Input />
-												</Form.Item>
+												<Form
+													form={formProfile}
+													layout="vertical"
+													requiredMark="optional"
+													autoComplete="off"
+													scrollToFirstError
+													initialValues={{ registrationToken: router.query.token as string }}
+												>
+													<Form.Item name="registrationToken" hidden>
+														<Input />
+													</Form.Item>
 
-												<Space direction="vertical" size={16} style={{ width: '100%' }}>
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={12}>
-															<Form.Item name="firstName" label={t('firstName')} rules={[{ required: true }]}>
-																<Input placeholder={t('firstName.plachehloder')} />
-															</Form.Item>
-														</Col>
-														<Col xs={24} lg={12}>
-															<Form.Item name="lastName" label={t('lastName')} rules={[{ required: true }]}>
-																<Input placeholder={t('lastName.plachehloder')} />
-															</Form.Item>
-														</Col>
-														<Col xs={24} lg={12}>
-															<Form.Item name="email" label={t('email')} rules={[{ required: true, type: 'email' }]}>
-																<Input placeholder="max.pain@website.com" />
-															</Form.Item>
-														</Col>
-													</Row>
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={12}>
-															<Form.Item name="yearOfBirth" label={t('yearOfBirth')} rules={[{ required: true }]}>
-																<DatePicker
-																	picker="year"
-																	style={{ width: '100%' }}
-																	disabledDate={(date) => date.year() > dayjs().subtract(18, 'year').year()}
-																	// defaultValue={dayjs().subtract(24, 'years')}
-																/>
-															</Form.Item>
-														</Col>
-													</Row>
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={12}>
-															<Form.Item name="country" label={t('country')} rules={[{ required: true }]}>
-																<AutoComplete
-																	allowClear
-																	placeholder={t('country.placeholder', 'Select country')}
-																	suffixIcon={<FiChevronDown size={24} color="#afafaf" />}
-																	filterOption={(inputValue, option) =>
-																		option!.title.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
+													<Space direction="vertical" size={16} style={{ width: '100%' }}>
+														<Row gutter={[32, 16]}>
+															<Col xs={24} lg={12}>
+																<Form.Item name="firstName" label={t('firstName')} rules={[{ required: true }]}>
+																	<Input placeholder={t('firstName.plachehloder')} />
+																</Form.Item>
+															</Col>
+															<Col xs={24} lg={12}>
+																<Form.Item name="lastName" label={t('lastName')} rules={[{ required: true }]}>
+																	<Input placeholder={t('lastName.plachehloder')} />
+																</Form.Item>
+															</Col>
+															<Col xs={24} lg={12}>
+																<Form.Item
+																	name="email"
+																	label={t('email')}
+																	rules={[{ required: true, type: 'email' }]}
+																	extra={
+																		<T keyName="registration.email.extra">
+																			The email must match the one you entered when you started registering
+																		</T>
 																	}
 																>
-																	{countries.map(({ value, label }: any) => (
-																		<AutoComplete.Option key={value} value={label} title={label}>
-																			{label}
-																		</AutoComplete.Option>
-																	))}
-																</AutoComplete>
-															</Form.Item>
-														</Col>
-														<Col xs={24} lg={12}>
-															<Form.Item name="city" label={t('city')}>
-																<Input placeholder={t('city.placeholder')} />
-															</Form.Item>
-														</Col>
-													</Row>
+																	<Input placeholder="max.pain@website.com" />
+																</Form.Item>
+															</Col>
+														</Row>
+														<Row gutter={[32, 16]}>
+															<Col xs={24} lg={12}>
+																<Form.Item name="yearOfBirth" label={t('yearOfBirth')} rules={[{ required: true }]}>
+																	<Select options={yearOptions} placeholder={dayjs().subtract(16, 'years').year()} />
+																</Form.Item>
+															</Col>
+														</Row>
+														<Row gutter={[32, 16]}>
+															<Col xs={24} lg={12}>
+																<Form.Item name="country" label={t('country')} rules={[{ required: true }]}>
+																	<AutoComplete
+																		allowClear
+																		placeholder={t('country.placeholder', 'Select country')}
+																		suffixIcon={<FiChevronDown size={24} color="#afafaf" />}
+																		filterOption={(inputValue, option) =>
+																			option!.title.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
+																		}
+																	>
+																		{countries.map(({ value, label }: any) => (
+																			<AutoComplete.Option key={value} value={label} title={label}>
+																				{label}
+																			</AutoComplete.Option>
+																		))}
+																	</AutoComplete>
+																</Form.Item>
+															</Col>
+															<Col xs={24} lg={12}>
+																<Form.Item name="city" label={t('city')}>
+																	<Input placeholder={t('city.placeholder')} />
+																</Form.Item>
+															</Col>
+														</Row>
 
-													<Form.Item
-														name="confirmUserData"
-														valuePropName="checked"
-														noStyle
-														rules={[
-															{
-																validator: (_, value) => {
-																	if (!value) {
-																		notification.error({
-																			message: t(
-																				'confirmUserData.error',
-																				'You should confirm the accuracy of the information entered'
-																			),
-																		})
-																	}
-																	return value ? Promise.resolve() : Promise.reject()
+														<Form.Item
+															name="confirmUserData"
+															valuePropName="checked"
+															noStyle
+															rules={[
+																{
+																	validator: (_, value) => {
+																		if (!value) {
+																			notification.error({
+																				message: t(
+																					'confirmUserData.error',
+																					'You should confirm the accuracy of the information entered'
+																				),
+																			})
+																		}
+																		return value ? Promise.resolve() : Promise.reject()
+																	},
 																},
-															},
-														]}
-													>
-														<Checkbox>
-															<T keyName="confirmUserData">I confirm the accuracy of the information entered</T>
-														</Checkbox>
-													</Form.Item>
+															]}
+														>
+															<Checkbox>
+																<T keyName="confirmUserData">I confirm the accuracy of the information entered</T>
+															</Checkbox>
+														</Form.Item>
 
-													<Form.Item
-														name="agreeWithTermsAndPrivacy"
-														valuePropName="checked"
-														noStyle
-														rules={[
-															{
-																validator: (_, value) => {
-																	if (!value) {
-																		notification.error({
-																			message: t(
-																				'agreeWithTermsAndPrivacy.error',
-																				'You should confirm the accuracy of the information entered'
-																			),
-																		})
-																	}
-																	return value ? Promise.resolve() : Promise.reject()
+														<Form.Item
+															name="agreeWithTermsAndPrivacy"
+															valuePropName="checked"
+															noStyle
+															rules={[
+																{
+																	validator: (_, value) => {
+																		if (!value) {
+																			notification.error({
+																				message: t(
+																					'agreeWithTermsAndPrivacy.error',
+																					'You should confirm the accuracy of the information entered'
+																				),
+																			})
+																		}
+																		return value ? Promise.resolve() : Promise.reject()
+																	},
 																},
-															},
-														]}
-													>
-														<Checkbox>
-															<T keyName="agreeWithTermsAndPrivacy">
-																By joining, you agree to our Terms of Service and Privacy Policy
-															</T>
-														</Checkbox>
-													</Form.Item>
+															]}
+														>
+															<Checkbox>
+																<T keyName="agreeWithTermsAndPrivacy">
+																	By joining, you agree to our Terms of Service and Privacy Policy
+																</T>
+															</Checkbox>
+														</Form.Item>
 
-													<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
-														<Checkbox>
-															<T keyName="subscribeToNewsletter">Receive platform news</T>
-														</Checkbox>
-													</Form.Item>
-												</Space>
-											</Form>
+														<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
+															<Checkbox>
+																<T keyName="subscribeToNewsletter">Receive platform news</T>
+															</Checkbox>
+														</Form.Item>
+													</Space>
+												</Form>
+											</div>
+											<div className="onboarding-footer">
+												<span></span>
+												<Button type="primary" onClick={handleSaveProfileAndNextStep} loading={isProfileSaving}>
+													<T keyName="saveAndContinue">Save and continue</T>
+												</Button>
+											</div>
 										</div>
-										<div className="onboarding-footer">
-											<span></span>
-											<Button type="primary" onClick={handleSaveProfileAndNextStep}>
-												<T keyName="saveAndContinue">Save and continue</T>
-											</Button>
-										</div>
-									</div>
+									</Spin>
 								)}
 
 								{/* Speciality */}
@@ -786,7 +841,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const session = await getServerSession(context.req, context.res, authOptions)
 	const registrationToken = context.query.token as string
 
-	if (!registrationToken && !session?.user.id) {
+	if (!registrationToken && !session?.user) {
 		return {
 			props: { error: 'Registration token is wrong. Go to Signup page before.' },
 		}
@@ -822,7 +877,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
 	return {
 		props: {
-			userId: session?.user.id,
+			userId: session?.user.id || null,
 			publicAccessToken,
 		},
 	}
