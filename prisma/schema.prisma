@@ -242,7 +242,7 @@ model TeamMember {
   startedAt       DateTime?
   finishedAt      DateTime?
   status          TeamMemberStatus @default(Applicant)
-  position        String
+  position        String?
   allowedContacts String[]
   specialityId    String
   speciality      Speciality       @relation(fields: [specialityId], references: [id])
