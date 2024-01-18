@@ -194,7 +194,7 @@ export const ProtectedLayout = ({ children }: any) => {
 				label: 'Выйти',
 				key: 'logout',
 				danger: true,
-				onClick: () => signOut(),
+				onClick: () => signOut({ redirect: true, callbackUrl: '/' }),
 			},
 		]
 
