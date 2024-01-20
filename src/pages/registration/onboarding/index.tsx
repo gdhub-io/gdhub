@@ -1,14 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
-import { skillLevelsList } from '@/components/ui/skillLevel'
+import { OnboardingCompleted } from '@/components/onboarding/OnboardingCompleted'
+import { OnboardingError } from '@/components/onboarding/OnboardingError'
+import { OnboardingProfileStep } from '@/components/onboarding/OnboardingProfileStep'
+import { OnboardingSpecialityStep } from '@/components/onboarding/OnboardingSpecialityStep'
 import { env } from '@/helpers/env'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { prisma } from '@/services/prisma'
 import { GameDifficultyLevel, GameGenre, GameSetting } from '@prisma/client'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
 	Button,
@@ -21,28 +24,26 @@ import {
 	Menu,
 	Input,
 	Space,
-	AutoComplete,
 	Checkbox,
-	notification,
 	Select,
-	Tooltip,
 	Segmented,
 	InputNumber,
-	message,
-	Spin,
 } from 'antd'
 import { ItemType } from 'antd/es/menu/hooks/useItems'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
-import { FiChevronDown } from 'react-icons/fi'
 import { PiWarningCircleLight } from 'react-icons/pi'
-import countryList from 'react-select-country-list'
 import styles from './style.module.scss'
+
+interface IOnboardingPage {
+	error?: string
+	userId: string | null
+	publicAccessToken: string
+}
 
 const { Paragraph, Title, Text } = Typography
 
@@ -52,57 +53,16 @@ declare global {
 	}
 }
 
-const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
+const OnboardingPage = ({ error, userId, publicAccessToken }: IOnboardingPage) => {
 	const router = useRouter()
 	const { t } = useTolgee()
-	const [formProfile] = Form.useForm()
 	const [formSpeciality] = Form.useForm()
 	const [formResources] = Form.useForm()
 	const [formInterests] = Form.useForm()
 	const [onboardingStep, setOnboardingStep] = useState(0)
 	const [lastCompletedStep, setLastCompletedStep] = useState(0)
 	const [isCompleted, setIsCompleted] = useState(false)
-	const countries = useMemo(() => countryList().getData(), [])
 
-	const { data: userProfile, isLoading: isProfileLoading } = useQuery(
-		['registration', router.query.token],
-		() =>
-			axios.get<any>('/api/auth/registration/onboarding/profile', {
-				params: { registrationToken: router.query.token },
-				headers: { Authorization: `Bearer ${publicAccessToken}` },
-			}),
-		{
-			enabled: !!router.query.token,
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			onSuccess: (response) => {
-				if (!response.data) return
-
-				const [firstName, lastName] = response?.data.name.split(' ')
-				formProfile.setFieldsValue({
-					userId: response?.data.id,
-					firstName,
-					lastName,
-					email: response?.data.email,
-					yearOfBirth: response?.data.profile.yearOfBirth,
-					country: response?.data.profile.country,
-					city: response?.data.profile.city,
-					confirmUserData: response?.data.profile.agreements.confirmUserData,
-					agreeWithTermsAndPrivacy: response?.data.profile.agreements.agreeWithTermsAndPrivacy,
-					needSubscribeToNewsletter: response?.data.profile.agreements.needSubscribeToNewsletter,
-				})
-
-				setLastCompletedStep(1)
-				setOnboardingStep(1)
-			},
-		}
-	)
-
-	const { mutateAsync: saveUserProfile, isLoading: isProfileSaving } = useMutation((data: any) =>
-		axios.post<any>('/api/auth/registration/onboarding/profile', data, {
-			headers: { Authorization: `Bearer ${publicAccessToken}` },
-		})
-	)
 	const { data: gameGenres } = useQuery(['gameGenres'], () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
 		staleTime: Infinity,
 	})
@@ -139,43 +99,14 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 		}))
 	}
 
-	// const handleSend = async () => {
-	// 	const { email } = await form.validateFields()
-	// 	const response = await sendRegistrationLink({ email })
+	// updating last completed step
+	useEffect(() => {
+		if (onboardingStep > lastCompletedStep) setLastCompletedStep(onboardingStep)
+		if (isCompleted) setLastCompletedStep(3)
+	}, [onboardingStep])
 
-	// 	setEmail(email)
-
-	// 	if (response?.status == 204) {
-	// 		setRegistrationStep(3)
-	// 	} else {
-	// 		message.error(response?.statusText)
-	// 	}
-	// }
-
-	const handleSaveProfileAndNextStep = async () => {
-		try {
-			const data = await formProfile.validateFields()
-
-			console.log('formProfile', data)
-
-			const res = await saveUserProfile(data)
-
-			setOnboardingStep(1)
-			setLastCompletedStep(1)
-		} catch (error: any) {
-			if (!error.response || !error.message) return
-
-			message.error(error.response?.data?.message || error.message)
-		}
-	}
-
-	const handleSaveSpecialityAndNextStep = async () => {
-		// const { data } = await formSpeciality.validateFields()
-
-		console.log('formSpeciality', formSpeciality.getFieldsValue())
-
-		setOnboardingStep(2)
-		setLastCompletedStep(2)
+	const onProfileLoading = () => {
+		setOnboardingStep(1)
 	}
 
 	const handleSaveInterestsAndNextStep = async () => {
@@ -184,7 +115,6 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 		console.log('formInterests', formInterests.getFieldsValue())
 
 		setOnboardingStep(3)
-		setLastCompletedStep(3)
 	}
 
 	const handleSaveResourcesAndFinish = async () => {
@@ -192,22 +122,16 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 
 		console.log('formResources', formResources.getFieldsValue())
 
-		setLastCompletedStep(3)
 		setIsCompleted(true)
+	}
+
+	const handleNextStep = () => {
+		setOnboardingStep((prev) => prev + 1)
 	}
 
 	const handlePreviousStep = () => {
 		setOnboardingStep((prev) => prev - 1)
 	}
-
-	const yearOptions = useMemo(
-		() =>
-			new Array(84).fill(0).map((r, i) => {
-				const _year = dayjs().year() - i - 16
-				return { label: _year, value: _year }
-			}),
-		[]
-	)
 
 	if (error) {
 		return (
@@ -215,28 +139,7 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 				<Head>
 					<title>{t('meta.registration.header', 'Registration')}</title>
 				</Head>
-				<div
-					className={`${styles.container}`}
-					style={{ backgroundImage: `url(${RegistrationBgImage.src})`, alignItems: 'center' }}
-				>
-					<div className={styles.completedBox}>
-						<div className="completed-content" style={{ textAlign: 'center' }}>
-							<Space direction="vertical" size={56}>
-								<Title>
-									<T>Error!</T>
-								</Title>
-								<Paragraph>
-									<T>{error}</T>
-								</Paragraph>
-								<Link href="/registration">
-									<Button style={{ width: '300px' }}>
-										<T>Go to registration</T>
-									</Button>
-								</Link>
-							</Space>
-						</div>
-					</div>
-				</div>
+				<OnboardingError error={error} />
 			</>
 		)
 	}
@@ -247,28 +150,7 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 				<Head>
 					<title>{t('meta.registration.header', 'Registration')}</title>
 				</Head>
-				<div
-					className={`${styles.container}`}
-					style={{ backgroundImage: `url(${RegistrationBgImage.src})`, alignItems: 'center' }}
-				>
-					<div className={styles.completedBox}>
-						<div className="completed-content" style={{ textAlign: 'center' }}>
-							<Space direction="vertical" size={56}>
-								<Title>
-									<T>Registration completed successfully!</T>
-								</Title>
-								<Paragraph>
-									<T>Welcome to the community where games are made.</T>
-								</Paragraph>
-								<Link href="/hub">
-									<Button style={{ width: '300px' }}>
-										<T>Go to GDHub</T>
-									</Button>
-								</Link>
-							</Space>
-						</div>
-					</div>
-				</div>
+				<OnboardingCompleted />
 			</>
 		)
 	}
@@ -315,280 +197,19 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 							<Col md={{ span: 19 }}>
 								{/* Profile */}
 								{onboardingStep == 0 && (
-									<Spin spinning={isProfileLoading}>
-										<div className="onboarding-content">
-											<div className="onboarding-form">
-												<div className="onboarding-form-title">
-													<Title level={2}>
-														<T keyName="user-profile">User Profile</T>
-													</Title>
-													<Paragraph italic>
-														<T>General information about new member</T>
-													</Paragraph>
-												</div>
-
-												<Form
-													form={formProfile}
-													layout="vertical"
-													requiredMark="optional"
-													autoComplete="off"
-													scrollToFirstError
-													initialValues={{ registrationToken: router.query.token as string }}
-												>
-													<Form.Item name="registrationToken" hidden>
-														<Input />
-													</Form.Item>
-
-													<Space direction="vertical" size={16} style={{ width: '100%' }}>
-														<Row gutter={[32, 16]}>
-															<Col xs={24} lg={12}>
-																<Form.Item name="firstName" label={t('firstName')} rules={[{ required: true }]}>
-																	<Input placeholder={t('firstName.plachehloder')} />
-																</Form.Item>
-															</Col>
-															<Col xs={24} lg={12}>
-																<Form.Item name="lastName" label={t('lastName')} rules={[{ required: true }]}>
-																	<Input placeholder={t('lastName.plachehloder')} />
-																</Form.Item>
-															</Col>
-															<Col xs={24} lg={12}>
-																<Form.Item
-																	name="email"
-																	label={t('email')}
-																	rules={[{ required: true, type: 'email' }]}
-																	extra={
-																		<T keyName="registration.email.extra">
-																			The email must match the one you entered when you started registering
-																		</T>
-																	}
-																>
-																	<Input placeholder="max.pain@website.com" />
-																</Form.Item>
-															</Col>
-														</Row>
-														<Row gutter={[32, 16]}>
-															<Col xs={24} lg={12}>
-																<Form.Item name="yearOfBirth" label={t('yearOfBirth')} rules={[{ required: true }]}>
-																	<Select options={yearOptions} placeholder={dayjs().subtract(16, 'years').year()} />
-																</Form.Item>
-															</Col>
-														</Row>
-														<Row gutter={[32, 16]}>
-															<Col xs={24} lg={12}>
-																<Form.Item name="country" label={t('country')} rules={[{ required: true }]}>
-																	<AutoComplete
-																		allowClear
-																		placeholder={t('country.placeholder', 'Select country')}
-																		suffixIcon={<FiChevronDown size={24} color="#afafaf" />}
-																		filterOption={(inputValue, option) =>
-																			option!.title.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
-																		}
-																	>
-																		{countries.map(({ value, label }: any) => (
-																			<AutoComplete.Option key={value} value={label} title={label}>
-																				{label}
-																			</AutoComplete.Option>
-																		))}
-																	</AutoComplete>
-																</Form.Item>
-															</Col>
-															<Col xs={24} lg={12}>
-																<Form.Item name="city" label={t('city')}>
-																	<Input placeholder={t('city.placeholder')} />
-																</Form.Item>
-															</Col>
-														</Row>
-
-														<Form.Item
-															name="confirmUserData"
-															valuePropName="checked"
-															noStyle
-															rules={[
-																{
-																	validator: (_, value) => {
-																		if (!value) {
-																			notification.error({
-																				message: t(
-																					'confirmUserData.error',
-																					'You should confirm the accuracy of the information entered'
-																				),
-																			})
-																		}
-																		return value ? Promise.resolve() : Promise.reject()
-																	},
-																},
-															]}
-														>
-															<Checkbox>
-																<T keyName="confirmUserData">I confirm the accuracy of the information entered</T>
-															</Checkbox>
-														</Form.Item>
-
-														<Form.Item
-															name="agreeWithTermsAndPrivacy"
-															valuePropName="checked"
-															noStyle
-															rules={[
-																{
-																	validator: (_, value) => {
-																		if (!value) {
-																			notification.error({
-																				message: t(
-																					'agreeWithTermsAndPrivacy.error',
-																					'You should confirm the accuracy of the information entered'
-																				),
-																			})
-																		}
-																		return value ? Promise.resolve() : Promise.reject()
-																	},
-																},
-															]}
-														>
-															<Checkbox>
-																<T keyName="agreeWithTermsAndPrivacy">
-																	By joining, you agree to our Terms of Service and Privacy Policy
-																</T>
-															</Checkbox>
-														</Form.Item>
-
-														<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
-															<Checkbox>
-																<T keyName="subscribeToNewsletter">Receive platform news</T>
-															</Checkbox>
-														</Form.Item>
-													</Space>
-												</Form>
-											</div>
-											<div className="onboarding-footer">
-												<span></span>
-												<Button type="primary" onClick={handleSaveProfileAndNextStep} loading={isProfileSaving}>
-													<T keyName="saveAndContinue">Save and continue</T>
-												</Button>
-											</div>
-										</div>
-									</Spin>
+									<OnboardingProfileStep
+										onLoading={onProfileLoading}
+										onSave={() => handleNextStep()}
+										publicAccessToken={publicAccessToken}
+									/>
 								)}
 
 								{/* Speciality */}
 								{onboardingStep == 1 && (
-									<div className="onboarding-content">
-										<div className="onboarding-form">
-											<div className="onboarding-form-title">
-												<Flex justify="space-between" align="center">
-													<Title level={2}>
-														<T keyName="specilaity">Speciality</T>
-													</Title>
-													<Flex align="center" gap={4}>
-														<PiWarningCircleLight size={20} color="#05050573" style={{ height: 20 }} />
-														<Text type="secondary" italic>
-															<T>You can change it or add more ones after</T>
-														</Text>
-													</Flex>
-												</Flex>
-
-												<Paragraph italic>
-													<T>Information about your main speciality</T>
-												</Paragraph>
-											</div>
-
-											<Form
-												form={formSpeciality}
-												layout="vertical"
-												requiredMark="optional"
-												autoComplete="off"
-												scrollToFirstError
-											>
-												<Space direction="vertical" size={16} style={{ width: '100%' }}>
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={12}>
-															<Form.Item name="name" label={t('specialityName')} rules={[{ required: true }]}>
-																<Input placeholder={t('specialityName.plachehloder')} />
-															</Form.Item>
-														</Col>
-														<Col xs={24} lg={12}>
-															<Form.Item
-																name="level"
-																label={t('specialityLevel')}
-																rules={[{ required: true }]}
-																wrapperCol={{ span: 24 }}
-															>
-																<Select placeholder={t('select')} style={{ width: '100%' }}>
-																	{skillLevelsList.map((item, indx: number) => (
-																		<Select.Option key={indx.toString()} value={item.value}>
-																			{item.value !== formSpeciality.getFieldValue('Level') ? (
-																				<Tooltip title={item.description} placement="right">
-																					{item.icon} {item.label}
-																				</Tooltip>
-																			) : (
-																				<>
-																					{item.icon} {item.label}
-																				</>
-																			)}
-																		</Select.Option>
-																	))}
-																</Select>
-															</Form.Item>
-														</Col>
-													</Row>
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={24}>
-															<Form.Item name="specialisation" label={t('specialisation')}>
-																<Input.TextArea placeholder={t('specialisation.plachehloder')} />
-															</Form.Item>
-														</Col>
-													</Row>
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={24}>
-															<Form.Item name="cvLink" label={t('cvLink')} rules={[{ type: 'url' }]}>
-																<Input placeholder={t('cvLink.plachehloder')} />
-															</Form.Item>
-														</Col>
-													</Row>
-
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={24}>
-															<Form.Item
-																name="skills"
-																label={t('skillList')}
-																wrapperCol={{ span: 24 }}
-																extra={t('skillList.extra')}
-																// extra="Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение"
-															>
-																<Input.TextArea
-																	rows={4}
-																	placeholder={t('skillList.plachehloder')}
-																	// placeholder={`Например:\nрисовать концепты мультяшных персонажей\nразрабатывать диалоговые системы`}
-																/>
-															</Form.Item>
-														</Col>
-													</Row>
-
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={24}>
-															<Form.Item name="experience" label={t('experience')} rules={[{ required: true }]}>
-																<Input.TextArea placeholder={t('experience.plachehloder')} rows={4} />
-															</Form.Item>
-														</Col>
-													</Row>
-													<Row gutter={[32, 16]}>
-														<Col xs={24} lg={24}>
-															<Form.Item name="education" label={t('education')}>
-																<Input.TextArea placeholder={t('education.plachehloder')} rows={4} />
-															</Form.Item>
-														</Col>
-													</Row>
-												</Space>
-											</Form>
-										</div>
-										<div className="onboarding-footer">
-											<Button onClick={handlePreviousStep}>
-												<T keyName="back">Back</T>
-											</Button>
-											<Button type="primary" onClick={handleSaveSpecialityAndNextStep}>
-												<T keyName="saveAndContinue">Save and continue</T>
-											</Button>
-										</div>
-									</div>
+									<OnboardingSpecialityStep
+										onSave={() => handleNextStep()}
+										onPreviousStep={() => handlePreviousStep()}
+									/>
 								)}
 
 								{/* Interests */}
@@ -839,6 +460,7 @@ const OnboardingPage = ({ error, userId, publicAccessToken }: any) => {
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const session = await getServerSession(context.req, context.res, authOptions)
 	const registrationToken = context.query.token as string
+	const publicAccessToken = Buffer.from(env('NEXT_PUBLIC_API_KEY')).toString('base64')
 
 	if (!registrationToken && !session?.user) {
 		return {
@@ -858,7 +480,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 		if (dayjs(registration.expires).diff() <= 0) {
 			await prisma.registration.delete({ where: { id: registration?.id } })
 			return {
-				props: { error: 'Registration token expired' },
+				props: { error: 'Registration token expired' } as IOnboardingPage,
 			}
 		}
 	}
@@ -872,13 +494,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 		}
 	}
 
-	const publicAccessToken = Buffer.from(env('NEXT_PUBLIC_API_KEY')).toString('base64')
-
 	return {
 		props: {
 			userId: session?.user.id || null,
 			publicAccessToken,
-		},
+		} as IOnboardingPage,
 	}
 }
 
