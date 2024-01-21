@@ -19,61 +19,52 @@ import {
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import { FiChevronDown } from 'react-icons/fi'
+import { GoInfo } from 'react-icons/go'
 import countryList from 'react-select-country-list'
-import styles from './style.module.scss'
 
 interface IOnboardingProfileStep {
-	publicAccessToken: string
 	onSave: (params: { userId: string }) => void
 	onLoading: (response: Record<string, any>) => void
 }
 
 const { Paragraph, Title } = Typography
 
-export const OnboardingProfileStep = ({ publicAccessToken, onSave, onLoading = () => {} }: IOnboardingProfileStep) => {
+export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboardingProfileStep) => {
 	const router = useRouter()
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
+	const { data: session } = useSession()
 	const countries = useMemo(() => countryList().getData(), [])
 
-	const { isLoading } = useQuery(
-		['registration', router.query.token],
-		() =>
-			axios.get<any>('/api/auth/registration/onboarding/profile', {
-				params: { registrationToken: router.query.token },
-				headers: { Authorization: `Bearer ${publicAccessToken}` },
-			}),
-		{
-			enabled: !!router.query.token,
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			onSuccess: (response) => {
-				if (!response.data) return
+	const { isLoading, isFetched } = useQuery(['profile', session?.user.id], () => axios.get<any>('/api/user/profile'), {
+		enabled: !!session?.user.id,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+		onSuccess: (response) => {
+			if (!response.data) return
 
-				const [firstName, lastName] = response?.data.name.split(' ')
-				form.setFieldsValue({
-					userId: response?.data.id,
-					firstName,
-					lastName,
-					email: response?.data.email,
-					yearOfBirth: response?.data.profile.yearOfBirth,
-					country: response?.data.profile.country,
-					city: response?.data.profile.city,
-					confirmUserData: response?.data.profile.agreements.confirmUserData,
-					agreeWithTermsAndPrivacy: response?.data.profile.agreements.agreeWithTermsAndPrivacy,
-					needSubscribeToNewsletter: response?.data.profile.agreements.needSubscribeToNewsletter,
-				})
+			const { data } = response
 
-				onLoading(response.data)
-			},
-		}
-	)
+			const [firstName, lastName] = data.name.split(' ')
+			form.setFieldsValue({
+				firstName,
+				lastName,
+				yearOfBirth: data.yearOfBirth,
+				country: data.country,
+				city: data.city,
+				confirmUserData: data.agreements.confirmUserData,
+				// agreeWithTermsAndPrivacy: data.agreements.agreeWithTermsAndPrivacy,
+				// needSubscribeToNewsletter: data.agreements.needSubscribeToNewsletter,
+			})
+
+			onLoading(data)
+		},
+	})
 
 	const { mutateAsync: saveUserProfile, isLoading: isSaving } = useMutation((data: any) =>
-		axios.post<any>('/api/auth/registration/onboarding/profile', data, {
-			headers: { Authorization: `Bearer ${publicAccessToken}` },
-		})
+		axios.put<any>('/api/user/profile', data)
 	)
 
 	const yearOptions = useMemo(
@@ -87,13 +78,11 @@ export const OnboardingProfileStep = ({ publicAccessToken, onSave, onLoading = (
 
 	const handleSaveProfileAndNextStep = async () => {
 		try {
-			const data = await form.validateFields()
+			const { firstName, lastName, ...data } = await form.validateFields()
 
-			console.log('formProfile', data)
+			const res = await saveUserProfile({ ...data, name: [firstName, lastName].join(' ') })
 
-			const res = await saveUserProfile(data)
-
-			onSave({ userId: res.data.userId })
+			onSave({ userId: res.data.id })
 		} catch (error: any) {
 			if (!error.response || !error.message) return
 
@@ -102,7 +91,7 @@ export const OnboardingProfileStep = ({ publicAccessToken, onSave, onLoading = (
 	}
 
 	return (
-		<Spin spinning={isLoading}>
+		<Spin spinning={isLoading && !isFetched}>
 			<div className="onboarding-content">
 				<div className="onboarding-form">
 					<div className="onboarding-form-title">
@@ -122,10 +111,6 @@ export const OnboardingProfileStep = ({ publicAccessToken, onSave, onLoading = (
 						scrollToFirstError
 						initialValues={{ registrationToken: router.query.token as string }}
 					>
-						<Form.Item name="registrationToken" hidden>
-							<Input />
-						</Form.Item>
-
 						<Space direction="vertical" size={16} style={{ width: '100%' }}>
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={12}>
@@ -139,23 +124,24 @@ export const OnboardingProfileStep = ({ publicAccessToken, onSave, onLoading = (
 									</Form.Item>
 								</Col>
 								<Col xs={24} lg={12}>
-									<Form.Item
-										name="email"
-										label={t('email')}
-										rules={[{ required: true, type: 'email' }]}
-										extra={
-											<T keyName="registration.email.extra">
-												The email must match the one you entered when you started registering
-											</T>
-										}
-									>
-										<Input placeholder="max.pain@website.com" />
+									<Form.Item label={t('email')} required rules={[{ required: true }]}>
+										<Input
+											value={session?.user.email || undefined}
+											placeholder="max.pain@website.com"
+											disabled
+											readOnly
+										/>
 									</Form.Item>
 								</Col>
 							</Row>
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={12}>
-									<Form.Item name="yearOfBirth" label={t('yearOfBirth')} rules={[{ required: true }]}>
+									<Form.Item
+										name="yearOfBirth"
+										label={t('yearOfBirth')}
+										rules={[{ required: true }]}
+										tooltip={{ icon: <GoInfo />, title: 'Вы не должны быть младше 16 лет.' }}
+									>
 										<Select options={yearOptions} placeholder={dayjs().subtract(16, 'years').year()} />
 									</Form.Item>
 								</Col>
@@ -208,39 +194,6 @@ export const OnboardingProfileStep = ({ publicAccessToken, onSave, onLoading = (
 							>
 								<Checkbox>
 									<T keyName="confirmUserData">I confirm the accuracy of the information entered</T>
-								</Checkbox>
-							</Form.Item>
-
-							<Form.Item
-								name="agreeWithTermsAndPrivacy"
-								valuePropName="checked"
-								noStyle
-								rules={[
-									{
-										validator: (_, value) => {
-											if (!value) {
-												notification.error({
-													message: t(
-														'agreeWithTermsAndPrivacy.error',
-														'You should confirm the accuracy of the information entered'
-													),
-												})
-											}
-											return value ? Promise.resolve() : Promise.reject()
-										},
-									},
-								]}
-							>
-								<Checkbox>
-									<T keyName="agreeWithTermsAndPrivacy">
-										By joining, you agree to our Terms of Service and Privacy Policy
-									</T>
-								</Checkbox>
-							</Form.Item>
-
-							<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
-								<Checkbox>
-									<T keyName="subscribeToNewsletter">Receive platform news</T>
 								</Checkbox>
 							</Form.Item>
 						</Space>

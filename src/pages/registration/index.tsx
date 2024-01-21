@@ -3,7 +3,8 @@ import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { useMutation } from '@tanstack/react-query'
-import { Button, Space, Typography, Form, Input, message } from 'antd'
+import { T, useTolgee } from '@tolgee/react'
+import { Button, Space, Typography, Form, Input, message, Checkbox, notification } from 'antd'
 import axios from 'axios'
 import { NextPage } from 'next'
 import Head from 'next/head'
@@ -23,6 +24,7 @@ declare global {
 
 const RegistrationPage: NextPage = () => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const [registrationStep, setRegistrationStep] = useState(1)
 	const [email, setEmail] = useState<string>()
 
@@ -44,7 +46,7 @@ const RegistrationPage: NextPage = () => {
 	}
 
 	return (
-		<EmptyLayout>
+		<EmptyLayout type="dark">
 			<Head>
 				<title>Registration</title>
 			</Head>
@@ -100,6 +102,39 @@ const RegistrationPage: NextPage = () => {
 												rules={[{ type: 'email', required: true, message: 'Please enter Email' }]}
 											>
 												<Input />
+											</Form.Item>
+
+											<Form.Item
+												name="agreeWithTermsAndPrivacy"
+												valuePropName="checked"
+												noStyle
+												rules={[
+													{
+														validator: (_, value) => {
+															if (!value) {
+																notification.error({
+																	message: t(
+																		'agreeWithTermsAndPrivacy.error',
+																		'You should confirm the accuracy of the information entered'
+																	),
+																})
+															}
+															return value ? Promise.resolve() : Promise.reject()
+														},
+													},
+												]}
+											>
+												<Checkbox>
+													<T keyName="agreeWithTermsAndPrivacy">
+														By joining, you agree to our Terms of Service and Privacy Policy
+													</T>
+												</Checkbox>
+											</Form.Item>
+
+											<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
+												<Checkbox>
+													<T keyName="subscribeToNewsletter">Receive platform news</T>
+												</Checkbox>
 											</Form.Item>
 										</Form>
 

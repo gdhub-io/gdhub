@@ -1,21 +1,36 @@
 import { UserRole } from '@prisma/client'
 import { NextResponse } from 'next/server'
 import { withAuth } from 'next-auth/middleware'
+import { getSession } from 'next-auth/react'
 
 export default withAuth(
-	function middleware(req) {
-		const { token } = req.nextauth
+	async function middleware(req) {
+		const session = await getSession({
+			req: {
+				headers: {
+					cookie: req.headers.get('cookie') || '',
+				},
+			},
+		})
+
+		if (!session?.user) {
+			return NextResponse.redirect(new URL('/', req.url))
+		}
+
+		const {
+			user: { onboardingDone, roles },
+		} = session
+
+		if (!onboardingDone && !req.nextUrl.pathname.startsWith('/registration/onboarding')) {
+			return NextResponse.redirect(new URL('/registration/onboarding', req.url))
+		}
 
 		if (
 			req.nextUrl.pathname.startsWith('/live/room/reports') &&
-			Array.isArray(token?.roles) &&
-			token?.roles.includes(UserRole.Guest) &&
-			token?.roles.length == 1
+			Array.isArray(roles) &&
+			roles.includes(UserRole.Guest) &&
+			roles.length == 1
 		) {
-			return NextResponse.redirect(new URL('/hub', req.url))
-		}
-
-		if (token && req.nextUrl.pathname == '/') {
 			return NextResponse.redirect(new URL('/hub', req.url))
 		}
 	},
@@ -39,5 +54,5 @@ export default withAuth(
 )
 
 export const config = {
-	matcher: ['/hub/:path*', '/profile', '/my/:path*', '/live/:path*', '/admin/:path*'],
+	matcher: ['/registration/onboarding', '/hub/:path*', '/profile', '/my/:path*', '/live/:path*', '/admin/:path*'],
 }

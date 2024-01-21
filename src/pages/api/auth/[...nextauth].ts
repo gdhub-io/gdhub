@@ -1,3 +1,4 @@
+import { env } from '@/helpers/env'
 import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
@@ -10,6 +11,7 @@ import GoogleProvider from 'next-auth/providers/google'
 
 export const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(prisma as unknown as PrismaClient),
+	secret: env('NEXTAUTH_SECRET'),
 	pages: {
 		signIn: '/signin',
 	},

@@ -1,6 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
+import { Prisma } from '@prisma/client'
 import { Body, Get, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
@@ -19,24 +20,26 @@ class ApiProfileHandler {
 
 	@Put()
 	public async update(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: UpdateProfileDto) {
-		const { data } = body
-		const { preferredGenres, preferredLevels, preferredSettings, ...othersData } = data
+		const { confirmUserData, preferredGenres, preferredLevels, preferredSettings, ...othersData } = body
 
-		if (data.tgNickname) {
-			let telegramUsername = data.tgNickname as string
+		if (body.tgNickname) {
+			let telegramUsername = body.tgNickname as string
 			telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
-			data.tgNickname = telegramUsername
+			body.tgNickname = telegramUsername
 		}
 
 		await prisma.profile.update({
 			where: { userId: req.user.id },
 			data: {
 				...othersData,
-				preferredGenres: {
-					set: preferredGenres?.map((v: string) => ({ id: v })),
-				},
-				preferredLevels: { set: preferredLevels?.map((v: string) => ({ id: v })) },
-				preferredSettings: { set: preferredSettings?.map((v: string) => ({ id: v })) },
+				preferredGenres: preferredGenres
+					? {
+							set: preferredGenres?.map((v: string) => ({ id: v })),
+					  }
+					: undefined,
+				preferredLevels: preferredLevels ? { set: preferredLevels?.map((v: string) => ({ id: v })) } : undefined,
+				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
+				agreements: confirmUserData ? ({ confirmUserData } as Prisma.JsonObject) : undefined,
 			},
 		})
 	}

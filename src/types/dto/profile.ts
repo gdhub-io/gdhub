@@ -1,26 +1,51 @@
-import { Type } from 'class-transformer'
-import { IsString } from 'class-validator'
-
-export class ProfileDto {
-	id?: string
-	userId?: string
-	name?: string
-	tgNickname?: string | null
-	portfolioLink?: string | null
-	country?: string | null
-	city?: string | null
-	createdAt?: Date
-	updatedAt?: Date
-	timeForWork?: number[]
-	preferredGenres?: string[]
-	preferredLevels?: string[]
-	preferredSettings?: string[]
-}
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class UpdateProfileDto {
 	@IsString()
-	id: string
+	@IsOptional()
+	name?: string
 
-	@Type(() => ProfileDto)
-	data: ProfileDto
+	@IsString()
+	@IsOptional()
+	tgNickname?: string | null
+
+	@IsString()
+	@IsOptional()
+	portfolioLink?: string | null
+
+	@IsString()
+	@IsOptional()
+	country?: string | null
+
+	@IsString()
+	@IsOptional()
+	city?: string | null
+
+	@IsString()
+	@IsOptional()
+	createdAt?: Date
+
+	@IsString()
+	@IsOptional()
+	updatedAt?: Date
+
+	@IsNumber()
+	@IsOptional()
+	timeForWork?: number[]
+
+	@IsString({ each: true })
+	@IsOptional()
+	preferredGenres?: string[]
+
+	@IsString({ each: true })
+	@IsOptional()
+	preferredLevels?: string[]
+
+	@IsString({ each: true })
+	@IsOptional()
+	preferredSettings?: string[]
+
+	@IsBoolean()
+	@IsOptional()
+	confirmUserData: boolean
 }
