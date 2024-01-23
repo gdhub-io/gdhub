@@ -6,7 +6,7 @@ const { Text } = Typography
 
 type ResourcesProfileFormArgs = {
 	profile: Profile
-	saveProfile: (data: { id: string; data: Partial<Profile> }) => Promise<void>
+	saveProfile: (data: Partial<Profile>) => Promise<void>
 }
 
 const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs) => {
@@ -29,10 +29,10 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 	const handleForm = async () => {
 		try {
 			const { timeForWorkMin, timeForWorkMax } = await form.validateFields()
-			const timeForWork = [timeForWorkMin, timeForWorkMax]
+			const timeForWork: number[] = [timeForWorkMin, timeForWorkMax]
 
 			setProcessing(true)
-			await saveProfile({ id: profile.id, data: { timeForWork } })
+			await saveProfile({ timeForWork })
 			setProcessing(false)
 
 			message.success('Данные о ресурсах обновлены')

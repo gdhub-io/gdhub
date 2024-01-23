@@ -1,0 +1,10 @@
+.switcher {
+  text-transform: uppercase;
+  padding: 14px !important;
+
+  :global {
+    .ant-btn-icon {
+      margin-inline-end: 8px !important;
+    }
+  }
+}

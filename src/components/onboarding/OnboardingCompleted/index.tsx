@@ -4,7 +4,7 @@ import { Typography, Space, Button } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
 
-const { Paragraph, Title } = Typography
+const { Title } = Typography
 
 export const OnboardingCompleted = () => {
 	return (
@@ -12,18 +12,15 @@ export const OnboardingCompleted = () => {
 			className={`${styles.container}`}
 			style={{ backgroundImage: `url(${RegistrationBgImage.src})`, alignItems: 'center' }}
 		>
-			<div className={styles.completedBox}>
-				<div className="completed-content" style={{ textAlign: 'center' }}>
+			<div className="onboarding-box">
+				<div className="onboarding-content">
 					<Space direction="vertical" size={56}>
 						<Title>
-							<T>Registration completed successfully!</T>
+							<T>Your profile was successfully completed!</T>
 						</Title>
-						<Paragraph>
-							<T>Welcome to the community where games are made.</T>
-						</Paragraph>
 						<Link href="/hub">
 							<Button style={{ width: '300px' }}>
-								<T>Go to GDHub</T>
+								<T>Let&apos;s go</T>
 							</Button>
 						</Link>
 					</Space>

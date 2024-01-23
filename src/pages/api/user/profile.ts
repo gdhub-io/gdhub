@@ -20,7 +20,7 @@ class ApiProfileHandler {
 
 	@Put()
 	public async update(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: UpdateProfileDto) {
-		const { confirmUserData, preferredGenres, preferredLevels, preferredSettings, ...othersData } = body
+		const { onboardingDone, confirmUserData, preferredGenres, preferredLevels, preferredSettings, ...othersData } = body
 
 		if (body.tgNickname) {
 			let telegramUsername = body.tgNickname as string
@@ -40,6 +40,7 @@ class ApiProfileHandler {
 				preferredLevels: preferredLevels ? { set: preferredLevels?.map((v: string) => ({ id: v })) } : undefined,
 				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
 				agreements: confirmUserData ? ({ confirmUserData } as Prisma.JsonObject) : undefined,
+				user: onboardingDone ? { update: { onboardingDone } } : undefined,
 			},
 		})
 	}

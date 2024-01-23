@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { GameDifficultyLevel, GameGenre, GameSetting, Profile } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Button, Card, Form, message, Select, Spin, Typography } from 'antd'
 import axios from 'axios'
 
@@ -10,7 +11,7 @@ type PreferencesProfileFormArgs = {
 		preferredSettings?: GameSetting[]
 		preferredLevels?: GameDifficultyLevel[]
 	}
-	saveProfile: (data: { id: string; data: Partial<Profile> }) => Promise<void>
+	saveProfile: (data: Partial<Profile>) => Promise<void>
 }
 
 const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileFormArgs) => {
@@ -43,7 +44,7 @@ const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileForm
 			const formData = await form.validateFields()
 
 			setProcessing(true)
-			await saveProfile({ id: profile.id, data: formData })
+			await saveProfile(formData)
 			setProcessing(false)
 
 			message.success('Предпочтения по играм обновлены')
@@ -54,17 +55,29 @@ const PreferencesProfileForm = ({ profile, saveProfile }: PreferencesProfileForm
 	}
 
 	const gameGenresOptions = gameGenres?.data.map((i) => ({
-		label: <Typography.Text ellipsis>{i.name}</Typography.Text>,
+		label: (
+			<Typography.Text ellipsis>
+				<T>{i.name}</T>
+			</Typography.Text>
+		),
 		value: i.id,
 	}))
 
 	const graphicSettingsOptions = gameSettings?.data.map((i) => ({
-		label: <Typography.Text ellipsis>{i.name}</Typography.Text>,
+		label: (
+			<Typography.Text ellipsis>
+				<T>{i.name}</T>
+			</Typography.Text>
+		),
 		value: i.id,
 	}))
 
 	const gameLevelsOptions = gameLevels?.data.map((i) => ({
-		label: <Typography.Text ellipsis>{i.name}</Typography.Text>,
+		label: (
+			<Typography.Text ellipsis>
+				<T>{i.name}</T>
+			</Typography.Text>
+		),
 		value: i.id,
 	}))
 

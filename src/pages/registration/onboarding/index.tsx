@@ -4,19 +4,16 @@ import { OnboardingCompleted } from '@/components/onboarding/OnboardingCompleted
 import { OnboardingError } from '@/components/onboarding/OnboardingError'
 import { OnboardingInterestStep } from '@/components/onboarding/OnboardingInterestStep'
 import { OnboardingProfileStep } from '@/components/onboarding/OnboardingProfileStep'
+import { OnboardingResourceStep } from '@/components/onboarding/OnboardingResourceStep'
 import { OnboardingSpecialityStep } from '@/components/onboarding/OnboardingSpecialityStep'
 import { OnboardingWelcome } from '@/components/onboarding/OnboardingWelcome'
-import { GameDifficultyLevel, GameGenre, GameSetting } from '@prisma/client'
-import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Typography, Form, Row, Col, Steps, Flex, Menu, Input, Space, Checkbox, InputNumber } from 'antd'
+import { Typography, Row, Col, Steps, Flex, Menu } from 'antd'
 import { ItemType } from 'antd/es/menu/hooks/useItems'
-import axios from 'axios'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
-const { Paragraph, Title, Text } = Typography
+const { Title } = Typography
 
 declare global {
 	interface Window {
@@ -26,8 +23,6 @@ declare global {
 
 const OnboardingPage = () => {
 	const { t } = useTolgee()
-	const [formResources] = Form.useForm()
-	const [formInterests] = Form.useForm()
 	const [error, setError] = useState<string>()
 	const [onboardingStep, setOnboardingStep] = useState(-1)
 	const [lastCompletedStep, setLastCompletedStep] = useState(0)
@@ -50,20 +45,16 @@ const OnboardingPage = () => {
 		setOnboardingStep(0)
 	}
 
-	const handleSaveResourcesAndFinish = async () => {
-		// const { data } = await formResources.validateFields()
-
-		console.log('formResources', formResources.getFieldsValue())
-
-		setIsCompleted(true)
+	const handlePreviousStep = () => {
+		setOnboardingStep((prev) => prev - 1)
 	}
 
 	const handleNextStep = () => {
 		setOnboardingStep((prev) => prev + 1)
 	}
 
-	const handlePreviousStep = () => {
-		setOnboardingStep((prev) => prev - 1)
+	const handleComplete = () => {
+		setIsCompleted(true)
 	}
 
 	if (error) {
@@ -151,91 +142,12 @@ const OnboardingPage = () => {
 									)}
 
 									{/* Resource */}
+
 									{onboardingStep == 3 && (
-										<div className="onboarding-content">
-											<div className="onboarding-form">
-												<div className="onboarding-form-title">
-													<Title level={2}>
-														<T keyName="resources">Recources</T>
-													</Title>
-													<Paragraph italic>
-														<T>How can you be useful to teams?</T>
-													</Paragraph>
-													<Paragraph italic type="secondary">
-														<T>
-															The main resource is your time, which you are willing to spend on participating in
-															projects. You can also provide additional information
-														</T>
-													</Paragraph>
-												</div>
-
-												<Form
-													form={formResources}
-													layout="vertical"
-													requiredMark="optional"
-													autoComplete="off"
-													scrollToFirstError
-													initialValues={{ availableForOffer: true }}
-												>
-													<Space direction="vertical" size={16} style={{ width: '100%' }}>
-														<Form.Item
-															label={<T keyName="availableTime" />}
-															tooltip={{ title: t('How many hours a week can you devote to projects?') }}
-															wrapperCol={{ span: 24 }}
-															required
-															valuePropName="value"
-														>
-															<Row>
-																<Col md={{ span: 12 }} xs={{ span: 24 }}>
-																	<Space>
-																		<Form.Item name="timeForWorkMin" noStyle rules={[{ required: true }]}>
-																			<InputNumber min={1} max={55} placeholder={t('minimum')} />
-																		</Form.Item>
-																		<Text>—</Text>
-																		<Form.Item
-																			name="timeForWorkMax"
-																			noStyle
-																			rules={[
-																				{ required: true },
-																				{
-																					validator: (_, value) =>
-																						formResources.getFieldValue('timeForWorkMin') > value
-																							? Promise.reject(t('The maximum value cannot be less than the minimum'))
-																							: Promise.resolve(),
-																				},
-																			]}
-																		>
-																			<InputNumber min={2} max={56} placeholder={t('maximum')} />
-																		</Form.Item>
-																		<Text>
-																			<T keyName="hours" />
-																		</Text>
-																	</Space>
-																</Col>
-															</Row>
-														</Form.Item>
-
-														<Form.Item name="availableForOffer" valuePropName="checked">
-															<Checkbox>
-																<T>I&apos;m available for offering</T>
-															</Checkbox>
-														</Form.Item>
-
-														<Form.Item name="additionalText" label={t('additionalInformation')}>
-															<Input.TextArea rows={8} />
-														</Form.Item>
-													</Space>
-												</Form>
-											</div>
-											<div className="onboarding-footer">
-												<Button onClick={handlePreviousStep}>
-													<T keyName="back">Back</T>
-												</Button>
-												<Button type="primary" onClick={handleSaveResourcesAndFinish}>
-													<T keyName="save">Save</T>
-												</Button>
-											</div>
-										</div>
+										<OnboardingResourceStep
+											onSave={() => handleComplete()}
+											onPreviousStep={() => handlePreviousStep()}
+										/>
 									)}
 								</Col>
 							</Row>

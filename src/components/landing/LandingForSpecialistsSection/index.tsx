@@ -3,6 +3,7 @@ import BgImageXS from '@/assets/images/landing/bg-image-for-specialists-section-
 import BgImage from '@/assets/images/landing/bg-image-for-specialists-section.png'
 import { Button, Col, Grid, Row, Space, Typography } from 'antd'
 import Image from 'next/image'
+import Link from 'next/link'
 import styles from './style.module.scss'
 
 const { Title, Text } = Typography
@@ -41,9 +42,11 @@ export const LandingForSpecialistsSection = () => {
 										</div>
 										<Text>You can become a part of a new video game or share your expertise as a Mentor</Text>
 									</Space>
-									<Button className={styles.heroButton} type="primary">
-										Join the team
-									</Button>
+									<Link href="/registration?for=specialist">
+										<Button className={styles.heroButton} type="primary">
+											Join the team
+										</Button>
+									</Link>
 								</Space>
 							</div>
 						</Col>

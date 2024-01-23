@@ -9,11 +9,13 @@
   min-height: 100vh;
   width: 100%;
   padding: 64px 0;
+  text-align: center;
 
   :global {
     h1 {
-      font-size: 48px;
+      font-size: 40px;
       font-weight: 800;
+      font-family: var(--main-font-family);
     }
 
     h2 {

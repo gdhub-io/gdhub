@@ -3,6 +3,7 @@ import BgImageXS from '@/assets/images/landing/bg-image-for-authors-section-xs.p
 import BgImage from '@/assets/images/landing/bg-image-for-authors-section.png'
 import { Button, Grid, Space, Typography } from 'antd'
 import Image from 'next/image'
+import Link from 'next/link'
 import styles from './style.module.scss'
 
 const { Title, Text } = Typography
@@ -47,9 +48,11 @@ export const LandingForAuthorsSection = () => {
 									or work independently at his own pace
 								</Text>
 							</Space>
-							<Button className={styles.heroButton} type="primary">
-								Assemble a team
-							</Button>
+							<Link href="/registration?for=author">
+								<Button className={styles.heroButton} type="primary">
+									Assemble a team
+								</Button>
+							</Link>
 						</Space>
 					</div>
 				</div>

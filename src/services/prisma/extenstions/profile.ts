@@ -10,6 +10,7 @@ export const profilePrismaExtenstion = Prisma.defineExtension((client) => {
 				update: async ({ args, query }) => {
 					const profile = await query(args)
 
+					/** Update user name on updating name of in profile */
 					if (args.data.name) {
 						await prisma.user.update({ where: { id: profile.userId }, data: { name: profile.name } })
 					}

@@ -86,26 +86,25 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 		document.body.style.overflow = showContent ? 'unset' : 'hidden'
 	}, [showContent])
 
+	const routeChangeStart = () => {
+		setShowContent(false)
+		setLoading(true)
+	}
+
+	const routeChangeComplete = (url: string) => {
+		pageview(url)
+		setLoadingOff()
+		document.body.style.overflow = 'unset'
+	}
+
 	useEffect(() => {
-		router.events.on('routeChangeStart', () => {
-			setShowContent(false)
-			setLoading(true)
-		})
-		router.events.on('routeChangeComplete', (url: string) => {
-			pageview(url)
-			setLoadingOff()
-		})
+		router.events.on('routeChangeStart', routeChangeStart)
+		router.events.on('routeChangeComplete', routeChangeComplete)
 		router.events.on('routeChangeError', () => setLoadingOff())
 
 		return () => {
-			router.events.off('routeChangeStart', () => {
-				setShowContent(false)
-				setLoading(true)
-			})
-			router.events.off('routeChangeComplete', (url: string) => {
-				pageview(url)
-				setLoadingOff()
-			})
+			router.events.off('routeChangeStart', routeChangeStart)
+			router.events.off('routeChangeComplete', routeChangeComplete)
 			router.events.off('routeChangeError', () => setLoadingOff())
 		}
 	}, [router.events])

@@ -4,6 +4,7 @@ import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
 import { T } from '@tolgee/react'
 import { Button, Col, Grid, Row, Space, Typography } from 'antd'
+import Link from 'next/link'
 import styles from './style.module.scss'
 import { HeroStats } from '../HeroStats'
 
@@ -54,9 +55,11 @@ export const LandingHeroSection = ({
 									</Space>
 								</li>
 							</ul>
-							<Button className={styles.heroButton} type="primary">
-								<T>Get started</T>
-							</Button>
+							<Link href="/registration">
+								<Button className={styles.heroButton} type="primary">
+									<T>Get started</T>
+								</Button>
+							</Link>
 						</Space>
 					</Col>
 					<Col xs={{ span: 24 }} xl={{ span: 9 }} style={{ position: 'relative' }}>

@@ -1,35 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+import { SwitchLanguage } from '@/components/SwitchLanguage'
 import { landingThemeConfig } from '@/config/theme'
-import { useTolgee } from '@tolgee/react'
-import {
-	Avatar,
-	Button,
-	ConfigProvider,
-	Drawer,
-	Grid,
-	Layout,
-	Menu,
-	MenuProps,
-	Row,
-	Select,
-	Space,
-	Typography,
-} from 'antd'
+import { Avatar, Button, ConfigProvider, Drawer, Grid, Layout, Menu, MenuProps, Row, Space } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
-const { Text } = Typography
 
 export const LandingLayout = ({ children }: any) => {
-	const router = useRouter()
-	const tolgee = useTolgee(['language'])
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [scrollY, setScrollY] = useState(0)
 	const screens = Grid.useBreakpoint()
@@ -114,7 +97,7 @@ export const LandingLayout = ({ children }: any) => {
 				<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
 					<Row align="middle" justify="space-between" className={styles.headerContainer}>
 						<Link href="/" className="logo">
-							<GdhubLogo style={{ width: '156px', height: '42px' }} />
+							<GdhubLogo style={{ width: '146px', height: '42px' }} />
 						</Link>
 
 						{screens.lg ? (
@@ -125,12 +108,6 @@ export const LandingLayout = ({ children }: any) => {
 									mode="horizontal"
 									items={headerMenu}
 								/>
-
-								{!!session && (
-									<Link href="/hub">
-										<Button>Go to app</Button>
-									</Link>
-								)}
 							</>
 						) : (
 							<div className={styles.mobileMenuBtn}>
@@ -140,30 +117,20 @@ export const LandingLayout = ({ children }: any) => {
 							</div>
 						)}
 
-						{!session && screens.lg && (
-							<Link href="/signin">
-								<Button>Log in</Button>
-							</Link>
-						)}
-
-						<Select
-							style={{ marginLeft: 16 }}
-							bordered={false}
-							value={tolgee.getLanguage()}
-							options={[
-								{
-									label: <Text>En</Text>,
-									value: 'en',
-								},
-								{
-									label: <Text>Ру</Text>,
-									value: 'ru',
-								},
-							]}
-							onSelect={(value) => {
-								router.replace(router.pathname, undefined, { locale: value })
-							}}
-						/>
+						<Space align="start">
+							<>
+								{!!session ? (
+									<Link href="/hub">
+										<Button>Go to app</Button>
+									</Link>
+								) : (
+									<Link href="/signin">
+										<Button>Log in</Button>
+									</Link>
+								)}
+							</>
+							<SwitchLanguage />
+						</Space>
 					</Row>
 				</Header>
 				<Content className={styles.content}>{children}</Content>

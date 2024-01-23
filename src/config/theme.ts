@@ -56,6 +56,7 @@ export const landingThemeConfig: ThemeConfig = {
 export const publicThemeConfig: ThemeConfig = {
 	algorithm: [theme.defaultAlgorithm],
 	token: {
+		fontFamily: mainFont.style.fontFamily,
 		colorPrimary: '#f15541',
 		colorInfo: '#f15541',
 		colorSuccess: '#67bf31',

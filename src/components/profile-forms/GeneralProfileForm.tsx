@@ -26,7 +26,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 			const formData = await form.validateFields()
 
 			setProcessing(true)
-			await saveProfile({ id: profile.id, data: formData })
+			await saveProfile(formData)
 			await sessionUpdate({ user: { name: formData.name } })
 			setProcessing(false)
 

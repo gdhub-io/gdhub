@@ -29,7 +29,7 @@ export class UpdateProfileDto {
 	@IsOptional()
 	updatedAt?: Date
 
-	@IsNumber()
+	@IsNumber({}, { each: true })
 	@IsOptional()
 	timeForWork?: number[]
 
@@ -47,5 +47,9 @@ export class UpdateProfileDto {
 
 	@IsBoolean()
 	@IsOptional()
-	confirmUserData: boolean
+	confirmUserData?: boolean
+
+	@IsBoolean()
+	@IsOptional()
+	onboardingDone?: boolean
 }
