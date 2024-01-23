@@ -23,15 +23,16 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 		}
 	)
 
-	const data: { title: string | null; description: string; avatar: string | null }[] | undefined = useMemo(() => {
-		if (!team?.data) return []
+	const data: { title: string | null; description: string | null; avatar: string | null }[] | undefined =
+		useMemo(() => {
+			if (!team?.data) return []
 
-		return team.data.members.map((member: TeamMember & { user: User }) => ({
-			title: member.user.name,
-			description: member.position,
-			avatar: member.user.image,
-		}))
-	}, [team])
+			return team.data.members.map((member: TeamMember & { user: User }) => ({
+				title: member.user.name,
+				description: member.position,
+				avatar: member.user.image,
+			}))
+		}, [team])
 
 	if (team && team?.data.members.length == 0) return null
 
