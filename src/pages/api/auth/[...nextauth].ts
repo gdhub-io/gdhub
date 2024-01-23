@@ -12,6 +12,7 @@ import GoogleProvider from 'next-auth/providers/google'
 export const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(prisma as unknown as PrismaClient),
 	secret: env('NEXTAUTH_SECRET'),
+	session: { strategy: 'jwt' },
 	pages: {
 		signIn: '/signin',
 	},
@@ -21,6 +22,7 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: process.env.GOOGLE_OAUTH_CLEINT_SECRET as string,
 			authorization: { params: { access_type: 'offline', prompt: 'consent' } },
 			allowDangerousEmailAccountLinking: true,
+			httpOptions: { timeout: 10000 },
 		}),
 		EmailProvider({
 			from: process.env.EMAIL_FROM as string,
@@ -80,13 +82,19 @@ export const authOptions: NextAuthOptions = {
 		},
 	},
 	callbacks: {
-		async session({ session, user }) {
-			if (!user) return redirect('/signin')
+		async jwt({ token }) {
+			if (!token.email) return
 
-			session.user = user
+			const user = await prisma.user.findUnique({ where: { email: token.email } })
+			return { ...token, ...user } as any
+		},
+		async session({ session, token, user, newSession }) {
+			if (!token) return redirect('/signin')
+
+			session.user = token
 
 			const [google] = await prisma.account.findMany({
-				where: { userId: user.id, provider: 'google' },
+				where: { userId: token.id, provider: 'google' },
 			})
 
 			if (google?.expires_at && google.expires_at * 1000 < Date.now()) {

@@ -1,25 +1,17 @@
 import { UserRole } from '@prisma/client'
 import { NextResponse } from 'next/server'
 import { withAuth } from 'next-auth/middleware'
-import { getSession } from 'next-auth/react'
+import { env } from './helpers/env'
 
 export default withAuth(
 	async function middleware(req) {
-		const session = await getSession({
-			req: {
-				headers: {
-					cookie: req.headers.get('cookie') || '',
-				},
-			},
-		})
+		const session = req.nextauth.token
 
-		if (!session?.user) {
+		if (!session) {
 			return NextResponse.redirect(new URL('/', req.url))
 		}
 
-		const {
-			user: { onboardingDone, roles },
-		} = session
+		const { onboardingDone, roles } = session
 
 		if (!onboardingDone && !req.nextUrl.pathname.startsWith('/registration/onboarding')) {
 			return NextResponse.redirect(new URL('/registration/onboarding', req.url))
@@ -35,19 +27,15 @@ export default withAuth(
 		}
 	},
 	{
+		secret: env('NEXTAUTH_SECRET'),
+		pages: { signIn: '/signin' },
 		callbacks: {
 			authorized: async ({ req, token }) => {
 				const pathname = req.nextUrl.pathname
 
 				if (pathname.startsWith('/_next') || pathname === '/favicon.ico') return true
 
-				// Get cookie with session tpken
-				const parsed = new RegExp(
-					/next-auth.session-token=([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/gm
-				).exec(req.headers.get('cookie') as string)
-				const sessionToken = parsed?.at(1)
-
-				return !!sessionToken
+				return !!token
 			},
 		},
 	}
