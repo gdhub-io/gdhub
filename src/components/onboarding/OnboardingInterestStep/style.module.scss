@@ -1,1 +1,57 @@
-.container {}
+.content {
+  :global {
+    .ant-segmented-item {
+      border: 1px solid #A2A1AB;
+
+      &:not(:last-child) {
+        margin-right: 24px;
+      }
+
+      &-selected {
+        background-color: #F33921;
+        color: #fff;
+        border-color: #F33921;
+
+        .ant-typography {
+          color: #fff;
+        }
+
+        .segmented-option-footer {
+          border-top-color: #F33921 !important;
+          background-color: #fff;
+
+          .ant-typography {
+            color: #F33921;
+            font-weight: 600 !important;
+          }
+        }
+      }
+
+      &-label {
+        padding: 0;
+      }
+    }
+  }
+
+  .segmentedOption {
+    svg {
+      margin: 28px;
+    }
+
+    :global {
+      .segmented-option-content {
+        padding: 20px;
+      }
+
+      .segmented-option-footer {
+        padding: 8px 0;
+        border-top: 1px solid #A2A1AB;
+
+        .ant-typography {
+          font-size: 14px;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+}

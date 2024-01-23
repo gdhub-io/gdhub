@@ -81,6 +81,7 @@ model Profile {
   preferredLevels   GameDifficultyLevel[] @relation("GameDifficultyLevelToProfile")
   preferredGenres   GameGenre[]           @relation("GameGenreToProfile")
   preferredSettings GameSetting[]         @relation("GameSettingToProfile")
+  primaryInterest   PrimaryInterest       @default(Specialist)
 }
 
 model VerificationToken {
@@ -372,4 +373,10 @@ enum SeasonStatus {
   Planning
   Active
   Done
+}
+
+enum PrimaryInterest {
+  Specialist
+  Author
+  Mentor
 }

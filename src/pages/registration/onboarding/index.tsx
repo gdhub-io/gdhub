@@ -1,37 +1,19 @@
 import { useEffect, useState } from 'react'
-import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
-import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
-import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { OnboardingCompleted } from '@/components/onboarding/OnboardingCompleted'
 import { OnboardingError } from '@/components/onboarding/OnboardingError'
+import { OnboardingInterestStep } from '@/components/onboarding/OnboardingInterestStep'
 import { OnboardingProfileStep } from '@/components/onboarding/OnboardingProfileStep'
 import { OnboardingSpecialityStep } from '@/components/onboarding/OnboardingSpecialityStep'
 import { OnboardingWelcome } from '@/components/onboarding/OnboardingWelcome'
 import { GameDifficultyLevel, GameGenre, GameSetting } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import {
-	Button,
-	Typography,
-	Form,
-	Row,
-	Col,
-	Steps,
-	Flex,
-	Menu,
-	Input,
-	Space,
-	Checkbox,
-	Select,
-	Segmented,
-	InputNumber,
-} from 'antd'
+import { Button, Typography, Form, Row, Col, Steps, Flex, Menu, Input, Space, Checkbox, InputNumber } from 'antd'
 import { ItemType } from 'antd/es/menu/hooks/useItems'
 import axios from 'axios'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { PiWarningCircleLight } from 'react-icons/pi'
 import styles from './style.module.scss'
 
 const { Paragraph, Title, Text } = Typography
@@ -43,9 +25,7 @@ declare global {
 }
 
 const OnboardingPage = () => {
-	const router = useRouter()
 	const { t } = useTolgee()
-	const [formSpeciality] = Form.useForm()
 	const [formResources] = Form.useForm()
 	const [formInterests] = Form.useForm()
 	const [error, setError] = useState<string>()
@@ -53,41 +33,12 @@ const OnboardingPage = () => {
 	const [lastCompletedStep, setLastCompletedStep] = useState(0)
 	const [isCompleted, setIsCompleted] = useState(false)
 
-	const { data: gameGenres } = useQuery(['gameGenres'], () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
-		staleTime: Infinity,
-	})
-	const { data: gameSettings } = useQuery(
-		['gameSettings'],
-		() => axios.get<GameSetting[]>('/api/dictionary/game-settings'),
-		{ staleTime: Infinity }
-	)
-	const { data: gameLevels } = useQuery(
-		['gameLevels'],
-		() => axios.get<GameDifficultyLevel[]>('/api/dictionary/game-levels'),
-		{
-			staleTime: Infinity,
-		}
-	)
-
 	const onboardingMenu: ItemType<any>[] = [
 		{ label: t('user-profile'), key: 'user-profile' },
 		{ label: t('specilaity'), key: 'speciality', disabled: lastCompletedStep <= 0 },
 		{ label: t('interests'), key: 'interests', disabled: lastCompletedStep <= 1 },
 		{ label: t('resources'), key: 'resources', disabled: lastCompletedStep <= 2 },
 	]
-
-	const prepareOptions = (data?: any[]) => {
-		if (!data) return []
-
-		return data.map((i) => ({
-			label: (
-				<Typography.Text ellipsis>
-					<T keyName={i.name} />
-				</Typography.Text>
-			),
-			value: i.id,
-		}))
-	}
 
 	// updating last completed step
 	useEffect(() => {
@@ -97,14 +48,6 @@ const OnboardingPage = () => {
 
 	const onProfileLoading = () => {
 		setOnboardingStep(0)
-	}
-
-	const handleSaveInterestsAndNextStep = async () => {
-		const { data } = await formInterests.validateFields()
-
-		console.log('formInterests', formInterests.getFieldsValue())
-
-		setOnboardingStep(3)
 	}
 
 	const handleSaveResourcesAndFinish = async () => {
@@ -201,151 +144,10 @@ const OnboardingPage = () => {
 
 									{/* Interests */}
 									{onboardingStep == 2 && (
-										<div className="onboarding-content">
-											<div className="onboarding-form">
-												<div className="onboarding-form-title">
-													<Flex justify="space-between" align="center">
-														<Title level={2}>
-															<T keyName="interests">Interests</T>
-														</Title>
-														<Flex align="center" gap={4}>
-															<PiWarningCircleLight size={20} color="#05050573" style={{ height: 20 }} />
-															<Text type="secondary" italic>
-																<T>You can change it or add more ones after</T>
-															</Text>
-														</Flex>
-													</Flex>
-
-													<Paragraph italic>
-														<T>Infomation about your preferences</T>
-													</Paragraph>
-												</div>
-
-												<Form
-													form={formInterests}
-													layout="vertical"
-													requiredMark="optional"
-													autoComplete="off"
-													scrollToFirstError
-													initialValues={{ mainInterest: router.query.interest || 'specialist' }}
-												>
-													<Space direction="vertical" size={16} style={{ width: '100%' }}>
-														<Row gutter={[32, 16]}>
-															<Col xs={24} lg={24}>
-																<Form.Item name="mainInterest" label={t('interest')} rules={[{ required: true }]}>
-																	<Segmented
-																		block
-																		className={styles.interest}
-																		options={[
-																			{
-																				label: (
-																					<div className={styles.segmentedOption}>
-																						<div className="segmented-option-content">
-																							<InterestAuthorIcon height={56} width={56} />
-																							<Paragraph>
-																								I want to be an <Text italic>Author</Text>
-																							</Paragraph>
-																						</div>
-																						<div className="segmented-option-footer">
-																							<Text>I want to create games for myself</Text>
-																						</div>
-																					</div>
-																				),
-																				value: 'author',
-																			},
-																			{
-																				label: (
-																					<div className={styles.segmentedOption}>
-																						<div className="segmented-option-content">
-																							<InterestSpecialistIcon height={56} width={56} />
-																							<Paragraph>
-																								I want to be a <Text italic>Specialist</Text>
-																							</Paragraph>
-																						</div>
-																						<div className="segmented-option-footer">
-																							<Text>I want to join the team</Text>
-																						</div>
-																					</div>
-																				),
-																				value: 'specialist',
-																			},
-																			{
-																				label: (
-																					<div className={styles.segmentedOption}>
-																						<div className="segmented-option-content">
-																							<InterestMentorIcon height={56} width={56} />
-																							<Paragraph>
-																								I want to be a <Text italic>Mentor</Text>
-																							</Paragraph>
-																						</div>
-																						<div className="segmented-option-footer">
-																							<Text>I want to share my expertise</Text>
-																						</div>
-																					</div>
-																				),
-																				value: 'mentor',
-																			},
-																		]}
-																	/>
-																</Form.Item>
-															</Col>
-														</Row>
-
-														<Row>
-															<Col xs={24} lg={24}>
-																<Form.Item name="preferredGenres" label={t('form.genres.label')}>
-																	<Select
-																		options={prepareOptions(gameGenres?.data)}
-																		mode="multiple"
-																		allowClear
-																		style={{ width: '100%' }}
-																		placeholder={t('select')}
-																		onChange={() => {}}
-																	/>
-																</Form.Item>
-															</Col>
-														</Row>
-
-														<Row>
-															<Col xs={24} lg={24}>
-																<Form.Item name="preferredSettings" label={t('form.settings.label')}>
-																	<Select
-																		options={prepareOptions(gameSettings?.data)}
-																		mode="multiple"
-																		allowClear
-																		style={{ width: '100%' }}
-																		placeholder={t('select')}
-																		onChange={() => {}}
-																	/>
-																</Form.Item>
-															</Col>
-														</Row>
-														<Row>
-															<Col xs={24} lg={24}>
-																<Form.Item name="preferredLevels" label={t('form.difficulty.label')}>
-																	<Select
-																		options={prepareOptions(gameLevels?.data)}
-																		mode="multiple"
-																		allowClear
-																		style={{ width: '100%' }}
-																		placeholder={t('select')}
-																		onChange={() => {}}
-																	/>
-																</Form.Item>
-															</Col>
-														</Row>
-													</Space>
-												</Form>
-											</div>
-											<div className="onboarding-footer">
-												<Button onClick={handlePreviousStep}>
-													<T keyName="back">Back</T>
-												</Button>
-												<Button type="primary" onClick={handleSaveInterestsAndNextStep}>
-													<T keyName="saveAndContinue">Save and continue</T>
-												</Button>
-											</div>
-										</div>
+										<OnboardingInterestStep
+											onSave={() => handleNextStep()}
+											onPreviousStep={() => handlePreviousStep()}
+										/>
 									)}
 
 									{/* Resource */}
