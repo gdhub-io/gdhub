@@ -25,8 +25,12 @@
 
   .stats {
     text-align: center;
-    
+
     :global {
+      span.ant-typography {
+        text-wrap: nowrap;
+      }
+
       span.ant-typography>strong {
         font-size: 48px;
       }

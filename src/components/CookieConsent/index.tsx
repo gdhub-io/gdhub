@@ -1,4 +1,5 @@
 import { MouseEvent, useEffect, useState } from 'react'
+import { T } from '@tolgee/react'
 import { Button, Flex, Grid, Space, Typography } from 'antd'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
@@ -37,16 +38,20 @@ export const CookieConsent = () => {
 		<div className={styles.cookieContainer}>
 			<Flex gap={32} align="center" vertical={screens.lg ? false : true}>
 				<Text>
-					This website uses cookies to improve the user experience. By using our website you agree to the use of all
-					cookies in accordance with our Cookie policy.
+					<T keyName="popup.cookie.text">
+						This website uses cookies to improve the user experience. By using our website you agree to the use of all
+						cookies in accordance with our Cookie policy.
+					</T>
 				</Text>
 
 				<Space size="large" wrap={screens.xl ? false : true}>
 					<Link href="/cookie-policy">
-						<Button>Read more</Button>
+						<Button>
+							<T keyName="popup.cookie.more">Read more</T>
+						</Button>
 					</Link>
 					<Button type="primary" onClick={onClick}>
-						I accept
+						<T keyName="popup.cookie.accept">I accept</T>
 					</Button>
 				</Space>
 			</Flex>

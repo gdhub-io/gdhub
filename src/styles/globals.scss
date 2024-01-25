@@ -108,11 +108,15 @@ a.text-link {
 	}
 
 	&:not(.ant-btn-icon-only)>.ant-btn-icon:not(:last-child) {
-		margin-inline-end: 37px;
+		margin-inline-end: 16px;
 	}
 
 	&:not(.ant-btn-icon-only):has(.ant-btn-icon) {
 		padding-left: 24px;
+	}
+
+	&-default {
+		background-color: transparent;
 	}
 
 	&.tertiary-blue-btn {
