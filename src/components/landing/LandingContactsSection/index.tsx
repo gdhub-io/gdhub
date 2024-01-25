@@ -2,6 +2,7 @@ import DiscordIcon from '@/assets/images/icons/discord.svg'
 import EmailIcon from '@/assets/images/icons/email.svg'
 import TelegramIcon from '@/assets/images/icons/telegram.svg'
 import BgImage from '@/assets/images/landing/bg-image-for-contacts-section.png'
+import { T } from '@tolgee/react'
 import { Col, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import { BiLogoLinkedin, BiLogoYoutube } from 'react-icons/bi'
@@ -15,9 +16,15 @@ export const LandingContactsSection = () => {
 	return (
 		<div id="contacts" className={styles.section} style={{ backgroundImage: `url(${BgImage.src})` }}>
 			<div className={styles.container}>
-				<div className={styles.preTitle}>Contacts</div>
-				<Title level={2}>Get in touch</Title>
-				<div className={styles.subTitle}>Join us and become a part of new era in the gaming industry!</div>
+				<div className={styles.preTitle}>
+					<T>Contacts</T>
+				</div>
+				<Title level={2}>
+					<T>Get in touch</T>
+				</Title>
+				<div className={styles.subTitle}>
+					<T>Join us and become a part of new era in the gaming industry!</T>
+				</div>
 				<div className={styles.content}>
 					<Row align="middle" justify="center">
 						<Col>
@@ -28,7 +35,9 @@ export const LandingContactsSection = () => {
 											<div className={styles.contactIcon}>
 												<EmailIcon />
 											</div>
-											<Text>Email</Text>
+											<Text>
+												<T>Email</T>
+											</Text>
 										</Space>
 									</Link>
 								</div>
@@ -38,7 +47,9 @@ export const LandingContactsSection = () => {
 											<div className={styles.contactIcon}>
 												<TelegramIcon />
 											</div>
-											<Text>Telegram</Text>
+											<Text>
+												<T>Telegram</T>
+											</Text>
 										</Space>
 									</Link>
 								</div>
@@ -48,7 +59,9 @@ export const LandingContactsSection = () => {
 											<div className={styles.contactIcon}>
 												<DiscordIcon />
 											</div>
-											<Text>Discord</Text>
+											<Text>
+												<T>Discord</T>
+											</Text>
 										</Space>
 									</Link>
 								</div>
@@ -58,7 +71,9 @@ export const LandingContactsSection = () => {
 											<div className={styles.contactIcon}>
 												<BiLogoYoutube size={100} style={{ width: 'initial', height: 'initial' }} />
 											</div>
-											<Text>Youtube</Text>
+											<Text>
+												<T>Youtube</T>
+											</Text>
 										</Space>
 									</Link>
 								</div>
@@ -68,7 +83,9 @@ export const LandingContactsSection = () => {
 											<div className={styles.contactIcon}>
 												<BiLogoLinkedin size={100} style={{ width: 'initial', height: 'initial' }} />
 											</div>
-											<Text>Linkedin</Text>
+											<Text>
+												<T>Linkedin</T>
+											</Text>
 										</Space>
 									</Link>
 								</div>

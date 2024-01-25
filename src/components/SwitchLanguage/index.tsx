@@ -6,7 +6,15 @@ import styles from './style.module.scss'
 
 const { Text } = Typography
 
-export const SwitchLanguage = ({ type = 'default' }: { type?: 'default' | 'primary' }) => {
+export const SwitchLanguage = ({
+	type = 'default',
+	border = false,
+	size = 'middle',
+}: {
+	type?: 'default' | 'primary'
+	border?: boolean
+	size?: 'small' | 'middle' | 'large'
+}) => {
 	const router = useRouter()
 	const tolgee = useTolgee(['language'])
 
@@ -28,12 +36,13 @@ export const SwitchLanguage = ({ type = 'default' }: { type?: 'default' | 'prima
 
 	return (
 		<Dropdown
-			className={styles.switcher}
+			className={`${styles.switcher} ${border ? styles.withBorder : undefined}`}
+			overlayClassName={`${styles.overlay} ${border ? styles.withBorder : undefined}`}
 			menu={{ items: langMenuItems, onClick: handleSelectLanguage }}
 			placement="bottomLeft"
 			trigger={['click']}
 		>
-			<Button type="text" icon={<TbWorld size={24} />}>
+			<Button type="text" size={size} icon={<TbWorld />}>
 				{tolgee.getLanguage()}
 			</Button>
 		</Dropdown>

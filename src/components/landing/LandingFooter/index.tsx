@@ -1,4 +1,5 @@
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import { T } from '@tolgee/react'
 import { Anchor, Col, Divider, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -15,45 +16,59 @@ export const LandingFooter = () => {
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<GdhubLogo style={{ width: '120px', height: '31px' }} />
 						<Paragraph style={{ marginTop: 12, maxWidth: 510 }}>
-							A community of game industry professionals whose members form teams to develop new games. Do you want to
-							get a new experience or develop your own game? Join now!
+							<T keyName="app-short-description">
+								A community of game industry professionals whose members form teams to develop new games. Do you want to
+								get a new experience or develop your own game? Join now!
+							</T>
 						</Paragraph>
 					</Col>
 					<Col xs={{ span: 8 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={8}>
-							<Title level={5}>Platform</Title>
+							<Title level={5}>
+								<T>Platform</T>
+							</Title>
 							<Anchor
 								items={[
-									{ href: '/projects', title: 'Game Projects', key: 'projects' },
-									{ href: '/vacancies', title: 'Vacancies', key: 'vacancies' },
-									{ href: '/#about', title: 'About us', key: 'about' },
+									{ href: '/projects', title: <T>Game Projects</T>, key: 'projects' },
+									{ href: '/vacancies', title: <T>Vacancies</T>, key: 'vacancies' },
+									{ href: '/#about', title: <T>About us</T>, key: 'about' },
 								]}
 							/>
 						</Space>
 					</Col>
 					<Col xs={{ span: 8 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={8}>
-							<Title level={5}>For Users</Title>
+							<Title level={5}>
+								<T>For Users</T>
+							</Title>
 							<Anchor
 								items={[
-									{ href: '/#for-authors', title: 'For Authors', key: 'for-authors' },
-									{ href: '/#for-specialists', title: 'For Specialists', key: 'for-specialists' },
+									{ href: '/#for-authors', title: <T>For Authors</T>, key: 'for-authors' },
+									{ href: '/#for-specialists', title: <T>For Specialists</T>, key: 'for-specialists' },
 								]}
 							/>
 						</Space>
 					</Col>
 					<Col xs={{ span: 8 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={8}>
-							<Title level={5}>Support</Title>
-							<Link href="/cookie-policy">Cookie Policy</Link>
-							<Link href="/terms">Terms of use</Link>
+							<Title level={5}>
+								<T>Support</T>
+							</Title>
+							<Link href="/cookie-policy">
+								<T>Cookie Policy</T>
+							</Link>
+							<Link href="/terms">
+								<T>Terms of use</T>
+							</Link>
 						</Space>
 					</Col>
 				</Row>
 
 				<Divider />
 
-				<Paragraph className={styles.copyright}>© 2023 GDHub, All rights reserved.</Paragraph>
+				<Paragraph className={styles.copyright}>
+					© 2023-2024 <T keyName="copyright">GDHub, All rights reserved.</T>
+				</Paragraph>
 			</div>
 		</div>
 	)

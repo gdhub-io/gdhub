@@ -10,7 +10,8 @@
     "lint": "next lint",
     "prepare": "husky install",
     "postinstall": "npx prisma generate",
-    "data-transfer": "ts-node -O {\\\"module\\\":\\\"CommonJS\\\"} -r tsconfig-paths/register prisma/data-transfer.ts"
+    "data-transfer": "ts-node -O {\\\"module\\\":\\\"CommonJS\\\"} -r tsconfig-paths/register prisma/data-transfer.ts",
+    "refresh-translations": "node import-translations.js"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} -r tsconfig-paths/register prisma/seed.ts"

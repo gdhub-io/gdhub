@@ -4,6 +4,7 @@ import { publicThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
+import { T } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -264,27 +265,43 @@ export const PublicLayout = ({ children }: any) => {
 						<Col span={12}>
 							<GdhubLogo style={{ width: '100px' }} />
 							<Paragraph>
-								A community of game industry professionals whose members form teams to develop new games. Do you want to
-								get a new experience or develop your own game? Join now!
+								<T keyName="app-short-description">
+									A community of game industry professionals whose members form teams to develop new games. Do you want
+									to get a new experience or develop your own game? Join now!
+								</T>
 							</Paragraph>
 						</Col>
 						<Col span={4}>
 							<Space direction="vertical">
-								<Title level={5}>Company</Title>
-								<Text>About us</Text>
+								<Title level={5}>
+									<T>Company</T>
+								</Title>
+								<Text>
+									<T>About us</T>
+								</Text>
 							</Space>
 						</Col>
 						<Col span={4}>
 							<Space direction="vertical">
-								<Title level={5}>For Users</Title>
-								<Text>For Authors</Text>
-								<Text>For Specialists</Text>
+								<Title level={5}>
+									<T>For Users</T>
+								</Title>
+								<Text>
+									<T>For Authors</T>
+								</Text>
+								<Text>
+									<T>For Specialists</T>
+								</Text>
 							</Space>
 						</Col>
 						<Col span={4}>
 							<Space direction="vertical">
-								<Title level={5}>Support</Title>
-								<Text>Cookie Policy</Text>
+								<Title level={5}>
+									<T>Support</T>
+								</Title>
+								<Text>
+									<T>Cookie Policy</T>
+								</Text>
 							</Space>
 						</Col>
 					</Row>

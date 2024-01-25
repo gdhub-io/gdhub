@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Carousel, Grid, Typography } from 'antd'
 import ReactNiceAvatar from 'react-nice-avatar'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
@@ -195,15 +196,22 @@ const feedbackList = [
 ]
 
 export const LandingFeedbackSection = () => {
+	const { t } = useTolgee()
 	const screens = Grid.useBreakpoint()
 	const [maxHeight, setMaxHeight] = useState('833px')
 
 	return (
 		<div id="reviews" className={styles.section} style={{ maxHeight: maxHeight }}>
 			<div className={styles.container}>
-				<div className={styles.preTitle}>Testimonials</div>
-				<Title level={2}>What our users say</Title>
-				<div className={styles.subTitle}>We are happy to work long-term with our users!</div>
+				<div className={styles.preTitle}>
+					<T keyName="landing.feedback.pretitle">Testimonials</T>
+				</div>
+				<Title level={2}>
+					<T keyName="landing.feedback.title">What our users say</T>
+				</Title>
+				<div className={styles.subTitle}>
+					<T keyName="landing.feedback.subtitle">We are happy to work long-term with our users!</T>
+				</div>
 				<div className={styles.content}>
 					{screens.lg && (
 						<>
@@ -211,15 +219,19 @@ export const LandingFeedbackSection = () => {
 								<Masonry gutter="30px">
 									{feedbackList.map((feedback, index) => (
 										<Card rootClassName={styles.feedbackCard} key={'feedback-card-' + index}>
-											<Card.Meta avatar={feedback.avatar} title={feedback.name} description={feedback.position} />
-											{feedback.text}
+											<Card.Meta
+												avatar={feedback.avatar}
+												title={t(`landing.feedback.title` + index, feedback.name)}
+												description={t(`landing.feedback.description` + index, feedback.position)}
+											/>
+											<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
 										</Card>
 									))}
 								</Masonry>
 							</ResponsiveMasonry>
 							{maxHeight != 'none' ? (
 								<Button className={styles.readMoreBtn} onClick={() => setMaxHeight('none')}>
-									Read more
+									<T>Read more</T>
 								</Button>
 							) : null}
 						</>

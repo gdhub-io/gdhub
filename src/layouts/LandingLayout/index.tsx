@@ -3,7 +3,21 @@ import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import { SwitchLanguage } from '@/components/SwitchLanguage'
 import { landingThemeConfig } from '@/config/theme'
-import { Avatar, Button, ConfigProvider, Drawer, Grid, Layout, Menu, MenuProps, Row, Space } from 'antd'
+import { T, useTolgee } from '@tolgee/react'
+import {
+	Avatar,
+	Button,
+	ConfigProvider,
+	Drawer,
+	Flex,
+	Grid,
+	Layout,
+	Menu,
+	MenuProps,
+	Row,
+	Space,
+	Typography,
+} from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
@@ -11,8 +25,10 @@ import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
+const { Text } = Typography
 
 export const LandingLayout = ({ children }: any) => {
+	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [scrollY, setScrollY] = useState(0)
 	const screens = Grid.useBreakpoint()
@@ -57,32 +73,32 @@ export const LandingLayout = ({ children }: any) => {
 		() => [
 			{
 				label: (
-					<Link href="#about" title="About us">
-						About us
+					<Link href="#about" title={t('About us')}>
+						<T>About us</T>
 					</Link>
 				),
 				key: '#about',
 			},
 			{
 				label: (
-					<Link href="#for-authors" title="For Authors">
-						For Authors
+					<Link href="#for-authors" title={t('For Authors')}>
+						<T>For Authors</T>
 					</Link>
 				),
 				key: '#for-authors',
 			},
 			{
 				label: (
-					<Link href="#for-specialists" title="For Specialists">
-						For Specialists
+					<Link href="#for-specialists" title={t('For Specialists')}>
+						<T>For Specialists</T>
 					</Link>
 				),
 				key: '#for-specialists',
 			},
 			{
 				label: (
-					<Link href="#contacts" title="Contacts">
-						Contacts
+					<Link href="#contacts" title={t('Contacts')}>
+						<T>Contacts</T>
 					</Link>
 				),
 				key: '#contacts',
@@ -108,6 +124,25 @@ export const LandingLayout = ({ children }: any) => {
 									mode="horizontal"
 									items={headerMenu}
 								/>
+
+								<Space align="start">
+									<>
+										{!!session ? (
+											<Link href="/hub">
+												<Button>
+													<T>Go to app</T>
+												</Button>
+											</Link>
+										) : (
+											<Link href="/signin">
+												<Button>
+													<T>Log in</T>
+												</Button>
+											</Link>
+										)}
+									</>
+									<SwitchLanguage />
+								</Space>
 							</>
 						) : (
 							<div className={styles.mobileMenuBtn}>
@@ -116,21 +151,6 @@ export const LandingLayout = ({ children }: any) => {
 								</Button>
 							</div>
 						)}
-
-						<Space align="start">
-							<>
-								{!!session ? (
-									<Link href="/hub">
-										<Button>Go to app</Button>
-									</Link>
-								) : (
-									<Link href="/signin">
-										<Button>Log in</Button>
-									</Link>
-								)}
-							</>
-							<SwitchLanguage />
-						</Space>
 					</Row>
 				</Header>
 				<Content className={styles.content}>{children}</Content>
@@ -139,7 +159,7 @@ export const LandingLayout = ({ children }: any) => {
 				</Footer>
 			</Layout>
 
-			{!screens.lg && (
+			{!screens.xl && (
 				<Drawer
 					className={styles.mobileMenuDrawer}
 					height={'100%'}
@@ -147,15 +167,18 @@ export const LandingLayout = ({ children }: any) => {
 					closeIcon={<AiOutlineClose size={24} />}
 					title={
 						!!session && (
-							<Space align="center">
+							<Flex align="center" justify="space-between">
 								<Avatar
 									src={
 										session.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
 									}
 									shape="square"
 								/>
-								<div className="username">{session.user?.name}</div>
-							</Space>
+								<Text className="username" ellipsis>
+									{session.user?.name}
+								</Text>
+								<SwitchLanguage border={true} size="small" />
+							</Flex>
 						)
 					}
 					placement="right"
@@ -164,11 +187,20 @@ export const LandingLayout = ({ children }: any) => {
 				>
 					<Space direction="vertical" size={32} style={{ width: '100%' }}>
 						<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
-						<Link href="/signin">
-							<Button size="small" type="primary" style={{ width: '100%' }}>
-								Log in
-							</Button>
-						</Link>
+
+						{!!session ? (
+							<Link href="/hub">
+								<Button size="small" type="primary" style={{ width: '100%' }}>
+									<T>Go to app</T>
+								</Button>
+							</Link>
+						) : (
+							<Link href="/signin">
+								<Button size="small" type="primary" style={{ width: '100%' }}>
+									<T>Log in</T>
+								</Button>
+							</Link>
+						)}
 					</Space>
 				</Drawer>
 			)}
