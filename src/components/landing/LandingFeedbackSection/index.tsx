@@ -248,8 +248,12 @@ export const LandingFeedbackSection = () => {
 							{feedbackList.map((feedback, index) => (
 								<div className={styles.feedbackSlideContainer} key={'feedback-card-' + index}>
 									<Card className={styles.feedbackSlide}>
-										<Card.Meta avatar={feedback.avatar} title={feedback.name} description={feedback.position} />
-										{feedback.text}
+										<Card.Meta
+											avatar={feedback.avatar}
+											title={t(`landing.feedback.title` + index, feedback.name)}
+											description={t(`landing.feedback.description` + index, feedback.position)}
+										/>
+										<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
 									</Card>
 								</div>
 							))}

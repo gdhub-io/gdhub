@@ -25,27 +25,25 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		staleTime: Infinity,
 	})
 
-	const { data: profileData } = useQuery(
-		['profile', 'current'],
-		() => axios.get<Speciality & { direction: WorkDirection }>('/api/user/speciality'),
-		{
-			onSuccess(response) {
-				const { id, name, level, direction, skills, specialization, portfolioUrl, jobs, schools } = response.data
+	useQuery(['profile', 'current'], () => axios.get<Speciality & { direction: WorkDirection }>('/api/user/speciality'), {
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+		onSuccess(response) {
+			const { id, name, level, direction, skills, specialization, portfolioUrl, jobs, schools } = response.data
 
-				form.setFieldsValue({
-					id,
-					name,
-					level,
-					workDirectionId: direction.id,
-					specialization,
-					portfolioUrl,
-					skills,
-					jobs,
-					schools,
-				})
-			},
-		}
-	)
+			form.setFieldsValue({
+				id,
+				name,
+				level,
+				workDirectionId: direction?.id,
+				specialization,
+				portfolioUrl,
+				skills,
+				jobs,
+				schools,
+			})
+		},
+	})
 
 	const { mutateAsync: createSpeciality } = useMutation(({ data }: any) =>
 		axios.post<any>('/api/user/speciality', { data })

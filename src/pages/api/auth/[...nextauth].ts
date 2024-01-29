@@ -29,16 +29,30 @@ export const authOptions: NextAuthOptions = {
 			server: process.env.EMAIL_SERVER as string,
 			async sendVerificationRequest({ identifier: email, url, provider: { server, from } }) {
 				try {
-					const result = await brevoApi.smtp.sendTransacEmail({
-						subject: 'Sign in',
-						to: [{ email }],
-						templateId: 1,
-						params: {
-							link: url,
-						},
-					})
+					const userExist = await prisma.user.findUnique({ where: { email } })
+					let sendResult: any
 
-					if (result.error) throw Error(result.error.message)
+					if (userExist) {
+						sendResult = await brevoApi.smtp.sendTransacEmail({
+							subject: 'Sign in',
+							to: [{ email }],
+							templateId: 1,
+							params: {
+								link: url,
+							},
+						})
+					} else {
+						sendResult = await brevoApi.smtp.sendTransacEmail({
+							subject: 'Registration',
+							to: [{ email }],
+							templateId: 2,
+							params: {
+								link: url,
+							},
+						})
+					}
+
+					if (sendResult.error) throw Error(sendResult.error.message)
 
 					console.log('sendVerificationRequest was sent')
 				} catch (error: any) {
@@ -73,14 +87,6 @@ export const authOptions: NextAuthOptions = {
 			},
 		}),
 	],
-	events: {
-		async createUser({ user }) {
-			await prisma.user.update({
-				where: { id: user.id },
-				data: { profile: { create: { name: user.name as string } } },
-			})
-		},
-	},
 	callbacks: {
 		async jwt({ token }) {
 			if (!token.email) return
