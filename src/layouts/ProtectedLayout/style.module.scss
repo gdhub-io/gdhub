@@ -2,6 +2,8 @@
 
 .header {
 	height: 120px;
+
+
 }
 
 .container {
@@ -16,9 +18,20 @@
 			align-items: center;
 		}
 
+		.header {
+
+			.ant-btn.ant-btn-text {
+				color: var(--dark-grey);
+
+				&:hover {
+					color: white;
+				}
+			}
+		}
+
 		.username {
 			font-size: 14px;
-			color: var(--dark-grey);
+			color: var(--dark-grey) !important;
 		}
 
 		.ant-layout-content {

@@ -29,6 +29,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { GoArrowUp } from 'react-icons/go'
 import { TbBrandTelegram } from 'react-icons/tb'
+import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
@@ -61,6 +62,15 @@ export const ProtectedLayout = ({ children }: any) => {
 		console.log(session)
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
+
+	const avatarConfig = useMemo(() => {
+		if (!session?.user.email) return
+
+		const config = genConfig(session.user.email)
+		config.hairStyle = 'normal'
+
+		return config
+	}, [session?.user.email])
 
 	const publicMenuItems: any = useMemo(
 		() => [
@@ -229,17 +239,21 @@ export const ProtectedLayout = ({ children }: any) => {
 											<Space>
 												<NotificationsBell />
 												<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-													<Button type="link" size="small">
+													<Button type="text" size="small">
 														<Space>
 															{screens.sm && <div className="username">{session?.user?.name}</div>}
-															<Avatar
-																src={
-																	session?.user?.image ? (
-																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																	) : null
-																}
-																shape="square"
-															/>
+															{session.user.image ? (
+																<Avatar
+																	src={
+																		session?.user?.image ? (
+																			<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																		) : null
+																	}
+																	shape="square"
+																/>
+															) : (
+																<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
+															)}
 														</Space>
 													</Button>
 												</Dropdown>

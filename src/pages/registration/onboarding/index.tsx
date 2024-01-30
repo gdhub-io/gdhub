@@ -159,49 +159,4 @@ const OnboardingPage = () => {
 	)
 }
 
-// export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-// 	const session = await getServerSession(context.req, context.res, authOptions)
-// 	const registrationToken = context.query.token as string
-// 	const publicAccessToken = Buffer.from(env('NEXT_PUBLIC_API_KEY')).toString('base64')
-
-// 	if (!registrationToken && !session?.user) {
-// 		return {
-// 			props: { error: 'Registration token is wrong. Go to Signup page before.' },
-// 		}
-// 	}
-
-// 	if (registrationToken) {
-// 		const registration = await prisma.registration.findUnique({ where: { registrationToken } })
-
-// 		if (!registration) {
-// 			return {
-// 				props: { error: 'The registration link is incorrect or has already been used' },
-// 			}
-// 		}
-
-// 		if (dayjs(registration.expires).diff() <= 0) {
-// 			await prisma.registration.delete({ where: { id: registration?.id } })
-// 			return {
-// 				props: { error: 'Registration token expired' } as IOnboardingPage,
-// 			}
-// 		}
-// 	}
-
-// 	if (session?.user && session.user.onboardingDone) {
-// 		return {
-// 			redirect: {
-// 				destination: '/hub',
-// 				permanent: false,
-// 			},
-// 		}
-// 	}
-
-// 	return {
-// 		props: {
-// 			userId: session?.user.id || null,
-// 			publicAccessToken,
-// 		} as IOnboardingPage,
-// 	}
-// }
-
 export default OnboardingPage

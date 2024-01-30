@@ -5,7 +5,7 @@ import ReactNiceAvatar from 'react-nice-avatar'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import styles from './style.module.scss'
 
-const { Title, Paragraph, Text } = Typography
+const { Title } = Typography
 
 const feedbackList = [
 	{

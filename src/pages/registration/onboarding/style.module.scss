@@ -22,11 +22,6 @@
     }
 
     .ant-typography {
-
-      &:not(span, .ant-typography-secondary) {
-        color: #17132C;
-      }
-
       i,
       span {
         font-family: var(--second-font-family);
