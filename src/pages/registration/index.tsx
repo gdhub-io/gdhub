@@ -2,10 +2,8 @@ import { useState } from 'react'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
-import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Typography, Form, Input, message, Checkbox, notification } from 'antd'
-import axios from 'axios'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -27,22 +25,24 @@ const RegistrationPage: NextPage = () => {
 	const { t } = useTolgee()
 	const [registrationStep, setRegistrationStep] = useState(1)
 	const [email, setEmail] = useState<string>()
-
-	const { mutateAsync: sendRegistrationLink, isLoading: isRegistration } = useMutation((data: { email: string }) =>
-		axios.post<void>('/api/email/registration', data)
-	)
+	const [isRegistration, setIsRegistration] = useState(false)
 
 	const handleSend = async () => {
+		setIsRegistration(true)
+
 		const { email } = await form.validateFields()
-		const response = await sendRegistrationLink({ email })
+		const response = await signIn('email', { email, userType: 'author', redirect: false })
+
+		if (response?.ok) {
+			setRegistrationStep(3)
+		}
+
+		if (response?.error) {
+			message.error(response?.error)
+		}
 
 		setEmail(email)
-
-		if (response?.status == 204) {
-			setRegistrationStep(3)
-		} else {
-			message.error(response?.statusText)
-		}
+		setIsRegistration(false)
 	}
 
 	return (

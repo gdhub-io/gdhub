@@ -20,7 +20,7 @@ export const OnboardingResourceStep = ({
 }: IOnboardingResourceStep) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
-	const { data: session } = useSession()
+	const { data: session, update: updateSession } = useSession()
 
 	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/user/profile'), {
 		enabled: !!session?.user.id,
@@ -56,6 +56,8 @@ export const OnboardingResourceStep = ({
 				timeForWork: timeForWorkMin && timeForWorkMax ? [timeForWorkMin, timeForWorkMax] : undefined,
 				onboardingDone: true,
 			})
+
+			await updateSession()
 
 			onSave()
 		} catch (error: any) {

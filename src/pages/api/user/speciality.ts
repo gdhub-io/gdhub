@@ -25,7 +25,11 @@ class ApiSpecialityHandler {
 		const { data } = body
 
 		const speciality = await prisma.speciality.create({
-			data: { ...data, user: { connect: { id: req.user.id } }, tools: data.tools ? data.tools.join(`\n`) : '' } as any,
+			data: {
+				...data,
+				userId: req.user.id,
+				tools: data.tools ? data.tools.join(`\n`) : '',
+			} as any,
 			include: { direction: true },
 		})
 

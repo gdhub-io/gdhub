@@ -32,7 +32,7 @@ class ApiDictGameGenresHandler {
 			},
 		})
 
-		const link = env('NEXT_PUBLIC_APP_URI') + `/registration/onboarding?token=${registrationToken}`
+		const link = env('NEXT_PUBLIC_APP_URI') + `/registration?token=${registrationToken}`
 
 		const result = await brevoApi.smtp.sendTransacEmail({
 			subject: 'Registration',

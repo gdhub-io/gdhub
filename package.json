@@ -11,7 +11,8 @@
     "prepare": "husky install",
     "postinstall": "npx prisma generate",
     "data-transfer": "ts-node -O {\\\"module\\\":\\\"CommonJS\\\"} -r tsconfig-paths/register prisma/data-transfer.ts",
-    "refresh-translations": "node import-translations.js"
+    "refresh-translations": "node import-translations.js",
+    "db:push-back": "chmod +x prisma/scripts/push-back.sh && prisma/scripts/push-back.sh"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} -r tsconfig-paths/register prisma/seed.ts"
