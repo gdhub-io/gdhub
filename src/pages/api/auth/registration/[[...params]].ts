@@ -36,18 +36,7 @@ class ApiRegistrationHandler {
 	@Post('/onboarding/profile')
 	public async saveOnboardingProfile(@Req() req: NextApiRequestWithUser, @Body() body: Record<string, any>) {
 		let user: any = null
-		const {
-			firstName,
-			lastName,
-			email,
-			yearOfBirth,
-			country,
-			city,
-			confirmUserData,
-			agreeWithTermsAndPrivacy,
-			needSubscribeToNewsletter,
-			registrationToken,
-		} = body
+		const { firstName, lastName, email, yearOfBirth, country, city, confirmUserData, registrationToken } = body
 
 		const registration = await prisma.registration.findUnique({ where: { registrationToken } })
 
@@ -69,7 +58,7 @@ class ApiRegistrationHandler {
 
 		const existedUser = await prisma.user.findUnique({
 			where: { email, emailVerified: {} },
-			include: { _count: { select: { specialities: true } } },
+			include: { _count: { select: { specialities: true } }, profile: true },
 		})
 
 		if (!existedUser) {
@@ -84,7 +73,7 @@ class ApiRegistrationHandler {
 							city,
 							yearOfBirth,
 							country,
-							agreements: { confirmUserData, agreeWithTermsAndPrivacy, needSubscribeToNewsletter },
+							agreements: { confirmUserData, agreeWithTermsAndPrivacy: false, needSubscribeToNewsletter: false },
 						},
 					},
 				},
@@ -93,6 +82,7 @@ class ApiRegistrationHandler {
 			if (existedUser.onboardingDone) {
 				throw new BadRequestException('User with the email already exists')
 			} else {
+				const previousAgreements = existedUser.profile?.agreements as Record<string, any>
 				user = await prisma.user.update({
 					where: { id: existedUser.id },
 					data: {
@@ -103,7 +93,7 @@ class ApiRegistrationHandler {
 								city,
 								yearOfBirth,
 								country,
-								agreements: { confirmUserData, agreeWithTermsAndPrivacy, needSubscribeToNewsletter },
+								agreements: { ...previousAgreements, confirmUserData },
 							},
 						},
 					},

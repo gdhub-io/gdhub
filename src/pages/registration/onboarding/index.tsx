@@ -24,7 +24,7 @@ declare global {
 const OnboardingPage = () => {
 	const { t } = useTolgee()
 	const [error, setError] = useState<string>()
-	const [onboardingStep, setOnboardingStep] = useState(-1)
+	const [onboardingStep, setOnboardingStep] = useState(3)
 	const [lastCompletedStep, setLastCompletedStep] = useState(0)
 	const [isCompleted, setIsCompleted] = useState(false)
 
