@@ -32,15 +32,10 @@ class ApiProfileHandler {
 			...othersData
 		} = body
 
-		const agreements: Prisma.JsonObject = {}
-		if (confirmUserData) agreements.confirmUserData = confirmUserData
-		if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
-		if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
+		let profile = await prisma.profile.findUnique({ where: { userId: req.user.id! } })
 
-		const existProfile = await prisma.user.existProfile(req.user.id!)
-
-		if (!existProfile) {
-			await prisma.profile.create({ data: { name: name!, userId: req.user.id! } })
+		if (!profile) {
+			profile = await prisma.profile.create({ data: { name: name!, userId: req.user.id! } })
 		}
 
 		if (body.tgNickname) {
@@ -48,6 +43,11 @@ class ApiProfileHandler {
 			telegramUsername = telegramUsername.replace(/@/g, '').replace(/https:\/\/t\.me\//g, '')
 			body.tgNickname = telegramUsername
 		}
+
+		const agreements = profile.agreements as Record<string, any>
+		if (confirmUserData) agreements.confirmUserData = confirmUserData
+		if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
+		if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
 
 		await prisma.profile.update({
 			where: { userId: req.user.id },
@@ -61,7 +61,7 @@ class ApiProfileHandler {
 					: undefined,
 				preferredLevels: preferredLevels ? { set: preferredLevels?.map((v: string) => ({ id: v })) } : undefined,
 				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
-				agreements: Object.values(agreements).length > 0 ? agreements : undefined,
+				agreements: confirmUserData ? ({ ...agreements, confirmUserData } as Prisma.JsonObject) : undefined,
 				user: onboardingDone ? { update: { onboardingDone, roles: { set: [UserRole.Member] } } } : undefined,
 			},
 		})
