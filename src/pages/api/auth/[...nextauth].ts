@@ -5,7 +5,6 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
 import { redirect } from 'next/navigation'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
 import EmailProvider from 'next-auth/providers/email'
 import GoogleProvider from 'next-auth/providers/google'
 
@@ -27,7 +26,7 @@ export const authOptions: NextAuthOptions = {
 		EmailProvider({
 			from: process.env.EMAIL_FROM as string,
 			server: process.env.EMAIL_SERVER as string,
-			async sendVerificationRequest({ identifier: email, url, provider: { server, from } }) {
+			async sendVerificationRequest({ identifier: email, url, provider: { server, from } }, ...other) {
 				try {
 					const userExist = await prisma.user.findUnique({ where: { email } })
 					let sendResult: any
@@ -57,32 +56,6 @@ export const authOptions: NextAuthOptions = {
 					console.log('sendVerificationRequest was sent')
 				} catch (error: any) {
 					console.error('', error)
-				}
-			},
-		}),
-		CredentialsProvider({
-			id: 'telegram-web-app',
-			name: 'Sign in with Telegram Web App',
-			credentials: {
-				username: { label: 'Username' },
-			},
-			async authorize(credentials, req) {
-				const { username } = req.query as { username: string }
-
-				if (!username) return null
-
-				const profile = await prisma.profile.findFirst({ where: { tgNickname: username }, include: { user: true } })
-
-				if (!profile) return null
-
-				return {
-					id: profile.user.id,
-					profileId: profile.id,
-					name: profile.name || 'Unknown name',
-					email: profile.user.email,
-					image: profile.user.image,
-					roles: profile.user.roles,
-					onboardingDone: profile.user.onboardingDone,
 				}
 			},
 		}),

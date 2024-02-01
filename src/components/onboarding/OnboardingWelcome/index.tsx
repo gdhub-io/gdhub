@@ -1,7 +1,6 @@
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { T } from '@tolgee/react'
 import { Space, Button, Typography } from 'antd'
-import Link from 'next/link'
 import styles from './style.module.scss'
 
 const { Paragraph, Title } = Typography
@@ -25,11 +24,10 @@ export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 								интересах.
 							</T>
 						</Paragraph>
-						<Link href="/registration">
-							<Button style={{ width: '300px' }} onClick={() => onNext()}>
-								<T>Заполнить профиль</T>
-							</Button>
-						</Link>
+
+						<Button style={{ width: '300px' }} onClick={() => onNext()}>
+							<T>Заполнить профиль</T>
+						</Button>
 					</Space>
 				</div>
 			</div>

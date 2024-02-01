@@ -52,6 +52,10 @@
       font-size: 18px;
     }
 
+    .ant-form {
+      text-align: left !important;
+    }
+
     @media screen and (max-width: 767px) {
       .login-box {
         flex-direction: column;

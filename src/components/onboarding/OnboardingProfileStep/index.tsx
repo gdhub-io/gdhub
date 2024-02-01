@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { deleteCookie, getCookie } from '@/helpers/cookie'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -79,8 +80,21 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 	const handleSaveProfileAndNextStep = async () => {
 		try {
 			const { firstName, lastName, ...data } = await form.validateFields()
+			let preRegistrationData: Record<string, any> | undefined = undefined
 
-			const res = await saveUserProfile({ ...data, name: [firstName, lastName].join(' ') })
+			if (router.query.provider) {
+				let preRegistrationCookie = getCookie(`auth.${router.query.provider}.pre-registration`)
+				preRegistrationData = preRegistrationCookie ? JSON.parse(preRegistrationCookie) : undefined
+			}
+
+			const res = await saveUserProfile({
+				...data,
+				name: [firstName, lastName].join(' '),
+				agreeWithTermsAndPrivacy: preRegistrationData?.agreeWithTermsAndPrivacy,
+				needSubscribeToNewsletter: preRegistrationData?.needSubscribeToNewsletter,
+			})
+
+			deleteCookie('pre-registration')
 
 			onSave({ userId: res.data.id })
 		} catch (error: any) {

@@ -12,8 +12,10 @@
         color: #fff;
         border-color: #F33921;
 
-        .ant-typography {
-          color: #fff;
+        .segmented-option-content {
+          .ant-typography {
+            color: #fff !important;
+          }
         }
 
         .segmented-option-footer {

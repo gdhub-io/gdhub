@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { OnboardingCompleted } from '@/components/onboarding/OnboardingCompleted'
 import { OnboardingError } from '@/components/onboarding/OnboardingError'
@@ -8,7 +8,7 @@ import { OnboardingResourceStep } from '@/components/onboarding/OnboardingResour
 import { OnboardingSpecialityStep } from '@/components/onboarding/OnboardingSpecialityStep'
 import { OnboardingWelcome } from '@/components/onboarding/OnboardingWelcome'
 import { T, useTolgee } from '@tolgee/react'
-import { Typography, Row, Col, Steps, Flex, Menu } from 'antd'
+import { Typography, Row, Col, Steps, Flex, Menu, Grid } from 'antd'
 import { ItemType } from 'antd/es/menu/hooks/useItems'
 import Head from 'next/head'
 import styles from './style.module.scss'
@@ -23,6 +23,8 @@ declare global {
 
 const OnboardingPage = () => {
 	const { t } = useTolgee()
+	const screens = Grid.useBreakpoint()
+	const containerRef = useRef<HTMLDivElement>(null)
 	const [error, setError] = useState<string>()
 	const [onboardingStep, setOnboardingStep] = useState(-1)
 	const [lastCompletedStep, setLastCompletedStep] = useState(0)
@@ -47,10 +49,12 @@ const OnboardingPage = () => {
 
 	const handlePreviousStep = () => {
 		setOnboardingStep((prev) => prev - 1)
+		window.scrollTo({ top: 0 })
 	}
 
 	const handleNextStep = () => {
 		setOnboardingStep((prev) => prev + 1)
+		window.scrollTo({ top: 0 })
 	}
 
 	const handleComplete = () => {
@@ -88,7 +92,11 @@ const OnboardingPage = () => {
 			{onboardingStep == -1 && <OnboardingWelcome onNext={() => setOnboardingStep(0)} />}
 
 			{onboardingStep >= 0 && (
-				<div className={`${styles.container}`} style={{ backgroundImage: `url(${RegistrationBgImage.src})` }}>
+				<div
+					ref={containerRef}
+					className={`${styles.container}`}
+					style={{ backgroundImage: `url(${RegistrationBgImage.src})` }}
+				>
 					<div className="onboarding-box">
 						<div className="onboarding-header">
 							<Flex align="center">
@@ -107,7 +115,7 @@ const OnboardingPage = () => {
 						</div>
 						<div className="onboarding-container">
 							<Row>
-								<Col md={{ span: 5 }}>
+								<Col xs={0} lg={{ span: 5 }}>
 									<div className="onboarding-sidemenu">
 										<Menu
 											className={styles.leftMenu}
@@ -119,7 +127,7 @@ const OnboardingPage = () => {
 										/>
 									</div>
 								</Col>
-								<Col md={{ span: 19 }}>
+								<Col xs={24} lg={{ span: 19 }}>
 									{/* Profile */}
 									{onboardingStep == 0 && (
 										<OnboardingProfileStep onLoading={onProfileLoading} onSave={() => handleNextStep()} />
@@ -158,50 +166,5 @@ const OnboardingPage = () => {
 		</>
 	)
 }
-
-// export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-// 	const session = await getServerSession(context.req, context.res, authOptions)
-// 	const registrationToken = context.query.token as string
-// 	const publicAccessToken = Buffer.from(env('NEXT_PUBLIC_API_KEY')).toString('base64')
-
-// 	if (!registrationToken && !session?.user) {
-// 		return {
-// 			props: { error: 'Registration token is wrong. Go to Signup page before.' },
-// 		}
-// 	}
-
-// 	if (registrationToken) {
-// 		const registration = await prisma.registration.findUnique({ where: { registrationToken } })
-
-// 		if (!registration) {
-// 			return {
-// 				props: { error: 'The registration link is incorrect or has already been used' },
-// 			}
-// 		}
-
-// 		if (dayjs(registration.expires).diff() <= 0) {
-// 			await prisma.registration.delete({ where: { id: registration?.id } })
-// 			return {
-// 				props: { error: 'Registration token expired' } as IOnboardingPage,
-// 			}
-// 		}
-// 	}
-
-// 	if (session?.user && session.user.onboardingDone) {
-// 		return {
-// 			redirect: {
-// 				destination: '/hub',
-// 				permanent: false,
-// 			},
-// 		}
-// 	}
-
-// 	return {
-// 		props: {
-// 			userId: session?.user.id || null,
-// 			publicAccessToken,
-// 		} as IOnboardingPage,
-// 	}
-// }
 
 export default OnboardingPage

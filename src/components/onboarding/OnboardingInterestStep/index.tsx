@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
@@ -24,6 +25,19 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 	const { t } = useTolgee()
 	const { data: session } = useSession()
 
+	const preSelectedInterest = useMemo(() => {
+		switch (router.query.for) {
+			case 'author':
+				return PrimaryInterest.Author
+			case 'specialist':
+				return PrimaryInterest.Specialist
+			case 'mentor':
+				return PrimaryInterest.Mentor
+			default:
+				return PrimaryInterest.Specialist
+		}
+	}, [router.query.for])
+
 	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/user/profile'), {
 		enabled: !!session?.user.id,
 		refetchInterval: false,
@@ -34,7 +48,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 			const { primaryInterest, preferredGenres, preferredSettings, preferredLevels } = response.data
 
 			form.setFieldsValue({
-				primaryInterest,
+				primaryInterest: preSelectedInterest || primaryInterest, //selected or default option
 				preferredGenres: preferredGenres.map((d: Record<string, string>) => d.id),
 				preferredSettings: preferredSettings.map((d: Record<string, string>) => d.id),
 				preferredLevels: preferredLevels.map((d: Record<string, string>) => d.id),
@@ -115,7 +129,8 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 						requiredMark="optional"
 						autoComplete="off"
 						scrollToFirstError
-						initialValues={{ primaryInterest: router.query.interest || 'specialist' }}
+						onValuesChange={(a, b) => console.log('change', a, b)}
+						initialValues={{ primaryInterest: preSelectedInterest }}
 					>
 						<Space direction="vertical" size={16} style={{ width: '100%' }}>
 							<Row gutter={[32, 16]}>

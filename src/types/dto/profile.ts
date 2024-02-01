@@ -94,6 +94,14 @@ export class UpdateProfileDto {
 	@IsOptional()
 	preferredSettings?: string[]
 
+	@IsString()
+	@IsOptional()
+	agreeWithTermsAndPrivacy: boolean
+
+	@IsString()
+	@IsOptional()
+	needSubscribeToNewsletter: boolean
+
 	@IsBoolean()
 	@IsOptional()
 	confirmUserData?: boolean

@@ -24,11 +24,18 @@ class ApiProfileHandler {
 			name,
 			onboardingDone,
 			confirmUserData,
+			agreeWithTermsAndPrivacy,
+			needSubscribeToNewsletter,
 			preferredGenres,
 			preferredLevels,
 			preferredSettings,
 			...othersData
 		} = body
+
+		const agreements: Prisma.JsonObject = {}
+		if (confirmUserData) agreements.confirmUserData = confirmUserData
+		if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
+		if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
 
 		const existProfile = await prisma.user.existProfile(req.user.id!)
 
@@ -54,7 +61,7 @@ class ApiProfileHandler {
 					: undefined,
 				preferredLevels: preferredLevels ? { set: preferredLevels?.map((v: string) => ({ id: v })) } : undefined,
 				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
-				agreements: confirmUserData ? ({ confirmUserData } as Prisma.JsonObject) : undefined,
+				agreements: Object.values(agreements).length > 0 ? agreements : undefined,
 				user: onboardingDone ? { update: { onboardingDone, roles: { set: [UserRole.Member] } } } : undefined,
 			},
 		})
