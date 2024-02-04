@@ -141,7 +141,7 @@ export const LandingLayout = ({ children }: any) => {
 											</Link>
 										)}
 									</>
-									<SwitchLanguage />
+									{/* <SwitchLanguage /> */}
 								</Space>
 							</>
 						) : (
@@ -177,7 +177,7 @@ export const LandingLayout = ({ children }: any) => {
 								<Text className="username" ellipsis>
 									{session.user?.name}
 								</Text>
-								<SwitchLanguage border={true} size="small" />
+								{/* <SwitchLanguage border={true} size="small" /> */}
 							</Flex>
 						)
 					}

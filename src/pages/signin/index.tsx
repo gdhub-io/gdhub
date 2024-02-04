@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import LogingBgImage from '@/assets/images/login-bg.jpg'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Typography, Form, Input, message } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
@@ -19,6 +20,7 @@ declare global {
 }
 
 const LoginPage: NextPage = () => {
+	const { t } = useTolgee()
 	const [form] = Form.useForm()
 	const [loginStep, setLoginStep] = useState(1)
 	const [email, setEmail] = useState<string>()
@@ -40,18 +42,22 @@ const LoginPage: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Sign in</title>
+				<title>{t('Sign in')}</title>
 			</Head>
 			<div className={`${styles.container} bright-container`} style={{ backgroundImage: `url(${LogingBgImage.src})` }}>
 				<div className="login-box">
 					<div className="login-form">
 						<Space direction="vertical" size={40}>
-							{loginStep < 3 && <Title>Log in</Title>}
+							{loginStep < 3 && (
+								<Title>
+									<T>Log in</T>
+								</Title>
+							)}
 							{loginStep == 1 && (
 								<>
 									<Space direction="vertical" size={24}>
 										<Button type="primary" style={{ width: '100%' }} onClick={() => setLoginStep(2)}>
-											Log in with email
+											<T>Log in with email</T>
 										</Button>
 										<Button
 											type="primary"
@@ -59,14 +65,14 @@ const LoginPage: NextPage = () => {
 											icon={<FaGoogle size={16} />}
 											onClick={() => signIn('google', { callbackUrl: '/hub' }, { prompt: 'select_account consent' })}
 										>
-											Log in with Google
+											<T>Log in with Google</T>
 										</Button>
 										<Link href="/registration" className={styles.createAccountLink}>
-											Create new account
+											<T>Create new account</T>
 										</Link>
 										<Link href="/">
 											<Button className="btn-default-on-white" style={{ width: '100%' }}>
-												Back to main
+												<T>Back to main</T>
 											</Button>
 										</Link>
 									</Space>
@@ -76,12 +82,16 @@ const LoginPage: NextPage = () => {
 							{loginStep == 2 && (
 								<>
 									<Space direction="vertical" size={24}>
-										<Paragraph>We will send a letter to email with a link to log into your account</Paragraph>
+										<Paragraph>
+											<T keyName="signin.subtitle">
+												We will send a letter to email with a link to log into your account
+											</T>
+										</Paragraph>
 
 										<Form form={form} layout="vertical">
 											<Form.Item
 												name="email"
-												label="Enter Email"
+												label={<T>Enter Email</T>}
 												rules={[{ type: 'email', required: true, message: 'Please enter Email' }]}
 											>
 												<Input />
@@ -90,10 +100,10 @@ const LoginPage: NextPage = () => {
 
 										<Space size={24}>
 											<Button type="primary" onClick={handleSend} loading={submitting}>
-												Send link to email
+												<T>Send link to email</T>
 											</Button>
 											<Button type="link" onClick={() => setLoginStep(1)}>
-												Back
+												<T>Back</T>
 											</Button>
 										</Space>
 									</Space>

@@ -32,9 +32,9 @@ const RegistrationPage: NextPage = () => {
 	const [isRegistration, setIsRegistration] = useState(false)
 
 	const handleSendWithEmail = async () => {
-		setIsRegistration(true)
-
 		const { email, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } = await formRegEmail.validateFields()
+
+		setIsRegistration(true)
 
 		setCookie(
 			'auth.email.pre-registration',
@@ -64,9 +64,9 @@ const RegistrationPage: NextPage = () => {
 	}
 
 	const handleSendWithGoogle = async () => {
-		setIsRegistration(true)
+		const { agreeWithTermsAndPrivacy, needSubscribeToNewsletter } = await formRegGoogle.validateFields()
 
-		const { agreeWithTermsAndPrivacy, needSubscribeToNewsletter } = await formRegEmail.validateFields()
+		setIsRegistration(true)
 
 		setCookie(
 			'auth.google.pre-registration',
@@ -89,7 +89,7 @@ const RegistrationPage: NextPage = () => {
 	return (
 		<EmptyLayout type="dark">
 			<Head>
-				<title>Registration</title>
+				<title>{t('Registration')}</title>
 			</Head>
 			<div
 				className={`${styles.container} bright-container`}
@@ -98,7 +98,11 @@ const RegistrationPage: NextPage = () => {
 				<div className="login-box">
 					<div className="login-form">
 						<Space direction="vertical" size={40}>
-							{registrationStep.step < 3 && <Title>Registration</Title>}
+							{registrationStep.step < 3 && (
+								<Title>
+									<T>Registration</T>
+								</Title>
+							)}
 							{registrationStep.step == 1 && (
 								<>
 									<Space direction="vertical" size={24}>
@@ -107,7 +111,7 @@ const RegistrationPage: NextPage = () => {
 											style={{ width: '100%' }}
 											onClick={() => setRegistrationStep({ step: 2, provider: 'email' })}
 										>
-											Create new account
+											<T>Create new account</T>
 										</Button>
 										<Button
 											type="primary"
@@ -115,14 +119,14 @@ const RegistrationPage: NextPage = () => {
 											icon={<FaGoogle size={16} />}
 											onClick={() => setRegistrationStep({ step: 2, provider: 'google' })}
 										>
-											Registration with Google
+											<T>Registration with Google</T>
 										</Button>
 										<Link href="/signin" className={styles.createAccountLink}>
-											I already have an account
+											<T>I already have an account</T>
 										</Link>
 										<Link href="/">
 											<Button className="btn-default-on-white" style={{ width: '100%' }}>
-												Back to main
+												<T>Back to main</T>
 											</Button>
 										</Link>
 									</Space>
@@ -169,10 +173,10 @@ const RegistrationPage: NextPage = () => {
 
 										<Space size={24}>
 											<Button type="primary" onClick={handleSendWithGoogle} loading={isRegistration}>
-												Continue with Google
+												<T>Continue with Google</T>
 											</Button>
 											<Button type="link" onClick={() => setRegistrationStep({ step: 1, provider: 'email' })}>
-												Back
+												<T>Back</T>
 											</Button>
 										</Space>
 									</Space>
@@ -182,13 +186,17 @@ const RegistrationPage: NextPage = () => {
 							{registrationStep.step == 2 && registrationStep.provider == 'email' && (
 								<>
 									<Space direction="vertical" size={24}>
-										<Paragraph>We will send a letter to email with a registration link</Paragraph>
+										<Paragraph>
+											<T keyName="registration.email.subtitle">
+												We will send a letter to email with a registration link
+											</T>
+										</Paragraph>
 
 										<Form form={formRegEmail} layout="vertical">
 											<Form.Item
 												name="email"
-												label="Enter Email"
-												rules={[{ type: 'email', required: true, message: 'Please enter Email' }]}
+												label={<T>Enter Email</T>}
+												rules={[{ type: 'email', required: true, message: <T>Please enter Email</T> }]}
 											>
 												<Input />
 											</Form.Item>
@@ -229,10 +237,10 @@ const RegistrationPage: NextPage = () => {
 
 										<Space size={24}>
 											<Button type="primary" onClick={handleSendWithEmail} loading={isRegistration}>
-												Send registration link
+												<T>Send registration link</T>
 											</Button>
 											<Button type="link" onClick={() => setRegistrationStep({ step: 1, provider: 'email' })}>
-												Back
+												<T>Back</T>
 											</Button>
 										</Space>
 									</Space>
@@ -242,13 +250,15 @@ const RegistrationPage: NextPage = () => {
 							{registrationStep.step == 3 && registrationStep.provider == 'email' && (
 								<Space direction="vertical" size={24}>
 									<Paragraph style={{ maxWidth: 400 }}>
-										We have sent an email to {email} with an access link. Follow the link and complete the following
-										registration steps.
+										<T keyName="registration.email.complete" params={{ email }}>
+											We have sent an email to email with an access link. Follow the link and complete the following
+											registration steps.
+										</T>
 									</Paragraph>
 
 									<Link href="/">
 										<Button className="btn-default-on-white" style={{ width: '100%' }}>
-											Back to main
+											<T>Back to main</T>
 										</Button>
 									</Link>
 								</Space>

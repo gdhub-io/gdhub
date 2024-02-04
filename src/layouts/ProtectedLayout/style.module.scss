@@ -2,12 +2,11 @@
 
 .header {
 	height: 120px;
-
-
 }
 
 .container {
 	max-width: $wrapper-width;
+	margin: 0 auto;
 
 	:global {
 		.logo {
