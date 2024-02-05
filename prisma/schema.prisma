@@ -54,6 +54,7 @@ model User {
   roles              UserRole[]          @default([Guest])
   updatedAt          DateTime            @updatedAt
   agreements         Json?               @default("{ \"confirmUserData\": false, \"agreeWithTermsAndPrivacy\": false, \"needSubscribeToNewsletter\": false }")
+  lang               Language            @default(ru)
   accounts           Account[]
   requestedLectures  Lecture[]           @relation("requestedBy")
   listener           LectureListener[]
@@ -85,6 +86,11 @@ model Profile {
   primaryInterest   PrimaryInterest       @default(Specialist)
   isActive          Boolean               @default(true)
   otherResources    String?
+}
+
+enum Language {
+  ru
+  en
 }
 
 model VerificationToken {

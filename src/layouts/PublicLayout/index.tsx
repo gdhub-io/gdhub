@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import { LandingFooter } from '@/components/landing/LandingFooter'
 import { publicThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -28,15 +29,14 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
-import { BsDiscord, BsMailbox, BsTelegram } from 'react-icons/bs'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
-const { Paragraph, Text, Title } = Typography
 
 export const PublicLayout = ({ children }: any) => {
 	const router = useRouter()
+	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
@@ -84,6 +84,44 @@ export const PublicLayout = ({ children }: any) => {
 			},
 		],
 		[screens]
+	)
+
+	const headerMenu: MenuProps['items'] = useMemo(
+		() => [
+			{
+				label: (
+					<Link href="#about" title={t('About us')}>
+						<T>About us</T>
+					</Link>
+				),
+				key: '#about',
+			},
+			{
+				label: (
+					<Link href="#for-authors" title={t('For Authors')}>
+						<T>For Authors</T>
+					</Link>
+				),
+				key: '#for-authors',
+			},
+			{
+				label: (
+					<Link href="#for-specialists" title={t('For Specialists')}>
+						<T>For Specialists</T>
+					</Link>
+				),
+				key: '#for-specialists',
+			},
+			{
+				label: (
+					<Link href="#contacts" title={t('Contacts')}>
+						<T>Contacts</T>
+					</Link>
+				),
+				key: '#contacts',
+			},
+		],
+		[screens, session]
 	)
 
 	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
@@ -170,143 +208,58 @@ export const PublicLayout = ({ children }: any) => {
 	return (
 		<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
 			<Layout className={styles.container}>
-				<Header className={styles.header}>
+				<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
 					<Row align="middle" justify="space-between" className={styles.headerContainer}>
 						<Link href="/" className="logo">
-							<GdhubLogo style={{ width: '156px', height: '42px' }} />
+							<GdhubLogo style={{ width: '146px', height: '42px' }} />
 						</Link>
-						{
+
+						{screens.lg ? (
 							<>
-								{screens.xl ? (
+								<Menu
+									className={styles.headerMenu}
+									style={{ flex: 1, justifyContent: 'center', columnGap: screens.xl ? 64 : 32 }}
+									mode="horizontal"
+									items={headerMenu}
+								/>
+
+								<Space align="start">
 									<>
-										{screens.lg && (
-											<Menu
-												style={{ flex: 1, justifyContent: 'center' }}
-												mode="horizontal"
-												items={session ? inlineMenuItems : publicMenuItems}
-											/>
-										)}
-										{!!session && (
-											<>
-												<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-													<Button type="link" size="large">
-														<Space>
-															{screens.sm && <div className="username">{session?.user?.name}</div>}
-															<Avatar
-																src={
-																	session?.user?.image ? (
-																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																	) : null
-																}
-																shape="square"
-															/>
-														</Space>
-													</Button>
-												</Dropdown>
-											</>
+										{!!session ? (
+											<Link href="/hub">
+												<Button>
+													<T>Go to app</T>
+												</Button>
+											</Link>
+										) : (
+											<Link href="/signin">
+												<Button>
+													<T>Log in</T>
+												</Button>
+											</Link>
 										)}
 									</>
-								) : (
-									<Space>
-										<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-											<AiOutlineMenu />
-										</Button>
-									</Space>
-								)}
+									{/* <SwitchLanguage /> */}
+								</Space>
 							</>
-						}
-						{!session && (
-							<Link href="/signin">
-								<Button>Log in</Button>
-							</Link>
+						) : (
+							<div className={styles.mobileMenuBtn}>
+								<Button type="text" onClick={() => setOpenMobileMenu(true)}>
+									<AiOutlineMenu size={32} />
+								</Button>
+							</div>
 						)}
 					</Row>
 				</Header>
 				<Content>
 					<div className="layout-background">{children}</div>
 				</Content>
-				<Footer>
-					<Space direction="vertical" align="center" style={{ width: '100%' }}>
-						<Paragraph>Contacts</Paragraph>
-						<Title level={2}>Get in touch</Title>
-						<Paragraph>Join us and become a part of new era in the gaming industry!</Paragraph>
-						<Row>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsMailbox />
-									</div>
-									<Text>Email</Text>
-									<Text>info@gdhub.io</Text>
-								</Space>
-							</Col>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsTelegram />
-									</div>
-									<Text>Telegram</Text>
-									<Text>Game Developers Hub</Text>
-								</Space>
-							</Col>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsDiscord />
-									</div>
-									<Text>Discord</Text>
-									<Text>Game Developers Hub</Text>
-								</Space>
-							</Col>
-						</Row>
-					</Space>
 
-					<Row>
-						<Col span={12}>
-							<GdhubLogo style={{ width: '100px' }} />
-							<Paragraph>
-								<T keyName="app-short-description">
-									A community of game industry professionals whose members form teams to develop new games. Do you want
-									to get a new experience or develop your own game? Join now!
-								</T>
-							</Paragraph>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>
-									<T>Company</T>
-								</Title>
-								<Text>
-									<T>About us</T>
-								</Text>
-							</Space>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>
-									<T>For Users</T>
-								</Title>
-								<Text>
-									<T>For Authors</T>
-								</Text>
-								<Text>
-									<T>For Specialists</T>
-								</Text>
-							</Space>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>
-									<T>Support</T>
-								</Title>
-								<Text>
-									<T>Cookie Policy</T>
-								</Text>
-							</Space>
-						</Col>
-					</Row>
+				<Footer className={styles.footer}>
+					<LandingFooter />
 				</Footer>
 			</Layout>
+
 			{!screens.lg && (
 				<Drawer
 					className={styles.mobileMenuDrawer}

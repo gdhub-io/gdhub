@@ -42,7 +42,7 @@ const LoginPage: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>{t('Sign in')}</title>
+				<title>{t('signin', 'Sign in')}</title>
 			</Head>
 			<div className={`${styles.container} bright-container`} style={{ backgroundImage: `url(${LogingBgImage.src})` }}>
 				<div className="login-box">
@@ -113,13 +113,15 @@ const LoginPage: NextPage = () => {
 							{loginStep == 3 && (
 								<Space direction="vertical" size={24}>
 									<Paragraph style={{ maxWidth: 400 }}>
-										We have sent an email to {email} with an access link. Follow the link and complete the following
-										registration steps.
+										<T keyName="signin.email.complete" params={{ email }}>
+											We have sent an email to email with an access link. Follow the link and complete the following
+											registration steps.
+										</T>
 									</Paragraph>
 
 									<Link href="/">
 										<Button className="btn-default-on-white" style={{ width: '100%' }}>
-											Return to main
+											<T>Return to main</T>
 										</Button>
 									</Link>
 								</Space>

@@ -9,9 +9,6 @@
 }
 
 .container {
-  max-width: $wrapper-width;
-  margin: 0 auto;
-
   :global {
     .logo {
       font-weight: bold;
@@ -41,6 +38,16 @@
   :global {
     .ant-drawer-close {
       display: none;
+    }
+  }
+}
+
+.footer {
+  padding: 0;
+
+  :global {
+    .ant-typography {
+      color: #fff;
     }
   }
 }

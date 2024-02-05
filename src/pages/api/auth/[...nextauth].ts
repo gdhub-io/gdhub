@@ -3,7 +3,7 @@ import { env } from '@/helpers/env'
 import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { PrismaClient } from '@prisma/client'
+import { Language, PrismaClient } from '@prisma/client'
 import { redirect } from 'next/navigation'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
@@ -34,18 +34,18 @@ export const authOptions: NextAuthOptions = {
 
 					if (userExist) {
 						sendResult = await brevoApi.smtp.sendTransacEmail({
-							subject: 'Sign in',
 							to: [{ email }],
-							templateId: brevoTemplates.ru.signin,
+							templateId: brevoTemplates[userExist.lang].signin,
 							params: {
 								link: url,
 							},
 						})
 					} else {
+						const defaultLang = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE') as Language
+
 						sendResult = await brevoApi.smtp.sendTransacEmail({
-							subject: 'Registration',
 							to: [{ email }],
-							templateId: brevoTemplates.ru.registration,
+							templateId: brevoTemplates[defaultLang].registration,
 							params: {
 								link: url,
 							},
