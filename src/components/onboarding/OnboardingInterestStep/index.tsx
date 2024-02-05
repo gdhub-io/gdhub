@@ -34,11 +34,11 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 			case 'mentor':
 				return PrimaryInterest.Mentor
 			default:
-				return PrimaryInterest.Specialist
+				return undefined
 		}
 	}, [router.query.for])
 
-	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/user/profile'), {
+	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/auth/registration/onboarding/interest'), {
 		enabled: !!session?.user.id,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
@@ -72,7 +72,9 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 		}
 	)
 
-	const { mutateAsync: updateProfile } = useMutation(({ data }: any) => axios.put<any>('/api/user/profile', data))
+	const { mutateAsync: updateProfile, isLoading: isUpdatingInterests } = useMutation(({ data }: any) =>
+		axios.put<any>('/api/auth/registration/onboarding/interest', data)
+	)
 
 	const prepareOptions = (data?: any[]) => {
 		if (!data) return []
@@ -244,7 +246,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 					<Button onClick={onPreviousStep}>
 						<T keyName="back">Back</T>
 					</Button>
-					<Button type="primary" onClick={handleSave}>
+					<Button type="primary" onClick={handleSave} loading={isUpdatingInterests}>
 						<T keyName="saveAndContinue">Save and continue</T>
 					</Button>
 				</div>

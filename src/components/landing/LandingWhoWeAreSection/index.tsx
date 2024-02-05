@@ -20,7 +20,7 @@ const members: any = {
 	'team_svg__team-member-4': 'Technical officer',
 	'team_svg__team-member-5': 'Mentor of game development',
 	'team_svg__team-member-6': 'UI/UX designer',
-	'team_svg__team-member-7': 'Mentor of digital art',
+	'team_svg__team-member-7': 'Community members',
 }
 
 export const LandingWhoWeAreSection = () => {

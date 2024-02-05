@@ -1,3 +1,4 @@
+import { brevoTemplates } from '@/config/brevo-templates'
 import { env } from '@/helpers/env'
 import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
@@ -5,7 +6,7 @@ import { IsString } from 'class-validator'
 import cryptoRandomString from 'crypto-random-string'
 import Cryptr from 'cryptr'
 import dayjs from 'dayjs'
-import { Body, Post, ValidationPipe, createHandler } from 'next-api-decorators'
+import { Body, Post, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class SendRegistrationLinkArgs {
 	@IsString()
@@ -16,7 +17,10 @@ class ApiDictGameGenresHandler {
 	constructor() {}
 
 	@Post()
-	public async sendRegistrationLink(@Body(ValidationPipe) { email }: SendRegistrationLinkArgs) {
+	public async sendRegistrationLink(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) { email }: SendRegistrationLinkArgs
+	) {
 		// Encrypt email
 		const cryptr = new Cryptr(process.env.NEXTAUTH_SECRET as string)
 		const signature = cryptoRandomString({ length: 32, type: 'alphanumeric' })
@@ -37,7 +41,7 @@ class ApiDictGameGenresHandler {
 		const result = await brevoApi.smtp.sendTransacEmail({
 			subject: 'Registration',
 			to: [{ email }],
-			templateId: 2,
+			templateId: brevoTemplates.ru.registration,
 			params: {
 				link,
 			},

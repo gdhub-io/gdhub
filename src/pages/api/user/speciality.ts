@@ -59,19 +59,16 @@ class ApiSpecialityHandler {
 				// })
 			}
 		}
-
-		try {
-			await indexNewDocumentToTypesense(speciality)
-		} catch (e) {
-			console.error(e)
-		}
 	}
 
 	@Put()
-	public async update(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: UpdateSpecialityDto) {
+	public async updateFirstSpeciality(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) body: UpdateSpecialityDto
+	) {
 		const {
 			id,
-			data: { workDirectionId, tools, ...otherData },
+			data: { workDirectionId, ...otherData },
 		} = body
 
 		const speciality = await prisma.speciality.update({
@@ -82,14 +79,6 @@ class ApiSpecialityHandler {
 			} as any,
 			include: { direction: true },
 		})
-
-		try {
-			const searchClient = await SearchEngineService.init()
-			await searchClient.deleteSpecialist(speciality.id)
-			await indexNewDocumentToTypesense(speciality)
-		} catch (e) {
-			console.error(e)
-		}
 	}
 
 	@Delete()
@@ -97,57 +86,7 @@ class ApiSpecialityHandler {
 		const { id } = params
 
 		await prisma.speciality.delete({ where: { id } })
-
-		try {
-			const searchClient = await SearchEngineService.init()
-			await searchClient.deleteSpecialist(id)
-		} catch (e) {
-			console.error(e)
-		}
 	}
 }
 
 export default createHandler(ApiSpecialityHandler)
-
-async function indexNewDocumentToTypesense(speciality: any) {
-	const searchClient = await SearchEngineService.init()
-
-	const {
-		id,
-		name,
-		level,
-		direction,
-		skills,
-		tools,
-		jobs,
-		schools,
-		country,
-		city,
-		createdAt,
-		updatedAt,
-		specialization,
-	} = speciality
-
-	/** Create document for typense search engine */
-	try {
-		await searchClient.addSpecialist(
-			prepareData({
-				id,
-				name,
-				specialization,
-				level,
-				direction: direction.name,
-				skills,
-				tools,
-				jobs,
-				schools,
-				country,
-				city,
-				createdAt,
-				updatedAt,
-			})
-		)
-	} catch (error) {
-		console.log(`New record for search engine was not save (id=${speciality.id})`, error)
-	}
-}

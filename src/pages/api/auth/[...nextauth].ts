@@ -1,3 +1,4 @@
+import { brevoTemplates } from '@/config/brevo-templates'
 import { env } from '@/helpers/env'
 import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
@@ -35,7 +36,7 @@ export const authOptions: NextAuthOptions = {
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							subject: 'Sign in',
 							to: [{ email }],
-							templateId: 1,
+							templateId: brevoTemplates.ru.signin,
 							params: {
 								link: url,
 							},
@@ -44,7 +45,7 @@ export const authOptions: NextAuthOptions = {
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							subject: 'Registration',
 							to: [{ email }],
-							templateId: 2,
+							templateId: brevoTemplates.ru.registration,
 							params: {
 								link: url,
 							},

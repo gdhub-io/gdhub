@@ -39,33 +39,35 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 	const { data: session } = useSession()
 	const countries = useMemo(() => countryList().getData(), [])
 
-	const { isLoading, isFetched } = useQuery(['profile', session?.user.id], () => axios.get<any>('/api/user/profile'), {
-		enabled: !!session?.user.id,
-		refetchInterval: false,
-		refetchOnWindowFocus: false,
-		onSuccess: (response) => {
-			if (!response.data) return
+	const { isLoading, isFetched } = useQuery(
+		['profile', session?.user.id],
+		() => axios.get<any>('/api/auth/registration/onboarding/profile'),
+		{
+			enabled: !!session?.user.id,
+			refetchInterval: false,
+			refetchOnWindowFocus: false,
+			onSuccess: (response) => {
+				if (!response.data) return
 
-			const { data } = response
+				const { data } = response
 
-			const [firstName, lastName] = data.name.split(' ')
-			form.setFieldsValue({
-				firstName,
-				lastName,
-				yearOfBirth: data.yearOfBirth,
-				country: data.country,
-				city: data.city,
-				confirmUserData: data.agreements.confirmUserData,
-				// agreeWithTermsAndPrivacy: data.agreements.agreeWithTermsAndPrivacy,
-				// needSubscribeToNewsletter: data.agreements.needSubscribeToNewsletter,
-			})
+				const [firstName, lastName] = data.name.split(' ')
+				form.setFieldsValue({
+					firstName,
+					lastName,
+					yearOfBirth: data.yearOfBirth,
+					country: data.country,
+					city: data.city,
+					confirmUserData: data.user.agreements.confirmUserData,
+				})
 
-			onLoading(data)
-		},
-	})
+				onLoading(data)
+			},
+		}
+	)
 
 	const { mutateAsync: saveUserProfile, isLoading: isSaving } = useMutation((data: any) =>
-		axios.put<any>('/api/user/profile', data)
+		axios.put<any>('/api/auth/registration/onboarding/profile', data)
 	)
 
 	const yearOptions = useMemo(
@@ -94,7 +96,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 				needSubscribeToNewsletter: preRegistrationData?.needSubscribeToNewsletter,
 			})
 
-			deleteCookie('pre-registration')
+			deleteCookie(`auth.${router.query.provider}.pre-registration`)
 
 			onSave({ userId: res.data.id })
 		} catch (error: any) {

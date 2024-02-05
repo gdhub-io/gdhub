@@ -22,7 +22,7 @@ export const OnboardingResourceStep = ({
 	const { t } = useTolgee()
 	const { data: session, update: updateSession } = useSession()
 
-	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/user/profile'), {
+	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/auth/registration/onboarding/resources'), {
 		enabled: !!session?.user.id,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
@@ -42,19 +42,18 @@ export const OnboardingResourceStep = ({
 		},
 	})
 
-	const { mutateAsync: saveUserProfile, isLoading: isSaving } = useMutation((data: any) =>
-		axios.put<any>('/api/user/profile', data)
+	const { mutateAsync: saveUserResources, isLoading: isSaving } = useMutation((data: any) =>
+		axios.put<any>('/api/auth/registration/onboarding/resources', data)
 	)
 
 	const handleSave = async () => {
 		try {
 			const { timeForWorkMin, timeForWorkMax, isActive, otherResources } = await form.validateFields()
 
-			await saveUserProfile({
+			await saveUserResources({
 				isActive,
 				otherResources,
 				timeForWork: timeForWorkMin && timeForWorkMax ? [timeForWorkMin, timeForWorkMax] : undefined,
-				onboardingDone: true,
 			})
 
 			await updateSession()
@@ -148,7 +147,7 @@ export const OnboardingResourceStep = ({
 					<Button onClick={onPreviousStep}>
 						<T keyName="back">Back</T>
 					</Button>
-					<Button type="primary" onClick={handleSave}>
+					<Button type="primary" onClick={handleSave} loading={isSaving}>
 						<T keyName="save">Save</T>
 					</Button>
 				</div>

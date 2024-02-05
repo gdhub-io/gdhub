@@ -25,32 +25,36 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		staleTime: Infinity,
 	})
 
-	useQuery(['profile', 'current'], () => axios.get<Speciality & { direction: WorkDirection }>('/api/user/speciality'), {
-		refetchInterval: false,
-		refetchOnWindowFocus: false,
-		onSuccess(response) {
-			const { id, name, level, direction, skills, specialization, portfolioUrl, jobs, schools } = response.data
+	useQuery(
+		['profile', 'current'],
+		() => axios.get<Speciality & { direction: WorkDirection }>('/api/auth/registration/onboarding/speciality'),
+		{
+			refetchInterval: false,
+			refetchOnWindowFocus: false,
+			onSuccess(response) {
+				const { id, name, level, direction, skills, specialization, portfolioUrl, jobs, schools } = response.data
 
-			form.setFieldsValue({
-				id,
-				name,
-				level,
-				workDirectionId: direction?.id,
-				specialization,
-				portfolioUrl,
-				skills,
-				jobs,
-				schools,
-			})
-		},
-	})
+				form.setFieldsValue({
+					id,
+					name,
+					level,
+					workDirectionId: direction?.id,
+					specialization,
+					portfolioUrl,
+					skills,
+					jobs,
+					schools,
+				})
+			},
+		}
+	)
 
 	const { mutateAsync: createSpeciality } = useMutation(({ data }: any) =>
-		axios.post<any>('/api/user/speciality', { data })
+		axios.post<any>('/api/auth/registration/onboarding/speciality', { data })
 	)
 
 	const { mutateAsync: updateSpeciality } = useMutation(({ id, data }: any) =>
-		axios.put<any>('/api/user/speciality', { id, data })
+		axios.put<any>('/api/auth/registration/onboarding/speciality', { id, data })
 	)
 
 	const workDirectionOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))

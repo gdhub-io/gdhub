@@ -1,4 +1,5 @@
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator'
+import { PrimaryInterest } from '@prisma/client'
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateProfileDto {
 	@IsString()
@@ -82,6 +83,18 @@ export class UpdateProfileDto {
 	@IsOptional()
 	timeForWork?: number[]
 
+	@IsString()
+	@IsOptional()
+	otherResources: string
+
+	@IsBoolean()
+	@IsOptional()
+	isActive: boolean
+
+	@IsEnum(PrimaryInterest)
+	@IsOptional()
+	primaryInterest: PrimaryInterest
+
 	@IsString({ each: true })
 	@IsOptional()
 	preferredGenres?: string[]
@@ -94,11 +107,11 @@ export class UpdateProfileDto {
 	@IsOptional()
 	preferredSettings?: string[]
 
-	@IsString()
+	@IsBoolean()
 	@IsOptional()
 	agreeWithTermsAndPrivacy: boolean
 
-	@IsString()
+	@IsBoolean()
 	@IsOptional()
 	needSubscribeToNewsletter: boolean
 

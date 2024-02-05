@@ -43,8 +43,23 @@ export class SearchEngineService {
 		return await this.client.collections(name).delete()
 	}
 
-	async addSpecialist(document: Record<string, any>) {
+	async addSpecialist(speciality: Record<string, any>) {
 		const existScheme = await this.existScheme(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+		const {
+			id,
+			name,
+			level,
+			direction,
+			skills,
+			tools,
+			jobs,
+			schools,
+			country,
+			city,
+			createdAt,
+			updatedAt,
+			specialization,
+		} = speciality
 
 		if (!existScheme) {
 			await this.migrateScheme(specialistsSchema)
@@ -53,7 +68,58 @@ export class SearchEngineService {
 		await this.client
 			.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 			.documents()
-			.create(prepareData(document))
+			.create(
+				prepareData({
+					id,
+					name,
+					specialization,
+					level,
+					direction: direction.name,
+					skills,
+					tools,
+					jobs,
+					schools,
+					country,
+					city,
+					createdAt,
+					updatedAt,
+				})
+			)
+	}
+
+	async updateSpecialist(specialityId: string, speciality: Record<string, any>) {
+		const {
+			id,
+			name,
+			level,
+			direction,
+			skills,
+			tools,
+			jobs,
+			schools,
+			country,
+			city,
+			createdAt,
+			updatedAt,
+			specialization,
+		} = speciality
+
+		await this.deleteSpecialist(specialityId)
+		await this.addSpecialist({
+			id,
+			name,
+			specialization,
+			level,
+			direction: direction.name,
+			skills,
+			tools,
+			jobs,
+			schools,
+			country,
+			city,
+			createdAt,
+			updatedAt,
+		})
 	}
 
 	async deleteSpecialist(specialityId: string) {
