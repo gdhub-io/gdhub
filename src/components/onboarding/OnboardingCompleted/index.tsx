@@ -17,7 +17,7 @@ export const OnboardingCompleted = () => {
 	return (
 		<div
 			className={`${styles.container}`}
-			style={{ backgroundImage: screens.lg ? `url(${RegistrationBgImage.src})` : undefined }}
+			style={{ backgroundImage: screens.sm ? `url(${RegistrationBgImage.src})` : undefined }}
 		>
 			<div className="onboarding-box">
 				<div className="onboarding-content">

@@ -53,7 +53,7 @@ const LoginPage: NextPage = () => {
 			</Head>
 			<div
 				className={`${styles.container}`}
-				style={{ backgroundImage: screens.lg ? `url(${LogingBgImage.src})` : undefined }}
+				style={{ backgroundImage: screens.sm ? `url(${LogingBgImage.src})` : undefined }}
 			>
 				<div className="login-box">
 					<div className="login-form">

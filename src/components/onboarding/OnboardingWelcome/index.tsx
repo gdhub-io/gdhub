@@ -11,7 +11,7 @@ export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 	return (
 		<div
 			className={`${styles.container} bright-container`}
-			style={{ backgroundImage: screens.lg ? `url(${RegistrationBgImage.src})` : undefined }}
+			style={{ backgroundImage: screens.sm ? `url(${RegistrationBgImage.src})` : undefined }}
 		>
 			<div className="onboarding-box">
 				<div className="onboarding-content">

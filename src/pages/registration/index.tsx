@@ -94,7 +94,7 @@ const RegistrationPage: NextPage = () => {
 			</Head>
 			<div
 				className={`${styles.container} bright-container`}
-				style={{ backgroundImage: screens.lg ? `url(${RegistrationBgImage.src})` : undefined }}
+				style={{ backgroundImage: screens.sm ? `url(${RegistrationBgImage.src})` : undefined }}
 			>
 				<div className="login-box">
 					<div className="login-form">
