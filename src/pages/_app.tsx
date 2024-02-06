@@ -70,8 +70,8 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	const setLoadingOff = () => {
 		setTimeout(() => {
 			setLoading(false)
-			setTimeout(() => setShowContent(true), 300)
-		}, 300)
+			setTimeout(() => setShowContent(true), 150)
+		}, 150)
 	}
 
 	useEffect(() => {
@@ -97,17 +97,17 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 		document.body.style.overflow = 'unset'
 	}
 
-	// useEffect(() => {
-	// 	router.events.on('routeChangeStart', routeChangeStart)
-	// 	router.events.on('routeChangeComplete', routeChangeComplete)
-	// 	router.events.on('routeChangeError', () => setLoadingOff())
+	useEffect(() => {
+		router.events.on('routeChangeStart', routeChangeStart)
+		router.events.on('routeChangeComplete', routeChangeComplete)
+		router.events.on('routeChangeError', () => setLoadingOff())
 
-	// 	return () => {
-	// 		router.events.off('routeChangeStart', routeChangeStart)
-	// 		router.events.off('routeChangeComplete', routeChangeComplete)
-	// 		router.events.off('routeChangeError', () => setLoadingOff())
-	// 	}
-	// }, [router.events])
+		return () => {
+			router.events.off('routeChangeStart', routeChangeStart)
+			router.events.off('routeChangeComplete', routeChangeComplete)
+			router.events.off('routeChangeError', () => setLoadingOff())
+		}
+	}, [router.events])
 
 	return (
 		<>

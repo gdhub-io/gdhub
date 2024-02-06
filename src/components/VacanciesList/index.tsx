@@ -8,8 +8,12 @@ import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
 const VacanciesList = () => {
+	const { data: session } = useSession()
+	const router = useRouter()
 	const { data: workDirections, getDirectionName } = useWorkDirections()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
@@ -32,13 +36,16 @@ const VacanciesList = () => {
 			dataIndex: 'title',
 			key: 'title',
 			width: '40%',
-			render: (value, record) => (
-				<>
-					<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
-						{value}
-					</span>
-				</>
-			),
+			render: (value, record) =>
+				session ? (
+					<>
+						<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
+							{value}
+						</span>
+					</>
+				) : (
+					<span style={{ fontWeight: 'bold' }}>{value}</span>
+				),
 		},
 		{
 			title: 'Проект',
@@ -66,6 +73,16 @@ const VacanciesList = () => {
 			responsive: ['md'],
 			key: 'finishedAt',
 			render: (value) => dayjs(value).format('DD.MM.YYYY'),
+		},
+		{
+			key: 'actions',
+			responsive: ['md'],
+			render: (value, record) =>
+				!session && (
+					<Link href={`/signin?callbackUrl=${router.asPath}`}>
+						<Button>Войти, чтобы посмотреть</Button>
+					</Link>
+				),
 		},
 	]
 
