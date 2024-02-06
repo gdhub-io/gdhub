@@ -1,0 +1,83 @@
+.container {
+  background-color: transparent;
+  transition: background-color 0.5s, backdrop-filter 0.4s;
+
+  :global {
+    .ant-typography {
+      color: #fff;
+    }
+  }
+
+  .logo {
+    display: inline-flex;
+    width: 156px;
+    height: 42px;
+  }
+
+  .topLine {
+    padding: 34px 0;
+  }
+
+  .menu {
+    display: block;
+    text-align: center;
+    color: #fff;
+    font-size: 16px;
+    background-color: transparent;
+
+    :global {
+      .ant-menu-item {
+        padding-inline: 32px;
+
+        a {
+          border-bottom: 2px solid transparent;
+          padding-bottom: 4px;
+          transition: border 0.3s;
+        }
+
+        &-active a {
+          color: #F15541 !important;
+          border-color: #F15541 !important;
+        }
+      }
+    }
+  }
+
+  .mobileMenuBtn {
+    padding: 8px;
+  }
+}
+
+.mobileMenuDrawer {
+  background: linear-gradient(-90deg, rgba(6, 22, 41, 1) 0%, rgba(4, 13, 20, 1) 50%, rgba(1, 11, 22, 1) 100%) !important;
+
+  :global(.ant-drawer-close)>svg {
+    color: #fff;
+  }
+
+  :global {
+    .ant-menu {
+      background: transparent;
+    }
+
+    .ant-drawer-body {
+      padding: 0 40px;
+    }
+
+    .ant-drawer-header {
+      border: 0;
+      padding: 24px 32px;
+    }
+
+    .ant-drawer-header-title {
+      justify-content: end;
+    }
+  }
+}
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

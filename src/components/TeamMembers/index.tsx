@@ -1,16 +1,19 @@
 import { useMemo } from 'react'
 import { Team, TeamMember, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { Avatar, List, Space, Typography } from 'antd'
+import { Avatar, Flex, List, Space, Typography } from 'antd'
 import axios from 'axios'
+import { useSession } from 'next-auth/react'
+import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 interface TeamMembersArgs {
 	teamId: string
 }
 
 const TeamMembers = ({ teamId }: TeamMembersArgs) => {
+	const { data: session } = useSession()
 	const { data: team } = useQuery(
 		['team-members', teamId],
 		() =>
@@ -39,22 +42,45 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	return (
 		<>
 			<Space direction="vertical" style={{ marginTop: 60, width: '100%' }}>
-				<Title level={5}>Команда</Title>
+				<Title level={2}>Команда</Title>
 
-				<List
-					grid={{ gutter: 16, xs: 1, sm: 1, md: 1, column: 2 }}
-					itemLayout="horizontal"
-					dataSource={data}
-					renderItem={(item, index) => (
-						<List.Item key={index}>
-							<List.Item.Meta
-								avatar={<Avatar size={64} src={item.avatar} />}
-								title={item.title}
-								description={item.description}
-							/>
-						</List.Item>
-					)}
-				/>
+				{!!session && (
+					<List
+						grid={{ gutter: 16, xs: 1, sm: 1, md: 1, column: 2 }}
+						itemLayout="horizontal"
+						dataSource={data}
+						renderItem={(item, index) =>
+							session ? (
+								<List.Item key={index}>
+									<List.Item.Meta
+										avatar={<Avatar size={64} src={item.avatar} />}
+										title={item.title}
+										description={item.description}
+									/>
+								</List.Item>
+							) : (
+								<></>
+							)
+						}
+					/>
+				)}
+
+				{!session && (
+					<Flex wrap="wrap" gap={16}>
+						{data.map((item, idx) => (
+							<Space key={idx}>
+								<ReactNiceAvatar
+									style={{ width: '42px', height: '42px' }}
+									{...genConfig(item.description || '')}
+									earSize="big"
+									eyeStyle="circle"
+									hairStyle="normal"
+								/>
+								<Text>{item.description}</Text>
+							</Space>
+						))}
+					</Flex>
+				)}
 			</Space>
 		</>
 	)

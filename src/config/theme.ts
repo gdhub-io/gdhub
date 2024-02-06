@@ -95,9 +95,8 @@ export const publicThemeConfig: ThemeConfig = {
 			paddingXS: 12,
 		},
 		Menu: {
-			activeBarBorderWidth: 0,
-			iconSize: 18,
-			itemMarginInline: 8,
+			colorBgContainer: 'transparent',
+			darkItemBg: 'transparent',
 		},
 		Input: {
 			paddingBlock: 12,
@@ -148,6 +147,10 @@ export const publicThemeConfig: ThemeConfig = {
 			textHeight: 48,
 			controlHeight: 52,
 			padding: 8,
+		},
+		Layout: {
+			bodyBg: 'transparent',
+			headerBg: 'transparent',
 		},
 	},
 

@@ -164,7 +164,7 @@ export const transferProjects = async (airtableService: AirtableBase, prisma: Ex
 									data: airtableReports.map((report) => ({
 										projectId: createdProject!.id,
 										content: report.get('Content') as string,
-										publishedAt: dayjs(record.get('Date') as string).toISOString(),
+										publishedAt: dayjs(report.get('Date') as string).toISOString(),
 										authorId: author!.id,
 										video: report.get('Youtube Video ID') as string,
 									})),

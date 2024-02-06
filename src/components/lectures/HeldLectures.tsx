@@ -6,18 +6,11 @@ import { Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { useRouter } from 'next/router'
 
 export const HeldLectures = () => {
-	const router = useRouter()
 	const screens = Grid.useBreakpoint()
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
-	// const {
-	// 	data,
-	// 	mutate: updateList,
-	// 	isValidating: isLoading,
-	// } = useSWR({ url: '/api/lecture/list', data: { status: ['Held'] } }, fetcher, { revalidateOnFocus: false })
 
 	const {
 		data: lectures,

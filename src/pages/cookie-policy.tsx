@@ -12,29 +12,25 @@ import '@9gustin/react-notion-render/dist/index.css'
 
 const { Title } = Typography
 
-const PrivacyPolicyPage: NextPageWithLayout = ({ page, blocks }: any) => {
+const PrivacyPolicyPage: NextPageWithLayout = ({ blocks }: any) => {
 	const { t } = useTolgee()
 
 	return (
-		<PublicLayout>
+		<PublicLayout title="Cookie Policy">
 			<Head>
 				<title>{t('Cookie Policy')}</title>
 			</Head>
 
 			<div className={styles.container}>
-				<Title>
-					<T>{page?.properties.title.title[0].plain_text}</T>
-				</Title>
 				<Render blocks={blocks.results} simpleTitles />
 			</div>
 		</PublicLayout>
 	)
 }
 
-export const getStaticProps: GetStaticProps = async ({ defaultLocale, locale }) => {
-	const page = await getPage({ pageId: 'c3fb3089-a57e-42f1-8383-3b13ea4842de' })
-
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
 	let blockId = 'c3fb3089-a57e-42f1-8383-3b13ea4842de'
+
 	switch (locale) {
 		case Language.ru:
 			blockId = '3f615959-cbd7-4323-819d-a4566385e242'
@@ -43,7 +39,7 @@ export const getStaticProps: GetStaticProps = async ({ defaultLocale, locale }) 
 	}
 
 	const blocks = await NotionService.blocks.children.list({
-		block_id: '3f615959-cbd7-4323-819d-a4566385e242',
+		block_id: blockId,
 	})
 
 	if (!blocks) {
@@ -54,7 +50,6 @@ export const getStaticProps: GetStaticProps = async ({ defaultLocale, locale }) 
 
 	return {
 		props: {
-			page,
 			blocks,
 		},
 		revalidate: 60,

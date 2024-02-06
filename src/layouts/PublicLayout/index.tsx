@@ -1,40 +1,27 @@
-import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
-import { LandingFooter } from '@/components/landing/LandingFooter'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import PublicHeaderBg from '@/assets/images/public-header-bg.png'
+import { MainFooter } from '@/components/MainFooter'
+import { MainHeader } from '@/components/MainHeader'
 import { publicThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
 import { T, useTolgee } from '@tolgee/react'
-import {
-	Avatar,
-	Button,
-	Col,
-	ConfigProvider,
-	Drawer,
-	Dropdown,
-	Grid,
-	Layout,
-	Menu,
-	MenuProps,
-	Row,
-	Space,
-	Tooltip,
-	Typography,
-} from 'antd'
+import { Avatar, Button, ConfigProvider, Drawer, Grid, Layout, Menu, MenuProps, Space, Tooltip, Typography } from 'antd'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
+import { AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
+const { Text, Title } = Typography
 
-export const PublicLayout = ({ children }: any) => {
+export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -205,58 +192,37 @@ export const PublicLayout = ({ children }: any) => {
 		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
 	}, [isOpenedInTelegram, screens, session])
 
+	const setBackground = useCallback(() => {
+		if (title && !backgroundImage) return `url(${PublicHeaderBg.src})`
+		if (title && backgroundImage)
+			return `linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.3)), url(${backgroundImage})`
+	}, [title, backgroundImage])
+
 	return (
 		<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+			<style jsx global>{`
+				:root {
+					--background-color: #fff;
+				}
+			`}</style>
 			<Layout className={styles.container}>
-				<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
-					<Row align="middle" justify="space-between" className={styles.headerContainer}>
-						<Link href="/" className="logo">
-							<GdhubLogo style={{ width: '146px', height: '42px' }} />
-						</Link>
-
-						{screens.lg ? (
-							<>
-								<Menu
-									className={styles.headerMenu}
-									style={{ flex: 1, justifyContent: 'center', columnGap: screens.xl ? 64 : 32 }}
-									mode="horizontal"
-									items={headerMenu}
-								/>
-
-								<Space align="start">
-									<>
-										{!!session ? (
-											<Link href="/hub">
-												<Button>
-													<T>Go to app</T>
-												</Button>
-											</Link>
-										) : (
-											<Link href="/signin">
-												<Button>
-													<T>Log in</T>
-												</Button>
-											</Link>
-										)}
-									</>
-									{/* <SwitchLanguage /> */}
-								</Space>
-							</>
-						) : (
-							<div className={styles.mobileMenuBtn}>
-								<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-									<AiOutlineMenu size={32} />
-								</Button>
-							</div>
-						)}
-					</Row>
+				<Header
+					className={styles.header}
+					style={{
+						backgroundImage: setBackground(),
+					}}
+				>
+					<MainHeader />
+					<div className={styles.titleContainer}>
+						{!!title && <Title className={styles.title}>{title}</Title>}
+						{!!subTitle && <Text type="secondary">{subTitle}</Text>}
+					</div>
 				</Header>
 				<Content>
 					<div className="layout-background">{children}</div>
 				</Content>
-
 				<Footer className={styles.footer}>
-					<LandingFooter />
+					<MainFooter />
 				</Footer>
 			</Layout>
 

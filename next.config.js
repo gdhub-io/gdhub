@@ -19,11 +19,14 @@ const nextConfig = {
 	env: {
 		NEXT_PUBLIC_ENV: 'PRODUCTION', //your next configs goes here
 	},
+	transpilePackages: ['@mdxeditor/editor'],
 	webpack: (config) => {
 		config.module.rules.push({
 			test: /\.svg$/,
 			use: ['@svgr/webpack'],
 		})
+
+		config.experiments = { ...config.experiments, topLevelAwait: true }
 
 		return config
 	},

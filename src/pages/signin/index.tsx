@@ -6,6 +6,7 @@ import { Button, Space, Typography, Form, Input, message } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { signIn } from 'next-auth/react'
 import { FaGoogle } from 'react-icons/fa'
@@ -20,6 +21,7 @@ declare global {
 }
 
 const LoginPage: NextPage = () => {
+	const router = useRouter()
 	const { t } = useTolgee()
 	const [form] = Form.useForm()
 	const [loginStep, setLoginStep] = useState(1)
@@ -30,7 +32,11 @@ const LoginPage: NextPage = () => {
 		setSubmitting(true)
 
 		const { email } = await form.validateFields()
-		const response = await signIn('email', { email, redirect: false })
+		const response = await signIn('email', {
+			email,
+			redirect: false,
+			callbackUrl: (router.query.callbackUrl as string) || '/hub',
+		})
 
 		setSubmitting(false)
 		setEmail(email)
@@ -63,14 +69,20 @@ const LoginPage: NextPage = () => {
 											type="primary"
 											style={{ width: '100%' }}
 											icon={<FaGoogle size={16} />}
-											onClick={() => signIn('google', { callbackUrl: '/hub' }, { prompt: 'select_account consent' })}
+											onClick={() =>
+												signIn(
+													'google',
+													{ callbackUrl: (router.query.callbackUrl as string) || '/hub' },
+													{ prompt: 'select_account consent' }
+												)
+											}
 										>
 											<T>Log in with Google</T>
 										</Button>
 										<Link href="/registration" className={styles.createAccountLink}>
 											<T>Create new account</T>
 										</Link>
-										<Link href="/">
+										<Link href={`/`}>
 											<Button className="btn-default-on-white" style={{ width: '100%' }}>
 												<T>Back to main</T>
 											</Button>

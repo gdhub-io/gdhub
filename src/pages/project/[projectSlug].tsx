@@ -2,16 +2,17 @@ import { useState } from 'react'
 import ProjectReports from '@/components/ProjectReports'
 import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { Profile, Project, ProjectStatus, User } from '@prisma/client'
-import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
+import { Button, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { GetStaticPropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import { TbBrandTelegram } from 'react-icons/tb'
 import YouTube from 'react-youtube'
 import { Options } from 'youtube-player/dist/types'
@@ -25,6 +26,7 @@ type ProjectPageParams = {
 
 const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 	const router = useRouter()
+	const { data: session } = useSession()
 	const screens = Grid.useBreakpoint()
 	const [showPitchVideo, setShowPitchVideo] = useState(false)
 
@@ -49,7 +51,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 	const pitchVideoOptions: Options = { playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 } }
 
 	return (
-		<>
+		<PublicLayout title={project.name} subTitle={`Автор ${project.author.name}`} backgroundImage={project.coverImage}>
 			<Head>
 				<title>{project.name}</title>
 				<meta name="description" content={project.description as string}></meta>
@@ -62,13 +64,8 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 			<div className={styles.container}>
 				<Row gutter={[32, 16]}>
 					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
-						<Title>{project.name}</Title>
-						<Space className="project-author" align="center">
-							<span>Автор</span>
-							<Text>{project.author.name}</Text>
-						</Space>
 						<div className="project-description">
-							<Title level={5}>Об игре</Title>
+							<Title level={2}>Об игре</Title>
 							<Paragraph>{project.description}</Paragraph>
 						</div>
 						{!screens.md && generalData}
@@ -103,7 +100,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 							/>
 						)}
 						{screens.md && generalData}
-						{project.author.profile.tgNickname ? (
+						{session && project.author.profile.tgNickname ? (
 							<Link
 								href={`https://t.me/${project.author.profile.tgNickname}`}
 								target="_blank"
@@ -125,7 +122,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 					<ProjectReports projectId={project.id} projectStartedAt={project.createdAt} />
 				</div>
 			</div>
-		</>
+		</PublicLayout>
 	)
 }
 
@@ -169,7 +166,5 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 		revalidate: 60,
 	}
 }
-
-ProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default ProjectPage
