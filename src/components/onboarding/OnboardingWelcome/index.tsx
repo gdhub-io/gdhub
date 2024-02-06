@@ -1,15 +1,17 @@
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { T } from '@tolgee/react'
-import { Space, Button, Typography } from 'antd'
+import { Space, Button, Typography, Grid } from 'antd'
 import styles from './style.module.scss'
 
 const { Paragraph, Title } = Typography
 
 export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
+	const screens = Grid.useBreakpoint()
+
 	return (
 		<div
 			className={`${styles.container} bright-container`}
-			style={{ backgroundImage: `url(${RegistrationBgImage.src})`, alignItems: 'center' }}
+			style={{ backgroundImage: screens.lg ? `url(${RegistrationBgImage.src})` : undefined }}
 		>
 			<div className="onboarding-box">
 				<div className="onboarding-content">

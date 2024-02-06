@@ -11,7 +11,6 @@ const createTolgeeService = () => {
 	const tolgee = Tolgee().use(DevTools()).use(FormatSimple())
 
 	if ('undefined' !== typeof window) {
-		console.log('createTolgeeService', typeof window)
 		tolgee.use(LanguageStorage())
 	}
 

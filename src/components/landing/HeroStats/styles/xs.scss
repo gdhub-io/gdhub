@@ -5,6 +5,10 @@
 		span {
 			font-size: 12px !important;
 		}
+
+		:global(.ant-space-gap-col-small) {
+			column-gap: 0px;
+		}
 	}
 
 	.stats {
@@ -16,10 +20,10 @@
 			}
 		}
 
-    :global {
-      span.ant-typography>strong {
-        font-size: 32px !important;
-      }
-    }
-  }
+		:global {
+			span.ant-typography>strong {
+				font-size: 32px !important;
+			}
+		}
+	}
 }

@@ -102,8 +102,6 @@ const ContentEditor: FC<EditorProps> = ({ markdown, editorRef, onChange = () => 
 
 							return res.data.url
 						} catch (error: any) {
-							console.log('ERR', error)
-
 							if (error.response.status == 413) {
 								notification.error({ message: 'Your file too large. Maximum file size is 5Mb.' })
 							} else {

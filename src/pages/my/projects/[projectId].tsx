@@ -21,10 +21,6 @@ const MyProjectPage: NextPageWithLayout = () => {
 	const projectId = router.query.projectId as string
 	const [showProjectModal, setShowProjectModal] = useState(false)
 
-	useEffect(() => {
-		console.log('projectId', projectId)
-	}, [router])
-
 	const {
 		data: myProject,
 		isLoading: isLoadingMyProject,

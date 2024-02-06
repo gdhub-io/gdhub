@@ -4,7 +4,7 @@ import { setCookie } from '@/helpers/cookie'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Space, Typography, Form, Input, message, Checkbox, notification } from 'antd'
+import { Button, Space, Typography, Form, Input, message, Checkbox, notification, Grid, Flex } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -23,6 +23,7 @@ declare global {
 }
 
 const RegistrationPage: NextPage = () => {
+	const screens = Grid.useBreakpoint()
 	const [formRegEmail] = Form.useForm()
 	const [formRegGoogle] = Form.useForm()
 	const { t } = useTolgee()
@@ -93,7 +94,7 @@ const RegistrationPage: NextPage = () => {
 			</Head>
 			<div
 				className={`${styles.container} bright-container`}
-				style={{ backgroundImage: `url(${RegistrationBgImage.src})` }}
+				style={{ backgroundImage: screens.lg ? `url(${RegistrationBgImage.src})` : undefined }}
 			>
 				<div className="login-box">
 					<div className="login-form">
@@ -171,14 +172,14 @@ const RegistrationPage: NextPage = () => {
 											</Form.Item>
 										</Form>
 
-										<Space size={24}>
+										<Flex justify="center" wrap="wrap" gap={16}>
 											<Button type="primary" onClick={handleSendWithGoogle} loading={isRegistration}>
 												<T>Continue with Google</T>
 											</Button>
 											<Button type="link" onClick={() => setRegistrationStep({ step: 1, provider: 'email' })}>
 												<T>Back</T>
 											</Button>
-										</Space>
+										</Flex>
 									</Space>
 								</>
 							)}
@@ -235,14 +236,14 @@ const RegistrationPage: NextPage = () => {
 											</Form.Item>
 										</Form>
 
-										<Space size={24}>
+										<Flex justify="center" wrap="wrap" gap={16}>
 											<Button type="primary" onClick={handleSendWithEmail} loading={isRegistration}>
 												<T>Send registration link</T>
 											</Button>
 											<Button type="link" onClick={() => setRegistrationStep({ step: 1, provider: 'email' })}>
 												<T>Back</T>
 											</Button>
-										</Space>
+										</Flex>
 									</Space>
 								</>
 							)}

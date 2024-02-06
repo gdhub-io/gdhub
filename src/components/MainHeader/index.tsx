@@ -3,6 +3,7 @@ import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Drawer, Flex, Grid, Menu, MenuProps, Space } from 'antd'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai'
 import styles from './style.module.scss'
@@ -10,6 +11,7 @@ import styles from './style.module.scss'
 export const MainHeader = ({ className }: { className?: string }) => {
 	const { data: session }: any = useSession()
 	const screens = Grid.useBreakpoint()
+	const router = useRouter()
 	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 
@@ -27,6 +29,10 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		}
 	}, [openMobileMenu])
 
+	const writeInternalLink = (internalLink: string) => {
+		return router.pathname == '/' ? internalLink : `/${internalLink}`
+	}
+
 	// show main scroll on open menu
 	const handleOpenMobileMenu = (open: boolean) => {
 		const body = document?.querySelector('body')
@@ -40,7 +46,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		() => [
 			{
 				label: (
-					<Link href="/#about" title={t('About us')}>
+					<Link href={writeInternalLink('#about')} title={t('About us')}>
 						<T>About us</T>
 					</Link>
 				),
@@ -48,7 +54,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
-					<Link href="#for-authors" title={t('For Authors')}>
+					<Link href={writeInternalLink('#for-authors')} title={t('For Authors')}>
 						<T>For Authors</T>
 					</Link>
 				),
@@ -56,7 +62,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
-					<Link href="#for-specialists" title={t('For Specialists')}>
+					<Link href={writeInternalLink('#for-specialists')} title={t('For Specialists')}>
 						<T>For Specialists</T>
 					</Link>
 				),
@@ -64,7 +70,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
-					<Link href="#contacts" title={t('Contacts')}>
+					<Link href={writeInternalLink('#contacts')} title={t('Contacts')}>
 						<T>Contacts</T>
 					</Link>
 				),

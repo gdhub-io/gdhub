@@ -8,8 +8,6 @@ config()
 async function main() {
 	const url = 'https://tolgee.gdhub.io/v2/projects/export?ak=' + process.env.NEXT_PUBLIC_TOLGEE_API_KEY
 
-	console.log(url)
-
 	https.get(url, (res) => {
 		// Image will be stored at this path
 		const path = `${__dirname}/src/i18n/i18n.zip`

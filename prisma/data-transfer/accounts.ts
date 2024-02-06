@@ -251,8 +251,6 @@ export const transferAccounts = async (airtableService: AirtableBase, prisma: Ex
 								})
 								if (createdUser) {
 									countCreatedRecords++
-
-									console.log(`user`, createdUser.id, createdUser.email)
 								}
 							} catch (err: any) {
 								console.error(err.message)

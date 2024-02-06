@@ -51,8 +51,6 @@ const LiveReportsPage = () => {
 				await callFrame.destroy()
 			}
 
-			console.log('createAndJoinCall', callRef?.current, callFrame)
-
 			const {
 				data: { token },
 			} = await getUserToken({ roomName: 'reports' })

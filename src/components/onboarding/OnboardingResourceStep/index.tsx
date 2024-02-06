@@ -143,14 +143,14 @@ export const OnboardingResourceStep = ({
 						</Space>
 					</Form>
 				</div>
-				<div className="onboarding-footer">
+				<Space wrap className="onboarding-footer">
 					<Button onClick={onPreviousStep}>
 						<T keyName="back">Back</T>
 					</Button>
 					<Button type="primary" onClick={handleSave} loading={isSaving}>
 						<T keyName="save">Save</T>
 					</Button>
-				</div>
+				</Space>
 			</div>
 		</div>
 	)

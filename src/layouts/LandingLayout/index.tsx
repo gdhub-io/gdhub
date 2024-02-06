@@ -6,6 +6,7 @@ import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Button, ConfigProvider, Drawer, Flex, Grid, Layout, Menu, MenuProps, Space, Typography } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { AiOutlineClose } from 'react-icons/ai'
 import styles from './style.module.scss'
@@ -13,12 +14,30 @@ import styles from './style.module.scss'
 const { Header, Footer, Content } = Layout
 const { Text } = Typography
 
+const scrollIntoViewWithOffset = (selector: string, offset: number) => {
+	const hookEl = document?.querySelector(selector)
+
+	if (!hookEl) return
+
+	window.scrollTo({
+		behavior: 'instant',
+		top: hookEl.getBoundingClientRect().top - document.body.getBoundingClientRect().top - offset,
+	})
+}
+
 export const LandingLayout = ({ children }: any) => {
 	const { t } = useTolgee()
+	const router = useRouter()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [scrollY, setScrollY] = useState(0)
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
+
+	useEffect(() => {
+		if (document.location.hash) {
+			scrollIntoViewWithOffset(document.location.hash, 100)
+		}
+	}, [router])
 
 	useEffect(() => {
 		if (!screens.xl) setOpenMobileMenu(false)

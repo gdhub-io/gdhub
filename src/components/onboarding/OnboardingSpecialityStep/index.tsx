@@ -2,7 +2,7 @@ import { skillLevelsList } from '@/components/ui/skillLevel'
 import { Speciality, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Flex, Form, Space, Row, Col, Input, Select, Tooltip, Button, Typography, message, Spin } from 'antd'
+import { Flex, Form, Space, Row, Col, Input, Select, Tooltip, Button, Typography, message, Spin, Grid } from 'antd'
 import axios from 'axios'
 import { PiWarningCircleLight } from 'react-icons/pi'
 
@@ -15,6 +15,7 @@ const { Paragraph, Title, Text } = Typography
 
 export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: IOnboardingSpecialityStep) => {
 	const [form] = Form.useForm()
+	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 
 	const {
@@ -83,8 +84,8 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		<Spin spinning={isLoading && !isFetched}>
 			<div className="onboarding-content">
 				<div className="onboarding-form">
-					<div className="onboarding-form-title">
-						<Flex justify="space-between" align="center">
+					<Space direction="vertical" className="onboarding-form-title">
+						<Flex justify="space-between" align="center" wrap="wrap">
 							<Title level={2}>
 								<T keyName="specilaity">Speciality</T>
 							</Title>
@@ -99,7 +100,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 						<Paragraph italic>
 							<T>Information about your main speciality</T>
 						</Paragraph>
-					</div>
+					</Space>
 
 					<Form form={form} layout="vertical" requiredMark="optional" autoComplete="off" scrollToFirstError>
 						<Form.Item name="id" hidden>
@@ -199,14 +200,19 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 						</Space>
 					</Form>
 				</div>
-				<div className="onboarding-footer">
+				<Space
+					className="onboarding-footer"
+					wrap
+					size={16}
+					style={screens.lg ? { flexDirection: 'row' } : { flexDirection: 'column-reverse' }}
+				>
 					<Button onClick={onPreviousStep}>
 						<T keyName="back">Back</T>
 					</Button>
 					<Button type="primary" onClick={handleSave}>
 						<T keyName="saveAndContinue">Save and continue</T>
 					</Button>
-				</div>
+				</Space>
 			</div>
 		</Spin>
 	)

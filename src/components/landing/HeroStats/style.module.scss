@@ -28,7 +28,8 @@
 
     :global {
       span.ant-typography {
-        text-wrap: nowrap;
+        word-wrap: normal;
+        text-wrap: wrap;
       }
 
       span.ant-typography>strong {

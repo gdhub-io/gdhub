@@ -87,7 +87,6 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 			message.success('Вы отклонили кандидатуру ' + candidate?.data.user.name)
 			onOk()
 		} catch (error: any) {
-			console.log(error)
 			message.error(error.message)
 		}
 	}
@@ -99,7 +98,6 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 			message.success(`Вы приняли ${candidate?.data.user.name} в команду`)
 			onOk()
 		} catch (error: any) {
-			console.log(error)
 			message.error(error.message)
 		}
 	}

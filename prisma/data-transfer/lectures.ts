@@ -161,7 +161,6 @@ export const transferLectures = async (airtableService: AirtableBase, prisma: Ex
 
 						if (createdLecture) {
 							newRecordsCount++
-							console.log('lecture', createdLecture.name)
 						}
 					}
 

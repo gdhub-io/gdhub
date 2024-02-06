@@ -19,23 +19,37 @@ class ApiRegistrationHandler {
 		const { name, yearOfBirth, country, city, confirmUserData, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
 			body
 
-		const user = await prisma.user.findUnique({ where: { id: req.user.id } })
+		const user = await prisma.user.findUnique({ where: { id: req.user.id }, include: { profile: true } })
 		const agreements: any = user?.agreements
 
 		agreements.confirmUserData = confirmUserData
 		if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
 		if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
 
-		await prisma.profile.update({
-			where: { userId: req.user.id },
-			data: {
-				name,
-				city,
-				yearOfBirth,
-				country,
-				user: { update: { agreements } },
-			},
-		})
+		if (user?.profile) {
+			await prisma.profile.update({
+				where: { userId: req.user.id },
+				data: {
+					name,
+					city,
+					yearOfBirth,
+					country,
+					user: { update: { agreements } },
+				},
+			})
+		} else {
+			await prisma.profile.create({
+				data: {
+					name,
+					city,
+					yearOfBirth,
+					country,
+					user: { connect: { id: req.user.id } },
+				},
+			})
+
+			await prisma.user.update({ where: { id: req.user.id }, data: { agreements } })
+		}
 	}
 
 	@Get('/speciality')

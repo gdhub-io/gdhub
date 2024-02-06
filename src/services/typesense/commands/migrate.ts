@@ -38,7 +38,6 @@ export async function migrate() {
 
 		console.info('Finish')
 	} catch (error: any) {
-		console.log(error.message)
 		console.info('Finish with Error')
 	}
 }
@@ -77,7 +76,6 @@ export const prepareData = (record: Record<string, any>) => {
 
 		if (value instanceof Date && (property == 'createdAt' || property == 'updatedAt')) {
 			value = dayjs(value).unix()
-			console.log('key', property, value)
 		}
 
 		record[property] = value

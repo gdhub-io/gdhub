@@ -2,12 +2,18 @@ import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
 import { T } from '@tolgee/react'
 import { Anchor, Col, Divider, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const { Title, Paragraph } = Typography
 
 export const MainFooter = () => {
 	const screens = Grid.useBreakpoint()
+	const router = useRouter()
+
+	const writeInternalLink = (internalLink: string) => {
+		return router.pathname == '/' ? internalLink : `/${internalLink}`
+	}
 
 	return (
 		<div className={styles.section}>
@@ -22,7 +28,7 @@ export const MainFooter = () => {
 							</T>
 						</Paragraph>
 					</Col>
-					<Col xs={{ span: 8 }} sm={{ span: 8 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={8}>
 							<Title level={5}>
 								<T>Platform</T>
@@ -31,25 +37,29 @@ export const MainFooter = () => {
 								items={[
 									{ href: '/projects', title: <T>Game Projects</T>, key: 'projects' },
 									{ href: '/vacancies', title: <T>Vacancies</T>, key: 'vacancies' },
-									{ href: '/#about', title: <T>About us</T>, key: 'about' },
+									{ href: writeInternalLink('#about'), title: <T>About us</T>, key: 'about' },
 								]}
 							/>
 						</Space>
 					</Col>
-					<Col xs={{ span: 8 }} sm={{ span: 8 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={8}>
 							<Title level={5}>
 								<T>For Users</T>
 							</Title>
 							<Anchor
 								items={[
-									{ href: '/#for-authors', title: <T>For Authors</T>, key: 'for-authors' },
-									{ href: '/#for-specialists', title: <T>For Specialists</T>, key: 'for-specialists' },
+									{ href: writeInternalLink('#for-authors'), title: <T>For Authors</T>, key: 'for-authors' },
+									{
+										href: writeInternalLink('#for-specialists'),
+										title: <T>For Specialists</T>,
+										key: 'for-specialists',
+									},
 								]}
 							/>
 						</Space>
 					</Col>
-					<Col xs={{ span: 8 }} sm={{ span: 8 }} lg={{ span: 4 }}>
+					<Col xs={{ span: 24 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={8}>
 							<Title level={5}>
 								<T>Support</T>

@@ -31,8 +31,12 @@ export const HeroStats = ({
 						<Avatar src={heroStatsImage1.src} />
 						<Avatar src={heroStatsImage2.src} />
 						<Avatar src={heroStatsImage3.src} />
-						<Avatar src={heroStatsImage4.src} />
-						<Avatar src={heroStatsImage5.src} />
+						{screen.lg && (
+							<>
+								<Avatar src={heroStatsImage4.src} />
+								<Avatar src={heroStatsImage5.src} />
+							</>
+						)}
 					</Avatar.Group>
 				</Space>
 				<Divider style={{ margin: '24px 0' }} className="divider" />

@@ -1,5 +1,5 @@
 import VacanciesList from '@/components/VacanciesList'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Grid } from 'antd'
 import Head from 'next/head'
@@ -9,7 +9,7 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	const screens = Grid.useBreakpoint()
 
 	return (
-		<>
+		<PublicLayout title="Вакансии">
 			<Head>
 				<title>Вакансии на проекты сообщества</title>
 				<meta property="og:title" content="Вакансии на проекты сообщества" />
@@ -17,15 +17,12 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 				<meta property="og:url" content="/projects" />
 			</Head>
 			<div className={styles.container}>
-				<h3>Вакансии на проекты сообщества</h3>
 				<div className="project-vacancies">
 					<VacanciesList />
 				</div>
 			</div>
-		</>
+		</PublicLayout>
 	)
 }
-
-VacanciesPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default VacanciesPage

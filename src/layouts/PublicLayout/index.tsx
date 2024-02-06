@@ -47,7 +47,6 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 	}
 
 	useEffect(() => {
-		console.log(session)
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
 

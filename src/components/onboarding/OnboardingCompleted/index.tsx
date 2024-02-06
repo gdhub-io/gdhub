@@ -1,6 +1,6 @@
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { T } from '@tolgee/react'
-import { Typography, Space, Button } from 'antd'
+import { Typography, Space, Button, Grid } from 'antd'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
@@ -8,6 +8,7 @@ const { Title } = Typography
 
 export const OnboardingCompleted = () => {
 	const router = useRouter()
+	const screens = Grid.useBreakpoint()
 
 	const handleGoToApp = () => {
 		router.push('/hub')
@@ -16,7 +17,7 @@ export const OnboardingCompleted = () => {
 	return (
 		<div
 			className={`${styles.container}`}
-			style={{ backgroundImage: `url(${RegistrationBgImage.src})`, alignItems: 'center' }}
+			style={{ backgroundImage: screens.lg ? `url(${RegistrationBgImage.src})` : undefined }}
 		>
 			<div className="onboarding-box">
 				<div className="onboarding-content">

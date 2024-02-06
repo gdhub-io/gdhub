@@ -95,7 +95,7 @@ const OnboardingPage = () => {
 				<div
 					ref={containerRef}
 					className={`${styles.container}`}
-					style={{ backgroundImage: `url(${RegistrationBgImage.src})` }}
+					style={{ backgroundImage: screens.lg ? `url(${RegistrationBgImage.src})` : undefined }}
 				>
 					<div className="onboarding-box">
 						<div className="onboarding-header">
@@ -103,14 +103,16 @@ const OnboardingPage = () => {
 								<Title style={{ flex: '400px' }}>
 									<T keyName="registration">Registration</T>
 								</Title>
-								<Steps
-									current={onboardingStep}
-									className={styles.horizontalSteps}
-									progressDot
-									direction="horizontal"
-									items={onboardingMenu}
-									style={{ flex: 'auto' }}
-								/>
+								{screens.lg && (
+									<Steps
+										current={onboardingStep}
+										className={styles.horizontalSteps}
+										progressDot
+										direction="horizontal"
+										items={onboardingMenu}
+										style={{ flex: 'auto' }}
+									/>
+								)}
 							</Flex>
 						</div>
 						<div className="onboarding-container">

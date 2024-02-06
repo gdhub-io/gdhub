@@ -104,8 +104,6 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 			})
 		}
 
-		console.log(children)
-
 		return children
 	}
 

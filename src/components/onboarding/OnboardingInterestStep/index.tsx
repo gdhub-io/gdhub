@@ -5,7 +5,7 @@ import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-ic
 import { GameDifficultyLevel, GameGenre, GameSetting, PrimaryInterest } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, Flex, Form, Row, Segmented, Select, Space, Typography, message } from 'antd'
+import { Button, Col, Flex, Form, Grid, Radio, Row, Segmented, Select, Space, Typography, message } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
@@ -21,6 +21,7 @@ const { Paragraph, Title, Text } = Typography
 
 export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IOnboardingInterestStep) => {
 	const router = useRouter()
+	const screens = Grid.useBreakpoint()
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
 	const { data: session } = useSession()
@@ -107,8 +108,8 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 		<div className={styles.content}>
 			<div className="onboarding-content">
 				<div className="onboarding-form">
-					<div className="onboarding-form-title">
-						<Flex justify="space-between" align="center">
+					<Space direction="vertical" className="onboarding-form-title">
+						<Flex justify="space-between" align="center" wrap="wrap">
 							<Title level={2}>
 								<T keyName="interests">Interests</T>
 							</Title>
@@ -123,7 +124,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 						<Paragraph italic>
 							<T>Infomation about your preferences</T>
 						</Paragraph>
-					</div>
+					</Space>
 
 					<Form
 						form={form}
@@ -138,60 +139,87 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={24}>
 									<Form.Item name="primaryInterest" label={t('interest')} rules={[{ required: true }]}>
-										<Segmented
-											block
-											className={styles.interest}
-											options={[
-												{
-													label: (
-														<div className={styles.segmentedOption}>
-															<div className="segmented-option-content">
-																<InterestAuthorIcon height={56} width={56} />
-																<Paragraph>
-																	I want to be an <Text italic>Author</Text>
-																</Paragraph>
+										{screens.lg && (
+											<Segmented
+												block
+												className={styles.interest}
+												options={[
+													{
+														label: (
+															<div className={styles.segmentedOption}>
+																<div className="segmented-option-content">
+																	<InterestAuthorIcon height={56} width={56} />
+																	<Paragraph>
+																		<T keyName="wantToBe.text">I want to be</T> <Text italic>Author</Text>
+																	</Paragraph>
+																</div>
+																<div className="segmented-option-footer">
+																	<Text>I want to create games for myself</Text>
+																</div>
 															</div>
-															<div className="segmented-option-footer">
-																<Text>I want to create games for myself</Text>
+														),
+														value: PrimaryInterest.Author,
+													},
+													{
+														label: (
+															<div className={styles.segmentedOption}>
+																<div className="segmented-option-content">
+																	<InterestSpecialistIcon height={56} width={56} />
+																	<Paragraph>
+																		<T keyName="wantToBe.text">I want to be</T> <Text italic>Specialist</Text>
+																	</Paragraph>
+																</div>
+																<div className="segmented-option-footer">
+																	<Text>I want to join the team</Text>
+																</div>
 															</div>
-														</div>
-													),
-													value: PrimaryInterest.Author,
-												},
-												{
-													label: (
-														<div className={styles.segmentedOption}>
-															<div className="segmented-option-content">
-																<InterestSpecialistIcon height={56} width={56} />
-																<Paragraph>
-																	I want to be a <Text italic>Specialist</Text>
-																</Paragraph>
+														),
+														value: PrimaryInterest.Specialist,
+													},
+													{
+														label: (
+															<div className={styles.segmentedOption}>
+																<div className="segmented-option-content">
+																	<InterestMentorIcon height={56} width={56} />
+																	<Paragraph>
+																		<T keyName="wantToBe.text">I want to be</T> <Text italic>Mentor</Text>
+																	</Paragraph>
+																</div>
+																<div className="segmented-option-footer">
+																	<Text>I want to share my expertise</Text>
+																</div>
 															</div>
-															<div className="segmented-option-footer">
-																<Text>I want to join the team</Text>
-															</div>
-														</div>
-													),
-													value: PrimaryInterest.Specialist,
-												},
-												{
-													label: (
-														<div className={styles.segmentedOption}>
-															<div className="segmented-option-content">
-																<InterestMentorIcon height={56} width={56} />
-																<Paragraph>
-																	I want to be a <Text italic>Mentor</Text>
-																</Paragraph>
-															</div>
-															<div className="segmented-option-footer">
-																<Text>I want to share my expertise</Text>
-															</div>
-														</div>
-													),
-													value: PrimaryInterest.Mentor,
-												},
-											]}
-										/>
+														),
+														value: PrimaryInterest.Mentor,
+													},
+												]}
+											/>
+										)}
+
+										{!screens.lg && (
+											<Radio.Group>
+												<Space direction="vertical">
+													<Radio value={PrimaryInterest.Author}>
+														<T keyName="wantToBe.text">I want to be</T>{' '}
+														<Text italic>
+															<T keyName="wantToBe.author">Author</T>
+														</Text>
+													</Radio>
+													<Radio value={PrimaryInterest.Specialist}>
+														<T keyName="wantToBe.text">I want to be</T>{' '}
+														<Text italic>
+															<T keyName="wantToBe.specialist">Specialist</T>
+														</Text>
+													</Radio>
+													<Radio value={PrimaryInterest.Mentor}>
+														<T keyName="wantToBe.text">I want to be</T>{' '}
+														<Text italic>
+															<T keyName="wantToBe.mentor">Mentor</T>
+														</Text>
+													</Radio>
+												</Space>
+											</Radio.Group>
+										)}
 									</Form.Item>
 								</Col>
 							</Row>
@@ -242,14 +270,19 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 						</Space>
 					</Form>
 				</div>
-				<div className="onboarding-footer">
+				<Space
+					className="onboarding-footer"
+					wrap
+					size={16}
+					style={screens.lg ? { flexDirection: 'row' } : { flexDirection: 'column-reverse' }}
+				>
 					<Button onClick={onPreviousStep}>
 						<T keyName="back">Back</T>
 					</Button>
 					<Button type="primary" onClick={handleSave} loading={isUpdatingInterests}>
 						<T keyName="saveAndContinue">Save and continue</T>
 					</Button>
-				</div>
+				</Space>
 			</div>
 		</div>
 	)

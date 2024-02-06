@@ -2,7 +2,7 @@ import { useState } from 'react'
 import LogingBgImage from '@/assets/images/login-bg.jpg'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Space, Typography, Form, Input, message } from 'antd'
+import { Button, Space, Typography, Form, Input, message, Flex, Grid } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -23,6 +23,7 @@ declare global {
 const LoginPage: NextPage = () => {
 	const router = useRouter()
 	const { t } = useTolgee()
+	const screens = Grid.useBreakpoint()
 	const [form] = Form.useForm()
 	const [loginStep, setLoginStep] = useState(1)
 	const [email, setEmail] = useState<string>()
@@ -50,7 +51,10 @@ const LoginPage: NextPage = () => {
 			<Head>
 				<title>{t('signin', 'Sign in')}</title>
 			</Head>
-			<div className={`${styles.container} bright-container`} style={{ backgroundImage: `url(${LogingBgImage.src})` }}>
+			<div
+				className={`${styles.container}`}
+				style={{ backgroundImage: screens.lg ? `url(${LogingBgImage.src})` : undefined }}
+			>
 				<div className="login-box">
 					<div className="login-form">
 						<Space direction="vertical" size={40}>
@@ -110,14 +114,14 @@ const LoginPage: NextPage = () => {
 											</Form.Item>
 										</Form>
 
-										<Space size={24}>
+										<Flex justify="center" wrap="wrap" gap={16}>
 											<Button type="primary" onClick={handleSend} loading={submitting}>
 												<T>Send link to email</T>
 											</Button>
 											<Button type="link" onClick={() => setLoginStep(1)}>
 												<T>Back</T>
 											</Button>
-										</Space>
+										</Flex>
 									</Space>
 								</>
 							)}
