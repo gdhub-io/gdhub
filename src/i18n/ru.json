@@ -4,15 +4,19 @@
   "Assemble a team" : "Собрать команду",
   "Autonomy" : "Автономия",
   "Back" : "Назад",
+  "Back to home" : "Вернуться на главную",
   "Back to main" : "На главную",
   "Beginner" : "Начинающий",
+  "Community members" : "Участники сообщества",
   "Contacts" : "Контакты",
   "Continue with Google" : "Продолжить через Google",
   "Cookie Policy" : "Политика работы с Cookie",
+  "Cookies Policy" : "Политика использования файлов Cookie",
   "Create new account" : "Регистрация",
   "Discord" : "Дискорд",
   "Email" : "Эл. почта",
   "Enter Email" : "Введите Email",
+  "Error 404" : "Ошибка 404",
   "Error!" : "Ошибка!",
   "Experienced" : "Опытный",
   "Expert" : "Эксперт",
@@ -60,10 +64,14 @@
   "Registration token is wrong" : "Сссылка регистрации некорректна",
   "Registration token is wrong. Go to Signup page before." : "Неправильная ссылка на регистрацию. Начните процесс регистрации заново",
   "Registration with Google" : "Регистрация через Google",
-  "Send link to email" : "Отправить мне ссылку для входа",
+  "Return to main" : "Вернуться на главную",
+  "Send link to email" : "Отправить ссылку",
   "Send registration link" : "Продолжить регистрацию",
   "Setting goals and working towards them" : "Ставим цели и работаем над их достижением",
   "Skillful" : "Средний уровень",
+  "Sorry, we couldn't find the page you're looking for" : {
+    "" : "К сожалению, мы не смогли найти страницу, которую вы ищете."
+  },
   "Support" : "Поддержка",
   "Taking risks and making mistakes" : "Рисковать и совершать ошибки",
   "Technical officer" : "Основатель и разработчик портала",
@@ -88,6 +96,7 @@
     "" : "Добро пожаловать в сообщество, где создаются игры."
   },
   "Will help the service and project authors offer solutions that are interesting to you" : "Поможем авторам сервиса и проекта предложить интересные вам решения",
+  "You" : "Ты",
   "You can change it or add more ones after" : "Вы сможете изменить эти данные позже",
   "Your profile was successfully completed!" : "Ваш профиль успешно заполнен!",
   "Youtube" : "Youtube",
@@ -245,6 +254,9 @@
   "select" : "Выберите",
   "shooter" : "Шутер",
   "signin" : {
+    "email" : {
+      "complete" : "Мы отправили электронное письмо на адрес {email} со ссылкой для доступа к платформе. Переходите по данный ссылке и пользуйтесь платформой."
+    },
     "subtitle" : "Мы отправим письмо на электронную почту со ссылкой для входа в свой аккаунт."
   },
   "simulation" : "Симуляторы",
@@ -284,6 +296,12 @@
   "userProjectList" : "Список ваших проектов",
   "users-proposed-concepts-total" : "Участники предложили {total} концептов игр",
   "video games" : "видео игры",
+  "wantToBe" : {
+    "author" : "Автор",
+    "mentor" : "Ментор",
+    "specialist" : "Специалист",
+    "text" : "Я"
+  },
   "workDirection" : "Сфера деятельности",
   "yearOfBirth" : "Год рождения",
   "yes" : "Да",

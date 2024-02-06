@@ -4,15 +4,19 @@
   "Assemble a team" : "Assemble a team",
   "Autonomy" : "Autonomy",
   "Back" : "Back",
+  "Back to home" : "Back to home",
   "Back to main" : "Back to main",
   "Beginner" : "Beginner",
+  "Community members" : "Community members",
   "Contacts" : "Contacts",
   "Continue with Google" : "Continue with Google",
   "Cookie Policy" : "Cookie Policy",
+  "Cookies Policy" : "Cookies Policy",
   "Create new account" : "Create new account",
   "Discord" : "Discord",
   "Email" : "Email",
   "Enter Email" : "Enter Email",
+  "Error 404" : "Error 404",
   "Error!" : "Error!",
   "Experienced" : "Experienced",
   "Expert" : "Expert",
@@ -60,10 +64,14 @@
   "Registration token is wrong" : "This registration link is wrong",
   "Registration token is wrong. Go to Signup page before." : "Registration token is wrong. Go to Signup page before",
   "Registration with Google" : "Registration with Google",
+  "Return to main" : "Return to main",
   "Send link to email" : "Send link to email",
   "Send registration link" : "Send registration link",
   "Setting goals and working towards them" : "Setting goals and working towards them",
   "Skillful" : "Skillful",
+  "Sorry, we couldn't find the page you're looking for" : {
+    "" : "Sorry, we couldn't find the page you're looking for."
+  },
   "Support" : "Support",
   "Taking risks and making mistakes" : "Taking risks and making mistakes",
   "Technical officer" : "Technical officer",
@@ -88,6 +96,7 @@
     "" : "Welcome to the community where games are made."
   },
   "Will help the service and project authors offer solutions that are interesting to you" : "Will help the service and project authors offer solutions that are interesting to you",
+  "You" : "You",
   "You can change it or add more ones after" : "You can change it or add more ones after",
   "Your profile was successfully completed!" : "Your profile was successfully completed!",
   "Youtube" : "Youtube",
@@ -245,6 +254,9 @@
   "select" : "Select",
   "shooter" : "Shooter",
   "signin" : {
+    "email" : {
+      "complete" : "We have sent an email to {email} using the link to access the platform. Follow this link and use the platform."
+    },
     "subtitle" : "We will send a letter to email with a link to log into your account"
   },
   "simulation" : "Simulation",
@@ -284,6 +296,12 @@
   "userProjectList" : "Your game projects",
   "users-proposed-concepts-total" : "In total, members proposed {total} ideas",
   "video games" : "video games",
+  "wantToBe" : {
+    "author" : "an Author",
+    "mentor" : "a Mentor",
+    "specialist" : "a Specialist",
+    "text" : "I want to be a"
+  },
   "workDirection" : "Field of Activity",
   "yearOfBirth" : "Year of Birth",
   "yes" : "Yes",
