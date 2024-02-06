@@ -6,7 +6,7 @@ import styles from './style.module.scss'
 
 const { Title, Paragraph } = Typography
 
-export const LandingFooter = () => {
+export const MainFooter = () => {
 	const screens = Grid.useBreakpoint()
 
 	return (

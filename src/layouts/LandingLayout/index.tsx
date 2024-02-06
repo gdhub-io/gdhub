@@ -1,27 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
-import { LandingFooter } from '@/components/landing/LandingFooter'
-import { SwitchLanguage } from '@/components/SwitchLanguage'
+import { MainFooter } from '@/components/MainFooter'
+import { MainHeader } from '@/components/MainHeader'
 import { landingThemeConfig } from '@/config/theme'
 import { T, useTolgee } from '@tolgee/react'
-import {
-	Avatar,
-	Button,
-	ConfigProvider,
-	Drawer,
-	Flex,
-	Grid,
-	Layout,
-	Menu,
-	MenuProps,
-	Row,
-	Space,
-	Typography,
-} from 'antd'
+import { Avatar, Button, ConfigProvider, Drawer, Flex, Grid, Layout, Menu, MenuProps, Space, Typography } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
+import { AiOutlineClose } from 'react-icons/ai'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
@@ -111,51 +97,11 @@ export const LandingLayout = ({ children }: any) => {
 		<ConfigProvider theme={landingThemeConfig}>
 			<Layout className={styles.container}>
 				<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
-					<Row align="middle" justify="space-between" className={styles.headerContainer}>
-						<Link href="/" className="logo">
-							<GdhubLogo style={{ width: '146px', height: '42px' }} />
-						</Link>
-
-						{screens.lg ? (
-							<>
-								<Menu
-									className={styles.headerMenu}
-									style={{ flex: 1, justifyContent: 'center', columnGap: screens.xl ? 64 : 32 }}
-									mode="horizontal"
-									items={headerMenu}
-								/>
-
-								<Space align="start">
-									<>
-										{!!session ? (
-											<Link href="/hub">
-												<Button>
-													<T>Go to app</T>
-												</Button>
-											</Link>
-										) : (
-											<Link href="/signin">
-												<Button>
-													<T>Log in</T>
-												</Button>
-											</Link>
-										)}
-									</>
-									{/* <SwitchLanguage /> */}
-								</Space>
-							</>
-						) : (
-							<div className={styles.mobileMenuBtn}>
-								<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-									<AiOutlineMenu size={32} />
-								</Button>
-							</div>
-						)}
-					</Row>
+					<MainHeader />
 				</Header>
 				<Content className={styles.content}>{children}</Content>
 				<Footer className={styles.footer}>
-					<LandingFooter />
+					<MainFooter />
 				</Footer>
 			</Layout>
 
@@ -190,13 +136,13 @@ export const LandingLayout = ({ children }: any) => {
 
 						{!!session ? (
 							<Link href="/hub">
-								<Button size="small" type="primary" style={{ width: '100%' }}>
+								<Button type="primary" style={{ width: '100%' }}>
 									<T>Go to app</T>
 								</Button>
 							</Link>
 						) : (
 							<Link href="/signin">
-								<Button size="small" type="primary" style={{ width: '100%' }}>
+								<Button type="primary" style={{ width: '100%' }}>
 									<T>Log in</T>
 								</Button>
 							</Link>

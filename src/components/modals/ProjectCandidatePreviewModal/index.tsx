@@ -25,20 +25,6 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 	const { getGameGenreName } = useGameGenres()
 	const { getGameSettingName } = useGameSettings()
 	const { getGameDifficultyName } = useGameDifficulties()
-	// const [processing, setProcessing] = useState(true)
-
-	// const {
-	// 	data: candidate,
-	// 	mutate: fetchCandidate,
-	// 	isValidating: isLoadingCandidate,
-	// } = useSWR({ url: '/api/my/project-candidate', data: { id: candidateId } }, fetcher, {
-	// 	revalidateOnFocus: false,
-	// 	isPaused: () => !candidateId,
-	// 	onSuccess: (data) => {
-	// 		setProcessing(false)
-	// 		form.setFieldsValue({ ...data, 'Created At': dayjs(data['Created At']) })
-	// 	},
-	// })
 
 	const {
 		data: candidate,

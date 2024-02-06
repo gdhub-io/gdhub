@@ -8,7 +8,6 @@ export const NotificationsBell = () => {
 	const router = useRouter()
 	const { data: session } = useSession()
 
-	// const { data } = useSWRImmutable({ url: '/api/services/novu/signature' }, fetcher)
 	const { data: signature } = useQuery(['novu-signature', session?.user.id], () =>
 		axios.get<{ signature: string }>('/api/services/novu/signature')
 	)

@@ -1,41 +1,26 @@
-import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import PublicHeaderBg from '@/assets/images/public-header-bg.png'
+import { MainFooter } from '@/components/MainFooter'
+import { MainHeader } from '@/components/MainHeader'
 import { publicThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
-import { T } from '@tolgee/react'
-import {
-	Avatar,
-	Button,
-	Col,
-	ConfigProvider,
-	Drawer,
-	Dropdown,
-	Grid,
-	Layout,
-	Menu,
-	MenuProps,
-	Row,
-	Space,
-	Tooltip,
-	Typography,
-} from 'antd'
+import { Avatar, Button, ConfigProvider, Drawer, Grid, Layout, Menu, MenuProps, Space, Tooltip, Typography } from 'antd'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
-import { BsDiscord, BsMailbox, BsTelegram } from 'react-icons/bs'
+import { AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
-const { Paragraph, Text, Title } = Typography
+const { Text, Title } = Typography
 
-export const PublicLayout = ({ children }: any) => {
+export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any) => {
 	const router = useRouter()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
@@ -167,144 +152,37 @@ export const PublicLayout = ({ children }: any) => {
 		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
 	}, [isOpenedInTelegram, screens, session])
 
+	const setBackground = useCallback(() => {
+		if (title && !backgroundImage) return `url(${PublicHeaderBg.src})`
+		if (title && backgroundImage)
+			return `linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.3)), url(${backgroundImage})`
+	}, [title, backgroundImage])
+
 	return (
 		<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+			<style jsx global>{`
+				:root {
+					--background-color: #fff;
+				}
+			`}</style>
 			<Layout className={styles.container}>
-				<Header className={styles.header}>
-					<Row align="middle" justify="space-between" className={styles.headerContainer}>
-						<Link href="/" className="logo">
-							<GdhubLogo style={{ width: '156px', height: '42px' }} />
-						</Link>
-						{
-							<>
-								{screens.xl ? (
-									<>
-										{screens.lg && (
-											<Menu
-												style={{ flex: 1, justifyContent: 'center' }}
-												mode="horizontal"
-												items={session ? inlineMenuItems : publicMenuItems}
-											/>
-										)}
-										{!!session && (
-											<>
-												<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-													<Button type="link" size="large">
-														<Space>
-															{screens.sm && <div className="username">{session?.user?.name}</div>}
-															<Avatar
-																src={
-																	session?.user?.image ? (
-																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																	) : null
-																}
-																shape="square"
-															/>
-														</Space>
-													</Button>
-												</Dropdown>
-											</>
-										)}
-									</>
-								) : (
-									<Space>
-										<Button type="text" onClick={() => setOpenMobileMenu(true)}>
-											<AiOutlineMenu />
-										</Button>
-									</Space>
-								)}
-							</>
-						}
-						{!session && (
-							<Link href="/signin">
-								<Button>Log in</Button>
-							</Link>
-						)}
-					</Row>
+				<Header
+					className={styles.header}
+					style={{
+						backgroundImage: setBackground(),
+					}}
+				>
+					<MainHeader />
+					<div className={styles.titleContainer}>
+						{!!title && <Title className={styles.title}>{title}</Title>}
+						{!!subTitle && <Text type="secondary">{subTitle}</Text>}
+					</div>
 				</Header>
 				<Content>
 					<div className="layout-background">{children}</div>
 				</Content>
-				<Footer>
-					<Space direction="vertical" align="center" style={{ width: '100%' }}>
-						<Paragraph>Contacts</Paragraph>
-						<Title level={2}>Get in touch</Title>
-						<Paragraph>Join us and become a part of new era in the gaming industry!</Paragraph>
-						<Row>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsMailbox />
-									</div>
-									<Text>Email</Text>
-									<Text>info@gdhub.io</Text>
-								</Space>
-							</Col>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsTelegram />
-									</div>
-									<Text>Telegram</Text>
-									<Text>Game Developers Hub</Text>
-								</Space>
-							</Col>
-							<Col>
-								<Space direction="vertical" align="center">
-									<div>
-										<BsDiscord />
-									</div>
-									<Text>Discord</Text>
-									<Text>Game Developers Hub</Text>
-								</Space>
-							</Col>
-						</Row>
-					</Space>
-
-					<Row>
-						<Col span={12}>
-							<GdhubLogo style={{ width: '100px' }} />
-							<Paragraph>
-								<T keyName="app-short-description">
-									A community of game industry professionals whose members form teams to develop new games. Do you want
-									to get a new experience or develop your own game? Join now!
-								</T>
-							</Paragraph>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>
-									<T>Company</T>
-								</Title>
-								<Text>
-									<T>About us</T>
-								</Text>
-							</Space>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>
-									<T>For Users</T>
-								</Title>
-								<Text>
-									<T>For Authors</T>
-								</Text>
-								<Text>
-									<T>For Specialists</T>
-								</Text>
-							</Space>
-						</Col>
-						<Col span={4}>
-							<Space direction="vertical">
-								<Title level={5}>
-									<T>Support</T>
-								</Title>
-								<Text>
-									<T>Cookie Policy</T>
-								</Text>
-							</Space>
-						</Col>
-					</Row>
+				<Footer className={styles.footer}>
+					<MainFooter />
 				</Footer>
 			</Layout>
 			{!screens.lg && (

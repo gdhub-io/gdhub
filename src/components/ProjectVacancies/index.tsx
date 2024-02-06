@@ -6,6 +6,9 @@ import { Button, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
 const { Title } = Typography
 
@@ -34,6 +37,8 @@ interface ProjectVacanciesArgs {
 }
 
 const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
+	const { data: session } = useSession()
+	const router = useRouter()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 
@@ -59,14 +64,17 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 			dataIndex: 'title',
 			key: 'title',
 			width: '60%',
-			render: (value, record) => (
-				<>
-					<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
-						{value}
-					</span>{' '}
-					{record.Status == 'draft' && <Tag color="lime">{vacancyStatusToText(record.Status)}</Tag>}
-				</>
-			),
+			render: (value, record) =>
+				session ? (
+					<>
+						<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
+							{value}
+						</span>{' '}
+						{record.Status == 'draft' && <Tag color="lime">{vacancyStatusToText(record.Status)}</Tag>}
+					</>
+				) : (
+					<span style={{ fontWeight: 'bold' }}>{value}</span>
+				),
 		},
 		{
 			title: 'Направление',
@@ -88,7 +96,14 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 		{
 			key: 'actions',
 			responsive: ['md'],
-			render: (value, record) => <Button onClick={() => handleEditVacancy(record.id)}>Подробнее</Button>,
+			render: (value, record) =>
+				session ? (
+					<Button onClick={() => handleEditVacancy(record.id)}>Подробнее</Button>
+				) : (
+					<Link href={`/signin?callbackUrl=${router.asPath}`}>
+						<Button>Войти, чтобы посмотреть</Button>
+					</Link>
+				),
 		},
 	]
 
@@ -105,7 +120,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	return (
 		<>
 			<Space direction="vertical" style={{ marginTop: 60 }}>
-				<Title level={5}>Вакансии</Title>
+				<Title level={2}>Вакансии</Title>
 				{projectVacancies?.data.length > 0 && (
 					<p style={{ fontSize: 12 }}>
 						Все участники проектов, откликаясь на вакансии, принимают условия, что на период участия в выбранном

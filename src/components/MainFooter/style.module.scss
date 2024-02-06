@@ -1,9 +1,17 @@
-@import '../../../styles/variables.scss';
+@import '../../styles/variables.scss';
 
 .section {
   position: relative;
   background-color: #0b0b0d;
-  padding: 48px 165px 24px;
+  // padding: 48px 165px 24px;
+  padding: 48px 70px 24px;
+
+  :global {
+    .ant-typography {
+      color: #FFFDFC;
+      font-size: 14px;
+    }
+  }
 }
 
 .container {
@@ -13,6 +21,7 @@
     font-size: 16px;
     color: #FFFDFC;
     font-weight: 400;
+    font-size: 14px;
     border-bottom: 1px solid transparent;
 
     &:hover {
@@ -55,13 +64,17 @@
         }
       }
     }
+
+    .ant-divider {
+      border-color: #ffffff26;
+    }
   }
 }
 
 .copyright {
   text-align: center;
   font-size: 14px;
-  color: #9f9f9f;
+  color: #9f9f9f !important;
 }
 
 @import './styles/xs.scss'; // screen < 576px

@@ -2,16 +2,33 @@
 
 .header {
   height: auto;
+  padding: 0 $public-padding;
+  background-position: right;
+  background-size: cover;
+  background-color: #000;
+
+  .titleContainer {
+    padding: 60px 0;
+
+    :global {
+      h1 {
+        font-size: 48px;
+        color: #fff;
+        margin-bottom: 0;
+      }
+
+      .ant-typography-secondary {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
 }
 
-.headerContainer {
-  height: 120px;
+.footer {
+  padding: 0;
 }
 
 .container {
-  max-width: $wrapper-width;
-  margin: 0 auto;
-
   :global {
     .logo {
       font-weight: bold;

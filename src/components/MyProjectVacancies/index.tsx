@@ -36,18 +36,6 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
 	const [showVacancyModal, setShowVacancyModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
-	// const {
-	// 	data: projectVacancies,
-	// 	mutate: fetchMyMyProjectVacancies,
-	// 	isValidating: isLoadingMyMyProjectVacancies,
-	// } = useSWR(
-	// 	{ url: '/api/my/project-vacancies', data: { projectId: project?.id, projectName: project?.Name } },
-	// 	fetcher,
-	// 	{
-	// 		revalidateOnFocus: false,
-	// 		isPaused: () => !project,
-	// 	}
-	// )
 
 	const {
 		data: projectVacancies,

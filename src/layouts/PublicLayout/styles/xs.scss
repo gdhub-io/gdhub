@@ -1,12 +1,35 @@
 @media screen and (max-width: 575px) {
+
+	.header {
+		padding: 0 $public-padding-xs;
+
+		.titleContainer {
+			padding: 30px 0;
+
+			:global {
+				h1 {
+					font-size: 28px;
+					padding: 0;
+				}
+			}
+		}
+	}
+
 	.container {
+		padding: 0;
+
+		.title {
+			padding: 30px 0;
+			font-size: 28px;
+		}
+
 		:global {
 			.ant-layout-header {
-				padding: 0 20px;
+				// padding: 0 20px;
 
 				.logo {
 					font-weight: bold;
-          margin: 0;
+					margin: 0;
 				}
 
 				.username {
@@ -15,14 +38,14 @@
 				}
 			}
 
-      .ant-layout-content {
-        padding: 0;
-  
-        .layout-background {
-          padding: 24px;
-          min-height: 360px;
-        }
-      }
+			.ant-layout-content {
+				padding: 0 20px;
+
+				.layout-background {
+					padding: 24px;
+					min-height: 360px;
+				}
+			}
 		}
 	}
 }

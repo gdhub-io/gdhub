@@ -1,20 +1,11 @@
 import { useState } from 'react'
 import ProjectReportModal from '@/components/modals/ProjectReportModal'
-import { fetcher, fetherForMutation } from '@/helpers/fetcher'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Grid, Popconfirm, Space, Table, message } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { TbTrash } from 'react-icons/tb'
-import useSWR from 'swr'
-import useSWRMutation from 'swr/mutation'
-
-interface ProjectReport {
-	Name: string
-	Description: string
-	FinishedAt: string
-	Status: string
-	[key: string]: any
-}
 
 interface MyProjectReportsArgs {
 	project: any
@@ -24,15 +15,19 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 	const screens = Grid.useBreakpoint()
 	const [showProjectReportModal, setShowProjectReportModal] = useState(false)
 	const [selectedReportId, setSelectedReportId] = useState<string>()
+
 	const {
 		data: MyProjectReports,
-		mutate: fetchMyProjectReports,
-		isValidating: isLoadingMyProjectReports,
-	} = useSWR({ url: '/api/project-report/list', data: { projectId: project?.id } }, fetcher, {
-		revalidateOnFocus: false,
-		isPaused: () => !project,
-	})
-	const { trigger: deleteProjectReport } = useSWRMutation('/api/project-report/delete', fetherForMutation)
+		refetch: fetchMyProjectReports,
+		isLoading: isLoadingMyProjectReports,
+	} = useQuery(
+		['project-reports', project?.id],
+		() => axios.get('/api/user/project/reports', { params: { projectId: project?.id } }),
+		{ enabled: !!project }
+	)
+	const { mutateAsync: deleteProjectReport } = useMutation((params: { id: string }) =>
+		axios.delete<void>('/api/user/project/report', { params })
+	)
 
 	const columns: ColumnsType<any> = [
 		{
@@ -40,7 +35,7 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 			dataIndex: 'ID',
 			key: 'ID',
 			width: '100%',
-			render: (value, record) => 'Отчет от ' + dayjs(record.Date).format('D.M.Y'),
+			render: (value, record) => 'Отчет от ' + dayjs(record.publishedAt).format('lll'),
 		},
 		{
 			key: 'actions',
@@ -49,6 +44,7 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 				<Space>
 					<Button onClick={() => handleEditReport(record.id)}>Изменить</Button>
 					<Popconfirm
+						key={record.id}
 						title="Точно хотите удалить этот отчет?"
 						okText="Да"
 						cancelText="Нет"

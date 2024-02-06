@@ -1,4 +1,4 @@
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { getWorkedProjects } from '@/services/prisma/queries'
 import { Project, Season, SeasonStage, User } from '@prisma/client'
@@ -30,13 +30,12 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 	]
 
 	return (
-		<>
+		<PublicLayout title="Проекты сообщества">
 			<Head>
 				<title>Проекты сообщества</title>
 				<meta property="og:url" content="/projects" />
 			</Head>
 			<div className={styles.container}>
-				<Title style={{ fontSize: 24 }}>Проекты сообщества</Title>
 				<Row
 					gutter={[
 						{ md: 24, xs: 24 },
@@ -89,7 +88,7 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 					))}
 				</Row>
 			</div>
-		</>
+		</PublicLayout>
 	)
 }
 
@@ -109,7 +108,5 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 		revalidate: 60,
 	}
 }
-
-ProjectsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default ProjectsPage

@@ -1,4 +1,4 @@
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import NotionService, { getPage } from '@/services/notion'
 import styles from '@/styles/cookie-policy.module.scss'
@@ -11,20 +11,17 @@ const { Title } = Typography
 
 const PrivacyPolicyPage: NextPageWithLayout = ({ page, blocks }: any) => {
 	return (
-		<>
+		<PublicLayout title="Cookie Policy">
 			<Head>
 				<title>Cookie Policy</title>
 			</Head>
 
 			<div className={styles.container}>
-				<Title>{page?.properties.title.title[0].plain_text}</Title>
 				<Render blocks={blocks.results} simpleTitles />
 			</div>
-		</>
+		</PublicLayout>
 	)
 }
-
-PrivacyPolicyPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export const getStaticProps = async () => {
 	const page = await getPage({ pageId: 'c3fb3089-a57e-42f1-8383-3b13ea4842de' })

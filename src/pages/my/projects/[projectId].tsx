@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import ProjectModal from '@/components/modals/ProjectModal'
 import MyProjectCandidates from '@/components/MyProjectCandidates'
+import MyProjectReports from '@/components/MyProjectReports'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
 import MyTeam from '@/components/MyTeam'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
@@ -77,7 +78,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 							<MyTeam teamId={myProject.data.teamId} />
 							<MyProjectVacancies teamId={myProject.data.teamId} />
 							<MyProjectCandidates project={myProject.data} />
-							{/* <MyProjectReports project={myProject.data} /> */}
+							<MyProjectReports project={myProject.data} />
 						</>
 					)}
 
