@@ -20,6 +20,7 @@ import {
 	Highlight,
 	Stats,
 	useInstantSearch,
+	Configure,
 } from 'react-instantsearch'
 import styles from './style.module.scss'
 
@@ -69,6 +70,12 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 						<Highlight attribute="tools" hit={hit} />
 					</div>
 				)}
+				{!!hit.specialization && (
+					<div className={styles.hitItem}>
+						<Text strong>Специализация: </Text>
+						<Highlight attribute="specialization" hit={hit} />
+					</div>
+				)}
 			</Card>
 		)
 	}
@@ -110,6 +117,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 					searchClient={searchAdapter.searchClient}
 					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
 				>
+					<Configure filters="isActive:true" />
 					<SearchBox placeholder="Type search query..." />
 					<Row justify="end" className={styles.stats}>
 						<Stats />

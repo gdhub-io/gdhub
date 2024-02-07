@@ -9,6 +9,8 @@ export const specialistsSchema: CollectionCreateSchema = {
 		{ name: 'direction', type: 'string', facet: true },
 		{ name: 'level', type: 'string', facet: true },
 		{ name: 'name', type: 'string', facet: true },
+		{ name: 'isActive', type: 'bool', facet: true },
+		{ name: 'specialization', type: 'string', facet: true },
 		{ name: 'skills', type: 'string[]', facet: true, optional: true },
 		{ name: 'tools', type: 'string[]', facet: true, optional: true },
 		{ name: 'jobs', type: 'string[]', facet: true, optional: true },

@@ -17,15 +17,25 @@ export async function migrate() {
 		console.info('Start')
 
 		const specialists = await prisma.speciality.findMany({
-			take: 100,
 			orderBy: { id: 'asc' },
-			include: { direction: true },
+			include: { direction: true, user: { include: { profile: true } } },
 		})
 
 		try {
-			const documents = specialists.map((s) =>
-				prepareData({ ...s, externalId: s.id, direction: s.direction.name })
-			) as any[]
+			const documents = specialists.map((s) => {
+				const { user, userId, workDirectionId, ...otherData } = s
+
+				return prepareData({
+					...otherData,
+					externalId: s.id,
+					isActive: s.user.profile?.isActive,
+					timeForWorkMin: user.profile?.timeForWork[0],
+					timeForWorkMax: user.profile?.timeForWork[1],
+					direction: s.direction.name,
+					country: user.profile?.country,
+					city: user.profile?.city,
+				})
+			}) as any[]
 			await searchService.client
 				.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 				.documents()

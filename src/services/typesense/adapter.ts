@@ -24,9 +24,10 @@ export class InstantsearchAdapter {
 					},
 				],
 				apiKey: process.env.NEXT_PUBLIC_TYPESENSE_SEARCH_API as string,
+				cacheSearchResultsForSeconds: 2 * 60,
 			},
 			additionalSearchParameters: {
-				query_by: 'name,city,country,schools,jobs,tools,skills,direction,level',
+				query_by: 'name,city,country,schools,jobs,tools,skills,direction,specialization',
 			},
 		})
 
