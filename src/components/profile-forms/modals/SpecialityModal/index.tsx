@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
+import { DefaultOptionType } from 'antd/es/select'
 import axios from 'axios'
 
 const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) => {
@@ -28,7 +29,7 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 		if (open) form.resetFields()
 
 		if (speciality) {
-			form.setFieldsValue({ ...speciality, tools: speciality.tools.split('\n') })
+			form.setFieldsValue({ ...speciality, tools: speciality.tools?.split('\n') })
 		}
 
 		setProcessing(false)
@@ -64,6 +65,27 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 
 	const workDirectionOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
 
+	const levelOptions: DefaultOptionType[] = useMemo(
+		() =>
+			skillLevelsList.map((item: any, indx: number) => {
+				console.log(item)
+				return {
+					value: item.value,
+					label:
+						item.label !== form.getFieldValue('Level') ? (
+							<Tooltip title={item.description} placement="right">
+								{item.icon} {item.label}
+							</Tooltip>
+						) : (
+							<>
+								{item.icon} {item.label}
+							</>
+						),
+				}
+			}),
+		[skillLevelsList, form]
+	)
+
 	return (
 		<Modal
 			title={speciality ? 'Изменить специальность' : 'Добавить специальность'}
@@ -83,8 +105,6 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 					layout="vertical"
 					name="profile-speciality-form"
 					wrapperCol={{ span: 12 }}
-					onFinish={() => {}}
-					onFinishFailed={() => {}}
 					autoComplete="off"
 					requiredMark="optional"
 				>
@@ -102,21 +122,7 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
 							<Form.Item name="level" label="Уровень владения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
-								<Select placeholder="Выберите" style={{ width: '100%' }}>
-									{skillLevelsList.map((item: any, indx: number) => (
-										<Select.Option key={indx.toString()} value={item.label}>
-											{item.label !== form.getFieldValue('Level') ? (
-												<Tooltip title={item.description} placement="right">
-													{item.icon} {item.label}
-												</Tooltip>
-											) : (
-												<>
-													{item.icon} {item.label}
-												</>
-											)}
-										</Select.Option>
-									))}
-								</Select>
+								<Select options={levelOptions} placeholder="Выберите" style={{ width: '100%' }} />
 							</Form.Item>
 						</Col>
 					</Row>

@@ -286,5 +286,10 @@ export const appThemeConfig: ThemeConfig = {
 			controlHeight: 48,
 			controlHeightLG: 52,
 		},
+		Modal: {
+			titleFontSize: 24,
+			titleLineHeight: 2,
+			fontWeightStrong: 700,
+		},
 	},
 }
