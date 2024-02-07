@@ -20,7 +20,7 @@ import {
 	Highlight,
 	Stats,
 	useInstantSearch,
-} from 'react-instantsearch-hooks-web'
+} from 'react-instantsearch'
 import styles from './style.module.scss'
 
 const { Paragraph, Text, Title } = Typography
