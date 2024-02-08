@@ -19,6 +19,7 @@ import {
 	Row,
 	Space,
 	Tooltip,
+	Typography,
 } from 'antd'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
@@ -33,8 +34,9 @@ import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
 const { Header, Footer, Content } = Layout
+const { Title } = Typography
 
-export const ProtectedLayout = ({ children }: any) => {
+export const ProtectedLayout = ({ title, children }: any) => {
 	const router = useRouter()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
@@ -278,7 +280,10 @@ export const ProtectedLayout = ({ children }: any) => {
 					</Row>
 				</Header>
 				<Content>
-					<div className="layout-background">{children}</div>
+					<div className="layout-background">
+						{!!title && <Title>{title}</Title>}
+						{children}
+					</div>
 				</Content>
 				<Footer></Footer>
 			</Layout>

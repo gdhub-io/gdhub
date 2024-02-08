@@ -3,15 +3,18 @@ import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { hasRole } from '@/helpers/user'
 import { Season, SeasonStage, TeamVacancy, UserRole } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 import SpecialitySelectModal from '../SpecialitySelectModal'
 
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const session: any = useSession()
+	const router = useRouter()
 	const [form] = Form.useForm()
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
 
@@ -31,7 +34,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				params: { id: vacancyId },
 			}),
 		{
-			enabled: !!vacancyId,
+			enabled: !!vacancyId && !!session?.data,
 		}
 	)
 
@@ -45,7 +48,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	)
 
 	useEffect(() => {
-		if (open && vacancyId) {
+		if (open && vacancyId && session?.data) {
 			refetchVacancy()
 		}
 	}, [open])
@@ -96,6 +99,10 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	}
 
 	const statusOkButton = () => {
+		if (!session?.data) {
+			return <T keyName="signin">Signin</T>
+		}
+
 		if (hasRole(UserRole.Member, session)) {
 			return vacancy?.data.myTeamMemberId ? 'Отозвать отклик' : 'Откликнуться'
 		}
@@ -103,7 +110,11 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		return 'Откликнуться'
 	}
 
-	const functionOkButton = () => {
+	const functionOkButton = async () => {
+		if (!session?.data) {
+			router.push('/signin?callbackUrl=' + router.asPath)
+		}
+
 		if (hasRole(UserRole.Member, session)) {
 			return vacancy?.data.myTeamMemberId
 				? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
@@ -117,18 +128,28 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		<>
 			<Modal
 				centered
-				title="Кто требуется"
+				title={
+					session?.data ? (
+						<T keyName="modal.vacancy.titleSession">Вакансия</T>
+					) : (
+						<T keyName="needAuth">Необходима авторизация</T>
+					)
+				}
 				width={800}
 				destroyOnClose
 				maskClosable={false}
 				okText={statusOkButton()}
 				onOk={functionOkButton}
-				okButtonProps={{ disabled: !session?.data?.user }}
-				cancelText="Закрыть"
+				// okButtonProps={{ disabled: !session?.data?.user }}
+				cancelText={<T keyName="close">Close</T>}
 				open={open}
 				onCancel={handleCancel}
 				confirmLoading={processing}
 			>
+				{!session?.data && (
+					<T keyName="needAuthDescription">Просмотр вакансий доступен только авторизованным пользователям лпатформы.</T>
+				)}
+
 				<Spin spinning={processing}>
 					{!!vacancy && (
 						<>
