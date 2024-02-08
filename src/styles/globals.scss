@@ -1,7 +1,34 @@
 @import 'antd/dist/reset.css'; // Import Ant Design styles by less entry
+@import './variables';
 
 :root {
 	--background-color: #0b0b0d;
+
+	// work direction colors
+	--bg-direc-development: #E5F1FF;
+	--bg-direc-web-development: #D3F7FF;
+	--bg-direc-game-design: #FDFEC8;
+	--bg-direc-2d-art-animation: #FFEBEB;
+	--bg-direc-3d-art-animation: #FFF4CF;
+	--bg-direc-management: #F0EBFF;
+	--bg-direc-game-writer: #FDFEC8;
+	--bg-direc-learning: #DCFFF9;
+	--bg-direc-technical-art: #F2FEE6;
+	--bg-direc-music-sound: #C9EBFF;
+	--bg-direc-marketing: #FFD5C8;
+	--bg-direc-vfx: #FFD7BA;
+	--bg-direc-qa: #F2DDFF;
+	--bg-direc-hr: #FFE2F0;
+	--bg-direc-video-editing: #FFEDFB;
+	--bg-direc-backend-development: #F6FFBF;
+	--bg-direc-investment: #FFCECE;
+	--bg-direc-other: #eeeeee;
+}
+
+@each $work-direction in $work-directions {
+	.bg-direc-#{$work-direction} {
+		background-color: var(--bg-direc-#{$work-direction});
+	}
 }
 
 @function colorWithAlpha($color, $alpha) {

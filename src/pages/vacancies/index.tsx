@@ -1,15 +1,18 @@
 import VacanciesList from '@/components/VacanciesList'
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Grid } from 'antd'
 import Head from 'next/head'
+import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	const screens = Grid.useBreakpoint()
+	const { data: session } = useSession()
 
-	return (
-		<PublicLayout title="Вакансии">
+	const pageContent = (
+		<>
 			<Head>
 				<title>Вакансии на проекты сообщества</title>
 				<meta property="og:title" content="Вакансии на проекты сообщества" />
@@ -21,8 +24,14 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 					<VacanciesList />
 				</div>
 			</div>
-		</PublicLayout>
+		</>
 	)
+
+	if (session) {
+		return <ProtectedLayout title="Вакансии">{pageContent}</ProtectedLayout>
+	}
+
+	return <PublicLayout title="Вакансии">{pageContent}</PublicLayout>
 }
 
 export default VacanciesPage

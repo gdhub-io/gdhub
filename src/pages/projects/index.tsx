@@ -1,3 +1,4 @@
+import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { getWorkedProjects } from '@/services/prisma/queries'
@@ -8,6 +9,7 @@ import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const { Title, Paragraph } = Typography
@@ -17,6 +19,7 @@ type ProjectsPageParams = { projects: ProjectIncludeAll[] }
 
 const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 	const screens = Grid.useBreakpoint()
+	const { data: session } = useSession()
 
 	const breadcrumbItems = (project: ProjectIncludeAll): ItemType[] => [
 		{
@@ -29,8 +32,8 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 		},
 	]
 
-	return (
-		<PublicLayout title="Проекты сообщества">
+	const pageContent = (
+		<>
 			<Head>
 				<title>Проекты сообщества</title>
 				<meta property="og:url" content="/projects" />
@@ -88,8 +91,14 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 					))}
 				</Row>
 			</div>
-		</PublicLayout>
+		</>
 	)
+
+	if (session) {
+		return <ProtectedLayout title="Проекты сообщества">{pageContent}</ProtectedLayout>
+	}
+
+	return <PublicLayout title="Проекты сообщества">{pageContent}</PublicLayout>
 }
 
 export const getStaticProps = async (context: GetServerSidePropsContext) => {

@@ -1,105 +1,48 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
-import { useWorkDirections } from '@/hooks/library'
-import { TeamVacancy } from '@prisma/client'
+import { TeamVacancy, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { Button, Space, Table } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
+import { T } from '@tolgee/react'
+import { Button, Col, Row, Space, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
+import { GoArrowDownRight } from 'react-icons/go'
+import styles from './style.module.scss'
+
+const { Title, Text } = Typography
 
 const VacanciesList = () => {
-	const { data: session } = useSession()
-	const router = useRouter()
-	const { data: workDirections, getDirectionName } = useWorkDirections()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
-	const {
-		data: vacancies,
-		isLoading: isLoadingMyVacanciesList,
-		refetch: refetchVacanciesList,
-	} = useQuery(
+	const { data: vacancies } = useQuery(
 		['vacancies'],
-		() => axios.get<(TeamVacancy & { project: { id: string; slug: string; name: string } })[]>('/api/vacancies'),
+		() =>
+			axios.get<
+				(TeamVacancy & {
+					direction: WorkDirection
+					project: { id: string; slug: string; name: string; description: string }
+				})[]
+			>('/api/vacancies'),
 		{
 			refetchOnWindowFocus: false,
 			refetchInterval: 60000,
 		}
 	)
 
-	const vacanciesColumns: ColumnsType<TeamVacancy & { project: { id: string; slug: string; name: string } }> = [
-		{
-			title: 'Название',
-			dataIndex: 'title',
-			key: 'title',
-			width: '40%',
-			render: (value, record) =>
-				session ? (
-					<>
-						<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
-							{value}
-						</span>
-					</>
-				) : (
-					<span style={{ fontWeight: 'bold' }}>{value}</span>
-				),
-		},
-		{
-			title: 'Проект',
-			dataIndex: 'teamId',
-			key: 'teamId',
-			// width: '40%',
-			render: (value, record) => (
-				<>
-					<Link href={`/project/${record.project.slug}`}>
-						<Button type="text">{record.project.name}</Button>
-					</Link>
-				</>
-			),
-		},
-		{
-			title: 'Направление',
-			dataIndex: 'directionId',
-			responsive: ['md'],
-			key: 'directionId',
-			render: (value) => getDirectionName(value),
-		},
-		{
-			title: 'Действует до',
-			dataIndex: 'finishedAt',
-			responsive: ['md'],
-			key: 'finishedAt',
-			render: (value) => dayjs(value).format('DD.MM.YYYY'),
-		},
-		{
-			key: 'actions',
-			responsive: ['md'],
-			render: (value, record) =>
-				!session && (
-					<Link href={`/signin?callbackUrl=${router.asPath}`}>
-						<Button>Войти, чтобы посмотреть</Button>
-					</Link>
-				),
-		},
-	]
-
-	const handleEditVacancy = (id: string) => {
+	const handleShowVacancy = (id: string) => {
 		setSelectedVacancyId(id)
 		setShowVacancyPreviewModal(true)
 	}
 
-	const handleSaveVacancy = () => {
+	const handleCloseVacancy = () => {
+		setSelectedVacancyId(undefined)
 		setShowVacancyPreviewModal(false)
-		refetchVacanciesList()
 	}
 
 	return (
 		<>
 			<Space direction="vertical">
-				<p style={{ fontSize: 12 }}>
+				<p className={styles.description}>
 					Все участники проектов, откликаясь на вакансии, принимают условия, что на период участия в выбранном проекте,
 					работа не оплачивается до момента получения финансирования или если, иные условия не указаны в вакансии.
 					Затраченное вами время - это инвестиции в проект, который вы выбираете. От того, как каждый член команды, и
@@ -111,13 +54,36 @@ const VacanciesList = () => {
 
 			{!!vacancies?.data ? (
 				<>
-					<Table
-						loading={isLoadingMyVacanciesList}
-						style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
-						columns={vacanciesColumns}
-						dataSource={vacancies.data}
-						pagination={false}
-					/>
+					<Row gutter={[32, 32]} wrap>
+						{vacancies.data.map((vacancy, idx) => {
+							return (
+								<Col xs={24} sm={12} lg={8} xxl={6} key={idx} className={styles.col}>
+									<div
+										className={[
+											styles.vacancyCard,
+											'bg-direc-' + vacancy.direction.name.replace(' & ', '-').replace(' ', '-'),
+										].join(' ')}
+									>
+										<div className={styles.validDate}>
+											<T>Valid until</T> {dayjs(vacancy.finishedAt).format('ll')}
+										</div>
+										<div className={styles.content}>
+											<Title level={2} className={styles.title}>
+												{vacancy.title}
+											</Title>
+
+											<div className={styles.projectName}>{vacancy.project.name}</div>
+										</div>
+										<Button
+											className={styles.linkBtn}
+											icon={<GoArrowDownRight size={24} onClick={() => handleShowVacancy(vacancy.id)} />}
+											type="primary"
+										/>
+									</div>
+								</Col>
+							)
+						})}
+					</Row>
 
 					<VacancyPreviewModal
 						vacancyId={selectedVacancyId}
@@ -126,7 +92,7 @@ const VacanciesList = () => {
 							setShowVacancyPreviewModal(false)
 							setSelectedVacancyId(undefined)
 						}}
-						onOk={handleSaveVacancy}
+						onOk={handleCloseVacancy}
 					/>
 				</>
 			) : (
