@@ -7,6 +7,10 @@ const nextConfig = {
 		locales: ['en', 'ru'],
 		defaultLocale: 'ru',
 	},
+	experimental: {
+		serverComponentsExternalPackages: ['bullmq'],
+		instrumentationHook: true,
+	},
 	images: {
 		remotePatterns: [
 			{ protocol: 'https', hostname: 'images.unsplash.com' },
