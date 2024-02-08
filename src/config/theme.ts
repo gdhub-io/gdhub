@@ -152,6 +152,11 @@ export const publicThemeConfig: ThemeConfig = {
 			bodyBg: 'transparent',
 			headerBg: 'transparent',
 		},
+		Modal: {
+			titleFontSize: 24,
+			titleLineHeight: 2,
+			fontWeightStrong: 700,
+		},
 	},
 
 	// token: {
