@@ -15,7 +15,7 @@ services:
       - .:/app
     restart: unless-stopped
     networks:
-      - gamelab-network
+      - gdhub-network
     command: yarn dev
 
   searchengine: #dashboard https://bfritscher.github.io
@@ -28,7 +28,7 @@ services:
       - gamelab-typesense-data:/data
     command: '--data-dir /data --api-key=${TYPESENSE_ADMIN_API} --enable-cors'
     networks:
-      - gamelab-network
+      - gdhub-network
 
   searchengine-dashboard: #dashboard https://bfritscher.github.io
     container_name: gamelab-typesense-dashboard
@@ -51,7 +51,7 @@ services:
       - ./deploy/postgres/init:/docker-entrypoint-initdb.d
       - gamelab-postgres-data:/var/lib/postgresql/data
     networks:
-      - gamelab-network
+      - gdhub-network
     restart: unless-stopped
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME:-postgres} -d ${DATABASE_NAME:-postgres}']
@@ -70,10 +70,22 @@ services:
     env_file:
       - .env
 
+  redis:
+    image: bitnami/redis:latest
+    environment:
+      - REDIS_PASSWORD=password12345
+    ports:
+      - '6379:6379'
+    volumes:
+      - gdhub-redis-data:/bitnami/redis/data
+    networks:
+      - gdhub-network
+
 volumes:
   gamelab-typesense-data:
   gamelab-postgres-data:
   gamelab-tolgee-data:
+  gdhub-redis-data:
 
 networks:
-  gamelab-network:
+  gdhub-network:

@@ -12,7 +12,8 @@
     "postinstall": "npx prisma generate",
     "data-transfer": "ts-node -O {\\\"module\\\":\\\"CommonJS\\\"} -r tsconfig-paths/register prisma/data-transfer.ts",
     "refresh-translations": "node import-translations.js",
-    "db:push-back": "chmod +x prisma/scripts/push-back.sh && prisma/scripts/push-back.sh"
+    "db:push-back": "chmod +x prisma/scripts/push-back.sh && prisma/scripts/push-back.sh",
+    "worker:tg-message": "dotenv -e .env -- ts-node -O {\\\"module\\\":\\\"CommonJS\\\"} -r tsconfig-paths/register src/workers/tg-message.worker.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} -r tsconfig-paths/register prisma/seed.ts"
@@ -36,16 +37,19 @@
     "airtable": "^0.12.2",
     "antd": "^5.11.1",
     "axios": "^1.4.0",
+    "bullmq": "^5.1.9",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cookie": "^0.5.0",
     "crypto-random-string": "^5.0.0",
     "cryptr": "^6.3.0",
     "dayjs": "^1.11.10",
+    "dotenv-cli": "^7.3.0",
     "flag-icon-css": "^4.1.7",
     "formidable": "^2.1.1",
     "html-react-parser": "^3.0.7",
     "instantsearch.js": "^4.64.3",
+    "ioredis": "^5.3.2",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^8.5.1",
     "luxon": "^3.0.1",
