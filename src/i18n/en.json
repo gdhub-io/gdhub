@@ -86,6 +86,7 @@
   "The registration link is incorrect or has already been used" : "The registration link is incorrect or has already been used",
   "UI/UX designer" : "UI/UX designer",
   "Vacancies" : "Vacancies",
+  "Valid until" : "Valid until",
   "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc" : {
     "" : "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc."
   },
@@ -121,6 +122,7 @@
   "city" : "City",
   "city-placeholder" : "Enter city",
   "city.placeholder" : "Enter your city name",
+  "close" : "Close",
   "community members" : "community members",
   "concept-link" : "Link to the concept",
   "concept-list" : "Concept list",
@@ -222,6 +224,8 @@
   "mid-core" : "Mid-core",
   "military" : "Military",
   "mmorpg" : "Massively multiplayer online role playing game (MMORPG)",
+  "needAuth" : "Authorization required",
+  "needAuthDescription" : "Viewing the data is available only to authorized users of the platform.",
   "no" : "No",
   "no-projects-yet" : "No projects found for this stage",
   "no-user-projects" : "No project yet.",
@@ -253,12 +257,9 @@
   "sci-fi" : "Sci-Fi",
   "select" : "Select",
   "shooter" : "Shooter",
-  "signin" : {
-    "email" : {
-      "complete" : "We have sent an email to {email} using the link to access the platform. Follow this link and use the platform."
-    },
-    "subtitle" : "We will send a letter to email with a link to log into your account"
-  },
+  "signin" : "Sign in",
+  "signin.email.complete" : "We have sent an email to {email} using the link to access the platform. Follow this link and use the platform.",
+  "signin.subtitle" : "We will send a letter to email with a link to log into your account",
   "simulation" : "Simulation",
   "skill" : {
     "beginner" : {
