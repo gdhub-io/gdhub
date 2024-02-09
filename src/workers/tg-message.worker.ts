@@ -1,5 +1,5 @@
 import TelegramService from '@/services/telegram'
-import { Worker, Queue } from 'bullmq'
+import { Worker, Queue, Processor } from 'bullmq'
 import Redis from 'ioredis'
 
 const connection = new Redis(process.env.REDIS_URL!, {
@@ -20,42 +20,35 @@ export const tgMessageQueue = new Queue('tgMessageQueue', {
 })
 
 export const TgMessageQueueWorkerRunning = () => {
-	const worker = new Worker(
-		'tgMessageQueue',
-		async (job) => {
-			const { message } = job?.data
-			const chatId = process.env.TELEGRAM_CHAT_ID ? Number.parseInt(process.env.TELEGRAM_CHAT_ID) : undefined
+	const workerHandler: Processor = async (job) => {
+		const telegramBot = TelegramService.init()
+		// let message: string | undefined = undefined
 
-			if (!chatId) throw Error('No target telegram chat data.')
-
-			const telegramBot = TelegramService.init()
-			await telegramBot.sendMessage({
-				chatId,
-				topicId: process.env.TELEGRAM_TOPIC_NEWS ? Number.parseInt(process.env.TELEGRAM_TOPIC_NEWS) : undefined,
-				message,
-			})
-		},
-		{
-			connection,
-			concurrency: 5,
-			removeOnComplete: { count: 1000 },
-			removeOnFail: { count: 5000 },
+		if (job.name == 'new-project-reports') {
+			await telegramBot.sendNewProjectReports({ inLastDays: 1 })
 		}
-	)
+
+		if (job.name == 'new-specialities') {
+			await telegramBot.sendNewSpecialities({ inLastDays: 1 })
+		}
+
+		if (job.name == 'new-vacancies') {
+			await telegramBot.sendNewVacancies({ inLastDays: 1 })
+		}
+	}
+
+	const worker = new Worker('tgMessageQueue', workerHandler, {
+		connection,
+		concurrency: 5,
+		removeOnComplete: { count: 1000 },
+		removeOnFail: { count: 5000 },
+	})
 
 	worker.on('completed', (job) => {
-		// update task status
-		void (async () => {
-			// await someFunction(job?.id, TaskStatus.COMPLETED)
-		})()
 		console.log(`${job.id} has completed!`)
 	})
 
 	worker.on('failed', (job, err) => {
-		// update task status
-		void (async () => {
-			// await someFunction(job?.id, TaskStatus.FAILED)
-		})()
 		console.log(`${job?.id} has failed with ${err.message}`)
 	})
 }

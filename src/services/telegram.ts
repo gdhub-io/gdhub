@@ -3,7 +3,20 @@
  * Telegram Bot API Docs https://core.telegram.org/bots/api#formatting-options
  */
 
+import { env } from '@/helpers/env'
+import dayjs from 'dayjs'
+import localeData from 'dayjs/plugin/localeData'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import weekday from 'dayjs/plugin/weekday'
 import fetch from 'node-fetch'
+import { prisma } from './prisma'
+
+dayjs.extend(localizedFormat)
+dayjs.extend(localeData)
+dayjs.extend(relativeTime)
+dayjs.extend(weekday)
+dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
 
 export default class TelegramService {
 	private apiUrl: string
@@ -94,5 +107,80 @@ export default class TelegramService {
 		} catch (error: any) {
 			console.log(error)
 		}
+	}
+
+	async sendNewProjectReports({ inLastDays = 1 }: { inLastDays?: number }) {
+		const reports = await prisma.projectReport.findMany({
+			where: {
+				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+			},
+			include: { project: { include: { stage: { include: { season: true } } } } },
+		})
+
+		let message = '<b>Новое на проектах сообщества</b>'
+
+		reports.map((report) => {
+			message += `\n\n<b>Проект ${report.project.name}</b> / ${report.project.stage.season.name}\n`
+			message += '<i>Отчет от: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
+			message += '- ' + report.content
+			message += report.video
+				? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Прикрепленное видео</a>`
+				: ''
+			message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Читать дальше</a>`
+		})
+
+		message += '<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
+
+		await this.sendMessage({
+			chatId: env<number>('TELEGRAM_CHAT_ID'),
+			topicId: env<number>('TELEGRAM_TOPIC_REPORTS'),
+			message,
+		})
+	}
+
+	async sendNewSpecialities({ inLastDays = 1 }: { inLastDays?: number }) {
+		const specialities = await prisma.speciality.findMany({
+			where: {
+				createdAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+			},
+			include: { user: { include: { profile: true } } },
+		})
+
+		let message = `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${specialities.length} участника</b> имеющие такие специальности, как:\n- `
+		message += specialities.map((r) => r.name).join(';\n- ')
+		message += '\n\nДобро пожаловать в наш хаб!'
+
+		await this.sendMessage({
+			chatId: env<number>('TELEGRAM_CHAT_ID'),
+			topicId: env<number>('TELEGRAM_TOPIC_NEWS'),
+			message,
+		})
+	}
+
+	async sendNewVacancies({ inLastDays = 1 }: { inLastDays?: number }) {
+		const projectWithVacancies = await prisma.project.findMany({
+			where: {
+				vacancies: { some: { publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() } } },
+			},
+			include: { vacancies: true, _count: { select: { vacancies: true } } },
+		})
+
+		let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
+
+		projectWithVacancies.map((project) => {
+			const vacancyNames = project.vacancies.map((v) => v.title)
+
+			message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n`
+			message += '- ' + vacancyNames.join('\n- ')
+		})
+
+		message +=
+			'<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
+
+		await this.sendMessage({
+			chatId: env<number>('TELEGRAM_CHAT_ID'),
+			topicId: env<number>('TELEGRAM_TOPIC_VACANCIES'),
+			message,
+		})
 	}
 }
