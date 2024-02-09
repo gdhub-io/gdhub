@@ -2,7 +2,7 @@ name: New Project Reports Send Message
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 17 * * *'
+    - cron: '20 14 * * *'
 jobs:
   cron:
     runs-on: ubuntu-latest
