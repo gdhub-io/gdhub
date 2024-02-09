@@ -217,7 +217,7 @@ export const ProtectedLayout = ({ title, children }: any) => {
 								{screens.sm && <Text className="username">{session?.user?.name}</Text>}
 							</Space>
 						</Space>
-						<Space size={24}>
+						<Space>
 							{screens.xl ? (
 								<>
 									<Link href="/hub/docs">
@@ -238,7 +238,6 @@ export const ProtectedLayout = ({ title, children }: any) => {
 																<Image src={session?.user.image} width={32} height={32} alt="avatar" />
 															) : null
 														}
-														shape="square"
 													/>
 												) : (
 													<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />

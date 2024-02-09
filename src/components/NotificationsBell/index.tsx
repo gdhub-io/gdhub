@@ -26,10 +26,10 @@ export const NotificationsBell = () => {
 			styles={{
 				bellButton: {
 					root: {
-						borderRadius: '50%',
-						padding: 2,
-						height: 24,
-						width: 24,
+						borderRadius: '0px',
+						padding: 8,
+						height: 40,
+						width: 40,
 						':hover': { backgroundColor: '#F33921', svg: { color: '#fff' } },
 						svg: { color: '#8e8e8e', scale: 2 },
 					},
