@@ -14,6 +14,7 @@
   "Cookies Policy" : "Cookies Policy",
   "Create new account" : "Create new account",
   "Discord" : "Discord",
+  "Documentation" : "Documentation",
   "Email" : "Email",
   "Enter Email" : "Enter Email",
   "Error 404" : "Error 404",
@@ -110,6 +111,19 @@
   "agreeWithTermsAndPrivacy.error" : "To register for the service you must agree with the specified documents",
   "agreements" : "Agreenments",
   "app-short-description" : "A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
+  "app" : {
+    "user" : {
+      "menu" : {
+        "hub" : "Overview",
+        "lectures" : "Lectures",
+        "members" : "Members",
+        "mentors" : "Mentors",
+        "projects" : "Projects",
+        "settings" : "Settings",
+        "vacancies" : "Vacancies"
+      }
+    }
+  },
   "are-you-sure-you-want-to-delete-it" : "Are you sure you want to delete it?",
   "availableTime" : "Available Time",
   "back" : "Back",
