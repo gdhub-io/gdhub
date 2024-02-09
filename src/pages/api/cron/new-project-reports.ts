@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 			projects.map((project) => {
 				output += `\n\n<b>Проект ${project.name}</b> / ${project.season}\n`
-				output += '<i>Отчет от: ' + dayjs(project.date).format('LLL') + '</i>\n\n'
+				output += '<i>Отчет от: ' + dayjs(project.date).format('ll') + '</i>\n\n'
 				output += '- ' + project.desc
 				output += project.videoLink ? `\n<a href="${project.videoLink}">Прикрепленное видео</>` : ''
 				output += `\n<a href="https://gdhub.io/project/${project.slug}">Читать дальше</a>`
