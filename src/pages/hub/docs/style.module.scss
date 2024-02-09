@@ -1,12 +1,11 @@
 .container {
-	border-top: 1px solid #e2e8f0;
-
 	:global {
 		.main-menu {
 			position: relative;
 			min-height: 500px;
 			height: 100%;
 			padding-top: 20px;
+			border: 0 !important;
 		}
 
 		.mobile-menu {
@@ -15,10 +14,13 @@
 		}
 
 		.main-container {
+			background-color: #fff;
 			position: relative;
 			min-height: 500px;
 			padding: 32px 64px;
 			line-height: 150%;
+
+			box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 6px 14px rgba(0,0,0,.08);
 
 			a {
 				color: #07ad92;

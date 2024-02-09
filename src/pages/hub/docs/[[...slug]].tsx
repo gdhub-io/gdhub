@@ -153,7 +153,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 				className={styles.container}
 				style={{ fontSize: themeToken.token.fontSize, color: themeToken.token.colorText }}
 			>
-				<Row>
+				<Row gutter={16}>
 					<Col xs={{ span: 24 }} md={{ span: 6 }} xl={{ span: 5 }} xxl={{ span: 4 }}>
 						{screens.md ? (
 							<Affix offsetTop={0}>

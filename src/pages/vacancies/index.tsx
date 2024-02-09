@@ -1,5 +1,4 @@
 import VacanciesList from '@/components/VacanciesList'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Grid } from 'antd'
@@ -11,8 +10,8 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
 
-	const pageContent = (
-		<>
+	return (
+		<PublicLayout title="Вакансии">
 			<Head>
 				<title>Вакансии на проекты сообщества</title>
 				<meta property="og:title" content="Вакансии на проекты сообщества" />
@@ -24,14 +23,8 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 					<VacanciesList />
 				</div>
 			</div>
-		</>
+		</PublicLayout>
 	)
-
-	if (session) {
-		return <ProtectedLayout title="Вакансии">{pageContent}</ProtectedLayout>
-	}
-
-	return <PublicLayout title="Вакансии">{pageContent}</PublicLayout>
 }
 
 export default VacanciesPage

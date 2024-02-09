@@ -1,4 +1,3 @@
-// import { useEffect } from 'react'
 import { useEffect } from 'react'
 import { IndieList } from '@/components/IndieList'
 import SeasonsList from '@/components/SeasonsList'
@@ -6,10 +5,11 @@ import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { UserRole } from '@prisma/client'
-import { Button, Space } from 'antd'
+import { Button, Flex, Space } from 'antd'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { CiLock } from 'react-icons/ci'
 import styles from './style.module.scss'
 
 const HubPage: NextPageWithLayout = () => {
@@ -20,11 +20,18 @@ const HubPage: NextPageWithLayout = () => {
 	}, [session])
 
 	return (
-		<>
+		<ProtectedLayout>
 			<Head>
 				<title>Game Developers Hub</title>
 			</Head>
 			<div className={styles.container}>
+				<Flex justify="end">
+					<Button type="primary" disabled>
+						<Space>
+							Add Project <CiLock style={{ display: 'block' }} />
+						</Space>
+					</Button>
+				</Flex>
 				{session.status == 'authenticated' && !hasRole(UserRole.Member, session) && (
 					<Space direction="vertical">
 						<p>
@@ -49,10 +56,8 @@ const HubPage: NextPageWithLayout = () => {
 					</>
 				)}
 			</div>
-		</>
+		</ProtectedLayout>
 	)
 }
-
-HubPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default HubPage
