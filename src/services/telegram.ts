@@ -3,6 +3,8 @@
  * Telegram Bot API Docs https://core.telegram.org/bots/api#formatting-options
  */
 
+import axios from 'axios'
+import { parseInline } from 'marked'
 import fetch from 'node-fetch'
 
 export default class TelegramService {
@@ -28,12 +30,14 @@ export default class TelegramService {
 		message: string
 		options?: Record<string, any>
 	}) {
-		let body: any = {
+		const text = await parseInline(message)
+
+		let body: Record<string, any> = {
 			chat_id: chatId,
 			message_thread_id: topicId || undefined,
 			parse_mode: 'HTML',
 			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS == '1',
-			text: message, //1-4096 characters
+			text: text.replace(/<img[^>]*>/g, ''), //1-4096 characters
 		}
 
 		if (options) {
@@ -41,16 +45,9 @@ export default class TelegramService {
 		}
 
 		try {
-			const res = await fetch(`${this.apiUrl}/sendMessage`, {
-				method: 'post',
-				body: JSON.stringify(body),
-				headers: {
-					accept: 'application/json',
-					'content-type': 'application/json',
-				},
-			})
+			const res = await axios.post(`${this.apiUrl}/sendMessage`, body)
 
-			if (!res.ok) throw new Error('Telegram sendMessage response is wrong')
+			if (!res.data) throw new Error('Telegram sendMessage response is wrong')
 
 			console.log('Message successfully send.')
 		} catch (error: any) {

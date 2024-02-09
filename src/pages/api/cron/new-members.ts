@@ -1,63 +1,38 @@
-import AirtableService from '@/services/airtable'
+import { env } from '@/helpers/env'
+import { NextAuthGuard } from '@/lib/api-middlewares'
+import { prisma } from '@/services/prisma'
 import TelegramService from '@/services/telegram'
-import { NextApiRequest, NextApiResponse } from 'next'
+import dayjs from 'dayjs'
+import { Post, Query, createHandler } from 'next-api-decorators'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	if (req.method !== 'POST' || req.headers['authorization'] !== process.env.BACKEND_KEY)
-		throw new Error('Forbidden request')
+class CronProjectReportsDto {
+	inLastDays: number
+}
 
-	try {
-		const chatId = process.env.TELEGRAM_CHAT_ID ? Number.parseInt(process.env.TELEGRAM_CHAT_ID) : undefined
-		if (!chatId) throw new Error('Unknown chat')
+@NextAuthGuard('public_api')
+class CronNewSpecialitiesHandler {
+	@Post()
+	public async handler(@Query() { inLastDays = 1 }: CronProjectReportsDto) {
+		const newSpecialities = await prisma.speciality.findMany({
+			where: {
+				createdAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+			},
+			include: { user: { include: { profile: true } } },
+		})
 
-		const newSpecialities = []
-		const newMembers = await AirtableService('Profiles')
-			.select({
-				fields: ['Specialities'],
-				filterByFormula: `AND( DATETIME_DIFF(DATEADD(TODAY(),-1,'days'), Created, 'days') < 3, Specialities )`,
-			})
-			.all()
+		console.log('New specialities were found: ', newSpecialities.length)
 
-		console.log('new members found', newMembers.length)
-
-		if (newMembers?.length == 0) {
-			res.json({ success: true })
-			return
-		}
-
-		for (const member of newMembers) {
-			const _specialities = member.fields.Specialities as string[]
-			const specs = await AirtableService('Specialities')
-				.select({
-					fields: ['Name'],
-					filterByFormula: `FIND(RECORD_ID(), "${_specialities.join(' ')}")`,
-				})
-				.all()
-
-			for (const spec of specs) {
-				newSpecialities.push(spec.fields.Name)
-			}
-		}
-
-		const finishMessage = [
-			'Бывает же такое!',
-			'Добро пожаловать в наш хаб!',
-			'Теперь-то начнем делать игры по-серъезному!',
-			'Ура! Своих прибавилось!',
-			'Сообщество растет. Приятно :)',
-		]
+		const finishMessage = ['Добро пожаловать в наш хаб!']
 		const randomInt = Math.floor(Math.random() * (finishMessage.length - 1))
-		const newSpecialitiesRender = newSpecialities.join(';\n- ')
+		const newSpecialitiesRender = newSpecialities.map((r) => r.name).join(';\n- ')
 
 		const telegramBot = TelegramService.init()
 		await telegramBot.sendMessage({
-			chatId,
-			topicId: process.env.TELEGRAM_TOPIC_NEWS ? Number.parseInt(process.env.TELEGRAM_TOPIC_NEWS) : undefined,
-			message: `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${newMembers.length} участника</b> имеющие такие специальности, как:\n- ${newSpecialitiesRender}\n\n${finishMessage[randomInt]}`,
+			chatId: env<number>('TELEGRAM_CHAT_ID'),
+			topicId: env<number>('TELEGRAM_TOPIC_NEWS'),
+			message: `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${newSpecialities.length} участника</b> имеющие такие специальности, как:\n- ${newSpecialitiesRender}\n\n${finishMessage[randomInt]}`,
 		})
-
-		res.json({ success: true })
-	} catch (error: any) {
-		res.json({ success: false, error: error.message })
 	}
 }
+
+export default createHandler(CronNewSpecialitiesHandler)
