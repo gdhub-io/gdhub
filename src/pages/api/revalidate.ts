@@ -1,3 +1,4 @@
+import { NextAuthGuard } from '@/lib/api-middlewares'
 import { IsString } from 'class-validator'
 import { type NextApiResponse } from 'next'
 import { Body, Post, Res, createHandler } from 'next-api-decorators'
@@ -7,7 +8,7 @@ class RevalidatePageDTO {
 	slug: string
 }
 
-// @NextAuthGuard('user')
+@NextAuthGuard('user')
 class ApiProjectsHandler {
 	constructor() {}
 
