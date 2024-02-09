@@ -5,20 +5,20 @@ import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
+import { T } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
 	ConfigProvider,
 	Drawer,
 	Dropdown,
+	Flex,
 	FloatButton,
 	Grid,
 	Layout,
 	Menu,
 	MenuProps,
-	Row,
 	Space,
-	Tooltip,
 	Typography,
 } from 'antd'
 import enLocale from 'antd/locale/en_US'
@@ -29,12 +29,12 @@ import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { GoArrowUp } from 'react-icons/go'
-import { TbBrandTelegram } from 'react-icons/tb'
+import { RxSlash } from 'react-icons/rx'
 import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
-const { Header, Footer, Content } = Layout
-const { Title } = Typography
+const { Header, Content } = Layout
+const { Title, Text } = Typography
 
 export const ProtectedLayout = ({ title, children }: any) => {
 	const router = useRouter()
@@ -42,23 +42,6 @@ export const ProtectedLayout = ({ title, children }: any) => {
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
-
-	const telegramMenuItem = {
-		label: screens.lg ? (
-			<Tooltip title="Чат сообщества в Telegram">
-				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
-					<Button shape="circle" type="text" size="small" style={{ top: '6px', position: 'relative' }}>
-						<TbBrandTelegram size={24} />
-					</Button>
-				</Link>
-			</Tooltip>
-		) : (
-			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
-				Чат сообщества в Telegram
-			</Link>
-		),
-		key: 'telegram-join-link',
-	}
 
 	useEffect(() => {
 		console.log(session)
@@ -73,40 +56,6 @@ export const ProtectedLayout = ({ title, children }: any) => {
 
 		return config
 	}, [session?.user.email])
-
-	const publicMenuItems: any = useMemo(
-		() => [
-			{
-				label: (
-					<Link href="/projects" title="Проекты сообщества">
-						{screens.lg ? (
-							<Button type="text" size="small">
-								Проекты
-							</Button>
-						) : (
-							'Проекты'
-						)}
-					</Link>
-				),
-				key: '/projects',
-			},
-			{
-				label: (
-					<Link href="/vacancies" title="Вакансии на инди-проекты">
-						{screens.lg ? (
-							<Button type="text" size="small">
-								Вакансии
-							</Button>
-						) : (
-							'Вакансии'
-						)}
-					</Link>
-				),
-				key: '/vacancies',
-			},
-		],
-		[screens]
-	)
 
 	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = [
@@ -125,58 +74,16 @@ export const ProtectedLayout = ({ title, children }: any) => {
 				),
 				key: '/hub',
 			},
-			...publicMenuItems,
+
 			{
 				label: (
 					<Link href="/hub/docs">
-						{screens.lg ? (
-							<Button type="primary" size="small" className="tertiary-blue-btn">
-								Documentation
-							</Button>
-						) : (
-							<strong>Documentation</strong>
-						)}
+						{screens.lg ? <Button size="small">Documentation</Button> : <strong>Documentation</strong>}
 					</Link>
 				),
 				key: '/hub/docs',
 			},
-			telegramMenuItem,
 		]
-
-		if (!!session && session?.user?.roles.includes(UserRole.Member)) {
-			menu = [
-				menu[0],
-				{
-					label: (
-						<Link href="/hub/members" title="Участники сообщества">
-							{screens.lg ? (
-								<Button type="text" size="small">
-									Участники
-								</Button>
-							) : (
-								'Участники'
-							)}
-						</Link>
-					),
-					key: '/hub/members',
-				},
-				{
-					label: (
-						<Link href="/hub/lectures" title="Лекции сообщества">
-							{screens.lg ? (
-								<Button type="text" size="small">
-									Лекции
-								</Button>
-							) : (
-								'Лекции'
-							)}
-						</Link>
-					),
-					key: '/hub/lectures',
-				},
-				...menu.slice(1),
-			]
-		}
 
 		return menu
 	}, [screens, session])
@@ -201,6 +108,16 @@ export const ProtectedLayout = ({ title, children }: any) => {
 				label: <Link href="/my/projects">Мои проекты</Link>,
 				key: 'projects',
 			},
+			{ type: 'divider' },
+			{
+				key: 'tg-community',
+				label: (
+					<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
+						Чат сообщества в Telegram
+					</Link>
+				),
+			},
+			{ type: 'divider' },
 			{
 				style: { display: isOpenedInTelegram ? 'none' : 'block' },
 				label: 'Выйти',
@@ -213,79 +130,142 @@ export const ProtectedLayout = ({ title, children }: any) => {
 		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
 	}, [isOpenedInTelegram, screens, session])
 
+	const menuItems: MenuProps['items'] = [
+		{
+			key: '/hub',
+			label: (
+				<Link href="/hub">
+					<T keyName="app.user.menu.hub">Overview</T>
+				</Link>
+			),
+		},
+		{
+			key: '/hub/vacancies',
+			label: (
+				<Link href="/hub/vacancies">
+					<T keyName="app.user.menu.vacancies">Vacancies</T>
+				</Link>
+			),
+		},
+		{
+			key: '/hub/members',
+			label: (
+				<Link href="/hub/members">
+					<T keyName="app.user.menu.members">Members</T>
+				</Link>
+			),
+		},
+		{
+			key: '/hub/projects',
+			label: (
+				<Link href="/hub/projects">
+					<T keyName="app.user.menu.projects">Projects</T>
+				</Link>
+			),
+		},
+		{
+			key: '/hub/lectures',
+			label: (
+				<Link href="/hub/lectures">
+					<T keyName="app.user.menu.lectures">Lectures</T>
+				</Link>
+			),
+		},
+		{
+			key: '/experts',
+			disabled: true,
+			label: <T keyName="app.user.menu.mentors">Mentors</T>,
+		},
+		{
+			key: '/profile',
+			label: (
+				<Link href="/profile">
+					<T keyName="app.user.menu.settings">Settings</T>
+				</Link>
+			),
+		},
+	]
+
 	return (
 		<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
 			<style jsx global>{`
 				:root {
-					--background-color: #fff;
+					--background-color: #fafafa;
 				}
 			`}</style>
 			<Layout className={styles.container}>
-				<Header className="header">
-					<Row align="middle" justify="space-between">
-						<Link href="/hub" className="logo">
-							<GdhubLogo style={{ width: '100px' }} />
-						</Link>
-						{
-							<>
-								{screens.xl ? (
-									<>
-										{screens.lg && (
-											<Menu
-												style={{ flex: 1, justifyContent: 'flex-end' }}
-												mode="horizontal"
-												items={session ? inlineMenuItems : publicMenuItems}
-											/>
-										)}
-										{!!session && (
-											<Space>
-												<NotificationsBell />
-												<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-													<Button type="text" size="small">
-														<Space>
-															{screens.sm && <div className="username">{session?.user?.name}</div>}
-															{session.user.image ? (
-																<Avatar
-																	src={
-																		session?.user?.image ? (
-																			<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																		) : null
-																	}
-																	shape="square"
-																/>
-															) : (
-																<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
-															)}
-														</Space>
-													</Button>
-												</Dropdown>
-											</Space>
-										)}
-									</>
-								) : (
-									<Space>
-										<NotificationsBell />
-										<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
-											<AiOutlineMenu />
-										</Button>
-									</Space>
-								)}
-							</>
-						}
-						{!session && (
-							<Link href="/signin">
-								<Button size="small">Log in</Button>
+				<Header className={styles.header}>
+					<Flex align="middle" justify="space-between">
+						<Space align="center" size={8}>
+							<Link href="/hub" className="logo">
+								<GdhubLogo style={{ width: '100px' }} />
 							</Link>
-						)}
-					</Row>
+							<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
+							<Space>
+								{session?.user?.image ? (
+									<Avatar
+										src={
+											session?.user?.image ? (
+												<Image src={session?.user.image} width={24} height={24} alt="avatar" />
+											) : null
+										}
+										size={24}
+									/>
+								) : (
+									<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
+								)}
+								{screens.sm && <Text className="username">{session?.user?.name}</Text>}
+							</Space>
+						</Space>
+						<Space>
+							{screens.xl ? (
+								<>
+									<Link href="/hub/docs">
+										<Button type="text" style={{ fontSize: 14 }}>
+											<T>Documentation</T>
+										</Button>
+									</Link>
+									<NotificationsBell />
+									<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
+										<Button
+											type="text"
+											style={{ display: 'block', padding: 0 }}
+											icon={
+												session?.user.image ? (
+													<Avatar
+														src={
+															session?.user?.image ? (
+																<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+															) : null
+														}
+													/>
+												) : (
+													<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
+												)
+											}
+										></Button>
+									</Dropdown>
+								</>
+							) : (
+								<>
+									<NotificationsBell />
+									<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
+										<AiOutlineMenu />
+									</Button>
+								</>
+							)}
+						</Space>
+					</Flex>
+					{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
+					<Menu items={menuItems} mode="horizontal" selectedKeys={[router.pathname]} className={styles.appMenu} />
 				</Header>
-				<Content>
-					<div className="layout-background">
+				<Content className={styles.contentContainer}>
+					<div className={styles.content}>
 						{!!title && <Title>{title}</Title>}
 						{children}
 					</div>
 				</Content>
-				<Footer></Footer>
+				{/* <Footer></Footer> */}
 			</Layout>
 			{!screens.lg && (
 				<Drawer
@@ -295,7 +275,7 @@ export const ProtectedLayout = ({ title, children }: any) => {
 						<Space>
 							<Avatar
 								src={
-									session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
+									session?.user?.image ? <Image src={session?.user.image} width={32} height={32} alt="avatar" /> : null
 								}
 								shape="square"
 							/>
@@ -306,7 +286,7 @@ export const ProtectedLayout = ({ title, children }: any) => {
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
 					extra={
-						<Button onClick={() => setOpenMobileMenu(false)} type="text" size="small">
+						<Button onClick={() => setOpenMobileMenu(false)} type="text">
 							<AiOutlineClose />
 						</Button>
 					}

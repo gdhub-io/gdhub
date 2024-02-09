@@ -2,7 +2,6 @@ import { useState } from 'react'
 import ProjectReports from '@/components/ProjectReports'
 import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
@@ -51,8 +50,8 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 
 	const pitchVideoOptions: Options = { playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 } }
 
-	const pageContent = (
-		<>
+	return (
+		<PublicLayout title={project.name} subTitle={`Автор ${project.author.name}`} backgroundImage={project.coverImage}>
 			<Head>
 				<title>{project.name}</title>
 				<meta name="description" content={project.description as string}></meta>
@@ -123,16 +122,6 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 					<ProjectReports projectId={project.id} projectStartedAt={project.createdAt} />
 				</div>
 			</div>
-		</>
-	)
-
-	if (session) {
-		return <ProtectedLayout title={project.name}>{pageContent}</ProtectedLayout>
-	}
-
-	return (
-		<PublicLayout title={project.name} subTitle={`Автор ${project.author.name}`} backgroundImage={project.coverImage}>
-			{pageContent}
 		</PublicLayout>
 	)
 }
