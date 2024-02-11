@@ -1,15 +1,9 @@
+import { redisConnection } from '@/services/redis'
 import TelegramService from '@/services/telegram'
 import { Worker, Queue, Processor } from 'bullmq'
-import Redis from 'ioredis'
-
-const connection = new Redis(process.env.REDIS_URL!, {
-	lazyConnect: true,
-	maxRetriesPerRequest: null,
-	db: 0,
-})
 
 export const tgMessageQueue = new Queue('tgMessageQueue', {
-	connection,
+	connection: redisConnection,
 	defaultJobOptions: {
 		attempts: 2,
 		backoff: {
@@ -38,7 +32,7 @@ export const TgMessageQueueWorkerRunning = () => {
 	}
 
 	const worker = new Worker('tgMessageQueue', workerHandler, {
-		connection,
+		connection: redisConnection,
 		concurrency: 5,
 		removeOnComplete: { count: 1000 },
 		removeOnFail: { count: 5000 },
@@ -51,4 +45,6 @@ export const TgMessageQueueWorkerRunning = () => {
 	worker.on('failed', (job, err) => {
 		console.log(`${job?.id} has failed with ${err.message}`)
 	})
+
+	return { ready: true }
 }
