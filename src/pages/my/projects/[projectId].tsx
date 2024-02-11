@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import ProjectModal from '@/components/modals/ProjectModal'
 import MyProjectCandidates from '@/components/MyProjectCandidates'
 import MyProjectReports from '@/components/MyProjectReports'
