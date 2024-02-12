@@ -1,4 +1,10 @@
-import { IMessage, NotificationBell, NovuProvider, PopoverNotificationCenter } from '@novu/notification-center'
+import {
+	I18NLanguage,
+	IMessage,
+	NotificationBell,
+	NovuProvider,
+	PopoverNotificationCenter,
+} from '@novu/notification-center'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -17,9 +23,13 @@ export const NotificationsBell = () => {
 		router.push(url)
 	}
 
+	if (!signature?.data.signature) {
+		return null
+	}
+
 	return (
 		<NovuProvider
-			i18n="ru"
+			i18n={(router.locale as I18NLanguage) || 'en'}
 			subscriberId={session?.user.id}
 			applicationIdentifier={process.env.NEXT_PUBLIC_NOVU_CLIENT_APP_ID as string}
 			subscriberHash={signature?.data.signature}
