@@ -16,11 +16,15 @@ class ApiUserTeamHandler {
 		const team = await prisma.team.findFirst({
 			where: {
 				id: teamId,
+			},
+			include: {
 				members: {
-					some: { status: { in: [TeamMemberStatus.Founder, TeamMemberStatus.Hired, TeamMemberStatus.Fired] } },
+					where: {
+						status: { in: [TeamMemberStatus.Founder, TeamMemberStatus.Hired, TeamMemberStatus.Fired] },
+					},
+					include: { user: { select: { name: true, image: true } } },
 				},
 			},
-			include: { members: { include: { user: { select: { name: true, image: true } } } } },
 		})
 
 		return team
