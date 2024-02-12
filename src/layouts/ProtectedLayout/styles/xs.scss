@@ -1,4 +1,10 @@
 @media screen and (max-width: 575px) {
+	.contentContainer {	
+		.content {
+			padding-inline: 20px;
+		}
+	}
+
 	.container {
 		:global {
 			.ant-layout-header {

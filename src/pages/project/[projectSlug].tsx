@@ -143,7 +143,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 	const { projectSlug }: any = context.params
 
 	const project = await prisma.project.findFirst({
-		where: { slug: projectSlug },
+		where: { slug: projectSlug, status: { in: [ProjectStatus.Approved, ProjectStatus.Done] } },
 		include: { author: { select: { name: true, profile: { select: { tgNickname: true } } } } },
 	})
 
