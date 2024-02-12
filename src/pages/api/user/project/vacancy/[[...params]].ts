@@ -98,7 +98,37 @@ class ApiUserTeamVacancyHandler {
 
 	@Put('/withdraw')
 	public async withdraw(@Req() req: NextApiRequestWithUser, @Body() { teamMemberId }: { teamMemberId: string }) {
-		await prisma.teamMember.delete({ where: { id: teamMemberId } })
+		const deletedMember = await prisma.teamMember.delete({
+			where: { id: teamMemberId },
+			select: {
+				user: true,
+				vacancy: true,
+				team: {
+					select: { members: { where: { status: TeamMemberStatus.Founder }, select: { userId: true, user: true } } },
+				},
+			},
+		})
+
+		if (!deletedMember.vacancy) return
+
+		for (const founderMember of deletedMember.team.members) {
+			try {
+				await NovuService.send({
+					template: 'default-message',
+					to: {
+						subscriberId: founderMember.userId,
+						email: founderMember.user.email!,
+					},
+					payload: {
+						message: `Кандидат ${deletedMember.user.name} отклонил свою кандидатуру на позицию ${deletedMember.vacancy.title}`,
+					},
+				})
+
+				console.info('New notification was sent to ' + founderMember.userId)
+			} catch (e) {
+				console.error('[NovuService]', e)
+			}
+		}
 	}
 
 	@Post('/apply')
@@ -141,7 +171,7 @@ class ApiUserTeamVacancyHandler {
 				template: 'new-candidate-to-project',
 				to: {
 					subscriberId: vacancy.project.authorId!,
-					email: vacancy.project?.author.name!,
+					email: vacancy.project?.author.email!,
 				},
 				payload: {
 					name: candidate.user.name,
@@ -159,26 +189,80 @@ class ApiUserTeamVacancyHandler {
 
 	@Put('/candidate/reject')
 	public async rejectCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
-		await prisma.teamMember.update({
+		const rejectedCandidate = await prisma.teamMember.update({
 			where: { id, status: TeamMemberStatus.Applicant },
 			data: { status: TeamMemberStatus.Rejected },
+			select: { user: true, vacancy: true, team: true },
 		})
+
+		try {
+			await NovuService.send({
+				template: 'default-message',
+				to: {
+					subscriberId: rejectedCandidate.user.id,
+					email: rejectedCandidate.user.email!,
+				},
+				payload: {
+					message: `Ваша кандидатура на позицию ${rejectedCandidate.vacancy?.title} в команде ${rejectedCandidate.team.name} была отклонена.`,
+				},
+			})
+
+			console.info('New notification was sent to ' + rejectedCandidate.user.id)
+		} catch (e) {
+			console.error('[NovuService]', e)
+		}
 	}
 
 	@Put('/candidate/hire')
 	public async hireCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
-		await prisma.teamMember.update({
+		const member = await prisma.teamMember.update({
 			where: { id, status: TeamMemberStatus.Applicant },
 			data: { status: TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
+			select: { user: true, team: true },
 		})
+
+		try {
+			await NovuService.send({
+				template: 'default-message',
+				to: {
+					subscriberId: member.user.id,
+					email: member.user.email!,
+				},
+				payload: {
+					message: `Вы приняты в команду ${member.team.name}`,
+				},
+			})
+
+			console.info('New notification was sent to ' + member.user.id)
+		} catch (e) {
+			console.error('[NovuService]', e)
+		}
 	}
 
 	@Put('/candidate/fire')
 	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
-		await prisma.teamMember.update({
+		const firedMember = await prisma.teamMember.update({
 			where: { id, status: TeamMemberStatus.Hired },
 			data: { status: TeamMemberStatus.Fired, finishedAt: dayjs().toISOString() },
+			select: { user: true, team: true },
 		})
+
+		try {
+			await NovuService.send({
+				template: 'default-message',
+				to: {
+					subscriberId: firedMember.user.id,
+					email: firedMember.user.email!,
+				},
+				payload: {
+					message: `Вы были исключены из команды ${firedMember.team.name}`,
+				},
+			})
+
+			console.info('New notification was sent to ' + firedMember.user.id)
+		} catch (e) {
+			console.error('[NovuService]', e)
+		}
 	}
 }
 

@@ -24,7 +24,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 			}),
 		{
 			enabled: !!teamId,
-			refetchOnWindowFocus: false,
+			// refetchOnWindowFocus: false,
 		}
 	)
 

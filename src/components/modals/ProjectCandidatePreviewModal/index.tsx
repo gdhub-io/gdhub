@@ -5,6 +5,7 @@ import {
 	GameGenre,
 	GameSetting,
 	Profile,
+	Project,
 	Speciality,
 	TeamMember,
 	TeamVacancy,
@@ -35,7 +36,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		() =>
 			axios.get<
 				TeamMember & {
-					vacancy: TeamVacancy
+					vacancy: TeamVacancy & { project: Project }
 					speciality: Speciality
 					user: User & {
 						specialities: Speciality[]
@@ -49,7 +50,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 			>('/api/user/project/candidate', {
 				params: { id: candidateId },
 			}),
-		{ enabled: !!candidateId }
+		{ enabled: !!candidateId, refetchInterval: false, refetchOnWindowFocus: false }
 	)
 
 	const { mutateAsync: rejectCandidate, isLoading: isRejecting } = useMutation(
@@ -139,7 +140,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 
 									<Descriptions layout="horizontal" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
 										<Descriptions.Item label="Интересует вакансия">{candidate.data.vacancy.title}</Descriptions.Item>
-										<Descriptions.Item label="На проекте">{candidate.data.teamId}</Descriptions.Item>
+										<Descriptions.Item label="На проекте">{candidate.data.vacancy.project.name}</Descriptions.Item>
 										<Descriptions.Item label="Создано">
 											{dayjs(candidate.data.createdAt).format('LLL')}
 										</Descriptions.Item>

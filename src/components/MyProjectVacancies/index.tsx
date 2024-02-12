@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
-import { TeamVacancyStatus } from '@prisma/client'
+import { Project, TeamVacancyStatus } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
+import { Button, Flex, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { HiOutlineLockClosed } from 'react-icons/hi'
+import VacancyArchiveModal from '../modals/VacancyArchiveModal'
 
 interface Vacancy {
 	key: string
@@ -30,16 +31,18 @@ const vacancyStatusToText = (status: TeamVacancyStatus) => {
 
 interface MyProjectVacanciesArgs {
 	teamId: string
+	project: Partial<Project>
 }
 
-const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
+const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
 	const [showVacancyModal, setShowVacancyModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
+	const [showVacancyArchiveModal, setShowVacancyArchiveModal] = useState(false)
 
 	const {
 		data: projectVacancies,
-		refetch: fetchMyMyProjectVacancies,
+		refetch: fetchMyProjectVacancies,
 		isLoading: isLoadingMyMyProjectVacancies,
 	} = useQuery(
 		['project-team-vacancies', teamId],
@@ -113,7 +116,7 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 		// await fetcher({ url: '/api/user/project/vacancy/close', data: { id } })
 		await cancelVacany({ id })
 		setSelectedVacancyId(undefined)
-		fetchMyMyProjectVacancies()
+		fetchMyProjectVacancies()
 
 		message.success('Вакансия закрыта')
 	}
@@ -121,15 +124,28 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 	const handleSaveVacancy = () => {
 		setShowVacancyModal(false)
 		setSelectedVacancyId(undefined)
-		fetchMyMyProjectVacancies()
+		fetchMyProjectVacancies()
+	}
+
+	const handleRestoreVacation = (vacancyId: string) => {
+		setShowVacancyArchiveModal(false)
+		fetchMyProjectVacancies()
+
+		setSelectedVacancyId(vacancyId)
+		setShowVacancyModal(!!vacancyId)
 	}
 
 	return (
 		<>
-			<Space align="center" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>Вакансии</h3>
-				<Button onClick={() => setShowVacancyModal(true)}>Добавить вакансию</Button>
-			</Space>
+			<Flex justify="space-between" style={{ marginTop: 60 }}>
+				<Space align="center">
+					<h3 style={{ margin: 0 }}>Вакансии</h3>
+					<Button onClick={() => setShowVacancyModal(true)}>Добавить вакансию</Button>
+				</Space>
+				<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
+					Архив
+				</Button>
+			</Flex>
 
 			{projectVacancies?.data.length > 0 ? (
 				<Table
@@ -153,6 +169,17 @@ const MyProjectVacancies = ({ teamId }: MyProjectVacanciesArgs) => {
 					setSelectedVacancyId(undefined)
 				}}
 				onOk={handleSaveVacancy}
+			/>
+
+			<VacancyArchiveModal
+				teamId={teamId}
+				projectId={project?.id}
+				projectName={project?.name}
+				open={showVacancyArchiveModal}
+				onCancel={() => {
+					setShowVacancyArchiveModal(false)
+				}}
+				onRestore={handleRestoreVacation}
 			/>
 		</>
 	)
