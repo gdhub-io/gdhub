@@ -106,7 +106,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 					{!!myProject.data && (
 						<>
 							<MyTeam teamId={myProject.data.teamId} />
-							<MyProjectVacancies teamId={myProject.data.teamId} />
+							<MyProjectVacancies teamId={myProject.data.teamId} project={myProject.data} />
 							<MyProjectCandidates project={myProject.data} />
 							<MyProjectReports project={myProject.data} />
 						</>

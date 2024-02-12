@@ -20,10 +20,10 @@ export const NotificationsBell = () => {
 
 	const handleClick = (notification: IMessage) => {
 		const { url } = notification.payload as any
-		router.push(url)
+		if (url) router.push(url)
 	}
 
-	if (!signature?.data.signature) {
+	if (!session || !signature?.data.signature) {
 		return null
 	}
 

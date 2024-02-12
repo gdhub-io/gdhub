@@ -12,23 +12,28 @@ class ParamIdDto {
 class ApiUserTeamCandidateHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { id }: ParamIdDto) {
-		const team = await prisma.teamMember.findFirst({
+		const _teamMember = await prisma.teamMember.findUnique({
+			where: { id },
+		})
+
+		const teamMember = await prisma.teamMember.findUnique({
 			where: { id },
 			include: {
 				user: {
 					select: {
 						id: true,
 						name: true,
+						email: _teamMember?.allowedContacts.includes('email') == true,
 						image: true,
 						profile: { include: { preferredGenres: true, preferredLevels: true, preferredSettings: true } },
 					},
 				},
-				vacancy: true,
+				vacancy: { include: { project: true } },
 				speciality: true,
 			},
 		})
 
-		return team
+		return teamMember
 	}
 }
 
