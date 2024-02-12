@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ProjectReports from '@/components/ProjectReports'
 import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
+import { env } from '@/helpers/env'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
@@ -21,10 +22,11 @@ import styles from './style.module.scss'
 const { Title, Paragraph, Text } = Typography
 
 type ProjectPageParams = {
+	ogImage: string
 	project: Project & { author: User & { profile: { tgNickname: Profile['tgNickname'] } } }
 }
 
-const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
+const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, ogImage }) => {
 	const router = useRouter()
 	const { data: session } = useSession()
 	const screens = Grid.useBreakpoint()
@@ -59,7 +61,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 				<meta property="og:description" content={project.description as string} />
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={router.route} />
-				{!!project.coverImage && <meta property="og:image" content={project.coverImage} />}
+				<meta property="og:image" content={ogImage} />
 			</Head>
 			<div className={styles.container}>
 				<Row gutter={[32, 16]}>
@@ -162,6 +164,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 				startedAt: project.startedAt?.toISOString(),
 				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
 			},
+			ogImage: env('NEXT_PUBLIC_APP_URI') + '/api/og?slug=' + project.slug,
 		},
 		revalidate: 60,
 	}
