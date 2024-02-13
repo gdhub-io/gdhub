@@ -1,12 +1,12 @@
 import { backendApiVerify, publicApiVerify } from '@/helpers/access'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { UserRole } from '@prisma/client'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { type NextApiResponse } from 'next'
 import { NextFunction, UnauthorizedException, createMiddlewareDecorator } from 'next-api-decorators'
-import { User, getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 
 export const NextAuthGuard = (guardName: 'user' | 'api' | 'public_api' | 'any', allowedRoles?: UserRole[]) =>
-	createMiddlewareDecorator(async (req: NextApiRequest & { user: User }, res: NextApiResponse, next: NextFunction) => {
+	createMiddlewareDecorator(async (req: any, res: NextApiResponse, next: NextFunction) => {
 		const session = await getServerSession(req, res, authOptions)
 
 		if (guardName == 'user') {
