@@ -8,9 +8,9 @@ import passport from 'passport'
 import BasicStrategy from 'passport-http'
 
 const basePath = '/api/services/bullmq/admin'
+const handler = express()
 
-const serverAdapter = new ExpressAdapter()
-serverAdapter.setBasePath(basePath)
+const serverAdapter = new ExpressAdapter().setBasePath(basePath)
 
 createBullBoard({
 	queues: [new BullMQAdapter(tgMessageQueue)],
@@ -19,21 +19,13 @@ createBullBoard({
 
 passport.use(
 	new BasicStrategy.BasicStrategy(function (username, password, done) {
-		const accessToken = Buffer.from(env('NEXT_PUBLIC_API_KEY')).toString('base64')
-
-		return username == 'admin' && password == accessToken
+		return username == 'admin' && password == env('NEXT_PUBLIC_API_KEY')
 			? done(null, { authenticated: true })
 			: done('Access denied', { authenticated: false })
 	})
 )
 
-const handler = express().use(
-	basePath,
-	passport.authenticate('basic', { session: false }),
-	(_req, _res, next) => {
-		next()
-	},
-	serverAdapter.getRouter()
-)
+handler.use(passport.authenticate('basic', { session: false }))
+handler.use(basePath, serverAdapter.getRouter())
 
 export default handler
