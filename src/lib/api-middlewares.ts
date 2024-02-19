@@ -1,12 +1,15 @@
-import { backendApiVerify, publicApiVerify } from '@/helpers/access'
+import { backendApiVerify, publicApiVerify, vercelCronVerify } from '@/helpers/access'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { UserRole } from '@prisma/client'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { type NextApiResponse } from 'next'
 import { NextFunction, UnauthorizedException, createMiddlewareDecorator } from 'next-api-decorators'
-import { User, getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth'
 
-export const NextAuthGuard = (guardName: 'user' | 'api' | 'public_api' | 'any', allowedRoles?: UserRole[]) =>
-	createMiddlewareDecorator(async (req: NextApiRequest & { user: User }, res: NextApiResponse, next: NextFunction) => {
+export const NextAuthGuard = (
+	guardName: 'user' | 'api' | 'public_api' | 'vercel_cron' | 'any',
+	allowedRoles?: UserRole[]
+) =>
+	createMiddlewareDecorator(async (req: any, res: NextApiResponse, next: NextFunction) => {
 		const session = await getServerSession(req, res, authOptions)
 
 		if (guardName == 'user') {
@@ -44,4 +47,14 @@ export const NextAuthGuard = (guardName: 'user' | 'api' | 'public_api' | 'any', 
 				throw new UnauthorizedException()
 			}
 		}
+
+		if (guardName == 'vercel_cron') {
+			if (vercelCronVerify(req) || publicApiVerify(req)) {
+				next()
+			} else {
+				throw new UnauthorizedException()
+			}
+		}
+
+		throw new UnauthorizedException()
 	})()

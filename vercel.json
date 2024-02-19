@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/new-members",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/new-project-reports",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron/new-vacancies",
+      "schedule": "0 15 * * *"
+    }
+  ]
+}
