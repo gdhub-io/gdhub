@@ -14,6 +14,10 @@ export const publicApiVerify = (req: NextApiRequest) => {
 	return req.headers['authorization'] && req.headers['authorization'] === 'Bearer ' + accessToken
 }
 
+export const vercelCronVerify = (req: NextApiRequest) => {
+	return req.headers['authorization'] && req.headers['authorization'] === 'Bearer ' + process.env.CRON_SECRET
+}
+
 export const userVerify = (req: NextApiRequest): AuthUser => {
 	const { cookies } = req
 	const cookieName = env('NEXT_PUBLIC_AUTH_COOKIE_NAME', 'token')

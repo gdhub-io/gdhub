@@ -9,7 +9,7 @@ class CronProjectReportsDto {
 	inLastDays: number
 }
 
-@NextAuthGuard('public_api')
+@NextAuthGuard('vercel_cron')
 class CronNewVacanciesHandler {
 	@Post()
 	public async handler(@Query() { inLastDays = 1 }: CronProjectReportsDto) {
