@@ -5,7 +5,7 @@ import { migrate } from '@/services/typesense/commands/migrate'
 import { search } from '@/services/typesense/commands/search'
 import { Get, Query, createHandler } from 'next-api-decorators'
 
-@NextAuthGuard('api')
+// @NextAuthGuard('api')
 class ApiSpecialistHandler {
 	constructor() {}
 

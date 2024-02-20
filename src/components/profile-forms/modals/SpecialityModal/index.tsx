@@ -2,13 +2,34 @@ import { useEffect, useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Col, Form, Input, message, Modal, Row, Select, Spin, Tooltip } from 'antd'
+import {
+	Button,
+	Col,
+	Form,
+	Input,
+	message,
+	Modal,
+	Row,
+	Select,
+	Space,
+	Spin,
+	Tooltip,
+	Typography,
+	Upload,
+	UploadProps,
+} from 'antd'
 import { DefaultOptionType } from 'antd/es/select'
 import axios from 'axios'
+import { useRouter } from 'next/router'
+
+const { Text } = Typography
 
 const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const router = useRouter()
 	const [processing, setProcessing] = useState(true)
+	const [showParseCVButton, setShowParseCVButton] = useState(false)
+	const [isParsing, setIsParsing] = useState(false)
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
@@ -34,6 +55,9 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 
 		setProcessing(false)
 
+		const existNameValue = !!form.getFieldValue('name')
+		setShowParseCVButton(existNameValue)
+
 		return () => form.resetFields()
 	}, [open, speciality])
 
@@ -43,9 +67,9 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 
 			setProcessing(true)
 			if (speciality) {
-				await updateSpeciality({ id: speciality?.id || null, data: formData })
+				await updateSpeciality({ id: speciality?.id || null, data: { ...formData, tools: formData.tools.join('\n') } })
 			} else {
-				await createSpeciality({ data: formData })
+				await createSpeciality({ data: { ...formData, tools: formData.tools.join('\n') } })
 			}
 
 			setProcessing(false)
@@ -64,6 +88,26 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 	}
 
 	const workDirectionOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
+
+	const fillForm = (data: any) => {
+		const { workAreaId, tools, summary, specialization, skills, experience, education, portfolioLink } = data
+
+		if (workAreaId)
+			form.setFieldsValue({
+				summary,
+				workDirectionId: workAreaId,
+				specialization,
+				skills: skills?.join('\n'),
+				tools,
+				portfolioUrl: portfolioLink,
+				jobs: experience?.map((job: any) => `${job.from} - ${job.to}, ${job.roleName}, ${job.companyName}`).join('\n'),
+				schools: education
+					?.map(
+						(school: any) => `${school.from} - ${school.to}, ${school.speciality}, ${school.degree}, ${school.school}`
+					)
+					.join('\n'),
+			})
+	}
 
 	const levelOptions: DefaultOptionType[] = useMemo(
 		() =>
@@ -84,6 +128,33 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 				}
 			}),
 		[skillLevelsList, form]
+	)
+
+	const uploadProps: UploadProps = useMemo(
+		() => ({
+			name: 'file',
+			accept: '.pdf',
+			action: '/api/user/parse/cv',
+			showUploadList: false,
+			data: { jobPosition: form.getFieldValue('name'), locale: router.locale },
+			maxCount: 1,
+			onChange: ({ file }) => {
+				if (file.status == 'uploading') {
+					setIsParsing(true)
+				}
+
+				if (file.status == 'error') {
+					message.error(file.error)
+					setIsParsing(false)
+				}
+
+				if (file.status === 'done') {
+					fillForm(file.response)
+					setIsParsing(false)
+				}
+			},
+		}),
+		[form]
 	)
 
 	return (
@@ -116,8 +187,24 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 								rules={[{ required: true }]}
 								required
 								wrapperCol={{ span: 24 }}
+								extra={
+									showParseCVButton && (
+										<Space style={{ marginTop: 4 }}>
+											<Text>Заполнить из резюме</Text>
+											<Upload {...uploadProps} disabled={isParsing}>
+												<Button size="small" disabled={isParsing} loading={isParsing}>
+													Загрузить PDF
+												</Button>
+											</Upload>
+										</Space>
+									)
+								}
 							>
-								<Input width={'100%'} placeholder={`Пример: Концепт-художник по персонажам`} />
+								<Input
+									width={'100%'}
+									placeholder={`Пример: Концепт-художник по персонажам`}
+									onChange={(e) => setShowParseCVButton(!!e.target.value)}
+								/>
 							</Form.Item>
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
@@ -126,6 +213,11 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 							</Form.Item>
 						</Col>
 					</Row>
+
+					<Form.Item name="summary" label="Кратко о себе" wrapperCol={{ span: 24 }}>
+						<Input.TextArea rows={3} />
+					</Form.Item>
+
 					<Form.Item
 						name="workDirectionId"
 						label="Направление деятельности"

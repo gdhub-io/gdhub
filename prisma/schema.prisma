@@ -104,6 +104,7 @@ model VerificationToken {
 model Speciality {
   id              String        @id @default(cuid())
   name            String
+  summary         String?
   specialization  String
   level           SkillLevel
   workDirectionId String
