@@ -6,18 +6,28 @@ declare global {
 	var cachedRedisConnection: Redis
 }
 
-const createRedisConnection = () => {
-	const redis = new Redis(env('REDIS_URL'), {
-		lazyConnect: true,
-		maxRetriesPerRequest: null,
-		db: 0,
-	})
+export const redisConnectionIsReady = async () => {
+	let isReady = false
+
+	try {
+		await redisConnection.ping((err, result) => {
+			isReady = result == 'PONG'
+		})
+	} catch (error) {
+		isReady = false
+	}
+
+	return isReady
+}
+
+export const createRedisConnection = () => {
+	const redis = new Redis(env('REDIS_URL'))
 
 	redis.on('error', (error) => {
 		console.error(`❌ Failed to connect to Redis server: ${error.message}`)
 	})
 
-	redis.on('connect', () => {
+	redis.on('ready', () => {
 		console.log('✅ Redis Connected Successfully')
 	})
 
