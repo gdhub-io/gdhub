@@ -3,7 +3,7 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import TelegramService from '@/services/telegram'
 import dayjs from 'dayjs'
-import { Post, Query, createHandler } from 'next-api-decorators'
+import { Get, Query, createHandler } from 'next-api-decorators'
 
 class CronProjectReportsDto {
 	inLastDays: number
@@ -11,7 +11,7 @@ class CronProjectReportsDto {
 
 @NextAuthGuard('vercel_cron')
 class CronProjectReportsHandler {
-	@Post()
+	@Get()
 	public async revalidatePage(@Query() { inLastDays = 1 }: CronProjectReportsDto) {
 		const reports = await prisma.projectReport.findMany({
 			where: {
