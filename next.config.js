@@ -9,7 +9,6 @@ const nextConfig = {
 	},
 	experimental: {
 		serverComponentsExternalPackages: ['bullmq'],
-		instrumentationHook: true,
 	},
 	images: {
 		remotePatterns: [
