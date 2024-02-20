@@ -1,16 +1,21 @@
-import { env } from './helpers/env'
+import { env } from '@/helpers/env'
+import { NextAuthGuard } from '@/lib/api-middlewares'
+import { redisConnectionIsReady } from '@/services/redis'
+import { TgMessageWorkerRunning, tgMessageQueueInit } from '@/workers/tg-message.worker'
+import { Get, createHandler } from 'next-api-decorators'
 
-export async function register() {
-	if (process.env.NEXT_RUNTIME === 'nodejs') {
-		const { TgMessageQueueWorkerRunning, tgMessageQueue } = await import('@/workers/tg-message.worker')
+// @NextAuthGuard('api')
+class ApiBullMQInitHandler {
+	constructor() {}
 
-		/** Run Telegram Message Worker */
-		const { ready } = TgMessageQueueWorkerRunning()
+	@Get()
+	public async init() {
+		const redisResult = await redisConnectionIsReady()
 
-		if (!ready) {
-			console.log('Redis connection is not ready.')
-			return
-		}
+		if (!redisResult) return { message: 'Redis is not ready' }
+
+		const tgMessageQueue = tgMessageQueueInit()
+		TgMessageWorkerRunning()
 
 		if (!(await tgMessageQueue.getJob('new-project-reports'))) {
 			await tgMessageQueue.add('new-project-reports', null, {
@@ -36,3 +41,5 @@ export async function register() {
 		console.log('Run Telegram Message Worker')
 	}
 }
+
+export default createHandler(ApiBullMQInitHandler)

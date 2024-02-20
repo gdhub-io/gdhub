@@ -1,5 +1,5 @@
 import { env } from '@/helpers/env'
-import { tgMessageQueue } from '@/workers/tg-message.worker'
+import { tgMessageQueueInit } from '@/workers/tg-message.worker'
 import { createBullBoard } from '@bull-board/api'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { ExpressAdapter } from '@bull-board/express'
@@ -13,7 +13,7 @@ const handler = express()
 const serverAdapter = new ExpressAdapter().setBasePath(basePath)
 
 createBullBoard({
-	queues: [new BullMQAdapter(tgMessageQueue)],
+	queues: [new BullMQAdapter(tgMessageQueueInit())],
 	serverAdapter,
 })
 

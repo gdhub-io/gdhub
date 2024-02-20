@@ -2,18 +2,19 @@ import { redisConnection } from '@/services/redis'
 import TelegramService from '@/services/telegram'
 import { Worker, Queue, Processor } from 'bullmq'
 
-export const tgMessageQueue = new Queue('tgMessageQueue', {
-	connection: redisConnection,
-	defaultJobOptions: {
-		attempts: 2,
-		backoff: {
-			type: 'exponential',
-			delay: 5000,
+export const tgMessageQueueInit = () =>
+	new Queue('tgMessageQueue', {
+		connection: { ...redisConnection.options, maxRetriesPerRequest: 1 },
+		defaultJobOptions: {
+			attempts: 2,
+			backoff: {
+				type: 'exponential',
+				delay: 5000,
+			},
 		},
-	},
-})
+	})
 
-export const TgMessageQueueWorkerRunning = () => {
+export const TgMessageWorkerRunning = () => {
 	const workerHandler: Processor = async (job) => {
 		const telegramBot = TelegramService.init()
 		// let message: string | undefined = undefined
@@ -32,7 +33,7 @@ export const TgMessageQueueWorkerRunning = () => {
 	}
 
 	const worker = new Worker('tgMessageQueue', workerHandler, {
-		connection: redisConnection,
+		connection: { ...redisConnection.options, maxRetriesPerRequest: null },
 		concurrency: 5,
 		removeOnComplete: { count: 1000 },
 		removeOnFail: { count: 5000 },
@@ -45,6 +46,4 @@ export const TgMessageQueueWorkerRunning = () => {
 	worker.on('failed', (job, err) => {
 		console.log(`${job?.id} has failed with ${err.message}`)
 	})
-
-	return { ready: true }
 }
