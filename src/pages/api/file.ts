@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs'
+import { env } from '@/helpers/env'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import SanityService from '@/services/sanity'
 import { IsString } from 'class-validator'
@@ -84,7 +85,7 @@ class ApiUploadFileHandler {
 		const file = fData.files.file
 		const data = await fs.readFile(file.filepath)
 
-		if (file.size > 1024 * 1024 * 5) throw new PayloadTooLargeException()
+		if (file.size > 1024 * 1024 * env('UPLOAD_FILE_FOR_REPORT_MAX_SIZE', 5)) throw new PayloadTooLargeException()
 
 		const response = await SanityService.uploadImage(
 			fData.fields?.filename || file.newFilename,
