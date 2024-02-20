@@ -1,5 +1,6 @@
 'use client'
 import React, { FC } from 'react'
+import { env } from '@/helpers/env'
 import {
 	BoldItalicUnderlineToggles,
 	MDXEditorMethods,
@@ -103,7 +104,12 @@ const ContentEditor: FC<EditorProps> = ({ markdown, editorRef, onChange = () => 
 							return res.data.url
 						} catch (error: any) {
 							if (error.response.status == 413) {
-								notification.error({ message: 'Your file too large. Maximum file size is 5Mb.' })
+								notification.error({
+									message: `Your file too large. Maximum file size is ${env(
+										'NEXT_PUBLIC_UPLOAD_FILE_FOR_REPORT_MAX_SIZE',
+										5
+									)}Mb.`,
+								})
 							} else {
 								notification.error({ message: 'Some problem with uploading. Try insert other image.' })
 							}
