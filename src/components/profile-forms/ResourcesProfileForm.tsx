@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Profile } from '@prisma/client'
-import { Button, Card, Col, Form, InputNumber, message, Row, Space, Spin, Typography } from 'antd'
+import { Button, Card, Col, Form, Input, InputNumber, message, Row, Space, Spin, Typography } from 'antd'
 
 const { Text } = Typography
 
@@ -28,11 +28,11 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 
 	const handleForm = async () => {
 		try {
-			const { timeForWorkMin, timeForWorkMax } = await form.validateFields()
+			const { timeForWorkMin, timeForWorkMax, otherResources } = await form.validateFields()
 			const timeForWork: number[] = [timeForWorkMin, timeForWorkMax]
 
 			setProcessing(true)
-			await saveProfile({ timeForWork })
+			await saveProfile({ timeForWork, otherResources })
 			setProcessing(false)
 
 			message.success('Данные о ресурсах обновлены')
@@ -51,6 +51,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 					wrapperCol={{ span: 12 }}
 					autoComplete="off"
 					requiredMark="optional"
+					initialValues={{ otherResources: profile?.otherResources }}
 				>
 					<Form.Item
 						label="Доступное время (в неделю)"
@@ -86,6 +87,10 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 								</Space>
 							</Col>
 						</Row>
+					</Form.Item>
+
+					<Form.Item label="Другие ресурсы" name="otherResources">
+						<Input.TextArea rows={2} />
 					</Form.Item>
 
 					<Button type="primary" onClick={handleForm} loading={processing}>

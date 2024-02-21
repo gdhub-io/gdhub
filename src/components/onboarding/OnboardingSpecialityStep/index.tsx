@@ -1,9 +1,27 @@
+import { useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { Speciality, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Flex, Form, Space, Row, Col, Input, Select, Tooltip, Button, Typography, message, Spin, Grid } from 'antd'
+import {
+	Flex,
+	Form,
+	Space,
+	Row,
+	Col,
+	Input,
+	Select,
+	Tooltip,
+	Button,
+	Typography,
+	message,
+	Spin,
+	Grid,
+	Upload,
+	UploadProps,
+} from 'antd'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 import { PiWarningCircleLight } from 'react-icons/pi'
 
 interface IOnboardingSpecialityStep {
@@ -15,8 +33,12 @@ const { Paragraph, Title, Text } = Typography
 
 export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: IOnboardingSpecialityStep) => {
 	const [form] = Form.useForm()
+	const router = useRouter()
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
+
+	const [showParseCVButton, setShowParseCVButton] = useState(false)
+	const [isParsing, setIsParsing] = useState(false)
 
 	const {
 		data: workDirections,
@@ -46,6 +68,9 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 					jobs,
 					schools,
 				})
+
+				const existNameValue = !!form.getFieldValue('name')
+				setShowParseCVButton(existNameValue)
 			},
 		}
 	)
@@ -58,7 +83,10 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		axios.put<any>('/api/auth/registration/onboarding/speciality', { id, data })
 	)
 
-	const workDirectionOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
+	const workDirectionOptions = workDirections?.data.map((direction) => ({
+		value: direction.id,
+		label: <T keyName={`workDirection-${direction.name}`}>{direction.name}</T>,
+	}))
 
 	const handleSave = async () => {
 		try {
@@ -80,8 +108,55 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		}
 	}
 
+	const uploadProps: UploadProps = useMemo(
+		() => ({
+			name: 'file',
+			accept: '.pdf',
+			action: '/api/user/parse/cv',
+			showUploadList: false,
+			data: { jobPosition: form.getFieldValue('name'), locale: router.locale },
+			maxCount: 1,
+			onChange: ({ file }) => {
+				if (file.status == 'uploading') {
+					setIsParsing(true)
+				}
+
+				if (file.status == 'error') {
+					message.error(file.error)
+					setIsParsing(false)
+				}
+
+				if (file.status === 'done') {
+					fillForm(file.response)
+					setIsParsing(false)
+				}
+			},
+		}),
+		[form]
+	)
+
+	const fillForm = (data: any) => {
+		const { workAreaId, tools, summary, specialization, skills, experience, education, portfolioLink } = data
+
+		if (workAreaId)
+			form.setFieldsValue({
+				summary,
+				workDirectionId: workAreaId,
+				specialization,
+				skills: skills?.join('\n'),
+				tools,
+				portfolioUrl: portfolioLink,
+				jobs: experience?.map((job: any) => `${job.from} - ${job.to}, ${job.roleName}, ${job.companyName}`).join('\n'),
+				schools: education
+					?.map(
+						(school: any) => `${school.from} - ${school.to}, ${school.speciality}, ${school.degree}, ${school.school}`
+					)
+					.join('\n'),
+			})
+	}
+
 	return (
-		<Spin spinning={isLoading && !isFetched}>
+		<Spin spinning={(isLoading && !isFetched) || isParsing}>
 			<div className="onboarding-content">
 				<div className="onboarding-form">
 					<Space direction="vertical" className="onboarding-form-title">
@@ -110,8 +185,27 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 						<Space direction="vertical" size={16} style={{ width: '100%' }}>
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={12}>
-									<Form.Item name="name" label={t('specialityName')} rules={[{ required: true }]}>
-										<Input placeholder={t('specialityName.plachehloder')} />
+									<Form.Item
+										name="name"
+										label={t('specialityName')}
+										rules={[{ required: true }]}
+										extra={
+											showParseCVButton && (
+												<Space style={{ marginTop: 4 }}>
+													<Text>Заполнить из резюме</Text>
+													<Upload {...uploadProps} disabled={isParsing}>
+														<Button size="small" disabled={isParsing} loading={isParsing}>
+															Загрузить PDF
+														</Button>
+													</Upload>
+												</Space>
+											)
+										}
+									>
+										<Input
+											placeholder={t('specialityName.plachehloder')}
+											onChange={(e) => setShowParseCVButton(!!e.target.value)}
+										/>
 									</Form.Item>
 								</Col>
 								<Col xs={24} lg={12}>
@@ -139,6 +233,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 									</Form.Item>
 								</Col>
 							</Row>
+
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={24}>
 									<Form.Item name="workDirectionId" label={t('workDirection')} rules={[{ required: true }]}>

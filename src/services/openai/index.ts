@@ -162,7 +162,7 @@ class OpenAI {
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,
-				temperature: 0.15,
+				temperature: 0.25,
 			})
 
 			const {

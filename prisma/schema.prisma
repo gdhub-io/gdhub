@@ -86,6 +86,7 @@ model Profile {
   primaryInterest   PrimaryInterest       @default(Specialist)
   isActive          Boolean               @default(true)
   otherResources    String?
+  motivation        String?
 }
 
 enum Language {
@@ -119,6 +120,15 @@ model Speciality {
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   direction       WorkDirection @relation(fields: [workDirectionId], references: [id])
   teamMembers     TeamMember[]
+  cvId            String?       @unique
+  cv              SpecialityCV? @relation(fields: [cvId], references: [id], onDelete: Cascade)
+}
+
+model SpecialityCV {
+  id         String                 @id @default(cuid())
+  text       String
+  embedding  Unsupported("vector")?
+  speciality Speciality?
 }
 
 model WorkDirection {
