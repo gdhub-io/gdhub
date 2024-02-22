@@ -38,8 +38,9 @@ services:
       - '8118:80'
 
   db:
-    image: postgres:15.3-alpine
+    build: ./docker/postgres
     container_name: gamelab_db
+    env_file: .env
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-postgres}
       POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
@@ -48,8 +49,11 @@ services:
     ports:
       - '${DATABASE_PORT:-5432}:5432'
     volumes:
-      - ./deploy/postgres/init:/docker-entrypoint-initdb.d
       - gamelab-postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init-app.sql
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     networks:
       - gdhub-network
     restart: unless-stopped
