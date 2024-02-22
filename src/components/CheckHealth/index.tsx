@@ -1,4 +1,4 @@
-import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Drawer, Flex, Grid, Menu, MenuProps, Space } from 'antd'
 import Link from 'next/link'
