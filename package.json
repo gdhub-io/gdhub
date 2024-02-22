@@ -89,6 +89,7 @@
     "recoil": "^0.7.7",
     "rehype-raw": "^7.0.0",
     "sharp": "^0.32.5",
+    "tiktoken": "^1.0.13",
     "typesense": "^1.7.2",
     "typesense-instantsearch-adapter": "^2.7.1",
     "use-http": "^1.0.27",

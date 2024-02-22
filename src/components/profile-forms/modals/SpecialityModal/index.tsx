@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import {
 	Button,
 	Col,
@@ -190,10 +191,12 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 								extra={
 									showParseCVButton && (
 										<Space style={{ marginTop: 4 }}>
-											<Text>Заполнить из резюме</Text>
+											<Text>
+												<T>Fill in from CV/resume</T>
+											</Text>
 											<Upload {...uploadProps} disabled={isParsing}>
 												<Button size="small" disabled={isParsing} loading={isParsing}>
-													Загрузить PDF
+													<T>Upload PDF</T>
 												</Button>
 											</Upload>
 										</Space>
@@ -214,7 +217,7 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 						</Col>
 					</Row>
 
-					<Form.Item name="summary" label="Кратко о себе" wrapperCol={{ span: 24 }}>
+					<Form.Item name="summary" label="Кратко о том, чем занимаетесь" wrapperCol={{ span: 24 }}>
 						<Input.TextArea rows={3} />
 					</Form.Item>
 

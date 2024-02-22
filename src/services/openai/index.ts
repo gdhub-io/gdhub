@@ -179,6 +179,89 @@ class OpenAI {
 			throw error
 		}
 	}
+
+	async matchingSpecAndProj(specialistText: string, projectText: string) {
+		const schema = {
+			type: 'object',
+			properties: {
+				projectScore: {
+					type: 'number',
+					description: 'percentage between 0 and 100 of specialist compliance with the project',
+					minimum: 0,
+					maximum: 100,
+				},
+				authorScore: {
+					type: 'number',
+					description: 'percentage between 0 and 100 of specialist compliance with the author of the project',
+					minimum: 0,
+					maximum: 100,
+				},
+				teamScore: {
+					type: 'number',
+					description: 'percentage between 0 and 100 of specialist compliance with the team of the project',
+					minimum: 0,
+					maximum: 100,
+				},
+				summary: {
+					type: 'string',
+					description: 'Comparison result. How is this specialist suitable or not suitable for this project and why',
+				},
+			},
+		}
+
+		const prompt: OpenAIAPI.Chat.Completions.ChatCompletionMessageParam[] = [
+			{
+				role: 'system',
+				content: stripIndents`
+				You are an experienced recruiter for game development teams and know how to select the composition of teams well, with minimal risks of conflicts within them. 
+				Possess all modern skills in the field of Human Resources.
+				`,
+			},
+			{
+				role: 'user',
+				content: stripIndents`
+				You need to determine whether the presented specialist is suitable for working in a team on an indie game project.
+				1. Determine the percentage of specialist compliance with the project.
+				2. Determine the percentage of correspondence between the specialist and the author of the project.
+        3. Determine the percentage of compliance of a specialist to the project team.
+				4. Comparison result. How is this specialist suitable or not suitable for this project and why.
+
+				Important! Do not include people's names and personal data of the people in the comparison result.
+
+        Information about the specialist:\n
+        ${specialistText}
+				
+				Information about the project:\n
+				"""${projectText}"""
+				`,
+			},
+		]
+
+		// console.debug(`[matchingSpecAndProj][prompt]`, JSON.stringify(prompt))
+
+		try {
+			const completionResponse = await this.openai.chat.completions.create({
+				model: 'gpt-4-turbo-preview',
+				functions: [{ name: 'parse_resume', parameters: schema }],
+				function_call: { name: 'parse_resume' },
+				messages: prompt,
+				temperature: 0.25,
+			})
+
+			const {
+				choices: [{ message }],
+			} = completionResponse
+
+			// console.debug(`[matchingSpecAndProj][result]`, message?.function_call?.arguments)
+
+			return isValidJSON(message?.function_call?.arguments)
+				? JSON.parse(message?.function_call?.arguments as string)
+				: undefined
+		} catch (error: any) {
+			console.error(error.message)
+			throw error
+		}
+	}
 }
 
 const globalForOpenAI = globalThis as unknown as {

@@ -55,7 +55,8 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 			refetchInterval: false,
 			refetchOnWindowFocus: false,
 			onSuccess(response) {
-				const { id, name, level, direction, skills, specialization, portfolioUrl, jobs, schools } = response.data
+				const { id, name, level, direction, skills, tools, summary, specialization, portfolioUrl, jobs, schools } =
+					response.data
 
 				form.setFieldsValue({
 					id,
@@ -65,6 +66,8 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 					specialization,
 					portfolioUrl,
 					skills,
+					tools: tools?.split('\n'),
+					summary,
 					jobs,
 					schools,
 				})
@@ -144,7 +147,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 				workDirectionId: workAreaId,
 				specialization,
 				skills: skills?.join('\n'),
-				tools,
+				tools: tools?.join('\n'),
 				portfolioUrl: portfolioLink,
 				jobs: experience?.map((job: any) => `${job.from} - ${job.to}, ${job.roleName}, ${job.companyName}`).join('\n'),
 				schools: education
@@ -159,7 +162,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		<Spin spinning={(isLoading && !isFetched) || isParsing}>
 			<div className="onboarding-content">
 				<div className="onboarding-form">
-					<Space direction="vertical" className="onboarding-form-title">
+					<Space direction="vertical" className="onboarding-form-title" style={{ width: '100%' }}>
 						<Flex justify="space-between" align="center" wrap="wrap">
 							<Title level={2}>
 								<T keyName="specilaity">Speciality</T>
@@ -182,9 +185,17 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 							<Input />
 						</Form.Item>
 
+						<Form.Item name="tools" hidden>
+							<Input />
+						</Form.Item>
+
+						<Form.Item name="summary" hidden>
+							<Input />
+						</Form.Item>
+
 						<Space direction="vertical" size={16} style={{ width: '100%' }}>
 							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={12}>
+								<Col xs={24} lg={16}>
 									<Form.Item
 										name="name"
 										label={t('specialityName')}
@@ -192,10 +203,12 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 										extra={
 											showParseCVButton && (
 												<Space style={{ marginTop: 4 }}>
-													<Text>Заполнить из резюме</Text>
+													<Text>
+														<T>Fill in from CV/resume</T>
+													</Text>
 													<Upload {...uploadProps} disabled={isParsing}>
 														<Button size="small" disabled={isParsing} loading={isParsing}>
-															Загрузить PDF
+															<T>Upload PDF</T>
 														</Button>
 													</Upload>
 												</Space>
@@ -208,7 +221,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 										/>
 									</Form.Item>
 								</Col>
-								<Col xs={24} lg={12}>
+								<Col xs={24} lg={8}>
 									<Form.Item
 										name="level"
 										label={t('specialityLevel')}
@@ -245,20 +258,14 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 									</Form.Item>
 								</Col>
 							</Row>
-							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={24}>
-									<Form.Item name="specialization" label={t('specialization')} rules={[{ required: true }]}>
-										<Input.TextArea placeholder={t('specialization.plachehloder')} />
-									</Form.Item>
-								</Col>
-							</Row>
-							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={24}>
-									<Form.Item name="portfolioUrl" label={t('cvLink')} rules={[{ type: 'url' }]}>
-										<Input placeholder={t('cvLink.plachehloder')} />
-									</Form.Item>
-								</Col>
-							</Row>
+
+							<Form.Item name="specialization" label={t('specialization')} rules={[{ required: true }]}>
+								<Input.TextArea placeholder={t('specialization.plachehloder')} />
+							</Form.Item>
+
+							<Form.Item name="portfolioUrl" label={t('cvLink')} rules={[{ type: 'url' }]}>
+								<Input placeholder={t('cvLink.plachehloder')} />
+							</Form.Item>
 
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={24}>

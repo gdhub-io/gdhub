@@ -1,6 +1,6 @@
 import { env } from '@/helpers/env'
-import { NextAuthGuard } from '@/lib/api-middlewares'
 import { redisConnectionIsReady } from '@/services/redis'
+import { matchingSpecAndProjWorkerRunning } from '@/workers/matching.worker'
 import { TgMessageWorkerRunning, tgMessageQueueInit } from '@/workers/tg-message.worker'
 import { Get, createHandler } from 'next-api-decorators'
 
@@ -16,6 +16,7 @@ class ApiBullMQInitHandler {
 
 		const tgMessageQueue = tgMessageQueueInit()
 		TgMessageWorkerRunning()
+		matchingSpecAndProjWorkerRunning()
 
 		if (!(await tgMessageQueue.getJob('new-project-reports'))) {
 			await tgMessageQueue.add('new-project-reports', null, {

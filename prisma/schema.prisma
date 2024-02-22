@@ -103,32 +103,41 @@ model VerificationToken {
 }
 
 model Speciality {
-  id              String        @id @default(cuid())
-  name            String
-  summary         String?
-  specialization  String
-  level           SkillLevel
-  workDirectionId String
-  portfolioUrl    String?
-  skills          String?
-  tools           String?
-  jobs            String?
-  schools         String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  direction       WorkDirection @relation(fields: [workDirectionId], references: [id])
-  teamMembers     TeamMember[]
-  cvId            String?       @unique
-  cv              SpecialityCV? @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  id                String                         @id @default(cuid())
+  name              String
+  summary           String?
+  specialization    String
+  level             SkillLevel
+  workDirectionId   String
+  portfolioUrl      String?
+  skills            String?
+  tools             String?
+  jobs              String?
+  schools           String?
+  createdAt         DateTime                       @default(now())
+  updatedAt         DateTime                       @updatedAt
+  userId            String
+  user              User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  direction         WorkDirection                  @relation(fields: [workDirectionId], references: [id])
+  teamMembers       TeamMember[]
+  availableProjects MatchingSpecialistAndProject[]
 }
 
-model SpecialityCV {
-  id         String                 @id @default(cuid())
-  text       String
-  embedding  Unsupported("vector")?
-  speciality Speciality?
+model MatchingSpecialistAndProject {
+  id           String     @id @default(cuid())
+  specialityId String
+  projectId    String
+  projectScore Int
+  authorScore  Int
+  avgScore     Int
+  teamScore    Int
+  summary      String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  specialist   Speciality @relation(fields: [specialityId], references: [id], onDelete: Cascade)
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, specialityId], name: "projectAndSpecialist")
 }
 
 model WorkDirection {
@@ -192,35 +201,36 @@ model SeasonStreamReport {
 }
 
 model Project {
-  id            String              @id @default(cuid())
-  name          String
-  description   String?
-  status        ProjectStatus       @default(Registered)
-  startedAt     DateTime            @default(now())
-  finishedAt    DateTime?
-  stageId       String
-  authorId      String
-  coverImage    String?
-  genre         String
-  platform      String
-  setting       String
-  visualStyle   String
-  slug          String              @default(cuid())
-  audition      String?
-  conceptLink   String?
-  gddLink       String?
-  pitchdeckLink String?
-  videoLink     String?
-  coreMechanics String[]
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  teamId        String
-  author        User                @relation(fields: [authorId], references: [id])
-  stage         SeasonStage         @relation(fields: [stageId], references: [id])
-  team          Team                @relation(fields: [teamId], references: [id])
-  estimations   ProjectEstimation[]
-  reports       ProjectReport[]
-  vacancies     TeamVacancy[]
+  id                   String                         @id @default(cuid())
+  name                 String
+  description          String?
+  status               ProjectStatus                  @default(Registered)
+  startedAt            DateTime                       @default(now())
+  finishedAt           DateTime?
+  stageId              String
+  authorId             String
+  coverImage           String?
+  genre                String
+  platform             String
+  setting              String
+  visualStyle          String
+  slug                 String                         @default(cuid())
+  audition             String?
+  conceptLink          String?
+  gddLink              String?
+  pitchdeckLink        String?
+  videoLink            String?
+  coreMechanics        String[]
+  createdAt            DateTime                       @default(now())
+  updatedAt            DateTime                       @updatedAt
+  teamId               String
+  author               User                           @relation(fields: [authorId], references: [id])
+  stage                SeasonStage                    @relation(fields: [stageId], references: [id])
+  team                 Team                           @relation(fields: [teamId], references: [id])
+  estimations          ProjectEstimation[]
+  reports              ProjectReport[]
+  vacancies            TeamVacancy[]
+  availableSpecialists MatchingSpecialistAndProject[]
 }
 
 model ProjectEstimation {
