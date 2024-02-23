@@ -58,6 +58,7 @@ export class SearchEngineService {
 			city,
 			createdAt,
 			updatedAt,
+			isActive,
 			specialization,
 		} = speciality
 
@@ -76,6 +77,7 @@ export class SearchEngineService {
 					level,
 					direction: direction.name,
 					skills,
+					isActive,
 					tools,
 					jobs,
 					schools,
@@ -98,6 +100,7 @@ export class SearchEngineService {
 			jobs,
 			schools,
 			country,
+			isActive,
 			city,
 			createdAt,
 			updatedAt,
@@ -115,6 +118,7 @@ export class SearchEngineService {
 			tools,
 			jobs,
 			schools,
+			isActive,
 			country,
 			city,
 			createdAt,

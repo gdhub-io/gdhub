@@ -1,5 +1,5 @@
 import GeneralProfileForm from '@/components/profile-forms/GeneralProfileForm'
-import PreferencesProfileForm from '@/components/profile-forms/PreferencesProfileForm'
+import InterestsProfileForm from '@/components/profile-forms/InterestsProfileForm'
 import ResourcesProfileForm from '@/components/profile-forms/ResourcesProfileForm'
 import SpecialitiesProfileForm from '@/components/profile-forms/SpecialitiesProfileForm'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
@@ -33,7 +33,7 @@ const ProfilePage: NextPageWithLayout = () => {
 					<GeneralProfileForm profile={profile.data} saveProfile={saveProfile} />
 					<SpecialitiesProfileForm profile={profile.data} />
 					<ResourcesProfileForm profile={profile.data} saveProfile={saveProfile} />
-					<PreferencesProfileForm profile={profile.data} saveProfile={saveProfile} />
+					<InterestsProfileForm profile={profile.data} saveProfile={saveProfile} />
 				</Space>
 			)}
 		</>

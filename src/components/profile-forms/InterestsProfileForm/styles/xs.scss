@@ -1,0 +1,19 @@
+@media screen and (max-width: 575px) {
+	.content {
+		:global {
+			.ant-segmented-item {
+				margin: unset !important;
+			}
+		}
+
+		.segmentedOption {
+			svg {
+				margin: 16px 8px 8px !important;
+			}
+
+			:global(.segmented-option-content) {
+				padding: 0px !important;
+			}
+		}
+	}
+}

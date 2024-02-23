@@ -3,23 +3,41 @@ import { seedGameDifficultyLevels } from './seeds/game-difficulties'
 import { seedGameGenres } from './seeds/game-genres'
 import { seedGameSettings } from './seeds/game-settings'
 import { seedDefaultSeasons } from './seeds/seasons'
+import { seedSubscriptionPlan } from './seeds/subscription-plans'
 import { seedWorkDirections } from './seeds/work-directions'
 
 async function main() {
-	await seedGameGenres(prisma)
-	console.log('Game Genres were sown')
+	const seed = process.argv[2]
 
-	await seedGameSettings(prisma)
-	console.log('Game Settings were sown')
+	if (!seed || seed == 'game-genres') {
+		await seedGameGenres(prisma)
+		console.log('Game Genres were sown')
+	}
 
-	await seedGameDifficultyLevels(prisma)
-	console.log('Game Difficulty Level were sown')
+	if (!seed || seed == 'game-settings') {
+		await seedGameSettings(prisma)
+		console.log('Game Settings were sown')
+	}
 
-	await seedWorkDirections(prisma)
-	console.log('Work directions were sown')
+	if (!seed || seed == 'game-levels') {
+		await seedGameDifficultyLevels(prisma)
+		console.log('Game Difficulty Level were sown')
+	}
 
-	await seedDefaultSeasons(prisma)
-	console.log('Seasons were sown')
+	if (!seed || seed == 'work-directions') {
+		await seedWorkDirections(prisma)
+		console.log('Work directions were sown')
+	}
+
+	if (!seed || seed == 'default-seasons') {
+		await seedDefaultSeasons(prisma)
+		console.log('Seasons were sown')
+	}
+
+	if (!seed || seed == 'subscription-plans') {
+		await seedSubscriptionPlan(prisma)
+		console.log('Subscription plans were sown')
+	}
 }
 
 main()

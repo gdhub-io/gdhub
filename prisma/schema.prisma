@@ -66,6 +66,7 @@ model User {
   specialities       Speciality[]
   memberInTeams      TeamMember[]
   lecturerRequests   LecturerRequest[]
+  subscriptions      Subscription[]
 }
 
 model Profile {
@@ -86,6 +87,7 @@ model Profile {
   primaryInterest   PrimaryInterest       @default(Specialist)
   isActive          Boolean               @default(true)
   otherResources    String?
+  motivation        String?
 }
 
 enum Language {
@@ -102,22 +104,41 @@ model VerificationToken {
 }
 
 model Speciality {
-  id              String        @id @default(cuid())
-  name            String
-  specialization  String
-  level           SkillLevel
-  workDirectionId String
-  portfolioUrl    String?
-  skills          String?
-  tools           String?
-  jobs            String?
-  schools         String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  direction       WorkDirection @relation(fields: [workDirectionId], references: [id])
-  teamMembers     TeamMember[]
+  id                String                         @id @default(cuid())
+  name              String
+  summary           String?
+  specialization    String
+  level             SkillLevel
+  workDirectionId   String
+  portfolioUrl      String?
+  skills            String?
+  tools             String?
+  jobs              String?
+  schools           String?
+  createdAt         DateTime                       @default(now())
+  updatedAt         DateTime                       @updatedAt
+  userId            String
+  user              User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  direction         WorkDirection                  @relation(fields: [workDirectionId], references: [id])
+  teamMembers       TeamMember[]
+  availableProjects MatchingSpecialistAndProject[]
+}
+
+model MatchingSpecialistAndProject {
+  id           String     @id @default(cuid())
+  specialityId String
+  projectId    String
+  projectScore Int
+  authorScore  Int
+  avgScore     Int
+  teamScore    Int
+  summary      String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  specialist   Speciality @relation(fields: [specialityId], references: [id], onDelete: Cascade)
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, specialityId], name: "projectAndSpecialist")
 }
 
 model WorkDirection {
@@ -181,35 +202,36 @@ model SeasonStreamReport {
 }
 
 model Project {
-  id            String              @id @default(cuid())
-  name          String
-  description   String?
-  status        ProjectStatus       @default(Registered)
-  startedAt     DateTime            @default(now())
-  finishedAt    DateTime?
-  stageId       String
-  authorId      String
-  coverImage    String?
-  genre         String
-  platform      String
-  setting       String
-  visualStyle   String
-  slug          String              @default(cuid())
-  audition      String?
-  conceptLink   String?
-  gddLink       String?
-  pitchdeckLink String?
-  videoLink     String?
-  coreMechanics String[]
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  teamId        String
-  author        User                @relation(fields: [authorId], references: [id])
-  stage         SeasonStage         @relation(fields: [stageId], references: [id])
-  team          Team                @relation(fields: [teamId], references: [id])
-  estimations   ProjectEstimation[]
-  reports       ProjectReport[]
-  vacancies     TeamVacancy[]
+  id                   String                         @id @default(cuid())
+  name                 String
+  description          String?
+  status               ProjectStatus                  @default(Registered)
+  startedAt            DateTime                       @default(now())
+  finishedAt           DateTime?
+  stageId              String
+  authorId             String
+  coverImage           String?
+  genre                String
+  platform             String
+  setting              String
+  visualStyle          String
+  slug                 String                         @default(cuid())
+  audition             String?
+  conceptLink          String?
+  gddLink              String?
+  pitchdeckLink        String?
+  videoLink            String?
+  coreMechanics        String[]
+  createdAt            DateTime                       @default(now())
+  updatedAt            DateTime                       @updatedAt
+  teamId               String
+  author               User                           @relation(fields: [authorId], references: [id])
+  stage                SeasonStage                    @relation(fields: [stageId], references: [id])
+  team                 Team                           @relation(fields: [teamId], references: [id])
+  estimations          ProjectEstimation[]
+  reports              ProjectReport[]
+  vacancies            TeamVacancy[]
+  availableSpecialists MatchingSpecialistAndProject[]
 }
 
 model ProjectEstimation {
@@ -330,6 +352,33 @@ model LectureListener {
   updatedAt DateTime @updatedAt
   lecture   Lecture  @relation(fields: [lectureId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model SubscriptionPlan {
+  id               String         @id @default(cuid())
+  name             String         @unique
+  providerPlanName String         @unique
+  price            Float
+  description      String?
+  subscriptions    Subscription[]
+}
+
+model Subscription {
+  id         String             @id @default(cuid())
+  userId     String
+  user       User               @relation(fields: [userId], references: [id])
+  planId     String
+  plan       SubscriptionPlan   @relation(fields: [planId], references: [id])
+  providerId String             @unique
+  startDate  DateTime
+  endDate    DateTime?
+  status     SubscriptionStatus
+}
+
+enum SubscriptionStatus {
+  Active
+  Paused
+  Canceled
 }
 
 enum UserRole {
