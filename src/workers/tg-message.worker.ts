@@ -33,7 +33,6 @@ export const tgMessageWorkerRun = () => {
 	const worker = new Worker('tgMessageQueue', workerProcessor, {
 		connection: redisConnect({ maxRetriesPerRequest: null }),
 		concurrency: 5,
-		autorun: false,
 		removeOnComplete: { count: 1000 },
 		removeOnFail: { count: 5000 },
 	})

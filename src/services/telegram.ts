@@ -114,6 +114,8 @@ export default class TelegramService {
 			include: { project: { include: { stage: { include: { season: true } } } } },
 		})
 
+		if (reports.length == 0) return
+
 		let message = '<b>Новое на проектах сообщества</b>'
 
 		reports.map((report) => {
@@ -143,6 +145,8 @@ export default class TelegramService {
 			include: { user: { include: { profile: true } } },
 		})
 
+		if (specialities.length == 0) return
+
 		let message = `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${specialities.length} участника</b> имеющие такие специальности, как:\n- `
 		message += specialities.map((r) => r.name).join(';\n- ')
 		message += '\n\nДобро пожаловать в наш хаб!'
@@ -161,6 +165,8 @@ export default class TelegramService {
 			},
 			include: { vacancies: true, _count: { select: { vacancies: true } } },
 		})
+
+		if (projectWithVacancies.length == 0) return
 
 		let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
 

@@ -84,6 +84,22 @@ services:
       - gdhub-redis-data:/bitnami/redis/data
     networks:
       - gdhub-network
+  
+  bullboard:
+    image: registry.gdhub.io/bullboard:latest
+    container_name: gdhub_bullboard
+    environment:
+      - APP_USERNAME=admin
+      - APP_PASSWORD=admin
+      - REDIS_URL=redis://default:password12345@redis/0
+      - QUEUES_LIST=tgMessageQueue
+    ports:
+      - "3003:3000"
+    restart: unless-stopped
+    depends_on:
+      - redis
+    networks:
+      - gdhub-network
 
 volumes:
   gamelab-typesense-data:
