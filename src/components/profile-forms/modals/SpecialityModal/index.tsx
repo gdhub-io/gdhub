@@ -22,12 +22,14 @@ import {
 import { DefaultOptionType } from 'antd/es/select'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
 const { Text } = Typography
 
-const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) => {
+const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const router = useRouter()
+	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
 	const [showParseCVButton, setShowParseCVButton] = useState(false)
 	const [isParsing, setIsParsing] = useState(false)
@@ -189,7 +191,8 @@ const SpecialityModal = ({ speciality, profileId, open, onOk, onCancel }: any) =
 								required
 								wrapperCol={{ span: 24 }}
 								extra={
-									showParseCVButton && (
+									showParseCVButton &&
+									!!session?.user.activeSubscription && (
 										<Space style={{ marginTop: 4 }}>
 											<Text>
 												<T>Fill in from CV/resume</T>

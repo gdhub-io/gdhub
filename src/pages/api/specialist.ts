@@ -17,6 +17,8 @@ class ApiSpecialistHandler {
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { id }: ParamIdDto) {
 		const isAdmin = req.user.roles?.includes(UserRole.Admin)
 
+		const activeSubscription = await prisma.user.activeSubscription(req.user.id!)
+
 		const specialist = await prisma.speciality.findFirst({
 			where: { id },
 			include: {
@@ -29,10 +31,13 @@ class ApiSpecialistHandler {
 					},
 				},
 				direction: true,
-				availableProjects: {
-					where: !isAdmin ? { project: { authorId: req.user.id } } : undefined,
-					include: { project: { select: { name: true } } },
-				},
+				// paid data
+				availableProjects: activeSubscription
+					? {
+							where: !isAdmin ? { project: { authorId: req.user.id } } : undefined,
+							include: { project: { select: { name: true } } },
+					  }
+					: undefined,
 			},
 		})
 

@@ -106,6 +106,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
+						motivation: profile?.motivation,
 						primaryInterest: profile?.primaryInterest,
 						preferredGenres: profile?.preferredGenres?.map((d) => d.id) || [],
 						preferredSettings: profile?.preferredSettings?.map((d) => d.id) || [],

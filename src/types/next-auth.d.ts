@@ -9,6 +9,7 @@ declare module 'next-auth/jwt' {
 		onboardingDone: boolean
 		lang: string
 		error?: 'RefreshAccessTokenError'
+		activeSubscription?: string
 	}
 }
 
@@ -20,6 +21,7 @@ declare module 'next-auth' {
 			roles: UserRole[]
 			onboardingDone: boolean
 			lang: string
+			activeSubscription?: string
 		} & DefaultSession['user']
 	}
 
@@ -28,5 +30,6 @@ declare module 'next-auth' {
 		roles: UserRole[]
 		onboardingDone: boolean
 		lang: string
+		activeSubscription?: string
 	}
 }
