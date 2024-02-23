@@ -158,7 +158,7 @@ class OpenAI {
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: 'gpt-4',
+				model: 'gpt-4-turbo-preview',
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,
@@ -220,7 +220,7 @@ class OpenAI {
 			{
 				role: 'user',
 				content: stripIndents`
-				You need to determine whether the presented specialist is suitable for working in a team on an indie game project.
+				You need to determine whether the presented specialist is suitable to work in a team on an indie game project, as well as to promote, management and sell it on the market.
 				1. Determine the percentage of specialist compliance with the project.
 				2. Determine the percentage of correspondence between the specialist and the author of the project.
         3. Determine the percentage of compliance of a specialist to the project team.

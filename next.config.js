@@ -8,7 +8,8 @@ const nextConfig = {
 		defaultLocale: 'ru',
 	},
 	experimental: {
-		serverComponentsExternalPackages: ['bullmq'],
+		// serverComponentsExternalPackages: ['bullmq'],
+		instrumentationHook: true,
 	},
 	images: {
 		remotePatterns: [

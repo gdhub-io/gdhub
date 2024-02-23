@@ -1,5 +1,4 @@
 import { formatNestedJson } from '@/helpers/format'
-import { openAI } from '@/services/openai'
 import { prisma } from '@/services/prisma'
 import { matchingSpecAndProjQueue } from '@/workers/matching.worker'
 import { ProjectStatus } from '@prisma/client'
@@ -12,55 +11,15 @@ class CronMatchingHandler {
 	public async handler() {
 		const lastUpdatedAt = dayjs().subtract(7, 'days').toDate()
 
-		const specialists = await prisma.speciality.findMany({
-			where: {
-				// user: { profile: { isActive: true } },
-				OR: [
-					{ availableProjects: { some: { updatedAt: { lte: lastUpdatedAt } } } },
-					{ availableProjects: { none: {} } },
-				],
-			},
-			select: {
-				id: true,
-				name: true,
-				summary: true,
-				specialization: true,
-				level: true,
-				skills: true,
-				tools: true,
-				jobs: true,
-				schools: true,
-				createdAt: true,
-				direction: { select: { name: true } },
-				user: {
-					select: {
-						lang: true,
-						profile: {
-							select: {
-								city: true,
-								country: true,
-								motivation: true,
-								otherResources: true,
-								timeForWork: true,
-								yearOfBirth: true,
-								primaryInterest: true,
-								preferredGenres: { select: { name: true } },
-								preferredLevels: { select: { name: true } },
-								preferredSettings: { select: { name: true } },
-							},
-						},
-					},
-				},
-			},
-			orderBy: { updatedAt: 'desc' },
-			take: 1,
-		})
-
 		const projects = await prisma.project.findMany({
 			where: {
 				status: ProjectStatus.Approved,
 				OR: [
-					{ availableSpecialists: { some: { updatedAt: { lte: lastUpdatedAt } } } },
+					{
+						availableSpecialists: {
+							some: { updatedAt: { lte: lastUpdatedAt } },
+						},
+					},
 					{ availableSpecialists: { none: {} } },
 				],
 			},
@@ -152,24 +111,83 @@ class CronMatchingHandler {
 			take: 1,
 		})
 
-		console.log(`Matching specialists (${specialists.length}) and projects (${projects.length}) ...`)
+		const specialists = await prisma.speciality.findMany({
+			where: {
+				// user: { profile: { isActive: true } },
+				// OR: [
+				// {
+				// 	availableProjects: {
+				// 		every: { updatedAt: { lte: lastUpdatedAt } },
+				// 	},
+				// },
+				// { availableProjects: { none: {} } },
+				// ],
+			},
+			select: {
+				id: true,
+				name: true,
+				summary: true,
+				specialization: true,
+				level: true,
+				skills: true,
+				tools: true,
+				jobs: true,
+				schools: true,
+				createdAt: true,
+				direction: { select: { name: true } },
+				user: {
+					select: {
+						lang: true,
+						profile: {
+							select: {
+								city: true,
+								country: true,
+								motivation: true,
+								otherResources: true,
+								timeForWork: true,
+								yearOfBirth: true,
+								primaryInterest: true,
+								preferredGenres: { select: { name: true } },
+								preferredLevels: { select: { name: true } },
+								preferredSettings: { select: { name: true } },
+							},
+						},
+					},
+				},
+			},
+			orderBy: { updatedAt: 'desc' },
+			// take: 10,
+		})
+
+		let matchingCount = 0
 
 		for (const specialist of specialists) {
 			for (const project of projects) {
+				const existMatching = await prisma.matchingSpecialistAndProject.findUnique({
+					where: {
+						projectAndSpecialist: { projectId: project.id, specialityId: specialist.id },
+						updatedAt: { gt: lastUpdatedAt },
+					},
+				})
+
+				if (existMatching) continue
+
+				matchingCount++
+
 				const specialistText = formatNestedJson(specialist)
 				const projectText = formatNestedJson(project)
 
-				const result = await matchingSpecAndProjQueue.add(
+				await matchingSpecAndProjQueue.add(
 					'matching-spec-and-proj',
 					{ specialityId: specialist.id, projectId: project.id, specialistText, projectText },
 					{
 						jobId: `matching-sp-${specialist.id}-${project.id}`,
 					}
 				)
-
-				console.log(`Matching in queue(jobId=${result.id})`)
 			}
 		}
+
+		console.log(`Matching jobs in queue: ${matchingCount}`)
 	}
 }
 

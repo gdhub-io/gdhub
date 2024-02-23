@@ -279,6 +279,9 @@ export const appThemeConfig: ThemeConfig = {
 			bodyBg: 'transparent',
 			headerBg: 'transparent',
 		},
+		Card: {
+			boxShadow: 'unset',
+		},
 		Menu: {
 			colorBgContainer: 'transparent',
 			darkItemBg: '#050505',
