@@ -23,7 +23,17 @@ const nextConfig = {
 	env: {
 		NEXT_PUBLIC_ENV: 'PRODUCTION', //your next configs goes here
 	},
-	transpilePackages: ['@mdxeditor/editor'],
+	transpilePackages: [
+		'@mdxeditor/editor',
+		'@ant-design',
+		'rc-util',
+		'rc-pagination',
+		'rc-picker',
+		'rc-notification',
+		'rc-tooltip',
+		'rc-tree',
+		'rc-table',
+	],
 	webpack: (config) => {
 		config.module.rules.push({
 			test: /\.svg$/,

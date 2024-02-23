@@ -7,6 +7,7 @@ declare module 'next-auth/jwt' {
 		id: string
 		roles: UserRole[]
 		onboardingDone: boolean
+		lang: string
 		error?: 'RefreshAccessTokenError'
 	}
 }
@@ -18,6 +19,7 @@ declare module 'next-auth' {
 			id: string
 			roles: UserRole[]
 			onboardingDone: boolean
+			lang: string
 		} & DefaultSession['user']
 	}
 
@@ -25,5 +27,6 @@ declare module 'next-auth' {
 		id: string
 		roles: UserRole[]
 		onboardingDone: boolean
+		lang: string
 	}
 }

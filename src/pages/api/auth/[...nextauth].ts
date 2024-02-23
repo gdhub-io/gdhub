@@ -61,6 +61,17 @@ export const authOptions: NextAuthOptions = {
 			},
 		}),
 	],
+	events: {
+		signIn(message) {
+			console.log('signIn', message)
+		},
+		updateUser(message) {
+			console.log('updateUser', message)
+		},
+		createUser(message) {
+			console.log('createUser', message)
+		},
+	},
 	callbacks: {
 		async jwt({ token }) {
 			if (!token.email) return

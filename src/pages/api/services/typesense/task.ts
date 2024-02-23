@@ -1,4 +1,3 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
 import { SearchEngineService } from '@/services/typesense'
 import { drop } from '@/services/typesense/commands/drop'
 import { migrate } from '@/services/typesense/commands/migrate'

@@ -1,7 +1,7 @@
 import { ThemeConfig, theme } from 'antd'
 import { Mulish as AppFont } from 'next/font/google'
 
-const mainFont = AppFont({ subsets: ['latin', 'cyrillic'] })
+const mainFont = AppFont({ subsets: ['latin', 'cyrillic'], display: 'swap', adjustFontFallback: false })
 
 export const landingThemeConfig: ThemeConfig = {
 	algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],

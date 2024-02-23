@@ -1,4 +1,3 @@
-import { env } from '@/helpers/env'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { openAI } from '@/services/openai'
 import multer from 'multer'
