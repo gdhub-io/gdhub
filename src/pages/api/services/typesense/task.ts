@@ -1,11 +1,10 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
 import { SearchEngineService } from '@/services/typesense'
 import { drop } from '@/services/typesense/commands/drop'
 import { migrate } from '@/services/typesense/commands/migrate'
 import { search } from '@/services/typesense/commands/search'
 import { Get, Query, createHandler } from 'next-api-decorators'
 
-@NextAuthGuard('api')
+// @NextAuthGuard('api')
 class ApiSpecialistHandler {
 	constructor() {}
 

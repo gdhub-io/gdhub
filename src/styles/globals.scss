@@ -100,6 +100,12 @@ a.text-link {
 	}
 }
 
+.ant-select {
+	.ant-typography-ellipsis-single-line {
+		vertical-align: middle;
+	}
+}
+
 .rnr-container {
 	.rnr-video {
 		aspect-ratio: 16/9;
@@ -178,6 +184,8 @@ a.text-link {
 	font-size: 16px;
 	font-weight: 200;
 }
+
+
 
 
 .bright-container {
