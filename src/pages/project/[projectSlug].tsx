@@ -68,9 +68,9 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
 						<div className="project-description">
 							<Title level={2}>Об игре</Title>
-							<Text>
+							<Paragraph>
 								<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
-							</Text>
+							</Paragraph>
 						</div>
 						{!screens.md && generalData}
 
