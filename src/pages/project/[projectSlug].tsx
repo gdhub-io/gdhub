@@ -7,7 +7,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { Profile, Project, ProjectStatus, User } from '@prisma/client'
 import { Button, Col, Descriptions, Grid, Row, Typography } from 'antd'
-import { GetStaticPropsContext } from 'next'
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -126,20 +126,20 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 	)
 }
 
-export async function getStaticPaths() {
-	const projects = await prisma.project.findMany({
-		where: { status: { not: ProjectStatus.Rejected } },
-		select: { slug: true },
-	})
+// export async function getStaticPaths() {
+// 	const projects = await prisma.project.findMany({
+// 		where: { status: { not: ProjectStatus.Rejected } },
+// 		select: { slug: true },
+// 	})
 
-	const paths = projects.map(({ slug }) => ({
-		params: { projectSlug: slug },
-	}))
+// 	const paths = projects.map(({ slug }) => ({
+// 		params: { projectSlug: slug },
+// 	}))
 
-	return { paths, fallback: false }
-}
+// 	return { paths, fallback: false }
+// }
 
-export const getStaticProps = async (context: GetStaticPropsContext) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const { projectSlug }: any = context.params
 
 	const project = await prisma.project.findFirst({
@@ -163,7 +163,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
 			},
 		},
-		revalidate: 60,
 	}
 }
 
