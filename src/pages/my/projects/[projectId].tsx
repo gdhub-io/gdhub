@@ -8,14 +8,17 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { Button, Col, Popover, Row, Space, Spin } from 'antd'
+import { Button, Col, Row, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { GrUpdate } from 'react-icons/gr'
 import { HiExternalLink } from 'react-icons/hi'
 import { TbSettings } from 'react-icons/tb'
+import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
+
+const { Text } = Typography
 
 const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
@@ -70,7 +73,10 @@ const MyProjectPage: NextPageWithLayout = () => {
 						</Col>
 					</Row>
 
-					<p style={{ marginTop: 20 }}>{myProject?.data.description}</p>
+					{/* <p style={{ marginTop: 20 }}>{myProject?.data.description}</p> */}
+					<Text style={{ marginTop: 20 }}>
+						<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{myProject?.data.description || ''}</ReactMarkdown>
+					</Text>
 
 					{!!myProject.data && (
 						<>

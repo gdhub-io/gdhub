@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { normUploadFile } from '@/helpers/file'
+import { MDXEditorMethods } from '@mdxeditor/editor'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
@@ -9,6 +10,7 @@ import {
 	Input,
 	message,
 	Modal,
+	notification,
 	Popover,
 	Row,
 	Select,
@@ -20,10 +22,12 @@ import {
 	UploadProps,
 } from 'antd'
 import axios from 'axios'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { GoCheckCircleFill } from 'react-icons/go'
 import { TbTrash } from 'react-icons/tb'
 import styles from './style.module.scss'
+import '@mdxeditor/editor/style.css'
 
 type ProjectModalParams = {
 	seasonId?: string
@@ -33,10 +37,14 @@ type ProjectModalParams = {
 	onCancel: () => void
 }
 
+const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr: false })
+
 const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModalParams) => {
 	const { token } = theme.useToken()
 	const [form] = Form.useForm()
+	const editorRef = useRef<MDXEditorMethods | null>()
 	const [cover, setCover] = useState<string | null>()
+	const [description, setDescription] = useState('')
 	const [coverProcessing, setCoverProcessing] = useState(false)
 
 	const { data: project, isFetching } = useQuery(
@@ -48,6 +56,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 			refetchInterval: false,
 			onSuccess({ data }) {
 				setCover(data.coverImage)
+				setDescription(data.description || '')
 			},
 		}
 	)
@@ -258,10 +267,29 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 						</Col>
 					</Row>
 
-					<Form.Item name="description" label="Краткое описание" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
-						<Input.TextArea
-							rows={6}
-							placeholder={`Например:\nВ роли андроида по имени 2B игрок может путешествовать по открытому миру. Битвы с противниками проходят в реальном времени и персонажи используют оружие ближнего боя. У игрока есть основные и побочные квесты…`}
+					<Form.Item
+						name="description"
+						label="Краткое описание"
+						required
+						rules={[
+							{
+								validator: () => {
+									const value = editorRef.current?.getMarkdown()
+									if (!value) {
+										notification.error({
+											message: 'Это поле обязательно для заполнения',
+										})
+									}
+									return value ? Promise.resolve() : Promise.reject()
+								},
+							},
+						]}
+						wrapperCol={{ span: 24 }}
+					>
+						<ContentEditor
+							editorRef={editorRef as any}
+							markdown={description}
+							onChange={(text: string) => form.setFieldValue('description', text)}
 						/>
 					</Form.Item>
 

@@ -14,7 +14,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { TbBrandTelegram } from 'react-icons/tb'
+import ReactMarkdown from 'react-markdown'
 import YouTube from 'react-youtube'
+import rehypeRaw from 'rehype-raw'
 import { Options } from 'youtube-player/dist/types'
 import styles from './style.module.scss'
 
@@ -66,7 +68,9 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
 						<div className="project-description">
 							<Title level={2}>Об игре</Title>
-							<Paragraph>{project.description}</Paragraph>
+							<Text>
+								<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
+							</Text>
 						</div>
 						{!screens.md && generalData}
 
