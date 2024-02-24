@@ -12,5 +12,13 @@
       "path": "/api/cron/new-vacancies",
       "schedule": "0 15 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "src/pages/api/**/*.js": {
+      "maxDuration": 300
+    },
+    "src/pages/api/**/*.ts": {
+      "maxDuration": 300
+    }
+  }
 }

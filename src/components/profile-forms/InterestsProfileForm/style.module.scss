@@ -1,0 +1,66 @@
+.content {
+  :global {
+    .ant-segmented-item {
+      border: 1px solid #A2A1AB;
+
+      &:not(:last-child) {
+        margin-right: 24px;
+      }
+
+      &-selected {
+        background-color: #F33921;
+        color: #fff;
+        border-color: #F33921;
+
+        .segmented-option-content {
+          .ant-typography {
+            color: #fff !important;
+          }
+        }
+
+        .segmented-option-footer {
+          border-top-color: #F33921 !important;
+          background-color: #fff;
+
+          .ant-typography {
+            color: #F33921;
+            font-weight: 600 !important;
+          }
+        }
+      }
+
+      &-label {
+        padding: 0;
+      }
+    }
+  }
+
+  .segmentedOption {
+    svg {
+      margin: 28px;
+    }
+
+    :global {
+      .segmented-option-content {
+        padding: 20px;
+      }
+
+      .segmented-option-footer {
+        padding: 8px 0;
+        border-top: 1px solid #A2A1AB;
+
+        .ant-typography {
+          font-size: 14px;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+}
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px

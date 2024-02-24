@@ -66,7 +66,9 @@ export const authOptions: NextAuthOptions = {
 			if (!token.email) return
 
 			const user = await prisma.user.findUnique({ where: { email: token.email } })
-			return { ...token, ...user } as any
+			const activeSubscription = await prisma.user.activeSubscription(user?.id!)
+
+			return { ...token, ...user, activeSubscription: activeSubscription?.id } as any
 		},
 		async session({ session, token, user, newSession }) {
 			if (!token) return redirect('/signin')

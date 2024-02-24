@@ -34,7 +34,13 @@ dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
 
-const secondFont = Lora({ subsets: ['latin', 'cyrillic'], weight: ['400', '700'], style: ['normal', 'italic'] })
+const secondFont = Lora({
+	subsets: ['latin', 'cyrillic'],
+	weight: ['400', '700'],
+	style: ['normal', 'italic'],
+	display: 'swap',
+	adjustFontFallback: false,
+})
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
 	getLayout?: (page: ReactNode) => ReactNode

@@ -38,8 +38,9 @@ services:
       - '8118:80'
 
   db:
-    image: postgres:15.3-alpine
+    build: ./docker/postgres
     container_name: gamelab_db
+    env_file: .env
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-postgres}
       POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
@@ -48,8 +49,11 @@ services:
     ports:
       - '${DATABASE_PORT:-5432}:5432'
     volumes:
-      - ./deploy/postgres/init:/docker-entrypoint-initdb.d
       - gamelab-postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init-app.sql
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     networks:
       - gdhub-network
     restart: unless-stopped
@@ -78,6 +82,22 @@ services:
       - '6379:6379'
     volumes:
       - gdhub-redis-data:/bitnami/redis/data
+    networks:
+      - gdhub-network
+  
+  bullboard:
+    image: registry.gdhub.io/bullboard:latest
+    container_name: gdhub_bullboard
+    environment:
+      - APP_USERNAME=admin
+      - APP_PASSWORD=admin
+      - REDIS_URL=redis://default:password12345@redis/0
+      - QUEUES_LIST=tgMessageQueue
+    ports:
+      - "3003:3000"
+    restart: unless-stopped
+    depends_on:
+      - redis
     networks:
       - gdhub-network
 

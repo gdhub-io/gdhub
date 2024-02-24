@@ -1,23 +1,10 @@
-import { redisConnection } from '@/services/redis'
+import { redisConnect } from '@/services/redis'
 import TelegramService from '@/services/telegram'
 import { Worker, Queue, Processor } from 'bullmq'
 
-export const tgMessageQueueInit = () =>
-	new Queue('tgMessageQueue', {
-		connection: { ...redisConnection.options, maxRetriesPerRequest: 1 },
-		defaultJobOptions: {
-			attempts: 2,
-			backoff: {
-				type: 'exponential',
-				delay: 5000,
-			},
-		},
-	})
-
-export const TgMessageWorkerRunning = () => {
-	const workerHandler: Processor = async (job) => {
+const workerProcessor: Processor = async (job) => {
+	try {
 		const telegramBot = TelegramService.init()
-		// let message: string | undefined = undefined
 
 		if (job.name == 'new-project-reports') {
 			await telegramBot.sendNewProjectReports({ inLastDays: 1 })
@@ -30,20 +17,41 @@ export const TgMessageWorkerRunning = () => {
 		if (job.name == 'new-vacancies') {
 			await telegramBot.sendNewVacancies({ inLastDays: 1 })
 		}
-	}
 
-	const worker = new Worker('tgMessageQueue', workerHandler, {
-		connection: { ...redisConnection.options, maxRetriesPerRequest: null },
+		return { success: true }
+	} catch (error: any) {
+		return { success: false, error: error?.message }
+	}
+}
+
+export const tgMessageQueue = new Queue('tgMessageQueue', {
+	connection: redisConnect({ enableReadyCheck: true, maxRetriesPerRequest: 1 }),
+	defaultJobOptions: {
+		attempts: 2,
+		backoff: {
+			type: 'exponential',
+			delay: 5000,
+		},
+	},
+})
+
+export const tgMessageWorkerRun = () => {
+	const worker = new Worker('tgMessageQueue', workerProcessor, {
+		connection: redisConnect({ maxRetriesPerRequest: null }),
 		concurrency: 5,
 		removeOnComplete: { count: 1000 },
 		removeOnFail: { count: 5000 },
 	})
 
-	worker.on('completed', (job) => {
-		console.log(`${job.id} has completed!`)
+	worker.on('completed', async (job) => {
+		console.log(`Job completed for ${job.id}`)
+	})
+	worker.on('failed', async (job, err) => {
+		console.error(`${job?.id} has failed with ${err.message}`)
+	})
+	worker.on('stalled', (str) => {
+		console.log(`Job stalled: ${str}`)
 	})
 
-	worker.on('failed', (job, err) => {
-		console.log(`${job?.id} has failed with ${err.message}`)
-	})
+	console.log('Workers for tgMessageQueue is running.')
 }

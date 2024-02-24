@@ -5,7 +5,7 @@ import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-ic
 import { GameDifficultyLevel, GameGenre, GameSetting, PrimaryInterest } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, Flex, Form, Grid, Radio, Row, Segmented, Select, Space, Typography, message } from 'antd'
+import { Button, Col, Flex, Form, Grid, Input, Radio, Row, Segmented, Select, Space, Typography, message } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
@@ -108,7 +108,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 		<div className={styles.content}>
 			<div className="onboarding-content">
 				<div className="onboarding-form">
-					<Space direction="vertical" className="onboarding-form-title">
+					<Space direction="vertical" className="onboarding-form-title" style={{ width: '100%' }}>
 						<Flex justify="space-between" align="center" wrap="wrap">
 							<Title level={2}>
 								<T keyName="interests">Interests</T>
@@ -122,7 +122,10 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 						</Flex>
 
 						<Paragraph italic>
-							<T>Infomation about your preferences</T>
+							<T keyName="onboarding.interests.motivation.description">
+								Information about your motivations and preferences. This information will allow the platform to suggest
+								you the most suitable projects, vacancies or candidates for your project.
+							</T>
 						</Paragraph>
 					</Space>
 
@@ -223,6 +226,23 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 									</Form.Item>
 								</Col>
 							</Row>
+
+							<Form.Item
+								name="motivation"
+								label={t(
+									'form.motivation.label',
+									'Your motivation. Why do you want to participate in game development or create your own?'
+								)}
+								wrapperCol={{ span: 24 }}
+							>
+								<Input.TextArea
+									rows={4}
+									placeholder={t(
+										'form.motivation.placeholder',
+										'Example: I want to be part of the creative team. What attracts me to game development...'
+									)}
+								/>
+							</Form.Item>
 
 							<Row>
 								<Col xs={24} lg={24}>
