@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo-v2b.svg'
+import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
@@ -198,7 +198,7 @@ export const ProtectedLayout = ({ title, children }: any) => {
 					<Flex align="middle" justify="space-between">
 						<Space align="center" size={8}>
 							<Link href="/hub" className="logo">
-								<GdhubLogo style={{ width: '100px' }} />
+								<GdhubLogo style={{ width: '115px' }} />
 							</Link>
 							<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
 							<Space>

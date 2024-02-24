@@ -8,9 +8,9 @@ export const redisConnect = (options?: RedisOptions) => {
 		console.error(`❌ Failed to connect to Redis server: ${error.message}`)
 	})
 
-	redis.on('ready', () => {
-		console.debug('✅ Redis Connected Successfully')
-	})
+	// redis.on('ready', () => {
+	// console.debug('✅ Redis Connected Successfully')
+	// })
 
 	return redis
 }

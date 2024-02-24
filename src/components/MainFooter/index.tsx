@@ -1,4 +1,4 @@
-import GdhubLogo from '@/assets/images/gdhub-logo-v2.svg'
+import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { T } from '@tolgee/react'
 import { Anchor, Col, Divider, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
@@ -20,7 +20,7 @@ export const MainFooter = () => {
 			<div className={styles.container}>
 				<Row gutter={[32, 32]} style={{ marginBottom: 32 }}>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
-						<GdhubLogo style={{ width: '120px', height: '31px' }} />
+						<GdhubLogo style={{ width: 'auto', height: '31px' }} />
 						<Paragraph style={{ marginTop: 12, maxWidth: 510 }}>
 							<T keyName="app-short-description">
 								A community of game industry professionals whose members form teams to develop new games. Do you want to

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import ProjectModal from '@/components/modals/ProjectModal'
 import MyProjectCandidates from '@/components/MyProjectCandidates'
 import MyProjectReports from '@/components/MyProjectReports'
@@ -7,15 +7,18 @@ import MyTeam from '@/components/MyTeam'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Col, Popover, Row, Space, Spin, message } from 'antd'
+import { useQuery } from '@tanstack/react-query'
+import { Button, Col, Row, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { GrUpdate } from 'react-icons/gr'
 import { HiExternalLink } from 'react-icons/hi'
 import { TbSettings } from 'react-icons/tb'
+import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
+
+const { Text } = Typography
 
 const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
@@ -36,29 +39,11 @@ const MyProjectPage: NextPageWithLayout = () => {
 		}
 	)
 
-	const { mutateAsync: revalidateProjectPage, isLoading: isRevalidating } = useMutation((params: { slug: string }) =>
-		axios.post('/api/revalidate', params)
-	)
-
 	const handleSaveProject = () => {
 		if (!myProject) return
 
 		setShowProjectModal(false)
-		revalidateProjectPage({ slug: `/project/${myProject.data.slug}` })
 		fetchMyProject()
-	}
-
-	const handleRevalidatePage = useCallback(async () => {
-		if (!myProject) return null
-
-		await revalidateProjectPage({ slug: `/project/${myProject.data.slug}` })
-		message.success(`Project page "/project/${myProject.data.slug}" was refreshed`)
-	}, [myProject])
-
-	const handleGoToPage = async () => {
-		if (!myProject) return null
-
-		await revalidateProjectPage({ slug: `/project/${myProject.data.slug}` })
 	}
 
 	if (myProject?.data) {
@@ -79,29 +64,19 @@ const MyProjectPage: NextPageWithLayout = () => {
 										Настройки
 									</Button>
 								)}
-								<Link
-									href={`/project/${myProject?.data.slug || myProject?.data.id}`}
-									target="_blank"
-									onClick={() => handleRevalidatePage()}
-								>
+								<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
 									<Button type="primary" icon={<HiExternalLink size={16} />}>
 										Страница проекта
 									</Button>
 								</Link>
-								<Popover content="Refresh data of the project public page">
-									<Button
-										type="text"
-										onClick={() => handleRevalidatePage()}
-										disabled={!myProject}
-										loading={isRevalidating}
-										icon={<GrUpdate size={16} />}
-									></Button>
-								</Popover>
 							</Space>
 						</Col>
 					</Row>
 
-					<p style={{ marginTop: 20 }}>{myProject?.data.description}</p>
+					{/* <p style={{ marginTop: 20 }}>{myProject?.data.description}</p> */}
+					<Text style={{ marginTop: 20 }}>
+						<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{myProject?.data.description || ''}</ReactMarkdown>
+					</Text>
 
 					{!!myProject.data && (
 						<>
@@ -139,7 +114,6 @@ const MyProjectPage: NextPageWithLayout = () => {
 									<Button
 										type="primary"
 										icon={<HiExternalLink size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
-										onClick={handleGoToPage}
 									>
 										Страница проекта
 									</Button>

@@ -4,35 +4,31 @@ import { redisConnect } from '@/services/redis'
 import { Worker, Queue, Processor } from 'bullmq'
 
 const workerProcessor: Processor = async (job) => {
-	try {
-		const { specialityId, projectId, specialistText, projectText } = job.data
+	const { specialityId, projectId, specialistText, projectText } = job.data
 
-		const response = await openAI.matchingSpecAndProj(specialistText, projectText)
+	const response = await openAI.matchingSpecAndProj(specialistText, projectText)
 
-		await prisma.matchingSpecialistAndProject.upsert({
-			where: { projectAndSpecialist: { specialityId, projectId } },
-			create: {
-				specialityId,
-				projectId,
-				authorScore: response.authorScore,
-				projectScore: response.projectScore,
-				teamScore: response.teamScore,
-				summary: response.summary,
-				avgScore: Math.round((response.authorScore + response.projectScore + response.teamScore) / 3),
-			},
-			update: {
-				authorScore: response.authorScore,
-				projectScore: response.projectScore,
-				teamScore: response.teamScore,
-				summary: response.summary,
-				avgScore: Math.round((response.authorScore + response.projectScore + response.teamScore) / 3),
-			},
-		})
+	await prisma.matchingSpecialistAndProject.upsert({
+		where: { projectAndSpecialist: { specialityId, projectId } },
+		create: {
+			specialityId,
+			projectId,
+			authorScore: response.authorScore,
+			projectScore: response.projectScore,
+			teamScore: response.teamScore,
+			summary: response.summary,
+			avgScore: Math.round((response.authorScore + response.projectScore + response.teamScore) / 3),
+		},
+		update: {
+			authorScore: response.authorScore,
+			projectScore: response.projectScore,
+			teamScore: response.teamScore,
+			summary: response.summary,
+			avgScore: Math.round((response.authorScore + response.projectScore + response.teamScore) / 3),
+		},
+	})
 
-		return { success: true }
-	} catch (error: any) {
-		return { success: false, error: error?.message }
-	}
+	return { success: true }
 }
 
 export const matchingSpecAndProjQueue = new Queue('matchingSpecAndProjQueue', {

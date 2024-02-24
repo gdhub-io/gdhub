@@ -7,14 +7,16 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { Profile, Project, ProjectStatus, User } from '@prisma/client'
 import { Button, Col, Descriptions, Grid, Row, Typography } from 'antd'
-import { GetStaticPropsContext } from 'next'
+import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { TbBrandTelegram } from 'react-icons/tb'
+import ReactMarkdown from 'react-markdown'
 import YouTube from 'react-youtube'
+import rehypeRaw from 'rehype-raw'
 import { Options } from 'youtube-player/dist/types'
 import styles from './style.module.scss'
 
@@ -66,7 +68,9 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
 						<div className="project-description">
 							<Title level={2}>Об игре</Title>
-							<Paragraph>{project.description}</Paragraph>
+							<Text>
+								<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
+							</Text>
 						</div>
 						{!screens.md && generalData}
 
@@ -126,20 +130,20 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 	)
 }
 
-export async function getStaticPaths() {
-	const projects = await prisma.project.findMany({
-		where: { status: { not: ProjectStatus.Rejected } },
-		select: { slug: true },
-	})
+// export async function getStaticPaths() {
+// 	const projects = await prisma.project.findMany({
+// 		where: { status: { not: ProjectStatus.Rejected } },
+// 		select: { slug: true },
+// 	})
 
-	const paths = projects.map(({ slug }) => ({
-		params: { projectSlug: slug },
-	}))
+// 	const paths = projects.map(({ slug }) => ({
+// 		params: { projectSlug: slug },
+// 	}))
 
-	return { paths, fallback: false }
-}
+// 	return { paths, fallback: false }
+// }
 
-export const getStaticProps = async (context: GetStaticPropsContext) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const { projectSlug }: any = context.params
 
 	const project = await prisma.project.findFirst({
@@ -163,7 +167,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
 			},
 		},
-		revalidate: 60,
 	}
 }
 

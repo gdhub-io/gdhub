@@ -162,6 +162,7 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 
 			<VacancyModal
 				teamId={teamId}
+				projectId={project?.id}
 				vacancyId={selectedVacancyId}
 				open={showVacancyModal}
 				onCancel={() => {
