@@ -5,6 +5,7 @@ import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { UserRole } from '@prisma/client'
+import { T } from '@tolgee/react'
 import { Button, Flex, Space } from 'antd'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -35,17 +36,28 @@ const HubPage: NextPageWithLayout = () => {
 				{session.status == 'authenticated' && !hasRole(UserRole.Member, session) && (
 					<Space direction="vertical">
 						<p>
-							Для того, чтобы стать участников Хаба, необходимо заполнить данные о себе, указать ваши специальности,
-							предпочтения в играх, а также указать время, которое вы готовы использовать на участие в проектах. Для
-							этого перейдите в ваш Профиль и укажите требуемые данные.
-							<br />А также не забудьте присоединиться к чату сообщества{' '}
-							<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
-								по данной ссылке
-							</Link>
-							.
+							<T keyName="hub.text1.part1">
+								In order to become participants in the Hub, you need to fill out information about yourself, indicate
+								your specialties, preferences in games, and also indicate the time that you are willing to use to
+								participate in projects. To do this, go to your Profile and provide the required data.
+							</T>
+							<br />
+							<T
+								keyName="hub.text1.part2"
+								defaultValue="And don't forget to join the community chat using {chatLink}"
+								params={{
+									chatLink: (
+										<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
+											this link
+										</Link>
+									),
+								}}
+							/>
 						</p>
 						<Link href="/profile">
-							<Button>Мой профиль</Button>
+							<Button>
+								<T>My Profile</T>
+							</Button>
 						</Link>
 					</Space>
 				)}

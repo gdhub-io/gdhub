@@ -4,6 +4,7 @@ import { DemoDayLayout } from '@/layouts/DemoDayLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { ProjectStatus } from '@prisma/client'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
@@ -17,12 +18,16 @@ const { Title, Text } = Typography
 
 const DemoDayPage: NextPageWithLayout = ({ projects, season, currentStage }: any) => {
 	const router = useRouter()
+	const { t } = useTolgee()
 
 	return (
-		<>
+		<DemoDayLayout>
 			<Head>
-				<title>День питчей на Game Developers Hub</title>
-				<meta property="og:title" content="Проекты расскажут о себе в формате коротких питчей" />
+				<title>{t('demoday.meta.title', 'Pitch Day at Game Developers Hub')}</title>
+				<meta
+					property="og:title"
+					content={t('demoday.meta.description', 'Projects will tell about themselves in the format of short pitches')}
+				/>
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={router.asPath} />
 			</Head>
@@ -38,29 +43,36 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, currentStage }: any
 					<DemoTitle season={season} />
 					<Link href="https://tally.so/r/nprjx1">
 						<Button type="text" size="large" className={styles.actionButton}>
-							Регистрация на питч
+							<T>Registration for pitch</T>
 						</Button>
 					</Link>
 					<DemoDayProjects projects={projects} />
 					<div className={styles.about}>
 						<Title level={3}>
-							Присоединяйтесь к нашему <span style={{ color: '#ffbb33' }}>{`{ сообществу }`}</span>
+							<T keyName="demoday.text1.part1">Join our</T>{' '}
+							<span style={{ color: '#ffbb33' }}>{`{ ${(<T keyName="demoday.text1.part2">community</T>)} }`}</span>
 						</Title>
 						<Space direction="vertical" size="large">
 							<Space direction="vertical" key="space-reg">
 								<Text>
-									Регистрируйтесь на gdhub.io — укажите ваши специальности, отзывайтесь на вакансии инди-проектов или
-									запускайте свои.
+									<T keyName="demoday.text2">
+										Register on gdhub.io - indicate your specialties, respond to vacancies for indie projects or launch
+										yours.
+									</T>
 								</Text>
 								<Link href="/">
 									<Button type="text">gdhub.io</Button>
 								</Link>
 							</Space>
 							<Space direction="vertical" key="space-chat">
-								<Text>Присоединяйтесь к нам в чат сообщества, общайтесь и узнавайте последние новости с проектов.</Text>
+								<Text>
+									<T keyName="demoday.text3">
+										Join us in the community chat, communicate and find out the latest news from projects.
+									</T>
+								</Text>
 								<Link href="https://t.me/+STkVL-tU8NnOtoV2">
 									<Button type="text" icon={<TbBrandTelegram size={16} />}>
-										Связаться
+										<T keyName="demoday.text4">Contact us</T>
 									</Button>
 								</Link>
 							</Space>
@@ -300,7 +312,7 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, currentStage }: any
 					</div>
 				</Space>
 			</div>
-		</>
+		</DemoDayLayout>
 	)
 }
 
@@ -338,7 +350,5 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 		},
 	}
 }
-
-DemoDayPage.getLayout = (page) => <DemoDayLayout>{page}</DemoDayLayout>
 
 export default DemoDayPage

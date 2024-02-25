@@ -27,7 +27,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
-import { DefaultSeoProps, NextSeo } from 'next-seo'
+import { NextSeo, NextSeoProps } from 'next-seo'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { GoArrowUp } from 'react-icons/go'
 import { RxSlash } from 'react-icons/rx'
@@ -37,7 +37,7 @@ import styles from './style.module.scss'
 interface ProtectedLayoutProps {
 	children: ReactNode
 	title?: string
-	seo?: DefaultSeoProps
+	seo?: NextSeoProps
 	backgroundImage?: string
 }
 
@@ -52,9 +52,14 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
 
-	const seoSettings = {
+	const seoSettings: NextSeoProps = {
 		title,
 		canonical: router.asPath,
+		openGraph: {
+			title,
+			type: 'website',
+			url: router.asPath,
+		},
 		...seo,
 	}
 

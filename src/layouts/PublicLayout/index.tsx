@@ -14,7 +14,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
-import { DefaultSeoProps, NextSeo } from 'next-seo'
+import { DefaultSeoProps, NextSeo, NextSeoProps } from 'next-seo'
 import { AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
@@ -38,9 +38,14 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
 
-	const seoSettings = {
+	const seoSettings: NextSeoProps = {
 		title,
 		canonical: router.asPath,
+		openGraph: {
+			title,
+			type: 'website',
+			url: router.asPath,
+		},
 		...seo,
 	}
 

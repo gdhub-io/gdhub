@@ -8,9 +8,9 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Row, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
-import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { HiExternalLink } from 'react-icons/hi'
@@ -22,6 +22,7 @@ const { Text } = Typography
 
 const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
+	const { t } = useTolgee()
 	const projectId = router.query.projectId as string
 	const [showProjectModal, setShowProjectModal] = useState(false)
 
@@ -48,10 +49,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 	if (myProject?.data) {
 		return (
-			<>
-				<Head>
-					<title>Управление проектом</title>
-				</Head>
+			<ProtectedLayout title={t('Project Management')}>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">
 						<Col xs={{ span: 24 }} md={{ span: 12 }}>
@@ -61,12 +59,12 @@ const MyProjectPage: NextPageWithLayout = () => {
 							<Space wrap>
 								{myProject?.data.status !== ProjectStatus.Rejected && (
 									<Button onClick={() => setShowProjectModal(true)} icon={<TbSettings size={16} />}>
-										Настройки
+										<T>Settings</T>
 									</Button>
 								)}
 								<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
 									<Button type="primary" icon={<HiExternalLink size={16} />}>
-										Страница проекта
+										<T>Project page</T>
 									</Button>
 								</Link>
 							</Space>
@@ -95,14 +93,11 @@ const MyProjectPage: NextPageWithLayout = () => {
 						onCancel={() => setShowProjectModal(false)}
 					/>
 				</Spin>
-			</>
+			</ProtectedLayout>
 		)
 	} else {
 		return (
-			<>
-				<Head>
-					<title>Управление проектом</title>
-				</Head>
+			<ProtectedLayout title={t('Project Management')}>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">
 						<Col xs={{ span: 24 }} md={{ span: 12 }}>
@@ -115,7 +110,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 										type="primary"
 										icon={<HiExternalLink size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
 									>
-										Страница проекта
+										<T>Project page</T>
 									</Button>
 								</Link>
 							</Space>
@@ -126,11 +121,9 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					{!!myProject?.data && <>{/* <MyTeam project={myProject.data} shouldUpdate={projectUpdatedEvent} /> */}</>}
 				</Spin>
-			</>
+			</ProtectedLayout>
 		)
 	}
 }
-
-MyProjectPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default MyProjectPage

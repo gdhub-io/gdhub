@@ -1,44 +1,41 @@
-import { useEffect, useState } from 'react'
 import { HeldLectures } from '@/components/lectures/HeldLectures'
 import { ReadyLectures } from '@/components/lectures/ReadyLectures'
 import { RequestedLectures } from '@/components/lectures/RequestedLectures'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
+import { T, useTolgee } from '@tolgee/react'
 import { Space } from 'antd'
-import Head from 'next/head'
 
 const LecturesPage: NextPageWithLayout = () => {
-	const [loading, setLoading] = useState(true)
-
-	useEffect(() => {
-		setLoading(false)
-	}, [])
+	const { t } = useTolgee()
 
 	return (
-		<>
-			<Head>
-				<title>Лекции</title>
-			</Head>
-			<h1>Лекции</h1>
+		<ProtectedLayout title={t('Lectures')}>
+			<h1>
+				<T>Lectures</T>
+			</h1>
 			<Space direction="vertical" size="large">
 				<p>
-					Часто при решении тех или иных задач возникает множество вопросов. Этот раздел поможет найти на них ответы у
-					других участников геймхаба. Создайте запрос на интересующую вас тему и, если она будет актуальна не только для
-					вас, попробуем ее провести.
-					<br />А тем, кто хочет делиться своим опытом с другими, здесь вы найдете возможность это делать. Следите за
-					темами, которые интересуют других участников и предлагайте себя в качестве лектора.
+					<T keyName="hub.lectures.text1.part1">
+						Often, when solving certain problems, many questions arise. This section will help you find answers to them
+						from other gamehub participants. Create a request for a topic that interests you and, if it is relevant not
+						only for you, we will try to carry it out.
+					</T>
 					<br />
-					Делимся знаниями, набираемся мудрости ;)
+					<T keyName="hub.lectures.text1.part1">
+						And for those who want to share their experience with others, here you will find the opportunity to do so.
+						Follow topics that interest other participants and offer yourself as a lecturer.
+					</T>
+					<br />
+					<T keyName="hub.lectures.text1.part1">Let&apos;s share knowledge, gain wisdom ;)</T>
 				</p>
 
 				<RequestedLectures />
 				<ReadyLectures />
 				<HeldLectures />
 			</Space>
-		</>
+		</ProtectedLayout>
 	)
 }
-
-LecturesPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default LecturesPage
