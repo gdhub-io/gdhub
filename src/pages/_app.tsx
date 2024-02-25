@@ -4,6 +4,7 @@ import CheckHealth from '@/components/CheckHealth'
 import { CookieConsent } from '@/components/CookieConsent'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
+import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
 import { publicThemeConfig } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
@@ -32,7 +33,7 @@ dayjs.extend(localizedFormat)
 dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
-dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
+dayjs.locale(defaultLocale)
 
 const secondFont = Lora({
 	subsets: ['latin', 'cyrillic'],
@@ -144,7 +145,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 							<CheckHealth>
 								<SessionProvider session={session}>
 									<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
-										<DefaultSeo {...SEOSettings} />
+										<DefaultSeo {...SEOSettings[router.locale as AvailableLocales]} />
 										{getLayout(<Component {...pageProps} />)}
 									</div>
 								</SessionProvider>

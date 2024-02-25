@@ -14,6 +14,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
+import { NextSeo } from 'next-seo'
 import { AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
@@ -21,13 +22,19 @@ import styles from './style.module.scss'
 const { Header, Footer, Content } = Layout
 const { Text, Title } = Typography
 
-export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any) => {
+export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }: any) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
+
+	const seoSettings = {
+		title,
+		canonical: router.asPath,
+		...seo,
+	}
 
 	const telegramMenuItem = {
 		label: screens.lg ? (
@@ -198,60 +205,63 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 	}, [title, backgroundImage])
 
 	return (
-		<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
-			<style jsx global>{`
-				:root {
-					--background-color: #fff;
-				}
-			`}</style>
-			<Layout className={styles.container}>
-				<Header
-					className={styles.header}
-					style={{
-						backgroundImage: setBackground(),
-					}}
-				>
-					<MainHeader />
-					<div className={styles.titleContainer}>
-						{!!title && <Title className={styles.title}>{title}</Title>}
-						{!!subTitle && <Text type="secondary">{subTitle}</Text>}
-					</div>
-				</Header>
-				<Content>
-					<div className="layout-background">{children}</div>
-				</Content>
-				<Footer className={styles.footer}>
-					<MainFooter />
-				</Footer>
-			</Layout>
+		<>
+			<NextSeo {...seoSettings} />
+			<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+				<style jsx global>{`
+					:root {
+						--background-color: #fff;
+					}
+				`}</style>
+				<Layout className={styles.container}>
+					<Header
+						className={styles.header}
+						style={{
+							backgroundImage: setBackground(),
+						}}
+					>
+						<MainHeader />
+						<div className={styles.titleContainer}>
+							{!!title && <Title className={styles.title}>{title}</Title>}
+							{!!subTitle && <Text type="secondary">{subTitle}</Text>}
+						</div>
+					</Header>
+					<Content>
+						<div className="layout-background">{children}</div>
+					</Content>
+					<Footer className={styles.footer}>
+						<MainFooter />
+					</Footer>
+				</Layout>
 
-			{!screens.lg && (
-				<Drawer
-					className={styles.mobileMenuDrawer}
-					height={'100%'}
-					title={
-						<Space>
-							<Avatar
-								src={
-									session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
-								}
-								shape="square"
-							/>
-							<div className="username">{session?.user?.name}</div>
-						</Space>
-					}
-					placement="top"
-					onClose={() => setOpenMobileMenu(false)}
-					open={openMobileMenu}
-					extra={
-						<Button onClick={() => setOpenMobileMenu(false)} type="text">
-							<AiOutlineClose />
-						</Button>
-					}
-				>
-					<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
-				</Drawer>
-			)}
-		</ConfigProvider>
+				{!screens.lg && (
+					<Drawer
+						className={styles.mobileMenuDrawer}
+						height={'100%'}
+						title={
+							<Space>
+								<Avatar
+									src={
+										session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
+									}
+									shape="square"
+								/>
+								<div className="username">{session?.user?.name}</div>
+							</Space>
+						}
+						placement="top"
+						onClose={() => setOpenMobileMenu(false)}
+						open={openMobileMenu}
+						extra={
+							<Button onClick={() => setOpenMobileMenu(false)} type="text">
+								<AiOutlineClose />
+							</Button>
+						}
+					>
+						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
+					</Drawer>
+				)}
+			</ConfigProvider>
+		</>
 	)
 }
