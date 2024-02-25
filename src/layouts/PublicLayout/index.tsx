@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import PublicHeaderBg from '@/assets/images/public-header-bg.png'
 import { MainFooter } from '@/components/MainFooter'
 import { MainHeader } from '@/components/MainHeader'
@@ -14,15 +14,23 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
-import { NextSeo } from 'next-seo'
+import { DefaultSeoProps, NextSeo } from 'next-seo'
 import { AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
+interface PublicLayoutProps {
+	children: ReactNode
+	title?: string
+	seo?: DefaultSeoProps
+	subTitle?: string
+	backgroundImage?: string
+}
+
 const { Header, Footer, Content } = Layout
 const { Text, Title } = Typography
 
-export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }: any) => {
+export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }: PublicLayoutProps) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -38,16 +46,16 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 
 	const telegramMenuItem = {
 		label: screens.lg ? (
-			<Tooltip title="Чат сообщества в Telegram">
-				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
+			<Tooltip title={t('Community chat on Telegram')}>
+				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram chat community')}>
 					<Button shape="circle" type="text" style={{ top: '6px', position: 'relative' }}>
 						<TbBrandTelegram size={24} />
 					</Button>
 				</Link>
 			</Tooltip>
 		) : (
-			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
-				Чат сообщества в Telegram
+			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram chat community')}>
+				{t('Community chat on Telegram')}
 			</Link>
 		),
 		key: 'telegram-join-link',
@@ -62,7 +70,13 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 			{
 				label: (
 					<Link href="/projects" title="Projects">
-						{screens.lg ? <Button type="text">Projects</Button> : 'Проекты'}
+						{screens.lg ? (
+							<Button type="text">
+								<T>Projects</T>
+							</Button>
+						) : (
+							<T>Projects</T>
+						)}
 					</Link>
 				),
 				key: '/projects',
@@ -70,7 +84,13 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 			{
 				label: (
 					<Link href="/vacancies" title="Vacancies">
-						{screens.lg ? <Button type="text">Vacancies</Button> : 'Вакансии'}
+						{screens.lg ? (
+							<Button type="text">
+								<T>Vacancies</T>
+							</Button>
+						) : (
+							<T>Vacancies</T>
+						)}
 					</Link>
 				),
 				key: '/vacancies',
@@ -122,8 +142,14 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 			{
 				style: { display: screens.lg ? 'none' : 'block' },
 				label: (
-					<Link href="/hub" title="Главная страница">
-						{screens.lg ? <Button type="primary">Главная</Button> : 'Главная'}
+					<Link href="/hub" title={t('Main Page')}>
+						{screens.lg ? (
+							<Button type="primary">
+								<T>Home</T>
+							</Button>
+						) : (
+							<T>Home</T>
+						)}
 					</Link>
 				),
 				key: '/hub',
@@ -131,8 +157,16 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 			...publicMenuItems,
 			{
 				label: (
-					<Link href="/hub/docs" title="С чего начать">
-						{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
+					<Link href="/hub/docs" title={t('Documentation')}>
+						{screens.lg ? (
+							<Button type="primary">
+								<T>Documentation</T>
+							</Button>
+						) : (
+							<strong>
+								<T>Documentation</T>
+							</strong>
+						)}
 					</Link>
 				),
 				key: '/hub/docs',
@@ -145,16 +179,28 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 				menu[0],
 				{
 					label: (
-						<Link href="/hub/members" title="Участники сообщества">
-							{screens.lg ? <Button type="text">Участники</Button> : 'Участники'}
+						<Link href="/hub/members" title={t('Community Members')}>
+							{screens.lg ? (
+								<Button type="text">
+									<T>Members</T>
+								</Button>
+							) : (
+								<T>Members</T>
+							)}
 						</Link>
 					),
 					key: '/hub/members',
 				},
 				{
 					label: (
-						<Link href="/hub/lectures" title="Лекции сообщества">
-							{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}
+						<Link href="/hub/lectures" title={t('Community Lectures')}>
+							{screens.lg ? (
+								<Button type="text">
+									<T>Lectures</T>
+								</Button>
+							) : (
+								<T>Lectures</T>
+							)}
 						</Link>
 					),
 					key: '/hub/lectures',
@@ -171,7 +217,11 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 
 		if (hasRole(UserRole.Admin, { data: session })) {
 			menu.push({
-				label: <Link href="/admin/seasons">Админка</Link>,
+				label: (
+					<Link href="/admin/seasons">
+						<T>Administration</T>
+					</Link>
+				),
 				key: '/admin/seasons',
 			})
 		}
@@ -179,16 +229,24 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 		menu = [
 			...menu,
 			{
-				label: <Link href="/profile">Профиль</Link>,
+				label: (
+					<Link href="/profile">
+						<T>Profile</T>
+					</Link>
+				),
 				key: 'profile',
 			},
 			{
-				label: <Link href="/my/projects">Мои проекты</Link>,
+				label: (
+					<Link href="/my/projects">
+						<T>My Projects</T>
+					</Link>
+				),
 				key: 'projects',
 			},
 			{
 				style: { display: isOpenedInTelegram ? 'none' : 'block' },
-				label: 'Выйти',
+				label: t('Sign out'),
 				key: 'logout',
 				danger: true,
 				onClick: () => signOut(),

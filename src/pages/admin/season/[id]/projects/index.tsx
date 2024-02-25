@@ -4,9 +4,9 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Project, ProjectStatus, Season, SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Row, Space, Typography, theme } from 'antd'
 import axios from 'axios'
-import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { GoArrowLeft } from 'react-icons/go'
@@ -20,6 +20,7 @@ const SeasonProjectIdeasPage: NextPageWithLayout = () => {
 	const router = useRouter()
 	const { query } = useRouter()
 	const { token } = theme.useToken()
+	const { t } = useTolgee()
 	const seasonId = query.id as string
 	const [selectedProjectId, setSelectedProjectId] = useState<string>()
 
@@ -86,16 +87,15 @@ const SeasonProjectIdeasPage: NextPageWithLayout = () => {
 	}, [season?.data, isLoading])
 
 	return (
-		<>
-			<Head>
-				<title>Проекты на {season?.data.name}</title>
-			</Head>
+		<ProtectedLayout title={t('Projects for the') + ' ' + season?.data.name}>
 			<Row justify="space-between" align="middle">
 				<Space align="center">
 					<Link href="/admin/seasons">
 						<Button icon={<GoArrowLeft />} type="text" style={{ marginBottom: '0.5em' }} />
 					</Link>
-					<Title level={2}>Проекты</Title>
+					<Title level={2}>
+						<T>Projects</T>
+					</Title>
 					<Text type="secondary">season: {season?.data.name}</Text>
 				</Space>
 			</Row>
@@ -128,10 +128,8 @@ const SeasonProjectIdeasPage: NextPageWithLayout = () => {
 				onOk={handleModalClose}
 				onUpdate={() => refetchProjects()}
 			/>
-		</>
+		</ProtectedLayout>
 	)
 }
-
-SeasonProjectIdeasPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default SeasonProjectIdeasPage

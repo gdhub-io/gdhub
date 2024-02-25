@@ -6,11 +6,12 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Profile } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Space } from 'antd'
 import axios from 'axios'
-import Head from 'next/head'
 
 const ProfilePage: NextPageWithLayout = () => {
+	const { t } = useTolgee()
 	const queryClient = useQueryClient()
 	const { data: profile } = useQuery(['profile'], () => axios.get<Profile>('/api/user/profile'))
 	const { mutateAsync: saveProfile } = useMutation<any, any, any>(
@@ -23,11 +24,10 @@ const ProfilePage: NextPageWithLayout = () => {
 	)
 
 	return (
-		<>
-			<Head>
-				<title>Ваш профиль</title>
-			</Head>
-			<h1>Настройки профиля</h1>
+		<ProtectedLayout title={t('Your Profile')}>
+			<h1>
+				<T>Profile Settings</T>
+			</h1>
 			{!!profile?.data && (
 				<Space size={24} direction="vertical" style={{ width: '100%' }}>
 					<GeneralProfileForm profile={profile.data} saveProfile={saveProfile} />
@@ -36,10 +36,8 @@ const ProfilePage: NextPageWithLayout = () => {
 					<InterestsProfileForm profile={profile.data} saveProfile={saveProfile} />
 				</Space>
 			)}
-		</>
+		</ProtectedLayout>
 	)
 }
-
-ProfilePage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default ProfilePage

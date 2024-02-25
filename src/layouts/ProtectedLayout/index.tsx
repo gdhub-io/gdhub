@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -27,21 +27,36 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
+import { DefaultSeoProps, NextSeo } from 'next-seo'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { GoArrowUp } from 'react-icons/go'
 import { RxSlash } from 'react-icons/rx'
 import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
+interface ProtectedLayoutProps {
+	children: ReactNode
+	title?: string
+	seo?: DefaultSeoProps
+	backgroundImage?: string
+}
+
 const { Header, Content } = Layout
 const { Title, Text } = Typography
 
-export const ProtectedLayout = ({ title, children }: any) => {
+export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) => {
 	const router = useRouter()
+	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
+
+	const seoSettings = {
+		title,
+		canonical: router.asPath,
+		...seo,
+	}
 
 	useEffect(() => {
 		console.log(session)
@@ -62,13 +77,13 @@ export const ProtectedLayout = ({ title, children }: any) => {
 			{
 				style: { display: screens.lg ? 'none' : 'block' },
 				label: (
-					<Link href="/hub" title="Главная страница">
+					<Link href="/hub" title={t('Home')}>
 						{screens.lg ? (
 							<Button type="primary" size="small">
-								Главная
+								<T>Home</T>
 							</Button>
 						) : (
-							'Главная'
+							<T>Home</T>
 						)}
 					</Link>
 				),
@@ -93,7 +108,11 @@ export const ProtectedLayout = ({ title, children }: any) => {
 
 		if (hasRole(UserRole.Admin, { data: session })) {
 			menu.push({
-				label: <Link href="/admin/seasons">Админка</Link>,
+				label: (
+					<Link href="/admin/seasons">
+						<T>Administration</T>
+					</Link>
+				),
 				key: '/admin/seasons',
 			})
 		}
@@ -101,26 +120,34 @@ export const ProtectedLayout = ({ title, children }: any) => {
 		menu = [
 			...menu,
 			{
-				label: <Link href="/profile">Профиль</Link>,
+				label: (
+					<Link href="/profile">
+						<T>Profile</T>
+					</Link>
+				),
 				key: 'profile',
 			},
 			{
-				label: <Link href="/my/projects">Мои проекты</Link>,
+				label: (
+					<Link href="/my/projects">
+						<T>My Projects</T>
+					</Link>
+				),
 				key: 'projects',
 			},
 			{ type: 'divider' },
 			{
 				key: 'tg-community',
 				label: (
-					<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
-						Чат сообщества в Telegram
+					<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram Chat Community')}>
+						<T>Telegram Chat Community</T>
 					</Link>
 				),
 			},
 			{ type: 'divider' },
 			{
 				style: { display: isOpenedInTelegram ? 'none' : 'block' },
-				label: 'Выйти',
+				label: t('Sign out'),
 				key: 'logout',
 				danger: true,
 				onClick: () => signOut({ redirect: true, callbackUrl: '/' }),
@@ -187,114 +214,119 @@ export const ProtectedLayout = ({ title, children }: any) => {
 	]
 
 	return (
-		<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
-			<style jsx global>{`
-				:root {
-					--background-color: #fafafa;
-				}
-			`}</style>
-			<Layout className={styles.container}>
-				<Header className={styles.header}>
-					<Flex align="middle" justify="space-between">
-						<Space align="center" size={8}>
-							<Link href="/hub" className="logo">
-								<GdhubLogo style={{ width: '115px' }} />
-							</Link>
-							<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-							<Space>
-								{session?.user?.image ? (
-									<Avatar
-										src={
-											session?.user?.image ? (
-												<Image src={session?.user.image} width={24} height={24} alt="avatar" />
-											) : null
-										}
-										size={24}
-									/>
-								) : (
-									<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
-								)}
-								{screens.sm && <Text className="username">{session?.user?.name}</Text>}
-							</Space>
-						</Space>
-						<Space>
-							{screens.xl ? (
-								<>
-									<Link href="/hub/docs">
-										<Button type="text" style={{ fontSize: 14 }}>
-											<T>Documentation</T>
-										</Button>
-									</Link>
-									<NotificationsBell />
-									<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-										<Button
-											type="text"
-											style={{ display: 'block', padding: 0 }}
-											icon={
-												session?.user.image ? (
-													<Avatar
-														src={
-															session?.user?.image ? (
-																<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-															) : null
-														}
-													/>
-												) : (
-													<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
-												)
+		<>
+			<NextSeo {...seoSettings} />
+			<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+				<style jsx global>{`
+					:root {
+						--background-color: #fafafa;
+					}
+				`}</style>
+				<Layout className={styles.container}>
+					<Header className={styles.header}>
+						<Flex align="middle" justify="space-between">
+							<Space align="center" size={8}>
+								<Link href="/hub" className="logo">
+									<GdhubLogo style={{ width: '115px' }} />
+								</Link>
+								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
+								<Space>
+									{session?.user?.image ? (
+										<Avatar
+											src={
+												session?.user?.image ? (
+													<Image src={session?.user.image} width={24} height={24} alt="avatar" />
+												) : null
 											}
-										></Button>
-									</Dropdown>
-								</>
-							) : (
-								<>
-									<NotificationsBell />
-									<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
-										<AiOutlineMenu />
-									</Button>
-								</>
-							)}
-						</Space>
-					</Flex>
-					{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
-					<Menu items={menuItems} mode="horizontal" selectedKeys={[router.pathname]} className={styles.appMenu} />
-				</Header>
-				<Content className={styles.contentContainer}>
-					<div className={styles.content}>
-						{!!title && <Title>{title}</Title>}
-						{children}
-					</div>
-				</Content>
-				{/* <Footer></Footer> */}
-			</Layout>
-			{!screens.lg && (
-				<Drawer
-					className={styles.mobileMenuDrawer}
-					height={'100%'}
-					title={
-						<Space>
-							<Avatar
-								src={
-									session?.user?.image ? <Image src={session?.user.image} width={32} height={32} alt="avatar" /> : null
-								}
-								shape="square"
-							/>
-							<div className="username">{session?.user?.name}</div>
-						</Space>
-					}
-					placement="top"
-					onClose={() => setOpenMobileMenu(false)}
-					open={openMobileMenu}
-					extra={
-						<Button onClick={() => setOpenMobileMenu(false)} type="text">
-							<AiOutlineClose />
-						</Button>
-					}
-				>
-					<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
-				</Drawer>
-			)}
-			<FloatButton.BackTop icon={<GoArrowUp />} rootClassName={styles.backTop} description="Scroll to up" />
-		</ConfigProvider>
+											size={24}
+										/>
+									) : (
+										<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
+									)}
+									{screens.sm && <Text className="username">{session?.user?.name}</Text>}
+								</Space>
+							</Space>
+							<Space>
+								{screens.xl ? (
+									<>
+										<Link href="/hub/docs">
+											<Button type="text" style={{ fontSize: 14 }}>
+												<T>Documentation</T>
+											</Button>
+										</Link>
+										<NotificationsBell />
+										<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
+											<Button
+												type="text"
+												style={{ display: 'block', padding: 0 }}
+												icon={
+													session?.user.image ? (
+														<Avatar
+															src={
+																session?.user?.image ? (
+																	<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																) : null
+															}
+														/>
+													) : (
+														<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
+													)
+												}
+											></Button>
+										</Dropdown>
+									</>
+								) : (
+									<>
+										<NotificationsBell />
+										<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
+											<AiOutlineMenu />
+										</Button>
+									</>
+								)}
+							</Space>
+						</Flex>
+						{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
+						<Menu items={menuItems} mode="horizontal" selectedKeys={[router.pathname]} className={styles.appMenu} />
+					</Header>
+					<Content className={styles.contentContainer}>
+						<div className={styles.content}>
+							{!!title && <Title>{title}</Title>}
+							{children}
+						</div>
+					</Content>
+					{/* <Footer></Footer> */}
+				</Layout>
+				{!screens.lg && (
+					<Drawer
+						className={styles.mobileMenuDrawer}
+						height={'100%'}
+						title={
+							<Space>
+								<Avatar
+									src={
+										session?.user?.image ? (
+											<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+										) : null
+									}
+									shape="square"
+								/>
+								<div className="username">{session?.user?.name}</div>
+							</Space>
+						}
+						placement="top"
+						onClose={() => setOpenMobileMenu(false)}
+						open={openMobileMenu}
+						extra={
+							<Button onClick={() => setOpenMobileMenu(false)} type="text">
+								<AiOutlineClose />
+							</Button>
+						}
+					>
+						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
+					</Drawer>
+				)}
+				<FloatButton.BackTop icon={<GoArrowUp />} rootClassName={styles.backTop} description="Scroll to up" />
+			</ConfigProvider>
+		</>
 	)
 }
