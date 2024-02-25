@@ -2,6 +2,7 @@ import { useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
 import { Project, TeamVacancyStatus } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Button, Flex, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -16,17 +17,6 @@ interface Vacancy {
 	FinishedAt: string
 	Status: TeamVacancyStatus
 	[key: string]: any
-}
-
-const vacancyStatusToText = (status: TeamVacancyStatus) => {
-	switch (status) {
-		case TeamVacancyStatus.Draft:
-			return 'Черновик'
-		case TeamVacancyStatus.Published:
-			return 'Размещена'
-		case TeamVacancyStatus.Closed:
-			return 'Закрыта'
-	}
 }
 
 interface MyProjectVacanciesArgs {
@@ -69,7 +59,11 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 			render: (value, data) => (
 				<>
 					<span onClick={() => handleEditVacancy(data.id)}>{value}</span>{' '}
-					{data.status == 'Draft' && <Tag color="lime">{vacancyStatusToText(data.status)}</Tag>}
+					{data.status == 'Draft' && (
+						<Tag color="lime">
+							<T keyName={data.status} />
+						</Tag>
+					)}
 				</>
 			),
 		},

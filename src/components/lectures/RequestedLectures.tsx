@@ -3,7 +3,6 @@ import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
 import LectureRequestModal from '@/components/modals/LectureRequestModal'
 import PropositionLectureModal from '@/components/modals/PropositionLectureModal'
 import SetLecturerModal from '@/components/modals/SetLecturerModal'
-import { lectureStatusAsText } from '@/helpers/format'
 import { Lecture, LectureListener, LectureStage, LecturerRequest, User, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -130,7 +129,9 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					>
 						<strong>{text}</strong>
 						<br />
-						<small>{lectureStatusAsText(lecture.stage)}</small>
+						<small>
+							<T keyName={lecture.stage} />
+						</small>
 					</div>
 				) : (
 					<div

@@ -12114,7 +12114,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 *
 		 * @tags Coupons
 		 * @name CreateCouponCollection
-		 * @summary Create а coupon collection
+		 * @summary Create a coupon collection
 		 * @request POST:/couponCollections
 		 * @secure
 		 */
