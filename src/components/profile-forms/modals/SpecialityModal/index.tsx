@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import {
 	Button,
 	Col,
@@ -28,6 +28,7 @@ const { Text } = Typography
 
 const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const router = useRouter()
 	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
@@ -77,7 +78,13 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 
 			setProcessing(false)
 
-			message.success(speciality ? 'Данные о специальности обновлены' : 'Добавлена новая специальность')
+			message.success(
+				speciality ? (
+					<T keyName="modal.speciality.update.success">Data on the specialty updated</T>
+				) : (
+					<T keyName="modal.speciality.create.success">Added a new specialty</T>
+				)
+			)
 			onOk()
 		} catch (error: any) {
 			setProcessing(false)
@@ -85,7 +92,9 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
+				message.error(
+					<T keyName="modal.speciality.create-update.error">Ошибка. Проверьте, все ли данные введены корректно</T>
+				)
 			}
 		}
 	}
@@ -162,12 +171,18 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 
 	return (
 		<Modal
-			title={speciality ? 'Изменить специальность' : 'Добавить специальность'}
+			title={
+				speciality ? (
+					<T key="modal.speciality.title.update">Change the specialty</T>
+				) : (
+					<T key="modal.speciality.title.create">Add specialty</T>
+				)
+			}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
-			cancelText="Закрыть"
-			okText="Сохранить"
+			cancelText={<T>Close</T>}
+			okText={<T>Save</T>}
 			open={open}
 			onOk={handleOk}
 			onCancel={onCancel}
@@ -185,7 +200,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					<Row gutter={[16, 16]}>
 						<Col xs={{ span: 24 }} md={{ span: 16 }}>
 							<Form.Item
-								label="Название специальности"
+								label={<T keyName="modal.speciality.form.name.label">Name of specialty</T>}
 								name="name"
 								rules={[{ required: true }]}
 								required
@@ -208,48 +223,73 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 							>
 								<Input
 									width={'100%'}
-									placeholder={`Пример: Концепт-художник по персонажам`}
+									placeholder={t('modal.speciality.form.name.placeholder', `Example: Character Concept Artist`)}
 									onChange={(e) => setShowParseCVButton(!!e.target.value)}
 								/>
 							</Form.Item>
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
-							<Form.Item name="level" label="Уровень владения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
-								<Select options={levelOptions} placeholder="Выберите" style={{ width: '100%' }} />
+							<Form.Item
+								name="level"
+								label={<T keyName="modal.speciality.form.level.label">Level of ownership</T>}
+								rules={[{ required: true }]}
+								wrapperCol={{ span: 24 }}
+							>
+								<Select
+									options={levelOptions}
+									placeholder={t('modal.speciality.form.level.placeholder', 'Select')}
+									style={{ width: '100%' }}
+								/>
 							</Form.Item>
 						</Col>
 					</Row>
 
-					<Form.Item name="summary" label="Кратко о том, чем занимаетесь" wrapperCol={{ span: 24 }}>
+					<Form.Item
+						name="summary"
+						label={<T keyName="modal.speciality.form.summary.label">Briefly about what you are doing</T>}
+						wrapperCol={{ span: 24 }}
+					>
 						<Input.TextArea rows={3} />
 					</Form.Item>
 
 					<Form.Item
 						name="workDirectionId"
-						label="Направление деятельности"
+						label={<T keyName="modal.speciality.form.workDirectionId.label">Direction of activity</T>}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 					>
-						<Select style={{ width: '100%' }} placeholder={`Выберите`} options={workDirectionOptions} />
-					</Form.Item>
-					<Form.Item name="specialization" label="Специализация" wrapperCol={{ span: 24 }} rules={[{ required: true }]}>
-						<Input.TextArea placeholder={`Пример: Реалистичные персонажи`} />
-					</Form.Item>
-					<Form.Item
-						name="skills"
-						label="Список навыков"
-						rules={[{ required: true }]}
-						wrapperCol={{ span: 24 }}
-						extra="Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение"
-					>
-						<Input.TextArea
-							rows={6}
-							placeholder={`Например:\nрисовать концепты мультяшных персонажей\nразрабатывать диалоговые системы`}
+						<Select
+							style={{ width: '100%' }}
+							placeholder={t('modal.speciality.form.workDirectionId.placeholder', `Choose`)}
+							options={workDirectionOptions}
 						/>
 					</Form.Item>
 					<Form.Item
+						name="specialization"
+						label={<T keyName="modal.speciality.form.specialization.label">Specialization</T>}
+						wrapperCol={{ span: 24 }}
+						rules={[{ required: true }]}
+					>
+						<Input.TextArea
+							placeholder={t('modal.speciality.form.specialization.placeholder', `Example: Realistic characters`)}
+						/>
+					</Form.Item>
+					<Form.Item
+						name="skills"
+						label={<T keyName="modal.speciality.form.skills.label">List of skills</T>}
+						rules={[{ required: true }]}
+						wrapperCol={{ span: 24 }}
+						extra={
+							<T keyName="modal.speciality.form.skills.extra">
+								Write each skill from a new line.Indicate in the format: verb + definition
+							</T>
+						}
+					>
+						<Input.TextArea rows={6} />
+					</Form.Item>
+					<Form.Item
 						name="portfolioUrl"
-						label="Ссылка на портфолио/резюме"
+						label={<T keyName="modal.speciality.form.portfolioUrl.label">Link to portfolio/resume</T>}
 						wrapperCol={{ span: 24 }}
 						rules={[{ type: 'url' }]}
 					>
@@ -257,36 +297,58 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					</Form.Item>
 					<Form.Item
 						name="tools"
-						label="Инструменты"
+						label={<T keyName="modal.speciality.form.tools.label">Tools</T>}
 						wrapperCol={{ span: 24 }}
-						extra="Укажите какие инструменты/софт/сервисы используете в работе"
+						extra={
+							<T keyName="modal.speciality.form.tools.extra">
+								Indicate which tools/software/services you use in your work
+							</T>
+						}
 					>
 						<Select
 							mode="tags"
 							style={{ width: '100%' }}
-							placeholder={`Пример: Photoshop, Google Docs, Unity, VS Code`}
+							placeholder={t(
+								'modal.speciality.form.tags.placeholder',
+								`Example: Photoshop, Google Docs, Unity, VS Code`
+							)}
 						/>
 					</Form.Item>
 					<Form.Item
 						name="jobs"
-						label="Где работали?"
+						label={<T keyName="modal.speciality.form.jobs.label">Where did you work?</T>}
 						wrapperCol={{ span: 24 }}
-						extra="Каждое место работы пишите c новой строки. Указывайте в формате: даты работы, место работы, должность"
+						extra={
+							<T keyName="modal.speciality.form.jobs.extra">
+								Write the work from a new line.Indicate in the format: Dates of work, place of work, position
+							</T>
+						}
 					>
 						<Input.TextArea
 							rows={6}
-							placeholder={`Например:\n2015-2020, ООО "ГеймБука", Unity-разработчик\n2020-настоящее время, ООО "Лукоморье", Sound-дизайнер`}
+							placeholder={t(
+								'modal.speciality.form.jobs.placeholder',
+								`Example:\n2015-2020, LLC "Gamboka", Unity developer\n2020-to-date, LLC "Lukomorye", Sound designer`
+							)}
 						/>
 					</Form.Item>
 					<Form.Item
 						name="schools"
-						label="Где учились?"
+						label={<T keyName="modal.speciality.form.schools.label">Where did you study?</T>}
 						wrapperCol={{ span: 24 }}
-						extra="Каждое место обучения пишите c новой строки. Указывайте в формате: период обучения, место учебы, название курса/специальности"
+						extra={
+							<T keyName="modal.speciality.form.schools.extra">
+								Write each place of training from a new line.Indicate in the format: training period, place of study,
+								name/specialty name
+							</T>
+						}
 					>
 						<Input.TextArea
 							rows={6}
-							placeholder={`Например:\n2000-2010, Гимназия №145\n2011, Курс на Udemy "Как стать тестировщиком"`}
+							placeholder={t(
+								'modal.speciality.form.schools.placeholder',
+								`Example:\n2000-2010, High school №145\n2011, The course on UDEMY "How to become a tester"`
+							)}
 						/>
 					</Form.Item>
 				</Form>
