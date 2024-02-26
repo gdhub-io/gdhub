@@ -2,6 +2,7 @@ import { useState } from 'react'
 import ProjectCandidatePreviewModal from '@/components/modals/ProjectCandidatePreviewModal'
 import { Project, Speciality, TeamMember, TeamVacancy, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Grid, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -13,6 +14,7 @@ interface MyProjectCandidatesArgs {
 
 const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 	const [showCandidatePreviewModal, setShowCandidatePreviewModal] = useState(false)
 	const [selectedCandidateId, setSelectedCandidateId] = useState<string>()
 
@@ -35,7 +37,7 @@ const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
 		TeamMember & { vacancy: TeamVacancy; speciality: Speciality; user: User & { specialities: Speciality[] } }
 	> = [
 		{
-			title: 'Кандидат',
+			title: t('Candidate'),
 			dataIndex: 'id',
 			key: 'id',
 			render: (value, record) => (
@@ -53,7 +55,7 @@ const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
 			),
 		},
 		{
-			title: 'Вакансия',
+			title: t('Job vacancy'),
 			dataIndex: 'vacancyId',
 			responsive: ['md'],
 			key: 'vacancyId',
@@ -62,7 +64,7 @@ const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
 			},
 		},
 		{
-			title: 'Получено',
+			title: t('Obtained'),
 			dataIndex: 'createdAt',
 			responsive: ['md'],
 			key: 'createdAt',
@@ -87,7 +89,9 @@ const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
 	return (
 		<>
 			<Space align="center" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>Отклики на вакансии</h3>
+				<h3 style={{ margin: 0 }}>
+					<T>Responses on vacancies</T>
+				</h3>
 				<Tag color="gray">{candidates?.data.length || 0}</Tag>
 			</Space>
 
@@ -112,7 +116,9 @@ const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
 					/>
 				</>
 			) : (
-				<p style={{ marginTop: 12, color: 'gray' }}>На данный момент заявок на участие нет</p>
+				<p style={{ marginTop: 12, color: 'gray' }}>
+					<T>There are no applications for participation at the moment</T>
+				</p>
 			)}
 		</>
 	)

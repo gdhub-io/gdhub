@@ -66,7 +66,7 @@
     "next-api-decorators": "^2.0.2",
     "next-auth": "^4.24.5",
     "next-csrf": "^0.2.1",
-    "next-seo": "^6.4.0",
+    "next-seo": "^6.5.0",
     "nextjs-cors": "^2.1.2",
     "node-fetch": "^3.2.10",
     "nodemailer": "^6.9.7",

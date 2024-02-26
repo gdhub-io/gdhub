@@ -55,7 +55,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 			await saveProfile(formData)
 			setProcessing(false)
 
-			message.success('Интересы и предпочтения обновлены')
+			message.success(<T>Interests and preferences updated</T>)
 		} catch (error: any) {
 			setProcessing(false)
 			message.error(error.message)
@@ -90,10 +90,13 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 	}))
 
 	return (
-		<Card title="Интересы и предпочтения" className={styles.content}>
+		<Card title={t('Interests and preferences')} className={styles.content}>
 			<Spin spinning={processing}>
 				<Paragraph>
-					Указанная информация поможет нам точнее настроить рекомендации по проектам, кандидатам на проекты для вас.
+					<T keyName="interestsAndPreferencesDescription">
+						This information will help us more accurately configure recommendations on projects, candidates for projects
+						for you.
+					</T>
 				</Paragraph>
 
 				<Form
@@ -211,21 +214,38 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 							</Radio.Group>
 						)}
 					</Form.Item>
-					<Form.Item label="Ваша мотивация участия в проектах или в их создании" name="motivation">
+					<Form.Item
+						label={
+							<T keyName="profile-forms.interests.field.motivation.label">
+								Your motivation for participation in projects or in their creation
+							</T>
+						}
+						name="motivation"
+					>
 						<Input.TextArea rows={4} />
 					</Form.Item>
-					<Form.Item label="Жанры игр, в разработке которых вам интересно было бы участвовать" name="preferredGenres">
+					<Form.Item
+						label={
+							<T keyName="profile-forms.interests.field.preferredGenres.label">
+								Games genres in the development of which you would be interested to participate
+							</T>
+						}
+						name="preferredGenres"
+					>
 						<Select
 							options={gameGenresOptions}
 							mode="multiple"
 							allowClear
 							style={{ width: '100%' }}
-							placeholder="Выберите"
+							placeholder={t('Select')}
 							onChange={() => {}}
 						/>
 					</Form.Item>
 					<Form.Item
-						label="Визуальный сеттинг проектов, с которым вам было бы интересно поработать"
+						label={t(
+							'profile-forms.interests.field.preferredSettings.label',
+							'Visual setting of projects with which you would be interested to work'
+						)}
 						name="preferredSettings"
 					>
 						<Select
@@ -233,23 +253,29 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 							mode="multiple"
 							allowClear
 							style={{ width: '100%' }}
-							placeholder="Выберите"
+							placeholder={t('Select')}
 							onChange={() => {}}
 						/>
 					</Form.Item>
-					<Form.Item label="Игры какой сложности вам хотелось бы разрабатывать" name="preferredLevels">
+					<Form.Item
+						label={t(
+							'profile-forms.interests.field.preferredLevels.label',
+							'What complexity games you would like to develop'
+						)}
+						name="preferredLevels"
+					>
 						<Select
 							options={gameLevelsOptions}
 							mode="multiple"
 							allowClear
 							style={{ width: '100%' }}
-							placeholder="Выберите"
+							placeholder={t('Select')}
 							onChange={() => {}}
 						/>
 					</Form.Item>
 
 					<Button type="primary" onClick={handleForm} loading={processing}>
-						Сохранить
+						<T>Save</T>
 					</Button>
 				</Form>
 			</Spin>

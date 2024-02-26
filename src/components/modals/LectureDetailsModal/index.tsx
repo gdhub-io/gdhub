@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
 	Lecture,
 	LectureListener,
@@ -9,7 +9,8 @@ import {
 	WorkDirection,
 } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Grid, message, Modal, Spin } from 'antd'
+import { T, useTolgee } from '@tolgee/react'
+import { message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { HeldContent } from './HeldContent'
@@ -24,8 +25,8 @@ export type LectureDetails = Lecture & {
 }
 
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
-	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
+	const { t } = useTolgee()
 	// const [processing, setProcessing] = useState(true)
 	// const [lecture, setLecture] = useState<any>()
 	const [isReady, setIsReady] = useState(false)
@@ -57,12 +58,12 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			const data = await registrationToLecture({ lectureId })
 
 			// if (!data.newRegistration || userIsRegistered) {
-			// 	message.info('Вы уже зарегистрированы на эту лекцию')
+			// message.info(<T>You are already registered for this lecture</T>)
 			// 	return
 			// }
 
 			setUserIsRegistered(true)
-			message.success('Регистрация прошла успешно')
+			message.success(<T>Registration successful</T>)
 		} catch (error: any) {
 			message.error(error.message)
 		}
@@ -77,23 +78,23 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 		if (!lecture?.data) return null
 
 		if (lecture.data.stage == LectureStage.Ready) {
-			return userIsRegistered ? 'Вы уже зарегистрированы' : 'Регистрация на лекцию'
+			return userIsRegistered ? <T>You are already registered</T> : <T>Registration for the lecture</T>
 		}
 
 		return null
 	}
 
 	const modalTitle = () => {
-		const defaultTitle = 'Информация о лекции'
+		const defaultTitle = <T>Lecture Information</T>
 
 		if (!lecture?.data) return defaultTitle
 
 		if (['Requested', 'Actualized'].includes(lecture.data.stage)) {
-			return 'Информация о запросе лекции'
+			return <T>Lecture Request Information</T>
 		}
 
 		if (['Proposed'].includes(lecture.data.stage)) {
-			return 'Информация о предложении лекции'
+			return <T>Lecture Proposal Information</T>
 		}
 
 		return defaultTitle
@@ -107,7 +108,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			destroyOnClose
 			width="90vw"
 			maskClosable={true}
-			cancelText="Закрыть"
+			cancelText={<T>Close</T>}
 			okText={okText()}
 			okButtonProps={{ hidden: lecture?.data.stage !== LectureStage.Ready }}
 			open={open}

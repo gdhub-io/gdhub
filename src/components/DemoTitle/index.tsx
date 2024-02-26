@@ -1,4 +1,5 @@
 import { Season } from '@prisma/client'
+import { T } from '@tolgee/react'
 import styles from './style.module.scss'
 
 export const DemoTitle = ({ season }: { season: Season }) => {
@@ -17,8 +18,10 @@ export const DemoTitle = ({ season }: { season: Season }) => {
 				</div>
 			</h1>
 			<p className={styles.subtitle}>
-				Команды из <span style={{ color: '#ffbb33' }}>{`{ ${season?.name} }`}</span> расскажут о своих инди-проектах
-				<br />в виде коротких питчей
+				<T>Teams from</T> <span style={{ color: '#ffbb33' }}>{`{ ${season?.name} }`}</span>{' '}
+				<T>will present their indie projects</T>
+				<br />
+				<T>in the form of short pitches</T>
 			</p>
 		</div>
 	)

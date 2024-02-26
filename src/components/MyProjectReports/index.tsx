@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ProjectReportModal from '@/components/modals/ProjectReportModal'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Grid, Popconfirm, Space, Table, message } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -13,6 +14,7 @@ interface MyProjectReportsArgs {
 
 const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 	const [showProjectReportModal, setShowProjectReportModal] = useState(false)
 	const [selectedReportId, setSelectedReportId] = useState<string>()
 
@@ -31,23 +33,25 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 
 	const columns: ColumnsType<any> = [
 		{
-			title: 'Отчет',
+			title: <T>Report</T>,
 			dataIndex: 'ID',
 			key: 'ID',
 			width: '100%',
-			render: (value, record) => 'Отчет от ' + dayjs(record.publishedAt).format('lll'),
+			render: (value, record) => t('Report from') + ' ' + dayjs(record.publishedAt).format('lll'),
 		},
 		{
 			key: 'actions',
 			responsive: ['md'],
 			render: (value, record) => (
 				<Space>
-					<Button onClick={() => handleEditReport(record.id)}>Изменить</Button>
+					<Button onClick={() => handleEditReport(record.id)}>
+						<T>Change</T>
+					</Button>
 					<Popconfirm
 						key={record.id}
-						title="Точно хотите удалить этот отчет?"
-						okText="Да"
-						cancelText="Нет"
+						title={t('You definitely want to delete this report?')}
+						okText={<T>Yes</T>}
+						cancelText={<T>No</T>}
 						onConfirm={() => handleDeleteReport(record.id)}
 					>
 						<Button icon={<TbTrash />} type="text" danger style={{ lineHeight: 'initial' }} />
@@ -83,8 +87,12 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 	return (
 		<>
 			<Space align="center" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>Отчеты</h3>
-				<Button onClick={() => handleAddReport()}>Добавить отчет</Button>
+				<h3 style={{ margin: 0 }}>
+					<T>Reports</T>
+				</h3>
+				<Button onClick={() => handleAddReport()}>
+					<T>Add a report</T>
+				</Button>
 			</Space>
 
 			{MyProjectReports?.data.length > 0 ? (
@@ -98,7 +106,9 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 					/>
 				</>
 			) : (
-				<p style={{ marginTop: 12, color: 'gray' }}>На данный момент отчетов не предоставлено</p>
+				<p style={{ marginTop: 12, color: 'gray' }}>
+					<T>At the moment, reports are not provided</T>
+				</p>
 			)}
 
 			<ProjectReportModal

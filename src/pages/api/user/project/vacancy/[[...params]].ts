@@ -1,6 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
+import { tolgeeService } from '@/services/tolgee'
 import { TeamMemberStatus, TeamVacancyStatus } from '@prisma/client'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
@@ -98,6 +99,8 @@ class ApiUserTeamVacancyHandler {
 
 	@Put('/withdraw')
 	public async withdraw(@Req() req: NextApiRequestWithUser, @Body() { teamMemberId }: { teamMemberId: string }) {
+		const { t } = tolgeeService
+
 		const deletedMember = await prisma.teamMember.delete({
 			where: { id: teamMemberId },
 			select: {
@@ -120,7 +123,11 @@ class ApiUserTeamVacancyHandler {
 						email: founderMember.user.email!,
 					},
 					payload: {
-						message: `Кандидат ${deletedMember.user.name} отклонил свою кандидатуру на позицию ${deletedMember.vacancy.title}`,
+						message: t(
+							'send-message.novu.candidate-reject',
+							'The candidate {candidateName} rejected his candidacy for the position {vacancyName}',
+							{ candidateName: deletedMember.user.name, vacancyName: deletedMember.vacancy.title }
+						),
 					},
 				})
 
@@ -189,6 +196,7 @@ class ApiUserTeamVacancyHandler {
 
 	@Put('/candidate/reject')
 	public async rejectCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
+		const { t } = tolgeeService
 		const rejectedCandidate = await prisma.teamMember.update({
 			where: { id, status: TeamMemberStatus.Applicant },
 			data: { status: TeamMemberStatus.Rejected },
@@ -203,7 +211,11 @@ class ApiUserTeamVacancyHandler {
 					email: rejectedCandidate.user.email!,
 				},
 				payload: {
-					message: `Ваша кандидатура на позицию ${rejectedCandidate.vacancy?.title} в команде ${rejectedCandidate.team.name} была отклонена.`,
+					message: t(
+						'send-message.novu.your-candidacy-reject',
+						'Your candidacy for a position on the team {teamName} has been rejected {vacancyName}',
+						{ teamName: rejectedCandidate.team.name, vacancyName: rejectedCandidate.vacancy?.title }
+					),
 				},
 			})
 
@@ -215,6 +227,7 @@ class ApiUserTeamVacancyHandler {
 
 	@Put('/candidate/hire')
 	public async hireCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
+		const { t } = tolgeeService
 		const member = await prisma.teamMember.update({
 			where: { id, status: TeamMemberStatus.Applicant },
 			data: { status: TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
@@ -229,7 +242,9 @@ class ApiUserTeamVacancyHandler {
 					email: member.user.email!,
 				},
 				payload: {
-					message: `Вы приняты в команду ${member.team.name}`,
+					message: t('send-message.novu.your-candidacy-approve', `You have been accepted into the team {memberName}`, {
+						memberName: member.team.name,
+					}),
 				},
 			})
 
@@ -241,6 +256,7 @@ class ApiUserTeamVacancyHandler {
 
 	@Put('/candidate/fire')
 	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
+		const { t } = tolgeeService
 		const firedMember = await prisma.teamMember.update({
 			where: { id, status: TeamMemberStatus.Hired },
 			data: { status: TeamMemberStatus.Fired, finishedAt: dayjs().toISOString() },
@@ -255,7 +271,7 @@ class ApiUserTeamVacancyHandler {
 					email: firedMember.user.email!,
 				},
 				payload: {
-					message: `Вы были исключены из команды ${firedMember.team.name}`,
+					message: t('', `You have been kicked off the team {firedMemberName}`, { firedMember: firedMember.team.name }),
 				},
 			})
 

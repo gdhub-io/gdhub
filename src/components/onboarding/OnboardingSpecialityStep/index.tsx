@@ -252,7 +252,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 									<Form.Item name="workDirectionId" label={t('workDirection')} rules={[{ required: true }]}>
 										<Select
 											style={{ width: '100%' }}
-											placeholder={`Например: геймдизайн`}
+											placeholder={t(`For example: Game Design`)}
 											options={workDirectionOptions}
 										/>
 									</Form.Item>
@@ -274,13 +274,8 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 										label={t('skillList')}
 										wrapperCol={{ span: 24 }}
 										extra={t('skillList.extra')}
-										// extra="Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение"
 									>
-										<Input.TextArea
-											rows={4}
-											placeholder={t('skillList.plachehloder')}
-											// placeholder={`Например:\nрисовать концепты мультяшных персонажей\nразрабатывать диалоговые системы`}
-										/>
+										<Input.TextArea rows={4} placeholder={t('skillList.plachehloder')} />
 									</Form.Item>
 								</Col>
 							</Row>

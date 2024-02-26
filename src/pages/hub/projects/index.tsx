@@ -2,10 +2,10 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Project, Season, SeasonStage, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import axios from 'axios'
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
@@ -16,6 +16,7 @@ const { Title, Paragraph } = Typography
 type ProjectIncludeAll = Project & { author: User; stage: SeasonStage & { season: Season } }
 
 const ProjectsPage: NextPageWithLayout = () => {
+	const { t } = useTolgee()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
 
@@ -37,11 +38,7 @@ const ProjectsPage: NextPageWithLayout = () => {
 	]
 
 	return (
-		<ProtectedLayout title="Проекты сообщества">
-			<Head>
-				<title>Проекты сообщества</title>
-				<meta property="og:url" content="/projects" />
-			</Head>
+		<ProtectedLayout title={t('Community Projects')}>
 			<div className={styles.container}>
 				<Spin spinning={isLoading}>
 					<Row
@@ -78,14 +75,14 @@ const ProjectsPage: NextPageWithLayout = () => {
 													layout={screens.md ? 'horizontal' : 'vertical'}
 													column={1}
 												>
-													<Descriptions.Item label="Автор">{project.author.name} </Descriptions.Item>
-													<Descriptions.Item label="Жанр">{project.genre}</Descriptions.Item>
-													<Descriptions.Item label="Сеттинг">{project.setting}</Descriptions.Item>
-													<Descriptions.Item label="Платформа">{project.platform}</Descriptions.Item>
+													<Descriptions.Item label={t('Author')}>{project.author.name} </Descriptions.Item>
+													<Descriptions.Item label={t('Genre')}>{project.genre}</Descriptions.Item>
+													<Descriptions.Item label={t('Game Setting')}>{project.setting}</Descriptions.Item>
+													<Descriptions.Item label={t('Platform')}>{project.platform}</Descriptions.Item>
 												</Descriptions>
 												<Link href={`/project/${project.slug}`} title={project.name}>
 													<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
-														На страницу проекта
+														<T>To the project page</T>
 													</Button>
 												</Link>
 											</div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { TeamVacancyStatus } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { List, Modal, Spin } from 'antd'
 import axios from 'axios'
 import { BsCheckLg } from 'react-icons/bs'
@@ -62,21 +63,29 @@ const VacancyArchiveModal = ({ projectId, projectName, teamId, open, onRestore, 
 	return (
 		<Modal
 			centered
-			title={`Архив вакансий с проекта ${projectName}`}
+			title={
+				<T
+					keyName="modal.vacancy-archive.title"
+					defaultValue="Archive of vacancies from the {projectName} project"
+					params={{ projectName }}
+				/>
+			}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
 			open={open}
 			onCancel={handleCancel}
 			confirmLoading={processing}
-			okText="Восстановить"
+			okText={<T>Restore</T>}
 			onOk={handleOk}
 			okButtonProps={{
 				disabled: !selectedItem,
 			}}
 		>
 			<Spin spinning={processing}>
-				<p>Выберите вакансию, которую хотите восстановить</p>
+				<p>
+					<T>Select the vacancy you want to restore</T>
+				</p>
 				<List
 					bordered
 					dataSource={archivedProjectVacancies?.data}

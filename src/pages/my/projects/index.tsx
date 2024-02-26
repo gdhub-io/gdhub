@@ -1,46 +1,25 @@
-// import { useState } from 'react'
-// import ProjectModal from '@/components/modals/ProjectModal'
-import { useEffect } from 'react'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { List, Row } from 'antd'
 import axios from 'axios'
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
-// import { TbPlus } from 'react-icons/tb'
 
 const MyProjectsPage: NextPageWithLayout = () => {
-	// const [showProjectModal, setShowProjectModal] = useState(false)
+	const { t } = useTolgee()
 
 	const { data: myProjects } = useQuery(['user-projects'], () => axios.get('/api/user/projects'), {
 		refetchOnWindowFocus: false,
 	})
 
-	useEffect(() => {
-		console.log(myProjects)
-	}, [myProjects])
-
-	// const handleNewProject = () => {
-	// 	setShowProjectModal(true)
-	// }
-
-	// const handleSaveProjectIdea = async () => {
-	// 	setShowProjectModal(false)
-	// 	await fetchMyProjects()
-	// }
-
 	return (
-		<>
-			<Head>
-				<title>Мои проекты</title>
-			</Head>
+		<ProtectedLayout title={t('My Projects')}>
 			<Row align="stretch" justify="space-between">
-				<h1>Мои проекты</h1>
-				{/* <Button type="primary" icon={<TbPlus size={16} />} onClick={handleNewProject}>
-					Создать новый
-				</Button> */}
+				<h1>
+					<T>My Projects</T>
+				</h1>
 			</Row>
 
 			{myProjects?.data?.length > 0 ? (
@@ -61,19 +40,12 @@ const MyProjectsPage: NextPageWithLayout = () => {
 					)}
 				/>
 			) : (
-				<p>У вас нет проектов</p>
+				<p>
+					<T>You have no projects</T>
+				</p>
 			)}
-
-			{/* <ProjectModal
-				seasonId="indie"
-				open={showProjectModal}
-				onOk={handleSaveProjectIdea}
-				onCancel={() => setShowProjectModal(false)}
-			/> */}
-		</>
+		</ProtectedLayout>
 	)
 }
-
-MyProjectsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default MyProjectsPage

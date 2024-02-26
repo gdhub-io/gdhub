@@ -2,6 +2,7 @@ import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { getWorkedProjects } from '@/services/prisma/queries'
 import { Project, Season, SeasonStage, User } from '@prisma/client'
+import { T, useTolgee } from '@tolgee/react'
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import { GetServerSidePropsContext } from 'next'
@@ -17,6 +18,7 @@ type ProjectIncludeAll = Project & { author: User; stage: SeasonStage & { season
 type ProjectsPageParams = { projects: ProjectIncludeAll[] }
 
 const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
+	const { t } = useTolgee()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
 
@@ -32,9 +34,11 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 	]
 
 	return (
-		<PublicLayout title="Проекты сообщества">
+		<PublicLayout title={<T>Community Projects</T>}>
 			<Head>
-				<title>Проекты сообщества</title>
+				<title>
+					<T>Community Projects</T>
+				</title>
 				<meta property="og:url" content="/projects" />
 			</Head>
 			<div className={styles.container}>
@@ -72,14 +76,14 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 												layout={screens.md ? 'horizontal' : 'vertical'}
 												column={1}
 											>
-												<Descriptions.Item label="Автор">{project.author.name} </Descriptions.Item>
-												<Descriptions.Item label="Жанр">{project.genre}</Descriptions.Item>
-												<Descriptions.Item label="Сеттинг">{project.setting}</Descriptions.Item>
-												<Descriptions.Item label="Платформа">{project.platform}</Descriptions.Item>
+												<Descriptions.Item label={t('Author')}>{project.author.name} </Descriptions.Item>
+												<Descriptions.Item label={t('Genre')}>{project.genre}</Descriptions.Item>
+												<Descriptions.Item label={t('Setting')}>{project.setting}</Descriptions.Item>
+												<Descriptions.Item label={t('Platform')}>{project.platform}</Descriptions.Item>
 											</Descriptions>
 											<Link href={`/project/${project.slug}`} title={project.name}>
 												<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
-													На страницу проекта
+													<T>Go to project page</T>
 												</Button>
 											</Link>
 										</div>

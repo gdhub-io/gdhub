@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
 import { LectureStage, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -11,6 +12,7 @@ import { useRouter } from 'next/router'
 
 export const ReadyLectures = () => {
 	const router = useRouter()
+	const { t } = useTolgee()
 	const screens = Grid.useBreakpoint()
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
@@ -31,7 +33,7 @@ export const ReadyLectures = () => {
 	const columns: ColumnsType<LectureDetails> = useMemo(
 		() => [
 			{
-				title: 'Тема лекции',
+				title: t('lecture.topic', 'Lecture Topic'),
 				dataIndex: 'name',
 				key: 'name',
 				render: (text, lecture) => {
@@ -59,13 +61,15 @@ export const ReadyLectures = () => {
 							<br />
 							<small>{lecture.directionId}</small>
 							<br />
-							<small>Дата: {_date}</small>
+							<small>
+								<T>Date</T>: {_date}
+							</small>
 						</div>
 					)
 				},
 			},
 			{
-				title: 'Направление',
+				title: t('workDirection', 'Work Direction'),
 				dataIndex: 'directionId',
 				key: 'directionId',
 				responsive: ['md'],
@@ -75,7 +79,7 @@ export const ReadyLectures = () => {
 				},
 			},
 			{
-				title: 'Лектор',
+				title: t('lecturer', 'Lecturer'),
 				dataIndex: 'lecturerId',
 				key: 'lecturerId',
 				responsive: ['md'],
@@ -86,7 +90,7 @@ export const ReadyLectures = () => {
 				},
 			},
 			{
-				title: 'Дата',
+				title: t('date', 'Date'),
 				dataIndex: 'date',
 				key: 'date',
 				responsive: ['md'],
@@ -106,7 +110,7 @@ export const ReadyLectures = () => {
 							setShowLectureDetails(true)
 						}}
 					>
-						Узнать больше
+						<T>More</T>
 					</Button>
 				),
 			},
@@ -119,7 +123,9 @@ export const ReadyLectures = () => {
 			{readyLectures && readyLectures.data?.length > 0 ? (
 				<>
 					<div>
-						<h3>Запланированные лекции</h3>
+						<h3>
+							<T>Scheduled lectures</T>
+						</h3>
 						<Spin spinning={isLoadingReadyLectures}>
 							<Table
 								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px', background: '#c1e994' }}

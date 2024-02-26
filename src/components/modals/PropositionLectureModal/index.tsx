@@ -1,5 +1,6 @@
 import { Lecture, LectureStage, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -10,6 +11,7 @@ import { useSession } from 'next-auth/react'
 const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
+	const { t } = useTolgee()
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
@@ -27,45 +29,6 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	)
 
 	const directionsOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
-
-	// const directionsOptions = [
-	// 	{
-	// 		value: 'Programming',
-	// 		label: 'Программирование',
-	// 	},
-	// 	{
-	// 		value: 'Game Design',
-	// 		label: 'Геймдизайн',
-	// 	},
-	// 	{
-	// 		value: '2D Art & Animation',
-	// 		label: '2D арт и анимация',
-	// 	},
-	// 	{
-	// 		value: '3D Art & Animation',
-	// 		label: '3D арт и анимация',
-	// 	},
-	// 	{
-	// 		value: 'Project Management',
-	// 		label: 'Управление проектом',
-	// 	},
-	// 	{
-	// 		value: 'Product Management',
-	// 		label: 'Управление продуктом',
-	// 	},
-	// 	{
-	// 		value: 'Technical Art',
-	// 		label: 'Технический арт',
-	// 	},
-	// 	{
-	// 		value: 'Team Management',
-	// 		label: 'Управление командой',
-	// 	},
-	// 	{
-	// 		value: 'Other',
-	// 		label: 'Другое',
-	// 	},
-	// ]
 
 	const handleOk = async () => {
 		try {
@@ -90,10 +53,10 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 			if (lectureId) {
 				await updateLecture({ id: lectureId, data: newData })
-				message.success('Предложение лекции создано')
+				message.success(t('The Offer of the Lecture has been created'))
 			} else {
 				await createLecture(newData)
-				message.success('Предложение лекции обновлено')
+				message.success(t('The proposal of the lecture is updated'))
 			}
 
 			form.resetFields()
@@ -102,7 +65,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error?.message)
 			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
+				message.error(t('Error. Check if all data is entered correctly'))
 			}
 		}
 	}
@@ -115,12 +78,12 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={lectureId ? 'Изменить параметы лекции' : 'Хочу провести лекцию'}
+			title={lectureId ? <T>Change the parametes of lectures</T> : <T>I want to give a lecture</T>}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
-			cancelText="Закрыть"
-			okText={lectureId ? 'Сохранить' : 'Опубликовать'}
+			cancelText={<T>Close</T>}
+			okText={lectureId ? <T>Save</T> : <T>Publish</T>}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -146,27 +109,46 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					<Form.Item name="lecturerId" required hidden noStyle>
 						<Input />
 					</Form.Item>
-					<Form.Item label="Лектор" required wrapperCol={{ span: 24 }}>
+					<Form.Item label={<T>Lecturer</T>} required wrapperCol={{ span: 24 }}>
 						<Input style={{ color: '#666' }} width={'100%'} readOnly disabled value={session?.user.name || ''} />
 					</Form.Item>
 
-					<Form.Item label="Тема лекции" name="name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
-						<Input width={'100%'} placeholder={`Например: Как проводить анализ проекта`} />
+					<Form.Item
+						label={<T>Lecture Theme</T>}
+						name="name"
+						rules={[{ required: true }]}
+						required
+						wrapperCol={{ span: 24 }}
+					>
+						<Input
+							width={'100%'}
+							placeholder={t(
+								'modal.proposition-lecture.field.name.placeholder',
+								`For example: how to analyze the project`
+							)}
+						/>
 					</Form.Item>
 
 					<Form.Item
 						name="directionId"
-						label="К какому направлению относится данная лекция"
+						label={t('modal.proposition-lecture.field.directionId.label', 'What direction does this lecture belong')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
 					>
-						<Select style={{ width: '100%' }} placeholder={`Например: геймдизайн`} options={directionsOptions} />
+						<Select
+							style={{ width: '100%' }}
+							placeholder={t('modal.proposition-lecture.field.directionId.placeholder', `For example: Game design`)}
+							options={directionsOptions}
+						/>
 					</Form.Item>
 
 					<Form.Item
 						name="description"
-						label="План лекции. О чем планируете рассказывать"
+						label={t(
+							'modal.proposition-lecture.field.description.label',
+							'Lecture plan.What are you planning to talk about'
+						)}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -175,17 +157,26 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Row>
 						<Col>
-							<Form.Item name="date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item
+								name="date"
+								label={t('modal.proposition-lecture.field.date.label', 'Date')}
+								rules={[{ required: true }]}
+								wrapperCol={{ span: 24 }}
+							>
 								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 						<Col offset={1}>
 							<Form.Item
 								name="time"
-								label="Время проведения"
+								label={t('modal.proposition-lecture.field.time.label', 'Time')}
 								rules={[{ required: true }]}
 								wrapperCol={{ span: 24 }}
-								extra={<small>Временная зона {DateTime.now().offsetNameShort}</small>}
+								extra={
+									<small>
+										<T>Temporary zone</T> {DateTime.now().offsetNameShort}
+									</small>
+								}
 							>
 								<TimePicker format="HH:mm" minuteStep={30} />
 							</Form.Item>
@@ -193,15 +184,17 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Row>
 
 					<Form.Item
-						label="Ссылка на лекцию"
+						label={t('modal.proposition-lecture.field.linkToStream.label', 'Link to the lecture')}
 						name="linkToStream"
 						extra={
 							<div>
-								Создайте ссылу на трансляцию в{' '}
+								<T keyName="modal.proposition-lecture.field.linkToStream.extra.part1">Create a link to broadcast in</T>{' '}
 								<Link href="https://meet.google.com/" target="_blank">
 									Google Meet
 								</Link>{' '}
-								(или на ином сервисе) и вставьте в это поле.
+								<T keyName="modal.proposition-lecture.field.linkToStream.extra.part2">
+									(or on another service) and insert into this field.
+								</T>
 							</div>
 						}
 						rules={[{ required: true, type: 'url' }]}
@@ -211,7 +204,12 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						<Input width={'100%'} />
 					</Form.Item>
 
-					<Form.Item name="duration" label="Длительность лекции" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+					<Form.Item
+						name="duration"
+						label={t('modal.proposition-lecture.field.duration.label', 'Duration of the lecture')}
+						rules={[{ required: true }]}
+						wrapperCol={{ span: 24 }}
+					>
 						<TimePicker format="HH:mm" minuteStep={10} />
 					</Form.Item>
 				</Form>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Profile } from '@prisma/client'
+import { T, useTolgee } from '@tolgee/react'
 import { AutoComplete, Button, Card, Form, Input, message, Spin } from 'antd'
 import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
@@ -11,6 +12,7 @@ type GeneralProfileFormArgs = {
 
 const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const { data: session, update: sessionUpdate } = useSession()
 	const [processing, setProcessing] = useState(true)
 	const countries = useMemo(() => countryList().getData(), [])
@@ -36,7 +38,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 				form.setFieldValue('tgNickname', telegramUsername)
 			}
 
-			message.success('Данные вашего профиля обновлены')
+			message.success(t('profile-forms.general.update-message', 'Your profile data is updated'))
 		} catch (error: any) {
 			setProcessing(false)
 			message.error(error.message)
@@ -44,7 +46,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 	}
 
 	return (
-		<Card title="Данные пользователя">
+		<Card title={<T keyName="profile-forms.general.card.title">User data</T>}>
 			<Spin spinning={processing}>
 				<Form
 					form={form}
@@ -62,19 +64,27 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 						tgNickname: profile.tgNickname,
 					}}
 				>
-					<Form.Item label="Электронная почта" tooltip={{ title: 'Получена из вашего Google-аккаунта' }} required>
+					<Form.Item
+						label={<T keyName="profile-forms.general.field.email.title">Email</T>}
+						tooltip={{ title: t('profile-forms.general.field.email.tooltip', 'Received from your Google account') }}
+						required
+					>
 						<Input disabled readOnly value={session?.user?.email || ''} />
 					</Form.Item>
-					<Form.Item label="Telegram Никнейм" name="tgNickname" extra="Указывать без символа @">
+					<Form.Item
+						label={<T keyName="profile-forms.general.field.tgNickname.title">Telegram nickname</T>}
+						name="tgNickname"
+						extra={<T keyName="profile-forms.general.field.tgNickname.extra">Indicate without symbol @</T>}
+					>
 						<Input />
 					</Form.Item>
-					<Form.Item label="Ваше имя" name="name" rules={[{ required: true }]} required>
+					<Form.Item label={<T>Your Name</T>} name="name" rules={[{ required: true }]} required>
 						<Input />
 					</Form.Item>
-					<Form.Item label="Страна" name="country" rules={[{ required: true }]} required>
+					<Form.Item label={<T>Country</T>} name="country" rules={[{ required: true }]} required>
 						<AutoComplete
 							allowClear
-							placeholder="Страна"
+							placeholder={<T>Country</T>}
 							filterOption={(inputValue, option) =>
 								option!.title.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
 							}
@@ -86,11 +96,11 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 							))}
 						</AutoComplete>
 					</Form.Item>
-					<Form.Item label="Город" name="city" rules={[{ required: false }]}>
+					<Form.Item label={<T>City</T>} name="city" rules={[{ required: false }]}>
 						<Input />
 					</Form.Item>
 					<Button type="primary" onClick={handleForm} loading={processing}>
-						Сохранить
+						<T>Save</T>
 					</Button>
 				</Form>
 			</Spin>

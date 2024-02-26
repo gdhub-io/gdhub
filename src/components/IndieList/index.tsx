@@ -1,3 +1,4 @@
+import { T } from '@tolgee/react'
 import { Typography } from 'antd'
 import { SeasonProjectsSection } from '../SeasonProjectsSection'
 
@@ -7,10 +8,10 @@ export const IndieList = () => {
 	return (
 		<>
 			<Title level={3} style={{ marginTop: 60 }}>
-				Other Game Projects
+				<T>Other Game Projects</T>
 			</Title>
 			<Paragraph>
-				Проекты разрабатываемые участниками сообщества самостоятельно (вне инкубационной программы).
+				<T>Projects developed independently by community members (outside the incubation program).</T>
 			</Paragraph>
 
 			<SeasonProjectsSection seasonSlug="indie" />

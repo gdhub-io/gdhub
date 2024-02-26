@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Team, TeamMember, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Avatar, Flex, List, Space, Typography } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -42,7 +43,9 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	return (
 		<>
 			<Space direction="vertical" style={{ marginTop: 60, width: '100%' }}>
-				<Title level={2}>Команда</Title>
+				<Title level={2}>
+					<T>Team</T>
+				</Title>
 
 				{!!session && (
 					<List

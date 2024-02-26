@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Project } from '@prisma/client'
+import { T } from '@tolgee/react'
 import { Typography } from 'antd'
 import Image from 'next/image'
 import styles from './style.module.scss'
@@ -34,7 +35,9 @@ export const DemoDayProjects = ({ projects }: { projects: any[] }) => {
 
 	return (
 		<div className={styles.content}>
-			<Title level={3}>Проекты, которые готовятся к питчу</Title>
+			<Title level={3}>
+				<T>Projects preparing for pitch</T>
+			</Title>
 			<section className={styles.carousel}>
 				<ul className="carousel__list">
 					{slides?.map((project: Project, idx: number) => (
@@ -54,7 +57,7 @@ export const DemoDayProjects = ({ projects }: { projects: any[] }) => {
 										<div className="carousel__contents">
 											<h2 className="user__name">{project.name}</h2>
 											<h3 className="user__title">
-												{project.genre} для {project.platform}
+												{project.genre} for {project.platform}
 											</h3>
 										</div>
 									</div>

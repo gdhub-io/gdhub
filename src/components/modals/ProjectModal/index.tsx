@@ -3,6 +3,7 @@ import { normUploadFile } from '@/helpers/file'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import {
 	Button,
 	Col,
@@ -40,6 +41,7 @@ type ProjectModalParams = {
 const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr: false })
 
 const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModalParams) => {
+	const { t } = useTolgee()
 	const { token } = theme.useToken()
 	const [form] = Form.useForm()
 	const editorRef = useRef<MDXEditorMethods | null>()
@@ -91,13 +93,13 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 				await createProject({ ...formData, seasonId, coverImage: cover ? cover : null })
 			}
 
-			message.success(projectId ? 'Данные проекта обновлены' : 'Добавлена новый проект игры')
+			message.success(projectId ? <T>Project data updated</T> : <T>Added a new game project</T>)
 			onOk()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
+				message.error(<T keyName="modal.project.errorText">Error. Check if all data is entered correctly</T>)
 			}
 		}
 	}
@@ -186,12 +188,12 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 	return (
 		<Modal
 			centered
-			title={projectId ? 'Изменить идею вашего проекта' : 'Добавить идею вашего проекта'}
+			title={projectId ? <T>Change your project idea</T> : <T>Add your project idea</T>}
 			width={900}
 			destroyOnClose
 			maskClosable={false}
-			cancelText="Закрыть"
-			okText="Сохранить"
+			cancelText={<T>Close</T>}
+			okText={<T>Save</T>}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -212,24 +214,28 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 						{!cover ? (
 							<Form.Item
 								name="coverImage"
-								label="Обложка для проекта"
+								label={<T keyName="modal.project.coverImage.label">Cover for the project</T>}
 								valuePropName="file"
 								getValueFromEvent={normUploadFile}
 								noStyle
 							>
 								<Upload.Dragger {...uploadProps}>
-									<p className="ant-upload-text">Добавить обложку проекта</p>
+									<p className="ant-upload-text">
+										<T keyName="modal.project.coverImage.text">Add a project cover</T>
+									</p>
 									<p className="ant-upload-hint">
-										Для загрузки изображения нажмите или перетащите его в это поле.
+										<T>To upload an image, click or drag it into this field.</T>
 										<br />
-										Разрешаются файлы форматов jpg, png. Соотношение сторон 16/9. Например, размер 1920x1080px.
+										<T keyName="modal.project.coverImage.hint">
+											Files in jpg, png formats are allowed. Aspect ratio 16/9. For example, the size is 1920x1080px.
+										</T>
 									</p>
 								</Upload.Dragger>
 							</Form.Item>
 						) : (
 							<div className={styles.cover}>
 								<Image src={cover + '?w=750'} fill alt="" />
-								<Popover content="Удалить обложку проекта">
+								<Popover content={t('modal.project.coverImage.deletePopover', 'Remove project cover')}>
 									<Button
 										shape="circle"
 										type="primary"
@@ -245,31 +251,39 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 					<Row gutter={[16, 0]} align="middle" style={{ marginTop: 30 }}>
 						<Col flex={1} xs={{ span: 24 }} md={{ span: 16 }}>
 							<Form.Item
-								label="Название проекта"
+								label={<T keyName="modal.project.name.label">Project Name</T>}
 								name="name"
 								rules={[{ required: true }]}
 								required
 								wrapperCol={{ span: 24 }}
 							>
-								<Input width={'100%'} placeholder={`Пример: Hitman`} size="large" />
+								<Input
+									width={'100%'}
+									placeholder={t('modal.project.name.placeholder', `Example: Hitman`)}
+									size="large"
+								/>
 							</Form.Item>
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
 							<Form.Item
 								name="platform"
-								label="Платформа"
+								label={<T keyName="modal.project.platform.label">Platform</T>}
 								wrapperCol={{ span: 24 }}
 								rules={[{ required: true }]}
 								required
 							>
-								<Input width={'100%'} placeholder={`Пример: PC`} size="large" />
+								<Input
+									width={'100%'}
+									placeholder={t('modal.project.platform.placeholder', 'Example: PC')}
+									size="large"
+								/>
 							</Form.Item>
 						</Col>
 					</Row>
 
 					<Form.Item
 						name="description"
-						label="Краткое описание"
+						label={<T keyName="modal.project.description.label">Short Description</T>}
 						required
 						rules={[
 							{
@@ -277,7 +291,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 									const value = editorRef.current?.getMarkdown()
 									if (!value) {
 										notification.error({
-											message: 'Это поле обязательно для заполнения',
+											message: <T keyName="form.error.required.text">This field is required</T>,
 										})
 									}
 									return value ? Promise.resolve() : Promise.reject()
@@ -297,7 +311,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 						name="conceptLink"
 						label={
 							<Space>
-								Ссылка на концепт-документ (описание идеи)
+								<T keyName="modal.project.conceptLink.label">Link to concept document (idea description)</T>
 								{project?.data.status == ProjectStatus.Approved && (
 									<Tooltip title="You can't change the link. It was approved already.">
 										<GoCheckCircleFill color={token.colorSuccess} />
@@ -316,7 +330,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 						<>
 							<Form.Item
 								name="gddLink"
-								label="Ссылка на геймдизайн-документ"
+								label={<T keyName="modal.project.gddLink.label">Link to game design document</T>}
 								wrapperCol={{ span: 24 }}
 								rules={[{ required: true, type: 'url' }]}
 								required
@@ -327,7 +341,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 								<Col md={{ span: 16 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item
 										name="pitchdeckLink"
-										label="Ссылка на презентацию (к питчу)"
+										label={<T keyName="modal.project.pitchdeckLink.label">Link to presentation (to pitch)</T>}
 										wrapperCol={{ span: 24 }}
 										rules={[{ type: 'url' }]}
 									>
@@ -337,48 +351,88 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 								<Col md={{ span: 8 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item
 										name="videoLink"
-										label="Видео питча"
+										label={<T keyName="modal.project.videoLink.label">Pitch video</T>}
 										wrapperCol={{ span: 24 }}
 										rules={[{ max: 64, min: 4 }]}
 									>
-										<Input width={'100%'} placeholder="Укажите ID видео: ECxL-7DWVSE" />
+										<Input
+											width={'100%'}
+											placeholder={t('modal.project.videoLink.placeholder', 'Specify video ID: ECxL-7DWVSE')}
+										/>
 									</Form.Item>
 								</Col>
 							</Row>
 						</>
 					)}
 
-					<Form.Item name="genre" label="Жанр" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
-						<Input width={'100%'} placeholder={`Пример: аркадный айдлер + tower defence`} />
-					</Form.Item>
-					<Form.Item name="setting" label="Сеттинг" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
-						<Input width={'100%'} placeholder={`Пример: постапокалипсис/зомби`} />
-					</Form.Item>
 					<Form.Item
-						name="visualStyle"
-						label="Визуальный стиль"
+						name="genre"
+						label={<T keyName="modal.project.genre.label">Genre</T>}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
 					>
-						<Input width={'100%'} placeholder={`Пример: лоу-поли или что-то напоминающее brawlstars`} />
+						<Input
+							width={'100%'}
+							placeholder={t('modal.project.genre.placeholder', 'Example: arcade idle + tower defense')}
+						/>
 					</Form.Item>
-					<Form.Item name="audition" label="Аудитория" wrapperCol={{ span: 24 }} rules={[{ required: true }]} required>
-						<Input width={'100%'} placeholder={`Пример: мужчины 16-45`} />
+					<Form.Item
+						name="setting"
+						label={<T keyName="modal.project.setting.label">Game Setting</T>}
+						wrapperCol={{ span: 24 }}
+						rules={[{ required: true }]}
+						required
+					>
+						<Input
+							width={'100%'}
+							placeholder={t('modal.project.setting.placeholder', 'Example: post-apocalyptic/zombie')}
+						/>
+					</Form.Item>
+					<Form.Item
+						name="visualStyle"
+						label={<T keyName="modal.project.visualStyle.label">Visual Style</T>}
+						wrapperCol={{ span: 24 }}
+						rules={[{ required: true }]}
+						required
+					>
+						<Input
+							width={'100%'}
+							placeholder={t(
+								'modal.project.visualStyle.placeholder',
+								'Example: low poly or something reminiscent of brawlstars'
+							)}
+						/>
+					</Form.Item>
+					<Form.Item
+						name="audition"
+						label={<T keyName="modal.project.audition.label">Audition</T>}
+						wrapperCol={{ span: 24 }}
+						rules={[{ required: true }]}
+						required
+					>
+						<Input width={'100%'} placeholder={t('modal.project.audition.placeholder', 'Example: men 16-45')} />
 					</Form.Item>
 
 					<Form.Item
 						name="coreMechanics"
-						label="Core-механики"
+						label={<T keyName="modal.project.coreMechanics.label">Core Mechanics</T>}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
-						extra={'Начните вводить текст. Для ввода новой механики нажмите Enter на клавиатуре и вводите текст'}
+						extra={
+							<T keyName="modal.project.coreMechanics.extra">
+								Start typing. To enter a new mechanic, press Enter on your keyboard and enter text
+							</T>
+						}
 					>
 						<Select
 							mode="tags"
 							style={{ width: '100%' }}
-							placeholder={`Например: бежать, карабкаться по обрывам, перемещаться через портал`}
+							placeholder={t(
+								'modal.project.coreMechanics.placeholder',
+								'For example: run, climb cliffs, move through a portal'
+							)}
 						/>
 					</Form.Item>
 				</Form>
