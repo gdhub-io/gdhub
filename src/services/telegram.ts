@@ -193,7 +193,7 @@ export default class TelegramService {
 		locale = AvailableLocales.en,
 	}: {
 		inLastDays?: number
-		locale: AvailableLocales
+		locale?: AvailableLocales
 	}) {
 		const reports = await prisma.projectReport.findMany({
 			where: {
@@ -225,7 +225,7 @@ export default class TelegramService {
 		locale = AvailableLocales.en,
 	}: {
 		inLastDays?: number
-		locale: AvailableLocales
+		locale?: AvailableLocales
 	}) {
 		const specialities = await prisma.speciality.findMany({
 			where: {
@@ -257,7 +257,7 @@ export default class TelegramService {
 		locale = AvailableLocales.en,
 	}: {
 		inLastDays?: number
-		locale: AvailableLocales
+		locale?: AvailableLocales
 	}) {
 		const projectWithVacancies = await prisma.project.findMany({
 			where: {
