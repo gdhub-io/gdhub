@@ -2,12 +2,14 @@ import { useEffect } from 'react'
 import { useWorkDirections } from '@/hooks/library'
 import { TeamVacancy, TeamVacancyStatus } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
 const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const { options: directionsOptions } = useWorkDirections()
 
 	const {
@@ -65,13 +67,13 @@ const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: an
 			}
 
 			form.resetFields()
-			message.success(vacancyId ? 'Вакансия изменена' : 'Добавлена новая вакансия')
+			message.success(vacancyId ? <T>The vacancy is changed</T> : <T>A new vacancy has been added</T>)
 			onOk()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
+				message.error(<T keyName="form.error">Error.Check if all data is entered correctly</T>)
 			}
 		}
 	}
@@ -84,7 +86,7 @@ const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: an
 	return (
 		<Modal
 			centered
-			title={vacancyId ? 'Изменить вакансию' : 'Создать новую вакансию'}
+			title={vacancyId ? <T>Change the vacancy</T> : <T>Create a new vacancy</T>}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
@@ -94,14 +96,14 @@ const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: an
 			footer={[
 				<Space key="form-buttons" wrap>
 					<Button key="close" onClick={handleCancel} disabled={isLoadingVacancy || isUpdating || isCreating}>
-						Закрыть
+						<T>Close</T>
 					</Button>
 					<Button
 						key="draft"
 						disabled={isLoadingVacancy || isUpdating || isCreating}
 						onClick={() => handleOk({ asDraft: true })}
 					>
-						Сохранить как черновик
+						<T>Save as draft</T>
 					</Button>
 					<Button
 						key="public"
@@ -109,7 +111,7 @@ const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: an
 						type="primary"
 						onClick={() => handleOk()}
 					>
-						{vacancy?.data.status == TeamVacancyStatus.Published ? 'Сохранить' : 'Опубликовать'}
+						{vacancy?.data.status == TeamVacancyStatus.Published ? <T>Save</T> : <T>Publish</T>}
 					</Button>
 				</Space>,
 			]}
@@ -131,17 +133,22 @@ const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: an
 					<Row gutter={[16, 16]}>
 						<Col flex={1}>
 							<Form.Item
-								label="Название вакансии"
+								label={t('The name of the vacancy')}
 								name="title"
 								rules={[{ required: true }]}
 								required
 								wrapperCol={{ span: 24 }}
 							>
-								<Input width={'100%'} placeholder={`Например: Концепт-художник по окружению`} />
+								<Input width={'100%'} placeholder={t(`For example: The concept of the environment`)} />
 							</Form.Item>
 						</Col>
 						<Col>
-							<Form.Item name="finishedAt" label="Актуальна до" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item
+								name="finishedAt"
+								label={t('Relevant to')}
+								rules={[{ required: true }]}
+								wrapperCol={{ span: 24 }}
+							>
 								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
@@ -149,24 +156,35 @@ const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: an
 
 					<Form.Item
 						name="directionId"
-						label="К какому направлению относится данная вакансия"
+						label={t('What direction does this vacancy belong')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
 					>
-						<Select style={{ width: '100%' }} placeholder={`Например: 2D арт и анимация`} options={directionsOptions} />
+						<Select
+							style={{ width: '100%' }}
+							placeholder={t(`For example: 2D art and animation`)}
+							options={directionsOptions}
+						/>
 					</Form.Item>
 
 					<Form.Item
 						name="description"
-						label="Описание вакансии"
-						help="Опишите требования/пожелания к кандидату, опишите какурю работу ему предстоит делать"
+						label={t('Vacancy description')}
+						help={
+							<T keyName="modal.vacancy.descriptionHelp">
+								Describe the requirements/wishes for the candidate, describe the kaku a job he has to do
+							</T>
+						}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input.TextArea
 							rows={6}
-							placeholder={`Например: Ищу концепт-художника по окружению, который имеет опыт работы на ПК проектах, работает в реалистичном стиле.`}
+							placeholder={t(
+								'modal.vacancy.descriptionPlaceholder',
+								`For example: I am looking for a concept designer from the environment that has experience at PC Projects, works in a realistic style.`
+							)}
 						/>
 					</Form.Item>
 				</Form>

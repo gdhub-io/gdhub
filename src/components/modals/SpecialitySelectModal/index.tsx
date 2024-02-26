@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Speciality } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
 import { CheckboxValueType } from 'antd/es/checkbox/Group'
 import axios from 'axios'
@@ -9,6 +10,7 @@ import styles from './style.module.scss'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const [processing, setProcessing] = useState(false)
 	const [selectedItem, setSelectedItem] = useState<string>()
 	const [contactType, setContactType] = useState<CheckboxValueType[]>(['email'])
@@ -38,12 +40,12 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		() => [
 			{
 				value: 'email',
-				label: `Электронная почта ${contacts?.data.email ? '(' + contacts?.data.email + ')' : ''}`,
+				label: t(`Email`) + ' ' + `${contacts?.data.email ? '(' + contacts?.data.email + ')' : ''}`,
 				disabled: !contacts?.data.email,
 			},
 			{
 				value: 'telegram',
-				label: `Телеграм ${contacts?.data.telegram ? '(@' + contacts?.data.telegram + ')' : ''}`,
+				label: t(`Telegram`) + ' ' + `${contacts?.data.telegram ? '(@' + contacts?.data.telegram + ')' : ''}`,
 			},
 		],
 		[contacts]
@@ -75,7 +77,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		<>
 			<Modal
 				centered
-				title="Укажите специальность"
+				title={<T keyName="modal.speciality-select.title">Indicate the specialty</T>}
 				destroyOnClose
 				okButtonProps={{
 					disabled:
@@ -84,15 +86,19 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 						(!contacts?.data.telegram && contactType.includes('telegram') && !telegramNickname),
 				}}
 				maskClosable={false}
-				okText="Выбрать"
+				okText={<T keyName="modal.speciality-select.okText">Choose</T>}
 				onOk={handleOk}
-				cancelText={'Отмена'}
+				cancelText={<T>Close</T>}
 				open={open}
 				onCancel={handleCancel}
 				confirmLoading={isLoading || isContactsLoading || processing}
 			>
 				<Spin spinning={isLoading || isContactsLoading || processing}>
-					<p>Выберите вашу специальность, которая соответствует выбранной вакансии</p>
+					<p>
+						<T keyName="modal.speciality-select.choose-text">
+							Choose your specialty that corresponds to the selected vacancy
+						</T>
+					</p>
 					<List
 						bordered
 						dataSource={specialities?.data}
@@ -107,7 +113,9 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 						)}
 					/>
 					<br />
-					<p>Как автору проекта связаться с вами?</p>
+					<p>
+						<T keyName="modal.speciality-select.contact-text">How to contact the author of the project with you?</T>
+					</p>
 					<Checkbox.Group
 						rootClassName={styles.contactTypes}
 						options={options}
@@ -119,7 +127,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 					{!contacts?.data.telegram && contactType.includes('telegram') && (
 						<Input
 							prefix="@"
-							placeholder="Укажите Телеграм-никнейм"
+							placeholder={t('Enter your Telegram nickname')}
 							onChange={(e) => setTelegramNickname(e.target.value)}
 						/>
 					)}

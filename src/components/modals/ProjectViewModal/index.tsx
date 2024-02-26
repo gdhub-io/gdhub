@@ -1,5 +1,6 @@
 import { Project, ProjectStatus, Season, SeasonStage, User, UserRole } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Descriptions, List, Modal, Select, Space, Spin, Typography, theme } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -20,6 +21,7 @@ type ProjectViewModalParams = {
 
 const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: ProjectViewModalParams) => {
 	const { token } = theme.useToken()
+	const { t } = useTolgee()
 	const { data: session } = useSession()
 	const {
 		data: project,
@@ -92,19 +94,25 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 			title={'Project Details'}
 			width={800}
 			destroyOnClose
-			cancelText="Закрыть"
+			cancelText={<T>Close</T>}
 			okButtonProps={{ hidden: true }}
 			okText={null}
 			open={open}
 			onCancel={handleCancel}
 			footer={
 				<Space>
-					<Button onClick={handleCancel}>Закрыть</Button>
+					<Button onClick={handleCancel}>
+						<T>Close</T>
+					</Button>
 					{session?.user.roles.includes(UserRole.Admin) && (
 						<>
-							{!!project?.data.stage.order && <Button onClick={handleMovePrevious}>Двигать назад</Button>}
+							{!!project?.data.stage.order && (
+								<Button onClick={handleMovePrevious}>
+									<T>Move back</T>
+								</Button>
+							)}
 							<Button onClick={handleMoveNext} type="primary">
-								Двигать вперед
+								<T>Move forward</T>
 							</Button>
 						</>
 					)}
@@ -116,13 +124,13 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 					{!!project?.data.coverImage && <Image src={project?.data.coverImage} alt="" fill />}
 				</div>
 				<Descriptions column={1}>
-					<Descriptions.Item label="Name">
+					<Descriptions.Item label={t('Name')}>
 						<strong>{project?.data.name}</strong>
 					</Descriptions.Item>
-					<Descriptions.Item label="Pipe">
+					<Descriptions.Item label={t('Pipe')}>
 						{project?.data.stage.season.name} / {project?.data.stage.name}
 					</Descriptions.Item>
-					<Descriptions.Item label="Статус" style={{}} contentStyle={{ color: 'red' }}>
+					<Descriptions.Item label={t('Status')} style={{}} contentStyle={{ color: 'red' }}>
 						<Select
 							bordered={false}
 							defaultValue={project.data.status}
@@ -131,22 +139,24 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 							style={{ width: '200px', backgroundColor: getTagColor(project.data.status), borderRadius: 8 }}
 						/>
 					</Descriptions.Item>
-					<Descriptions.Item label="Автор">{project?.data.author.name}</Descriptions.Item>
-					<Descriptions.Item label="Жанр">{project?.data.genre}</Descriptions.Item>
-					<Descriptions.Item label="Сеттинг">{project?.data.setting}</Descriptions.Item>
-					<Descriptions.Item label="Аудитория">{project?.data.audition}</Descriptions.Item>
-					<Descriptions.Item label="Основные механики">{project?.data.coreMechanics.join(', ')}</Descriptions.Item>
-					<Descriptions.Item label="Платформа">{project?.data.platform}</Descriptions.Item>
-					<Descriptions.Item label="Описание">{project?.data.description}</Descriptions.Item>
+					<Descriptions.Item label={t('Author')}>{project?.data.author.name}</Descriptions.Item>
+					<Descriptions.Item label={t('Genre')}>{project?.data.genre}</Descriptions.Item>
+					<Descriptions.Item label={t('Game Setting')}>{project?.data.setting}</Descriptions.Item>
+					<Descriptions.Item label={t('Audience')}>{project?.data.audition}</Descriptions.Item>
+					<Descriptions.Item label={t('Core mechanics')}>{project?.data.coreMechanics.join(', ')}</Descriptions.Item>
+					<Descriptions.Item label={t('Platform')}>{project?.data.platform}</Descriptions.Item>
+					<Descriptions.Item label={t('Description')}>{project?.data.description}</Descriptions.Item>
 				</Descriptions>
 
 				<Paragraph style={{ marginTop: 24 }}>
-					<Title level={5}>Приложения</Title>
+					<Title level={5}>
+						<T>Appendix</T>
+					</Title>
 					<List>
 						{!!project.data.conceptLink && (
 							<List.Item>
 								<Link href={project.data.conceptLink} target="_blank">
-									Концепт-документ <GoLinkExternal />
+									<T>Concept document</T> <GoLinkExternal />
 								</Link>
 							</List.Item>
 						)}
@@ -154,7 +164,7 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 						{!!project.data.gddLink && (
 							<List.Item>
 								<Link href={project.data.gddLink} target="_blank">
-									ГДД <GoLinkExternal />
+									<T>GDD</T> <GoLinkExternal />
 								</Link>
 							</List.Item>
 						)}
@@ -162,7 +172,7 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 						{!!project.data.pitchdeckLink && (
 							<List.Item>
 								<Link href={project.data.pitchdeckLink} target="_blank">
-									Питчдек <GoLinkExternal />
+									<T>Pitch deck</T> <GoLinkExternal />
 								</Link>
 							</List.Item>
 						)}
@@ -170,7 +180,7 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 						{!!project.data.videoLink && (
 							<List.Item>
 								<Link href={project.data.videoLink} target="_blank">
-									Видео питча <GoLinkExternal />
+									<T>Pitch video</T> <GoLinkExternal />
 								</Link>
 							</List.Item>
 						)}

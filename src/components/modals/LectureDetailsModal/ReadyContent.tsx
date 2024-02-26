@@ -1,6 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { LecturerRequest } from '@prisma/client'
+import { T } from '@tolgee/react'
 import { Avatar, Button, Card, Space } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -26,30 +27,36 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 		<>
 			<h2>{lecture.name}</h2>
 			<div className="lecture-date">
-				Когда: {!!lecturer?.date && dayjs(lecturer.date).format('dd LLL YYYY, hh:mm')} (онлайн)
+				<T>When</T>: {!!lecturer?.date && dayjs(lecturer.date).format('dd LLL YYYY, hh:mm')} (<T>online</T>)
 			</div>
-			<div style={{ marginTop: 16 }}>Что будет:</div>
+			<div style={{ marginTop: 16 }}>
+				<T>What will happen</T>:
+			</div>
 			<div className="lecture-description">
 				<TextWithLineBreak text={lecturer?.curriculum} />
 			</div>
 
 			{!!lecturer && (
 				<>
-					<div style={{ marginTop: 16 }}>Лектор:</div>
+					<div style={{ marginTop: 16 }}>
+						<T>Lecturer</T>:
+					</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
 							title={lecturer.user.name}
 							description={
 								<>
-									{lecturer.user.specialities
-										? lecturer.user.specialities.map((s: any) => (
-												<Fragment key={s.Name}>
-													{s.Name} ({s.Level})
-													<br />
-												</Fragment>
-										  ))
-										: 'Участник сообщества'}
+									{lecturer.user.specialities ? (
+										lecturer.user.specialities.map((s: any) => (
+											<Fragment key={s.Name}>
+												{s.Name} ({s.Level})
+												<br />
+											</Fragment>
+										))
+									) : (
+										<T>Community member</T>
+									)}
 								</>
 							}
 						/>
@@ -61,10 +68,12 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 				<Space wrap direction="vertical">
 					<Link href={lecturer.linkToStream} target="_blank">
 						<Button type="primary" style={{ marginTop: 16 }}>
-							Ссылка на стрим
+							<T>Link to stream</T>
 						</Button>
 					</Link>
-					<small>Переходите по этой ссылке перед началом лекции</small>
+					<small>
+						<T>Follow this link before the lecture</T>
+					</small>
 				</Space>
 			)}
 		</>

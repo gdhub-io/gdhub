@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Lecture, LecturerRequest, WorkDirection } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -10,6 +11,7 @@ import { useSession } from 'next-auth/react'
 
 const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const { data: session } = useSession()
 	const [speakerRequest, setSpeakerRequest] = useState<LecturerRequest>()
 
@@ -85,7 +87,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					},
 				})
 
-				message.success('Ваше предложение обновлено')
+				message.success(<T keyName="modal.lecturerRequest.updateSuccess">Your proposal is updated</T>)
 			} else {
 				await createLecturerRequest({
 					directionId: formData.directionId,
@@ -95,7 +97,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					date: date.toISOString(),
 				})
 
-				message.success('Ваше предложение провести лекцию отправлено')
+				message.success(<T keyName="modal.lecturerRequest.createSuccess">Your proposal to conduct a lecture sent</T>)
 			}
 
 			form.resetFields()
@@ -105,7 +107,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
+				message.error(<T keyName="form.error">Error. Check if all data is entered correctly</T>)
 			}
 		}
 	}
@@ -118,12 +120,12 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={'Хочу провести эту лекцию'}
+			title={<T keyName="modal.lecturerRequest.title">I want to give this lecture</T>}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
-			cancelText="Закрыть"
-			okText={speakerRequest ? 'Сохранить' : 'Предложить'}
+			cancelText={<T>Close</T>}
+			okText={speakerRequest ? <T>Save</T> : <T>Offer</T>}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -144,7 +146,13 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						<Input />
 					</Form.Item>
 
-					<Form.Item label="Тема лекции" name="name" rules={[{ required: true }]} required wrapperCol={{ span: 24 }}>
+					<Form.Item
+						label={<T>Lecture theme</T>}
+						name="name"
+						rules={[{ required: true }]}
+						required
+						wrapperCol={{ span: 24 }}
+					>
 						<Input
 							width={'100%'}
 							readOnly
@@ -156,7 +164,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="wishes"
-						label="Пожелания по содержанию лекции"
+						label={<T keyName="modal.lecturerRequest.wishes">Wishes for the content of the lecture</T>}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -165,16 +173,16 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="directionId"
-						label="К какому направлению относится данная лекция"
+						label={<T keyName="modal.lecturerRequest.direction">What direction does this lecture belong</T>}
 						wrapperCol={{ span: 24 }}
 						required
 					>
-						<Select style={{ width: '100%' }} placeholder={`Например: геймдизайн`} options={directionsOptions} />
+						<Select style={{ width: '100%' }} placeholder={t('For example: game design')} options={directionsOptions} />
 					</Form.Item>
 
 					<Form.Item
 						name="curriculum"
-						label="План лекции. О чем планируете рассказывать"
+						label={<T keyName="modal.lecturerRequest.curriculum">Lecture plan.What are you planning to talk about</T>}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -183,17 +191,21 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Row>
 						<Col>
-							<Form.Item name="date" label="Дата проведения" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item name="date" label={<T>Date</T>} rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
 								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 						<Col offset={1}>
 							<Form.Item
 								name="time"
-								label="Время проведения"
+								label={<T>Time</T>}
 								rules={[{ required: true }]}
 								wrapperCol={{ span: 24 }}
-								extra={<small>Временная зона {DateTime.now().offsetNameShort}</small>}
+								extra={
+									<small>
+										<T>Time zone</T> {DateTime.now().offsetNameShort}
+									</small>
+								}
 							>
 								<TimePicker format="HH:mm" minuteStep={15} />
 							</Form.Item>
@@ -201,15 +213,21 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Row>
 
 					<Form.Item
-						label="Ссылка на лекцию"
+						label={<T keyName="modal.lecturerRequest.linkToStream">Link to the broadcast</T>}
 						name="linkToStream"
 						extra={
 							<div>
-								Создайте ссылу на трансляцию в{' '}
-								<Link href="https://meet.google.com/" target="_blank">
-									Google Meet
-								</Link>{' '}
-								(или на ином сервисе) и вставьте в это поле.
+								<T
+									keyName=""
+									defaultValue="Create a link to a broadcast in {link} (or on another service) and insert into this field."
+									params={{
+										link: (
+											<Link href="https://meet.google.com/" target="_blank">
+												Google Meet
+											</Link>
+										),
+									}}
+								/>
 							</div>
 						}
 						rules={[{ type: 'url' }]}
