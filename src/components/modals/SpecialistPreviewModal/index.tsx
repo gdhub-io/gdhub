@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { MatchingSpecialistAndProject, Profile, Speciality, User, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Col, Descriptions, Modal, Row, Space, Spin, Statistic, Tag, Typography, theme } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -11,6 +12,7 @@ const { Paragraph, Text } = Typography
 
 const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => {
 	const { token } = theme.useToken()
+	const { t } = useTolgee()
 	const {
 		data: specialist,
 		refetch: fetchSpecialist,
@@ -54,7 +56,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 		<>
 			<Modal
 				centered
-				title="Карточка специалиста"
+				title={t('Specialist card')}
 				width={800}
 				destroyOnClose
 				maskClosable={false}
@@ -63,7 +65,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 				footer={[
 					<Space key="form-buttons" wrap>
 						<Button key="close" onClick={handleCancel} disabled={isLoading}>
-							Закрыть
+							<T>Close</T>
 						</Button>
 					</Space>,
 				]}
@@ -78,18 +80,26 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 							<Card>
 								<Descriptions layout="horizontal" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
 									{!!specialist.data.portfolioUrl && (
-										<Descriptions.Item label="Резюме/портфолио">
+										<Descriptions.Item label={t('Summary/portfolio')}>
 											<Link href={specialist.data.portfolioUrl} target="_blank">
-												<Button size="small">Перейти</Button>
+												<Button size="small">
+													<T>Go</T>
+												</Button>
 											</Link>
 										</Descriptions.Item>
 									)}
-									<Descriptions.Item label="Свободное время">
-										от {specialist.data.user.profile.timeForWork[0]} до {specialist.data.user.profile.timeForWork[1]}{' '}
-										часов в неделю
+									<Descriptions.Item label={t('Free time')}>
+										<T
+											keyName="fromTo"
+											defaultValue="from {fromDate} to {toDate} hours a week"
+											params={{
+												fromDate: specialist.data.user.profile.timeForWork[0],
+												toDate: specialist.data.user.profile.timeForWork[1],
+											}}
+										/>
 									</Descriptions.Item>
 									{!!specialist.data.user.profile.country && (
-										<Descriptions.Item label="Место проживания">
+										<Descriptions.Item label={t('Place of residence')}>
 											{[specialist.data.user.profile.country, specialist.data.user.profile.city].join(', ')}
 										</Descriptions.Item>
 									)}
@@ -98,36 +108,42 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 
 							<Card>
 								<Descriptions layout="vertical" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
-									<Descriptions.Item label="Специализация">{specialist.data.specialization}</Descriptions.Item>
-									<Descriptions.Item label="Навыки">{specialist.data.skills}</Descriptions.Item>
-									<Descriptions.Item label="Использую в работе">
-										{specialist.data.tools || '(инструменты не указаны)'}
+									<Descriptions.Item label={t('Specialization')}>{specialist.data.specialization}</Descriptions.Item>
+									<Descriptions.Item label={t('Skills')}>{specialist.data.skills}</Descriptions.Item>
+									<Descriptions.Item label={t('I use it in work')}>
+										{specialist.data.tools || t('(tools are not indicated)')}
 									</Descriptions.Item>
-									<Descriptions.Item label="Опыт работы">
-										{specialist.data.jobs || '(места работ не указаны)'}
+									<Descriptions.Item label={t('Experience')}>
+										{specialist.data.jobs || t('(places of work are not indicated)')}
 									</Descriptions.Item>
-									<Descriptions.Item label="Где получал знания">
-										{specialist.data.schools || '(места обучения не указаны)'}
+									<Descriptions.Item label={t('Where I received knowledge')}>
+										{specialist.data.schools || t('(places of training are not indicated)')}
 									</Descriptions.Item>
 								</Descriptions>
 							</Card>
 
-							<Card title="Предпочтения в играх">
+							<Card title={t('Preferences in games')}>
 								<Descriptions layout="vertical" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
-									<Descriptions.Item label="Предпочитаю жанры">
-										{specialist.data.user.profile.preferredGenres
-											? specialist.data.user.profile.preferredGenres.map((r: any) => r.name).join(', ')
-											: '(не указано)'}
+									<Descriptions.Item label={t('I prefer genres')}>
+										{specialist.data.user.profile.preferredGenres ? (
+											specialist.data.user.profile.preferredGenres.map((r: any) => r.name).join(', ')
+										) : (
+											<T>(not pointed)</T>
+										)}
 									</Descriptions.Item>
-									<Descriptions.Item label="Предпочитаю сеттинги">
-										{specialist.data.user.profile.preferredSettings
-											? specialist.data.user.profile.preferredSettings.map((r: any) => r.name).join(', ')
-											: '(не указано)'}
+									<Descriptions.Item label={t('I prefer game settings')}>
+										{specialist.data.user.profile.preferredSettings ? (
+											specialist.data.user.profile.preferredSettings.map((r: any) => r.name).join(', ')
+										) : (
+											<T>(not pointed)</T>
+										)}
 									</Descriptions.Item>
-									<Descriptions.Item label="Предпочитаю игры следующей сложности">
-										{specialist.data.user.profile.preferredLevels
-											? specialist.data.user.profile.preferredLevels.map((r: any) => r.name).join(', ')
-											: '(не указано)'}
+									<Descriptions.Item label={t('I prefer games of the following complexitylexity')}>
+										{specialist.data.user.profile.preferredLevels ? (
+											specialist.data.user.profile.preferredLevels.map((r: any) => r.name).join(', ')
+										) : (
+											<T>(not pointed)</T>
+										)}
 									</Descriptions.Item>
 								</Descriptions>
 							</Card>
@@ -135,7 +151,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 							{specialist.data?.availableProjects?.map((record) => (
 								<Card
 									key={record.id}
-									title={'Подходит для проекта ' + record.project.name}
+									title={t('Suitable for the project') + ' ' + record.project.name}
 									extra={
 										<Tag style={{ padding: '8px 12px' }} color={calculateMatcinhColor(record.avgScore)}>
 											{record.avgScore}%
@@ -148,7 +164,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 											<Col span={8}>
 												<Card bordered={false}>
 													<Statistic
-														title="Соответствие проекту"
+														title={t('Compliance with the project')}
 														value={record.projectScore}
 														valueStyle={{ fontSize: 24, color: calculateMatcinhColor(record.projectScore) }}
 														suffix="%"
@@ -158,7 +174,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 											<Col span={8}>
 												<Card bordered={false}>
 													<Statistic
-														title="Соответствие автору"
+														title={t('Compliance with the author')}
 														value={record.authorScore}
 														valueStyle={{ fontSize: 24, color: calculateMatcinhColor(record.authorScore) }}
 														suffix="%"
@@ -168,7 +184,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 											<Col span={8}>
 												<Card bordered={false}>
 													<Statistic
-														title="Соответствие команде"
+														title={t('Compliance with the team')}
 														value={record.teamScore}
 														valueStyle={{
 															fontSize: 24,
@@ -180,14 +196,16 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 											</Col>
 										</Row>
 
-										<Text strong>Комментарий</Text>
+										<Text strong>
+											<T>Comment</T>
+										</Text>
 
 										<Paragraph>{record.summary}</Paragraph>
 									</Space>
 								</Card>
 							))}
 
-							<Card title="Контакты">
+							<Card title={<T>Contacts</T>}>
 								<Space wrap>
 									{!!specialist.data.user.profile.tgNickname && (
 										<Link target="_blank" href={'https://t.me/' + specialist.data.user.profile.tgNickname}>

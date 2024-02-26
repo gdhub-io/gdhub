@@ -1,6 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { Lecture, LecturerRequest, Speciality, User } from '@prisma/client'
+import { T } from '@tolgee/react'
 import { Alert, Avatar, Card } from 'antd'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
@@ -31,32 +32,40 @@ export const HeldContent = ({
 					opts={{ playerVars: { disablekb: 1, autoplay: 0 } }}
 				/>
 			) : (
-				<Alert type="warning" message="Видеозаписи еще нет" style={{ marginBottom: 16 }} />
+				<Alert type="warning" message={<T>No video yet</T>} style={{ marginBottom: 16 }} />
 			)}
 			<h2>{lecture.name}</h2>
-			<div className="lecture-date">Прошло: {!!lecture?.date ? dayjs(lecture.date).format('lll') : null}</div>
-			<div style={{ marginTop: 16 }}>Содержание лекции:</div>
+			<div className="lecture-date">
+				<T>Passed</T>: {!!lecture?.date ? dayjs(lecture.date).format('lll') : null}
+			</div>
+			<div style={{ marginTop: 16 }}>
+				<T>Contents of the lecture</T>:
+			</div>
 			<div className="lecture-description">
 				<TextWithLineBreak text={lecturer?.curriculum} />
 			</div>
 
 			{!!lecturer && (
 				<>
-					<div style={{ marginTop: 16 }}>Лектор:</div>
+					<div style={{ marginTop: 16 }}>
+						<T>Lecturer</T>:
+					</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
 							title={lecturer.user.name}
 							description={
 								<>
-									{lecturer.user.specialities
-										? lecturer.user.specialities.map((s: any) => (
-												<Fragment key={s.name}>
-													{s.name} ({s.level})
-													<br />
-												</Fragment>
-										  ))
-										: 'Участник сообщества'}
+									{lecturer.user.specialities ? (
+										lecturer.user.specialities.map((s: any) => (
+											<Fragment key={s.name}>
+												{s.name} ({s.level})
+												<br />
+											</Fragment>
+										))
+									) : (
+										<T keyName="communityMember">Community Member</T>
+									)}
 								</>
 							}
 						/>

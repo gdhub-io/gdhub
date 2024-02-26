@@ -65,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			if (userProfile.get('Telegram Chat ID') === message.chat.id) {
 				await telegramService.sendMessage({
 					chatId: message.chat.id,
-					message: 'Данные уже синхронизированы, ' + userProfile.get('Name'),
+					message: 'Data is already synchronized, ' + userProfile.get('Name'),
 				})
 			} else {
 				await AirtableService('Profiles').update(userProfile.id, {
@@ -74,7 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 				await telegramService.sendMessage({
 					chatId: message.chat.id,
-					message: 'Ваш аккаунт синхронизирован, ' + userProfile.get('Name') + '.  Теперь сможем общаться.',
+					message: 'Your account is synced, ' + userProfile.get('Name') + '.  Now we can communicate.',
 				})
 			}
 		}
@@ -90,18 +90,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			if (!userProfile) {
 				await telegramService.sendMessage({
 					chatId: message.chat.id,
-					message: `Доброго времени суток, ${message.from.first_name}. Для получения доступа к порталу gdhub.io необходима регистрация.`,
+					message: `Good day, ${message.from.first_name}. Registration is required to gain access to the gdhub.io portal.`,
 					options: {
-						inline_keyboard: [[{ text: 'Зарегистрироваться', url: 'https://gdhub.io/' }]],
+						inline_keyboard: [[{ text: 'Register', url: 'https://gdhub.io/' }]],
 					},
 				})
 			} else {
 				if (userProfile.get('Telegram Chat ID') !== message.chat.id) {
 					await telegramService.sendMessage({
 						chatId: message.chat.id,
-						message: `Доброго времени суток, ${message.from.first_name}. Для работы с ботом необходимо синхронизировать ваш аккаунт.`,
+						message: `Good day, ${message.from.first_name}. To work with the bot you need to synchronize your account.`,
 						options: {
-							inline_keyboard: [[{ text: 'Синхронизировать', callback_data: 'syncme' }]],
+							inline_keyboard: [[{ text: 'Sync', callback_data: 'syncme' }]],
 						},
 					})
 
@@ -110,9 +110,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 				await telegramService.sendMessage({
 					chatId: message.chat.id,
-					message: `Доброго времени суток, ${message.from.first_name}. Добро пожаловать в чат бота Геймхаба`,
+					message: `Good day, ${message.from.first_name}. Welcome to the Gamehub bot chat`,
 					options: {
-						inline_keyboard: [[{ text: 'Открыть Хаб', web_app: { url: 'https://gdhub.io' } }]],
+						inline_keyboard: [[{ text: 'Open the Hub', web_app: { url: 'https://gdhub.io' } }]],
 					},
 				})
 			}
@@ -132,7 +132,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 			await telegramService.sendMessage({
 				chatId: callback_query.message.chat.id,
-				message: 'Ваш аккаунт синхронизирован, ' + userProfile.get('Name') + '.  Теперь сможем общаться.',
+				message: 'Your account is synced, ' + userProfile.get('Name') + '.  Now we can communicate.',
 			})
 		}
 

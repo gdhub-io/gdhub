@@ -1,5 +1,6 @@
 import { Team, TeamMember, TeamMemberStatus, User } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Grid, message, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -11,6 +12,7 @@ interface ProjectVacanciesArgs {
 
 const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 
 	const {
 		data: team,
@@ -42,7 +44,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 			await fireMember({ id: teamMemberId })
 			fetchMyTeam()
 
-			message.success('Сотрудник уволен')
+			message.success(t('The employee is dismissed'))
 		} catch (error: any) {
 			console.log(error)
 
@@ -52,7 +54,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 
 	const columns: ColumnsType<TeamMember & { user: User }> = [
 		{
-			title: 'Имя',
+			title: t('Full Name'),
 			key: 'userName',
 			render: (_, member) => {
 				return screens.md ? (
@@ -68,7 +70,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 			},
 		},
 		{
-			title: 'Роль на проекте',
+			title: t('The role on the project'),
 			dataIndex: 'position',
 			key: 'position',
 			responsive: ['md'],
@@ -77,14 +79,20 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 			},
 		},
 		{
-			title: 'Период участия',
+			title: t('The period of participation'),
 			dataIndex: 'startedAt',
 			responsive: ['md'],
 			key: 'startedAt',
 			render(value, member) {
 				let startedAt = dayjs(member.startedAt).format('DD.MM.YYYY')
-				let finishedAt = member.finishedAt ? dayjs(member.finishedAt).format('DD.MM.YYYY') : 'настоящее время'
-				return `с ${startedAt} по ${finishedAt}`
+				let finishedAt = member.finishedAt ? dayjs(member.finishedAt).format('DD.MM.YYYY') : t('present')
+				return (
+					<T
+						keyName="fromToWithDates"
+						defaultValue="from {fromDate} to {toDate}"
+						params={{ fromDate: startedAt, toDate: finishedAt }}
+					/>
+				)
 			},
 		},
 		{
@@ -93,8 +101,12 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 				if (member.status == TeamMemberStatus.Founder) return null
 
 				if (member.status == TeamMemberStatus.Hired)
-					return <Button onClick={() => handleFired(member.id)}>Уволить</Button>
-				if (member.status == TeamMemberStatus.Fired) return 'Уволен'
+					return (
+						<Button onClick={() => handleFired(member.id)}>
+							<T>Fire</T>
+						</Button>
+					)
+				if (member.status == TeamMemberStatus.Fired) return t('Fired')
 			},
 		},
 	]
@@ -102,7 +114,9 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 	return (
 		<>
 			<Space align="center" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>Команда проекта</h3>
+				<h3 style={{ margin: 0 }}>
+					<T>The project team</T>
+				</h3>
 			</Space>
 
 			<Table

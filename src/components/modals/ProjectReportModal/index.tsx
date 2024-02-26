@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { ProjectReport } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { DatePicker, Form, Input, message, Modal, notification, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -12,6 +13,7 @@ const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr:
 
 const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const [content, setContent] = useState('')
 	const editorRef = useRef<MDXEditorMethods | null>()
 
@@ -65,13 +67,13 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			}
 
 			form.resetFields()
-			message.success(reportId ? 'Отчет изменен' : 'Добавлен новый отчет')
+			message.success(reportId ? <T>The report has been changed</T> : <T>A new report has been added</T>)
 			onOk()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error('Ошибка. Проверьте, все ли данные введены корректно')
+				message.error(<T keyName="common.formError">Error. Check if all data is entered correctly</T>)
 			}
 		}
 	}
@@ -84,15 +86,14 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 	return (
 		<Modal
 			centered
-			title={reportId ? 'Изменить отчет' : 'Добавить отчет'}
+			title={reportId ? <T>Change the report</T> : <T>Add a report</T>}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
-			okText="Сохранить"
-			cancelText="Закрыть"
+			okText={<T>Save</T>}
+			cancelText={<T>Close</T>}
 			open={open}
 			onCancel={handleCancel}
-			// confirmLoading={isLoading}
 			onOk={() => handleOk()}
 		>
 			<Spin spinning={isFetching}>
@@ -114,13 +115,18 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 						<Input />
 					</Form.Item>
 
-					<Form.Item name="publishedAt" label="Дата отчета" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+					<Form.Item
+						name="publishedAt"
+						label={<T>Report Date</T>}
+						rules={[{ required: true }]}
+						wrapperCol={{ span: 24 }}
+					>
 						<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current > dayjs().endOf('day')} />
 					</Form.Item>
 
 					<Form.Item
 						name="content"
-						label="Что было сделано нового относительно прошлого отчета?"
+						label={<T keyName="modal.projectReport.content">What has been made new relative to the past report?</T>}
 						required
 						rules={[
 							{
@@ -128,7 +134,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 									const value = editorRef.current?.getMarkdown()
 									if (!value) {
 										notification.error({
-											message: 'Это поле обязательно для заполнения',
+											message: <T>This field is required</T>,
 										})
 									}
 									return value ? Promise.resolve() : Promise.reject()
@@ -142,17 +148,10 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 							markdown={content}
 							onChange={(text: string) => form.setFieldValue('content', text)}
 						/>
-
-						{/* <Input.TextArea
-							rows={10}
-							maxLength={1000}
-							showCount
-							placeholder={`Например:\n1. Добавлена механика ближнего боя\n2. Изменен дизайн босса\n...`}
-						/> */}
 					</Form.Item>
 
-					<Form.Item name="video" label="Видео-отчет" wrapperCol={{ span: 24 }}>
-						<Input placeholder="Вставьте ID видео из Youtube" />
+					<Form.Item name="video" label={<T>Video report</T>} wrapperCol={{ span: 24 }}>
+						<Input placeholder={t('Insert ID video from YouTube')} />
 					</Form.Item>
 				</Form>
 			</Spin>

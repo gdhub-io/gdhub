@@ -42,19 +42,6 @@ class ApiSpecialityHandler {
 					where: { id: userNotMember.id },
 					data: { roles: { push: 'Member' } },
 				})
-
-				// await NovuService.send({
-				// 	template: 'default-message',
-				// 	to: {
-				// 		subscriberId: userNotMember.id,
-				// 		email: userNotMember.email || undefined,
-				// 	},
-				// 	payload: {
-				// 		message: 'Вы добавили специальность и теперь можете откликаться на вакансии с проектов сообщества.',
-				// 		url: process.env.NEXT_PUBLIC_APP_URI + '/vacancies',
-				// 		linkLabel: 'Смотреть вакансии',
-				// 	},
-				// })
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Profile } from '@prisma/client'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Col, Form, Input, InputNumber, message, Row, Space, Spin, Typography } from 'antd'
 
 const { Text } = Typography
@@ -11,6 +12,7 @@ type ResourcesProfileFormArgs = {
 
 const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs) => {
 	const [form] = Form.useForm()
+	const { t } = useTolgee()
 	const [processing, setProcessing] = useState(true)
 
 	useEffect(() => {
@@ -35,14 +37,14 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 			await saveProfile({ timeForWork, otherResources })
 			setProcessing(false)
 
-			message.success('Данные о ресурсах обновлены')
+			message.success(t('profile-forms.resources.update-message', 'Resource data updated'))
 		} catch (error: any) {
 			setProcessing(false)
 		}
 	}
 
 	return (
-		<Card title="Ресурсы">
+		<Card title={<T keyName="profile-forms.resources.card.title">Resources</T>}>
 			<Spin spinning={processing}>
 				<Form
 					form={form}
@@ -54,8 +56,13 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 					initialValues={{ otherResources: profile?.otherResources }}
 				>
 					<Form.Item
-						label="Доступное время (в неделю)"
-						tooltip={{ title: 'Сколько часов в неделю вы можете уделять участию в проектах.' }}
+						label={<T keyName="profile-forms.resources.field.timeForWork.title">Available time (per week)</T>}
+						tooltip={{
+							title: t(
+								'profile-forms.resources.field.timeForWork.tooltip',
+								'How many hours a week can you pay to participation in projects.'
+							),
+						}}
 						wrapperCol={{ span: 24 }}
 						required
 						valuePropName="value"
@@ -63,11 +70,15 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 						<Row>
 							<Col md={{ span: 12 }} xs={{ span: 24 }}>
 								<Space>
-									<Text>От </Text>
+									<Text>
+										<T>From</T>{' '}
+									</Text>
 									<Form.Item name="timeForWorkMin" noStyle rules={[{ required: true }]}>
-										<InputNumber min={1} max={55} placeholder="минимум" />
+										<InputNumber min={1} max={55} placeholder={t('minimum')} />
 									</Form.Item>
-									<Text>до</Text>
+									<Text>
+										<T>to</T>
+									</Text>
 									<Form.Item
 										name="timeForWorkMax"
 										noStyle
@@ -76,25 +87,36 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 											{
 												validator: (_, value) =>
 													form.getFieldValue('timeForWorkMin') > value
-														? Promise.reject('Максимальное значение не может быть меньше минимального')
+														? Promise.reject(
+																t(
+																	'profile-forms.resources.field.timeForWorkMax.error',
+																	'The maximum value cannot be less than the minimum'
+																)
+														  )
 														: Promise.resolve(),
 											},
 										]}
 									>
-										<InputNumber min={2} max={56} placeholder="максиммум" />
+										<InputNumber min={2} max={56} placeholder={t('maximum')} />
 									</Form.Item>
-									<Text> часов в неделю</Text>
+									<Text>
+										{' '}
+										<T>hours a week</T>
+									</Text>
 								</Space>
 							</Col>
 						</Row>
 					</Form.Item>
 
-					<Form.Item label="Другие ресурсы" name="otherResources">
+					<Form.Item
+						label={t('profile-forms.resources.field.other-resources.label', 'Other resources')}
+						name="otherResources"
+					>
 						<Input.TextArea rows={2} />
 					</Form.Item>
 
 					<Button type="primary" onClick={handleForm} loading={processing}>
-						Сохранить
+						<T>Save</T>
 					</Button>
 				</Form>
 			</Spin>

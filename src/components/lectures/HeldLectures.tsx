@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
 import { LectureStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -11,6 +12,7 @@ export const HeldLectures = () => {
 	const screens = Grid.useBreakpoint()
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
+	const { t } = useTolgee()
 
 	const {
 		data: lectures,
@@ -21,7 +23,7 @@ export const HeldLectures = () => {
 	const columns: ColumnsType<LectureDetails> = useMemo(
 		() => [
 			{
-				title: 'Тема лекции',
+				title: t('lecture.topic', 'Lecture Topic'),
 				dataIndex: 'name',
 				key: 'name',
 				render: (text, lecture) => {
@@ -49,13 +51,15 @@ export const HeldLectures = () => {
 							<br />
 							<small>{lecture.directionId}</small>
 							<br />
-							<small>Дата: {_date}</small>
+							<small>
+								<T>Date</T>: {_date}
+							</small>
 						</div>
 					)
 				},
 			},
 			{
-				title: 'Лектор',
+				title: t('lecturer', 'Lecturer'),
 				dataIndex: 'lecturerId',
 				key: 'lecturerId',
 				responsive: ['md'],
@@ -66,7 +70,7 @@ export const HeldLectures = () => {
 				},
 			},
 			{
-				title: 'Дата',
+				title: t('date', 'Date'),
 				dataIndex: 'date',
 				key: 'date',
 				responsive: ['md'],
@@ -82,7 +86,9 @@ export const HeldLectures = () => {
 		<>
 			{lectures?.data?.length > 0 ? (
 				<div>
-					<h3>Прошедшие лекции</h3>
+					<h3>
+						<T>Past Lectures</T>
+					</h3>
 					<Spin spinning={isLoading}>
 						<Table
 							style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}

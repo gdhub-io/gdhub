@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { ProjectReport } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Grid, Space, Timeline, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -21,6 +22,7 @@ type ProjectReportItem =
 	| undefined
 
 const ProjectReports = ({ projectId, projectStartedAt }: ProjectReportsArgs) => {
+	const { t } = useTolgee()
 	const screens = Grid.useBreakpoint()
 	const { data: projectReports } = useQuery(
 		['project-reports', projectId],
@@ -57,7 +59,7 @@ const ProjectReports = ({ projectId, projectStartedAt }: ProjectReportsArgs) => 
 				? dayjs(nextReport.publishedAt).startOf('day')
 				: dayjs(projectStartedAt).startOf('day')
 			const period = {
-				dot: <span className={styles.periodDot}>{`${currentDate.diff(dateAfter, 'days')} дней`}</span>,
+				dot: <span className={styles.periodDot}>{`${currentDate.diff(dateAfter, 'days')} ` + t('days')}</span>,
 				children: <div style={{ height: 42 }} />,
 			}
 
@@ -67,7 +69,7 @@ const ProjectReports = ({ projectId, projectStartedAt }: ProjectReportsArgs) => 
 
 		reportsWithPeriods.push({
 			label: dayjs(projectStartedAt).format('D MMM YYYY'),
-			children: 'Старт проекта',
+			children: <T>Project Started At</T>,
 		})
 
 		return reportsWithPeriods
@@ -76,7 +78,9 @@ const ProjectReports = ({ projectId, projectStartedAt }: ProjectReportsArgs) => 
 	return (
 		<div className={styles.component}>
 			<Space direction="vertical" style={{ marginTop: 60, width: '100%' }}>
-				<Title level={2}>Журнал разработки</Title>
+				<Title level={2}>
+					<T>Development Log</T>
+				</Title>
 
 				{screens.lg && (
 					<div className={styles.reportsContainer}>

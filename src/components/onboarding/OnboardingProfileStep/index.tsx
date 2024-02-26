@@ -156,7 +156,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 										name="yearOfBirth"
 										label={t('yearOfBirth')}
 										rules={[{ required: true }]}
-										tooltip={{ icon: <GoInfo />, title: 'Вы не должны быть младше 16 лет.' }}
+										tooltip={{ icon: <GoInfo />, title: <T>You should not be younger than 16 years</T> }}
 									>
 										<Select options={yearOptions} placeholder={dayjs().subtract(16, 'years').year()} />
 									</Form.Item>

@@ -3,6 +3,7 @@
  * Telegram Bot API Docs https://core.telegram.org/bots/api#formatting-options
  */
 
+import { AvailableLocales } from '@/config/locale'
 import { env } from '@/helpers/env'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -19,6 +20,87 @@ dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
+
+const newProjectReportsMessageRu = (reports: any[]) => {
+	let message = '<b>Новое на проектах сообщества</b>'
+
+	reports.map((report) => {
+		message += `\n\n<b>Проект ${report.project.name}</b> / ${report.project.stage.season.name}\n`
+		message += '<i>Отчет от: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
+		message += '- ' + report.content
+		message += report.video
+			? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Прикрепленное видео</a>`
+			: ''
+		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Читать дальше</a>`
+	})
+
+	message += '<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
+
+	return message
+}
+
+const newProjectReportsMessageEn = (reports: any[]) => {
+	let message = '<b>New on community projects</b>'
+
+	reports.map((report) => {
+		message += `\n\n<b>Project ${report.project.name}</b> / ${report.project.stage.season.name}\n`
+		message += '<i>Report from: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
+		message += '- ' + report.content
+		message += report.video ? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Attached video</a>` : ''
+		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Read more</a>`
+	})
+
+	message += '<i>p.s. See the full text of the reports on the project pages.</i>'
+
+	return message
+}
+
+const newSpecialitiesMessageRu = (specialities: any[]) => {
+	let message = `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${specialities.length} участника</b> имеющие такие специальности, как:\n- `
+	message += specialities.map((r) => r.name).join(';\n- ')
+	message += '\n\nДобро пожаловать в наш хаб!'
+
+	return message
+}
+
+const newSpecialitiesMessageEn = (specialities: any[]) => {
+	let message = `<b>New Community Members</b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
+	message += specialities.map((r) => r.name).join(';\n- ')
+	message += '\n\nWelcome to our hub!'
+
+	return message
+}
+
+const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
+	let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
+
+	projectWithVacancies.map((project) => {
+		const vacancyNames = project.vacancies.map((v: any) => v.title)
+
+		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n`
+		message += '- ' + vacancyNames.join('\n- ')
+	})
+
+	message +=
+		'<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
+
+	return message
+}
+
+const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
+	let message = '🔥 <b>New vacancies for community projects</b>'
+
+	projectWithVacancies.map((project) => {
+		const vacancyNames = project.vacancies.map((v: any) => v.title)
+
+		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Project ${project.name}</a></b>\n`
+		message += '- ' + vacancyNames.join('\n- ')
+	})
+
+	message += '<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
+
+	return message
+}
 
 export default class TelegramService {
 	private apiUrl: string
@@ -106,7 +188,13 @@ export default class TelegramService {
 		}
 	}
 
-	async sendNewProjectReports({ inLastDays = 1 }: { inLastDays?: number }) {
+	async sendNewProjectReports({
+		inLastDays = 1,
+		locale = AvailableLocales.en,
+	}: {
+		inLastDays?: number
+		locale: AvailableLocales
+	}) {
 		const reports = await prisma.projectReport.findMany({
 			where: {
 				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
@@ -116,19 +204,14 @@ export default class TelegramService {
 
 		if (reports.length == 0) return
 
-		let message = '<b>Новое на проектах сообщества</b>'
+		let message = ''
 
-		reports.map((report) => {
-			message += `\n\n<b>Проект ${report.project.name}</b> / ${report.project.stage.season.name}\n`
-			message += '<i>Отчет от: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-			message += '- ' + report.content
-			message += report.video
-				? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Прикрепленное видео</a>`
-				: ''
-			message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Читать дальше</a>`
-		})
-
-		message += '<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
+		switch (locale) {
+			case 'ru':
+				message = newProjectReportsMessageRu(reports)
+			case 'en':
+				message = newProjectReportsMessageEn(reports)
+		}
 
 		await this.sendMessage({
 			chatId: env<number>('TELEGRAM_CHAT_ID'),
@@ -137,7 +220,13 @@ export default class TelegramService {
 		})
 	}
 
-	async sendNewSpecialities({ inLastDays = 1 }: { inLastDays?: number }) {
+	async sendNewSpecialities({
+		inLastDays = 1,
+		locale = AvailableLocales.en,
+	}: {
+		inLastDays?: number
+		locale: AvailableLocales
+	}) {
 		const specialities = await prisma.speciality.findMany({
 			where: {
 				createdAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
@@ -147,9 +236,14 @@ export default class TelegramService {
 
 		if (specialities.length == 0) return
 
-		let message = `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${specialities.length} участника</b> имеющие такие специальности, как:\n- `
-		message += specialities.map((r) => r.name).join(';\n- ')
-		message += '\n\nДобро пожаловать в наш хаб!'
+		let message = ''
+
+		switch (locale) {
+			case 'ru':
+				message = newSpecialitiesMessageRu(specialities)
+			case 'en':
+				message = newSpecialitiesMessageEn(specialities)
+		}
 
 		await this.sendMessage({
 			chatId: env<number>('TELEGRAM_CHAT_ID'),
@@ -158,7 +252,13 @@ export default class TelegramService {
 		})
 	}
 
-	async sendNewVacancies({ inLastDays = 1 }: { inLastDays?: number }) {
+	async sendNewVacancies({
+		inLastDays = 1,
+		locale = AvailableLocales.en,
+	}: {
+		inLastDays?: number
+		locale: AvailableLocales
+	}) {
 		const projectWithVacancies = await prisma.project.findMany({
 			where: {
 				vacancies: { some: { publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() } } },
@@ -168,17 +268,14 @@ export default class TelegramService {
 
 		if (projectWithVacancies.length == 0) return
 
-		let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
+		let message = ''
 
-		projectWithVacancies.map((project) => {
-			const vacancyNames = project.vacancies.map((v) => v.title)
-
-			message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n`
-			message += '- ' + vacancyNames.join('\n- ')
-		})
-
-		message +=
-			'<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
+		switch (locale) {
+			case 'ru':
+				message = newSpecialitiesMessageRu(projectWithVacancies)
+			case 'en':
+				message = newSpecialitiesMessageEn(projectWithVacancies)
+		}
 
 		await this.sendMessage({
 			chatId: env<number>('TELEGRAM_CHAT_ID'),

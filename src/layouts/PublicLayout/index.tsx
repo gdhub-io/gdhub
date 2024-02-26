@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import PublicHeaderBg from '@/assets/images/public-header-bg.png'
 import { MainFooter } from '@/components/MainFooter'
 import { MainHeader } from '@/components/MainHeader'
@@ -14,14 +14,23 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
+import { DefaultSeoProps, NextSeo, NextSeoProps } from 'next-seo'
 import { AiOutlineClose } from 'react-icons/ai'
 import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
+interface PublicLayoutProps {
+	children: ReactNode
+	title?: string
+	seo?: DefaultSeoProps
+	subTitle?: string
+	backgroundImage?: string
+}
+
 const { Header, Footer, Content } = Layout
 const { Text, Title } = Typography
 
-export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any) => {
+export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }: PublicLayoutProps) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -29,18 +38,29 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
 
+	const seoSettings: NextSeoProps = {
+		title,
+		canonical: router.asPath,
+		openGraph: {
+			title,
+			type: 'website',
+			url: router.asPath,
+		},
+		...seo,
+	}
+
 	const telegramMenuItem = {
 		label: screens.lg ? (
-			<Tooltip title="Чат сообщества в Telegram">
-				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
+			<Tooltip title={t('Community chat on Telegram')}>
+				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram chat community')}>
 					<Button shape="circle" type="text" style={{ top: '6px', position: 'relative' }}>
 						<TbBrandTelegram size={24} />
 					</Button>
 				</Link>
 			</Tooltip>
 		) : (
-			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
-				Чат сообщества в Telegram
+			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram chat community')}>
+				{t('Community chat on Telegram')}
 			</Link>
 		),
 		key: 'telegram-join-link',
@@ -55,7 +75,13 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 			{
 				label: (
 					<Link href="/projects" title="Projects">
-						{screens.lg ? <Button type="text">Projects</Button> : 'Проекты'}
+						{screens.lg ? (
+							<Button type="text">
+								<T>Projects</T>
+							</Button>
+						) : (
+							<T>Projects</T>
+						)}
 					</Link>
 				),
 				key: '/projects',
@@ -63,7 +89,13 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 			{
 				label: (
 					<Link href="/vacancies" title="Vacancies">
-						{screens.lg ? <Button type="text">Vacancies</Button> : 'Вакансии'}
+						{screens.lg ? (
+							<Button type="text">
+								<T>Vacancies</T>
+							</Button>
+						) : (
+							<T>Vacancies</T>
+						)}
 					</Link>
 				),
 				key: '/vacancies',
@@ -115,8 +147,14 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 			{
 				style: { display: screens.lg ? 'none' : 'block' },
 				label: (
-					<Link href="/hub" title="Главная страница">
-						{screens.lg ? <Button type="primary">Главная</Button> : 'Главная'}
+					<Link href="/hub" title={t('Main Page')}>
+						{screens.lg ? (
+							<Button type="primary">
+								<T>Home</T>
+							</Button>
+						) : (
+							<T>Home</T>
+						)}
 					</Link>
 				),
 				key: '/hub',
@@ -124,8 +162,16 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 			...publicMenuItems,
 			{
 				label: (
-					<Link href="/hub/docs" title="С чего начать">
-						{screens.lg ? <Button type="primary">С чего начать</Button> : <strong>С чего начать</strong>}
+					<Link href="/hub/docs" title={t('Documentation')}>
+						{screens.lg ? (
+							<Button type="primary">
+								<T>Documentation</T>
+							</Button>
+						) : (
+							<strong>
+								<T>Documentation</T>
+							</strong>
+						)}
 					</Link>
 				),
 				key: '/hub/docs',
@@ -138,16 +184,28 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 				menu[0],
 				{
 					label: (
-						<Link href="/hub/members" title="Участники сообщества">
-							{screens.lg ? <Button type="text">Участники</Button> : 'Участники'}
+						<Link href="/hub/members" title={t('Community Members')}>
+							{screens.lg ? (
+								<Button type="text">
+									<T>Members</T>
+								</Button>
+							) : (
+								<T>Members</T>
+							)}
 						</Link>
 					),
 					key: '/hub/members',
 				},
 				{
 					label: (
-						<Link href="/hub/lectures" title="Лекции сообщества">
-							{screens.lg ? <Button type="text">Лекции</Button> : 'Лекции'}
+						<Link href="/hub/lectures" title={t('Community Lectures')}>
+							{screens.lg ? (
+								<Button type="text">
+									<T>Lectures</T>
+								</Button>
+							) : (
+								<T>Lectures</T>
+							)}
 						</Link>
 					),
 					key: '/hub/lectures',
@@ -164,7 +222,11 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 
 		if (hasRole(UserRole.Admin, { data: session })) {
 			menu.push({
-				label: <Link href="/admin/seasons">Админка</Link>,
+				label: (
+					<Link href="/admin/seasons">
+						<T>Administration</T>
+					</Link>
+				),
 				key: '/admin/seasons',
 			})
 		}
@@ -172,16 +234,24 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 		menu = [
 			...menu,
 			{
-				label: <Link href="/profile">Профиль</Link>,
+				label: (
+					<Link href="/profile">
+						<T>Profile</T>
+					</Link>
+				),
 				key: 'profile',
 			},
 			{
-				label: <Link href="/my/projects">Мои проекты</Link>,
+				label: (
+					<Link href="/my/projects">
+						<T>My Projects</T>
+					</Link>
+				),
 				key: 'projects',
 			},
 			{
 				style: { display: isOpenedInTelegram ? 'none' : 'block' },
-				label: 'Выйти',
+				label: t('Sign out'),
 				key: 'logout',
 				danger: true,
 				onClick: () => signOut(),
@@ -198,60 +268,63 @@ export const PublicLayout = ({ children, title, subTitle, backgroundImage }: any
 	}, [title, backgroundImage])
 
 	return (
-		<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
-			<style jsx global>{`
-				:root {
-					--background-color: #fff;
-				}
-			`}</style>
-			<Layout className={styles.container}>
-				<Header
-					className={styles.header}
-					style={{
-						backgroundImage: setBackground(),
-					}}
-				>
-					<MainHeader />
-					<div className={styles.titleContainer}>
-						{!!title && <Title className={styles.title}>{title}</Title>}
-						{!!subTitle && <Text type="secondary">{subTitle}</Text>}
-					</div>
-				</Header>
-				<Content>
-					<div className="layout-background">{children}</div>
-				</Content>
-				<Footer className={styles.footer}>
-					<MainFooter />
-				</Footer>
-			</Layout>
+		<>
+			<NextSeo {...seoSettings} />
+			<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+				<style jsx global>{`
+					:root {
+						--background-color: #fff;
+					}
+				`}</style>
+				<Layout className={styles.container}>
+					<Header
+						className={styles.header}
+						style={{
+							backgroundImage: setBackground(),
+						}}
+					>
+						<MainHeader />
+						<div className={styles.titleContainer}>
+							{!!title && <Title className={styles.title}>{title}</Title>}
+							{!!subTitle && <Text type="secondary">{subTitle}</Text>}
+						</div>
+					</Header>
+					<Content>
+						<div className="layout-background">{children}</div>
+					</Content>
+					<Footer className={styles.footer}>
+						<MainFooter />
+					</Footer>
+				</Layout>
 
-			{!screens.lg && (
-				<Drawer
-					className={styles.mobileMenuDrawer}
-					height={'100%'}
-					title={
-						<Space>
-							<Avatar
-								src={
-									session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
-								}
-								shape="square"
-							/>
-							<div className="username">{session?.user?.name}</div>
-						</Space>
-					}
-					placement="top"
-					onClose={() => setOpenMobileMenu(false)}
-					open={openMobileMenu}
-					extra={
-						<Button onClick={() => setOpenMobileMenu(false)} type="text">
-							<AiOutlineClose />
-						</Button>
-					}
-				>
-					<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
-				</Drawer>
-			)}
-		</ConfigProvider>
+				{!screens.lg && (
+					<Drawer
+						className={styles.mobileMenuDrawer}
+						height={'100%'}
+						title={
+							<Space>
+								<Avatar
+									src={
+										session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
+									}
+									shape="square"
+								/>
+								<div className="username">{session?.user?.name}</div>
+							</Space>
+						}
+						placement="top"
+						onClose={() => setOpenMobileMenu(false)}
+						open={openMobileMenu}
+						extra={
+							<Button onClick={() => setOpenMobileMenu(false)} type="text">
+								<AiOutlineClose />
+							</Button>
+						}
+					>
+						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
+					</Drawer>
+				)}
+			</ConfigProvider>
+		</>
 	)
 }

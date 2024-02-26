@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai'
 import styles from './style.module.scss'
+import { SwitchLanguage } from '../SwitchLanguage'
 
 export const MainHeader = ({ className }: { className?: string }) => {
 	const { data: session }: any = useSession()
@@ -109,7 +110,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 								</Link>
 							)}
 						</>
-						{/* <SwitchLanguage /> */}
+						<SwitchLanguage />
 					</Space>
 				)}
 				{!screens.lg && (
@@ -125,7 +126,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					height={'100%'}
 					afterOpenChange={handleOpenMobileMenu}
 					closeIcon={<AiOutlineClose size={24} />}
-					// title={<Flex justify="end">{ <SwitchLanguage border={true} size="small" /> }</Flex>}
+					title={<Flex justify="end">{<SwitchLanguage border={true} size="small" />}</Flex>}
 					placement="right"
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}

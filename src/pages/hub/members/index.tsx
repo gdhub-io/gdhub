@@ -6,8 +6,8 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import { UserRole } from '@prisma/client'
+import { T, useTolgee } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
-import Head from 'next/head'
 import { useSession } from 'next-auth/react'
 import { BsFilter } from 'react-icons/bs'
 import {
@@ -30,6 +30,7 @@ const searchAdapter = new InstantsearchAdapter()
 
 const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: any) => {
 	const session = useSession()
+	const { t } = useTolgee()
 	const [openedFilter, setOpenFilter] = useState(false)
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<string | undefined>()
 	const screens = Grid.useBreakpoint()
@@ -39,7 +40,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 			<Card
 				actions={[
 					<Button key="details" onClick={() => setSelectedSpecialistId(hit.id)}>
-						Подробнее
+						<T>More details</T>
 					</Button>,
 				]}
 			>
@@ -60,19 +61,25 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 				)}
 				{!!hit.skills && (
 					<div className={styles.hitItem}>
-						<Text strong>Навыки: </Text>
+						<Text strong>
+							<T>Skills</T>{' '}
+						</Text>
 						<Highlight attribute="skills" hit={hit} />
 					</div>
 				)}
 				{!!hit.tools && (
 					<div className={styles.hitItem}>
-						<Text strong>Инструменты: </Text>
+						<Text strong>
+							<T>Tools & Software</T>{' '}
+						</Text>
 						<Highlight attribute="tools" hit={hit} />
 					</div>
 				)}
 				{!!hit.specialization && (
 					<div className={styles.hitItem}>
-						<Text strong>Специализация: </Text>
+						<Text strong>
+							<T>Specialization</T>{' '}
+						</Text>
 						<Highlight attribute="specialization" hit={hit} />
 					</div>
 				)}
@@ -82,37 +89,45 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 
 	if (!hasRole(UserRole.Guest, session)) {
 		return (
-			<>
-				<Head>
-					<title>Участники</title>
-				</Head>
+			<ProtectedLayout title={t('Community Members')}>
 				<div className={styles.container}>
-					<h1>Участники</h1>
+					<h1>
+						<T>Community Members</T>
+					</h1>
 					<p>
-						Участником сообщества считается любой зарегистрированный пользователь нашего портала. На сегодня нас{' '}
-						<strong>{usersCount}</strong>.
+						<T
+							keyName="pahge.hub.members.text1"
+							defaultValue="Any registered user of our portal is considered a community member. Today we are {userCount}."
+							params={{ userCount: <strong>{usersCount}</strong> }}
+						/>
 					</p>
 					<p>
-						Те из нас, кто указал специальности в своем профиле, считаются участниками, которые открыты для предложений
-						участвовать в разработке инди-проектов. На сегодня зарегистрировано <strong>{specialitiesCount}</strong>{' '}
-						специалиста.
+						<T
+							keyName="pahge.hub.members.text2"
+							defaultValue="Those of us who have indicated a major in our profile are considered members who are open to offers to
+							participate in the development of indie projects. As of today, {specialitiesCount} specialists are
+							registered."
+							params={{ specialitiesCount: <strong>{specialitiesCount}</strong> }}
+						/>
 					</p>
 					<p>
-						Авторы инди-проектов имеют доступ к базе специалистов и могут приглашать их на свои проекты. Для этого
-						необходимо создать проект.
+						<T
+							keyName="pahge.hub.members.text3"
+							defaultValue="Authors of indie projects have access to a database of specialists and can invite them to their projects. For this
+							you need to create a project."
+						/>
 					</p>
 				</div>
-			</>
+			</ProtectedLayout>
 		)
 	}
 
 	return (
-		<>
-			<Head>
-				<title>Участники</title>
-			</Head>
+		<ProtectedLayout title={t('Community Members')}>
 			<div className={styles.container}>
-				<h1>Участники</h1>
+				<h1>
+					<T>Community Members</T>
+				</h1>
 				<InstantSearch
 					searchClient={searchAdapter.searchClient}
 					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
@@ -125,7 +140,11 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 
 					<Row gutter={[16, 16]}>
 						<Col xs={{ span: 24 }} lg={{ span: 8 }}>
-							{screens.lg ? <SearchFilter /> : <SearchMobileFilter onClick={() => setOpenFilter(true)} />}
+							{screens.lg ? (
+								<SearchFilter SearchFilter={t('Clear Filter')} />
+							) : (
+								<SearchMobileFilter SearchMobileFilter={t('Clear Filter')} onClick={() => setOpenFilter(true)} />
+							)}
 						</Col>
 						<Col xs={{ span: 24 }} lg={{ span: 16 }}>
 							<NoResultsBoundary fallback={<NoResults />}>
@@ -137,7 +156,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 
 					<Drawer
 						open={openedFilter}
-						title="Фильтр поиска"
+						title={<T>Search filter</T>}
 						className={styles.container}
 						onClose={() => setOpenFilter(false)}
 					>
@@ -151,11 +170,9 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 					/>
 				</InstantSearch>
 			</div>
-		</>
+		</ProtectedLayout>
 	)
 }
-
-SpecialistsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
 
 export default SpecialistsPage
 
@@ -183,24 +200,24 @@ function NoResults() {
 	)
 }
 
-function SearchFilter() {
+function SearchFilter({ resetButtonText }: any) {
 	return (
 		<Space direction="vertical" style={{ width: '100%' }}>
-			<Card title="Направление" className={styles.panel}>
+			<Card title={<T keyName="workDirection">Work Direction</T>} className={styles.panel}>
 				<RefinementList attribute="direction" showMore />
 			</Card>
-			<Card title="Уровень" className={styles.panel}>
+			<Card title={<T keyName="difficultyLevel">Difficulty Level</T>} className={styles.panel}>
 				<RefinementList attribute="level" />
 			</Card>
-			<Card title="Страна" className={styles.panel}>
+			<Card title={<T keyName="country">Country</T>} className={styles.panel}>
 				<RefinementList attribute="country" showMore />
 			</Card>
-			<ClearRefinements translations={{ resetButtonText: 'Очистить фильтр' }} />
+			<ClearRefinements translations={{ resetButtonText }} />
 		</Space>
 	)
 }
 
-function SearchMobileFilter({ onClick }: any) {
+function SearchMobileFilter({ onClick, resetButtonText }: any) {
 	const { indexUiState } = useInstantSearch()
 	const [count, setCount] = useState(0)
 
@@ -222,10 +239,10 @@ function SearchMobileFilter({ onClick }: any) {
 	return (
 		<Space>
 			<Button onClick={onClick} icon={<BsFilter />}>
-				Фильтр&nbsp;
+				<T>Filter</T>&nbsp;
 				<Badge count={count} size="small" />
 			</Button>
-			{count > 0 && <ClearRefinements translations={{ resetButtonText: 'Очистить фильтр' }} />}
+			{count > 0 && <ClearRefinements translations={{ resetButtonText }} />}
 		</Space>
 	)
 }

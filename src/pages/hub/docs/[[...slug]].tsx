@@ -5,6 +5,7 @@ import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { getPages } from '@/services/notion'
 import { Render } from '@9gustin/react-notion-render'
 import { useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Col, Menu, Row, Select, Spin, Grid, theme, Typography, Affix } from 'antd'
 import axios from 'axios'
 import { DateTime } from 'luxon'
@@ -147,7 +148,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	return (
 		<>
 			<Head>
-				<title>{pageProperties?.properties.Name.title[0].plain_text || 'Документация'}</title>
+				<title>{pageProperties?.properties.Name.title[0].plain_text || 'Documentation'}</title>
 			</Head>
 			<div
 				className={styles.container}
@@ -182,7 +183,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 									<div className="content-header">
 										<Title>{pageProperties?.properties.Name.title[0].plain_text}</Title>
 										<Text type="secondary">
-											Обновлено{' '}
+											<T>Updated</T>{' '}
 											{DateTime.fromISO(pageProperties?.last_edited_time).toFormat('d LLL, yyyy', { locale: 'ru-RU' })}
 										</Text>
 									</div>
@@ -190,7 +191,9 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 								</section>
 							) : (
 								<section className="main-container">
-									<p>Страница не существует или у вас нет к ней доступа</p>
+									<p>
+										<T>The page does not exist or you do not have access to it</T>
+									</p>
 								</section>
 							)}
 						</Spin>

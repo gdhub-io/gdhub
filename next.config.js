@@ -5,7 +5,7 @@ const nextConfig = {
 	output: 'standalone',
 	i18n: {
 		locales: ['en', 'ru'],
-		defaultLocale: 'ru',
+		defaultLocale: 'en',
 	},
 	experimental: {
 		// serverComponentsExternalPackages: ['bullmq'],

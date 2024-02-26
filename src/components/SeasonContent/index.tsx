@@ -3,6 +3,7 @@ import DividerIcon from '@/assets/images/icons/divider.svg'
 import SearchingStageContent from '@/components/SeasonContent/stages/SearchingStageContent'
 import { DefaultSeasonStages } from '@/types/enums'
 import { Season, SeasonStage, SeasonStatus } from '@prisma/client'
+import { T, useTolgee } from '@tolgee/react'
 import { Grid, Space, Typography } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import DoneStageContent from './stages/DoneStageContent'
@@ -19,6 +20,7 @@ const { Title, Text, Paragraph } = Typography
 
 const SeasonContent = ({ season }: { season: SeasonData }) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 	const stage = useMemo(() => {
 		console.log('stage', season?.stages)
 		return season?.stages.find((s) => s.isCurrent)
@@ -71,7 +73,11 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 			case DefaultSeasonStages.Done:
 				return <DoneStageContent season={season} />
 			default:
-				return <Text>Информации по текущему этапу нет или еще готовится.</Text>
+				return (
+					<Text>
+						<T>There is no information on the current stage or is still preparing.</T>
+					</Text>
+				)
 		}
 	}
 
@@ -81,10 +87,17 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 		<div className={styles.container}>
 			<Space align="baseline">
 				<Title level={2}>{season.name}</Title>
-				{season.status !== SeasonStatus.Done && !!stage && <Text type="secondary">Этап {stage.order + 1}-ый из 6</Text>}
+				{season.status !== SeasonStatus.Done && !!stage && (
+					<Text type="secondary">
+						<T>Stage</T> {stage.order + 1}
+						<T>th from</T> 6
+					</Text>
+				)}
 			</Space>
 
-			<Paragraph>Период проведения: {datePeiodtoText({ start: startedAt, finish: finishedAt })}</Paragraph>
+			<Paragraph>
+				<T>Period of conduct</T>: {datePeiodtoText({ start: startedAt, finish: finishedAt })}
+			</Paragraph>
 
 			{!!stage && (
 				<div>

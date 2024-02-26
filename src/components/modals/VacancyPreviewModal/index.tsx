@@ -3,7 +3,7 @@ import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { hasRole } from '@/helpers/user'
 import { Season, SeasonStage, TeamVacancy, UserRole } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -14,6 +14,7 @@ import SpecialitySelectModal from '../SpecialitySelectModal'
 
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const session: any = useSession()
+	const { t } = useTolgee()
 	const router = useRouter()
 	const [form] = Form.useForm()
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
@@ -77,7 +78,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				vacancyId: vacancy.data.id,
 			})
 
-			message.success('Ваш отклик на выранную вакансию отослан')
+			message.success(<T keyName="modal.vacancy.applySuccess">Your response is sent</T>)
 			setShowSpecialitySelectModal(false)
 			setTimeout(onCancel, 600)
 		} catch (error: any) {
@@ -90,7 +91,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		try {
 			await withdrawApply(data)
 
-			message.success('Ваш отклик отозван')
+			message.success(<T keyName="modal.vacancy.withdrawSuccess">Your response is withdrawn</T>)
 			onCancel()
 		} catch (error: any) {
 			console.log(error)
@@ -104,10 +105,10 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		}
 
 		if (hasRole(UserRole.Member, session)) {
-			return vacancy?.data.myTeamMemberId ? 'Отозвать отклик' : 'Откликнуться'
+			return vacancy?.data.myTeamMemberId ? <T>Reveal the response</T> : <T>Respond</T>
 		}
 
-		return 'Откликнуться'
+		return <T>Respond</T>
 	}
 
 	const functionOkButton = async () => {
@@ -130,9 +131,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				centered
 				title={
 					session?.data ? (
-						<T keyName="modal.vacancy.titleSession">Вакансия</T>
+						<T keyName="modal.vacancy.titleSession">Job vacancy</T>
 					) : (
-						<T keyName="needAuth">Необходима авторизация</T>
+						<T keyName="needAuth">Requested authorization</T>
 					)
 				}
 				width={800}
@@ -147,7 +148,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				confirmLoading={processing}
 			>
 				{!session?.data && (
-					<T keyName="needAuthDescription">Просмотр вакансий доступен только авторизованным пользователям лпатформы.</T>
+					<T keyName="needAuthDescription">Viewing vacancies is available only to authorized lpatform users.</T>
 				)}
 
 				<Spin spinning={processing}>
@@ -156,14 +157,14 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							<h1>{vacancy.data.title}</h1>
 
 							<Descriptions layout="horizontal" column={1} size="small">
-								<Descriptions.Item label="Проект">{vacancy.data.project.name}</Descriptions.Item>
-								<Descriptions.Item label="Пайплайн">{vacancy.data.project.stage.season.name}</Descriptions.Item>
-								<Descriptions.Item label="Вакансия акатуальна до">
+								<Descriptions.Item label={t('Project')}>{vacancy.data.project.name}</Descriptions.Item>
+								<Descriptions.Item label={t('Pipeline')}>{vacancy.data.project.stage.season.name}</Descriptions.Item>
+								<Descriptions.Item label={t('The vacancy is acute before')}>
 									{dayjs(vacancy.data.finishedAt).format('LL')}
 								</Descriptions.Item>
 							</Descriptions>
 							<Descriptions layout="vertical" column={1}>
-								<Descriptions.Item className={styles.vacancyDescription} label="Описание вакансии">
+								<Descriptions.Item className={styles.vacancyDescription} label={t('Vacancy description')}>
 									<TextWithLineBreak text={vacancy.data.description} />
 								</Descriptions.Item>
 							</Descriptions>
@@ -171,13 +172,15 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							{vacancy.data.myTeamMemberId ? (
 								<Alert
 									type="success"
-									message="Вы уже откликнулись на данную вакансию. Автор проекта должен связаться с вами в ближайшее время."
+									message={<T keyName="modal.vacancy.applied">You have already responded to this vacancy</T>}
 								/>
 							) : null}
 							{!session?.data?.user && (
 								<Alert
 									type="error"
-									message="Откликнуться могут только зарегистрированные пользователи с заполненной специальностью"
+									message={
+										<T keyName="modal.vacancy.notAuth">Only registered users with a completed specialty can respond.</T>
+									}
 								/>
 							)}
 						</>

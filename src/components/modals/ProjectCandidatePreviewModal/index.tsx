@@ -12,6 +12,7 @@ import {
 	User,
 } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -22,6 +23,7 @@ import styles from './style.module.scss'
 
 const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any) => {
 	const queryClient = useQueryClient()
+	const { t } = useTolgee()
 	const [form] = Form.useForm()
 	const { getGameGenreName } = useGameGenres()
 	const { getGameSettingName } = useGameSettings()
@@ -85,7 +87,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		try {
 			await rejectCandidate({ id: candidateId })
 
-			message.success('Вы отклонили кандидатуру ' + candidate?.data.user.name)
+			message.success(t('You rejected the candidacy ') + candidate?.data.user.name)
 			onOk()
 		} catch (error: any) {
 			message.error(error.message)
@@ -96,7 +98,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		try {
 			await hireCandidate({ id: candidateId })
 
-			message.success(`Вы приняли ${candidate?.data.user.name} в команду`)
+			message.success(t(`You took the team`) + ' ' + candidate?.data.user.name)
 			onOk()
 		} catch (error: any) {
 			message.error(error.message)
@@ -107,7 +109,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		<>
 			<Modal
 				centered
-				title="Карточка кандидата"
+				title={<T>Candidate card</T>}
 				width={800}
 				destroyOnClose
 				maskClosable={false}
@@ -117,13 +119,13 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 				footer={[
 					<Space key="form-buttons" wrap>
 						<Button key="close" onClick={handleCancel} disabled={processing}>
-							Закрыть
+							<T>Close</T>
 						</Button>
 						<Button key="reject" disabled={processing} onClick={handleReject}>
-							Отклонить
+							<T>Reject</T>
 						</Button>
 						<Button key="approve" disabled={processing} type="primary" onClick={handleApprove}>
-							Принять в команду
+							<T>Accept the team</T>
 						</Button>
 					</Space>,
 				]}
@@ -139,15 +141,19 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 									</div>
 
 									<Descriptions layout="horizontal" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
-										<Descriptions.Item label="Интересует вакансия">{candidate.data.vacancy.title}</Descriptions.Item>
-										<Descriptions.Item label="На проекте">{candidate.data.vacancy.project.name}</Descriptions.Item>
-										<Descriptions.Item label="Создано">
+										<Descriptions.Item label={t('Interested in the vacancy')}>
+											{candidate.data.vacancy.title}
+										</Descriptions.Item>
+										<Descriptions.Item label={t('On the project')}>
+											{candidate.data.vacancy.project.name}
+										</Descriptions.Item>
+										<Descriptions.Item label={t('Created')}>
 											{dayjs(candidate.data.createdAt).format('LLL')}
 										</Descriptions.Item>
 									</Descriptions>
 
 									<Descriptions
-										title="Об участнике"
+										title={t('About the participant')}
 										className={styles.descriptionBlock}
 										layout="horizontal"
 										column={1}
@@ -155,17 +161,25 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 										labelStyle={{ fontWeight: 'bold' }}
 									>
 										{!!candidate?.data.speciality.portfolioUrl && (
-											<Descriptions.Item label="Резюме/портфолио">
+											<Descriptions.Item label={<T>CV/Portfolio</T>}>
 												<Link href={candidate?.data.speciality.portfolioUrl} target="_blank">
-													<Button size="small">Перейти</Button>
+													<Button size="small">
+														<T>Go</T>
+													</Button>
 												</Link>
 											</Descriptions.Item>
 										)}
-										<Descriptions.Item label="Свободное время">
-											от {candidate.data.user.profile.timeForWork[0]} до {candidate.data.user.profile.timeForWork[1]}{' '}
-											часов
+										<Descriptions.Item label={<T>Free time</T>}>
+											<T
+												keyName="fromTo"
+												defaultValue="from {fromDate} to {toDate} hours a week"
+												params={{
+													fromDate: candidate.data.user.profile.timeForWork[0],
+													toDate: candidate.data.user.profile.timeForWork[1],
+												}}
+											/>
 										</Descriptions.Item>
-										<Descriptions.Item label="Место проживания">
+										<Descriptions.Item label={<T>Place of residence</T>}>
 											{[candidate.data.user.profile.country, candidate.data.user.profile.city].join(', ')}
 										</Descriptions.Item>
 									</Descriptions>
@@ -197,50 +211,56 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 							</Row>
 
 							<Descriptions
-								title="О специальности"
+								title={t('About specialty')}
 								className={styles.descriptionBlock}
 								layout="vertical"
 								column={1}
 								size="small"
 								labelStyle={{ fontWeight: 'bold' }}
 							>
-								<Descriptions.Item label="Специализация">{candidate.data.speciality.specialization}</Descriptions.Item>
-								<Descriptions.Item label="Навыки">{candidate.data.speciality.skills}</Descriptions.Item>
-								<Descriptions.Item label="Использую в работе">
-									{candidate.data.speciality.tools || '(инструменты не указаны)'}
+								<Descriptions.Item label={t('Specialization')}>
+									{candidate.data.speciality.specialization}
 								</Descriptions.Item>
-								<Descriptions.Item label="Опыт работы">
-									{candidate.data.speciality.jobs || '(места работ не указаны)'}
+								<Descriptions.Item label={t('Skills')}>{candidate.data.speciality.skills}</Descriptions.Item>
+								<Descriptions.Item label={t('I use it in work')}>
+									{candidate.data.speciality.tools || t('(tools are not indicated)')}
 								</Descriptions.Item>
-								<Descriptions.Item label="Где получал знания">
-									{candidate.data.speciality.schools || '(места обучения не указаны)'}
+								<Descriptions.Item label={t('Experience')}>
+									{candidate.data.speciality.jobs || t('(places of work are not indicated)')}
+								</Descriptions.Item>
+								<Descriptions.Item label={t('Where I received knowledge')}>
+									{candidate.data.speciality.schools || t('(places of training are not indicated)')}
 								</Descriptions.Item>
 							</Descriptions>
 
 							<Descriptions
-								title="Предпочтения в играх"
+								title={t('Preferences in games')}
 								layout="vertical"
 								column={1}
 								size="small"
 								labelStyle={{ fontWeight: 'bold' }}
 								className={styles.descriptionBlock}
 							>
-								<Descriptions.Item label="Предпочитаю жанры">
-									{candidate.data.user.profile.preferedGenres
-										? candidate.data.user.profile.preferedGenres.map((r) => getGameGenreName(r.id)).join(', ')
-										: '(не указано)'}
+								<Descriptions.Item label={t('I prefer genres')}>
+									{candidate.data.user.profile.preferedGenres ? (
+										candidate.data.user.profile.preferedGenres.map((r) => getGameGenreName(r.id)).join(', ')
+									) : (
+										<T>(not pointed)</T>
+									)}
 								</Descriptions.Item>
-								<Descriptions.Item label="Предпочитаю сеттинги">
-									{candidate.data.user.profile.preferedSettings
-										? candidate.data.user.profile.preferedSettings.map((r) => getGameSettingName(r.id)).join(', ')
-										: '(не указано)'}
+								<Descriptions.Item label={t('I prefer game settings')}>
+									{candidate.data.user.profile.preferedSettings ? (
+										candidate.data.user.profile.preferedSettings.map((r) => getGameSettingName(r.id)).join(', ')
+									) : (
+										<T>(not pointed)</T>
+									)}
 								</Descriptions.Item>
-								<Descriptions.Item label="Предпочитаю игры следующей сложности">
-									{candidate.data.user.profile.preferedDifficulties
-										? candidate.data.user.profile.preferedDifficulties
-												.map((r) => getGameDifficultyName(r.id))
-												.join(', ')
-										: '(не указано)'}
+								<Descriptions.Item label={t('I prefer games of the following complexity')}>
+									{candidate.data.user.profile.preferedDifficulties ? (
+										candidate.data.user.profile.preferedDifficulties.map((r) => getGameDifficultyName(r.id)).join(', ')
+									) : (
+										<T>(not pointed)</T>
+									)}
 								</Descriptions.Item>
 							</Descriptions>
 						</>

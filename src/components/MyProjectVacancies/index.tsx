@@ -2,6 +2,7 @@ import { useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
 import { Project, TeamVacancyStatus } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Flex, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -18,17 +19,6 @@ interface Vacancy {
 	[key: string]: any
 }
 
-const vacancyStatusToText = (status: TeamVacancyStatus) => {
-	switch (status) {
-		case TeamVacancyStatus.Draft:
-			return 'Черновик'
-		case TeamVacancyStatus.Published:
-			return 'Размещена'
-		case TeamVacancyStatus.Closed:
-			return 'Закрыта'
-	}
-}
-
 interface MyProjectVacanciesArgs {
 	teamId: string
 	project: Partial<Project>
@@ -36,6 +26,7 @@ interface MyProjectVacanciesArgs {
 
 const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 	const [showVacancyModal, setShowVacancyModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 	const [showVacancyArchiveModal, setShowVacancyArchiveModal] = useState(false)
@@ -62,40 +53,48 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
-			title: 'Название',
+			title: t('Title'),
 			dataIndex: 'title',
 			key: 'title',
 			width: '50%',
 			render: (value, data) => (
 				<>
 					<span onClick={() => handleEditVacancy(data.id)}>{value}</span>{' '}
-					{data.status == 'Draft' && <Tag color="lime">{vacancyStatusToText(data.status)}</Tag>}
+					{data.status == 'Draft' && (
+						<Tag color="lime">
+							<T keyName={data.status} />
+						</Tag>
+					)}
 				</>
 			),
 		},
 		{
-			title: 'Направление',
+			title: t('Direction'),
 			dataIndex: 'direction',
 			key: 'direction',
 			responsive: ['md'],
 		},
 		{
-			title: 'Действует до',
+			title: t('Valid until'),
 			dataIndex: 'finishedAt',
 			key: 'finishedAt',
 			responsive: ['md'],
-			render: (value) => (value ? 'до ' + dayjs(value).format('LLL') : undefined),
+			render: (value) => (value ? t('to') + ' ' + dayjs(value).format('LLL') : undefined),
 		},
 		{
 			key: 'actions',
 			width: '1%',
 			render: (value, record) => (
 				<Space>
-					{screens.md && <Button onClick={() => handleEditVacancy(record.id)}>Изменить</Button>}
+					{screens.md && (
+						<Button onClick={() => handleEditVacancy(record.id)}>
+							<T>Change</T>
+						</Button>
+					)}
 					<Popconfirm
-						title="Точно хотите закрыть вакансию?"
-						okText="Да"
-						cancelText="Нет"
+						title={t('You definitely want to close the vacancy?')}
+						okText={<T>Yes</T>}
+						cancelText={<T>No</T>}
 						onConfirm={() => handleCloseVacancy(record.id)}
 					>
 						<Button type="text" danger>
@@ -118,7 +117,7 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 		setSelectedVacancyId(undefined)
 		fetchMyProjectVacancies()
 
-		message.success('Вакансия закрыта')
+		message.success(<T>The vacancy is closed</T>)
 	}
 
 	const handleSaveVacancy = () => {
@@ -139,11 +138,15 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 		<>
 			<Flex justify="space-between" style={{ marginTop: 60 }}>
 				<Space align="center">
-					<h3 style={{ margin: 0 }}>Вакансии</h3>
-					<Button onClick={() => setShowVacancyModal(true)}>Добавить вакансию</Button>
+					<h3 style={{ margin: 0 }}>
+						<T>Vacancies</T>
+					</h3>
+					<Button onClick={() => setShowVacancyModal(true)}>
+						<T>Add the vacancy</T>
+					</Button>
 				</Space>
 				<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
-					Архив
+					<T>Archive</T>
 				</Button>
 			</Flex>
 
@@ -157,7 +160,9 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 					pagination={false}
 				/>
 			) : (
-				<p style={{ marginTop: 12, color: 'gray' }}>На данный момент открытых вакансий нет</p>
+				<p style={{ marginTop: 12, color: 'gray' }}>
+					<T>There are no open vacancies at the moment</T>
+				</p>
 			)}
 
 			<VacancyModal

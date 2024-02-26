@@ -5,6 +5,7 @@ import { StreamLayout } from '@/layouts/StreamLayout'
 import DailyIframe, { DailyCall, DailyCallOptions } from '@daily-co/daily-js'
 import { UserRole } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Button, Form, Input, Space, message } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -118,10 +119,12 @@ const LiveReportsPage = () => {
 				<Space align="start">
 					{!instanceId ? (
 						<Button onClick={startLiveStream} disabled={!readyToStream} type="primary">
-							Начать стрим
+							<T>Start a stream</T>
 						</Button>
 					) : (
-						<Button onClick={stopLiveStream}>Закончить стрим</Button>
+						<Button onClick={stopLiveStream}>
+							<T>End stream</T>
+						</Button>
 					)}
 					<Form
 						form={form}
