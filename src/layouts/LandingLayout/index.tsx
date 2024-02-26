@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { MainFooter } from '@/components/MainFooter'
 import { MainHeader } from '@/components/MainHeader'
+import { SwitchLanguage } from '@/components/SwitchLanguage'
 import { landingThemeConfig } from '@/config/theme'
 import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Button, ConfigProvider, Drawer, Flex, Grid, Layout, Menu, MenuProps, Space, Typography } from 'antd'
@@ -142,7 +143,7 @@ export const LandingLayout = ({ children }: any) => {
 								<Text className="username" ellipsis>
 									{session.user?.name}
 								</Text>
-								{/* <SwitchLanguage border={true} size="small" /> */}
+								<SwitchLanguage border={true} size="small" />
 							</Flex>
 						)
 					}

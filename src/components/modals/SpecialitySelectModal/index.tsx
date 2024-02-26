@@ -24,7 +24,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		data: contacts,
 		isLoading: isContactsLoading,
 		refetch: fetchContacts,
-	} = useQuery(['user-contacts'], () => axios.get('/api/user/contacts'))
+	} = useQuery(['user-contacts'], (): Promise<any> => axios.get('/api/user/contacts'))
 
 	useEffect(() => {
 		if (open) {

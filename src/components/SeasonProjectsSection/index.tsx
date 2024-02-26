@@ -1,5 +1,6 @@
 import { Project, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Col, Card, Descriptions, Typography, Button, Row, Grid } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -13,6 +14,7 @@ type ProjectsSectionArgs = {
 
 export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 
 	const { data: projects, isFetching: isLoadingProjecs } = useQuery(
 		['projects', seasonId],
@@ -47,17 +49,17 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 										<Descriptions.Item>
 											<Typography.Paragraph ellipsis={{ rows: 4 }}>{project.description}</Typography.Paragraph>
 										</Descriptions.Item>
-										<Descriptions.Item label="Автор">{project.author.name} </Descriptions.Item>
-										<Descriptions.Item label="Жанр">{project.genre}</Descriptions.Item>
-										<Descriptions.Item label="Сеттинг">{project.setting}</Descriptions.Item>
-										<Descriptions.Item label="Платформа">{project.platform}</Descriptions.Item>
+										<Descriptions.Item label={t('Author')}>{project.author.name} </Descriptions.Item>
+										<Descriptions.Item label={t('Genre')}>{project.genre}</Descriptions.Item>
+										<Descriptions.Item label={t('Game Setting')}>{project.setting}</Descriptions.Item>
+										<Descriptions.Item label={t('Platform')}>{project.platform}</Descriptions.Item>
 									</Descriptions>
 									<Descriptions layout="vertical" column={1}>
-										<Descriptions.Item label="Визуальный стиль">{project.visualStyle}</Descriptions.Item>
+										<Descriptions.Item label={t('Visual style')}>{project.visualStyle}</Descriptions.Item>
 									</Descriptions>
 									<Link href={`/project/${project.slug}`}>
 										<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
-											На страницу проекта
+											<T>On the page of the project</T>
 										</Button>
 									</Link>
 								</div>

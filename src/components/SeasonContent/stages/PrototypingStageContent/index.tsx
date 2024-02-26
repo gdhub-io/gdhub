@@ -4,6 +4,7 @@ import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T } from '@tolgee/react'
 import { Skeleton, Spin, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -41,7 +42,9 @@ const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
 
 				{!!reportsDates?.data.length && (
 					<>
-						<h3>Отчетные дни</h3>
+						<h3>
+							<T>Reporting days</T>
+						</h3>
 						<ul>
 							{reportsDates?.data.map((reportDate, index) => (
 								<li key={`report-date-${index}`}>

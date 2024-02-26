@@ -93,7 +93,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 				message.error(error.message)
 			} else {
 				message.error(
-					<T keyName="modal.speciality.create-update.error">Ошибка. Проверьте, все ли данные введены корректно</T>
+					<T keyName="modal.speciality.create-update.error">Error. Check if all the data is entered correctly </T>
 				)
 			}
 		}

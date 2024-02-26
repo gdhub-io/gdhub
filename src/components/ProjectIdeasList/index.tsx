@@ -1,4 +1,5 @@
 import { Project } from '@prisma/client'
+import { useTolgee } from '@tolgee/react'
 import { Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
 import Image from 'next/image'
 import styles from './style.module.scss'
@@ -11,6 +12,7 @@ export const ProjectIdeasList = ({
 	isLoading: boolean
 }) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 
 	if (!projectIdeas.length) return <p>No project ideas yet.</p>
 
@@ -41,13 +43,13 @@ export const ProjectIdeasList = ({
 											<Descriptions.Item>
 												<Typography.Paragraph ellipsis={{ rows: 4 }}>{project.Description}</Typography.Paragraph>
 											</Descriptions.Item>
-											<Descriptions.Item label="Автор">{project['Author Name']} </Descriptions.Item>
-											<Descriptions.Item label="Жанр">{project.Genre}</Descriptions.Item>
-											<Descriptions.Item label="Сеттинг">{project.Setting}</Descriptions.Item>
-											<Descriptions.Item label="Платформа">{project.Platform}</Descriptions.Item>
+											<Descriptions.Item label={t('Author')}>{project.author.name} </Descriptions.Item>
+											<Descriptions.Item label={t('Genre')}>{project.genre}</Descriptions.Item>
+											<Descriptions.Item label={t('Game Setting')}>{project.setting}</Descriptions.Item>
+											<Descriptions.Item label={t('Platform')}>{project.platform}</Descriptions.Item>
 										</Descriptions>
 										<Descriptions layout="vertical" column={1}>
-											<Descriptions.Item label="Визуальный стиль">{project['Visual Style']}</Descriptions.Item>
+											<Descriptions.Item label={t('Visual Style')}>{project.visualStyle}</Descriptions.Item>
 										</Descriptions>
 									</div>
 								}

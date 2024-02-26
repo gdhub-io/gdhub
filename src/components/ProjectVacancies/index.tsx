@@ -2,7 +2,7 @@ import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import { WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Table, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
@@ -29,6 +29,7 @@ interface ProjectVacanciesArgs {
 const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const { data: session } = useSession()
 	const router = useRouter()
+	const { t } = useTolgee()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 
@@ -50,7 +51,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
-			title: 'Название',
+			title: t('Name'),
 			dataIndex: 'title',
 			key: 'title',
 			width: '60%',
@@ -71,7 +72,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 				),
 		},
 		{
-			title: 'Направление',
+			title: t('Direction'),
 			dataIndex: 'directionId',
 			responsive: ['md'],
 			key: 'directionId',
@@ -81,7 +82,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 			},
 		},
 		{
-			title: 'Действует до',
+			title: t('Valid until'),
 			dataIndex: 'finishedAt',
 			responsive: ['md'],
 			key: 'finishedAt',
@@ -92,10 +93,14 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 			responsive: ['md'],
 			render: (value, record) =>
 				session ? (
-					<Button onClick={() => handleEditVacancy(record.id)}>Подробнее</Button>
+					<Button onClick={() => handleEditVacancy(record.id)}>
+						<T>Details</T>
+					</Button>
 				) : (
 					<Link href={`/signin?callbackUrl=${router.asPath}`}>
-						<Button>Войти, чтобы посмотреть</Button>
+						<Button>
+							<T>Enter to see</T>
+						</Button>
 					</Link>
 				),
 		},
@@ -114,15 +119,19 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	return (
 		<>
 			<Space direction="vertical" style={{ marginTop: 60 }}>
-				<Title level={2}>Вакансии</Title>
+				<Title level={2}>
+					<T>Vacancies</T>
+				</Title>
 				{projectVacancies?.data.length > 0 && (
 					<p style={{ fontSize: 12 }}>
-						Все участники проектов, откликаясь на вакансии, принимают условия, что на период участия в выбранном
-						проекте, работа не оплачивается до момента получения финансирования или если, иные условия не указаны в
-						вакансии. Затраченное вами время - это инвестиции в проект, который вы выбираете. От того, как каждый член
-						команды, и команда в целом, будет работать на проекте, зависит, смогут ли эти инвестиции конвертироваться в
-						деньги или нет. В любом случае ваше резюме станет более весомым, когда в нем будет информация об участии в
-						реальных проектах.
+						<T keyName="vacancies.list.description">
+							All project participants, responding to vacancies, accept the conditions that for the period of
+							participation in the selected project, work is not paid until the moment of receipt of funding or if,
+							other conditions are not indicated in vacancies.The time you spent is investment in the project that you
+							choose.From how every member teams, and the team as a whole, will work on the project, depends whether
+							these investments will be able to convert In money or not.In any case, your resume will become more
+							significant when it will have information about participation In real projects.
+						</T>
 					</p>
 				)}
 			</Space>
@@ -148,7 +157,9 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 					/>
 				</>
 			) : (
-				<p>На данный момент открытых вакансий нет</p>
+				<p>
+					<T>There are no open vacancies at the moment</T>
+				</p>
 			)}
 		</>
 	)

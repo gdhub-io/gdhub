@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Speciality, UserRole } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -13,6 +14,7 @@ const { Text } = Typography
 const SpecialitiesProfileForm = ({ profile }: any) => {
 	const session = useSession()
 	const queryClient = useQueryClient()
+	const { t } = useTolgee()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
@@ -50,17 +52,21 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		try {
 			await deleteSpeciality({ id: specialityId })
 
-			message.success('Специальность была удалена')
+			message.success(t('Specialty has been removed'))
 		} catch (error: any) {
 			message.error('Error')
 		}
 	}
 
 	return (
-		<Card title="Специальности">
+		<Card title={<T keyName="profile-form.specialities.card.title">Specialties</T>}>
 			<Spin spinning={processing}>
 				<Space direction="vertical" size="large" style={{ width: '100%' }}>
-					<Text>Специальности позволяют вам откликаться на вакансии с действующих проектов и проводить лекции.</Text>
+					<Text>
+						<T keyName="profile-form.specialities.card.description">
+							Specialties allow you to respond to vacancies from existing projects and conduct lectures.
+						</T>
+					</Text>
 					{specialities?.data && (
 						<List
 							size="small"
@@ -69,9 +75,13 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 								emptyText: (
 									<Space direction="vertical">
 										<GiSkills size={24} />
-										<span>Вы не добавили еще ни одной специальности.</span>
+										<span>
+											<T keyName="profile-form.specialities.card.no-specialities">
+												You have not added a single specialty yet.
+											</T>
+										</span>
 										<Button type="primary" icon={<GoPlus />} onClick={showModal}>
-											Добавить
+											<T keyName="profile-form.specialities.card.button.add-speciality">Add</T>
 										</Button>
 									</Space>
 								),
@@ -89,11 +99,13 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 										description={speciality.specialization}
 									/>
 									<Space>
-										<Button onClick={() => handleEditSpeciality(speciality)}>Изменить</Button>
+										<Button onClick={() => handleEditSpeciality(speciality)}>
+											<T keyName="profile-form.specialities.card.button.change-speciality">Change</T>
+										</Button>
 										<Popconfirm
-											title="Точно хотите удалить？"
-											okText="Да"
-											cancelText="Нет"
+											title={<T>You definitely want to remove?</T>}
+											okText={<T>Yes</T>}
+											cancelText={<T>No</T>}
 											onConfirm={() => handleDeleteSpeciality(speciality.id)}
 										>
 											<Button type="text" danger icon={<GoTrash />} />
@@ -105,7 +117,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 					)}
 					{!!specialities?.data.length && (
 						<Button type="primary" onClick={showModal}>
-							Добавить специальность
+							<T>Add specialty</T>
 						</Button>
 					)}
 				</Space>

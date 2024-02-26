@@ -85,8 +85,13 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 				{isStageExpired() && (
 					<Alert
 						type="success"
-						message="На данный момент прием идей завершен. Менторы по геймдизайну обсуждают поданные идеи, общаются с их авторами. По окончании
-							обсуждений будет определен список проектов, которые пойдут далее на этап подготовки проекта"
+						message={
+							<T keyName="stage-expired">
+								At the moment, the reception of ideas is completed.Mentors on the game design are discussing the
+								presented ideas, communicate with their authors.At the end of the discussion, a list of projects that
+								will go further to the stage will be determined Project preparation
+							</T>
+						}
 					/>
 				)}
 

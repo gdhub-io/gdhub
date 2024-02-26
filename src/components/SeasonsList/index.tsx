@@ -2,6 +2,7 @@ import DividerIcon from '@/assets/images/icons/divider.svg'
 import { DefaultSeasonStages } from '@/types/enums'
 import { SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
 import { Alert, Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -22,6 +23,7 @@ type SeasonGeneralData = {
 
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 	const { data: seasons, isFetching: isLoading } = useQuery(
 		['seasons'],
 		() => axios.get<SeasonGeneralData[]>('/api/seasons'),
@@ -42,33 +44,33 @@ const SeasonsList = () => {
 		const details: any = {
 			Searching: {
 				number: 1,
-				title: 'Этап исследования',
+				title: t('Study stage'),
 			},
 			'Pre-production': {
 				number: 2,
-				title: 'Этап подготовки проекта',
+				title: t('The stage of preparation of the project'),
 			},
 			Recruiting: {
 				number: 3,
-				title: 'Этап набора команды',
+				title: t('The stage of the team set'),
 			},
 			Prototyping: {
 				number: 4,
-				title: 'Этап прототипирования',
+				title: t('Stage of prototyping'),
 			},
 			Production: {
 				number: 5,
-				title: 'Этап разработки проекта',
+				title: t('Project development stage'),
 			},
 			Pitching: {
 				number: 6,
-				title: 'Питчи проектов',
+				title: t('Pitches of projects'),
 			},
 			Planning: {
-				title: 'Планируется',
+				title: t('Planned'),
 			},
 			Done: {
-				title: 'Завершен',
+				title: t('Completed'),
 			},
 		}
 
@@ -76,14 +78,26 @@ const SeasonsList = () => {
 	}
 
 	const actionTag = (season: any) =>
-		!season.currentStage.isCompleted ? <Tag color="success">Действующий сезон</Tag> : <Tag color="gray">Завершен</Tag>
+		!season.currentStage.isCompleted ? (
+			<Tag color="success">
+				<T>The current season</T>
+			</Tag>
+		) : (
+			<Tag color="gray">
+				<T>Completed</T>
+			</Tag>
+		)
 
 	return (
 		<>
-			<Title level={3}>Инкубационная программа Gamelab</Title>
+			<Title level={3}>
+				<T>IncubaMation program GameLab</T>
+			</Title>
 			<Paragraph>
-				В рамках данной программы авторы инди-игр могут подать свои идеи, а другие специалисты могут попасть в команды
-				разработки и превратить эти идеи в компьютерную или мобильную игру.
+				<T keyName="seasonsListDesc">
+					Within the framework of this program, the authors of the IGR can submit their ideas, while other specialists
+					can get to the commands Development and turn these ideas into a computer or mobile game.
+				</T>
 			</Paragraph>
 			<Spin spinning={isLoading}>
 				<Space direction="vertical" size={24} style={{ width: '100%' }}>
@@ -91,12 +105,17 @@ const SeasonsList = () => {
 						<Alert
 							description={
 								<Text>
-									На данный момент нет активных запусков инкубационной программы Gamelab. Следите за анонсами будущих
-									запусков в наших чатах и социальных сетях. Вы также можете инициировать старт своего проекта вне
-									данной программы заполнив{' '}
-									<Link href="https://tally.so/r/w8zl5P" target="_blank">
-										данную форму
-									</Link>
+									<T
+										keyName="seasonsListEmpty"
+										defaultValue="At the moment, there are no active launches of the Gamelab incubation program.Follow the announcements of future launches in our chats and social networks.You can also initiate the start of your project outside filling {formLink}"
+										params={{
+											formLink: (
+												<Link href="https://tally.so/r/w8zl5P" target="_blank">
+													<T>this form</T>
+												</Link>
+											),
+										}}
+									></T>
 								</Text>
 							}
 						/>
@@ -131,7 +150,10 @@ const SeasonsList = () => {
 											{!season.currentStage.isCompleted && (
 												<>
 													{screens.md && <DividerIcon className="divider" />}
-													<small>Этап {stagesDetails(season.currentStage.name)?.number}-ый из 6</small>
+													<small>
+														<T>Stage</T> {stagesDetails(season.currentStage.name)?.number}
+														<T>th of</T> 6
+													</small>
 													{screens.md && <DividerIcon className="divider" />}
 													<small>{stagesDetails(season.currentStage.name)?.title}</small>
 												</>
@@ -144,14 +166,17 @@ const SeasonsList = () => {
 								>
 									{season.currentStage.name === DefaultSeasonStages.Searching && (
 										<Paragraph>
-											Идет набор проектов. <Link href={`/${season.slug}`}>Узнать подробнее</Link>
+											<T>There is a set of projects.</T>{' '}
+											<Link href={`/${season.slug}`}>
+												<T>Details</T>
+											</Link>
 										</Paragraph>
 									)}
 
 									{season.currentStage.name !== DefaultSeasonStages.Searching && !isPlannedSeason(season) && (
 										<Descriptions bordered column={1} size="small">
-											<Descriptions.Item label="Участников">{season.membersCount}</Descriptions.Item>
-											<Descriptions.Item label="Проектов">{season.projectsCount}</Descriptions.Item>
+											<Descriptions.Item label={t('Participants')}>{season.membersCount}</Descriptions.Item>
+											<Descriptions.Item label={t('Projects')}>{season.projectsCount}</Descriptions.Item>
 										</Descriptions>
 									)}
 								</Card>

@@ -43,12 +43,14 @@ const VacanciesList = () => {
 		<>
 			<Space direction="vertical">
 				<p className={styles.description}>
-					Все участники проектов, откликаясь на вакансии, принимают условия, что на период участия в выбранном проекте,
-					работа не оплачивается до момента получения финансирования или если, иные условия не указаны в вакансии.
-					Затраченное вами время - это инвестиции в проект, который вы выбираете. От того, как каждый член команды, и
-					команда в целом, будет работать на проекте, зависит, смогут ли эти инвестиции конвертироваться в деньги или
-					нет. В любом случае ваше резюме станет более весомым, когда в нем будет информация об участии в реальных
-					проектах.
+					<T keyName="vacancies.list.description">
+						All project participants, responding to vacancies, accept the conditions that for the period of
+						participation in the selected project, work is not paid until the moment of receipt of funding or if, other
+						conditions are not indicated in vacancies.The time you spent is investment in the project that you
+						choose.From how every member teams, and the team as a whole, will work on the project, depends whether these
+						investments will be able to convert In money or not.In any case, your resume will become more significant
+						when it will have information about participation In real projects.
+					</T>
 				</p>
 			</Space>
 
@@ -96,7 +98,9 @@ const VacanciesList = () => {
 					/>
 				</>
 			) : (
-				<p>На данный момент открытых вакансий нет</p>
+				<p>
+					<T>There are no open vacancies at the moment</T>
+				</p>
 			)}
 		</>
 	)

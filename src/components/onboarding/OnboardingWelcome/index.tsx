@@ -17,18 +17,17 @@ export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 				<div className="onboarding-content">
 					<Space direction="vertical" size={56}>
 						<Title>
-							<T>Добро пожаловать в сообщество Game Developers Hub!</T>
+							<T keyName="onboarding.welcome.title">Welcome to the Game Developers Hub community!</T>
 						</Title>
 						<Paragraph>
-							<T>
-								Мы рады, что вы с нами! Еще немного и вы сможете использовать все доступные на сегодня возможности
-								нашего портала. Для того, чтобы он был вам полезен, вам необходимо рассказать немного о себе и своих
-								интересах.
+							<T keyName="onboarding.welcome.text1">
+								We are glad that you are with us!A little more and you can use all available opportunities for today our
+								portal.In order for it to be useful to you, you need to tell a little about yourself and your interests.
 							</T>
 						</Paragraph>
 
 						<Button style={{ width: '300px' }} onClick={() => onNext()}>
-							<T>Заполнить профиль</T>
+							<T keyName="onboarding.welcome.button1">Fill out the profile</T>
 						</Button>
 					</Space>
 				</div>

@@ -35,34 +35,6 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 
 			<UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />
 
-			{/* {mechanicsList?.length > 0 && (
-				<>
-					<h4>Список игровых механик:</h4>
-					<p style={{ lineHeight: '26px' }}>
-						{mechanicsList.map((mechanic: string, idx: number) => (
-							<Text code key={mechanic + idx}>
-								{mechanic}
-							</Text>
-						))}
-					</p>
-				</>
-			)} */}
-
-			{/* {visualSolutionsList?.length > 0 && (
-				<>
-					<h4>Список визуальных стилей:</h4>
-					<p>
-						<ol>
-							{visualSolutionsList.map((vislual: string, idx: number) => (
-								<li key={vislual + idx}>
-									<Text code>{vislual}</Text>
-								</li>
-							))}
-						</ol>
-					</p>
-				</>
-			)} */}
-
 			{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 
 			{stage?.isCompleted && (
