@@ -32,7 +32,7 @@ const workerProcessor: Processor = async (job) => {
 }
 
 export const matchingSpecAndProjQueue = new Queue('matchingSpecAndProjQueue', {
-	connection: redisConnect({ enableReadyCheck: true, maxRetriesPerRequest: 1 }),
+	connection: redisConnect(),
 	defaultJobOptions: {
 		attempts: 2,
 		backoff: {
