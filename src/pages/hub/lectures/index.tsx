@@ -11,9 +11,6 @@ const LecturesPage: NextPageWithLayout = () => {
 
 	return (
 		<ProtectedLayout title={t('Lectures')}>
-			<h1>
-				<T>Lectures</T>
-			</h1>
 			<Space direction="vertical" size="large">
 				<p>
 					<T keyName="hub.lectures.text1.part1">

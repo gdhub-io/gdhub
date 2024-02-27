@@ -49,17 +49,32 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 		...seo,
 	}
 
+	const linkToChat = useMemo(() => {
+		let link = ''
+
+		switch (router.locale) {
+			case 'en':
+				link = 'https://discord.gg/WcUFD3tHqg'
+				break
+			case 'ru':
+				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				break
+		}
+
+		return link
+	}, [router])
+
 	const telegramMenuItem = {
 		label: screens.lg ? (
 			<Tooltip title={t('Community chat on Telegram')}>
-				<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram chat community')}>
+				<Link href={linkToChat} target="_blank" title={t('Community Chat')}>
 					<Button shape="circle" type="text" style={{ top: '6px', position: 'relative' }}>
 						<TbBrandTelegram size={24} />
 					</Button>
 				</Link>
 			</Tooltip>
 		) : (
-			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram chat community')}>
+			<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Community Chat')}>
 				{t('Community chat on Telegram')}
 			</Link>
 		),

@@ -24,10 +24,7 @@ const ProfilePage: NextPageWithLayout = () => {
 	)
 
 	return (
-		<ProtectedLayout title={t('Your Profile')}>
-			<h1>
-				<T>Profile Settings</T>
-			</h1>
+		<ProtectedLayout title={t('Settings')}>
 			{!!profile?.data && (
 				<Space size={24} direction="vertical" style={{ width: '100%' }}>
 					<GeneralProfileForm profile={profile.data} saveProfile={saveProfile} />

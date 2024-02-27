@@ -28,12 +28,15 @@ import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
 import 'dayjs/locale/ru'
 import { DefaultSeo } from 'next-seo'
+import NProgress from 'nprogress'
 
 dayjs.extend(localizedFormat)
 dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale(defaultLocale)
+
+NProgress.configure({ showSpinner: false })
 
 const secondFont = Lora({
 	subsets: ['latin', 'cyrillic'],
@@ -86,35 +89,33 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}, [])
 
 	useEffect(() => {
-		console.log('ssrTolgee', ssrTolgee)
-	}, [ssrTolgee])
-
-	useEffect(() => {
 		document.body.style.overflow = showContent ? 'unset' : 'hidden'
 	}, [showContent])
 
 	const routeChangeStart = (...args: any) => {
-		setShowContent(false)
-		setLoading(true)
+		// setShowContent(false)
+		// setLoading(true)
+		NProgress.start()
 	}
 
 	const routeChangeComplete = (url: string) => {
 		pageview(url)
-		setLoadingOff()
-		document.body.style.overflow = 'unset'
+		// setLoadingOff()
+		// document.body.style.overflow = 'unset'
+		NProgress.done()
 	}
 
-	// useEffect(() => {
-	// 	router.events.on('routeChangeStart', routeChangeStart)
-	// 	router.events.on('routeChangeComplete', routeChangeComplete)
-	// 	router.events.on('routeChangeError', () => setLoadingOff())
+	useEffect(() => {
+		router.events.on('routeChangeStart', routeChangeStart)
+		router.events.on('routeChangeComplete', routeChangeComplete)
+		// 	router.events.on('routeChangeError', () => setLoadingOff())
 
-	// 	return () => {
-	// 		router.events.off('routeChangeStart', routeChangeStart)
-	// 		router.events.off('routeChangeComplete', routeChangeComplete)
-	// 		router.events.off('routeChangeError', () => setLoadingOff())
-	// 	}
-	// }, [router.events])
+		return () => {
+			router.events.off('routeChangeStart', routeChangeStart)
+			router.events.off('routeChangeComplete', routeChangeComplete)
+			// 		router.events.off('routeChangeError', () => setLoadingOff())
+		}
+	}, [router.events])
 
 	return (
 		<>

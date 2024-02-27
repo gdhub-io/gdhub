@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { IndieList } from '@/components/IndieList'
 import SeasonsList from '@/components/SeasonsList'
 import { hasRole } from '@/helpers/user'
@@ -9,16 +9,33 @@ import { T } from '@tolgee/react'
 import { Button, Flex, Space } from 'antd'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { CiLock } from 'react-icons/ci'
 import styles from './style.module.scss'
 
 const HubPage: NextPageWithLayout = () => {
 	const session = useSession()
+	const router = useRouter()
 
 	useEffect(() => {
 		console.log('session', session, hasRole(UserRole.Member, session))
 	}, [session])
+
+	const linkToChat = useMemo(() => {
+		let link = ''
+
+		switch (router.locale) {
+			case 'en':
+				link = 'https://discord.gg/WcUFD3tHqg'
+				break
+			case 'ru':
+				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				break
+		}
+
+		return link
+	}, [router])
 
 	return (
 		<ProtectedLayout>
@@ -42,17 +59,10 @@ const HubPage: NextPageWithLayout = () => {
 								participate in projects. To do this, go to your Profile and provide the required data.
 							</T>
 							<br />
-							<T
-								keyName="hub.text1.part2"
-								defaultValue="And don't forget to join the community chat using {chatLink}"
-								params={{
-									chatLink: (
-										<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank">
-											this link
-										</Link>
-									),
-								}}
-							/>
+							<T keyName="hub.text1.part2">And don&apos;t forget to join the community chat using</T>{' '}
+							<Link href={linkToChat} target="_blank">
+								this link
+							</Link>
 						</p>
 						<Link href="/profile">
 							<Button>

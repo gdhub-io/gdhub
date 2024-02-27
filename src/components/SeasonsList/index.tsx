@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import DividerIcon from '@/assets/images/icons/divider.svg'
 import { DefaultSeasonStages } from '@/types/enums'
 import { SeasonStage } from '@prisma/client'
@@ -7,6 +8,7 @@ import { Alert, Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'a
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const { Title, Text, Paragraph } = Typography
@@ -23,6 +25,7 @@ type SeasonGeneralData = {
 
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()
+	const router = useRouter()
 	const { t } = useTolgee()
 	const { data: seasons, isFetching: isLoading } = useQuery(
 		['seasons'],
@@ -88,6 +91,23 @@ const SeasonsList = () => {
 			</Tag>
 		)
 
+	const linkToForm = useMemo(() => {
+		let link = ''
+
+		console.log('router.locale', router.locale)
+
+		switch (router.locale) {
+			case 'en':
+				link = 'https://tally.so/r/w2NV6D'
+				break
+			case 'ru':
+				link = 'https://tally.so/r/w8zl5P'
+				break
+		}
+
+		return link
+	}, [router])
+
 	return (
 		<>
 			<Title level={3}>
@@ -105,17 +125,15 @@ const SeasonsList = () => {
 						<Alert
 							description={
 								<Text>
-									<T
-										keyName="seasonsListEmpty"
-										defaultValue="At the moment, there are no active launches of the Gamelab incubation program.Follow the announcements of future launches in our chats and social networks.You can also initiate the start of your project outside filling {formLink}"
-										params={{
-											formLink: (
-												<Link href="https://tally.so/r/w8zl5P" target="_blank">
-													<T>this form</T>
-												</Link>
-											),
-										}}
-									></T>
+									<T keyName="seasonsListEmpty">
+										At the moment, there are no active launches of the Gamelab incubation program.Follow the
+										announcements of future launches in our chats and social networks.You can also initiate the start of
+										your project outside filling
+									</T>{' '}
+									<Link href={linkToForm} target="_blank">
+										<T>this form</T>
+									</Link>
+									.
 								</Text>
 							}
 						/>

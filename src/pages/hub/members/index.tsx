@@ -91,31 +91,25 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 		return (
 			<ProtectedLayout title={t('Community Members')}>
 				<div className={styles.container}>
-					<h1>
-						<T>Community Members</T>
-					</h1>
 					<p>
-						<T
-							keyName="pahge.hub.members.text1"
-							defaultValue="Any registered user of our portal is considered a community member. Today we are {userCount}."
-							params={{ userCount: <strong>{usersCount}</strong> }}
-						/>
+						<T keyName="page.hub.members.text1">
+							Any registered user of our portal is considered a community member. Today we are
+						</T>{' '}
+						<strong>{usersCount}</strong>.
 					</p>
 					<p>
-						<T
-							keyName="pahge.hub.members.text2"
-							defaultValue="Those of us who have indicated a major in our profile are considered members who are open to offers to
-							participate in the development of indie projects. As of today, {specialitiesCount} specialists are
-							registered."
-							params={{ specialitiesCount: <strong>{specialitiesCount}</strong> }}
-						/>
+						<T keyName="page.hub.members.text2.part1">
+							Those of us who have indicated a major in our profile are considered members who are open to offers to
+							participate in the development of indie projects. As of today
+						</T>{' '}
+						<strong>{specialitiesCount}</strong>{' '}
+						<T keyName="page.hub.members.text2.part2">specialists are registered.</T>
 					</p>
 					<p>
-						<T
-							keyName="pahge.hub.members.text3"
-							defaultValue="Authors of indie projects have access to a database of specialists and can invite them to their projects. For this
-							you need to create a project."
-						/>
+						<T keyName="page.hub.members.text3">
+							Authors of indie projects have access to a database of specialists and can invite them to their projects.
+							For this you need to create a project.
+						</T>
 					</p>
 				</div>
 			</ProtectedLayout>
@@ -125,9 +119,6 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 	return (
 		<ProtectedLayout title={t('Community Members')}>
 			<div className={styles.container}>
-				<h1>
-					<T>Community Members</T>
-				</h1>
 				<InstantSearch
 					searchClient={searchAdapter.searchClient}
 					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
