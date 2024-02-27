@@ -34,7 +34,7 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 	]
 
 	return (
-		<PublicLayout title={<T>Community Projects</T>}>
+		<PublicLayout title={t('Community Projects')}>
 			<Head>
 				<title>
 					<T>Community Projects</T>

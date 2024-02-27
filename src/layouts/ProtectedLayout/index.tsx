@@ -108,6 +108,21 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 		return menu
 	}, [screens, session])
 
+	const linkToChat = useMemo(() => {
+		let link = ''
+
+		switch (router.locale) {
+			case 'en':
+				link = 'https://discord.gg/WcUFD3tHqg'
+				break
+			case 'ru':
+				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				break
+		}
+
+		return link
+	}, [router])
+
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = []
 
@@ -144,8 +159,8 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 			{
 				key: 'tg-community',
 				label: (
-					<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title={t('Telegram Chat Community')}>
-						<T>Telegram Chat Community</T>
+					<Link href={linkToChat} target="_blank" title={t('Community Chat')}>
+						<T>Community Chat</T>
 					</Link>
 				),
 			},

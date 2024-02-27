@@ -16,12 +16,6 @@ const MyProjectsPage: NextPageWithLayout = () => {
 
 	return (
 		<ProtectedLayout title={t('My Projects')}>
-			<Row align="stretch" justify="space-between">
-				<h1>
-					<T>My Projects</T>
-				</h1>
-			</Row>
-
 			{myProjects?.data?.length > 0 ? (
 				<List
 					bordered

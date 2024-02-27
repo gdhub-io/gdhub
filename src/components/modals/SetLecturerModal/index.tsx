@@ -217,17 +217,13 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						name="linkToStream"
 						extra={
 							<div>
-								<T
-									keyName=""
-									defaultValue="Create a link to a broadcast in {link} (or on another service) and insert into this field."
-									params={{
-										link: (
-											<Link href="https://meet.google.com/" target="_blank">
-												Google Meet
-											</Link>
-										),
-									}}
-								/>
+								<T keyName="modal.lecturerRequest.linkToStream.extra.part1">Create a link to a broadcast in</T>{' '}
+								<Link href="https://meet.google.com/" target="_blank">
+									Google Meet
+								</Link>{' '}
+								<T keyName="modal.lecturerRequest.linkToStream.extra.part2">
+									(or on another service) and insert into this field.
+								</T>
 							</div>
 						}
 						rules={[{ type: 'url' }]}

@@ -21,7 +21,7 @@ const workerProcessor: Processor = async (job) => {
 }
 
 export const tgMessageQueue = new Queue('tgMessageQueue', {
-	connection: redisConnect({ enableReadyCheck: true, maxRetriesPerRequest: 1 }),
+	connection: redisConnect(),
 	defaultJobOptions: {
 		attempts: 2,
 		backoff: {

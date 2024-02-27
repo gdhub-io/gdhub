@@ -1,43 +1,98 @@
 {
+  "(not pointed)" : "(not pointed)",
+  "A new report has been added" : "A new report has been added",
+  "A new vacancy has been added" : "A new vacancy has been added",
+  "About Game" : "About Game",
   "About us" : "About us",
+  "Accept the team" : "Accept the team",
   "Achiever" : "Achiever",
+  "Add a report" : "Add a report",
+  "Add specialty" : "Add specialty",
+  "Add the vacancy" : "Add the vacancy",
+  "Add your project idea" : "Add your project idea",
+  "Added a new game project" : "Added a new game project",
+  "Administration" : "Administration",
+  "Appendix" : "Appendix",
+  "Archive" : "Archive",
+  "Are you sure?" : "Are you sure?",
   "Assemble a team" : "Assemble a team",
+  "At the moment, reports are not provided" : "At the moment, reports are not provided",
+  "Audition" : "Audition",
+  "Author" : "Author",
   "Autonomy" : "Autonomy",
   "Back" : "Back",
   "Back to home" : "Back to home",
   "Back to main" : "Back to main",
+  "Become a Lecturer" : "Become a Lecturer",
   "Beginner" : "Beginner",
+  "CV/Portfolio" : "CV/Portfolio",
+  "Candidate card" : "Candidate card",
+  "Change" : "Change",
+  "Change the lecture request" : "Change the lecture request",
+  "Change the parametes of lectures" : "Change the parametes of lectures",
+  "Change the report" : "Change the report",
+  "Change the vacancy" : "Change the vacancy",
+  "Change your project idea" : "Change your project idea",
+  "City" : "City",
+  "Close" : "Close",
+  "Comment" : "Comment",
+  "Community Chat" : "Community Chat",
+  "Community Projects" : "Community Projects",
+  "Community member" : "Community member",
   "Community members" : "Community members",
+  "Completed" : "Completed",
+  "Concept document" : "Concept document",
+  "Contact the author" : "Contact the author",
   "Contacts" : "Contacts",
+  "Contents of the lecture" : "Contents of the lecture",
   "Continue with Google" : "Continue with Google",
   "Cookie Policy" : "Cookie Policy",
   "Cookies Policy" : "Cookies Policy",
+  "Country" : "Country",
+  "Create a new vacancy" : "Create a new vacancy",
   "Create new account" : "Create new account",
+  "Date" : "Date",
+  "Details" : "Details",
+  "Development Log" : "Development Log",
   "Discord" : "Discord",
   "Documentation" : "Documentation",
   "Email" : "Email",
+  "End stream" : "End stream",
   "Enter Email" : "Enter Email",
+  "Enter to see" : "Enter to see",
   "Error 404" : "Error 404",
   "Error!" : "Error!",
   "Experienced" : "Experienced",
   "Expert" : "Expert",
   "Exploration" : "Exploration",
+  "Fill in from CV/resume" : "Fill in from CV/resume",
+  "Filter" : "Filter",
+  "Fire" : "Fire",
+  "Follow this link before the lecture" : "Follow this link before the lecture",
   "For Authors" : "For Authors",
   "For Specialists" : "For Specialists",
   "For Users" : "For Users",
+  "Free time" : "Free time",
+  "From" : "From",
+  "GDD" : "GDD",
   "Game Developers Hub for everyone who wants to make" : "Game Developers Hub for everyone who wants to make",
   "Game Projects" : "Game Projects",
+  "Game Setting" : "Game Setting",
   "General information about new member" : "General information about new member",
+  "Genre" : "Genre",
   "Get in touch" : "Get in touch",
   "Get started" : "Get started",
+  "Go" : "Go",
   "Go to GDHub" : "Go to GDHub",
   "Go to app" : "Go to app",
+  "Go to project page" : "Go to project page",
   "Go to registration" : "Go to registration",
   "Goal-oriented" : "Goal-oriented",
   "How can you be useful to teams?" : "How can you be useful to teams?",
   "How many hours a week can you devote to projects?" : "How many hours a week can you devote to projects?",
   "I already have an account" : "I already have an account",
   "I'm available for offering" : "I am available for offers of participation in projects",
+  "IncubaMation program GameLab" : "Incubation program GameLab",
   "Individuality" : "Individuality",
   "Infomation about your preferences" : "Infomation about your preferences",
   "Information about your main speciality" : "Information about your main speciality",
@@ -49,14 +104,22 @@
   "Log in with Google" : "Log in with Google",
   "Log in with email" : "Log in with email",
   "Mastering communication and networking skills" : "Mastering communication and networking skills",
+  "Mentor" : "Mentor",
   "Mentor of digital art" : "Mentor of digital art",
   "Mentor of game design" : "Mentor of game design",
   "Mentor of game development" : "Mentor of game development",
   "Mentor of team management" : "Mentor of team management",
+  "My Projects" : "My Projects",
   "Novice" : "Novice",
+  "On the page of the project" : "On the page of the project",
   "Our Core Values" : "Our Core Values",
   "Platform" : "Platform",
   "Player" : "Player",
+  "Projects developed independently by community members (outside the incubation program)" : {
+    "" : "Projects developed independently by community members (outside the incubation program)."
+  },
+  "Projects preparing for pitch" : "Projects preparing for pitch",
+  "Publish" : "Publish",
   "Pursuing oppurtunities instead of settling" : "Pursuing oppurtunities instead of settling",
   "Read more" : "Read more",
   "Registration" : "Registration",
@@ -73,12 +136,14 @@
   "Sorry, we couldn't find the page you're looking for" : {
     "" : "Sorry, we couldn't find the page you're looking for."
   },
+  "Specialist" : "Specialist",
   "Support" : "Support",
   "Taking risks and making mistakes" : "Taking risks and making mistakes",
   "Technical officer" : "Technical officer",
   "Telegram" : "Telegram",
   "Terms of use" : "Terms of use",
   "The main resource is your time, which you are willing to spend on participating in projects" : {
+    " You can\n\t\t\t\t\t\t\t\talso provide additional information" : "The main resource is your time, which you are willing to spend on participating in projects. You can also provide additional information",
     " You can also provide additional information" : "The main resource is your time, which you are willing to spend on participating in projects. You can also provide additional information"
   },
   "The maximum value cannot be less than the minimum" : "The maximum value cannot be less than the minimum",
@@ -86,8 +151,17 @@
   "The power of self-identity" : "The power of self-identity",
   "The registration link is incorrect or has already been used" : "The registration link is incorrect or has already been used",
   "UI/UX designer" : "UI/UX designer",
+  "Updated" : "Updated",
+  "Upload PDF" : "Upload PDF",
   "Vacancies" : "Vacancies",
   "Valid until" : "Valid until",
+  "Video report" : "Video report",
+  "View the presentation" : "View the presentation",
+  "Visual Style" : "Visual Style",
+  "Want to attend" : "Want to attend",
+  "We help Authors of new video games to assemble a team of game designers, programmers, artists,\n\t\t\t\t\t\t\t\t\t\t\t\tanimators, etc" : {
+    "" : "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc."
+  },
   "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc" : {
     "" : "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc."
   },
@@ -97,10 +171,20 @@
   "Welcome to the community where games are made" : {
     "" : "Welcome to the community where games are made."
   },
+  "What will happen" : "What will happen",
+  "When" : "When",
   "Will help the service and project authors offer solutions that are interesting to you" : "Will help the service and project authors offer solutions that are interesting to you",
+  "Yes" : "Yes",
   "You" : "You",
+  "You are already registered" : "You are already registered",
   "You can change it or add more ones after" : "You can change it or add more ones after",
+  "You definitely want to remove?" : "You definitely want to remove?",
+  "You have canceled your vote" : "You have canceled your vote",
+  "You have no projects" : "You have no projects",
+  "You should not be younger than 16 years" : "You should not be younger than 16 years",
+  "Your Name" : "Your Name",
   "Your profile was successfully completed!" : "Your profile was successfully completed!",
+  "Your vote has been counted" : "Your vote has been counted",
   "Youtube" : "Youtube",
   "action-adventure" : "Action adventure",
   "actual vacancies" : "actual vacancies",
@@ -137,7 +221,11 @@
   "city-placeholder" : "Enter city",
   "city.placeholder" : "Enter your city name",
   "close" : "Close",
+  "common" : {
+    "formError" : "Error. Check if all data is entered correctly"
+  },
   "community members" : "community members",
+  "communityMember" : "Community Member",
   "concept-link" : "Link to the concept",
   "concept-list" : "Concept list",
   "confirmUserData" : "I confirm the accuracy of the information entered",
@@ -149,6 +237,16 @@
   "cvLink" : "CV/Portfolio link",
   "cvLink.plachehloder" : "Linkedin, Artstation or other links",
   "dance" : "Dance/rhythm",
+  "demoday" : {
+    "text1" : {
+      "part1" : "Join our",
+      "part2" : "community"
+    },
+    "text2" : "Register on gdhub.io - indicate your specialties, respond to vacancies for indie projects or launch yours.",
+    "text3" : "Join us in the community chat, communicate and find out the latest news from projects.",
+    "text4" : "Contact us"
+  },
+  "difficultyLevel" : "Level of Difficulty",
   "education" : "Education",
   "education.plachehloder" : "For example:\n2000-2010, Gymnasium No. 145; \n2011, Course on Udemy “How to become a tester”",
   "email" : "Email",
@@ -163,20 +261,42 @@
     "difficulty" : {
       "label" : "Difficulty of the game you want to develop"
     },
+    "error" : "Error. Check if all data is entered correctly",
+    "error.required.text" : "This field is required",
     "genres" : {
       "label" : "Genres of games in the development of which you want to participate"
+    },
+    "motivation" : {
+      "label" : "Your motivation. Why do you want to participate in game development or create your own?",
+      "placeholder" : "Example: I want to be part of the creative team. What attracts me to game development..."
     },
     "settings" : {
       "label" : "Visual setting of games you want to work with"
     }
   },
   "fps" : "First person shooter (FPS)",
+  "fromTo" : "from {fromDate} to {toDate} hours a week",
+  "fromToWithDates" : "from {fromDate} to {toDate}",
   "hard-core" : "Hard-core",
   "historic" : "Historic",
   "hours" : "hours",
+  "hours a week" : "hours a week",
+  "hub" : {
+    "lectures" : {
+      "text1" : {
+        "part1" : "Lets share knowledge, gain wisdom ;)"
+      }
+    },
+    "text1" : {
+      "part1" : "In order to become participants in the Hub, you need to fill out information about yourself, indicate your specialties, preferences in games, and also indicate the time that you are willing to use to participate in projects. To do this, go to your Profile and provide the required data.",
+      "part2" : "And dont forget to join the community chat using"
+    }
+  },
   "hyper-casual" : "Hyper-casual",
+  "in the form of short pitches" : "in the form of short pitches",
   "interest" : "Main interest",
   "interests" : "Interests",
+  "interestsAndPreferencesDescription" : "This information will help us more accurately configure recommendations on projects, candidates for projects for you.",
   "landing" : {
     "about" : {
       "abovetitle" : "Know about us",
@@ -238,13 +358,186 @@
   "mid-core" : "Mid-core",
   "military" : "Military",
   "mmorpg" : "Massively multiplayer online role playing game (MMORPG)",
+  "modal" : {
+    "lectureRequest" : {
+      "lecture-created-success" : "Added a new request for a lecture",
+      "lecture-name" : "Lecture theme",
+      "lecture-updated-success" : "Lecture amended",
+      "wishes" : "Wishes for the content of the lecture",
+      "wishes-help" : "So you want to know at this lecture?",
+      "work-direction" : "What direction does this lecture belong"
+    },
+    "lecturerRequest" : {
+      "createSuccess" : "Your proposal to conduct a lecture sent",
+      "curriculum" : "Lecture plan. What are you planning to talk about",
+      "direction" : "What direction does this lecture belong",
+      "linkToStream" : "Link to the broadcast",
+      "linkToStream.extra.part1" : "Create a link to a broadcast in",
+      "linkToStream.extra.part2" : "(or on another service) and insert into this field.",
+      "title" : "I want to give this lecture",
+      "updateSuccess" : "Your proposal is updated",
+      "wishes" : "Wishes for the content of the lecture"
+    },
+    "project" : {
+      "audition" : {
+        "label" : "Audition"
+      },
+      "conceptLink" : {
+        "label" : "Link to concept document (idea description)"
+      },
+      "coreMechanics" : {
+        "extra" : "Start typing. To enter a new mechanic, press Enter on your keyboard and enter text",
+        "label" : "Core Mechanics"
+      },
+      "coverImage" : {
+        "hint" : "Files in jpg, png formats are allowed. Aspect ratio 16/9. For example, the size is 1920x1080px.",
+        "label" : "Cover for the project",
+        "text" : "Add a project cover"
+      },
+      "description" : {
+        "label" : "Short Description"
+      },
+      "errorText" : "Error. Check if all data is entered correctly",
+      "gddLink" : {
+        "label" : "Link to game design document"
+      },
+      "genre" : {
+        "label" : "Genre"
+      },
+      "name" : {
+        "label" : "Project Name"
+      },
+      "pitchdeckLink" : {
+        "label" : "Link to presentation (to pitch)"
+      },
+      "platform" : {
+        "label" : "Platform"
+      },
+      "setting" : {
+        "label" : "Game Setting"
+      },
+      "videoLink" : {
+        "label" : "Pitch video"
+      },
+      "visualStyle" : {
+        "label" : "Visual Style"
+      }
+    },
+    "projectReport" : {
+      "content" : "What has been made new relative to the past report?"
+    },
+    "proposition-lecture" : {
+      "field" : {
+        "linkToStream" : {
+          "extra" : {
+            "part1" : "Create a link to broadcast in",
+            "part2" : "(or on another service) and insert into this field."
+          }
+        }
+      }
+    },
+    "speciality-select" : {
+      "choose-text" : "Choose your specialty that corresponds to the selected vacancy",
+      "contact-text" : "How to contact the author of the project with you?",
+      "okText" : "Choose",
+      "title" : "Indicate the specialty"
+    },
+    "speciality" : {
+      "create-update" : {
+        "error" : "Error. Check if all the data is entered correctly"
+      },
+      "create" : {
+        "success" : "Added a new specialty"
+      },
+      "form" : {
+        "jobs" : {
+          "extra" : "Write the work from a new line.Indicate in the format: Dates of work, place of work, position",
+          "label" : "Where did you work?"
+        },
+        "level" : {
+          "label" : "Level of ownership"
+        },
+        "name" : {
+          "label" : "Name of specialty"
+        },
+        "portfolioUrl" : {
+          "label" : "Link to portfolio/resume"
+        },
+        "schools" : {
+          "extra" : "Write each place of training from a new line.Indicate in the format: training period, place of study, name/specialty name",
+          "label" : "Where did you study?"
+        },
+        "skills" : {
+          "extra" : "Write each skill from a new line.Indicate in the format: verb + definition",
+          "label" : "List of skills"
+        },
+        "specialization" : {
+          "label" : "Specialization"
+        },
+        "summary" : {
+          "label" : "Briefly about what you are doing"
+        },
+        "tools" : {
+          "extra" : "Indicate which tools/software/services you use in your work",
+          "label" : "Tools"
+        },
+        "workDirectionId" : {
+          "label" : "Direction of activity"
+        }
+      },
+      "title" : {
+        "create" : "Add specialty",
+        "update" : "Change the specialty"
+      },
+      "update" : {
+        "success" : "Data on the specialty updated"
+      }
+    },
+    "vacancy-archive" : {
+      "title" : "Archive of vacancies from the {projectName} project"
+    },
+    "vacancy" : {
+      "applied" : "You have already responded to this vacancy",
+      "applySuccess" : "Your response is sent",
+      "descriptionHelp" : "Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",
+      "notAuth" : "Only registered users with a completed specialty can respond.",
+      "titleSession" : "Job vacancy",
+      "withdrawSuccess" : "Your response is withdrawn"
+    }
+  },
   "needAuth" : "Authorization required",
   "needAuthDescription" : "Viewing the data is available only to authorized users of the platform.",
   "no" : "No",
   "no-projects-yet" : "No projects found for this stage",
   "no-user-projects" : "No project yet.",
+  "onboarding" : {
+    "interests" : {
+      "motivation" : {
+        "description" : "Information about your motivations and preferences. This information will allow the platform to suggest you the most suitable projects, vacancies or candidates for your project."
+      }
+    },
+    "welcome" : {
+      "button1" : "Fill out the profile",
+      "text1" : "We are glad that you are with us!A little more and you can use all available opportunities for today our portal.In order for it to be useful to you, you need to tell a little about yourself and your interests.",
+      "title" : "Welcome to the Game Developers Hub community!"
+    }
+  },
+  "online" : "online",
   "oriental fantasy" : "Oriental Fantasy",
   "other" : "Other",
+  "page" : {
+    "hub" : {
+      "members" : {
+        "text1" : "Any registered user of our portal is considered a community member. Today we are",
+        "text2" : {
+          "part1" : "Those of us who have indicated a major in our profile are considered members who are open to offers to participate in the development of indie projects. As of today",
+          "part2" : "specialists are registered."
+        },
+        "text3" : "Authors of indie projects have access to a database of specialists and can invite them to their projects. For this you need to create a project."
+      }
+    }
+  },
+  "participants" : "participants",
   "pitches-will-at-date-on-our-channel" : "Project pitches will take place on {date} of the year on our channel in",
   "platformer" : "Platformer",
   "popup" : {
@@ -252,6 +545,55 @@
       "accept" : "I accept",
       "more" : "Read more",
       "text" : "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy."
+    }
+  },
+  "profile-form" : {
+    "specialities" : {
+      "card" : {
+        "button" : {
+          "add-speciality" : "Add Speciality",
+          "change-speciality" : "Change"
+        },
+        "description" : "Specialties allow you to respond to vacancies from existing projects and conduct lectures.",
+        "no-specialities" : "You have not added a single specialty yet.",
+        "title" : "Specialties"
+      }
+    }
+  },
+  "profile-forms" : {
+    "general" : {
+      "card" : {
+        "title" : "User data"
+      },
+      "field" : {
+        "email" : {
+          "title" : "Email"
+        },
+        "tgNickname" : {
+          "extra" : "Indicate without symbol @",
+          "title" : "Telegram nickname"
+        }
+      }
+    },
+    "interests" : {
+      "field" : {
+        "motivation" : {
+          "label" : "Your motivation for participation in projects or in their creation"
+        },
+        "preferredGenres" : {
+          "label" : "Games genres in the development of which you would be interested to participate"
+        }
+      }
+    },
+    "resources" : {
+      "card" : {
+        "title" : "Resources"
+      },
+      "field" : {
+        "timeForWork" : {
+          "title" : "Available time (per week)"
+        }
+      }
     }
   },
   "projectListByStage" : "List of projects at the current stage",
@@ -262,6 +604,7 @@
   "registration.email.complete" : "We have sent an {email} to email with an access link. Follow the link and complete the following registration steps.",
   "registration.email.extra" : "The email must match the one you entered when you started registering",
   "registration.email.subtitle" : "We will send a letter to email with a registration link",
+  "relevant for" : "relevant for",
   "resigration-to-demoday" : "Registration for Demo Day",
   "resources" : "Recources",
   "rpg" : "Role playing games",
@@ -269,6 +612,8 @@
   "save" : "Save",
   "saveAndContinue" : "Save and continue",
   "sci-fi" : "Sci-Fi",
+  "seasonsListDesc" : "Within the framework of this program, the authors of games can submit their ideas, while other specialists can get to the commands Development and turn these ideas into a computer or mobile game.",
+  "seasonsListEmpty" : "At the moment, there are no active launches of the Gamelab incubation program.Follow the announcements of future launches in our chats and social networks.You can also initiate the start of your project outside filling",
   "select" : "Select",
   "shooter" : "Shooter",
   "signin" : "Sign in",
@@ -301,23 +646,56 @@
   "specialityName" : "Specialty Name",
   "specialityName.plachehloder" : "Example: Unity developer",
   "specialization" : "Specialization ",
+  "specialization.plachehloder" : "Example: I specialize in cartoon character concepts",
   "specilaity" : "Speciality",
   "sport" : "Sport",
   "sports" : "Sports",
+  "stage-expired" : "At the moment, the reception of ideas is completed.Mentors on the game design are discussing the presented ideas, communicate with their authors.At the end of the discussion, a list of projects that will go further to the stage will be determined Project preparation",
   "subscribeToNewsletter" : "Receive platform news",
   "survival horror" : "Survival horror",
   "tbs" : "Turn based strategy",
+  "th from" : "th from",
+  "th of" : "th of",
+  "this form" : "this form",
+  "to" : "to",
   "user-profile" : "User Profile",
   "userProjectList" : "Your game projects",
   "users-proposed-concepts-total" : "In total, members proposed {total} ideas",
+  "vacancies" : {
+    "list" : {
+      "description" : "All project participants, responding to vacancies, accept the conditions that for the period of participation in the selected project, work is not paid until the moment of receipt of funding or if, other conditions are not indicated in vacancies.The time you spent is investment in the project that you choose.From how every member teams, and the team as a whole, will work on the project, depends whether these investments will be able to convert In money or not.In any case, your resume will become more significant when it will have information about participation In real projects."
+    }
+  },
   "video games" : "video games",
   "wantToBe" : {
     "author" : "an Author",
+    "author.description" : "I want to create my own games",
     "mentor" : "a Mentor",
+    "mentor.description" : "I want to share my expertise",
     "specialist" : "a Specialist",
+    "specialist.description" : "I want to join the team",
     "text" : "I want to be a"
   },
+  "will present their indie projects" : "will present their indie projects",
   "workDirection" : "Field of Activity",
+  "workDirection-2d art & animation" : "2D Art & Animation",
+  "workDirection-3d art & animation" : "3D Art & Animation",
+  "workDirection-backend development" : "Backend Development",
+  "workDirection-development" : "Development",
+  "workDirection-game design" : "Game Design",
+  "workDirection-game writer" : "Game Writer",
+  "workDirection-hr" : "Human Resources",
+  "workDirection-investment" : "Investment",
+  "workDirection-learning" : "Learning",
+  "workDirection-management" : "Management",
+  "workDirection-marketing" : "Marketing",
+  "workDirection-music & sound" : "Music & Sound",
+  "workDirection-other" : "Other",
+  "workDirection-qa" : "QA",
+  "workDirection-technical art" : "Technical Art",
+  "workDirection-vfx" : "VFX",
+  "workDirection-video editing" : "Video Editing",
+  "workDirection-web development" : "Web Development",
   "yearOfBirth" : "Year of Birth",
   "yes" : "Yes",
   "zombie" : "Zombie"

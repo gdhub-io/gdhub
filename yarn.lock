@@ -3110,10 +3110,10 @@
     "@tanstack/query-core" "4.32.6"
     use-sync-external-store "^1.2.0"
 
-"@tolgee/cli@^1.3.2":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@tolgee/cli/-/cli-1.3.2.tgz#4ddf07f96612f95f1744dfc15bdeac5c46c61d21"
-  integrity sha512-7Vf+BFGmQ9jLfDiRrhsgg+h494k0V8BacSdKVZV83PqhibI6/+H9boJvB1oSA+IEwAO9BoBFxy87Y1LN0NI1Cg==
+"@tolgee/cli@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@tolgee/cli/-/cli-1.4.0.tgz#bc2a63f4d3d5314c81c9adff09be890571e5f666"
+  integrity sha512-VgmeEH+lOHuQTcIUVhUKR8M4JXRMg2s/qcnntmRKfBTFkRn29e6dKuzYS0WogsIb1k5lRY13C/FqHZFf4TtPJQ==
   dependencies:
     ansi-colors "^4.1.3"
     base32-decode "^1.0.0"
@@ -3449,6 +3449,11 @@
   integrity sha512-SzyGKgwPzuWp2SHhlpXKzCX0pIOfcI4V2eF37nNBJOhwlegQ83omtVQ1XxZpDE06V/d6AQvfQdPfnw0tRC//Ng==
   dependencies:
     undici-types "~5.26.4"
+
+"@types/nprogress@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@types/nprogress/-/nprogress-0.2.3.tgz#b2150b054a13622fabcba12cf6f0b54c48b14287"
+  integrity sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -8452,6 +8457,11 @@ npm-run-path@^5.1.0:
   integrity sha512-sJOdmRGrY2sjNTRMbSvluQqg+8X7ZK61yvzBEIDhz4f8z1TZFYABsqjjCBd/0PUNE9M6QDgHJXQkGUEm7Q+l9Q==
   dependencies:
     path-key "^4.0.0"
+
+nprogress@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nprogress/-/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
+  integrity sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==
 
 nth-check@^2.0.1:
   version "2.1.1"
