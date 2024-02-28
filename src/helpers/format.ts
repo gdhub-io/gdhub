@@ -1,3 +1,7 @@
+import { AvailableLocales } from '@/config/locale'
+import { NextApiRequest } from 'next'
+import { env } from './env'
+
 export const isValidJSON = (text: any) => {
 	if (typeof text !== 'string') {
 		return false
@@ -41,4 +45,17 @@ export function formatNestedJson(obj: any, parentKey = '', output = '') {
 	}
 
 	return output
+}
+
+export const getServerLocale = (req: NextApiRequestWithUser | NextApiRequest) => {
+	let locale = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE')
+
+	const acceptLanguage = req.headers['accept-language']
+
+	if (acceptLanguage) {
+		const [fullLocale] = acceptLanguage?.split(';')
+		locale = fullLocale.split(',')[1]
+	}
+
+	return (locale as AvailableLocales) || AvailableLocales.en
 }

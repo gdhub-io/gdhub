@@ -17,7 +17,7 @@ const RecruitingStageContent = ({ season }: { season: SeasonData }) => {
 
 	const { data: stageContent, isLoading } = useQuery(
 		['gamelab-recruiting-content'],
-		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', lang: router.locale, pageSlug: stage?.name }),
+		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', locale: router.locale, pageSlug: stage?.name }),
 		{
 			enabled: !!stage,
 			refetchInterval: false,
