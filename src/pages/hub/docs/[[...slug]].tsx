@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Col, Menu, Row, Select, Spin, Grid, theme, Typography, Affix } from 'antd'
 import axios from 'axios'
-import { DateTime } from 'luxon'
+import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
@@ -182,8 +182,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 									<div className="content-header">
 										<Title>{pageProperties?.properties.Name.title[0].plain_text}</Title>
 										<Text type="secondary">
-											<T>Updated</T>{' '}
-											{DateTime.fromISO(pageProperties?.last_edited_time).toFormat('d LLL, yyyy', { locale: 'ru-RU' })}
+											<T>Updated</T> {dayjs(pageProperties?.last_edited_time).format('ll')}
 										</Text>
 									</div>
 									<Render blocks={pageContent?.data} classNames useStyles simpleTitles />

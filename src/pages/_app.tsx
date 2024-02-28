@@ -26,7 +26,7 @@ import { Lora } from 'next/font/google'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
-import 'dayjs/locale/ru'
+import 'dayjs/locale/en'
 import { DefaultSeo } from 'next-seo'
 import NProgress from 'nprogress'
 
@@ -86,6 +86,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	useEffect(() => {
 		setLoadingOff()
+		dayjs.locale(router.locale || AvailableLocales.en)
 	}, [])
 
 	useEffect(() => {
