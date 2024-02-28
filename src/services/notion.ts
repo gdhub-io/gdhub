@@ -73,7 +73,7 @@ export const getPages = async ({ roles = [], locale = AvailableLocales.en }: Get
 
 		return pages.results
 	} catch (error) {
-		console.error(error)
+		// console.error(error)
 		return null
 	}
 }
@@ -86,7 +86,7 @@ export const getPage = async ({ pageId }: { pageId: string }) => {
 
 		return page
 	} catch (error) {
-		console.error(error)
+		// console.error(error)
 		return null
 	}
 }
@@ -119,7 +119,7 @@ export const getBlocks = async (pageSlug: string, locale = AvailableLocales.en) 
 
 		return blocks.results
 	} catch (error) {
-		console.error(error)
+		// console.error(error)
 		return null
 	}
 }
@@ -153,7 +153,7 @@ export const getGamelabStageBlocks = async (
 
 		return blocks.results
 	} catch (error) {
-		console.error(error)
+		// console.error(error)
 		return null
 	}
 }
