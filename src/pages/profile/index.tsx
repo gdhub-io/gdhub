@@ -6,7 +6,7 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Profile } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Space } from 'antd'
 import axios from 'axios'
 

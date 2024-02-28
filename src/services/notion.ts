@@ -1,3 +1,4 @@
+import { AvailableLocales } from '@/config/locale'
 import { Client } from '@notionhq/client'
 
 // Initializing a client
@@ -7,9 +8,25 @@ const NotionService = new Client({
 
 type GetPagesParams = {
 	roles: string[]
+	locale?: AvailableLocales
 }
 
-export const getPages = async ({ roles = [] }: GetPagesParams) => {
+const getDatabase = ({ locale = AvailableLocales.en }: { locale: AvailableLocales }) => {
+	let notionDatabaseId = process.env.NOTION_DATABASE_DOCS as string
+
+	switch (locale) {
+		case AvailableLocales.en:
+			notionDatabaseId = process.env.NOTION_DATABASE_DOCS_EN as string
+			break
+		case AvailableLocales.ru:
+			notionDatabaseId = process.env.NOTION_DATABASE_DOCS_RU as string
+			break
+	}
+
+	return notionDatabaseId
+}
+
+export const getPages = async ({ roles = [], locale = AvailableLocales.en }: GetPagesParams) => {
 	try {
 		const filterParams: any = {
 			and: [
@@ -49,7 +66,7 @@ export const getPages = async ({ roles = [] }: GetPagesParams) => {
 		}
 
 		const pages = await NotionService.databases.query({
-			database_id: process.env.NOTION_DATABASE_DOCS as string,
+			database_id: getDatabase({ locale }),
 			sorts: [{ property: 'Order', direction: 'ascending' }],
 			filter: filterParams,
 		})
@@ -74,10 +91,10 @@ export const getPage = async ({ pageId }: { pageId: string }) => {
 	}
 }
 
-export const getBlocks = async (pageSlug: string, lang = 'en') => {
+export const getBlocks = async (pageSlug: string, locale = AvailableLocales.en) => {
 	try {
 		const response = await NotionService.databases.query({
-			database_id: process.env.NOTION_DATABASE_DOCS as string,
+			database_id: getDatabase({ locale }),
 			filter: {
 				and: [
 					{

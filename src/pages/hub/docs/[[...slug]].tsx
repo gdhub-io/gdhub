@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
+import { AvailableLocales } from '@/config/locale'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { getPages } from '@/services/notion'
 import { Render } from '@9gustin/react-notion-render'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Col, Menu, Row, Select, Spin, Grid, theme, Typography, Affix } from 'antd'
 import axios from 'axios'
 import { DateTime } from 'luxon'
-import Head from 'next/head'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import styles from './style.module.scss'
@@ -19,6 +20,7 @@ const { Text, Title } = Typography
 
 const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 	const themeToken = theme.useToken()
 	const router = useRouter()
 	const { slug: urlSlug } = router.query
@@ -136,7 +138,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		data: pageContent,
 		isLoading,
 		refetch: refetchPage,
-	} = useQuery(['documentation', pageSlug], () => axios.post(`/api/notion/page`, { pageSlug }), {
+	} = useQuery(['documentation', pageSlug], () => axios.post(`/api/notion/page`, { pageSlug, locale: router.locale }), {
 		enabled: !!pageSlug,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
@@ -146,13 +148,10 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	})
 
 	return (
-		<>
-			<Head>
-				<title>{pageProperties?.properties.Name.title[0].plain_text || 'Documentation'}</title>
-			</Head>
+		<ProtectedLayout title={t('page.documentation.title', 'Documentation')}>
 			<div
 				className={styles.container}
-				style={{ fontSize: themeToken.token.fontSize, color: themeToken.token.colorText }}
+				style={{ fontSize: themeToken.token.fontSize, color: themeToken.token.colorText, marginTop: 16 }}
 			>
 				<Row gutter={16}>
 					<Col xs={{ span: 24 }} md={{ span: 6 }} xl={{ span: 5 }} xxl={{ span: 4 }}>
@@ -200,15 +199,14 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 					</Col>
 				</Row>
 			</div>
-		</>
+		</ProtectedLayout>
 	)
 }
 
-DocsPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
-
-export const getServerSideProps = async (context: any) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+	const locale = context.locale as AvailableLocales
 	const session: any = await getServerSession(context.req, context.res, authOptions)
-	let pages: any = await getPages({ roles: session.user.roles })
+	let pages: any = await getPages({ roles: session.user.roles, locale })
 
 	return {
 		props: {
