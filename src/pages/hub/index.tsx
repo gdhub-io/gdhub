@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { IndieList } from '@/components/IndieList'
-import SeasonsList from '@/components/SeasonsList'
+import CreateProjectModal from '@/components/modals/CreateProjectModal'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -11,12 +11,12 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
-import { CiLock } from 'react-icons/ci'
 import styles from './style.module.scss'
 
 const HubPage: NextPageWithLayout = () => {
 	const session = useSession()
 	const router = useRouter()
+	const [openCreateProjectModal, setOpenCreateProjectModal] = useState(false)
 
 	useEffect(() => {
 		console.log('session', session, hasRole(UserRole.Member, session))
@@ -44,10 +44,8 @@ const HubPage: NextPageWithLayout = () => {
 			</Head>
 			<div className={styles.container}>
 				<Flex justify="end">
-					<Button type="primary" disabled>
-						<Space>
-							Add Project <CiLock style={{ display: 'block' }} />
-						</Space>
+					<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
+						<Space>Add Project</Space>
 					</Button>
 				</Flex>
 				{session.status == 'authenticated' && !hasRole(UserRole.Member, session) && (
@@ -73,11 +71,13 @@ const HubPage: NextPageWithLayout = () => {
 				)}
 				{session.status == 'authenticated' && hasRole(UserRole.Member, session) && (
 					<>
-						<SeasonsList />
+						{/* <SeasonsList /> */}
 						<IndieList />
 					</>
 				)}
 			</div>
+
+			<CreateProjectModal open={openCreateProjectModal} onCancel={() => setOpenCreateProjectModal(false)} />
 		</ProtectedLayout>
 	)
 }

@@ -29,7 +29,7 @@ const MyProjectsPage: NextPageWithLayout = () => {
 								) : null
 							}
 						>
-							<Link href={`/my/projects/${myProject.id}`}>{myProject.name}</Link>
+							<Link href={`/my/projects/${myProject.slug}`}>{myProject.name}</Link>
 						</List.Item>
 					)}
 				/>

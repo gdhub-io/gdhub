@@ -4,9 +4,9 @@ import MyProjectCandidates from '@/components/MyProjectCandidates'
 import MyProjectReports from '@/components/MyProjectReports'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
 import MyTeam from '@/components/MyTeam'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
+import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
+import { Project, SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Row, Space, Spin, Typography } from 'antd'
@@ -23,7 +23,7 @@ const { Text } = Typography
 const MyProjectPage: NextPageWithLayout = () => {
 	const router = useRouter()
 	const { t } = useTolgee()
-	const projectId = router.query.projectId as string
+	const slug = router.query.slug as string
 	const [showProjectModal, setShowProjectModal] = useState(false)
 
 	const {
@@ -31,10 +31,10 @@ const MyProjectPage: NextPageWithLayout = () => {
 		isLoading: isLoadingMyProject,
 		refetch: fetchMyProject,
 	} = useQuery(
-		['user-project', projectId],
-		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { projectId } }),
+		['user-project', slug],
+		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { slug } }),
 		{
-			enabled: !!projectId,
+			enabled: !!slug,
 			refetchInterval: 60000 * 5,
 			refetchOnWindowFocus: false,
 		}
@@ -49,7 +49,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 	if (myProject?.data) {
 		return (
-			<ProtectedLayout title={t('Project Management')}>
+			<ProtectedProjectLayout title={t('Project Management')}>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">
 						<Col xs={{ span: 24 }} md={{ span: 12 }}>
@@ -57,11 +57,9 @@ const MyProjectPage: NextPageWithLayout = () => {
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
 							<Space wrap>
-								{myProject?.data.status !== ProjectStatus.Rejected && (
-									<Button onClick={() => setShowProjectModal(true)} icon={<TbSettings size={16} />}>
-										<T>Settings</T>
-									</Button>
-								)}
+								<Button onClick={() => setShowProjectModal(true)} icon={<TbSettings size={16} />}>
+									<T>Settings</T>
+								</Button>
 								<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
 									<Button type="primary" icon={<HiExternalLink size={16} />}>
 										<T>Project page</T>
@@ -87,17 +85,17 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					<ProjectModal
 						seasonId={myProject?.data.stage.seasonId}
-						projectId={projectId}
+						projectId={myProject?.data.id}
 						open={showProjectModal}
 						onOk={handleSaveProject}
 						onCancel={() => setShowProjectModal(false)}
 					/>
 				</Spin>
-			</ProtectedLayout>
+			</ProtectedProjectLayout>
 		)
 	} else {
 		return (
-			<ProtectedLayout title={t('Project Management')}>
+			<ProtectedProjectLayout title={t('Project Management')}>
 				<Spin spinning={isLoadingMyProject}>
 					<Row justify="space-between" align="top">
 						<Col xs={{ span: 24 }} md={{ span: 12 }}>
@@ -121,7 +119,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					{!!myProject?.data && <>{/* <MyTeam project={myProject.data} shouldUpdate={projectUpdatedEvent} /> */}</>}
 				</Spin>
-			</ProtectedLayout>
+			</ProtectedProjectLayout>
 		)
 	}
 }
