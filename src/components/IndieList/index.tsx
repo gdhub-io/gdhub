@@ -7,12 +7,9 @@ const { Title, Paragraph } = Typography
 export const IndieList = () => {
 	return (
 		<>
-			<Title level={3} style={{ marginTop: 60 }}>
-				<T>Other Game Projects</T>
+			<Title level={2} style={{ marginTop: 60 }}>
+				<T>Recommendations for game projects</T>
 			</Title>
-			<Paragraph>
-				<T>Projects developed independently by community members (outside the incubation program).</T>
-			</Paragraph>
 
 			<SeasonProjectsSection seasonSlug="indie" />
 		</>

@@ -92,7 +92,7 @@ services:
       - APP_USERNAME=admin
       - APP_PASSWORD=admin
       - REDIS_URL=redis://default:password12345@redis/0
-      - QUEUES_LIST=tgMessageQueue
+      - QUEUES_LIST=tgMessageQueue,matchingSpecAndProjQueue
     ports:
       - "3003:3000"
     restart: unless-stopped
