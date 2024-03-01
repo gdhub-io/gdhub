@@ -1,6 +1,6 @@
 import { formatNestedJson } from '@/helpers/format'
+import { matchingQueue } from '@/queues/matching.queue'
 import { prisma } from '@/services/prisma'
-import { matchingSpecAndProjQueue } from '@/workers/matching.worker'
 import { ProjectStatus } from '@prisma/client'
 import dayjs from 'dayjs'
 import { Post, createHandler } from 'next-api-decorators'
@@ -177,13 +177,12 @@ class CronMatchingHandler {
 				const specialistText = formatNestedJson(specialist)
 				const projectText = formatNestedJson(project)
 
-				await matchingSpecAndProjQueue.add(
-					'matching-spec-and-proj',
-					{ specialityId: specialist.id, projectId: project.id, specialistText, projectText },
-					{
-						jobId: `matching-sp-${specialist.id}-${project.id}`,
-					}
-				)
+				await matchingQueue.add('matching-spec-and-proj', {
+					specialityId: specialist.id,
+					projectId: project.id,
+					specialistText,
+					projectText,
+				})
 			}
 		}
 

@@ -84,17 +84,20 @@ services:
       - gdhub-redis-data:/bitnami/redis/data
     networks:
       - gdhub-network
-  
+
   bullboard:
     image: registry.gdhub.io/bullboard:latest
     container_name: gdhub_bullboard
+    env_file: .env
     environment:
       - APP_USERNAME=admin
       - APP_PASSWORD=admin
       - REDIS_URL=redis://default:password12345@redis/0
-      - QUEUES_LIST=tgMessageQueue
+      - QUEUES_LIST=telegram,matching
+      - GDHUB_URL=${NEXTAUTH_URL}
+      - GDHUB_BACKEND_KEY={BACKEND_KEY}
     ports:
-      - "3003:3000"
+      - '3003:3000'
     restart: unless-stopped
     depends_on:
       - redis
