@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react'
 import { IndieList } from '@/components/IndieList'
-import SeasonsList from '@/components/SeasonsList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -37,6 +36,23 @@ const HubPage: NextPageWithLayout = () => {
 		return link
 	}, [router])
 
+	const linkToForm = useMemo(() => {
+		let link = ''
+
+		console.log('router.locale', router.locale)
+
+		switch (router.locale) {
+			case 'en':
+				link = 'https://tally.so/r/w2NV6D'
+				break
+			case 'ru':
+				link = 'https://tally.so/r/w8zl5P'
+				break
+		}
+
+		return link
+	}, [router])
+
 	return (
 		<ProtectedLayout>
 			<Head>
@@ -44,10 +60,12 @@ const HubPage: NextPageWithLayout = () => {
 			</Head>
 			<div className={styles.container}>
 				<Flex justify="end">
-					<Button type="primary" disabled>
-						<Space>
-							Add Project <CiLock style={{ display: 'block' }} />
-						</Space>
+					<Button type="primary">
+						<Link href={linkToForm} target="_blank">
+							<Space>
+								Add Project <CiLock style={{ display: 'block' }} />
+							</Space>
+						</Link>
 					</Button>
 				</Flex>
 				{session.status == 'authenticated' && !hasRole(UserRole.Member, session) && (
@@ -73,7 +91,7 @@ const HubPage: NextPageWithLayout = () => {
 				)}
 				{session.status == 'authenticated' && hasRole(UserRole.Member, session) && (
 					<>
-						<SeasonsList />
+						{/* <SeasonsList /> */}
 						<IndieList />
 					</>
 				)}
