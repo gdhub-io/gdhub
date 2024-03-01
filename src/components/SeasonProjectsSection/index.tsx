@@ -1,7 +1,7 @@
-import { Project, User } from '@prisma/client'
+import { MatchingSpecialistAndProject, Project, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Col, Card, Descriptions, Typography, Button, Row, Grid } from 'antd'
+import { Col, Card, Descriptions, Typography, Button, Row, Grid, Alert } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -19,9 +19,12 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 	const { data: projects, isFetching: isLoadingProjecs } = useQuery(
 		['projects', seasonId],
 		() =>
-			axios.get<(Project & { author: User })[]>('/api/season/projects', {
-				params: { seasonId, seasonSlug },
-			}),
+			axios.get<(Project & { availableSpecialists: MatchingSpecialistAndProject[]; author: User })[]>(
+				'/api/season/projects',
+				{
+					params: { seasonId, seasonSlug },
+				}
+			),
 		{ enabled: !!seasonId || !!seasonSlug }
 	)
 
@@ -62,6 +65,14 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 											<T>On the page of the project</T>
 										</Button>
 									</Link>
+									{!!project.availableSpecialists?.length && (
+										<Alert
+											showIcon
+											type="success"
+											message={`The project suits you ${project.availableSpecialists[0]?.avgScore}%`}
+											style={{ marginTop: 16 }}
+										/>
+									)}
 								</div>
 							}
 						/>
