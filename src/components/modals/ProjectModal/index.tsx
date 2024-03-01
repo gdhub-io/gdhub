@@ -320,8 +320,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 							</Space>
 						}
 						wrapperCol={{ span: 24 }}
-						rules={[{ required: true, type: 'url' }]}
-						required
+						rules={[{ type: 'url' }]}
 					>
 						<Input width={'100%'} disabled={project?.data.status == ProjectStatus.Approved} />
 					</Form.Item>
