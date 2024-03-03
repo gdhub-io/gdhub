@@ -204,6 +204,12 @@ a.text-link {
 	margin-top: 52px;
 }
 
+.ant-card-hoverable {
+	&:hover {
+		box-shadow: 0 0 0 1px rgba(0, 0, 0, .08), 0 4px 6px rgba(0, 0, 0, .04);
+	}
+}
+
 @media screen and (max-width: 575px) {
 	.app-container {
 		justify-content: unset;

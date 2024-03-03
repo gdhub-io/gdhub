@@ -40,14 +40,14 @@ const { Title, Text } = Typography
 
 export const ProtectedProjectLayout = ({ title, children }: any) => {
 	const router = useRouter()
-	const projectSlug = router.query.projectId as string
+	const projectSlug = router.query.slug as string
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
 
 	const { data: project } = useQuery(['user-project', session?.user.id], () =>
-		axios.get('/api/user/project', { params: { projectId: projectSlug } })
+		axios.get<any>('/api/user/project', { params: { projectId: projectSlug } })
 	)
 
 	useEffect(() => {

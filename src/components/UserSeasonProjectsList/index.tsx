@@ -7,7 +7,6 @@ import { Typography, Button, Grid, List, Space, Popconfirm, Badge } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
 import { GoLinkExternal, GoTrash } from 'react-icons/go'
-import ProjectModal from '../modals/ProjectModal'
 
 type ProjectsSectionArgs = {
 	seasonId: string
@@ -116,13 +115,6 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 						</Space>
 					</List.Item>
 				)}
-			/>
-
-			<ProjectModal
-				projectId={selectedProject}
-				open={showUserProjectModal}
-				onOk={handleSaveUserProject}
-				onCancel={() => setShowUserProjectModal(false)}
 			/>
 		</Space>
 	)

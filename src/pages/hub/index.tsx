@@ -1,26 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { IndieList } from '@/components/IndieList'
-import CreateProjectModal from '@/components/modals/CreateProjectModal'
+import { MyProjectList } from '@/components/MyProjectList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { UserRole } from '@prisma/client'
 import { T } from '@tolgee/react'
-import { Button, Flex, Space } from 'antd'
-import Head from 'next/head'
+import { Alert, Button, Space, Typography } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
+const { Title, Text } = Typography
+
 const HubPage: NextPageWithLayout = () => {
 	const session = useSession()
 	const router = useRouter()
-	const [openCreateProjectModal, setOpenCreateProjectModal] = useState(false)
-
-	useEffect(() => {
-		console.log('session', session, hasRole(UserRole.Member, session))
-	}, [session])
 
 	const linkToChat = useMemo(() => {
 		let link = ''
@@ -39,45 +35,47 @@ const HubPage: NextPageWithLayout = () => {
 
 	return (
 		<ProtectedLayout>
-			<Head>
-				<title>Game Developers Hub</title>
-			</Head>
-			<div className={styles.container}>
-				<Flex justify="end">
-					<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
-						<Space>Add Project</Space>
-					</Button>
-				</Flex>
-				{session.status == 'authenticated' && !hasRole(UserRole.Member, session) && (
-					<Space direction="vertical">
-						<p>
-							<T keyName="hub.text1.part1">
-								In order to become participants in the Hub, you need to fill out information about yourself, indicate
-								your specialties, preferences in games, and also indicate the time that you are willing to use to
-								participate in projects. To do this, go to your Profile and provide the required data.
-							</T>
-							<br />
-							<T keyName="hub.text1.part2">And don&apos;t forget to join the community chat using</T>{' '}
-							<Link href={linkToChat} target="_blank">
-								this link
-							</Link>
-						</p>
-						<Link href="/profile">
-							<Button>
-								<T>My Profile</T>
-							</Button>
-						</Link>
-					</Space>
+			<Space className={styles.container} direction="vertical" size={32}>
+				<Space direction="vertical" size={0}>
+					<Title level={2}>Hello, {session?.data?.user.name} 👋</Title>
+					<Text>
+						<T>I think now is the perfect time to make games.</T>
+					</Text>
+				</Space>
+
+				{session.status == 'authenticated' && session.data.user.onboardingDone && (
+					<Alert
+						type="warning"
+						message={
+							<Space direction="vertical">
+								<div>
+									<T keyName="hub.text1.part1">
+										Now you can get acquainted with our platform, but in order to be able to create your own projects or
+										respond to the vacancies of others, you need to complete the registration by filling in the
+										necessary information about yourself.
+									</T>
+									<br />
+									<T keyName="hub.text1.part2">And don&apos;t forget to join the community chat using</T>{' '}
+									<Link href={linkToChat} target="_blank">
+										this link.
+									</Link>
+								</div>
+								<Link href="/registration/onboarding">
+									<Button>
+										<T>Complete Registration</T>
+									</Button>
+								</Link>
+							</Space>
+						}
+					/>
 				)}
 				{session.status == 'authenticated' && hasRole(UserRole.Member, session) && (
 					<>
-						{/* <SeasonsList /> */}
+						<MyProjectList />
 						<IndieList />
 					</>
 				)}
-			</div>
-
-			<CreateProjectModal open={openCreateProjectModal} onCancel={() => setOpenCreateProjectModal(false)} />
+			</Space>
 		</ProtectedLayout>
 	)
 }

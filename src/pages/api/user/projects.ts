@@ -26,6 +26,20 @@ class ApiUsewrSeasonProjectsHandler {
 				status: status ? { equals: status } : undefined,
 				stage: seasonId ? { seasonId: { equals: seasonId } } : undefined,
 			},
+			select: {
+				id: true,
+				name: true,
+				slug: true,
+				description: true,
+				coverImage: true,
+				stage: {
+					select: {
+						isCurrent: true,
+						name: true,
+						season: { select: { id: true, name: true } },
+					},
+				},
+			},
 		})
 
 		return projects
