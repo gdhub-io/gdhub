@@ -1,32 +1,30 @@
+import { useContext } from 'react'
+import { ProjectContext } from '@/contexts/ProjectContext'
 import { Team, TeamMember, TeamMemberStatus, User } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Space, Table } from 'antd'
+import { Button, Grid, message, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
-interface ProjectVacanciesArgs {
-	teamId: string
-}
-
-const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
+const MyTeam = () => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
+	const contextProject = useContext(ProjectContext)?.contextProject
 
 	const {
 		data: team,
 		refetch: fetchMyTeam,
 		isLoading: isLoadingMyTeam,
 	} = useQuery(
-		['user-project-team', teamId],
+		['user-project-team', contextProject?.teamId],
 		() =>
 			axios.get<Team & { members: (TeamMember & { user: User })[] }>('/api/user/project/team', {
-				params: { teamId },
+				params: { teamId: contextProject?.teamId },
 			}),
 		{
-			enabled: !!teamId,
-			// refetchOnWindowFocus: false,
+			enabled: !!contextProject?.teamId,
 		}
 	)
 
@@ -54,7 +52,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 
 	const columns: ColumnsType<TeamMember & { user: User }> = [
 		{
-			title: t('Full Name'),
+			title: t('Member Name'),
 			key: 'userName',
 			render: (_, member) => {
 				return screens.md ? (
@@ -70,7 +68,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 			},
 		},
 		{
-			title: t('The role on the project'),
+			title: t('Position'),
 			dataIndex: 'position',
 			key: 'position',
 			responsive: ['md'],
@@ -79,7 +77,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 			},
 		},
 		{
-			title: t('The period of participation'),
+			title: t('Start and End Dates'),
 			dataIndex: 'startedAt',
 			responsive: ['md'],
 			key: 'startedAt',
@@ -97,6 +95,7 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 		},
 		{
 			key: 'fire',
+			title: 'Status',
 			render: (value, member) => {
 				if (member.status == TeamMemberStatus.Founder) return null
 
@@ -112,22 +111,14 @@ const MyTeam = ({ teamId }: ProjectVacanciesArgs) => {
 	]
 
 	return (
-		<>
-			<Space align="center" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>
-					<T>The project team</T>
-				</h3>
-			</Space>
-
-			<Table
-				showHeader={false}
-				loading={isLoadingMyTeam}
-				style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
-				columns={columns}
-				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
-				pagination={false}
-			/>
-		</>
+		<Table
+			// showHeader={false}
+			loading={isLoadingMyTeam || isFiring}
+			style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
+			columns={columns}
+			dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
+			pagination={false}
+		/>
 	)
 }
 

@@ -22,11 +22,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 	const { t } = useTolgee()
 	const slug = router.query.slug as string
 
-	const {
-		data: myProject,
-		isLoading: isLoadingMyProject,
-		refetch: fetchMyProject,
-	} = useQuery(
+	const { data: myProject, isLoading: isLoadingMyProject } = useQuery(
 		['user-project', slug],
 		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { slug } }),
 		{
@@ -36,68 +32,30 @@ const MyProjectPage: NextPageWithLayout = () => {
 		}
 	)
 
-	if (myProject?.data) {
-		return (
-			<ProtectedProjectLayout>
-				<Spin spinning={isLoadingMyProject}>
-					<Row justify="space-between" align="top">
-						<Col xs={{ span: 24 }} md={{ span: 12 }}>
-							<h1>{myProject?.data.name}</h1>
-						</Col>
-						<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
-							<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
-								<Button type="primary" icon={<HiExternalLink size={16} />}>
-									<T>Project page</T>
-								</Button>
-							</Link>
-						</Col>
-					</Row>
+	return (
+		<ProtectedProjectLayout>
+			<Spin spinning={isLoadingMyProject}>
+				<Row justify="space-between" align="top">
+					<Col xs={{ span: 24 }} md={{ span: 12 }}>
+						<h1>{myProject?.data.name}</h1>
+					</Col>
+					<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
+						<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
+							<Button type="primary" icon={<HiExternalLink size={16} />}>
+								<T>Project page</T>
+							</Button>
+						</Link>
+					</Col>
+				</Row>
 
-					{/* <p style={{ marginTop: 20 }}>{myProject?.data.description}</p> */}
-					<Text style={{ marginTop: 20 }}>
-						<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{myProject?.data.description || ''}</ReactMarkdown>
-					</Text>
+				<Text style={{ marginTop: 16 }}>
+					<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{myProject?.data.description || ''}</ReactMarkdown>
+				</Text>
 
-					{!!myProject.data && (
-						<>
-							<MyTeam teamId={myProject.data.teamId} />
-							<MyProjectVacancies teamId={myProject.data.teamId} project={myProject.data} />
-							<MyProjectCandidates project={myProject.data} />
-							<MyProjectReports project={myProject.data} />
-						</>
-					)}
-				</Spin>
-			</ProtectedProjectLayout>
-		)
-	} else {
-		return (
-			<ProtectedProjectLayout title={t('Project Management')}>
-				<Spin spinning={isLoadingMyProject}>
-					<Row justify="space-between" align="top">
-						<Col xs={{ span: 24 }} md={{ span: 12 }}>
-							<h1>{myProject?.data.name}</h1>
-						</Col>
-						<Col xs={{ span: 24 }} md={{ span: 12 }} style={{ textAlign: 'right' }}>
-							<Space wrap>
-								<Link href={`/project/${myProject?.data.slug || myProject?.data.id}`} target="_blank">
-									<Button
-										type="primary"
-										icon={<HiExternalLink size={16} style={{ position: 'relative', top: '3px', marginRight: '6px' }} />}
-									>
-										<T>Project page</T>
-									</Button>
-								</Link>
-							</Space>
-						</Col>
-					</Row>
-
-					<p style={{ marginTop: 20 }}>{myProject?.data.description}</p>
-
-					{!!myProject?.data && <>{/* <MyTeam project={myProject.data} shouldUpdate={projectUpdatedEvent} /> */}</>}
-				</Spin>
-			</ProtectedProjectLayout>
-		)
-	}
+				{!!myProject?.data && <MyProjectReports project={myProject.data} />}
+			</Spin>
+		</ProtectedProjectLayout>
+	)
 }
 
 export default MyProjectPage
