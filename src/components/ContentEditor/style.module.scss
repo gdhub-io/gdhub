@@ -1,4 +1,6 @@
 .editor {
-  border: 1px solid #adadad;
-  z-index: 1000 !important;
+  &:not(:global(.mdxeditor-popup-container)) {
+    border: 1px solid #adadad;
+    z-index: 1000 !important;
+  }
 }
