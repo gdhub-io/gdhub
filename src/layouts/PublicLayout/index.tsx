@@ -257,14 +257,6 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 				key: 'profile',
 			},
 			{
-				label: (
-					<Link href="/hub">
-						<T>My Projects</T>
-					</Link>
-				),
-				key: 'projects',
-			},
-			{
 				style: { display: isOpenedInTelegram ? 'none' : 'block' },
 				label: t('Sign out'),
 				key: 'logout',

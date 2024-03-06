@@ -144,14 +144,6 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 				),
 				key: 'profile',
 			},
-			{
-				label: (
-					<Link href="/my/projects">
-						<T>My Projects</T>
-					</Link>
-				),
-				key: 'projects',
-			},
 			{ type: 'divider' },
 			{
 				key: 'tg-community',
