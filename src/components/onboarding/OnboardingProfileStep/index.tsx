@@ -170,7 +170,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 											placeholder={t('country.placeholder', 'Select country')}
 											suffixIcon={<FiChevronDown size={24} color="#afafaf" />}
 											filterOption={(inputValue, option) =>
-												option!.title.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
+												option?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
 											}
 										>
 											{countries.map(({ value, label }: any) => (
