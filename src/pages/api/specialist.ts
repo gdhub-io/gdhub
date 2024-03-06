@@ -32,13 +32,12 @@ class ApiSpecialistHandler {
 				},
 				direction: true,
 				// paid data
-				availableProjects:
-					activeSubscription || isAdmin
-						? {
-								where: !isAdmin ? { project: { authorId: req.user.id } } : undefined,
-								include: { project: { select: { name: true } } },
-						  }
-						: undefined,
+				availableProjects: activeSubscription
+					? {
+							where: !isAdmin ? { project: { authorId: req.user.id } } : undefined,
+							include: { project: { select: { name: true } } },
+						}
+					: undefined,
 			},
 		})
 

@@ -55,11 +55,8 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 	const seoSettings: NextSeoProps = {
 		title,
 		canonical: router.asPath,
-		openGraph: {
-			title,
-			type: 'website',
-			url: router.asPath,
-		},
+		nofollow: true,
+		noindex: true,
 		...seo,
 	}
 
@@ -146,14 +143,6 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 					</Link>
 				),
 				key: 'profile',
-			},
-			{
-				label: (
-					<Link href="/my/projects">
-						<T>My Projects</T>
-					</Link>
-				),
-				key: 'projects',
 			},
 			{ type: 'divider' },
 			{

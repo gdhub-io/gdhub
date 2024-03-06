@@ -4,54 +4,15 @@ import { ProjectStatus, TeamMemberStatus, UserRole } from '@prisma/client'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import { slugify } from 'voca'
 
 class CreateProjectDto {
 	@IsString()
 	name: string
 
 	@IsString()
-	seasonId: string
-
-	@IsString({ each: true })
-	coreMechanics: string[]
-
-	@IsString()
 	@IsOptional()
 	description?: string
-
-	@IsString()
-	@IsOptional()
-	coverImage?: string
-
-	@IsString()
-	genre: string
-
-	@IsString()
-	setting: string
-
-	@IsString()
-	platform: string
-
-	@IsString()
-	visualStyle: string
-
-	@IsString()
-	audition: string
-
-	@IsString()
-	@IsOptional()
-	videoLink?: string
-
-	@IsString()
-	@IsOptional()
-	pitchdeckLink?: string
-
-	@IsString()
-	@IsOptional()
-	gddLink?: string
-
-	@IsString()
-	conceptLink: string
 }
 
 class UpdateProjectDto {
@@ -122,7 +83,7 @@ class UpdateProjectDto {
 
 class GetProjectDto {
 	@IsString()
-	projectId: string
+	slug: string
 }
 
 class QueryIdParam {
@@ -133,9 +94,9 @@ class QueryIdParam {
 @NextAuthGuard('user')
 class ApiProjectHandler {
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { projectId }: GetProjectDto) {
-		const project = await prisma.project.findFirst({
-			where: { id: projectId, authorId: req.user.id },
+	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { slug }: GetProjectDto) {
+		const project = await prisma.project.findUnique({
+			where: { slug },
 			include: { stage: true },
 		})
 
@@ -145,7 +106,7 @@ class ApiProjectHandler {
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { seasonId, ...data }: CreateProjectDto
+		@Body(ValidationPipe) { name, description }: CreateProjectDto
 	) {
 		if (!req.user.id) throw Error('Unknown user')
 
@@ -155,13 +116,15 @@ class ApiProjectHandler {
 		})
 
 		const season = await prisma.season.findFirst({
-			where: { id: seasonId },
+			where: { slug: 'indie' },
 			include: { stages: { where: { isCurrent: { equals: true } } } },
 		})
 
 		const project = await prisma.project.create({
 			data: {
-				...data,
+				name,
+				slug: slugify(name),
+				description,
 				author: { connect: { id: req.user.id } },
 				status: ProjectStatus.Registered,
 				stage: { connect: { id: season?.stages[0].id } },

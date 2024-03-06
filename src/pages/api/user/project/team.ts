@@ -13,10 +13,8 @@ class UserTeamDto {
 class ApiUserTeamHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { teamId }: UserTeamDto) {
-		const team = await prisma.team.findFirst({
-			where: {
-				id: teamId,
-			},
+		const team = await prisma.team.findUnique({
+			where: { id: teamId },
 			include: {
 				members: {
 					where: {

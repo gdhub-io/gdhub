@@ -6,7 +6,7 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
-import { publicThemeConfig } from '@/config/theme'
+import { publicThemeConfig, secondFont } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
 import { tolgeeService } from '@/services/tolgee'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -19,10 +19,10 @@ import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import timezone from 'dayjs/plugin/timezone'
 import weekday from 'dayjs/plugin/weekday'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
-import { Lora } from 'next/font/google'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { SessionProvider } from 'next-auth/react'
@@ -31,20 +31,13 @@ import { DefaultSeo } from 'next-seo'
 import NProgress from 'nprogress'
 
 dayjs.extend(localizedFormat)
+dayjs.extend(timezone)
 dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale(defaultLocale)
 
 NProgress.configure({ showSpinner: false })
-
-const secondFont = Lora({
-	subsets: ['latin', 'cyrillic'],
-	weight: ['400', '700'],
-	style: ['normal', 'italic'],
-	display: 'swap',
-	adjustFontFallback: false,
-})
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
 	getLayout?: (page: ReactNode) => ReactNode
@@ -100,7 +93,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}
 
 	const routeChangeComplete = (url: string) => {
-		pageview(url)
+		if (process.env.NODE_ENV == 'production') pageview(url)
 		// setLoadingOff()
 		// document.body.style.overflow = 'unset'
 		NProgress.done()
@@ -122,24 +115,25 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 		<>
 			<style jsx global>{`
 				:root {
-					--main-font-family: ${publicThemeConfig?.token?.fontFamily}, sans-serif;
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
 				}
 			`}</style>
 			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
-			<Script
-				id="gtag-base"
-				strategy="afterInteractive"
-				dangerouslySetInnerHTML={{
-					__html: `
+			{process.env.NODE_ENV == 'production' && (
+				<Script
+					id="gtag-base"
+					strategy="afterInteractive"
+					dangerouslySetInnerHTML={{
+						__html: `
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer', '${GTM_ID}');
           `,
-				}}
-			/>
+					}}
+				/>
+			)}
 			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
 				<ErrorBoundary>
 					<QueryClientProvider client={queryClient}>

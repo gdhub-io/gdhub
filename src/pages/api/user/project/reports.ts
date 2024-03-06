@@ -5,15 +5,16 @@ import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorat
 
 class GetProjectReportsDto {
 	@IsString()
-	projectId: string
+	slug: string
 }
 
 @NextAuthGuard('user')
 class ApiUserProjectReportsHandler {
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { projectId }: GetProjectReportsDto) {
+	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { slug }: GetProjectReportsDto) {
 		const reports = await prisma.projectReport.findMany({
-			where: { projectId },
+			where: { project: { slug } },
+			include: { project: true },
 			orderBy: [{ publishedAt: 'desc' }],
 		})
 

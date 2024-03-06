@@ -63,7 +63,7 @@ class ApiProfileHandler {
 				preferredGenres: preferredGenres
 					? {
 							set: preferredGenres?.map((v: string) => ({ id: v })),
-					  }
+						}
 					: undefined,
 				preferredLevels: preferredLevels ? { set: preferredLevels?.map((v: string) => ({ id: v })) } : undefined,
 				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,

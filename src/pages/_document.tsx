@@ -37,7 +37,7 @@ const MyDocument = () => (
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 		</Head>
 		<body>
-			{process.env.NEXT_PUBLIC_APP_URI !== 'http://localhost:3000' && (
+			{process.env.NODE_ENV == 'production' && (
 				<noscript>
 					<iframe
 						src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

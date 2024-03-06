@@ -4,7 +4,6 @@ import { T, useTolgee } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { DateTime } from 'luxon'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 
@@ -174,7 +173,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 								wrapperCol={{ span: 24 }}
 								extra={
 									<small>
-										<T>Temporary zone</T> {DateTime.now().offsetNameShort}
+										<T>Time zone</T> {dayjs().tz().offsetName('short')}
 									</small>
 								}
 							>
