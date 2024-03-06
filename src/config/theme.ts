@@ -1,7 +1,20 @@
 import { ThemeConfig, theme } from 'antd'
-import { Mulish as AppFont } from 'next/font/google'
+import { Mulish as AppFont, Lora } from 'next/font/google'
 
-const mainFont = AppFont({ subsets: ['latin', 'cyrillic'], display: 'swap', adjustFontFallback: false })
+export const mainFont = AppFont({
+	subsets: ['latin', 'cyrillic'],
+	display: 'swap',
+	adjustFontFallback: false,
+	variable: '--main-font-family',
+})
+
+export const secondFont = Lora({
+	subsets: ['latin', 'cyrillic'],
+	weight: ['400', '700'],
+	style: ['normal', 'italic'],
+	display: 'swap',
+	adjustFontFallback: false,
+})
 
 export const landingThemeConfig: ThemeConfig = {
 	algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],

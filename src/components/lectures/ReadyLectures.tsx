@@ -7,7 +7,6 @@ import { Button, Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { DateTime } from 'luxon'
 import { useRouter } from 'next/router'
 
 export const ReadyLectures = () => {
@@ -95,9 +94,7 @@ export const ReadyLectures = () => {
 				key: 'date',
 				responsive: ['md'],
 				render: (date) => {
-					return DateTime.fromISO(date).toFormat('dd LLL yyyy, t', {
-						locale: router.locale,
-					})
+					return dayjs(date).format('dd LLL yyyy, t')
 				},
 			},
 			{

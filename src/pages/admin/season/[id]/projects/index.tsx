@@ -7,12 +7,13 @@ import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Row, Space, Typography, theme } from 'antd'
 import axios from 'axios'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { GoArrowLeft } from 'react-icons/go'
-import Board from 'react-trello-ts'
-import { BoardData, Lane } from 'react-trello-ts/dist/types/Board'
 import styles from './style.module.scss'
+
+const Board = dynamic(() => import('react-trello-ts'), { ssr: false })
 
 const { Title, Text } = Typography
 
@@ -58,10 +59,10 @@ const SeasonProjectIdeasPage: NextPageWithLayout = () => {
 		setSelectedProjectId(undefined)
 	}
 
-	const data: BoardData | undefined = useMemo(() => {
+	const data: any | undefined = useMemo(() => {
 		if (!season?.data) return
 
-		const lanes: Lane[] = season.data.stages.map((stage) => ({
+		const lanes: any[] = season.data.stages.map((stage) => ({
 			id: stage.id,
 			title: stage.name,
 			label: stage.projects.length.toString(),
