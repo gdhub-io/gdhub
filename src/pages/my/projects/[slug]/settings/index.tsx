@@ -62,7 +62,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 	)
 
 	const { mutateAsync: updateProject, isLoading: isUpdating } = useMutation((data: any) =>
-		axios.put<Project>('/api/user/project', data, { params: { id: projectSlug } })
+		axios.put<Project>('/api/user/project', data, { params: { id: project?.data.id } })
 	)
 
 	useEffect(() => {
@@ -413,7 +413,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 				</Form>
 			</Spin>
 
-			<Button type="primary" onClick={handleOk}>
+			<Button type="primary" onClick={handleOk} loading={isUpdating}>
 				<T>Save</T>
 			</Button>
 		</ProtectedProjectLayout>
