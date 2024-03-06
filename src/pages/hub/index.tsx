@@ -33,6 +33,23 @@ const HubPage: NextPageWithLayout = () => {
 		return link
 	}, [router])
 
+	const linkToForm = useMemo(() => {
+		let link = ''
+
+		console.log('router.locale', router.locale)
+
+		switch (router.locale) {
+			case 'en':
+				link = 'https://tally.so/r/w2NV6D'
+				break
+			case 'ru':
+				link = 'https://tally.so/r/w8zl5P'
+				break
+		}
+
+		return link
+	}, [router])
+
 	return (
 		<ProtectedLayout>
 			<Space className={styles.container} direction="vertical" size={32}>

@@ -2,26 +2,44 @@ import { formatNestedJson } from '@/helpers/format'
 import { matchingQueue } from '@/queues/matching.queue'
 import { prisma } from '@/services/prisma'
 import { ProjectStatus } from '@prisma/client'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
-import { Post, createHandler } from 'next-api-decorators'
+import { Body, Post, createHandler } from 'next-api-decorators'
+
+class CronMatchingHandlerDto {
+	@IsString()
+	@IsOptional()
+	projectId?: string
+
+	@IsString()
+	@IsOptional()
+	specialityId?: string
+
+	@IsNumber()
+	@IsOptional()
+	take?: number
+}
 
 // @NextAuthGuard('public_api')
 class CronMatchingHandler {
 	@Post()
-	public async handler() {
+	public async handler(@Body() { projectId, specialityId, take }: CronMatchingHandlerDto) {
 		const lastUpdatedAt = dayjs().subtract(7, 'days').toDate()
 
 		const projects = await prisma.project.findMany({
 			where: {
+				id: projectId,
 				status: ProjectStatus.Approved,
-				OR: [
-					{
-						availableSpecialists: {
-							some: { updatedAt: { lte: lastUpdatedAt } },
-						},
-					},
-					{ availableSpecialists: { none: {} } },
-				],
+				OR: !specialityId
+					? [
+							{
+								availableSpecialists: {
+									some: { updatedAt: { lte: lastUpdatedAt } },
+								},
+							},
+							{ availableSpecialists: { none: {} } },
+						]
+					: undefined,
 			},
 			select: {
 				id: true,
@@ -108,20 +126,14 @@ class CronMatchingHandler {
 					},
 				},
 			},
-			take: 1,
+			take: !specialityId ? 1 : undefined,
 		})
 
 		const specialists = await prisma.speciality.findMany({
 			where: {
-				// user: { profile: { isActive: true } },
-				// OR: [
-				// {
-				// 	availableProjects: {
-				// 		every: { updatedAt: { lte: lastUpdatedAt } },
-				// 	},
-				// },
-				// { availableProjects: { none: {} } },
-				// ],
+				id: specialityId,
+				user: { profile: { isActive: true } },
+				OR: [{ availableProjects: { none: {} } }],
 			},
 			select: {
 				id: true,
@@ -156,7 +168,7 @@ class CronMatchingHandler {
 				},
 			},
 			orderBy: { updatedAt: 'desc' },
-			// take: 10,
+			take,
 		})
 
 		let matchingCount = 0
@@ -186,7 +198,7 @@ class CronMatchingHandler {
 			}
 		}
 
-		console.log(`Matching jobs in queue: ${matchingCount}`)
+		console.log(`Matching specialists in queue: ${matchingCount}`)
 	}
 }
 
