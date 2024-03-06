@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import ProjectModal from '@/components/modals/ProjectModal'
 import { SeasonData } from '@/components/SeasonContent'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
 import { hasRole } from '@/helpers/user'
@@ -96,13 +95,6 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 				)}
 
 				{!isStageExpired() && <UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />}
-
-				<ProjectModal
-					seasonId={season.id}
-					open={showProjectModal}
-					onOk={handleSaveProjectIdea}
-					onCancel={() => setShowProjectModal(false)}
-				/>
 			</Spin>
 		</div>
 	)

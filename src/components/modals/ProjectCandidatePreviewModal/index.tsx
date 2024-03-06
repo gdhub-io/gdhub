@@ -182,6 +182,9 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 										<Descriptions.Item label={<T>Place of residence</T>}>
 											{[candidate.data.user.profile.country, candidate.data.user.profile.city].join(', ')}
 										</Descriptions.Item>
+										<Descriptions.Item label={<T>Motivation</T>}>
+											{candidate.data.user.profile.motivation}
+										</Descriptions.Item>
 									</Descriptions>
 								</Col>
 								<Col xs={{ span: 24, order: 0 }} md={{ span: 6, order: 1 }}>

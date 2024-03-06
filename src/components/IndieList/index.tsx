@@ -8,8 +8,11 @@ export const IndieList = () => {
 	return (
 		<>
 			<Title level={2} style={{ marginTop: 60 }}>
-				<T>Recommendations for game projects</T>
+				<T>Game Projects</T>
 			</Title>
+			<Paragraph>
+				<T>Projects developed independently by community members.</T>
+			</Paragraph>
 
 			<SeasonProjectsSection seasonSlug="indie" />
 		</>

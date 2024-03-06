@@ -55,11 +55,8 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 	const seoSettings: NextSeoProps = {
 		title,
 		canonical: router.asPath,
-		openGraph: {
-			title,
-			type: 'website',
-			url: router.asPath,
-		},
+		nofollow: true,
+		noindex: true,
 		...seo,
 	}
 

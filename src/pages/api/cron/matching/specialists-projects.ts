@@ -1,6 +1,6 @@
 import { formatNestedJson } from '@/helpers/format'
+import { matchingQueue } from '@/queues/matching.queue'
 import { prisma } from '@/services/prisma'
-import { matchingSpecAndProjQueue } from '@/workers/matching.worker'
 import { ProjectStatus } from '@prisma/client'
 import { IsNumber, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
@@ -38,7 +38,7 @@ class CronMatchingHandler {
 								},
 							},
 							{ availableSpecialists: { none: {} } },
-					  ]
+						]
 					: undefined,
 			},
 			select: {
@@ -189,15 +189,12 @@ class CronMatchingHandler {
 				const specialistText = formatNestedJson(specialist)
 				const projectText = formatNestedJson(project)
 
-				const response = await matchingSpecAndProjQueue.add(
-					'matching-spec-and-proj',
-					{ specialityId: specialist.id, projectId: project.id, specialistText, projectText },
-					{
-						// jobId: `matching-sp-${specialist.id}-${project.id}`,
-					}
-				)
-
-				console.log('matchingSpecAndProjQueue', response.data)
+				await matchingQueue.add('matching-spec-and-proj', {
+					specialityId: specialist.id,
+					projectId: project.id,
+					specialistText,
+					projectText,
+				})
 			}
 		}
 

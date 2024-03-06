@@ -1,4 +1,14 @@
 .editor {
-  border: 1px solid #adadad;
-  z-index: 1000 !important;
+  &:not(:global(.mdxeditor-popup-container)) {
+    border: 1px solid #adadad;
+    z-index: 1000 !important;
+  }
+
+  :global {
+    .mdxeditor-toolbar {
+      background: #fff;
+      border-bottom: 1px solid #afafaf;
+      border-radius: 0;
+    }
+  }
 }

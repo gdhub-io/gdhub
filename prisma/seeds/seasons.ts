@@ -49,7 +49,7 @@ export const seedDefaultSeasons = async (prisma: ExtendedPrismaClient) => {
 		prisma.season.create({
 			data: {
 				name: 'Indie',
-				slug: '/indie',
+				slug: 'indie',
 				startedAt: dayjs().toISOString(),
 				description: 'Default pipeline for indie teams',
 				stages: {

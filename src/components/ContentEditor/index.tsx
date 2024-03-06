@@ -31,6 +31,7 @@ import styles from './style.module.scss'
 interface EditorProps {
 	markdown: string
 	editorRef?: React.MutableRefObject<MDXEditorMethods | null>
+	className?: string
 	onChange?: (text: string) => void
 }
 
@@ -75,13 +76,13 @@ const YouTubeButton = () => {
 	)
 }
 
-const ContentEditor: FC<EditorProps> = ({ markdown, editorRef, onChange = () => {} }) => {
+const ContentEditor: FC<EditorProps> = ({ markdown, className, editorRef, onChange = () => {} }) => {
 	const { data: session } = useSession()
 
 	return (
 		<MDXEditor
 			ref={editorRef}
-			className={styles.editor}
+			className={`${styles.editor} ${className}`}
 			markdown={markdown}
 			onChange={onChange}
 			plugins={[

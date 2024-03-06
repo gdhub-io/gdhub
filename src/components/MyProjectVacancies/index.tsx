@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
-import { Project, TeamVacancyStatus } from '@prisma/client'
+import { ProjectContext } from '@/contexts/ProjectContext'
+import { TeamVacancyStatus } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Flex, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
@@ -19,14 +20,10 @@ interface Vacancy {
 	[key: string]: any
 }
 
-interface MyProjectVacanciesArgs {
-	teamId: string
-	project: Partial<Project>
-}
-
-const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
+const MyProjectVacancies = () => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
+	const contextProject = useContext(ProjectContext)?.contextProject
 	const [showVacancyModal, setShowVacancyModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 	const [showVacancyArchiveModal, setShowVacancyArchiveModal] = useState(false)
@@ -36,13 +33,13 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 		refetch: fetchMyProjectVacancies,
 		isLoading: isLoadingMyMyProjectVacancies,
 	} = useQuery(
-		['project-team-vacancies', teamId],
+		['project-team-vacancies', contextProject?.teamId],
 		() =>
 			axios.get('/api/user/project/vacancies', {
-				params: { teamId },
+				params: { teamId: contextProject?.teamId },
 			}),
 		{
-			enabled: !!teamId,
+			enabled: !!contextProject?.teamId,
 			refetchOnWindowFocus: false,
 		}
 	)
@@ -166,8 +163,8 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 			)}
 
 			<VacancyModal
-				teamId={teamId}
-				projectId={project?.id}
+				teamId={contextProject?.teamId}
+				projectId={contextProject?.id}
 				vacancyId={selectedVacancyId}
 				open={showVacancyModal}
 				onCancel={() => {
@@ -178,9 +175,9 @@ const MyProjectVacancies = ({ teamId, project }: MyProjectVacanciesArgs) => {
 			/>
 
 			<VacancyArchiveModal
-				teamId={teamId}
-				projectId={project?.id}
-				projectName={project?.name}
+				teamId={contextProject?.teamId}
+				projectId={contextProject?.id}
+				projectName={contextProject?.name}
 				open={showVacancyArchiveModal}
 				onCancel={() => {
 					setShowVacancyArchiveModal(false)

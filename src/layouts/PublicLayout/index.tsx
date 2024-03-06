@@ -258,7 +258,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 			},
 			{
 				label: (
-					<Link href="/my/projects">
+					<Link href="/hub">
 						<T>My Projects</T>
 					</Link>
 				),

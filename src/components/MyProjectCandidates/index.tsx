@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import ProjectCandidatePreviewModal from '@/components/modals/ProjectCandidatePreviewModal'
-import { Project, Speciality, TeamMember, TeamVacancy, User } from '@prisma/client'
+import { ProjectContext } from '@/contexts/ProjectContext'
+import { Speciality, TeamMember, TeamVacancy, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Grid, Space, Table, Tag } from 'antd'
@@ -8,12 +9,9 @@ import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
-interface MyProjectCandidatesArgs {
-	project: Project & Record<string, any>
-}
-
-const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
+const MyProjectCandidates = () => {
 	const screens = Grid.useBreakpoint()
+	const contextProject = useContext(ProjectContext)?.contextProject
 	const { t } = useTolgee()
 	const [showCandidatePreviewModal, setShowCandidatePreviewModal] = useState(false)
 	const [selectedCandidateId, setSelectedCandidateId] = useState<string>()
@@ -23,14 +21,14 @@ const MyProjectCandidates = ({ project }: MyProjectCandidatesArgs) => {
 		refetch: refetchCandidates,
 		isFetching: isLoadingCandidates,
 	} = useQuery(
-		['candidates', project.id],
+		['candidates', contextProject?.id],
 		() =>
 			axios.get<
 				(TeamMember & { vacancy: TeamVacancy; speciality: Speciality; user: User & { specialities: Speciality[] } })[]
 			>('/api/user/project/candidates', {
-				params: { teamId: project?.teamId },
+				params: { teamId: contextProject?.teamId },
 			}),
-		{ enabled: !!project }
+		{ enabled: !!contextProject }
 	)
 
 	const columns: ColumnsType<

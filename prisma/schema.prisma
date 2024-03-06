@@ -211,11 +211,11 @@ model Project {
   stageId              String
   authorId             String
   coverImage           String?
-  genre                String
-  platform             String
-  setting              String
-  visualStyle          String
-  slug                 String                         @default(cuid())
+  genre                String?
+  platform             String?
+  setting              String?
+  visualStyle          String?
+  slug                 String                         @unique
   audition             String?
   conceptLink          String?
   gddLink              String?
