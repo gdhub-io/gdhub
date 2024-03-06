@@ -86,7 +86,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 							allowClear
 							placeholder={<T>Country</T>}
 							filterOption={(inputValue, option) =>
-								option!.title.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
+								option?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
 							}
 						>
 							{countries.map(({ value, label }: any) => (
