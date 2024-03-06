@@ -17,7 +17,7 @@ export const MyProjectList = () => {
 	})
 
 	return (
-		<Space direction="vertical" size={16}>
+		<Space direction="vertical" size={16} style={{ width: '100%' }}>
 			<Flex justify="space-between">
 				<Title level={2}>
 					<T>My Projects</T>
@@ -29,7 +29,7 @@ export const MyProjectList = () => {
 			</Flex>
 
 			<Row gutter={[16, 16]} wrap>
-				{myProjects?.data?.length > 0 &&
+				{myProjects?.data?.length > 0 ? (
 					myProjects?.data.map((myProject: any) => (
 						<Col key={myProject.id} xs={24} lg={8}>
 							<Link href={`/my/projects/${myProject.slug}`}>
@@ -51,7 +51,12 @@ export const MyProjectList = () => {
 								</Card>
 							</Link>
 						</Col>
-					))}
+					))
+				) : (
+					<Text type="secondary">
+						You don&apos;t have any project yet. Create <span>a new one</span> or join <span>existing ones</span>.
+					</Text>
+				)}
 			</Row>
 
 			<CreateProjectModal open={openCreateProjectModal} onCancel={() => setOpenCreateProjectModal(false)} />

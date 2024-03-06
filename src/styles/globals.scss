@@ -167,6 +167,20 @@ a.text-link {
 		}
 	}
 
+	&.gray-btn {
+		background-color: transparent;
+		border-color: #031625;
+		color: #031625;
+		box-shadow: none;
+
+		&:hover,
+		&:active {
+			background-color: #031625 !important;
+			color: #FFFDFC !important;
+			border-color: #031625;
+		}
+	}
+
 	&>span {
 		line-height: 16px;
 	}

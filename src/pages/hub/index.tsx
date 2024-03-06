@@ -43,7 +43,7 @@ const HubPage: NextPageWithLayout = () => {
 					</Text>
 				</Space>
 
-				{session.status == 'authenticated' && session.data.user.onboardingDone && (
+				{session.status == 'authenticated' && !session.data.user.onboardingDone && (
 					<Alert
 						type="warning"
 						message={

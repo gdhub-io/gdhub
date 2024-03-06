@@ -36,7 +36,7 @@ class ApiSpecialistHandler {
 					? {
 							where: !isAdmin ? { project: { authorId: req.user.id } } : undefined,
 							include: { project: { select: { name: true } } },
-					  }
+						}
 					: undefined,
 			},
 		})

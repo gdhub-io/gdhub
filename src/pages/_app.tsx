@@ -100,7 +100,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}
 
 	const routeChangeComplete = (url: string) => {
-		pageview(url)
+		if (process.env.NODE_ENV == 'production') pageview(url)
 		// setLoadingOff()
 		// document.body.style.overflow = 'unset'
 		NProgress.done()
@@ -127,19 +127,21 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 				}
 			`}</style>
 			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
-			<Script
-				id="gtag-base"
-				strategy="afterInteractive"
-				dangerouslySetInnerHTML={{
-					__html: `
+			{process.env.NODE_ENV == 'production' && (
+				<Script
+					id="gtag-base"
+					strategy="afterInteractive"
+					dangerouslySetInnerHTML={{
+						__html: `
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer', '${GTM_ID}');
           `,
-				}}
-			/>
+					}}
+				/>
+			)}
 			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
 				<ErrorBoundary>
 					<QueryClientProvider client={queryClient}>

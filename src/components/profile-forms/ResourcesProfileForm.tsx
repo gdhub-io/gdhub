@@ -92,7 +92,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 																	'profile-forms.resources.field.timeForWorkMax.error',
 																	'The maximum value cannot be less than the minimum'
 																)
-														  )
+															)
 														: Promise.resolve(),
 											},
 										]}
