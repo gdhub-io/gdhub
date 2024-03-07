@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { pipLayout } from '@/config/daily'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { StreamLayout } from '@/layouts/StreamLayout'
-import DailyIframe, { DailyCall, DailyCallOptions } from '@daily-co/daily-js'
+import { DailyCallOptions } from '@daily-co/daily-js'
+import { DailyProvider, useCallFrame } from '@daily-co/daily-react'
 import { UserRole } from '@prisma/client'
-import { useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
-import { Button, Form, Input, Space, message } from 'antd'
+import { Button, Divider, Form, Input, InputRef, Select, Space } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { v4 as uuidv4 } from 'uuid'
@@ -29,54 +29,74 @@ const LiveReportsPage = () => {
 	const { data: session } = useSession()
 	const uuid = uuidv4()
 	const callRef = useRef(null)
+	const titleRef = useRef<InputRef>(null)
+	const subTitleRef = useRef<InputRef>(null)
 	const [form] = Form.useForm()
-	const [callFrame, setCallFrame] = useState<DailyCall>()
 	const [instanceId, setInstanceId] = useState<string>()
 	const [rtmpUrl, setrtmpUrl] = useState<string>('rtmp://a.rtmp.youtube.com/live2')
 	const [streamKey, setStreamKey] = useState<string>('rmv8-528k-updh-kf1r-1hx8')
 	const [meetingStarted, setMeetingStarted] = useState(false)
+	const [streamMode, setStreamMode] = useState<string | number | boolean | undefined>(
+		pipLayout.composition_params?.mode || 'single'
+	)
+	const [showTitleSlate, setShowTitleSlate] = useState<boolean>(false)
 
-	const { mutateAsync: getUserToken } = useMutation((data: { roomName: string }) =>
-		axios.get<{ token: string }>('/api/live/token', { params: data })
+	const { data: token } = useQuery(
+		['daily-co-token', session?.user.id],
+		() => axios.get<{ token: string }>('/api/live/token', { params: { roomName: 'reports' } }),
+		{ refetchOnWindowFocus: false, refetchInterval: false, refetchOnMount: false }
 	)
 
+	const callFrame = useCallFrame({
+		parentEl: callRef.current,
+		options: { ...dailyCallOptions, token: token?.data.token },
+		shouldCreateInstance: useCallback(() => Boolean(callRef.current) && Boolean(token?.data.token), [token?.data]),
+	})
+
 	useEffect(() => {
-		if (session) createAndJoinCall()
-	}, [session])
+		if (!callFrame) return
 
-	const createAndJoinCall = async () => {
-		try {
-			if (!callRef?.current) return
+		callFrame.join({ url: 'https://gdhub.daily.co/reports' })
 
-			if (callFrame) {
-				await callFrame.destroy()
-			}
+		callFrame.on('joined-meeting', joinedMeeting)
+		callFrame.on('left-meeting', () => leaveCall())
 
-			const {
-				data: { token },
-			} = await getUserToken({ roomName: 'reports' })
-
-			let newCallFrame: DailyCall = DailyIframe.createFrame(callRef?.current, {
-				...dailyCallOptions,
-				token: token,
-			})
-
-			setCallFrame(newCallFrame)
-
-			newCallFrame.on('joined-meeting', joinedMeeting)
-			newCallFrame.on('left-meeting', () => leaveCall(newCallFrame))
-
-			await newCallFrame.join({ url: `https://gdhub.daily.co/reports` })
-		} catch (error: any) {
-			message.error(error.message)
-			console.error(error)
+		return () => {
+			callFrame.off('joined-meeting', joinedMeeting)
+			callFrame.off('left-meeting', () => leaveCall())
 		}
-	}
+	}, [callFrame])
 
-	const leaveCall = async (_callFrame: DailyCall) => {
-		await _callFrame.destroy()
-		setCallFrame(undefined)
+	useEffect(() => {
+		if (!callFrame || !instanceId) return
+
+		if (streamMode) {
+			callFrame.updateLiveStreaming({
+				instanceId: uuid,
+				layout: { preset: 'custom', composition_params: { mode: streamMode } },
+			})
+		}
+
+		if (showTitleSlate) {
+			callFrame.updateLiveStreaming({
+				layout: {
+					preset: 'custom',
+					composition_params: {
+						showTitleSlate,
+						'titleSlate.title': titleRef?.current?.input?.value || 'Title',
+						'titleSlate.subtitle': subTitleRef?.current?.input?.value || 'Subtitle',
+					},
+				},
+			})
+		}
+
+		console.log('ok')
+	}, [streamMode, showTitleSlate])
+
+	const leaveCall = async () => {
+		await callFrame?.destroy()
 		setMeetingStarted(false)
+		setInstanceId(undefined)
 	}
 
 	const joinedMeeting = () => {
@@ -114,43 +134,66 @@ const LiveReportsPage = () => {
 	}, [rtmpUrl, streamKey, meetingStarted])
 
 	return (
-		<main className="container">
-			{session?.user.roles.includes(UserRole.Admin) && (
-				<Space align="start">
-					{!instanceId ? (
-						<Button onClick={startLiveStream} disabled={!readyToStream} type="primary">
-							<T>Start a stream</T>
-						</Button>
-					) : (
-						<Button onClick={stopLiveStream}>
-							<T>End stream</T>
-						</Button>
-					)}
-					<Form
-						form={form}
-						layout="inline"
-						validateMessages={{ required: 'This field is required' }}
-						initialValues={{ rtmpUrl, streamKey }}
-					>
-						<Form.Item name="rtmpUrl" rules={[{ required: true }]}>
-							<Input placeholder="Rtml Url" htmlSize={40} onChange={(e) => setrtmpUrl(e.target.value)} />
-						</Form.Item>
-						<Form.Item name="streamKey" rules={[{ required: true }]}>
-							<Input placeholder="Stream Key" htmlSize={30} onChange={(e) => setStreamKey(e.target.value)} />
-						</Form.Item>
-					</Form>
-				</Space>
-			)}
+		<ProtectedLayout>
+			<DailyProvider callObject={callFrame}>
+				<main className="container">
+					{session?.user.roles.includes(UserRole.Admin) && (
+						<>
+							<Space align="start">
+								<Form
+									form={form}
+									layout="inline"
+									validateMessages={{ required: 'This field is required' }}
+									initialValues={{ rtmpUrl, streamKey }}
+								>
+									<Form.Item name="rtmpUrl" rules={[{ required: true }]}>
+										<Input placeholder="Rtml Url" htmlSize={40} onChange={(e) => setrtmpUrl(e.target.value)} />
+									</Form.Item>
+									<Form.Item name="streamKey" rules={[{ required: true }]}>
+										<Input placeholder="Stream Key" htmlSize={30} onChange={(e) => setStreamKey(e.target.value)} />
+									</Form.Item>
+								</Form>
+								{!instanceId ? (
+									<Button onClick={startLiveStream} disabled={!readyToStream} type="primary">
+										<T>Start a stream</T>
+									</Button>
+								) : (
+									<Button onClick={stopLiveStream}>
+										<T>End stream</T>
+									</Button>
+								)}
+							</Space>
 
-			<div ref={callRef} className={styles.callFrame} />
-		</main>
+							{!!instanceId && (
+								<Space style={{ marginTop: 16 }} size={16}>
+									<Select
+										style={{ width: 200 }}
+										defaultValue={streamMode}
+										options={[
+											{ value: 'single', label: 'Single' },
+											{ value: 'split', label: 'Split' },
+											{ value: 'grid', label: 'Grid' },
+											{ value: 'dominant', label: 'Dominant' },
+											{ value: 'pip', label: 'Pip' },
+										]}
+										onSelect={(value) => setStreamMode(value)}
+									/>
+									<Divider type="vertical" />
+									<Input ref={titleRef} placeholder="Title" defaultValue="Title" />
+									<Input ref={subTitleRef} placeholder="Subtitle" defaultValue="Subtitle" />
+									<Button onClick={() => setShowTitleSlate((prev) => !prev)}>
+										{showTitleSlate ? 'Hide' : 'Show'} Title Slate
+									</Button>
+								</Space>
+							)}
+						</>
+					)}
+
+					<div ref={callRef} className={styles.callFrame} />
+				</main>
+			</DailyProvider>
+		</ProtectedLayout>
 	)
 }
-
-LiveReportsPage.getLayout = (page: any) => (
-	<ProtectedLayout>
-		<StreamLayout>{page}</StreamLayout>
-	</ProtectedLayout>
-)
 
 export default LiveReportsPage

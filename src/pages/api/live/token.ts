@@ -19,9 +19,15 @@ class ApiSpecialistHandler {
 			body: JSON.stringify({
 				properties: {
 					room_name: req.user.roles?.includes(UserRole.Admin) ? undefined : roomName,
-					is_owner: req.user.roles?.includes(UserRole.Admin),
+					is_owner: req.user.roles?.includes(UserRole.Admin) || false,
 					user_name: req.user.name,
 					enable_screenshare: true,
+					lang: 'user',
+					permissions: {
+						hasPresence: true,
+						canSend: true,
+						canAdmin: req.user.roles?.includes(UserRole.Admin) || false,
+					},
 				},
 			}),
 			headers: {

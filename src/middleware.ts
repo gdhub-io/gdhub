@@ -24,8 +24,10 @@ export default withAuth(
 		if (
 			req.nextUrl.pathname.startsWith('/live/room/reports') &&
 			Array.isArray(roles) &&
-			roles.includes(UserRole.Guest) &&
-			roles.length == 1
+			!roles.includes(UserRole.Author) &&
+			!roles.includes(UserRole.Member) &&
+			!roles.includes(UserRole.Admin) &&
+			!roles.includes(UserRole.Mentor)
 		) {
 			return NextResponse.redirect(new URL('/hub', req.url))
 		}
