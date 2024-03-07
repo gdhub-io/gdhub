@@ -1,6 +1,12 @@
-import { DailyLiveStreamingLayoutConfig } from '@daily-co/daily-js'
+import { DailyStartStreamingCustomLayoutConfig } from '@daily-co/daily-js'
 
-export const pipLayout: DailyLiveStreamingLayoutConfig = {
+export type CustomComponentParams =
+	| {
+			[key: string]: string | number | boolean
+	  }
+	| undefined
+
+export const pipLayout: DailyStartStreamingCustomLayoutConfig = {
 	composition_id: 'daily:baseline',
 	preset: 'custom',
 	session_assets: {
@@ -8,15 +14,15 @@ export const pipLayout: DailyLiveStreamingLayoutConfig = {
 			'https://cdn.sanity.io/images/3ao2jrg0/prod/d27665d440ec6fa51d543dd893bfa35bc38e71ef-512x512.png',
 	},
 	composition_params: {
-		mode: 'pip',
+		mode: 'split',
 		showTextOverlay: true,
 		showImageOverlay: true,
 		showTitleSlate: false,
 		enableAutoOpeningSlate: false,
 		'videoSettings.maxCamStreams': 25,
 		'videoSettings.preferScreenshare': true,
-		'videoSettings.omitPaused': false,
-		'videoSettings.omitAudioOnly': false,
+		'videoSettings.omitPaused': true,
+		'videoSettings.omitAudioOnly': true,
 		'videoSettings.omitExtraScreenshares': false,
 		'videoSettings.showParticipantLabels': true,
 		'videoSettings.roundedCorners': true,
@@ -72,6 +78,7 @@ export const pipLayout: DailyLiveStreamingLayoutConfig = {
 		'image.assetName': 'logo.png',
 		'image.position': 'bottom-right',
 		'image.fullScreen': false,
+		'mage.zPosition': 'foreground',
 		'image.aspectRatio': 2,
 		'image.height_gu': 7.5,
 		'image.margin_gu': -0.5,
@@ -99,6 +106,7 @@ export const pipLayout: DailyLiveStreamingLayoutConfig = {
 		'openingSlate.fontSize_gu': 2.5,
 		'openingSlate.subtitle.fontSize_pct': 75,
 		'openingSlate.subtitle.fontWeight': '400',
+		'titleSlate.enableTransition': true,
 		'titleSlate.title': 'Title slate',
 		'titleSlate.subtitle': 'Subtitle',
 		'titleSlate.bgColor': 'rgba(0, 0, 0, 1)',
