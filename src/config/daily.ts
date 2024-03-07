@@ -14,7 +14,7 @@ export const pipLayout: DailyStartStreamingCustomLayoutConfig = {
 			'https://cdn.sanity.io/images/3ao2jrg0/prod/d27665d440ec6fa51d543dd893bfa35bc38e71ef-512x512.png',
 	},
 	composition_params: {
-		mode: 'split',
+		mode: 'grid',
 		showTextOverlay: true,
 		showImageOverlay: true,
 		showTitleSlate: false,
