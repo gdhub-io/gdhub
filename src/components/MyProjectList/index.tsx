@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import CreateProjectModal from '@/components/modals/CreateProjectModal'
+import { UserRole } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Avatar, Button, Card, Col, Flex, Row, Space, Tag, Typography } from 'antd'
@@ -23,9 +24,11 @@ export const MyProjectList = () => {
 					<T>My Projects</T>
 				</Title>
 
-				<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
-					<Space>Add Project</Space>
-				</Button>
+				{session?.user.roles.includes(UserRole.Author) && (
+					<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
+						<Space>Add Project</Space>
+					</Button>
+				)}
 			</Flex>
 
 			<Row gutter={[16, 16]} wrap>

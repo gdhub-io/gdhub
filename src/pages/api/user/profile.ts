@@ -1,7 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
-import { UserRole } from '@prisma/client'
+import { PrimaryInterest, UserRole } from '@prisma/client'
 import { Body, Get, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
@@ -34,10 +34,12 @@ class ApiProfileHandler {
 			preferredGenres,
 			preferredLevels,
 			preferredSettings,
+			primaryInterest,
 			...othersData
 		} = body
 
 		let profile = await prisma.profile.findUnique({ where: { userId: req.user.id! }, include: { user: true } })
+		let updatedRoles = (profile?.user.roles as UserRole[]) || []
 
 		if (!profile) {
 			profile = await prisma.profile.create({ data: { name: name!, userId: req.user.id! }, include: { user: true } })
@@ -55,11 +57,46 @@ class ApiProfileHandler {
 		if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
 		if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
 
+		// on  onboarding
+		if (onboardingDone) {
+			updatedRoles = [UserRole.Member]
+		}
+		// on  save profile
+		if (primaryInterest && primaryInterest == PrimaryInterest.Specialist) {
+			const idxMentor = updatedRoles.findIndex((v) => v === UserRole.Mentor)
+			const idxAuthor = updatedRoles.findIndex((v) => v === UserRole.Author)
+
+			if (idxMentor !== -1) {
+				updatedRoles.splice(idxMentor, 1)
+			}
+			if (idxAuthor !== -1) {
+				updatedRoles.splice(idxAuthor, 1)
+			}
+		}
+		if (primaryInterest && primaryInterest == PrimaryInterest.Author && !updatedRoles.includes(UserRole.Author)) {
+			const idx = updatedRoles.findIndex((v) => v === UserRole.Mentor)
+
+			if (idx !== -1) {
+				updatedRoles.splice(idx, 1)
+			}
+			updatedRoles.push(UserRole.Author)
+		}
+		if (primaryInterest && primaryInterest == PrimaryInterest.Mentor && !updatedRoles.includes(UserRole.Mentor)) {
+			const idx = updatedRoles.findIndex((v) => v === UserRole.Author)
+
+			if (idx !== -1) {
+				updatedRoles.splice(idx, 1)
+			}
+
+			updatedRoles.push(UserRole.Mentor)
+		}
+
 		await prisma.profile.update({
 			where: { userId: req.user.id },
 			data: {
 				...othersData,
 				name,
+				primaryInterest,
 				preferredGenres: preferredGenres
 					? {
 							set: preferredGenres?.map((v: string) => ({ id: v })),
@@ -70,7 +107,8 @@ class ApiProfileHandler {
 				user: {
 					update: {
 						onboardingDone,
-						roles: onboardingDone ? { set: [UserRole.Member] } : undefined,
+						roles: updatedRoles,
+						// roles: profile.user.roles.includes(UserRole.Admin) ? updatedRoles : undefined,
 						agreements: agreementsChanged ? agreements : undefined,
 					},
 				},
