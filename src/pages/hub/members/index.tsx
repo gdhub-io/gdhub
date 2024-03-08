@@ -5,10 +5,10 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
-import { UserRole } from '@prisma/client'
+import { ProjectStatus, UserRole } from '@prisma/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
-import { useSession } from 'next-auth/react'
+import { getSession, useSession } from 'next-auth/react'
 import { BsFilter } from 'react-icons/bs'
 import {
 	SearchBox,
@@ -28,7 +28,7 @@ const { Paragraph, Text, Title } = Typography
 
 const searchAdapter = new InstantsearchAdapter()
 
-const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: any) => {
+const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, hasApprovedProjects = false }: any) => {
 	const session = useSession()
 	const { t } = useTolgee()
 	const [openedFilter, setOpenFilter] = useState(false)
@@ -87,7 +87,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 		)
 	}
 
-	if (!hasRole(UserRole.Guest, session)) {
+	if (!hasRole(UserRole.Author, session) || !hasApprovedProjects) {
 		return (
 			<ProtectedLayout title={t('Community Members')}>
 				<div className={styles.container}>
@@ -108,7 +108,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount }: 
 					<p>
 						<T keyName="page.hub.members.text3">
 							Authors of indie projects have access to a database of specialists and can invite them to their projects.
-							For this you need to create a project.
+							For this you need to create a project and and bring your project to the recruiting stage.
 						</T>
 					</p>
 				</div>
@@ -239,13 +239,18 @@ function SearchMobileFilter({ onClick, resetButtonText }: any) {
 }
 
 export async function getServerSideProps(context: any) {
+	const session = await getSession(context)
 	const usersCount = await prisma.user.count()
 	const specialitiesCount = await prisma.speciality.count()
+	const hasApprovedProjects = await prisma.project.count({
+		where: { authorId: session?.user.id, status: ProjectStatus.Approved },
+	})
 
 	return {
 		props: {
 			usersCount,
 			specialitiesCount,
+			hasApprovedProjects: hasApprovedProjects !== 0,
 		},
 	}
 }
