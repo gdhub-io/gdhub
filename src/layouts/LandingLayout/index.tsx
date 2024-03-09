@@ -9,6 +9,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
+import { NextSeo, NextSeoProps } from 'next-seo'
 import { AiOutlineClose } from 'react-icons/ai'
 import styles from './style.module.scss'
 
@@ -33,6 +34,21 @@ export const LandingLayout = ({ children }: any) => {
 	const [scrollY, setScrollY] = useState(0)
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
+
+	const seoSettings: NextSeoProps = {
+		title: t('landing.seo.title', 'Game Developers Hub'),
+		description: t('landing.seo.description', 'Game Developers Hub is a platform for game developers and specialists.'),
+		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+		openGraph: {
+			title: t('landing.seo.title', 'Game Developers Hub'),
+			description: t(
+				'landing.seo.description',
+				'Game Developers Hub is a platform for game developers and specialists.'
+			),
+			type: 'website',
+			url: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+		},
+	}
 
 	useEffect(() => {
 		if (document.location.hash) {
@@ -114,62 +130,67 @@ export const LandingLayout = ({ children }: any) => {
 	)
 
 	return (
-		<ConfigProvider theme={landingThemeConfig}>
-			<Layout className={styles.container}>
-				<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
-					<MainHeader />
-				</Header>
-				<Content className={styles.content}>{children}</Content>
-				<Footer className={styles.footer}>
-					<MainFooter />
-				</Footer>
-			</Layout>
+		<>
+			<NextSeo {...seoSettings} />
+			<ConfigProvider theme={landingThemeConfig}>
+				<Layout className={styles.container}>
+					<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
+						<MainHeader />
+					</Header>
+					<Content className={styles.content}>{children}</Content>
+					<Footer className={styles.footer}>
+						<MainFooter />
+					</Footer>
+				</Layout>
 
-			{!screens.xl && (
-				<Drawer
-					className={styles.mobileMenuDrawer}
-					height={'100%'}
-					afterOpenChange={handleOpenMobileMenu}
-					closeIcon={<AiOutlineClose size={24} />}
-					title={
-						!!session && (
-							<Flex align="center" justify="space-between">
-								<Avatar
-									src={
-										session.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
-									}
-									shape="square"
-								/>
-								<Text className="username" ellipsis>
-									{session.user?.name}
-								</Text>
-								<SwitchLanguage border={true} size="small" />
-							</Flex>
-						)
-					}
-					placement="right"
-					onClose={() => setOpenMobileMenu(false)}
-					open={openMobileMenu}
-				>
-					<Space direction="vertical" size={32} style={{ width: '100%' }}>
-						<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
+				{!screens.xl && (
+					<Drawer
+						className={styles.mobileMenuDrawer}
+						height={'100%'}
+						afterOpenChange={handleOpenMobileMenu}
+						closeIcon={<AiOutlineClose size={24} />}
+						title={
+							!!session && (
+								<Flex align="center" justify="space-between">
+									<Avatar
+										src={
+											session.user?.image ? (
+												<Image src={session.user.image} width={32} height={32} alt="avatar" />
+											) : null
+										}
+										shape="square"
+									/>
+									<Text className="username" ellipsis>
+										{session.user?.name}
+									</Text>
+									<SwitchLanguage border={true} size="small" />
+								</Flex>
+							)
+						}
+						placement="right"
+						onClose={() => setOpenMobileMenu(false)}
+						open={openMobileMenu}
+					>
+						<Space direction="vertical" size={32} style={{ width: '100%' }}>
+							<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
 
-						{!!session ? (
-							<Link href="/hub">
-								<Button type="primary" style={{ width: '100%' }}>
-									<T>Go to app</T>
-								</Button>
-							</Link>
-						) : (
-							<Link href="/signin">
-								<Button type="primary" style={{ width: '100%' }}>
-									<T>Log in</T>
-								</Button>
-							</Link>
-						)}
-					</Space>
-				</Drawer>
-			)}
-		</ConfigProvider>
+							{!!session ? (
+								<Link href="/hub">
+									<Button type="primary" style={{ width: '100%' }}>
+										<T>Go to app</T>
+									</Button>
+								</Link>
+							) : (
+								<Link href="/signin">
+									<Button type="primary" style={{ width: '100%' }}>
+										<T>Log in</T>
+									</Button>
+								</Link>
+							)}
+						</Space>
+					</Drawer>
+				)}
+			</ConfigProvider>
+		</>
 	)
 }

@@ -3,6 +3,7 @@ import PublicHeaderBg from '@/assets/images/public-header-bg.png'
 import { MainFooter } from '@/components/MainFooter'
 import { MainHeader } from '@/components/MainHeader'
 import { publicThemeConfig } from '@/config/theme'
+import { env } from '@/helpers/env'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
@@ -40,11 +41,11 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 
 	const seoSettings: NextSeoProps = {
 		title,
-		canonical: router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		openGraph: {
 			title,
 			type: 'website',
-			url: router.asPath,
+			url: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		},
 		...seo,
 	}

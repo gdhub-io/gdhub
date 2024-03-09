@@ -1,0 +1,16 @@
+# Block
+User-agent: *
+Disallow: /hub
+Disallow: /live
+Disallow: /profile
+Disallow: /registration/onboarding
+Disallow: /cookie-policy
+Disallow: /terms
+Disallow: /my
+Disallow: /admin
+
+# Allow
+User-agent: *
+Allow: /
+
+Sitemap: https://gdhub.io/sitemap.xml

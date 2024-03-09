@@ -59,6 +59,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 			subTitle={t('Author') + ' ' + project.author.name}
 			backgroundImage={project.coverImage || undefined}
 			seo={{
+				description: project.description as string,
 				openGraph: {
 					description: project.description as string,
 					images: project.coverImage ? [{ url: project.coverImage as string }] : undefined,

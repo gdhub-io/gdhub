@@ -69,7 +69,7 @@ export const ProtectedProjectLayout = ({
 
 	const seoSettings: NextSeoProps = {
 		title: title || 'Project',
-		canonical: router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		nofollow: true,
 		noindex: true,
 		...seo,
