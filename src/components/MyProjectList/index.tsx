@@ -46,9 +46,9 @@ export const MyProjectList = () => {
 											</Flex>
 										}
 										description={
-											<Text ellipsis type="secondary">
-												{myProject.description}
-											</Text>
+											myProject.description ? (
+												<Text type="secondary">{myProject.description?.slice(0, 100)}...</Text>
+											) : null
 										}
 									/>
 								</Card>

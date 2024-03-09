@@ -10,7 +10,6 @@ Disallow: /my
 Disallow: /admin
 
 # Allow
-User-agent: *
 Allow: /
 
 Sitemap: https://gdhub.io/sitemap.xml
