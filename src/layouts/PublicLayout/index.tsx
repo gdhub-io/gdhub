@@ -40,13 +40,16 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	const { data: session }: any = useSession()
 
 	const seoSettings: NextSeoProps = {
-		title,
+		title: title || 'Game Developers Hub',
 		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		openGraph: {
-			title,
+			title: title || 'Game Developers Hub',
 			type: 'website',
+			defaultImageWidth: 1200,
+			defaultImageHeight: 630,
 			url: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		},
+		facebook: { appId: '' },
 		...seo,
 	}
 

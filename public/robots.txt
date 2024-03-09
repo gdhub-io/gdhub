@@ -11,5 +11,6 @@ Disallow: /admin
 
 # Allow
 Allow: /
+Allow: /api/og/*
 
 Sitemap: https://gdhub.io/sitemap.xml
