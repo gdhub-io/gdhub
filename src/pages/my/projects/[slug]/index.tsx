@@ -7,6 +7,8 @@ import { Spin } from 'antd'
 const MyProjectPage: NextPageWithLayout = () => {
 	const { project, isLoading } = useCurrentProject()
 
+	if (!project) return null
+
 	return (
 		<ProtectedProjectLayout>
 			<Spin spinning={isLoading}>

@@ -54,7 +54,7 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 
 	const seoSettings: NextSeoProps = {
 		title,
-		canonical: router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		nofollow: true,
 		noindex: true,
 		...seo,

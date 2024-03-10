@@ -10,7 +10,10 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	const router = useRouter()
 
 	return (
-		<PublicLayout title={t('Vacancies')}>
+		<PublicLayout
+			title={t('Vacancies')}
+			seo={{ description: t('Vacancies for indie projects for enterprising specialists in the gaming industry') }}
+		>
 			<div className={styles.container}>
 				<div className="project-vacancies">
 					<VacanciesList />

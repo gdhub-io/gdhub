@@ -6,7 +6,6 @@ import { T, useTolgee } from '@tolgee/react'
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import { GetServerSidePropsContext } from 'next'
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
@@ -34,13 +33,10 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 	]
 
 	return (
-		<PublicLayout title={t('Community Projects')}>
-			<Head>
-				<title>
-					<T>Community Projects</T>
-				</title>
-				<meta property="og:url" content="/projects" />
-			</Head>
+		<PublicLayout
+			title={t('Indie Game Projects')}
+			seo={{ description: t('Indie games that are developed by platform users') }}
+		>
 			<div className={styles.container}>
 				<Row
 					gutter={[

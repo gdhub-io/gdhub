@@ -20,7 +20,7 @@ import rehypeRaw from 'rehype-raw'
 import { Options } from 'youtube-player/dist/types'
 import styles from './style.module.scss'
 
-const { Title, Paragraph, Text } = Typography
+const { Title, Paragraph } = Typography
 
 type ProjectPageParams = {
 	project: Project & { author: User & { profile: { tgNickname: Profile['tgNickname'] } } }
@@ -59,9 +59,16 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 			subTitle={t('Author') + ' ' + project.author.name}
 			backgroundImage={project.coverImage || undefined}
 			seo={{
+				description: project.description as string,
 				openGraph: {
 					description: project.description as string,
-					images: project.coverImage ? [{ url: project.coverImage as string }] : undefined,
+					images: project.coverImage
+						? [
+								{
+									url: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${project.name}&st=Author%20${project.author.name}&img=${project.coverImage}`,
+								},
+							]
+						: undefined,
 				},
 			}}
 		>

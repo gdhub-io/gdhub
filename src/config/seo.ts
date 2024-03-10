@@ -8,7 +8,6 @@ const config: Record<AvailableLocales, DefaultSeoProps> = {
 		openGraph: {
 			type: 'website',
 			locale: 'en-US',
-			url: 'https://gdhub.io/',
 			siteName: 'Game Developers Hub',
 			images: [
 				{

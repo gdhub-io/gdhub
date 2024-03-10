@@ -77,8 +77,8 @@ export const DevLogWall = ({ project }: any) => {
 				/>
 			</Col>
 			<Col xs={24} lg={8}>
-				<Title level={2}>{projectReports?.data[0].project?.name}</Title>
-				<Paragraph>{projectReports?.data[0].project?.description}</Paragraph>
+				<Title level={2}>{projectReports?.data[0]?.project?.name}</Title>
+				<Paragraph>{projectReports?.data[0]?.project?.description}</Paragraph>
 			</Col>
 		</Row>
 	)
