@@ -17,9 +17,9 @@ export default withAuth(
 		// 	return NextResponse.redirect(new URL('/registration/onboarding', req.url))
 		// }
 
-		if (onboardingDone && req.nextUrl.pathname.startsWith('/registration/onboarding')) {
-			return NextResponse.redirect(new URL('/hub', req.url))
-		}
+		// if (onboardingDone && req.nextUrl.pathname.startsWith('/registration/onboarding')) {
+		// 	return NextResponse.redirect(new URL('/hub', req.url))
+		// }
 
 		if (
 			req.nextUrl.pathname.startsWith('/live/room/reports') &&

@@ -1,12 +1,14 @@
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { T } from '@tolgee/react'
 import { Space, Button, Typography, Grid } from 'antd'
+import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const { Paragraph, Title } = Typography
 
 export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 	const screens = Grid.useBreakpoint()
+	const router = useRouter()
 
 	return (
 		<div
@@ -26,9 +28,14 @@ export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 							</T>
 						</Paragraph>
 
-						<Button style={{ width: '300px' }} onClick={() => onNext()}>
-							<T keyName="onboarding.welcome.button1">Fill out the profile</T>
-						</Button>
+						<Space>
+							<Button type="text" onClick={() => router.push('/hub')}>
+								<T keyName="onboarding.welcome.skip">Skip</T>
+							</Button>
+							<Button type="primary" style={{ width: '300px' }} onClick={() => onNext()}>
+								<T keyName="onboarding.welcome.button1">Fill out the profile</T>
+							</Button>
+						</Space>
 					</Space>
 				</div>
 			</div>

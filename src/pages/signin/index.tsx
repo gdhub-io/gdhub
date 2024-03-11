@@ -48,9 +48,9 @@ const LoginPage: NextPage = () => {
 
 	return (
 		<>
-			{/* <Head>
+			<Head>
 				<title>{t('signin', 'Sign in')}</title>
-			</Head> */}
+			</Head>
 			<div
 				className={`${styles.container}`}
 				style={{ backgroundImage: screens.sm ? `url(${LogingBgImage.src})` : undefined }}
