@@ -7,7 +7,6 @@ import { Language } from '@prisma/client'
 import { useTolgee } from '@tolgee/react'
 import { Typography } from 'antd'
 import { GetStaticProps } from 'next'
-import Head from 'next/head'
 import '@9gustin/react-notion-render/dist/index.css'
 
 const { Title } = Typography
@@ -17,9 +16,9 @@ const PrivacyPolicyPage: NextPageWithLayout = ({ blocks }: any) => {
 
 	return (
 		<PublicLayout title="Cookie Policy">
-			<Head>
+			{/* <Head>
 				<title>{t('Cookie Policy')}</title>
-			</Head>
+			</Head> */}
 
 			<div className={styles.container}>
 				<Render blocks={blocks.results} simpleTitles />

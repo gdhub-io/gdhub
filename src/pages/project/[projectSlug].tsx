@@ -5,14 +5,17 @@ import TeamMembers from '@/components/TeamMembers'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
+import { tolgeeService } from '@/services/tolgee'
 import { Profile, Project, ProjectStatus, User } from '@prisma/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
+import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
+import { NextSeo, NextSeoProps } from 'next-seo'
 import { TbBrandTelegram } from 'react-icons/tb'
 import ReactMarkdown from 'react-markdown'
 import YouTube from 'react-youtube'
@@ -24,14 +27,24 @@ const { Title, Paragraph } = Typography
 
 type ProjectPageParams = {
 	project: Project & { author: User & { profile: { tgNickname: Profile['tgNickname'] } } }
+	seo?: { title: string; description?: string; image?: string }
 }
 
-const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
+const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const { data: session } = useSession()
 	const screens = Grid.useBreakpoint()
 	const [showPitchVideo, setShowPitchVideo] = useState(false)
+
+	const seoParams: NextSeoProps = {
+		title: seo?.title,
+		description: seo?.description,
+		openGraph: {
+			description: seo?.description as string,
+			images: seo?.image ? [{ url: seo.image as string, alt: project.name + ' cover image' }] : undefined,
+		},
+	}
 
 	const handleCoverClick = () => setShowPitchVideo(true)
 
@@ -54,90 +67,82 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project }) => {
 	const pitchVideoOptions: Options = { playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 } }
 
 	return (
-		<PublicLayout
-			title={project.name}
-			subTitle={t('Author') + ' ' + project.author.name}
-			backgroundImage={project.coverImage || undefined}
-			seo={{
-				description: project.description as string,
-				openGraph: {
-					description: project.description as string,
-					images: project.coverImage
-						? [
-								{
-									url: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${project.name}&st=Author%20${project.author.name}&img=${project.coverImage}`,
-								},
-							]
-						: undefined,
-				},
-			}}
-		>
-			<div className={styles.container}>
-				<Row gutter={[32, 16]}>
-					<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
-						<div className="project-description">
-							<Title level={2}>
-								<T>About Game</T>
-							</Title>
-							<Paragraph>
-								<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
-							</Paragraph>
-						</div>
-						{!screens.md && generalData}
+		<>
+			<PublicLayout
+				title={project.name}
+				subTitle={t('Author') + ' ' + project.author.name}
+				backgroundImage={project.coverImage || undefined}
+				seo={seoParams}
+			>
+				{/* <NextSeo {...seoParams} /> */}
 
-						<div className="project-team">
-							<TeamMembers teamId={project.teamId} />
-						</div>
-					</Col>
-					<Col xs={{ span: 24, order: 0 }} md={{ span: 12, order: 1 }} lg={{ span: 8, order: 1 }}>
-						{!showPitchVideo && (
-							<>
-								{!!project.coverImage && (
-									<div className={styles.cover}>
-										{project.videoLink && (
-											<div className={styles.coverButtonContainer}>
-												<Button onClick={handleCoverClick} type="primary">
-													<T>View the presentation</T>
-												</Button>
-											</div>
-										)}
-										<Image src={project.coverImage} alt="cover" fill />
-									</div>
-								)}
-							</>
-						)}
-						{showPitchVideo && project.videoLink && (
-							<YouTube
-								className={styles.videoCover}
-								videoId={project.videoLink}
-								opts={pitchVideoOptions}
-								onEnd={() => setShowPitchVideo(false)}
-							/>
-						)}
-						{screens.md && generalData}
-						{session && project.author.profile.tgNickname ? (
-							<Link
-								href={`https://t.me/${project.author.profile.tgNickname}`}
-								target="_blank"
-								style={{ display: 'block', width: 'fit-content' }}
-							>
-								<Button shape="round" type="dashed" className={styles.writeToAuthorButton}>
-									<TbBrandTelegram size={16} /> <T>Contact the author</T>
-								</Button>
-							</Link>
-						) : null}
-					</Col>
-				</Row>
+				<div className={styles.container}>
+					<Row gutter={[32, 16]}>
+						<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
+							<div className="project-description">
+								<Title level={2}>
+									<T>About Game</T>
+								</Title>
+								<Paragraph>
+									<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
+								</Paragraph>
+							</div>
+							{!screens.md && generalData}
 
-				<div className="project-vacancies">
-					<ProjectVacancies teamId={project.teamId} />
+							<div className="project-team">
+								<TeamMembers teamId={project.teamId} />
+							</div>
+						</Col>
+						<Col xs={{ span: 24, order: 0 }} md={{ span: 12, order: 1 }} lg={{ span: 8, order: 1 }}>
+							{!showPitchVideo && (
+								<>
+									{!!project.coverImage && (
+										<div className={styles.cover}>
+											{project.videoLink && (
+												<div className={styles.coverButtonContainer}>
+													<Button onClick={handleCoverClick} type="primary">
+														<T>View the presentation</T>
+													</Button>
+												</div>
+											)}
+											<Image src={project.coverImage} alt="cover" fill />
+										</div>
+									)}
+								</>
+							)}
+							{showPitchVideo && project.videoLink && (
+								<YouTube
+									className={styles.videoCover}
+									videoId={project.videoLink}
+									opts={pitchVideoOptions}
+									onEnd={() => setShowPitchVideo(false)}
+								/>
+							)}
+							{screens.md && generalData}
+							{session && project.author.profile.tgNickname ? (
+								<Link
+									href={`https://t.me/${project.author.profile.tgNickname}`}
+									target="_blank"
+									style={{ display: 'block', width: 'fit-content' }}
+								>
+									<Button shape="round" type="dashed" className={styles.writeToAuthorButton}>
+										<TbBrandTelegram size={16} /> <T>Contact the author</T>
+									</Button>
+								</Link>
+							) : null}
+						</Col>
+					</Row>
+
+					<div className="project-vacancies">
+						<ProjectVacancies teamId={project.teamId} />
+					</div>
+
+					<div className="project-reports">
+						<ProjectReports projectId={project.id} projectStartedAt={project.createdAt} />
+					</div>
 				</div>
-
-				<div className="project-reports">
-					<ProjectReports projectId={project.id} projectStartedAt={project.createdAt} />
-				</div>
-			</div>
-		</PublicLayout>
+			</PublicLayout>
+		</>
 	)
 }
 
@@ -163,6 +168,11 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 				updatedAt: project.updatedAt.toISOString(),
 				startedAt: project.startedAt?.toISOString(),
 				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
+			},
+			seo: {
+				title: project.name,
+				description: project.description?.slice(0, 160),
+				image: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${project.name}&st=Author%20${project.author.name}&img=${project.coverImage}`,
 			},
 		},
 	}

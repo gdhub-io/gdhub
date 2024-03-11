@@ -12,7 +12,7 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	return (
 		<PublicLayout
 			title={t('Vacancies')}
-			seo={{ description: t('Vacancies for indie projects for enterprising specialists in the gaming industry') }}
+			seo={{ description: t('for enterprising specialists in the gaming industry') }}
 		>
 			<div className={styles.container}>
 				<div className="project-vacancies">

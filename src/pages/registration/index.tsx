@@ -89,9 +89,9 @@ const RegistrationPage: NextPage = () => {
 
 	return (
 		<EmptyLayout type="dark">
-			<Head>
+			{/* <Head>
 				<title>{t('Registration')}</title>
-			</Head>
+			</Head> */}
 			<div
 				className={`${styles.container} bright-container`}
 				style={{ backgroundImage: screens.sm ? `url(${RegistrationBgImage.src})` : undefined }}

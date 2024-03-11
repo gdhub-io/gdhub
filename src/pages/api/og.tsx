@@ -7,7 +7,7 @@ export const config = {
 	runtime: 'edge',
 }
 
-export default function handler(request: NextRequest) {
+export default async function handler(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url)
 
@@ -16,6 +16,10 @@ export default function handler(request: NextRequest) {
 		const coverImage = searchParams.get('img')
 		const title = searchParams.get('t')
 		const subTitle = searchParams.get('st')
+
+		const fontData = await fetch(new URL('../../assets/fonts/mulish/Mulish-Regular.ttf', import.meta.url)).then((res) =>
+			res.arrayBuffer()
+		)
 
 		if (!coverImage)
 			return new ImageResponse(<>Error</>, {
@@ -37,6 +41,7 @@ export default function handler(request: NextRequest) {
 						justifyContent: 'center',
 						// alignItems: 'center',
 						position: 'relative',
+						fontFamily: '"Mulish"',
 					}}
 				>
 					<img width="1200" height="630" src={coverImage} style={{ position: 'absolute' }} />
@@ -177,6 +182,13 @@ export default function handler(request: NextRequest) {
 			{
 				width: 1200,
 				height: 630,
+				fonts: [
+					{
+						name: 'Mulish',
+						data: fontData,
+						style: 'normal',
+					},
+				],
 			}
 		)
 	} catch (e: any) {
