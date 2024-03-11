@@ -171,11 +171,11 @@ export default async function handler(request: NextRequest) {
 					</div>
 
 					<p style={{ paddingTop: 32, color: '#fff', fontSize: 90, paddingLeft: 64, textAlign: 'left' }}>
-						{title || 'Title'}
+						{title ? decodeURIComponent(title) : 'Title'}
 					</p>
 
 					<p style={{ color: '#ffffff80', fontSize: 32, paddingLeft: 64, textAlign: 'left' }}>
-						{subTitle || 'Subtitle'}
+						{subTitle ? decodeURIComponent(subTitle) : 'Subtitle'}
 					</p>
 				</div>
 			),
