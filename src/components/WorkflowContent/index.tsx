@@ -1,10 +1,12 @@
-import { useMemo } from 'react'
+import { useState } from 'react'
 import DividerIcon from '@/assets/images/icons/divider.svg'
-import SearchingStageContent from '@/components/SeasonContent/stages/SearchingStageContent'
+import SearchingStageContent from '@/components/WorkflowContent/stages/SearchingStageContent'
 import { DefaultSeasonStages } from '@/types/enums'
 import { Season, SeasonStage, SeasonStatus } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Grid, Space, Typography } from 'antd'
+import axios from 'axios'
 import dayjs, { Dayjs } from 'dayjs'
 import DoneStageContent from './stages/DoneStageContent'
 import PitchingStageContent from './stages/PitchingStageContent'
@@ -14,29 +16,42 @@ import PrototypingStageContent from './stages/PrototypingStageContent'
 import RecruitingStageContent from './stages/RecruitingStageContent'
 import styles from './style.module.scss'
 
-export type SeasonData = Season & { stages: (SeasonStage & { isCompleted: boolean })[] }
+export type SeasonData = Season & { stages: SeasonStage[] }
 
 const { Title, Text, Paragraph } = Typography
 
-const SeasonContent = ({ season }: { season: SeasonData }) => {
+const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	const screens = Grid.useBreakpoint()
+	const [stage, setStage] = useState<SeasonStage>()
+	const [workflow, setWorkflow] = useState<SeasonData>()
 	const { t } = useTolgee()
-	const stage = useMemo(() => {
-		console.log('stage', season?.stages)
-		return season?.stages.find((s) => s.isCurrent)
-	}, [season])
 
-	const finishedAt = useMemo(() => {
-		if (!season || !season.finishedAt) return
+	const { isLoading } = useQuery(
+		['project-workflow', projectId],
+		() =>
+			axios.get<SeasonStage & { season: SeasonData }>('/api/user/project/workflow', {
+				params: { projectId },
+			}),
+		{
+			enabled: !!projectId,
+			onSuccess({ data }) {
+				setStage(data)
+				setWorkflow(data.season)
+			},
+		}
+	)
 
-		return dayjs(season.finishedAt)
-	}, [season])
+	// const finishedAt = useMemo(() => {
+	// 	if (!season || !season.finishedAt) return
 
-	const startedAt = useMemo(() => {
-		if (!season || !season.startedAt) return
+	// 	return dayjs(season.finishedAt)
+	// }, [season])
 
-		return dayjs(season.startedAt)
-	}, [season])
+	// const startedAt = useMemo(() => {
+	// 	if (!season || !season.startedAt) return
+
+	// 	return dayjs(season.startedAt)
+	// }, [season])
 
 	const datePeiodtoText = ({ start, finish }: { start?: Dayjs; finish?: Dayjs }) => {
 		if (!start) return
@@ -53,25 +68,27 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 	}
 
 	const stageContent = (stageName: string) => {
-		if (season.status === SeasonStatus.Done) {
-			return <DoneStageContent season={season} />
+		if (!workflow) return
+
+		if (workflow.status === SeasonStatus.Done) {
+			return <DoneStageContent season={workflow} />
 		}
 
 		switch (stageName) {
 			case DefaultSeasonStages.Pitching:
-				return <PitchingStageContent season={season} />
+				return <PitchingStageContent season={workflow} />
 			case DefaultSeasonStages.Searching:
-				return <SearchingStageContent season={season} />
+				return <SearchingStageContent season={workflow} />
 			case DefaultSeasonStages.PreProduction:
-				return <PreProductionStageContent season={season} />
+				return <PreProductionStageContent season={workflow} />
 			case DefaultSeasonStages.Prototyping:
-				return <PrototypingStageContent season={season} />
+				return <PrototypingStageContent season={workflow} />
 			case DefaultSeasonStages.Recruiting:
-				return <RecruitingStageContent season={season} />
+				return <RecruitingStageContent season={workflow} />
 			case DefaultSeasonStages.Production:
-				return <ProductionStageContent season={season} />
+				return <ProductionStageContent season={workflow} />
 			case DefaultSeasonStages.Done:
-				return <DoneStageContent season={season} />
+				return <DoneStageContent season={workflow} />
 			default:
 				return (
 					<Text>
@@ -81,23 +98,19 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 		}
 	}
 
-	if (!season) return null
+	if (!workflow) return null
 
 	return (
 		<div className={styles.container}>
 			<Space align="baseline">
-				<Title level={2}>{season.name}</Title>
-				{season.status !== SeasonStatus.Done && !!stage && (
+				<Title level={2}>{workflow.name}</Title>
+				{workflow.status !== SeasonStatus.Done && !!stage && (
 					<Text type="secondary">
 						<T>Stage</T> {stage.order + 1}
 						<T>th from</T> 6
 					</Text>
 				)}
 			</Space>
-
-			<Paragraph>
-				<T>Period of conduct</T>: {datePeiodtoText({ start: startedAt, finish: finishedAt })}
-			</Paragraph>
 
 			{!!stage && (
 				<div>
@@ -120,4 +133,4 @@ const SeasonContent = ({ season }: { season: SeasonData }) => {
 	)
 }
 
-export default SeasonContent
+export default WorkflowContent

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { SeasonData } from '@/components/SeasonContent'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
+import { SeasonData } from '@/components/WorkflowContent'
 import { hasRole } from '@/helpers/user'
 import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus, UserRole } from '@prisma/client'

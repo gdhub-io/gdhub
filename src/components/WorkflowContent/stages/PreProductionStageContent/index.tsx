@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { SeasonData } from '@/components/SeasonContent'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
+import { SeasonData } from '@/components/WorkflowContent'
 import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
