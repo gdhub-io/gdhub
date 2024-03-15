@@ -78,11 +78,11 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		}
 	)
 
-	const { mutateAsync: createSpeciality } = useMutation(({ data }: any) =>
+	const { mutateAsync: createSpeciality, isLoading: isCreating } = useMutation(({ data }: any) =>
 		axios.post<any>('/api/auth/registration/onboarding/speciality', { data })
 	)
 
-	const { mutateAsync: updateSpeciality } = useMutation(({ id, data }: any) =>
+	const { mutateAsync: updateSpeciality, isLoading: isUpdating } = useMutation(({ id, data }: any) =>
 		axios.put<any>('/api/auth/registration/onboarding/speciality', { id, data })
 	)
 
@@ -120,6 +120,12 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 			data: { jobPosition: form.getFieldValue('name'), locale: router.locale },
 			maxCount: 1,
 			onChange: ({ file }) => {
+				if (file.status === 'done' && !file.response?.success) {
+					setIsParsing(false)
+					message.error(t('uploadcv-error-message', `We couldn't process your file. Enter data manually`))
+					return
+				}
+
 				if (file.status == 'uploading') {
 					setIsParsing(true)
 				}
@@ -306,9 +312,14 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 					<Button onClick={onPreviousStep}>
 						<T keyName="back">Back</T>
 					</Button>
-					<Button type="primary" onClick={handleSave}>
-						<T keyName="saveAndContinue">Save and continue</T>
-					</Button>
+					<Space>
+						<Button type="text" onClick={() => router.push('/hub')}>
+							<T keyName="onboarding.welcome.later">Continue later</T>
+						</Button>
+						<Button type="primary" onClick={handleSave} loading={isCreating || isUpdating}>
+							<T keyName="saveAndContinue">Save and continue</T>
+						</Button>
+					</Space>
 				</Space>
 			</div>
 		</Spin>

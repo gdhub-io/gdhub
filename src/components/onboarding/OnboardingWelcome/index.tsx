@@ -28,14 +28,9 @@ export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 							</T>
 						</Paragraph>
 
-						<Space>
-							<Button type="text" onClick={() => router.push('/hub')}>
-								<T keyName="onboarding.welcome.skip">Skip</T>
-							</Button>
-							<Button type="primary" style={{ width: '300px' }} onClick={() => onNext()}>
-								<T keyName="onboarding.welcome.button1">Fill out the profile</T>
-							</Button>
-						</Space>
+						<Button type="primary" style={{ width: '300px' }} onClick={() => onNext()}>
+							<T keyName="onboarding.welcome.button1">Fill out the profile</T>
+						</Button>
 					</Space>
 				</div>
 			</div>

@@ -299,9 +299,14 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 					<Button onClick={onPreviousStep}>
 						<T keyName="back">Back</T>
 					</Button>
-					<Button type="primary" onClick={handleSave} loading={isUpdatingInterests}>
-						<T keyName="saveAndContinue">Save and continue</T>
-					</Button>
+					<Space>
+						<Button type="text" onClick={() => router.push('/hub')}>
+							<T keyName="onboarding.welcome.later">Continue later</T>
+						</Button>
+						<Button type="primary" onClick={handleSave} loading={isUpdatingInterests}>
+							<T keyName="saveAndContinue">Save and continue</T>
+						</Button>
+					</Space>
 				</Space>
 			</div>
 		</div>
