@@ -13,11 +13,12 @@ export const useCurrentProject = () => {
 		data: project,
 		refetch,
 		isLoading,
+		isFetched,
 	} = useQuery(
 		['project-data', slug, session?.user.id],
-		() => axios.get<Partial<Project>>('/api/user/project', { params: { slug } }),
+		() => axios.get<Project>('/api/user/project', { params: { slug } }),
 		{ enabled: !!slug }
 	)
 
-	return { project: project?.data, refetch, isLoading }
+	return { project: project?.data, refetch, isLoading, isFetched }
 }
