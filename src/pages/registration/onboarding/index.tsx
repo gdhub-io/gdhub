@@ -10,7 +10,6 @@ import { OnboardingWelcome } from '@/components/onboarding/OnboardingWelcome'
 import { T, useTolgee } from '@tolgee/react'
 import { Typography, Row, Col, Steps, Flex, Menu, Grid } from 'antd'
 import { ItemType } from 'antd/es/menu/hooks/useItems'
-import Head from 'next/head'
 import styles from './style.module.scss'
 
 const { Title } = Typography
@@ -64,9 +63,9 @@ const OnboardingPage = () => {
 	if (error) {
 		return (
 			<>
-				<Head>
+				{/* <Head>
 					<title>{t('meta.registration.header', 'Registration')}</title>
-				</Head>
+				</Head> */}
 				<OnboardingError error={error} />
 			</>
 		)
@@ -75,9 +74,9 @@ const OnboardingPage = () => {
 	if (isCompleted) {
 		return (
 			<>
-				<Head>
+				{/* <Head>
 					<title>{t('meta.registration.header', 'Registration')}</title>
-				</Head>
+				</Head> */}
 				<OnboardingCompleted />
 			</>
 		)
@@ -85,9 +84,9 @@ const OnboardingPage = () => {
 
 	return (
 		<>
-			<Head>
+			{/* <Head>
 				<title>{t('meta.registration.header', 'Registration')}</title>
-			</Head>
+			</Head> */}
 
 			{onboardingStep == -1 && <OnboardingWelcome onNext={() => setOnboardingStep(0)} />}
 

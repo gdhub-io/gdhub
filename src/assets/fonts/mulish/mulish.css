@@ -1,0 +1,8 @@
+/* cyrillic-ext */
+@font-face {
+	font-family: 'Mulish';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url(./Mulish-Regular.ttf) format('ttf');
+}

@@ -87,32 +87,28 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}, [showContent])
 
 	const routeChangeStart = (...args: any) => {
-		// setShowContent(false)
-		// setLoading(true)
 		NProgress.start()
 	}
 
 	const routeChangeComplete = (url: string) => {
 		if (process.env.NODE_ENV == 'production') pageview(url)
-		// setLoadingOff()
-		// document.body.style.overflow = 'unset'
+
 		NProgress.done()
 	}
 
 	useEffect(() => {
 		router.events.on('routeChangeStart', routeChangeStart)
 		router.events.on('routeChangeComplete', routeChangeComplete)
-		// 	router.events.on('routeChangeError', () => setLoadingOff())
 
 		return () => {
 			router.events.off('routeChangeStart', routeChangeStart)
 			router.events.off('routeChangeComplete', routeChangeComplete)
-			// 		router.events.off('routeChangeError', () => setLoadingOff())
 		}
 	}, [router.events])
 
 	return (
 		<>
+			<DefaultSeo {...SEOSettings[router.locale as AvailableLocales]} />
 			<style jsx global>{`
 				:root {
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
@@ -141,7 +137,6 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 							<CheckHealth>
 								<SessionProvider session={session}>
 									<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
-										<DefaultSeo {...SEOSettings[router.locale as AvailableLocales]} />
 										{getLayout(<Component {...pageProps} />)}
 									</div>
 								</SessionProvider>

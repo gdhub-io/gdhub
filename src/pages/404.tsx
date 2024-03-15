@@ -2,7 +2,6 @@ import { EmptyLayout } from '@/layouts/EmptyLayout'
 import styles from '@/styles/errors.module.scss'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Typography } from 'antd'
-import Head from 'next/head'
 import Link from 'next/link'
 
 const { Paragraph } = Typography
@@ -12,9 +11,9 @@ export default function Custom404() {
 
 	return (
 		<EmptyLayout>
-			<Head>
+			{/* <Head>
 				<title>{t('Error 404')}</title>
-			</Head>
+			</Head> */}
 			<div className={styles.errorPageContainer}>
 				<Space direction="vertical">
 					<div className={styles.notFound}>

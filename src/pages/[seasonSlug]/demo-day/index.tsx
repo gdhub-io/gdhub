@@ -8,7 +8,6 @@ import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
-import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { TbBrandTelegram } from 'react-icons/tb'
@@ -22,7 +21,7 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, currentStage }: any
 
 	return (
 		<DemoDayLayout>
-			<Head>
+			{/* <Head>
 				<title>{t('demoday.meta.title', 'Pitch Day at Game Developers Hub')}</title>
 				<meta
 					property="og:title"
@@ -30,7 +29,7 @@ const DemoDayPage: NextPageWithLayout = ({ projects, season, currentStage }: any
 				/>
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={router.asPath} />
-			</Head>
+			</Head> */}
 			<div className={styles.container}>
 				<Space direction="vertical" size={64}>
 					<Space style={{ width: '100%', justifyContent: 'center' }} align="center" wrap>
