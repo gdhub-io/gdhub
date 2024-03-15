@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { LandingContactsSection } from '@/components/landing/LandingContactsSection'
+import { LandingFeaturedProjectsSection } from '@/components/landing/LandingFeaturedProjectsSection'
+import { LandingFeaturedVacanciesSection } from '@/components/landing/LandingFeaturedVacanciesSection'
 import { LandingFeedbackSection } from '@/components/landing/LandingFeedbackSection'
 import { LandingForAuthorsSection } from '@/components/landing/LandingForAuthorsSection'
 import { LandingForSpecialistsSection } from '@/components/landing/LandingForSpecialistsSection'
@@ -72,6 +74,8 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 					<LandingWhoWeAreSection />
 					<LandingForAuthorsSection />
 					<LandingForSpecialistsSection />
+					<LandingFeaturedProjectsSection />
+					<LandingFeaturedVacanciesSection />
 					<LandingFeedbackSection />
 					<LandingContactsSection />
 				</div>

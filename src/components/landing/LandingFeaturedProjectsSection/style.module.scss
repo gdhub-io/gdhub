@@ -1,0 +1,66 @@
+@import '../../../styles/variables.scss';
+
+.section {
+  position: relative;
+  background-color: #0b0b0d;
+  padding: 96px 165px;
+  background-position-x: left;
+  background-repeat: no-repeat;
+  text-align: center;
+}
+
+.container {
+  max-width: $wrapper-width;
+
+  .preTitle {
+    color: #FFBB55;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .subTitle {
+    color: #FFFDFC;
+    font-family: var(--second-font-family);
+    font-style: italic;
+    font-size: 18px;
+    max-width: 500px;
+    margin: 0 auto;
+    margin-bottom: 80px;
+  }
+
+  .content {
+    margin-top: 126px;
+    margin-bottom: 40px;
+
+    :global {
+      span.ant-typography {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+.slider {
+  margin-bottom: 64px;
+
+  .slide {
+    .image {
+      position: relative;
+      height: 200px;
+    }
+  }
+}
+
+@import './styles/xs.scss'; // screen < 576px
+@import './styles/sm.scss'; // screen ≥ 576px
+@import './styles/md.scss'; // screen ≥ 768px
+@import './styles/lg.scss'; // screen ≥ 992px
+@import './styles/xl.scss'; // screen ≥ 1200px
+@import './styles/xxl.scss'; // screen ≥ 1600px
