@@ -16,7 +16,7 @@ class ApiUserProjectWorkflowHandler {
 			where: { id: projectId },
 			select: {
 				id: true,
-				stage: { include: { season: { include: { stages: true } } } },
+				stage: { include: { season: { include: { stages: { orderBy: { order: 'asc' } } } } } },
 			},
 		})
 

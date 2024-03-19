@@ -134,7 +134,7 @@ export const getGamelabStageBlocks = async (
 			filter: {
 				and: [
 					{
-						property: 'stage',
+						property: 'slug',
 						rich_text: {
 							equals: stageName.toLowerCase(),
 						},

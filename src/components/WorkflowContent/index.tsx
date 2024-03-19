@@ -1,19 +1,13 @@
-import { useState } from 'react'
-import DividerIcon from '@/assets/images/icons/divider.svg'
-import SearchingStageContent from '@/components/WorkflowContent/stages/SearchingStageContent'
-import { DefaultSeasonStages } from '@/types/enums'
-import { Season, SeasonStage, SeasonStatus } from '@prisma/client'
-import { useQuery } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
+import { capitalize } from '@/helpers/text'
+import { Season, SeasonStage } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Grid, Space, Typography } from 'antd'
+import { Button, Col, Flex, Grid, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
-import dayjs, { Dayjs } from 'dayjs'
-import DoneStageContent from './stages/DoneStageContent'
-import PitchingStageContent from './stages/PitchingStageContent'
-import PreProductionStageContent from './stages/PreProductionStageContent'
-import ProductionStageContent from './stages/ProductionStageContent'
-import PrototypingStageContent from './stages/PrototypingStageContent'
-import RecruitingStageContent from './stages/RecruitingStageContent'
+import { Dayjs } from 'dayjs'
+import { GoArrowLeft } from 'react-icons/go'
+import DefaultStageContent from './stages/DefaultStageContent'
 import styles from './style.module.scss'
 
 export type SeasonData = Season & { stages: SeasonStage[] }
@@ -26,20 +20,33 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	const [workflow, setWorkflow] = useState<SeasonData>()
 	const { t } = useTolgee()
 
-	const { isLoading } = useQuery(
+	const { refetch: refetchWorkflowData } = useQuery(
 		['project-workflow', projectId],
 		() =>
-			axios.get<SeasonStage & { season: SeasonData }>('/api/user/project/workflow', {
+			axios.get<{ stage: SeasonStage & { season: SeasonData } }>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
 		{
 			enabled: !!projectId,
 			onSuccess({ data }) {
-				setStage(data)
-				setWorkflow(data.season)
+				setStage(data.stage)
+				setWorkflow(data.stage.season)
 			},
 		}
 	)
+
+	const { mutateAsync: moveProjectToStage, isLoading: isMoving } = useMutation(
+		(data: any) => axios.put<void>(`/api/project/move`, data),
+		{
+			onSuccess: () => {
+				refetchWorkflowData()
+			},
+		}
+	)
+
+	const currentStageIndex = useMemo(() => {
+		return workflow?.stages.findIndex((s) => s.id == stage?.id) || 0
+	}, [workflow, stage])
 
 	// const finishedAt = useMemo(() => {
 	// 	if (!season || !season.finishedAt) return
@@ -68,67 +75,105 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	}
 
 	const stageContent = (stageName: string) => {
-		if (!workflow) return
+		if (!stage) return
 
-		if (workflow.status === SeasonStatus.Done) {
-			return <DoneStageContent season={workflow} />
-		}
+		return <DefaultStageContent stage={stage} />
 
-		switch (stageName) {
-			case DefaultSeasonStages.Pitching:
-				return <PitchingStageContent season={workflow} />
-			case DefaultSeasonStages.Searching:
-				return <SearchingStageContent season={workflow} />
-			case DefaultSeasonStages.PreProduction:
-				return <PreProductionStageContent season={workflow} />
-			case DefaultSeasonStages.Prototyping:
-				return <PrototypingStageContent season={workflow} />
-			case DefaultSeasonStages.Recruiting:
-				return <RecruitingStageContent season={workflow} />
-			case DefaultSeasonStages.Production:
-				return <ProductionStageContent season={workflow} />
-			case DefaultSeasonStages.Done:
-				return <DoneStageContent season={workflow} />
-			default:
-				return (
-					<Text>
-						<T>There is no information on the current stage or is still preparing.</T>
-					</Text>
-				)
-		}
+		// if (workflow.status === SeasonStatus.Done) {
+		// 	return <DoneStageContent season={workflow} />
+		// }
+
+		// switch (stageName) {
+		// 	case DefaultSeasonStages.Pitching:
+		// 		return <PitchingStageContent season={workflow} />
+		// 	case DefaultSeasonStages.Searching:
+		// 		return <SearchingStageContent season={workflow} />
+		// 	case DefaultSeasonStages.PreProduction:
+		// 		return <PreProductionStageContent season={workflow} />
+		// 	case DefaultSeasonStages.Prototyping:
+		// 		return <PrototypingStageContent season={workflow} />
+		// 	case DefaultSeasonStages.Recruiting:
+		// 		return <RecruitingStageContent season={workflow} />
+		// 	case DefaultSeasonStages.Production:
+		// 		return <ProductionStageContent season={workflow} />
+		// 	case DefaultSeasonStages.Done:
+		// 		return <DoneStageContent season={workflow} />
+		// 	default:
+		// 		return (
+		// 			<Text>
+		// 				<T>There is no information on the current stage or is still preparing.</T>
+		// 			</Text>
+		// 		)
+		// }
 	}
 
-	if (!workflow) return null
+	const handlePreviousStage = () => {
+		if (!workflow?.stages) return
+
+		const nextStageId = currentStageIndex > 0 ? currentStageIndex - 1 : currentStageIndex
+
+		moveProjectToStage({ projectId, targetStageId: workflow.stages[nextStageId]?.id })
+	}
+
+	const handleNextStage = () => {
+		if (!workflow?.stages) return
+
+		const previousStageId = currentStageIndex < workflow.stages.length ? currentStageIndex + 1 : currentStageIndex
+
+		moveProjectToStage({ projectId, targetStageId: workflow.stages[previousStageId]?.id })
+	}
+
+	// const handleSetStage = (current: number) => {
+	// 	if (!workflow?.stages) return
+
+	// 	moveProjectToStage({ projectId, targetStageId: workflow.stages[current]?.id })
+	// }
+
+	if (!workflow || !stage) return null
 
 	return (
 		<div className={styles.container}>
-			<Space align="baseline">
-				<Title level={2}>{workflow.name}</Title>
-				{workflow.status !== SeasonStatus.Done && !!stage && (
-					<Text type="secondary">
-						<T>Stage</T> {stage.order + 1}
-						<T>th from</T> 6
-					</Text>
-				)}
+			<Space direction="vertical" style={{ width: '100%' }}>
+				<Row>
+					<Col xs={24} lg={18}>
+						<Flex justify="space-between" align="baseline">
+							<Title level={2}>
+								<T keyName="workflow.current-stage">Current stage</T>: {capitalize(stage.name)}
+							</Title>
+							<Space>
+								{currentStageIndex > 0 && (
+									<Button onClick={handlePreviousStage} disabled={isMoving} icon={<GoArrowLeft />} type="text">
+										<T keyName="workflow.previous-stage">Previous</T>
+									</Button>
+								)}
+								{currentStageIndex < workflow.stages.length - 1 && (
+									<Button onClick={handleNextStage} disabled={isMoving}>
+										<T keyName="workflow.next-stage">Next stage</T>
+									</Button>
+								)}
+							</Space>
+						</Flex>
+					</Col>
+					<Col xs={24} lg={6}></Col>
+				</Row>
+
+				<Row gutter={[32, 32]}>
+					<Col xs={24} lg={18}>
+						<div className={styles.stageContent}>{stageContent(stage.name)}</div>
+					</Col>
+					<Col xs={24} lg={6}>
+						<Steps
+							direction="vertical"
+							// onChange={handleSetStage}
+							current={currentStageIndex}
+							items={workflow.stages.map((s) => ({
+								title: capitalize(s.name),
+								description: s.description,
+							}))}
+						/>
+					</Col>
+				</Row>
 			</Space>
-
-			{!!stage && (
-				<div>
-					<Space align="center" direction={screens.md ? 'horizontal' : 'vertical'}>
-						<Title level={4}>{stage.name}</Title>
-						{!!stage.startedAt && (
-							<Text>
-								{screens.md && <DividerIcon style={{ stroke: 'gray' }} />}
-								<Text type="secondary" style={{ marginBottom: 10, display: 'inline-block' }}>
-									{datePeiodtoText({ start: dayjs(stage.startedAt), finish: dayjs(stage.finishedAt) })}
-								</Text>
-							</Text>
-						)}
-					</Space>
-
-					<div>{stageContent(stage.name)}</div>
-				</div>
-			)}
 		</div>
 	)
 }

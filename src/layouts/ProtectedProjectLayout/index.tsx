@@ -173,11 +173,10 @@ export const ProtectedProjectLayout = ({
 		{
 			key: `/my/projects/${projectSlug}/workflow`,
 			label: (
-				// <Link href={`/my/projects/${projectSlug}/workflow`}>
-				<T keyName="app.user-project.menu.workflow">Workflow</T>
-				// </Link>
+				<Link href={`/my/projects/${projectSlug}/workflow`}>
+					<T keyName="app.user-project.menu.workflow">Workflow</T>
+				</Link>
 			),
-			disabled: true,
 		},
 		{
 			key: `/my/projects/${projectSlug}/vacancies`,
