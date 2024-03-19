@@ -19,12 +19,12 @@ const LecturesPage: NextPageWithLayout = () => {
 						only for you, we will try to carry it out.
 					</T>
 					<br />
-					<T keyName="hub.lectures.text1.part1">
+					<T keyName="hub.lectures.text1.part2">
 						And for those who want to share their experience with others, here you will find the opportunity to do so.
 						Follow topics that interest other participants and offer yourself as a lecturer.
 					</T>
 					<br />
-					<T keyName="hub.lectures.text1.part1">Let&apos;s share knowledge, gain wisdom ;)</T>
+					<T keyName="hub.lectures.text1.part3">Let&apos;s share knowledge, gain wisdom ;)</T>
 				</p>
 
 				<RequestedLectures />

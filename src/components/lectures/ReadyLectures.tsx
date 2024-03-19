@@ -36,7 +36,7 @@ export const ReadyLectures = () => {
 				dataIndex: 'name',
 				key: 'name',
 				render: (text, lecture) => {
-					const _date = dayjs(lecture.date).format('dd LLL yyyy, T')
+					const _date = dayjs(lecture.date).format('ll')
 
 					return screens.md ? (
 						<div

@@ -8,6 +8,7 @@ import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import { ProjectStatus, UserRole } from '@prisma/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
+import { GetServerSidePropsContext } from 'next'
 import { getSession, useSession } from 'next-auth/react'
 import { BsFilter } from 'react-icons/bs'
 import {
@@ -238,7 +239,7 @@ function SearchMobileFilter({ onClick, resetButtonText }: any) {
 	)
 }
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
 	const session = await getSession(context)
 	const usersCount = await prisma.user.count()
 	const specialitiesCount = await prisma.speciality.count()
@@ -250,7 +251,7 @@ export async function getServerSideProps(context: any) {
 		props: {
 			usersCount,
 			specialitiesCount,
-			hasApprovedProjects: hasApprovedProjects !== 0,
+			hasApprovedProjects: hasApprovedProjects !== 0 || session?.user.roles.includes(UserRole.Admin),
 		},
 	}
 }

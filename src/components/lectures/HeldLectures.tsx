@@ -27,7 +27,7 @@ export const HeldLectures = () => {
 				dataIndex: 'name',
 				key: 'name',
 				render: (text, lecture) => {
-					const _date = dayjs(lecture.date).format('dd LLL YYYY')
+					const _date = dayjs(lecture.date).format('ll')
 
 					return screens.md ? (
 						<div
@@ -75,7 +75,7 @@ export const HeldLectures = () => {
 				key: 'date',
 				responsive: ['md'],
 				render: (date) => {
-					return dayjs(date).format('dd LLL YYYY')
+					return dayjs(date).format('ll')
 				},
 			},
 		],

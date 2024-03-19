@@ -3,8 +3,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { Project, Season, SeasonStage, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
-import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
+import { Button, Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -26,16 +25,16 @@ const ProjectsPage: NextPageWithLayout = () => {
 		isLoading,
 	} = useQuery(['projects'], () => axios.get('/api/projects'), { enabled: !!session?.user })
 
-	const breadcrumbItems = (project: ProjectIncludeAll): ItemType[] => [
-		{
-			title: project.stage.season.name,
-			key: project.stage.season.name + '-season',
-		},
-		{
-			title: project.stage.name,
-			key: project.stage.name + '-stage',
-		},
-	]
+	// const breadcrumbItems = (project: ProjectIncludeAll): ItemType[] => [
+	// 	{
+	// 		title: project.stage.season.name,
+	// 		key: project.stage.season.name + '-season',
+	// 	},
+	// 	{
+	// 		title: project.stage.name,
+	// 		key: project.stage.name + '-stage',
+	// 	},
+	// ]
 
 	return (
 		<ProtectedLayout title={t('Community Projects')}>
@@ -66,7 +65,7 @@ const ProjectsPage: NextPageWithLayout = () => {
 												<Descriptions
 													title={
 														<>
-															<Breadcrumb items={breadcrumbItems(project)} className={styles.seasonDetails} />
+															{/* <Breadcrumb items={breadcrumbItems(project)} className={styles.seasonDetails} /> */}
 															<Title level={2} style={{ fontSize: 16 }}>
 																{project.name}
 															</Title>
