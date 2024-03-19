@@ -64,7 +64,7 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 											<T>On the page of the project</T>
 										</Button>
 									</Link>
-									{!!project.availableSpecialists?.filter((as) => as.id == session?.user.id) && (
+									{!!project.availableSpecialists?.filter((as) => as.id == session?.user.id).length && (
 										<Alert
 											showIcon
 											type="success"
