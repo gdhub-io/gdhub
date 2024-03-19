@@ -233,7 +233,7 @@ export const ProtectedProjectLayout = ({
 								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
 								<Button type="text" size="small">
 									<Link href={`/hub`}>
-										<T>My Projects</T>
+										<T>Hub</T>
 									</Link>
 								</Button>
 								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />

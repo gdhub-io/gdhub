@@ -37,7 +37,10 @@ const ProjectsPage: NextPageWithLayout = () => {
 	// ]
 
 	return (
-		<ProtectedLayout title={t('Community Projects')}>
+		<ProtectedLayout
+			title={t('page.hab.projects.title', 'Indie Game Projects')}
+			subTitle={t('page.hab.projects.subtitle', 'Projects developed independently by users')}
+		>
 			<div className={styles.container}>
 				<Spin spinning={isLoading}>
 					<Row
