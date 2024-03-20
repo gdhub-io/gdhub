@@ -15,6 +15,7 @@ class ApiProjecReportsHandler {
 		const reports = await prisma.projectReport.findMany({
 			where: { projectId },
 			orderBy: { publishedAt: 'desc' },
+			take: 5,
 		})
 
 		return reports

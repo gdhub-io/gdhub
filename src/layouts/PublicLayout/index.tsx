@@ -41,6 +41,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 
 	const seoParams: NextSeoProps = {
 		title,
+		description: seo?.description || subTitle,
 		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		openGraph: {
 			images: [

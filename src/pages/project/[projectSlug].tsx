@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ProjectReports from '@/components/ProjectReports'
+import { DevLogPublicWall } from '@/components/DevLogPublicWall'
 import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
 import { PublicLayout } from '@/layouts/PublicLayout'
@@ -7,7 +7,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { Profile, Project, ProjectStatus, User } from '@prisma/client'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, Descriptions, Grid, Row, Typography } from 'antd'
+import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -77,19 +77,22 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 				<div className={styles.container}>
 					<Row gutter={[32, 16]}>
 						<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
-							<div className="project-description">
-								<Title level={2}>
-									<T>About Game</T>
-								</Title>
-								<Paragraph>
-									<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
-								</Paragraph>
-							</div>
-							{!screens.md && generalData}
+							<Space direction="vertical" size={64} style={{ width: '100%' }}>
+								<div className="project-description">
+									<Title level={2}>
+										<T>About Game</T>
+									</Title>
+									<Paragraph>
+										<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
+									</Paragraph>
+								</div>
 
-							<div className="project-team">
-								<TeamMembers teamId={project.teamId} />
-							</div>
+								{!screens.md && generalData}
+
+								<ProjectVacancies teamId={project.teamId} />
+
+								<DevLogPublicWall projectId={project.id} />
+							</Space>
 						</Col>
 						<Col xs={{ span: 24, order: 0 }} md={{ span: 12, order: 1 }} lg={{ span: 8, order: 1 }}>
 							{!showPitchVideo && (
@@ -128,16 +131,12 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 									</Button>
 								</Link>
 							) : null}
+
+							<div className="project-team">
+								<TeamMembers teamId={project.teamId} />
+							</div>
 						</Col>
 					</Row>
-
-					<div className="project-vacancies">
-						<ProjectVacancies teamId={project.teamId} />
-					</div>
-
-					<div className="project-reports">
-						<ProjectReports projectId={project.id} projectStartedAt={project.createdAt} />
-					</div>
 				</div>
 			</PublicLayout>
 		</>
