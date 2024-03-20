@@ -20,6 +20,7 @@ import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import weekday from 'dayjs/plugin/weekday'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
@@ -31,6 +32,7 @@ import { DefaultSeo } from 'next-seo'
 import NProgress from 'nprogress'
 
 dayjs.extend(localizedFormat)
+dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(localeData)
 dayjs.extend(relativeTime)

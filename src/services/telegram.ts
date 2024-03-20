@@ -34,13 +34,13 @@ const newProjectReportsMessageRu = (reports: any[]) => {
 		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Читать дальше</a>`
 	})
 
-	message += '<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
+	message += '\n<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
 
 	return message
 }
 
 const newProjectReportsMessageEn = (reports: any[]) => {
-	let message = '<b>New on community projects</b>'
+	let message = '<b>New on games projects</b>'
 
 	reports.map((report) => {
 		message += `\n\n<b>Project ${report.project.name}</b> / ${report.project.stage.season.name}\n`
@@ -50,7 +50,7 @@ const newProjectReportsMessageEn = (reports: any[]) => {
 		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Read more</a>`
 	})
 
-	message += '<i>p.s. See the full text of the reports on the project pages.</i>'
+	message += '\n<i>p.s. See the full text of the reports on the project pages.</i>'
 
 	return message
 }
@@ -64,7 +64,7 @@ const newSpecialitiesMessageRu = (specialities: any[]) => {
 }
 
 const newSpecialitiesMessageEn = (specialities: any[]) => {
-	let message = `<b>New Community Members</b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
+	let message = `<b>New </b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
 	message += specialities.map((r) => r.name).join(';\n- ')
 	message += '\n\nWelcome to our hub!'
 
