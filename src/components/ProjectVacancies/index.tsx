@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
-import { WorkDirection } from '@prisma/client'
+import { TeamVacancy, WorkDirection } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Space, Table, Tag, Typography } from 'antd'
+import { Button, Space, Row, Col, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
+import { GoArrowDownRight } from 'react-icons/go'
+import styles from './style.module.scss'
 
 const { Title } = Typography
 
@@ -45,9 +47,19 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 		data: projectVacancies,
 		refetch: fetchMyProjectVacancies,
 		isFetching: isLoadingMyProjectVacancies,
-	} = useQuery(['team-vacancy', teamId], () => axios.get('/api/project/vacancies', { params: { teamId: teamId } }), {
-		enabled: !!teamId,
-	})
+	} = useQuery(
+		['team-vacancy', teamId],
+		() =>
+			axios.get<
+				(TeamVacancy & {
+					direction: WorkDirection
+					project: { id: string; slug: string; name: string; description: string }
+				})[]
+			>('/api/project/vacancies', { params: { teamId: teamId } }),
+		{
+			enabled: !!teamId,
+		}
+	)
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
@@ -116,13 +128,23 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 		fetchMyProjectVacancies()
 	}
 
+	const handleShowVacancy = (id: string) => {
+		setSelectedVacancyId(id)
+		setShowVacancyPreviewModal(true)
+	}
+
+	const handleCloseVacancy = () => {
+		setSelectedVacancyId(undefined)
+		setShowVacancyPreviewModal(false)
+	}
+
 	return (
 		<>
-			<Space direction="vertical" style={{ marginTop: 60 }}>
+			<Space direction="vertical" style={{ width: '100%' }}>
 				<Title level={2}>
 					<T>Vacancies</T>
 				</Title>
-				{projectVacancies?.data.length > 0 && (
+				{!!projectVacancies?.data.length && (
 					<p style={{ fontSize: 12 }}>
 						<T keyName="vacancies.list.description">
 							All project participants, responding to vacancies, accept the conditions that for the period of
@@ -136,15 +158,38 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 				)}
 			</Space>
 
-			{projectVacancies?.data.length > 0 ? (
+			{!!projectVacancies?.data ? (
 				<>
-					<Table
-						loading={isLoadingMyProjectVacancies}
-						style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
-						columns={vacanciesColumns}
-						dataSource={projectVacancies?.data?.map((m: any) => ({ ...m, key: m.id }))}
-						pagination={false}
-					/>
+					<Row gutter={[32, 32]} wrap>
+						{projectVacancies.data.map((vacancy, idx) => {
+							return (
+								<Col xs={24} sm={12} lg={8} xxl={6} key={idx} className={styles.col}>
+									<div
+										className={[
+											styles.vacancyCard,
+											'bg-direc-' + vacancy.direction.name.replace(' & ', '-').replace(' ', '-'),
+										].join(' ')}
+									>
+										<div className={styles.validDate}>
+											<T>Valid until</T> {dayjs(vacancy.finishedAt).format('ll')}
+										</div>
+										<div className={styles.content}>
+											<Title level={2} className={styles.title}>
+												{vacancy.title}
+											</Title>
+
+											<div className={styles.projectName}>{vacancy.project.name}</div>
+										</div>
+										<Button
+											className={styles.linkBtn}
+											icon={<GoArrowDownRight size={24} onClick={() => handleShowVacancy(vacancy.id)} />}
+											type="primary"
+										/>
+									</div>
+								</Col>
+							)
+						})}
+					</Row>
 
 					<VacancyPreviewModal
 						vacancyId={selectedVacancyId}
@@ -153,7 +198,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 							setShowVacancyPreviewModal(false)
 							setSelectedVacancyId(undefined)
 						}}
-						onOk={handleSaveVacancy}
+						onOk={handleCloseVacancy}
 					/>
 				</>
 			) : (

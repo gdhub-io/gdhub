@@ -1,9 +1,0 @@
-@media screen and (max-width: 575px) {
-	.component {
-		:global {
-			.ant-timeline-item-content {
-				width: calc(100% - 15% - 24px) !important;
-			}
-		}
-	}
-}

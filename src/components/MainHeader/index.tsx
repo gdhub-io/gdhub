@@ -71,6 +71,14 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
+					<Link href="/projects" title={t('Game Projects')}>
+						<T>Game Projects</T>
+					</Link>
+				),
+				key: '/projects',
+			},
+			{
+				label: (
 					<Link href={writeInternalLink('#contacts')} title={t('Contacts')}>
 						<T>Contacts</T>
 					</Link>

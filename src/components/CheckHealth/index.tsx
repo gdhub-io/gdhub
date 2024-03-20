@@ -14,10 +14,6 @@ const CheckHealth = ({ children }: any) => {
 		retry: 0,
 	})
 
-	if (data?.data === true && isFetched) {
-		return children
-	}
-
 	if (data?.data === false && isFetched) {
 		return (
 			<EmptyLayout>
@@ -42,7 +38,7 @@ const CheckHealth = ({ children }: any) => {
 		)
 	}
 
-	return null
+	return children
 }
 
 export default CheckHealth

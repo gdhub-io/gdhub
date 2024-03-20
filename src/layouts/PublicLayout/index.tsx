@@ -41,13 +41,14 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 
 	const seoParams: NextSeoProps = {
 		title,
+		description: seo?.description || subTitle,
 		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		openGraph: {
 			images: [
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${title}&st=${t(seo?.description || '')}&img=${process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${title}&st=${t(seo?.description || '')}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
 					alt: 'Indie Game Developers Page Cover',
 				},
 			],

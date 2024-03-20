@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Carousel, Grid, Typography } from 'antd'
 import ReactNiceAvatar from 'react-nice-avatar'
@@ -215,20 +215,22 @@ export const LandingFeedbackSection = () => {
 				<div className={styles.content}>
 					{screens.lg && (
 						<>
-							<ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1200: 3, 1440: 4 }}>
-								<Masonry gutter="30px">
-									{feedbackList.map((feedback, index) => (
-										<Card rootClassName={styles.feedbackCard} key={'feedback-card-' + index}>
-											<Card.Meta
-												avatar={feedback.avatar}
-												title={t(`landing.feedback.title` + index, feedback.name)}
-												description={t(`landing.feedback.description` + index, feedback.position)}
-											/>
-											<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
-										</Card>
-									))}
-								</Masonry>
-							</ResponsiveMasonry>
+							<Suspense>
+								<ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1200: 3, 1440: 4 }}>
+									<Masonry gutter="30px">
+										{feedbackList.map((feedback, index) => (
+											<Card rootClassName={styles.feedbackCard} key={'feedback-card-' + index}>
+												<Card.Meta
+													avatar={feedback.avatar}
+													title={t(`landing.feedback.title` + index, feedback.name)}
+													description={t(`landing.feedback.description` + index, feedback.position)}
+												/>
+												<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
+											</Card>
+										))}
+									</Masonry>
+								</ResponsiveMasonry>
+							</Suspense>
 							{maxHeight != 'none' ? (
 								<Button className={styles.readMoreBtn} onClick={() => setMaxHeight('none')}>
 									<T>Read more</T>
@@ -238,26 +240,28 @@ export const LandingFeedbackSection = () => {
 					)}
 
 					{!screens.lg && (
-						<Carousel
-							autoplay={false}
-							centerMode
-							className={styles.feedbackCarousel}
-							centerPadding="32px"
-							dots={{ className: styles.feedbackDot }}
-						>
-							{feedbackList.map((feedback, index) => (
-								<div className={styles.feedbackSlideContainer} key={'feedback-card-' + index}>
-									<Card className={styles.feedbackSlide}>
-										<Card.Meta
-											avatar={feedback.avatar}
-											title={t(`landing.feedback.title` + index, feedback.name)}
-											description={t(`landing.feedback.description` + index, feedback.position)}
-										/>
-										<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
-									</Card>
-								</div>
-							))}
-						</Carousel>
+						<Suspense>
+							<Carousel
+								autoplay={false}
+								centerMode
+								className={styles.feedbackCarousel}
+								centerPadding="32px"
+								dots={{ className: styles.feedbackDot }}
+							>
+								{feedbackList.map((feedback, index) => (
+									<div className={styles.feedbackSlideContainer} key={'feedback-card-' + index}>
+										<Card className={styles.feedbackSlide}>
+											<Card.Meta
+												avatar={feedback.avatar}
+												title={t(`landing.feedback.title` + index, feedback.name)}
+												description={t(`landing.feedback.description` + index, feedback.position)}
+											/>
+											<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
+										</Card>
+									</div>
+								))}
+							</Carousel>
+						</Suspense>
 					)}
 				</div>
 			</div>
