@@ -85,7 +85,7 @@
   "Go" : "Go",
   "Go to GDHub" : "Go to GDHub",
   "Go to app" : "Go to app",
-  "Go to project page" : "Go to project page",
+  "Go to project page" : "View details",
   "Go to registration" : "Go to registration",
   "Goal-oriented" : "Goal-oriented",
   "How can you be useful to teams?" : "How can you be useful to teams?",
@@ -99,6 +99,7 @@
   "Information about your main speciality" : "Information about your main speciality",
   "Join the team" : "Join the team",
   "Join us and become a part of new era in the gaming industry!" : "Join us and become a part of new era in the gaming industry!",
+  "Last updates" : "Last updates",
   "Legal officer" : "Legal officer",
   "Let's go" : "Let's go",
   "Log in" : "Log in",
@@ -212,6 +213,9 @@
   "are-you-sure-you-want-to-delete-it" : "Are you sure you want to delete it?",
   "availableTime" : "Available Time",
   "back" : "Back",
+  "button" : {
+    "save" : "Save"
+  },
   "casual" : "Casual",
   "change" : "Edit",
   "checkhealth" : {
@@ -529,6 +533,12 @@
   "oriental fantasy" : "Oriental Fantasy",
   "other" : "Other",
   "page" : {
+    "hab" : {
+      "projects" : {
+        "subtitle" : "Projects developed or being developed by users",
+        "title" : "Game Projects"
+      }
+    },
     "hub" : {
       "members" : {
         "text1" : "Any registered user of our portal is considered a community member. Today we are",

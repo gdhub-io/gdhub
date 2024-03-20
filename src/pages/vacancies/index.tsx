@@ -12,7 +12,10 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	return (
 		<PublicLayout
 			title={t('Vacancies')}
-			seo={{ description: t('for enterprising specialists in the gaming industry') }}
+			subTitle={t('for initiative specialists from gaming industry')}
+			backgroundImage={
+				'https://cdn.sanity.io/images/3ao2jrg0/prod/f652fd9ac43f4b555c990db0265cef66ab5fdaf1-1920x1080.png'
+			}
 		>
 			<div className={styles.container}>
 				<div className="project-vacancies">

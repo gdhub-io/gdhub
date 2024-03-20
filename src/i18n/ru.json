@@ -99,6 +99,7 @@
   "Information about your main speciality" : "Информация о вас, как специалисте в геймдеве",
   "Join the team" : "Присоединиться",
   "Join us and become a part of new era in the gaming industry!" : "Присоединяйтесь к нам и станьте частью новой эры игровой индустрии!",
+  "Last updates" : "Последние обновления",
   "Legal officer" : "Юрист в геймдеве",
   "Let's go" : "Вперед!",
   "Log in" : "Войти",
@@ -212,6 +213,9 @@
   "are-you-sure-you-want-to-delete-it" : "Точно хотите удалить?",
   "availableTime" : "Доступное время",
   "back" : "Назад",
+  "button" : {
+    "save" : "Сохранить"
+  },
   "casual" : "Казуальные",
   "change" : "Изменить",
   "checkhealth" : {
@@ -529,6 +533,12 @@
   "oriental fantasy" : "Азиатская фэнтэзи",
   "other" : "Другие",
   "page" : {
+    "hab" : {
+      "projects" : {
+        "subtitle" : "Проекты разработанные или разрабатываемые пользователями платформы",
+        "title" : "Игровые пректы"
+      }
+    },
     "hub" : {
       "members" : {
         "text1" : "Любой зарегистрированный пользователь нашего портала считается участником сообщества. Сегодня мы",
