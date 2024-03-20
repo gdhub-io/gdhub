@@ -138,6 +138,8 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 		setShowVacancyPreviewModal(false)
 	}
 
+	if (!projectVacancies?.data) return null
+
 	return (
 		<>
 			<Space direction="vertical" style={{ width: '100%' }}>
