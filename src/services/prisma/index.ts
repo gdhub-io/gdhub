@@ -2,6 +2,7 @@ import { env } from '@/helpers/env'
 import { PrismaClient } from '@prisma/client'
 import { healthExtension } from './extenstions/health'
 import { profilePrismaExtenstion } from './extenstions/profile'
+import { projectPrismaExtension } from './extenstions/project'
 import { seasonPrismaExtension } from './extenstions/season'
 import { userPrismaExtension } from './extenstions/user'
 
@@ -22,6 +23,7 @@ const extendedPrismaClient = () => {
 		.$extends(userPrismaExtension)
 		.$extends(profilePrismaExtenstion)
 		.$extends(seasonPrismaExtension)
+		.$extends(projectPrismaExtension)
 
 	return extendedPrisma
 }

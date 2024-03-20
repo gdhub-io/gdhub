@@ -3,7 +3,7 @@ import { capitalize } from '@/helpers/text'
 import { Season, SeasonStage } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, Flex, Grid, Row, Space, Steps, Typography } from 'antd'
+import { Button, Checkbox, Col, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import { Dayjs } from 'dayjs'
 import { GoArrowLeft } from 'react-icons/go'
@@ -16,6 +16,7 @@ const { Title, Text, Paragraph } = Typography
 
 const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	const screens = Grid.useBreakpoint()
+	const [conditionStatus, setConditionStatus] = useState<any>()
 	const [stage, setStage] = useState<SeasonStage>()
 	const [workflow, setWorkflow] = useState<SeasonData>()
 	const { t } = useTolgee()
@@ -23,7 +24,10 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	const { refetch: refetchWorkflowData } = useQuery(
 		['project-workflow', projectId],
 		() =>
-			axios.get<{ stage: SeasonStage & { season: SeasonData } }>('/api/user/project/workflow', {
+			axios.get<{
+				conditionStatus: Record<string, any> & { completed: boolean }
+				stage: SeasonStage & { season: SeasonData }
+			}>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
 		{
@@ -31,6 +35,7 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 			onSuccess({ data }) {
 				setStage(data.stage)
 				setWorkflow(data.stage.season)
+				setConditionStatus(data.conditionStatus)
 			},
 		}
 	)
@@ -147,9 +152,19 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 									</Button>
 								)}
 								{currentStageIndex < workflow.stages.length - 1 && (
-									<Button onClick={handleNextStage} disabled={isMoving}>
-										<T keyName="workflow.next-stage">Next stage</T>
-									</Button>
+									<>
+										{conditionStatus.completed == false ? (
+											<Popover content="Required actions is not completed">
+												<Button disabled={conditionStatus.completed == false}>
+													<T keyName="workflow.next-stage">Next stage</T>
+												</Button>
+											</Popover>
+										) : (
+											<Button onClick={handleNextStage} disabled={isMoving}>
+												<T keyName="workflow.next-stage">Next stage</T>
+											</Button>
+										)}
+									</>
 								)}
 							</Space>
 						</Flex>
@@ -159,7 +174,28 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 
 				<Row gutter={[32, 32]}>
 					<Col xs={24} lg={18}>
-						<div className={styles.stageContent}>{stageContent(stage.name)}</div>
+						<Space direction="vertical" size={32} style={{ width: '100%' }}>
+							<div className={styles.stageContent}>{stageContent(stage.name)}</div>
+
+							{!!stage.conditions && (
+								<div className={styles.stageContent}>
+									<Title level={2}>Required Actions</Title>
+
+									{Array.isArray(stage.conditions) && stage.conditions.length > 0 && (
+										<Checkbox.Group
+											style={{ flexDirection: 'column' }}
+											options={stage.conditions.map((condition: any) => ({
+												label: condition.label,
+												value: condition.field,
+											}))}
+											value={stage.conditions.map((condition: any) =>
+												conditionStatus[condition.field] ? condition.field : null
+											)}
+										/>
+									)}
+								</div>
+							)}
+						</Space>
 					</Col>
 					<Col xs={24} lg={6}>
 						<Steps

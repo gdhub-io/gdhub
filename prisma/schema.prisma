@@ -188,6 +188,7 @@ model SeasonStage {
   order         Int                  @default(0)
   isCurrent     Boolean              @default(false)
   seasonId      String
+  conditions    Json?
   projects      Project[]
   estimations   ProjectEstimation[]
   season        Season               @relation(fields: [seasonId], references: [id], onDelete: Cascade)

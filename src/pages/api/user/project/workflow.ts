@@ -12,7 +12,7 @@ class UserProjectWorkflowDto {
 class ApiUserProjectWorkflowHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { projectId }: UserProjectWorkflowDto) {
-		const team = await prisma.project.findUnique({
+		const project = await prisma.project.findUnique({
 			where: { id: projectId },
 			select: {
 				id: true,
@@ -20,7 +20,9 @@ class ApiUserProjectWorkflowHandler {
 			},
 		})
 
-		return team
+		const conditionStatus = await prisma.project.conditionStatus({ projectId })
+
+		return { ...project, conditionStatus }
 	}
 }
 

@@ -58,12 +58,12 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			const data = await registrationToLecture({ lectureId })
 
 			// if (!data.newRegistration || userIsRegistered) {
-			// message.info(<T>You are already registered for this lecture</T>)
+			// message.info(t('You are already registered for this lecture'))
 			// 	return
 			// }
 
 			setUserIsRegistered(true)
-			message.success(<T>Registration successful</T>)
+			message.success(t('Registration successful'))
 		} catch (error: any) {
 			message.error(error.message)
 		}
