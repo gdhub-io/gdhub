@@ -9,6 +9,7 @@ import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
+	Col,
 	ConfigProvider,
 	Drawer,
 	Dropdown,
@@ -18,6 +19,7 @@ import {
 	Layout,
 	Menu,
 	MenuProps,
+	Row,
 	Space,
 	Typography,
 } from 'antd'
@@ -233,67 +235,73 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 				`}</style>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
-						<Flex align="middle" justify="space-between">
-							<Space align="center" size={8}>
-								<Link href="/hub" className="logo">
-									<GdhubLogo style={{ width: '115px' }} />
-								</Link>
-								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-								<Space>
-									{session?.user?.image ? (
-										<Avatar
-											src={
-												session?.user?.image ? (
-													<Image src={session?.user.image} width={24} height={24} alt="avatar" />
-												) : null
-											}
-											size={24}
-										/>
-									) : (
-										<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
-									)}
-									{screens.sm && <Text className="username">{session?.user?.name}</Text>}
-								</Space>
-							</Space>
-							<Space>
-								{screens.xl ? (
-									<>
-										<Link href="/hub/docs">
-											<Button type="text" style={{ fontSize: 14 }}>
-												<T>Documentation</T>
-											</Button>
-										</Link>
-										<NotificationsBell />
-										<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-											<Button
-												type="text"
-												style={{ display: 'block', padding: 0 }}
-												icon={
-													session?.user.image ? (
-														<Avatar
-															src={
-																session?.user?.image ? (
-																	<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																) : null
-															}
-														/>
-													) : (
-														<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
-													)
+						{/* <Flex align="middle" justify="space-between"> */}
+						<Row wrap={false} align="middle">
+							<Col flex="auto">
+								<Flex align="center" justify="start" gap={8}>
+									<Link href="/hub" className="logo">
+										<GdhubLogo style={{ width: '115px' }} />
+									</Link>
+									<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
+									<Space>
+										{session?.user?.image ? (
+											<Avatar
+												src={
+													session?.user?.image ? (
+														<Image src={session?.user.image} width={24} height={24} alt="avatar" />
+													) : null
 												}
-											></Button>
-										</Dropdown>
-									</>
-								) : (
-									<>
-										<NotificationsBell />
-										<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
-											<AiOutlineMenu />
-										</Button>
-									</>
-								)}
-							</Space>
-						</Flex>
+												size={24}
+											/>
+										) : (
+											<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
+										)}
+										{screens.sm && <Text className="username">{session?.user?.name}</Text>}
+									</Space>
+								</Flex>
+							</Col>
+							<Col flex="none">
+								<Space>
+									{screens.xl ? (
+										<>
+											<Link href="/hub/docs">
+												<Button type="text" style={{ fontSize: 14 }}>
+													<T>Documentation</T>
+												</Button>
+											</Link>
+											<NotificationsBell />
+											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
+												<Button
+													type="text"
+													style={{ display: 'block', padding: 0 }}
+													icon={
+														session?.user.image ? (
+															<Avatar
+																src={
+																	session?.user?.image ? (
+																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																	) : null
+																}
+															/>
+														) : (
+															<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
+														)
+													}
+												></Button>
+											</Dropdown>
+										</>
+									) : (
+										<>
+											<NotificationsBell />
+											<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
+												<AiOutlineMenu />
+											</Button>
+										</>
+									)}
+								</Space>
+							</Col>
+						</Row>
+						{/* </Flex> */}
 						{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
 						<Menu items={menuItems} mode="horizontal" selectedKeys={[router.pathname]} className={styles.appMenu} />
 					</Header>
