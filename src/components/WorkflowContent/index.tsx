@@ -143,7 +143,8 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 					<Col xs={24} lg={18}>
 						<Flex justify="space-between" align="baseline">
 							<Title level={2}>
-								<T keyName="workflow.current-stage">Current stage</T>: {capitalize(t(`workflow.${workflow.name}.step${currentStageIndex + 1}.name`, stage.name))}
+								<T keyName="workflow.current-stage">Current stage</T>:{' '}
+								{capitalize(t(`workflow.${workflow.name}.step${currentStageIndex + 1}.name`, stage.name))}
 							</Title>
 							<Space>
 								{currentStageIndex > 0 && (
@@ -179,7 +180,9 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 
 							{!!stage.conditions && (
 								<div className={styles.stageContent}>
-									<Title level={2}><T keyName="workflow.required-acitons.title">Required Actions</T></Title>
+									<Title level={2}>
+										<T keyName="workflow.required-acitons.title">Required Actions</T>
+									</Title>
 
 									{Array.isArray(stage.conditions) && stage.conditions.length > 0 && (
 										<Checkbox.Group
@@ -209,8 +212,8 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 						/>
 					</Col>
 				</Row>
-			</Space >
-		</div >
+			</Space>
+		</div>
 	)
 }
 
