@@ -135,10 +135,6 @@ export const ProtectedProjectLayout = ({
 				label: <Link href="/profile">Профиль</Link>,
 				key: 'profile',
 			},
-			{
-				label: <Link href="/my/projects">Мои проекты</Link>,
-				key: 'projects',
-			},
 			{ type: 'divider' },
 			{
 				key: 'tg-community',

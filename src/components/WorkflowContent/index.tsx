@@ -143,7 +143,7 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 					<Col xs={24} lg={18}>
 						<Flex justify="space-between" align="baseline">
 							<Title level={2}>
-								<T keyName="workflow.current-stage">Current stage</T>: {capitalize(stage.name)}
+								<T keyName="workflow.current-stage">Current stage</T>: {capitalize(t(`workflow.${workflow.name}.step${currentStageIndex + 1}.name`, stage.name))}
 							</Title>
 							<Space>
 								{currentStageIndex > 0 && (
@@ -154,7 +154,7 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 								{currentStageIndex < workflow.stages.length - 1 && (
 									<>
 										{conditionStatus.completed == false ? (
-											<Popover content="Required actions is not completed">
+											<Popover content={t('Required actions is not completed')}>
 												<Button disabled={conditionStatus.completed == false}>
 													<T keyName="workflow.next-stage">Next stage</T>
 												</Button>
@@ -179,13 +179,13 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 
 							{!!stage.conditions && (
 								<div className={styles.stageContent}>
-									<Title level={2}>Required Actions</Title>
+									<Title level={2}><T keyName="workflow.required-acitons.title">Required Actions</T></Title>
 
 									{Array.isArray(stage.conditions) && stage.conditions.length > 0 && (
 										<Checkbox.Group
 											style={{ flexDirection: 'column' }}
 											options={stage.conditions.map((condition: any) => ({
-												label: condition.label,
+												label: t(`workflow.${workflow.name}.condition.${condition.label}`, condition.label),
 												value: condition.field,
 											}))}
 											value={stage.conditions.map((condition: any) =>
@@ -202,15 +202,15 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 							direction="vertical"
 							// onChange={handleSetStage}
 							current={currentStageIndex}
-							items={workflow.stages.map((s) => ({
-								title: capitalize(s.name),
+							items={workflow.stages.map((s, idx: number) => ({
+								title: capitalize(t(`workflow.${workflow.name}.step${idx + 1}.name`, s.name)),
 								description: s.description,
 							}))}
 						/>
 					</Col>
 				</Row>
-			</Space>
-		</div>
+			</Space >
+		</div >
 	)
 }
 
