@@ -272,9 +272,9 @@ export default class TelegramService {
 
 		switch (locale) {
 			case 'ru':
-				message = newSpecialitiesMessageRu(projectWithVacancies)
+				message = newVacanciesMessageRu(projectWithVacancies)
 			case 'en':
-				message = newSpecialitiesMessageEn(projectWithVacancies)
+				message = newVacanciesMessageEn(projectWithVacancies)
 		}
 
 		await this.sendMessage({
