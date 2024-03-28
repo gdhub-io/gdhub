@@ -1,9 +1,9 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import HeroBgImage from '@/assets/images/landing/hero-bg.png'
 import PublicHeaderBg from '@/assets/images/public-header-bg.png'
 import { MainFooter } from '@/components/MainFooter'
 import { MainHeader } from '@/components/MainHeader'
 import { publicThemeConfig } from '@/config/theme'
-import { env } from '@/helpers/env'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
@@ -39,17 +39,20 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
 
-	const seoSettings: NextSeoProps = {
-		title: title || 'Game Developers Hub',
+	const seoParams: NextSeoProps = {
+		title,
+		description: seo?.description || subTitle,
 		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		openGraph: {
-			title: title || 'Game Developers Hub',
-			type: 'website',
-			defaultImageWidth: 1200,
-			defaultImageHeight: 630,
-			url: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+			images: [
+				{
+					url: seo?.openGraph?.images?.length
+						? seo?.openGraph.images[0].url
+						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${title}&st=${t(seo?.description || subTitle || '')}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+					alt: 'Indie Game Developers Page Cover',
+				},
+			],
 		},
-		facebook: { appId: '' },
 		...seo,
 	}
 
@@ -280,7 +283,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 
 	return (
 		<>
-			<NextSeo {...seoSettings} />
+			<NextSeo {...seoParams} />
 			<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {

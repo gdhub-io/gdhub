@@ -20,6 +20,7 @@ import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import weekday from 'dayjs/plugin/weekday'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
@@ -31,6 +32,7 @@ import { DefaultSeo } from 'next-seo'
 import NProgress from 'nprogress'
 
 dayjs.extend(localizedFormat)
+dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(localeData)
 dayjs.extend(relativeTime)
@@ -87,32 +89,28 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	}, [showContent])
 
 	const routeChangeStart = (...args: any) => {
-		// setShowContent(false)
-		// setLoading(true)
 		NProgress.start()
 	}
 
 	const routeChangeComplete = (url: string) => {
 		if (process.env.NODE_ENV == 'production') pageview(url)
-		// setLoadingOff()
-		// document.body.style.overflow = 'unset'
+
 		NProgress.done()
 	}
 
 	useEffect(() => {
 		router.events.on('routeChangeStart', routeChangeStart)
 		router.events.on('routeChangeComplete', routeChangeComplete)
-		// 	router.events.on('routeChangeError', () => setLoadingOff())
 
 		return () => {
 			router.events.off('routeChangeStart', routeChangeStart)
 			router.events.off('routeChangeComplete', routeChangeComplete)
-			// 		router.events.off('routeChangeError', () => setLoadingOff())
 		}
 	}, [router.events])
 
 	return (
 		<>
+			<DefaultSeo {...SEOSettings[router.locale as AvailableLocales]} />
 			<style jsx global>{`
 				:root {
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
@@ -141,7 +139,6 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 							<CheckHealth>
 								<SessionProvider session={session}>
 									<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
-										<DefaultSeo {...SEOSettings[router.locale as AvailableLocales]} />
 										{getLayout(<Component {...pageProps} />)}
 									</div>
 								</SessionProvider>

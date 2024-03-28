@@ -9,7 +9,6 @@ import { useTelegram } from '@/helpers/useTelegram'
 import { LandingLayout } from '@/layouts/LandingLayout'
 import { prisma } from '@/services/prisma'
 import { Typography } from 'antd'
-import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
 import { NextPageWithLayout } from './_app'
@@ -64,9 +63,9 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 
 	return (
 		<>
-			<Head>
+			{/* <Head>
 				<title>Game Developers Hub</title>
-			</Head>
+			</Head> */}
 			<LandingLayout className={styles.container}>
 				<div className={styles.main}>
 					<LandingHeroSection stats={stats} />

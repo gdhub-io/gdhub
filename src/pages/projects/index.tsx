@@ -34,7 +34,8 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 
 	return (
 		<PublicLayout
-			title={t('Indie Game Projects')}
+			title={t('page.projects.title', 'Indie Game Projects')}
+			subTitle={t('page.projects.subtitle', 'Projects developed independently by users')}
 			seo={{ description: t('Indie games that are developed by platform users') }}
 		>
 			<div className={styles.container}>

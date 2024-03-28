@@ -96,7 +96,7 @@ class ApiProjectHandler {
 	@Get()
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { slug }: GetProjectDto) {
 		const project = await prisma.project.findUnique({
-			where: { slug },
+			where: { slug, OR: [{ authorId: req.user.id }, { team: { members: { some: { userId: req.user.id } } } }] },
 			include: { stage: true },
 		})
 

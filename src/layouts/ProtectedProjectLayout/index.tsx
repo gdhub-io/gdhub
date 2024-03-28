@@ -1,12 +1,13 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-logo-v2b.svg'
+import { Error404 } from '@/components/Error404'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { ContextProject, ProjectContext } from '@/contexts/ProjectContext'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
+import { useCurrentProject } from '@/hooks/project'
 import { UserRole } from '@prisma/client'
-import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import {
 	Avatar,
@@ -25,7 +26,6 @@ import {
 } from 'antd'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
-import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -36,9 +36,10 @@ import { GoArrowUp } from 'react-icons/go'
 import { RxSlash } from 'react-icons/rx'
 import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
+import { ProtectedLayout } from '../ProtectedLayout'
 
 const { Header, Content } = Layout
-const { Title, Text } = Typography
+const { Title, Text, Paragraph } = Typography
 
 export const ProtectedProjectLayout = ({
 	title,
@@ -57,15 +58,13 @@ export const ProtectedProjectLayout = ({
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
 
-	const { data: project } = useQuery(
-		['user-project', session?.user.id],
-		() => axios.get<any>('/api/user/project', { params: { slug: projectSlug } }),
-		{
-			onSuccess(data) {
-				setContextProject({ id: data.data.id, name: data.data.name, teamId: data.data.teamId })
-			},
-		}
-	)
+	const { project, isFetched } = useCurrentProject()
+
+	useEffect(() => {
+		if (!project) return
+
+		setContextProject({ id: project.id, name: project.name, teamId: project.teamId })
+	}, [project])
 
 	const seoSettings: NextSeoProps = {
 		title: title || 'Project',
@@ -206,6 +205,15 @@ export const ProtectedProjectLayout = ({
 		},
 	]
 
+	if (isFetched && !project) {
+		return (
+			<ProtectedLayout>
+				<NextSeo title="Error 404" nofollow noindex />
+				<Error404 callbackUrl={'/hub'} textBackButton="Back to Hub" theme="light" containerStyle={{ height: '50vh' }} />
+			</ProtectedLayout>
+		)
+	}
+
 	return (
 		<ProjectContext.Provider value={{ contextProject, setContextProject }}>
 			<NextSeo {...seoSettings} />
@@ -225,11 +233,11 @@ export const ProtectedProjectLayout = ({
 								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
 								<Button type="text" size="small">
 									<Link href={`/hub`}>
-										<T>My Projects</T>
+										<T>Hub</T>
 									</Link>
 								</Button>
 								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-								<Text>{project?.data?.name || 'Project'}</Text>
+								<Text>{project?.name || 'Project'}</Text>
 							</Space>
 							<Space>
 								{screens.xl ? (

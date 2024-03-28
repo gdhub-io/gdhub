@@ -24,15 +24,20 @@ class UserParseCVHandler {
 		@UploadedFile() file: any,
 		@Body() { jobPosition, locale }: any
 	) {
-		const data = await pdf(file.buffer)
+		try {
+			const data = await pdf(file.buffer)
 
-		if (!data) throw new BadRequestException()
+			if (!data) throw new BadRequestException()
 
-		const response = await openAI.parseCV(data.text, jobPosition, {
-			locale,
-		})
+			const response = await openAI.parseCV(data.text, jobPosition, {
+				locale,
+			})
 
-		return response
+			return response
+		} catch (error: any) {
+			console.error('uploadCV', error)
+			return { success: false }
+		}
 	}
 }
 

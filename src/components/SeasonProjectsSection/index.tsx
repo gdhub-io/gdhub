@@ -1,10 +1,11 @@
 import { MatchingSpecialistAndProject, Project, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Col, Card, Descriptions, Typography, Button, Row, Grid, Alert } from 'antd'
+import { Col, Card, Descriptions, Button, Row, Grid, Alert } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 type ProjectsSectionArgs = {
@@ -14,6 +15,7 @@ type ProjectsSectionArgs = {
 
 export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
+	const { data: session } = useSession()
 	const { t } = useTolgee()
 
 	const { data: projects, isFetching: isLoadingProjecs } = useQuery(
@@ -49,9 +51,6 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 							description={
 								<div className={styles.projectDescriptions}>
 									<Descriptions title={project.name} layout={screens.md ? 'horizontal' : 'vertical'} column={1}>
-										<Descriptions.Item>
-											<Typography.Paragraph ellipsis={{ rows: 4 }}>{project.description}</Typography.Paragraph>
-										</Descriptions.Item>
 										<Descriptions.Item label={t('Author')}>{project.author.name} </Descriptions.Item>
 										<Descriptions.Item label={t('Genre')}>{project.genre}</Descriptions.Item>
 										<Descriptions.Item label={t('Game Setting')}>{project.setting}</Descriptions.Item>
@@ -65,7 +64,7 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 											<T>On the page of the project</T>
 										</Button>
 									</Link>
-									{!!project.availableSpecialists?.length && (
+									{!!project.availableSpecialists?.filter((as) => as.id == session?.user.id).length && (
 										<Alert
 											showIcon
 											type="success"

@@ -11,7 +11,7 @@ export const IndieList = () => {
 				<T>Game Projects</T>
 			</Title>
 			<Paragraph>
-				<T>Projects developed independently by community members.</T>
+				<T>Projects developed independently by users.</T>
 			</Paragraph>
 
 			<SeasonProjectsSection seasonSlug="indie" />

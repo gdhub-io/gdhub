@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Alert, Space, Typography } from 'antd'
 import axios from 'axios'
-import Head from 'next/head'
 import styles from './style.module.scss'
 
 const { Title } = Typography
@@ -15,16 +14,9 @@ const CheckHealth = ({ children }: any) => {
 		retry: 0,
 	})
 
-	if (data?.data === true && isFetched) {
-		return children
-	}
-
 	if (data?.data === false && isFetched) {
 		return (
 			<EmptyLayout>
-				<Head>
-					<title>Game Developers Hub</title>
-				</Head>
 				<div className={styles.container}>
 					<Space direction="vertical" align="center" size="large">
 						<div className="logo">
@@ -46,7 +38,7 @@ const CheckHealth = ({ children }: any) => {
 		)
 	}
 
-	return null
+	return children
 }
 
 export default CheckHealth

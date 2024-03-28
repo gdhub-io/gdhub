@@ -5,7 +5,6 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import Head from 'next/head'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
@@ -24,9 +23,9 @@ const SeasonPage: NextPageWithLayout = () => {
 
 	return (
 		<>
-			<Head>
+			{/* <Head>
 				<title>{season?.data.name || 'Season'}</title>
-			</Head>
+			</Head> */}
 			<div className={styles.container}>{!!season && <SeasonContent season={season?.data} />}</div>
 		</>
 	)
