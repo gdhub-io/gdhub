@@ -5,6 +5,7 @@
 
 import { AvailableLocales } from '@/config/locale'
 import { env } from '@/helpers/env'
+import { TeamVacancyStatus } from '@prisma/client'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
@@ -34,13 +35,13 @@ const newProjectReportsMessageRu = (reports: any[]) => {
 		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Читать дальше</a>`
 	})
 
-	message += '<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
+	message += '\n<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
 
 	return message
 }
 
 const newProjectReportsMessageEn = (reports: any[]) => {
-	let message = '<b>New on community projects</b>'
+	let message = '<b>New on games projects</b>'
 
 	reports.map((report) => {
 		message += `\n\n<b>Project ${report.project.name}</b> / ${report.project.stage.season.name}\n`
@@ -50,7 +51,7 @@ const newProjectReportsMessageEn = (reports: any[]) => {
 		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Read more</a>`
 	})
 
-	message += '<i>p.s. See the full text of the reports on the project pages.</i>'
+	message += '\n<i>p.s. See the full text of the reports on the project pages.</i>'
 
 	return message
 }
@@ -64,7 +65,7 @@ const newSpecialitiesMessageRu = (specialities: any[]) => {
 }
 
 const newSpecialitiesMessageEn = (specialities: any[]) => {
-	let message = `<b>New Community Members</b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
+	let message = `<b>New </b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
 	message += specialities.map((r) => r.name).join(';\n- ')
 	message += '\n\nWelcome to our hub!'
 
@@ -82,7 +83,7 @@ const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
 	})
 
 	message +=
-		'<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
+		'\n\n<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
 
 	return message
 }
@@ -97,7 +98,7 @@ const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 		message += '- ' + vacancyNames.join('\n- ')
 	})
 
-	message += '<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
+	message += '\n\n<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
 
 	return message
 }
@@ -261,7 +262,12 @@ export default class TelegramService {
 	}) {
 		const projectWithVacancies = await prisma.project.findMany({
 			where: {
-				vacancies: { some: { publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() } } },
+				vacancies: {
+					every: {
+						status: TeamVacancyStatus.Published,
+						publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+					},
+				},
 			},
 			include: { vacancies: true, _count: { select: { vacancies: true } } },
 		})
@@ -272,9 +278,9 @@ export default class TelegramService {
 
 		switch (locale) {
 			case 'ru':
-				message = newSpecialitiesMessageRu(projectWithVacancies)
+				message = newVacanciesMessageRu(projectWithVacancies)
 			case 'en':
-				message = newSpecialitiesMessageEn(projectWithVacancies)
+				message = newVacanciesMessageEn(projectWithVacancies)
 		}
 
 		await this.sendMessage({

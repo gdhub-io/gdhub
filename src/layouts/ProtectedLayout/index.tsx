@@ -39,14 +39,15 @@ import styles from './style.module.scss'
 interface ProtectedLayoutProps {
 	children: ReactNode
 	title?: string
+	subTitle?: string
 	seo?: NextSeoProps
 	backgroundImage?: string
 }
 
 const { Header, Content } = Layout
-const { Title, Text } = Typography
+const { Title, Text, Paragraph } = Typography
 
-export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) => {
+export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLayoutProps) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -56,6 +57,7 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 
 	const seoSettings: NextSeoProps = {
 		title,
+		description: subTitle,
 		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		nofollow: true,
 		noindex: true,
@@ -307,7 +309,10 @@ export const ProtectedLayout = ({ title, seo, children }: ProtectedLayoutProps) 
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							{!!title && <Title>{title}</Title>}
+							<Space size={0} direction="vertical" style={{ marginBottom: 32 }}>
+								{!!title && <Title>{title}</Title>}
+								{!!subTitle && <Paragraph>{subTitle}</Paragraph>}
+							</Space>
 							{children}
 						</div>
 					</Content>

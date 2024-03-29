@@ -10,7 +10,7 @@ import {
 } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { message, Modal, Spin } from 'antd'
+import { Grid, message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { HeldContent } from './HeldContent'
@@ -26,6 +26,7 @@ export type LectureDetails = Lecture & {
 
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const { data: session } = useSession()
+	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 	// const [processing, setProcessing] = useState(true)
 	// const [lecture, setLecture] = useState<any>()
@@ -106,8 +107,8 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			centered
 			title={modalTitle()}
 			destroyOnClose
-			width="90vw"
-			maskClosable={true}
+			width={screens.lg ? '50vw' : '100%'}
+			maskClosable={false}
 			cancelText={<T>Close</T>}
 			okText={okText()}
 			okButtonProps={{ hidden: lecture?.data.stage !== LectureStage.Ready }}

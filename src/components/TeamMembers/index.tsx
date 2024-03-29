@@ -49,7 +49,7 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 
 				{!!session && (
 					<List
-						grid={{ gutter: 16, xs: 1, sm: 1, md: 1, column: 2 }}
+						grid={{ gutter: 16, xs: 1, sm: 1, md: 1, column: 1 }}
 						itemLayout="horizontal"
 						dataSource={data}
 						renderItem={(item, index) =>
