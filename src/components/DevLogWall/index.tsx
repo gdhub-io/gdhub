@@ -67,7 +67,7 @@ export const DevLogWall = ({ project }: any) => {
 					dataSource={items}
 					renderItem={(item) => (
 						<List.Item>
-							<Card style={{ width: '100%' }}>
+							<Card style={{ width: '100%' }} className={styles.postCard}>
 								<Text type="secondary">{item.label}</Text>
 								<br />
 								<Paragraph ellipsis={{ rows: 20, expandable: true }}>{item.children}</Paragraph>
