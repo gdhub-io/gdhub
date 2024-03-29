@@ -5,6 +5,7 @@
 
 import { AvailableLocales } from '@/config/locale'
 import { env } from '@/helpers/env'
+import { TeamVacancyStatus } from '@prisma/client'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
@@ -82,7 +83,7 @@ const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
 	})
 
 	message +=
-		'<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
+		'\n\n<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
 
 	return message
 }
@@ -97,7 +98,7 @@ const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 		message += '- ' + vacancyNames.join('\n- ')
 	})
 
-	message += '<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
+	message += '\n\n<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
 
 	return message
 }
@@ -261,7 +262,12 @@ export default class TelegramService {
 	}) {
 		const projectWithVacancies = await prisma.project.findMany({
 			where: {
-				vacancies: { some: { publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() } } },
+				vacancies: {
+					every: {
+						status: TeamVacancyStatus.Published,
+						publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+					},
+				},
 			},
 			include: { vacancies: true, _count: { select: { vacancies: true } } },
 		})
