@@ -1,5 +1,5 @@
 // import { useEffect } from 'react'
-import SeasonContent, { SeasonData } from '@/components/SeasonContent'
+import SeasonContent, { SeasonData } from '@/components/WorkflowContent'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'

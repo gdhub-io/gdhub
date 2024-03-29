@@ -120,12 +120,12 @@ const StageStageModal = ({ seasonId, stageId, open, onOk, onCancel }: any) => {
 
 					<Row gutter={[16, 16]}>
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
-							<Form.Item name="startedAt" label="Started at" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item name="startedAt" label="Started at" wrapperCol={{ span: 24 }}>
 								<DatePicker format="DD.MM.YYYY" />
 							</Form.Item>
 						</Col>
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
-							<Form.Item name="finishedAt" label="Finished at" rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item name="finishedAt" label="Finished at" wrapperCol={{ span: 24 }}>
 								<DatePicker format="DD.MM.YYYY" />
 							</Form.Item>
 						</Col>

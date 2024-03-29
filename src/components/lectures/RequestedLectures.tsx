@@ -284,7 +284,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		try {
 			await deleteLecture({ id: lectureId })
 
-			message.success(<T>Request for lecture has been deleted</T>)
+			message.success(t('Request for lecture has been deleted'))
 		} catch (error: any) {
 			message.error('Error')
 		}
@@ -294,9 +294,9 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		try {
 			await deleteLecturerRequest({ id: currentLecturerRequestId, lectureId })
 
-			message.success(<T>Request for lecture has been deleted</T>)
+			message.success(t('Request for lecture has been deleted'))
 		} catch (error: any) {
-			message.error('Error')
+			message.error(t('Error'))
 		}
 	}
 
@@ -310,12 +310,12 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 
 			await updateList()
 			if (isRelevant) {
-				message.success(<T>Your vote has been counted</T>)
+				message.success(t('Your vote has been counted'))
 			} else {
-				message.success(<T>You have canceled your vote</T>)
+				message.success(t('You have canceled your vote'))
 			}
 		} catch (error: any) {
-			message.error('Error')
+			message.error(t('Error'))
 		}
 	}
 

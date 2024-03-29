@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { normUploadFile } from '@/helpers/file'
 import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -82,12 +82,12 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 			const formData = await form.validateFields()
 			await updateProject({ ...formData, coverImage: cover ? cover : null })
 
-			message.success(projectSlug ? <T>Project data updated</T> : <T>Added a new game project</T>)
+			message.success(projectSlug ? t('Project data updated') : t('Added a new game project'))
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(<T keyName="modal.project.errorText">Error. Check if all data is entered correctly</T>)
+				message.error(t('modal.project.errorText', 'Error. Check if all data is entered correctly'))
 			}
 		}
 	}
@@ -276,11 +276,13 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						]}
 						wrapperCol={{ span: 24 }}
 					>
-						<ContentEditor
-							editorRef={editorRef as any}
-							markdown={description}
-							onChange={(text: string) => form.setFieldValue('description', text)}
-						/>
+						<Suspense>
+							<ContentEditor
+								editorRef={editorRef as any}
+								markdown={description}
+								onChange={(text: string) => form.setFieldValue('description', text)}
+							/>
+						</Suspense>
 					</Form.Item>
 
 					<Form.Item
@@ -414,7 +416,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 			</Spin>
 
 			<Button type="primary" onClick={handleOk} loading={isUpdating}>
-				<T>Save</T>
+				<T keyName="button.save">Save</T>
 			</Button>
 		</ProtectedProjectLayout>
 	)

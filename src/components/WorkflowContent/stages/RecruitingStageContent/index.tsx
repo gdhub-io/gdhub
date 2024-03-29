@@ -1,25 +1,19 @@
 import { useMemo } from 'react'
-import { SeasonData } from '@/components/SeasonContent'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
+import { SeasonData } from '@/components/WorkflowContent'
 import { Render } from '@9gustin/react-notion-render'
-import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
+import { ProjectStatus } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton, Spin } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
-const ProductionStageContent = ({ season }: { season: SeasonData }) => {
+const RecruitingStageContent = ({ season }: { season: SeasonData }) => {
 	const router = useRouter()
 	const stage = useMemo(() => {
-		return season.stages.find((s) => s.isCurrent)
+		return season?.stages.find((s) => s.isCurrent)
 	}, [season])
-
-	const { data: reportsDates } = useQuery(
-		['season-reports', stage?.id],
-		() => axios.get<SeasonStreamReport[]>('/api/season/stream-reports', { params: { stageId: stage?.id } }),
-		{ enabled: !!stage, refetchOnWindowFocus: false, staleTime: Infinity }
-	)
 
 	const { data: stageContent, isLoading } = useQuery(
 		['gamelab-recruiting-content'],
@@ -44,4 +38,4 @@ const ProductionStageContent = ({ season }: { season: SeasonData }) => {
 	)
 }
 
-export default ProductionStageContent
+export default RecruitingStageContent
