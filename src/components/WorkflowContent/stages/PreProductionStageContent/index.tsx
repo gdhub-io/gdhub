@@ -37,7 +37,7 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 
 			{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 
-			{stage?.isCompleted && (
+			{stage?.isCurrent && (
 				<Alert style={{ marginTop: 16 }} type="success" message={<T keyName="projects-currently-being-assessed" />} />
 			)}
 		</div>
