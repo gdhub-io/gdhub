@@ -21,14 +21,7 @@ const SeasonPage: NextPageWithLayout = () => {
 		{ enabled: !!seasonSlug, refetchOnWindowFocus: false }
 	)
 
-	return (
-		<>
-			{/* <Head>
-				<title>{season?.data.name || 'Season'}</title>
-			</Head> */}
-			<div className={styles.container}>{!!season && <SeasonContent season={season?.data} />}</div>
-		</>
-	)
+	return null
 }
 
 SeasonPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>
