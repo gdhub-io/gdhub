@@ -157,8 +157,8 @@ const SeasonsList = () => {
 										) : null
 									}
 									style={
-										season.currentStage.name == DefaultSeasonStages.Searching ||
-										season.currentStage.name == DefaultSeasonStages.Pitching
+										season.currentStage.name == DefaultSeasonStages.Ideation ||
+										season.currentStage.name == DefaultSeasonStages.Concepting
 											? { borderColor: '#333', borderWidth: '2px' }
 											: undefined
 									}
@@ -182,7 +182,7 @@ const SeasonsList = () => {
 									}
 									extra={screens.md && actionTag(season)}
 								>
-									{season.currentStage.name === DefaultSeasonStages.Searching && (
+									{season.currentStage.name === DefaultSeasonStages.Ideation && (
 										<Paragraph>
 											<T>There is a set of projects.</T>{' '}
 											<Link href={`/${season.slug}`}>
@@ -191,7 +191,7 @@ const SeasonsList = () => {
 										</Paragraph>
 									)}
 
-									{season.currentStage.name !== DefaultSeasonStages.Searching && !isPlannedSeason(season) && (
+									{season.currentStage.name !== DefaultSeasonStages.Ideation && !isPlannedSeason(season) && (
 										<Descriptions bordered column={1} size="small">
 											<Descriptions.Item label={t('Participants')}>{season.membersCount}</Descriptions.Item>
 											<Descriptions.Item label={t('Projects')}>{season.projectsCount}</Descriptions.Item>
