@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Render } from '@9gustin/react-notion-render'
 import { SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
@@ -9,7 +8,6 @@ import styles from './style.module.scss'
 
 const DefaultStageContent = ({ stage }: { stage: SeasonStage }) => {
 	const router = useRouter()
-	const [pageProperties, setPageProperties] = useState<any>()
 
 	const { data: stageContent, isLoading } = useQuery(
 		['gamelab-recruiting-content', stage?.id],

@@ -200,17 +200,19 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 							)}
 						</Space>
 					</Col>
-					<Col xs={24} lg={6}>
-						<Steps
-							direction="vertical"
-							// onChange={handleSetStage}
-							current={currentStageIndex}
-							items={workflow.stages.map((s, idx: number) => ({
-								title: capitalize(t(`workflow.${workflow.name}.step${idx + 1}.name`, s.name)),
-								description: s.description,
-							}))}
-						/>
-					</Col>
+					{screens.lg && (
+						<Col xs={24} lg={6}>
+							<Steps
+								direction="vertical"
+								// onChange={handleSetStage}
+								current={currentStageIndex}
+								items={workflow.stages.map((s, idx: number) => ({
+									title: capitalize(t(`workflow.${workflow.name}.step${idx + 1}.name`, s.name)),
+									description: s.description,
+								}))}
+							/>
+						</Col>
+					)}
 				</Row>
 			</Space>
 		</div>
