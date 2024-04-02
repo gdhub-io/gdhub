@@ -91,7 +91,9 @@
   "How can you be useful to teams?" : "Чем вы можете быть полезны командам?",
   "How many hours a week can you devote to projects?" : "Сколько часов в неделю вы можете уделять участию в проектах?",
   "I already have an account" : "Я уже зарегистрирован",
+  "I want to give a lecture" : "Я хочу прочитать лекцию",
   "I'm available for offering" : "Я доступен для предложений участия в проектах",
+  "Im available for offering" : "Я открыт для предложений",
   "IncubaMation program GameLab" : "Инкубационная программа GameLab",
   "Indie Game Projects" : "Игровые проекты сообщества",
   "Individuality" : "Индивидуальность",
@@ -130,6 +132,7 @@
   "Registration token is wrong" : "Сссылка регистрации некорректна",
   "Registration token is wrong. Go to Signup page before." : "Неправильная ссылка на регистрацию. Начните процесс регистрации заново",
   "Registration with Google" : "Регистрация через Google",
+  "Required actions is not completed" : "Обязтельные действия должны быть выполнены",
   "Return to main" : "Вернуться на главную",
   "Send link to email" : "Отправить ссылку",
   "Send registration link" : "Продолжить регистрацию",
@@ -176,6 +179,7 @@
   "What will happen" : "Что будет",
   "When" : "Когда",
   "Will help the service and project authors offer solutions that are interesting to you" : "Поможем авторам сервиса и проекта предложить интересные вам решения",
+  "Workflow" : "Рабочий процесс",
   "Yes" : "Да",
   "You" : "Ты",
   "You are already registered" : "Вы уже зарегистрированы",
@@ -198,6 +202,14 @@
   "agreements" : "Соглашения",
   "app-short-description" : "Сообщество профессионалов игровой индустрии, члены которого формируют команды для разработки новых игр. Хотите получить новый опыт или разработать собственную игру? Присоединяйся сейчас!",
   "app" : {
+    "user-project" : {
+      "menu" : {
+        "overview" : "Дневник разработки",
+        "team" : "Команда",
+        "vacancies" : "Вакансии",
+        "workflow" : "Рабочий процесс"
+      }
+    },
     "user" : {
       "menu" : {
         "hub" : "Обзор",
@@ -533,6 +545,9 @@
   "oriental fantasy" : "Азиатская фэнтэзи",
   "other" : "Другие",
   "page" : {
+    "documentation" : {
+      "title" : "Документация"
+    },
     "hab" : {
       "projects" : {
         "subtitle" : "Проекты разработанные или разрабатываемые пользователями платформы",
@@ -715,6 +730,54 @@
   "workDirection-vfx" : "Визуальные эффекты",
   "workDirection-video editing" : "Видеоинженерия",
   "workDirection-web development" : "Веб-программирование",
+  "workflow" : {
+    "Indie" : {
+      "condition" : {
+        "Add concept document link to project settings" : {
+          "" : "Добавьте ссылку на концепт-документ на странице Настройки проекта."
+        }
+      },
+      "step1" : {
+        "name" : "Введение"
+      },
+      "step10" : {
+        "name" : "Поддержка"
+      },
+      "step11" : {
+        "name" : "Закрытие"
+      },
+      "step2" : {
+        "name" : "Работа с идеей"
+      },
+      "step3" : {
+        "name" : "Концептирование"
+      },
+      "step4" : {
+        "name" : "Планирование"
+      },
+      "step5" : {
+        "name" : "Вертикальный срез"
+      },
+      "step6" : {
+        "name" : "Имплементация фичей и подготовка контента"
+      },
+      "step7" : {
+        "name" : "Feature freeze и интеграция"
+      },
+      "step8" : {
+        "name" : "Релиз и поддержка"
+      },
+      "step9" : {
+        "name" : "Завершение проекта"
+      }
+    },
+    "current-stage" : "Текущий шаг",
+    "next-stage" : "Следующий этап",
+    "previous-stage" : "Назад",
+    "required-acitons" : {
+      "title" : "Необходимо сделать"
+    }
+  },
   "yearOfBirth" : "Год рождения",
   "yes" : "Да",
   "zombie" : "Зомби"

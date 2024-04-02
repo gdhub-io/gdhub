@@ -91,7 +91,9 @@
   "How can you be useful to teams?" : "How can you be useful to teams?",
   "How many hours a week can you devote to projects?" : "How many hours a week can you devote to projects?",
   "I already have an account" : "I already have an account",
+  "I want to give a lecture" : "I want to give a lecture",
   "I'm available for offering" : "I am available for offers of participation in projects",
+  "Im available for offering" : "I'm available for offering",
   "IncubaMation program GameLab" : "Incubation program GameLab",
   "Indie Game Projects" : "Indie Game Projects",
   "Individuality" : "Individuality",
@@ -130,6 +132,7 @@
   "Registration token is wrong" : "This registration link is wrong",
   "Registration token is wrong. Go to Signup page before." : "Registration token is wrong. Go to Signup page before",
   "Registration with Google" : "Registration with Google",
+  "Required actions is not completed" : "Required actions is not completed",
   "Return to main" : "Return to main",
   "Send link to email" : "Send link to email",
   "Send registration link" : "Send registration link",
@@ -176,6 +179,7 @@
   "What will happen" : "What will happen",
   "When" : "When",
   "Will help the service and project authors offer solutions that are interesting to you" : "Will help the service and project authors offer solutions that are interesting to you",
+  "Workflow" : "Workflow",
   "Yes" : "Yes",
   "You" : "You",
   "You are already registered" : "You are already registered",
@@ -198,6 +202,14 @@
   "agreements" : "Agreenments",
   "app-short-description" : "A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
   "app" : {
+    "user-project" : {
+      "menu" : {
+        "overview" : "Devlog",
+        "team" : "Team",
+        "vacancies" : "Vacancies",
+        "workflow" : "Workflow"
+      }
+    },
     "user" : {
       "menu" : {
         "hub" : "Overview",
@@ -533,6 +545,9 @@
   "oriental fantasy" : "Oriental Fantasy",
   "other" : "Other",
   "page" : {
+    "documentation" : {
+      "title" : "Documentation"
+    },
     "hab" : {
       "projects" : {
         "subtitle" : "Projects developed or being developed by users",
@@ -715,6 +730,54 @@
   "workDirection-vfx" : "VFX",
   "workDirection-video editing" : "Video Editing",
   "workDirection-web development" : "Web Development",
+  "workflow" : {
+    "Indie" : {
+      "condition" : {
+        "Add concept document link to project settings" : {
+          "" : "Add concept document link to project settings."
+        }
+      },
+      "step1" : {
+        "name" : "Introduction"
+      },
+      "step10" : {
+        "name" : "Support"
+      },
+      "step11" : {
+        "name" : "Closing"
+      },
+      "step2" : {
+        "name" : "Ideation"
+      },
+      "step3" : {
+        "name" : "Concepting"
+      },
+      "step4" : {
+        "name" : "Planning"
+      },
+      "step5" : {
+        "name" : "Vertical  Cut"
+      },
+      "step6" : {
+        "name" : "Preparation"
+      },
+      "step7" : {
+        "name" : "Integration"
+      },
+      "step8" : {
+        "name" : "Release & Support"
+      },
+      "step9" : {
+        "name" : "Closing"
+      }
+    },
+    "current-stage" : "Current Stage",
+    "next-stage" : "Next Stage",
+    "previous-stage" : "Previous",
+    "required-acitons" : {
+      "title" : "Required Actions"
+    }
+  },
   "yearOfBirth" : "Year of Birth",
   "yes" : "Yes",
   "zombie" : "Zombie"

@@ -3,7 +3,7 @@ import { capitalize } from '@/helpers/text'
 import { Season, SeasonStage } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Checkbox, Col, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
+import { Alert, Button, Checkbox, Col, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import { Dayjs } from 'dayjs'
 import { GoArrowLeft } from 'react-icons/go'
@@ -139,6 +139,9 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	return (
 		<div className={styles.container}>
 			<Space direction="vertical" style={{ width: '100%' }}>
+				<Alert showIcon message="This section in development" />
+				<br />
+
 				<Row>
 					<Col xs={24} lg={18}>
 						<Flex justify="space-between" align="baseline">
