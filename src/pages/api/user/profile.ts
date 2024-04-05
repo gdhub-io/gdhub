@@ -35,7 +35,8 @@ class ApiProfileHandler {
 			preferredLevels,
 			preferredSettings,
 			primaryInterest,
-			...othersData
+			lang,
+			...othersProfileData
 		} = body
 
 		let profile = await prisma.profile.findUnique({ where: { userId: req.user.id! }, include: { user: true } })
@@ -94,7 +95,7 @@ class ApiProfileHandler {
 		await prisma.profile.update({
 			where: { userId: req.user.id },
 			data: {
-				...othersData,
+				...othersProfileData,
 				name,
 				primaryInterest,
 				preferredGenres: preferredGenres
@@ -106,6 +107,7 @@ class ApiProfileHandler {
 				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
 				user: {
 					update: {
+						lang,
 						onboardingDone,
 						roles: updatedRoles,
 						// roles: profile.user.roles.includes(UserRole.Admin) ? updatedRoles : undefined,

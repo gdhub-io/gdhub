@@ -18,6 +18,7 @@ class CreateSeasonStageDto {
 	@IsBoolean()
 	isCurrent: boolean
 	@IsDateString()
+	@IsOptional()
 	startedAt: string
 	@IsDateString()
 	@IsOptional()

@@ -1,3 +1,4 @@
+import { AvailableLocales } from '@/config/locale'
 import { PrimaryInterest } from '@prisma/client'
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 
@@ -122,4 +123,8 @@ export class UpdateProfileDto {
 	@IsBoolean()
 	@IsOptional()
 	onboardingDone?: boolean
+
+	@IsEnum(AvailableLocales)
+	@IsOptional()
+	lang?: AvailableLocales
 }

@@ -1,12 +1,11 @@
 // import { useEffect } from 'react'
-import SeasonContent, { SeasonData } from '@/components/SeasonContent'
+import { SeasonData } from '@/components/WorkflowContent'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import styles from './style.module.scss'
 
 const SeasonPage: NextPageWithLayout = () => {
 	const router = useRouter()
@@ -21,14 +20,7 @@ const SeasonPage: NextPageWithLayout = () => {
 		{ enabled: !!seasonSlug, refetchOnWindowFocus: false }
 	)
 
-	return (
-		<>
-			{/* <Head>
-				<title>{season?.data.name || 'Season'}</title>
-			</Head> */}
-			<div className={styles.container}>{!!season && <SeasonContent season={season?.data} />}</div>
-		</>
-	)
+	return null
 }
 
 SeasonPage.getLayout = (page) => <ProtectedLayout>{page}</ProtectedLayout>

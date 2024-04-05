@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { SeasonData } from '@/components/SeasonContent'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
+import { SeasonData } from '@/components/WorkflowContent'
 import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
@@ -37,7 +37,7 @@ const PreProductionStageContent = ({ season }: { season: SeasonData }) => {
 
 			{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
 
-			{stage?.isCompleted && (
+			{stage?.isCurrent && (
 				<Alert style={{ marginTop: 16 }} type="success" message={<T keyName="projects-currently-being-assessed" />} />
 			)}
 		</div>

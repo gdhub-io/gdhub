@@ -12,6 +12,7 @@ import { T } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
+	Col,
 	ConfigProvider,
 	Drawer,
 	Dropdown,
@@ -21,6 +22,7 @@ import {
 	Layout,
 	Menu,
 	MenuProps,
+	Row,
 	Space,
 	Typography,
 } from 'antd'
@@ -135,10 +137,6 @@ export const ProtectedProjectLayout = ({
 				label: <Link href="/profile">Профиль</Link>,
 				key: 'profile',
 			},
-			{
-				label: <Link href="/my/projects">Мои проекты</Link>,
-				key: 'projects',
-			},
 			{ type: 'divider' },
 			{
 				key: 'tg-community',
@@ -166,18 +164,17 @@ export const ProtectedProjectLayout = ({
 			key: `/my/projects/${projectSlug}`,
 			label: (
 				<Link href={`/my/projects/${projectSlug}`}>
-					<T keyName="app.user-project.menu.overview">Overview</T>
+					<T keyName="app.user-project.menu.workflow">Workflow</T>
 				</Link>
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/workflow`,
+			key: `/my/projects/${projectSlug}/devlog`,
 			label: (
-				// <Link href={`/my/projects/${projectSlug}/workflow`}>
-				<T keyName="app.user-project.menu.workflow">Workflow</T>
-				// </Link>
+				<Link href={`/my/projects/${projectSlug}/devlog`}>
+					<T keyName="app.user-project.menu.overview">Devlog</T>
+				</Link>
 			),
-			disabled: true,
 		},
 		{
 			key: `/my/projects/${projectSlug}/vacancies`,
@@ -225,59 +222,71 @@ export const ProtectedProjectLayout = ({
 				`}</style>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
-						<Flex align="middle" justify="space-between">
-							<Space align="center" size={8}>
-								<Link href="/hub" className="logo">
-									<GdhubLogo style={{ width: '100px' }} />
-								</Link>
-								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-								<Button type="text" size="small">
-									<Link href={`/hub`}>
-										<T>Hub</T>
+						{/* <Flex align="middle" justify="space-between"> */}
+						<Row wrap={false} align="middle">
+							<Col flex="auto">
+								<Flex align="center" justify="start" gap={8}>
+									<Link href="/hub" className="logo">
+										<GdhubLogo style={{ width: '100px' }} />
 									</Link>
-								</Button>
-								<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-								<Text>{project?.name || 'Project'}</Text>
-							</Space>
-							<Space>
-								{screens.xl ? (
-									<>
-										<Link href="/hub/docs">
-											<Button type="text" style={{ fontSize: 14 }}>
-												<T>Documentation</T>
+									<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
+									{screens.lg && (
+										<>
+											<Button type="text" size="small">
+												<Link href={`/hub`}>
+													<T>Hub</T>
+												</Link>
 											</Button>
-										</Link>
-										<NotificationsBell />
-										<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
-											<Button
-												type="text"
-												style={{ display: 'block', padding: 0 }}
-												icon={
-													session?.user.image ? (
-														<Avatar
-															src={
-																session?.user?.image ? (
-																	<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-																) : null
-															}
-														/>
-													) : (
-														<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
-													)
-												}
-											></Button>
-										</Dropdown>
-									</>
-								) : (
-									<>
-										<NotificationsBell />
-										<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
-											<AiOutlineMenu />
-										</Button>
-									</>
-								)}
-							</Space>
-						</Flex>
+											<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
+										</>
+									)}
+									<Text style={{ verticalAlign: 'middle' }} ellipsis={{ tooltip: true }}>
+										{project?.name || 'Project'}
+									</Text>
+								</Flex>
+							</Col>
+							<Col flex="none">
+								<Space>
+									{screens.xl ? (
+										<>
+											<Link href="/hub/docs">
+												<Button type="text" style={{ fontSize: 14 }}>
+													<T>Documentation</T>
+												</Button>
+											</Link>
+											<NotificationsBell />
+											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
+												<Button
+													type="text"
+													style={{ display: 'block', padding: 0 }}
+													icon={
+														session?.user.image ? (
+															<Avatar
+																src={
+																	session?.user?.image ? (
+																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																	) : null
+																}
+															/>
+														) : (
+															<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
+														)
+													}
+												></Button>
+											</Dropdown>
+										</>
+									) : (
+										<>
+											<NotificationsBell />
+											<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
+												<AiOutlineMenu />
+											</Button>
+										</>
+									)}
+								</Space>
+							</Col>
+						</Row>
+						{/* </Flex> */}
 						{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
 						<Menu items={menuItems} mode="horizontal" selectedKeys={[router.asPath]} className={styles.appMenu} />
 					</Header>

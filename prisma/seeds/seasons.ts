@@ -9,7 +9,19 @@ import dayjs from 'dayjs'
 // 	{ name: 'SoftLaunch', order: 3 },
 // 	{ name: 'Release', order: 4 },
 // ]
-const defaultIndieStages = ['Recruiting', 'Prototyping', 'Production', 'SoftLaunch', 'Release']
+const defaultIndieStages = [
+	'concept',
+	'pre-planning',
+	'recruiting',
+	'prototyping',
+	'marketing',
+	'development',
+	'testing',
+	'polishing',
+	'release',
+	'support',
+	'closing',
+]
 
 export const seedDefaultSeasons = async (prisma: ExtendedPrismaClient) => {
 	const newStages: Prisma.SeasonStageCreateWithoutSeasonInput[] = []
@@ -41,7 +53,7 @@ export const seedDefaultSeasons = async (prisma: ExtendedPrismaClient) => {
 							},
 						},
 					}),
-			  ])
+				])
 			: undefined
 	}
 

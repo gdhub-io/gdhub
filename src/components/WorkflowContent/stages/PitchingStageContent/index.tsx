@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { SeasonData } from '@/components/SeasonContent'
+import { SeasonData } from '@/components/WorkflowContent'
 import { Render } from '@9gustin/react-notion-render'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
