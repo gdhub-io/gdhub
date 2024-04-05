@@ -1,3 +1,4 @@
+import { getServerLocale } from '@/helpers/format'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
@@ -16,6 +17,7 @@ class ApiRegistrationHandler {
 
 	@Put('/profile')
 	public async saveOnboardingProfile(@Req() req: NextApiRequestWithUser, @Body() body: Record<string, any>) {
+		const locale = getServerLocale(req)
 		const { name, yearOfBirth, country, city, confirmUserData, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
 			body
 
@@ -34,7 +36,7 @@ class ApiRegistrationHandler {
 					city,
 					yearOfBirth,
 					country,
-					user: { update: { agreements } },
+					user: { update: { agreements, lang: locale } },
 				},
 			})
 		} else {

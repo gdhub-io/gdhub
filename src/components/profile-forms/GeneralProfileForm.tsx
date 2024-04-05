@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
+import { AvailableLocales } from '@/config/locale'
 import { Profile } from '@prisma/client'
 import { T, useTolgee } from '@tolgee/react'
-import { AutoComplete, Button, Card, Form, Input, message, Spin } from 'antd'
+import { AutoComplete, Button, Card, Form, Input, message, Select, Spin } from 'antd'
 import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
 
@@ -12,7 +13,7 @@ type GeneralProfileFormArgs = {
 
 const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t, getLanguage, changeLanguage } = useTolgee()
 	const { data: session, update: sessionUpdate } = useSession()
 	const [processing, setProcessing] = useState(true)
 	const countries = useMemo(() => countryList().getData(), [])
@@ -30,6 +31,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 			setProcessing(true)
 			await saveProfile(formData)
 			await sessionUpdate({ user: { name: formData.name } })
+			await changeLanguage(formData.lang)
 			setProcessing(false)
 
 			if (formData.tgNickname) {
@@ -98,6 +100,15 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 					</Form.Item>
 					<Form.Item label={<T>City</T>} name="city" rules={[{ required: false }]}>
 						<Input />
+					</Form.Item>
+					<Form.Item label={<T>Language</T>} name="lang" rules={[{ required: true }]}>
+						<Select
+							defaultValue={getLanguage()}
+							options={[
+								{ value: AvailableLocales.en, label: 'English' },
+								{ value: AvailableLocales.ru, label: 'Русский' },
+							]}
+						/>
 					</Form.Item>
 					<Button type="primary" onClick={handleForm} loading={processing}>
 						<T>Save</T>
