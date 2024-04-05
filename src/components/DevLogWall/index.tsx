@@ -1,8 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { ProjectReport } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
-import { Card, Col, List, Row, Typography } from 'antd'
+import { Card, Col, List, Row, Spin, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
@@ -18,11 +17,9 @@ type ProjectReportItem =
 
 const { Title, Paragraph, Text } = Typography
 
-export const DevLogWall = ({ project }: any) => {
+export const DevLogWall = () => {
 	const router = useRouter()
-	const { t } = useTolgee()
 	const slug = router.query.slug as string
-	const [posts, setPosts] = useState<any[]>()
 
 	const {
 		data: projectReports,
@@ -51,35 +48,35 @@ export const DevLogWall = ({ project }: any) => {
 
 		if (!reports?.length || !projectReports) return []
 
-		setPosts(reports)
-
 		return reports
 	}, [projectReports])
 
-	if (!project) return null
+	if (!projectReports?.data?.length) return null
 
 	return (
-		<Row gutter={[32, 16]} className={styles.wall}>
-			<Col xs={24} lg={16}>
-				<List
-					header={<PostForm projectId={project.id} onCreate={() => refetch()} />}
-					bordered={false}
-					dataSource={items}
-					renderItem={(item) => (
-						<List.Item>
-							<Card style={{ width: '100%' }} className={styles.postCard}>
-								<Text type="secondary">{item.label}</Text>
-								<br />
-								<Paragraph ellipsis={{ rows: 20, expandable: true }}>{item.children}</Paragraph>
-							</Card>
-						</List.Item>
-					)}
-				/>
-			</Col>
-			<Col xs={24} lg={8}>
-				<Title level={2}>{projectReports?.data[0]?.project?.name}</Title>
-				<Paragraph>{projectReports?.data[0]?.project?.description}</Paragraph>
-			</Col>
-		</Row>
+		<Spin spinning={isLoading}>
+			<Row gutter={[32, 16]} className={styles.wall}>
+				<Col xs={24} lg={16}>
+					<List
+						header={<PostForm projectId={projectReports.data[0].projectId} onCreate={() => refetch()} />}
+						bordered={false}
+						dataSource={items}
+						renderItem={(item) => (
+							<List.Item>
+								<Card style={{ width: '100%' }} className={styles.postCard}>
+									<Text type="secondary">{item.label}</Text>
+									<br />
+									<Paragraph ellipsis={{ rows: 20, expandable: true }}>{item.children}</Paragraph>
+								</Card>
+							</List.Item>
+						)}
+					/>
+				</Col>
+				<Col xs={24} lg={8}>
+					<Title level={2}>{projectReports.data[0].project?.name}</Title>
+					<Paragraph>{projectReports.data[0].project?.description}</Paragraph>
+				</Col>
+			</Row>
+		</Spin>
 	)
 }
