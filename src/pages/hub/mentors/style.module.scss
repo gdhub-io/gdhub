@@ -1,0 +1,28 @@
+.card {
+  .cover {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+
+.mentorDescriptions {
+  padding: 16px 8px;
+
+  :global {
+    .ant-descriptions-item {
+      padding-bottom: 4px;
+
+      &-label {
+        font-size: 12px;
+        color: #666;
+      }
+
+      &-content {
+        font-size: 12px;
+      }
+    }
+  }
+}
