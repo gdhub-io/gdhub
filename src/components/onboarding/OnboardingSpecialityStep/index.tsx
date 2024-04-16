@@ -39,6 +39,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 
 	const [showParseCVButton, setShowParseCVButton] = useState(false)
 	const [isParsing, setIsParsing] = useState(false)
+	const [jobPosition, setJobPosition] = useState<string>('')
 
 	const {
 		data: workDirections,
@@ -117,10 +118,10 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 			accept: '.pdf',
 			action: '/api/user/parse/cv',
 			showUploadList: false,
-			data: { jobPosition: form.getFieldValue('name'), locale: router.locale },
+			data: { jobPosition, locale: router.locale },
 			maxCount: 1,
 			onChange: ({ file }) => {
-				if (file.status === 'done' && !file.response?.success) {
+				if (file.status === 'done' && (!file.response || file.response.success == false)) {
 					setIsParsing(false)
 					message.error(t('uploadcv-error-message', `We couldn't process your file. Enter data manually`))
 					return
@@ -136,12 +137,13 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 				}
 
 				if (file.status === 'done') {
+					console.log('fillForm', file)
 					fillForm(file.response)
 					setIsParsing(false)
 				}
 			},
 		}),
-		[form]
+		[form, jobPosition]
 	)
 
 	const fillForm = (data: any) => {
@@ -162,6 +164,11 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 					)
 					.join('\n'),
 			})
+	}
+
+	const handleJobPositionChange = (value: string) => {
+		setShowParseCVButton(!!value)
+		setJobPosition(value)
 	}
 
 	return (
@@ -223,7 +230,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 									>
 										<Input
 											placeholder={t('specialityName.plachehloder')}
-											onChange={(e) => setShowParseCVButton(!!e.target.value)}
+											onChange={(e) => handleJobPositionChange(e.target.value)}
 										/>
 									</Form.Item>
 								</Col>

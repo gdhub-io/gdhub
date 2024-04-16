@@ -37,11 +37,22 @@ export const profilePrismaExtenstion = Prisma.defineExtension((client) => {
 					return speciality
 				},
 				delete: async ({ args, query }) => {
+					const data = await client.speciality.findUnique({ where: { id: args.where.id } })
 					const speciality = await query(args)
 
 					/** Update data in search engine */
-					if (args.where.id) {
+					if (data && args.where.id) {
 						try {
+							// set onboardingDone to false for users without specialities
+							const specialtiesLeft = await client.speciality.count({ where: { id: args.where.id } })
+
+							if (specialtiesLeft == 0) {
+								await client.user.update({
+									where: { id: data?.userId },
+									data: { onboardingDone: false },
+								})
+							}
+
 							const searchClient = await SearchEngineService.init()
 							await searchClient.deleteSpecialist(args.where.id)
 						} catch (error) {

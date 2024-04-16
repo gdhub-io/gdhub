@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
 		EmailProvider({
 			from: process.env.EMAIL_FROM as string,
 			server: process.env.EMAIL_SERVER as string,
-			async sendVerificationRequest({ identifier: email, url, provider: { server, from } }, ...other) {
+			async sendVerificationRequest({ identifier: email, url, provider }, ...other) {
 				try {
 					const userExist = await prisma.user.findUnique({ where: { email } })
 					let sendResult: any
@@ -42,10 +42,12 @@ export const authOptions: NextAuthOptions = {
 						})
 					} else {
 						const defaultLang = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE') as Language
+						const params = new URL(url).searchParams
+						const locale = (params.get('locale') as Language) || defaultLang
 
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							to: [{ email }],
-							templateId: brevoTemplates[defaultLang].registration,
+							templateId: brevoTemplates[locale].registration,
 							params: {
 								link: url,
 							},

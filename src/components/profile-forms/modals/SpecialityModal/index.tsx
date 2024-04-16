@@ -34,6 +34,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 	const [processing, setProcessing] = useState(true)
 	const [showParseCVButton, setShowParseCVButton] = useState(false)
 	const [isParsing, setIsParsing] = useState(false)
+	const [jobPosition, setJobPosition] = useState<string>('')
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
@@ -148,9 +149,15 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 			accept: '.pdf',
 			action: '/api/user/parse/cv',
 			showUploadList: false,
-			data: { jobPosition: form.getFieldValue('name'), locale: router.locale },
+			data: { jobPosition, locale: router.locale },
 			maxCount: 1,
 			onChange: ({ file }) => {
+				if (file.status === 'done' && (!file.response || file.response.success == false)) {
+					setIsParsing(false)
+					message.error(t('uploadcv-error-message', `We couldn't process your file. Enter data manually`))
+					return
+				}
+
 				if (file.status == 'uploading') {
 					setIsParsing(true)
 				}
@@ -166,8 +173,13 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 				}
 			},
 		}),
-		[form]
+		[form, jobPosition]
 	)
+
+	const handleJobPositionChange = (value: string) => {
+		setShowParseCVButton(!!value)
+		setJobPosition(value)
+	}
 
 	return (
 		<Modal
@@ -224,7 +236,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 								<Input
 									width={'100%'}
 									placeholder={t('modal.speciality.form.name.placeholder', `Example: Character Concept Artist`)}
-									onChange={(e) => setShowParseCVButton(!!e.target.value)}
+									onChange={(e) => handleJobPositionChange(e.target.value)}
 								/>
 							</Form.Item>
 						</Col>

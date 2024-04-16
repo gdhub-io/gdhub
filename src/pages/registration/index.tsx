@@ -26,7 +26,7 @@ const RegistrationPage: NextPage = () => {
 	const screens = Grid.useBreakpoint()
 	const [formRegEmail] = Form.useForm()
 	const [formRegGoogle] = Form.useForm()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const router = useRouter()
 	const [registrationStep, setRegistrationStep] = useState({ step: 1, provider: 'email' })
 	const [email, setEmail] = useState<string>()
@@ -49,7 +49,7 @@ const RegistrationPage: NextPage = () => {
 		const response = await signIn('email', {
 			email,
 			redirect: false,
-			callbackUrl: `/registration/onboarding?provider=email${router.query?.for ? '&for=' + router.query.for : ''}`,
+			callbackUrl: `/registration/onboarding?locale=${getLanguage()}&provider=email${router.query?.for ? '&for=' + router.query.for : ''}`,
 		})
 
 		if (response?.ok) {
