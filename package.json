@@ -62,7 +62,7 @@
     "marked": "^12.0.0",
     "multer": "^1.4.5-lts.1",
     "natural-cron": "^1.0.1",
-    "next": "^14.1.4",
+    "next": "^14.2.1",
     "next-api-decorators": "^2.0.2",
     "next-auth": "^4.24.5",
     "next-csrf": "^0.2.1",
