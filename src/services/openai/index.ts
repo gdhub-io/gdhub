@@ -137,7 +137,7 @@ class OpenAI {
 				content: stripIndents`
 				Parse this resume to json given the following steps:
 				2. Find a summery of the resume.
-				3. Find information about a person's experience.
+				3. Find information about a person's experience. If an entry doesn't have a finish date data then use "now" for the field.
         4. Find information about a person's education (schools, colledges, universities, courses, etc).
         5. Find information about the tools (frameworks, programming languages, software, etc.) that a person uses.
         7. Determine which area of activity the specified position belongs to and return "id" of the area.
@@ -158,7 +158,7 @@ class OpenAI {
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: 'gpt-4-turbo-preview',
+				model: 'gpt-4-turbo',
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,
@@ -241,7 +241,7 @@ class OpenAI {
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: 'gpt-4-turbo-preview',
+				model: 'gpt-4-turbo',
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,
