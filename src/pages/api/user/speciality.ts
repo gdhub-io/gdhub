@@ -25,7 +25,7 @@ class ApiSpecialityHandler {
 			data: {
 				...data,
 				userId: req.user.id,
-				tools: data.tools ? data.tools.join(`\n`) : '',
+				tools: data.tools,
 			} as any,
 			include: { direction: true },
 		})
