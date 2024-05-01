@@ -83,6 +83,7 @@ const ContentEditor: FC<EditorProps> = ({ markdown, className, editorRef, onChan
 		<MDXEditor
 			ref={editorRef}
 			className={`${styles.editor} ${className}`}
+			contentEditableClassName={styles.contentSection}
 			markdown={markdown}
 			onChange={onChange}
 			plugins={[

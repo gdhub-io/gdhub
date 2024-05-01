@@ -11,7 +11,7 @@ class ApiProjectMoveDto {
 	targetStageId: string
 }
 
-@NextAuthGuard('user', [UserRole.Admin])
+@NextAuthGuard('user', [UserRole.Author])
 class ApiProjectMoveHandler {
 	@Put()
 	public async move(@Body(ValidationPipe) { projectId, targetStageId }: ApiProjectMoveDto) {

@@ -43,9 +43,8 @@ export class SpecialityDto {
 	@IsOptional()
 	skills?: string
 
-	@IsArray()
 	@IsOptional()
-	tools?: string[]
+	tools?: string
 
 	@IsString()
 	@IsOptional()
