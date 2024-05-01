@@ -68,12 +68,14 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 	useEffect(() => {
 		if (projectSlug) {
 			setCover(undefined)
+			setDescription('')
 		}
 	}, [])
 
 	useEffect(() => {
 		if (project) {
 			form.setFieldsValue({ ...project.data })
+			setDescription(project.data?.description || '')
 		}
 	}, [project])
 
@@ -264,7 +266,12 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 
 					<Form.Item
 						name="description"
-						label={<T keyName="modal.project.description.label">Short Description</T>}
+						label={
+							<>
+								<T keyName="modal.project.description.label">Short Description</T>
+								{description}
+							</>
+						}
 						required
 						rules={[
 							{
@@ -285,7 +292,10 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 							<ContentEditor
 								editorRef={editorRef as any}
 								markdown={description}
-								onChange={(text: string) => form.setFieldValue('description', text)}
+								onChange={(text: string) => {
+									form.setFieldValue('description', text)
+									// setDescription(text)
+								}}
 							/>
 						</Suspense>
 					</Form.Item>

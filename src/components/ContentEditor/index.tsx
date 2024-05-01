@@ -1,5 +1,5 @@
 'use client'
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import { env } from '@/helpers/env'
 import {
 	BoldItalicUnderlineToggles,
@@ -78,6 +78,10 @@ const YouTubeButton = () => {
 
 const ContentEditor: FC<EditorProps> = ({ markdown, className, editorRef, onChange = () => {} }) => {
 	const { data: session } = useSession()
+
+	useEffect(() => {
+		editorRef?.current?.setMarkdown(markdown)
+	}, [markdown])
 
 	return (
 		<MDXEditor
