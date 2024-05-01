@@ -149,21 +149,20 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 	const fillForm = (data: any) => {
 		const { workAreaId, tools, summary, specialization, skills, experience, education, portfolioLink } = data
 
-		if (workAreaId)
-			form.setFieldsValue({
-				summary,
-				workDirectionId: workAreaId,
-				specialization,
-				skills: skills?.join('\n'),
-				tools: tools?.join('\n'),
-				portfolioUrl: portfolioLink,
-				jobs: experience?.map((job: any) => `${job.from} - ${job.to}, ${job.roleName}, ${job.companyName}`).join('\n'),
-				schools: education
-					?.map(
-						(school: any) => `${school.from} - ${school.to}, ${school.speciality}, ${school.degree}, ${school.school}`
-					)
-					.join('\n'),
-			})
+		form.setFieldsValue({
+			summary,
+			workDirectionId: workAreaId,
+			specialization,
+			skills: skills?.join('\n'),
+			tools: tools?.join('\n'),
+			portfolioUrl: portfolioLink,
+			jobs: experience?.map((job: any) => `${job.from} - ${job.to}, ${job.roleName}, ${job.companyName}`).join('\n'),
+			schools: education
+				?.map(
+					(school: any) => `${school.from} - ${school.to}, ${school.speciality}, ${school.degree}, ${school.school}`
+				)
+				.join('\n'),
+		})
 	}
 
 	const handleJobPositionChange = (value: string) => {

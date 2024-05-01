@@ -115,9 +115,11 @@ class ApiProjectHandler {
 			include: { specialities: true, memberInTeams: { where: { status: TeamMemberStatus.Founder } } },
 		})
 
+		const userhasTeam = user?.memberInTeams[0]?.status == TeamMemberStatus.Founder
+
 		const season = await prisma.season.findFirst({
 			where: { slug: 'indie' },
-			include: { stages: { where: { isCurrent: { equals: true } } } },
+			include: { stages: true },
 		})
 
 		const project = await prisma.project.create({
@@ -127,24 +129,27 @@ class ApiProjectHandler {
 				description,
 				author: { connect: { id: req.user.id } },
 				status: ProjectStatus.Registered,
-				stage: { connect: { id: season?.stages[0].id } },
-				team: {
-					connectOrCreate: {
-						where: { id: user?.memberInTeams[0].teamId },
-						create: {
-							name: `${user?.name}'s Team`,
-							members: {
-								create: {
-									position: 'Founder',
-									specialityId: user?.specialities[0].id!,
-									startedAt: dayjs().toISOString(),
-									status: TeamMemberStatus.Founder,
-									userId: req.user.id,
+				stage: { connect: { id: season?.stages.find((r) => r.order == 0)?.id } },
+				team: userhasTeam
+					? {
+							connect: {
+								id: user?.memberInTeams[0]?.teamId,
+							},
+						}
+					: {
+							create: {
+								name: `${user?.name}'s Team`,
+								members: {
+									create: {
+										position: 'Founder',
+										specialityId: user?.specialities[0].id!,
+										startedAt: dayjs().toISOString(),
+										status: TeamMemberStatus.Founder,
+										userId: req.user.id,
+									},
 								},
 							},
 						},
-					},
-				},
 				reports: {
 					create: {
 						content: 'Registration of the project on the service',

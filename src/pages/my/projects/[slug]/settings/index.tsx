@@ -80,7 +80,11 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 	const handleOk = async () => {
 		try {
 			const formData = await form.validateFields()
-			await updateProject({ ...formData, coverImage: cover ? cover : null })
+			await updateProject({
+				...formData,
+				description: formData.description?.trim(),
+				coverImage: cover ? cover : null,
+			})
 
 			message.success(projectSlug ? t('Project data updated') : t('Added a new game project'))
 		} catch (error: any) {
@@ -174,6 +178,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 				<Form
 					form={form}
 					layout="vertical"
+					className={styles.form}
 					name="profile-speciality-form"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}
@@ -265,12 +270,12 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 							{
 								validator: () => {
 									const value = editorRef.current?.getMarkdown()
+
 									if (!value) {
-										notification.error({
-											message: <T keyName="form.error.required.text">This field is required</T>,
-										})
+										return Promise.reject(t('form.error.required.text', 'This field is required'))
 									}
-									return value ? Promise.resolve() : Promise.reject()
+
+									return Promise.resolve()
 								},
 							},
 						]}
