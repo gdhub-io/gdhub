@@ -5,7 +5,7 @@
 
 import { AvailableLocales } from '@/config/locale'
 import { env } from '@/helpers/env'
-import { TeamVacancyStatus } from '@prisma/client'
+import { ProjectStatus, TeamVacancyStatus } from '@prisma/client'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
@@ -199,6 +199,7 @@ export default class TelegramService {
 		const reports = await prisma.projectReport.findMany({
 			where: {
 				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+				project: { status: ProjectStatus.Approved },
 			},
 			include: { project: { include: { stage: { include: { season: true } } } } },
 		})
@@ -265,12 +266,15 @@ export default class TelegramService {
 				vacancies: {
 					every: {
 						status: TeamVacancyStatus.Published,
-						publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+						publishedAt: { gte: dayjs().subtract(inLastDays, 'days').toDate() },
 					},
 				},
+				status: ProjectStatus.Approved,
 			},
 			include: { vacancies: true, _count: { select: { vacancies: true } } },
 		})
+
+		projectWithVacancies.filter((r) => r._count.vacancies > 0)
 
 		if (projectWithVacancies.length == 0) return
 
