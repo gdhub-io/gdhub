@@ -261,7 +261,7 @@ export default class TelegramService {
 		inLastDays?: number
 		locale?: AvailableLocales
 	}) {
-		const projectWithVacancies = await prisma.project.findMany({
+		let projectWithVacancies = await prisma.project.findMany({
 			where: {
 				vacancies: {
 					every: {
@@ -274,7 +274,7 @@ export default class TelegramService {
 			include: { vacancies: true, _count: { select: { vacancies: true } } },
 		})
 
-		projectWithVacancies.filter((r) => r._count.vacancies > 0)
+		projectWithVacancies = projectWithVacancies.filter((r) => r._count.vacancies > 0)
 
 		if (projectWithVacancies.length == 0) return
 
