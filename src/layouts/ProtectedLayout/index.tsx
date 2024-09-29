@@ -53,7 +53,8 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
-	const { data: session }: any = useSession()
+	const { data: session } = useSession()
+	const { changeLanguage } = useTolgee()
 
 	const seoSettings: NextSeoProps = {
 		title,
@@ -63,6 +64,10 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 		noindex: true,
 		...seo,
 	}
+
+	useEffect(() => {
+		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('langiage is changed'))
+	}, [session?.user.lang])
 
 	useEffect(() => {
 		console.log(session)

@@ -6,12 +6,17 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
-const DefaultStageContent = ({ stage }: { stage: SeasonStage }) => {
+const DefaultStageContent = ({ stage, locale = 'en' }: { stage: SeasonStage; locale?: string }) => {
 	const router = useRouter()
 
 	const { data: stageContent, isLoading } = useQuery(
 		['gamelab-recruiting-content', stage?.id],
-		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', locale: router.locale, pageSlug: stage?.name }),
+		() =>
+			axios.post(`/api/notion/page`, {
+				table: 'gamelab-pipeline',
+				locale: locale || router.locale,
+				pageSlug: stage?.name,
+			}),
 		{
 			enabled: !!stage,
 			refetchInterval: false,

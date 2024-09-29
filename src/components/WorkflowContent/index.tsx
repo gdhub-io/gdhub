@@ -14,7 +14,7 @@ export type SeasonData = Season & { stages: SeasonStage[] }
 
 const { Title, Text, Paragraph } = Typography
 
-const WorkflowContent = ({ projectId }: { projectId: string }) => {
+const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
 	const [conditionStatus, setConditionStatus] = useState<any>()
 	const [stage, setStage] = useState<SeasonStage>()
@@ -82,7 +82,7 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	const stageContent = (stageName: string) => {
 		if (!stage) return
 
-		return <DefaultStageContent stage={stage} />
+		return <DefaultStageContent stage={stage} locale={locale} />
 
 		// if (workflow.status === SeasonStatus.Done) {
 		// 	return <DoneStageContent season={workflow} />

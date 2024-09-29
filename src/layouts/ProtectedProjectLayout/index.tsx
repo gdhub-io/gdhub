@@ -8,7 +8,7 @@ import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { useCurrentProject } from '@/hooks/project'
 import { UserRole } from '@prisma/client'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -41,7 +41,7 @@ import styles from './style.module.scss'
 import { ProtectedLayout } from '../ProtectedLayout'
 
 const { Header, Content } = Layout
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
 
 export const ProtectedProjectLayout = ({
 	title,
@@ -59,6 +59,7 @@ export const ProtectedProjectLayout = ({
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
+	const { changeLanguage } = useTolgee()
 
 	const { project, isFetched } = useCurrentProject()
 
@@ -77,7 +78,10 @@ export const ProtectedProjectLayout = ({
 	}
 
 	useEffect(() => {
-		console.log('router', router)
+		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('langiage is changed'))
+	}, [session?.user.lang])
+
+	useEffect(() => {
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
 

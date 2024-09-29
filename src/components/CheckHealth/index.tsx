@@ -2,17 +2,19 @@ import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
-import { Alert, Space, Typography } from 'antd'
+import { Alert, Button, Space } from 'antd'
 import axios from 'axios'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
-
-const { Title } = Typography
 
 const CheckHealth = ({ children }: any) => {
 	const { data, isFetched } = useQuery(['app-health'], () => axios.get<boolean>('/api/internal/health'), {
 		refetchInterval: false,
 		retry: 0,
 	})
+	const router = useRouter()
 
 	if (data?.data === false && isFetched) {
 		return (
@@ -32,6 +34,14 @@ const CheckHealth = ({ children }: any) => {
 							message={<T keyName="checkhealth.error_no_connection">No connection. Try later.</T>}
 							showIcon
 						/>
+						<Link target="_blank" href={router.locale == 'ru' ? 'https://t.me/gdhub_io' : 'https://t.me/gdhub_en'}>
+							<Button
+								style={{ marginTop: 32 }}
+								icon={<TbBrandTelegram size={24} style={{ position: 'relative', marginRight: 5 }} />}
+							>
+								Go to chat
+							</Button>
+						</Link>
 					</Space>
 				</div>
 			</EmptyLayout>

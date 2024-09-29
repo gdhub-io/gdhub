@@ -94,8 +94,6 @@ const SeasonsList = () => {
 	const linkToForm = useMemo(() => {
 		let link = ''
 
-		console.log('router.locale', router.locale)
-
 		switch (router.locale) {
 			case 'en':
 				link = 'https://tally.so/r/w2NV6D'

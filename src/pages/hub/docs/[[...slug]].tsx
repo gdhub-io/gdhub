@@ -205,7 +205,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
 	const locale = context.locale as AvailableLocales
 	const session: any = await getServerSession(context.req, context.res, authOptions)
-	let pages: any = await getPages({ roles: session.user.roles, locale })
+	let pages: any = await getPages({ roles: session?.user.roles, locale: session.user.lanf || locale })
 
 	return {
 		props: {

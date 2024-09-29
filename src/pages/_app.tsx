@@ -116,7 +116,6 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
 				}
 			`}</style>
-			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
 			{process.env.NODE_ENV == 'production' && (
 				<Script
 					id="gtag-base"
@@ -132,10 +131,10 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					}}
 				/>
 			)}
-			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
-				<ErrorBoundary>
-					<QueryClientProvider client={queryClient}>
-						<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
+			<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
+				<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
+					<ErrorBoundary>
+						<QueryClientProvider client={queryClient}>
 							<CheckHealth>
 								<SessionProvider session={session}>
 									<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
@@ -145,12 +144,11 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 							</CheckHealth>
 							<CookieConsent />
 							<LoadingScreen visible={loading} />
-						</ConfigProvider>
-
-						{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
-					</QueryClientProvider>
-				</ErrorBoundary>
-			</TolgeeProvider>
+							{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+						</QueryClientProvider>
+					</ErrorBoundary>
+				</TolgeeProvider>
+			</ConfigProvider>
 		</>
 	)
 }
