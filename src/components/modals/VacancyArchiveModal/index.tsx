@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { TeamVacancyStatus } from '@prisma/client'
+import { BsCheckLg } from '@react-icons/all-files/bs/BsCheckLg'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { List, Modal, Spin } from 'antd'
 import axios from 'axios'
-import { BsCheckLg } from 'react-icons/bs'
 
 const VacancyArchiveModal = ({ projectId, projectName, teamId, open, onRestore, onCancel }: any) => {
 	const [processing, setProcessing] = useState(true)

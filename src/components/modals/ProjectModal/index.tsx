@@ -1,7 +1,10 @@
+import React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { normUploadFile } from '@/helpers/file'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
+import { GoCheckCircleFill } from '@react-icons/all-files/go/GoCheckCircleFill'
+import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -25,8 +28,6 @@ import {
 import axios from 'axios'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { GoCheckCircleFill } from 'react-icons/go'
-import { TbTrash } from 'react-icons/tb'
 import styles from './style.module.scss'
 import '@mdxeditor/editor/style.css'
 

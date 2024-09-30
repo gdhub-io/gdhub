@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
 import { capitalize } from '@/helpers/text'
 import { Season, SeasonStage } from '@prisma/client'
+import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Checkbox, Col, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import { Dayjs } from 'dayjs'
-import { GoArrowLeft } from 'react-icons/go'
 import DefaultStageContent from './stages/DefaultStageContent'
 import styles from './style.module.scss'
 

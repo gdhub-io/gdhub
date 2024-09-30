@@ -5,6 +5,10 @@ import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
+import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
+import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
+import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
+import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
@@ -30,9 +34,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { NextSeo, NextSeoProps } from 'next-seo'
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
-import { GoArrowUp } from 'react-icons/go'
-import { RxSlash } from 'react-icons/rx'
 import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
@@ -119,10 +120,10 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 
 		switch (router.locale) {
 			case 'en':
-				link = 'https://discord.gg/WcUFD3tHqg'
+				link = 'https://t.me/gdhub_en'
 				break
 			case 'ru':
-				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				link = 'https://t.me/gdhub_io'
 				break
 		}
 

@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import { TeamVacancy, WorkDirection } from '@prisma/client'
+import { GoArrowDownRight } from '@react-icons/all-files/go/GoArrowDownRight'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Button, Col, Row, Space, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { GoArrowDownRight } from 'react-icons/go'
 import styles from './style.module.scss'
 
 const { Title, Text } = Typography

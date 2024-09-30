@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import React from 'react'
 import LogingBgImage from '@/assets/images/login-bg.jpg'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { FaGoogle } from '@react-icons/all-files/fa/FaGoogle'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Typography, Form, Input, message, Flex, Grid } from 'antd'
 import { NextPage } from 'next'
@@ -9,7 +11,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { signIn } from 'next-auth/react'
-import { FaGoogle } from 'react-icons/fa'
 import styles from './style.module.scss'
 
 const { Paragraph, Title } = Typography

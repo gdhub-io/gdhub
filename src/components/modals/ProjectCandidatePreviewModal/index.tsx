@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import React from 'react'
 import { useGameDifficulties, useGameGenres, useGameSettings } from '@/hooks/library'
 import {
 	GameDifficultyLevel,
@@ -11,6 +12,8 @@ import {
 	TeamVacancy,
 	User,
 } from '@prisma/client'
+import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
+import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
@@ -18,7 +21,6 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
-import { TbBrandTelegram, TbMail } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any) => {

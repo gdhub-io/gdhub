@@ -1,10 +1,10 @@
 import { Project } from '@prisma/client'
+import { PiRocketDuotone } from '@react-icons/all-files/pi/PiRocketDuotone'
 import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Flex, Form, Input, message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { PiRocketDuotone } from 'react-icons/pi'
 
 const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 	const router = useRouter()

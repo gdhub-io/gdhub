@@ -1,12 +1,12 @@
 import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
+import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Alert, Button, Space } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 const CheckHealth = ({ children }: any) => {

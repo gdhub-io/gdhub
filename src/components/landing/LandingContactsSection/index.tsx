@@ -1,11 +1,11 @@
-import DiscordIcon from '@/assets/images/icons/discord.svg'
 import EmailIcon from '@/assets/images/icons/email.svg'
 import TelegramIcon from '@/assets/images/icons/telegram.svg'
 import BgImage from '@/assets/images/landing/bg-image-for-contacts-section.png'
+import { BiLogoLinkedin } from '@react-icons/all-files/bi/BiLogoLinkedin'
+import { BiLogoYoutube } from '@react-icons/all-files/bi/BiLogoYoutube'
 import { T } from '@tolgee/react'
 import { Col, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
-import { BiLogoLinkedin, BiLogoYoutube } from 'react-icons/bi'
 import styles from './style.module.scss'
 
 const { Title, Paragraph, Text } = Typography
@@ -53,7 +53,7 @@ export const LandingContactsSection = () => {
 										</Space>
 									</Link>
 								</div>
-								<div className={styles.contactItem}>
+								{/* <div className={styles.contactItem}>
 									<Link href="https://discord.gg/WcUFD3tHqg" target="_blank">
 										<Space direction="vertical" size={32}>
 											<div className={styles.contactIcon}>
@@ -64,7 +64,7 @@ export const LandingContactsSection = () => {
 											</Text>
 										</Space>
 									</Link>
-								</div>
+								</div> */}
 								<div className={styles.contactItem}>
 									<Link href="https://www.youtube.com/@gamedev_hub" target="_blank">
 										<Space direction="vertical" size={32}>

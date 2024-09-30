@@ -23,10 +23,10 @@ const HubPage: NextPageWithLayout = () => {
 
 		switch (router.locale) {
 			case 'en':
-				link = 'https://discord.gg/WcUFD3tHqg'
+				link = 'https://t.me/gdhub_en'
 				break
 			case 'ru':
-				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				link = 'https://t.me/gdhub_io'
 				break
 		}
 

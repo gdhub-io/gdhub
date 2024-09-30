@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { Speciality, WorkDirection } from '@prisma/client'
+import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -22,7 +23,6 @@ import {
 } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { PiWarningCircleLight } from 'react-icons/pi'
 
 interface IOnboardingSpecialityStep {
 	onSave: () => void

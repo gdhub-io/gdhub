@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import { MatchingSpecialistAndProject, Profile, Speciality, User, WorkDirection } from '@prisma/client'
+import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
+import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Col, Descriptions, Modal, Row, Space, Spin, Statistic, Tag, Typography, theme } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
-import { TbBrandTelegram, TbMail } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 const { Paragraph, Text } = Typography

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Speciality } from '@prisma/client'
+import { BsCheckLg } from '@react-icons/all-files/bs/BsCheckLg'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
 import { CheckboxValueType } from 'antd/es/checkbox/Group'
 import axios from 'axios'
-import { BsCheckLg } from 'react-icons/bs'
 import styles from './style.module.scss'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {

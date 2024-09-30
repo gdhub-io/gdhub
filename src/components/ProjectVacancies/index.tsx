@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import { TeamVacancy, WorkDirection } from '@prisma/client'
+import { GoArrowDownRight } from '@react-icons/all-files/go/GoArrowDownRight'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Row, Col, Tag, Typography } from 'antd'
@@ -10,7 +11,6 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
-import { GoArrowDownRight } from 'react-icons/go'
 import styles from './style.module.scss'
 
 const { Title } = Typography

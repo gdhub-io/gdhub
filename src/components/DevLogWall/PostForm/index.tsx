@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { ProjectReport } from '@prisma/client'
+import { IoMdClose } from '@react-icons/all-files/io/IoMdClose'
 import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Flex, Form, Input, Space, message, notification } from 'antd'
@@ -8,7 +9,6 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import '@mdxeditor/editor/style.css'
 import dynamic from 'next/dynamic'
-import { IoMdClose } from 'react-icons/io'
 
 const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr: false })
 

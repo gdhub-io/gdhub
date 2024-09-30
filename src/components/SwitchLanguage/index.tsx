@@ -1,7 +1,7 @@
+import { TbWorld } from '@react-icons/all-files/tb/TbWorld'
 import { useTolgee } from '@tolgee/react'
 import { Button, Dropdown, MenuProps, Typography } from 'antd'
 import { useRouter } from 'next/router'
-import { TbWorld } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 const { Text } = Typography
