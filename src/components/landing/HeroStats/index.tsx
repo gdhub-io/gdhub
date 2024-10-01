@@ -18,51 +18,64 @@ export const HeroStats = ({
 
 	return (
 		<div className={styles.container}>
-			<Space direction="vertical" className={styles.component}>
-				<Space style={{ width: '100%' }} size="large" className={styles.members}>
-					<Space direction="vertical" align="center">
-						<Text strong>{stats?.usersCount}+</Text>
-						<Text>
-							<T>community members</T>
-						</Text>
-					</Space>
+			<div className={styles.component} style={{ position: 'relative' }}>
+				<div
+					style={{
+						background: '#0b0b0d',
+						width: '100%',
+						height: '100%',
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						filter: 'blur(30px)',
+					}}
+				></div>
+				<div>
+					<Space style={{ width: '100%' }} size="large" className={styles.members}>
+						<Space direction="vertical" align="center">
+							<Text strong>{stats?.usersCount}+</Text>
+							<Text>
+								<T>community members</T>
+							</Text>
+						</Space>
 
-					<Avatar.Group size={screen.md ? 72 : 56}>
-						<Avatar src={heroStatsImage1.src} />
-						<Avatar src={heroStatsImage2.src} />
-						<Avatar src={heroStatsImage3.src} />
-						{screen.lg && (
-							<>
-								<Avatar src={heroStatsImage4.src} />
-								<Avatar src={heroStatsImage5.src} />
-							</>
-						)}
-					</Avatar.Group>
-				</Space>
-				<Divider style={{ margin: '24px 0' }} className="divider" />
-				<Space className={styles.stats}>
-					<Space direction="vertical" align="center">
-						<Text strong>{stats?.specialitiesCount}+</Text>
-						<Text>
-							<T>qualified specialists</T>
-						</Text>
+						<Avatar.Group size={screen.md ? 72 : 56}>
+							<Avatar src={heroStatsImage1.src} />
+							<Avatar src={heroStatsImage2.src} />
+							<Avatar src={heroStatsImage3.src} />
+							{screen.lg && (
+								<>
+									<Avatar src={heroStatsImage4.src} />
+									<Avatar src={heroStatsImage5.src} />
+								</>
+							)}
+						</Avatar.Group>
 					</Space>
-					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
-					<Space direction="vertical" align="center">
-						<Text strong>{stats?.projectsCount}</Text>
-						<Text>
-							<T>current projects</T>
-						</Text>
+					<Divider style={{ margin: '24px 0' }} className="divider" />
+					<Space className={styles.stats}>
+						<Space direction="vertical" align="center">
+							<Text strong>{stats?.specialitiesCount}+</Text>
+							<Text>
+								<T>qualified specialists</T>
+							</Text>
+						</Space>
+						<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
+						<Space direction="vertical" align="center">
+							<Text strong>{stats?.projectsCount}</Text>
+							<Text>
+								<T>current projects</T>
+							</Text>
+						</Space>
+						<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
+						<Space direction="vertical" align="center">
+							<Text strong>{stats?.vacanciesCount}+</Text>
+							<Text>
+								<T>actual vacancies</T>
+							</Text>
+						</Space>
 					</Space>
-					<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
-					<Space direction="vertical" align="center">
-						<Text strong>{stats?.vacanciesCount}+</Text>
-						<Text>
-							<T>actual vacancies</T>
-						</Text>
-					</Space>
-				</Space>
-			</Space>
+				</div>
+			</div>
 		</div>
 	)
 }
