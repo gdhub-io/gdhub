@@ -40,6 +40,7 @@
   "Community Projects" : "Проекты сообщества",
   "Community member" : "Участник сообщества",
   "Community members" : "Участники сообщества",
+  "Complete Registration" : "Завершить регистрацию",
   "Completed" : "Завершенно",
   "Concept document" : "Концепт-документ",
   "Contact the author" : "Связаться с автором",
@@ -91,6 +92,9 @@
   "How can you be useful to teams?" : "Чем вы можете быть полезны командам?",
   "How many hours a week can you devote to projects?" : "Сколько часов в неделю вы можете уделять участию в проектах?",
   "I already have an account" : "Я уже зарегистрирован",
+  "I think now is the perfect time to make games" : {
+    "" : "Думаю, сейчас самое время, чтобы делать игры."
+  },
   "I want to give a lecture" : "Я хочу прочитать лекцию",
   "I'm available for offering" : "Я доступен для предложений участия в проектах",
   "Im available for offering" : "Я открыт для предложений",
@@ -119,6 +123,7 @@
   "Our Core Values" : "Наши ключевые ценности",
   "Platform" : "Платформа",
   "Player" : "Коммуникация",
+  "Profile" : "Профиль",
   "Projects developed independently by community members (outside the incubation program)" : {
     "" : "Проекты, разработанные членами сообщества самостоятельно (вне инкубационной программы)."
   },
@@ -137,6 +142,7 @@
   "Send link to email" : "Отправить ссылку",
   "Send registration link" : "Продолжить регистрацию",
   "Setting goals and working towards them" : "Ставим цели и работаем над их достижением",
+  "Settings" : "Настройки",
   "Skillful" : "Средний уровень",
   "Sorry, we couldn't find the page you're looking for" : {
     "" : "К сожалению, мы не смогли найти страницу, которую вы ищете."
