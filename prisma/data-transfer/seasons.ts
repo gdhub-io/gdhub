@@ -90,7 +90,7 @@ export const transferSeasons = async (airtableService: AirtableBase, prisma: Ext
 																.map((r) => ({
 																	date: dayjs(r.get('Date') as string).toISOString(),
 																})),
-													  }
+														}
 													: undefined,
 											},
 										},

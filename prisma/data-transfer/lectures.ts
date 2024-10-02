@@ -130,7 +130,7 @@ export const transferLectures = async (airtableService: AirtableBase, prisma: Ex
 												curriculum: record.Description as string,
 												linkToStream: record.Link as string,
 												directionId: direction!.id,
-										  }
+											}
 										: undefined,
 								},
 								listeners:
@@ -154,7 +154,7 @@ export const transferLectures = async (airtableService: AirtableBase, prisma: Ex
 															}
 														}),
 												},
-										  }
+											}
 										: undefined,
 							},
 						})

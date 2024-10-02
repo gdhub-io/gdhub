@@ -148,7 +148,7 @@ export const transferProjects = async (airtableService: AirtableBase, prisma: Ex
 																			specialization: 'Game design',
 																			user: { connect: { id: author?.id } },
 																			direction: { connect: { id: defaultWorkDirectionForNewAuthor?.id } },
-																	  }
+																		}
 																	: undefined,
 															},
 														},
