@@ -11,7 +11,7 @@ type GetPagesParams = {
 	locale?: AvailableLocales
 }
 
-const getDatabase = ({ locale = AvailableLocales.en }: { locale: AvailableLocales }) => {
+const getDatabase = ({ locale = AvailableLocales.ru }: { locale: AvailableLocales }) => {
 	let notionDatabaseId = process.env.NOTION_DATABASE_DOCS as string
 
 	switch (locale) {
@@ -26,7 +26,7 @@ const getDatabase = ({ locale = AvailableLocales.en }: { locale: AvailableLocale
 	return notionDatabaseId
 }
 
-export const getPages = async ({ roles = [], locale = AvailableLocales.en }: GetPagesParams) => {
+export const getPages = async ({ roles = [], locale = AvailableLocales.ru }: GetPagesParams) => {
 	try {
 		const filterParams: any = {
 			and: [
@@ -91,7 +91,7 @@ export const getPage = async ({ pageId }: { pageId: string }) => {
 	}
 }
 
-export const getBlocks = async (pageSlug: string, locale = AvailableLocales.en) => {
+export const getBlocks = async (pageSlug: string, locale = AvailableLocales.ru) => {
 	try {
 		const response = await NotionService.databases.query({
 			database_id: getDatabase({ locale }),

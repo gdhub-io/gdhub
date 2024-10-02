@@ -5,17 +5,16 @@ import { hasRole } from '@/helpers/user'
 import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus, UserRole } from '@prisma/client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Skeleton, Space, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const SearchingStageContent = ({ season }: { season: SeasonData }) => {
-	const router = useRouter()
+	const { getLanguage } = useTolgee()
 	const queryClient = useQueryClient()
 	const session: any = useSession()
 	const stage = useMemo(() => {
@@ -34,7 +33,7 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 
 	const { data: stageContent, isLoading } = useQuery(
 		['gamelab-searching-content'],
-		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', locale: router.locale, pageSlug: stage?.name }),
+		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', locale: getLanguage(), pageSlug: stage?.name }),
 		{
 			enabled: !!stage,
 			refetchInterval: false,

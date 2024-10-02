@@ -21,15 +21,12 @@ export const LandingHeroSection = ({
 		<div
 			className={styles.section}
 			style={{
-				backgroundPosition: 'right',
-				backgroundOrigin: 'content-box',
-				backgroundSize: 'initial',
-				backgroundImage: `url(${screens.lg ? heroBgImage.src : heroBgImageXS.src})`,
+				backgroundImage: screens.lg ? `url(${heroBgImage.src})` : undefined,
 			}}
 		>
 			<div className={styles.container}>
-				<Row gutter={[screens.xl ? 64 : 0, 64]}>
-					<Col xs={{ span: 24 }} xl={{ span: 15 }}>
+				<Row gutter={[screens.lg ? 64 : 0, 64]}>
+					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Space size={[64, 64]} direction="vertical" className={styles.heroMain}>
 							<div>
 								<span>
@@ -38,12 +35,11 @@ export const LandingHeroSection = ({
 									</Title>
 								</span>
 								<br />
-								<span style={{ fontSize: 52 }}>
-									<T>for everyone who wants to make</T>
-								</span>
-								<br />
-								<span style={{ fontSize: 52, color: '#F15541' }}>
-									<T>video games</T>
+								<span className={styles.subTitle}>
+									<T>for everyone who wants to make</T>{' '}
+									<span style={{ color: '#F15541' }}>
+										<T>video games</T>
+									</span>
 								</span>
 							</div>
 							<ul>
@@ -76,7 +72,7 @@ export const LandingHeroSection = ({
 							</Link>
 						</Space>
 					</Col>
-					<Col xs={{ span: 24 }} xl={{ span: 9 }} style={{ position: 'relative' }}>
+					<Col xs={{ span: 24 }} lg={{ span: 12 }} style={{ position: 'relative' }}>
 						<HeroStats stats={stats} />
 					</Col>
 				</Row>

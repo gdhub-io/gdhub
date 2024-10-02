@@ -20,7 +20,7 @@
     ],
     "@next/next/no-html-link-for-pages": "off",
     "react-hooks/exhaustive-deps": "off",
-    "unused-imports/no-unused-imports-ts": [
+    "unused-imports/no-unused-imports": [
       "warn",
       {
         "vars": "all",

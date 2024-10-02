@@ -28,7 +28,7 @@ const { Text } = Typography
 
 const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const router = useRouter()
 	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
@@ -149,7 +149,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 			accept: '.pdf',
 			action: '/api/user/parse/cv',
 			showUploadList: false,
-			data: { jobPosition, locale: router.locale },
+			data: { jobPosition, locale: getLanguage() },
 			maxCount: 1,
 			onChange: ({ file }) => {
 				if (file.status === 'done' && (!file.response || file.response.success == false)) {

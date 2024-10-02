@@ -1,4 +1,4 @@
-import { GoogleOutlined } from '@ant-design/icons'
+import { AiOutlineGoogle } from '@react-icons/all-files/ai/AiOutlineGoogle'
 import { Button, Space } from 'antd'
 
 const UITestPage = () => {
@@ -18,7 +18,7 @@ const UITestPage = () => {
 					Tertiary
 				</Button>
 				{/* Tertiary Blue button */}
-				<Button type="primary" icon={<GoogleOutlined rev="span" />}>
+				<Button type="primary" icon={<AiOutlineGoogle rev="span" />}>
 					With Icon
 				</Button>
 			</Space>

@@ -4,6 +4,7 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { getPages } from '@/services/notion'
+import { tolgeeService } from '@/services/tolgee'
 import { Render } from '@9gustin/react-notion-render'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -20,7 +21,7 @@ const { Text, Title } = Typography
 
 const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const themeToken = theme.useToken()
 	const router = useRouter()
 	const { slug: urlSlug } = router.query
@@ -138,8 +139,8 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		data: pageContent,
 		isLoading,
 		refetch: refetchPage,
-	} = useQuery(['documentation', pageSlug], () => axios.post(`/api/notion/page`, { pageSlug, locale: router.locale }), {
-		enabled: !!pageSlug,
+	} = useQuery(['documentation', pageSlug], () => axios.post(`/api/notion/page`, { pageSlug, locale: getLanguage() }), {
+		enabled: !!pageSlug && !!getLanguage(),
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
 		onSuccess: () => {
@@ -203,9 +204,9 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 }
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-	const locale = context.locale as AvailableLocales
+	const locale = tolgeeService.getLanguage() as AvailableLocales
 	const session: any = await getServerSession(context.req, context.res, authOptions)
-	let pages: any = await getPages({ roles: session?.user.roles, locale: session.user.lanf || locale })
+	let pages: any = await getPages({ roles: session?.user.roles, locale: session.user.lang || locale })
 
 	return {
 		props: {

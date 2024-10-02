@@ -60,7 +60,7 @@ export const ProtectedProjectLayout = ({
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
-	const { changeLanguage } = useTolgee()
+	const { changeLanguage, getLanguage } = useTolgee()
 
 	const { project, isFetched } = useCurrentProject()
 
@@ -219,7 +219,7 @@ export const ProtectedProjectLayout = ({
 	return (
 		<ProjectContext.Provider value={{ contextProject, setContextProject }}>
 			<NextSeo {...seoSettings} />
-			<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
 						--background-color: #fafafa;

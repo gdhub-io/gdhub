@@ -33,7 +33,7 @@ const { Text, Title } = Typography
 
 export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }: PublicLayoutProps) => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
@@ -59,7 +59,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	const linkToChat = useMemo(() => {
 		let link = ''
 
-		switch (router.locale) {
+		switch (getLanguage()) {
 			case 'en':
 				link = 'https://t.me/gdhub_en'
 				break
@@ -284,7 +284,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	return (
 		<>
 			<NextSeo {...seoParams} />
-			<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+			<ConfigProvider theme={publicThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
 						--background-color: #fff;

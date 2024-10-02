@@ -81,7 +81,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	useEffect(() => {
 		setLoadingOff()
-		dayjs.locale(router.locale || AvailableLocales.en)
+		dayjs.locale(ssrTolgee.getLanguage() || AvailableLocales.en)
 	}, [])
 
 	useEffect(() => {
@@ -110,7 +110,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	return (
 		<>
-			<DefaultSeo {...SEOSettings[router.locale as AvailableLocales]} />
+			<DefaultSeo {...SEOSettings[ssrTolgee.getLanguage() as AvailableLocales]} />
 			<style jsx global>{`
 				:root {
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
