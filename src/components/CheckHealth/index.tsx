@@ -2,11 +2,10 @@ import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Space } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const CheckHealth = ({ children }: any) => {
@@ -14,7 +13,7 @@ const CheckHealth = ({ children }: any) => {
 		refetchInterval: false,
 		retry: 0,
 	})
-	const router = useRouter()
+	const { getLanguage } = useTolgee()
 
 	if (data?.data === false && isFetched) {
 		return (
@@ -34,7 +33,7 @@ const CheckHealth = ({ children }: any) => {
 							message={<T keyName="checkhealth.error_no_connection">No connection. Try later.</T>}
 							showIcon
 						/>
-						<Link target="_blank" href={router.locale == 'ru' ? 'https://t.me/gdhub_io' : 'https://t.me/gdhub_en'}>
+						<Link target="_blank" href={getLanguage() == 'ru' ? 'https://t.me/gdhub_io' : 'https://t.me/gdhub_en'}>
 							<Button
 								style={{ marginTop: 32 }}
 								icon={<TbBrandTelegram size={24} style={{ position: 'relative', marginRight: 5 }} />}

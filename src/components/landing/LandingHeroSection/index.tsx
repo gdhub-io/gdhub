@@ -1,5 +1,4 @@
-import heroBgImageXS from '@/assets/images/landing/hero-bg-xs.png'
-import heroBgImage from '@/assets/images/landing/hero-bg.png'
+import heroBgImage from '@/assets/images/landing/gdhub-hero-img.png'
 import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
 import { T } from '@tolgee/react'
@@ -20,18 +19,28 @@ export const LandingHeroSection = ({
 	return (
 		<div
 			className={styles.section}
-			style={{ backgroundImage: `url(${screens.lg ? heroBgImage.src : heroBgImageXS.src})` }}
+			style={{
+				backgroundImage: screens.lg ? `url(${heroBgImage.src})` : undefined,
+			}}
 		>
 			<div className={styles.container}>
-				<Row gutter={[screens.xl ? 64 : 0, 64]}>
-					<Col xs={{ span: 24 }} xl={{ span: 15 }}>
+				<Row gutter={[screens.lg ? 64 : 0, 64]}>
+					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Space size={[64, 64]} direction="vertical" className={styles.heroMain}>
-							<Title>
-								<T>Game Developers Hub for everyone who wants to make</T>{' '}
-								<span style={{ color: '#F15541' }}>
-									<T>video games</T>
+							<div>
+								<span>
+									<Title>
+										<T>Game Developers Hub</T>
+									</Title>
 								</span>
-							</Title>
+								<br />
+								<span className={styles.subTitle}>
+									<T>for everyone who wants to make</T>{' '}
+									<span style={{ color: '#F15541' }}>
+										<T>video games</T>
+									</span>
+								</span>
+							</div>
 							<ul>
 								<li>
 									<Space>
@@ -62,7 +71,7 @@ export const LandingHeroSection = ({
 							</Link>
 						</Space>
 					</Col>
-					<Col xs={{ span: 24 }} xl={{ span: 9 }} style={{ position: 'relative' }}>
+					<Col xs={{ span: 24 }} lg={{ span: 12 }} style={{ position: 'relative' }}>
 						<HeroStats stats={stats} />
 					</Col>
 				</Row>

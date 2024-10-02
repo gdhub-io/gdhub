@@ -50,12 +50,11 @@ const { Title, Text } = Typography
 
 export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLayoutProps) => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t, getLanguage, changeLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
-	const { changeLanguage } = useTolgee()
 
 	const seoSettings: NextSeoProps = {
 		title,
@@ -118,7 +117,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	const linkToChat = useMemo(() => {
 		let link = ''
 
-		switch (router.locale) {
+		switch (getLanguage()) {
 			case 'en':
 				link = 'https://t.me/gdhub_en'
 				break
@@ -235,7 +234,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	return (
 		<>
 			<NextSeo {...seoSettings} />
-			<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
 						--background-color: #fafafa;

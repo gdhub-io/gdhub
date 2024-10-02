@@ -35,7 +35,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 	const [form] = Form.useForm()
 	const router = useRouter()
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 
 	const [showParseCVButton, setShowParseCVButton] = useState(false)
 	const [isParsing, setIsParsing] = useState(false)
@@ -118,7 +118,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 			accept: '.pdf',
 			action: '/api/user/parse/cv',
 			showUploadList: false,
-			data: { jobPosition, locale: router.locale },
+			data: { jobPosition, locale: getLanguage() },
 			maxCount: 1,
 			onChange: ({ file }) => {
 				if (file.status === 'done' && (!file.response || file.response.success == false)) {
