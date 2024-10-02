@@ -1,4 +1,5 @@
 import { publicThemeConfig, landingThemeConfig } from '@/config/theme'
+import { useTolgee } from '@tolgee/react'
 import { ConfigProvider, Layout } from 'antd'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
@@ -7,11 +8,12 @@ import styles from './style.module.scss'
 
 export const EmptyLayout = ({ children, type = 'light' }: any) => {
 	const router = useRouter()
+	const { getLanguage } = useTolgee()
 
 	return (
 		<ConfigProvider
 			theme={type == 'light' ? landingThemeConfig : publicThemeConfig}
-			locale={router.locale == 'en' ? enLocale : ruLocale}
+			locale={getLanguage() == 'en' ? enLocale : ruLocale}
 		>
 			<Layout className={styles.container}>{children}</Layout>
 		</ConfigProvider>

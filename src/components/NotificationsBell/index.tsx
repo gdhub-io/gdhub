@@ -6,6 +6,7 @@ import {
 	PopoverNotificationCenter,
 } from '@novu/notification-center'
 import { useQuery } from '@tanstack/react-query'
+import { useTolgee } from '@tolgee/react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
@@ -13,6 +14,7 @@ import { useSession } from 'next-auth/react'
 export const NotificationsBell = () => {
 	const router = useRouter()
 	const { data: session } = useSession()
+	const { getLanguage } = useTolgee()
 
 	const { data: signature } = useQuery(['novu-signature', session?.user.id], () =>
 		axios.get<{ signature: string }>('/api/services/novu/signature')
@@ -29,7 +31,7 @@ export const NotificationsBell = () => {
 
 	return (
 		<NovuProvider
-			i18n={(router.locale as I18NLanguage) || 'en'}
+			i18n={(getLanguage() as I18NLanguage) || 'en'}
 			subscriberId={session?.user.id}
 			applicationIdentifier={process.env.NEXT_PUBLIC_NOVU_CLIENT_APP_ID as string}
 			subscriberHash={signature?.data.signature}

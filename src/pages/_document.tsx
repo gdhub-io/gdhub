@@ -62,12 +62,12 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
 		originalRenderPage({
 			// Useful for wrapping the whole react tree
 			enhanceApp: (App) => (props) => (
-				// <StyleProvider cache={cache}>
+				// <StyleProvider cache={cache}>*/}
 				<App {...props} />
 				// </StyleProvider>
 			),
 			// Useful for wrapping in a per-page basis
-			enhanceComponent: (Component) => Component,
+			// enhanceComponent: (Component) => Component,
 		})
 
 	// Run the parent `getInitialProps`, it now includes the custom `renderPage`

@@ -26,7 +26,7 @@ type SeasonGeneralData = {
 const SeasonsList = () => {
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const { data: seasons, isFetching: isLoading } = useQuery(
 		['seasons'],
 		() => axios.get<SeasonGeneralData[]>('/api/seasons'),
@@ -94,7 +94,7 @@ const SeasonsList = () => {
 	const linkToForm = useMemo(() => {
 		let link = ''
 
-		switch (router.locale) {
+		switch (getLanguage()) {
 			case 'en':
 				link = 'https://tally.so/r/w2NV6D'
 				break

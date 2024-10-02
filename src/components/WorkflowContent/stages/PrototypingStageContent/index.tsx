@@ -4,15 +4,14 @@ import { SeasonData } from '@/components/WorkflowContent'
 import { Render } from '@9gustin/react-notion-render'
 import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Skeleton, Spin, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
-	const router = useRouter()
+	const { getLanguage } = useTolgee()
 	const stage = useMemo(() => {
 		return season?.stages.find((s) => s.isCurrent)
 	}, [season])
@@ -25,7 +24,7 @@ const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
 
 	const { data: stageContent, isLoading } = useQuery(
 		['gamelab-recruiting-content'],
-		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', locale: router.locale, pageSlug: stage?.name }),
+		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', locale: getLanguage(), pageSlug: stage?.name }),
 		{
 			enabled: !!stage,
 			refetchInterval: false,
