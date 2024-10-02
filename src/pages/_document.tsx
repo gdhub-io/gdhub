@@ -1,5 +1,5 @@
 import { GTM_ID } from '@/helpers/gtm'
-import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs'
+import { createCache, extractStyle } from '@ant-design/cssinjs'
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 
 // export default class CustomDocument extends Document {
