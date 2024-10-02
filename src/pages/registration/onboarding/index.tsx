@@ -9,7 +9,7 @@ import { OnboardingSpecialityStep } from '@/components/onboarding/OnboardingSpec
 import { OnboardingWelcome } from '@/components/onboarding/OnboardingWelcome'
 import { T, useTolgee } from '@tolgee/react'
 import { Typography, Row, Col, Steps, Flex, Menu, Grid } from 'antd'
-import { ItemType } from 'antd/es/menu/hooks/useItems'
+import { ItemType } from 'antd/es/menu/interface'
 import styles from './style.module.scss'
 
 const { Title } = Typography
