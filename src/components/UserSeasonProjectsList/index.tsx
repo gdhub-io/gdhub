@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Project, ProjectStatus } from '@prisma/client'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
+import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useQuery } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Typography, Button, Grid, List, Space, Popconfirm, Badge } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
-import { GoLinkExternal, GoTrash } from 'react-icons/go'
 
 type ProjectsSectionArgs = {
 	seasonId: string

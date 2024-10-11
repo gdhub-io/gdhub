@@ -6,11 +6,11 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import { ProjectStatus, UserRole } from '@prisma/client'
+import { BsFilter } from '@react-icons/all-files/bs/BsFilter'
 import { T, useTolgee } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import { getSession, useSession } from 'next-auth/react'
-import { BsFilter } from 'react-icons/bs'
 import {
 	SearchBox,
 	InstantSearch,
@@ -124,7 +124,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 					searchClient={searchAdapter.searchClient}
 					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
 				>
-					<Configure filters="isActive:true" />
+					<Configure optionalFilters={['isActive:true']} />
 					<SearchBox placeholder="Type search query..." />
 					<Row justify="end" className={styles.stats}>
 						<Stats />

@@ -2,13 +2,13 @@ import { useContext, useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { TeamVacancyStatus } from '@prisma/client'
+import { HiOutlineLockClosed } from '@react-icons/all-files/hi/HiOutlineLockClosed'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Flex, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
+import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { HiOutlineLockClosed } from 'react-icons/hi'
 import VacancyArchiveModal from '../modals/VacancyArchiveModal'
 
 interface Vacancy {
@@ -164,7 +164,6 @@ const MyProjectVacancies = () => {
 
 			<VacancyModal
 				teamId={contextProject?.teamId}
-				projectId={contextProject?.id}
 				vacancyId={selectedVacancyId}
 				open={showVacancyModal}
 				onCancel={() => {

@@ -28,8 +28,6 @@ class UserTeamVacancyCreateDto {
 	finishedAt: string
 	@IsString()
 	teamId: string
-	@IsString()
-	projectId: string
 }
 
 class UserTeamVacancyUpdateDto {
@@ -63,14 +61,14 @@ class ApiUserTeamVacancyHandler {
 				team: {
 					select: {
 						id: true,
-					},
-				},
-				project: {
-					select: {
-						id: true,
-						name: true,
-						slug: true,
-						stage: { select: { name: true, season: { select: { id: true, name: true } } } },
+						project: {
+							select: {
+								id: true,
+								name: true,
+								slug: true,
+								stage: { select: { name: true, season: { select: { id: true, name: true } } } },
+							},
+						},
 					},
 				},
 				_count: { select: { applicants: true } },
@@ -155,7 +153,7 @@ class ApiUserTeamVacancyHandler {
 
 		const vacancy = await prisma.teamVacancy.findUnique({
 			where: { id: vacancyId },
-			include: { project: { include: { author: true } } },
+			include: { team: { select: { project: { include: { author: true } } } } },
 		})
 
 		if (!vacancy || !req.user.id) return
@@ -177,18 +175,18 @@ class ApiUserTeamVacancyHandler {
 			await NovuService.send({
 				template: 'new-candidate-to-project',
 				to: {
-					subscriberId: vacancy.project.authorId!,
-					email: vacancy.project?.author.email!,
+					subscriberId: vacancy.team!.project?.authorId!,
+					email: vacancy.team!.project?.author.email!,
 				},
 				payload: {
 					name: candidate.user.name,
 					vacancy: vacancy.title,
-					project: vacancy.project?.name,
-					url: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.project?.id,
+					project: vacancy.team!.project?.name,
+					url: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.team!.project?.id,
 				},
 			})
 
-			console.info('New notification was sent to ' + vacancy.project?.authorId)
+			console.info('New notification was sent to ' + vacancy.team!.project?.authorId)
 		} catch (e) {
 			console.error('[NovuService]', e)
 		}

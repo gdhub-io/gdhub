@@ -5,6 +5,10 @@ import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
+import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
+import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
+import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
+import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
@@ -14,7 +18,6 @@ import {
 	Drawer,
 	Dropdown,
 	Flex,
-	FloatButton,
 	Grid,
 	Layout,
 	Menu,
@@ -30,9 +33,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { NextSeo, NextSeoProps } from 'next-seo'
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
-import { GoArrowUp } from 'react-icons/go'
-import { RxSlash } from 'react-icons/rx'
 import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
@@ -49,11 +49,11 @@ const { Title, Text } = Typography
 
 export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLayoutProps) => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t, getLanguage, changeLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
-	const { data: session }: any = useSession()
+	const { data: session } = useSession()
 
 	const seoSettings: NextSeoProps = {
 		title,
@@ -63,6 +63,10 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 		noindex: true,
 		...seo,
 	}
+
+	useEffect(() => {
+		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('langiage is changed'))
+	}, [session?.user.lang])
 
 	useEffect(() => {
 		console.log(session)
@@ -112,12 +116,12 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	const linkToChat = useMemo(() => {
 		let link = ''
 
-		switch (router.locale) {
+		switch (getLanguage()) {
 			case 'en':
-				link = 'https://discord.gg/WcUFD3tHqg'
+				link = 'https://t.me/gdhub_en'
 				break
 			case 'ru':
-				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				link = 'https://t.me/gdhub_io'
 				break
 		}
 
@@ -167,7 +171,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 			},
 		]
 
-		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
+		return screens.lg ? menu : [...inlineMenuItems, { key: 'divider1', type: 'divider' }, ...menu]
 	}, [isOpenedInTelegram, screens, session])
 
 	const menuItems: MenuProps['items'] = [
@@ -229,12 +233,12 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	return (
 		<>
 			<NextSeo {...seoSettings} />
-			<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
-				<style jsx global>{`
-					:root {
-						--background-color: #fafafa;
-					}
-				`}</style>
+			<style jsx global>{`
+				:root {
+					--background-color: #fafafa;
+				}
+			`}</style>
+			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
 						{/* <Flex align="middle" justify="space-between"> */}
@@ -258,7 +262,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 										) : (
 											<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
 										)}
-										{screens.sm && <Text className="username">{session?.user?.name}</Text>}
+										{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
 									</Space>
 								</Flex>
 							</Col>
@@ -315,7 +319,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 					</Content>
 					{/* <Footer></Footer> */}
 				</Layout>
-				{!screens.lg && (
+				{!screens.lg ? (
 					<Drawer
 						className={styles.mobileMenuDrawer}
 						height={'100%'}
@@ -343,8 +347,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 					>
 						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 					</Drawer>
-				)}
-				<FloatButton.BackTop icon={<GoArrowUp />} rootClassName={styles.backTop} description="Scroll to up" />
+				) : null}
 			</ConfigProvider>
 		</>
 	)

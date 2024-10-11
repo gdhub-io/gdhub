@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import { Speciality, WorkDirection } from '@prisma/client'
+import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -22,7 +23,6 @@ import {
 } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { PiWarningCircleLight } from 'react-icons/pi'
 
 interface IOnboardingSpecialityStep {
 	onSave: () => void
@@ -35,7 +35,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 	const [form] = Form.useForm()
 	const router = useRouter()
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 
 	const [showParseCVButton, setShowParseCVButton] = useState(false)
 	const [isParsing, setIsParsing] = useState(false)
@@ -118,7 +118,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 			accept: '.pdf',
 			action: '/api/user/parse/cv',
 			showUploadList: false,
-			data: { jobPosition, locale: router.locale },
+			data: { jobPosition, locale: getLanguage() },
 			maxCount: 1,
 			onChange: ({ file }) => {
 				if (file.status === 'done' && (!file.response || file.response.success == false)) {
@@ -319,9 +319,9 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 						<T keyName="back">Back</T>
 					</Button>
 					<Space>
-						<Button type="text" onClick={() => router.push('/hub')}>
+						{/* <Button type="text" onClick={() => router.push('/hub')}>
 							<T keyName="onboarding.welcome.later">Continue later</T>
-						</Button>
+						</Button> */}
 						<Button type="primary" onClick={handleSave} loading={isCreating || isUpdating}>
 							<T keyName="saveAndContinue">Save and continue</T>
 						</Button>

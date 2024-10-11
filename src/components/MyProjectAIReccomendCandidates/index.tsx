@@ -3,7 +3,7 @@ import { MatchingSpecialistAndProject, Speciality, User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Grid, Space, Table, Tag, Typography, theme } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
+import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import SpecialistPreviewModal from '../modals/SpecialistPreviewModal'
 

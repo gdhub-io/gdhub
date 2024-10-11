@@ -5,7 +5,7 @@ import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { UserRole } from '@prisma/client'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Space, Typography } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -17,16 +17,17 @@ const { Title, Text } = Typography
 const HubPage: NextPageWithLayout = () => {
 	const session = useSession()
 	const router = useRouter()
+	const { getLanguage } = useTolgee()
 
 	const linkToChat = useMemo(() => {
 		let link = ''
 
-		switch (router.locale) {
+		switch (getLanguage()) {
 			case 'en':
-				link = 'https://discord.gg/WcUFD3tHqg'
+				link = 'https://t.me/gdhub_en'
 				break
 			case 'ru':
-				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				link = 'https://t.me/gdhub_io'
 				break
 		}
 
@@ -36,9 +37,7 @@ const HubPage: NextPageWithLayout = () => {
 	const linkToForm = useMemo(() => {
 		let link = ''
 
-		console.log('router.locale', router.locale)
-
-		switch (router.locale) {
+		switch (getLanguage()) {
 			case 'en':
 				link = 'https://tally.so/r/w2NV6D'
 				break

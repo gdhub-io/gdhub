@@ -1,8 +1,6 @@
 import '@/styles/globals.scss'
 import React, { ReactNode, useEffect, useState } from 'react'
-import CheckHealth from '@/components/CheckHealth'
 import { CookieConsent } from '@/components/CookieConsent'
-import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
@@ -81,7 +79,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	useEffect(() => {
 		setLoadingOff()
-		dayjs.locale(router.locale || AvailableLocales.en)
+		dayjs.locale(ssrTolgee.getLanguage() || AvailableLocales.en)
 	}, [])
 
 	useEffect(() => {
@@ -110,13 +108,12 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	return (
 		<>
-			<DefaultSeo {...SEOSettings[router.locale as AvailableLocales]} />
+			<DefaultSeo {...SEOSettings[ssrTolgee.getLanguage() as AvailableLocales]} />
 			<style jsx global>{`
 				:root {
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
 				}
 			`}</style>
-			<Script id="gtag-base" src="https://telegram.org/js/telegram-web-app.js" />
 			{process.env.NODE_ENV == 'production' && (
 				<Script
 					id="gtag-base"
@@ -132,24 +129,24 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					}}
 				/>
 			)}
-			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
-				<ErrorBoundary>
-					<QueryClientProvider client={queryClient}>
-						<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
-							<CheckHealth>
-								<SessionProvider session={session}>
-									<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
-										{getLayout(<Component {...pageProps} />)}
-									</div>
-								</SessionProvider>
-							</CheckHealth>
-							<CookieConsent />
-							<LoadingScreen visible={loading} />
-						</ConfigProvider>
 
-						{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
-					</QueryClientProvider>
-				</ErrorBoundary>
+			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
+				{/* <ErrorBoundary> */}
+				<QueryClientProvider client={queryClient}>
+					{/* <CheckHealth> */}
+					<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
+						<SessionProvider session={session}>
+							<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
+								{getLayout(<Component {...pageProps} />)}
+							</div>
+						</SessionProvider>
+					</ConfigProvider>
+					{/* </CheckHealth> */}
+					<CookieConsent />
+					<LoadingScreen visible={loading} />
+					{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+				</QueryClientProvider>
+				{/* </ErrorBoundary> */}
 			</TolgeeProvider>
 		</>
 	)

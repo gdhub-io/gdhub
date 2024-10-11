@@ -1,4 +1,5 @@
 import { Project, ProjectStatus, Season, SeasonStage, User, UserRole } from '@prisma/client'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Descriptions, List, Modal, Select, Space, Spin, Typography, theme } from 'antd'
@@ -6,7 +7,6 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { GoLinkExternal } from 'react-icons/go'
 import styles from './style.module.scss'
 
 const { Paragraph, Title, Text } = Typography

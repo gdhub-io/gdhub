@@ -4,12 +4,19 @@
     background-position-y: top;
     background-position-x: center;
     background-size: contain;
+    background-origin: border-box;
   }
 
   .heroMain {
     .heroButton {
       padding: 18px 32px;
       max-width: inherit;
+    }
+
+    .subTitle {
+      font-size: 36px;
+      text-align: center;
+      display: inline-block;
     }
 
     :global {
@@ -20,14 +27,14 @@
         line-height: 1.25;
       }
 
-      ul {  
+      ul {
         >li {
           margin-bottom: 16px;
-  
+
           svg {
             margin: 8px;
           }
-  
+
           span {
             font-size: 14px;
           }

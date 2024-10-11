@@ -1,17 +1,22 @@
 import { Render } from '@9gustin/react-notion-render'
 import { SeasonStage } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
+import { useTolgee } from '@tolgee/react'
 import { Skeleton, Spin } from 'antd'
 import axios from 'axios'
-import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
-const DefaultStageContent = ({ stage }: { stage: SeasonStage }) => {
-	const router = useRouter()
+const DefaultStageContent = ({ stage, locale = 'en' }: { stage: SeasonStage; locale?: string }) => {
+	const { getLanguage } = useTolgee()
 
 	const { data: stageContent, isLoading } = useQuery(
 		['gamelab-recruiting-content', stage?.id],
-		() => axios.post(`/api/notion/page`, { table: 'gamelab-pipeline', locale: router.locale, pageSlug: stage?.name }),
+		() =>
+			axios.post(`/api/notion/page`, {
+				table: 'gamelab-pipeline',
+				locale: locale || getLanguage(),
+				pageSlug: stage?.name,
+			}),
 		{
 			enabled: !!stage,
 			refetchInterval: false,

@@ -7,7 +7,7 @@ import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Spac
 import axios from 'axios'
 import dayjs from 'dayjs'
 
-const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: any) => {
+const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
 	const { options: directionsOptions } = useWorkDirections()
@@ -59,7 +59,6 @@ const VacancyModal = ({ teamId, vacancyId, projectId, open, onOk, onCancel }: an
 			} else {
 				await createVacancy({
 					...formData,
-					projectId,
 					publishedAt: asDraft ? null : dayjs().toISOString(),
 					status: asDraft ? TeamVacancyStatus.Draft : TeamVacancyStatus.Published,
 					teamId,

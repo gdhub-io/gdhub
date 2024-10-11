@@ -1,6 +1,6 @@
 import { SkillLevel } from '@prisma/client'
 import { Type } from 'class-transformer'
-import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 export class WorkDirectionDto {
 	@IsString()

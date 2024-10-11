@@ -6,7 +6,8 @@
   padding: calc($landing-header-height + 96px) 165px 96px;
   background-repeat: no-repeat;
   background-position-x: right;
-  background-size: cover;
+  background-size: 50%;
+  background-origin: content-box;
 }
 
 .container {
@@ -34,11 +35,16 @@
     }
   }
 
+  .subTitle {
+    font-size: 52px;
+    line-height: 120%;
+  }
+
   :global {
     h1 {
-      font-size: 80px;
+      font-size: 72px;
       font-weight: 800;
-      line-height: 96px;
+      line-height: 72px;
       margin-bottom: 0;
     }
 

@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import { TeamVacancy, WorkDirection } from '@prisma/client'
+import { GoArrowDownRight } from '@react-icons/all-files/go/GoArrowDownRight'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Button, Col, Row, Space, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { GoArrowDownRight } from 'react-icons/go'
 import styles from './style.module.scss'
 
 const { Title, Text } = Typography
@@ -20,7 +20,7 @@ const VacanciesList = () => {
 			axios.get<
 				(TeamVacancy & {
 					direction: WorkDirection
-					project: { id: string; slug: string; name: string; description: string }
+					team: { project: { id: string; slug: string; name: string; description: string } }
 				})[]
 			>('/api/vacancies'),
 		{
@@ -74,7 +74,7 @@ const VacanciesList = () => {
 												{vacancy.title}
 											</Title>
 
-											<div className={styles.projectName}>{vacancy.project.name}</div>
+											<div className={styles.projectName}>{vacancy.team.project.name}</div>
 										</div>
 										<Button
 											className={styles.linkBtn}

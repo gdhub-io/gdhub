@@ -40,6 +40,7 @@
   "Community Projects" : "Community Projects",
   "Community member" : "Community member",
   "Community members" : "Community members",
+  "Complete Registration" : "Complete Registration",
   "Completed" : "Completed",
   "Concept document" : "Concept document",
   "Contact the author" : "Contact the author",
@@ -91,6 +92,9 @@
   "How can you be useful to teams?" : "How can you be useful to teams?",
   "How many hours a week can you devote to projects?" : "How many hours a week can you devote to projects?",
   "I already have an account" : "I already have an account",
+  "I think now is the perfect time to make games" : {
+    "" : "I think now is the perfect time to make games. "
+  },
   "I want to give a lecture" : "I want to give a lecture",
   "I'm available for offering" : "I am available for offers of participation in projects",
   "Im available for offering" : "I'm available for offering",
@@ -119,6 +123,7 @@
   "Our Core Values" : "Our Core Values",
   "Platform" : "Platform",
   "Player" : "Player",
+  "Profile" : "Profile",
   "Projects developed independently by community members (outside the incubation program)" : {
     "" : "Projects developed independently by community members (outside the incubation program)."
   },
@@ -137,6 +142,7 @@
   "Send link to email" : "Send link to email",
   "Send registration link" : "Send registration link",
   "Setting goals and working towards them" : "Setting goals and working towards them",
+  "Settings" : "Settings",
   "Skillful" : "Skillful",
   "Sorry, we couldn't find the page you're looking for" : {
     "" : "Sorry, we couldn't find the page you're looking for."

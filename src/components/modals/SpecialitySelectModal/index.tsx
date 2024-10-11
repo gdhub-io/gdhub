@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Speciality } from '@prisma/client'
+import { BsCheckLg } from '@react-icons/all-files/bs/BsCheckLg'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
-import { CheckboxValueType } from 'antd/es/checkbox/Group'
 import axios from 'axios'
-import { BsCheckLg } from 'react-icons/bs'
 import styles from './style.module.scss'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
@@ -13,7 +12,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const { t } = useTolgee()
 	const [processing, setProcessing] = useState(false)
 	const [selectedItem, setSelectedItem] = useState<string>()
-	const [contactType, setContactType] = useState<CheckboxValueType[]>(['email'])
+	const [contactType, setContactType] = useState<string[]>(['email'])
 	const [telegramNickname, setTelegramNickname] = useState<string>()
 
 	const {
@@ -56,7 +55,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		onCancel()
 	}
 
-	const handleSetContact = (checkedValue: CheckboxValueType[]) => {
+	const handleSetContact = (checkedValue: string[]) => {
 		setContactType(checkedValue)
 	}
 

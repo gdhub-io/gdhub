@@ -7,6 +7,8 @@ import { publicThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
+import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
+import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Button, ConfigProvider, Drawer, Grid, Layout, Menu, MenuProps, Space, Tooltip, Typography } from 'antd'
 import enLocale from 'antd/locale/en_US'
@@ -16,8 +18,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { DefaultSeoProps, NextSeo, NextSeoProps } from 'next-seo'
-import { AiOutlineClose } from 'react-icons/ai'
-import { TbBrandTelegram } from 'react-icons/tb'
 import styles from './style.module.scss'
 
 interface PublicLayoutProps {
@@ -33,7 +33,7 @@ const { Text, Title } = Typography
 
 export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }: PublicLayoutProps) => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
@@ -59,12 +59,12 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	const linkToChat = useMemo(() => {
 		let link = ''
 
-		switch (router.locale) {
+		switch (getLanguage()) {
 			case 'en':
-				link = 'https://discord.gg/WcUFD3tHqg'
+				link = 'https://t.me/gdhub_en'
 				break
 			case 'ru':
-				link = 'https://t.me/+HD91s6-i7uAwZDIy'
+				link = 'https://t.me/gdhub_io'
 				break
 		}
 
@@ -284,7 +284,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	return (
 		<>
 			<NextSeo {...seoParams} />
-			<ConfigProvider theme={publicThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+			<ConfigProvider theme={publicThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
 						--background-color: #fff;

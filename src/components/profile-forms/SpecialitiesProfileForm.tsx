@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Speciality, UserRole } from '@prisma/client'
+import { GiSkills } from '@react-icons/all-files/gi/GiSkills'
+import { GoPlus } from '@react-icons/all-files/go/GoPlus'
+import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
-import { GiSkills } from 'react-icons/gi'
-import { GoPlus, GoTrash } from 'react-icons/go'
 import SpecialityModal from './modals/SpecialityModal'
 
 const { Text } = Typography

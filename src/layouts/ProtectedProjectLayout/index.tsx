@@ -8,7 +8,11 @@ import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { useCurrentProject } from '@/hooks/project'
 import { UserRole } from '@prisma/client'
-import { T } from '@tolgee/react'
+import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
+import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
+import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
+import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
+import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -33,15 +37,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { NextSeo, NextSeoProps } from 'next-seo'
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
-import { GoArrowUp } from 'react-icons/go'
-import { RxSlash } from 'react-icons/rx'
 import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 import { ProtectedLayout } from '../ProtectedLayout'
 
 const { Header, Content } = Layout
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
 
 export const ProtectedProjectLayout = ({
 	title,
@@ -59,6 +60,7 @@ export const ProtectedProjectLayout = ({
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session }: any = useSession()
+	const { changeLanguage, getLanguage } = useTolgee()
 
 	const { project, isFetched } = useCurrentProject()
 
@@ -77,7 +79,10 @@ export const ProtectedProjectLayout = ({
 	}
 
 	useEffect(() => {
-		console.log('router', router)
+		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('langiage is changed'))
+	}, [session?.user.lang])
+
+	useEffect(() => {
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
 
@@ -214,7 +219,7 @@ export const ProtectedProjectLayout = ({
 	return (
 		<ProjectContext.Provider value={{ contextProject, setContextProject }}>
 			<NextSeo {...seoSettings} />
-			<ConfigProvider theme={appThemeConfig} locale={router.locale == 'en' ? enLocale : ruLocale}>
+			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
 						--background-color: #fafafa;

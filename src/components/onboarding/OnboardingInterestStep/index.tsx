@@ -3,13 +3,13 @@ import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
 import { GameDifficultyLevel, GameGenre, GameSetting, PrimaryInterest } from '@prisma/client'
+import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Flex, Form, Grid, Input, Radio, Row, Segmented, Select, Space, Typography, message } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
-import { PiWarningCircleLight } from 'react-icons/pi'
 import styles from './style.module.scss'
 
 interface IOnboardingInterestStep {
@@ -300,9 +300,9 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 						<T keyName="back">Back</T>
 					</Button>
 					<Space>
-						<Button type="text" onClick={() => router.push('/hub')}>
+						{/* <Button type="text" onClick={() => router.push('/hub')}>
 							<T keyName="onboarding.welcome.later">Continue later</T>
-						</Button>
+						</Button> */}
 						<Button type="primary" onClick={handleSave} loading={isUpdatingInterests}>
 							<T keyName="saveAndContinue">Save and continue</T>
 						</Button>

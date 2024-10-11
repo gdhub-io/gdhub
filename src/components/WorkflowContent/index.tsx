@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
 import { capitalize } from '@/helpers/text'
 import { Season, SeasonStage } from '@prisma/client'
+import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Checkbox, Col, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import { Dayjs } from 'dayjs'
-import { GoArrowLeft } from 'react-icons/go'
 import DefaultStageContent from './stages/DefaultStageContent'
 import styles from './style.module.scss'
 
@@ -14,7 +14,7 @@ export type SeasonData = Season & { stages: SeasonStage[] }
 
 const { Title, Text, Paragraph } = Typography
 
-const WorkflowContent = ({ projectId }: { projectId: string }) => {
+const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
 	const [conditionStatus, setConditionStatus] = useState<any>()
 	const [stage, setStage] = useState<SeasonStage>()
@@ -82,7 +82,7 @@ const WorkflowContent = ({ projectId }: { projectId: string }) => {
 	const stageContent = (stageName: string) => {
 		if (!stage) return
 
-		return <DefaultStageContent stage={stage} />
+		return <DefaultStageContent stage={stage} locale={locale} />
 
 		// if (workflow.status === SeasonStatus.Done) {
 		// 	return <DoneStageContent season={workflow} />

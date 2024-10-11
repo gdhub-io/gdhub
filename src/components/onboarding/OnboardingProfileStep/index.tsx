@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 import { deleteCookie, getCookie } from '@/helpers/cookie'
+import { FiChevronDown } from '@react-icons/all-files/fi/FiChevronDown'
+import { GoInfo } from '@react-icons/all-files/go/GoInfo'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -21,8 +23,6 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
-import { FiChevronDown } from 'react-icons/fi'
-import { GoInfo } from 'react-icons/go'
 import countryList from 'react-select-country-list'
 
 interface IOnboardingProfileStep {
@@ -158,7 +158,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 										rules={[{ required: true }]}
 										tooltip={{ icon: <GoInfo />, title: <T>You should not be younger than 16 years</T> }}
 									>
-										<Select options={yearOptions} placeholder={dayjs().subtract(16, 'years').year()} />
+										<Select options={yearOptions} showSearch placeholder={dayjs().subtract(16, 'years').year()} />
 									</Form.Item>
 								</Col>
 							</Row>
