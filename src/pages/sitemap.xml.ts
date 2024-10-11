@@ -54,14 +54,15 @@ export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 	const projects = await prisma.project.findMany({
 		where: {
 			status: { in: [ProjectStatus.Approved, ProjectStatus.Done] },
+			team: { vacancies: { some: {} } },
 		},
-		include: { vacancies: true },
 		orderBy: { updatedAt: 'desc' },
 	})
 
 	const vacancies = await prisma.teamVacancy.findMany({
 		where: {
 			status: 'Published',
+			finishedAt: { gt: dayjs().toISOString() },
 		},
 		orderBy: { updatedAt: 'desc' },
 	})

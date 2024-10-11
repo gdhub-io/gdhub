@@ -263,18 +263,20 @@ export default class TelegramService {
 	}) {
 		let projectWithVacancies = await prisma.project.findMany({
 			where: {
-				vacancies: {
-					every: {
-						status: TeamVacancyStatus.Published,
-						publishedAt: { gte: dayjs().subtract(inLastDays, 'days').toDate() },
+				team: {
+					vacancies: {
+						every: {
+							status: TeamVacancyStatus.Published,
+							publishedAt: { gte: dayjs().subtract(inLastDays, 'days').toDate() },
+						},
 					},
 				},
 				status: ProjectStatus.Approved,
 			},
-			include: { vacancies: true, _count: { select: { vacancies: true } } },
+			include: { team: { select: { _count: { select: { vacancies: true } } } } },
 		})
 
-		projectWithVacancies = projectWithVacancies.filter((r) => r._count.vacancies > 0)
+		projectWithVacancies = projectWithVacancies.filter((r) => r.team._count.vacancies > 0)
 
 		if (projectWithVacancies.length == 0) return
 

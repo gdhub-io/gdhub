@@ -1,8 +1,6 @@
 import '@/styles/globals.scss'
 import React, { ReactNode, useEffect, useState } from 'react'
-import CheckHealth from '@/components/CheckHealth'
 import { CookieConsent } from '@/components/CookieConsent'
-import ErrorBoundary from '@/components/ErrorBoundary'
 import LoadingScreen from '@/components/LoadingScreen'
 import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
@@ -131,24 +129,25 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					}}
 				/>
 			)}
-			<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
-				<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
-					<ErrorBoundary>
-						<QueryClientProvider client={queryClient}>
-							<CheckHealth>
-								<SessionProvider session={session}>
-									<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
-										{getLayout(<Component {...pageProps} />)}
-									</div>
-								</SessionProvider>
-							</CheckHealth>
-							<CookieConsent />
-							<LoadingScreen visible={loading} />
-							{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
-						</QueryClientProvider>
-					</ErrorBoundary>
-				</TolgeeProvider>
-			</ConfigProvider>
+
+			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
+				{/* <ErrorBoundary> */}
+				<QueryClientProvider client={queryClient}>
+					{/* <CheckHealth> */}
+					<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
+						<SessionProvider session={session}>
+							<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
+								{getLayout(<Component {...pageProps} />)}
+							</div>
+						</SessionProvider>
+					</ConfigProvider>
+					{/* </CheckHealth> */}
+					<CookieConsent />
+					<LoadingScreen visible={loading} />
+					{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+				</QueryClientProvider>
+				{/* </ErrorBoundary> */}
+			</TolgeeProvider>
 		</>
 	)
 }
