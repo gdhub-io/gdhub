@@ -22,9 +22,6 @@
     "@9gustin/react-notion-render": "^3.11.2",
     "@ant-design/cssinjs": "^1.21.1",
     "@ant-design/icons": "^5.2.6",
-    "@bull-board/api": "^5.14.0",
-    "@bull-board/express": "^5.14.0",
-    "@bull-board/ui": "^5.14.0",
     "@daily-co/daily-js": "^0.60.0",
     "@daily-co/daily-react": "^0.17.3",
     "@headlessui/react": "1.7.1",
@@ -71,7 +68,7 @@
     "node-fetch": "^3.2.10",
     "nodemailer": "^6.9.15",
     "nprogress": "^0.2.0",
-    "openai": "^4.35.0",
+    "openai": "^4.67.3",
     "passport": "^0.7.0",
     "passport-http": "^0.3.0",
     "path-to-regexp": "^6.2.1",
@@ -96,11 +93,9 @@
     "typesense": "^1.7.2",
     "typesense-instantsearch-adapter": "^2.7.1",
     "uuid": "^9.0.0",
-    "voca": "^1.4.1",
-    "yarn": "^1.22.19"
+    "voca": "^1.4.1"
   },
   "devDependencies": {
-    "@snaplet/copycat": "^5.1.0",
     "@svgr/webpack": "^6.3.1",
     "@tanstack/react-query-devtools": "^4.32.0",
     "@tolgee/cli": "^1.4.0",

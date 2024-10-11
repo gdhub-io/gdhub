@@ -158,7 +158,7 @@ class OpenAI {
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: 'gpt-4-turbo',
+				model: 'gpt-4o',
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,
@@ -241,7 +241,7 @@ class OpenAI {
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: 'gpt-4-turbo',
+				model: 'gpt-4o',
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,

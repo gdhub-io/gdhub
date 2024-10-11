@@ -28,7 +28,8 @@ class ApiUserTeamCandidateHandler {
 						profile: { include: { preferredGenres: true, preferredLevels: true, preferredSettings: true } },
 					},
 				},
-				vacancy: { include: { project: true } },
+				team: { select: { project: true } },
+				vacancy: true,
 				speciality: true,
 			},
 		})

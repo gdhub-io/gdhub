@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Form, Grid, Input, message, Radio, Segmented, Select, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
+import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 type InterestsProfileFormArgs = {
@@ -22,6 +23,7 @@ const { Paragraph, Text } = Typography
 
 const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs) => {
 	const [form] = Form.useForm()
+	const { update: updateSession } = useSession()
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 	const [processing, setProcessing] = useState(true)
@@ -53,6 +55,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 
 			setProcessing(true)
 			await saveProfile(formData)
+			await updateSession({ user: { roles: [formData.primaryInterest] } })
 			setProcessing(false)
 
 			message.success(<T>Interests and preferences updated</T>)
