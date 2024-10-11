@@ -1,0 +1,512 @@
+[
+  {
+    "input": "public account id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account type",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account provider",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account provider_account_id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account refresh_token",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account access_token",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account token_type",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account scope",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account id_token",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public account session_state",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public game_difficulty_level id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public game_difficulty_level name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public game_genre id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public game_genre name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public game_setting id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public game_setting name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecture id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecture name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecture wishes",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecture description",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecture link_to_stream",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecture record_link",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecture_listener id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecturer_request id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecturer_request direction_id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecturer_request curriculum",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public lecturer_request link_to_stream",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public matching_specialist_and_project id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public matching_specialist_and_project summary",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public profile id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public profile tg_nickname",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public profile country",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public profile city",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public profile name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public profile other_resources",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public profile motivation",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project description",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project cover_image",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project genre",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project platform",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project setting",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project visual_style",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project slug",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project audition",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project concept_link",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project gdd_link",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project pitchdeck_link",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project video_link",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project core_mechanics",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project_estimation id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project_estimation notes",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project_report id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project_report content",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public project_report video",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public registration id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public registration registration_token",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public registration signature",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season description",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season slug",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season cover_image",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season_stage id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season_stage name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season_stage description",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public season_stream_report id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public session id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public session session_token",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality specialization",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality portfolio_url",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality skills",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality tools",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality jobs",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality schools",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public speciality summary",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public subscription id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public subscription provider_id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public subscription_plan id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public subscription_plan name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public subscription_plan provider_plan_name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public subscription_plan description",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team slug",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team_member id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team_member position",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team_member allowed_contacts",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team_vacancy id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team_vacancy title",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public team_vacancy description",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public user id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public user name",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public user email",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public user image",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public verification_token identifier",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public verification_token token",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public work_direction id",
+    "examples": [],
+    "description": ""
+  },
+  {
+    "input": "public work_direction name",
+    "examples": [],
+    "description": ""
+  }
+]

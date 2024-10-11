@@ -100,6 +100,7 @@
     "yarn": "^1.22.19"
   },
   "devDependencies": {
+    "@snaplet/copycat": "^5.1.0",
     "@svgr/webpack": "^6.3.1",
     "@tanstack/react-query-devtools": "^4.32.0",
     "@tolgee/cli": "^1.4.0",
@@ -141,5 +142,8 @@
   },
   "resolutions": {
     "@babel/runtime": "^7.24.6"
+  },
+  "@snaplet/seed": {
+    "config": "prisma/seed/seed.config.ts"
   }
 }
