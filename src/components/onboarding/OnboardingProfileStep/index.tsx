@@ -158,7 +158,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 										rules={[{ required: true }]}
 										tooltip={{ icon: <GoInfo />, title: <T>You should not be younger than 16 years</T> }}
 									>
-										<Select options={yearOptions} placeholder={dayjs().subtract(16, 'years').year()} />
+										<Select options={yearOptions} showSearch placeholder={dayjs().subtract(16, 'years').year()} />
 									</Form.Item>
 								</Col>
 							</Row>

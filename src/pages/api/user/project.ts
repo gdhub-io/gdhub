@@ -130,26 +130,20 @@ class ApiProjectHandler {
 				author: { connect: { id: req.user.id } },
 				status: ProjectStatus.Registered,
 				stage: { connect: { id: season?.stages.find((r) => r.order == 0)?.id } },
-				team: userhasTeam
-					? {
-							connect: {
-								id: user?.memberInTeams[0]?.teamId,
-							},
-						}
-					: {
+				team: {
+					create: {
+						name: `${slugify(name)}'s Team`,
+						members: {
 							create: {
-								name: `${user?.name}'s Team`,
-								members: {
-									create: {
-										position: 'Founder',
-										specialityId: user?.specialities[0].id!,
-										startedAt: dayjs().toISOString(),
-										status: TeamMemberStatus.Founder,
-										userId: req.user.id,
-									},
-								},
+								position: 'Founder',
+								specialityId: user?.specialities[0].id!,
+								startedAt: dayjs().toISOString(),
+								status: TeamMemberStatus.Founder,
+								userId: req.user.id,
 							},
 						},
+					},
+				},
 				reports: {
 					create: {
 						content: 'Registration of the project on the service',

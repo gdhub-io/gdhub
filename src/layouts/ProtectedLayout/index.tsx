@@ -18,7 +18,6 @@ import {
 	Drawer,
 	Dropdown,
 	Flex,
-	FloatButton,
 	Grid,
 	Layout,
 	Menu,
@@ -172,7 +171,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 			},
 		]
 
-		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
+		return screens.lg ? menu : [...inlineMenuItems, { key: 'divider1', type: 'divider' }, ...menu]
 	}, [isOpenedInTelegram, screens, session])
 
 	const menuItems: MenuProps['items'] = [
@@ -234,12 +233,12 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	return (
 		<>
 			<NextSeo {...seoSettings} />
+			<style jsx global>{`
+				:root {
+					--background-color: #fafafa;
+				}
+			`}</style>
 			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
-				<style jsx global>{`
-					:root {
-						--background-color: #fafafa;
-					}
-				`}</style>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
 						{/* <Flex align="middle" justify="space-between"> */}
@@ -263,7 +262,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 										) : (
 											<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
 										)}
-										{screens.sm && <Text className="username">{session?.user?.name}</Text>}
+										{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
 									</Space>
 								</Flex>
 							</Col>
@@ -320,7 +319,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 					</Content>
 					{/* <Footer></Footer> */}
 				</Layout>
-				{!screens.lg && (
+				{!screens.lg ? (
 					<Drawer
 						className={styles.mobileMenuDrawer}
 						height={'100%'}
@@ -348,8 +347,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 					>
 						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 					</Drawer>
-				)}
-				<FloatButton.BackTop icon={<GoArrowUp />} rootClassName={styles.backTop} description="Scroll to up" />
+				) : null}
 			</ConfigProvider>
 		</>
 	)

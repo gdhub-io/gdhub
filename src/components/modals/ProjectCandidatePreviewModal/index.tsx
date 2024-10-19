@@ -40,7 +40,8 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		() =>
 			axios.get<
 				TeamMember & {
-					vacancy: TeamVacancy & { project: Project }
+					vacancy: TeamVacancy
+					team: { project: Project }
 					speciality: Speciality
 					user: User & {
 						specialities: Speciality[]
@@ -147,7 +148,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 											{candidate.data.vacancy.title}
 										</Descriptions.Item>
 										<Descriptions.Item label={t('On the project')}>
-											{candidate.data.vacancy.project.name}
+											{candidate.data.team.project.name}
 										</Descriptions.Item>
 										<Descriptions.Item label={t('Created')}>
 											{dayjs(candidate.data.createdAt).format('LLL')}

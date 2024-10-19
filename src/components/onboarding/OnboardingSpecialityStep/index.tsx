@@ -319,9 +319,9 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 						<T keyName="back">Back</T>
 					</Button>
 					<Space>
-						<Button type="text" onClick={() => router.push('/hub')}>
+						{/* <Button type="text" onClick={() => router.push('/hub')}>
 							<T keyName="onboarding.welcome.later">Continue later</T>
-						</Button>
+						</Button> */}
 						<Button type="primary" onClick={handleSave} loading={isCreating || isUpdating}>
 							<T keyName="saveAndContinue">Save and continue</T>
 						</Button>
