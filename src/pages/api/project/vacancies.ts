@@ -14,7 +14,7 @@ class ApiProjectVacancyHandler {
 	public async list(@Query(ValidationPipe) { teamId }: ProjectVacancyParams) {
 		const vacancies = await prisma.teamVacancy.findMany({
 			where: { status: 'Published', teamId },
-			include: { direction: { select: { name: true } }, project: { select: { name: true } } },
+			include: { direction: { select: { name: true } }, team: { select: { project: { select: { name: true } } } } },
 			orderBy: { publishedAt: 'desc' },
 		})
 
