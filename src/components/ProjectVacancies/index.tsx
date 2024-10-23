@@ -53,7 +53,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 			axios.get<
 				(TeamVacancy & {
 					direction: WorkDirection
-					project: { id: string; slug: string; name: string; description: string }
+					team: { project: { id: string; slug: string; name: string; description: string } }
 				})[]
 			>('/api/project/vacancies', { params: { teamId: teamId } }),
 		{
@@ -180,7 +180,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 												{vacancy.title}
 											</Title>
 
-											<div className={styles.projectName}>{vacancy.project?.name}</div>
+											<div className={styles.projectName}>{vacancy.team.project?.name}</div>
 										</div>
 										<Button
 											className={styles.linkBtn}
