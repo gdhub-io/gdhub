@@ -103,6 +103,18 @@ services:
     networks:
       - gdhub-network
 
+  broker:
+    image: rabbitmq:management
+    container_name: gdhub_broker
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - gdhub-network
+
 volumes:
   gamelab-typesense-data:
   gamelab-postgres-data:
