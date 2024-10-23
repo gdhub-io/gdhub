@@ -180,7 +180,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 												{vacancy.title}
 											</Title>
 
-											<div className={styles.projectName}>{vacancy.project.name}</div>
+											<div className={styles.projectName}>{vacancy.project?.name}</div>
 										</div>
 										<Button
 											className={styles.linkBtn}

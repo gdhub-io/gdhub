@@ -12,7 +12,6 @@ import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { NextSeoProps } from 'next-seo'
 import ReactMarkdown from 'react-markdown'
@@ -29,7 +28,6 @@ type ProjectPageParams = {
 }
 
 const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) => {
-	const router = useRouter()
 	const { t } = useTolgee()
 	const { data: session } = useSession()
 	const screens = Grid.useBreakpoint()
@@ -40,7 +38,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 		description: seo?.description,
 		openGraph: {
 			description: seo?.description as string,
-			images: seo?.image ? [{ url: seo.image as string, alt: project.name + ' cover image' }] : undefined,
+			images: seo?.image ? [{ url: seo.image as string, alt: project?.name + ' cover image' }] : undefined,
 		},
 	}
 
@@ -67,7 +65,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 	return (
 		<>
 			<PublicLayout
-				title={project.name}
+				title={project?.name}
 				subTitle={t('Author') + ' ' + project.author.name}
 				backgroundImage={project.coverImage || undefined}
 				seo={seoParams}

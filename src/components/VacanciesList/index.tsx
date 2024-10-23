@@ -74,7 +74,7 @@ const VacanciesList = () => {
 												{vacancy.title}
 											</Title>
 
-											<div className={styles.projectName}>{vacancy.team.project.name}</div>
+											<div className={styles.projectName}>{vacancy.team.project?.name}</div>
 										</div>
 										<Button
 											className={styles.linkBtn}
