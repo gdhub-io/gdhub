@@ -121,13 +121,13 @@ const newConsulationRequestMessage = ({ topic, comment }: { topic: string; comme
 						callback_data: 'accept_request',
 					},
 					{
-						text: 'Отклонить запрос',
+						text: 'Отклонить',
 						callback_data: 'decline_request',
 					},
 					{
 						text: 'Детали',
 						web_app: {
-							url: `${process.env.TELEGRAM_TMA_URL}/?startup=req${12345}&mode=compact`,
+							url: `${process.env.APP_EXPERTS_TELEGRAM_TMA_URL as string}/?startup=req${12345}&mode=compact`,
 						},
 					},
 				],
