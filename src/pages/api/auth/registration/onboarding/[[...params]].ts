@@ -3,7 +3,7 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
 import { CreateSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
-import { PrimaryInterest, Prisma, UserRole } from '@prisma/client'
+import { PrimaryInterest, UserRole } from '@prisma/client'
 import { BadRequestException, Body, Get, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')

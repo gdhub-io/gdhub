@@ -7,7 +7,6 @@ import { useTelegram } from '@/helpers/useTelegram'
 import { UserRole } from '@prisma/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
-import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { T, useTolgee } from '@tolgee/react'
 import {
