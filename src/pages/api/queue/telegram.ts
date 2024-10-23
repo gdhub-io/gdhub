@@ -23,6 +23,10 @@ class ApiQueueTelegramHandler {
 			await telegramBot.sendNewVacancies({ inLastDays: 1 })
 		}
 
+		if (job.name == 'consultation-request') {
+			await telegramBot.sendConsultationRequest(job.data)
+		}
+
 		return { success: true }
 	}
 }
