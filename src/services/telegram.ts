@@ -143,9 +143,9 @@ export default class TelegramService {
 		this.apiUrl = `https://api.telegram.org/bot${botToken}`
 	}
 
-	static init() {
-		const botToken = process.env.TELEGRAM_BOT_TOKEN as string
-		return new TelegramService({ botToken })
+	static init(botToken?: string) {
+		const defaultBotToken = process.env.TELEGRAM_BOT_TOKEN as string
+		return new TelegramService({ botToken: botToken || defaultBotToken })
 	}
 
 	async sendMessage({
