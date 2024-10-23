@@ -225,13 +225,12 @@ model Project {
   coreMechanics        String[]
   createdAt            DateTime                       @default(now())
   updatedAt            DateTime                       @updatedAt
-  teamId               String
+  teamId               String                         @unique
   author               User                           @relation(fields: [authorId], references: [id])
   stage                SeasonStage                    @relation(fields: [stageId], references: [id])
   team                 Team                           @relation(fields: [teamId], references: [id])
   estimations          ProjectEstimation[]
   reports              ProjectReport[]
-  vacancies            TeamVacancy[]
   availableSpecialists MatchingSpecialistAndProject[]
 }
 
@@ -252,8 +251,8 @@ model Team {
   id        String        @id @default(cuid())
   name      String        @unique
   slug      String        @unique @default(cuid())
-  projects  Project[]
   members   TeamMember[]
+  project   Project?
   vacancies TeamVacancy[]
 }
 
@@ -302,8 +301,6 @@ model TeamVacancy {
   applicants  TeamMember[]
   direction   WorkDirection     @relation(fields: [directionId], references: [id])
   team        Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  projectId   String
-  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Lecture {

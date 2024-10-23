@@ -124,7 +124,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 					searchClient={searchAdapter.searchClient}
 					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
 				>
-					<Configure filters="isActive:true" />
+					<Configure optionalFilters={['isActive:true']} />
 					<SearchBox placeholder="Type search query..." />
 					<Row justify="end" className={styles.stats}>
 						<Stats />

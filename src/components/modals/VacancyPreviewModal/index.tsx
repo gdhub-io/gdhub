@@ -28,7 +28,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		() =>
 			axios.get<
 				TeamVacancy & {
-					project: { id: string; slug: string; name: string; stage: SeasonStage & { season: Season } }
+					team: { project: { id: string; slug: string; name: string; stage: SeasonStage & { season: Season } } }
 					myTeamMemberId: string
 				}
 			>('/api/user/project/vacancy', {
@@ -157,8 +157,10 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							<h1>{vacancy.data.title}</h1>
 
 							<Descriptions layout="horizontal" column={1} size="small">
-								<Descriptions.Item label={t('Project')}>{vacancy.data.project.name}</Descriptions.Item>
-								<Descriptions.Item label={t('Pipeline')}>{vacancy.data.project.stage.season.name}</Descriptions.Item>
+								<Descriptions.Item label={t('Project')}>{vacancy.data.team.project.name}</Descriptions.Item>
+								<Descriptions.Item label={t('Pipeline')}>
+									{vacancy.data.team.project.stage.season.name}
+								</Descriptions.Item>
 								<Descriptions.Item label={t('The vacancy is acute before')}>
 									{dayjs(vacancy.data.finishedAt).format('LL')}
 								</Descriptions.Item>

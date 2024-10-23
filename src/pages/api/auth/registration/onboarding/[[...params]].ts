@@ -3,8 +3,8 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
 import { CreateSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
-import { PrimaryInterest, UserRole } from '@prisma/client'
-import { Body, Get, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import { PrimaryInterest, Prisma, UserRole } from '@prisma/client'
+import { BadRequestException, Body, Get, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
 class ApiRegistrationHandler {
@@ -23,7 +23,10 @@ class ApiRegistrationHandler {
 			body
 
 		const user = await prisma.user.findUnique({ where: { id: req.user.id }, include: { profile: true } })
-		const agreements: any = user?.agreements
+
+		if (!user) throw new BadRequestException('The user is not exist')
+
+		const agreements: any = user?.agreements || {}
 
 		agreements.confirmUserData = confirmUserData
 		if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
@@ -47,11 +50,11 @@ class ApiRegistrationHandler {
 					city,
 					yearOfBirth,
 					country,
-					user: { connect: { id: req.user.id } },
+					user: { connect: { id: user.id } },
 				},
 			})
 
-			await prisma.user.update({ where: { id: req.user.id }, data: { agreements } })
+			await prisma.user.update({ where: { id: user.id }, data: { agreements } })
 		}
 	}
 

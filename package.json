@@ -68,7 +68,7 @@
     "node-fetch": "^3.2.10",
     "nodemailer": "^6.9.15",
     "nprogress": "^0.2.0",
-    "openai": "^4.35.0",
+    "openai": "^4.67.3",
     "passport": "^0.7.0",
     "passport-http": "^0.3.0",
     "path-to-regexp": "^6.2.1",
@@ -93,8 +93,7 @@
     "typesense": "^1.7.2",
     "typesense-instantsearch-adapter": "^2.7.1",
     "uuid": "^9.0.0",
-    "voca": "^1.4.1",
-    "yarn": "^1.22.19"
+    "voca": "^1.4.1"
   },
   "devDependencies": {
     "@svgr/webpack": "^6.3.1",
@@ -138,5 +137,8 @@
   },
   "resolutions": {
     "@babel/runtime": "^7.24.6"
+  },
+  "@snaplet/seed": {
+    "config": "prisma/seed/seed.config.ts"
   }
 }

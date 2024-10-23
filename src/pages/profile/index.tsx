@@ -23,16 +23,21 @@ const ProfilePage: NextPageWithLayout = () => {
 		}
 	)
 
+	if (!profile?.data)
+		return (
+			<ProtectedLayout title={t('Settings')}>
+				<></>
+			</ProtectedLayout>
+		)
+
 	return (
 		<ProtectedLayout title={t('Settings')}>
-			{!!profile?.data && (
-				<Space size={24} direction="vertical" style={{ width: '100%' }}>
-					<GeneralProfileForm profile={profile.data} saveProfile={saveProfile} />
-					<SpecialitiesProfileForm profile={profile.data} />
-					<ResourcesProfileForm profile={profile.data} saveProfile={saveProfile} />
-					<InterestsProfileForm profile={profile.data} saveProfile={saveProfile} />
-				</Space>
-			)}
+			<Space size={24} direction="vertical" style={{ width: '100%' }}>
+				<GeneralProfileForm profile={profile.data} saveProfile={saveProfile} />
+				<SpecialitiesProfileForm profile={profile.data} />
+				<ResourcesProfileForm profile={profile.data} saveProfile={saveProfile} />
+				<InterestsProfileForm profile={profile.data} saveProfile={saveProfile} />
+			</Space>
 		</ProtectedLayout>
 	)
 }
