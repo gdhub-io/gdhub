@@ -20,7 +20,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
 	const { data: specialities, isFetching: processing } = useQuery(['user-specialities'], () =>
-		axios.get<Speciality[]>('/api/user/specialities')
+		axios.get<prismaClient.Speciality[]>('/api/user/specialities')
 	)
 
 	const { mutateAsync: deleteSpeciality } = useMutation(
@@ -88,7 +88,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 								),
 							}}
 							dataSource={specialities.data}
-							renderItem={(speciality: Speciality) => (
+							renderItem={(speciality: prismaClient.Speciality) => (
 								<List.Item>
 									<List.Item.Meta
 										title={

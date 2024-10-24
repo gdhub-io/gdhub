@@ -51,7 +51,10 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 
 	useQuery(
 		['profile', 'current'],
-		() => axios.get<Speciality & { direction: WorkDirection }>('/api/auth/registration/onboarding/speciality'),
+		() =>
+			axios.get<prismaClient.Speciality & { direction: prismaClient.WorkDirection }>(
+				'/api/auth/registration/onboarding/speciality'
+			),
 		{
 			refetchInterval: false,
 			refetchOnWindowFocus: false,

@@ -22,10 +22,10 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 		['specialist', specialistId],
 		() =>
 			axios.get<
-				Speciality & {
-					availableProjects: (MatchingSpecialistAndProject & { project: { name: string } })[]
-					direction: WorkDirection
-					user: User & { profile: prismaClient.Profile & { [key: string]: any } }
+				prismaClient.Speciality & {
+					availableProjects: (prismaClient.MatchingSpecialistAndProject & { project: { name: string } })[]
+					direction: prismaClient.WorkDirection
+					user: prismaClient.User & { profile: prismaClient.Profile & { [key: string]: any } }
 				}
 			>('/api/specialist', { params: { id: specialistId } }),
 		{ staleTime: Infinity, enabled: open }

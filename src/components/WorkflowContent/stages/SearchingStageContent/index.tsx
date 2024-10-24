@@ -26,7 +26,7 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 		['season-projects-count', stage?.id],
 		() =>
 			axios.get<{ count: number }>('/api/season/stage/projects', {
-				params: { stageId: stage?.id, status: ProjectStatus.Registered, onlyCount: true },
+				params: { stageId: stage?.id, status: prismaClient.ProjectStatus.Registered, onlyCount: true },
 			}),
 		{ enabled: !!stage }
 	)
@@ -93,7 +93,9 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 					/>
 				)}
 
-				{!isStageExpired() && <UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />}
+				{!isStageExpired() && (
+					<UserSeasonProjectsList seasonId={season.id} status={prismaClient.ProjectStatus.Registered} />
+				)}
 			</Spin>
 		</div>
 	)

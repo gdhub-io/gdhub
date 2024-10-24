@@ -27,8 +27,15 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		['vacancy', vacancyId],
 		() =>
 			axios.get<
-				TeamVacancy & {
-					team: { project: { id: string; slug: string; name: string; stage: SeasonStage & { season: Season } } }
+				prismaClient.TeamVacancy & {
+					team: {
+						project: {
+							id: string
+							slug: string
+							name: string
+							stage: prismaClient.SeasonStage & { season: prismaClient.Season }
+						}
+					}
 					myTeamMemberId: string
 				}
 			>('/api/user/project/vacancy', {

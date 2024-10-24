@@ -30,7 +30,12 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 	} = useQuery(
 		['user-project', projectId],
 		() =>
-			axios.get<Project & { author: User; stage: SeasonStage & { season: Season } }>('/api/project/details', {
+			axios.get<
+				prismaClient.Project & {
+					author: prismaClient.User
+					stage: prismaClient.SeasonStage & { season: prismaClient.Season }
+				}
+			>('/api/project/details', {
 				params: { projectId },
 			}),
 		{
@@ -43,17 +48,17 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 	const { mutateAsync: moveCardToStage } = useMutation((data: any) => axios.put<void>(`/api/project/move`, data))
 	const { mutateAsync: changeProjectStatus } = useMutation((data: any) => axios.put<void>(`/api/project/status`, data))
 
-	const statusesOptions = Object.values(ProjectStatus).map((s) => ({ title: s, value: s }))
+	const statusesOptions = Object.values(prismaClient.ProjectStatus).map((s) => ({ title: s, value: s }))
 
-	const getTagColor = (status: ProjectStatus) => {
+	const getTagColor = (status: prismaClient.ProjectStatus) => {
 		switch (status) {
-			case ProjectStatus.Registered:
+			case prismaClient.ProjectStatus.Registered:
 				return token.blue3
-			case ProjectStatus.Approved:
+			case prismaClient.ProjectStatus.Approved:
 				return token.green3
-			case ProjectStatus.Rejected:
+			case prismaClient.ProjectStatus.Rejected:
 				return token.red3
-			case ProjectStatus.Done:
+			case prismaClient.ProjectStatus.Done:
 				return token.colorFillSecondary
 		}
 	}
@@ -78,7 +83,7 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 		}
 	}
 
-	const handleChangeStatus = async (newStatus: ProjectStatus) => {
+	const handleChangeStatus = async (newStatus: prismaClient.ProjectStatus) => {
 		const { status } = await changeProjectStatus({ projectId, newStatus })
 		if (status == 204) {
 			await refetch()

@@ -11,7 +11,7 @@ import Link from 'next/link'
 
 type ProjectsSectionArgs = {
 	seasonId: string
-	status: ProjectStatus
+	status: prismaClient.ProjectStatus
 }
 
 const { Title } = Typography
@@ -27,7 +27,7 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 		refetch: refreshUserProjects,
 	} = useQuery(
 		['user-season-projects', seasonId],
-		() => axios.get<Project[]>('/api/user/projects', { params: { seasonId, status } }),
+		() => axios.get<prismaClient.Project[]>('/api/user/projects', { params: { seasonId, status } }),
 		{ refetchInterval: Infinity, refetchOnWindowFocus: false }
 	)
 

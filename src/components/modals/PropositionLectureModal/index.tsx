@@ -19,12 +19,12 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			staleTime: Infinity,
 		}
 	)
-	const { mutateAsync: createLecture, isLoading: isCreating } = useMutation((data: Partial<Lecture>) =>
-		axios.post<Lecture>('/api/user/lecture', { ...data, stage: LectureStage.Proposed })
+	const { mutateAsync: createLecture, isLoading: isCreating } = useMutation((data: Partial<prismaClient.Lecture>) =>
+		axios.post<prismaClient.Lecture>('/api/user/lecture', { ...data, stage: prismaClient.LectureStage.Proposed })
 	)
 	const { mutateAsync: updateLecture, isLoading: isUpdating } = useMutation(
-		({ id, data }: { id: string; data: Partial<Lecture> }) =>
-			axios.put<Lecture>('/api/user/lecture', data, { params: { id } })
+		({ id, data }: { id: string; data: Partial<prismaClient.Lecture> }) =>
+			axios.put<prismaClient.Lecture>('/api/user/lecture', data, { params: { id } })
 	)
 
 	const directionsOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
@@ -34,7 +34,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			const { name, lecturerId, directionId, description, linkToStream, date, time, duration } =
 				await form.validateFields()
 
-			const newData: Partial<Lecture> = {
+			const newData: Partial<prismaClient.Lecture> = {
 				name,
 				directionId,
 				description,
