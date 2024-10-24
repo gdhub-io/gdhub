@@ -1,4 +1,3 @@
-import { User } from '@prisma/client'
 import { type NextApiRequest } from 'next'
 
 declare global {

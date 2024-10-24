@@ -2,7 +2,7 @@ import { useState } from 'react'
 import SeasonStreamReportModal from '@/components/modals/SeasonStreamReportModal'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { SeasonStreamReport } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -28,7 +28,9 @@ const SeasonStreamReportsPage: NextPageWithLayout = () => {
 	} = useQuery(
 		['admin', 'season-stream-reports'],
 		() =>
-			axios.get<SeasonStreamReport[]>(`/api/admin/season/stream-reports`, { params: { seasonId: router.query.id } }),
+			axios.get<prismaClient.SeasonStreamReport[]>(`/api/admin/season/stream-reports`, {
+				params: { seasonId: router.query.id },
+			}),
 		{ enabled: !!router.query.id }
 	)
 

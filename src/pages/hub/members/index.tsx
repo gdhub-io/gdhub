@@ -5,7 +5,7 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
-import { ProjectStatus, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BsFilter } from '@react-icons/all-files/bs/BsFilter'
 import { T, useTolgee } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
@@ -88,7 +88,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 		)
 	}
 
-	if (!hasRole(UserRole.Author, session) || !hasApprovedProjects) {
+	if (!hasRole(prismaClient.UserRole.Author, session) || !hasApprovedProjects) {
 		return (
 			<ProtectedLayout title={t('Community Members')}>
 				<div className={styles.container}>
@@ -244,14 +244,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 	const usersCount = await prisma.user.count()
 	const specialitiesCount = await prisma.speciality.count()
 	const hasApprovedProjects = await prisma.project.count({
-		where: { authorId: session?.user.id, status: ProjectStatus.Approved },
+		where: { authorId: session?.user.id, status: prismaClient.ProjectStatus.Approved },
 	})
 
 	return {
 		props: {
 			usersCount,
 			specialitiesCount,
-			hasApprovedProjects: hasApprovedProjects !== 0 || session?.user.roles.includes(UserRole.Admin),
+			hasApprovedProjects: hasApprovedProjects !== 0 || session?.user.roles.includes(prismaClient.UserRole.Admin),
 		},
 	}
 }

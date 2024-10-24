@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ProjectReport } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Col, List, Row, Spin, Typography } from 'antd'
 import axios from 'axios'
@@ -32,7 +32,7 @@ export const DevLogWall = () => {
 	})
 
 	const items: ProjectReportItem = useMemo(() => {
-		let reports = projectReports?.data.map((report: ProjectReport) => {
+		let reports = projectReports?.data.map((report: prismaClient.ProjectReport) => {
 			return {
 				label: dayjs(report.publishedAt).format('ll'),
 				children: (

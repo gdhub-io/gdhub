@@ -6,7 +6,7 @@ import { MainHeader } from '@/components/MainHeader'
 import { publicThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { T, useTolgee } from '@tolgee/react'
@@ -201,7 +201,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 			telegramMenuItem,
 		]
 
-		if (!!session && session?.user?.roles.includes(UserRole.Member)) {
+		if (!!session && session?.user?.roles.includes(prismaClient.UserRole.Member)) {
 			menu = [
 				menu[0],
 				{
@@ -242,7 +242,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = []
 
-		if (hasRole(UserRole.Admin, { data: session })) {
+		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
 				label: (
 					<Link href="/admin/seasons">

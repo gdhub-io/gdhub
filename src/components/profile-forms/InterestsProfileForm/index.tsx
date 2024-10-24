@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
-import { GameDifficultyLevel, GameGenre, GameSetting, PrimaryInterest, Profile } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Form, Grid, Input, message, Radio, Segmented, Select, Space, Spin, Typography } from 'antd'
@@ -11,12 +11,12 @@ import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 type InterestsProfileFormArgs = {
-	profile: Profile & {
-		preferredGenres?: GameGenre[]
-		preferredSettings?: GameSetting[]
-		preferredLevels?: GameDifficultyLevel[]
+	profile: prismaClient.Profile & {
+		preferredGenres?: prismaClient.GameGenre[]
+		preferredSettings?: prismaClient.GameSetting[]
+		preferredLevels?: prismaClient.GameDifficultyLevel[]
 	}
-	saveProfile: (data: Partial<Profile>) => Promise<void>
+	saveProfile: (data: Partial<prismaClient.Profile>) => Promise<void>
 }
 
 const { Paragraph, Text } = Typography
@@ -27,17 +27,21 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 	const [processing, setProcessing] = useState(true)
-	const { data: gameGenres } = useQuery(['gameGenres'], () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
-		staleTime: Infinity,
-	})
+	const { data: gameGenres } = useQuery(
+		['gameGenres'],
+		() => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
+		{
+			staleTime: Infinity,
+		}
+	)
 	const { data: gameSettings } = useQuery(
 		['gameSettings'],
-		() => axios.get<GameSetting[]>('/api/dictionary/game-settings'),
+		() => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
 		{ staleTime: Infinity }
 	)
 	const { data: gameLevels } = useQuery(
 		['gameLevels'],
-		() => axios.get<GameDifficultyLevel[]>('/api/dictionary/game-levels'),
+		() => axios.get<prismaClient.GameDifficultyLevel[]>('/api/dictionary/game-levels'),
 		{
 			staleTime: Infinity,
 		}
@@ -144,7 +148,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 												</div>
 											</div>
 										),
-										value: PrimaryInterest.Author,
+										value: prismaClient.PrimaryInterest.Author,
 									},
 									{
 										label: (
@@ -165,7 +169,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 												</div>
 											</div>
 										),
-										value: PrimaryInterest.Specialist,
+										value: prismaClient.PrimaryInterest.Specialist,
 									},
 									{
 										label: (
@@ -186,7 +190,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 												</div>
 											</div>
 										),
-										value: PrimaryInterest.Mentor,
+										value: prismaClient.PrimaryInterest.Mentor,
 									},
 								]}
 							/>
@@ -195,19 +199,19 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 						{!screens.lg && (
 							<Radio.Group>
 								<Space direction="vertical">
-									<Radio value={PrimaryInterest.Author}>
+									<Radio value={prismaClient.PrimaryInterest.Author}>
 										<T keyName="wantToBe.text">I want to be</T>{' '}
 										<Text italic>
 											<T keyName="wantToBe.author">Author</T>
 										</Text>
 									</Radio>
-									<Radio value={PrimaryInterest.Specialist}>
+									<Radio value={prismaClient.PrimaryInterest.Specialist}>
 										<T keyName="wantToBe.text">I want to be</T>{' '}
 										<Text italic>
 											<T keyName="wantToBe.specialist">Specialist</T>
 										</Text>
 									</Radio>
-									<Radio value={PrimaryInterest.Mentor}>
+									<Radio value={prismaClient.PrimaryInterest.Mentor}>
 										<T keyName="wantToBe.text">I want to be</T>{' '}
 										<Text italic>
 											<T keyName="wantToBe.mentor">Mentor</T>

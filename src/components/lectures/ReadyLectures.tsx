@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
-import { LectureStage, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Grid, Spin, Table } from 'antd'
@@ -17,13 +17,13 @@ export const ReadyLectures = () => {
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
 	const { data: readyLectures, isLoading: isLoadingReadyLectures } = useQuery(['lectures', 'ready'], () =>
 		axios.get<LectureDetails[]>('/api/lectures', {
-			params: { stage: [LectureStage.Ready, LectureStage.Proposed].join(',') },
+			params: { stage: [prismaClient.LectureStage.Ready, prismaClient.LectureStage.Proposed].join(',') },
 		})
 	)
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
-		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
 		{
 			staleTime: Infinity,
 		}

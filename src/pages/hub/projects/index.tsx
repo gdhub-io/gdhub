@@ -1,6 +1,6 @@
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { Project, Season, SeasonStage, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
@@ -12,7 +12,10 @@ import styles from './style.module.scss'
 
 const { Title, Paragraph } = Typography
 
-type ProjectIncludeAll = Project & { author: User; stage: SeasonStage & { season: Season } }
+type ProjectIncludeAll = prismaClient.Project & {
+	author: prismaClient.User
+	stage: prismaClient.SeasonStage & { season: prismaClient.Season }
+}
 
 const ProjectsPage: NextPageWithLayout = () => {
 	const { t } = useTolgee()

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Profile } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Col, Form, Input, InputNumber, message, Row, Space, Spin, Typography } from 'antd'
 
 const { Text } = Typography
 
 type ResourcesProfileFormArgs = {
-	profile: Profile
-	saveProfile: (data: Partial<Profile>) => Promise<void>
+	profile: prismaClient.Profile
+	saveProfile: (data: Partial<prismaClient.Profile>) => Promise<void>
 }
 
 const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs) => {

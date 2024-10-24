@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import DividerIcon from '@/assets/images/icons/divider.svg'
 import { DefaultSeasonStages } from '@/types/enums'
-import { SeasonStage } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Card, Descriptions, Grid, Space, Spin, Tag, Typography } from 'antd'
@@ -17,7 +17,7 @@ type SeasonGeneralData = {
 	name: string
 	slug: string
 	startedAt: string
-	currentStage: SeasonStage & { isCompleted: boolean }
+	currentStage: prismaClient.SeasonStage & { isCompleted: boolean }
 	projectsCount: number
 	membersCount: number
 	coverImage?: string

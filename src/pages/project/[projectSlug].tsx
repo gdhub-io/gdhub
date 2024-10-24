@@ -5,7 +5,7 @@ import TeamMembers from '@/components/TeamMembers'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
-import { Profile, Project, ProjectStatus, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
@@ -23,7 +23,9 @@ import styles from './style.module.scss'
 const { Title, Paragraph } = Typography
 
 type ProjectPageParams = {
-	project: Project & { author: User & { profile: { tgNickname: Profile['tgNickname'] } } }
+	project: prismaClient.Project & {
+		author: prismaClient.User & { profile: { tgNickname: prismaClient.Profile['tgNickname'] } }
+	}
 	seo?: { title: string; description?: string; image?: string }
 }
 
@@ -145,7 +147,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const { projectSlug }: any = context.params
 
 	const project = await prisma.project.findFirst({
-		where: { slug: projectSlug, status: { in: [ProjectStatus.Approved, ProjectStatus.Done] } },
+		where: {
+			slug: projectSlug,
+			status: { in: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
+		},
 		include: { author: { select: { name: true, profile: { select: { tgNickname: true } } } } },
 	})
 

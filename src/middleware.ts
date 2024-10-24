@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { NextResponse } from 'next/server'
 import { withAuth } from 'next-auth/middleware'
 import { env } from './helpers/env'
@@ -24,10 +24,10 @@ export default withAuth(
 		if (
 			req.nextUrl.pathname.startsWith('/live/room/reports') &&
 			Array.isArray(roles) &&
-			!roles.includes(UserRole.Author) &&
-			!roles.includes(UserRole.Member) &&
-			!roles.includes(UserRole.Admin) &&
-			!roles.includes(UserRole.Mentor)
+			!roles.includes(prismaClient.UserRole.Author) &&
+			!roles.includes(prismaClient.UserRole.Member) &&
+			!roles.includes(prismaClient.UserRole.Admin) &&
+			!roles.includes(prismaClient.UserRole.Mentor)
 		) {
 			return NextResponse.redirect(new URL('/hub', req.url))
 		}

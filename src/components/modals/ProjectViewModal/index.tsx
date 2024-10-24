@@ -1,4 +1,4 @@
-import { Project, ProjectStatus, Season, SeasonStage, User, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -104,7 +104,7 @@ const ProjectViewModal = ({ projectId, open, onOk, onCancel, onUpdate }: Project
 					<Button onClick={handleCancel}>
 						<T>Close</T>
 					</Button>
-					{session?.user.roles.includes(UserRole.Admin) && (
+					{session?.user.roles.includes(prismaClient.UserRole.Admin) && (
 						<>
 							{!!project?.data.stage.order && (
 								<Button onClick={handleMovePrevious}>

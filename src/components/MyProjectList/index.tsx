@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import CreateProjectModal from '@/components/modals/CreateProjectModal'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Avatar, Button, Card, Col, Flex, Row, Space, Tag, Typography } from 'antd'
@@ -24,7 +24,7 @@ export const MyProjectList = () => {
 					<T>My Projects</T>
 				</Title>
 
-				{session?.user.roles.includes(UserRole.Author) && (
+				{session?.user.roles.includes(prismaClient.UserRole.Author) && (
 					<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
 						<Space>Add Project</Space>
 					</Button>

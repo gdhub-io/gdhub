@@ -1,17 +1,7 @@
 import { useEffect } from 'react'
 import React from 'react'
 import { useGameDifficulties, useGameGenres, useGameSettings } from '@/hooks/library'
-import {
-	GameDifficultyLevel,
-	GameGenre,
-	GameSetting,
-	Profile,
-	Project,
-	Speciality,
-	TeamMember,
-	TeamVacancy,
-	User,
-} from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -39,16 +29,16 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		['candidate', candidateId],
 		() =>
 			axios.get<
-				TeamMember & {
-					vacancy: TeamVacancy
-					team: { project: Project }
-					speciality: Speciality
-					user: User & {
-						specialities: Speciality[]
-						profile: Profile & {
-							preferedGenres: GameGenre[]
-							preferedSettings: GameSetting[]
-							preferedDifficulties: GameDifficultyLevel[]
+				prismaClient.TeamMember & {
+					vacancy: prismaClient.TeamVacancy
+					team: { project: prismaClient.Project }
+					speciality: prismaClient.Speciality
+					user: prismaClient.User & {
+						specialities: prismaClient.Speciality[]
+						profile: prismaClient.Profile & {
+							preferedGenres: prismaClient.GameGenre[]
+							preferedSettings: prismaClient.GameSetting[]
+							preferedDifficulties: prismaClient.GameDifficultyLevel[]
 						}
 					}
 				}

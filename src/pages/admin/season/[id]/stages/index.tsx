@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import SeasonStageModal from '@/components/modals/SeasonStageModal'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { SeasonStage } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -27,7 +27,7 @@ const SeasonStagesAdminPage: NextPageWithLayout = () => {
 		refetch,
 	} = useQuery(
 		['admin', 'seasons'],
-		() => axios.get<SeasonStage[]>(`/api/admin/season/stages`, { params: { seasonId: router.query.id } }),
+		() => axios.get<prismaClient.SeasonStage[]>(`/api/admin/season/stages`, { params: { seasonId: router.query.id } }),
 		{ enabled: !!router.query.id }
 	)
 

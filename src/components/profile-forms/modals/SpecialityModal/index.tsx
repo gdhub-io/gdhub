@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
-import { WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -38,7 +38,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
-		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
 		{
 			staleTime: Infinity,
 		}

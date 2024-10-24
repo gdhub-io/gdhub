@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ProjectReport } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Card, List, Typography } from 'antd'
@@ -25,7 +25,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 
 	const { data: projectReports } = useQuery(
 		['project-reports', projectId],
-		() => axios.get<ProjectReport[]>('/api/project/reports', { params: { projectId } }),
+		() => axios.get<prismaClient.ProjectReport[]>('/api/project/reports', { params: { projectId } }),
 		{
 			enabled: !!projectId,
 			refetchOnWindowFocus: false,
@@ -33,7 +33,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 	)
 
 	const items: ProjectReportItem = useMemo(() => {
-		let reports = projectReports?.data.map((report: ProjectReport) => {
+		let reports = projectReports?.data.map((report: prismaClient.ProjectReport) => {
 			return {
 				label: dayjs(report.publishedAt).format('ll'),
 				children: (

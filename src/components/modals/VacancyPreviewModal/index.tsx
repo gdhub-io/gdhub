@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { hasRole } from '@/helpers/user'
-import { Season, SeasonStage, TeamVacancy, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
@@ -104,7 +104,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			return <T keyName="signin">Signin</T>
 		}
 
-		if (hasRole(UserRole.Member, session)) {
+		if (hasRole(prismaClient.UserRole.Member, session)) {
 			return vacancy?.data.myTeamMemberId ? <T>Reveal the response</T> : <T>Respond</T>
 		}
 
@@ -116,7 +116,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			router.push('/signin?callbackUrl=' + router.asPath)
 		}
 
-		if (hasRole(UserRole.Member, session)) {
+		if (hasRole(prismaClient.UserRole.Member, session)) {
 			return vacancy?.data.myTeamMemberId
 				? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
 				: setShowSpecialitySelectModal(true)
@@ -190,7 +190,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				</Spin>
 			</Modal>
 
-			{hasRole(UserRole.Member, session) && (
+			{hasRole(prismaClient.UserRole.Member, session) && (
 				<SpecialitySelectModal
 					open={showSpecialitySelectModal}
 					onOk={handleSpecialitySelect}

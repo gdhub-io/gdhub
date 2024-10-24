@@ -1,8 +1,8 @@
 import React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { normUploadFile } from '@/helpers/file'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
-import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
 import { GoCheckCircleFill } from '@react-icons/all-files/go/GoCheckCircleFill'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -52,7 +52,10 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 
 	const { data: project, isFetching } = useQuery(
 		['user-project', projectId],
-		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { projectId } }),
+		() =>
+			axios.get<prismaClient.Project & { stage: prismaClient.SeasonStage }>('/api/user/project', {
+				params: { projectId },
+			}),
 		{
 			enabled: !!projectId && open,
 			refetchOnWindowFocus: false,
@@ -67,10 +70,10 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 	console.log('projectId', projectId, isFetching)
 
 	const { mutateAsync: createProject, isLoading: isCreating } = useMutation((data: any) =>
-		axios.post<Project>('/api/user/project', data)
+		axios.post<prismaClient.Project>('/api/user/project', data)
 	)
 	const { mutateAsync: updateProject, isLoading: isUpdating } = useMutation((data: any) =>
-		axios.put<Project>('/api/user/project', data, { params: { id: projectId } })
+		axios.put<prismaClient.Project>('/api/user/project', data, { params: { id: projectId } })
 	)
 
 	useEffect(() => {
@@ -313,7 +316,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 						label={
 							<Space>
 								<T keyName="modal.project.conceptLink.label">Link to concept document (idea description)</T>
-								{project?.data.status == ProjectStatus.Approved && (
+								{project?.data.status == prismaClient.ProjectStatus.Approved && (
 									<Tooltip title="You can't change the link. It was approved already.">
 										<GoCheckCircleFill color={token.colorSuccess} />
 									</Tooltip>
@@ -323,10 +326,10 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 						wrapperCol={{ span: 24 }}
 						rules={[{ type: 'url' }]}
 					>
-						<Input width={'100%'} disabled={project?.data.status == ProjectStatus.Approved} />
+						<Input width={'100%'} disabled={project?.data.status == prismaClient.ProjectStatus.Approved} />
 					</Form.Item>
 
-					{project?.data.status == ProjectStatus.Approved && (
+					{project?.data.status == prismaClient.ProjectStatus.Approved && (
 						<>
 							<Form.Item
 								name="gddLink"

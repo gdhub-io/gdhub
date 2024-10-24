@@ -1,6 +1,6 @@
 import { env } from '@/helpers/env'
 import { prisma } from '@/services/prisma'
-import { SubscriptionStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { type NextApiRequest } from 'next'
@@ -72,7 +72,7 @@ class ApiGumroadPingServiceHandler {
 		} else {
 			await prisma.subscription.update({
 				where: { providerId: subscription_id },
-				data: { status: SubscriptionStatus.Canceled, endDate: dayjs().toDate() },
+				data: { status: prismaClient.SubscriptionStatus.Canceled, endDate: dayjs().toDate() },
 			})
 		}
 

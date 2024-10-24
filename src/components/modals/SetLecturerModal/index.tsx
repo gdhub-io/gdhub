@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Lecture, LecturerRequest, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
@@ -58,7 +58,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
-		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
 		{
 			staleTime: Infinity,
 		}

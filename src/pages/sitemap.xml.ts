@@ -1,5 +1,5 @@
 import { prisma } from '@/services/prisma'
-import { ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
 
@@ -53,7 +53,7 @@ function SiteMap() {
 export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 	const projects = await prisma.project.findMany({
 		where: {
-			status: { in: [ProjectStatus.Approved, ProjectStatus.Done] },
+			status: { in: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
 			team: { vacancies: { some: {} } },
 		},
 		orderBy: { updatedAt: 'desc' },

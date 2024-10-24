@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Speciality, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GiSkills } from '@react-icons/all-files/gi/GiSkills'
 import { GoPlus } from '@react-icons/all-files/go/GoPlus'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
@@ -36,7 +36,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const handleOk = () => {
 		setIsModalOpen(false)
 		queryClient.invalidateQueries(['user-specialities'])
-		session.update({ roles: session.data?.user.roles.includes(UserRole.Member) })
+		session.update({ roles: session.data?.user.roles.includes(prismaClient.UserRole.Member) })
 	}
 
 	const handleCancel = () => {

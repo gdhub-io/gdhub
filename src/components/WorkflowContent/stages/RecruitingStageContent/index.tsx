@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { SeasonData } from '@/components/WorkflowContent'
 import { Render } from '@9gustin/react-notion-render'
-import { ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Skeleton, Spin } from 'antd'
@@ -12,7 +12,7 @@ import styles from './style.module.scss'
 const RecruitingStageContent = ({ season }: { season: SeasonData }) => {
 	const { getLanguage } = useTolgee()
 	const stage = useMemo(() => {
-		return season?.stages.find((s) => s.isCurrent)
+		return season?.stages.find((s: { isCurrent: any }) => s.isCurrent)
 	}, [season])
 
 	const { data: stageContent, isLoading } = useQuery(
@@ -32,7 +32,7 @@ const RecruitingStageContent = ({ season }: { season: SeasonData }) => {
 					<Render blocks={stageContent?.data} classNames useStyles simpleTitles />
 				</Skeleton>
 
-				{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
+				{!!stage && <StageProjectsSection stageId={stage.id} status={prismaClient.ProjectStatus.Approved} />}
 			</Spin>
 		</div>
 	)

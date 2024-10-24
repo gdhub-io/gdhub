@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator'
 import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -8,9 +8,9 @@ class SeasonProjectsDto {
 	@IsString()
 	stageId: string
 
-	@IsEnum(ProjectStatus)
+	@IsEnum(prismaClient.ProjectStatus)
 	@IsOptional()
-	status?: ProjectStatus
+	status?: prismaClient.ProjectStatus
 
 	@IsString()
 	@IsOptional()
@@ -25,7 +25,8 @@ class SeasonProjectsDto {
 class ApiSeasonProjectsHandler {
 	@Get()
 	public async get(
-		@Query(ValidationPipe) { stageId, status = ProjectStatus.Approved, onlyCount = false }: SeasonProjectsDto
+		@Query(ValidationPipe)
+		{ stageId, status = prismaClient.ProjectStatus.Approved, onlyCount = false }: SeasonProjectsDto
 	) {
 		if (onlyCount) {
 			const projectsCount = await prisma.project.count({

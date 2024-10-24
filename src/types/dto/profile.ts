@@ -1,5 +1,5 @@
 import { AvailableLocales } from '@/config/locale'
-import { PrimaryInterest } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateProfileDto {
@@ -92,9 +92,9 @@ export class UpdateProfileDto {
 	@IsOptional()
 	isActive: boolean
 
-	@IsEnum(PrimaryInterest)
+	@IsEnum(prismaClient.PrimaryInterest)
 	@IsOptional()
-	primaryInterest: PrimaryInterest
+	primaryInterest: prismaClient.PrimaryInterest
 
 	@IsString({ each: true })
 	@IsOptional()

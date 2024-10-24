@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useWorkDirections } from '@/hooks/library'
-import { TeamVacancy, TeamVacancyStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
@@ -18,7 +18,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 		isFetching: isLoadingVacancy,
 	} = useQuery(
 		['vacancy', vacancyId],
-		() => axios.get<TeamVacancy>('/api/user/project/vacancy', { params: { id: vacancyId } }),
+		() => axios.get<prismaClient.TeamVacancy>('/api/user/project/vacancy', { params: { id: vacancyId } }),
 		{
 			enabled: !!vacancyId,
 			staleTime: Infinity,
@@ -52,7 +52,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 					data: {
 						...formData,
 						publishedAt: asDraft ? null : dayjs().toISOString(),
-						status: asDraft ? TeamVacancyStatus.Draft : TeamVacancyStatus.Published,
+						status: asDraft ? prismaClient.TeamVacancyStatus.Draft : prismaClient.TeamVacancyStatus.Published,
 						teamId,
 					},
 				})
@@ -60,7 +60,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 				await createVacancy({
 					...formData,
 					publishedAt: asDraft ? null : dayjs().toISOString(),
-					status: asDraft ? TeamVacancyStatus.Draft : TeamVacancyStatus.Published,
+					status: asDraft ? prismaClient.TeamVacancyStatus.Draft : prismaClient.TeamVacancyStatus.Published,
 					teamId,
 				})
 			}
@@ -110,7 +110,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 						type="primary"
 						onClick={() => handleOk()}
 					>
-						{vacancy?.data.status == TeamVacancyStatus.Published ? <T>Save</T> : <T>Publish</T>}
+						{vacancy?.data.status == prismaClient.TeamVacancyStatus.Published ? <T>Save</T> : <T>Publish</T>}
 					</Button>
 				</Space>,
 			]}

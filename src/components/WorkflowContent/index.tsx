@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { capitalize } from '@/helpers/text'
-import { Season, SeasonStage } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -10,14 +10,14 @@ import { Dayjs } from 'dayjs'
 import DefaultStageContent from './stages/DefaultStageContent'
 import styles from './style.module.scss'
 
-export type SeasonData = Season & { stages: SeasonStage[] }
+export type SeasonData = prismaClient.Season & { stages: prismaClient.SeasonStage[] }
 
 const { Title, Text, Paragraph } = Typography
 
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
 	const [conditionStatus, setConditionStatus] = useState<any>()
-	const [stage, setStage] = useState<SeasonStage>()
+	const [stage, setStage] = useState<prismaClient.SeasonStage>()
 	const [workflow, setWorkflow] = useState<SeasonData>()
 	const { t } = useTolgee()
 
@@ -26,7 +26,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		() =>
 			axios.get<{
 				conditionStatus: Record<string, any> & { completed: boolean }
-				stage: SeasonStage & { season: SeasonData }
+				stage: prismaClient.SeasonStage & { season: SeasonData }
 			}>('/api/user/project/workflow', {
 				params: { projectId },
 			}),

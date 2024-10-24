@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
 import { ProjectContext } from '@/contexts/ProjectContext'
-import { TeamVacancyStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { HiOutlineLockClosed } from '@react-icons/all-files/hi/HiOutlineLockClosed'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -16,7 +16,7 @@ interface Vacancy {
 	Name: string
 	Description: string
 	FinishedAt: string
-	Status: TeamVacancyStatus
+	Status: prismaClient.TeamVacancyStatus
 	[key: string]: any
 }
 

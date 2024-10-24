@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsOptional, IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -22,7 +22,7 @@ class ApiSeasonProjectsHandler {
 		@Query(ValidationPipe) { seasonId, seasonSlug }: SeasonProjectsDto
 	) {
 		const aiProjects = await prisma.project.findMany({
-			where: { status: { in: [ProjectStatus.Approved] } },
+			where: { status: { in: [prismaClient.ProjectStatus.Approved] } },
 			include: {
 				availableSpecialists: { where: { avgScore: { gte: 75 } }, select: { avgScore: true } },
 				author: { select: { image: true, name: true, id: true } },

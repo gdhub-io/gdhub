@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AvailableLocales } from '@/config/locale'
-import { Profile } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T, useTolgee } from '@tolgee/react'
 import { AutoComplete, Button, Card, Form, Input, message, Select, Spin } from 'antd'
 import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
 
 type GeneralProfileFormArgs = {
-	profile: Profile
-	saveProfile: (data: { id: string; data: Partial<Profile> }) => Promise<void>
+	profile: prismaClient.Profile
+	saveProfile: (data: { id: string; data: Partial<prismaClient.Profile> }) => Promise<void>
 }
 
 const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) => {

@@ -2,7 +2,7 @@ import { useState } from 'react'
 // import LectureModal from '@/components/modals/LectureModal'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { Lecture, LectureStage, LecturerRequest, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button, Popconfirm, Popover, Row, Space, Table, Typography } from 'antd'
@@ -48,9 +48,9 @@ const LecturesAdminPage: NextPageWithLayout = () => {
 	// }
 
 	const columns: ColumnsType<
-		Lecture & {
+		prismaClient.Lecture & {
 			_count: { lecturerRequests: number; listeners: number }
-			lecturerRequests: (LecturerRequest & { user: User })[]
+			lecturerRequests: (prismaClient.LecturerRequest & { user: prismaClient.User })[]
 		}
 	> = [
 		{
@@ -74,7 +74,7 @@ const LecturesAdminPage: NextPageWithLayout = () => {
 			dataIndex: 'date',
 			key: 'date',
 			render: (value, data) =>
-				data.stage == LectureStage.Requested ? (
+				data.stage == prismaClient.LectureStage.Requested ? (
 					<Text type="secondary">not selected</Text>
 				) : (
 					dayjs(data.date).format('LLL')

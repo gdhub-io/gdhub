@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
-import { ProjectReport } from '@prisma/client'
 import { IoMdClose } from '@react-icons/all-files/io/IoMdClose'
 import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -20,7 +20,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 	const editorRef = useRef<MDXEditorMethods | null>()
 
 	const { mutateAsync: createProjectReport, isLoading } = useMutation(
-		(data: Omit<Partial<ProjectReport>, 'id'>) => axios.post<void>('/api/user/project/report', data),
+		(data: Omit<Partial<prismaClient.ProjectReport>, 'id'>) => axios.post<void>('/api/user/project/report', data),
 		{
 			onSuccess: () => {
 				onCreate()

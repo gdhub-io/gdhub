@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
-import { Lecture, LecturerRequest, Speciality, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T } from '@tolgee/react'
 import { Alert, Avatar, Card } from 'antd'
 import dayjs from 'dayjs'
@@ -12,7 +12,11 @@ import styles from './style.module.scss'
 export const HeldContent = ({
 	lecture,
 }: {
-	lecture: Lecture & { lecturerRequests: (LecturerRequest & { user: User & { specialities: Speciality[] } })[] }
+	lecture: prismaClient.Lecture & {
+		lecturerRequests: (prismaClient.LecturerRequest & {
+			user: prismaClient.User & { specialities: prismaClient.Speciality[] }
+		})[]
+	}
 }) => {
 	const router = useRouter()
 	const { data: session } = useSession()

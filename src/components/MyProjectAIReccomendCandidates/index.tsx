@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { MatchingSpecialistAndProject, Speciality, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Grid, Space, Table, Tag, Typography, theme } from 'antd'
@@ -26,12 +26,13 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 	} = useQuery(
 		['AICandidates', projectId],
 		() =>
-			axios.get<(MatchingSpecialistAndProject & { specialist: Speciality & { user: User } })[]>(
-				'/api/user/project/ai-candidates',
-				{
-					params: { projectId },
-				}
-			),
+			axios.get<
+				(prismaClient.MatchingSpecialistAndProject & {
+					specialist: prismaClient.Speciality & { user: prismaClient.User }
+				})[]
+			>('/api/user/project/ai-candidates', {
+				params: { projectId },
+			}),
 		{ enabled: !!projectId }
 	)
 

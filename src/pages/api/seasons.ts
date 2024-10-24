@@ -36,14 +36,6 @@ class ApiSeasonsHandler {
 			orderBy: [{ startedAt: 'desc' }],
 		})
 
-		// const seasons = await AirtableService('Seasons')
-		// 	.select({
-		// 		fields: ['Name', 'Season Stages', 'Started At', 'Slug', 'Project Ideas', 'Members', 'Approved Projects'],
-		// 		sort: [{ field: 'Started At', direction: 'desc' }],
-		// 		filterByFormula: 'Status != "Not Active"',
-		// 	})
-		// 	.all()
-
 		if (!seasons) {
 			return []
 		}
@@ -66,41 +58,7 @@ class ApiSeasonsHandler {
 				membersCount,
 				coverImage,
 			}
-			// 	const approvedProjectsIds = season.get('Approved Projects') as string[]
-			// 	const _output: Record<string, any> = {
-			// 		...season.fields,
-			// 		id: season.id,
-			// 		membersCount: approvedProjectsIds ? approvedProjectsIds.length : 0,
-			// 		projectsCount: approvedProjectsIds?.length || 0,
-			// 	}
-			// 	const stagesList = season.get('Season Stages') as string[]
-			// 	const stages = await AirtableService('Season Stages')
-			// 		.select({
-			// 			sort: [{ field: 'Order', direction: 'asc' }],
-			// 			fields: ['Name', 'Started At', 'Finished At', 'Status'],
-			// 			filterByFormula: `FIND(RECORD_ID(), "${stagesList.join(' ')}")`,
-			// 		})
-			// 		.all()
-			// 	if (stages) {
-			// 		_output['Season Stages'] = stages.map((stage: any) => {
-			// 			return {
-			// 				...stage.fields,
-			// 				id: stage.id,
-			// 			}
-			// 		})
-			// 		const currentStage = stages.find((s: any) => s.get('Status') === 'Active')
-			// 		_output.Stage = currentStage?.get('Name')
-			// 	}
-			// 	const membersIds = season.get('Members') as string[]
-			// 	if (membersIds?.length) {
-			// 		const members = await AirtableService('Project Members')
-			// 			.select({
-			// 				fields: [],
-			// 				filterByFormula: `AND(FIND(Status, "Member Fired"), FIND(RECORD_ID(), "${membersIds.join(' ')}"))`,
-			// 			})
-			// 			.all()
-			// 		_output.membersCount = _output.projectsCount + members?.length || 0
-			// 	}
+
 			output.push(_output)
 		}
 

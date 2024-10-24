@@ -5,7 +5,7 @@
 
 import { AvailableLocales } from '@/config/locale'
 import { env } from '@/helpers/env'
-import { ProjectStatus, TeamVacancyStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import axios from 'axios'
 import { stripIndents } from 'common-tags'
 import dayjs from 'dayjs'
@@ -234,7 +234,7 @@ export default class TelegramService {
 		const reports = await prisma.projectReport.findMany({
 			where: {
 				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
-				project: { status: ProjectStatus.Approved },
+				project: { status: prismaClient.ProjectStatus.Approved },
 			},
 			include: { project: { include: { stage: { include: { season: true } } } } },
 		})
@@ -301,12 +301,12 @@ export default class TelegramService {
 				team: {
 					vacancies: {
 						every: {
-							status: TeamVacancyStatus.Published,
+							status: prismaClient.TeamVacancyStatus.Published,
 							publishedAt: { gte: dayjs().subtract(inLastDays, 'days').toDate() },
 						},
 					},
 				},
-				status: ProjectStatus.Approved,
+				status: prismaClient.ProjectStatus.Approved,
 			},
 			include: { team: { select: { _count: { select: { vacancies: true } } } } },
 		})
