@@ -112,6 +112,8 @@ const newConsulationRequestMessage = ({ topic, comment }: { topic: string; comme
 			Тема: ${topic ? topic : '-'}
 			Комментарий: ${!comment ? '-' : ''}
 			<blockquote>${comment}</blockquote>
+
+			<i>Статус: ожидает вашего ответа</i>
 			`,
 		reply_markup: {
 			inline_keyboard: [
@@ -329,8 +331,14 @@ export default class TelegramService {
 		})
 	}
 
-	async sendConsultationRequest({ chatId, topic, comment }: { chatId: string; topic: string; comment: string }) {
-		const message = newConsulationRequestMessage({ topic, comment })
+	async sendConsultationRequest({
+		chatId,
+		variables,
+	}: {
+		chatId: string
+		variables: { topic: string; comment: string }
+	}) {
+		const message = newConsulationRequestMessage(variables)
 
 		await this.sendMessage({
 			chatId: +chatId,
