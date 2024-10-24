@@ -7,7 +7,6 @@ import { AvailableLocales } from '@/config/locale'
 import { env } from '@/helpers/env'
 import { ProjectStatus, TeamVacancyStatus } from '@prisma/client'
 import axios from 'axios'
-import { stripIndents } from 'common-tags'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -102,38 +101,6 @@ const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 	message += '\n\n<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
 
 	return message
-}
-
-const newConsulationRequestMessage = ({ topic, comment }: { topic: string; comment: string }) => {
-	return {
-		message: stripIndents`
-			<b>Новый запрос на консультацию</b>
-	
-			Тема: ${topic ? topic : '-'}
-			Комментарий: ${!comment ? '-' : ''}
-			<blockquote>${comment}</blockquote>
-			`,
-		reply_markup: {
-			inline_keyboard: [
-				[
-					{
-						text: 'Принять запрос',
-						callback_data: 'accept_request',
-					},
-					{
-						text: 'Отклонить',
-						callback_data: 'decline_request',
-					},
-					{
-						text: 'Детали',
-						web_app: {
-							url: `${process.env.APP_EXPERTS_TELEGRAM_TMA_URL as string}/?startup=req${12345}&mode=compact`,
-						},
-					},
-				],
-			],
-		},
-	}
 }
 
 export default class TelegramService {
@@ -326,16 +293,6 @@ export default class TelegramService {
 			chatId: env<number>('TELEGRAM_CHAT_ID'),
 			topicId: env<number>('TELEGRAM_TOPIC_VACANCIES'),
 			message,
-		})
-	}
-
-	async sendConsultationRequest({ chatId, topic, comment }: { chatId: string; topic: string; comment: string }) {
-		const message = newConsulationRequestMessage({ topic, comment })
-
-		await this.sendMessage({
-			chatId: +chatId,
-			message: message.message,
-			options: message.reply_markup,
 		})
 	}
 }
