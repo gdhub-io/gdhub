@@ -9,21 +9,18 @@ class ApiQueueTelegramHandler {
 
 	@Post()
 	public async workerProcessor(@Body() job: Job<any, any, string>) {
-		// jobs from main app
-		if (job.data?.app == undefined || job.data?.app == 'main') {
-			const telegramBot = TelegramService.init()
+		const telegramBot = TelegramService.init()
 
-			if (job.name == 'new-project-reports') {
-				await telegramBot.sendNewProjectReports({ inLastDays: 1 })
-			}
+		if (job.name == 'new-project-reports') {
+			await telegramBot.sendNewProjectReports({ inLastDays: 1 })
+		}
 
-			if (job.name == 'new-specialities') {
-				await telegramBot.sendNewSpecialities({ inLastDays: 1 })
-			}
+		if (job.name == 'new-specialities') {
+			await telegramBot.sendNewSpecialities({ inLastDays: 1 })
+		}
 
-			if (job.name == 'new-vacancies') {
-				await telegramBot.sendNewVacancies({ inLastDays: 1 })
-			}
+		if (job.name == 'new-vacancies') {
+			await telegramBot.sendNewVacancies({ inLastDays: 1 })
 		}
 
 		return { success: true }
