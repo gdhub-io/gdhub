@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { TeamMemberStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -18,7 +18,13 @@ class ApiUserTeamHandler {
 			include: {
 				members: {
 					where: {
-						status: { in: [TeamMemberStatus.Founder, TeamMemberStatus.Hired, TeamMemberStatus.Fired] },
+						status: {
+							in: [
+								prismaClient.TeamMemberStatus.Founder,
+								prismaClient.TeamMemberStatus.Hired,
+								prismaClient.TeamMemberStatus.Fired,
+							],
+						},
 					},
 					include: { user: { select: { name: true, image: true } } },
 				},

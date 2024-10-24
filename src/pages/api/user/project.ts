@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus, TeamMemberStatus, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
@@ -72,9 +72,9 @@ class UpdateProjectDto {
 	@IsOptional()
 	authorId?: string
 
-	@IsEnum(ProjectStatus)
+	@IsEnum(prismaClient.ProjectStatus)
 	@IsOptional()
-	status?: ProjectStatus
+	status?: prismaClient.ProjectStatus
 
 	@IsString()
 	@IsOptional()
@@ -112,10 +112,10 @@ class ApiProjectHandler {
 
 		const user = await prisma.user.findUnique({
 			where: { id: req.user.id },
-			include: { specialities: true, memberInTeams: { where: { status: TeamMemberStatus.Founder } } },
+			include: { specialities: true, memberInTeams: { where: { status: prismaClient.TeamMemberStatus.Founder } } },
 		})
 
-		const userhasTeam = user?.memberInTeams[0]?.status == TeamMemberStatus.Founder
+		const userhasTeam = user?.memberInTeams[0]?.status == prismaClient.TeamMemberStatus.Founder
 
 		const season = await prisma.season.findFirst({
 			where: { slug: 'indie' },
@@ -128,7 +128,7 @@ class ApiProjectHandler {
 				slug: slugify(name),
 				description,
 				author: { connect: { id: req.user.id } },
-				status: ProjectStatus.Registered,
+				status: prismaClient.ProjectStatus.Registered,
 				stage: { connect: { id: season?.stages.find((r) => r.order == 0)?.id } },
 				team: {
 					create: {
@@ -138,7 +138,7 @@ class ApiProjectHandler {
 								position: 'Founder',
 								specialityId: user?.specialities[0].id!,
 								startedAt: dayjs().toISOString(),
-								status: TeamMemberStatus.Founder,
+								status: prismaClient.TeamMemberStatus.Founder,
 								userId: req.user.id,
 							},
 						},
@@ -157,11 +157,11 @@ class ApiProjectHandler {
 			},
 		})
 
-		if (!project.author.roles.includes(UserRole.Author)) {
+		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
 			await prisma.user.update({
 				where: { id: req.user.id },
 				data: {
-					roles: [...project.author.roles, UserRole.Author],
+					roles: [...project.author.roles, prismaClient.UserRole.Author],
 				},
 			})
 		}
@@ -187,11 +187,11 @@ class ApiProjectHandler {
 			},
 		})
 
-		if (!project.author.roles.includes(UserRole.Author)) {
+		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
 			await prisma.user.update({
 				where: { id: req.user.id },
 				data: {
-					roles: [...project.author.roles, UserRole.Author],
+					roles: [...project.author.roles, prismaClient.UserRole.Author],
 				},
 			})
 		}

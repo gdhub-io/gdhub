@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -15,7 +15,7 @@ class ApiTeamAICandidatesHandler {
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { projectId }: UserTeamCandidatesDto) {
 		if (!req.user.id) return
 
-		const isAdmin = req.user.roles?.includes(UserRole.Admin)
+		const isAdmin = req.user.roles?.includes(prismaClient.UserRole.Admin)
 		const hasActiveSubscription = await prisma.user.activeSubscription(req.user.id)
 
 		if (!hasActiveSubscription && !isAdmin) return

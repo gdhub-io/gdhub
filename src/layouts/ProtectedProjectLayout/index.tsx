@@ -7,7 +7,7 @@ import { ContextProject, ProjectContext } from '@/contexts/ProjectContext'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
 import { useCurrentProject } from '@/hooks/project'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
@@ -129,7 +129,7 @@ export const ProtectedProjectLayout = ({
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = []
 
-		if (hasRole(UserRole.Admin, { data: session })) {
+		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
 				label: <Link href="/admin/seasons">Админка</Link>,
 				key: '/admin/seasons',

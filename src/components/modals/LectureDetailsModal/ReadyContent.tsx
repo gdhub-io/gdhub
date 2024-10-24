@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
-import { LecturerRequest } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T } from '@tolgee/react'
 import { Avatar, Button, Card, Space } from 'antd'
 import dayjs from 'dayjs'
@@ -13,7 +13,7 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 	const router = useRouter()
 	const { data: session } = useSession()
 	const lecturer = useMemo(
-		() => lecture.lecturerRequests.find((r: LecturerRequest) => r.userId == session?.user.id),
+		() => lecture.lecturerRequests.find((r: prismaClient.LecturerRequest) => r.userId == session?.user.id),
 		[lecture]
 	)
 	const userIsRegistered = useMemo(() => lecture.listeners.find((r) => r.userId == session?.user.id), [lecture])

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { StageProjectsSection } from '@/components/StageProjectsSection'
 import { SeasonData } from '@/components/WorkflowContent'
 import { Render } from '@9gustin/react-notion-render'
-import { ProjectStatus, SeasonStreamReport } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Skeleton, Spin, Typography } from 'antd'
@@ -13,12 +13,13 @@ import styles from './style.module.scss'
 const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
 	const { getLanguage } = useTolgee()
 	const stage = useMemo(() => {
-		return season?.stages.find((s) => s.isCurrent)
+		return season?.stages.find((s: { isCurrent: any }) => s.isCurrent)
 	}, [season])
 
 	const { data: reportsDates } = useQuery(
 		['season-reports', stage?.id],
-		() => axios.get<SeasonStreamReport[]>('/api/season/stream-reports', { params: { stageId: stage?.id } }),
+		() =>
+			axios.get<prismaClient.SeasonStreamReport[]>('/api/season/stream-reports', { params: { stageId: stage?.id } }),
 		{ enabled: !!stage, refetchOnWindowFocus: false, staleTime: Infinity }
 	)
 
@@ -57,7 +58,7 @@ const PrototypingStageContent = ({ season }: { season: SeasonData }) => {
 					</>
 				)}
 
-				{!!stage && <StageProjectsSection stageId={stage.id} status={ProjectStatus.Approved} />}
+				{!!stage && <StageProjectsSection stageId={stage.id} status={prismaClient.ProjectStatus.Approved} />}
 			</Spin>
 		</div>
 	)

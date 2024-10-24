@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, createHandler } from 'next-api-decorators'
 
@@ -9,7 +9,7 @@ class ParamsDto {
 	lectureId: string
 }
 
-@NextAuthGuard('user', [UserRole.Admin])
+@NextAuthGuard('user', [prismaClient.UserRole.Admin])
 class ApiSeasonStagesAdminHandler {
 	constructor() {}
 

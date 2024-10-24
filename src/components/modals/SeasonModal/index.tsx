@@ -1,4 +1,4 @@
-import { SeasonStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin } from 'antd'
 import axios from 'axios'
@@ -119,7 +119,7 @@ const ProjectModal = ({ seasonId, open, onOk, onCancel }: any) => {
 						<Col xs={{ span: 24 }} md={{ span: 6 }}>
 							<Form.Item name="status" label="Status" wrapperCol={{ span: 24 }} rules={[{ required: true }]}>
 								<Select
-									options={Object.values(SeasonStatus)
+									options={Object.values(prismaClient.SeasonStatus)
 										.filter((key) => !Number.isInteger(key))
 										.map((key) => ({ label: key, value: key }))}
 								/>

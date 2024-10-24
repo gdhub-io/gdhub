@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import ProjectCandidatePreviewModal from '@/components/modals/ProjectCandidatePreviewModal'
 import { ProjectContext } from '@/contexts/ProjectContext'
-import { Speciality, TeamMember, TeamVacancy, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Grid, Space, Table, Tag } from 'antd'
@@ -24,7 +24,11 @@ const MyProjectCandidates = () => {
 		['candidates', contextProject?.id],
 		() =>
 			axios.get<
-				(TeamMember & { vacancy: TeamVacancy; speciality: Speciality; user: User & { specialities: Speciality[] } })[]
+				(prismaClient.TeamMember & {
+					vacancy: prismaClient.TeamVacancy
+					speciality: prismaClient.Speciality
+					user: prismaClient.User & { specialities: prismaClient.Speciality[] }
+				})[]
 			>('/api/user/project/candidates', {
 				params: { teamId: contextProject?.teamId },
 			}),
@@ -32,7 +36,11 @@ const MyProjectCandidates = () => {
 	)
 
 	const columns: ColumnsType<
-		TeamMember & { vacancy: TeamVacancy; speciality: Speciality; user: User & { specialities: Speciality[] } }
+		prismaClient.TeamMember & {
+			vacancy: prismaClient.TeamVacancy
+			speciality: prismaClient.Speciality
+			user: prismaClient.User & { specialities: prismaClient.Speciality[] }
+		}
 	> = [
 		{
 			title: t('Candidate'),

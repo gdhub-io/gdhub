@@ -38,3 +38,5 @@ yarn-error.log*
 prisma/backward.sql
 
 backup-tolgee
+
+.npmrc

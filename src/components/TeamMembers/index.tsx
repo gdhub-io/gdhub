@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Team, TeamMember, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Avatar, Flex, List, Space, Typography } from 'antd'
@@ -18,9 +18,12 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	const { data: team } = useQuery(
 		['team-members', teamId],
 		() =>
-			axios.get<Team & { members: (TeamMember & { user: User })[] }>('/api/project/team', {
-				params: { teamId },
-			}),
+			axios.get<prismaClient.Team & { members: (prismaClient.TeamMember & { user: prismaClient.User })[] }>(
+				'/api/project/team',
+				{
+					params: { teamId },
+				}
+			),
 		{
 			enabled: !!teamId,
 			refetchOnWindowFocus: false,
@@ -31,7 +34,7 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 		useMemo(() => {
 			if (!team?.data) return []
 
-			return team.data.members.map((member: TeamMember & { user: User }) => ({
+			return team.data.members.map((member: prismaClient.TeamMember & { user: prismaClient.User }) => ({
 				title: member.user.name,
 				description: member.position,
 				avatar: member.user.image,

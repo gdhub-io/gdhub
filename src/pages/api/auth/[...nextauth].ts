@@ -2,15 +2,15 @@ import { brevoTemplates } from '@/config/brevo-templates'
 import { env } from '@/helpers/env'
 import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { Language, PrismaClient } from '@prisma/client'
 import { redirect } from 'next/navigation'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
 import GoogleProvider from 'next-auth/providers/google'
 
 export const authOptions: NextAuthOptions = {
-	adapter: PrismaAdapter(prisma as unknown as PrismaClient),
+	adapter: PrismaAdapter(prisma as unknown as prismaClient.PrismaClient),
 	secret: env('NEXTAUTH_SECRET'),
 	session: { strategy: 'jwt' },
 	pages: {
@@ -41,9 +41,9 @@ export const authOptions: NextAuthOptions = {
 							},
 						})
 					} else {
-						const defaultLang = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE') as Language
+						const defaultLang = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE') as prismaClient.Language
 						const params = new URL(url).searchParams
-						const locale = (params.get('locale') as Language) || defaultLang
+						const locale = (params.get('locale') as prismaClient.Language) || defaultLang
 
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							to: [{ email }],

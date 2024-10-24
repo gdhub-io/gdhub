@@ -3,7 +3,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import NotionService from '@/services/notion'
 import styles from '@/styles/cookie-policy.module.scss'
 import { Render } from '@9gustin/react-notion-render'
-import { Language } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useTolgee } from '@tolgee/react'
 import { Typography } from 'antd'
 import { GetStaticProps } from 'next'
@@ -31,9 +31,9 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 	let blockId = 'c3fb3089-a57e-42f1-8383-3b13ea4842de'
 
 	switch (locale) {
-		case Language.ru:
+		case prismaClient.Language.ru:
 			blockId = '3f615959-cbd7-4323-819d-a4566385e242'
-		case Language.en:
+		case prismaClient.Language.en:
 			blockId = 'c3fb3089-a57e-42f1-8383-3b13ea4842de'
 	}
 

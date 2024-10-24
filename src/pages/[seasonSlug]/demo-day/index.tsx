@@ -3,7 +3,7 @@ import { DemoTitle } from '@/components/DemoTitle'
 import { DemoDayLayout } from '@/layouts/DemoDayLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Space, Typography } from 'antd'
@@ -337,7 +337,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	}
 
 	const projects = await prisma.project.findMany({
-		where: { stage: { seasonId: season.id }, status: { equals: ProjectStatus.Approved } },
+		where: { stage: { seasonId: season.id }, status: { equals: prismaClient.ProjectStatus.Approved } },
 		select: { name: true, coverImage: true, description: true },
 	})
 

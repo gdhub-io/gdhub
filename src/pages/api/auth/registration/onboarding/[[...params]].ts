@@ -3,7 +3,7 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
 import { CreateSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
-import { PrimaryInterest, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BadRequestException, Body, Get, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
@@ -128,19 +128,19 @@ class ApiRegistrationHandler {
 	@Put('/interest')
 	public async updateInterests(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: UpdateProfileDto) {
 		const { preferredGenres, preferredLevels, preferredSettings, primaryInterest } = body
-		let role: UserRole = UserRole.Guest
+		let role: prismaClient.UserRole = prismaClient.UserRole.Guest
 
 		switch (primaryInterest) {
-			case PrimaryInterest.Specialist: {
-				role = UserRole.Member
+			case prismaClient.PrimaryInterest.Specialist: {
+				role = prismaClient.UserRole.Member
 				break
 			}
-			case PrimaryInterest.Author: {
-				role = UserRole.Author
+			case prismaClient.PrimaryInterest.Author: {
+				role = prismaClient.UserRole.Author
 				break
 			}
-			case PrimaryInterest.Mentor: {
-				role = UserRole.Mentor
+			case prismaClient.PrimaryInterest.Mentor: {
+				role = prismaClient.UserRole.Mentor
 				break
 			}
 		}
@@ -157,7 +157,7 @@ class ApiRegistrationHandler {
 				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
 				primaryInterest,
 				user: {
-					update: { where: { NOT: { roles: { has: UserRole.Author } } }, data: { roles: { push: role } } },
+					update: { where: { NOT: { roles: { has: prismaClient.UserRole.Author } } }, data: { roles: { push: role } } },
 				},
 			} as any,
 		})

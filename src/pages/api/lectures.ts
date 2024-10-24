@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { LectureStage } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsOptional, IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -16,7 +16,7 @@ class ApiLecturesHandler {
 
 	@Get()
 	public async list(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { stage }: ParamDto) {
-		const stages = stage?.split(',') as LectureStage[]
+		const stages = stage?.split(',') as prismaClient.LectureStage[]
 
 		const lectures = await prisma.lecture.findMany({
 			where: { stage: stages ? { in: stages } : undefined },

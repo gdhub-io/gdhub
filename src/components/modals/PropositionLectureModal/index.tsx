@@ -1,4 +1,4 @@
-import { Lecture, LectureStage, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
@@ -14,17 +14,17 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
-		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
 		{
 			staleTime: Infinity,
 		}
 	)
-	const { mutateAsync: createLecture, isLoading: isCreating } = useMutation((data: Partial<Lecture>) =>
-		axios.post<Lecture>('/api/user/lecture', { ...data, stage: LectureStage.Proposed })
+	const { mutateAsync: createLecture, isLoading: isCreating } = useMutation((data: Partial<prismaClient.Lecture>) =>
+		axios.post<prismaClient.Lecture>('/api/user/lecture', { ...data, stage: prismaClient.LectureStage.Proposed })
 	)
 	const { mutateAsync: updateLecture, isLoading: isUpdating } = useMutation(
-		({ id, data }: { id: string; data: Partial<Lecture> }) =>
-			axios.put<Lecture>('/api/user/lecture', data, { params: { id } })
+		({ id, data }: { id: string; data: Partial<prismaClient.Lecture> }) =>
+			axios.put<prismaClient.Lecture>('/api/user/lecture', data, { params: { id } })
 	)
 
 	const directionsOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
@@ -34,7 +34,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			const { name, lecturerId, directionId, description, linkToStream, date, time, duration } =
 				await form.validateFields()
 
-			const newData: Partial<Lecture> = {
+			const newData: Partial<prismaClient.Lecture> = {
 				name,
 				directionId,
 				description,

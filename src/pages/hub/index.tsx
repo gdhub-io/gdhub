@@ -4,7 +4,7 @@ import { MyProjectList } from '@/components/MyProjectList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Space, Typography } from 'antd'
 import Link from 'next/link'
@@ -85,7 +85,7 @@ const HubPage: NextPageWithLayout = () => {
 						}
 					/>
 				)}
-				{session.status == 'authenticated' && hasRole(UserRole.Member, session) && (
+				{session.status == 'authenticated' && hasRole(prismaClient.UserRole.Member, session) && (
 					<>
 						<MyProjectList />
 						<IndieList />

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Project, ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useQuery } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import Link from 'next/link'
 
 type ProjectsSectionArgs = {
 	seasonId: string
-	status: ProjectStatus
+	status: prismaClient.ProjectStatus
 }
 
 const { Title } = Typography
@@ -27,12 +27,12 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 		refetch: refreshUserProjects,
 	} = useQuery(
 		['user-season-projects', seasonId],
-		() => axios.get<Project[]>('/api/user/projects', { params: { seasonId, status } }),
+		() => axios.get<prismaClient.Project[]>('/api/user/projects', { params: { seasonId, status } }),
 		{ refetchInterval: Infinity, refetchOnWindowFocus: false }
 	)
 
 	const { mutateAsync: deleteProject } = useMutation(({ id }: { id: string }) =>
-		axios.delete<Project>('/api/user/project', { params: { id } })
+		axios.delete<prismaClient.Project>('/api/user/project', { params: { id } })
 	)
 
 	const handleEditUserProject = (userProjectId: string) => {

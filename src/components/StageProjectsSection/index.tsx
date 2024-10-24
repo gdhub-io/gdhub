@@ -1,4 +1,4 @@
-import { Project, ProjectStatus, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Col, Card, Descriptions, Typography, Button, Row, Grid, Space } from 'antd'
@@ -9,17 +9,20 @@ import styles from './style.module.scss'
 
 type ProjectsSectionArgs = {
 	stageId: string
-	status?: ProjectStatus
+	status?: prismaClient.ProjectStatus
 }
 
 const { Title } = Typography
 
-export const StageProjectsSection = ({ stageId, status = ProjectStatus.Registered }: ProjectsSectionArgs) => {
+export const StageProjectsSection = ({
+	stageId,
+	status = prismaClient.ProjectStatus.Registered,
+}: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 
 	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery(['projects', stageId], () =>
-		axios.get<(Project & { author: User })[]>('/api/season/stage/projects', {
+		axios.get<(prismaClient.Project & { author: prismaClient.User })[]>('/api/season/stage/projects', {
 			params: { stageId, status },
 		})
 	)

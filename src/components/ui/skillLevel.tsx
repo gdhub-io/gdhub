@@ -3,7 +3,7 @@ import SkillExperiencedIcon from '@/assets/images/skills/experienced.svg'
 import SkillExpertIcon from '@/assets/images/skills/expert.svg'
 import SkillNoviceIcon from '@/assets/images/skills/novice.svg'
 import SkillSkillfulIcon from '@/assets/images/skills/skillful.svg'
-import { SkillLevel } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T } from '@tolgee/react'
 import { Tooltip } from 'antd'
 import { ReactElement } from 'react-markdown/lib/react-markdown'
@@ -18,8 +18,8 @@ export const skillLevelsList: {
 }[] = [
 	{
 		index: 1,
-		value: SkillLevel.Novice,
-		label: <T keyName={SkillLevel.Novice} />,
+		value: prismaClient.SkillLevel.Novice,
+		label: <T keyName={prismaClient.SkillLevel.Novice} />,
 		icon: <SkillNoviceIcon />,
 		color: '#ffeb3b',
 		description: (
@@ -28,8 +28,8 @@ export const skillLevelsList: {
 	},
 	{
 		index: 2,
-		value: SkillLevel.Beginner,
-		label: <T keyName={SkillLevel.Beginner} />,
+		value: prismaClient.SkillLevel.Beginner,
+		label: <T keyName={prismaClient.SkillLevel.Beginner} />,
 		icon: <SkillBeginnerIcon />,
 		color: '#FF9159',
 		description: (
@@ -38,8 +38,8 @@ export const skillLevelsList: {
 	},
 	{
 		index: 3,
-		value: SkillLevel.Skillful,
-		label: <T keyName={SkillLevel.Skillful} />,
+		value: prismaClient.SkillLevel.Skillful,
+		label: <T keyName={prismaClient.SkillLevel.Skillful} />,
 		icon: <SkillSkillfulIcon />,
 		color: '#F3B721',
 		description: (
@@ -50,16 +50,16 @@ export const skillLevelsList: {
 	},
 	{
 		index: 4,
-		value: SkillLevel.Experienced,
-		label: <T keyName={SkillLevel.Experienced} />,
+		value: prismaClient.SkillLevel.Experienced,
+		label: <T keyName={prismaClient.SkillLevel.Experienced} />,
 		icon: <SkillExperiencedIcon />,
 		color: '#80CC14',
 		description: <T keyName="skill.experienced.description">In your work you use intuition based on your experience</T>,
 	},
 	{
 		index: 5,
-		value: SkillLevel.Expert,
-		label: <T keyName={SkillLevel.Expert} />,
+		value: prismaClient.SkillLevel.Expert,
+		label: <T keyName={prismaClient.SkillLevel.Expert} />,
 		icon: <SkillExpertIcon />,
 		color: '#25B869',
 		description: (
@@ -70,7 +70,7 @@ export const skillLevelsList: {
 	},
 ]
 
-export const renderSkillLevel = (levelName: SkillLevel) => {
+export const renderSkillLevel = (levelName: prismaClient.SkillLevel) => {
 	const level = skillLevelsList.find((i) => i.label == levelName)
 	return (
 		<Tooltip title={level?.description}>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
-import { Speciality, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -45,13 +45,16 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		data: workDirections,
 		isLoading,
 		isFetched,
-	} = useQuery(['workDirections'], () => axios.get<WorkDirection[]>('/api/dictionary/work-directions'), {
+	} = useQuery(['workDirections'], () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'), {
 		staleTime: Infinity,
 	})
 
 	useQuery(
 		['profile', 'current'],
-		() => axios.get<Speciality & { direction: WorkDirection }>('/api/auth/registration/onboarding/speciality'),
+		() =>
+			axios.get<prismaClient.Speciality & { direction: prismaClient.WorkDirection }>(
+				'/api/auth/registration/onboarding/speciality'
+			),
 		{
 			refetchInterval: false,
 			refetchOnWindowFocus: false,

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { MatchingSpecialistAndProject, Profile, Speciality, User, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { useQuery } from '@tanstack/react-query'
@@ -22,10 +22,10 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 		['specialist', specialistId],
 		() =>
 			axios.get<
-				Speciality & {
-					availableProjects: (MatchingSpecialistAndProject & { project: { name: string } })[]
-					direction: WorkDirection
-					user: User & { profile: Profile & { [key: string]: any } }
+				prismaClient.Speciality & {
+					availableProjects: (prismaClient.MatchingSpecialistAndProject & { project: { name: string } })[]
+					direction: prismaClient.WorkDirection
+					user: prismaClient.User & { profile: prismaClient.Profile & { [key: string]: any } }
 				}
 			>('/api/specialist', { params: { id: specialistId } }),
 		{ staleTime: Infinity, enabled: open }

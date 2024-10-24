@@ -1,4 +1,4 @@
-import { Lecture, LectureStage, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Form, Input, message, Modal, Select, Spin } from 'antd'
@@ -13,30 +13,35 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 		refetch: fetchLecture,
 		isFetching,
 		isPaused,
-	} = useQuery(['lecture', lectureId], () => axios.get<Lecture>('/api/lecture', { params: { id: lectureId } }), {
-		enabled: !!lectureId,
-		onSuccess({ data }) {
-			form.setFieldsValue({
-				name: data.name,
-				wishes: data.wishes,
-				directionId: data.directionId,
-			})
-		},
-	})
+	} = useQuery(
+		['lecture', lectureId],
+		() => axios.get<prismaClient.Lecture>('/api/lecture', { params: { id: lectureId } }),
+		{
+			enabled: !!lectureId,
+			onSuccess({ data }) {
+				form.setFieldsValue({
+					name: data.name,
+					wishes: data.wishes,
+					directionId: data.directionId,
+				})
+			},
+		}
+	)
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
-		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
 		{
 			staleTime: Infinity,
 		}
 	)
 
-	const { mutateAsync: createLecture } = useMutation((data: Partial<Lecture>) =>
-		axios.post<Lecture>('/api/user/lecture', { ...data, stage: LectureStage.Requested })
+	const { mutateAsync: createLecture } = useMutation((data: Partial<prismaClient.Lecture>) =>
+		axios.post<prismaClient.Lecture>('/api/user/lecture', { ...data, stage: prismaClient.LectureStage.Requested })
 	)
-	const { mutateAsync: updateLecture } = useMutation(({ id, data }: { id: string; data: Partial<Lecture> }) =>
-		axios.put<Lecture>('/api/user/lecture', data, { params: { id } })
+	const { mutateAsync: updateLecture } = useMutation(
+		({ id, data }: { id: string; data: Partial<prismaClient.Lecture> }) =>
+			axios.put<prismaClient.Lecture>('/api/user/lecture', data, { params: { id } })
 	)
 
 	const workDirectionOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))

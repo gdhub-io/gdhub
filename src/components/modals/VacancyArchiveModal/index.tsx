@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TeamVacancyStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BsCheckLg } from '@react-icons/all-files/bs/BsCheckLg'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
@@ -49,7 +49,7 @@ const VacancyArchiveModal = ({ projectId, projectName, teamId, open, onRestore, 
 		try {
 			setProcessing(true)
 
-			await saveVacancy({ id: selectedItem, data: { status: TeamVacancyStatus.Draft, publishedAt: null } })
+			await saveVacancy({ id: selectedItem, data: { status: prismaClient.TeamVacancyStatus.Draft, publishedAt: null } })
 			fetchArchivedProjectVacancies()
 
 			setProcessing(false)

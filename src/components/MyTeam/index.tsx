@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { ProjectContext } from '@/contexts/ProjectContext'
-import { Team, TeamMember, TeamMemberStatus, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Grid, message, Table } from 'antd'
@@ -20,9 +20,12 @@ const MyTeam = () => {
 	} = useQuery(
 		['user-project-team', contextProject?.teamId],
 		() =>
-			axios.get<Team & { members: (TeamMember & { user: User })[] }>('/api/user/project/team', {
-				params: { teamId: contextProject?.teamId },
-			}),
+			axios.get<prismaClient.Team & { members: (prismaClient.TeamMember & { user: prismaClient.User })[] }>(
+				'/api/user/project/team',
+				{
+					params: { teamId: contextProject?.teamId },
+				}
+			),
 		{
 			enabled: !!contextProject?.teamId,
 		}
@@ -50,7 +53,7 @@ const MyTeam = () => {
 		}
 	}
 
-	const columns: ColumnsType<TeamMember & { user: User }> = [
+	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
 		{
 			title: t('Member Name'),
 			key: 'userName',
@@ -61,7 +64,9 @@ const MyTeam = () => {
 					<>
 						<div>{member.user.name}</div>
 						<small>
-							{member.status == TeamMemberStatus.Founder ? `${member.position} (founder)` : member.position}
+							{member.status == prismaClient.TeamMemberStatus.Founder
+								? `${member.position} (founder)`
+								: member.position}
 						</small>
 					</>
 				)
@@ -73,7 +78,7 @@ const MyTeam = () => {
 			key: 'position',
 			responsive: ['md'],
 			render: (value, member) => {
-				return member.status == TeamMemberStatus.Founder ? `${value} (founder)` : value
+				return member.status == prismaClient.TeamMemberStatus.Founder ? `${value} (founder)` : value
 			},
 		},
 		{
@@ -97,15 +102,15 @@ const MyTeam = () => {
 			key: 'fire',
 			title: 'Status',
 			render: (value, member) => {
-				if (member.status == TeamMemberStatus.Founder) return null
+				if (member.status == prismaClient.TeamMemberStatus.Founder) return null
 
-				if (member.status == TeamMemberStatus.Hired)
+				if (member.status == prismaClient.TeamMemberStatus.Hired)
 					return (
 						<Button onClick={() => handleFired(member.id)}>
 							<T>Fire</T>
 						</Button>
 					)
-				if (member.status == TeamMemberStatus.Fired) return t('Fired')
+				if (member.status == prismaClient.TeamMemberStatus.Fired) return t('Fired')
 			},
 		},
 	]

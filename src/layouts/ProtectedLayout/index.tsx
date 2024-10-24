@@ -4,7 +4,7 @@ import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
@@ -130,7 +130,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = []
 
-		if (hasRole(UserRole.Admin, { data: session })) {
+		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
 				label: (
 					<Link href="/admin/seasons">

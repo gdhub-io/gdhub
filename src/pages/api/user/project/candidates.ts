@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { TeamMemberStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -14,7 +14,7 @@ class ApiTeamCandidatesHandler {
 	@Get()
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { teamId }: UserTeamCandidatesDto) {
 		const applicants = await prisma.teamMember.findMany({
-			where: { teamId, status: { equals: TeamMemberStatus.Applicant } },
+			where: { teamId, status: { equals: prismaClient.TeamMemberStatus.Applicant } },
 			include: {
 				user: {
 					select: {

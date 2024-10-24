@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
-import { TeamVacancy, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowDownRight } from '@react-icons/all-files/go/GoArrowDownRight'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
@@ -18,8 +18,8 @@ const VacanciesList = () => {
 		['vacancies'],
 		() =>
 			axios.get<
-				(TeamVacancy & {
-					direction: WorkDirection
+				(prismaClient.TeamVacancy & {
+					direction: prismaClient.WorkDirection
 					team: { project: { id: string; slug: string; name: string; description: string } }
 				})[]
 			>('/api/vacancies'),

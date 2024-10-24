@@ -2,8 +2,8 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { normUploadFile } from '@/helpers/file'
 import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
 import { NextPageWithLayout } from '@/pages/_app'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
-import { Project, ProjectStatus, SeasonStage } from '@prisma/client'
 import { GoCheckCircleFill } from '@react-icons/all-files/go/GoCheckCircleFill'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -48,7 +48,10 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 
 	const { data: project, isFetching } = useQuery(
 		['user-project', projectSlug],
-		() => axios.get<Project & { stage: SeasonStage }>('/api/user/project', { params: { slug: projectSlug } }),
+		() =>
+			axios.get<prismaClient.Project & { stage: prismaClient.SeasonStage }>('/api/user/project', {
+				params: { slug: projectSlug },
+			}),
 		{
 			enabled: !!projectSlug,
 			refetchOnWindowFocus: false,
@@ -61,7 +64,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 	)
 
 	const { mutateAsync: updateProject, isLoading: isUpdating } = useMutation((data: any) =>
-		axios.put<Project>('/api/user/project', data, { params: { id: project?.data.id } })
+		axios.put<prismaClient.Project>('/api/user/project', data, { params: { id: project?.data.id } })
 	)
 
 	useEffect(() => {
@@ -304,7 +307,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						label={
 							<Space>
 								<T keyName="modal.project.conceptLink.label">Link to concept document (idea description)</T>
-								{project?.data.status == ProjectStatus.Approved && (
+								{project?.data.status == prismaClient.ProjectStatus.Approved && (
 									<Tooltip title="You can't change the link. It was approved already.">
 										<GoCheckCircleFill color={token.colorSuccess} />
 									</Tooltip>
@@ -317,7 +320,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						<Input width={'100%'} />
 					</Form.Item>
 
-					{project?.data.status == ProjectStatus.Approved && (
+					{project?.data.status == prismaClient.ProjectStatus.Approved && (
 						<>
 							<Form.Item
 								name="gddLink"

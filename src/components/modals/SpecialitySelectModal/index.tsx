@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Speciality } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BsCheckLg } from '@react-icons/all-files/bs/BsCheckLg'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -19,7 +19,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		data: specialities,
 		isLoading,
 		refetch: fetchSpecialities,
-	} = useQuery(['user-specialities'], () => axios.get<Speciality[]>('/api/user/specialities'))
+	} = useQuery(['user-specialities'], () => axios.get<prismaClient.Speciality[]>('/api/user/specialities'))
 
 	const {
 		data: contacts,

@@ -4,7 +4,7 @@ import ResourcesProfileForm from '@/components/profile-forms/ResourcesProfileFor
 import SpecialitiesProfileForm from '@/components/profile-forms/SpecialitiesProfileForm'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { Profile } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Space } from 'antd'
@@ -13,7 +13,7 @@ import axios from 'axios'
 const ProfilePage: NextPageWithLayout = () => {
 	const { t } = useTolgee()
 	const queryClient = useQueryClient()
-	const { data: profile } = useQuery(['profile'], () => axios.get<Profile>('/api/user/profile'))
+	const { data: profile } = useQuery(['profile'], () => axios.get<prismaClient.Profile>('/api/user/profile'))
 	const { mutateAsync: saveProfile } = useMutation<any, any, any>(
 		(variables: any) => axios.put<void>('/api/user/profile', variables),
 		{

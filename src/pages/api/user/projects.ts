@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -8,9 +8,9 @@ class UserSeasonProjectsDto {
 	@IsString()
 	@IsOptional()
 	seasonId?: string
-	@IsEnum(ProjectStatus)
+	@IsEnum(prismaClient.ProjectStatus)
 	@IsOptional()
-	status?: ProjectStatus
+	status?: prismaClient.ProjectStatus
 }
 
 @NextAuthGuard('user')

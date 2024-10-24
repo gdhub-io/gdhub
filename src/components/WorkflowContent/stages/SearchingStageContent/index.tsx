@@ -3,7 +3,7 @@ import { UserSeasonProjectsList } from '@/components/UserSeasonProjectsList'
 import { SeasonData } from '@/components/WorkflowContent'
 import { hasRole } from '@/helpers/user'
 import { Render } from '@9gustin/react-notion-render'
-import { ProjectStatus, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Skeleton, Space, Spin } from 'antd'
@@ -26,7 +26,7 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 		['season-projects-count', stage?.id],
 		() =>
 			axios.get<{ count: number }>('/api/season/stage/projects', {
-				params: { stageId: stage?.id, status: ProjectStatus.Registered, onlyCount: true },
+				params: { stageId: stage?.id, status: prismaClient.ProjectStatus.Registered, onlyCount: true },
 			}),
 		{ enabled: !!stage }
 	)
@@ -65,7 +65,7 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 						</Button>
 					)}
 
-					{hasRole(UserRole.Mentor, session) && (
+					{hasRole(prismaClient.UserRole.Mentor, session) && (
 						<Link href={`/${season.slug}/projects`}>
 							<Button>
 								<T keyName="concept-list" />
@@ -93,7 +93,9 @@ const SearchingStageContent = ({ season }: { season: SeasonData }) => {
 					/>
 				)}
 
-				{!isStageExpired() && <UserSeasonProjectsList seasonId={season.id} status={ProjectStatus.Registered} />}
+				{!isStageExpired() && (
+					<UserSeasonProjectsList seasonId={season.id} status={prismaClient.ProjectStatus.Registered} />
+				)}
 			</Spin>
 		</div>
 	)
