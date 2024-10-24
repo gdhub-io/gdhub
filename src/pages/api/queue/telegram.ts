@@ -10,7 +10,7 @@ class ApiQueueTelegramHandler {
 	@Post()
 	public async workerProcessor(@Body() job: Job<any, any, string>) {
 		// jobs from main app
-		if (job.data.app == undefined || job.data.app == 'main') {
+		if (job.data?.app == undefined || job.data?.app == 'main') {
 			const telegramBot = TelegramService.init()
 
 			if (job.name == 'new-project-reports') {
