@@ -190,6 +190,7 @@ class CronMatchingHandler {
 				const projectText = formatNestedJson(project)
 
 				await matchingQueue.add('matching-spec-and-proj', {
+					app: 'main',
 					specialityId: specialist.id,
 					projectId: project.id,
 					specialistText,
