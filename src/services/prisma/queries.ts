@@ -1,5 +1,5 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { DefaultSeasonStages } from '@gdhub-io/gdhub-prisma/src/enums'
+import { DefaultSeasonStages } from '@gdhub-io/gdhub-prisma/dist/enums'
 import { prisma } from '.'
 
 export const getWorkedProjects = async () => {
