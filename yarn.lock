@@ -1903,10 +1903,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.1.tgz#16308cea045f0fc777b6ff20a9f25474dd8293d2"
   integrity sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==
 
-"@gdhub-io/gdhub-prisma@^1.0.15":
-  version "1.0.15"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.0.15/c33463d2a480bc7cdee1d0fbe677f297aff8b0fa#c33463d2a480bc7cdee1d0fbe677f297aff8b0fa"
-  integrity sha512-g1/hBai59k+a98hFuKX6XR7cN0PpC1t7xX+8dxQWscnIfqJcfjYgul8g0w0Ufflm3LQ96QlC89YD9Tgl9vjk5w==
+"@gdhub-io/gdhub-prisma@^1.0.17":
+  version "1.0.17"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.0.17/88c7524bad5eb89f2718fd2aea25e27b48a5e469#88c7524bad5eb89f2718fd2aea25e27b48a5e469"
+  integrity sha512-VOCGCoJ9jF18sjXgQRIjOxt+t6yVPRmhVr/EdhvW2lFWbTysA23P6wcK6JM16kzQHq3xzKckrGKxZ/YOivqScA==
   dependencies:
     "@gdhub-io/gdhub-typesense" "^1.0.2"
     "@prisma/client" "^5.18.0"
