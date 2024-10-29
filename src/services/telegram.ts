@@ -191,7 +191,7 @@ export default class TelegramService {
 
 	async sendNewProjectReports({
 		inLastDays = 1,
-		locale = AvailableLocales.en,
+		locale = AvailableLocales.ru,
 	}: {
 		inLastDays?: number
 		locale?: AvailableLocales
@@ -224,7 +224,7 @@ export default class TelegramService {
 
 	async sendNewSpecialities({
 		inLastDays = 1,
-		locale = AvailableLocales.en,
+		locale = AvailableLocales.ru,
 	}: {
 		inLastDays?: number
 		locale?: AvailableLocales
@@ -256,7 +256,7 @@ export default class TelegramService {
 
 	async sendNewVacancies({
 		inLastDays = 1,
-		locale = AvailableLocales.en,
+		locale = AvailableLocales.ru,
 	}: {
 		inLastDays?: number
 		locale?: AvailableLocales
@@ -265,7 +265,7 @@ export default class TelegramService {
 			where: {
 				team: {
 					vacancies: {
-						every: {
+						some: {
 							status: prismaClient.TeamVacancyStatus.Published,
 							publishedAt: { gte: dayjs().subtract(inLastDays, 'days').toDate() },
 						},
@@ -276,7 +276,7 @@ export default class TelegramService {
 			include: { team: { select: { _count: { select: { vacancies: true } } } } },
 		})
 
-		projectWithVacancies = projectWithVacancies.filter((r: any) => r.team._count.vacancies > 0)
+		projectWithVacancies = projectWithVacancies.filter((r: any) => r.team.vacancies.length > 0)
 
 		if (projectWithVacancies.length == 0) return
 
