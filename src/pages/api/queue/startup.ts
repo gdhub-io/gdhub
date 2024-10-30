@@ -11,7 +11,7 @@ class ApiQueueStartupHandler {
 	public async stratup() {
 		const schedule = new CronExpressionBuilder()
 
-		await telegramQueue.drain()
+		await telegramQueue.drain(true)
 
 		await telegramQueue.add(
 			'new-project-reports',

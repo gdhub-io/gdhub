@@ -76,7 +76,7 @@ const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
 	let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
 
 	projectWithVacancies.map((project) => {
-		const vacancyNames = project.vacancies.map((v: any) => v.title)
+		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
 
 		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n`
 		message += '- ' + vacancyNames.join('\n- ')
@@ -92,7 +92,7 @@ const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 	let message = '🔥 <b>New vacancies for community projects</b>'
 
 	projectWithVacancies.map((project) => {
-		const vacancyNames = project.vacancies.map((v: any) => v.title)
+		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
 
 		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Project ${project.name}</a></b>\n`
 		message += '- ' + vacancyNames.join('\n- ')
@@ -204,7 +204,7 @@ export default class TelegramService {
 			include: { project: { include: { stage: { include: { season: true } } } } },
 		})
 
-		if (reports.length == 0) return
+		if (reports.length == 0) return { sent: 0 }
 
 		let message = ''
 
@@ -220,6 +220,8 @@ export default class TelegramService {
 			topicId: env<number>('TELEGRAM_TOPIC_REPORTS'),
 			message,
 		})
+
+		return { sent: reports.length }
 	}
 
 	async sendNewSpecialities({
@@ -236,7 +238,7 @@ export default class TelegramService {
 			include: { user: { include: { profile: true } } },
 		})
 
-		if (specialities.length == 0) return
+		if (specialities.length == 0) return { sent: 0 }
 
 		let message = ''
 
@@ -252,6 +254,8 @@ export default class TelegramService {
 			topicId: env<number>('TELEGRAM_TOPIC_NEWS'),
 			message,
 		})
+
+		return { sent: specialities.length }
 	}
 
 	async sendNewVacancies({
@@ -273,12 +277,12 @@ export default class TelegramService {
 				},
 				status: prismaClient.ProjectStatus.Approved,
 			},
-			include: { team: { select: { _count: { select: { vacancies: true } } } } },
+			include: { team: { select: { _count: { select: { vacancies: true } }, vacancies: true } } },
 		})
 
 		projectWithVacancies = projectWithVacancies.filter((r: any) => r.team.vacancies.length > 0)
 
-		if (projectWithVacancies.length == 0) return
+		if (projectWithVacancies.length == 0) return { sent: 0 }
 
 		let message = ''
 
@@ -294,5 +298,7 @@ export default class TelegramService {
 			topicId: env<number>('TELEGRAM_TOPIC_VACANCIES'),
 			message,
 		})
+
+		return { sent: projectWithVacancies.length }
 	}
 }
