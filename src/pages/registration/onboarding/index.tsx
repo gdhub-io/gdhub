@@ -25,7 +25,7 @@ const OnboardingPage = () => {
 	const screens = Grid.useBreakpoint()
 	const containerRef = useRef<HTMLDivElement>(null)
 	const [error, setError] = useState<string>()
-	const [onboardingStep, setOnboardingStep] = useState(-1)
+	const [onboardingStep, setOnboardingStep] = useState(1)
 	const [lastCompletedStep, setLastCompletedStep] = useState(0)
 	const [isCompleted, setIsCompleted] = useState(false)
 
