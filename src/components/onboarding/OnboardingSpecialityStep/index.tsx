@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
+import { DownOutlined, UpOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -22,7 +23,6 @@ import {
 	UploadProps,
 } from 'antd'
 import axios from 'axios'
-import { useRouter } from 'next/router'
 
 interface IOnboardingSpecialityStep {
 	onSave: () => void
@@ -33,13 +33,14 @@ const { Paragraph, Title, Text } = Typography
 
 export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: IOnboardingSpecialityStep) => {
 	const [form] = Form.useForm()
-	const router = useRouter()
+	const [messageApi, contextHolder] = message.useMessage()
 	const screens = Grid.useBreakpoint()
 	const { t, getLanguage } = useTolgee()
 
 	const [showParseCVButton, setShowParseCVButton] = useState(false)
 	const [isParsing, setIsParsing] = useState(false)
 	const [jobPosition, setJobPosition] = useState<string>('')
+	const [showOptionalFields, setShowOptionalFields] = useState(false)
 
 	const {
 		data: workDirections,
@@ -111,7 +112,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		} catch (error: any) {
 			if (!error.response || !error.message) return
 
-			message.error(error.response?.data?.message || error.message)
+			messageApi.error(error.response?.data?.message || error.message)
 		}
 	}
 
@@ -124,9 +125,10 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 			data: { jobPosition, locale: getLanguage() },
 			maxCount: 1,
 			onChange: ({ file }) => {
+				console.log('onChange', file)
 				if (file.status === 'done' && (!file.response || file.response.success == false)) {
 					setIsParsing(false)
-					message.error(t('uploadcv-error-message', `We couldn't process your file. Enter data manually`))
+					messageApi.error(t('uploadcv-error-message', `We couldn't process your file. Enter data manually`))
 					return
 				}
 
@@ -135,8 +137,9 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 				}
 
 				if (file.status == 'error') {
-					message.error(file.error)
+					messageApi.error(t('uploadcv-error-message', `We couldn't process your file. Enter data manually`))
 					setIsParsing(false)
+					return
 				}
 
 				if (file.status === 'done') {
@@ -174,163 +177,172 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 	}
 
 	return (
-		<Spin spinning={(isLoading && !isFetched) || isParsing}>
-			<div className="onboarding-content">
-				<div className="onboarding-form">
-					<Space direction="vertical" className="onboarding-form-title" style={{ width: '100%' }}>
-						<Flex justify="space-between" align="center" wrap="wrap">
-							<Title level={2}>
-								<T keyName="specilaity">Speciality</T>
-							</Title>
-							<Flex align="center" gap={4}>
-								<PiWarningCircleLight size={20} color="#05050573" style={{ height: 20 }} />
-								<Text type="secondary" italic>
-									<T>You can change it or add more ones after</T>
-								</Text>
+		<>
+			{contextHolder}
+			<Spin spinning={(isLoading && !isFetched) || isParsing}>
+				<div className="onboarding-content">
+					<div className="onboarding-form">
+						<Space direction="vertical" className="onboarding-form-title" style={{ width: '100%' }}>
+							<Flex justify="space-between" align="center" wrap="wrap">
+								<Title level={2}>
+									<T keyName="specilaity">Speciality</T>
+								</Title>
+								<Flex align="center" gap={4}>
+									<PiWarningCircleLight size={20} color="#05050573" style={{ height: 20 }} />
+									<Text type="secondary" italic>
+										<T>You can change it or add more ones after</T>
+									</Text>
+								</Flex>
 							</Flex>
-						</Flex>
 
-						<Paragraph italic>
-							<T>Information about your main speciality</T>
-						</Paragraph>
-					</Space>
-
-					<Form form={form} layout="vertical" requiredMark="optional" autoComplete="off" scrollToFirstError>
-						<Form.Item name="id" hidden>
-							<Input />
-						</Form.Item>
-
-						<Form.Item name="tools" hidden>
-							<Input />
-						</Form.Item>
-
-						<Form.Item name="summary" hidden>
-							<Input />
-						</Form.Item>
-
-						<Space direction="vertical" size={16} style={{ width: '100%' }}>
-							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={16}>
-									<Form.Item
-										name="name"
-										label={t('specialityName')}
-										rules={[{ required: true }]}
-										extra={
-											showParseCVButton && (
-												<Space style={{ marginTop: 4 }}>
-													<Text>
-														<T>Fill in from CV/resume</T>
-													</Text>
-													<Upload {...uploadProps} disabled={isParsing}>
-														<Button size="small" disabled={isParsing} loading={isParsing}>
-															<T>Upload PDF</T>
-														</Button>
-													</Upload>
-												</Space>
-											)
-										}
-									>
-										<Input
-											placeholder={t('specialityName.plachehloder')}
-											onChange={(e) => handleJobPositionChange(e.target.value)}
-										/>
-									</Form.Item>
-								</Col>
-								<Col xs={24} lg={8}>
-									<Form.Item
-										name="level"
-										label={t('specialityLevel')}
-										rules={[{ required: true }]}
-										wrapperCol={{ span: 24 }}
-									>
-										<Select placeholder={t('select')} style={{ width: '100%' }}>
-											{skillLevelsList.map((item, indx: number) => (
-												<Select.Option key={indx.toString()} value={item.value}>
-													{item.value !== form.getFieldValue('Level') ? (
-														<Tooltip title={item.description} placement="right">
-															{item.icon} {item.label}
-														</Tooltip>
-													) : (
-														<>
-															{item.icon} {item.label}
-														</>
-													)}
-												</Select.Option>
-											))}
-										</Select>
-									</Form.Item>
-								</Col>
-							</Row>
-
-							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={24}>
-									<Form.Item name="workDirectionId" label={t('workDirection')} rules={[{ required: true }]}>
-										<Select
-											style={{ width: '100%' }}
-											placeholder={t(`For example: Game Design`)}
-											options={workDirectionOptions}
-										/>
-									</Form.Item>
-								</Col>
-							</Row>
-
-							<Form.Item name="specialization" label={t('specialization')} rules={[{ required: true }]}>
-								<Input.TextArea placeholder={t('specialization.plachehloder')} />
-							</Form.Item>
-
-							<Form.Item name="portfolioUrl" label={t('cvLink')} rules={[{ type: 'url' }]}>
-								<Input placeholder={t('cvLink.plachehloder')} />
-							</Form.Item>
-
-							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={24}>
-									<Form.Item
-										name="skills"
-										label={t('skillList')}
-										wrapperCol={{ span: 24 }}
-										extra={t('skillList.extra')}
-									>
-										<Input.TextArea rows={4} placeholder={t('skillList.plachehloder')} />
-									</Form.Item>
-								</Col>
-							</Row>
-
-							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={24}>
-									<Form.Item name="jobs" label={t('experience')} rules={[{ required: true }]}>
-										<Input.TextArea placeholder={t('experience.plachehloder')} rows={4} />
-									</Form.Item>
-								</Col>
-							</Row>
-							<Row gutter={[32, 16]}>
-								<Col xs={24} lg={24}>
-									<Form.Item name="schools" label={t('education')}>
-										<Input.TextArea placeholder={t('education.plachehloder')} rows={4} />
-									</Form.Item>
-								</Col>
-							</Row>
+							<Paragraph italic>
+								<T>Information about your main speciality</T>
+							</Paragraph>
 						</Space>
-					</Form>
-				</div>
-				<Space
-					className="onboarding-footer"
-					wrap
-					size={16}
-					style={screens.lg ? { flexDirection: 'row' } : { flexDirection: 'column-reverse' }}
-				>
-					<Button onClick={onPreviousStep}>
-						<T keyName="back">Back</T>
-					</Button>
-					<Space>
-						{/* <Button type="text" onClick={() => router.push('/hub')}>
+
+						<Form form={form} layout="vertical" requiredMark="optional" autoComplete="off" scrollToFirstError>
+							<Form.Item name="id" hidden>
+								<Input />
+							</Form.Item>
+
+							<Form.Item name="tools" hidden>
+								<Input />
+							</Form.Item>
+
+							<Form.Item name="summary" hidden>
+								<Input />
+							</Form.Item>
+
+							<Space direction="vertical" size={16} style={{ width: '100%' }}>
+								<Row gutter={[32, 16]}>
+									<Col xs={24} lg={16}>
+										<Form.Item
+											name="name"
+											label={t('specialityName')}
+											rules={[{ required: true }]}
+											extra={
+												showParseCVButton && (
+													<Space style={{ marginTop: 4 }}>
+														<Text>
+															<T>Fill in from CV/resume</T>
+														</Text>
+														<Upload {...uploadProps} disabled={isParsing}>
+															<Button size="small" disabled={isParsing} loading={isParsing}>
+																<T>Upload PDF</T>
+															</Button>
+														</Upload>
+													</Space>
+												)
+											}
+										>
+											<Input
+												placeholder={t('specialityName.plachehloder')}
+												onChange={(e) => handleJobPositionChange(e.target.value)}
+											/>
+										</Form.Item>
+									</Col>
+									<Col xs={24} lg={8}>
+										<Form.Item
+											name="level"
+											label={t('specialityLevel')}
+											rules={[{ required: true }]}
+											wrapperCol={{ span: 24 }}
+										>
+											<Select placeholder={t('select')} style={{ width: '100%' }}>
+												{skillLevelsList.map((item, indx: number) => (
+													<Select.Option key={indx.toString()} value={item.value}>
+														{item.value !== form.getFieldValue('Level') ? (
+															<Tooltip title={item.description} placement="right">
+																{item.icon} {item.label}
+															</Tooltip>
+														) : (
+															<>
+																{item.icon} {item.label}
+															</>
+														)}
+													</Select.Option>
+												))}
+											</Select>
+										</Form.Item>
+									</Col>
+								</Row>
+
+								<Row gutter={[32, 16]}>
+									<Col xs={24} lg={24}>
+										<Form.Item name="workDirectionId" label={t('workDirection')} rules={[{ required: true }]}>
+											<Select
+												style={{ width: '100%' }}
+												placeholder={t(`For example: Game Design`)}
+												options={workDirectionOptions}
+											/>
+										</Form.Item>
+									</Col>
+								</Row>
+
+								<Form.Item name="specialization" label={t('specialization')} rules={[{ required: true }]}>
+									<Input.TextArea placeholder={t('specialization.plachehloder')} />
+								</Form.Item>
+
+								<Form.Item name="jobs" label={t('experience')} rules={[{ required: true }]}>
+									<Input.TextArea placeholder={t('experience.plachehloder')} rows={4} />
+								</Form.Item>
+
+								<div style={{ display: showOptionalFields ? 'block' : 'none' }}>
+									<Form.Item name="portfolioUrl" label={t('cvLink')} rules={[{ type: 'url' }]}>
+										<Input placeholder={t('cvLink.plachehloder')} />
+									</Form.Item>
+
+									<Row gutter={[32, 16]}>
+										<Col xs={24} lg={24}>
+											<Form.Item
+												name="skills"
+												label={t('skillList')}
+												wrapperCol={{ span: 24 }}
+												extra={t('skillList.extra')}
+											>
+												<Input.TextArea rows={4} placeholder={t('skillList.plachehloder')} />
+											</Form.Item>
+										</Col>
+									</Row>
+
+									<Row gutter={[32, 16]}>
+										<Col xs={24} lg={24}>
+											<Form.Item name="schools" label={t('education')}>
+												<Input.TextArea placeholder={t('education.plachehloder')} rows={4} />
+											</Form.Item>
+										</Col>
+									</Row>
+								</div>
+
+								<a onClick={(e) => setShowOptionalFields((prev) => !prev)}>
+									<Space>
+										{showOptionalFields ? <T>Hide additional fields</T> : <T>Fill additional fields</T>}
+										{showOptionalFields ? <UpOutlined /> : <DownOutlined />}
+									</Space>
+								</a>
+							</Space>
+						</Form>
+					</div>
+					<Space
+						className="onboarding-footer"
+						wrap
+						size={16}
+						style={screens.lg ? { flexDirection: 'row' } : { flexDirection: 'column-reverse' }}
+					>
+						<Button onClick={onPreviousStep}>
+							<T keyName="back">Back</T>
+						</Button>
+						<Space>
+							{/* <Button type="text" onClick={() => router.push('/hub')}>
 							<T keyName="onboarding.welcome.later">Continue later</T>
 						</Button> */}
-						<Button type="primary" onClick={handleSave} loading={isCreating || isUpdating}>
-							<T keyName="saveAndContinue">Save and continue</T>
-						</Button>
+							<Button type="primary" onClick={handleSave} loading={isCreating || isUpdating}>
+								<T keyName="saveAndContinue">Save and continue</T>
+							</Button>
+						</Space>
 					</Space>
-				</Space>
-			</div>
-		</Spin>
+				</div>
+			</Spin>
+		</>
 	)
 }
