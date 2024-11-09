@@ -10703,6 +10703,11 @@ tar-stream@^3.1.5:
     fast-fifo "^1.2.0"
     streamx "^2.15.0"
 
+telegram-react-auth-button@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/telegram-react-auth-button/-/telegram-react-auth-button-0.4.0.tgz#340b27f091d4ba2a0c165127308660e894ccea41"
+  integrity sha512-ddjE7IEwbtV0YmeIWelVlj5It8+CGaGoVZnMqIg1EFhXnP5wb71i7R+SXuzGOsfq54NZHbm2jWoeBR/gkc8ZBA==
+
 text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"

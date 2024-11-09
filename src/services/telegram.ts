@@ -107,7 +107,7 @@ export default class TelegramService {
 	private apiUrl: string
 
 	private constructor({ botToken }: any) {
-		this.apiUrl = `https://api.telegram.org/bot${botToken}`
+		this.apiUrl = `https://api.telegram.org/bot${botToken}${process.env.NODE_ENV == 'development' ? '/test' : ''}`
 	}
 
 	static init(botToken?: string) {

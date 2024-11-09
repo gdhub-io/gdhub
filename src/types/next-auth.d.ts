@@ -9,6 +9,7 @@ declare module 'next-auth/jwt' {
 		lang: string
 		error?: 'RefreshAccessTokenError'
 		activeSubscription?: string
+		telegramId?: string
 	}
 }
 
@@ -21,6 +22,7 @@ declare module 'next-auth' {
 			onboardingDone: boolean
 			lang: string
 			activeSubscription?: string
+			telegramId?: string
 		} & DefaultSession['user']
 	}
 
@@ -30,5 +32,6 @@ declare module 'next-auth' {
 		onboardingDone: boolean
 		lang: string
 		activeSubscription?: string
+		telegramId?: string
 	}
 }

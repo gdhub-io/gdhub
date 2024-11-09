@@ -1,3 +1,4 @@
+import ConnectProfileForm from '@/components/profile-forms/ConnectProfileForm'
 import GeneralProfileForm from '@/components/profile-forms/GeneralProfileForm'
 import InterestsProfileForm from '@/components/profile-forms/InterestsProfileForm'
 import ResourcesProfileForm from '@/components/profile-forms/ResourcesProfileForm'
@@ -36,6 +37,7 @@ const ProfilePage: NextPageWithLayout = () => {
 				<GeneralProfileForm profile={profile.data} saveProfile={saveProfile} />
 				<SpecialitiesProfileForm profile={profile.data} />
 				<ResourcesProfileForm profile={profile.data} saveProfile={saveProfile} />
+				<ConnectProfileForm profile={profile.data} saveProfile={saveProfile} />
 				<InterestsProfileForm profile={profile.data} saveProfile={saveProfile} />
 			</Space>
 		</ProtectedLayout>
