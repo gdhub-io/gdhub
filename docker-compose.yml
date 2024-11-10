@@ -74,7 +74,7 @@ services:
 
   redis:
     image: bitnami/redis:latest
-    container_name: gdhub_bullboard
+    container_name: gdhub_redis
     environment:
       - REDIS_PASSWORD=password12345
     ports:
@@ -90,7 +90,7 @@ services:
     environment:
       - APP_USERNAME=admin
       - APP_PASSWORD=admin
-      - REDIS_URL=redis://default:password12345@redis/0
+      - REDIS_URL=redis://default:password12345@redis:6379
       - QUEUES_LIST=telegram,matching
       - APP_MAIN=${BROKER_APP_MAIN}
       - APP_EXPERTS=${BROKER_APP_EXPERTS}
