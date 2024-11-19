@@ -1,790 +1,865 @@
 {
-  "(not pointed)" : "(не указано)",
-  "A new report has been added" : "Добавлен новый отчет",
-  "A new vacancy has been added" : "Добавлена новая вакансия",
-  "About Game" : "Об игре",
-  "About us" : "О нас",
-  "Accept the team" : "Принять команду",
-  "Achiever" : "Добиваться успеха",
-  "Add a report" : "Добавить отчет",
-  "Add specialty" : "Добавить специальность",
-  "Add the vacancy" : "Добавить вакансию",
-  "Add your project idea" : "Добавьте идею вашего проекта",
-  "Added a new game project" : "Добавлен новый игровой проект",
-  "Administration" : "Администрация",
-  "Appendix" : "Приложение",
-  "Archive" : "Архив",
-  "Are you sure?" : "Вы уверены?",
-  "Assemble a team" : "Собрать команду",
-  "At the moment, reports are not provided" : "На данный момент отчеты не предоставляются",
-  "Audition" : "Прослушивание",
-  "Author" : "Автор",
-  "Autonomy" : "Автономия",
-  "Back" : "Назад",
-  "Back to home" : "Вернуться на главную",
-  "Back to main" : "На главную",
-  "Become a Lecturer" : "Стать преподавателем",
-  "Beginner" : "Начинающий",
-  "CV/Portfolio" : "Резюме/Портфолио",
-  "Candidate card" : "Карточка кандидата",
-  "Change" : "Изменить",
-  "Change the lecture request" : "Изменить запрос на лекцию",
-  "Change the parametes of lectures" : "Изменение параметров лекции",
-  "Change the report" : "Изменить отчет",
-  "Change the vacancy" : "Изменить вакансию",
-  "Change your project idea" : "Измените идею вашего проекта",
-  "City" : "Город",
-  "Close" : "Закрыть",
-  "Comment" : "Комментарий",
-  "Community Chat" : "Чат Сообщества",
-  "Community Projects" : "Проекты сообщества",
-  "Community member" : "Участник сообщества",
-  "Community members" : "Участники сообщества",
-  "Complete Registration" : "Завершить регистрацию",
-  "Completed" : "Завершенно",
-  "Concept document" : "Концепт-документ",
-  "Contact the author" : "Связаться с автором",
-  "Contacts" : "Контакты",
-  "Contents of the lecture" : "Содержание лекции",
-  "Continue with Google" : "Продолжить через Google",
-  "Cookie Policy" : "Политика работы с Cookie",
-  "Cookies Policy" : "Политика использования файлов Cookie",
-  "Country" : "Страна",
-  "Create a new vacancy" : "Создать новую вакансию",
-  "Create new account" : "Регистрация",
-  "Date" : "Дата",
-  "Details" : "Подробнее",
-  "Development Log" : "Журнал разработки",
-  "Discord" : "Дискорд",
-  "Documentation" : "Документация",
-  "Email" : "Эл. почта",
-  "End stream" : "Завершить трансляцию",
-  "Enter Email" : "Введите Email",
-  "Enter to see" : "Войдите, чтобы увидеть",
-  "Error 404" : "Ошибка 404",
-  "Error!" : "Ошибка!",
-  "Experienced" : "Опытный",
-  "Expert" : "Эксперт",
-  "Exploration" : "Исследлование",
-  "Fill in from CV/resume" : "Заполнить из резюме",
-  "Filter" : "Фильтр",
-  "Fire" : "Уволить",
-  "Follow this link before the lecture" : "Перед началом лекции перейдите по этой ссылке",
-  "For Authors" : "Для авторов",
-  "For Specialists" : "Для специалистов",
-  "For Users" : "Длф пользователей",
-  "Free time" : "Свободное время",
-  "From" : "От",
-  "GDD" : "ГДД",
-  "Game Developers Hub for everyone who wants to make" : "Хаб разработчиков игр, которые хотят создавать",
-  "Game Projects" : "Игровые проекты",
-  "Game Setting" : "Визуальная обстановка",
-  "General information about new member" : "Общая информация о новом участнике",
-  "Genre" : "Жанр",
-  "Get in touch" : "Свяжитесь с нами",
-  "Get started" : "Начать",
-  "Go" : "Вперед",
-  "Go to GDHub" : "Перейти в GDHub",
-  "Go to app" : "Мой кабинет",
-  "Go to project page" : "Подробнее",
-  "Go to registration" : "Начать регистрацию заново",
-  "Goal-oriented" : "Целеориентированность",
-  "How can you be useful to teams?" : "Чем вы можете быть полезны командам?",
-  "How many hours a week can you devote to projects?" : "Сколько часов в неделю вы можете уделять участию в проектах?",
-  "I already have an account" : "Я уже зарегистрирован",
-  "I think now is the perfect time to make games" : {
-    "" : "Думаю, сейчас самое время, чтобы делать игры."
+  "(not pointed)": "(не указано)",
+  "A new report has been added": "Добавлен новый отчет",
+  "A new vacancy has been added": "Добавлена новая вакансия",
+  "About Game": "Об игре",
+  "About us": "О нас",
+  "Accept the team": "Принять команду",
+  "Achiever": "Добиваться успеха",
+  "Add a report": "Добавить отчет",
+  "Add specialty": "Добавить специальность",
+  "Add the vacancy": "Добавить вакансию",
+  "Add your project idea": "Добавьте идею вашего проекта",
+  "Added a new game project": "Добавлен новый игровой проект",
+  "Administration": "Администрация",
+  "Appendix": "Приложение",
+  "Archive": "Архив",
+  "Are you sure?": "Вы уверены?",
+  "Assemble a team": "Собрать команду",
+  "At the moment, reports are not provided": "На данный момент отчеты не предоставляются",
+  "Audition": "Прослушивание",
+  "Author": "Автор",
+  "Autonomy": "Автономия",
+  "Back": "Назад",
+  "Back to home": "Вернуться на главную",
+  "Back to main": "На главную",
+  "Become a Lecturer": "Стать преподавателем",
+  "Beginner": "Начинающий",
+  "CV/Portfolio": "Резюме/Портфолио",
+  "Cancel": "Отменить",
+  "Candidate card": "Карточка кандидата",
+  "Change": "Изменить",
+  "Change the lecture request": "Изменить запрос на лекцию",
+  "Change the parametes of lectures": "Изменение параметров лекции",
+  "Change the report": "Изменить отчет",
+  "Change the vacancy": "Изменить вакансию",
+  "Change your project idea": "Измените идею вашего проекта",
+  "City": "Город",
+  "Close": "Закрыть",
+  "Comment": "Комментарий",
+  "Community Chat": "Чат Сообщества",
+  "Community Projects": "Проекты сообщества",
+  "Community member": "Участник сообщества",
+  "Community members": "Участники сообщества",
+  "Complete Registration": "Завершить регистрацию",
+  "Completed": "Завершенно",
+  "Concept document": "Концепт-документ",
+  "Connecting to Telegram will allow you to request advice from community mentors through the app": "Подключение вашего Телеграм-аккаунта позволит запрашивать советы у менторов через приложение",
+  "Contact the author": "Связаться с автором",
+  "Contacts": "Контакты",
+  "Contents of the lecture": "Содержание лекции",
+  "Continue with Google": "Продолжить через Google",
+  "Cookie Policy": "Политика работы с Cookie",
+  "Cookies Policy": "Политика использования файлов Cookie",
+  "Country": "Страна",
+  "Create a new vacancy": "Создать новую вакансию",
+  "Create new account": "Регистрация",
+  "Date": "Дата",
+  "Details": "Подробнее",
+  "Development Log": "Журнал разработки",
+  "Discord": "Дискорд",
+  "Documentation": "Документация",
+  "Email": "Эл. почта",
+  "End stream": "Завершить трансляцию",
+  "Enter Email": "Введите Email",
+  "Enter to see": "Войдите, чтобы увидеть",
+  "Error 404": "Ошибка 404",
+  "Error!": "Ошибка!",
+  "Experienced": "Опытный",
+  "Expert": "Эксперт",
+  "Exploration": "Исследлование",
+  "Fill in from CV/resume": "Заполнить из резюме",
+  "Filter": "Фильтр",
+  "Fire": "Уволить",
+  "Follow this link before the lecture": "Перед началом лекции перейдите по этой ссылке",
+  "For Authors": "Для авторов",
+  "For Specialists": "Для специалистов",
+  "For Users": "Длф пользователей",
+  "For example: The concept of the environment": "Например: концепт-художник по окружению",
+  "Free time": "Свободное время",
+  "From": "От",
+  "GDD": "ГДД",
+  "Game Developers Hub for everyone who wants to make": "Хаб разработчиков игр, которые хотят создавать",
+  "Game Projects": "Игровые проекты",
+  "Game Setting": "Визуальная обстановка",
+  "General information about new member": "Общая информация о новом участнике",
+  "Genre": "Жанр",
+  "Get in touch": "Свяжитесь с нами",
+  "Get started": "Начать",
+  "Go": "Вперед",
+  "Go to GDHub": "Перейти в GDHub",
+  "Go to app": "Мой кабинет",
+  "Go to project page": "Подробнее",
+  "Go to registration": "Начать регистрацию заново",
+  "Goal-oriented": "Целеориентированность",
+  "How can you be useful to teams?": "Чем вы можете быть полезны командам?",
+  "How many hours a week can you devote to projects?": "Сколько часов в неделю вы можете уделять участию в проектах?",
+  "Hub": "Хаб",
+  "I already have an account": "Я уже зарегистрирован",
+  "I think now is the perfect time to make games": {
+    "": "Думаю, сейчас самое время, чтобы делать игры."
   },
-  "I want to give a lecture" : "Я хочу прочитать лекцию",
-  "I'm available for offering" : "Я доступен для предложений участия в проектах",
-  "Im available for offering" : "Я открыт для предложений",
-  "IncubaMation program GameLab" : "Инкубационная программа GameLab",
-  "Indie Game Projects" : "Игровые проекты сообщества",
-  "Individuality" : "Индивидуальность",
-  "Infomation about your preferences" : "Информация о ваших предпочтениях",
-  "Information about your main speciality" : "Информация о вас, как специалисте в геймдеве",
-  "Join the team" : "Присоединиться",
-  "Join us and become a part of new era in the gaming industry!" : "Присоединяйтесь к нам и станьте частью новой эры игровой индустрии!",
-  "Last updates" : "Последние обновления",
-  "Legal officer" : "Юрист в геймдеве",
-  "Let's go" : "Вперед!",
-  "Log in" : "Войти",
-  "Log in with Google" : "Войти через Google",
-  "Log in with email" : "Войти через Email",
-  "Mastering communication and networking skills" : "Овладение коммуникативными и сетевыми навыками",
-  "Mentor" : "Ментор",
-  "Mentor of digital art" : "Ментор по цифровому искусству",
-  "Mentor of game design" : "Ментор по геймдизайну инди-игр",
-  "Mentor of game development" : "Ментор по программированию игр",
-  "Mentor of team management" : "Ментор по управлению проектами",
-  "My Projects" : "Мои проекты",
-  "Novice" : "Без опыта",
-  "On the page of the project" : "На страницу проекта",
-  "Our Core Values" : "Наши ключевые ценности",
-  "Platform" : "Платформа",
-  "Player" : "Коммуникация",
-  "Profile" : "Профиль",
-  "Projects developed independently by community members (outside the incubation program)" : {
-    "" : "Проекты, разработанные членами сообщества самостоятельно (вне инкубационной программы)."
+  "I want to give a lecture": "Я хочу прочитать лекцию",
+  "I'm available for offering": "Я доступен для предложений участия в проектах",
+  "Im available for offering": "Я открыт для предложений",
+  "IncubaMation program GameLab": "Инкубационная программа GameLab",
+  "Indie Game Projects": "Игровые проекты сообщества",
+  "Individuality": "Индивидуальность",
+  "Infomation about your preferences": "Информация о ваших предпочтениях",
+  "Information about your main speciality": "Информация о вас, как специалисте в геймдеве",
+  "Insert video url": "Вставьте ссылку на видео",
+  "Interests and preferences": "Интересы и предпочтения",
+  "Join the team": "Присоединиться",
+  "Join us and become a part of new era in the gaming industry!": "Присоединяйтесь к нам и станьте частью новой эры игровой индустрии!",
+  "Language": "Язык",
+  "Last updates": "Последние обновления",
+  "Legal officer": "Юрист в геймдеве",
+  "Let's go": "Вперед!",
+  "Log in": "Войти",
+  "Log in with Google": "Войти через Google",
+  "Log in with email": "Войти через Email",
+  "Mastering communication and networking skills": "Овладение коммуникативными и сетевыми навыками",
+  "Member Name": "Участник",
+  "Mentor": "Ментор",
+  "Mentor of digital art": "Ментор по цифровому искусству",
+  "Mentor of game design": "Ментор по геймдизайну инди-игр",
+  "Mentor of game development": "Ментор по программированию игр",
+  "Mentor of team management": "Ментор по управлению проектами",
+  "My Projects": "Мои проекты",
+  "Novice": "Без опыта",
+  "On the page of the project": "На страницу проекта",
+  "Our Core Values": "Наши ключевые ценности",
+  "Platform": "Платформа",
+  "Player": "Коммуникация",
+  "Position": "Роль",
+  "Profile": "Профиль",
+  "Project Team": "Команда проекта",
+  "Projects developed independently by community members (outside the incubation program)": {
+    "": "Проекты, разработанные членами сообщества самостоятельно (вне инкубационной программы)."
   },
-  "Projects preparing for pitch" : "Проекты готовятся к питчу",
-  "Publish" : "Опубликовать",
-  "Pursuing oppurtunities instead of settling" : "Поиск возможностей вместо того, чтобы останавливаться на достигнутом",
-  "Read more" : "Смотреть еще",
-  "Registration" : "Регистрация",
-  "Registration completed successfully!" : "Регистрация прошла успешно!",
-  "Registration token expired" : "Регистрационный токен просрочен. Начните регистрацию заново.",
-  "Registration token is wrong" : "Сссылка регистрации некорректна",
-  "Registration token is wrong. Go to Signup page before." : "Неправильная ссылка на регистрацию. Начните процесс регистрации заново",
-  "Registration with Google" : "Регистрация через Google",
-  "Required actions is not completed" : "Обязтельные действия должны быть выполнены",
-  "Return to main" : "Вернуться на главную",
-  "Send link to email" : "Отправить ссылку",
-  "Send registration link" : "Продолжить регистрацию",
-  "Setting goals and working towards them" : "Ставим цели и работаем над их достижением",
-  "Settings" : "Настройки",
-  "Skillful" : "Средний уровень",
-  "Sorry, we couldn't find the page you're looking for" : {
-    "" : "К сожалению, мы не смогли найти страницу, которую вы ищете."
+  "Projects developed independently by users": {
+    "": "Проекты, разрабатываемые другими пользователями"
   },
-  "Specialist" : "Специалист",
-  "Support" : "Поддержка",
-  "Taking risks and making mistakes" : "Рисковать и совершать ошибки",
-  "Technical officer" : "Основатель и разработчик портала",
-  "Telegram" : "Телеграм",
-  "Terms of use" : "Правила использования",
-  "The main resource is your time, which you are willing to spend on participating in projects" : {
-    " You can\n\t\t\t\t\t\t\t\talso provide additional information" : "Главный ресурс – это ваше время, которое вы готовы потратить на участие в проектах. Вы также можете предоставить дополнительную информацию",
-    " You can also provide additional information" : "Главный ресурс – это ваше время, которое вы готовы потратить на участие в проектах. Вы также можете предоставить дополнительную информацию"
+  "Projects preparing for pitch": "Проекты готовятся к питчу",
+  "Publish": "Опубликовать",
+  "Pursuing oppurtunities instead of settling": "Поиск возможностей вместо того, чтобы останавливаться на достигнутом",
+  "Read more": "Смотреть еще",
+  "Registration": "Регистрация",
+  "Registration completed successfully!": "Регистрация прошла успешно!",
+  "Registration token expired": "Регистрационный токен просрочен. Начните регистрацию заново.",
+  "Registration token is wrong": "Сссылка регистрации некорректна",
+  "Registration token is wrong. Go to Signup page before.": "Неправильная ссылка на регистрацию. Начните процесс регистрации заново",
+  "Registration with Google": "Регистрация через Google",
+  "Relevant to": "Актуальна до",
+  "Required actions is not completed": "Обязтельные действия должны быть выполнены",
+  "Responses on vacancies": "Отклики на вакансии",
+  "Restore": "Восстановить",
+  "Return to main": "Вернуться на главную",
+  "Save": "Сохранить",
+  "Save as draft": "Сохранить черновик",
+  "Select the vacancy you want to restore": "Выберите вакансию, которую желаете восстановить",
+  "Send link to email": "Отправить ссылку",
+  "Send registration link": "Продолжить регистрацию",
+  "Setting goals and working towards them": "Ставим цели и работаем над их достижением",
+  "Settings": "Настройки",
+  "Sign out": "Выйти",
+  "Skillful": "Средний уровень",
+  "Sorry, we couldn't find the page you're looking for": {
+    "": "К сожалению, мы не смогли найти страницу, которую вы ищете."
   },
-  "The maximum value cannot be less than the minimum" : "Максимальное значение не может быть меньше минимального",
-  "The need for liberty" : "Потребность в свободе",
-  "The power of self-identity" : "Сила самоидентификации",
-  "The registration link is incorrect or has already been used" : "Ссылка регистрации неправильная или была уже использована",
-  "UI/UX designer" : "Веб-дизайнер портала",
-  "Updated" : "Обновлено",
-  "Upload PDF" : "Загрузить PDF",
-  "Vacancies" : "Вакансии",
-  "Valid until" : "Актуальна до",
-  "Video report" : "Видеоотчет",
-  "View the presentation" : "Посмотреть презентацию",
-  "Visual Style" : "Визуальный стиль",
-  "Want to attend" : "Хочу принять участие",
-  "We help Authors of new video games to assemble a team of game designers, programmers, artists,\n\t\t\t\t\t\t\t\t\t\t\t\tanimators, etc" : {
-    "" : "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
+  "Specialist": "Специалист",
+  "Start and End Dates": "Период участия",
+  "Support": "Поддержка",
+  "Taking risks and making mistakes": "Рисковать и совершать ошибки",
+  "Technical officer": "Основатель и разработчик портала",
+  "Telegram": "Телеграм",
+  "Terms of use": "Правила использования",
+  "The main resource is your time, which you are willing to spend on participating in projects": {
+    " You can\n\t\t\t\t\t\t\t\talso provide additional information": "Главный ресурс – это ваше время, которое вы готовы потратить на участие в проектах. Вы также можете предоставить дополнительную информацию",
+    " You can also provide additional information": "Главный ресурс – это ваше время, которое вы готовы потратить на участие в проектах. Вы также можете предоставить дополнительную информацию"
   },
-  "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc" : {
-    "" : "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
+  "The maximum value cannot be less than the minimum": "Максимальное значение не может быть меньше минимального",
+  "The name of the vacancy": "Название вакансии",
+  "The need for liberty": "Потребность в свободе",
+  "The power of self-identity": "Сила самоидентификации",
+  "The registration link is incorrect or has already been used": "Ссылка регистрации неправильная или была уже использована",
+  "There are no applications for participation at the moment": "В данный момент откликов на вакансии нет",
+  "There are no open vacancies at the moment": "В данный момент вакансий нет",
+  "UI/UX designer": "Веб-дизайнер портала",
+  "Updated": "Обновлено",
+  "Upload PDF": "Загрузить PDF",
+  "Vacancies": "Вакансии",
+  "Vacancy description": "Описание вакансии",
+  "Valid until": "Актуальна до",
+  "Video report": "Видеоотчет",
+  "View the presentation": "Посмотреть презентацию",
+  "Visual Style": "Визуальный стиль",
+  "Want to attend": "Хочу принять участие",
+  "We help Authors of new video games to assemble a team of game designers, programmers, artists,\n\t\t\t\t\t\t\t\t\t\t\t\tanimators, etc": {
+    "": "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
   },
-  "We help game industry professionals find an interesting role for themselves in new projects" : {
-    "" : "Мы помогаем профессионалам игровой индустрии найти для себя интересную роль в новых проектах."
+  "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc": {
+    "": "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
   },
-  "Welcome to the community where games are made" : {
-    "" : "Добро пожаловать в сообщество, где создаются игры."
+  "We help game industry professionals find an interesting role for themselves in new projects": {
+    "": "Мы помогаем профессионалам игровой индустрии найти для себя интересную роль в новых проектах."
   },
-  "What will happen" : "Что будет",
-  "When" : "Когда",
-  "Will help the service and project authors offer solutions that are interesting to you" : "Поможем авторам сервиса и проекта предложить интересные вам решения",
-  "Workflow" : "Рабочий процесс",
-  "Yes" : "Да",
-  "You" : "Ты",
-  "You are already registered" : "Вы уже зарегистрированы",
-  "You can change it or add more ones after" : "Вы сможете изменить эти данные позже",
-  "You definitely want to remove?" : "Вы точно хотите удалить?",
-  "You have canceled your vote" : "Вы отменили свой голос",
-  "You have no projects" : "У вас нет проектов",
-  "You should not be younger than 16 years" : "Вы не должны быть моложе 16 лет",
-  "Your Name" : "Ваше имя",
-  "Your profile was successfully completed!" : "Ваш профиль успешно заполнен!",
-  "Your vote has been counted" : "Ваш голос засчитан",
-  "Youtube" : "Youtube",
-  "action-adventure" : "Приключенческий боевик",
-  "actual vacancies" : "открытых вакансий",
-  "add-new-concept" : "Предложить новый кноцепт игры",
-  "additionalInformation" : "Дополнительная информация",
-  "adventure" : "Приключения",
-  "agreeWithTermsAndPrivacy" : "Присоединяясь, вы соглашаетесь с нашими Условиями обслуживания и Политикой конфиденциальности",
-  "agreeWithTermsAndPrivacy.error" : "Для регистрации на сервисе вам необходимо согласиться с указанными документами",
-  "agreements" : "Соглашения",
-  "app-short-description" : "Сообщество профессионалов игровой индустрии, члены которого формируют команды для разработки новых игр. Хотите получить новый опыт или разработать собственную игру? Присоединяйся сейчас!",
-  "app" : {
-    "user-project" : {
-      "menu" : {
-        "overview" : "Дневник разработки",
-        "team" : "Команда",
-        "vacancies" : "Вакансии",
-        "workflow" : "Рабочий процесс"
+  "Welcome to the community where games are made": {
+    "": "Добро пожаловать в сообщество, где создаются игры."
+  },
+  "What direction does this vacancy belong": "К какому направлению деятельности относится данная вакансия",
+  "What will happen": "Что будет",
+  "When": "Когда",
+  "Will help the service and project authors offer solutions that are interesting to you": "Поможем авторам сервиса и проекта предложить интересные вам решения",
+  "Workflow": "Рабочий процесс",
+  "Yes": "Да",
+  "You": "Ты",
+  "You are already registered": "Вы уже зарегистрированы",
+  "You can change it or add more ones after": "Вы сможете изменить эти данные позже",
+  "You definitely want to remove?": "Вы точно хотите удалить?",
+  "You have canceled your vote": "Вы отменили свой голос",
+  "You have no projects": "У вас нет проектов",
+  "You should not be younger than 16 years": "Вы не должны быть моложе 16 лет",
+  "Your Name": "Ваше имя",
+  "Your profile was successfully completed!": "Ваш профиль успешно заполнен!",
+  "Your vote has been counted": "Ваш голос засчитан",
+  "Youtube": "Youtube",
+  "action-adventure": "Приключенческий боевик",
+  "actual vacancies": "открытых вакансий",
+  "add-new-concept": "Предложить новый кноцепт игры",
+  "additionalInformation": "Дополнительная информация",
+  "adventure": "Приключения",
+  "agreeWithTermsAndPrivacy": "Присоединяясь, вы соглашаетесь с нашими Условиями обслуживания и Политикой конфиденциальности",
+  "agreeWithTermsAndPrivacy.error": "Для регистрации на сервисе вам необходимо согласиться с указанными документами",
+  "agreements": "Соглашения",
+  "app-short-description": "Сообщество профессионалов игровой индустрии, члены которого формируют команды для разработки новых игр. Хотите получить новый опыт или разработать собственную игру? Присоединяйся сейчас!",
+  "app": {
+    "user-project": {
+      "menu": {
+        "overview": "Дневник разработки",
+        "team": "Команда",
+        "vacancies": "Вакансии",
+        "workflow": "Рабочий процесс"
       }
     },
-    "user" : {
-      "menu" : {
-        "hub" : "Обзор",
-        "lectures" : "Лекции",
-        "members" : "Участники",
-        "mentors" : "Менторы",
-        "projects" : "Проекты",
-        "settings" : "Настройки",
-        "vacancies" : "Вакансии"
+    "user": {
+      "menu": {
+        "hub": "Обзор",
+        "lectures": "Лекции",
+        "members": "Участники",
+        "mentors": "Менторы",
+        "projects": "Проекты",
+        "settings": "Настройки",
+        "vacancies": "Вакансии"
       }
     }
   },
-  "are-you-sure-you-want-to-delete-it" : "Точно хотите удалить?",
-  "availableTime" : "Доступное время",
-  "back" : "Назад",
-  "button" : {
-    "save" : "Сохранить"
-  },
-  "casual" : "Казуальные",
-  "change" : "Изменить",
-  "checkhealth" : {
-    "description" : "Добро пожаловать в хаб профессионалов из геймдев, которые собираются вместе, чтобы делать новые видео игры.",
-    "error_no_connection" : "Нет связи с сервером. Попробуйте зайти позже."
-  },
-  "city" : "Город",
-  "city-placeholder" : "Укажите город",
-  "city.placeholder" : "Введите название вашего города",
-  "close" : "Закрыть",
-  "common" : {
-    "formError" : "Ошибка. Проверьте, все ли данные введены правильно"
-  },
-  "community members" : "участников сообщества",
-  "communityMember" : "Участник сообщества",
-  "concept-link" : "Ссылка на концепт",
-  "concept-list" : "Список концептов игр",
-  "confirmUserData" : "Я подтверждаю достоверность введенной информации",
-  "confirmUserData.error" : "Вам следует подтвердить достоверность введенной информации",
-  "copyright" : "GDHub, Все права защищены.",
-  "country" : "Страна",
-  "country.placeholder" : "Выберите страну",
-  "current projects" : "текущих проектов",
-  "cvLink" : "Ссылка на резюме/портфолио",
-  "cvLink.plachehloder" : "Ссылка на Linkedin, Artstation или другой сервис",
-  "dance" : "Танцевальные, ритмичные",
-  "demoday" : {
-    "text1" : {
-      "part1" : "Присоединяйтесь к нашему",
-      "part2" : "сообществу"
-    },
-    "text2" : "Регистрируйтесь на gdhub.io — указывайте свою специальность, откликайтесь на вакансии для инди-проектов или запускайте свой.",
-    "text3" : "Присоединяйтесь к нам в чате сообщества, общайтесь и узнавайте последние новости проектов.",
-    "text4" : "Связаться с нами"
-  },
-  "difficultyLevel" : "Уровень сложности",
-  "education" : "Учебные заведения, где вы получили знания по этой специальности",
-  "education.plachehloder" : "Например:\n2000-2010 гг., Гимназия № 145; \n2011, Курс на Udemy «Как стать тестировщиком»",
-  "email" : "Электронная почта",
-  "experience" : "Ваш опыт работы по этой специальности",
-  "experience.plachehloder" : "Например:\n2015-2020, ООО «Геймбук», Unity разработчик \n2020-настоящее время, ООО «Лукоморье», Звукорежиссер\nEсть только опыт выполнения учебных работ",
-  "fairy" : "Сказочный",
-  "fantasy" : "Фэнтэзи",
-  "fighting" : "Борьба, сражения",
-  "firstName" : "Имя",
-  "firstName.plachehloder" : "Максим",
-  "form" : {
-    "difficulty" : {
-      "label" : "Сложность игры, которую вы хотите разработать"
-    },
-    "error" : "Ошибка. Проверьте, все ли данные введены правильно",
-    "error.required.text" : "Это поле обязательно к заполнению",
-    "genres" : {
-      "label" : "Жанры игр, в разработке которых вы хотите поучаствовать"
-    },
-    "motivation" : {
-      "label" : "Ваша мотивация. Почему вы хотите участвовать в разработке игр или создавать свои?",
-      "placeholder" : "Пример: Я хочу быть частью творческой команды. Что меня привлекает в разработке игр..."
-    },
-    "settings" : {
-      "label" : "Игровой сеттинг, с которыми вы хотите работать"
+  "application": {
+    "experts": {
+      "name": "Менторы из геймдева"
     }
   },
-  "fps" : "Шутер от первого лица (FPS)",
-  "fromTo" : "с {fromDate} по {toDate} часов в неделю",
-  "fromToWithDates" : "с {fromDate} по {toDate}",
-  "hard-core" : "Сложные",
-  "historic" : "Исторический",
-  "hours" : "часов",
-  "hours a week" : "часов в неделю",
-  "hub" : {
-    "lectures" : {
-      "text1" : {
-        "part1" : "Часто при решении тех или иных задач возникает множество вопросов. Этот раздел поможет вам найти ответы на них у других участников GDHub. Создайте заявку на интересующую вас тему и, если она актуальна не только для вас, мы постараемся ее выполнить.",
-        "part2" : "А для тех, кто хочет поделиться своим опытом с другими, здесь вы найдете возможность сделать это. Следите за темами, которые интересуют других участников, и предложите себя в качестве лектора.",
-        "part3" : "Давайте делиться знаниями, набираться мудрости ;)"
+  "are-you-sure-you-want-to-delete-it": "Точно хотите удалить?",
+  "availableTime": "Доступное время",
+  "back": "Назад",
+  "button": {
+    "edit": {
+      "label": "Изменить"
+    },
+    "save": "Сохранить"
+  },
+  "casual": "Казуальные",
+  "change": "Изменить",
+  "checkhealth": {
+    "description": "Добро пожаловать в хаб профессионалов из геймдев, которые собираются вместе, чтобы делать новые видео игры.",
+    "error_no_connection": "Нет связи с сервером. Попробуйте зайти позже."
+  },
+  "city": "Город",
+  "city-placeholder": "Укажите город",
+  "city.placeholder": "Введите название вашего города",
+  "close": "Закрыть",
+  "common": {
+    "formError": "Ошибка. Проверьте, все ли данные введены правильно"
+  },
+  "community members": "участников сообщества",
+  "communityMember": "Участник сообщества",
+  "concept-link": "Ссылка на концепт",
+  "concept-list": "Список концептов игр",
+  "confirmUserData": "Я подтверждаю достоверность введенной информации",
+  "confirmUserData.error": "Вам следует подтвердить достоверность введенной информации",
+  "copyright": "GDHub, Все права защищены.",
+  "country": "Страна",
+  "country.placeholder": "Выберите страну",
+  "current projects": "текущих проектов",
+  "cvLink": "Ссылка на резюме/портфолио",
+  "cvLink.plachehloder": "Ссылка на Linkedin, Artstation или другой сервис",
+  "dance": "Танцевальные, ритмичные",
+  "demoday": {
+    "text1": {
+      "part1": "Присоединяйтесь к нашему",
+      "part2": "сообществу"
+    },
+    "text2": "Регистрируйтесь на gdhub.io — указывайте свою специальность, откликайтесь на вакансии для инди-проектов или запускайте свой.",
+    "text3": "Присоединяйтесь к нам в чате сообщества, общайтесь и узнавайте последние новости проектов.",
+    "text4": "Связаться с нами"
+  },
+  "devlog": {
+    "button": {
+      "add-yt-video": "Добавить видео из Youtube"
+    }
+  },
+  "devlogwall": {
+    "postform": {
+      "add-video": "Добавить видео"
+    }
+  },
+  "difficultyLevel": "Уровень сложности",
+  "education": "Учебные заведения, где вы получили знания по этой специальности",
+  "education.plachehloder": "Например:\n2000-2010 гг., Гимназия № 145; \n2011, Курс на Udemy «Как стать тестировщиком»",
+  "email": "Электронная почта",
+  "experience": "Ваш опыт работы по этой специальности",
+  "experience.plachehloder": "Например:\n2015-2020, ООО «Геймбук», Unity разработчик \n2020-настоящее время, ООО «Лукоморье», Звукорежиссер\nEсть только опыт выполнения учебных работ",
+  "fairy": "Сказочный",
+  "fantasy": "Фэнтэзи",
+  "fighting": "Борьба, сражения",
+  "firstName": "Имя",
+  "firstName.plachehloder": "Максим",
+  "form": {
+    "difficulty": {
+      "label": "Сложность игры, которую вы хотите разработать"
+    },
+    "error": "Ошибка. Проверьте, все ли данные введены правильно",
+    "error.required.text": "Это поле обязательно к заполнению",
+    "genres": {
+      "label": "Жанры игр, в разработке которых вы хотите поучаствовать"
+    },
+    "message": {
+      "incorrect": "Ошибка. Проверьте все ли данные были введены корректно"
+    },
+    "motivation": {
+      "label": "Ваша мотивация. Почему вы хотите участвовать в разработке игр или создавать свои?",
+      "placeholder": "Пример: Я хочу быть частью творческой команды. Что меня привлекает в разработке игр..."
+    },
+    "settings": {
+      "label": "Игровой сеттинг, с которыми вы хотите работать"
+    }
+  },
+  "fps": "Шутер от первого лица (FPS)",
+  "fromTo": "с {fromDate} по {toDate} часов в неделю",
+  "fromToWithDates": "с {fromDate} по {toDate}",
+  "hard-core": "Сложные",
+  "historic": "Исторический",
+  "hours": "часов",
+  "hours a week": "часов в неделю",
+  "hub": {
+    "lectures": {
+      "text1": {
+        "part1": "Часто при решении тех или иных задач возникает множество вопросов. Этот раздел поможет вам найти ответы на них у других участников GDHub. Создайте заявку на интересующую вас тему и, если она актуальна не только для вас, мы постараемся ее выполнить.",
+        "part2": "А для тех, кто хочет поделиться своим опытом с другими, здесь вы найдете возможность сделать это. Следите за темами, которые интересуют других участников, и предложите себя в качестве лектора.",
+        "part3": "Давайте делиться знаниями, набираться мудрости ;)"
       }
     },
-    "text1" : {
-      "part1" : "Сейчас вы можете ознакомиться с нашей платформой, но, чтобы иметь возможность создавать свои проекты или откликаться на вакансии других вам необходимо завершить регистрацию заполнив необходимые данные о себе.",
-      "part2" : "И не забудьте присоединиться к чату сообщества, используя"
+    "text1": {
+      "part1": "Сейчас вы можете ознакомиться с нашей платформой, но, чтобы иметь возможность создавать свои проекты или откликаться на вакансии других вам необходимо завершить регистрацию заполнив необходимые данные о себе.",
+      "part2": "И не забудьте присоединиться к чату сообщества, используя"
     }
   },
-  "hyper-casual" : "Гиперказуальные",
-  "in the form of short pitches" : "в виде коротких питчей",
-  "interest" : "Основной интерес",
-  "interests" : "Интересы",
-  "interestsAndPreferencesDescription" : "Эта информация поможет нам точнее формировать для вас рекомендации по проектам, кандидатам на проекты.",
-  "landing" : {
-    "about" : {
-      "abovetitle" : "Узнать о нас",
-      "subtitle" : "Мы — сообщество профессионалов игрового мира, которые не хотят ограничиваться традиционной занятостью.",
-      "text1" : "Мы начали свой путь в 2015 году, когда организовали инкубатор разработки игр, где обучали и поддерживали молодых разработчиков, помогая им воплощать свои идеи в жизнь. С тех пор мы превратились в Gdhub — уникальную платформу, объединяющую опытных профессионалов из разных областей игровой разработки в динамичные и творческие команды.",
-      "text2" : "На Gdhub вы можете найти партнеров для совместной разработки коммерческих видеоигр, а также поделиться знаниями и опытом с другими членами сообщества.",
-      "text3" : "Мы работаем в gig-экономике – экономике временной и непостоянной работы, что дает нам гибкость и независимость. Мы ценим свободу, креативность и возможность выбирать интересные проекты.",
-      "title" : "КТО МЫ ТАКИЕ"
+  "hyper-casual": "Гиперказуальные",
+  "in the form of short pitches": "в виде коротких питчей",
+  "interest": "Основной интерес",
+  "interests": "Интересы",
+  "interestsAndPreferencesDescription": "Эта информация поможет нам точнее формировать для вас рекомендации по проектам, кандидатам на проекты.",
+  "landing": {
+    "about": {
+      "abovetitle": "Узнать о нас",
+      "subtitle": "Мы — сообщество профессионалов игрового мира, которые не хотят ограничиваться традиционной занятостью.",
+      "text1": "Мы начали свой путь в 2015 году, когда организовали инкубатор разработки игр, где обучали и поддерживали молодых разработчиков, помогая им воплощать свои идеи в жизнь. С тех пор мы превратились в Gdhub — уникальную платформу, объединяющую опытных профессионалов из разных областей игровой разработки в динамичные и творческие команды.",
+      "text2": "На Gdhub вы можете найти партнеров для совместной разработки коммерческих видеоигр, а также поделиться знаниями и опытом с другими членами сообщества.",
+      "text3": "Мы работаем в gig-экономике – экономике временной и непостоянной работы, что дает нам гибкость и независимость. Мы ценим свободу, креативность и возможность выбирать интересные проекты.",
+      "title": "КТО МЫ ТАКИЕ"
     },
-    "author" : {
-      "pretitle" : "в чем наши преимущества",
-      "text1" : "Нашей платформой активно пользуются многие профессионалы из геймдева – геймдизайнеров, программистов, художников, аниматоров и т.д.",
-      "text2" : "Начинай разработку игры не имея финансирования на команду",
-      "text3" : "Каждый Автор может выбрать формат работы на нашем портале: в рамках инкубационной программы Gamelab или работать самостоятельно в своем темпе.",
-      "title" : "ДЛЯ АВТОРОВ"
+    "author": {
+      "pretitle": "в чем наши преимущества",
+      "text1": "Нашей платформой активно пользуются многие профессионалы из геймдева – геймдизайнеров, программистов, художников, аниматоров и т.д.",
+      "text2": "Начинай разработку игры не имея финансирования на команду",
+      "text3": "Каждый Автор может выбрать формат работы на нашем портале: в рамках инкубационной программы Gamelab или работать самостоятельно в своем темпе.",
+      "title": "ДЛЯ АВТОРОВ"
     },
-    "feedback" : {
-      "description0" : "Геймдизайнер",
-      "description1" : "Ведущий дизайнер уровней",
-      "description2" : "Геймдизайнер",
-      "description3" : "2D художник",
-      "description4" : "Геймдизайнер",
-      "description5" : "Геймдизайнер",
-      "description6" : "2D художник",
-      "description7" : "Геймдизайнер",
-      "description8" : "Менеджер проектов",
-      "pretitle" : "Отзывы",
-      "subtitle" : "Мы рады долгосрочному сотрудничеству с нашими пользователями!",
-      "text0" : "В настоящее время я работаю в OpenMyGame средним геймдизайнером. Я хотел поучаствовать в геймлабе в качестве gd и pm, чтобы набраться опыта. Все запланированное увенчалось успехом. Познакомился с интересными людьми. Впоследствии этот опыт и сам факт участия в подобном мероприятии очень помогли мне найти свою первую работу в качестве генерального директора. Желаю новым участникам удачи и терпения.",
-      "text1" : "Моими главными целями было получить опыт работы над игрой всей командой, но уже через пару месяцев стало понятно, что бросать игру никто не хочет, и мы продолжили дорабатывать демо-версию. В итоге спустя почти год работы у нас появилась демо-версия с самым базовым функционалом, хорошим стартовым визуалом, музыкой и даже полноценным трейлером.",
-      "text2" : "Я работаю GD (гейм-дизайнером) в компании-разработчике, занимающейся созданием игр для мобильного рынка. Я пришел туда сразу после лаборатории в качестве дизайнера уровней. С некоторыми членами команды я до сих пор общаюсь, и с 3D-художником мы работаем вместе :)",
-      "text3" : "Желаю следующим проектам: опытных лидов и более четких целей. А также такая же страсть и интерес к проекту, как и у нашей команды.",
-      "text4" : "Большое спасибо за этот опыт. Мне удалось многое испытать вживую.",
-      "text5" : "Команда - \uD83D\uDD25\uD83D\uDD25\uD83D\uDD25. Спасибо за возможность поработать с вами! )",
-      "text6" : "Я люблю свою команду! Я хотел бы продолжить сотрудничество. Желаю добиться успеха и двигаться дальше, несмотря на все препятствия)",
-      "text7" : "Ни один тренинг не даст вам столько эмоций и столько новой практики, сколько дал лично мне GD Hub. Ведь все члены вашей команды вам ничего не должны и не обязаны ничего делать. Все, что у вас есть, — это ваша идея, ваш опыт в чем-то и ваша внутренняя энергия, которая позволит вам вести команду от начала до конца и продолжать вести ее дальше, пока ваш продукт не дойдет до настоящего игрока.",
-      "text8" : "Команда сформировалась достаточно хорошо, если эта игра не сложится и большинство не разбежится, то можно попробовать начать следующую игру с нуля и с учетом полученного опыта.",
-      "text9" : "Все круто! Давайте двигаться дальше ;)",
-      "title" : "ЧТО ГОВОРЯТ НАШИ ПОЛЬЗОВАТЕЛИ",
-      "title0" : "Вячеслав",
-      "title1" : "Каролина",
-      "title2" : "Николай",
-      "title3" : "Анна",
-      "title4" : "Евгений",
-      "title5" : "Дмитрий",
-      "title6" : "Елена",
-      "title7" : "Сергей",
-      "title8" : "Алексей"
+    "feedback": {
+      "description0": "Геймдизайнер",
+      "description1": "Ведущий дизайнер уровней",
+      "description2": "Геймдизайнер",
+      "description3": "2D художник",
+      "description4": "Геймдизайнер",
+      "description5": "Геймдизайнер",
+      "description6": "2D художник",
+      "description7": "Геймдизайнер",
+      "description8": "Менеджер проектов",
+      "pretitle": "Отзывы",
+      "subtitle": "Мы рады долгосрочному сотрудничеству с нашими пользователями!",
+      "text0": "В настоящее время я работаю в OpenMyGame средним геймдизайнером. Я хотел поучаствовать в геймлабе в качестве gd и pm, чтобы набраться опыта. Все запланированное увенчалось успехом. Познакомился с интересными людьми. Впоследствии этот опыт и сам факт участия в подобном мероприятии очень помогли мне найти свою первую работу в качестве генерального директора. Желаю новым участникам удачи и терпения.",
+      "text1": "Моими главными целями было получить опыт работы над игрой всей командой, но уже через пару месяцев стало понятно, что бросать игру никто не хочет, и мы продолжили дорабатывать демо-версию. В итоге спустя почти год работы у нас появилась демо-версия с самым базовым функционалом, хорошим стартовым визуалом, музыкой и даже полноценным трейлером.",
+      "text2": "Я работаю GD (гейм-дизайнером) в компании-разработчике, занимающейся созданием игр для мобильного рынка. Я пришел туда сразу после лаборатории в качестве дизайнера уровней. С некоторыми членами команды я до сих пор общаюсь, и с 3D-художником мы работаем вместе :)",
+      "text3": "Желаю следующим проектам: опытных лидов и более четких целей. А также такая же страсть и интерес к проекту, как и у нашей команды.",
+      "text4": "Большое спасибо за этот опыт. Мне удалось многое испытать вживую.",
+      "text5": "Команда - \uD83D\uDD25\uD83D\uDD25\uD83D\uDD25. Спасибо за возможность поработать с вами! )",
+      "text6": "Я люблю свою команду! Я хотел бы продолжить сотрудничество. Желаю добиться успеха и двигаться дальше, несмотря на все препятствия)",
+      "text7": "Ни один тренинг не даст вам столько эмоций и столько новой практики, сколько дал лично мне GD Hub. Ведь все члены вашей команды вам ничего не должны и не обязаны ничего делать. Все, что у вас есть, — это ваша идея, ваш опыт в чем-то и ваша внутренняя энергия, которая позволит вам вести команду от начала до конца и продолжать вести ее дальше, пока ваш продукт не дойдет до настоящего игрока.",
+      "text8": "Команда сформировалась достаточно хорошо, если эта игра не сложится и большинство не разбежится, то можно попробовать начать следующую игру с нуля и с учетом полученного опыта.",
+      "text9": "Все круто! Давайте двигаться дальше ;)",
+      "title": "ЧТО ГОВОРЯТ НАШИ ПОЛЬЗОВАТЕЛИ",
+      "title0": "Вячеслав",
+      "title1": "Каролина",
+      "title2": "Николай",
+      "title3": "Анна",
+      "title4": "Евгений",
+      "title5": "Дмитрий",
+      "title6": "Елена",
+      "title7": "Сергей",
+      "title8": "Алексей"
     },
-    "specialist" : {
-      "pretitle" : "в чем наши приемущества",
-      "text1" : "У каждого специалиста игровой индустрии есть возможность присоединиться к одному из разрабатываемых инди-проектов, чтобы набраться опыта и завести новых друзей.",
-      "text2" : "Вы можете стать частью новой видеоигры или поделиться своим опытом в качестве наставника.",
-      "title" : "ДЛЯ СПЕЦИАЛИСТОВ"
+    "specialist": {
+      "pretitle": "в чем наши приемущества",
+      "text1": "У каждого специалиста игровой индустрии есть возможность присоединиться к одному из разрабатываемых инди-проектов, чтобы набраться опыта и завести новых друзей.",
+      "text2": "Вы можете стать частью новой видеоигры или поделиться своим опытом в качестве наставника.",
+      "title": "ДЛЯ СПЕЦИАЛИСТОВ"
     }
   },
-  "lastName" : "Фамилия",
-  "lastName.plachehloder" : "Пень",
-  "mid-core" : "Средней сложности",
-  "military" : "Военный",
-  "mmorpg" : "Многопользовательская ролевая онлайн игра (MMORPG)",
-  "modal" : {
-    "lectureRequest" : {
-      "lecture-created-success" : "Добавлен новый запрос на лекцию",
-      "lecture-name" : "Тема лекции",
-      "lecture-updated-success" : "Лекция изменена",
-      "wishes" : "Пожелания к содержанию лекции",
-      "wishes-help" : "Итак, что вы хотите узнать на этой лекции?",
-      "work-direction" : "Какому направлению принадлежит эта лекция?"
-    },
-    "lecturerRequest" : {
-      "createSuccess" : "Ваше предложение о проведении лекции отправлено",
-      "curriculum" : "План лекции. О чем вы планируете говорить?",
-      "direction" : "Какому направлению принадлежит эта лекция?",
-      "linkToStream" : "Ссылка на трансляцию",
-      "linkToStream.extra.part1" : "Создайте ссылку для трансляции в",
-      "linkToStream.extra.part2" : "(или на другом сервисе) и вставьте в это поле.",
-      "title" : "Я хочу прочитать эту лекцию",
-      "updateSuccess" : "Ваше предложение обновлено",
-      "wishes" : "Пожелания к содержанию лекции"
-    },
-    "project" : {
-      "audition" : {
-        "label" : "Аудитория"
-      },
-      "conceptLink" : {
-        "label" : "Ссылка на концептуальный документ (описание идеи)"
-      },
-      "coreMechanics" : {
-        "extra" : "Начните печатать. Чтобы ввести новую механику, нажмите Enter на клавиатуре и введите текст.",
-        "label" : "Основная механика"
-      },
-      "coverImage" : {
-        "hint" : "Допускаются файлы в форматах jpg, png. Соотношение сторон 16/9. Например, размер 1920х1080 пикселей.",
-        "label" : "Обложка для проекта",
-        "text" : "Добавить обложку проекта"
-      },
-      "description" : {
-        "label" : "Краткое описание"
-      },
-      "errorText" : "Ошибка. Проверьте, все ли данные введены правильно",
-      "gddLink" : {
-        "label" : "Ссылка на геймдиайн-документ"
-      },
-      "genre" : {
-        "label" : "Жанр"
-      },
-      "name" : {
-        "label" : "Название проекта"
-      },
-      "pitchdeckLink" : {
-        "label" : "Ссылка на презентацию (для питча)"
-      },
-      "platform" : {
-        "label" : "Платформа"
-      },
-      "setting" : {
-        "label" : "Сеттинг"
-      },
-      "videoLink" : {
-        "label" : "Питч-видео"
-      },
-      "visualStyle" : {
-        "label" : "Визуальный стиль"
+  "lastName": "Фамилия",
+  "lastName.plachehloder": "Пень",
+  "mid-core": "Средней сложности",
+  "military": "Военный",
+  "mmorpg": "Многопользовательская ролевая онлайн игра (MMORPG)",
+  "modal": {
+    "devlogwall": {
+      "newpost": {
+        "label": "Что нового на проекте?",
+        "postBtn": {
+          "label": "Опубликовать"
+        }
       }
     },
-    "projectReport" : {
-      "content" : "Что нового по сравнению с предыдущим отчетом?"
+    "lectureRequest": {
+      "lecture-created-success": "Добавлен новый запрос на лекцию",
+      "lecture-name": "Тема лекции",
+      "lecture-updated-success": "Лекция изменена",
+      "wishes": "Пожелания к содержанию лекции",
+      "wishes-help": "Итак, что вы хотите узнать на этой лекции?",
+      "work-direction": "Какому направлению принадлежит эта лекция?"
     },
-    "proposition-lecture" : {
-      "field" : {
-        "linkToStream" : {
-          "extra" : {
-            "part1" : "Создайте ссылку для трансляции в",
-            "part2" : "(или на другом сервисе) и вставьте в это поле."
+    "lecturerRequest": {
+      "createSuccess": "Ваше предложение о проведении лекции отправлено",
+      "curriculum": "План лекции. О чем вы планируете говорить?",
+      "direction": "Какому направлению принадлежит эта лекция?",
+      "linkToStream": "Ссылка на трансляцию",
+      "linkToStream.extra.part1": "Создайте ссылку для трансляции в",
+      "linkToStream.extra.part2": "(или на другом сервисе) и вставьте в это поле.",
+      "title": "Я хочу прочитать эту лекцию",
+      "updateSuccess": "Ваше предложение обновлено",
+      "wishes": "Пожелания к содержанию лекции"
+    },
+    "project": {
+      "audition": {
+        "label": "Аудитория"
+      },
+      "conceptLink": {
+        "label": "Ссылка на концептуальный документ (описание идеи)"
+      },
+      "coreMechanics": {
+        "extra": "Начните печатать. Чтобы ввести новую механику, нажмите Enter на клавиатуре и введите текст.",
+        "label": "Основная механика"
+      },
+      "coverImage": {
+        "hint": "Допускаются файлы в форматах jpg, png. Соотношение сторон 16/9. Например, размер 1920х1080 пикселей.",
+        "label": "Обложка для проекта",
+        "text": "Добавить обложку проекта"
+      },
+      "description": {
+        "label": "Краткое описание"
+      },
+      "errorText": "Ошибка. Проверьте, все ли данные введены правильно",
+      "gddLink": {
+        "label": "Ссылка на геймдиайн-документ"
+      },
+      "genre": {
+        "label": "Жанр"
+      },
+      "name": {
+        "label": "Название проекта"
+      },
+      "pitchdeckLink": {
+        "label": "Ссылка на презентацию (для питча)"
+      },
+      "platform": {
+        "label": "Платформа"
+      },
+      "setting": {
+        "label": "Сеттинг"
+      },
+      "videoLink": {
+        "label": "Питч-видео"
+      },
+      "visualStyle": {
+        "label": "Визуальный стиль"
+      }
+    },
+    "projectReport": {
+      "content": "Что нового по сравнению с предыдущим отчетом?"
+    },
+    "proposition-lecture": {
+      "field": {
+        "linkToStream": {
+          "extra": {
+            "part1": "Создайте ссылку для трансляции в",
+            "part2": "(или на другом сервисе) и вставьте в это поле."
           }
         }
       }
     },
-    "speciality-select" : {
-      "choose-text" : "Выберите специальность, соответствующую выбранной вакансии",
-      "contact-text" : "Как автору проекта связаться с вами?",
-      "okText" : "Выбрать",
-      "title" : "Укажите специальность"
+    "speciality-select": {
+      "choose-text": "Выберите специальность, соответствующую выбранной вакансии",
+      "contact-text": "Как автору проекта связаться с вами?",
+      "okText": "Выбрать",
+      "title": "Укажите специальность"
     },
-    "speciality" : {
-      "create-update" : {
-        "error" : "Ошибка. Проверьте, все ли данные введены правильно"
+    "speciality": {
+      "create-update": {
+        "error": "Ошибка. Проверьте, все ли данные введены правильно"
       },
-      "create" : {
-        "success" : "Добавить специальность"
+      "create": {
+        "success": "Добавить специальность"
       },
-      "form" : {
-        "jobs" : {
-          "extra" : "Работу напишите с новой строки.Укажите в формате: Даты работы, место работы, должность.",
-          "label" : "Где ты работаешь?"
+      "form": {
+        "jobs": {
+          "extra": "Работу напишите с новой строки.Укажите в формате: Даты работы, место работы, должность.",
+          "label": "Где ты работаешь?"
         },
-        "level" : {
-          "label" : "Уровень владения"
+        "level": {
+          "label": "Уровень владения"
         },
-        "name" : {
-          "label" : "Название специальности"
+        "name": {
+          "label": "Название специальности"
         },
-        "portfolioUrl" : {
-          "label" : "Ссылка на портфолио/резюме"
+        "portfolioUrl": {
+          "label": "Ссылка на портфолио/резюме"
         },
-        "schools" : {
-          "extra" : "Каждое место обучения пишите с новой строки. Укажите в формате: период обучения, место обучения, ФИО/название специальности.",
-          "label" : "Где ты учился?"
+        "schools": {
+          "extra": "Каждое место обучения пишите с новой строки. Укажите в формате: период обучения, место обучения, ФИО/название специальности.",
+          "label": "Где ты учился?"
         },
-        "skills" : {
-          "extra" : "Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение",
-          "label" : "Список навыков"
+        "skills": {
+          "extra": "Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение",
+          "label": "Список навыков"
         },
-        "specialization" : {
-          "label" : "Специализация"
+        "specialization": {
+          "label": "Специализация"
         },
-        "summary" : {
-          "label" : "Коротко о том, чем вы занимаетесь"
+        "summary": {
+          "label": "Коротко о том, чем вы занимаетесь"
         },
-        "tools" : {
-          "extra" : "Укажите, какие инструменты/программное обеспечение/сервисы вы используете в своей работе.",
-          "label" : "Инструменты"
+        "tools": {
+          "extra": "Укажите, какие инструменты/программное обеспечение/сервисы вы используете в своей работе.",
+          "label": "Инструменты"
         },
-        "workDirectionId" : {
-          "label" : "Направление деятельности"
+        "workDirectionId": {
+          "label": "Направление деятельности"
         }
       },
-      "title" : {
-        "create" : "Добавить специальность",
-        "update" : "Изменить специальность"
+      "title": {
+        "create": "Добавить специальность",
+        "update": "Изменить специальность"
       },
-      "update" : {
-        "success" : "Данные по специальности обновлены"
+      "update": {
+        "success": "Данные по специальности обновлены"
       }
     },
-    "vacancy-archive" : {
-      "title" : "Архив вакансий проекта {projectName}"
+    "vacancy-archive": {
+      "title": "Архив вакансий проекта {projectName}"
     },
-    "vacancy" : {
-      "applied" : "Вы уже откликнулись на эту вакансию",
-      "applySuccess" : "Ваш ответ отозван",
-      "descriptionHelp" : "Опишите требования/пожелания к кандидату, опишите каку работу, которую ему предстоит выполнять.",
-      "notAuth" : "Отвечать могут только зарегистрированные пользователи с заполненными данными о специальности.",
-      "titleSession" : "Вакансия",
-      "withdrawSuccess" : "Ваш ответ отозван"
+    "vacancy": {
+      "applied": "Вы уже откликнулись на эту вакансию",
+      "applySuccess": "Ваш ответ отозван",
+      "descriptionHelp": "Опишите требования/пожелания к кандидату, опишите каку работу, которую ему предстоит выполнять.",
+      "descriptionPlaceholder": "Например: Я ищу концепт-художника, который специализируется на быстром создании скетчей реалистичных персонажей",
+      "notAuth": "Отвечать могут только зарегистрированные пользователи с заполненными данными о специальности.",
+      "titleSession": "Вакансия",
+      "withdrawSuccess": "Ваш ответ отозван"
     }
   },
-  "needAuth" : "Необходима авторизация",
-  "needAuthDescription" : "Просмотр этих данных доступен только авторизованным пользователям платформы.",
-  "no" : "Нет",
-  "no-projects-yet" : "Проектов для этой стадии не найдено",
-  "no-user-projects" : "Здесь будет отображаться список ваших проектов.",
-  "onboarding" : {
-    "interests" : {
-      "motivation" : {
-        "description" : "Информация о вашей мотивации и предпочтениях. Эта информация позволит платформе предложить вам наиболее подходящие проекты, вакансии или кандидатов для вашего проекта."
-      }
-    },
-    "welcome" : {
-      "button1" : "Заполните профиль",
-      "text1" : "Мы рады, что вы с нами! Еще немного и вы сможете использовать все доступные на сегодня возможности нашего портала. Для того, чтобы он был вам полезен, вам нужно немного рассказать о себе и своих интересах.",
-      "title" : "Добро пожаловать в сообщество Game Developers Hub!"
+  "my-project": {
+    "list": {
+      "empty": "У вас еще нет проектов. Создайте новый или присоединитись к проектам других пользователей."
     }
   },
-  "online" : "Онлайн",
-  "oriental fantasy" : "Азиатская фэнтэзи",
-  "other" : "Другие",
-  "page" : {
-    "documentation" : {
-      "title" : "Документация"
-    },
-    "hab" : {
-      "projects" : {
-        "subtitle" : "Проекты разработанные или разрабатываемые пользователями платформы",
-        "title" : "Игровые пректы"
+  "needAuth": "Необходима авторизация",
+  "needAuthDescription": "Просмотр этих данных доступен только авторизованным пользователям платформы.",
+  "no": "Нет",
+  "no-projects-yet": "Проектов для этой стадии не найдено",
+  "no-user-projects": "Здесь будет отображаться список ваших проектов.",
+  "onboarding": {
+    "interests": {
+      "motivation": {
+        "description": "Информация о вашей мотивации и предпочтениях. Эта информация позволит платформе предложить вам наиболее подходящие проекты, вакансии или кандидатов для вашего проекта."
       }
     },
-    "hub" : {
-      "members" : {
-        "text1" : "Любой зарегистрированный пользователь нашего портала считается участником сообщества. Сегодня мы",
-        "text2" : {
-          "part1" : "Те из нас, кто указал специальность в своем профиле, считаются участниками, открытыми для предложений по участию в разработке инди-проектов. На сегодняшний день",
-          "part2" : "специалисты зарегистрированы."
+    "welcome": {
+      "button1": "Заполните профиль",
+      "text1": "Мы рады, что вы с нами! Еще немного и вы сможете использовать все доступные на сегодня возможности нашего портала. Для того, чтобы он был вам полезен, вам нужно немного рассказать о себе и своих интересах.",
+      "title": "Добро пожаловать в сообщество Game Developers Hub!"
+    }
+  },
+  "online": "Онлайн",
+  "oriental fantasy": "Азиатская фэнтэзи",
+  "other": "Другие",
+  "page": {
+    "documentation": {
+      "title": "Документация"
+    },
+    "hab": {
+      "projects": {
+        "subtitle": "Проекты разработанные или разрабатываемые пользователями платформы",
+        "title": "Игровые проекты"
+      }
+    },
+    "hub": {
+      "members": {
+        "text1": "Любой зарегистрированный пользователь нашего портала считается участником сообщества. На сегодня нас",
+        "text2": {
+          "part1": "Те из нас, кто указал специальность в своем профиле, считаются участниками, открытыми для предложений по участию в разработке инди-проектов. На сегодняшний день",
+          "part2": "специалистов зарегистрированы."
         },
-        "text3" : "Авторы инди-проектов имеют доступ к базе специалистов и могут приглашать их в свои проекты. Для этого вам необходимо создать проект и довести его до стадии рекрутинга."
+        "text3": "Авторы инди-проектов имеют доступ к базе специалистов и могут приглашать их в свои проекты. Для этого вам необходимо создать проект и довести его до стадии рекрутинга."
       }
     }
   },
-  "participants" : "участники",
-  "pitches-will-at-date-on-our-channel" : "Питчи проектов состоятся {date} года на нашем канале в",
-  "platformer" : "Платформер",
-  "popup" : {
-    "cookie" : {
-      "accept" : "Я согласен",
-      "more" : "Подробнее",
-      "text" : "Этот веб-сайт использует файлы cookie для улучшения пользовательского опыта. Используя наш веб-сайт, вы соглашаетесь на использование всех файлов cookie в соответствии с нашей Политикой использования файлов cookie."
+  "participants": "участники",
+  "pitches-will-at-date-on-our-channel": "Питчи проектов состоятся {date} года на нашем канале в",
+  "platformer": "Платформер",
+  "popup": {
+    "cookie": {
+      "accept": "Я согласен",
+      "more": "Подробнее",
+      "text": "Этот веб-сайт использует файлы cookie для улучшения пользовательского опыта. Используя наш веб-сайт, вы соглашаетесь на использование всех файлов cookie в соответствии с нашей Политикой использования файлов cookie."
     }
   },
-  "profile-form" : {
-    "specialities" : {
-      "card" : {
-        "button" : {
-          "add-speciality" : "Добавить специальность",
-          "change-speciality" : "Изменить"
+  "profile-form": {
+    "specialities": {
+      "card": {
+        "button": {
+          "add-speciality": "Добавить специальность",
+          "change-speciality": "Изменить"
         },
-        "description" : "Специальности позволяют откликаться на вакансии из существующих проектов и проводить лекции.",
-        "no-specialities" : "Вы еще не добавили ни одной специальности.",
-        "title" : "Специальности"
+        "description": "Специальности позволяют откликаться на вакансии из существующих проектов и проводить лекции.",
+        "no-specialities": "Вы еще не добавили ни одной специальности.",
+        "title": "Специальности"
       }
     }
   },
-  "profile-forms" : {
-    "general" : {
-      "card" : {
-        "title" : "Данные пользователя"
+  "profile-forms": {
+    "connect": {
+      "card": {
+        "title": "Подключить Telegram"
+      }
+    },
+    "general": {
+      "card": {
+        "title": "Данные пользователя"
       },
-      "field" : {
-        "email" : {
-          "title" : "Электронная почта"
+      "field": {
+        "email": {
+          "title": "Электронная почта"
         },
-        "tgNickname" : {
-          "extra" : "Указывать без символа @",
-          "title" : "Никнейм в телеграмме"
-        }
-      }
-    },
-    "interests" : {
-      "field" : {
-        "motivation" : {
-          "label" : "Ваша мотивация к участию в проектах или в их создании"
-        },
-        "preferredGenres" : {
-          "label" : "Жанры игр, в разработке которых вы хотите поучаствовать"
-        },
-        "preferredLevels" : {
-          "label" : "Игры какой сложности вы бы хотели разработать?"
-        },
-        "preferredSettings" : {
-          "label" : "Визуальный сеттинг проектов, с которыми вам было бы интересно поработать"
+        "tgNickname": {
+          "extra": "Указывать без символа @",
+          "title": "Никнейм в телеграмме"
         }
       }
     },
-    "resources" : {
-      "card" : {
-        "title" : "Ресурсы"
+    "interests": {
+      "field": {
+        "motivation": {
+          "label": "Ваша мотивация к участию в проектах или в их создании"
+        },
+        "preferredGenres": {
+          "label": "Жанры игр, в разработке которых вы хотите поучаствовать"
+        },
+        "preferredLevels": {
+          "label": "Игры какой сложности вы бы хотели разработать?"
+        },
+        "preferredSettings": {
+          "label": "Визуальный сеттинг проектов, с которыми вам было бы интересно поработать"
+        }
+      }
+    },
+    "resources": {
+      "card": {
+        "title": "Ресурсы"
       },
-      "field" : {
-        "timeForWork" : {
-          "title" : "Доступное время"
+      "field": {
+        "other-resources": {
+          "label": "Другие ресурсы"
+        },
+        "timeForWork": {
+          "title": "Доступное время"
         }
       }
     }
   },
-  "projectListByStage" : "Список проектов на текущей стадии",
-  "puzzle" : "Пазлы",
-  "qualified specialists" : "специалистов",
-  "real life" : "Реальная жизнь",
-  "registration" : "Регистрация",
-  "registration.email.complete" : "Мы отправили письмо на адрес {email} со ссылкой для доступа. Перейдите по ссылке и выполните следующие шаги регистрации.",
-  "registration.email.extra" : "Должен совпадать с электронной почтой, которую вы ввели при старте регистраци",
-  "registration.email.subtitle" : "Мы отправим письмо на электронную почту со ссылкой для регистрации.",
-  "relevant for" : "актуально для",
-  "resigration-to-demoday" : "Регистрация на Demo Day",
-  "resources" : "Ресурсы",
-  "rpg" : "Ролевые игры (RPG)",
-  "rts" : "Стратегия в реальном времени (RTS)",
-  "save" : "Сохранить",
-  "saveAndContinue" : "Сохранить и продолжить",
-  "sci-fi" : "Научная фантастика",
-  "seasonsListDesc" : "В рамках этой программы авторы игр могут подать свои идеи, а другие специалисты могут попасть в команды Разработки и превратить эти идеи в компьютерную или мобильную игру.",
-  "seasonsListEmpty" : "На данный момент активных запусков инкубационной программы Gamelab нет. Следите за анонсами будущих запусков в наших чатах и социальных сетях. Вы также можете инициировать старт своего проекта вне икубационной программы Gamelab, заполнив",
-  "select" : "Выберите",
-  "shooter" : "Шутер",
-  "signin" : "Войти",
-  "signin.email.complete" : "Мы отправили электронное письмо на адрес {email} со ссылкой для доступа к платформе. Переходите по данный ссылке и пользуйтесь платформой.",
-  "signin.subtitle" : "Мы отправим письмо на электронную почту со ссылкой для входа в свой аккаунт.",
-  "simulation" : "Симуляторы",
-  "skill" : {
-    "beginner" : {
-      "description" : "Вы знаете, как выполнять работу, у вас уже есть некоторый опыт"
+  "project": {
+    "create": "Создать проект"
+  },
+  "projectListByStage": "Список проектов на текущей стадии",
+  "puzzle": "Пазлы",
+  "qualified specialists": "специалистов",
+  "real life": "Реальная жизнь",
+  "registration": "Регистрация",
+  "registration.email.complete": "Мы отправили письмо на адрес {email} со ссылкой для доступа. Перейдите по ссылке и выполните следующие шаги регистрации.",
+  "registration.email.extra": "Должен совпадать с электронной почтой, которую вы ввели при старте регистраци",
+  "registration.email.subtitle": "Мы отправим письмо на электронную почту со ссылкой для регистрации.",
+  "relevant for": "актуально для",
+  "resigration-to-demoday": "Регистрация на Demo Day",
+  "resources": "Ресурсы",
+  "rpg": "Ролевые игры (RPG)",
+  "rts": "Стратегия в реальном времени (RTS)",
+  "save": "Сохранить",
+  "saveAndContinue": "Сохранить и продолжить",
+  "sci-fi": "Научная фантастика",
+  "seasonsListDesc": "В рамках этой программы авторы игр могут подать свои идеи, а другие специалисты могут попасть в команды Разработки и превратить эти идеи в компьютерную или мобильную игру.",
+  "seasonsListEmpty": "На данный момент активных запусков инкубационной программы Gamelab нет. Следите за анонсами будущих запусков в наших чатах и социальных сетях. Вы также можете инициировать старт своего проекта вне икубационной программы Gamelab, заполнив",
+  "select": "Выберите",
+  "shooter": "Шутер",
+  "signin": "Войти",
+  "signin.email.complete": "Мы отправили электронное письмо на адрес {email} со ссылкой для доступа к платформе. Переходите по данный ссылке и пользуйтесь платформой.",
+  "signin.subtitle": "Мы отправим письмо на электронную почту со ссылкой для входа в свой аккаунт.",
+  "simulation": "Симуляторы",
+  "skill": {
+    "beginner": {
+      "description": "Вы знаете, как выполнять работу, у вас уже есть некоторый опыт"
     },
-    "experienced" : {
-      "description" : "В своей работе вы используете интуицию, основанную на своем опыте"
+    "experienced": {
+      "description": "В своей работе вы используете интуицию, основанную на своем опыте"
     },
-    "expert" : {
-      "description" : "У вас есть огромная библиотека различных ситуаций (кейсов), построенная на основе вашего опыта"
+    "expert": {
+      "description": "У вас есть огромная библиотека различных ситуаций (кейсов), построенная на основе вашего опыта"
     },
-    "novice" : {
-      "description" : "Вы знаете, как выполнять работу, но у вас еще нет опыта"
+    "novice": {
+      "description": "Вы знаете, как выполнять работу, но у вас еще нет опыта"
     },
-    "skillful" : {
-      "description" : "Принимаете на себя ответственность за выбор способа выполнения работы и можете расставлять приоритеты в работе по уровню важности"
+    "skillful": {
+      "description": "Принимаете на себя ответственность за выбор способа выполнения работы и можете расставлять приоритеты в работе по уровню важности"
     }
   },
-  "skillList" : "Список навыков",
-  "skillList.extra" : "Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение",
-  "skillList.plachehloder" : "Например:\nрисовать концепты мультяшных персонажей\nразрабатывать диалоговые системы",
-  "specialisation" : "Специализация",
-  "specialisation.plachehloder" : "Я специализируюсь на...",
-  "specialityLevel" : "Уровень владения",
-  "specialityName" : "Название специальности",
-  "specialityName.plachehloder" : "Например: Unity разработчик",
-  "specialization" : "Специализация",
-  "specialization.plachehloder" : "Пример: специализируюсь на концептах мультяшных персонажей",
-  "specilaity" : "Специальность",
-  "sport" : "Спортивный",
-  "sports" : "Спортивные",
-  "stage-expired" : "На данный момент прием идей завершен. Наставники по игровому дизайну обсуждают представленные идеи, общаются с их авторами. По итогам обсуждения будет определен список проектов, которые пройдут дальше в стадию. Подготовка проекта.",
-  "subscribeToNewsletter" : "Получать новости платформы",
-  "survival horror" : "Ужас выживания",
-  "tbs" : "Пошаговые стратегии",
-  "th from" : " от",
-  "th of" : " из",
-  "this form" : "эта форма",
-  "to" : "к",
-  "user-profile" : "Профиль пользователя",
-  "userProjectList" : "Список ваших проектов",
-  "users-proposed-concepts-total" : "Участники предложили {total} концептов игр",
-  "vacancies" : {
-    "list" : {
-      "description" : "Все участники проекта, откликаясь на вакансии, принимают условия о том, что на период участия в выбранном проекте работа не оплачивается до момента поступления финансирования или если в вакансиях не указаны иные условия. Затраченное вами время является инвестицией. в том проекте, который вы выберете. От того, как каждый участник команды, да и команда в целом, будет работать над проектом, зависит, смогут ли эти инвестиции конвертироваться в деньги или нет. В любом случае ваше резюме станет более значимым. когда появится информация об участии в реальных проектах."
+  "skillList": "Список навыков",
+  "skillList.extra": "Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение",
+  "skillList.plachehloder": "Например:\nрисовать концепты мультяшных персонажей\nразрабатывать диалоговые системы",
+  "specialisation": "Специализация",
+  "specialisation.plachehloder": "Я специализируюсь на...",
+  "specialityLevel": "Уровень владения",
+  "specialityName": "Название специальности",
+  "specialityName.plachehloder": "Например: Unity разработчик",
+  "specialization": "Специализация",
+  "specialization.plachehloder": "Пример: специализируюсь на концептах мультяшных персонажей",
+  "specilaity": "Специальность",
+  "sport": "Спортивный",
+  "sports": "Спортивные",
+  "stage-expired": "На данный момент прием идей завершен. Наставники по игровому дизайну обсуждают представленные идеи, общаются с их авторами. По итогам обсуждения будет определен список проектов, которые пройдут дальше в стадию. Подготовка проекта.",
+  "subscribeToNewsletter": "Получать новости платформы",
+  "survival horror": "Ужас выживания",
+  "tbs": "Пошаговые стратегии",
+  "th from": " от",
+  "th of": " из",
+  "this form": "эта форма",
+  "to": "к",
+  "user-profile": "Профиль пользователя",
+  "user": {
+    "welcome": "Привет, {userName} \uD83D\uDC4B"
+  },
+  "userProjectList": "Список ваших проектов",
+  "users-proposed-concepts-total": "Участники предложили {total} концептов игр",
+  "vacancies": {
+    "list": {
+      "description": "Все участники проекта, откликаясь на вакансии, принимают условия о том, что на период участия в выбранном проекте работа не оплачивается до момента поступления финансирования или если в вакансиях не указаны иные условия. Затраченное вами время является инвестицией. в том проекте, который вы выберете. От того, как каждый участник команды, да и команда в целом, будет работать над проектом, зависит, смогут ли эти инвестиции конвертироваться в деньги или нет. В любом случае ваше резюме станет более значимым. когда появится информация об участии в реальных проектах."
     }
   },
-  "video games" : "видео игры",
-  "wantToBe" : {
-    "author" : "Автор",
-    "author.description" : "Хочу делать свои игры",
-    "mentor" : "Ментор",
-    "mentor.description" : "Хочу делиться моей экспертизой",
-    "specialist" : "Специалист",
-    "specialist.description" : "Хочу присоединиться к команде разработки",
-    "text" : "Я"
+  "video games": "видео игры",
+  "wantToBe": {
+    "author": "Автор",
+    "author.description": "Хочу делать свои игры",
+    "mentor": "Ментор",
+    "mentor.description": "Хочу делиться моей экспертизой",
+    "specialist": "Специалист",
+    "specialist.description": "Хочу присоединиться к команде разработки",
+    "text": "Я"
   },
-  "will present their indie projects" : "представят свои инди-проекты",
-  "workDirection" : "Сфера деятельности",
-  "workDirection-2d art & animation" : "2D арт и анимация",
-  "workDirection-3d art & animation" : "3D арт и анимация",
-  "workDirection-backend development" : "Программирование серверной части",
-  "workDirection-development" : "Программирование игр",
-  "workDirection-game design" : "Геймдизайн",
-  "workDirection-game writer" : "Нарративный геймдизайн",
-  "workDirection-hr" : "Поиск специалистов (HR)",
-  "workDirection-investment" : "Инвестиции",
-  "workDirection-learning" : "Образование",
-  "workDirection-management" : "Управление",
-  "workDirection-marketing" : "Маркетинг и реклама",
-  "workDirection-music & sound" : "Музыка и звуки",
-  "workDirection-other" : "Другое",
-  "workDirection-qa" : "Анализ качества (QA)",
-  "workDirection-technical art" : "Технический арт",
-  "workDirection-vfx" : "Визуальные эффекты",
-  "workDirection-video editing" : "Видеоинженерия",
-  "workDirection-web development" : "Веб-программирование",
-  "workflow" : {
-    "Indie" : {
-      "condition" : {
-        "Add concept document link to project settings" : {
-          "" : "Добавьте ссылку на концепт-документ на странице Настройки проекта."
+  "will present their indie projects": "представят свои инди-проекты",
+  "workDirection": "Сфера деятельности",
+  "workDirection-2d art & animation": "2D арт и анимация",
+  "workDirection-3d art & animation": "3D арт и анимация",
+  "workDirection-backend development": "Программирование серверной части",
+  "workDirection-development": "Программирование игр",
+  "workDirection-game design": "Геймдизайн",
+  "workDirection-game writer": "Нарративный геймдизайн",
+  "workDirection-hr": "Поиск специалистов (HR)",
+  "workDirection-investment": "Инвестиции",
+  "workDirection-learning": "Образование",
+  "workDirection-management": "Управление",
+  "workDirection-marketing": "Маркетинг и реклама",
+  "workDirection-music & sound": "Музыка и звуки",
+  "workDirection-other": "Другое",
+  "workDirection-qa": "Анализ качества (QA)",
+  "workDirection-technical art": "Технический арт",
+  "workDirection-vfx": "Визуальные эффекты",
+  "workDirection-video editing": "Видеоинженерия",
+  "workDirection-web development": "Веб-программирование",
+  "workflow": {
+    "Indie": {
+      "condition": {
+        "Add concept document link to project settings": {
+          "": "Добавьте ссылку на концепт-документ на странице Настройки проекта."
         }
       },
-      "step1" : {
-        "name" : "Введение"
+      "step1": {
+        "name": "Введение"
       },
-      "step10" : {
-        "name" : "Поддержка"
+      "step10": {
+        "name": "Поддержка"
       },
-      "step11" : {
-        "name" : "Закрытие"
+      "step11": {
+        "name": "Закрытие"
       },
-      "step2" : {
-        "name" : "Работа с идеей"
+      "step2": {
+        "name": "Работа с идеей"
       },
-      "step3" : {
-        "name" : "Концептирование"
+      "step3": {
+        "name": "Концептирование"
       },
-      "step4" : {
-        "name" : "Планирование"
+      "step4": {
+        "name": "Планирование"
       },
-      "step5" : {
-        "name" : "Вертикальный срез"
+      "step5": {
+        "name": "Вертикальный срез"
       },
-      "step6" : {
-        "name" : "Имплементация фичей и подготовка контента"
+      "step6": {
+        "name": "Имплементация фичей и подготовка контента"
       },
-      "step7" : {
-        "name" : "Feature freeze и интеграция"
+      "step7": {
+        "name": "Feature freeze и интеграция"
       },
-      "step8" : {
-        "name" : "Релиз и поддержка"
+      "step8": {
+        "name": "Релиз и поддержка"
       },
-      "step9" : {
-        "name" : "Завершение проекта"
+      "step9": {
+        "name": "Завершение проекта"
       }
     },
-    "current-stage" : "Текущий шаг",
-    "next-stage" : "Следующий этап",
-    "previous-stage" : "Назад",
-    "required-acitons" : {
-      "title" : "Необходимо сделать"
+    "current-stage": "Текущий шаг",
+    "next-stage": "Следующий этап",
+    "previous-stage": "Назад",
+    "required-acitons": {
+      "title": "Необходимо сделать"
     }
   },
-  "yearOfBirth" : "Год рождения",
-  "yes" : "Да",
-  "zombie" : "Зомби"
+  "yearOfBirth": "Год рождения",
+  "yes": "Да",
+  "zombie": "Зомби"
 }

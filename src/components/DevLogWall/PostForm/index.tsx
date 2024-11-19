@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { AiOutlineVideoCameraAdd } from '@react-icons/all-files/ai/AiOutlineVideoCameraAdd'
