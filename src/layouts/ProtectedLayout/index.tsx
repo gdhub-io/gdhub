@@ -32,7 +32,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { NextSeo, NextSeoProps } from 'next-seo'
-import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
 interface ProtectedLayoutProps {
@@ -71,15 +70,6 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 		console.log(session)
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
-
-	const avatarConfig = useMemo(() => {
-		if (!session?.user.email) return
-
-		const config = genConfig(session.user.email)
-		config.hairStyle = 'normal'
-
-		return config
-	}, [session?.user.email])
 
 	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = [
@@ -249,18 +239,14 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 									</Link>
 									<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
 									<Space>
-										{session?.user?.image ? (
-											<Avatar
-												src={
-													session?.user?.image ? (
-														<Image src={session?.user.image} width={24} height={24} alt="avatar" />
-													) : null
-												}
-												size={24}
-											/>
-										) : (
-											<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
-										)}
+										<Avatar
+											src={
+												session?.user?.image ? (
+													<Image src={session?.user.image} width={24} height={24} alt="avatar" />
+												) : null
+											}
+											size={24}
+										/>
 										{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
 									</Space>
 								</Flex>
@@ -278,19 +264,19 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
 												<Button
 													type="text"
+													shape="circle"
 													style={{ display: 'block', padding: 0 }}
 													icon={
 														session?.user.image ? (
 															<Avatar
+																size={32}
 																src={
 																	session?.user?.image ? (
 																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
 																	) : null
 																}
 															/>
-														) : (
-															<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
-														)
+														) : null
 													}
 												></Button>
 											</Dropdown>

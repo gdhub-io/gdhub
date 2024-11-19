@@ -3555,6 +3555,11 @@
   resolved "https://registry.yarnpkg.com/@tolgee/core/-/core-5.20.0.tgz#1211f855e35c3d6aa3590e92d552d12341f5cf53"
   integrity sha512-RI5X/+ECBKkn+Cgnz27uIDTT8Zps+VYJEbktxta3D6F4YPvAGy83348MVb89WXgqbpKVMPSOTr0j1623mojLDw==
 
+"@tolgee/format-icu@^5.31.5":
+  version "5.31.5"
+  resolved "https://registry.yarnpkg.com/@tolgee/format-icu/-/format-icu-5.31.5.tgz#020a3141c3b0d5b0284781a15152b1972ab3118a"
+  integrity sha512-hhgeytYY/HUbe327KpyyTcRqdPlXiy+hs70XIakUHdemJ7rFinGSumWBBeIYzb5hnxmyjWvI+tnWFJJOTWTYHw==
+
 "@tolgee/react@^5.16.2":
   version "5.20.0"
   resolved "https://registry.yarnpkg.com/@tolgee/react/-/react-5.20.0.tgz#4187b9716ff60c09fcc9cad3128fdd971802d89f"
@@ -5387,7 +5392,7 @@ deep-is@^0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
   integrity sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==
 
-deepmerge@^4.2.2:
+deepmerge@^4.0.0, deepmerge@^4.2.2:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.3.1.tgz#44b5f2147cd3b00d4b56137685966f26fd25dd4a"
   integrity sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==
@@ -7804,6 +7809,11 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
+memoize-one@^5.1.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
+  integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
+
 merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
@@ -9637,6 +9647,11 @@ react-error-boundary@^3.1.4:
   dependencies:
     "@babel/runtime" "^7.12.5"
 
+react-fast-compare@^3.0.1:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.2.tgz#929a97a532304ce9fee4bcae44234f1ce2c21d49"
+  integrity sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==
+
 react-hook-form@^7.44.2:
   version "7.51.0"
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.51.0.tgz#757ae71b37c26e00590bd3788508287dcc5ecdaf"
@@ -9710,7 +9725,7 @@ react-markdown@^8.0.7:
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
 
-react-nice-avatar@^1.4.1:
+react-nice-avatar@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/react-nice-avatar/-/react-nice-avatar-1.5.0.tgz#08af0267f5879da21780bc968d194daf7ed37faa"
   integrity sha512-sGusqbgWIA4Il6Y0zHEfs4XF+a06etNljhwFYiHIGATDmVVf53Nez7U7GY5EwEz5/xGuUhs6uel5AC5NN/2UPg==
@@ -9718,6 +9733,17 @@ react-nice-avatar@^1.4.1:
     "@babel/runtime" "^7.14.3"
     chroma-js "^2.1.2"
     prop-types "^15.7.2"
+
+react-player@^2.16.0:
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/react-player/-/react-player-2.16.0.tgz#89070700b03f5a5ded9f0b3165d4717390796481"
+  integrity sha512-mAIPHfioD7yxO0GNYVFD1303QFtI3lyyQZLY229UEAp/a10cSW+hPcakg0Keq8uWJxT2OiT/4Gt+Lc9bD6bJmQ==
+  dependencies:
+    deepmerge "^4.0.0"
+    load-script "^1.0.0"
+    memoize-one "^5.1.1"
+    prop-types "^15.7.2"
+    react-fast-compare "^3.0.1"
 
 react-popopo@^2.1.9:
   version "2.1.9"

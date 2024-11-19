@@ -53,7 +53,13 @@ const HubPage: NextPageWithLayout = () => {
 		<ProtectedLayout>
 			<Space className={styles.container} direction="vertical" size={32}>
 				<Space direction="vertical" size={0}>
-					<Title level={2}>Hello, {session?.data?.user.name} 👋</Title>
+					<Title level={2}>
+						<T
+							keyName="user.welcome"
+							defaultValue="Hello, {userName}"
+							params={{ userName: session?.data?.user.name || 'user' }}
+						/>
+					</Title>
 					<Text>
 						<T>I think now is the perfect time to make games.</T>
 					</Text>

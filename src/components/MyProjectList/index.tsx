@@ -26,7 +26,9 @@ export const MyProjectList = () => {
 
 				{session?.user.roles.includes(prismaClient.UserRole.Author) && (
 					<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
-						<Space>Add Project</Space>
+						<Space>
+							<T keyName="project.create">Add Project</T>
+						</Space>
 					</Button>
 				)}
 			</Flex>
@@ -57,7 +59,11 @@ export const MyProjectList = () => {
 					))
 				) : (
 					<Text type="secondary">
-						You don&apos;t have any project yet. Create <span>a new one</span> or join <span>existing ones</span>.
+						<T
+							keyName="my-project.list.empty"
+							defaultValue="You don't have any project yet. Create <span>a new one</span> or join <span>existing ones</span>."
+							params={{ span: <span /> }}
+						></T>
 					</Text>
 				)}
 			</Row>

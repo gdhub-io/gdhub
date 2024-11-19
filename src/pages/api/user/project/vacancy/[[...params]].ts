@@ -82,7 +82,12 @@ class ApiUserTeamVacancyHandler {
 
 	@Post()
 	public async create(@Body(ValidationPipe) data: UserTeamVacancyCreateDto) {
-		await prisma.teamVacancy.create({ data })
+		try {
+			await prisma.teamVacancy.create({ data })
+		} catch (error) {
+			console.error('[project.create]', error)
+			throw error
+		}
 	}
 
 	@Put()

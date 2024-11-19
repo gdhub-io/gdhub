@@ -189,6 +189,18 @@ a.text-link {
 		}
 	}
 
+	&.gray-text-btn {
+		border-color: transparent;
+		color: #031625;
+		box-shadow: none;
+
+		&:hover,
+		&:active {
+			background-color: #031625 !important;
+			color: #FFFDFC !important;
+		}
+	}
+
 	&>span {
 		line-height: 16px;
 	}

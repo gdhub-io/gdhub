@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
+import { AiOutlineVideoCameraAdd } from '@react-icons/all-files/ai/AiOutlineVideoCameraAdd'
 import { IoMdClose } from '@react-icons/all-files/io/IoMdClose'
 import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Card, Flex, Form, Input, Space, message, notification } from 'antd'
+import { Button, Card, Flex, Form, Input, Space, Tooltip, message, notification } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import '@mdxeditor/editor/style.css'
@@ -17,7 +18,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 	const { t } = useTolgee()
 	const [content, setContent] = useState('')
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false)
-	const editorRef = useRef<MDXEditorMethods | null>()
+	let editorRef = useRef<MDXEditorMethods | null>()
 
 	const { mutateAsync: createProjectReport, isLoading } = useMutation(
 		(data: Omit<Partial<prismaClient.ProjectReport>, 'id'>) => axios.post<void>('/api/user/project/report', data),
@@ -45,11 +46,12 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 			})
 
 			form.resetFields()
+			setShowAddVideoInput(false)
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error('Error. Check if all data is entered correctly')
+				message.error(t('form.message.incorrect', 'Error. Check if all data is entered correctly'))
 			}
 		}
 	}
@@ -104,9 +106,14 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 
 					{!showAddVideoInput && (
 						<Flex justify="space-between">
-							<Button className="gray-btn" onClick={() => setShowAddVideoInput(true)}>
-								Add Youtube video
-							</Button>
+							<Tooltip title={<T keyName="devlogwall.form.add-video">Add video</T>}>
+								<Button
+									className="gray-text-btn"
+									onClick={() => setShowAddVideoInput(true)}
+									icon={<AiOutlineVideoCameraAdd size={24} />}
+									type="text"
+								></Button>
+							</Tooltip>
 
 							<Button type="primary" onClick={handleOk} loading={isLoading}>
 								<T keyName="modal.devlogwall.newpost.postBtn.label">Post</T>
@@ -118,7 +125,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 						<>
 							<Flex gap={16} align="center">
 								<Form.Item name="video" wrapperCol={{ span: 24 }} style={{ margin: 0, width: '100%' }}>
-									<Input placeholder={t('Insert ID video from YouTube')} />
+									<Input placeholder={t('Insert video url')} />
 								</Form.Item>
 								<Button type="text" onClick={() => setShowAddVideoInput(false)} style={{ paddingInline: 8 }}>
 									<IoMdClose />

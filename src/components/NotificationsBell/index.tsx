@@ -38,7 +38,7 @@ export const NotificationsBell = () => {
 			styles={{
 				bellButton: {
 					root: {
-						borderRadius: '0px',
+						borderRadius: '50%',
 						padding: 8,
 						height: 40,
 						width: 40,

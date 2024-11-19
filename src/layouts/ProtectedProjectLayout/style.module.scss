@@ -78,27 +78,44 @@
 	line-height: 32px !important;
 	margin-left: -16px;
 	margin-right: -16px;
+	margin-bottom: 4px;
+	margin-top: 16px;
 	font-size: 14px;
 
 	:global {
+		.ant-menu-item {
+			margin-inline: 2px;
+		}
+
 		.ant-menu-item:not(.ant-menu-item-disabled) {
+			border-radius: 4px;
+			background: transparent;
+
 			.ant-menu-title-content {
 				color: #777;
+			}
+
+			&::after {
+				border-width: 0px !important;
 			}
 		}
 
 		.ant-menu-item-active {
-			&::after {
+			background: #efefef !important;
+
+			&::before {
 				border-color: #181818 !important;
 			}
 		}
 
 		.ant-menu-item-selected {
+			background: #efefef !important;
+
 			.ant-menu-title-content {
 				color: #181818;
 			}
 
-			&::after {
+			&::before {
 				border-color: #181818 !important;
 			}
 		}

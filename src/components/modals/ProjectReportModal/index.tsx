@@ -73,7 +73,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(<T keyName="common.formError">Error. Check if all data is entered correctly</T>)
+				message.error(t('form.message.incorrect', 'Error. Check if all data is entered correctly'))
 			}
 		}
 	}

@@ -103,7 +103,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(<T keyName="modal.project.errorText">Error. Check if all data is entered correctly</T>)
+				message.error(t('form.message.incorrect', 'Error. Check if all data is entered correctly'))
 			}
 		}
 	}

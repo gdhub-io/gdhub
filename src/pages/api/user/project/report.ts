@@ -30,6 +30,7 @@ class UpdateProjectReportDto {
 	video?: string
 
 	@IsString()
+	@IsOptional()
 	publishedAt: string
 }
 

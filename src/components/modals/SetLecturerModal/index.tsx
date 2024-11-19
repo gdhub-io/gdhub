@@ -108,7 +108,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(<T keyName="form.error">Error. Check if all data is entered correctly</T>)
+				message.error(t('form.message.incorrect', 'Error. Check if all data is entered correctly'))
 			}
 		}
 	}
