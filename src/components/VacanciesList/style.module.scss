@@ -9,10 +9,16 @@
 
 .vacancyCard {
   position: relative;
+  cursor: pointer;
   // background-color: #FFF4CF;
   padding: 12px 12px 40px 24px;
   height: 100%;
   min-height: 214px;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  }
 
   .content {
     display: flex;

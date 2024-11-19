@@ -299,6 +299,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
 							{!!title && <Title>{title}</Title>}
+							{!!subTitle && <div>{subTitle}</div>} <br />
 							{children}
 						</div>
 					</Content>

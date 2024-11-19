@@ -61,6 +61,7 @@ const VacanciesList = () => {
 							return (
 								<Col xs={24} sm={12} lg={8} xxl={6} key={idx} className={styles.col}>
 									<div
+										onClick={() => handleShowVacancy(vacancy.id)}
 										className={[
 											styles.vacancyCard,
 											'bg-direc-' + vacancy.direction.name.replace(' & ', '-').replace(' ', '-'),
@@ -76,11 +77,9 @@ const VacanciesList = () => {
 
 											<div className={styles.projectName}>{vacancy.team.project?.name}</div>
 										</div>
-										<Button
-											className={styles.linkBtn}
-											icon={<GoArrowDownRight size={24} onClick={() => handleShowVacancy(vacancy.id)} />}
-											type="primary"
-										/>
+										<div className={styles.linkBtn}>
+											<GoArrowDownRight size={24} />
+										</div>
 									</div>
 								</Col>
 							)

@@ -152,6 +152,7 @@
   "Registration with Google": "Registration with Google",
   "Relevant to": "Relevant to",
   "Required actions is not completed": "Required actions is not completed",
+  "Respond": "Respond",
   "Responses on vacancies": "Responses on vacancies",
   "Restore": "Restore",
   "Return to main": "Return to main",
@@ -629,6 +630,10 @@
         },
         "text3": "Authors of indie projects have access to a database of specialists and can invite them to their projects. For this you need to create a project and and bring your project to the recruiting stage."
       }
+    },
+    "vacancies": {
+      "subTitle": "Invest your time in the success of new game projects",
+      "title": "Vacancies"
     }
   },
   "participants": "participants",

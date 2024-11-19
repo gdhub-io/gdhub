@@ -10,7 +10,11 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	const { t } = useTolgee()
 
 	return (
-		<ProtectedLayout title={t('Vacancies')} seo={{ openGraph: { type: 'website', url: router.asPath } }}>
+		<ProtectedLayout
+			title={t('page.vacancies.title', 'Vacancies')}
+			subTitle={t('page.vacancies.subTitle', 'Invest your time in the success of new game projects')}
+			seo={{ openGraph: { type: 'website', url: router.asPath } }}
+		>
 			<div className={styles.container}>
 				<div className="project-vacancies">
 					<VacanciesList />
