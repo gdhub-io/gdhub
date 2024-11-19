@@ -138,7 +138,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 		setShowVacancyPreviewModal(false)
 	}
 
-	if (!projectVacancies?.data) return null
+	if (!projectVacancies?.data.length) return null
 
 	return (
 		<>
