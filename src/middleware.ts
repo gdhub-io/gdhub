@@ -31,6 +31,11 @@ export default withAuth(
 		) {
 			return NextResponse.redirect(new URL('/hub', req.url))
 		}
+
+		// redirects
+		if (req.nextUrl.pathname == '/profile' || req.nextUrl.pathname == '/profile/settings') {
+			return NextResponse.redirect(new URL('/profile/settings/general', req.url))
+		}
 	},
 	{
 		secret: env('NEXTAUTH_SECRET'),
@@ -48,5 +53,14 @@ export default withAuth(
 )
 
 export const config = {
-	matcher: ['/registration/onboarding', '/hub/:path*', '/profile', '/my/:path*', '/live/:path*', '/admin/:path*'],
+	matcher: [
+		'/registration/onboarding',
+		'/hub',
+		'/hub/:path*',
+		'/profile',
+		'/profile/:path*',
+		'/my/:path*',
+		'/live/:path*',
+		'/admin/:path*',
+	],
 }

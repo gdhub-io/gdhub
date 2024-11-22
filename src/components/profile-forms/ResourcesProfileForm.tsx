@@ -44,7 +44,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 	}
 
 	return (
-		<Card title={<T keyName="profile-forms.resources.card.title">Resources</T>}>
+		<Card title={<T keyName="profile-forms.resources.card.title">Resources</T>} bordered={false}>
 			<Spin spinning={processing}>
 				<Form
 					form={form}

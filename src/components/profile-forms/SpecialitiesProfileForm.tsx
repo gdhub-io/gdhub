@@ -60,7 +60,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	}
 
 	return (
-		<Card title={<T keyName="profile-form.specialities.card.title">Specialties</T>}>
+		<Card title={<T keyName="profile-form.specialities.card.title">Specialties</T>} bordered={false}>
 			<Spin spinning={processing}>
 				<Space direction="vertical" size="large" style={{ width: '100%' }}>
 					<Text>

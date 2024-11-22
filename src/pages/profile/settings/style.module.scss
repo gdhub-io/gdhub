@@ -1,0 +1,26 @@
+.sider {
+  // text-align: left;
+  // line-height: 120px;
+  // color: #fff;
+  background-color: transparent;
+}
+
+.content {
+  border: 1px solid #ececec;
+  border-radius: 4px;
+  text-align: left;
+  min-height: 120;
+  background-color: #fff;
+  margin: 0 16px;
+  padding: 16px;
+
+  :global {
+    .ant-card {
+      box-shadow: none;
+    }
+
+    .ant-btn {
+      display: flex;
+    }
+  }
+}

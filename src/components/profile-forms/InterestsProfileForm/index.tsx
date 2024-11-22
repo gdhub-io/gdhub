@@ -97,7 +97,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 	}))
 
 	return (
-		<Card title={t('Interests and preferences')} className={styles.content}>
+		<Card title={t('Interests and preferences')} className={styles.content} bordered={false}>
 			<Spin spinning={processing}>
 				<Paragraph>
 					<T keyName="interestsAndPreferencesDescription">

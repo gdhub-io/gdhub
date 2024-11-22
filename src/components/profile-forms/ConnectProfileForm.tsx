@@ -50,7 +50,7 @@ const ConnectProfileForm = ({ profile, saveProfile }: ConnectProfileFormArgs) =>
 	}, [session])
 
 	return (
-		<Card title={<T keyName="profile-forms.connect.card.title">Telegram connection</T>}>
+		<Card title={<T keyName="profile-forms.connect.card.title">Telegram connection</T>} bordered={false}>
 			<Spin spinning={processing}>
 				{session?.user.telegramId ? (
 					<Flex justify="space-between">
