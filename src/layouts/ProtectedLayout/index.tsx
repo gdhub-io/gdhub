@@ -210,7 +210,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 			label: <T keyName="app.user.menu.mentors">Mentors</T>,
 		},
 		{
-			key: '/profile',
+			key: '/profile/settings/general',
 			label: (
 				<Link href="/profile">
 					<T keyName="app.user.menu.settings">Settings</T>

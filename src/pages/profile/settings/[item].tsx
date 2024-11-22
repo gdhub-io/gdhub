@@ -10,18 +10,16 @@ import { NextPageWithLayout } from '@/pages/_app'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Layout, Menu } from 'antd'
-import { ItemType, MenuItemType } from 'antd/es/menu/interface'
+import { Grid, Layout, Menu, Select } from 'antd'
 import axios from 'axios'
-import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
-const { Sider, Content } = Layout
+const { Header, Sider, Content } = Layout
 
 const ProfilePage: NextPageWithLayout = ({ params }: any) => {
 	const [content, setContent] = useState<React.JSX.Element>()
-	const searchParams = useSearchParams()
+	const screens = Grid.useBreakpoint()
 	const router = useRouter()
 	const { t } = useTolgee()
 	const queryClient = useQueryClient()
@@ -35,7 +33,7 @@ const ProfilePage: NextPageWithLayout = ({ params }: any) => {
 		}
 	)
 
-	const settingsMenu: ItemType<MenuItemType>[] = [
+	const settingsMenu: any[] = [
 		{
 			label: t('profile.settings.menu.general', 'General'),
 			key: 'general',
@@ -63,9 +61,7 @@ const ProfilePage: NextPageWithLayout = ({ params }: any) => {
 	]
 
 	useEffect(() => {
-		if (!router.query?.item) return
-
-		switchContent(router.query.item as string)
+		switchContent((router.query.item as string) || 'general')
 	}, [router.query.item])
 
 	const switchContent = (key: string) => {
@@ -108,8 +104,18 @@ const ProfilePage: NextPageWithLayout = ({ params }: any) => {
 
 	return (
 		<ProtectedLayout title={t('Settings')}>
+			{!screens.lg ? (
+				<Header style={{ padding: 0, height: 100 }}>
+					<Select
+						options={settingsMenu.map((d) => ({ label: d.label, value: d.key }))}
+						value={(router.query?.item as string) || 'general'}
+						style={{ width: '100%', margin: '8px 0' }}
+						onChange={(value) => switchContent(value)}
+					/>
+				</Header>
+			) : null}
 			<Layout>
-				<Sider width={200} className={styles.sider}>
+				<Sider width={200} className={styles.sider} breakpoint="lg" collapsedWidth="0" trigger={null}>
 					<Menu
 						mode="vertical"
 						defaultSelectedKeys={[(router.query?.item as string) || 'general']}

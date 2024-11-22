@@ -53,7 +53,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 				form={form}
 				layout="vertical"
 				name="profile-general-form"
-				wrapperCol={{ span: 12 }}
+				wrapperCol={{ xs: { span: 24 }, lg: { span: 12 } }}
 				onFinish={() => {}}
 				onFinishFailed={() => {}}
 				autoComplete="off"
