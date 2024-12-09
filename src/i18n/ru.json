@@ -12,6 +12,7 @@
   "Add your project idea": "Добавьте идею вашего проекта",
   "Added a new game project": "Добавлен новый игровой проект",
   "Administration": "Администрация",
+  "Allows you to contribute to game development through advising": "Позволяет вам внести свой вклад в разработку игр посредством консультирования",
   "Appendix": "Приложение",
   "Archive": "Архив",
   "Are you sure?": "Вы уверены?",
@@ -52,12 +53,14 @@
   "Cookie Policy": "Политика работы с Cookie",
   "Cookies Policy": "Политика использования файлов Cookie",
   "Country": "Страна",
+  "Create": "Создать",
   "Create a new vacancy": "Создать новую вакансию",
   "Create new account": "Регистрация",
   "Date": "Дата",
   "Details": "Подробнее",
   "Development Log": "Журнал разработки",
   "Discord": "Дискорд",
+  "Display Name": "Отображаемое имя",
   "Documentation": "Документация",
   "Email": "Эл. почта",
   "End stream": "Завершить трансляцию",
@@ -133,6 +136,7 @@
   "Player": "Коммуникация",
   "Position": "Роль",
   "Profile": "Профиль",
+  "Project Settings": "Настройки проекта",
   "Project Team": "Команда проекта",
   "Projects developed independently by community members (outside the incubation program)": {
     "": "Проекты, разработанные членами сообщества самостоятельно (вне инкубационной программы)."
@@ -432,6 +436,22 @@
   "military": "Военный",
   "mmorpg": "Многопользовательская ролевая онлайн игра (MMORPG)",
   "modal": {
+    "create-project": {
+      "field": {
+        "agree": {
+          "error": "Необходимо потдвердить",
+          "label": "Я подтверждаю, что ознакомился и согласен с <a>требованиями к игровым проектам, опубликованными на платформе gdhub.io</a>."
+        },
+        "description": {
+          "label": "Краткое описание",
+          "placeholder": "Этот игровой проет про ..."
+        },
+        "name": {
+          "label": "Название"
+        }
+      },
+      "title": "Создать новый игровой проект"
+    },
     "devlogwall": {
       "newpost": {
         "label": "Что нового на проекте?",
@@ -471,6 +491,7 @@
         "label": "Основная механика"
       },
       "coverImage": {
+        "deletePopover": "Удалить обложку проекта",
         "hint": "Допускаются файлы в форматах jpg, png. Соотношение сторон 16/9. Например, размер 1920х1080 пикселей.",
         "label": "Обложка для проекта",
         "text": "Добавить обложку проекта"
@@ -648,6 +669,11 @@
     }
   },
   "profile-form": {
+    "mentorship": {
+      "card": {
+        "description": "Включите, если хотите, чтобы другие участники сообщества к вам обращались за консультациями."
+      }
+    },
     "specialities": {
       "card": {
         "button": {
@@ -668,12 +694,15 @@
     },
     "general": {
       "card": {
+        "account": "Аккаунт",
+        "location": "Расположение",
         "title": "Данные пользователя"
       },
       "field": {
         "email": {
           "title": "Электронная почта"
         },
+        "language": "Язык на платформе",
         "tgNickname": {
           "extra": "Указывать без символа @",
           "title": "Никнейм в телеграмме"
@@ -696,6 +725,11 @@
         }
       }
     },
+    "mentorship": {
+      "card": {
+        "title": "Менторство"
+      }
+    },
     "resources": {
       "card": {
         "title": "Ресурсы"
@@ -707,6 +741,18 @@
         "timeForWork": {
           "title": "Доступное время"
         }
+      }
+    }
+  },
+  "profile": {
+    "settings": {
+      "menu": {
+        "connections": "Подключения",
+        "general": "Общие",
+        "interests": "Интересы",
+        "mentorship": "Менторство",
+        "resources": "Ресурсы",
+        "specialities": "Специальности"
       }
     }
   },

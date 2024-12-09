@@ -12,6 +12,7 @@
   "Add your project idea": "Add your project idea",
   "Added a new game project": "Added a new game project",
   "Administration": "Administration",
+  "Allows you to contribute to game development through advising": "Allows you to contribute to game development through advising",
   "Appendix": "Appendix",
   "Archive": "Archive",
   "Are you sure?": "Are you sure?",
@@ -52,12 +53,14 @@
   "Cookie Policy": "Cookie Policy",
   "Cookies Policy": "Cookies Policy",
   "Country": "Country",
+  "Create": "Create",
   "Create a new vacancy": "Create a new vacancy",
   "Create new account": "Create new account",
   "Date": "Date",
   "Details": "Details",
   "Development Log": "Development Log",
   "Discord": "Discord",
+  "Display Name": "Display Name",
   "Documentation": "Documentation",
   "Email": "Email",
   "End stream": "End stream",
@@ -133,6 +136,7 @@
   "Player": "Player",
   "Position": "Position",
   "Profile": "Profile",
+  "Project Settings": "Project Settings",
   "Project Team": "Project Team",
   "Projects developed independently by community members (outside the incubation program)": {
     "": "Projects developed independently by community members (outside the incubation program)."
@@ -432,6 +436,22 @@
   "military": "Military",
   "mmorpg": "Massively multiplayer online role playing game (MMORPG)",
   "modal": {
+    "create-project": {
+      "field": {
+        "agree": {
+          "error": "Should accept requirements",
+          "label": "I confirm that I have read and agree to <a>the requirements for game projects published on the gdhub.io platform</a>."
+        },
+        "description": {
+          "label": "Short Description",
+          "placeholder": "This game project about..."
+        },
+        "name": {
+          "label": "Title"
+        }
+      },
+      "title": "Create new game project"
+    },
     "devlogwall": {
       "newpost": {
         "label": "What's new in the project?",
@@ -471,6 +491,7 @@
         "label": "Core Mechanics"
       },
       "coverImage": {
+        "deletePopover": "Remove project cover",
         "hint": "Files in jpg, png formats are allowed. Aspect ratio 16/9. For example, the size is 1920x1080px.",
         "label": "Cover for the project",
         "text": "Add a project cover"
@@ -647,6 +668,11 @@
     }
   },
   "profile-form": {
+    "mentorship": {
+      "card": {
+        "description": "Turn on if you want other community members to contact you for advice."
+      }
+    },
     "specialities": {
       "card": {
         "button": {
@@ -667,12 +693,15 @@
     },
     "general": {
       "card": {
+        "account": "Account",
+        "location": "Location",
         "title": "User data"
       },
       "field": {
         "email": {
           "title": "Email"
         },
+        "language": "Platform Language",
         "tgNickname": {
           "extra": "Indicate without symbol @",
           "title": "Telegram nickname"
@@ -695,6 +724,11 @@
         }
       }
     },
+    "mentorship": {
+      "card": {
+        "title": "Mentorship"
+      }
+    },
     "resources": {
       "card": {
         "title": "Resources"
@@ -706,6 +740,18 @@
         "timeForWork": {
           "title": "Available time (per week)"
         }
+      }
+    }
+  },
+  "profile": {
+    "settings": {
+      "menu": {
+        "connections": "Connections",
+        "general": "General",
+        "interests": "Interests",
+        "mentorship": "Mentorship",
+        "resources": "Resources",
+        "specialities": "Specialities "
       }
     }
   },
