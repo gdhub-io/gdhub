@@ -204,6 +204,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					name="profile-speciality-form"
 					wrapperCol={{ span: 12 }}
 					autoComplete="off"

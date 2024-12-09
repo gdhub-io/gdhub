@@ -88,6 +88,7 @@ export const OnboardingResourceStep = ({
 					<Form
 						form={form}
 						layout="vertical"
+						variant="filled"
 						requiredMark="optional"
 						autoComplete="off"
 						scrollToFirstError

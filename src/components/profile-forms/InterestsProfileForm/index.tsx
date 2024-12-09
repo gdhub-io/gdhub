@@ -109,6 +109,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					name="profile-preferences-form"
 					wrapperCol={{ span: 24 }}
 					onFinish={() => {}}

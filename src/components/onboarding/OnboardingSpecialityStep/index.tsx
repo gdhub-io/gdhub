@@ -200,7 +200,14 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 							</Paragraph>
 						</Space>
 
-						<Form form={form} layout="vertical" requiredMark="optional" autoComplete="off" scrollToFirstError>
+						<Form
+							variant="filled"
+							form={form}
+							layout="vertical"
+							requiredMark="optional"
+							autoComplete="off"
+							scrollToFirstError
+						>
 							<Form.Item name="id" hidden>
 								<Input />
 							</Form.Item>

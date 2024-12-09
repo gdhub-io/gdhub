@@ -116,6 +116,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 			<Spin spinning={isLoading || isUpdating}>
 				<Form
 					form={form}
+					variant="filled"
 					layout="vertical"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}

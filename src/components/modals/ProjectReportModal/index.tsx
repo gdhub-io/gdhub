@@ -99,6 +99,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			<Spin spinning={isFetching}>
 				<Form
 					form={form}
+					variant="filled"
 					layout="vertical"
 					name="report-form"
 					wrapperCol={{ span: 12 }}

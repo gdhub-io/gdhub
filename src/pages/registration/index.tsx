@@ -137,7 +137,7 @@ const RegistrationPage: NextPage = () => {
 							{registrationStep.step == 2 && registrationStep.provider == 'google' && (
 								<>
 									<Space direction="vertical" size={24}>
-										<Form form={formRegGoogle} layout="vertical">
+										<Form variant="filled" form={formRegGoogle} layout="vertical">
 											<Form.Item
 												name="agreeWithTermsAndPrivacy"
 												valuePropName="checked"

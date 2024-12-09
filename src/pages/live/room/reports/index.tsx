@@ -143,6 +143,7 @@ const LiveReportsPage = () => {
 								<Form
 									form={form}
 									layout="inline"
+									variant="filled"
 									validateMessages={{ required: 'This field is required' }}
 									initialValues={{ rtmpUrl, streamKey }}
 								>

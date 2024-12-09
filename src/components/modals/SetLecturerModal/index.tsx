@@ -136,6 +136,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					name="lecture-request-form"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}

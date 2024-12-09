@@ -52,6 +52,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 			<Form
 				form={form}
 				layout="vertical"
+				variant="filled"
 				name="profile-general-form"
 				wrapperCol={{ xs: { span: 24 }, lg: { span: 12 } }}
 				onFinish={() => {}}

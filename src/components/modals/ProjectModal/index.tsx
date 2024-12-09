@@ -206,6 +206,7 @@ const ProjectModal = ({ seasonId, projectId, open, onOk, onCancel }: ProjectModa
 			<Spin spinning={isFetching || isCreating || isUpdating}>
 				<Form
 					form={form}
+					variant="filled"
 					layout="vertical"
 					name="profile-speciality-form"
 					wrapperCol={{ span: 12 }}

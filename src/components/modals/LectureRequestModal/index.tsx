@@ -87,6 +87,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			<Spin spinning={isFetching}>
 				<Form
 					form={form}
+					variant="filled"
 					layout="vertical"
 					name="lecture-request-form"
 					wrapperCol={{ span: 12 }}

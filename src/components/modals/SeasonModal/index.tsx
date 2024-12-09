@@ -84,6 +84,7 @@ const ProjectModal = ({ seasonId, open, onOk, onCancel }: any) => {
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}
 					onFinishFailed={() => {}}

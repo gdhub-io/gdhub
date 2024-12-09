@@ -60,6 +60,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 		<Card>
 			<Form
 				form={form}
+				variant="filled"
 				layout="vertical"
 				name="report-form"
 				wrapperCol={{ span: 12 }}

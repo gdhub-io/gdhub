@@ -182,6 +182,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					className={styles.form}
 					name="profile-speciality-form"
 					wrapperCol={{ span: 12 }}
@@ -268,12 +269,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 
 					<Form.Item
 						name="description"
-						label={
-							<>
-								<T keyName="modal.project.description.label">Short Description</T>
-								{description}
-							</>
-						}
+						label={<T keyName="modal.project.description.label">Short Description</T>}
 						required
 						rules={[
 							{
@@ -302,7 +298,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						</Suspense>
 					</Form.Item>
 
-					<Form.Item
+					{/* <Form.Item
 						name="conceptLink"
 						label={
 							<Space>
@@ -318,11 +314,11 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						rules={[{ type: 'url' }]}
 					>
 						<Input width={'100%'} />
-					</Form.Item>
+					</Form.Item> */}
 
 					{project?.data.status == prismaClient.ProjectStatus.Approved && (
 						<>
-							<Form.Item
+							{/* <Form.Item
 								name="gddLink"
 								label={<T keyName="modal.project.gddLink.label">Link to game design document</T>}
 								wrapperCol={{ span: 24 }}
@@ -330,7 +326,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 								required
 							>
 								<Input width={'100%'} />
-							</Form.Item>
+							</Form.Item> */}
 							<Row gutter={[16, 16]}>
 								<Col md={{ span: 16 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item

@@ -93,6 +93,7 @@ const SeasonStreamReportModal = ({ seasonId, streamReportId, open, onOk, onCance
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}
 					onFinishFailed={() => {}}

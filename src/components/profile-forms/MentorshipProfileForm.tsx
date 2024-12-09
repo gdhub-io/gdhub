@@ -89,6 +89,7 @@ const MentorshipProfileForm = ({ profile }: MentorshipProfileFormArgs) => {
 					<Form
 						form={form}
 						layout="vertical"
+						variant="filled"
 						name="profile-mentorship-form"
 						wrapperCol={{ span: 12 }}
 						autoComplete="off"

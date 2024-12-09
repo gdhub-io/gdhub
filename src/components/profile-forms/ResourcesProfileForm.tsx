@@ -49,6 +49,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					name="profile-resources-form"
 					wrapperCol={{ span: 12 }}
 					autoComplete="off"

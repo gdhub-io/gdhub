@@ -2,14 +2,15 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiRocketDuotone } from '@react-icons/all-files/pi/PiRocketDuotone'
 import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Flex, Form, Input, message, Modal, Spin } from 'antd'
+import { Checkbox, Flex, Form, Input, message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import styles from './style.module.scss'
 
 const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 	const router = useRouter()
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 
 	const { mutateAsync: createProject, isLoading: isCreateProcessing } = useMutation((data) =>
 		axios.post<prismaClient.Project>('/api/user/project', data)
@@ -58,12 +59,14 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 			<Spin spinning={isCreateProcessing}>
 				<Form
 					form={form}
+					variant="filled"
 					layout="vertical"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}
 					onFinishFailed={() => {}}
 					autoComplete="off"
 					requiredMark="optional"
+					initialValues={{ agree: false }}
 				>
 					<Form.Item
 						label={<T keyName="modal.create-project.field.name.label">Title</T>}
@@ -81,11 +84,50 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 					>
 						<Input.TextArea
 							rows={6}
-							placeholder={t(
-								'modal.create-project.field.description.modal.create-project.field.description',
-								'This project about...'
-							)}
+							placeholder={t('modal.create-project.field.description.placeholder', 'This project about...')}
 						/>
+					</Form.Item>
+
+					<Form.Item
+						name="agree"
+						valuePropName="checked"
+						wrapperCol={{
+							xs: {
+								span: 24,
+								offset: 0,
+							},
+						}}
+						rules={[
+							{
+								validator: (_, value) =>
+									value
+										? Promise.resolve()
+										: Promise.reject(
+												new Error(t('modal.create-project.field.agree.error', 'Should accept requirements'))
+											),
+							},
+						]}
+					>
+						<Checkbox className={styles.checkbox}>
+							<T
+								keyName="modal.create-project.field.agree.label"
+								defaultValue="I confirm that I have read and agree to the <a>requirements for game projects published on the gdhub.io platform</a>."
+								params={{
+									a: (
+										<a
+											href={
+												getLanguage() == 'ru'
+													? 'https://gdhub.notion.site/gdhub-io-157dcc9e9c9d805f8bace76c04d0a36b'
+													: 'https://gdhub.notion.site/Requirements-for-game-projects-published-on-the-gdhub-io-platform-157dcc9e9c9d80c3ab0ae8d12035dc30'
+											}
+											target="_blank"
+											rel="noreferrer"
+											className={styles.link}
+										/>
+									),
+								}}
+							/>
+						</Checkbox>
 					</Form.Item>
 				</Form>
 			</Spin>

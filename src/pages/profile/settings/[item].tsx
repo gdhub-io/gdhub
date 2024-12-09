@@ -13,6 +13,7 @@ import { useTolgee } from '@tolgee/react'
 import { Grid, Layout, Menu, Select } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const { Header, Sider, Content } = Layout
@@ -23,7 +24,14 @@ const ProfilePage: NextPageWithLayout = ({ params }: any) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const queryClient = useQueryClient()
-	const { data: profile } = useQuery(['profile'], () => axios.get<prismaClient.Profile>('/api/user/profile'))
+	const { data: session } = useSession()
+	const { data: profile } = useQuery(
+		['profile-setting', session?.user.id],
+		() => axios.get<prismaClient.Profile>('/api/user/profile'),
+		{
+			enabled: !!session?.user,
+		}
+	)
 	const { mutateAsync: saveProfile } = useMutation<any, any, any>(
 		(variables: any) => axios.put<void>('/api/user/profile', variables),
 		{

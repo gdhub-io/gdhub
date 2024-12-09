@@ -1,7 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 import { slugify } from 'voca'
@@ -9,6 +9,9 @@ import { slugify } from 'voca'
 class CreateProjectDto {
 	@IsString()
 	name: string
+
+	@IsBoolean()
+	agree: boolean
 
 	@IsString()
 	@IsOptional()
@@ -106,9 +109,10 @@ class ApiProjectHandler {
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { name, description }: CreateProjectDto
+		@Body(ValidationPipe) { name, description, agree }: CreateProjectDto
 	) {
 		if (!req.user.id) throw Error('Unknown user')
+		if (!agree) throw Error('Should accept requirements')
 
 		const user = await prisma.user.findUnique({
 			where: { id: req.user.id },
@@ -125,10 +129,11 @@ class ApiProjectHandler {
 		const project = await prisma.project.create({
 			data: {
 				name,
+				agree,
 				slug: slugify(name),
 				description,
 				author: { connect: { id: req.user.id } },
-				status: prismaClient.ProjectStatus.Registered,
+				status: prismaClient.ProjectStatus.Approved,
 				stage: { connect: { id: season?.stages.find((r) => r.order == 0)?.id } },
 				team: {
 					create: {

@@ -119,6 +119,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					name="vacancy-form"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}

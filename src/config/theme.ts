@@ -313,5 +313,10 @@ export const appThemeConfig: ThemeConfig = {
 			titleLineHeight: 2,
 			fontWeightStrong: 700,
 		},
+		Checkbox: {
+			controlInteractiveSize: 18,
+			fontSize: 16,
+			paddingContentHorizontal: 8,
+		},
 	},
 }
