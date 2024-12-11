@@ -58,15 +58,19 @@ const newProjectReportsMessageEn = (reports: any[]) => {
 
 const newSpecialitiesMessageRu = (specialities: any[]) => {
 	let message = `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${specialities.length} участника</b> имеющие такие специальности, как:\n- `
-	message += specialities.map((r) => r.name).join(';\n- ')
+	message += specialities
+		.map((r) => `${r.name} (${r.level})${r.specialization ? '\n' + r.specialization : ''}`)
+		.join(';\n- ')
 	message += '\n\nДобро пожаловать в наш хаб!'
 
 	return message
 }
 
 const newSpecialitiesMessageEn = (specialities: any[]) => {
-	let message = `<b>New </b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
-	message += specialities.map((r) => r.name).join(';\n- ')
+	let message = `<b>New members</b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
+	message += specialities
+		.map((r) => `${r.name} (${r.level})${r.specialization ? '\n' + r.specialization : ''}`)
+		.join(';\n- ')
 	message += '\n\nWelcome to our hub!'
 
 	return message
@@ -211,8 +215,10 @@ export default class TelegramService {
 		switch (locale) {
 			case 'ru':
 				message = newProjectReportsMessageRu(reports)
+				break
 			case 'en':
 				message = newProjectReportsMessageEn(reports)
+				break
 		}
 
 		await this.sendMessage({
@@ -245,8 +251,10 @@ export default class TelegramService {
 		switch (locale) {
 			case 'ru':
 				message = newSpecialitiesMessageRu(specialities)
+				break
 			case 'en':
 				message = newSpecialitiesMessageEn(specialities)
+				break
 		}
 
 		await this.sendMessage({
@@ -289,8 +297,10 @@ export default class TelegramService {
 		switch (locale) {
 			case 'ru':
 				message = newVacanciesMessageRu(projectWithVacancies)
+				break
 			case 'en':
 				message = newVacanciesMessageEn(projectWithVacancies)
+				break
 		}
 
 		await this.sendMessage({

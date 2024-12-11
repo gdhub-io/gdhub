@@ -1,3 +1,4 @@
+import { AvailableLocales } from '@/config/locale'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import TelegramService from '@/services/telegram'
 import { Job } from 'bullmq'
@@ -12,15 +13,15 @@ class ApiQueueTelegramHandler {
 		const telegramBot = TelegramService.init()
 
 		if (job.name == 'new-project-reports') {
-			await telegramBot.sendNewProjectReports({ inLastDays: 1 })
+			await telegramBot.sendNewProjectReports({ inLastDays: 1, locale: AvailableLocales.ru })
 		}
 
 		if (job.name == 'new-specialities') {
-			await telegramBot.sendNewSpecialities({ inLastDays: 1 })
+			await telegramBot.sendNewSpecialities({ inLastDays: 1, locale: AvailableLocales.ru })
 		}
 
 		if (job.name == 'new-vacancies') {
-			await telegramBot.sendNewVacancies({ inLastDays: 1 })
+			await telegramBot.sendNewVacancies({ inLastDays: 1, locale: AvailableLocales.ru })
 		}
 
 		return { success: true }
