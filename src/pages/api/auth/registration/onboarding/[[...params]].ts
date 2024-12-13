@@ -1,5 +1,6 @@
 import { getServerLocale } from '@/helpers/format'
 import { NextAuthGuard } from '@/lib/api-middlewares'
+import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
 import { UpdateProfileDto } from '@/types/dto/profile'
 import { CreateSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
@@ -180,10 +181,35 @@ class ApiRegistrationHandler {
 	public async updateResources(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: UpdateProfileDto) {
 		const { timeForWork, otherResources, isActive } = body
 
-		await prisma.profile.update({
+		const profile = await prisma.profile.update({
 			where: { userId: req.user.id },
 			data: { timeForWork, otherResources, isActive, user: { update: { onboardingDone: true } } },
+			select: {
+				primaryInterest: true,
+				name: true,
+				user: { select: { agreements: true, name: true, email: true, lang: true } },
+			},
 		})
+
+		try {
+			const agreements = profile.user.agreements as Record<string, boolean>
+
+			const newSubscriber = await brevoApi.contacts.createContact({
+				email: profile.user.email as string,
+				listIds: [2],
+				attributes: {
+					MAIN_LOCALE: profile.user.lang,
+					MAIN_INTEREST: profile.primaryInterest,
+					FIRSTNAME: profile.name || profile.user.name,
+					HAS_SUBSCRIBE_TO_NEWSLETTER: agreements?.needSubscribeToNewsletter || false,
+				},
+			})
+
+			const response = await newSubscriber.json()
+			console.log('[brevo: newSubscriber: response]', response)
+		} catch (error) {
+			console.error('[brevo: newSubscriber: error]', error)
+		}
 	}
 }
 
