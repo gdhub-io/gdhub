@@ -149,7 +149,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const project = await prisma.project.findFirst({
 		where: {
 			slug: projectSlug,
-			status: { in: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
+			// status: { notIn: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
 		},
 		include: { author: { select: { name: true, profile: { select: { tgNickname: true } } } } },
 	})

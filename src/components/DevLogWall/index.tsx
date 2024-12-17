@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useMemo, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
@@ -51,7 +52,14 @@ export const DevLogWall = () => {
 				children: (
 					<div className={styles.reportItem}>
 						<Paragraph ellipsis={{ rows: 20, expandable: true }}>
-							<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{report.content}</ReactMarkdown>
+							<ReactMarkdown
+								rehypePlugins={[rehypeRaw as any]}
+								components={{
+									img: (props) => <img style={{ maxWidth: '100%' }} alt={props.alt || ''} {...props} />,
+								}}
+							>
+								{report.content}
+							</ReactMarkdown>
 						</Paragraph>
 						{!!report.video && (
 							<div className={styles.playerWrapper}>

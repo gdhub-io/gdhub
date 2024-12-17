@@ -21,6 +21,7 @@ export const DevLogPost = ({ data, editable = false, onUpdate = () => {} }: DevL
 	return (
 		<Card
 			style={{ width: '100%' }}
+			styles={{ title: { fontSize: 14 } }}
 			className={styles.postCard}
 			title={<Text type="secondary">{data.label}</Text>}
 			extra={

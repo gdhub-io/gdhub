@@ -287,7 +287,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 			<ConfigProvider theme={publicThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
-						--background-color: #fff;
+						--background-color: #f2f4f7;
 					}
 				`}</style>
 				<Layout className={styles.container}>
