@@ -61,14 +61,23 @@ export const LandingLayout = ({ children }: any) => {
 	}, [session, screens])
 
 	useEffect(() => {
+		const unsetOverflow = () => {
+			if (typeof window !== 'undefined') {
+				const body = document?.querySelector('body')
+				body?.style.setProperty('overflow', 'unset')
+			}
+		}
+
 		const handleScroll = () => {
 			setScrollY(window.scrollY)
 		}
 
 		handleScroll()
+		unsetOverflow()
 
 		window.addEventListener('scroll', handleScroll)
 		return () => {
+			unsetOverflow()
 			window.removeEventListener('scroll', handleScroll)
 		}
 	}, [])
@@ -87,7 +96,7 @@ export const LandingLayout = ({ children }: any) => {
 		const body = document?.querySelector('body')
 
 		if (!open) {
-			body?.style.setProperty('overflow', 'inherit')
+			body?.style.setProperty('overflow', 'unset')
 		}
 	}
 

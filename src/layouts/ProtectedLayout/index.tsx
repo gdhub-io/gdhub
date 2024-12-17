@@ -63,6 +63,17 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	}
 
 	useEffect(() => {
+		const unsetOverflow = () => {
+			if (typeof window !== 'undefined') {
+				const body = document?.querySelector('body')
+				body?.style.setProperty('overflow', 'unset')
+			}
+		}
+
+		unsetOverflow()
+	}, [])
+
+	useEffect(() => {
 		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('langiage is changed'))
 	}, [session?.user.lang])
 
