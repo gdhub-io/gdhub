@@ -1,11 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { T } from '@tolgee/react'
 import { Avatar, Flex, List, Space, Typography } from 'antd'
 import axios from 'axios'
-import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'
 import ReactPlayer from 'react-player'

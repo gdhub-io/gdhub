@@ -4,22 +4,12 @@ import NotionService from '@/services/notion'
 import styles from '@/styles/cookie-policy.module.scss'
 import { Render } from '@9gustin/react-notion-render'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useTolgee } from '@tolgee/react'
-import { Typography } from 'antd'
 import { GetStaticProps } from 'next'
 import '@9gustin/react-notion-render/dist/index.css'
 
-const { Title } = Typography
-
 const PrivacyPolicyPage: NextPageWithLayout = ({ blocks }: any) => {
-	const { t } = useTolgee()
-
 	return (
 		<PublicLayout title="Cookie Policy">
-			{/* <Head>
-				<title>{t('Cookie Policy')}</title>
-			</Head> */}
-
 			<div className={styles.container}>
 				<Render blocks={blocks.results} simpleTitles />
 			</div>
