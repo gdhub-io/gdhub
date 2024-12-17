@@ -617,6 +617,45 @@
   "no": "No",
   "no-projects-yet": "No projects found for this stage",
   "no-user-projects": "No project yet.",
+  "novu": {
+    "inbox": {
+      "filters": {
+        "dropdownOptions": {
+          "archived": "Archived",
+          "default": "All",
+          "unread": "Unread"
+        },
+        "labels": {
+          "default": "All"
+        }
+      }
+    },
+    "notification": {
+      "actions": {
+        "archive": {
+          "tooltip": "Archive"
+        },
+        "read": {
+          "tooltip": "Mark as read"
+        },
+        "unread": {
+          "tooltip": "Mark as unread"
+        }
+      }
+    },
+    "notifications": {
+      "actions": {
+        "archiveAll": "Archive all",
+        "archiveRead": "Archive read",
+        "readAll": "Mark all as read"
+      },
+      "emptyNotice": "No notifications"
+    },
+    "preferences": {
+      "global": "General",
+      "title": "Settings"
+    }
+  },
   "onboarding": {
     "interests": {
       "motivation": {

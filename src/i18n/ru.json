@@ -618,6 +618,45 @@
   "no": "Нет",
   "no-projects-yet": "Проектов для этой стадии не найдено",
   "no-user-projects": "Здесь будет отображаться список ваших проектов.",
+  "novu": {
+    "inbox": {
+      "filters": {
+        "dropdownOptions": {
+          "archived": "Архив",
+          "default": "Все",
+          "unread": "Непрочитанные"
+        },
+        "labels": {
+          "default": "Все"
+        }
+      }
+    },
+    "notification": {
+      "actions": {
+        "archive": {
+          "tooltip": "В архив"
+        },
+        "read": {
+          "tooltip": "Отметить как прочитанное"
+        },
+        "unread": {
+          "tooltip": "Отметить как непрочитанные"
+        }
+      }
+    },
+    "notifications": {
+      "actions": {
+        "archiveAll": "Отправить всё в архив",
+        "archiveRead": "Чтение архива",
+        "readAll": "Отметить все как прочитанные"
+      },
+      "emptyNotice": "Нет уведомлений"
+    },
+    "preferences": {
+      "global": "Общие",
+      "title": "Настройки"
+    }
+  },
   "onboarding": {
     "interests": {
       "motivation": {
