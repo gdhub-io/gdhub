@@ -69,8 +69,10 @@ const ProfilePage: NextPageWithLayout = () => {
 	]
 
 	useEffect(() => {
-		switchContent((router.query.item as string) || 'general')
-	}, [router.query.item])
+		if (profile?.data && router.query.item) {
+			switchContent((router.query.item as string) || 'general')
+		}
+	}, [router.query.item, profile?.data])
 
 	const switchContent = (key: string) => {
 		if (!profile) return
@@ -99,8 +101,6 @@ const ProfilePage: NextPageWithLayout = () => {
 		}
 
 		setContent(_content)
-
-		router.push(`/profile/settings/${key}`)
 	}
 
 	if (!profile?.data)
@@ -118,19 +118,21 @@ const ProfilePage: NextPageWithLayout = () => {
 						options={settingsMenu.map((d) => ({ label: d.label, value: d.key }))}
 						value={(router.query?.item as string) || 'general'}
 						style={{ width: '100%', margin: '8px 0' }}
-						onChange={(value) => switchContent(value)}
+						onChange={(value) => router.push(`/profile/settings/${value}`)}
 					/>
 				</Header>
 			) : null}
 			<Layout>
 				<Sider width={200} className={styles.sider} breakpoint="lg" collapsedWidth="0" trigger={null}>
-					<Menu
-						mode="vertical"
-						defaultSelectedKeys={[(router.query?.item as string) || 'general']}
-						style={{ height: '100%', borderRight: 0 }}
-						items={settingsMenu}
-						onSelect={({ key }) => switchContent(key)}
-					/>
+					{screens.lg ? (
+						<Menu
+							mode="vertical"
+							defaultSelectedKeys={[(router.query?.item as string) || 'general']}
+							style={{ height: '100%', borderRight: 0 }}
+							items={settingsMenu}
+							onSelect={({ key }) => router.push(`/profile/settings/${key}`)}
+						/>
+					) : null}
 				</Sider>
 				<Content className={styles.content}>{content}</Content>
 			</Layout>

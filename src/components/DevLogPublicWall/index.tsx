@@ -102,7 +102,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 		return reports
 	}, [projectReports])
 
-	if (!projectId || !projectReports?.data) return null
+	if (!projectId || !projectReports?.data || !items?.length) return null
 
 	return (
 		<>

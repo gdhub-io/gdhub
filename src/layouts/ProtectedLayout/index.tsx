@@ -78,7 +78,6 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	}, [session?.user.lang])
 
 	useEffect(() => {
-		console.log(session)
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
 

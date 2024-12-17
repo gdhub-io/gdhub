@@ -170,8 +170,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
 			},
 			seo: {
-				title: project.name,
-				description: project.description?.slice(0, 160),
+				title: project.name || null,
+				description: project.description?.slice(0, 160) || null,
 				image: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${project.name}&st=Author%20${project.author.name}&img=${project.coverImage}`,
 			},
 		},
