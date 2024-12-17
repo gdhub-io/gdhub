@@ -18,7 +18,7 @@ import styles from './style.module.scss'
 
 const { Header, Sider, Content } = Layout
 
-const ProfilePage: NextPageWithLayout = ({ params }: any) => {
+const ProfilePage: NextPageWithLayout = () => {
 	const [content, setContent] = useState<React.JSX.Element>()
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
@@ -98,9 +98,9 @@ const ProfilePage: NextPageWithLayout = ({ params }: any) => {
 				break
 		}
 
-		router.push(`/profile/settings/${key}`)
-
 		setContent(_content)
+
+		router.push(`/profile/settings/${key}`)
 	}
 
 	if (!profile?.data)
