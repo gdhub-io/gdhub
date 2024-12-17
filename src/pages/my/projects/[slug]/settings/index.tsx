@@ -4,7 +4,6 @@ import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
-import { GoCheckCircleFill } from '@react-icons/all-files/go/GoCheckCircleFill'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -17,10 +16,8 @@ import {
 	Popover,
 	Row,
 	Select,
-	Space,
 	Spin,
 	theme,
-	Tooltip,
 	Typography,
 	Upload,
 	UploadProps,
@@ -298,35 +295,8 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						</Suspense>
 					</Form.Item>
 
-					{/* <Form.Item
-						name="conceptLink"
-						label={
-							<Space>
-								<T keyName="modal.project.conceptLink.label">Link to concept document (idea description)</T>
-								{project?.data.status == prismaClient.ProjectStatus.Approved && (
-									<Tooltip title="You can't change the link. It was approved already.">
-										<GoCheckCircleFill color={token.colorSuccess} />
-									</Tooltip>
-								)}
-							</Space>
-						}
-						wrapperCol={{ span: 24 }}
-						rules={[{ type: 'url' }]}
-					>
-						<Input width={'100%'} />
-					</Form.Item> */}
-
 					{project?.data.status == prismaClient.ProjectStatus.Approved && (
 						<>
-							{/* <Form.Item
-								name="gddLink"
-								label={<T keyName="modal.project.gddLink.label">Link to game design document</T>}
-								wrapperCol={{ span: 24 }}
-								rules={[{ required: true, type: 'url' }]}
-								required
-							>
-								<Input width={'100%'} />
-							</Form.Item> */}
 							<Row gutter={[16, 16]}>
 								<Col md={{ span: 16 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item

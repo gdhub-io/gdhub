@@ -154,6 +154,8 @@ class ApiUserTeamVacancyHandler {
 			vacancyId,
 		}: { specialityId: string; contactType: string[]; telegramNickname?: string; vacancyId: string }
 	) {
+		const { t } = tolgeeService
+
 		if (contactType.includes('telegram') && telegramNickname) {
 			await prisma.profile.update({ where: { userId: req.user.id }, data: { tgNickname: telegramNickname } })
 		}
@@ -180,16 +182,20 @@ class ApiUserTeamVacancyHandler {
 
 		try {
 			await NovuService.send({
-				template: 'new-candidate-to-project',
+				template: 'default-message',
 				to: {
 					subscriberId: vacancy.team!.project?.authorId!,
 					email: vacancy.team!.project?.author.email!,
 				},
 				payload: {
-					name: candidate.user.name,
-					vacancy: vacancy.title,
-					project: vacancy.team!.project?.name,
-					url: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.team!.project?.id,
+					title: t('message.new-job-response.title', 'New job response to the {project}', {
+						project: vacancy.team!.project?.name,
+					}),
+					message: t('message.new-job-response.content', `for vacancy "{vacancy}" from {name}`, {
+						name: candidate.user.name,
+						vacancy: vacancy.title,
+					}),
+					redirectUrl: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.team!.project?.id,
 				},
 			})
 
