@@ -1,6 +1,11 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { UpdateProfileDto } from '@/types/dto/profile'
+import {
+	SwitchMentorshipDto,
+	UpdateMentorshipSettingDto,
+	UpdateProfileDto,
+	isSwitchMentorshipType,
+} from '@/types/dto/profile'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { Body, Get, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -21,6 +26,45 @@ class ApiProfileHandler {
 		})
 
 		return profile
+	}
+
+	@Put('/mentorship')
+	public async updateMentorshipSetting(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) data: SwitchMentorshipDto | UpdateMentorshipSettingDto
+	) {
+		if (isSwitchMentorshipType(data)) {
+			const { enabled } = data as SwitchMentorshipDto
+
+			const roles = req.user.roles as prismaClient.UserRole[]
+			const hasMentorshipRole = roles.includes(prismaClient.UserRole.Mentor)
+
+			if (enabled && !hasMentorshipRole) {
+				roles.push(prismaClient.UserRole.Mentor)
+			}
+
+			if (!enabled && hasMentorshipRole) {
+				const idx = roles.findIndex((v) => v === prismaClient.UserRole.Mentor)
+
+				if (idx !== -1) {
+					roles.splice(idx, 1)
+				}
+			}
+
+			await prisma.user.update({ where: { id: req.user.id }, data: { roles: { set: roles } } })
+
+			return { enabled: enabled }
+		} else {
+			const { specialityId, timeForMentoring, openForQuestions } = data as UpdateMentorshipSettingDto
+
+			await prisma.speciality.update({
+				where: { id: specialityId },
+				data: {
+					timeForMentoring: timeForMentoring === '' ? null : timeForMentoring,
+					openForQuestions: { set: openForQuestions },
+				},
+			})
+		}
 	}
 
 	@Put()

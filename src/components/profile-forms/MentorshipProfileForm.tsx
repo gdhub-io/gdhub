@@ -1,67 +1,118 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import {
-	Button,
-	Card,
-	Col,
-	Form,
-	Input,
-	InputNumber,
-	message,
-	Row,
-	Space,
-	Spin,
-	Switch,
-	Tooltip,
-	Typography,
-} from 'antd'
+import { Alert, Button, Card, Form, Input, message, Spin, Switch, Tooltip, Typography } from 'antd'
+import Select from 'antd/es/select'
+import axios from 'axios'
+import { useSession } from 'next-auth/react'
+import styles from './MentorshipProfileForm.module.scss'
 
 const { Paragraph, Text } = Typography
 
 type MentorshipProfileFormArgs = {
 	profile: prismaClient.Profile
+	onUpdate: () => Promise<void> | void
 }
 
-const MentorshipProfileForm = ({ profile }: MentorshipProfileFormArgs) => {
+const MentorshipProfileForm = ({ profile, onUpdate = () => {} }: MentorshipProfileFormArgs) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
-	const [processing, setProcessing] = useState(true)
 	const [enabled, setEnabled] = useState(false)
+	const [selectedSpecialityId, setSelectedSpecialityId] = useState<string | null>(null)
+	const { data: session, update: refreshSession } = useSession()
+
+	const { mutateAsync: switchMentorship, isLoading: isSwitching } = useMutation(
+		({ enabled }: { enabled: boolean }) => axios.put<any>('/api/user/profile/mentorship', { enabled }),
+		{
+			onSuccess: ({ data }) => setEnabled(data.enabled),
+		}
+	)
 
 	useEffect(() => {
-		if (profile) {
-			setProcessing(false)
+		if (session) {
+			setEnabled(session.user.roles.includes(prismaClient.$Enums.UserRole.Mentor))
+		}
+	}, [session])
 
-			if (profile.timeForWork && Array.isArray(profile.timeForWork)) {
+	useEffect(() => {
+		if (selectedSpecialityId) {
+			const speciality = specialities?.data.find((r: any) => r.id === selectedSpecialityId)
+
+			if (speciality) {
 				form.setFieldsValue({
-					timeForWorkMin: profile.timeForWork[0],
-					timeForWorkMax: profile.timeForWork[1],
+					timeForMentoring: speciality.timeForMentoring,
+					openForQuestions: speciality.openForQuestions,
 				})
 			}
 		}
-	}, [profile])
+	}, [selectedSpecialityId])
 
-	const saveMentorshipSettings = async ({ someFileds }: any) => {}
+	const { mutateAsync: saveMentorshipSetting, isLoading: isSaving } = useMutation(
+		(data: { specialityId: string; timeForMentoring: string; openForQuestions: string[] }) =>
+			axios.put<any>('/api/user/profile/mentorship', data),
+		{
+			onSuccess: async () => {
+				await refetchSpecialityList()
+			},
+		}
+	)
+
+	const {
+		data: specialities,
+		isLoading: isSpecialityFetching,
+		refetch: refetchSpecialityList,
+		dataUpdatedAt,
+	} = useQuery(
+		['user-specialities', 'mentorship'],
+		() =>
+			axios.get<any>('/api/user/specialities', {
+				params: {
+					level: [prismaClient.$Enums.SkillLevel.Experienced, prismaClient.$Enums.SkillLevel.Expert],
+				},
+			}),
+		{ enabled }
+	)
+
+	useEffect(() => {
+		if (!selectedSpecialityId && specialities?.data) {
+			form.setFieldsValue({
+				specialityId: specialities?.data[0].id,
+				timeForMentoring: specialities?.data[0].timeForMentoring,
+				openForQuestions: specialities?.data[0].openForQuestions,
+			})
+		}
+	}, [specialities?.data, dataUpdatedAt])
 
 	const handleForm = async () => {
 		try {
-			const { timeForWorkMin, timeForWorkMax, otherMentorship } = await form.validateFields()
-			const timeForWork: number[] = [timeForWorkMin, timeForWorkMax]
+			const data = await form.validateFields()
 
-			setProcessing(true)
-			await saveMentorshipSettings({
-				/** some fields */
-			})
-			setProcessing(false)
+			await saveMentorshipSetting(data)
+			await onUpdate()
 
-			message.success(t('profile-forms.mentorship.update-message', 'Resource data updated'))
-		} catch (error: any) {
-			setProcessing(false)
+			message.success(t('profile-forms.mentorship.update-message', 'Mentorship settins is updated'))
+		} catch {}
+	}
+
+	const switchMentorshipStatus = async (checked: boolean) => {
+		await switchMentorship({ enabled: checked })
+		await refreshSession()
+
+		if (!checked) {
+			form.resetFields()
+			setSelectedSpecialityId(null)
 		}
 	}
 
-	const switchMentorshipStatus = (checked: boolean) => setEnabled(checked)
+	const specialityListOptions = specialities?.data.map((r: any) => ({
+		label: (
+			<Typography.Text ellipsis>
+				<T>{r.name}</T>
+			</Typography.Text>
+		),
+		value: r.id,
+	}))
 
 	return (
 		<Card
@@ -77,21 +128,20 @@ const MentorshipProfileForm = ({ profile }: MentorshipProfileFormArgs) => {
 						</Text>
 					}
 				>
-					<Switch checked={false} disabled loading={false} onChange={switchMentorshipStatus} />
+					<Switch checked={enabled} loading={isSwitching} onChange={switchMentorshipStatus} />
 				</Tooltip>
 			}
 		>
-			<Spin spinning={processing}>
+			<Spin spinning={isSaving}>
 				<Paragraph>
 					<T>Allows you to contribute to game development through advising</T>
 				</Paragraph>
-				{enabled && (
+				{enabled && !!specialities?.data.length && (
 					<Form
 						form={form}
 						layout="vertical"
 						variant="filled"
 						name="profile-mentorship-form"
-						wrapperCol={{ span: 12 }}
 						autoComplete="off"
 						requiredMark="optional"
 						initialValues={
@@ -101,69 +151,67 @@ const MentorshipProfileForm = ({ profile }: MentorshipProfileFormArgs) => {
 						}
 					>
 						<Form.Item
-							label={<T keyName="profile-forms.mentorship.field.timeForWork.title">Available time (per week)</T>}
-							tooltip={{
-								title: t(
-									'profile-forms.mentorship.field.timeForWork.tooltip',
-									'How many hours a week can you pay to participation in projects.'
-								),
-							}}
-							wrapperCol={{ span: 24 }}
-							required
-							valuePropName="value"
+							label={t('profile-forms.mentorship.field.speciality.label', 'Speciality in which you can help')}
+							rules={[{ required: true }]}
+							name="specialityId"
 						>
-							<Row>
-								<Col md={{ span: 12 }} xs={{ span: 24 }}>
-									<Space>
-										<Text>
-											<T>From</T>{' '}
-										</Text>
-										<Form.Item name="timeForWorkMin" noStyle rules={[{ required: true }]}>
-											<InputNumber min={1} max={55} placeholder={t('minimum')} />
-										</Form.Item>
-										<Text>
-											<T>to</T>
-										</Text>
-										<Form.Item
-											name="timeForWorkMax"
-											noStyle
-											rules={[
-												{ required: true },
-												{
-													validator: (_, value) =>
-														form.getFieldValue('timeForWorkMin') > value
-															? Promise.reject(
-																	t(
-																		'profile-forms.mentorship.field.timeForWorkMax.error',
-																		'The maximum value cannot be less than the minimum'
-																	)
-																)
-															: Promise.resolve(),
-												},
-											]}
-										>
-											<InputNumber min={2} max={56} placeholder={t('maximum')} />
-										</Form.Item>
-										<Text>
-											{' '}
-											<T>hours a week</T>
-										</Text>
-									</Space>
-								</Col>
-							</Row>
+							<Select
+								options={specialityListOptions}
+								style={{ width: '100%' }}
+								placeholder={t('Select')}
+								onChange={(value) => setSelectedSpecialityId(value)}
+								loading={isSpecialityFetching}
+							/>
 						</Form.Item>
 
 						<Form.Item
-							label={t('profile-forms.mentorship.field.other-mentorship.label', 'Other mentorship')}
-							name="otherMentorship"
+							label={t(
+								'profile-forms.mentorship.field.openForQuestions.label',
+								'A list of questions that can be addressed to you'
+							)}
+							name="openForQuestions"
+							rules={[{ required: true }]}
 						>
-							<Input.TextArea rows={2} />
+							<Select
+								className={styles.questionSelect}
+								mode="tags"
+								maxCount={5}
+								style={{ width: '100%' }}
+								placeholder={t('Start typing and press Enter')}
+								loading={isSpecialityFetching}
+							/>
 						</Form.Item>
 
-						<Button type="primary" onClick={handleForm} loading={processing}>
+						<Form.Item
+							label={t('profile-forms.mentorship.field.timeForMentoring.label', 'Query response rate')}
+							help={t(
+								'profile-forms.mentorship.field.timeForMentoring.help',
+								'How quickly do you plan to respond to new requests?'
+							)}
+							name="timeForMentoring"
+						>
+							<Input.TextArea
+								rows={1}
+								placeholder={t(
+									'profile-forms.mentorship.field.timeForMentoring.placeholder',
+									'I answer as much as possible'
+								)}
+							/>
+						</Form.Item>
+
+						<Button type="primary" style={{ marginTop: 32 }} onClick={handleForm} loading={isSaving}>
 							<T>Save</T>
 						</Button>
 					</Form>
+				)}
+
+				{enabled && !specialities?.data.length && (
+					<Alert
+						message={t(
+							'profile-forms.mentorship.card.no-specialities',
+							'To become a mentor, you must have at least one specialty of the Experienced or Expert level'
+						)}
+					/>
 				)}
 			</Spin>
 		</Card>

@@ -128,3 +128,23 @@ export class UpdateProfileDto {
 	@IsOptional()
 	lang?: AvailableLocales
 }
+
+export class SwitchMentorshipDto {
+	@IsBoolean()
+	enabled: boolean
+}
+
+export class UpdateMentorshipSettingDto {
+	@IsString()
+	specialityId: string
+
+	@IsString({ each: true })
+	openForQuestions: string[]
+
+	@IsOptional()
+	timeForMentoring?: string
+}
+
+export function isSwitchMentorshipType(data: any) {
+	return data.enabled !== undefined
+}

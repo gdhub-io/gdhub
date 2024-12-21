@@ -765,7 +765,26 @@
     },
     "mentorship": {
       "card": {
+        "no-specialities": "To become a mentor, you must have at least one specialty of the Experienced or Expert level",
         "title": "Mentorship"
+      },
+      "field": {
+        "openForQuestions": {
+          "label": "A list of questions that can be addressed to you"
+        },
+        "response-rate": {
+          "help": "How quickly do you plan to respond to new requests?",
+          "label": "Query response rate",
+          "placeholder": "I answer as much as possible"
+        },
+        "speciality": {
+          "label": "Speciality in which you can help"
+        },
+        "timeForMentoring": {
+          "help": "How quickly do you plan to respond to new requests?\n",
+          "label": "Query response rate",
+          "placeholder": "I answer as much as possible"
+        }
       }
     },
     "resources": {

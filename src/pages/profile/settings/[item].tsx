@@ -87,7 +87,14 @@ const ProfilePage: NextPageWithLayout = () => {
 				_content = <SpecialitiesProfileForm profile={profile.data} />
 				break
 			case 'mentorship':
-				_content = <MentorshipProfileForm profile={profile.data} />
+				_content = (
+					<MentorshipProfileForm
+						profile={profile.data}
+						onUpdate={async () => {
+							await queryClient.invalidateQueries(['profile'])
+						}}
+					/>
+				)
 				break
 			case 'resources':
 				_content = <ResourcesProfileForm profile={profile.data} saveProfile={saveProfile} />
