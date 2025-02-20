@@ -17,4 +17,10 @@ if (process.env.NODE_ENV === 'production') {
 	prisma = global.cachedPrisma
 }
 
+export class PrismaService {
+	public static init() {
+		return prisma
+	}
+}
+
 export { prisma }
