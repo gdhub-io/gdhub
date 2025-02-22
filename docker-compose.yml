@@ -3,9 +3,9 @@ services:
     build:
       context: .
       target: deps
-    container_name: gamelab-dev
+    container_name: gdhub_dev
     env_file:
-      - .env
+      - .env.docker
     ports:
       - 3000:3000
       - 9229:9229
@@ -13,23 +13,23 @@ services:
       - .:/app
     restart: unless-stopped
     networks:
-      - gdhub-network
+      - gdhub_network
     command: yarn dev
 
   searchengine: #dashboard https://bfritscher.github.io
-    container_name: gamelab-searchengine
+    container_name: gdhub_searchengine
     image: typesense/typesense:0.24.1
     restart: on-failure
     ports:
       - '8108:8108'
     volumes:
-      - gamelab-typesense-data:/data
+      - gdhub_typesense_data:/data
     command: '--data-dir /data --api-key=${TYPESENSE_ADMIN_API} --enable-cors'
     networks:
-      - gdhub-network
+      - gdhub_network
 
   searchengine-dashboard: #dashboard https://bfritscher.github.io
-    container_name: gamelab-typesense-dashboard
+    container_name: gdhub_typesense_dashboard
     image: ghcr.io/bfritscher/typesense-dashboard:latest
     restart: on-failure
     ports:
@@ -37,8 +37,9 @@ services:
 
   db:
     build: ./docker/postgres
-    container_name: gamelab_db
-    env_file: .env
+    container_name: gdhub_db
+    env_file:
+      - .env.docker
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-postgres}
       POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
@@ -47,13 +48,13 @@ services:
     ports:
       - '${DATABASE_PORT:-5432}:5432'
     volumes:
-      - gamelab-postgres-data:/var/lib/postgresql/data
+      - gdhub_postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init-app.sql
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     networks:
-      - gdhub-network
+      - gdhub_network
     restart: unless-stopped
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME:-postgres} -d ${DATABASE_NAME:-postgres}']
@@ -65,12 +66,12 @@ services:
   translation-app:
     image: tolgee/tolgee
     volumes:
-      - gamelab-tolgee-data:/data
+      - gdhub_tolgee_data:/data
     ports:
       - '25432:25432' # if you would like to access the DB
       - '8080:8080'
     env_file:
-      - .env
+      - .env.docker
 
   redis:
     image: bitnami/redis:latest
@@ -80,13 +81,15 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - gdhub-redis-data:/bitnami/redis/data
+      - gdhub_redis_data:/bitnami/redis/data
     networks:
-      - gdhub-network
+      - gdhub_network
 
   broker:
     image: registry.gdhub.io/bullboard:latest
     container_name: gdhub_broker
+    env_file:
+      - .env.docker
     environment:
       - APP_USERNAME=admin
       - APP_PASSWORD=admin
@@ -100,13 +103,13 @@ services:
     depends_on:
       - redis
     networks:
-      - gdhub-network
+      - gdhub_network
 
 volumes:
-  gamelab-typesense-data:
-  gamelab-postgres-data:
-  gamelab-tolgee-data:
-  gdhub-redis-data:
+  gdhub_typesense_data:
+  gdhub_postgres_data:
+  gdhub_tolgee_data:
+  gdhub_redis_data:
 
 networks:
-  gdhub-network:
+  gdhub_network:
