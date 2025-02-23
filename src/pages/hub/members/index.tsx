@@ -42,22 +42,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 			<Card
 				hoverable
 				onClick={() => setSelectedSpecialistId(hit.id)}
-				style={{ cursor: 'pointer' }}
-				actions={[
-					<Button
-						key="details"
-						type="text"
-						onClick={(e) => {
-							e.stopPropagation()
-							setSelectedSpecialistId(hit.id)
-						}}
-					>
-						<Space>
-							<T>More details</T>
-							<RightOutlined />
-						</Space>
-					</Button>,
-				]}
+				style={{ cursor: 'pointer', position: 'relative' }}
 			>
 				<Card.Meta
 					avatar={
@@ -223,6 +208,8 @@ function NoResults() {
 }
 
 const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
+	const { t } = useTolgee()
+
 	return (
 		<Card className={styles.filterCard}>
 			<Space direction="vertical" size={24} style={{ width: '100%' }}>
@@ -247,11 +234,7 @@ const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
 					<RefinementList attribute="skills" />
 				</div>
 
-				{onClear && (
-					<Button block onClick={onClear}>
-						<T>Clear filters</T>
-					</Button>
-				)}
+				<ClearRefinements translations={{ resetButtonText: t('Clear filter') }} />
 			</Space>
 		</Card>
 	)

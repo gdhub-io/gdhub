@@ -108,33 +108,35 @@
 
     .ais-SearchBox-form {
       position: relative;
-      display: -webkit-box;
-      display: -ms-flexbox;
       display: flex;
-      -webkit-box-align: center;
-      -ms-flex-align: center;
       align-items: center;
-      height: 40px;
-      padding-left: 40px;
-      padding-right: 40px;
-      // background-color: #f5f5fa;
-      border: 2px solid #636363;
-      color: inherit;
-      border-radius: 0px;
+      height: 48px;
+      padding: 0 16px;
+      background-color: #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 8px;
+      transition: all 0.2s ease-in-out;
+      margin-bottom: 24px;
 
+      &:hover, &:focus-within {
+        border-color: #f15541;
+        box-shadow: 0 2px 8px rgba(241, 85, 65, 0.1);
+      }
     }
 
     .ais-SearchBox-submit {
-      // display: none
-      position: absolute;
-      left: 8px;
+      position: relative;
+      left: 0;
       background: none;
       border: none;
+      padding: 0;
+      margin-right: 8px;
 
       &>svg {
-        scale: 1.5;
+        width: 16px;
+        height: 16px;
         stroke: #979797;
-        fill: #979797;
+        fill: none;
       }
     }
 
@@ -143,29 +145,38 @@
       width: 100%;
       height: 100%;
       background-color: transparent;
-      color: #5d6494;
+      color: #2c2c2c;
+      font-size: 16px;
       outline: 0;
       border: 0;
+
+      &::placeholder {
+        color: #979797;
+      }
     }
 
     .ais-SearchBox-reset {
-      position: absolute;
+      position: relative;
       right: 0;
-      margin-right: 6px;
-      height: 24px;
-      width: 24px;
-      color: #3a416f;
-      opacity: 0.8;
+      margin: 0 0 0 8px;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      color: #979797;
+      opacity: 0.6;
       background: none;
-      outline: 0;
-      border: 0;
+      border: none;
       cursor: pointer;
-    }
+      transition: all 0.2s ease-in-out;
 
-    .ais-SearchBox-reset svg {
-      display: block;
-      height: 100%;
-      width: 100%
+      &:hover {
+        opacity: 1;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
     }
 
     .ais-Autocomplete h3 {
@@ -220,34 +231,41 @@
       display: block
     }
 
-    .ais-ClearRefinements-button {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-align: center;
-      -ms-flex-align: center;
-      align-items: center;
-      height: 32px;
-      margin-left: 2px;
-      margin-right: 2px;
-      padding-left: 16px;
-      padding-right: 16px;
-      background-color: white;
-      cursor: pointer;
-      // background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#f5f5fa));
-      // background-image: linear-gradient(180deg, #fff, #f5f5fa);
-      font-size: 16px;
-      color: inherit;
-      border-radius: 4px;
-      // -webkit-box-shadow: 0 4px 11px 0 rgba(37, 44, 97, .15), 0 2px 3px 0 rgba(93, 100, 148, .2);
-      // box-shadow: 0 4px 11px 0 rgba(37, 44, 97, .15), 0 2px 3px 0 rgba(93, 100, 148, .2);
-      white-space: nowrap;
-      // -webkit-transition: all .2s ease-out;
-      // transition: all .2s ease-out
+    .ais-ClearRefinements {
+      margin-top: 16px;
     }
 
-    .ais-ClearRefinements-button:hover {
-      border-color: #21243d;
+    .ais-ClearRefinements-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 40px;
+      padding: 0 16px;
+      background-color: white;
+      border: 1px solid #e6e6e6;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #2c2c2c;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        border-color: #f15541;
+        color: #f15541;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        border-color: #e6e6e6;
+        color: #979797;
+
+        &:hover {
+          border-color: #e6e6e6;
+          color: #979797;
+        }
+      }
     }
 
     .ais-CurrentRefinements-list {
