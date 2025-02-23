@@ -24,13 +24,11 @@ export const MyProjectList = () => {
 					<T>My Projects</T>
 				</Title>
 
-				{session?.user.roles.includes(prismaClient.UserRole.Author) && (
-					<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
-						<Space>
-							<T keyName="project.create">Add Project</T>
-						</Space>
-					</Button>
-				)}
+				<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
+					<Space>
+						<T keyName="project.create">Add Project</T>
+					</Space>
+				</Button>
 			</Flex>
 
 			<Row gutter={[16, 16]} wrap>
