@@ -1,4 +1,7 @@
 .container {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 
   h4 {
     font-size: 18px;
@@ -7,7 +10,7 @@
   .stats {
     font-size: 14px;
     color: #a1a1a1;
-    margin: 8px 0;
+    margin-bottom: 24px;
   }
 
   .hitItem {
@@ -518,7 +521,7 @@
       border-radius: 2px
     }
 
-    .ais-RangeInput .vue-slider-component .vue-slider {
+    .ais-RangeInput .vue-slider-component .vue-slider-component {
       background-color: #c5c9e0
     }
 
@@ -619,11 +622,12 @@
     .ais-InfiniteHits-item {
       border: 2px solid transparent;
       border-radius: 6px;
-
-      // margin-top: 12px;
       margin-bottom: 12px;
+      transition: all 0.2s ease-in-out;
 
       &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         border: 2px solid #383838;
       }
     }
@@ -678,14 +682,8 @@
     .ais-Pagination-item {
       display: block;
       margin: 2px;
-      // background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#f5f5fa));
-      // background-image: linear-gradient(180deg, #fff, #f5f5fa);
-      // color: #21243d;
       border: 1px solid transparent;
       border-radius: 4px;
-      // -webkit-box-shadow: 0 4px 11px 0 rgba(37, 44, 97, .15), 0 2px 3px 0 rgba(93, 100, 148, .2);
-      // box-shadow: 0 4px 11px 0 rgba(37, 44, 97, .15), 0 2px 3px 0 rgba(93, 100, 148, .2);
-      // -webkit-transition: all .2s ease-out;
       transition: all .2s ease-out
     }
 
@@ -699,16 +697,11 @@
     }
 
     .ais-Pagination-item--selected {
-      // background-image: -webkit-gradient(linear, left top, left bottom, from(#7c90ff), to(#5468ff));
-      // background-image: linear-gradient(180deg, #7c90ff, #5468ff);
-      // color: #fff
       border-color: #2c2c2c;
     }
 
     .ais-Pagination-item:hover {
       background-color: #e6e6e6;
-      // -webkit-box-shadow: 0 8px 11px 0 rgba(37, 44, 97, .15), 0 4px 6px 0 rgba(93, 100, 148, .2);
-      // box-shadow: 0 8px 11px 0 rgba(37, 44, 97, .15), 0 4px 6px 0 rgba(93, 100, 148, .2)
     }
 
     .ais-Pagination-link {
@@ -768,6 +761,103 @@
 
     .ais-PoweredBy-logo {
       width: 96px !important
+    }
+
+    .ant-card {
+      height: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e6e6e6;
+      transition: all 0.2s ease-in-out;
+      
+      &:hover {
+        border-color: #f15541;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .ant-card-body {
+        padding: 24px;
+      }
+
+      .ant-card-meta-title {
+        margin-bottom: 16px;
+      }
+
+      .ant-tag {
+        background: #f5f5f5;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 6px;
+      }
+
+      .ant-card-actions {
+        background: none;
+        border-top: 1px solid #f0f0f0;
+        padding: 12px 24px;
+
+        button {
+          border-radius: 6px;
+          padding: 4px 16px;
+          height: auto;
+          
+          &:hover {
+            color: #f15541;
+            border-color: #f15541;
+          }
+        }
+      }
+    }
+  }
+}
+
+.filterCard {
+  position: sticky;
+  top: 24px;
+  border-radius: 8px;
+  background: transparent;
+  
+  :global {
+    .ant-card {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    
+    .ant-card-body {
+      padding: 24px;
+    }
+    
+    .ais-RefinementList-item {
+      margin: 8px 0;
+      
+      &--selected {
+        .ais-RefinementList-label {
+          color: #f15541;
+        }
+        
+        .ais-RefinementList-checkbox {
+          border-color: #f15541;
+          background: #f15541;
+          border-radius: 4px;
+        }
+      }
+
+      .ais-RefinementList-checkbox {
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+    }
+    
+    .ais-RefinementList-count {
+      background: rgba(245, 245, 245, 0.8);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    .ant-typography {
+      margin-bottom: 12px;
     }
   }
 }
