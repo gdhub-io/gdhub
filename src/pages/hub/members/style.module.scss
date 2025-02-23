@@ -626,7 +626,6 @@
       transition: all 0.2s ease-in-out;
 
       &:hover {
-        transform: translateY(-4px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         border: 2px solid #383838;
       }
@@ -769,11 +768,6 @@
       overflow: hidden;
       border: 1px solid #e6e6e6;
       transition: all 0.2s ease-in-out;
-      
-      &:hover {
-        border-color: #f15541;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      }
 
       .ant-card-body {
         padding: 24px;
@@ -815,12 +809,13 @@
   top: 24px;
   border-radius: 8px;
   background: transparent;
+  border: none !important;
   
   :global {
     .ant-card {
       background: transparent;
-      border: none;
-      box-shadow: none;
+      border: none !important;
+      box-shadow: none !important;
     }
     
     .ant-card-body {
