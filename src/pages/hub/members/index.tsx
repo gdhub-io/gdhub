@@ -51,7 +51,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 						</Avatar>
 					}
 					title={
-						<Title level={4} style={{ margin: 0 }}>
+						<Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center', minHeight: 64 }}>
 							<Highlight attribute="name" hit={hit} />
 						</Title>
 					}
@@ -144,14 +144,23 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
 				>
 					<Configure optionalFilters={['isActive:true']} />
-					<SearchBox placeholder="Type search query..." />
+					<Row gutter={[16, 16]} align="middle" style={{ marginBottom: 24 }}>
+						<Col flex="auto">
+							<SearchBox placeholder="Type search query..." />
+						</Col>
+						{!screens.lg && (
+							<Col>
+								<SearchMobileFilter onClick={() => setOpenFilter(true)} resetButtonText={t('Clear filter')} />
+							</Col>
+						)}
+					</Row>
 					<Row justify="end" className={styles.stats}>
 						<Stats />
 					</Row>
 
 					<Row gutter={[16, 16]}>
 						<Col xs={{ span: 24 }} lg={{ span: 8 }}>
-							{screens.lg ? <SearchFilter /> : <SearchMobileFilter />}
+							{screens.lg ? <SearchFilter /> : null}
 						</Col>
 						<Col xs={{ span: 24 }} lg={{ span: 16 }}>
 							<NoResultsBoundary fallback={<NoResults />}>
@@ -166,6 +175,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 						title={<T>Search filter</T>}
 						className={styles.container}
 						onClose={() => setOpenFilter(false)}
+						placement="right"
 					>
 						<SearchFilter />
 					</Drawer>
