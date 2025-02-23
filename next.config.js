@@ -18,6 +18,7 @@ const nextConfig = {
 			{ protocol: 'https', hostname: 's3.us-west-2.amazonaws.com' },
 			{ protocol: 'https', hostname: 'cdn.sanity.io' },
 			{ protocol: 'https', hostname: 'loremflickr.com' },
+			{ protocol: 'https', hostname: 'avatars.githubusercontent.com' },
 		],
 	},
 	env: {
