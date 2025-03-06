@@ -17,11 +17,19 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	const router = useRouter()
 	const { t } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
+	const [activeMenuKey, setActiveMenuKey] = useState<string>('')
 
 	// hide mobile menu on resize window
 	useEffect(() => {
 		if (!screens.xl) setOpenMobileMenu(false)
 	}, [session, screens])
+
+	// Устанавливаем активный пункт меню при загрузке страницы и при изменении хэша
+	useEffect(() => {
+		if (document.location.hash) {
+			setActiveMenuKey(document.location.hash)
+		}
+	}, [router.asPath])
 
 	// hide main scroll on open menu
 	useEffect(() => {
@@ -34,6 +42,32 @@ export const MainHeader = ({ className }: { className?: string }) => {
 
 	const writeInternalLink = (internalLink: string) => {
 		return router.pathname == '/' ? internalLink : `/${internalLink}`
+	}
+
+	// Функция для плавного скроллинга к якорю
+	const scrollToAnchor = (e: React.MouseEvent<HTMLAnchorElement>, selector: string) => {
+		// Проверяем, что это якорная ссылка
+		if (selector.startsWith('#')) {
+			e.preventDefault()
+
+			const offset = 100 // Отступ от верха
+			const element = document.querySelector(selector)
+
+			if (element) {
+				window.scrollTo({
+					behavior: 'smooth',
+					top: element.getBoundingClientRect().top + window.scrollY - offset,
+				})
+
+				// Устанавливаем активный пункт меню
+				setActiveMenuKey(selector)
+
+				// Закрываем мобильное меню, если оно открыто
+				if (openMobileMenu) {
+					setOpenMobileMenu(false)
+				}
+			}
+		}
 	}
 
 	// show main scroll on open menu
@@ -49,7 +83,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		() => [
 			{
 				label: (
-					<Link href={writeInternalLink('#about')} title={t('About us')}>
+					<Link href={writeInternalLink('#about')} title={t('About us')} onClick={(e) => scrollToAnchor(e, '#about')}>
 						<T>About us</T>
 					</Link>
 				),
@@ -57,7 +91,11 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
-					<Link href={writeInternalLink('#for-authors')} title={t('For Authors')}>
+					<Link
+						href={writeInternalLink('#for-authors')}
+						title={t('For Authors')}
+						onClick={(e) => scrollToAnchor(e, '#for-authors')}
+					>
 						<T>For Authors</T>
 					</Link>
 				),
@@ -65,7 +103,11 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
-					<Link href={writeInternalLink('#for-specialists')} title={t('For Specialists')}>
+					<Link
+						href={writeInternalLink('#for-specialists')}
+						title={t('For Specialists')}
+						onClick={(e) => scrollToAnchor(e, '#for-specialists')}
+					>
 						<T>For Specialists</T>
 					</Link>
 				),
@@ -81,7 +123,11 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
-					<Link href={writeInternalLink('#contacts')} title={t('Contacts')}>
+					<Link
+						href={writeInternalLink('#contacts')}
+						title={t('Contacts')}
+						onClick={(e) => scrollToAnchor(e, '#contacts')}
+					>
 						<T>Contacts</T>
 					</Link>
 				),
@@ -99,22 +145,30 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					<GdhubLogo />
 				</Link>
 				{/* menu */}
-				<div style={{ width: '100%' }}>
-					{screens.lg && <Menu theme="dark" mode="horizontal" items={headerMenu} className={styles.menu} />}
-				</div>
+				{screens.lg && (
+					<div className={styles.menuContainer}>
+						<Menu
+							theme="dark"
+							mode="horizontal"
+							items={headerMenu}
+							className={styles.menu}
+							selectedKeys={[activeMenuKey]}
+						/>
+					</div>
+				)}
 				{/* right signin button */}
 				{screens.lg && (
-					<Space align="center">
+					<Space align="center" className={styles.rightControls}>
 						<>
 							{!!session ? (
 								<Link href="/hub">
-									<Button>
+									<Button className={styles.actionButton}>
 										<T>Go to app</T>
 									</Button>
 								</Link>
 							) : (
 								<Link href="/signin">
-									<Button>
+									<Button className={styles.actionButton}>
 										<T>Log in</T>
 									</Button>
 								</Link>
@@ -142,7 +196,15 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					open={openMobileMenu}
 				>
 					<Space direction="vertical" size={32} style={{ width: '100%' }}>
-						<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
+						<Menu
+							items={headerMenu}
+							theme="dark"
+							onSelect={({ key }) => {
+								setOpenMobileMenu(false)
+								setActiveMenuKey(key)
+							}}
+							selectedKeys={[activeMenuKey]}
+						/>
 
 						{!!session ? (
 							<Link href="/hub">

@@ -1,6 +1,7 @@
 .container {
   background-color: transparent;
   transition: background-color 0.5s, backdrop-filter 0.4s;
+  width: 100%;
 
   :global {
     .ant-typography {
@@ -15,31 +16,71 @@
   }
 
   .topLine {
-    padding: 34px 0;
+    padding: 24px 0;
+    width: 100%;
+  }
+
+  .menuContainer {
+    display: flex;
+    justify-content: center;
+    flex: 1;
   }
 
   .menu {
-    display: block;
-    text-align: center;
+    display: flex;
+    justify-content: center;
     color: #fff;
     font-size: 16px;
     background-color: transparent;
 
     :global {
       .ant-menu-item {
-        padding-inline: 32px;
+        padding-inline: 24px;
+        margin-inline: 4px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
 
         a {
-          border-bottom: 2px solid transparent;
-          padding-bottom: 4px;
-          transition: border 0.3s;
+          position: relative;
+          color: #fff;
+          font-weight: 500;
+          transition: color 0.3s ease;
         }
 
-        &-active a {
-          color: #F15541 !important;
-          border-color: #F15541 !important;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.08);
+          
+          a {
+            color: #fff;
+          }
+        }
+
+        &-active {
+          background-color: rgba(241, 85, 65, 0.1);
+          
+          a {
+            color: #fff !important;
+          }
         }
       }
+    }
+  }
+
+  .rightControls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .actionButton {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
     }
   }
 

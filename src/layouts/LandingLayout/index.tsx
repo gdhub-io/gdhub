@@ -22,7 +22,7 @@ const scrollIntoViewWithOffset = (selector: string, offset: number) => {
 	if (!hookEl) return
 
 	window.scrollTo({
-		behavior: 'instant',
+		behavior: 'smooth',
 		top: hookEl.getBoundingClientRect().top - document.body.getBoundingClientRect().top - offset,
 	})
 }
@@ -52,7 +52,9 @@ export const LandingLayout = ({ children }: any) => {
 
 	useEffect(() => {
 		if (document.location.hash) {
-			scrollIntoViewWithOffset(document.location.hash, 100)
+			setTimeout(() => {
+				scrollIntoViewWithOffset(document.location.hash, 100)
+			}, 300)
 		}
 	}, [router])
 
