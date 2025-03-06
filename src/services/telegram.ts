@@ -205,7 +205,7 @@ export default class TelegramService {
 				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
 				project: { status: prismaClient.ProjectStatus.Approved },
 			},
-			include: { project: { include: { stage: { include: { season: true } } } } },
+			// include: { project: { include: { stage: { include: { season: true } } } } },
 		})
 
 		if (reports.length == 0) return { sent: 0 }
