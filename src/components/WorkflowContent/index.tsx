@@ -7,35 +7,35 @@ import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Checkbox, Col, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import { Dayjs } from 'dayjs'
-import DefaultStageContent from './stages/DefaultStageContent'
 import styles from './style.module.scss'
-
-export type SeasonData = prismaClient.Season & { stages: prismaClient.SeasonStage[] }
+import WorkflowStepContent from './WorkflowStepContent'
 
 const { Title, Text, Paragraph } = Typography
 
+export type ProjectWorkflow = prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
+
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
-	const [conditionStatus, setConditionStatus] = useState<any>()
-	const [stage, setStage] = useState<prismaClient.SeasonStage>()
-	const [workflow, setWorkflow] = useState<SeasonData>()
+	const [conditionStatus, setConditionStatus] = useState<any>({ completed: false })
+	const [step, setStep] = useState<prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }>()
+	const [workflow, setWorkflow] = useState<ProjectWorkflow>()
 	const { t } = useTolgee()
 
 	const { refetch: refetchWorkflowData } = useQuery(
 		['project-workflow', projectId],
 		() =>
 			axios.get<{
-				conditionStatus: Record<string, any> & { completed: boolean }
-				stage: prismaClient.SeasonStage & { season: SeasonData }
+				currentStep: prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }
+				workflow: ProjectWorkflow
 			}>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
 		{
 			enabled: !!projectId,
 			onSuccess({ data }) {
-				setStage(data.stage)
-				setWorkflow(data.stage.season)
-				setConditionStatus(data.conditionStatus)
+				setStep(data.currentStep)
+				setWorkflow(data.workflow)
+				// setConditionStatus(data.conditionStatus)
 			},
 		}
 	)
@@ -50,8 +50,8 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	)
 
 	const currentStageIndex = useMemo(() => {
-		return workflow?.stages.findIndex((s) => s.id == stage?.id) || 0
-	}, [workflow, stage])
+		return workflow?.steps.findIndex((s) => s.id == step?.id) || 0
+	}, [workflow, step])
 
 	// const finishedAt = useMemo(() => {
 	// 	if (!season || !season.finishedAt) return
@@ -79,53 +79,20 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		return 'c ' + start.format('ll')
 	}
 
-	const stageContent = (stageName: string) => {
-		if (!stage) return
-
-		return <DefaultStageContent stage={stage} locale={locale} />
-
-		// if (workflow.status === SeasonStatus.Done) {
-		// 	return <DoneStageContent season={workflow} />
-		// }
-
-		// switch (stageName) {
-		// 	case DefaultSeasonStages.Pitching:
-		// 		return <PitchingStageContent season={workflow} />
-		// 	case DefaultSeasonStages.Searching:
-		// 		return <SearchingStageContent season={workflow} />
-		// 	case DefaultSeasonStages.PreProduction:
-		// 		return <PreProductionStageContent season={workflow} />
-		// 	case DefaultSeasonStages.Prototyping:
-		// 		return <PrototypingStageContent season={workflow} />
-		// 	case DefaultSeasonStages.Recruiting:
-		// 		return <RecruitingStageContent season={workflow} />
-		// 	case DefaultSeasonStages.Production:
-		// 		return <ProductionStageContent season={workflow} />
-		// 	case DefaultSeasonStages.Done:
-		// 		return <DoneStageContent season={workflow} />
-		// 	default:
-		// 		return (
-		// 			<Text>
-		// 				<T>There is no information on the current stage or is still preparing.</T>
-		// 			</Text>
-		// 		)
-		// }
-	}
-
 	const handlePreviousStage = () => {
-		if (!workflow?.stages) return
+		if (!workflow?.steps) return
 
 		const nextStageId = currentStageIndex > 0 ? currentStageIndex - 1 : currentStageIndex
 
-		moveProjectToStage({ projectId, targetStageId: workflow.stages[nextStageId]?.id })
+		moveProjectToStage({ projectId, targetStageId: workflow.steps[nextStageId]?.id })
 	}
 
 	const handleNextStage = () => {
-		if (!workflow?.stages) return
+		if (!workflow?.steps) return
 
-		const previousStageId = currentStageIndex < workflow.stages.length ? currentStageIndex + 1 : currentStageIndex
+		const previousStageId = currentStageIndex < workflow.steps.length ? currentStageIndex + 1 : currentStageIndex
 
-		moveProjectToStage({ projectId, targetStageId: workflow.stages[previousStageId]?.id })
+		moveProjectToStage({ projectId, targetStageId: workflow.steps[previousStageId]?.id })
 	}
 
 	// const handleSetStage = (current: number) => {
@@ -134,7 +101,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	// 	moveProjectToStage({ projectId, targetStageId: workflow.stages[current]?.id })
 	// }
 
-	if (!workflow || !stage) return null
+	if (!workflow || !step) return null
 
 	return (
 		<div className={styles.container}>
@@ -147,7 +114,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 						<Flex justify="space-between" align="baseline">
 							<Title level={2}>
 								<T keyName="workflow.current-stage">Current stage</T>:{' '}
-								{capitalize(t(`workflow.${workflow.name}.step${currentStageIndex + 1}.name`, stage.name))}
+								{capitalize(t(`workflow.${workflow.title}.step${currentStageIndex + 1}.name`, step.name))}
 							</Title>
 							<Space>
 								{currentStageIndex > 0 && (
@@ -155,7 +122,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 										<T keyName="workflow.previous-stage">Previous</T>
 									</Button>
 								)}
-								{currentStageIndex < workflow.stages.length - 1 && (
+								{currentStageIndex < workflow.steps.length - 1 && (
 									<>
 										{conditionStatus.completed == false ? (
 											<Popover content={t('Required actions is not completed')}>
@@ -179,24 +146,24 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 				<Row gutter={[32, 32]}>
 					<Col xs={24} lg={18}>
 						<Space direction="vertical" size={32} style={{ width: '100%' }}>
-							<div className={styles.stageContent}>{stageContent(stage.name)}</div>
+							<div className={styles.stepContent}>
+								<WorkflowStepContent step={step} locale={locale} />
+							</div>
 
-							{!!stage.conditions && (
-								<div className={styles.stageContent}>
+							{!!step.tasks && (
+								<div className={styles.stepContent}>
 									<Title level={2}>
 										<T keyName="workflow.required-acitons.title">Required Actions</T>
 									</Title>
 
-									{Array.isArray(stage.conditions) && stage.conditions.length > 0 && (
+									{Array.isArray(step.tasks) && step.tasks.length > 0 && (
 										<Checkbox.Group
 											style={{ flexDirection: 'column' }}
-											options={stage.conditions.map((condition: any) => ({
-												label: t(`workflow.${workflow.name}.condition.${condition.label}`, condition.label),
-												value: condition.field,
+											options={step.tasks.map((task: any) => ({
+												label: t(`workflow.${workflow.title}.condition.${task.label}`, task.label),
+												value: task.field,
 											}))}
-											value={stage.conditions.map((condition: any) =>
-												conditionStatus[condition.field] ? condition.field : null
-											)}
+											value={step.tasks.map((task: any) => task.field)}
 										/>
 									)}
 								</div>
@@ -209,9 +176,8 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								direction="vertical"
 								// onChange={handleSetStage}
 								current={currentStageIndex}
-								items={workflow.stages.map((s, idx: number) => ({
-									title: capitalize(t(`workflow.${workflow.name}.step${idx + 1}.name`, s.name)),
-									description: s.description,
+								items={workflow.steps.map((s, idx: number) => ({
+									title: capitalize(t(`workflow.${workflow.title}.step${idx + 1}.name`, s.name)),
 								}))}
 							/>
 						</Col>

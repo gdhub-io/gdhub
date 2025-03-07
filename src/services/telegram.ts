@@ -26,7 +26,7 @@ const newProjectReportsMessageRu = (reports: any[]) => {
 	let message = '<b>Новое на проектах сообщества</b>'
 
 	reports.map((report) => {
-		message += `\n\n<b>Проект ${report.project.name}</b> / ${report.project.stage.season.name}\n`
+		message += `\n\n<b>Проект ${report.project.name}</b>\n`
 		message += '<i>Отчет от: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '- ' + report.content
 		message += report.video
@@ -44,7 +44,7 @@ const newProjectReportsMessageEn = (reports: any[]) => {
 	let message = '<b>New on games projects</b>'
 
 	reports.map((report) => {
-		message += `\n\n<b>Project ${report.project.name}</b> / ${report.project.stage.season.name}\n`
+		message += `\n\n<b>Project ${report.project.name}</b>\n`
 		message += '<i>Report from: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '- ' + report.content
 		message += report.video ? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Attached video</a>` : ''
@@ -205,7 +205,6 @@ export default class TelegramService {
 				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
 				project: { status: prismaClient.ProjectStatus.Approved },
 			},
-			// include: { project: { include: { stage: { include: { season: true } } } } },
 		})
 
 		if (reports.length == 0) return { sent: 0 }
