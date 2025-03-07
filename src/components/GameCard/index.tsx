@@ -1,0 +1,60 @@
+import React from 'react'
+import { Card, Typography, Tag } from 'antd'
+import Image from 'next/image'
+import Link from 'next/link'
+import DefaultCover from './DefaultCover'
+import styles from './styles.module.scss'
+
+const { Title, Text } = Typography
+
+interface GameCardProps {
+	id: string
+	title: string
+	genre?: string
+	platform?: string
+	coverImage?: string
+	slug: string
+	workflowStage?: string
+}
+
+const GameCard: React.FC<GameCardProps> = ({ id, title, genre, platform, coverImage, slug, workflowStage }) => {
+	return (
+		<Link href={`/project/${slug}`} className={styles.gameCardLink}>
+			<Card className={styles.gameCard} bodyStyle={{ padding: 0 }}>
+				<div className={styles.gameCardContent}>
+					<div className={styles.gameCardImageContainer}>
+						{coverImage ? (
+							<Image
+								src={coverImage}
+								alt={`${title} cover`}
+								fill
+								className={styles.gameCardImage}
+								sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+							/>
+						) : (
+							<DefaultCover title={title} />
+						)}
+					</div>
+
+					{workflowStage && (
+						<div className={styles.gameCardWorkflowStage}>
+							<Tag className={styles.workflowStageTag}>{workflowStage}</Tag>
+						</div>
+					)}
+
+					<div className={styles.gameCardInfo}>
+						<Title level={4} className={styles.gameCardTitle}>
+							{title}
+						</Title>
+						<div className={styles.gameCardMeta}>
+							{genre && <Tag className={styles.gameCardGenre}>{genre}</Tag>}
+							{platform && <Tag className={styles.gameCardPlatform}>{platform}</Tag>}
+						</div>
+					</div>
+				</div>
+			</Card>
+		</Link>
+	)
+}
+
+export default GameCard
