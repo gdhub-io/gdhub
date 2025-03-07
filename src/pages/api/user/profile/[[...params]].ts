@@ -21,7 +21,7 @@ class ApiProfileHandler {
 				preferredGenres: true,
 				preferredLevels: true,
 				preferredSettings: true,
-				user: { select: { agreements: true } },
+				user: { select: { lang: true, agreements: true } },
 			},
 		})
 

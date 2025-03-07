@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
 
 type GeneralProfileFormArgs = {
-	profile: prismaClient.Profile
+	profile: prismaClient.Profile & { user: Partial<prismaClient.User> }
 	saveProfile: (data: { id: string; data: Partial<prismaClient.Profile> }) => Promise<void>
 }
 
@@ -64,6 +64,7 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 					country: profile.country,
 					city: profile.city,
 					tgNickname: profile.tgNickname,
+					lang: profile?.user.lang || getLanguage(),
 				}}
 			>
 				<Flex vertical gap={16}>

@@ -1,3 +1,5 @@
+'use client'
+
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
@@ -11,11 +13,6 @@ import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const { Title, Paragraph } = Typography
-
-type ProjectIncludeAll = prismaClient.Project & {
-	author: prismaClient.User
-	stage: prismaClient.SeasonStage & { season: prismaClient.Season }
-}
 
 const ProjectsPage: NextPageWithLayout = () => {
 	const { t } = useTolgee()
@@ -53,7 +50,7 @@ const ProjectsPage: NextPageWithLayout = () => {
 						]}
 					>
 						{!isSuccess && <Paragraph type="secondary">There are no projects available to view</Paragraph>}
-						{projects?.data?.map((project: ProjectIncludeAll, idx: number) => (
+						{projects?.data?.map((project: any, idx: number) => (
 							<Col key={idx} xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }} xl={{ span: 6 }}>
 								<Card
 									className={styles.card}

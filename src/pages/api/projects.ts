@@ -14,8 +14,14 @@ class ApiProjectsHandler {
 				status: { in: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
 			},
 			include: {
-				stage: { select: { id: true, name: true, season: { select: { id: true, name: true } } } },
 				author: { select: { name: true } },
+				workflow: {
+					select: {
+						id: true,
+						title: true,
+						steps: { where: { isCurrent: true } },
+					},
+				},
 			},
 		})
 	}

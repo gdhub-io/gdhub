@@ -80,11 +80,9 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 			setProcessing(false)
 
 			message.success(
-				speciality ? (
-					<T keyName="modal.speciality.update.success">Data on the specialty updated</T>
-				) : (
-					<T keyName="modal.speciality.create.success">Added a new specialty</T>
-				)
+				speciality
+					? t('modal.speciality.update.success', 'Data on the specialty updated')
+					: t('modal.speciality.create.success', 'Added a new specialty')
 			)
 			onOk()
 		} catch (error: any) {
@@ -93,9 +91,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(
-					<T keyName="modal.speciality.create-update.error">Error. Check if all the data is entered correctly </T>
-				)
+				message.error(t('modal.speciality.create-update.error', 'Error. Check if all the data is entered correctly'))
 			}
 		}
 	}
@@ -184,17 +180,15 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 	return (
 		<Modal
 			title={
-				speciality ? (
-					<T key="modal.speciality.title.update">Change the specialty</T>
-				) : (
-					<T key="modal.speciality.title.create">Add specialty</T>
-				)
+				speciality
+					? t('modal.speciality.title.update', 'Change the specialty')
+					: t('modal.speciality.title.create', 'Add specialty')
 			}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
-			cancelText={<T>Close</T>}
-			okText={<T>Save</T>}
+			cancelText={t('modal.speciality.title.close', 'Close')}
+			okText={t('modal.speciality.title.save', 'Save')}
 			open={open}
 			onOk={handleOk}
 			onCancel={onCancel}
@@ -213,7 +207,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					<Row gutter={[16, 16]}>
 						<Col xs={{ span: 24 }} md={{ span: 16 }}>
 							<Form.Item
-								label={<T keyName="modal.speciality.form.name.label">Name of specialty</T>}
+								label={t('modal.speciality.form.name.label', 'Name of specialty')}
 								name="name"
 								rules={[{ required: true }]}
 								required
@@ -222,12 +216,10 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 									showParseCVButton &&
 									!!session?.user.activeSubscription && (
 										<Space style={{ marginTop: 4 }}>
-											<Text>
-												<T>Fill in from CV/resume</T>
-											</Text>
+											<Text>{t('modal.speciality.form.name.extra', 'Fill in from CV/resume')}</Text>
 											<Upload {...uploadProps} disabled={isParsing}>
 												<Button size="small" disabled={isParsing} loading={isParsing}>
-													<T>Upload PDF</T>
+													{t('modal.speciality.form.name.upload', 'Upload PDF')}
 												</Button>
 											</Upload>
 										</Space>
@@ -244,7 +236,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
 							<Form.Item
 								name="level"
-								label={<T keyName="modal.speciality.form.level.label">Level of ownership</T>}
+								label={t('modal.speciality.form.level.label', 'Level of ownership')}
 								rules={[{ required: true }]}
 								wrapperCol={{ span: 24 }}
 							>
@@ -259,7 +251,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="summary"
-						label={<T keyName="modal.speciality.form.summary.label">Briefly about what you are doing</T>}
+						label={t('modal.speciality.form.summary.label', 'Briefly about what you are doing')}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input.TextArea rows={3} />
@@ -267,7 +259,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="workDirectionId"
-						label={<T keyName="modal.speciality.form.workDirectionId.label">Direction of activity</T>}
+						label={t('modal.speciality.form.workDirectionId.label', 'Direction of activity')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 					>
@@ -279,7 +271,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					</Form.Item>
 					<Form.Item
 						name="specialization"
-						label={<T keyName="modal.speciality.form.specialization.label">Specialization</T>}
+						label={t('modal.speciality.form.specialization.label', 'Specialization')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 					>
@@ -289,20 +281,19 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					</Form.Item>
 					<Form.Item
 						name="skills"
-						label={<T keyName="modal.speciality.form.skills.label">List of skills</T>}
+						label={t('modal.speciality.form.skills.label', 'List of skills')}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
-						extra={
-							<T keyName="modal.speciality.form.skills.extra">
-								Write each skill from a new line.Indicate in the format: verb + definition
-							</T>
-						}
+						extra={t(
+							'modal.speciality.form.skills.extra',
+							'Write each skill from a new line.Indicate in the format: verb + definition'
+						)}
 					>
 						<Input.TextArea rows={6} />
 					</Form.Item>
 					<Form.Item
 						name="portfolioUrl"
-						label={<T keyName="modal.speciality.form.portfolioUrl.label">Link to portfolio/resume</T>}
+						label={t('modal.speciality.form.portfolioUrl.label', 'Link to portfolio/resume')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ type: 'url' }]}
 					>
@@ -310,13 +301,12 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					</Form.Item>
 					<Form.Item
 						name="tools"
-						label={<T keyName="modal.speciality.form.tools.label">Tools</T>}
+						label={t('modal.speciality.form.tools.label', 'Tools')}
 						wrapperCol={{ span: 24 }}
-						extra={
-							<T keyName="modal.speciality.form.tools.extra">
-								Indicate which tools/software/services you use in your work
-							</T>
-						}
+						extra={t(
+							'modal.speciality.form.tools.extra',
+							'Indicate which tools/software/services you use in your work'
+						)}
 					>
 						<Select
 							mode="tags"
@@ -329,13 +319,12 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					</Form.Item>
 					<Form.Item
 						name="jobs"
-						label={<T keyName="modal.speciality.form.jobs.label">Where did you work?</T>}
+						label={t('modal.speciality.form.jobs.label', 'Where did you work?')}
 						wrapperCol={{ span: 24 }}
-						extra={
-							<T keyName="modal.speciality.form.jobs.extra">
-								Write the work from a new line.Indicate in the format: Dates of work, place of work, position
-							</T>
-						}
+						extra={t(
+							'modal.speciality.form.jobs.extra',
+							'Write the work from a new line.Indicate in the format: Dates of work, place of work, position'
+						)}
 					>
 						<Input.TextArea
 							rows={6}
@@ -347,14 +336,12 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					</Form.Item>
 					<Form.Item
 						name="schools"
-						label={<T keyName="modal.speciality.form.schools.label">Where did you study?</T>}
+						label={t('modal.speciality.form.schools.label', 'Where did you study?')}
 						wrapperCol={{ span: 24 }}
-						extra={
-							<T keyName="modal.speciality.form.schools.extra">
-								Write each place of training from a new line.Indicate in the format: training period, place of study,
-								name/specialty name
-							</T>
-						}
+						extra={t(
+							'modal.speciality.form.schools.extra',
+							'Write each place of training from a new line.Indicate in the format: training period, place of study, name/specialty name'
+						)}
 					>
 						<Input.TextArea
 							rows={6}
