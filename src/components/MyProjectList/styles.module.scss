@@ -1,0 +1,30 @@
+.userProjectsContainer {
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  margin-bottom: 24px !important;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: #1890ff;
+    border-radius: 2px;
+  }
+}
+
+.projectsGrid {
+  margin-top: 16px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+} 

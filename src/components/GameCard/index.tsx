@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Typography, Tag } from 'antd'
+import { Card, Typography, Tag, Avatar, Tooltip } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
 import DefaultCover from './DefaultCover'
@@ -15,11 +15,25 @@ interface GameCardProps {
 	coverImage?: string
 	slug: string
 	workflowStage?: string
+	authorName?: string
+	authorAvatar?: string
+	isUserProject?: boolean
 }
 
-const GameCard: React.FC<GameCardProps> = ({ id, title, genre, platform, coverImage, slug, workflowStage }) => {
+const GameCard: React.FC<GameCardProps> = ({
+	id,
+	title,
+	genre,
+	platform,
+	coverImage,
+	slug,
+	workflowStage,
+	authorName,
+	authorAvatar,
+	isUserProject,
+}) => {
 	return (
-		<Link href={`/project/${slug}`} className={styles.gameCardLink}>
+		<Link href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`} className={styles.gameCardLink}>
 			<Card className={styles.gameCard} bodyStyle={{ padding: 0 }}>
 				<div className={styles.gameCardContent}>
 					<div className={styles.gameCardImageContainer}>
@@ -42,6 +56,18 @@ const GameCard: React.FC<GameCardProps> = ({ id, title, genre, platform, coverIm
 						</div>
 					)}
 
+					{isUserProject && authorName && (
+						<div className={styles.gameCardAuthor}>
+							<Tooltip title={`Author: ${authorName}`}>
+								{authorAvatar ? (
+									<Avatar src={authorAvatar} alt={authorName} className={styles.authorAvatar} />
+								) : (
+									<Avatar className={styles.authorAvatar}>{authorName.charAt(0).toUpperCase()}</Avatar>
+								)}
+							</Tooltip>
+						</div>
+					)}
+
 					<div className={styles.gameCardInfo}>
 						<Title level={4} className={styles.gameCardTitle}>
 							{title}
@@ -49,6 +75,7 @@ const GameCard: React.FC<GameCardProps> = ({ id, title, genre, platform, coverIm
 						<div className={styles.gameCardMeta}>
 							{genre && <Tag className={styles.gameCardGenre}>{genre}</Tag>}
 							{platform && <Tag className={styles.gameCardPlatform}>{platform}</Tag>}
+							{isUserProject && <Tag className={styles.gameCardUserProject}>User Project</Tag>}
 						</div>
 					</div>
 				</div>

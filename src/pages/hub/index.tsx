@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { IndieList } from '@/components/IndieList'
-import { MyProjectList } from '@/components/MyProjectList'
+import MyProjectList from '@/components/MyProjectList'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -79,7 +79,6 @@ const HubPage: NextPageWithLayout = () => {
 				{session.status == 'authenticated' && !!session.data.user.onboardingDone && (
 					<>
 						<MyProjectList />
-						<IndieList />
 					</>
 				)}
 			</Space>

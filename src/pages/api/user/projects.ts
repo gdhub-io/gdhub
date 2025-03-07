@@ -28,7 +28,7 @@ class ApiUsewrSeasonProjectsHandler {
 				slug: true,
 				description: true,
 				coverImage: true,
-				author: { select: { name: true } },
+				author: { select: { name: true, image: true } },
 				workflow: {
 					select: {
 						id: true,
