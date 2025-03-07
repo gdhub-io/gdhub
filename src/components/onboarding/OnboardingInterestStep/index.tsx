@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
-import { GameDifficultyLevel, GameGenre, GameSetting, PrimaryInterest } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -29,11 +29,11 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 	const preSelectedInterest = useMemo(() => {
 		switch (router.query.for) {
 			case 'author':
-				return PrimaryInterest.Author
+				return prismaClient.PrimaryInterest.Author
 			case 'specialist':
-				return PrimaryInterest.Specialist
+				return prismaClient.PrimaryInterest.Specialist
 			case 'mentor':
-				return PrimaryInterest.Mentor
+				return prismaClient.PrimaryInterest.Mentor
 			default:
 				return undefined
 		}
@@ -57,17 +57,21 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 		},
 	})
 
-	const { data: gameGenres } = useQuery(['gameGenres'], () => axios.get<GameGenre[]>('/api/dictionary/game-genres'), {
-		staleTime: Infinity,
-	})
+	const { data: gameGenres } = useQuery(
+		['gameGenres'],
+		() => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
+		{
+			staleTime: Infinity,
+		}
+	)
 	const { data: gameSettings } = useQuery(
 		['gameSettings'],
-		() => axios.get<GameSetting[]>('/api/dictionary/game-settings'),
+		() => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
 		{ staleTime: Infinity }
 	)
 	const { data: gameLevels } = useQuery(
 		['gameLevels'],
-		() => axios.get<GameDifficultyLevel[]>('/api/dictionary/game-levels'),
+		() => axios.get<prismaClient.GameDifficultyLevel[]>('/api/dictionary/game-levels'),
 		{
 			staleTime: Infinity,
 		}
@@ -132,6 +136,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 					<Form
 						form={form}
 						layout="vertical"
+						variant="filled"
 						requiredMark="optional"
 						autoComplete="off"
 						scrollToFirstError
@@ -161,7 +166,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 																</div>
 															</div>
 														),
-														value: PrimaryInterest.Author,
+														value: prismaClient.PrimaryInterest.Author,
 													},
 													{
 														label: (
@@ -177,7 +182,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 																</div>
 															</div>
 														),
-														value: PrimaryInterest.Specialist,
+														value: prismaClient.PrimaryInterest.Specialist,
 													},
 													{
 														label: (
@@ -193,7 +198,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 																</div>
 															</div>
 														),
-														value: PrimaryInterest.Mentor,
+														value: prismaClient.PrimaryInterest.Mentor,
 													},
 												]}
 											/>
@@ -202,19 +207,19 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 										{!screens.lg && (
 											<Radio.Group>
 												<Space direction="vertical">
-													<Radio value={PrimaryInterest.Author}>
+													<Radio value={prismaClient.PrimaryInterest.Author}>
 														<T keyName="wantToBe.text">I want to be</T>{' '}
 														<Text italic>
 															<T keyName="wantToBe.author">Author</T>
 														</Text>
 													</Radio>
-													<Radio value={PrimaryInterest.Specialist}>
+													<Radio value={prismaClient.PrimaryInterest.Specialist}>
 														<T keyName="wantToBe.text">I want to be</T>{' '}
 														<Text italic>
 															<T keyName="wantToBe.specialist">Specialist</T>
 														</Text>
 													</Radio>
-													<Radio value={PrimaryInterest.Mentor}>
+													<Radio value={prismaClient.PrimaryInterest.Mentor}>
 														<T keyName="wantToBe.text">I want to be</T>{' '}
 														<Text italic>
 															<T keyName="wantToBe.mentor">Mentor</T>

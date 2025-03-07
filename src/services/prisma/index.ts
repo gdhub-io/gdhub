@@ -1,42 +1,17 @@
-import { env } from '@/helpers/env'
-import { PrismaClient } from '@prisma/client'
-import { healthExtension } from './extenstions/health'
-import { profilePrismaExtenstion } from './extenstions/profile'
-import { projectPrismaExtension } from './extenstions/project'
-import { seasonPrismaExtension } from './extenstions/season'
-import { userPrismaExtension } from './extenstions/user'
+import { GdhubDatabaseClient, GdhubDatabaseService } from '@gdhub-io/gdhub-prisma'
 
 declare global {
 	// eslint-disable-next-line no-var
-	var cachedPrisma: ExtendedPrismaClient
+	var cachedPrisma: GdhubDatabaseClient
 }
 
-const extendedPrismaClient = () => {
-	const prisma = new PrismaClient({
-		datasourceUrl: env('POSTGRES_PRISMA_URL'),
-		log: process.env.DEBUG ? ['query', 'error'] : ['error'],
-		errorFormat: 'pretty',
-	})
-
-	const extendedPrisma = prisma
-		.$extends(healthExtension)
-		.$extends(userPrismaExtension)
-		.$extends(profilePrismaExtenstion)
-		.$extends(seasonPrismaExtension)
-		.$extends(projectPrismaExtension)
-
-	return extendedPrisma
-}
-
-export type ExtendedPrismaClient = ReturnType<typeof extendedPrismaClient>
-
-let prisma: ReturnType<typeof extendedPrismaClient>
+let prisma: GdhubDatabaseClient
 
 if (process.env.NODE_ENV === 'production') {
-	prisma = extendedPrismaClient()
+	prisma = GdhubDatabaseService.init().client
 } else {
 	if (!global.cachedPrisma) {
-		global.cachedPrisma = extendedPrismaClient()
+		global.cachedPrisma = GdhubDatabaseService.init().client
 	}
 
 	prisma = global.cachedPrisma

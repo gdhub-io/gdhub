@@ -3,7 +3,7 @@ import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
 import LectureRequestModal from '@/components/modals/LectureRequestModal'
 import PropositionLectureModal from '@/components/modals/PropositionLectureModal'
 import SetLecturerModal from '@/components/modals/SetLecturerModal'
-import { Lecture, LectureListener, LectureStage, LecturerRequest, User, WorkDirection } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'
 import { HiOutlineTrash } from '@react-icons/all-files/hi/HiOutlineTrash'
 import { HiOutlineX } from '@react-icons/all-files/hi/HiOutlineX'
@@ -69,7 +69,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 
 	const { data: workDirections } = useQuery(
 		['workDirections'],
-		() => axios.get<WorkDirection[]>('/api/dictionary/work-directions'),
+		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
 		{
 			staleTime: Infinity,
 		}
@@ -95,23 +95,23 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		isLoading,
 	} = useQuery(['lectures', 'requested'], () =>
 		axios.get<
-			(Lecture & {
-				listeners: LectureListener[]
-				direction: WorkDirection
-				lecturerRequests: (LecturerRequest & { user: User })[]
+			(prismaClient.Lecture & {
+				listeners: prismaClient.LectureListener[]
+				direction: prismaClient.WorkDirection
+				lecturerRequests: (prismaClient.LecturerRequest & { user: prismaClient.User })[]
 				isRelevant: boolean
 				isAuthor: boolean
 			})[]
 		>('/api/lectures', {
-			params: { stage: [LectureStage.Requested, LectureStage.Actualized].join(',') },
+			params: { stage: [prismaClient.LectureStage.Requested, prismaClient.LectureStage.Actualized].join(',') },
 		})
 	)
 
 	const columns: ColumnsType<
-		Lecture & {
-			listeners: LectureListener[]
-			direction: WorkDirection
-			lecturerRequests: (LecturerRequest & { user: User })[]
+		prismaClient.Lecture & {
+			listeners: prismaClient.LectureListener[]
+			direction: prismaClient.WorkDirection
+			lecturerRequests: (prismaClient.LecturerRequest & { user: prismaClient.User })[]
 			isRelevant: boolean
 			isAuthor: boolean
 		}
@@ -253,7 +253,8 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 						<TbDotsVertical size={16} style={{ position: 'relative', top: 2 }} />
 					</Dropdown>
 				) : lecture.requestedById === session?.user?.id &&
-				  (lecture.stage === LectureStage.Requested || lecture.stage === LectureStage.Proposed) ? (
+				  (lecture.stage === prismaClient.LectureStage.Requested ||
+						lecture.stage === prismaClient.LectureStage.Proposed) ? (
 					<Space wrap={screens.md ? false : true}>
 						<Button onClick={() => handleEditLectureRequest(lecture.id)}>
 							<T>Change</T>

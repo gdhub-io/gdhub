@@ -3,7 +3,7 @@ import { pipLayout } from '@/config/daily'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { DailyCallOptions } from '@daily-co/daily-js'
 import { DailyProvider, useCallFrame } from '@daily-co/daily-react'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Button, Divider, Form, Input, InputRef, Select, Space } from 'antd'
@@ -137,12 +137,13 @@ const LiveReportsPage = () => {
 		<ProtectedLayout>
 			<DailyProvider callObject={callFrame}>
 				<main className="container">
-					{session?.user.roles.includes(UserRole.Admin) && (
+					{session?.user.roles.includes(prismaClient.UserRole.Admin) && (
 						<>
 							<Space align="start">
 								<Form
 									form={form}
 									layout="inline"
+									variant="filled"
 									validateMessages={{ required: 'This field is required' }}
 									initialValues={{ rtmpUrl, streamKey }}
 								>

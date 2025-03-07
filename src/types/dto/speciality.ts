@@ -1,4 +1,4 @@
-import { SkillLevel } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { Type } from 'class-transformer'
 import { IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator'
 
@@ -22,9 +22,9 @@ export class SpecialityDto {
 	@IsOptional()
 	specialization: string
 
-	@IsEnum(SkillLevel)
+	@IsEnum(prismaClient.SkillLevel)
 	@IsOptional()
-	level: SkillLevel
+	level: prismaClient.SkillLevel
 
 	@IsString()
 	@IsOptional()

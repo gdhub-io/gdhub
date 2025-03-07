@@ -1,9 +1,9 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { Get, Req, createHandler } from 'next-api-decorators'
 
-@NextAuthGuard('user', [UserRole.Admin])
+@NextAuthGuard('user', [prismaClient.UserRole.Admin])
 class ApiSeasonsAdminHandler {
 	constructor() {}
 

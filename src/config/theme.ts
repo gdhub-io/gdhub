@@ -250,7 +250,7 @@ export const publicThemeConfig: ThemeConfig = {
 }
 
 export const appThemeConfig: ThemeConfig = {
-	algorithm: [theme.defaultAlgorithm],
+	algorithm: [theme.compactAlgorithm],
 	token: {
 		fontFamily: mainFont.style.fontFamily,
 		colorPrimary: 'rgb(241,85,65)',
@@ -275,18 +275,19 @@ export const appThemeConfig: ThemeConfig = {
 			size: 14,
 			sizeLG: 18,
 			// colorTextBase: '#FFFDFC',
-			controlHeight: 42,
-			controlHeightLG: 36,
+			controlHeight: 36,
+			controlHeightLG: 32,
 			controlHeightSM: 24,
 			fontSize: 14,
 			fontSizeLG: 18,
 			colorBgContainer: 'transparent',
 			colorBorder: '#050505',
-			paddingContentHorizontal: 64,
+			paddingContentHorizontal: 32,
 			paddingContentVertical: 16,
 		},
 		Typography: {
 			fontSize: 16,
+			colorTextSecondary: 'rgb(5, 5, 5, 0.8)',
 		},
 		Layout: {
 			bodyBg: 'transparent',
@@ -311,6 +312,11 @@ export const appThemeConfig: ThemeConfig = {
 			titleFontSize: 24,
 			titleLineHeight: 2,
 			fontWeightStrong: 700,
+		},
+		Checkbox: {
+			controlInteractiveSize: 18,
+			fontSize: 16,
+			paddingContentHorizontal: 8,
 		},
 	},
 }

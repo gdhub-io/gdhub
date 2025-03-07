@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Speciality, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GiSkills } from '@react-icons/all-files/gi/GiSkills'
 import { GoPlus } from '@react-icons/all-files/go/GoPlus'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
@@ -20,7 +20,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
 	const { data: specialities, isFetching: processing } = useQuery(['user-specialities'], () =>
-		axios.get<Speciality[]>('/api/user/specialities')
+		axios.get<prismaClient.Speciality[]>('/api/user/specialities')
 	)
 
 	const { mutateAsync: deleteSpeciality } = useMutation(
@@ -36,7 +36,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const handleOk = () => {
 		setIsModalOpen(false)
 		queryClient.invalidateQueries(['user-specialities'])
-		session.update({ roles: session.data?.user.roles.includes(UserRole.Member) })
+		session.update({ roles: session.data?.user.roles.includes(prismaClient.UserRole.Member) })
 	}
 
 	const handleCancel = () => {
@@ -60,7 +60,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	}
 
 	return (
-		<Card title={<T keyName="profile-form.specialities.card.title">Specialties</T>}>
+		<Card title={<T keyName="profile-form.specialities.card.title">Specialties</T>} bordered={false}>
 			<Spin spinning={processing}>
 				<Space direction="vertical" size="large" style={{ width: '100%' }}>
 					<Text>
@@ -88,7 +88,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 								),
 							}}
 							dataSource={specialities.data}
-							renderItem={(speciality: Speciality) => (
+							renderItem={(speciality: prismaClient.Speciality) => (
 								<List.Item>
 									<List.Item.Meta
 										title={

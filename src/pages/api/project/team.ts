@@ -1,5 +1,5 @@
 import { prisma } from '@/services/prisma'
-import { TeamMemberStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -15,7 +15,7 @@ class ApiUserTeamHandler {
 			where: { id: teamId },
 			include: {
 				members: {
-					where: { status: { in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder] } },
+					where: { status: { in: [prismaClient.TeamMemberStatus.Hired, prismaClient.TeamMemberStatus.Founder] } },
 					include: { user: { select: { name: true, image: true } } },
 				},
 			},

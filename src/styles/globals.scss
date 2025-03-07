@@ -123,7 +123,7 @@ a.text-link {
 		padding: 16px;
 		margin-bottom: 16px;
 		display: flex;
-    column-gap: 12px;
+		column-gap: 12px;
 	}
 }
 
@@ -189,6 +189,18 @@ a.text-link {
 		}
 	}
 
+	&.gray-text-btn {
+		border-color: transparent;
+		color: #031625;
+		box-shadow: none;
+
+		&:hover,
+		&:active {
+			background-color: #031625 !important;
+			color: #FFFDFC !important;
+		}
+	}
+
 	&>span {
 		line-height: 16px;
 	}
@@ -204,7 +216,7 @@ a.text-link {
 }
 
 .ant-typography {
-	font-size: 16px;
+	// font-size: 16px;
 	font-weight: 200;
 }
 
@@ -234,6 +246,11 @@ body:has(.ant-modal-root) {
 	&:hover {
 		box-shadow: 0 0 0 1px rgba(0, 0, 0, .08), 0 4px 6px rgba(0, 0, 0, .04);
 	}
+}
+
+.ant-checkbox+span {
+	padding-inline-start: 8px;
+	padding-inline-end: 8px;
 }
 
 @media screen and (max-width: 575px) {

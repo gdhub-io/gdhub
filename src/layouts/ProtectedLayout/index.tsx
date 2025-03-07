@@ -4,10 +4,9 @@ import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
-import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -33,7 +32,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { NextSeo, NextSeoProps } from 'next-seo'
-import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
 import styles from './style.module.scss'
 
 interface ProtectedLayoutProps {
@@ -65,22 +63,23 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	}
 
 	useEffect(() => {
+		const unsetOverflow = () => {
+			if (typeof window !== 'undefined') {
+				const body = document?.querySelector('body')
+				body?.style.setProperty('overflow', 'unset')
+			}
+		}
+
+		unsetOverflow()
+	}, [])
+
+	useEffect(() => {
 		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('langiage is changed'))
 	}, [session?.user.lang])
 
 	useEffect(() => {
-		console.log(session)
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
-
-	const avatarConfig = useMemo(() => {
-		if (!session?.user.email) return
-
-		const config = genConfig(session.user.email)
-		config.hairStyle = 'normal'
-
-		return config
-	}, [session?.user.email])
 
 	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = [
@@ -131,7 +130,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = []
 
-		if (hasRole(UserRole.Admin, { data: session })) {
+		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
 				label: (
 					<Link href="/admin/seasons">
@@ -221,7 +220,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 			label: <T keyName="app.user.menu.mentors">Mentors</T>,
 		},
 		{
-			key: '/profile',
+			key: '/profile/settings/general',
 			label: (
 				<Link href="/profile">
 					<T keyName="app.user.menu.settings">Settings</T>
@@ -250,18 +249,14 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 									</Link>
 									<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
 									<Space>
-										{session?.user?.image ? (
-											<Avatar
-												src={
-													session?.user?.image ? (
-														<Image src={session?.user.image} width={24} height={24} alt="avatar" />
-													) : null
-												}
-												size={24}
-											/>
-										) : (
-											<ReactNiceAvatar style={{ width: 24, height: 24 }} {...avatarConfig} />
-										)}
+										<Avatar
+											src={
+												session?.user?.image ? (
+													<Image src={session?.user.image} width={24} height={24} alt="avatar" />
+												) : null
+											}
+											size={24}
+										/>
 										{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
 									</Space>
 								</Flex>
@@ -279,19 +274,19 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
 												<Button
 													type="text"
+													shape="circle"
 													style={{ display: 'block', padding: 0 }}
 													icon={
 														session?.user.image ? (
 															<Avatar
+																size={32}
 																src={
 																	session?.user?.image ? (
 																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
 																	) : null
 																}
 															/>
-														) : (
-															<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
-														)
+														) : null
 													}
 												></Button>
 											</Dropdown>
@@ -314,6 +309,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
 							{!!title && <Title>{title}</Title>}
+							{!!subTitle && <div>{subTitle}</div>} <br />
 							{children}
 						</div>
 					</Content>

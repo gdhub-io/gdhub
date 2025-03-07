@@ -1,4 +1,4 @@
-import { MatchingSpecialistAndProject, Project, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Col, Card, Descriptions, Button, Row, Grid, Alert } from 'antd'
@@ -21,12 +21,12 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 	const { data: projects, isFetching: isLoadingProjecs } = useQuery(
 		['projects', seasonId],
 		() =>
-			axios.get<(Project & { availableSpecialists: MatchingSpecialistAndProject[]; author: User })[]>(
-				'/api/season/projects',
-				{
-					params: { seasonId, seasonSlug },
-				}
-			),
+			axios.get<
+				(prismaClient.Project & {
+					availableSpecialists: prismaClient.MatchingSpecialistAndProject[]
+					author: prismaClient.User
+				})[]
+			>('/api/projects', {}),
 		{ enabled: !!seasonId || !!seasonSlug }
 	)
 

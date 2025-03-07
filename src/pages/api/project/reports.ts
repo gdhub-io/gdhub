@@ -16,6 +16,27 @@ class ApiProjecReportsHandler {
 			where: { projectId },
 			orderBy: { publishedAt: 'desc' },
 			take: 5,
+			include: {
+				author: {
+					select: {
+						name: true,
+						image: true,
+						memberInTeams: {
+							where: {
+								team: {
+									project: {
+										id: projectId,
+									},
+								},
+							},
+							select: { position: true },
+						},
+						profile: {
+							select: { name: true },
+						},
+					},
+				},
+			},
 		})
 
 		return reports

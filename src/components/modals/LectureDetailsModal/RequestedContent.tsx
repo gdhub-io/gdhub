@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
-import { Lecture, LecturerRequest, Speciality, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T } from '@tolgee/react'
 import { Avatar, Card } from 'antd'
 import { useSession } from 'next-auth/react'
@@ -8,7 +8,11 @@ import { useSession } from 'next-auth/react'
 export const RequestedContent = ({
 	lecture,
 }: {
-	lecture: Lecture & { lecturerRequests: (LecturerRequest & { user: User & { specialities: Speciality[] } })[] }
+	lecture: prismaClient.Lecture & {
+		lecturerRequests: (prismaClient.LecturerRequest & {
+			user: prismaClient.User & { specialities: prismaClient.Speciality[] }
+		})[]
+	}
 }) => {
 	const { data: session } = useSession()
 	const lecturer = useMemo(() => lecture.lecturerRequests.find((r) => r.userId == session?.user.id), [lecture])
@@ -44,7 +48,7 @@ export const RequestedContent = ({
 							description={
 								<>
 									{lecturer.user.specialities ? (
-										lecturer.user.specialities.map((s: Speciality) => (
+										lecturer.user.specialities.map((s: prismaClient.Speciality) => (
 											<Fragment key={s.name}>
 												{s.name} ({s.level})
 												<br />

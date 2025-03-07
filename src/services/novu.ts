@@ -13,9 +13,9 @@ export class NovuService {
 
 	static async send({ to, payload, template }: NovuSendArgs) {
 		try {
-			const res = await novuClient.trigger(template, {
+			await novuClient.trigger(template, {
 				to,
-				payload,
+				payload: { app: 'main', ...payload },
 			})
 		} catch (error) {
 			throw error

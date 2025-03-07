@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { LecturerRequest, Speciality, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -27,7 +27,9 @@ const LectureSpeakersAdminPage: NextPageWithLayout = () => {
 	} = useQuery(
 		['admin', 'seasons'],
 		() =>
-			axios.get<(LecturerRequest & { user: User & { specialities: Speciality[] } })[]>(`/api/admin/lecture/speakers`, {
+			axios.get<
+				(prismaClient.LecturerRequest & { user: prismaClient.User & { specialities: prismaClient.Speciality[] } })[]
+			>(`/api/admin/lecture/speakers`, {
 				params: { lectureId: router.query.id },
 			}),
 		{ enabled: !!router.query.id }
@@ -89,7 +91,9 @@ const LectureSpeakersAdminPage: NextPageWithLayout = () => {
 		updateStage({ id: stageId, isSpeaker })
 	}
 
-	const columns: ColumnsType<LecturerRequest & { user: User & { specialities: Speciality[] } }> = [
+	const columns: ColumnsType<
+		prismaClient.LecturerRequest & { user: prismaClient.User & { specialities: prismaClient.Speciality[] } }
+	> = [
 		{
 			title: 'Name',
 			dataIndex: 'userId',

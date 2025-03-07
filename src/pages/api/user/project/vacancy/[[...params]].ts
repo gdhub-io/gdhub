@@ -2,7 +2,7 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import { tolgeeService } from '@/services/tolgee'
-import { TeamMemberStatus, TeamVacancyStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
@@ -19,8 +19,8 @@ class UserTeamVacancyCreateDto {
 	description: string
 	@IsString()
 	directionId: string
-	@IsEnum(TeamVacancyStatus)
-	status: TeamVacancyStatus
+	@IsEnum(prismaClient.TeamVacancyStatus)
+	status: prismaClient.TeamVacancyStatus
 	@IsString()
 	@IsOptional()
 	publishedAt?: string
@@ -40,9 +40,9 @@ class UserTeamVacancyUpdateDto {
 	@IsString()
 	@IsOptional()
 	directionId?: string
-	@IsEnum(TeamVacancyStatus)
+	@IsEnum(prismaClient.TeamVacancyStatus)
 	@IsOptional()
-	status?: TeamVacancyStatus
+	status?: prismaClient.TeamVacancyStatus
 	@IsString()
 	@IsOptional()
 	publishedAt?: string
@@ -66,7 +66,7 @@ class ApiUserTeamVacancyHandler {
 								id: true,
 								name: true,
 								slug: true,
-								stage: { select: { name: true, season: { select: { id: true, name: true } } } },
+								workflow: { select: { steps: { select: { id: true, name: true } } } },
 							},
 						},
 					},
@@ -82,7 +82,12 @@ class ApiUserTeamVacancyHandler {
 
 	@Post()
 	public async create(@Body(ValidationPipe) data: UserTeamVacancyCreateDto) {
-		await prisma.teamVacancy.create({ data })
+		try {
+			await prisma.teamVacancy.create({ data })
+		} catch (error) {
+			console.error('[project.create]', error)
+			throw error
+		}
 	}
 
 	@Put()
@@ -92,7 +97,7 @@ class ApiUserTeamVacancyHandler {
 
 	@Delete()
 	public async delete(@Query(ValidationPipe) { id }: IDParamDto) {
-		await prisma.teamVacancy.update({ where: { id }, data: { status: TeamVacancyStatus.Closed } })
+		await prisma.teamVacancy.update({ where: { id }, data: { status: prismaClient.TeamVacancyStatus.Closed } })
 	}
 
 	@Put('/withdraw')
@@ -105,7 +110,9 @@ class ApiUserTeamVacancyHandler {
 				user: true,
 				vacancy: true,
 				team: {
-					select: { members: { where: { status: TeamMemberStatus.Founder }, select: { userId: true, user: true } } },
+					select: {
+						members: { where: { status: prismaClient.TeamMemberStatus.Founder }, select: { userId: true, user: true } },
+					},
 				},
 			},
 		})
@@ -147,6 +154,8 @@ class ApiUserTeamVacancyHandler {
 			vacancyId,
 		}: { specialityId: string; contactType: string[]; telegramNickname?: string; vacancyId: string }
 	) {
+		const { t } = tolgeeService
+
 		if (contactType.includes('telegram') && telegramNickname) {
 			await prisma.profile.update({ where: { userId: req.user.id }, data: { tgNickname: telegramNickname } })
 		}
@@ -164,7 +173,7 @@ class ApiUserTeamVacancyHandler {
 				vacancyId,
 				teamId: vacancy.teamId,
 				position: vacancy.title,
-				status: TeamMemberStatus.Applicant,
+				status: prismaClient.TeamMemberStatus.Applicant,
 				specialityId,
 				allowedContacts: contactType,
 			},
@@ -173,16 +182,20 @@ class ApiUserTeamVacancyHandler {
 
 		try {
 			await NovuService.send({
-				template: 'new-candidate-to-project',
+				template: 'default-message',
 				to: {
 					subscriberId: vacancy.team!.project?.authorId!,
 					email: vacancy.team!.project?.author.email!,
 				},
 				payload: {
-					name: candidate.user.name,
-					vacancy: vacancy.title,
-					project: vacancy.team!.project?.name,
-					url: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.team!.project?.id,
+					title: t('message.new-job-response.title', 'New job response to the {project}', {
+						project: vacancy.team!.project?.name,
+					}),
+					message: t('message.new-job-response.content', `for vacancy "{vacancy}" from {name}`, {
+						name: candidate.user.name,
+						vacancy: vacancy.title,
+					}),
+					redirectUrl: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.team!.project?.id,
 				},
 			})
 
@@ -196,8 +209,8 @@ class ApiUserTeamVacancyHandler {
 	public async rejectCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
 		const { t } = tolgeeService
 		const rejectedCandidate = await prisma.teamMember.update({
-			where: { id, status: TeamMemberStatus.Applicant },
-			data: { status: TeamMemberStatus.Rejected },
+			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
+			data: { status: prismaClient.TeamMemberStatus.Rejected },
 			select: { user: true, vacancy: true, team: true },
 		})
 
@@ -227,8 +240,8 @@ class ApiUserTeamVacancyHandler {
 	public async hireCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
 		const { t } = tolgeeService
 		const member = await prisma.teamMember.update({
-			where: { id, status: TeamMemberStatus.Applicant },
-			data: { status: TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
+			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
+			data: { status: prismaClient.TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
 			select: { user: true, team: true },
 		})
 
@@ -256,8 +269,8 @@ class ApiUserTeamVacancyHandler {
 	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
 		const { t } = tolgeeService
 		const firedMember = await prisma.teamMember.update({
-			where: { id, status: TeamMemberStatus.Hired },
-			data: { status: TeamMemberStatus.Fired, finishedAt: dayjs().toISOString() },
+			where: { id, status: prismaClient.TeamMemberStatus.Hired },
+			data: { status: prismaClient.TeamMemberStatus.Fired, finishedAt: dayjs().toISOString() },
 			select: { user: true, team: true },
 		})
 

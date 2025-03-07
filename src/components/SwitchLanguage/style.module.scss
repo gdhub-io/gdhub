@@ -1,11 +1,25 @@
 .switcher {
   text-transform: uppercase;
-  padding: 14px !important;
+  padding: 0 14px !important;
+  height: 40px;
+  border-radius: 4px;
   border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    
+    svg {
+      transform: rotate(15deg);
+    }
   }
 
   &.withBorder {
@@ -13,12 +27,13 @@
   }
 
   &:global(.ant-btn-sm) {
-    padding: 14px 8px !important;
+    padding: 0 10px !important;
     font-size: 14px;
+    height: 32px;
 
     svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
     }
   }
 
@@ -31,8 +46,35 @@
 
 .overlay {
   border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
 
   &.withBorder {
     border: 1px solid #474747 !important;
+  }
+  
+  :global {
+    .ant-dropdown-menu {
+      background-color: #1a1a1a;
+      border-radius: 4px;
+      
+      &-item {
+        color: rgba(255, 255, 255, 0.85);
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.08);
+          color: #fff;
+        }
+        
+        &-selected {
+          background-color: rgba(241, 85, 65, 0.1);
+          
+          .ant-typography {
+            color: #F15541;
+          }
+        }
+      }
+    }
   }
 }

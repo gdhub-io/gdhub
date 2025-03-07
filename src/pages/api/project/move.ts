@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Body, Put, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -11,7 +11,7 @@ class ApiProjectMoveDto {
 	targetStageId: string
 }
 
-@NextAuthGuard('user', [UserRole.Author])
+@NextAuthGuard('user', [prismaClient.UserRole.Author])
 class ApiProjectMoveHandler {
 	@Put()
 	public async move(@Body(ValidationPipe) { projectId, targetStageId }: ApiProjectMoveDto) {

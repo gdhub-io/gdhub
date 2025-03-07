@@ -28,7 +28,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
-
+.env.docker
 # vercel
 .vercel
 
@@ -38,3 +38,17 @@ yarn-error.log*
 prisma/backward.sql
 
 backup-tolgee
+
+.npmrc
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.server
+.env.client
+.env.docker
+
+# Keep examples in git
+!.env.example
+!.env.docker.example

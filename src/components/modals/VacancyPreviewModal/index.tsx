@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import { hasRole } from '@/helpers/user'
-import { Season, SeasonStage, TeamVacancy, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
@@ -27,8 +27,15 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		['vacancy', vacancyId],
 		() =>
 			axios.get<
-				TeamVacancy & {
-					team: { project: { id: string; slug: string; name: string; stage: SeasonStage & { season: Season } } }
+				prismaClient.TeamVacancy & {
+					team: {
+						project: {
+							id: string
+							slug: string
+							name: string
+							workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
+						}
+					}
 					myTeamMemberId: string
 				}
 			>('/api/user/project/vacancy', {
@@ -104,7 +111,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			return <T keyName="signin">Signin</T>
 		}
 
-		if (hasRole(UserRole.Member, session)) {
+		if (hasRole(prismaClient.UserRole.Member, session)) {
 			return vacancy?.data.myTeamMemberId ? <T>Reveal the response</T> : <T>Respond</T>
 		}
 
@@ -112,11 +119,12 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	}
 
 	const functionOkButton = async () => {
+		debugger
 		if (!session?.data) {
 			router.push('/signin?callbackUrl=' + router.asPath)
 		}
 
-		if (hasRole(UserRole.Member, session)) {
+		if (!hasRole(prismaClient.UserRole.Guest, session)) {
 			return vacancy?.data.myTeamMemberId
 				? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
 				: setShowSpecialitySelectModal(true)
@@ -158,9 +166,6 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 
 							<Descriptions layout="horizontal" column={1} size="small">
 								<Descriptions.Item label={t('Project')}>{vacancy.data.team.project.name}</Descriptions.Item>
-								<Descriptions.Item label={t('Pipeline')}>
-									{vacancy.data.team.project.stage.season.name}
-								</Descriptions.Item>
 								<Descriptions.Item label={t('The vacancy is acute before')}>
 									{dayjs(vacancy.data.finishedAt).format('LL')}
 								</Descriptions.Item>
@@ -190,7 +195,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				</Spin>
 			</Modal>
 
-			{hasRole(UserRole.Member, session) && (
+			{session && (
 				<SpecialitySelectModal
 					open={showSpecialitySelectModal}
 					onOk={handleSpecialitySelect}

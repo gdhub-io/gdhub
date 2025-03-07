@@ -5,14 +5,13 @@ import TeamMembers from '@/components/TeamMembers'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
-import { Profile, Project, ProjectStatus, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { NextSeoProps } from 'next-seo'
 import ReactMarkdown from 'react-markdown'
@@ -24,12 +23,13 @@ import styles from './style.module.scss'
 const { Title, Paragraph } = Typography
 
 type ProjectPageParams = {
-	project: Project & { author: User & { profile: { tgNickname: Profile['tgNickname'] } } }
+	project: prismaClient.Project & {
+		author: prismaClient.User & { profile: { tgNickname: prismaClient.Profile['tgNickname'] } }
+	}
 	seo?: { title: string; description?: string; image?: string }
 }
 
 const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) => {
-	const router = useRouter()
 	const { t } = useTolgee()
 	const { data: session } = useSession()
 	const screens = Grid.useBreakpoint()
@@ -40,7 +40,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 		description: seo?.description,
 		openGraph: {
 			description: seo?.description as string,
-			images: seo?.image ? [{ url: seo.image as string, alt: project.name + ' cover image' }] : undefined,
+			images: seo?.image ? [{ url: seo.image as string, alt: project?.name + ' cover image' }] : undefined,
 		},
 	}
 
@@ -67,7 +67,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 	return (
 		<>
 			<PublicLayout
-				title={project.name}
+				title={project?.name}
 				subTitle={t('Author') + ' ' + project.author.name}
 				backgroundImage={project.coverImage || undefined}
 				seo={seoParams}
@@ -147,7 +147,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 	const { projectSlug }: any = context.params
 
 	const project = await prisma.project.findFirst({
-		where: { slug: projectSlug, status: { in: [ProjectStatus.Approved, ProjectStatus.Done] } },
+		where: {
+			slug: projectSlug,
+			// status: { notIn: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
+		},
 		include: { author: { select: { name: true, profile: { select: { tgNickname: true } } } } },
 	})
 
@@ -167,8 +170,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
 			},
 			seo: {
-				title: project.name,
-				description: project.description?.slice(0, 160),
+				title: project.name || null,
+				description: project.description?.slice(0, 160) || null,
 				image: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${project.name}&st=Author%20${project.author.name}&img=${project.coverImage}`,
 			},
 		},

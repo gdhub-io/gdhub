@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import ProjectViewModal from '@/components/modals/ProjectViewModal'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { Project, ProjectStatus, Season, SeasonStage } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -32,21 +32,24 @@ const SeasonProjectIdeasPage: NextPageWithLayout = () => {
 	} = useQuery(
 		['season-projects', seasonId],
 		() =>
-			axios.get<Season & { stages: (SeasonStage & { projects: Project[] })[] }>('/api/season', {
-				params: { id: seasonId, withProjects: true },
-			}),
+			axios.get<prismaClient.Season & { stages: (prismaClient.SeasonStage & { projects: prismaClient.Project[] })[] }>(
+				'/api/season',
+				{
+					params: { id: seasonId, withProjects: true },
+				}
+			),
 		{ enabled: !!seasonId }
 	)
 
-	const getTagColor = (status: ProjectStatus) => {
+	const getTagColor = (status: prismaClient.ProjectStatus) => {
 		switch (status) {
-			case ProjectStatus.Registered:
+			case prismaClient.ProjectStatus.Registered:
 				return token.blue
-			case ProjectStatus.Approved:
+			case prismaClient.ProjectStatus.Approved:
 				return token.green
-			case ProjectStatus.Rejected:
+			case prismaClient.ProjectStatus.Rejected:
 				return token.red
-			case ProjectStatus.Done:
+			case prismaClient.ProjectStatus.Done:
 				return token.colorFillSecondary
 		}
 	}

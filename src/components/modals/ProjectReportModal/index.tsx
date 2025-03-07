@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
-import { ProjectReport } from '@prisma/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { DatePicker, Form, Input, message, Modal, notification, Spin } from 'antd'
@@ -19,7 +19,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 
 	const { refetch: fetchReport, isFetching } = useQuery(
 		['project-report', reportId],
-		() => axios.get<ProjectReport>('/api/user/project/report', { params: { id: reportId } }),
+		() => axios.get<prismaClient.ProjectReport>('/api/user/project/report', { params: { id: reportId } }),
 		{
 			enabled: !!reportId,
 			onSuccess(data) {
@@ -31,10 +31,10 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			staleTime: Infinity,
 		}
 	)
-	const { mutateAsync: createProjectReport } = useMutation((data: Omit<Partial<ProjectReport>, 'id'>) =>
+	const { mutateAsync: createProjectReport } = useMutation((data: Omit<Partial<prismaClient.ProjectReport>, 'id'>) =>
 		axios.post<void>('/api/user/project/report', data)
 	)
-	const { mutateAsync: updateProjectReport } = useMutation((data: Partial<ProjectReport>) =>
+	const { mutateAsync: updateProjectReport } = useMutation((data: Partial<prismaClient.ProjectReport>) =>
 		axios.put<void>('/api/user/project/report', data)
 	)
 
@@ -73,7 +73,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(<T keyName="common.formError">Error. Check if all data is entered correctly</T>)
+				message.error(t('form.message.incorrect', 'Error. Check if all data is entered correctly'))
 			}
 		}
 	}
@@ -99,6 +99,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			<Spin spinning={isFetching}>
 				<Form
 					form={form}
+					variant="filled"
 					layout="vertical"
 					name="report-form"
 					wrapperCol={{ span: 12 }}

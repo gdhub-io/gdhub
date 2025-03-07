@@ -122,6 +122,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 					<Form
 						form={form}
 						layout="vertical"
+						variant="filled"
 						requiredMark="optional"
 						autoComplete="off"
 						scrollToFirstError

@@ -1,7 +1,7 @@
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { getWorkedProjects } from '@/services/prisma/queries'
-import { Project, Season, SeasonStage, User } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
@@ -13,7 +13,10 @@ import styles from './style.module.scss'
 
 const { Title, Paragraph } = Typography
 
-type ProjectIncludeAll = Project & { author: User; stage: SeasonStage & { season: Season } }
+type ProjectIncludeAll = prismaClient.Project & {
+	author: prismaClient.User
+	stage: prismaClient.SeasonStage & { season: prismaClient.Season }
+}
 type ProjectsPageParams = { projects: ProjectIncludeAll[] }
 
 const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {

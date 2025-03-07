@@ -1,4 +1,4 @@
-import { Project } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useTolgee } from '@tolgee/react'
 import { Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
 import Image from 'next/image'
@@ -8,7 +8,7 @@ export const ProjectIdeasList = ({
 	projectIdeas,
 	isLoading = false,
 }: {
-	projectIdeas: Project[]
+	projectIdeas: prismaClient.Project[]
 	isLoading: boolean
 }) => {
 	const screens = Grid.useBreakpoint()

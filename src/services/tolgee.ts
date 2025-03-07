@@ -1,6 +1,7 @@
 import enLocale from '@/i18n/en.json'
 import ruLocale from '@/i18n/ru.json'
-import { Tolgee, FormatSimple, TolgeeInstance, LanguageStorage, LanguageDetector } from '@tolgee/react'
+import { FormatIcu } from '@tolgee/format-icu'
+import { Tolgee, TolgeeInstance, LanguageStorage, LanguageDetector } from '@tolgee/react'
 import { InContextTools } from '@tolgee/web/tools'
 
 declare global {
@@ -25,7 +26,7 @@ const createTolgeeService = () => {
 		)
 	}
 
-	tolgee.use(FormatSimple())
+	tolgee.use(FormatIcu())
 	tolgee.use(LanguageDetector())
 
 	if ('undefined' !== typeof window) {

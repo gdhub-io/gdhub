@@ -105,7 +105,7 @@ const LoginPage: NextPage = () => {
 											</T>
 										</Paragraph>
 
-										<Form form={form} layout="vertical">
+										<Form variant="filled" form={form} layout="vertical">
 											<Form.Item
 												name="email"
 												label={<T>Enter Email</T>}

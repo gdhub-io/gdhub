@@ -1,7 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus, TeamMemberStatus, UserRole } from '@prisma/client'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 import { slugify } from 'voca'
@@ -9,6 +9,9 @@ import { slugify } from 'voca'
 class CreateProjectDto {
 	@IsString()
 	name: string
+
+	@IsBoolean()
+	agree: boolean
 
 	@IsString()
 	@IsOptional()
@@ -72,9 +75,9 @@ class UpdateProjectDto {
 	@IsOptional()
 	authorId?: string
 
-	@IsEnum(ProjectStatus)
+	@IsEnum(prismaClient.ProjectStatus)
 	@IsOptional()
-	status?: ProjectStatus
+	status?: prismaClient.ProjectStatus
 
 	@IsString()
 	@IsOptional()
@@ -97,7 +100,7 @@ class ApiProjectHandler {
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { slug }: GetProjectDto) {
 		const project = await prisma.project.findUnique({
 			where: { slug, OR: [{ authorId: req.user.id }, { team: { members: { some: { userId: req.user.id } } } }] },
-			include: { stage: true },
+			include: { workflow: { include: { steps: true } } },
 		})
 
 		return project
@@ -106,30 +109,26 @@ class ApiProjectHandler {
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { name, description }: CreateProjectDto
+		@Body(ValidationPipe) { name, description, agree }: CreateProjectDto
 	) {
 		if (!req.user.id) throw Error('Unknown user')
+		if (!agree) throw Error('Should accept requirements')
 
 		const user = await prisma.user.findUnique({
 			where: { id: req.user.id },
-			include: { specialities: true, memberInTeams: { where: { status: TeamMemberStatus.Founder } } },
+			include: { specialities: true, memberInTeams: { where: { status: prismaClient.TeamMemberStatus.Founder } } },
 		})
 
-		const userhasTeam = user?.memberInTeams[0]?.status == TeamMemberStatus.Founder
-
-		const season = await prisma.season.findFirst({
-			where: { slug: 'indie' },
-			include: { stages: true },
-		})
+		const userhasTeam = user?.memberInTeams[0]?.status == prismaClient.TeamMemberStatus.Founder
 
 		const project = await prisma.project.create({
 			data: {
 				name,
+				agree,
 				slug: slugify(name),
 				description,
 				author: { connect: { id: req.user.id } },
-				status: ProjectStatus.Registered,
-				stage: { connect: { id: season?.stages.find((r) => r.order == 0)?.id } },
+				status: prismaClient.ProjectStatus.Approved,
 				team: {
 					create: {
 						name: `${slugify(name)}'s Team`,
@@ -138,7 +137,7 @@ class ApiProjectHandler {
 								position: 'Founder',
 								specialityId: user?.specialities[0].id!,
 								startedAt: dayjs().toISOString(),
-								status: TeamMemberStatus.Founder,
+								status: prismaClient.TeamMemberStatus.Founder,
 								userId: req.user.id,
 							},
 						},
@@ -157,11 +156,11 @@ class ApiProjectHandler {
 			},
 		})
 
-		if (!project.author.roles.includes(UserRole.Author)) {
+		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
 			await prisma.user.update({
 				where: { id: req.user.id },
 				data: {
-					roles: [...project.author.roles, UserRole.Author],
+					roles: [...project.author.roles, prismaClient.UserRole.Author],
 				},
 			})
 		}
@@ -173,25 +172,24 @@ class ApiProjectHandler {
 	public async update(
 		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { id }: QueryIdParam,
-		@Body(ValidationPipe) { stageId, authorId, ...data }: UpdateProjectDto
+		@Body(ValidationPipe) { authorId, ...data }: UpdateProjectDto
 	) {
 		const project = await prisma.project.update({
 			where: { id },
 			data: {
 				...data,
 				author: authorId ? { connect: { id: authorId } } : undefined,
-				stage: stageId ? { connect: { id: stageId } } : undefined,
 			},
 			include: {
 				author: { select: { name: true, image: true, id: true, roles: true, profile: { select: { id: true } } } },
 			},
 		})
 
-		if (!project.author.roles.includes(UserRole.Author)) {
+		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
 			await prisma.user.update({
 				where: { id: req.user.id },
 				data: {
-					roles: [...project.author.roles, UserRole.Author],
+					roles: [...project.author.roles, prismaClient.UserRole.Author],
 				},
 			})
 		}

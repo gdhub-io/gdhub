@@ -15,9 +15,10 @@ const nextConfig = {
 		remotePatterns: [
 			{ protocol: 'https', hostname: 'images.unsplash.com' },
 			{ protocol: 'https', hostname: 'lh3.googleusercontent.com' },
-			{ protocol: 'https', hostname: 'dl.airtable.com' },
 			{ protocol: 'https', hostname: 's3.us-west-2.amazonaws.com' },
 			{ protocol: 'https', hostname: 'cdn.sanity.io' },
+			{ protocol: 'https', hostname: 'loremflickr.com' },
+			{ protocol: 'https', hostname: 'avatars.githubusercontent.com' },
 		],
 	},
 	env: {

@@ -1,68 +1,75 @@
-import { useState } from 'react'
-import CreateProjectModal from '@/components/modals/CreateProjectModal'
-import { UserRole } from '@prisma/client'
+import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
-import { Avatar, Button, Card, Col, Flex, Row, Space, Tag, Typography } from 'antd'
+import { useTolgee } from '@tolgee/react'
+import { Button, Empty, Flex, Space, Spin, Typography } from 'antd'
+import { Row, Col } from 'antd'
 import axios from 'axios'
-import Link from 'next/link'
-import { useSession } from 'next-auth/react'
+import styles from './styles.module.scss'
+import GameCard from '../GameCard'
+import CreateProjectModal from '../modals/CreateProjectModal'
+const { Title } = Typography
 
-const { Title, Text } = Typography
-
-export const MyProjectList = () => {
-	const { data: session } = useSession()
+const MyProjectList: React.FC = () => {
 	const [openCreateProjectModal, setOpenCreateProjectModal] = useState(false)
-	const { data: myProjects } = useQuery(['user-projects'], () => axios.get('/api/user/projects'), {
+	const { t } = useTolgee()
+
+	const {
+		data: projects,
+		isSuccess,
+		isLoading,
+		error,
+	} = useQuery(['userProjects'], () => axios.get('/api/user/projects'), {
 		refetchOnWindowFocus: false,
 	})
 
-	return (
-		<Space direction="vertical" size={16} style={{ width: '100%' }}>
-			<Flex justify="space-between">
-				<Title level={2}>
-					<T>My Projects</T>
-				</Title>
+	if (isLoading) {
+		return (
+			<div className={styles.loadingContainer}>
+				<Spin />
+			</div>
+		)
+	}
 
-				{session?.user.roles.includes(UserRole.Author) && (
-					<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
-						<Space>Add Project</Space>
-					</Button>
-				)}
+	if (error) {
+		return <Empty description="Failed to load user projects" />
+	}
+
+	if (!isSuccess || !projects?.data || projects.data.length === 0) {
+		return <Empty description="No user projects found" />
+	}
+
+	return (
+		<div className={styles.userProjectsContainer}>
+			<Flex justify="space-between">
+				<Title level={2}>{t('page.hub.user-projects', 'My Projects')}</Title>
+
+				<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
+					<Space>{t('project.create', 'Add Project')}</Space>
+				</Button>
 			</Flex>
 
-			<Row gutter={[16, 16]} wrap>
-				{myProjects?.data?.length > 0 ? (
-					myProjects?.data.map((myProject: any) => (
-						<Col key={myProject.id} xs={24} lg={8}>
-							<Link href={`/my/projects/${myProject.slug}`}>
-								<Card hoverable>
-									<Card.Meta
-										avatar={<Avatar shape="square" size="large" src={myProject.coverImage} />}
-										title={
-											<Flex justify="space-between">
-												<Text>{myProject.name}</Text>
-												<Tag color="blue">{myProject.stage?.name}</Tag>
-											</Flex>
-										}
-										description={
-											myProject.description ? (
-												<Text type="secondary">{myProject.description?.slice(0, 100)}...</Text>
-											) : null
-										}
-									/>
-								</Card>
-							</Link>
-						</Col>
-					))
-				) : (
-					<Text type="secondary">
-						You don&apos;t have any project yet. Create <span>a new one</span> or join <span>existing ones</span>.
-					</Text>
-				)}
+			<Row gutter={[24, 24]} className={styles.projectsGrid}>
+				{projects.data.map((project: any) => (
+					<Col key={project.id} xs={24} sm={12} md={8} lg={6} xl={6}>
+						<GameCard
+							id={project.id}
+							title={project.name}
+							genre={project.genre || undefined}
+							platform={project.platform || undefined}
+							coverImage={project.coverImage || undefined}
+							slug={project.slug}
+							workflowStage={project.workflow?.steps?.[0]?.name}
+							authorName={project.author?.name}
+							authorAvatar={project.author?.image}
+							isUserProject={true}
+						/>
+					</Col>
+				))}
 			</Row>
 
 			<CreateProjectModal open={openCreateProjectModal} onCancel={() => setOpenCreateProjectModal(false)} />
-		</Space>
+		</div>
 	)
 }
+
+export default MyProjectList

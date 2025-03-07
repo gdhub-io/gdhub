@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Project } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T } from '@tolgee/react'
 import { Typography } from 'antd'
 import Image from 'next/image'
@@ -40,7 +40,7 @@ export const DemoDayProjects = ({ projects }: { projects: any[] }) => {
 			</Title>
 			<section className={styles.carousel}>
 				<ul className="carousel__list">
-					{slides?.map((project: Project, idx: number) => (
+					{slides?.map((project: prismaClient.Project, idx: number) => (
 						<>
 							{!!project.coverImage && (
 								<li

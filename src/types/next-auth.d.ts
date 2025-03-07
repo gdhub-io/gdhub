@@ -1,5 +1,4 @@
 import 'next-auth/jwt'
-import { UserRole } from '@prisma/client'
 import { DefaultSession } from 'next-auth'
 
 declare module 'next-auth/jwt' {
@@ -10,6 +9,7 @@ declare module 'next-auth/jwt' {
 		lang: string
 		error?: 'RefreshAccessTokenError'
 		activeSubscription?: string
+		telegramId?: string
 	}
 }
 
@@ -22,6 +22,7 @@ declare module 'next-auth' {
 			onboardingDone: boolean
 			lang: string
 			activeSubscription?: string
+			telegramId?: string
 		} & DefaultSession['user']
 	}
 
@@ -31,5 +32,6 @@ declare module 'next-auth' {
 		onboardingDone: boolean
 		lang: string
 		activeSubscription?: string
+		telegramId?: string
 	}
 }

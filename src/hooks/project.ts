@@ -1,4 +1,4 @@
-import { Project } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -16,7 +16,7 @@ export const useCurrentProject = () => {
 		isFetched,
 	} = useQuery(
 		['project-data', slug, session?.user.id],
-		() => axios.get<Project>('/api/user/project', { params: { slug } }),
+		() => axios.get<prismaClient.Project>('/api/user/project', { params: { slug } }),
 		{ enabled: !!slug }
 	)
 

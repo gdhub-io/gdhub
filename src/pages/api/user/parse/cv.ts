@@ -1,7 +1,16 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { openAI } from '@/services/openai'
 import multer from 'multer'
-import { Post, createHandler, UploadedFile, UseMiddleware, BadRequestException, Req, Body } from 'next-api-decorators'
+import {
+	Post,
+	createHandler,
+	UploadedFile,
+	UseMiddleware,
+	BadRequestException,
+	Req,
+	Body,
+	HttpException,
+} from 'next-api-decorators'
 import pdf from 'pdf-parse'
 
 export const config = {
@@ -36,7 +45,8 @@ class UserParseCVHandler {
 			return response
 		} catch (error: any) {
 			console.error('uploadCV', error)
-			return { success: false }
+
+			throw new HttpException(error.status, error.error.message)
 		}
 	}
 }

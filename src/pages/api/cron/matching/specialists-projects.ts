@@ -1,7 +1,7 @@
 import { formatNestedJson } from '@/helpers/format'
 import { matchingQueue } from '@/queues/matching.queue'
 import { prisma } from '@/services/prisma'
-import { ProjectStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsNumber, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { Body, Post, createHandler } from 'next-api-decorators'
@@ -29,7 +29,7 @@ class CronMatchingHandler {
 		const projects = await prisma.project.findMany({
 			where: {
 				id: projectId,
-				status: ProjectStatus.Approved,
+				status: prismaClient.ProjectStatus.Approved,
 				OR: !specialityId
 					? [
 							{
@@ -190,6 +190,7 @@ class CronMatchingHandler {
 				const projectText = formatNestedJson(project)
 
 				await matchingQueue.add('matching-spec-and-proj', {
+					app: 'main',
 					specialityId: specialist.id,
 					projectId: project.id,
 					specialistText,

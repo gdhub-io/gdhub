@@ -5,10 +5,10 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { InstantsearchAdapter } from '@/services/typesense/adapter'
-import { ProjectStatus, UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BsFilter } from '@react-icons/all-files/bs/BsFilter'
 import { T, useTolgee } from '@tolgee/react'
-import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
+import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography, Avatar } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import { getSession, useSession } from 'next-auth/react'
 import {
@@ -39,56 +39,74 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 	const Hit = ({ hit }: any) => {
 		return (
 			<Card
-				actions={[
-					<Button key="details" onClick={() => setSelectedSpecialistId(hit.id)}>
-						<T>More details</T>
-					</Button>,
-				]}
+				hoverable
+				onClick={() => setSelectedSpecialistId(hit.id)}
+				style={{ cursor: 'pointer', position: 'relative' }}
 			>
 				<Card.Meta
+					avatar={
+						<Avatar size={64} src={hit.avatar} style={{ backgroundColor: '#f15541' }}>
+							{hit.name?.[0]?.toUpperCase()}
+						</Avatar>
+					}
 					title={
-						<Title level={4} style={{ whiteSpace: 'initial' }}>
+						<Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center', minHeight: 64 }}>
 							<Highlight attribute="name" hit={hit} />
 						</Title>
 					}
+					description={
+						<Space direction="vertical" size={16} style={{ width: '100%', marginTop: 8 }}>
+							{!!hit.direction && (
+								<Space wrap>
+									<Tag color="default">
+										<Highlight attribute="direction" hit={hit} />
+									</Tag>
+									<Tag color="default">
+										<Highlight attribute="level" hit={hit} />
+									</Tag>
+								</Space>
+							)}
+
+							{!!hit.skills && (
+								<div>
+									<Text type="secondary" strong>
+										<T>Skills</T>
+									</Text>
+									<div style={{ marginTop: 4 }}>
+										<Highlight attribute="skills" hit={hit} />
+									</div>
+								</div>
+							)}
+
+							{!!hit.tools && (
+								<div>
+									<Text type="secondary" strong>
+										<T>Tools & Software</T>
+									</Text>
+									<div style={{ marginTop: 4 }}>
+										<Highlight attribute="tools" hit={hit} />
+									</div>
+								</div>
+							)}
+
+							{!!hit.specialization && (
+								<div>
+									<Text type="secondary" strong>
+										<T>Specialization</T>
+									</Text>
+									<div style={{ marginTop: 4 }}>
+										<Highlight attribute="specialization" hit={hit} />
+									</div>
+								</div>
+							)}
+						</Space>
+					}
 				/>
-				{!!hit.direction && (
-					<Space wrap>
-						<Highlight attribute="direction" hit={hit} />
-						<Tag>
-							<Highlight attribute="level" hit={hit} />
-						</Tag>
-					</Space>
-				)}
-				{!!hit.skills && (
-					<div className={styles.hitItem}>
-						<Text strong>
-							<T>Skills</T>{' '}
-						</Text>
-						<Highlight attribute="skills" hit={hit} />
-					</div>
-				)}
-				{!!hit.tools && (
-					<div className={styles.hitItem}>
-						<Text strong>
-							<T>Tools & Software</T>{' '}
-						</Text>
-						<Highlight attribute="tools" hit={hit} />
-					</div>
-				)}
-				{!!hit.specialization && (
-					<div className={styles.hitItem}>
-						<Text strong>
-							<T>Specialization</T>{' '}
-						</Text>
-						<Highlight attribute="specialization" hit={hit} />
-					</div>
-				)}
 			</Card>
 		)
 	}
 
-	if (!hasRole(UserRole.Author, session) || !hasApprovedProjects) {
+	if (!hasRole(prismaClient.UserRole.Author, session) || !hasApprovedProjects) {
 		return (
 			<ProtectedLayout title={t('Community Members')}>
 				<div className={styles.container}>
@@ -125,18 +143,23 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 					indexName={process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string}
 				>
 					<Configure optionalFilters={['isActive:true']} />
-					<SearchBox placeholder="Type search query..." />
+					<Row gutter={[16, 16]} align="middle" style={{ marginBottom: 24 }}>
+						<Col flex="auto">
+							<SearchBox placeholder="Type search query..." />
+						</Col>
+						{!screens.lg && (
+							<Col>
+								<SearchMobileFilter onClick={() => setOpenFilter(true)} resetButtonText={t('Clear filter')} />
+							</Col>
+						)}
+					</Row>
 					<Row justify="end" className={styles.stats}>
 						<Stats />
 					</Row>
 
 					<Row gutter={[16, 16]}>
 						<Col xs={{ span: 24 }} lg={{ span: 8 }}>
-							{screens.lg ? (
-								<SearchFilter SearchFilter={t('Clear Filter')} />
-							) : (
-								<SearchMobileFilter SearchMobileFilter={t('Clear Filter')} onClick={() => setOpenFilter(true)} />
-							)}
+							{screens.lg ? <SearchFilter /> : null}
 						</Col>
 						<Col xs={{ span: 24 }} lg={{ span: 16 }}>
 							<NoResultsBoundary fallback={<NoResults />}>
@@ -151,6 +174,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 						title={<T>Search filter</T>}
 						className={styles.container}
 						onClose={() => setOpenFilter(false)}
+						placement="right"
 					>
 						<SearchFilter />
 					</Drawer>
@@ -192,20 +216,36 @@ function NoResults() {
 	)
 }
 
-function SearchFilter({ resetButtonText }: any) {
+const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
+	const { t } = useTolgee()
+
 	return (
-		<Space direction="vertical" style={{ width: '100%' }}>
-			<Card title={<T keyName="workDirection">Work Direction</T>} className={styles.panel}>
-				<RefinementList attribute="direction" showMore />
-			</Card>
-			<Card title={<T keyName="difficultyLevel">Difficulty Level</T>} className={styles.panel}>
-				<RefinementList attribute="level" />
-			</Card>
-			<Card title={<T keyName="country">Country</T>} className={styles.panel}>
-				<RefinementList attribute="country" showMore />
-			</Card>
-			<ClearRefinements translations={{ resetButtonText }} />
-		</Space>
+		<Card className={styles.filterCard}>
+			<Space direction="vertical" size={24} style={{ width: '100%' }}>
+				<div>
+					<Title level={5}>
+						<T>Direction</T>
+					</Title>
+					<RefinementList attribute="direction" />
+				</div>
+
+				<div>
+					<Title level={5}>
+						<T>Level</T>
+					</Title>
+					<RefinementList attribute="level" />
+				</div>
+
+				<div>
+					<Title level={5}>
+						<T>Skills</T>
+					</Title>
+					<RefinementList attribute="skills" />
+				</div>
+
+				<ClearRefinements translations={{ resetButtonText: t('Clear filter') }} />
+			</Space>
+		</Card>
 	)
 }
 
@@ -244,14 +284,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 	const usersCount = await prisma.user.count()
 	const specialitiesCount = await prisma.speciality.count()
 	const hasApprovedProjects = await prisma.project.count({
-		where: { authorId: session?.user.id, status: ProjectStatus.Approved },
+		where: { authorId: session?.user.id, status: prismaClient.ProjectStatus.Approved },
 	})
 
 	return {
 		props: {
 			usersCount,
 			specialitiesCount,
-			hasApprovedProjects: hasApprovedProjects !== 0 || session?.user.roles.includes(UserRole.Admin),
+			hasApprovedProjects: hasApprovedProjects !== 0 || session?.user.roles.includes(prismaClient.UserRole.Admin),
 		},
 	}
 }

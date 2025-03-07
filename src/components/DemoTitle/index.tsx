@@ -1,8 +1,8 @@
-import { Season } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T } from '@tolgee/react'
 import styles from './style.module.scss'
 
-export const DemoTitle = ({ season }: { season: Season }) => {
+export const DemoTitle = ({ season }: { season: prismaClient.Season }) => {
 	if (!season) return null
 
 	return (

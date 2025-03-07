@@ -1,5 +1,5 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
-import { UserRole } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -18,15 +18,15 @@ class ApiSpecialistHandler {
 			method: 'post',
 			body: JSON.stringify({
 				properties: {
-					room_name: req.user.roles?.includes(UserRole.Admin) ? undefined : roomName,
-					is_owner: req.user.roles?.includes(UserRole.Admin) || false,
+					room_name: req.user.roles?.includes(prismaClient.UserRole.Admin) ? undefined : roomName,
+					is_owner: req.user.roles?.includes(prismaClient.UserRole.Admin) || false,
 					user_name: req.user.name,
 					enable_screenshare: true,
 					lang: 'user',
 					permissions: {
 						hasPresence: true,
 						canSend: true,
-						canAdmin: req.user.roles?.includes(UserRole.Admin) || false,
+						canAdmin: req.user.roles?.includes(prismaClient.UserRole.Admin) || false,
 					},
 				},
 			}),

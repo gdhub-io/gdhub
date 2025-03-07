@@ -5,7 +5,7 @@
 
 import { AvailableLocales } from '@/config/locale'
 import { env } from '@/helpers/env'
-import { ProjectStatus, TeamVacancyStatus } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
@@ -26,7 +26,7 @@ const newProjectReportsMessageRu = (reports: any[]) => {
 	let message = '<b>Новое на проектах сообщества</b>'
 
 	reports.map((report) => {
-		message += `\n\n<b>Проект ${report.project.name}</b> / ${report.project.stage.season.name}\n`
+		message += `\n\n<b>Проект ${report.project.name}</b>\n`
 		message += '<i>Отчет от: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '- ' + report.content
 		message += report.video
@@ -44,7 +44,7 @@ const newProjectReportsMessageEn = (reports: any[]) => {
 	let message = '<b>New on games projects</b>'
 
 	reports.map((report) => {
-		message += `\n\n<b>Project ${report.project.name}</b> / ${report.project.stage.season.name}\n`
+		message += `\n\n<b>Project ${report.project.name}</b>\n`
 		message += '<i>Report from: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '- ' + report.content
 		message += report.video ? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Attached video</a>` : ''
@@ -58,15 +58,19 @@ const newProjectReportsMessageEn = (reports: any[]) => {
 
 const newSpecialitiesMessageRu = (specialities: any[]) => {
 	let message = `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${specialities.length} участника</b> имеющие такие специальности, как:\n- `
-	message += specialities.map((r) => r.name).join(';\n- ')
+	message += specialities
+		.map((r) => `${r.name} (${r.level})${r.specialization ? '\n' + r.specialization : ''}`)
+		.join(';\n- ')
 	message += '\n\nДобро пожаловать в наш хаб!'
 
 	return message
 }
 
 const newSpecialitiesMessageEn = (specialities: any[]) => {
-	let message = `<b>New </b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
-	message += specialities.map((r) => r.name).join(';\n- ')
+	let message = `<b>New members</b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
+	message += specialities
+		.map((r) => `${r.name} (${r.level})${r.specialization ? '\n' + r.specialization : ''}`)
+		.join(';\n- ')
 	message += '\n\nWelcome to our hub!'
 
 	return message
@@ -76,7 +80,7 @@ const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
 	let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
 
 	projectWithVacancies.map((project) => {
-		const vacancyNames = project.vacancies.map((v: any) => v.title)
+		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
 
 		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n`
 		message += '- ' + vacancyNames.join('\n- ')
@@ -92,7 +96,7 @@ const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 	let message = '🔥 <b>New vacancies for community projects</b>'
 
 	projectWithVacancies.map((project) => {
-		const vacancyNames = project.vacancies.map((v: any) => v.title)
+		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
 
 		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Project ${project.name}</a></b>\n`
 		message += '- ' + vacancyNames.join('\n- ')
@@ -107,12 +111,12 @@ export default class TelegramService {
 	private apiUrl: string
 
 	private constructor({ botToken }: any) {
-		this.apiUrl = `https://api.telegram.org/bot${botToken}`
+		this.apiUrl = `https://api.telegram.org/bot${botToken}${process.env.NODE_ENV == 'development' ? '/test' : ''}`
 	}
 
-	static init() {
-		const botToken = process.env.TELEGRAM_BOT_TOKEN as string
-		return new TelegramService({ botToken })
+	static init(botToken?: string) {
+		const defaultBotToken = process.env.TELEGRAM_BOT_TOKEN as string
+		return new TelegramService({ botToken: botToken || defaultBotToken })
 	}
 
 	async sendMessage({
@@ -191,7 +195,7 @@ export default class TelegramService {
 
 	async sendNewProjectReports({
 		inLastDays = 1,
-		locale = AvailableLocales.en,
+		locale = AvailableLocales.ru,
 	}: {
 		inLastDays?: number
 		locale?: AvailableLocales
@@ -199,20 +203,21 @@ export default class TelegramService {
 		const reports = await prisma.projectReport.findMany({
 			where: {
 				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
-				project: { status: ProjectStatus.Approved },
+				project: { status: prismaClient.ProjectStatus.Approved },
 			},
-			include: { project: { include: { stage: { include: { season: true } } } } },
 		})
 
-		if (reports.length == 0) return
+		if (reports.length == 0) return { sent: 0 }
 
 		let message = ''
 
 		switch (locale) {
 			case 'ru':
 				message = newProjectReportsMessageRu(reports)
+				break
 			case 'en':
 				message = newProjectReportsMessageEn(reports)
+				break
 		}
 
 		await this.sendMessage({
@@ -220,11 +225,13 @@ export default class TelegramService {
 			topicId: env<number>('TELEGRAM_TOPIC_REPORTS'),
 			message,
 		})
+
+		return { sent: reports.length }
 	}
 
 	async sendNewSpecialities({
 		inLastDays = 1,
-		locale = AvailableLocales.en,
+		locale = AvailableLocales.ru,
 	}: {
 		inLastDays?: number
 		locale?: AvailableLocales
@@ -236,15 +243,17 @@ export default class TelegramService {
 			include: { user: { include: { profile: true } } },
 		})
 
-		if (specialities.length == 0) return
+		if (specialities.length == 0) return { sent: 0 }
 
 		let message = ''
 
 		switch (locale) {
 			case 'ru':
 				message = newSpecialitiesMessageRu(specialities)
+				break
 			case 'en':
 				message = newSpecialitiesMessageEn(specialities)
+				break
 		}
 
 		await this.sendMessage({
@@ -252,11 +261,13 @@ export default class TelegramService {
 			topicId: env<number>('TELEGRAM_TOPIC_NEWS'),
 			message,
 		})
+
+		return { sent: specialities.length }
 	}
 
 	async sendNewVacancies({
 		inLastDays = 1,
-		locale = AvailableLocales.en,
+		locale = AvailableLocales.ru,
 	}: {
 		inLastDays?: number
 		locale?: AvailableLocales
@@ -265,28 +276,30 @@ export default class TelegramService {
 			where: {
 				team: {
 					vacancies: {
-						every: {
-							status: TeamVacancyStatus.Published,
+						some: {
+							status: prismaClient.TeamVacancyStatus.Published,
 							publishedAt: { gte: dayjs().subtract(inLastDays, 'days').toDate() },
 						},
 					},
 				},
-				status: ProjectStatus.Approved,
+				status: prismaClient.ProjectStatus.Approved,
 			},
-			include: { team: { select: { _count: { select: { vacancies: true } } } } },
+			include: { team: { select: { _count: { select: { vacancies: true } }, vacancies: true } } },
 		})
 
-		projectWithVacancies = projectWithVacancies.filter((r) => r.team._count.vacancies > 0)
+		projectWithVacancies = projectWithVacancies.filter((r: any) => r.team.vacancies.length > 0)
 
-		if (projectWithVacancies.length == 0) return
+		if (projectWithVacancies.length == 0) return { sent: 0 }
 
 		let message = ''
 
 		switch (locale) {
 			case 'ru':
 				message = newVacanciesMessageRu(projectWithVacancies)
+				break
 			case 'en':
 				message = newVacanciesMessageEn(projectWithVacancies)
+				break
 		}
 
 		await this.sendMessage({
@@ -294,5 +307,7 @@ export default class TelegramService {
 			topicId: env<number>('TELEGRAM_TOPIC_VACANCIES'),
 			message,
 		})
+
+		return { sent: projectWithVacancies.length }
 	}
 }

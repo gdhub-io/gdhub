@@ -1,4 +1,4 @@
-import { SeasonStage } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { DatePicker, Form, Input, message, Modal, Select, Spin } from 'antd'
 import axios from 'axios'
@@ -8,7 +8,7 @@ const SeasonStreamReportModal = ({ seasonId, streamReportId, open, onOk, onCance
 	const [form] = Form.useForm()
 
 	const { data: seasonStages } = useQuery(['admin', 'seasons'], () =>
-		axios.get<SeasonStage[]>(`/api/admin/season/stages`, { params: { seasonId } })
+		axios.get<prismaClient.SeasonStage[]>(`/api/admin/season/stages`, { params: { seasonId } })
 	)
 
 	const { isFetching } = useQuery(
@@ -93,6 +93,7 @@ const SeasonStreamReportModal = ({ seasonId, streamReportId, open, onOk, onCance
 				<Form
 					form={form}
 					layout="vertical"
+					variant="filled"
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}
 					onFinishFailed={() => {}}

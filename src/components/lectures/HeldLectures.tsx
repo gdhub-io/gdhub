@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
-import { LectureStage } from '@prisma/client'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Grid, Spin, Table } from 'antd'
@@ -18,7 +18,7 @@ export const HeldLectures = () => {
 		data: lectures,
 		refetch: updateList,
 		isLoading,
-	} = useQuery(['lectures'], () => axios.get('/api/lectures', { params: { stage: LectureStage.Held } }))
+	} = useQuery(['lectures'], () => axios.get('/api/lectures', { params: { stage: prismaClient.LectureStage.Held } }))
 
 	const columns: ColumnsType<LectureDetails> = useMemo(
 		() => [

@@ -12,17 +12,21 @@ class UserProjectWorkflowDto {
 class ApiUserProjectWorkflowHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { projectId }: UserProjectWorkflowDto) {
-		const project = await prisma.project.findUnique({
-			where: { id: projectId },
-			select: {
-				id: true,
-				stage: { include: { season: { include: { stages: { orderBy: { order: 'asc' } } } } } },
+		const projectWorkflow = await prisma.projectWorkflow.findFirst({
+			where: { projectId },
+			include: {
+				steps: { include: { tasks: true } },
 			},
 		})
 
-		const conditionStatus = await prisma.project.conditionStatus({ projectId })
+		const currentStep = await prisma.project.getCurrentWorkflowStep({
+			projectId,
+		})
 
-		return { ...project, conditionStatus }
+		return {
+			currentStep: currentStep,
+			workflow: projectWorkflow,
+		}
 	}
 }
 

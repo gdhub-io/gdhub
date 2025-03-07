@@ -1,10 +1,7 @@
 import { useMemo } from 'react'
-import { IndieList } from '@/components/IndieList'
-import { MyProjectList } from '@/components/MyProjectList'
-import { hasRole } from '@/helpers/user'
+import MyProjectList from '@/components/MyProjectList'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { UserRole } from '@prisma/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Space, Typography } from 'antd'
 import Link from 'next/link'
@@ -34,26 +31,17 @@ const HubPage: NextPageWithLayout = () => {
 		return link
 	}, [router])
 
-	const linkToForm = useMemo(() => {
-		let link = ''
-
-		switch (getLanguage()) {
-			case 'en':
-				link = 'https://tally.so/r/w2NV6D'
-				break
-			case 'ru':
-				link = 'https://tally.so/r/w8zl5P'
-				break
-		}
-
-		return link
-	}, [router])
-
 	return (
 		<ProtectedLayout>
 			<Space className={styles.container} direction="vertical" size={32}>
 				<Space direction="vertical" size={0}>
-					<Title level={2}>Hello, {session?.data?.user.name} 👋</Title>
+					<Title level={2}>
+						<T
+							keyName="user.welcome"
+							defaultValue="Hello, {userName}"
+							params={{ userName: session?.data?.user.name || 'user' }}
+						/>
+					</Title>
 					<Text>
 						<T>I think now is the perfect time to make games.</T>
 					</Text>
@@ -85,10 +73,9 @@ const HubPage: NextPageWithLayout = () => {
 						}
 					/>
 				)}
-				{session.status == 'authenticated' && hasRole(UserRole.Member, session) && (
+				{session.status == 'authenticated' && !!session.data.user.onboardingDone && (
 					<>
 						<MyProjectList />
-						<IndieList />
 					</>
 				)}
 			</Space>

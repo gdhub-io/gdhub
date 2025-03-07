@@ -1,11 +1,11 @@
-import { ProjectStatus } from '@prisma/client'
-import { DefaultSeasonStages } from './extenstions/season'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { DefaultSeasonStages } from '@gdhub-io/gdhub-prisma/dist/enums'
 import { prisma } from '.'
 
 export const getWorkedProjects = async () => {
 	return await prisma.project.findMany({
 		where: {
-			status: { in: [ProjectStatus.Approved, ProjectStatus.Done] },
+			status: { in: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
 			stage: {
 				name: { notIn: [DefaultSeasonStages.Ideation, DefaultSeasonStages.Concepting] },
 			},
