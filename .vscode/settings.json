@@ -10,5 +10,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   // "prettier.prettierPath": "./node_modules/prettier",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsserver.maxTsServerMemory": 4096
 }

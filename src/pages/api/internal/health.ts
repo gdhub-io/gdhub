@@ -1,5 +1,4 @@
 import { prisma } from '@/services/prisma'
-import { tolgeeService } from '@/services/tolgee'
 import { SearchEngineService } from '@/services/typesense'
 import type { NextApiRequest, NextApiResponse } from 'next'
 

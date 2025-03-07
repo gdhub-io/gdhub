@@ -33,7 +33,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							id: string
 							slug: string
 							name: string
-							stage: prismaClient.SeasonStage & { season: prismaClient.Season }
+							workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
 						}
 					}
 					myTeamMemberId: string
@@ -119,11 +119,12 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	}
 
 	const functionOkButton = async () => {
+		debugger
 		if (!session?.data) {
 			router.push('/signin?callbackUrl=' + router.asPath)
 		}
 
-		if (hasRole(prismaClient.UserRole.Member, session)) {
+		if (!hasRole(prismaClient.UserRole.Guest, session)) {
 			return vacancy?.data.myTeamMemberId
 				? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
 				: setShowSpecialitySelectModal(true)
@@ -165,9 +166,6 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 
 							<Descriptions layout="horizontal" column={1} size="small">
 								<Descriptions.Item label={t('Project')}>{vacancy.data.team.project.name}</Descriptions.Item>
-								<Descriptions.Item label={t('Pipeline')}>
-									{vacancy.data.team.project.stage.season.name}
-								</Descriptions.Item>
 								<Descriptions.Item label={t('The vacancy is acute before')}>
 									{dayjs(vacancy.data.finishedAt).format('LL')}
 								</Descriptions.Item>
@@ -197,7 +195,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				</Spin>
 			</Modal>
 
-			{hasRole(prismaClient.UserRole.Member, session) && (
+			{session && (
 				<SpecialitySelectModal
 					open={showSpecialitySelectModal}
 					onOk={handleSpecialitySelect}

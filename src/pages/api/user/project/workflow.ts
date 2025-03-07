@@ -16,13 +16,11 @@ class ApiUserProjectWorkflowHandler {
 			where: { id: projectId },
 			select: {
 				id: true,
-				stage: { include: { season: { include: { stages: { orderBy: { order: 'asc' } } } } } },
+				workflow: { include: { steps: { orderBy: { order: 'asc' } } } },
 			},
 		})
 
-		const conditionStatus = await prisma.project.conditionStatus({ projectId })
-
-		return { ...project, conditionStatus }
+		return project
 	}
 }
 

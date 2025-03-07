@@ -100,7 +100,7 @@ class ApiProjectHandler {
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { slug }: GetProjectDto) {
 		const project = await prisma.project.findUnique({
 			where: { slug, OR: [{ authorId: req.user.id }, { team: { members: { some: { userId: req.user.id } } } }] },
-			include: { stage: true },
+			include: { workflow: { include: { steps: true } } },
 		})
 
 		return project
@@ -121,11 +121,6 @@ class ApiProjectHandler {
 
 		const userhasTeam = user?.memberInTeams[0]?.status == prismaClient.TeamMemberStatus.Founder
 
-		const season = await prisma.season.findFirst({
-			where: { slug: 'indie' },
-			include: { stages: true },
-		})
-
 		const project = await prisma.project.create({
 			data: {
 				name,
@@ -134,7 +129,6 @@ class ApiProjectHandler {
 				description,
 				author: { connect: { id: req.user.id } },
 				status: prismaClient.ProjectStatus.Approved,
-				stage: { connect: { id: season?.stages.find((r) => r.order == 0)?.id } },
 				team: {
 					create: {
 						name: `${slugify(name)}'s Team`,
@@ -178,14 +172,13 @@ class ApiProjectHandler {
 	public async update(
 		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { id }: QueryIdParam,
-		@Body(ValidationPipe) { stageId, authorId, ...data }: UpdateProjectDto
+		@Body(ValidationPipe) { authorId, ...data }: UpdateProjectDto
 	) {
 		const project = await prisma.project.update({
 			where: { id },
 			data: {
 				...data,
 				author: authorId ? { connect: { id: authorId } } : undefined,
-				stage: stageId ? { connect: { id: stageId } } : undefined,
 			},
 			include: {
 				author: { select: { name: true, image: true, id: true, roles: true, profile: { select: { id: true } } } },
