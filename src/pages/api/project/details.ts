@@ -14,7 +14,7 @@ class ApiProjectHandler {
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { projectId }: GetProjectDto) {
 		const project = await prisma.project.findFirst({
 			where: { id: projectId },
-			include: { stage: { include: { season: true } }, author: { select: { id: true, name: true, image: true } } },
+			include: { author: { select: { id: true, name: true, image: true } }, workflow: { select: { steps: true } } },
 		})
 
 		return project
