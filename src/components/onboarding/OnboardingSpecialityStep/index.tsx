@@ -324,7 +324,11 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 								<a onClick={(e) => setShowOptionalFields((prev) => !prev)}>
 									<Space>
 										{showOptionalFields ? <T>Hide additional fields</T> : <T>Fill additional fields</T>}
-										{showOptionalFields ? <UpOutlined /> : <DownOutlined />}
+										{showOptionalFields ? (
+											<UpOutlined onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+										) : (
+											<DownOutlined onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+										)}
 									</Space>
 								</a>
 							</Space>

@@ -46,7 +46,11 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 	const { data: project, isFetching } = useQuery(
 		['user-project', projectSlug],
 		() =>
-			axios.get<prismaClient.Project & { stage: prismaClient.SeasonStage }>('/api/user/project', {
+			axios.get<
+				prismaClient.Project & {
+					workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
+				}
+			>('/api/user/project', {
 				params: { slug: projectSlug },
 			}),
 		{

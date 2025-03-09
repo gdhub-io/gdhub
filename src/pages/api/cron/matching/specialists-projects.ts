@@ -53,7 +53,7 @@ class CronMatchingHandler {
 				setting: true,
 				status: true,
 				visualStyle: true,
-				stage: { select: { name: true, isCurrent: true, isCompleted: true } },
+				workflow: { select: { steps: true } },
 				author: {
 					select: {
 						lang: true,
