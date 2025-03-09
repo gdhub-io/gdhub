@@ -4,6 +4,7 @@ import { LandingFeedbackSection } from '@/components/landing/LandingFeedbackSect
 import { LandingForAuthorsSection } from '@/components/landing/LandingForAuthorsSection'
 import { LandingForSpecialistsSection } from '@/components/landing/LandingForSpecialistsSection'
 import { LandingHeroSection } from '@/components/landing/LandingHeroSection'
+import { LandingRecentDevlogsSection } from '@/components/landing/LandingRecentDevlogsSection'
 import { LandingWhoWeAreSection } from '@/components/landing/LandingWhoWeAreSection'
 import { useTelegram } from '@/helpers/useTelegram'
 import { LandingLayout } from '@/layouts/LandingLayout'
@@ -72,6 +73,7 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 					<LandingWhoWeAreSection />
 					<LandingForAuthorsSection />
 					<LandingForSpecialistsSection />
+					<LandingRecentDevlogsSection />
 					<LandingFeedbackSection />
 					<LandingContactsSection />
 				</div>

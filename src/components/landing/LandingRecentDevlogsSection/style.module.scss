@@ -1,0 +1,152 @@
+@import '../../../styles/variables.scss';
+
+.section {
+  position: relative;
+  background-color: #0b0b0d;
+  padding: 96px 165px;
+}
+
+.container {
+  max-width: $wrapper-width;
+  margin: 0 auto;
+  text-align: center;
+
+  .preTitle {
+    color: #FFBB55;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #fff;
+  }
+
+  .description {
+    font-size: 18px;
+    max-width: 800px;
+    margin: 0 auto 48px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.devlogsContainer {
+  margin-bottom: 48px;
+}
+
+.devlogCard {
+  height: 100%;
+  transition: all 0.3s;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #1f1f23;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border-color: rgba(241, 85, 65, 0.3);
+  }
+
+  .cardHeader {
+    margin-bottom: 16px;
+
+    .projectInfo {
+      h4 {
+        margin-bottom: 4px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #fff;
+      }
+    }
+  }
+
+  .cardContent {
+    margin-bottom: 16px;
+    min-height: 80px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .cardFooter {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.65);
+  }
+}
+
+.actionContainer {
+  margin-top: 32px;
+
+  .actionButton {
+    min-width: 200px;
+    height: auto;
+    padding: 10px 24px;
+    font-size: 16px;
+    border-radius: 4px;
+    color: #fff;
+    border-color: #F15541;
+    background-color: #F15541;
+    outline: 0px solid #333;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: #F15541 !important;
+      outline: 1px solid #F15541;
+      outline-offset: 3px;
+    }
+  }
+}
+
+// Медиа-запросы для адаптивности
+@media (max-width: 1200px) {
+  .section {
+    padding: 72px 80px;
+  }
+}
+
+@media (max-width: 992px) {
+  .section {
+    padding: 64px 40px;
+  }
+
+  .container {
+    h2 {
+      font-size: 36px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 48px 24px;
+  }
+
+  .container {
+    .preTitle {
+      font-size: 14px;
+    }
+
+    h2 {
+      font-size: 28px;
+    }
+
+    .description {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .section {
+    padding: 40px 16px;
+  }
+}
