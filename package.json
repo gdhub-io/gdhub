@@ -15,13 +15,16 @@
     "db:deploy": "gdhub-prisma deploy --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
     "db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma"
   },
+  "prisma": {
+    "seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
+  },
   "dependencies": {
     "@9gustin/react-notion-render": "^3.11.2",
     "@ant-design/cssinjs": "^1.21.1",
     "@ant-design/icons": "^5.2.6",
     "@daily-co/daily-js": "^0.60.0",
     "@daily-co/daily-react": "^0.17.3",
-    "@gdhub-io/gdhub-prisma": "^1.4.9",
+    "@gdhub-io/gdhub-prisma": "^1.5.3",
     "@gdhub-io/gdhub-typesense": "^1.0.2",
     "@headlessui/react": "1.7.1",
     "@mdxeditor/editor": "^3.11.5",
