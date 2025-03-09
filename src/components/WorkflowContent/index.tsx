@@ -95,12 +95,6 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		moveProjectToStage({ projectId, targetStageId: workflow.steps[previousStageId]?.id })
 	}
 
-	// const handleSetStage = (current: number) => {
-	// 	if (!workflow?.stages) return
-
-	// 	moveProjectToStage({ projectId, targetStageId: workflow.stages[current]?.id })
-	// }
-
 	if (!workflow || !step) return null
 
 	return (

@@ -164,14 +164,6 @@ const LectureSpeakersAdminPage: NextPageWithLayout = () => {
 
 				{response?.data && <Table id="stages" dataSource={response.data} columns={columns} sticky />}
 			</div>
-
-			{/* <SeasonStageModal
-				seasonId={router.query.id}
-				stageId={stageId}
-				open={showModal}
-				onCancel={handleClose}
-				onOk={handleSave}
-			/> */}
 		</>
 	)
 }

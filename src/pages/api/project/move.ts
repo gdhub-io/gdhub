@@ -15,30 +15,40 @@ class ApiProjectMoveDto {
 class ApiProjectMoveHandler {
 	@Put()
 	public async move(@Body(ValidationPipe) { projectId, targetStageId }: ApiProjectMoveDto) {
-		let targetStage
+		let nextStep
 
 		if (['next', 'previous'].includes(targetStageId)) {
-			const project = await prisma.project.findFirst({ where: { id: projectId }, select: { stage: true } })
+			const project = await prisma.project.findFirst({
+				where: { id: projectId },
+				select: { workflow: { include: { steps: { include: { tasks: true } } } } },
+			})
 
 			if (project) {
+				const currentStep = project.workflow?.steps.find((step) => step.isCurrent)
+
+				if (!currentStep) return
+
 				if (targetStageId == 'next') {
-					targetStage = await prisma.seasonStage.findFirst({
-						where: { seasonId: project.stage.seasonId, order: project.stage.order + 1 },
-					})
+					nextStep = project.workflow?.steps.find((step) => step.order === (currentStep?.order || 0) + 1)
 				}
 
-				if (targetStageId == 'previous') {
-					targetStage = await prisma.seasonStage.findFirst({
-						where: { seasonId: project.stage.seasonId, order: project.stage.order - 1 },
+				if (targetStageId == 'previous' && currentStep?.order > 0) {
+					nextStep = project.workflow?.steps.find((step) => step.order === (currentStep?.order || 0) - 1)
+				}
+
+				if (nextStep) {
+					await prisma.projectWorkflowStep.update({
+						where: { id: currentStep.id },
+						data: { isCurrent: false },
+					})
+
+					await prisma.projectWorkflowStep.update({
+						where: { id: nextStep?.id },
+						data: { isCurrent: true },
 					})
 				}
 			}
 		}
-
-		await prisma.project.update({
-			where: { id: projectId },
-			data: { stageId: targetStage?.id || targetStageId },
-		})
 	}
 }
 
