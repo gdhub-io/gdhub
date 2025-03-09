@@ -44,7 +44,12 @@ export const LandingHeroSection = ({
 							<ul>
 								<li>
 									<Space>
-										<Icon component={StarIcon} rev="item" style={{ fontSize: screens.md ? 32 : 19 }} />
+										<Icon
+											component={StarIcon}
+											style={{ fontSize: screens.md ? 32 : 19 }}
+											onPointerEnterCapture={undefined}
+											onPointerLeaveCapture={undefined}
+										/>
 										<Text>
 											<T>
 												We help Authors of new video games to assemble a team of game designers, programmers, artists,
@@ -55,7 +60,12 @@ export const LandingHeroSection = ({
 								</li>
 								<li>
 									<Space>
-										<Icon component={StarIcon} rev="span" style={{ fontSize: screens.md ? 32 : 19 }} />
+										<Icon
+											component={StarIcon}
+											style={{ fontSize: screens.md ? 32 : 19 }}
+											onPointerEnterCapture={undefined}
+											onPointerLeaveCapture={undefined}
+										/>
 										<Text>
 											<T>
 												We help game industry professionals find an interesting role for themselves in new projects.

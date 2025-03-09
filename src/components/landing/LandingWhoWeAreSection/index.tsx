@@ -122,7 +122,13 @@ export const LandingWhoWeAreSection = () => {
 					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title={t('The need for liberty')} overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
-								<Icon component={LightingIcon} rev="span" size={40} />
+								<Icon
+									component={LightingIcon}
+									rev="span"
+									size={40}
+									onPointerEnterCapture={undefined}
+									onPointerLeaveCapture={undefined}
+								/>
 								<Text>
 									<T>Autonomy</T>
 								</Text>
@@ -132,7 +138,13 @@ export const LandingWhoWeAreSection = () => {
 					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title={t('The power of self-identity')} overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
-								<Icon component={DiamondIcon} rev="span" size={40} />
+								<Icon
+									component={DiamondIcon}
+									rev="span"
+									size={40}
+									onPointerEnterCapture={undefined}
+									onPointerLeaveCapture={undefined}
+								/>
 								<Text>
 									<T>Individuality</T>
 								</Text>
@@ -142,7 +154,13 @@ export const LandingWhoWeAreSection = () => {
 					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title={t('Pursuing oppurtunities instead of settling')} overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
-								<Icon component={ClockIcon} rev="span" size={40} />
+								<Icon
+									component={ClockIcon}
+									rev="span"
+									size={40}
+									onPointerEnterCapture={undefined}
+									onPointerLeaveCapture={undefined}
+								/>
 								<Text>
 									<T>Exploration</T>
 								</Text>
@@ -152,7 +170,13 @@ export const LandingWhoWeAreSection = () => {
 					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title={t('Setting goals and working towards them')} overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
-								<Icon component={GoalIcon} rev="span" size={40} />
+								<Icon
+									component={GoalIcon}
+									rev="span"
+									size={40}
+									onPointerEnterCapture={undefined}
+									onPointerLeaveCapture={undefined}
+								/>
 								<Text>
 									<T>Goal-oriented</T>
 								</Text>
@@ -162,7 +186,13 @@ export const LandingWhoWeAreSection = () => {
 					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title={t('Taking risks and making mistakes')} overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
-								<Icon component={StarIcon} rev="span" size={40} />
+								<Icon
+									component={StarIcon}
+									rev="span"
+									size={40}
+									onPointerEnterCapture={undefined}
+									onPointerLeaveCapture={undefined}
+								/>
 								<Text>
 									<T>Achiever</T>
 								</Text>
@@ -172,7 +202,12 @@ export const LandingWhoWeAreSection = () => {
 					<Col xs={{ span: 12 }} xl={{ span: 4 }}>
 						<Tooltip title={t('Mastering communication and networking skills')} overlayClassName={styles.tooltip}>
 							<div className={styles.valuesBlock}>
-								<Icon component={PeopleIcon} rev="span" />
+								<Icon
+									component={PeopleIcon}
+									rev="span"
+									onPointerEnterCapture={undefined}
+									onPointerLeaveCapture={undefined}
+								/>
 								<Text>
 									<T>Player</T>
 								</Text>

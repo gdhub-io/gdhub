@@ -130,7 +130,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 				/>
 			)}
 
-			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading..." options={{ useSuspense: true }}>
+			<TolgeeProvider tolgee={ssrTolgee} fallback="Loading...">
 				{/* <ErrorBoundary> */}
 				<QueryClientProvider client={queryClient}>
 					{/* <CheckHealth> */}

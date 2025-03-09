@@ -1,10 +1,7 @@
 import { useMemo } from 'react'
-import { IndieList } from '@/components/IndieList'
-import { MyProjectList } from '@/components/MyProjectList'
-import { hasRole } from '@/helpers/user'
+import MyProjectList from '@/components/MyProjectList'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T, useTolgee } from '@tolgee/react'
 import { Alert, Button, Space, Typography } from 'antd'
 import Link from 'next/link'
@@ -79,7 +76,6 @@ const HubPage: NextPageWithLayout = () => {
 				{session.status == 'authenticated' && !!session.data.user.onboardingDone && (
 					<>
 						<MyProjectList />
-						<IndieList />
 					</>
 				)}
 			</Space>

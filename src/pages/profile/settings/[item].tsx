@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react'
 import ConnectProfileForm from '@/components/profile-forms/ConnectProfileForm'
 import GeneralProfileForm from '@/components/profile-forms/GeneralProfileForm'
@@ -27,7 +29,7 @@ const ProfilePage: NextPageWithLayout = () => {
 	const { data: session } = useSession()
 	const { data: profile } = useQuery(
 		['profile-setting', session?.user.id],
-		() => axios.get<prismaClient.Profile>('/api/user/profile'),
+		() => axios.get<prismaClient.Profile & { user: Partial<prismaClient.User> }>('/api/user/profile'),
 		{
 			enabled: !!session?.user,
 		}

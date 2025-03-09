@@ -66,7 +66,7 @@ class ApiUserTeamVacancyHandler {
 								id: true,
 								name: true,
 								slug: true,
-								stage: { select: { name: true, season: { select: { id: true, name: true } } } },
+								workflow: { select: { steps: { select: { id: true, name: true } } } },
 							},
 						},
 					},

@@ -3,8 +3,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { getWorkedProjects } from '@/services/prisma/queries'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T, useTolgee } from '@tolgee/react'
-import { Breadcrumb, Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
-import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
+import { Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -15,7 +14,7 @@ const { Title, Paragraph } = Typography
 
 type ProjectIncludeAll = prismaClient.Project & {
 	author: prismaClient.User
-	stage: prismaClient.SeasonStage & { season: prismaClient.Season }
+	currentStep: prismaClient.ProjectWorkflowStep & { workflow: prismaClient.ProjectWorkflow }
 }
 type ProjectsPageParams = { projects: ProjectIncludeAll[] }
 
@@ -23,17 +22,6 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 	const { t } = useTolgee()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
-
-	const breadcrumbItems = (project: ProjectIncludeAll): ItemType[] => [
-		{
-			title: project.stage.season.name,
-			key: project.stage.season.name + '-season',
-		},
-		{
-			title: project.stage.name,
-			key: project.stage.name + '-stage',
-		},
-	]
 
 	return (
 		<PublicLayout
@@ -67,7 +55,6 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 											<Descriptions
 												title={
 													<>
-														<Breadcrumb items={breadcrumbItems(project)} className={styles.seasonDetails} />
 														<Title level={2} style={{ fontSize: 16 }}>
 															{project.name}
 														</Title>

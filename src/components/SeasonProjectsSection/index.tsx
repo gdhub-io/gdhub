@@ -26,9 +26,7 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 					availableSpecialists: prismaClient.MatchingSpecialistAndProject[]
 					author: prismaClient.User
 				})[]
-			>('/api/season/projects', {
-				params: { seasonId, seasonSlug },
-			}),
+			>('/api/projects', {}),
 		{ enabled: !!seasonId || !!seasonSlug }
 	)
 
