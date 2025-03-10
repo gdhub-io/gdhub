@@ -24,7 +24,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		if (!screens.xl) setOpenMobileMenu(false)
 	}, [session, screens])
 
-	// Устанавливаем активный пункт меню при загрузке страницы и при изменении хэша
+	// Set active menu item when page loads and when hash changes
 	useEffect(() => {
 		if (document.location.hash) {
 			setActiveMenuKey(document.location.hash)
@@ -44,9 +44,9 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		return router.pathname == '/' ? internalLink : `/${internalLink}`
 	}
 
-	// Функция для плавного скроллинга к якорю
+	// Function for smooth scrolling to anchor
 	const scrollToAnchor = (e: React.MouseEvent<HTMLAnchorElement>, selector: string) => {
-		// Проверяем, что это якорная ссылка
+		// Check if this is an anchor link
 		if (selector.startsWith('#')) {
 			e.preventDefault()
 
@@ -59,10 +59,10 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					top: element.getBoundingClientRect().top + window.scrollY - offset,
 				})
 
-				// Устанавливаем активный пункт меню
+				// Set active menu item
 				setActiveMenuKey(selector)
 
-				// Закрываем мобильное меню, если оно открыто
+				// Close mobile menu if it is open
 				if (openMobileMenu) {
 					setOpenMobileMenu(false)
 				}
