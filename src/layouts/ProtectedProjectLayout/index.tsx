@@ -53,6 +53,7 @@ export const ProtectedProjectLayout = ({
 	seo?: NextSeoProps
 	children: ReactNode
 }) => {
+	const { t } = useTolgee()
 	const router = useRouter()
 	const projectSlug = router.query.slug as string
 	const [contextProject, setContextProject] = useState<ContextProject>()
@@ -100,13 +101,13 @@ export const ProtectedProjectLayout = ({
 			{
 				style: { display: screens.lg ? 'none' : 'block' },
 				label: (
-					<Link href="/hub" title="Главная страница">
+					<Link href="/hub" title="Dashboard">
 						{screens.lg ? (
 							<Button type="primary" size="small">
-								Главная
+								Dashboard
 							</Button>
 						) : (
-							'Главная'
+							t('Dashboard')
 						)}
 					</Link>
 				),
@@ -139,22 +140,22 @@ export const ProtectedProjectLayout = ({
 		menu = [
 			...menu,
 			{
-				label: <Link href="/profile">Профиль</Link>,
+				label: <Link href="/profile">User Settings</Link>,
 				key: 'profile',
 			},
 			{ type: 'divider' },
 			{
 				key: 'tg-community',
 				label: (
-					<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Телеграм-чат сообщества">
-						Чат сообщества в Telegram
+					<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Telegram community chat">
+						Telegram community chat
 					</Link>
 				),
 			},
 			{ type: 'divider' },
 			{
 				style: { display: isOpenedInTelegram ? 'none' : 'block' },
-				label: 'Выйти',
+				label: 'Logout',
 				key: 'logout',
 				danger: true,
 				onClick: () => signOut({ redirect: true, callbackUrl: '/' }),
@@ -165,45 +166,27 @@ export const ProtectedProjectLayout = ({
 	}, [isOpenedInTelegram, screens, session])
 
 	const menuItems: MenuProps['items'] = [
+		// {
+		// 	key: `/my/projects/${projectSlug}`,
+		// 	label: <Link href={`/my/projects/${projectSlug}`}>{t('app.user-project.menu.workflow', 'Workflow')}</Link>,
+		// },
 		{
 			key: `/my/projects/${projectSlug}`,
-			label: (
-				<Link href={`/my/projects/${projectSlug}`}>
-					<T keyName="app.user-project.menu.workflow">Workflow</T>
-				</Link>
-			),
-		},
-		{
-			key: `/my/projects/${projectSlug}/devlog`,
-			label: (
-				<Link href={`/my/projects/${projectSlug}/devlog`}>
-					<T keyName="app.user-project.menu.overview">Devlog</T>
-				</Link>
-			),
+			label: <Link href={`/my/projects/${projectSlug}/devlog`}>{t('app.user-project.menu.overview', 'Devlog')}</Link>,
 		},
 		{
 			key: `/my/projects/${projectSlug}/vacancies`,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/vacancies`}>
-					<T keyName="app.user-project.menu.vacancies">Vacancies</T>
-				</Link>
+				<Link href={`/my/projects/${projectSlug}/vacancies`}>{t('app.user-project.menu.vacancies', 'Vacancies')}</Link>
 			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/team`,
-			label: (
-				<Link href={`/my/projects/${projectSlug}/team`}>
-					<T keyName="app.user-project.menu.team">Team</T>
-				</Link>
-			),
+			label: <Link href={`/my/projects/${projectSlug}/team`}>{t('app.user-project.menu.team', 'Team')}</Link>,
 		},
 		{
 			key: `/my/projects/${projectSlug}/settings`,
-			label: (
-				<Link href={`/my/projects/${projectSlug}/settings`}>
-					<T keyName="app.user.menu.settings">Settings</T>
-				</Link>
-			),
+			label: <Link href={`/my/projects/${projectSlug}/settings`}>{t('app.user.menu.settings', 'Settings')}</Link>,
 		},
 	]
 

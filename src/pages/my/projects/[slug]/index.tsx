@@ -1,19 +1,13 @@
-import WorkflowContent from '@/components/WorkflowContent'
+import { DevLogWall } from '@/components/DevLogWall'
 import { useCurrentProject } from '@/hooks/project'
 import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
 import { useTolgee } from '@tolgee/react'
-import { useSession } from 'next-auth/react'
 
-export const MyProjectWorkflowPage = () => {
+export const MyProjectHomePage = () => {
 	const { t } = useTolgee()
 	const { project } = useCurrentProject()
-	const { data: session } = useSession()
 
-	return (
-		<ProtectedProjectLayout title={t('Workflow')}>
-			{!!project && <WorkflowContent projectId={project.id} locale={session?.user.lang} />}
-		</ProtectedProjectLayout>
-	)
+	return <ProtectedProjectLayout>{!!project && <DevLogWall slug={project.slug} />}</ProtectedProjectLayout>
 }
 
-export default MyProjectWorkflowPage
+export default MyProjectHomePage
