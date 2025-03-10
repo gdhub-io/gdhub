@@ -104,7 +104,7 @@ export const LandingRecentDevlogsSection = () => {
 				<div className={styles.actionContainer}>
 					<Link href="/projects">
 						<Button type="primary" size={screens.md ? 'large' : 'middle'} className={styles.actionButton}>
-							<T keyName="landing.devlogs.viewAllProjects">Смотреть все проекты</T>
+							<T keyName="landing.devlogs.viewAllProjects">Watch all projects</T>
 						</Button>
 					</Link>
 				</div>
