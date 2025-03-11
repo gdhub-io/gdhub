@@ -40,7 +40,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 						<div className={`${styles.stageTag} ${isRequired ? styles.required : styles.optional}`}>{stage}</div>
 					</div>
 				</div>
-				
+
 				<div className={styles.taskInfoItem}>
 					<div className={styles.taskInfoLabel}>Status</div>
 					<div className={styles.taskInfoValue}>
@@ -56,7 +56,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 						</div>
 					</div>
 				</div>
-				
+
 				<div className={styles.taskInfoItem}>
 					<div className={styles.taskInfoLabel}>Assignee</div>
 					<div className={styles.taskInfoValue}>
@@ -71,4 +71,4 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 	)
 }
 
-export default WorkflowTaskCard 
+export default WorkflowTaskCard
