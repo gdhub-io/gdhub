@@ -1,26 +1,28 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Alert, Button, Checkbox, Col, Drawer, Flex, Grid, Popover, Row, Space, Steps, Typography, Tag } from 'antd'
+import { Alert, Button, Col, Drawer, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import { Dayjs } from 'dayjs'
 import styles from './style.module.scss'
 import WorkflowStepContent from './WorkflowStepContent'
+import WorkflowTaskCard from './WorkflowTaskCard'
 
 const { Title, Text } = Typography
 
 export type ProjectWorkflow = prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
 
-// Расширенный тип задачи с дополнительными свойствами
+// Обновим тип ExtendedTask, добавив поле stage
 type ExtendedTask = {
 	id: string
 	label: string
 	field: string
 	required: boolean
 	completed: boolean
+	stage?: string
 }
 
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
@@ -30,36 +32,39 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const [workflow, setWorkflow] = useState<ProjectWorkflow>()
 	const [drawerVisible, setDrawerVisible] = useState(false)
 	const [popoverVisible, setPopoverVisible] = useState(false)
-	const [mockTasks, setMockTasks] = useState<ExtendedTask[]>([])
+	const [taskStatuses, setTaskStatuses] = useState<Record<string, boolean>>({})
 	const { t } = useTolgee()
 
-	// Инициализация моковых задач
-	useEffect(() => {
-		const tasks: ExtendedTask[] = [
+	// Инициализация моковых задач с полем stage
+	const mockTasks: ExtendedTask[] = useMemo(
+		() => [
 			{
 				id: '1',
-				label: 'Create project documentation',
-				field: 'documentation',
+				label: 'Complete project description',
+				field: 'description',
 				required: true,
-				completed: false,
+				completed: conditionStatus.completed,
+				stage: 'Co-Working',
 			},
 			{
 				id: '2',
-				label: 'Setup development environment',
-				field: 'dev_environment',
-				required: true,
-				completed: true,
+				label: 'Add project team members',
+				field: 'team',
+				required: false,
+				completed: taskStatuses['2'] || false,
+				stage: 'Research v2',
 			},
 			{
 				id: '3',
-				label: 'Schedule kickoff meeting',
-				field: 'kickoff_meeting',
-				required: false,
-				completed: false,
+				label: 'Set project timeline',
+				field: 'timeline',
+				required: true,
+				completed: taskStatuses['3'] || false,
+				stage: 'Co-Working',
 			},
-		]
-		setMockTasks(tasks)
-	}, [])
+		],
+		[conditionStatus.completed, taskStatuses]
+	)
 
 	const { refetch: refetchWorkflowData } = useQuery(
 		['project-workflow', projectId],
@@ -75,7 +80,6 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 			onSuccess({ data }) {
 				setStep(data.currentStep)
 				setWorkflow(data.workflow)
-				// setConditionStatus(data.conditionStatus)
 			},
 		}
 	)
@@ -132,7 +136,13 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 
 	// Обработчик изменения статуса задачи
 	const handleTaskStatusChange = (taskId: string, checked: boolean) => {
-		setMockTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? { ...task, completed: checked } : task)))
+		// Обновляем conditionStatus для задачи с id=1
+		if (taskId === '1') {
+			setConditionStatus((prev: any) => ({ ...prev, completed: checked }))
+		} else {
+			// Для остальных задач обновляем статус в taskStatuses
+			setTaskStatuses((prev) => ({ ...prev, [taskId]: checked }))
+		}
 	}
 
 	const stepsStepsList = (
@@ -148,7 +158,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		</div>
 	)
 
-	if (!workflow || !step) return null
+	if (!workflow) return null
 
 	return (
 		<div className={styles.container}>
@@ -162,7 +172,12 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 							<T keyName="workflow.current-step">Current step</T>
 						</Text>
 						<Title level={2} className={styles.stepName}>
-							{capitalize(t(`workflow.${workflow.title}.step${currentStageIndex + 1}.name`, step.name))}
+							{capitalize(
+								t(
+									`workflow.${workflow.title}.step${currentStageIndex + 1}.name`,
+									workflow.steps[currentStageIndex]?.name
+								)
+							)}
 						</Title>
 					</div>
 					<div className={styles.stepActions}>
@@ -205,7 +220,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 					<Col xs={24} lg={16}>
 						<Space direction="vertical" size={32} style={{ width: '100%' }}>
 							<div className={styles.stepContent}>
-								<WorkflowStepContent step={step} locale={locale} />
+								<WorkflowStepContent step={workflow.steps[currentStageIndex]} locale={locale} />
 							</div>
 
 							{!screens.lg && mockTasks.length > 0 && (
@@ -215,18 +230,15 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 									</Title>
 									<div className={styles.tasksContainer}>
 										{mockTasks.map((task) => (
-											<div key={task.id} className={styles.taskItem}>
-												<Checkbox
-													checked={task.completed}
-													onChange={(e) => handleTaskStatusChange(task.id, e.target.checked)}
-												>
-													<span className={task.completed ? styles.completedTask : ''}>{task.label}</span>
-												</Checkbox>
-												<div>
-													{task.required ? <Tag color="red">Required</Tag> : <Tag color="blue">Optional</Tag>}
-													{task.completed && <Tag color="green">Completed</Tag>}
-												</div>
-											</div>
+											<WorkflowTaskCard
+												key={task.id}
+												id={task.id}
+												label={task.label}
+												stage={task.stage}
+												required={task.required}
+												completed={task.completed}
+												onStatusChange={handleTaskStatusChange}
+											/>
 										))}
 									</div>
 								</div>
@@ -242,18 +254,15 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								{mockTasks.length > 0 ? (
 									<div className={styles.tasksContainer}>
 										{mockTasks.map((task) => (
-											<div key={task.id} className={styles.taskItem}>
-												<Checkbox
-													checked={task.completed}
-													onChange={(e) => handleTaskStatusChange(task.id, e.target.checked)}
-												>
-													<span className={task.completed ? styles.completedTask : ''}>{task.label}</span>
-												</Checkbox>
-												<div>
-													{task.required ? <Tag color="red">Required</Tag> : <Tag color="blue">Optional</Tag>}
-													{task.completed && <Tag color="green">Completed</Tag>}
-												</div>
-											</div>
+											<WorkflowTaskCard
+												key={task.id}
+												id={task.id}
+												label={task.label}
+												stage={task.stage}
+												required={task.required}
+												completed={task.completed}
+												onStatusChange={handleTaskStatusChange}
+											/>
 										))}
 									</div>
 								) : (
