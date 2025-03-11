@@ -9,23 +9,6 @@ class ParamsDto {
 	id: string
 }
 
-// class CreateSeasonStageDto {
-// 	@IsString()
-// 	name: string
-// 	@IsString()
-// 	@IsOptional()
-// 	description?: string
-// 	@IsBoolean()
-// 	isCurrent: boolean
-// 	@IsDateString()
-// 	startedAt: string
-// 	@IsDateString()
-// 	@IsOptional()
-// 	finishedAt?: string
-// 	@IsString()
-// 	seasonId: string
-// }
-
 @NextAuthGuard('user', [prismaClient.UserRole.Admin])
 class ApiLecturerRequestAdminHandler {
 	constructor() {}

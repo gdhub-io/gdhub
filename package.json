@@ -24,7 +24,7 @@
     "@ant-design/icons": "^5.2.6",
     "@daily-co/daily-js": "^0.60.0",
     "@daily-co/daily-react": "^0.17.3",
-    "@gdhub-io/gdhub-prisma": "^1.5.4",
+    "@gdhub-io/gdhub-prisma": "^1.5.5",
     "@gdhub-io/gdhub-typesense": "^1.0.2",
     "@headlessui/react": "1.7.1",
     "@mdxeditor/editor": "^3.11.5",

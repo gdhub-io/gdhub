@@ -12,7 +12,7 @@ class ApiProjectsHandler {
 		return await prisma.project.findMany({
 			where: {
 				status: { in: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
-				workflow: { steps: { some: { isCurrent: true, order: { gt: 0 } } } },
+				workflow: { currentStep: { order: { gt: 0 } } },
 			},
 			include: {
 				author: { select: { name: true } },
@@ -20,7 +20,7 @@ class ApiProjectsHandler {
 					select: {
 						id: true,
 						title: true,
-						steps: { where: { isCurrent: true } },
+						currentStep: true,
 					},
 				},
 			},

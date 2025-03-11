@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { GoArrowLeft } from '@react-icons/all-files/go/GoArrowLeft'
+import { GoListUnordered } from '@react-icons/all-files/go/GoListUnordered'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Alert, Button, Col, Drawer, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
+import { Button, Col, Drawer, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import { Dayjs } from 'dayjs'
 import styles from './style.module.scss'
@@ -17,6 +17,7 @@ export type ProjectWorkflow = prismaClient.ProjectWorkflow & { steps: prismaClie
 
 type ProjctWorkflowWithSteps = ProjectWorkflow & {
 	steps: (prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] })[]
+	currentStep: prismaClient.ProjectWorkflowStep
 }
 
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
@@ -77,8 +78,9 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		}
 	)
 
-	const { mutateAsync: moveProjectToStage, isLoading: isMoving } = useMutation(
-		(data: any) => axios.put<void>(`/api/project/move`, data),
+	const { mutateAsync: moveProjectToStep, isLoading: isMoving } = useMutation(
+		(data: { projectId: string; direction: 'next' | 'previous'; targetStepId?: string }) =>
+			axios.put<void>(`/api/project/move`, data),
 		{
 			onSuccess: () => {
 				refetchWorkflowData()
@@ -86,54 +88,35 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		}
 	)
 
-	const currentStageIndex = useMemo(() => {
-		return workflow?.steps.findIndex((s) => s.id == step?.id) || 0
+	const currentStepIndex = useMemo(() => {
+		return step?.order || 0
 	}, [workflow, step])
 
-	const datePeiodtoText = ({ start, finish }: { start?: Dayjs; finish?: Dayjs }) => {
-		if (!start) return
+	const handlePreviousStep = () => {
+		moveProjectToStep({ projectId, direction: 'previous' })
+	}
 
-		if (finish && start.year() === finish.year()) {
-			return start.format('D MMM') + ' - ' + finish.format('ll')
+	const handleNextStep = () => {
+		moveProjectToStep({ projectId, direction: 'next' })
+	}
+
+	useEffect(() => {
+		const stepTasks = workflow?.steps[currentStepIndex].tasks
+
+		if (!stepTasks || stepTasks.length === 0) {
+			setConditionStatus({ completed: true })
+			return
 		}
 
-		if (finish && start.year() != finish.year()) {
-			return start.format('ll') + ' - ' + finish.format('ll')
+		if (stepTasks.every((t) => t.done)) {
+			setConditionStatus({ completed: true })
 		}
+	}, [workflow?.steps[currentStepIndex].tasks])
 
-		return 'c ' + start.format('ll')
-	}
-
-	const handlePreviousStage = () => {
-		if (!workflow?.steps) return
-
-		const nextStageId = currentStageIndex > 0 ? currentStageIndex - 1 : currentStageIndex
-
-		moveProjectToStage({ projectId, targetStageId: workflow.steps[nextStageId]?.id })
-	}
-
-	const handleNextStage = () => {
-		if (!workflow?.steps) return
-
-		const previousStageId = currentStageIndex < workflow.steps.length ? currentStageIndex + 1 : currentStageIndex
-
-		moveProjectToStage({ projectId, targetStageId: workflow.steps[previousStageId]?.id })
-	}
-
-	const handleSetStage = (stepIndex: number) => {
-		if (!workflow?.steps) return
-		moveProjectToStage({ projectId, targetStageId: workflow.steps[stepIndex]?.id })
-		setPopoverVisible(false)
-		setDrawerVisible(false)
-	}
-
-	// Обработчик изменения статуса задачи
 	const handleTaskStatusChange = (taskId: string, checked: boolean) => {
-		// Обновляем conditionStatus для задачи с id=1
 		if (taskId === '1') {
 			setConditionStatus((prev: any) => ({ ...prev, completed: checked }))
 		} else {
-			// Для остальных задач обновляем статус в taskStatuses
 			setTaskStatuses((prev) => ({ ...prev, [taskId]: checked }))
 		}
 	}
@@ -142,7 +125,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		<div className={styles.stepsWrapper}>
 			<Steps
 				direction="vertical"
-				current={currentStageIndex}
+				current={currentStepIndex}
 				items={workflow?.steps.map((s, idx: number) => ({
 					title: capitalize(t(`workflow.${workflow.title}.step${idx + 1}.name`, s.name)),
 					disabled: true,
@@ -163,32 +146,27 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 						</Text>
 						<Title level={2} className={styles.stepName}>
 							{capitalize(
-								t(
-									`workflow.${workflow.title}.step${currentStageIndex + 1}.name`,
-									workflow.steps[currentStageIndex]?.name
-								)
+								t(`workflow.${workflow.title}.step${currentStepIndex + 1}.name`, workflow.steps[currentStepIndex]?.name)
 							)}
 						</Title>
 					</div>
 					<div className={styles.stepTasks}>
-						{currentStageIndex > 0 && (
-							<Button onClick={handlePreviousStage} disabled={isMoving} icon={<GoArrowLeft />} type="text">
-								<T keyName="workflow.previous-step">Previous</T>
+						{!screens.lg && (
+							<Button type="text" ghost onClick={() => setDrawerVisible(true)}>
+								<T keyName="workflow.all-steps">All steps</T>
 							</Button>
 						)}
-						{!screens.lg && (
-							<Button type="text" onClick={() => setDrawerVisible(true)}>
-								<T keyName="workflow.all-steps">All steps</T>
+						{currentStepIndex > 0 && (
+							<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
+								<T keyName="workflow.previous-step">Previous</T>
 							</Button>
 						)}
 						{screens.lg && (
 							<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
-								<Button type="text">
-									<T keyName="workflow.all-steps">All steps</T>
-								</Button>
+								<Button type="text" icon={<GoListUnordered />} />
 							</Popover>
 						)}
-						{currentStageIndex < workflow.steps.length - 1 && (
+						{currentStepIndex < workflow.steps.length - 1 && (
 							<>
 								{conditionStatus.completed == false ? (
 									<Popover content={t('Tasks are not completed')}>
@@ -197,7 +175,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 										</Button>
 									</Popover>
 								) : (
-									<Button onClick={handleNextStage} disabled={isMoving}>
+									<Button onClick={handleNextStep} disabled={isMoving}>
 										<T keyName="workflow.next-step">Next step</T>
 									</Button>
 								)}
@@ -210,16 +188,16 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 					<Col xs={24} lg={16}>
 						<Space direction="vertical" size={32} style={{ width: '100%' }}>
 							<div className={styles.stepContent}>
-								<WorkflowStepContent step={workflow.steps[currentStageIndex]} locale={locale} />
+								<WorkflowStepContent step={workflow.steps[currentStepIndex]} locale={locale} />
 							</div>
 
-							{!screens.lg && workflow.steps[currentStageIndex].tasks.length > 0 && (
+							{!screens.lg && workflow.steps[currentStepIndex].tasks.length > 0 && (
 								<div className={styles.stepContent}>
 									<Title level={3}>
 										<T keyName="workflow.tasks.title">Tasks</T>
 									</Title>
 									<div className={styles.tasksContainer}>
-										{workflow.steps[currentStageIndex].tasks.map((task) => (
+										{workflow.steps[currentStepIndex].tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
@@ -241,9 +219,9 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<Title level={3}>
 									<T keyName="workflow.tasks.title">Tasks</T>
 								</Title>
-								{workflow.steps[currentStageIndex].tasks.length > 0 ? (
+								{workflow.steps[currentStepIndex].tasks.length > 0 ? (
 									<div className={styles.tasksContainer}>
-										{workflow.steps[currentStageIndex].tasks.map((task) => (
+										{workflow.steps[currentStepIndex].tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
