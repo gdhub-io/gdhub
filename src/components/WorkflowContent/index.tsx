@@ -15,63 +15,56 @@ const { Title, Text } = Typography
 
 export type ProjectWorkflow = prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
 
-// Обновим тип ExtendedTask, добавив поле stage
-type ExtendedTask = {
-	id: string
-	label: string
-	field: string
-	required: boolean
-	completed: boolean
-	stage?: string
+type ProjctWorkflowWithSteps = ProjectWorkflow & {
+	steps: (prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] })[]
 }
 
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
 	const [conditionStatus, setConditionStatus] = useState<any>({ completed: false })
 	const [step, setStep] = useState<prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }>()
-	const [workflow, setWorkflow] = useState<ProjectWorkflow>()
+	const [workflow, setWorkflow] = useState<ProjctWorkflowWithSteps>()
 	const [drawerVisible, setDrawerVisible] = useState(false)
 	const [popoverVisible, setPopoverVisible] = useState(false)
 	const [taskStatuses, setTaskStatuses] = useState<Record<string, boolean>>({})
 	const { t } = useTolgee()
 
-	// Инициализация моковых задач с полем stage
-	const mockTasks: ExtendedTask[] = useMemo(
-		() => [
-			{
-				id: '1',
-				label: 'Complete project description',
-				field: 'description',
-				required: true,
-				completed: conditionStatus.completed,
-				stage: 'Co-Working',
-			},
-			{
-				id: '2',
-				label: 'Add project team members',
-				field: 'team',
-				required: false,
-				completed: taskStatuses['2'] || false,
-				stage: 'Research v2',
-			},
-			{
-				id: '3',
-				label: 'Set project timeline',
-				field: 'timeline',
-				required: true,
-				completed: taskStatuses['3'] || false,
-				stage: 'Co-Working',
-			},
-		],
-		[conditionStatus.completed, taskStatuses]
-	)
+	// const mockTasks: ExtendedTask[] = useMemo(
+	// 	() => [
+	// 		{
+	// 			id: '1',
+	// 			label: 'Complete project description',
+	// 			field: 'description',
+	// 			required: true,
+	// 			completed: conditionStatus.completed,
+	// 			stage: 'Co-Working',
+	// 		},
+	// 		{
+	// 			id: '2',
+	// 			label: 'Add project team members',
+	// 			field: 'team',
+	// 			required: false,
+	// 			completed: taskStatuses['2'] || false,
+	// 			stage: 'Research v2',
+	// 		},
+	// 		{
+	// 			id: '3',
+	// 			label: 'Set project timeline',
+	// 			field: 'timeline',
+	// 			required: true,
+	// 			completed: taskStatuses['3'] || false,
+	// 			stage: 'Co-Working',
+	// 		},
+	// 	],
+	// 	[conditionStatus.completed, taskStatuses]
+	// )
 
 	const { refetch: refetchWorkflowData } = useQuery(
 		['project-workflow', projectId],
 		() =>
 			axios.get<{
 				currentStep: prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }
-				workflow: ProjectWorkflow
+				workflow: ProjctWorkflowWithSteps
 			}>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
@@ -163,9 +156,6 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	return (
 		<div className={styles.container}>
 			<Space direction="vertical" style={{ width: '100%' }}>
-				<Alert showIcon message="This section in development" />
-				<br />
-
 				<Flex justify="space-between" align="center" className={styles.stepHeader}>
 					<div className={styles.stepTitle}>
 						<Text style={{ margin: 0 }}>
@@ -180,7 +170,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 							)}
 						</Title>
 					</div>
-					<div className={styles.stepActions}>
+					<div className={styles.stepTasks}>
 						{currentStageIndex > 0 && (
 							<Button onClick={handlePreviousStage} disabled={isMoving} icon={<GoArrowLeft />} type="text">
 								<T keyName="workflow.previous-step">Previous</T>
@@ -201,7 +191,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 						{currentStageIndex < workflow.steps.length - 1 && (
 							<>
 								{conditionStatus.completed == false ? (
-									<Popover content={t('Actions are not completed')}>
+									<Popover content={t('Tasks are not completed')}>
 										<Button disabled={conditionStatus.completed == false}>
 											<T keyName="workflow.next-step">Next step</T>
 										</Button>
@@ -223,20 +213,20 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<WorkflowStepContent step={workflow.steps[currentStageIndex]} locale={locale} />
 							</div>
 
-							{!screens.lg && mockTasks.length > 0 && (
+							{!screens.lg && workflow.steps[currentStageIndex].tasks.length > 0 && (
 								<div className={styles.stepContent}>
 									<Title level={3}>
-										<T keyName="workflow.actions.title">Actions</T>
+										<T keyName="workflow.tasks.title">Tasks</T>
 									</Title>
 									<div className={styles.tasksContainer}>
-										{mockTasks.map((task) => (
+										{workflow.steps[currentStageIndex].tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
-												label={task.label}
-												stage={task.stage}
+												label={task.description || ''}
+												stage={''}
 												required={task.required}
-												completed={task.completed}
+												completed={task.done}
 												onStatusChange={handleTaskStatusChange}
 											/>
 										))}
@@ -249,18 +239,18 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 						<Col xs={24} lg={8}>
 							<div className={styles.sidebarContent}>
 								<Title level={3}>
-									<T keyName="workflow.actions.title">Actions</T>
+									<T keyName="workflow.tasks.title">Tasks</T>
 								</Title>
-								{mockTasks.length > 0 ? (
+								{workflow.steps[currentStageIndex].tasks.length > 0 ? (
 									<div className={styles.tasksContainer}>
-										{mockTasks.map((task) => (
+										{workflow.steps[currentStageIndex].tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
-												label={task.label}
-												stage={task.stage}
+												label={task.description || ''}
+												stage={''}
 												required={task.required}
-												completed={task.completed}
+												completed={task.done}
 												onStatusChange={handleTaskStatusChange}
 											/>
 										))}
