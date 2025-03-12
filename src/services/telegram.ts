@@ -31,13 +31,9 @@ const newProjectReportsMessageRu = (
 		message += `\n\n<b>Проект ${report.project.name}</b>\n`
 		message += '<i>Опубликовано: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
-		message += report.video
-			? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Прикрепленное видео</a>`
-			: ''
-		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Читать дальше</a>`
+		message += report.video ? `\n<a href="${report.video}">Прикрепленное видео</a>` : ''
+		message += `\n\n<a href="https://gdhub.io/project/${report.project.slug}">На страницу проекта</a>`
 	})
-
-	message += '\n\n<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
 
 	return message
 }
@@ -51,11 +47,9 @@ const newProjectReportsMessageEn = (
 		message += `\n\n<b>Project ${report.project.name}</b>\n`
 		message += '<i>Published: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
-		message += report.video ? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Attached video</a>` : ''
+		message += report.video ? `\n<a href="${report.video}">Attached video</a>` : ''
 		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Read more</a>`
 	})
-
-	message += '\n\n<i>p.s. See the full text of the reports on the project pages.</i>'
 
 	return message
 }
