@@ -22,36 +22,40 @@ dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
 
-const newProjectReportsMessageRu = (reports: any[]) => {
+const newProjectReportsMessageRu = (
+	reports: (prismaClient.ProjectReport & { project: { name: string; slug: string } })[]
+) => {
 	let message = '<b>Новое на проектах сообщества</b>'
 
 	reports.map((report) => {
 		message += `\n\n<b>Проект ${report.project.name}</b>\n`
-		message += '<i>Отчет от: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '- ' + report.content
+		message += '<i>Опубликовано: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
+		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
 		message += report.video
 			? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Прикрепленное видео</a>`
 			: ''
 		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Читать дальше</a>`
 	})
 
-	message += '\n<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
+	message += '\n\n<i>p.s. Полный текст отчетов смотрите на страницах проектов.</i>'
 
 	return message
 }
 
-const newProjectReportsMessageEn = (reports: any[]) => {
+const newProjectReportsMessageEn = (
+	reports: (prismaClient.ProjectReport & { project: { name: string; slug: string } })[]
+) => {
 	let message = '<b>New on games projects</b>'
 
 	reports.map((report) => {
 		message += `\n\n<b>Project ${report.project.name}</b>\n`
-		message += '<i>Report from: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '- ' + report.content
+		message += '<i>Published: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
+		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
 		message += report.video ? `\n<a href="${'https://www.youtube.com/watch?v=' + report.video}">Attached video</a>` : ''
 		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Read more</a>`
 	})
 
-	message += '\n<i>p.s. See the full text of the reports on the project pages.</i>'
+	message += '\n\n<i>p.s. See the full text of the reports on the project pages.</i>'
 
 	return message
 }
@@ -82,8 +86,8 @@ const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
 	projectWithVacancies.map((project) => {
 		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
 
-		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n`
-		message += '- ' + vacancyNames.join('\n- ')
+		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n\n`
+		message += vacancyNames.map((name: string) => `▶ <b>${name}</b>`).join('\n')
 	})
 
 	message +=
@@ -99,7 +103,7 @@ const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
 
 		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Project ${project.name}</a></b>\n`
-		message += '- ' + vacancyNames.join('\n- ')
+		message += vacancyNames.map((name: string) => `▶ <b>${name}</b>`).join('\n')
 	})
 
 	message += '\n\n<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
@@ -220,6 +224,7 @@ export default class TelegramService {
 				publishedAt: { gte: lastLogDate },
 				project: { status: prismaClient.ProjectStatus.Approved },
 			},
+			include: { project: { select: { name: true, slug: true } } },
 		})
 
 		if (reports.length == 0) return { sent: 0 }
