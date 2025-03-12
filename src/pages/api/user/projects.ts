@@ -33,7 +33,7 @@ class ApiUsewrSeasonProjectsHandler {
 					select: {
 						id: true,
 						title: true,
-						steps: { where: { isCurrent: true } },
+						currentStep: true,
 					},
 				},
 			},

@@ -1,3 +1,4 @@
+import QueueBrokerLog from '@/decorators/QueueBrokerLog'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { openAI } from '@/services/openai'
 import { prisma } from '@/services/prisma'
@@ -8,6 +9,7 @@ class ApiQueueTelegramHandler {
 	constructor() {}
 
 	@Post()
+	@QueueBrokerLog('matching-specialist-and-project')
 	public async workerProcessor(@Body() job: { name: string; data: any }) {
 		const { specialityId, projectId, specialistText, projectText } = job.data
 

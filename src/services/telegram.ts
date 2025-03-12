@@ -200,9 +200,24 @@ export default class TelegramService {
 		inLastDays?: number
 		locale?: AvailableLocales
 	}) {
+		const lastLog = await prisma.queueJobLog.findFirst({
+			where: {
+				name: 'new-project-reports',
+				type: prismaClient.QueueJobType.Broker,
+				status: prismaClient.QueueJobStatus.Completed,
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		})
+
+		const lastLogDate = lastLog
+			? dayjs(lastLog.createdAt).add(1, 'second').toDate()
+			: dayjs().subtract(inLastDays, 'd').toDate()
+
 		const reports = await prisma.projectReport.findMany({
 			where: {
-				publishedAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+				publishedAt: { gte: lastLogDate },
 				project: { status: prismaClient.ProjectStatus.Approved },
 			},
 		})
@@ -236,9 +251,24 @@ export default class TelegramService {
 		inLastDays?: number
 		locale?: AvailableLocales
 	}) {
+		const lastLog = await prisma.queueJobLog.findFirst({
+			where: {
+				name: 'new-specialities',
+				type: prismaClient.QueueJobType.Broker,
+				status: prismaClient.QueueJobStatus.Completed,
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		})
+
+		const lastLogDate = lastLog
+			? dayjs(lastLog.createdAt).add(1, 'second').toDate()
+			: dayjs().subtract(inLastDays, 'd').toDate()
+
 		const specialities = await prisma.speciality.findMany({
 			where: {
-				createdAt: { gte: dayjs().subtract(inLastDays, 'd').toDate() },
+				createdAt: { gte: lastLogDate },
 			},
 			include: { user: { include: { profile: true } } },
 		})
@@ -272,13 +302,28 @@ export default class TelegramService {
 		inLastDays?: number
 		locale?: AvailableLocales
 	}) {
+		const lastLog = await prisma.queueJobLog.findFirst({
+			where: {
+				name: 'new-vacancies',
+				type: prismaClient.QueueJobType.Broker,
+				status: prismaClient.QueueJobStatus.Completed,
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		})
+
+		const lastLogDate = lastLog
+			? dayjs(lastLog.createdAt).add(1, 'second').toDate()
+			: dayjs().subtract(inLastDays, 'd').toDate()
+
 		let projectWithVacancies = await prisma.project.findMany({
 			where: {
 				team: {
 					vacancies: {
 						some: {
 							status: prismaClient.TeamVacancyStatus.Published,
-							publishedAt: { gte: dayjs().subtract(inLastDays, 'days').toDate() },
+							publishedAt: { gte: lastLogDate },
 						},
 					},
 				},

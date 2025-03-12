@@ -1,3 +1,4 @@
+import QueueCronLog from '@/decorators/QueueCronLog'
 import { formatNestedJson } from '@/helpers/format'
 import { matchingQueue } from '@/queues/matching.queue'
 import { prisma } from '@/services/prisma'
@@ -23,6 +24,7 @@ class CronMatchingHandlerDto {
 // @NextAuthGuard('public_api')
 class CronMatchingHandler {
 	@Post()
+	@QueueCronLog('matching-specialist-vs-project')
 	public async handler(@Body() { projectId, specialityId, take }: CronMatchingHandlerDto) {
 		const lastUpdatedAt = dayjs().subtract(7, 'days').toDate()
 
