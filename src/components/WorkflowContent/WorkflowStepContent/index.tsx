@@ -42,7 +42,7 @@ const WorkflowStepContent = ({ step, locale = 'en' }: { step: prismaClient.Proje
 		<div className={styles.container}>
 			<Spin spinning={!step}>
 				<Skeleton active title={false} paragraph={{ rows: 4 }} loading={isLoading}>
-					<Render blocks={content?.data} classNames useStyles simpleTitles />
+					<Render emptyBlocks blocks={content?.data} classNames useStyles simpleTitles />
 				</Skeleton>
 			</Spin>
 		</div>

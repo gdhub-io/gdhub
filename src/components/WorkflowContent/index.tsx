@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { GoListUnordered } from '@react-icons/all-files/go/GoListUnordered'
+import { CiViewList } from '@react-icons/all-files/ci/CiViewList'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Drawer, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
-import { Dayjs } from 'dayjs'
 import styles from './style.module.scss'
 import WorkflowStepContent from './WorkflowStepContent'
 import WorkflowTaskCard from './WorkflowTaskCard'
@@ -163,7 +162,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 						)}
 						{screens.lg && (
 							<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
-								<Button type="text" icon={<GoListUnordered />} />
+								<Button type="text" icon={<CiViewList size={24} />} />
 							</Popover>
 						)}
 						{currentStepIndex < workflow.steps.length - 1 && (

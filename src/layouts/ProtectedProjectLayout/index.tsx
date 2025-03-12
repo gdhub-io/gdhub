@@ -172,7 +172,7 @@ export const ProtectedProjectLayout = ({
 		// },
 		{
 			key: `/my/projects/${projectSlug}`,
-			label: <Link href={`/my/projects/${projectSlug}/devlog`}>{t('app.user-project.menu.overview', 'Devlog')}</Link>,
+			label: <Link href={`/my/projects/${projectSlug}`}>{t('app.user-project.menu.overview', 'Devlog')}</Link>,
 		},
 		{
 			key: `/my/projects/${projectSlug}/vacancies`,

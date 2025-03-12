@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
-import { DownOutlined, UpOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { AiOutlineDown } from '@react-icons/all-files/ai/AiOutlineDown'
+import { AiOutlineUp } from '@react-icons/all-files/ai/AiOutlineUp'
 import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -324,11 +325,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 								<a onClick={(e) => setShowOptionalFields((prev) => !prev)}>
 									<Space>
 										{showOptionalFields ? <T>Hide additional fields</T> : <T>Fill additional fields</T>}
-										{showOptionalFields ? (
-											<UpOutlined onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-										) : (
-											<DownOutlined onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-										)}
+										{showOptionalFields ? <AiOutlineUp /> : <AiOutlineDown />}
 									</Space>
 								</a>
 							</Space>
