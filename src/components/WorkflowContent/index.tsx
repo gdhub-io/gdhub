@@ -87,7 +87,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		}
 	)
 
-	const currentStepIndex = useMemo(() => {
+	const currentStepOrder = useMemo(() => {
 		return step?.order || 0
 	}, [workflow, step])
 
@@ -100,7 +100,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	}
 
 	useEffect(() => {
-		const stepTasks = workflow?.steps[currentStepIndex].tasks
+		const stepTasks = workflow?.steps[currentStepOrder].tasks
 
 		if (!stepTasks || stepTasks.length === 0) {
 			setConditionStatus({ completed: true })
@@ -110,7 +110,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		if (stepTasks.every((t) => t.done)) {
 			setConditionStatus({ completed: true })
 		}
-	}, [workflow?.steps[currentStepIndex].tasks])
+	}, [workflow?.steps[currentStepOrder].tasks])
 
 	const handleTaskStatusChange = (taskId: string, checked: boolean) => {
 		if (taskId === '1') {
@@ -124,8 +124,9 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		<div className={styles.stepsWrapper}>
 			<Steps
 				direction="vertical"
-				current={currentStepIndex}
+				current={currentStepOrder}
 				items={workflow?.steps.map((s, idx: number) => ({
+					key: s.id,
 					title: capitalize(t(`workflow.${workflow.title}.step${idx + 1}.name`, s.name)),
 					disabled: true,
 				}))}
@@ -145,7 +146,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 						</Text>
 						<Title level={2} className={styles.stepName}>
 							{capitalize(
-								t(`workflow.${workflow.title}.step${currentStepIndex + 1}.name`, workflow.steps[currentStepIndex]?.name)
+								t(`workflow.${workflow.title}.step${currentStepOrder + 1}.name`, workflow.steps[currentStepOrder]?.name)
 							)}
 						</Title>
 					</div>
@@ -155,7 +156,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<T keyName="workflow.all-steps">All steps</T>
 							</Button>
 						)}
-						{currentStepIndex > 0 && (
+						{currentStepOrder > 0 && (
 							<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
 								<T keyName="workflow.previous-step">Previous</T>
 							</Button>
@@ -165,7 +166,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<Button type="text" icon={<CiViewList size={24} />} />
 							</Popover>
 						)}
-						{currentStepIndex < workflow.steps.length - 1 && (
+						{currentStepOrder < workflow.steps.length - 1 && (
 							<>
 								{conditionStatus.completed == false ? (
 									<Popover content={t('Tasks are not completed')}>
@@ -187,16 +188,16 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 					<Col xs={24} lg={16}>
 						<Space direction="vertical" size={32} style={{ width: '100%' }}>
 							<div className={styles.stepContent}>
-								<WorkflowStepContent step={workflow.steps[currentStepIndex]} locale={locale} />
+								<WorkflowStepContent step={workflow.steps[currentStepOrder]} locale={locale} />
 							</div>
 
-							{!screens.lg && workflow.steps[currentStepIndex].tasks.length > 0 && (
+							{!screens.lg && workflow.steps[currentStepOrder].tasks.length > 0 && (
 								<div className={styles.stepContent}>
 									<Title level={3}>
 										<T keyName="workflow.tasks.title">Tasks</T>
 									</Title>
 									<div className={styles.tasksContainer}>
-										{workflow.steps[currentStepIndex].tasks.map((task) => (
+										{workflow.steps[currentStepOrder].tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
@@ -218,9 +219,9 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<Title level={3}>
 									<T keyName="workflow.tasks.title">Tasks</T>
 								</Title>
-								{workflow.steps[currentStepIndex].tasks.length > 0 ? (
+								{workflow.steps[currentStepOrder].tasks.length > 0 ? (
 									<div className={styles.tasksContainer}>
-										{workflow.steps[currentStepIndex].tasks.map((task) => (
+										{workflow.steps[currentStepOrder].tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
