@@ -119,7 +119,6 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	}
 
 	const functionOkButton = async () => {
-		debugger
 		if (!session?.data) {
 			router.push('/signin?callbackUrl=' + router.asPath)
 		}
