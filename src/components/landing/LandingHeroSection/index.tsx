@@ -7,7 +7,7 @@ import Link from 'next/link'
 import styles from './style.module.scss'
 import { HeroStats } from '../HeroStats'
 
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
 
 export const LandingHeroSection = ({
 	stats,
