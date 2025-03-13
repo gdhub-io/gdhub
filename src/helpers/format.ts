@@ -56,6 +56,11 @@ export const getServerLocale = (req: NextApiRequestWithUser | NextApiRequest) =>
 		const [fullLocale] = acceptLanguage?.split(';')
 		locale = fullLocale.split(',')[1]
 		locale = locale.split('-')[0]
+
+		// check allowed locales
+		if (Object.values(AvailableLocales).includes(locale as any) == false) {
+			locale = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE')
+		}
 	}
 
 	return (locale as AvailableLocales) || AvailableLocales.en
