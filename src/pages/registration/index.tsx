@@ -80,7 +80,9 @@ const RegistrationPage: NextPage = () => {
 
 		await signIn(
 			'google',
-			{ callbackUrl: `/registration/onboarding?provider=google${router.query?.for ? '?for=' + router.query.for : ''}` },
+			{
+				callbackUrl: `/registration/onboarding?locale=${getLanguage()}&provider=google${router.query?.for ? '?for=' + router.query.for : ''}`,
+			},
 			{ prompt: 'select_account consent' }
 		)
 
