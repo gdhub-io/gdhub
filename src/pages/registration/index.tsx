@@ -49,7 +49,7 @@ const RegistrationPage: NextPage = () => {
 		const response = await signIn('email', {
 			email,
 			redirect: false,
-			callbackUrl: `/registration/onboarding?locale=${getLanguage()}&provider=email${router.query?.for ? '&for=' + router.query.for : ''}`,
+			callbackUrl: `/registration/onboarding?locale=${getLanguage() || 'en'}&provider=email${router.query?.for ? '&for=' + router.query.for : ''}`,
 		})
 
 		if (response?.ok) {
@@ -80,7 +80,9 @@ const RegistrationPage: NextPage = () => {
 
 		await signIn(
 			'google',
-			{ callbackUrl: `/registration/onboarding?provider=google${router.query?.for ? '?for=' + router.query.for : ''}` },
+			{
+				callbackUrl: `/registration/onboarding?locale=${getLanguage()}&provider=google${router.query?.for ? '?for=' + router.query.for : ''}`,
+			},
 			{ prompt: 'select_account consent' }
 		)
 
