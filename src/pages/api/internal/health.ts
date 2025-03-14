@@ -1,9 +1,18 @@
 import { prisma } from '@/services/prisma'
+import SanityService from '@/services/sanity'
+import TelegramService from '@/services/telegram'
 import { SearchEngineService } from '@/services/typesense'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { createHandler, Get } from 'next-api-decorators'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	if (req.method === 'GET') {
+class ApiHealthyHandler {
+	constructor(
+		private readonly telegramService = TelegramService.init(),
+		private readonly sanityService = SanityService
+	) {}
+
+	@Get()
+	async handler(req: NextApiRequest, res: NextApiResponse) {
 		// check if database is healthy
 		const dbResult = await prisma.$isHealthy()
 
@@ -16,22 +25,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		const typesenseService = await SearchEngineService.init()
 		const typesenseResult = await typesenseService.client.health.retrieve()
 
-		const total = dbResult && httpResult.ok && tolgeeResult.ok && typesenseResult.ok
+		const telegramResult = await this.telegramService.health()
+		const sanityResult = await this.sanityService.health()
 
-		return res.json({
+		const total =
+			dbResult && httpResult.ok && tolgeeResult.ok && typesenseResult.ok && telegramResult.ok && sanityResult.ok
+
+		return {
 			healthy: total,
 			services: {
 				'server[http]': httpResult.ok,
 				'db[postgres]': dbResult,
 				'translate[tolgee]': tolgeeResult.ok,
 				'search[typesense]': typesenseResult.ok,
-				'chat[telegram]': '',
-				'images[sanity]': '',
+				'chat[telegram]': telegramResult.ok,
+				'images[sanity]': sanityResult.ok,
 				'queue[redis]': '',
 				'notifications[novu]': '',
 				'ai[openai]': '',
 				'email[brevo]': '',
 			},
-		})
+		}
 	}
 }
+
+export default createHandler(ApiHealthyHandler)

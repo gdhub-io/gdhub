@@ -8,102 +8,17 @@ import { env } from '@/helpers/env'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import localeData from 'dayjs/plugin/localeData'
-import localizedFormat from 'dayjs/plugin/localizedFormat'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import weekday from 'dayjs/plugin/weekday'
 import { parseInline } from 'marked'
 import fetch from 'node-fetch'
-import { prisma } from './prisma'
-
-dayjs.extend(localizedFormat)
-dayjs.extend(localeData)
-dayjs.extend(relativeTime)
-dayjs.extend(weekday)
-dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
-
-const newProjectReportsMessageRu = (
-	reports: (prismaClient.ProjectReport & { project: { name: string; slug: string } })[]
-) => {
-	let message = '<b>Новое на проектах сообщества</b>'
-
-	reports.map((report) => {
-		message += `\n\n<b>Проект ${report.project.name}</b>\n`
-		message += '<i>Опубликовано: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
-		message += report.video ? `\n<a href="${report.video}">Прикрепленное видео</a>` : ''
-		message += `\n\n<a href="https://gdhub.io/project/${report.project.slug}">На страницу проекта</a>`
-	})
-
-	return message
-}
-
-const newProjectReportsMessageEn = (
-	reports: (prismaClient.ProjectReport & { project: { name: string; slug: string } })[]
-) => {
-	let message = '<b>New on games projects</b>'
-
-	reports.map((report) => {
-		message += `\n\n<b>Project ${report.project.name}</b>\n`
-		message += '<i>Published: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
-		message += report.video ? `\n<a href="${report.video}">Attached video</a>` : ''
-		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Read more</a>`
-	})
-
-	return message
-}
-
-const newSpecialitiesMessageRu = (specialities: any[]) => {
-	let message = `<b>Новые участники сообщества</b>\n\nК сообществу присоединилось <b>+${specialities.length} участника</b> имеющие такие специальности, как:\n- `
-	message += specialities
-		.map((r) => `${r.name} (${r.level})${r.specialization ? '\n' + r.specialization : ''}`)
-		.join(';\n- ')
-	message += '\n\nДобро пожаловать в наш хаб!'
-
-	return message
-}
-
-const newSpecialitiesMessageEn = (specialities: any[]) => {
-	let message = `<b>New members</b>\n\n<b>+${specialities.length} members</b> have joined the community with specialties such as:\n- `
-	message += specialities
-		.map((r) => `${r.name} (${r.level})${r.specialization ? '\n' + r.specialization : ''}`)
-		.join(';\n- ')
-	message += '\n\nWelcome to our hub!'
-
-	return message
-}
-
-const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
-	let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
-
-	projectWithVacancies.map((project) => {
-		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
-
-		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n\n`
-		message += vacancyNames.map((name: string) => `▶ <b>${name}</b>`).join('\n')
-	})
-
-	message +=
-		'\n\n<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
-
-	return message
-}
-
-const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
-	let message = '🔥 <b>New vacancies for community projects</b>'
-
-	projectWithVacancies.map((project) => {
-		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
-
-		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Project ${project.name}</a></b>\n`
-		message += vacancyNames.map((name: string) => `▶ <b>${name}</b>`).join('\n')
-	})
-
-	message += '\n\n<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
-
-	return message
-}
+import {
+	newProjectReportsMessageEn,
+	newProjectReportsMessageRu,
+	newSpecialitiesMessageEn,
+	newSpecialitiesMessageRu,
+	newVacanciesMessageEn,
+	newVacanciesMessageRu,
+} from './messages'
+import { prisma } from '../prisma'
 
 export default class TelegramService {
 	private apiUrl: string
@@ -115,6 +30,24 @@ export default class TelegramService {
 	static init(botToken?: string) {
 		const defaultBotToken = process.env.TELEGRAM_BOT_TOKEN as string
 		return new TelegramService({ botToken: botToken || defaultBotToken })
+	}
+
+	async health() {
+		try {
+			const res = await axios.post(`${this.apiUrl}/getMe`)
+
+			if (!res.data) {
+				console.error('Telegram getMe response is wrong')
+				return { ok: false }
+			}
+
+			console.log(res)
+
+			return { ok: res.status == 200 }
+		} catch (error: any) {
+			console.log(error)
+			return { ok: false }
+		}
 	}
 
 	async sendMessage({

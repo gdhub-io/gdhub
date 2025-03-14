@@ -11,9 +11,19 @@ export default class SanityService {
 		})
 	}
 
+	static async health() {
+		const client = this.initClient()
+		const res = await client.users.getById('me')
+
+		console.log('[sanity, health]', res)
+
+		return { ok: Boolean(res) }
+	}
+
 	static async uploadImage(newFilename: string, fileBuffer: Buffer, tag?: string) {
 		try {
 			const client = this.initClient()
+
 			const response = await client.assets.upload('image', fileBuffer, { filename: newFilename })
 
 			return {
