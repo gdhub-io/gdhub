@@ -4,6 +4,7 @@ export type ContextProject = {
 	id: string
 	name: string
 	teamId: string
+	isProjectAuthor: boolean
 }
 
 export const ProjectContext = createContext<

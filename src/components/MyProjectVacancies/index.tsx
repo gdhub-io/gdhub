@@ -1,15 +1,19 @@
 import { useContext, useState } from 'react'
 import VacancyModal from '@/components/modals/VacancyModal'
+import ModernTable from '@/components/ModernTable'
+import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { HiOutlineLockClosed } from '@react-icons/all-files/hi/HiOutlineLockClosed'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Flex, Grid, message, Popconfirm, Space, Table, Tag } from 'antd'
+import { Button, Flex, Grid, message, Popconfirm, Space, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import VacancyArchiveModal from '../modals/VacancyArchiveModal'
+
+const { Text } = Typography
 
 interface Vacancy {
 	key: string
@@ -55,14 +59,20 @@ const MyProjectVacancies = () => {
 			key: 'title',
 			width: '50%',
 			render: (value, data) => (
-				<>
-					<span onClick={() => handleEditVacancy(data.id)}>{value}</span>{' '}
+				<Space direction="vertical" size={0}>
+					<Text
+						className={tableStyles.tableMemberName}
+						onClick={() => handleEditVacancy(data.id)}
+						style={{ cursor: 'pointer' }}
+					>
+						{value}
+					</Text>
 					{data.status == 'Draft' && (
 						<Tag color="lime">
 							<T keyName={data.status} />
 						</Tag>
 					)}
-				</>
+				</Space>
 			),
 		},
 		{
@@ -70,13 +80,17 @@ const MyProjectVacancies = () => {
 			dataIndex: 'direction',
 			key: 'direction',
 			responsive: ['md'],
+			render: (value) => <Text className={tableStyles.tableMemberPosition}>{value}</Text>,
 		},
 		{
 			title: t('Valid until'),
 			dataIndex: 'finishedAt',
 			key: 'finishedAt',
 			responsive: ['md'],
-			render: (value) => (value ? t('to') + ' ' + dayjs(value).format('LLL') : undefined),
+			render: (value) =>
+				value ? (
+					<Text className={tableStyles.tableMemberDates}>{t('to') + ' ' + dayjs(value).format('LLL')}</Text>
+				) : null,
 		},
 		{
 			key: 'actions',
@@ -133,7 +147,7 @@ const MyProjectVacancies = () => {
 
 	return (
 		<>
-			<Flex justify="space-between" style={{ marginTop: 60 }}>
+			<Flex justify="space-between" align="center" style={{ marginTop: 60 }}>
 				<Space align="center">
 					<h3 style={{ margin: 0 }}>
 						<T>Vacancies</T>
@@ -148,10 +162,9 @@ const MyProjectVacancies = () => {
 			</Flex>
 
 			{projectVacancies?.data.length > 0 ? (
-				<Table
+				<ModernTable
 					showHeader={false}
 					loading={isLoadingMyMyProjectVacancies}
-					style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
 					columns={vacanciesColumns}
 					dataSource={projectVacancies?.data?.map((m: any) => ({ ...m, key: m.id }))}
 					pagination={false}
