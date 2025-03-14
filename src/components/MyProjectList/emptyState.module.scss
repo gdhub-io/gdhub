@@ -1,0 +1,81 @@
+.emptyStateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #fafafa;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.imageContainer {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  margin-bottom: 16px !important;
+}
+
+.description {
+  max-width: 500px;
+  margin-bottom: 24px !important;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 16px;
+}
+
+.actionsContainer {
+  margin-bottom: 24px;
+}
+
+.createButton {
+  background: linear-gradient(90deg, #1677ff 0%, #4096ff 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.2);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(22, 119, 255, 0.3);
+  }
+}
+
+.joinButton {
+  border: 1px solid #1677ff;
+  color: #1677ff;
+  background: transparent;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(22, 119, 255, 0.05);
+    transform: translateY(-2px);
+  }
+}
+
+.infoBox {
+  display: flex;
+  align-items: flex-start;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 500px;
+}
+
+.infoIcon {
+  font-size: 24px;
+  color: #1677ff;
+  margin-right: 12px;
+  margin-top: 2px;
+}
+
+.infoText {
+  margin-bottom: 0 !important;
+  color: #0050b3;
+  font-size: 14px;
+  text-align: left;
+}

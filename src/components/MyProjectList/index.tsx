@@ -4,6 +4,7 @@ import { useTolgee } from '@tolgee/react'
 import { Button, Empty, Flex, Space, Spin, Typography } from 'antd'
 import { Row, Col } from 'antd'
 import axios from 'axios'
+import EmptyProjectsState from './EmptyProjectsState'
 import styles from './styles.module.scss'
 import GameCard from '../GameCard'
 import CreateProjectModal from '../modals/CreateProjectModal'
@@ -32,7 +33,7 @@ const MyProjectList: React.FC = () => {
 
 	return (
 		<div className={styles.userProjectsContainer}>
-			<Flex justify="space-between">
+			<Flex justify="space-between" wrap>
 				<Title level={2}>{t('page.hub.user-projects', 'My Projects')}</Title>
 
 				<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
@@ -41,10 +42,12 @@ const MyProjectList: React.FC = () => {
 			</Flex>
 
 			{!isSuccess || !projects?.data || projects.data.length === 0 ? (
-				<Empty description="No user projects found" />
+				<EmptyProjectsState onCreateProject={() => setOpenCreateProjectModal(true)} />
 			) : undefined}
 
-			{error ? <Empty description="Failed to load user projects" /> : undefined}
+			{error ? (
+				<Empty description={t('page.hub.user-projects.load-error', 'Failed to load user projects')} />
+			) : undefined}
 
 			<Row gutter={[24, 24]} className={styles.projectsGrid}>
 				{projects?.data.map((project: any) => (

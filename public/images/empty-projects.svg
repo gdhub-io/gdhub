@@ -1,0 +1,36 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="70" fill="#f0f0f0" opacity="0.5" />
+  
+  <!-- Game controller outline -->
+  <path d="M130 80C130 74 125 70 120 70H80C75 70 70 74 70 80V110C70 116 75 120 80 120H120C125 120 130 116 130 110V80Z" 
+    stroke="#909090" strokeWidth="3" fill="none" />
+  
+  <!-- Controller buttons -->
+  <circle cx="110" cy="90" r="5" fill="#909090" />
+  <circle cx="120" cy="100" r="5" fill="#909090" />
+  <rect x="80" y="95" width="10" height="3" rx="1.5" fill="#909090" />
+  <rect x="83.5" y="91.5" width="10" height="3" rx="1.5" transform="rotate(90 83.5 91.5)" fill="#909090" />
+  
+  <!-- Code brackets (representing development) -->
+  <path d="M50 70L40 90L50 110" stroke="#909090" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+  <path d="M150 70L160 90L150 110" stroke="#909090" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+  
+  <!-- Connecting arrow (from idea to implementation) -->
+  <path d="M60 130C80 150 120 150 140 130" stroke="#909090" strokeWidth="2" strokeDasharray="4 2" />
+  <path d="M140 130L150 120L150 140Z" fill="#909090" />
+  
+  <!-- Document/design element -->
+  <rect x="70" y="30" width="30" height="40" rx="2" fill="white" stroke="#909090" strokeWidth="2" />
+  <path d="M75 40H95M75 50H90M75 60H85" stroke="#909090" strokeWidth="1.5" strokeLinecap="round" />
+  
+  <!-- Gear (representing development process) -->
+  <circle cx="140" cy="50" r="15" fill="white" stroke="#909090" strokeWidth="2" />
+  <path d="M140 35V40M140 60V65M155 50H150M130 50H125M150 40L147 43M130 60L133 57M150 60L147 57M130 40L133 43" 
+    stroke="#909090" strokeWidth="2" strokeLinecap="round" />
+  
+  <!-- Small decorative elements -->
+  <circle cx="40" cy="40" r="4" fill="#909090" />
+  <circle cx="160" cy="160" r="4" fill="#909090" />
+  <path d="M40 160L45 155L50 160L45 165Z" fill="#909090" />
+</svg> 
