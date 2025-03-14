@@ -1,11 +1,15 @@
 import { prisma } from '@/services/prisma'
+import SanityService from '@/services/sanity'
 import TelegramService from '@/services/telegram'
 import { SearchEngineService } from '@/services/typesense'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createHandler, Get } from 'next-api-decorators'
 
 class ApiHealthyHandler {
-	constructor(private readonly telegramService = TelegramService.init()) {}
+	constructor(
+		private readonly telegramService = TelegramService.init(),
+		private readonly sanityService = SanityService
+	) {}
 
 	@Get()
 	async handler(req: NextApiRequest, res: NextApiResponse) {
@@ -22,8 +26,10 @@ class ApiHealthyHandler {
 		const typesenseResult = await typesenseService.client.health.retrieve()
 
 		const telegramResult = await this.telegramService.health()
+		const sanityResult = await this.sanityService.health()
 
-		const total = dbResult && httpResult.ok && tolgeeResult.ok && typesenseResult.ok
+		const total =
+			dbResult && httpResult.ok && tolgeeResult.ok && typesenseResult.ok && telegramResult.ok && sanityResult.ok
 
 		return {
 			healthy: total,
@@ -33,7 +39,7 @@ class ApiHealthyHandler {
 				'translate[tolgee]': tolgeeResult.ok,
 				'search[typesense]': typesenseResult.ok,
 				'chat[telegram]': telegramResult.ok,
-				'images[sanity]': '',
+				'images[sanity]': sanityResult.ok,
 				'queue[redis]': '',
 				'notifications[novu]': '',
 				'ai[openai]': '',
