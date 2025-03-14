@@ -30,14 +30,6 @@ const MyProjectList: React.FC = () => {
 		)
 	}
 
-	if (error) {
-		return <Empty description="Failed to load user projects" />
-	}
-
-	if (!isSuccess || !projects?.data || projects.data.length === 0) {
-		return <Empty description="No user projects found" />
-	}
-
 	return (
 		<div className={styles.userProjectsContainer}>
 			<Flex justify="space-between">
@@ -48,8 +40,14 @@ const MyProjectList: React.FC = () => {
 				</Button>
 			</Flex>
 
+			{!isSuccess || !projects?.data || projects.data.length === 0 ? (
+				<Empty description="No user projects found" />
+			) : undefined}
+
+			{error ? <Empty description="Failed to load user projects" /> : undefined}
+
 			<Row gutter={[24, 24]} className={styles.projectsGrid}>
-				{projects.data.map((project: any) => (
+				{projects?.data.map((project: any) => (
 					<Col key={project.id} xs={24} sm={12} md={8} lg={6} xl={6}>
 						<GameCard
 							id={project.id}
