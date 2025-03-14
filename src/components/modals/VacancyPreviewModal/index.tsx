@@ -124,11 +124,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			router.push('/signin?callbackUrl=' + router.asPath)
 		}
 
-		if (!hasRole(prismaClient.UserRole.Guest, session)) {
-			return vacancy?.data.myTeamMemberId
-				? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
-				: setShowSpecialitySelectModal(true)
-		}
+		return vacancy?.data.myTeamMemberId
+			? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
+			: setShowSpecialitySelectModal(true)
 
 		return null
 	}
