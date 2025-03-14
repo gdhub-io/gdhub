@@ -30,6 +30,7 @@ import {
 	Space,
 	Typography,
 } from 'antd'
+import { ItemType } from 'antd/es/menu/interface'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
 import Image from 'next/image'
@@ -64,6 +65,7 @@ export const ProtectedProjectLayout = ({
 	const { changeLanguage, getLanguage } = useTolgee()
 
 	const { project, isFetched } = useCurrentProject()
+	const isProjectAuthor = useMemo(() => project?.authorId === session?.user.id, [project, session])
 
 	useEffect(() => {
 		if (!project) return
@@ -165,27 +167,31 @@ export const ProtectedProjectLayout = ({
 		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
 	}, [isOpenedInTelegram, screens, session])
 
-	const menuItems: MenuProps['items'] = [
+	const menuItems: (ItemType & { disabled: boolean })[] = [
 		// {
 		// 	key: `/my/projects/${projectSlug}`,
 		// 	label: <Link href={`/my/projects/${projectSlug}`}>{t('app.user-project.menu.workflow', 'Workflow')}</Link>,
 		// },
 		{
 			key: `/my/projects/${projectSlug}`,
+			disabled: false,
 			label: <Link href={`/my/projects/${projectSlug}`}>{t('app.user-project.menu.overview', 'Devlog')}</Link>,
 		},
 		{
 			key: `/my/projects/${projectSlug}/vacancies`,
+			disabled: !isProjectAuthor,
 			label: (
 				<Link href={`/my/projects/${projectSlug}/vacancies`}>{t('app.user-project.menu.vacancies', 'Vacancies')}</Link>
 			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/team`,
+			disabled: false,
 			label: <Link href={`/my/projects/${projectSlug}/team`}>{t('app.user-project.menu.team', 'Team')}</Link>,
 		},
 		{
 			key: `/my/projects/${projectSlug}/settings`,
+			disabled: !isProjectAuthor,
 			label: <Link href={`/my/projects/${projectSlug}/settings`}>{t('app.user.menu.settings', 'Settings')}</Link>,
 		},
 	]
@@ -276,7 +282,12 @@ export const ProtectedProjectLayout = ({
 						</Row>
 						{/* </Flex> */}
 						{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
-						<Menu items={menuItems} mode="horizontal" selectedKeys={[router.asPath]} className={styles.appMenu} />
+						<Menu
+							items={menuItems.filter((r) => !r.disabled)}
+							mode="horizontal"
+							selectedKeys={[router.asPath]}
+							className={styles.appMenu}
+						/>
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>

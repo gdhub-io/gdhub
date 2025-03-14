@@ -19,7 +19,18 @@ class ApiUsewrSeasonProjectsHandler {
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { status }: UserSeasonProjectsDto) {
 		const projects = await prisma.project.findMany({
 			where: {
-				authorId: req.user.id,
+				OR: [
+					{ authorId: req.user.id },
+					{
+						team: {
+							members: {
+								some: {
+									userId: req.user.id,
+								},
+							},
+						},
+					},
+				],
 				status: status ? { equals: status } : undefined,
 			},
 			select: {
