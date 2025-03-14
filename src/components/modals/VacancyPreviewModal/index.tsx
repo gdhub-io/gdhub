@@ -43,6 +43,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			}),
 		{
 			enabled: !!vacancyId && !!session?.data,
+			refetchOnWindowFocus: false,
 		}
 	)
 
@@ -194,7 +195,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				</Spin>
 			</Modal>
 
-			{session && (
+			{Boolean(session?.data) && (
 				<SpecialitySelectModal
 					open={showSpecialitySelectModal}
 					onOk={handleSpecialitySelect}

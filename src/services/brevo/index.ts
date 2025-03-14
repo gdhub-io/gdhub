@@ -8,7 +8,10 @@ declare global {
 let brevoApi: Api<any>
 
 function createBrevoClient() {
-	return new Api({ baseApiParams: { headers: { 'api-key': process.env.BREVO_API_KEY as string } } })
+	return new Api({
+		baseUrl: 'https://api.brevo.com/v3',
+		baseApiParams: { headers: { 'api-key': process.env.BREVO_API_KEY as string } },
+	})
 }
 
 if (process.env.NODE_ENV === 'production') {
