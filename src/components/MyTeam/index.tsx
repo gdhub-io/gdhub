@@ -1,5 +1,6 @@
 import { useContext } from 'react'
-import ModernTable from '@/components/common/ModernTable'
+import ModernTable from '@/components/ModernTable'
+import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -8,7 +9,6 @@ import { Button, Grid, message, Flex, Typography, Tag, Space } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 
 const { Text } = Typography
 
