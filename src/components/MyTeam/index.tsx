@@ -1,4 +1,5 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
+import InviteMemberModal from '@/components/modals/InviteMemberModal'
 import ModernTable from '@/components/ModernTable'
 import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
@@ -16,6 +17,7 @@ const MyTeam = () => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 	const contextProject = useContext(ProjectContext)?.contextProject
+	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 
 	const {
 		data: team,
@@ -55,6 +57,19 @@ const MyTeam = () => {
 
 			message.error(error.message)
 		}
+	}
+
+	const handleOpenInviteModal = () => {
+		setIsInviteModalOpen(true)
+	}
+
+	const handleCloseInviteModal = () => {
+		setIsInviteModalOpen(false)
+	}
+
+	const handleInviteSuccess = () => {
+		setIsInviteModalOpen(false)
+		fetchMyTeam()
 	}
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
@@ -144,8 +159,8 @@ const MyTeam = () => {
 					<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
 
 					{contextProject?.isProjectAuthor && (
-						<Button type="primary">
-							<T>Join Member</T>
+						<Button type="primary" onClick={handleOpenInviteModal}>
+							<T>Invite Member</T>
 						</Button>
 					)}
 				</Flex>
@@ -156,6 +171,15 @@ const MyTeam = () => {
 				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}
 			/>
+
+			{contextProject?.teamId && (
+				<InviteMemberModal
+					teamId={contextProject.teamId}
+					open={isInviteModalOpen}
+					onOk={handleInviteSuccess}
+					onCancel={handleCloseInviteModal}
+				/>
+			)}
 		</>
 	)
 }

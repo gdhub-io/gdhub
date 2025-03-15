@@ -1,6 +1,10 @@
+import { useEffect, useState } from 'react'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
-import { T } from '@tolgee/react'
-import { Typography, Space, Button, Grid } from 'antd'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTolgee } from '@tolgee/react'
+import { Button, Grid, Spin } from 'antd'
+import { Typography, Space } from 'antd'
+import axios from 'axios'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
@@ -9,9 +13,61 @@ const { Title } = Typography
 export const OnboardingCompleted = () => {
 	const router = useRouter()
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
+	const { pendingInvitation } = router.query
+	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false)
 
-	const handleGoToApp = () => {
-		router.push('/hub')
+	// Проверяем, есть ли ожидающие приглашения
+	const { data: user, isLoading: isLoadingUser } = useQuery(['user', 'current'], () => axios.get('/api/user/me'), {
+		enabled: !pendingInvitation, // Не запрашиваем, если есть pendingInvitation в URL
+		refetchOnWindowFocus: false,
+	})
+
+	// Мутация для обработки ожидающего приглашения
+	const { mutate: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
+		(invitationId: string) =>
+			axios.get(`/api/user/project/team/complete-pending-invitation?invitationId=${invitationId}`),
+		{
+			onSuccess: (response) => {
+				if (response.data.redirect) {
+					router.push(response.data.redirect)
+				} else {
+					router.push('/hub')
+				}
+			},
+			onError: () => {
+				// В случае ошибки просто перенаправляем на главную страницу
+				router.push('/hub')
+			},
+		}
+	)
+
+	// Обрабатываем приглашение из URL параметра
+	useEffect(() => {
+		if (pendingInvitation && !isProcessingInvitation) {
+			setIsProcessingInvitation(true)
+			completePendingInvitation(pendingInvitation as string)
+		}
+	}, [pendingInvitation])
+
+	// Проверяем наличие ожидающих приглашений в профиле пользователя
+	useEffect(() => {
+		if (user?.data && user.data.pendingTeamInvitations?.length > 0 && !isProcessingInvitation) {
+			const firstPendingInvitation = user.data.pendingTeamInvitations[0]
+			if (firstPendingInvitation.invitationId) {
+				setIsProcessingInvitation(true)
+				completePendingInvitation(firstPendingInvitation.invitationId)
+			}
+		}
+	}, [user])
+
+	// Если обрабатываем приглашение, показываем спиннер
+	if (isProcessingInvitation || isCompletingInvitation || isLoadingUser) {
+		return (
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+				<Spin size="large" tip={t('Processing your invitation...')} />
+			</div>
+		)
 	}
 
 	return (
@@ -25,7 +81,7 @@ export const OnboardingCompleted = () => {
 						<Title>
 							<T>Your profile was successfully completed!</T>
 						</Title>
-						<Button style={{ width: '300px' }} onClick={handleGoToApp}>
+						<Button style={{ width: '300px' }} onClick={() => router.push('/hub')}>
 							<T>Let&apos;s go</T>
 						</Button>
 					</Space>
