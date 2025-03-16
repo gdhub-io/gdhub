@@ -70,7 +70,7 @@ export const ProtectedProjectLayout = ({
 	useEffect(() => {
 		if (!project) return
 
-		setContextProject({ id: project.id, name: project.name, teamId: project.teamId })
+		setContextProject({ id: project.id, name: project.name, teamId: project.teamId, isProjectAuthor })
 	}, [project])
 
 	const seoSettings: NextSeoProps = {

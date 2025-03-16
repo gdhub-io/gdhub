@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GiSkills } from '@react-icons/all-files/gi/GiSkills'
 import { GoPlus } from '@react-icons/all-files/go/GoPlus'
@@ -7,12 +7,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import SpecialityModal from './modals/SpecialityModal'
-
 const { Text } = Typography
 
 const SpecialitiesProfileForm = ({ profile }: any) => {
+	const router = useRouter()
+	const pendingInvitationId = useMemo(() => router.query.pendingInvitation, [router.query.pendingInvitation])
 	const session = useSession()
 	const queryClient = useQueryClient()
 	const { t } = useTolgee()
@@ -23,20 +25,60 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		axios.get<prismaClient.Speciality[]>('/api/user/specialities')
 	)
 
+	const { data: pendingTeamInvitation } = useQuery(
+		['pending-invitation', pendingInvitationId],
+		() =>
+			axios.get<prismaClient.TeamInvitation[]>('/api/user/project/team/invitation', {
+				params: { teamInvitationId: pendingInvitationId },
+			}),
+		{ enabled: !!pendingInvitationId, refetchOnWindowFocus: false }
+	)
+
 	const { mutateAsync: deleteSpeciality } = useMutation(
 		(params: any) => axios.delete('/api/user/speciality', { params }),
 		{ onSuccess: () => queryClient.invalidateQueries(['user-specialities']) }
 	)
+
+	const { mutate: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
+		(invitationId: string) =>
+			axios.get(`/api/user/project/team/complete-pending-invitation?invitationId=${pendingInvitationId}`),
+		{
+			onSuccess: (response) => {
+				if (response.data.redirect) {
+					router.push(response.data.redirect)
+				} else {
+					router.push('/profile/specialities')
+				}
+			},
+			onError: () => {
+				// В случае ошибки просто перенаправляем на страницу специализаций
+				router.push('/profile/specialities')
+			},
+		}
+	)
+
+	useEffect(() => {
+		if (!pendingInvitationId) return
+
+		showModal()
+	}, [pendingInvitationId])
 
 	const showModal = () => {
 		setSelectedSpeciality(null)
 		setIsModalOpen(true)
 	}
 
-	const handleOk = () => {
+	const handleOk = async (options: { invitationCompleted?: boolean } | undefined) => {
+		// close modal
 		setIsModalOpen(false)
-		queryClient.invalidateQueries(['user-specialities'])
-		session.update({ roles: session.data?.user.roles.includes(prismaClient.UserRole.Member) })
+		// complete pending invitation
+		if (pendingInvitationId && options?.invitationCompleted) {
+			await completePendingInvitation(pendingInvitationId as string)
+		}
+		// update speciality list
+		await queryClient.invalidateQueries(['user-specialities'])
+		// refresh session data
+		await session.update({ roles: session.data?.user.roles.includes(prismaClient.UserRole.Member) })
 	}
 
 	const handleCancel = () => {
@@ -124,7 +166,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 				</Space>
 				<SpecialityModal
 					speciality={selectedSpeciality}
-					profileId={profile?.id}
+					teamInvitation={pendingTeamInvitation?.data as any}
 					open={isModalOpen}
 					onOk={handleOk}
 					onCancel={handleCancel}

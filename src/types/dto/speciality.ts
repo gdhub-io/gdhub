@@ -16,6 +16,10 @@ export class SpecialityDto {
 
 	@IsString()
 	@IsOptional()
+	teamInvitationId?: string
+
+	@IsString()
+	@IsOptional()
 	name: string
 
 	@IsString()

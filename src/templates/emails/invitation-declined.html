@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation Declined</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 0 0 5px 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Invitation Declined</h1>
+        </div>
+        <div class="content">
+            <p>Hello {{inviterName}},</p>
+            <p>We wanted to let you know that <strong>{{memberName}}</strong> ({{memberEmail}}) has declined your invitation to join the <strong>{{teamName}}</strong> team for the project <strong>{{projectName}}</strong> as a <strong>{{position}}</strong>.</p>
+            <p>You can invite another person to fill this position or try reaching out to {{memberName}} directly to discuss any concerns they might have.</p>
+            <p>
+                <a href="{{appUrl}}/project/{{projectSlug}}/team" class="button">Go to Team Management</a>
+            </p>
+            <p>Thank you for using GDHub!</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message from GDHub. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html> 
