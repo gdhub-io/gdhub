@@ -1,6 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { CreateSpecialityDto, DeleteSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')
@@ -30,8 +31,22 @@ class ApiSpecialityHandler {
 			include: { direction: true },
 		})
 
+		if (data.teamInvitationId) {
+			const teamInvitation = await prisma.teamInvitation.findUnique({
+				where: { id: data.teamInvitationId },
+			})
+
+			if (teamInvitation) {
+				await prisma.teamInvitation.update({
+					where: { id: data.teamInvitationId },
+					data: { status: prismaClient.InvitationStatus.Accepted },
+				})
+			}
+		}
+
 		const specialitiesCount = await prisma.speciality.count({ where: { userId: req.user.id } })
 
+		// set role Member
 		if (specialitiesCount == 1) {
 			const userNotMember = await prisma.user.findFirst({
 				where: { AND: [{ id: req.user.id }, { NOT: { roles: { has: 'Member' } } }] },

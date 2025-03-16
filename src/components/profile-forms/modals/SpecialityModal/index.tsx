@@ -21,15 +21,21 @@ import {
 } from 'antd'
 import { DefaultOptionType } from 'antd/es/select'
 import axios from 'axios'
-import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
+
+interface SpecialityModalArgs {
+	speciality: prismaClient.Speciality
+	teamInvitation?: prismaClient.TeamInvitation & { team: prismaClient.Team & { project: prismaClient.Project } }
+	open: boolean
+	onOk: (options?: { invitationCompleted?: boolean }) => void
+	onCancel: () => void
+}
 
 const { Text } = Typography
 
-const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
+const SpecialityModal = ({ speciality, teamInvitation, open, onOk, onCancel }: SpecialityModalArgs) => {
 	const [form] = Form.useForm()
 	const { t, getLanguage } = useTolgee()
-	const router = useRouter()
 	const { data: session } = useSession()
 	const [processing, setProcessing] = useState(true)
 	const [showParseCVButton, setShowParseCVButton] = useState(false)
@@ -50,6 +56,16 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 	const { mutateAsync: updateSpeciality } = useMutation((variables: any) =>
 		axios.put<void>('/api/user/speciality', variables)
 	)
+
+	useEffect(() => {
+		if (teamInvitation) {
+			form.setFieldsValue({
+				name: teamInvitation.position,
+				workDirectionId: teamInvitation.directionId,
+				teamInvitationId: teamInvitation.id,
+			})
+		}
+	}, [teamInvitation])
 
 	useEffect(() => {
 		if (open) form.resetFields()
@@ -74,7 +90,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 			if (speciality) {
 				await updateSpeciality({ id: speciality?.id || null, data: { ...formData, tools: formData.tools.join('\n') } })
 			} else {
-				await createSpeciality({ data: { ...formData, tools: formData.tools.join('\n') } })
+				await createSpeciality({ data: { ...formData, tools: formData.tools?.join('\n') } })
 			}
 
 			setProcessing(false)
@@ -84,7 +100,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 					? t('modal.speciality.update.success', 'Data on the specialty updated')
 					: t('modal.speciality.create.success', 'Added a new specialty')
 			)
-			onOk()
+			onOk({ invitationCompleted: !!teamInvitation })
 		} catch (error: any) {
 			setProcessing(false)
 
@@ -177,13 +193,22 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 		setJobPosition(value)
 	}
 
+	const renderTitle = () => {
+		if (teamInvitation) {
+			return t(
+				'modal.speciality.title.create-with-invitation',
+				`Add specialty for the ${teamInvitation?.team.project.name} (by invitation)`
+			)
+		}
+
+		return speciality
+			? t('modal.speciality.title.update', 'Change the specialty')
+			: t('modal.speciality.title.create', 'Add specialty')
+	}
+
 	return (
 		<Modal
-			title={
-				speciality
-					? t('modal.speciality.title.update', 'Change the specialty')
-					: t('modal.speciality.title.create', 'Add specialty')
-			}
+			title={renderTitle()}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
@@ -194,6 +219,10 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 			onCancel={onCancel}
 			confirmLoading={processing}
 		>
+			<Form.Item name="teamInvitationId" hidden>
+				<Input />
+			</Form.Item>
+
 			<Spin spinning={processing}>
 				<Form
 					form={form}
@@ -228,6 +257,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 							>
 								<Input
 									width={'100%'}
+									disabled={!!teamInvitation}
 									placeholder={t('modal.speciality.form.name.placeholder', `Example: Character Concept Artist`)}
 									onChange={(e) => handleJobPositionChange(e.target.value)}
 								/>
@@ -264,6 +294,7 @@ const SpecialityModal = ({ speciality, open, onOk, onCancel }: any) => {
 						rules={[{ required: true }]}
 					>
 						<Select
+							disabled={!!teamInvitation}
 							style={{ width: '100%' }}
 							placeholder={t('modal.speciality.form.workDirectionId.placeholder', `Choose`)}
 							options={workDirectionOptions}

@@ -71,7 +71,9 @@ class ApiUserTeamAcceptInviteHandler {
 			const hasCompletedOnboarding = user.onboardingDone
 
 			// Проверяем, есть ли у пользователя хотя бы одна специализация
-			const hasSpeciality = user.specialities && user.specialities.length > 0
+			const hasSpeciality =
+				user.specialities &&
+				user.specialities.filter((speciality) => speciality.workDirectionId === invitation.directionId).length > 0
 
 			// Если пользователь не завершил onboarding или не имеет специализации,
 			// сохраняем информацию о приглашении для последующего добавления в команду
@@ -127,7 +129,7 @@ class ApiUserTeamAcceptInviteHandler {
 					return {
 						success: true,
 						message: 'You need to create a speciality before joining the team',
-						redirect: `/profile/specialities/create?pendingInvitation=${invitation.id}`,
+						redirect: `/profile/settings/specialities?pendingInvitation=${invitation.id}`,
 					}
 				}
 			}
@@ -136,7 +138,7 @@ class ApiUserTeamAcceptInviteHandler {
 			const teamMember = await prisma.teamMember.create({
 				data: {
 					position: invitation.position,
-					speciality: { connect: { id: specialityId } },
+					speciality: { connect: { id: user.specialities[0].id } },
 					status: prismaClient.TeamMemberStatus.Hired,
 					startedAt: invitation.startedAt,
 					team: { connect: { id: invitation.teamId } },

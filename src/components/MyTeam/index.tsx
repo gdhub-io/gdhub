@@ -37,11 +37,35 @@ const MyTeam = () => {
 		}
 	)
 
+	const {
+		data: pendingInvitations,
+		refetch: fetchPendingInvitations,
+		isLoading: isLoadingPendingInvitations,
+	} = useQuery(
+		['team-pending-invitations', contextProject?.teamId],
+		() =>
+			axios.get<prismaClient.TeamInvitation[]>('/api/user/project/team/pending-invitations', {
+				params: { teamId: contextProject?.teamId },
+			}),
+		{
+			enabled: !!contextProject?.teamId && !!contextProject?.isProjectAuthor,
+		}
+	)
+
 	const { mutateAsync: fireMember, isLoading: isFiring } = useMutation(
 		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/fire', data),
 		{
 			onSuccess: () => {
 				fetchMyTeam()
+			},
+		}
+	)
+
+	const { mutateAsync: cancelInvitation, isLoading: isCanceling } = useMutation(
+		(data: { id: string }) => axios.delete<void>('/api/user/project/team/invitation', { params: data }),
+		{
+			onSuccess: () => {
+				fetchPendingInvitations()
 			},
 		}
 	)
@@ -59,6 +83,16 @@ const MyTeam = () => {
 		}
 	}
 
+	const handleCancelInvitation = async (invitationId: string) => {
+		try {
+			await cancelInvitation({ id: invitationId })
+			message.success(t('Invitation canceled'))
+		} catch (error: any) {
+			console.log(error)
+			message.error(error.message)
+		}
+	}
+
 	const handleOpenInviteModal = () => {
 		setIsInviteModalOpen(true)
 	}
@@ -70,6 +104,7 @@ const MyTeam = () => {
 	const handleInviteSuccess = () => {
 		setIsInviteModalOpen(false)
 		fetchMyTeam()
+		fetchPendingInvitations()
 	}
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
@@ -152,6 +187,42 @@ const MyTeam = () => {
 		},
 	]
 
+	const pendingInvitationsColumns: ColumnsType<prismaClient.TeamInvitation> = [
+		{
+			title: t('Email'),
+			key: 'email',
+			dataIndex: 'email',
+		},
+		{
+			title: t('Position'),
+			dataIndex: 'position',
+			key: 'position',
+		},
+		{
+			title: t('Invited At'),
+			dataIndex: 'createdAt',
+			key: 'createdAt',
+			responsive: ['md'],
+			render: (value) => dayjs(value).format('DD.MM.YYYY'),
+		},
+		{
+			title: t('Expires At'),
+			dataIndex: 'expiresAt',
+			key: 'expiresAt',
+			responsive: ['md'],
+			render: (value) => dayjs(value).format('DD.MM.YYYY'),
+		},
+		{
+			key: 'actions',
+			title: t('Actions'),
+			render: (_, invitation) => (
+				<Button danger ghost onClick={() => handleCancelInvitation(invitation.id)}>
+					<T>Cancel</T>
+				</Button>
+			),
+		},
+	]
+
 	return (
 		<>
 			{Boolean(contextProject?.isProjectAuthor) && (
@@ -171,6 +242,18 @@ const MyTeam = () => {
 				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}
 			/>
+
+			{contextProject?.isProjectAuthor && pendingInvitations?.data && pendingInvitations.data.length > 0 && (
+				<>
+					<h3 style={{ marginTop: 24 }}>{t('Pending Invitations')}</h3>
+					<ModernTable
+						loading={isLoadingPendingInvitations || isCanceling}
+						columns={pendingInvitationsColumns}
+						dataSource={pendingInvitations.data.map((invitation) => ({ ...invitation, key: invitation.id }))}
+						pagination={false}
+					/>
+				</>
+			)}
 
 			{contextProject?.teamId && (
 				<InviteMemberModal

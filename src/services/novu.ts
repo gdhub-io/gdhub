@@ -6,7 +6,9 @@ export type NovuSendArgs = {
 	template: string
 }
 
-const novuClient = new Novu(process.env.NOVU_API_SECRET as string)
+const novuClient = new Novu(process.env.NOVU_API_SECRET as string, {
+	backendUrl: (process.env.NOVU_API_URL as string) || 'https://api.novu.co',
+})
 
 export class NovuService {
 	private constructor() {}

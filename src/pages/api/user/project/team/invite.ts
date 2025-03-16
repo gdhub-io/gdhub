@@ -90,7 +90,7 @@ class ApiUserTeamInviteHandler {
 							position: data.position,
 							startedAt: data.startedAt || new Date().toISOString(),
 							inviterName: req.user.name || 'Project founder',
-							acceptUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/user/project/team/accept-invite?token=${invitation.id}`,
+							acceptUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invite/${invitation.id}`,
 						},
 					})
 				} catch (error) {
@@ -147,7 +147,7 @@ class ApiUserTeamInviteHandler {
 						position: data.position,
 						startedAt: data.startedAt || new Date().toISOString(),
 						inviterName: req.user.name || 'Project founder',
-						acceptUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/user/project/team/accept-invite?token=${invitation.id}`,
+						acceptUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invite/${invitation.id}`,
 					},
 				})
 			} catch (error) {
