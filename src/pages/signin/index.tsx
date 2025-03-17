@@ -30,6 +30,16 @@ const LoginPage: NextPage = () => {
 	const [email, setEmail] = useState<string>()
 	const [submitting, setSubmitting] = useState<boolean>(false)
 
+	// Check for error in query params
+	const { error, callbackUrl } = router.query
+
+	// Show error message if token expired
+	React.useEffect(() => {
+		if (error === 'RefreshTokenExpired') {
+			message.error(t('refresh_token_expired', 'Your session has expired. Please sign in again.'))
+		}
+	}, [error, t])
+
 	const handleSend = async () => {
 		setSubmitting(true)
 
