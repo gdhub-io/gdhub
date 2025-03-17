@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
-			clientSecret: process.env.GOOGLE_OAUTH_CLEINT_SECRET as string,
+			clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
 			authorization: { params: { access_type: 'offline', prompt: 'consent' } },
 			allowDangerousEmailAccountLinking: true,
 			httpOptions: { timeout: 10000 },
@@ -78,7 +78,7 @@ export const authOptions: NextAuthOptions = {
 		async session({ session, token, user, newSession }) {
 			if (!token) return redirect('/signin')
 
-			session.user = token
+			session.user = token as any
 
 			const [google] = await prisma.account.findMany({
 				where: { userId: token.id, provider: 'google' },
@@ -93,7 +93,7 @@ export const authOptions: NextAuthOptions = {
 						headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 						body: new URLSearchParams({
 							client_id: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
-							client_secret: process.env.GOOGLE_OAUTH_CLEINT_SECRET as string,
+							client_secret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
 							grant_type: 'refresh_token',
 							refresh_token: google.refresh_token as string,
 						}),
@@ -102,7 +102,17 @@ export const authOptions: NextAuthOptions = {
 
 					const tokens: TokenSet & { expires_in: number } = await response.json()
 
-					if (!response.ok || !tokens.expires_in) throw tokens
+					if (!response.ok) {
+						console.error('Token refresh response not OK:', tokens)
+
+						// Check for invalid_grant error specifically
+						if (tokens.error === 'invalid_grant') {
+							console.error('Invalid grant error - refresh token is expired or revoked')
+							session.error = 'InvalidGrantError'
+						}
+
+						throw tokens
+					}
 
 					await prisma.account.update({
 						data: {
@@ -119,8 +129,16 @@ export const authOptions: NextAuthOptions = {
 					})
 				} catch (error) {
 					console.error('Error refreshing access token', error)
-					// The error property will be used client-side to handle the refresh token error
-					session.error = 'RefreshAccessTokenError'
+
+					// Check if it's an invalid_grant error
+					const errorObj = error as any
+					if (errorObj?.error === 'invalid_grant') {
+						console.error('Invalid grant error - refresh token is expired or revoked')
+						session.error = 'InvalidGrantError'
+					} else {
+						// For other errors
+						session.error = 'RefreshAccessTokenError'
+					}
 				}
 			}
 

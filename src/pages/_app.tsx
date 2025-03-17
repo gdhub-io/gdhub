@@ -6,6 +6,7 @@ import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
 import { publicThemeConfig, secondFont } from '@/config/theme'
 import { GTM_ID, pageview } from '@/helpers/gtm'
+import { useAuthErrorHandler } from '@/hooks/useAuthErrorHandler'
 import { tolgeeService } from '@/services/tolgee'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -136,6 +137,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					{/* <CheckHealth> */}
 					<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
 						<SessionProvider session={session}>
+							<AuthErrorHandler />
 							<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
 								{getLayout(<Component {...pageProps} />)}
 							</div>
@@ -150,4 +152,10 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 			</TolgeeProvider>
 		</>
 	)
+}
+
+// Component to handle authentication errors
+function AuthErrorHandler() {
+	useAuthErrorHandler()
+	return null
 }
