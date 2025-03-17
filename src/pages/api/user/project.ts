@@ -3,7 +3,18 @@ import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
-import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import {
+	BadRequestException,
+	Body,
+	Delete,
+	Get,
+	Post,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+	createHandler,
+} from 'next-api-decorators'
 import { slugify } from 'voca'
 
 class CreateProjectDto {
@@ -116,10 +127,28 @@ class ApiProjectHandler {
 
 		const user = await prisma.user.findUnique({
 			where: { id: req.user.id },
-			include: { specialities: true, memberInTeams: { where: { status: prismaClient.TeamMemberStatus.Founder } } },
+			include: {
+				specialities: true,
+				memberInTeams: {
+					where: { status: prismaClient.TeamMemberStatus.Founder },
+					include: { team: { include: { project: { select: { id: true, name: true, slug: true } } } } },
+				},
+			},
 		})
 
-		const userhasTeam = user?.memberInTeams[0]?.status == prismaClient.TeamMemberStatus.Founder
+		if (!user) throw Error('User not found')
+
+		const existingProjectTeam = user?.memberInTeams.find(
+			(member) => member.status == prismaClient.TeamMemberStatus.Founder && member.team.project?.slug == slugify(name)
+		)
+
+		const existingProject = await prisma.project.findUnique({
+			where: { slug: slugify(name) },
+		})
+
+		if (existingProject) {
+			throw new BadRequestException('Project with this name already exists')
+		}
 
 		const project = await prisma.project.create({
 			data: {
@@ -129,20 +158,22 @@ class ApiProjectHandler {
 				description,
 				author: { connect: { id: req.user.id } },
 				status: prismaClient.ProjectStatus.Approved,
-				team: {
-					create: {
-						name: `${slugify(name)}'s Team`,
-						members: {
+				team: existingProjectTeam
+					? { connect: { id: existingProjectTeam.teamId } }
+					: {
 							create: {
-								position: 'Founder',
-								specialityId: user?.specialities[0].id!,
-								startedAt: dayjs().toISOString(),
-								status: prismaClient.TeamMemberStatus.Founder,
-								userId: req.user.id,
+								name: `${slugify(name)}'s Team`,
+								members: {
+									create: {
+										position: 'Founder',
+										specialityId: user?.specialities[0].id!,
+										startedAt: dayjs().toISOString(),
+										status: prismaClient.TeamMemberStatus.Founder,
+										userId: req.user.id,
+									},
+								},
 							},
 						},
-					},
-				},
 				reports: {
 					create: {
 						content: 'Registration of the project on the service',
