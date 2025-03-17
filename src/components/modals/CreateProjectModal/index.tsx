@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiRocketDuotone } from '@react-icons/all-files/pi/PiRocketDuotone'
 import { useMutation } from '@tanstack/react-query'
@@ -12,24 +13,36 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { t, getLanguage } = useTolgee()
 
-	const { mutateAsync: createProject, isLoading: isCreateProcessing } = useMutation((data) =>
-		axios.post<prismaClient.Project>('/api/user/project', data)
-	)
+	const {
+		mutateAsync: createProject,
+		error: createProjectError,
+		isLoading: isCreateProcessing,
+	} = useMutation((data) => axios.post<prismaClient.Project>('/api/user/project', data))
+
+	useEffect(() => {
+		const error = createProjectError as any
+		if (error?.response?.data?.message) {
+			message.error(error.response?.data?.message)
+		}
+	}, [createProjectError])
 
 	const handleOk = async () => {
+		let data: any
+
 		try {
-			const data = await form.validateFields()
-
-			const project = await createProject(data)
-
-			router.push('/my/projects/' + project.data.slug)
+			data = await form.validateFields()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
-			} else {
-				message.error('Error. Check if all form data is entered correctly')
+				return
 			}
 		}
+
+		if (!data) return
+
+		const project = await createProject(data)
+
+		router.push('/my/projects/' + project.data.slug)
 	}
 
 	const handleCancel = () => {
