@@ -229,7 +229,8 @@ const MyTeam = () => {
 				<Flex justify="space-between" align="center" wrap>
 					<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
 
-					{contextProject?.isProjectAuthor && (
+					{/* temp */}
+					{contextProject?.isProjectAuthor && process.env.NODE_ENV !== 'production' && (
 						<Button type="primary" onClick={handleOpenInviteModal}>
 							<T>Invite Member</T>
 						</Button>
