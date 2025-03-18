@@ -9,10 +9,7 @@ class OpenAI {
 	openai: OpenAIAPI
 
 	private constructor() {
-		this.openai = new OpenAIAPI({
-			apiKey: env('OPENAI_API_KEY'),
-			organization: env('OPENAI_API_CLIENT_ID'),
-		})
+		this.openai = new OpenAIAPI({ apiKey: env('OPENAI_API_KEY') })
 	}
 
 	static getInstance() {
@@ -45,18 +42,12 @@ class OpenAI {
 
 	async moderationInput(input: string) {
 		try {
-			const moderationResponse = await this.openai.moderations.create({
-				input,
-			})
+			const moderationResponse = await this.openai.moderations.create({ input })
 
 			const [results] = moderationResponse.results
 
 			if (results.flagged) {
-				return {
-					error: 'Flagged content',
-					flagged: true,
-					categories: results.categories,
-				}
+				return { error: 'Flagged content', flagged: true, categories: results.categories }
 			}
 
 			return
@@ -78,12 +69,7 @@ class OpenAI {
 					enum: workDirections.map((wd) => wd.id),
 					default: workDirections.find((wd) => wd.name == 'other')?.id,
 				},
-				skills: {
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-				},
+				skills: { type: 'array', items: { type: 'string' } },
 				experience: {
 					type: 'array',
 					items: {
@@ -114,12 +100,7 @@ class OpenAI {
 					},
 				},
 				portfolioLink: { type: 'string' },
-				tools: {
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-				},
+				tools: { type: 'array', items: { type: 'string' } },
 			},
 		}
 
@@ -158,7 +139,7 @@ class OpenAI {
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: 'gpt-4o',
+				model: process.env.OPENAI_API_MODEL || 'gpt-4o',
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,
@@ -241,7 +222,7 @@ class OpenAI {
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: 'gpt-4o',
+				model: process.env.OPENAI_API_MODEL || 'gpt-4o',
 				functions: [{ name: 'parse_resume', parameters: schema }],
 				function_call: { name: 'parse_resume' },
 				messages: prompt,
@@ -264,9 +245,7 @@ class OpenAI {
 	}
 }
 
-const globalForOpenAI = globalThis as unknown as {
-	openAI: OpenAI | undefined
-}
+const globalForOpenAI = globalThis as unknown as { openAI: OpenAI | undefined }
 
 export const openAI = globalForOpenAI.openAI ?? OpenAI.getInstance()
 
