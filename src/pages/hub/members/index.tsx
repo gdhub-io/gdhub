@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import SpecialistPreviewModal from '@/components/modals/SpecialistPreviewModal'
 import { hasRole } from '@/helpers/user'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
-import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { InstantsearchAdapter } from '@gdhub-io/gdhub-typesense/dist/adapter'
 import { BsFilter } from '@react-icons/all-files/bs/BsFilter'
 import { T, useTolgee } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
@@ -27,14 +27,22 @@ import styles from './style.module.scss'
 
 const { Paragraph, Text, Title } = Typography
 
-const searchAdapter = new InstantsearchAdapter()
-
 const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, hasApprovedProjects = false }: any) => {
 	const session = useSession()
 	const { t } = useTolgee()
 	const [openedFilter, setOpenFilter] = useState(false)
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<string | undefined>()
 	const screens = Grid.useBreakpoint()
+	const searchAdapter = useMemo(
+		() =>
+			new InstantsearchAdapter({
+				host: process.env.NEXT_PUBLIC_TYPESENSE_HOST as string,
+				port: parseInt(process.env.NEXT_PUBLIC_TYPESENSE_PORT as string),
+				protocol: process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL as string,
+				apiKey: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY as string,
+			}),
+		[]
+	)
 
 	const Hit = ({ hit }: any) => {
 		return (

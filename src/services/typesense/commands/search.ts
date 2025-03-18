@@ -1,11 +1,9 @@
-import { SearchEngineService } from '@/services/typesense'
-import { SearchParams } from 'typesense/lib/Typesense/Documents'
+import { SearchEngineService } from '@gdhub-io/gdhub-typesense'
+import { SearchParams } from '@gdhub-io/gdhub-typesense/dist/types'
 
-export async function search(searchParams: SearchParams) {
+export async function search(searchClient: SearchEngineService, searchParams: SearchParams) {
 	try {
-		const searchService = await SearchEngineService.init()
-
-		const response = await searchService.client
+		const response = await searchClient.client
 			.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 			.documents()
 			.search(searchParams)

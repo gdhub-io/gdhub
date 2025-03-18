@@ -1789,23 +1789,23 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.8.tgz#21a907684723bbbaa5f0974cf7730bd797eb8e62"
   integrity sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==
 
-"@gdhub-io/gdhub-prisma@^1.7.5":
-  version "1.7.5"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.7.5/ff9c12109c95b99f8f0d5be0d853a5ffee75e47e#ff9c12109c95b99f8f0d5be0d853a5ffee75e47e"
-  integrity sha512-EU0R7YBSu9rgINWQmw8xVhRq+Z4oUuA7DoCTx7Ky7mSqttrfWyvFer4qxGNBhQnaRIfP5xr83VJNaIqUY47Vww==
+"@gdhub-io/gdhub-prisma@^1.7.7":
+  version "1.7.7"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.7.7/2d92bb5d97ef7bf8f6b292ca71eb76ab81ebe15c#2d92bb5d97ef7bf8f6b292ca71eb76ab81ebe15c"
+  integrity sha512-ILonDPt2RjOTZ2cWt6qYl3fOa3aw4CNhLhw4oJNJjeeERPKykc9K+7tAe9xXNqsNoqpPGGXt9ks0H/iv6Ttw+A==
   dependencies:
     "@faker-js/faker" "^9.2.0"
-    "@gdhub-io/gdhub-typesense" "^1.0.2"
+    "@gdhub-io/gdhub-typesense" "^1.0.6"
     "@prisma/client" "6"
     dayjs "^1.11.13"
     prisma "6"
     prisma-extension-pagination "^0.7.4"
     prisma-json-types-generator "^3.2.2"
 
-"@gdhub-io/gdhub-typesense@^1.0.2":
-  version "1.0.2"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.2/a78bdb429a3d79450ed482879e3e395039c50e7a#a78bdb429a3d79450ed482879e3e395039c50e7a"
-  integrity sha512-dLaFFbkqnDyu0cWeE5V0jkLv6G5SannrGjbPKkufboNXRxr20PzdThYpdIrbUG32vzGVZyFTGI2a4pcJLe5s9g==
+"@gdhub-io/gdhub-typesense@^1.0.6":
+  version "1.0.6"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.6/2825e41b4b51a61291221e549d82c396059e4ab1#2825e41b4b51a61291221e549d82c396059e4ab1"
+  integrity sha512-jxhOwbHh0dtcAsemld5XPjODMqcjuipJjJx5nxM2z2qCKa/TGUw95j3Z78oOOlexksj0MSVqSNUluJpp9o+Rug==
   dependencies:
     dayjs "^1.11.13"
     typesense "^1.8.2"
@@ -10759,7 +10759,7 @@ typescript@^5.8.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.2.tgz#8170b3702f74b79db2e5a96207c15e65807999e4"
   integrity sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==
 
-typesense-instantsearch-adapter@^2.7.1, typesense-instantsearch-adapter@^2.8.0:
+typesense-instantsearch-adapter@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/typesense-instantsearch-adapter/-/typesense-instantsearch-adapter-2.8.0.tgz#2c01d00957cef97df5a941f55bced072013300bb"
   integrity sha512-2q4QVpHoUV0ncf1XOqIC0dufOTkFRxQ0mHzg//H3WK02ZYqdNNPCAacZODhQlltl1cNJdTI8Y4uuGVd6fJuGzw==

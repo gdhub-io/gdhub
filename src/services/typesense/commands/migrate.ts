@@ -1,17 +1,19 @@
 import { prisma } from '@/services/prisma'
-import { SearchEngineService } from '@/services/typesense'
-import { specialistsSchema } from '@/services/typesense/schemes/specialists'
+import { SearchEngineService } from '@gdhub-io/gdhub-typesense'
+import { specialistsSchema } from '@gdhub-io/gdhub-typesense/dist/schemes/specialists'
 import dayjs from 'dayjs'
 
-export async function migrate() {
+export async function migrate(searchClient: SearchEngineService) {
 	try {
-		const searchService = await SearchEngineService.init()
-		const existSpecialists = await searchService.existScheme(
+		const existSpecialists = await searchClient.existScheme(
 			process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string
 		)
 
 		if (!existSpecialists) {
-			await searchService.migrateScheme(specialistsSchema)
+			await searchClient.migrateScheme({
+				...specialistsSchema,
+				name: process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string,
+			})
 			console.info('Specialists sheme added')
 		}
 		console.info('Start')
@@ -36,7 +38,7 @@ export async function migrate() {
 					city: user.profile?.city,
 				})
 			}) as any[]
-			await searchService.client
+			await searchClient.client
 				.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 				.documents()
 				.import(documents)

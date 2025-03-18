@@ -1,13 +1,12 @@
-import { SearchEngineService } from '@/services/typesense'
+import { SearchEngineService } from '@gdhub-io/gdhub-typesense'
 
-export async function drop() {
-	const searchService = await SearchEngineService.init()
-	const existSpecialists = await searchService.existScheme(
+export async function drop(searchClient: SearchEngineService) {
+	const existSpecialists = await searchClient.existScheme(
 		process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string
 	)
 
 	if (existSpecialists) {
-		await searchService.deleteScheme(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+		await searchClient.deleteScheme(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 		console.info('Specialists sheme was dropped')
 	} else {
 		console.info('Nothing changes')
