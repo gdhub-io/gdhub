@@ -24,6 +24,7 @@ import {
 	UploadProps,
 } from 'antd'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 
 interface IOnboardingSpecialityStep {
 	onSave: () => void
@@ -33,6 +34,8 @@ interface IOnboardingSpecialityStep {
 const { Paragraph, Title, Text } = Typography
 
 export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: IOnboardingSpecialityStep) => {
+	const router = useRouter()
+	const pendingInvitationId = router.query?.pendingInvitation as string
 	const [form] = Form.useForm()
 	const [messageApi, contextHolder] = message.useMessage()
 	const screens = Grid.useBreakpoint()
@@ -52,7 +55,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 	})
 
 	useQuery(
-		['profile', 'current'],
+		['onboarding', 'speciality'],
 		() =>
 			axios.get<prismaClient.Speciality & { direction: prismaClient.WorkDirection }>(
 				'/api/auth/registration/onboarding/speciality'
@@ -80,6 +83,22 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 
 				const existNameValue = !!form.getFieldValue('name')
 				setShowParseCVButton(existNameValue)
+			},
+		}
+	)
+
+	const { data: pendingInvitation } = useQuery(
+		['team-invite', pendingInvitationId],
+		() => axios.get<any>(`/api/user/pending-invitation/${pendingInvitationId}`),
+		{
+			enabled: !!pendingInvitationId,
+			onSuccess(response) {
+				console.log('pendingInvitation', response)
+				form.setFieldsValue({
+					name: response.data.position,
+					workDirectionId: response.data.directionId,
+				})
+				setShowParseCVButton(true)
 			},
 		}
 	)
@@ -186,7 +205,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 						<Space direction="vertical" className="onboarding-form-title" style={{ width: '100%' }}>
 							<Flex justify="space-between" align="center" wrap="wrap">
 								<Title level={2}>
-									<T keyName="specilaity">Speciality</T>
+									{t('speciality', 'Speciality' + (!!pendingInvitation ? ' (by invitation)' : ''))}
 								</Title>
 								<Flex align="center" gap={4}>
 									<PiWarningCircleLight size={20} color="#05050573" style={{ height: 20 }} />
@@ -282,6 +301,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 												style={{ width: '100%' }}
 												placeholder={t(`For example: Game Design`)}
 												options={workDirectionOptions}
+												disabled={!!pendingInvitation}
 											/>
 										</Form.Item>
 									</Col>

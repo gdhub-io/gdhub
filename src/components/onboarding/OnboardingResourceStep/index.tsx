@@ -124,9 +124,7 @@ export const OnboardingResourceStep = ({
 											>
 												<InputNumber min={2} max={56} placeholder={t('maximum')} />
 											</Form.Item>
-											<Text>
-												<T keyName="hours" />
-											</Text>
+											<Text>{t('hours-a-week', 'hours a week')}</Text>
 										</Space>
 									</Col>
 								</Row>

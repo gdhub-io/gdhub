@@ -248,5 +248,3 @@ class OpenAI {
 const globalForOpenAI = globalThis as unknown as { openAI: OpenAI | undefined }
 
 export const openAI = globalForOpenAI.openAI ?? OpenAI.getInstance()
-
-// if (env('NODE_ENV') !== 'production') globalForOpenAI.openAI = openAI

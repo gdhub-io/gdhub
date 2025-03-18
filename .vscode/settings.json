@@ -12,5 +12,5 @@
   "search.exclude": {
     "**/node_modules": true,
     "**/*.code-search": true
-  }
+  },
 }
