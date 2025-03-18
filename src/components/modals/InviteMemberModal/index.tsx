@@ -78,6 +78,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 			<Form
 				form={form}
 				layout="vertical"
+				variant="filled"
 				initialValues={{ position: '', email: '', directionId: undefined, startedAt: dayjs() }}
 			>
 				<Form.Item
@@ -115,7 +116,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 					label={<T>Start Date</T>}
 					rules={[{ required: true, message: t('Please select start date') }]}
 				>
-					<DatePicker placeholder={t('Select start date')} style={{ width: '100%' }} />
+					<DatePicker format="DD.MM.YYYY" placeholder={t('Select start date')} style={{ width: '100%' }} />
 				</Form.Item>
 			</Form>
 		</Modal>

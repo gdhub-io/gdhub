@@ -3,7 +3,7 @@ import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsEmail, IsString, IsOptional, IsDateString } from 'class-validator'
-import { Body, Post, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import { Body, Param, Get, Post, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class InviteMemberDto {
 	@IsString()
@@ -25,6 +25,15 @@ class InviteMemberDto {
 
 @NextAuthGuard('user')
 class ApiUserTeamInviteHandler {
+	@Get('/:id')
+	public async getInvitation(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
+		const invitation = await prisma.teamInvitation.findUnique({
+			where: { id },
+		})
+
+		return invitation
+	}
+
 	@Post()
 	public async invite(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: InviteMemberDto) {
 		try {

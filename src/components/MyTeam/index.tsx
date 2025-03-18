@@ -6,7 +6,7 @@ import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Flex, Typography, Tag, Space } from 'antd'
+import { Button, Grid, message, Flex, Typography, Tag, Space, Popconfirm } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -172,9 +172,16 @@ const MyTeam = () => {
 
 				if (member.status === prismaClient.TeamMemberStatus.Hired) {
 					return (
-						<Button danger ghost onClick={() => handleFired(member.id)}>
-							<T>Fire</T>
-						</Button>
+						<Popconfirm
+							title={t('Are you sure you want to fire this member?')}
+							onConfirm={() => handleFired(member.id)}
+							okText={t('Yes')}
+							cancelText={t('No')}
+						>
+							<Button danger ghost>
+								{t('team.member.fire', 'Fire')}
+							</Button>
+						</Popconfirm>
 					)
 				}
 
@@ -230,7 +237,7 @@ const MyTeam = () => {
 					<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
 
 					{/* temp */}
-					{contextProject?.isProjectAuthor && process.env.NODE_ENV !== 'production' && (
+					{contextProject?.isProjectAuthor && (
 						<Button type="primary" onClick={handleOpenInviteModal}>
 							<T>Invite Member</T>
 						</Button>

@@ -5,17 +5,109 @@
 }
 
 .descriptionBlock {
-	border: 1px solid #e6e6e6;
-	border-radius: 16px;
+	border-radius: 8px;
 	padding: 16px;
 	margin: 8px 0;
+	background-color: rgba(241, 85, 65, 0.02);
+}
+
+.cardHeader {
+	margin-bottom: 24px;
+}
+
+.cardType {
+	font-size: 14px;
+	display: block;
+	margin-bottom: 8px;
 }
 
 .specialityTitle {
 	font-weight: bold;
-	margin-bottom: 16px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
 
 	h1 {
 		margin: 0;
+		font-size: 28px;
 	}
+}
+
+.cardWrapper {
+	border-radius: 8px;
+	margin-bottom: 16px;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	background-color: #ffffff;
+	border: none;
+	box-shadow: none;
+}
+
+.statCard {
+	background-color: rgba(241, 85, 65, 0.02);
+	border-radius: 8px;
+	transition: all 0.3s ease;
+	border: none;
+	box-shadow: none;
+}
+
+.contactButtons {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 4px;
+}
+
+.skillTag {
+	margin: 4px;
+	border-radius: 16px;
+	background-color: rgba(241, 85, 65, 0.08);
+	border: none;
+	color: rgba(5, 5, 5, 0.85);
+	padding: 4px 12px;
+	transition: all 0.3s ease;
+	
+	&:hover {
+		background-color: rgba(241, 85, 65, 0.15);
+	}
+}
+
+.levelBadge {
+	background-color: rgba(241, 85, 65, 0.1);
+	color: rgb(241, 85, 65);
+	border-radius: 16px;
+	padding: 4px 12px;
+	font-weight: 500;
+	font-size: 14px;
+}
+
+.sectionTitle {
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 0;
+	color: rgba(5, 5, 5, 0.85);
+}
+
+.profileInfo {
+	padding: 16px;
+}
+
+.quoteBlock {
+	display: flex;
+	align-items: flex-start;
+	padding: 16px;
+	background-color: rgba(241, 85, 65, 0.03);
+	border-radius: 8px;
+	margin-top: 8px;
+	
+	svg {
+		flex-shrink: 0;
+	}
+}
+
+.fieldLabel {
+	font-size: 14px;
+	font-weight: normal;
+	display: block;
+	margin-bottom: 4px;
 }

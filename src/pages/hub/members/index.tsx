@@ -8,7 +8,7 @@ import { InstantsearchAdapter } from '@/services/typesense/adapter'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BsFilter } from '@react-icons/all-files/bs/BsFilter'
 import { T, useTolgee } from '@tolgee/react'
-import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography, Avatar } from 'antd'
+import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import { getSession, useSession } from 'next-auth/react'
 import {
@@ -44,64 +44,44 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 				style={{ cursor: 'pointer', position: 'relative' }}
 			>
 				<Card.Meta
-					avatar={
-						<Avatar size={64} src={hit.avatar} style={{ backgroundColor: '#f15541' }}>
-							{hit.name?.[0]?.toUpperCase()}
-						</Avatar>
-					}
 					title={
-						<Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center', minHeight: 64 }}>
+						<Title level={4}>
 							<Highlight attribute="name" hit={hit} />
 						</Title>
 					}
 					description={
 						<Space direction="vertical" size={16} style={{ width: '100%', marginTop: 8 }}>
-							{!!hit.direction && (
-								<Space wrap>
-									<Tag color="default">
-										<Highlight attribute="direction" hit={hit} />
-									</Tag>
-									<Tag color="default">
-										<Highlight attribute="level" hit={hit} />
-									</Tag>
-								</Space>
-							)}
-
-							{!!hit.skills && (
-								<div>
-									<Text type="secondary" strong>
-										<T>Skills</T>
-									</Text>
-									<div style={{ marginTop: 4 }}>
-										<Highlight attribute="skills" hit={hit} />
-									</div>
-								</div>
-							)}
-
-							{!!hit.tools && (
-								<div>
-									<Text type="secondary" strong>
-										<T>Tools & Software</T>
-									</Text>
-									<div style={{ marginTop: 4 }}>
-										<Highlight attribute="tools" hit={hit} />
-									</div>
-								</div>
-							)}
-
 							{!!hit.specialization && (
-								<div>
-									<Text type="secondary" strong>
-										<T>Specialization</T>
-									</Text>
-									<div style={{ marginTop: 4 }}>
-										<Highlight attribute="specialization" hit={hit} />
-									</div>
+								<div style={{ marginTop: 4 }}>
+									<Highlight attribute="specialization" hit={hit} />
 								</div>
 							)}
 						</Space>
 					}
 				/>
+
+				<Space wrap style={{ marginTop: 16 }}>
+					<Text type="secondary">{t('Level')}:</Text>
+					<Tag color="default">
+						<Highlight attribute="level" hit={hit} />
+					</Tag>
+					{!!hit.direction && (
+						<>
+							<Text type="secondary">{t('Direction')}:</Text>
+							<Tag color="default">
+								<Highlight attribute="direction" hit={hit} />
+							</Tag>
+						</>
+					)}
+					{!!hit.timeForWorkMin && !!hit.timeForWorkMax && (
+						<>
+							<Text type="secondary">{t('Free time')}:</Text>
+							<Tag color="default">
+								<Highlight attribute="timeForWorkMin" hit={hit} /> - <Highlight attribute="timeForWorkMax" hit={hit} />
+							</Tag>
+						</>
+					)}
+				</Space>
 			</Card>
 		)
 	}
