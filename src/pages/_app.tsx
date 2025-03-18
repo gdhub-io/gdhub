@@ -5,6 +5,7 @@ import LoadingScreen from '@/components/LoadingScreen'
 import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
 import { publicThemeConfig, secondFont } from '@/config/theme'
+import { hasGoogleConsent } from '@/helpers/googleConsent'
 import { GTM_ID, pageview } from '@/helpers/gtm'
 import { useAuthErrorHandler } from '@/hooks/useAuthErrorHandler'
 import { tolgeeService } from '@/services/tolgee'
@@ -70,6 +71,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 	const [showContent, setShowContent] = useState(false)
 	const getLayout = Component.getLayout || ((page) => <>{page}</>)
 	const ssrTolgee = useTolgeeSSR(tolgeeService, router.locale)
+	const [googleConsent, setGoogleConsent] = useState(false)
 
 	const setLoadingOff = () => {
 		setTimeout(() => {
@@ -80,6 +82,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 
 	useEffect(() => {
 		setLoadingOff()
+		setGoogleConsent(hasGoogleConsent())
 		dayjs.locale(ssrTolgee.getLanguage() || AvailableLocales.en)
 	}, [])
 
@@ -115,7 +118,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
 				}
 			`}</style>
-			{process.env.NODE_ENV == 'production' && (
+			{process.env.NODE_ENV == 'production' && googleConsent && (
 				<Script
 					id="gtag-base"
 					strategy="afterInteractive"

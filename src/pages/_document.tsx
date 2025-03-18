@@ -38,14 +38,15 @@ const MyDocument = () => (
 		</Head>
 		<body>
 			{process.env.NODE_ENV == 'production' && (
-				<noscript>
-					<iframe
-						src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-						height="0"
-						width="0"
-						style={{ display: 'none', visibility: 'hidden' }}
-					/>
-				</noscript>
+				<noscript
+					dangerouslySetInnerHTML={{
+						__html: `
+						<!-- Google Tag Manager iframe will be loaded only if user has given consent to cookies -->
+						<!-- The actual loading of the iframe is controlled via JavaScript in the cookie consent logic -->
+						<div id="gtm-noscript-container"></div>
+						`,
+					}}
+				/>
 			)}
 			<Main />
 			<NextScript />
