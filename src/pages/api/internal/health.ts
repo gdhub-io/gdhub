@@ -1,7 +1,7 @@
 import { prisma } from '@/services/prisma'
 import SanityService from '@/services/sanity'
 import TelegramService from '@/services/telegram'
-import { SearchEngineService } from '@/services/typesense'
+import { SearchEngineService } from '@gdhub-io/gdhub-typesense'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createHandler, Get } from 'next-api-decorators'
 
@@ -22,7 +22,13 @@ class ApiHealthyHandler {
 		// check if novu is healthy
 		const tolgeeResult = await fetch(process.env.NEXT_PUBLIC_TOLGEE_API_URL || '')
 
-		const typesenseService = await SearchEngineService.init()
+		const typesenseService = await SearchEngineService.init({
+			host: process.env.NEXT_PUBLIC_TYPESENSE_HOST as string,
+			port: Number.parseInt(process.env.NEXT_PUBLIC_TYPESENSE_PORT as string),
+			protocol: process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL as string,
+			apiKey: process.env.TYPESENSE_ADMIN_API as string,
+		})
+
 		const typesenseResult = await typesenseService.client.health.retrieve()
 
 		const telegramResult = await this.telegramService.health()
