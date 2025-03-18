@@ -2,11 +2,12 @@
   position: fixed;
   bottom: 0px;
   left: 0px;
-  background-color: #0b0b0dee;
+  background-color: #0b0b0bee;
   backdrop-filter: blur(8px) saturate(200%);
   border-top: 2px solid #232323;
   width: 100%;
   padding: 45px 165px;
+  z-index: 1000;
 
   :global {
     .ant-typography {
@@ -43,6 +44,32 @@
         border-color: darken(#f15541, 5%);
       }
     }
+    
+    .ant-checkbox-wrapper {
+      color: #fff;
+      
+      .ant-checkbox-checked .ant-checkbox-inner {
+        background-color: #f15541;
+        border-color: #f15541;
+      }
+      
+      &:hover .ant-checkbox-inner {
+        border-color: #f15541;
+      }
+    }
+  }
+}
+
+.detailsContainer {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 10px;
+  border: 1px solid #333;
+  
+  h5.ant-typography {
+    margin-bottom: 16px;
+    color: #fff;
   }
 }
 
