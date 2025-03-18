@@ -1811,6 +1811,15 @@
     typesense "^1.8.2"
     typesense-instantsearch-adapter "^2.8.0"
 
+"@gdhub-io/gdhub-typesense@^1.0.6":
+  version "1.0.6"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.6/2825e41b4b51a61291221e549d82c396059e4ab1#2825e41b4b51a61291221e549d82c396059e4ab1"
+  integrity sha512-jxhOwbHh0dtcAsemld5XPjODMqcjuipJjJx5nxM2z2qCKa/TGUw95j3Z78oOOlexksj0MSVqSNUluJpp9o+Rug==
+  dependencies:
+    dayjs "^1.11.13"
+    typesense "^1.8.2"
+    typesense-instantsearch-adapter "^2.8.0"
+
 "@humanwhocodes/config-array@^0.13.0":
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.13.0.tgz#fb907624df3256d04b9aa2df50d7aa97ec648748"
@@ -10759,7 +10768,7 @@ typescript@^5.8.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.2.tgz#8170b3702f74b79db2e5a96207c15e65807999e4"
   integrity sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==
 
-typesense-instantsearch-adapter@^2.7.1, typesense-instantsearch-adapter@^2.8.0:
+typesense-instantsearch-adapter@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/typesense-instantsearch-adapter/-/typesense-instantsearch-adapter-2.8.0.tgz#2c01d00957cef97df5a941f55bced072013300bb"
   integrity sha512-2q4QVpHoUV0ncf1XOqIC0dufOTkFRxQ0mHzg//H3WK02ZYqdNNPCAacZODhQlltl1cNJdTI8Y4uuGVd6fJuGzw==
