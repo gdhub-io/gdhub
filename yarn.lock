@@ -1789,27 +1789,18 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.8.tgz#21a907684723bbbaa5f0974cf7730bd797eb8e62"
   integrity sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==
 
-"@gdhub-io/gdhub-prisma@^1.7.5":
-  version "1.7.5"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.7.5/ff9c12109c95b99f8f0d5be0d853a5ffee75e47e#ff9c12109c95b99f8f0d5be0d853a5ffee75e47e"
-  integrity sha512-EU0R7YBSu9rgINWQmw8xVhRq+Z4oUuA7DoCTx7Ky7mSqttrfWyvFer4qxGNBhQnaRIfP5xr83VJNaIqUY47Vww==
+"@gdhub-io/gdhub-prisma@^1.7.7":
+  version "1.7.7"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.7.7/2d92bb5d97ef7bf8f6b292ca71eb76ab81ebe15c#2d92bb5d97ef7bf8f6b292ca71eb76ab81ebe15c"
+  integrity sha512-ILonDPt2RjOTZ2cWt6qYl3fOa3aw4CNhLhw4oJNJjeeERPKykc9K+7tAe9xXNqsNoqpPGGXt9ks0H/iv6Ttw+A==
   dependencies:
     "@faker-js/faker" "^9.2.0"
-    "@gdhub-io/gdhub-typesense" "^1.0.2"
+    "@gdhub-io/gdhub-typesense" "^1.0.6"
     "@prisma/client" "6"
     dayjs "^1.11.13"
     prisma "6"
     prisma-extension-pagination "^0.7.4"
     prisma-json-types-generator "^3.2.2"
-
-"@gdhub-io/gdhub-typesense@^1.0.2":
-  version "1.0.2"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.2/a78bdb429a3d79450ed482879e3e395039c50e7a#a78bdb429a3d79450ed482879e3e395039c50e7a"
-  integrity sha512-dLaFFbkqnDyu0cWeE5V0jkLv6G5SannrGjbPKkufboNXRxr20PzdThYpdIrbUG32vzGVZyFTGI2a4pcJLe5s9g==
-  dependencies:
-    dayjs "^1.11.13"
-    typesense "^1.8.2"
-    typesense-instantsearch-adapter "^2.8.0"
 
 "@gdhub-io/gdhub-typesense@^1.0.6":
   version "1.0.6"
