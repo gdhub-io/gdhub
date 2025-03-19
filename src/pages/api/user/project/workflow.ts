@@ -15,18 +15,12 @@ class ApiUserProjectWorkflowHandler {
 		const projectWorkflow = await prisma.projectWorkflow.findFirst({
 			where: { projectId },
 			include: {
-				steps: { orderBy: { order: 'asc' }, include: { tasks: true } },
+				currentStep: { include: { tasks: true } },
+				steps: { select: { id: true, order: true, name: true }, orderBy: { order: 'asc' } },
 			},
 		})
 
-		const currentStep = await prisma.project.getCurrentWorkflowStep({
-			projectId,
-		})
-
-		return {
-			currentStep: currentStep,
-			workflow: projectWorkflow,
-		}
+		return projectWorkflow
 	}
 }
 

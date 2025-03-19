@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { Render } from '@9gustin/react-notion-render'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
@@ -7,21 +7,27 @@ import { Skeleton, Spin } from 'antd'
 import axios from 'axios'
 import styles from './style.module.scss'
 
+const prepareContentRequest = (step: prismaClient.ProjectWorkflowStep) => {
+	const [source, path] = step.description?.split('::') || []
+
+	if (source === 'notion' && path) {
+		const [table, slug] = path?.split('.')
+
+		return { source, table, slug }
+	}
+
+	return null
+}
+
 const WorkflowStepContent = ({ step, locale = 'en' }: { step: prismaClient.ProjectWorkflowStep; locale?: string }) => {
 	const { getLanguage } = useTolgee()
-	const [contentRequest, setContentRequest] = useState<{ source: 'notion'; table: string; slug: string }>()
+	const contentRequest = useMemo(() => prepareContentRequest(step), [step])
 
-	useEffect(() => {
-		const [source, path] = step.description?.split('::') || []
-
-		if (source === 'notion' && path) {
-			const [table, slug] = path?.split('.')
-
-			setContentRequest({ source, table, slug })
-		}
-	}, [step])
-
-	const { data: content, isLoading } = useQuery(
+	const {
+		data: content,
+		isLoading,
+		refetch: refetchContent,
+	} = useQuery(
 		['workflow-step-content', step?.id],
 		() =>
 			axios.post(`/api/notion/page`, {

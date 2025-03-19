@@ -20,6 +20,7 @@ export const NotificationsBell = () => {
 		queryKey: ['novu-signature', session?.user.id],
 		queryFn: () => axios.get<{ signature: string }>('/api/services/novu/signature'),
 		enabled: !!session?.user.id,
+		refetchOnWindowFocus: false,
 	})
 
 	if (!session || !signature?.data.signature) {
