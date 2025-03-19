@@ -1,4 +1,4 @@
-import { GTM_ID } from '@/helpers/gtm'
+// import { GTM_ID } from '@/helpers/gtm'
 import { createCache, extractStyle } from '@ant-design/cssinjs'
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
 

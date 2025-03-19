@@ -215,9 +215,12 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 			),
 		},
 		{
-			key: '/experts',
-			disabled: true,
-			label: <T keyName="app.user.menu.mentors">Mentors</T>,
+			key: '/hub/mentors',
+			label: (
+				<Link href="/hub/mentors">
+					<T keyName="app.user.menu.mentors">Mentors</T>
+				</Link>
+			),
 		},
 		{
 			key: '/profile/settings/general',
