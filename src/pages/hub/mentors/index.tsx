@@ -83,11 +83,6 @@ const MentorsPage = () => {
 			</div>
 
 			<Spin spinning={isLoading}>
-				<div className={styles.mentorsHint}>
-					<Text type="secondary">
-						<T keyName="mentors.page.click_hint">Click on a mentor card to contact them via Telegram</T>
-					</Text>
-				</div>
 				<Row gutter={[24, 24]} className={styles.mentorsGrid}>
 					{mentors?.map((mentor) => (
 						<Col xs={24} sm={12} md={8} lg={6} key={mentor.id}>

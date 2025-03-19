@@ -168,14 +168,17 @@ export const ProtectedProjectLayout = ({
 	}, [isOpenedInTelegram, screens, session])
 
 	const menuItems: (ItemType & { disabled: boolean })[] = [
-		// {
-		// 	key: `/my/projects/${projectSlug}`,
-		// 	label: <Link href={`/my/projects/${projectSlug}`}>{t('app.user-project.menu.workflow', 'Workflow')}</Link>,
-		// },
 		{
 			key: `/my/projects/${projectSlug}`,
 			disabled: false,
 			label: <Link href={`/my/projects/${projectSlug}`}>{t('app.user-project.menu.overview', 'Devlog')}</Link>,
+		},
+		{
+			key: `/my/projects/${projectSlug}/workflow`,
+			disabled: false,
+			label: (
+				<Link href={`/my/projects/${projectSlug}/workflow`}>{t('app.user-project.menu.workflow', 'Workflow')}</Link>
+			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/vacancies`,
