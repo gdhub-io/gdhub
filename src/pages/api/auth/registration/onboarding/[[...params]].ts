@@ -158,7 +158,9 @@ class ApiRegistrationHandler {
 				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
 				primaryInterest,
 				user: {
-					update: { where: { NOT: { roles: { has: prismaClient.UserRole.Author } } }, data: { roles: { push: role } } },
+					update: {
+						roles: { set: [prismaClient.UserRole.Member, prismaClient.UserRole.Author] },
+					},
 				},
 			} as any,
 		})
