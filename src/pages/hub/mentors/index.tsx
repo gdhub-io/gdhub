@@ -125,16 +125,6 @@ const MentorsPage = () => {
 											)}
 										</ul>
 									</div>
-									{mentor.profile?.tgNickname && (
-										<div className={styles.telegramLink}>
-											<Text type="secondary">
-												<T keyName="mentors.page.telegram.label">Telegram:</T>
-											</Text>
-											<a href={`https://t.me/${mentor.profile.tgNickname}`} target="_blank" rel="noopener noreferrer">
-												@{mentor.profile.tgNickname}
-											</a>
-										</div>
-									)}
 								</div>
 							</Card>
 						</Col>
