@@ -15,14 +15,13 @@ const { Title, Text } = Typography
 export type ProjectWorkflow = prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
 
 type ProjctWorkflowWithSteps = ProjectWorkflow & {
-	steps: (prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] })[]
-	currentStep: prismaClient.ProjectWorkflowStep
+	steps: prismaClient.ProjectWorkflowStep[]
+	currentStep: prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }
 }
 
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
 	const [conditionStatus, setConditionStatus] = useState<any>({ completed: false })
-	const [step, setStep] = useState<prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }>()
 	const [workflow, setWorkflow] = useState<ProjctWorkflowWithSteps>()
 	const [drawerVisible, setDrawerVisible] = useState(false)
 	const [popoverVisible, setPopoverVisible] = useState(false)
@@ -62,17 +61,14 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const { refetch: refetchWorkflowData } = useQuery(
 		['project-workflow', projectId],
 		() =>
-			axios.get<{
-				currentStep: prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }
-				workflow: ProjctWorkflowWithSteps
-			}>('/api/user/project/workflow', {
+			axios.get<ProjctWorkflowWithSteps>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
 		{
 			enabled: !!projectId,
+			refetchOnWindowFocus: false,
 			onSuccess({ data }) {
-				setStep(data.currentStep)
-				setWorkflow(data.workflow)
+				setWorkflow(data)
 			},
 		}
 	)
@@ -88,8 +84,8 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	)
 
 	const currentStepOrder = useMemo(() => {
-		return step?.order || 0
-	}, [workflow, step])
+		return workflow?.currentStep?.order || 0
+	}, [workflow])
 
 	const handlePreviousStep = () => {
 		moveProjectToStep({ projectId, direction: 'previous' })
@@ -100,7 +96,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	}
 
 	useEffect(() => {
-		const stepTasks = workflow?.steps[currentStepOrder].tasks
+		const stepTasks = workflow?.currentStep.tasks
 
 		if (!stepTasks || stepTasks.length === 0) {
 			setConditionStatus({ completed: true })
@@ -110,7 +106,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		if (stepTasks.every((t) => t.done)) {
 			setConditionStatus({ completed: true })
 		}
-	}, [workflow?.steps[currentStepOrder].tasks])
+	}, [workflow?.currentStep.tasks])
 
 	const handleTaskStatusChange = (taskId: string, checked: boolean) => {
 		if (taskId === '1') {
@@ -151,21 +147,16 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 						</Title>
 					</div>
 					<div className={styles.stepTasks}>
-						{!screens.lg && (
-							<Button type="text" ghost onClick={() => setDrawerVisible(true)}>
-								<T keyName="workflow.all-steps">All steps</T>
-							</Button>
-						)}
 						{currentStepOrder > 0 && (
 							<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
 								<T keyName="workflow.previous-step">Previous</T>
 							</Button>
 						)}
-						{screens.lg && (
-							<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
-								<Button type="text" icon={<CiViewList size={24} />} />
-							</Popover>
-						)}
+
+						<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
+							<Button type="text" icon={<CiViewList size={24} />} />
+						</Popover>
+
 						{currentStepOrder < workflow.steps.length - 1 && (
 							<>
 								{conditionStatus.completed == false ? (
@@ -188,16 +179,16 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 					<Col xs={24} lg={16}>
 						<Space direction="vertical" size={32} style={{ width: '100%' }}>
 							<div className={styles.stepContent}>
-								<WorkflowStepContent step={workflow.steps[currentStepOrder]} locale={locale} />
+								<WorkflowStepContent step={workflow.currentStep} locale={locale} />
 							</div>
 
-							{!screens.lg && workflow.steps[currentStepOrder].tasks.length > 0 && (
+							{!screens.lg && workflow.currentStep.tasks.length > 0 && (
 								<div className={styles.stepContent}>
 									<Title level={3}>
 										<T keyName="workflow.tasks.title">Tasks</T>
 									</Title>
 									<div className={styles.tasksContainer}>
-										{workflow.steps[currentStepOrder].tasks.map((task) => (
+										{workflow.currentStep.tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
@@ -219,9 +210,9 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<Title level={3}>
 									<T keyName="workflow.tasks.title">Tasks</T>
 								</Title>
-								{workflow.steps[currentStepOrder].tasks.length > 0 ? (
+								{workflow.currentStep.tasks.length > 0 ? (
 									<div className={styles.tasksContainer}>
-										{workflow.steps[currentStepOrder].tasks.map((task) => (
+										{workflow.currentStep.tasks.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
