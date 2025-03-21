@@ -1,0 +1,76 @@
+.container {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.helpIcon {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  
+  &:hover {
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userAvatar {
+  flex-shrink: 0;
+}
+
+.transactionsTable {
+  width: 100%;
+}
+
+.loading, .error, .noData {
+  text-align: center;
+  padding: 32px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.error {
+  color: #ff4d4f;
+}
+
+// Стили для модального окна передачи доли
+.transferModal {
+  .transferForm {
+    margin-top: 16px;
+  }
+  
+  .transferInfo {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    
+    .infoRow {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+  }
+} 

@@ -12,7 +12,7 @@ import { Button, Grid, message, Flex, Typography, Tag, Space, Popconfirm } from 
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import EquityPlot from './EquityPlot'
+import EquitySection from './EquitySection'
 
 const { Text } = Typography
 
@@ -82,7 +82,7 @@ const MyTeam = () => {
 				params: { projectId: contextProject?.id },
 			}),
 		{
-			enabled: !!contextProject?.id && !!contextProject?.isProjectAuthor,
+			enabled: !!contextProject?.id,
 		}
 	)
 
@@ -155,8 +155,8 @@ const MyTeam = () => {
 	}
 
 	const getMemberShare = (memberId: string) => {
-		if (!projectEquity?.data?.teamShares) return null
-		return projectEquity.data.teamShares.find((share: any) => share.memberId === memberId)
+		if (!projectEquity?.data?.equityAllocations) return null
+		return projectEquity.data.equityAllocations.find((share: any) => share.ownerId === memberId)
 	}
 
 	const handleOpenMemberShareModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
@@ -177,7 +177,10 @@ const MyTeam = () => {
 	const getMaxAvailableShare = (currentShare: number) => {
 		if (!projectEquity?.data) return 50
 
-		const teamTotal = projectEquity.data.teamShares.reduce((sum: number, share: any) => sum + share.percentage, 0)
+		const teamTotal = projectEquity.data.equityAllocations?.reduce(
+			(sum: number, share: any) => sum + share.percentage,
+			0
+		)
 		const allocated =
 			projectEquity.data.platformShare +
 			projectEquity.data.mentorFundShare +
@@ -343,32 +346,15 @@ const MyTeam = () => {
 
 	return (
 		<>
-			{/* Отображение информации о долях проекта (если доступно) */}
-			{projectEquity?.data && (
-				<div style={{ marginBottom: 24 }}>
-					<Flex justify="space-between" align="center" style={{ marginBottom: 8 }}>
-						<h3 style={{ margin: 0 }}>{t('Project Equity Distribution')}</h3>
-						{contextProject?.isProjectAuthor && (
-							<Button type="default" onClick={handleOpenEquityModal}>
-								<T>Settings</T>
-							</Button>
-						)}
-					</Flex>
-					<div style={{ padding: '0' }}>
-						<EquityPlot
-							platformShare={projectEquity.data.platformShare}
-							mentorFundShare={projectEquity.data.mentorFundShare}
-							investmentReserve={projectEquity.data.investmentReserve}
-							teamShares={projectEquity.data.teamShares.map((share: any) => {
-								const member = team?.data.members.find((m: any) => m.id === share.memberId)
-								return {
-									...share,
-									name: member?.user.name || '',
-								}
-							})}
-						/>
-					</div>
-				</div>
+			{/* Отображение информации о долях проекта */}
+			{projectEquity?.data && contextProject?.id && (
+				<EquitySection
+					projectId={contextProject.id}
+					isProjectAuthor={contextProject.isProjectAuthor || false}
+					equityData={projectEquity.data}
+					teamMembers={team?.data.members || []}
+					onManageEquity={handleOpenEquityModal}
+				/>
 			)}
 
 			{/* Заголовок таблицы участников с кнопкой "Пригласить участника" */}

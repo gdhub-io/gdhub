@@ -18,25 +18,37 @@ interface EquityShareModalProps {
 	projectWorkflow?: any // Тип для workflow с шагами
 }
 
-interface EquityShare {
-	memberId: string
+interface EquityAllocation {
+	id?: string
+	ownerId: string
+	teamMemberId?: string | null
+	percentage: number
+	isFixed: boolean
+	vested: boolean
+	promises?: EquityPromise[]
+}
+
+interface EquityPromise {
+	id?: string
 	percentage: number
 	targetStepId?: string | null
-	isFixed: boolean
+	description?: string
+	isExecuted: boolean
 }
 
 interface ProjectEquity {
 	platformShare: number // Фиксированные 3%
 	mentorFundShare: number // Минимум 7%
 	investmentReserve: number // Резерв под инвестиции, например 40%
-	teamShares: EquityShare[]
+	teamShares?: any[] // Для обратной совместимости
+	equityAllocations?: EquityAllocation[] // Новый формат для хранения долей
 }
 
 const defaultEquity: ProjectEquity = {
 	platformShare: 3, // Фиксированные 3%
 	mentorFundShare: 7, // Минимум 7%
 	investmentReserve: 40, // Резерв под инвестиции, по умолчанию 40%
-	teamShares: [],
+	equityAllocations: [],
 }
 
 const EquityShareModal = ({ teamId, projectId, open, onOk, onCancel, teamMembers }: EquityShareModalProps) => {
@@ -77,7 +89,12 @@ const EquityShareModal = ({ teamId, projectId, open, onOk, onCancel, teamMembers
 
 	// Пересчитываем оставшийся процент при изменении долей
 	useEffect(() => {
-		const teamTotal = equity.teamShares.reduce((sum, share) => sum + share.percentage, 0)
+		// Вычисляем общую долю команды, используя equityAllocations если доступны,
+		// иначе используем teamShares для обратной совместимости
+		const teamTotal = equity.equityAllocations
+			? equity.equityAllocations.reduce((sum, alloc) => sum + alloc.percentage, 0)
+			: 0
+
 		const allocatedPercentage = equity.platformShare + equity.mentorFundShare + equity.investmentReserve + teamTotal
 		setRemainingPercentage(100 - allocatedPercentage)
 	}, [equity])
@@ -129,24 +146,42 @@ const EquityShareModal = ({ teamId, projectId, open, onOk, onCancel, teamMembers
 					<Title level={5}>{t('Equity Distribution Rules')}</Title>
 					<ul>
 						<li>{t('3% is fixed for the platform')}</li>
-						<li>{t('At least 2% is allocated to the mentor fund')}</li>
+						<li>{t('At least 7% is allocated to the mentor fund')}</li>
 						<li>{t('A portion should be reserved for future investments')}</li>
 					</ul>
+				</div>
+
+				{/* Сводка распределения долей */}
+				<div className={styles.equitySummary}>
+					<Text>
+						{t('Remaining unallocated percentage')}
+						{': '}
+						<Text strong type={remainingPercentage < 0 ? 'danger' : undefined}>
+							{remainingPercentage.toFixed(1)}%
+						</Text>
+					</Text>
+					<Text>
+						{t('Team allocated percentage')}
+						{': '}
+						<Text strong>
+							{100 - equity.platformShare - equity.mentorFundShare - equity.investmentReserve - remainingPercentage}%
+						</Text>
+					</Text>
 				</div>
 
 				{/* Настройка долей */}
 				<Form form={form} variant="filled" layout="vertical">
 					{/* Доля фонда менторов (минимум 7%) */}
-					<Form.Item label={t('Mentor Fund Share (minimum 2%)')}>
+					<Form.Item label={t('Mentor Fund Share (minimum 7%)')}>
 						<Flex align="center" gap={16}>
 							<div className={styles.sliderContainer}>
 								<Slider
-									min={2}
+									min={7}
 									max={20}
 									defaultValue={7}
 									value={equity.mentorFundShare}
 									onChange={handleMentorFundChange}
-									marks={{ 2: '2%', 10: '10%', 15: '15%', 20: '20%' }}
+									marks={{ 7: '7%', 10: '10%', 15: '15%', 20: '20%' }}
 								/>
 							</div>
 							<InputNumber

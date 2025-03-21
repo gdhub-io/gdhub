@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import * as Plot from '@observablehq/plot'
 import styles from './EquityPlot.module.scss'
 
@@ -8,6 +8,8 @@ interface EquityShare {
 	isFixed: boolean
 	vested: boolean
 	name?: string
+	userId?: string
+	promises?: any[]
 }
 
 interface EquityPlotProps {
@@ -15,6 +17,7 @@ interface EquityPlotProps {
 	mentorFundShare: number
 	investmentReserve: number
 	teamShares: EquityShare[]
+	teamMembers?: any[]
 }
 
 interface DataItem {
@@ -28,9 +31,15 @@ interface DataItem {
 
 const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare, investmentReserve, teamShares }) => {
 	const containerRef = useRef<HTMLDivElement>(null)
+	const [chartWidth, setChartWidth] = useState<number>(0)
 
-	useEffect(() => {
+	// Функция для рендеринга графика
+	const renderChart = () => {
 		if (!containerRef.current) return
+
+		// Получаем текущую ширину контейнера
+		const currentWidth = containerRef.current.clientWidth
+		setChartWidth(currentWidth)
 
 		// Преобразуем данные в формат, подходящий для Plot
 		const data: DataItem[] = []
@@ -65,9 +74,14 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 			})
 		}
 
+		// Очищаем контейнер перед созданием нового графика
+		if (containerRef.current) {
+			containerRef.current.innerHTML = ''
+		}
+
 		// Создаем график с помощью Plot
 		const chart = Plot.plot({
-			width: containerRef.current.clientWidth,
+			width: currentWidth,
 			height: 60,
 			margin: 0,
 			style: {
@@ -183,13 +197,32 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 		})
 
 		// Очищаем контейнер и добавляем новый график
-		containerRef.current.innerHTML = ''
-		containerRef.current.appendChild(chart)
+		if (containerRef.current) {
+			containerRef.current.appendChild(chart)
+		}
+	}
+
+	// Эффект для первичного рендеринга и при изменении данных
+	useEffect(() => {
+		renderChart()
+
+		// Создаем ResizeObserver для отслеживания изменений размера контейнера
+		const resizeObserver = new ResizeObserver(() => {
+			if (containerRef.current && containerRef.current.clientWidth !== chartWidth) {
+				renderChart()
+			}
+		})
+
+		// Наблюдаем за контейнером
+		if (containerRef.current) {
+			resizeObserver.observe(containerRef.current)
+		}
 
 		// Очистка при размонтировании
 		return () => {
 			if (containerRef.current) {
 				containerRef.current.innerHTML = ''
+				resizeObserver.disconnect()
 			}
 		}
 	}, [platformShare, mentorFundShare, investmentReserve, teamShares])
@@ -202,11 +235,12 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 				style={{
 					background: 'transparent',
 					marginTop: 0,
+					marginBottom: 0,
 					borderRadius: '6px',
 					overflow: 'hidden',
 				}}
 			></div>
-			<div style={{ marginTop: 8 }}>
+			<div style={{ marginTop: 4 }}>
 				<div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
 					<div style={{ display: 'flex', alignItems: 'center' }}>
 						<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#9E9E9E' }} />
