@@ -1,5 +1,7 @@
 import { useContext, useState } from 'react'
+import EquityShareModal from '@/components/modals/EquityShareModal'
 import InviteMemberModal from '@/components/modals/InviteMemberModal'
+import MemberShareModal from '@/components/modals/MemberShareModal'
 import ModernTable from '@/components/ModernTable'
 import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
@@ -10,6 +12,7 @@ import { Button, Grid, message, Flex, Typography, Tag, Space, Popconfirm } from 
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import EquityPlot from './EquityPlot'
 
 const { Text } = Typography
 
@@ -18,6 +21,11 @@ const MyTeam = () => {
 	const { t } = useTolgee()
 	const contextProject = useContext(ProjectContext)?.contextProject
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+	const [isEquityModalOpen, setIsEquityModalOpen] = useState(false)
+	const [isMemberShareModalOpen, setIsMemberShareModalOpen] = useState(false)
+	const [selectedMember, setSelectedMember] = useState<(prismaClient.TeamMember & { user: prismaClient.User }) | null>(
+		null
+	)
 
 	const {
 		data: team,
@@ -49,6 +57,32 @@ const MyTeam = () => {
 			}),
 		{
 			enabled: !!contextProject?.teamId && !!contextProject?.isProjectAuthor,
+		}
+	)
+
+	const { data: projectWorkflow, isLoading: isLoadingWorkflow } = useQuery(
+		['project-workflow', contextProject?.id],
+		() =>
+			axios.get('/api/user/project/workflow', {
+				params: { projectId: contextProject?.id },
+			}),
+		{
+			enabled: !!contextProject?.id && !!contextProject?.isProjectAuthor,
+		}
+	)
+
+	const {
+		data: projectEquity,
+		refetch: fetchProjectEquity,
+		isLoading: isLoadingEquity,
+	} = useQuery(
+		['project-equity', contextProject?.id],
+		() =>
+			axios.get('/api/user/project/equity', {
+				params: { projectId: contextProject?.id },
+			}),
+		{
+			enabled: !!contextProject?.id && !!contextProject?.isProjectAuthor,
 		}
 	)
 
@@ -105,6 +139,53 @@ const MyTeam = () => {
 		setIsInviteModalOpen(false)
 		fetchMyTeam()
 		fetchPendingInvitations()
+	}
+
+	const handleOpenEquityModal = () => {
+		setIsEquityModalOpen(true)
+	}
+
+	const handleCloseEquityModal = () => {
+		setIsEquityModalOpen(false)
+	}
+
+	const handleEquityUpdateSuccess = () => {
+		setIsEquityModalOpen(false)
+		fetchProjectEquity()
+	}
+
+	const getMemberShare = (memberId: string) => {
+		if (!projectEquity?.data?.teamShares) return null
+		return projectEquity.data.teamShares.find((share: any) => share.memberId === memberId)
+	}
+
+	const handleOpenMemberShareModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
+		setSelectedMember(member)
+		setIsMemberShareModalOpen(true)
+	}
+
+	const handleCloseMemberShareModal = () => {
+		setIsMemberShareModalOpen(false)
+		setSelectedMember(null)
+	}
+
+	const handleMemberShareUpdateSuccess = (percentage: number, vested: boolean, targetStepId?: string) => {
+		handleCloseMemberShareModal()
+		fetchProjectEquity()
+	}
+
+	const getMaxAvailableShare = (currentShare: number) => {
+		if (!projectEquity?.data) return 50
+
+		const teamTotal = projectEquity.data.teamShares.reduce((sum: number, share: any) => sum + share.percentage, 0)
+		const allocated =
+			projectEquity.data.platformShare +
+			projectEquity.data.mentorFundShare +
+			projectEquity.data.investmentReserve +
+			teamTotal
+		const remainingPercentage = 100 - allocated + currentShare
+
+		return Math.min(currentShare + remainingPercentage, 50)
 	}
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
@@ -192,6 +273,36 @@ const MyTeam = () => {
 				return null
 			},
 		},
+		{
+			title: t('Shares'),
+			key: 'shares',
+			render: (_, member) => {
+				const memberShare = getMemberShare(member.id)
+				if (!memberShare) {
+					return (
+						<Space>
+							<Text type="secondary">-</Text>
+							{contextProject?.isProjectAuthor && (
+								<Button type="link" onClick={() => handleOpenMemberShareModal(member)} size="small">
+									<T>Edit</T>
+								</Button>
+							)}
+						</Space>
+					)
+				}
+
+				return (
+					<Space>
+						<Text>{memberShare.percentage.toFixed(1)}%</Text>
+						{contextProject?.isProjectAuthor && (
+							<Button type="link" onClick={() => handleOpenMemberShareModal(member)} size="small">
+								<T>Edit</T>
+							</Button>
+						)}
+					</Space>
+				)
+			},
+		},
 	]
 
 	const pendingInvitationsColumns: ColumnsType<prismaClient.TeamInvitation> = [
@@ -232,18 +343,45 @@ const MyTeam = () => {
 
 	return (
 		<>
-			{Boolean(contextProject?.isProjectAuthor) && (
-				<Flex justify="space-between" align="center" wrap>
-					<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
-
-					{/* temp */}
-					{contextProject?.isProjectAuthor && (
-						<Button type="primary" onClick={handleOpenInviteModal}>
-							<T>Invite Member</T>
-						</Button>
-					)}
-				</Flex>
+			{/* Отображение информации о долях проекта (если доступно) */}
+			{projectEquity?.data && (
+				<div style={{ marginBottom: 24 }}>
+					<Flex justify="space-between" align="center" style={{ marginBottom: 8 }}>
+						<h3 style={{ margin: 0 }}>{t('Project Equity Distribution')}</h3>
+						{contextProject?.isProjectAuthor && (
+							<Button type="default" onClick={handleOpenEquityModal}>
+								<T>Settings</T>
+							</Button>
+						)}
+					</Flex>
+					<div style={{ padding: '0' }}>
+						<EquityPlot
+							platformShare={projectEquity.data.platformShare}
+							mentorFundShare={projectEquity.data.mentorFundShare}
+							investmentReserve={projectEquity.data.investmentReserve}
+							teamShares={projectEquity.data.teamShares.map((share: any) => {
+								const member = team?.data.members.find((m: any) => m.id === share.memberId)
+								return {
+									...share,
+									name: member?.user.name || '',
+								}
+							})}
+						/>
+					</div>
+				</div>
 			)}
+
+			{/* Заголовок таблицы участников с кнопкой "Пригласить участника" */}
+			<Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
+				<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
+
+				{contextProject?.isProjectAuthor && (
+					<Button type="primary" onClick={handleOpenInviteModal}>
+						<T>Invite Member</T>
+					</Button>
+				)}
+			</Flex>
+
 			<ModernTable
 				loading={isLoadingMyTeam || isFiring}
 				columns={columns}
@@ -264,12 +402,35 @@ const MyTeam = () => {
 			)}
 
 			{contextProject?.teamId && (
-				<InviteMemberModal
-					teamId={contextProject.teamId}
-					open={isInviteModalOpen}
-					onOk={handleInviteSuccess}
-					onCancel={handleCloseInviteModal}
-				/>
+				<>
+					<InviteMemberModal
+						open={isInviteModalOpen}
+						onOk={handleInviteSuccess}
+						onCancel={handleCloseInviteModal}
+						teamId={contextProject?.teamId || ''}
+					/>
+					<EquityShareModal
+						open={isEquityModalOpen}
+						onOk={handleEquityUpdateSuccess}
+						onCancel={handleCloseEquityModal}
+						projectId={contextProject?.id || ''}
+						teamId={contextProject?.teamId || ''}
+						teamMembers={team?.data.members || []}
+						projectWorkflow={projectWorkflow?.data}
+					/>
+					{selectedMember && (
+						<MemberShareModal
+							open={isMemberShareModalOpen}
+							onOk={handleMemberShareUpdateSuccess}
+							onCancel={handleCloseMemberShareModal}
+							memberId={selectedMember.id}
+							currentShare={getMemberShare(selectedMember.id)?.percentage || 0}
+							maxShare={getMaxAvailableShare(getMemberShare(selectedMember.id)?.percentage || 0)}
+							projectId={contextProject?.id || ''}
+							isVested={getMemberShare(selectedMember.id)?.vested || true}
+						/>
+					)}
+				</>
 			)}
 		</>
 	)
