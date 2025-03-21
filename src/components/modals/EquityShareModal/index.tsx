@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Form, Modal, Button, Slider, Typography, Space, InputNumber, Alert } from 'antd'
+import { Form, Modal, Button, Slider, Typography, Space, InputNumber, Flex } from 'antd'
 import axios from 'axios'
+import styles from './styles.module.scss'
 
 const { Text, Title } = Typography
 
@@ -110,7 +111,7 @@ const EquityShareModal = ({ teamId, projectId, open, onOk, onCancel, teamMembers
 
 	return (
 		<Modal
-			title={t('Global Project Settings')}
+			title={t('Equity Settings')}
 			open={open}
 			width={600}
 			onCancel={onCancel}
@@ -123,65 +124,63 @@ const EquityShareModal = ({ teamId, projectId, open, onOk, onCancel, teamMembers
 				</Button>,
 			]}
 		>
-			<Space direction="vertical" style={{ width: '100%' }} size="large">
-				<Alert
-					message={t('Equity Distribution Rules')}
-					description={
-						<ul>
-							<li>{t('3% is fixed for the platform')}</li>
-							<li>{t('At least 7% is allocated to the mentor fund')}</li>
-							<li>{t('A portion should be reserved for future investments')}</li>
-							<li>
-								{t('The remaining percentage ({remainingPercent}%) is available for team distribution', {
-									remainingPercent: remainingPercentage.toFixed(2),
-								})}
-							</li>
-						</ul>
-					}
-					type="info"
-					showIcon
-				/>
+			<Space direction="vertical" style={{ width: '100%', paddingInline: 8 }} size="large">
+				<div className={styles.equityRules}>
+					<Title level={5}>{t('Equity Distribution Rules')}</Title>
+					<ul>
+						<li>{t('3% is fixed for the platform')}</li>
+						<li>{t('At least 2% is allocated to the mentor fund')}</li>
+						<li>{t('A portion should be reserved for future investments')}</li>
+					</ul>
+				</div>
 
 				{/* Настройка долей */}
-				<Form form={form} layout="vertical">
-					<Title level={4}>{t('Global Settings')}</Title>
-
+				<Form form={form} variant="filled" layout="vertical">
 					{/* Доля фонда менторов (минимум 7%) */}
-					<Form.Item label={t('Mentor Fund Share (minimum 7%)')}>
-						<Slider
-							min={7}
-							max={20}
-							value={equity.mentorFundShare}
-							onChange={handleMentorFundChange}
-							marks={{ 7: '7%', 10: '10%', 15: '15%', 20: '20%' }}
-						/>
-						<InputNumber
-							min={7}
-							max={20}
-							value={equity.mentorFundShare}
-							onChange={handleMentorFundChange}
-							addonAfter="%"
-							style={{ width: '100px' }}
-						/>
+					<Form.Item label={t('Mentor Fund Share (minimum 2%)')}>
+						<Flex align="center" gap={16}>
+							<div className={styles.sliderContainer}>
+								<Slider
+									min={2}
+									max={20}
+									defaultValue={7}
+									value={equity.mentorFundShare}
+									onChange={handleMentorFundChange}
+									marks={{ 2: '2%', 10: '10%', 15: '15%', 20: '20%' }}
+								/>
+							</div>
+							<InputNumber
+								min={7}
+								max={20}
+								value={equity.mentorFundShare}
+								onChange={handleMentorFundChange}
+								addonAfter="%"
+								style={{ width: '110px' }}
+							/>
+						</Flex>
 					</Form.Item>
 
 					{/* Резерв под инвестиции */}
 					<Form.Item label={t('Investment Reserve')}>
-						<Slider
-							min={0}
-							max={70}
-							value={equity.investmentReserve}
-							onChange={handleInvestmentReserveChange}
-							marks={{ 0: '0%', 20: '20%', 40: '40%', 60: '60%' }}
-						/>
-						<InputNumber
-							min={0}
-							max={70}
-							value={equity.investmentReserve}
-							onChange={handleInvestmentReserveChange}
-							addonAfter="%"
-							style={{ width: '100px' }}
-						/>
+						<Flex align="center" gap={16}>
+							<div className={styles.sliderContainer}>
+								<Slider
+									min={0}
+									max={70}
+									value={equity.investmentReserve}
+									onChange={handleInvestmentReserveChange}
+									marks={{ 0: '0%', 20: '20%', 40: '40%', 60: '60%' }}
+								/>
+							</div>
+							<InputNumber
+								min={0}
+								max={70}
+								value={equity.investmentReserve}
+								onChange={handleInvestmentReserveChange}
+								addonAfter="%"
+								style={{ width: '110px' }}
+							/>
+						</Flex>
 					</Form.Item>
 				</Form>
 			</Space>

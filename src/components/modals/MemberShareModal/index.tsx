@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Modal, Form, InputNumber, Button, Slider, Typography, Space, Select } from 'antd'
+import { Modal, Form, InputNumber, Button, Slider, Typography, Space, Select, Flex } from 'antd'
 import axios from 'axios'
 
 const { Text, Paragraph } = Typography
@@ -105,7 +105,7 @@ const MemberShareModal = ({
 		<Modal
 			title={t('Edit Member Share')}
 			open={open}
-			width={500}
+			width={600}
 			onCancel={onCancel}
 			footer={[
 				<Button key="cancel" onClick={onCancel}>
@@ -117,19 +117,11 @@ const MemberShareModal = ({
 			]}
 		>
 			<Space direction="vertical" style={{ width: '100%' }} size="large">
-				<Paragraph>
-					{t('The maximum share this member can receive is') +
-						' ' +
-						maxShare.toFixed(1) +
-						'% ' +
-						t('based on current project equity distribution.')}
-				</Paragraph>
-
 				<Paragraph type="secondary">
 					{t('Promised shares will be automatically vested when the project reaches the specified workflow step.')}
 				</Paragraph>
 
-				<Form form={form} layout="vertical">
+				<Form form={form} variant="filled" layout="vertical">
 					<Form.Item
 						label={t('Share Percentage')}
 						name="percentage"
@@ -147,8 +139,8 @@ const MemberShareModal = ({
 						]}
 						initialValue={currentShare}
 					>
-						<div style={{ display: 'flex', alignItems: 'center' }}>
-							<div style={{ flex: 1, marginRight: 16 }}>
+						<Flex align="center" gap={16}>
+							<div style={{ flex: 1 }}>
 								<Slider min={0} max={maxShare} step={0.1} value={percentage} onChange={handlePercentageChange} />
 							</div>
 							<InputNumber
@@ -158,9 +150,9 @@ const MemberShareModal = ({
 								value={percentage}
 								onChange={handlePercentageChange}
 								addonAfter="%"
-								style={{ width: '100px' }}
+								style={{ width: '110px' }}
 							/>
-						</div>
+						</Flex>
 					</Form.Item>
 
 					<Form.Item
@@ -175,18 +167,6 @@ const MemberShareModal = ({
 							options={availableSteps}
 						/>
 					</Form.Item>
-
-					{targetStepId && (
-						<Paragraph type="warning">
-							{t('These shares are promised and will be vested when the project reaches the selected workflow step.')}
-						</Paragraph>
-					)}
-
-					{!targetStepId && isVested && <Paragraph type="success">{t('These shares are already vested.')}</Paragraph>}
-
-					{!targetStepId && !isVested && (
-						<Paragraph type="warning">{t('These shares are promised but no vesting step is selected.')}</Paragraph>
-					)}
 				</Form>
 			</Space>
 		</Modal>

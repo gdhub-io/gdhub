@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
-import styles from '@/components/modals/EquityShareModal/styles.module.scss'
 import * as Plot from '@observablehq/plot'
+import styles from './EquityPlot.module.scss'
 
 interface EquityShare {
 	memberId: string
@@ -43,15 +43,12 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 		data.push({ category: 'Investment Reserve', value: investmentReserve, color: '#5C6BC0', type: 'system' })
 
 		// Добавляем доли команды - более гибкие, но зависят от общей картины
-		teamShares.forEach((share) => {
-			data.push({
-				category: share.name || 'Team Member',
-				value: share.percentage,
-				color: share.vested ? '#3949AB' : '#7986CB', // Более насыщенный для выданных долей, менее для обещанных
-				vested: share.vested,
-				type: 'team',
-				original: share,
-			})
+
+		data.push({
+			category: 'Team Member',
+			value: teamShares.map((m) => m.percentage).reduce((sum, share) => sum + share, 0),
+			color: '#3949AB', // Более насыщенный для выданных долей, менее для обещанных
+			type: 'team',
 		})
 
 		// Рассчитываем нераспределенные доли
@@ -71,7 +68,7 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 		// Создаем график с помощью Plot
 		const chart = Plot.plot({
 			width: containerRef.current.clientWidth,
-			height: 80,
+			height: 60,
 			margin: 0,
 			style: {
 				backgroundColor: 'transparent',
@@ -116,31 +113,11 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 							const prevSum = data.slice(0, index).reduce((sum, item) => sum + item.value, 0)
 							return prevSum + d.value / 2
 						},
-						text: (d: DataItem) => `${d.value.toFixed(1)}%`,
+						text: (d: DataItem) => `${d.value > 10 ? d.category : ''} ${d.value.toFixed(1)}%`,
 						fill: 'white',
 						fontWeight: 'bold',
 						fontSize: 12,
 						textAnchor: 'middle',
-						dy: 3,
-					}
-				),
-				// Добавляем метки категорий для Team и Unallocated
-				Plot.text(
-					data.filter((d) => (d.type === 'team' || d.type === 'unallocated') && d.value >= 10),
-					{
-						y: 0,
-						x: (d: DataItem) => {
-							// Найдем позицию центра для каждого сегмента
-							const index = data.indexOf(d)
-							const prevSum = data.slice(0, index).reduce((sum, item) => sum + item.value, 0)
-							return prevSum + d.value / 2
-						},
-						text: (d: DataItem) => (d.type === 'team' ? 'Team' : d.category),
-						fill: 'white',
-						fontWeight: 'bold',
-						fontSize: 10,
-						textAnchor: 'middle',
-						dy: -8,
 					}
 				),
 			],
@@ -183,21 +160,16 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 					// Добавляем слушатель событий для показа/скрытия подсказки
 					bar.addEventListener('mouseenter', (e) => {
 						const tooltip = document.createElement('div')
-						tooltip.className = styles.tooltip || 'tooltip'
+						tooltip.className = styles.tooltip
 						tooltip.textContent = `${barData.category}: ${barData.value.toFixed(1)}%`
+
 						// Позиционируем подсказку над сегментом
 						const rect = bar.getBoundingClientRect()
-						tooltip.style.position = 'absolute'
 						tooltip.style.top = `${rect.top - 30}px`
 						tooltip.style.left = `${rect.left + rect.width / 2}px`
-						tooltip.style.transform = 'translateX(-50%)'
-						tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.7)'
-						tooltip.style.color = 'white'
-						tooltip.style.padding = '4px 8px'
-						tooltip.style.borderRadius = '4px'
-						tooltip.style.fontSize = '12px'
-						tooltip.style.zIndex = '1000'
+
 						document.body.appendChild(tooltip)
+
 						bar.addEventListener(
 							'mouseleave',
 							() => {
@@ -244,21 +216,15 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 					</div>
 					<div style={{ display: 'flex', alignItems: 'center' }}>
 						<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#78909C' }} />
-						<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>
-							Mentors: {mentorFundShare}%
-						</span>
+						<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>Mentors</span>
 					</div>
 					<div style={{ display: 'flex', alignItems: 'center' }}>
 						<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#5C6BC0' }} />
-						<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>
-							Investment Reserve: {investmentReserve}%
-						</span>
+						<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>Investment Reserve</span>
 					</div>
 					<div style={{ display: 'flex', alignItems: 'center' }}>
 						<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#3949AB' }} />
-						<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>
-							Team: {teamShares.reduce((sum, share) => sum + share.percentage, 0)}%
-						</span>
+						<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>Team</span>
 					</div>
 					{100 -
 						platformShare -
@@ -268,17 +234,7 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 						0 && (
 						<div style={{ display: 'flex', alignItems: 'center' }}>
 							<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#42A5F5' }} />
-							<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>
-								Unallocated:{' '}
-								{(
-									100 -
-									platformShare -
-									mentorFundShare -
-									investmentReserve -
-									teamShares.reduce((sum, share) => sum + share.percentage, 0)
-								).toFixed(1)}
-								%
-							</span>
+							<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>Unallocated</span>
 						</div>
 					)}
 				</div>

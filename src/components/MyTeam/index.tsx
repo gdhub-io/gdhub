@@ -281,7 +281,7 @@ const MyTeam = () => {
 				if (!memberShare) {
 					return (
 						<Space>
-							<Text type="secondary">-</Text>
+							<Text type="secondary">not set</Text>
 							{contextProject?.isProjectAuthor && (
 								<Button type="link" onClick={() => handleOpenMemberShareModal(member)} size="small">
 									<T>Edit</T>
