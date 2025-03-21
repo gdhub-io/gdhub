@@ -399,10 +399,7 @@ const MyTeam = () => {
 						open={isEquityModalOpen}
 						onOk={handleEquityUpdateSuccess}
 						onCancel={handleCloseEquityModal}
-						projectId={contextProject?.id || ''}
-						teamId={contextProject?.teamId || ''}
-						teamMembers={team?.data.members || []}
-						projectWorkflow={projectWorkflow?.data}
+						projectEquity={projectEquity?.data}
 					/>
 					{selectedMember && (
 						<MemberShareModal

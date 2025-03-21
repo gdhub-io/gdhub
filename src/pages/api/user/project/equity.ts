@@ -1,49 +1,22 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { prisma } from '@/services/prisma'
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator'
-import { ValidationPipe } from 'next-api-decorators'
-import { Body, createHandler, Get, Post, Query } from 'next-api-decorators'
-import { getServerSession } from 'next-auth'
-
-class EquityShareDto {
-	@IsString()
-	@IsNotEmpty()
-	memberId: string
-
-	@IsNumber()
-	@Min(0)
-	percentage: number
-
-	@IsString()
-	@IsOptional()
-	targetStepId?: string | null
-
-	@IsOptional()
-	isFixed: boolean
-}
+import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator'
+import type { NextApiRequest } from 'next'
+import { Body, createHandler, Get, Query, Req } from 'next-api-decorators'
+import { Put, ValidationPipe } from 'next-api-decorators'
 
 class ProjectEquityDto {
 	@IsString()
 	@IsNotEmpty()
-	projectId: string
+	id: string
 
 	@IsNumber()
-	@Min(7)
+	@Min(2)
 	mentorFundShare: number
 
 	@IsNumber()
 	@Min(0)
 	investmentReserve: number
-}
-
-// Формат данных для хранения информации о долях
-interface ProjectEquityData {
-	projectId: string
-	mentorFundShare: number
-	investmentReserve: number
-	createdAt: Date
-	updatedAt: Date
 }
 
 class ProjectEquityQueryDto {
@@ -79,60 +52,46 @@ class ApiProjectEquityHandler {
 		return projectEquity
 	}
 
-	@Post()
-	public async save(@Body(ValidationPipe) equityData: ProjectEquityDto) {
-		const { projectId, mentorFundShare, investmentReserve } = equityData
+	@Put()
+	public async save(@Body(ValidationPipe) equityData: ProjectEquityDto, @Req() req: NextApiRequest) {
+		const { id, mentorFundShare, investmentReserve } = equityData
 
-		// Проверяем существование проекта
-		const project = await prisma.project.findUnique({
-			where: { id: projectId },
+		// Check if project equity exists
+		const projectEquity = await prisma.projectEquity.findUnique({
+			where: { id },
 			include: {
-				team: {
-					include: {
-						members: true,
-					},
-				},
+				project: true,
 			},
 		})
 
-		if (!project) {
-			throw new Error('Project not found')
+		if (!projectEquity) {
+			throw new Error('Project equity not found')
 		}
 
-		// Проверяем права пользователя на проект
-		const session = await getServerSession(authOptions)
-		if (!session || !session.user) {
+		// Get user from decorated request
+		// NextAuthGuard already checked authentication
+		const userId = (req as any).user?.id
+
+		if (!userId) {
 			throw new Error('Unauthorized')
 		}
 
-		// Проверяем, что текущий пользователь является автором проекта
-		if (project.authorId !== session.user.id) {
+		// Check if current user is project author
+		if (projectEquity.project.authorId !== userId) {
 			throw new Error('You are not authorized to modify this project equity')
 		}
 
-		// Проверяем корректность распределения долей
+		// Check if allocation is correct
 		const totalAllocation = mentorFundShare + investmentReserve
 
 		if (totalAllocation > 100) {
 			throw new Error('Total allocation exceeds 100%')
 		}
 
-		if (totalAllocation < 10) {
-			throw new Error('Total allocation must be at least 10%')
-		}
-
-		if (mentorFundShare < 7) {
-			throw new Error('Mentor fund share must be at least 2%')
-		}
-
-		// Сохраняем данные во временное хранилище
-		const updatedEquity: ProjectEquityData = {
-			projectId,
-			mentorFundShare,
-			investmentReserve,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		}
+		const updatedEquity = await prisma.projectEquity.update({
+			where: { id },
+			data: { mentorFundShare, investmentReserve },
+		})
 
 		return updatedEquity
 	}

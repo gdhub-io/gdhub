@@ -61,9 +61,9 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 				<div className={styles.plotContainer}>
 					<EquityPlot
 						teamMembers={teamMembers}
-						platformShare={equityData?.platformShare || 3}
-						mentorFundShare={equityData?.mentorFundShare || 7}
-						investmentReserve={equityData?.investmentReserve || 40}
+						platformShare={equityData?.platformShare}
+						mentorFundShare={equityData?.mentorFundShare}
+						investmentReserve={equityData?.investmentReserve}
 						teamShares={
 							equityData?.equityAllocations?.map((allocation: any) => ({
 								id: allocation.id,
@@ -74,7 +74,6 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 									allocation.owner?.name ||
 									t('Team Member'),
 								percentage: allocation.percentage,
-								vested: true, // По умолчанию все доли считаются полученными
 								promises: allocation.promises || [],
 							})) || []
 						}
