@@ -85,6 +85,7 @@ const EquityShareModal = ({ projectEquity, open, onOk, onCancel }: EquityShareMo
 		<Modal
 			title={t('Equity Settings')}
 			open={open}
+			maskClosable={false}
 			width={600}
 			onCancel={onCancel}
 			footer={[

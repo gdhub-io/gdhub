@@ -60,17 +60,6 @@ const MyTeam = () => {
 		}
 	)
 
-	const { data: projectWorkflow, isLoading: isLoadingWorkflow } = useQuery(
-		['project-workflow', contextProject?.id],
-		() =>
-			axios.get('/api/user/project/workflow', {
-				params: { projectId: contextProject?.id },
-			}),
-		{
-			enabled: !!contextProject?.id && !!contextProject?.isProjectAuthor,
-		}
-	)
-
 	const {
 		data: projectEquity,
 		refetch: fetchProjectEquity,
@@ -156,7 +145,7 @@ const MyTeam = () => {
 
 	const getMemberShare = (memberId: string) => {
 		if (!projectEquity?.data?.equityAllocations) return null
-		return projectEquity.data.equityAllocations.find((share: any) => share.ownerId === memberId)
+		return projectEquity.data.equityAllocations.find((share: any) => share.teamMemberId === memberId)
 	}
 
 	const handleOpenMemberShareModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
@@ -277,32 +266,41 @@ const MyTeam = () => {
 			},
 		},
 		{
+			title: t('Promises'),
+			key: 'promises',
+			render: (_, member) => {
+				const memberShare = getMemberShare(member.id)
+
+				if (!memberShare?.promises[0]) {
+					return null
+				}
+
+				return <Text>{memberShare.promises[0].percentage.toFixed(1)}%</Text>
+			},
+		},
+		{
 			title: t('Shares'),
 			key: 'shares',
 			render: (_, member) => {
-				const memberShare = getMemberShare(member.id)
-				if (!memberShare) {
-					return (
-						<Space>
-							<Text type="secondary">not set</Text>
-							{contextProject?.isProjectAuthor && (
-								<Button type="link" onClick={() => handleOpenMemberShareModal(member)} size="small">
-									<T>Edit</T>
-								</Button>
-							)}
-						</Space>
-					)
+				const shares = getMemberShare(member.id)
+
+				if (!shares) {
+					return null
 				}
 
+				return <Text>{shares.percentage.toFixed(1)}%</Text>
+			},
+		},
+		{
+			title: t('Actions'),
+			key: 'actions',
+			render: (_, member) => {
 				return (
-					<Space>
-						<Text>{memberShare.percentage.toFixed(1)}%</Text>
-						{contextProject?.isProjectAuthor && (
-							<Button type="link" onClick={() => handleOpenMemberShareModal(member)} size="small">
-								<T>Edit</T>
-							</Button>
-						)}
-					</Space>
+					contextProject?.isProjectAuthor && (
+						<Button type="link" onClick={() => handleOpenMemberShareModal(member)} size="small">
+							<T>Edit</T>
+						</Button>
+					)
 				)
 			},
 		},

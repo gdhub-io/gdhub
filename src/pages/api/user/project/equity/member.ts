@@ -1,13 +1,8 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { ProjectEquityRepository } from '@/repositories/project-equity.repository'
 import { prisma } from '@/services/prisma'
 import { IsNotEmpty, IsNumber, IsString, Min, IsOptional } from 'class-validator'
-import { Body, Post, ValidationPipe, createHandler } from 'next-api-decorators'
-import { getServerSession } from 'next-auth'
-
-// Временное хранилище данных в памяти
-// (в реальном проекте это должно быть в базе данных)
-const projectEquityStore: Record<string, any> = {}
+import { Body, Post, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class UpdateMemberShareDto {
 	@IsString()
@@ -27,131 +22,83 @@ class UpdateMemberShareDto {
 	targetStepId?: string
 }
 
-interface ApiResponse<T> {
-	success: boolean
-	data?: T
-	error?: string
-}
-
 @NextAuthGuard('user')
 class ApiMemberShareHandler {
 	@Post()
-	public async updateMemberShare(@Body(ValidationPipe) data: UpdateMemberShareDto): Promise<ApiResponse<any>> {
-		try {
-			const { projectId, memberId, percentage, targetStepId } = data
+	public async updateMemberShare(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: UpdateMemberShareDto) {
+		const { projectId, memberId, percentage, targetStepId } = data
 
-			// Проверяем существование проекта
-			const project = await prisma.project.findUnique({
-				where: { id: projectId },
-				include: {
-					team: {
-						include: {
-							members: true,
-						},
+		if (!targetStepId) {
+			throw new Error('Target step ID is required')
+		}
+
+		// Check if the project exists
+		const project = await prisma.project.findUnique({
+			where: { id: projectId },
+			include: {
+				team: {
+					include: {
+						members: true,
 					},
 				},
+			},
+		})
+
+		if (!project) {
+			throw new Error('Project not found')
+		}
+
+		// Check if the current user is the project author
+		if (project.authorId !== req.user.id) {
+			throw new Error('You do not have permission to update the member shares')
+		}
+
+		// Get the information about the current project workflow
+		const workflow = await prisma.projectWorkflow.findFirst({
+			where: { projectId },
+			include: {
+				currentStep: true,
+			},
+		})
+
+		// Check if the specified step has been reached for vesting
+		let vested = true
+		if (targetStepId && workflow?.currentStep) {
+			// Get the information about the step that will be used for vesting
+			const targetStep = await prisma.projectWorkflowStep.findUnique({
+				where: { id: targetStepId },
 			})
 
-			if (!project) {
-				return {
-					success: false,
-					error: 'Проект не найден',
-				}
-			}
-
-			// Проверяем права пользователя на проект
-			const session = await getServerSession(authOptions)
-			if (!session || !session.user) {
-				return {
-					success: false,
-					error: 'Необходима авторизация',
-				}
-			}
-
-			// Проверяем, что текущий пользователь является автором проекта
-			if (project.authorId !== session.user.id) {
-				return {
-					success: false,
-					error: 'У вас нет прав для изменения долей участников',
-				}
-			}
-
-			// Получаем информацию о текущем шаге проекта
-			const workflow = await prisma.projectWorkflow.findFirst({
-				where: { projectId },
-				include: {
-					currentStep: true,
-				},
-			})
-
-			// Проверяем, достигнут ли указанный шаг для vesting
-			let vested = true
-			if (targetStepId && workflow?.currentStep) {
-				// Получаем информацию о шаге, на котором будет происходить vesting
-				const targetStep = await prisma.projectWorkflowStep.findUnique({
-					where: { id: targetStepId },
-				})
-
-				// Проверяем, находится ли проект на указанном шаге или прошел его
-				if (targetStep && workflow.currentStep.order < targetStep.order) {
-					vested = false // Доля еще не вестирована, т.к. нужный шаг не достигнут
-				}
-			}
-
-			// Получаем текущие данные о долях
-			const equity = projectEquityStore[projectId] || {
-				projectId,
-				platformShare: 3,
-				mentorFundShare: 7,
-				investmentReserve: 40,
-				teamShares: [],
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			}
-
-			// Находим долю участника или создаем новую
-			const memberShareIndex = equity.teamShares.findIndex((share: any) => share.memberId === memberId)
-
-			if (memberShareIndex >= 0) {
-				equity.teamShares[memberShareIndex].percentage = percentage
-				equity.teamShares[memberShareIndex].targetStepId = targetStepId
-				equity.teamShares[memberShareIndex].vested = vested
-			} else {
-				equity.teamShares.push({
-					memberId,
-					percentage,
-					targetStepId,
-					vested,
-					isFixed: false,
-				})
-			}
-
-			// Проверяем, что общая сумма не превышает 100%
-			const totalTeamShares = equity.teamShares.reduce((sum: number, share: any) => sum + share.percentage, 0)
-			const totalAllocation = equity.platformShare + equity.mentorFundShare + equity.investmentReserve + totalTeamShares
-
-			if (totalAllocation > 100) {
-				return {
-					success: false,
-					error: 'Общая доля превышает 100%',
-				}
-			}
-
-			// Обновляем данные в хранилище
-			equity.updatedAt = new Date()
-			projectEquityStore[projectId] = equity
-
-			return {
-				success: true,
-				data: equity,
-			}
-		} catch (error: any) {
-			console.error('Ошибка при обновлении доли участника:', error)
-			return {
-				success: false,
-				error: error.message || 'Произошла ошибка при обновлении доли участника',
+			// Check if the project is on the specified step or has passed it
+			if (targetStep && workflow.currentStep.order < targetStep.order) {
+				vested = false // The share is not vested yet, since the target step has not been reached
 			}
 		}
+
+		const equity = await ProjectEquityRepository.getProjectEquity(projectId)
+
+		// Get the current data about the shares
+		let memberShare = await ProjectEquityRepository.getMemberShare(projectId, memberId)
+
+		if (!memberShare || targetStepId) {
+			memberShare = await ProjectEquityRepository.createMemberShare({
+				projectId,
+				memberId,
+				percentage,
+				targetStepId,
+				createdById: req.user.id,
+			})
+		}
+
+		// Check if the total sum does not exceed 100%
+		const totalTeamShares = equity.equityAllocations.reduce((sum: number, share: any) => sum + share.percentage, 0)
+		const totalAllocation = equity.platformShare + equity.mentorFundShare + equity.investmentReserve + totalTeamShares
+
+		if (totalAllocation > 100) {
+			throw new Error('Total share exceeds 100%')
+		}
+
+		return { ...memberShare, percentage }
 	}
 }
 

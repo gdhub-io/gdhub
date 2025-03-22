@@ -32,7 +32,11 @@ class ApiProjectEquityHandler {
 		const projectEquity = await prisma.projectEquity.findUnique({
 			where: { projectId },
 			include: {
-				equityAllocations: true,
+				equityAllocations: {
+					include: {
+						promises: { take: 1, orderBy: { createdAt: 'desc' } },
+					},
+				},
 			},
 		})
 

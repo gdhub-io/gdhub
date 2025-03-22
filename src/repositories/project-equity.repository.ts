@@ -1,5 +1,4 @@
 import { prisma } from '@/services/prisma'
-import { ApiResponse } from '@/types/ApiResponse'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 
 /**
@@ -25,6 +24,17 @@ export interface EquityPromiseRequest {
 }
 
 /**
+ * Interface for creating a member share
+ */
+export interface CreateMemberShareRequest {
+	projectId: string
+	memberId: string
+	percentage: number
+	targetStepId: string
+	createdById: string
+}
+
+/**
  * Interface for input data to get transaction history
  */
 export interface GetEquityHistoryInput {
@@ -38,7 +48,7 @@ export interface GetEquityHistoryInput {
  * Interface for output data of transaction history
  */
 export interface GetEquityHistoryOutput {
-	transactions: any[] // Тут должны быть транзакции
+	transactions: any[]
 	pagination: {
 		total: number
 		page: number
@@ -54,7 +64,7 @@ export class ProjectEquityRepository {
 	/**
 	 * Get current equity distribution for project
 	 */
-	static async getProjectEquity(projectId: string): Promise<ApiResponse<prismaClient.ProjectEquity>> {
+	static async getProjectEquity(projectId: string) {
 		try {
 			// Get data about equity from database
 			const equity = await prisma.projectEquity.findUnique({
@@ -89,23 +99,20 @@ export class ProjectEquityRepository {
 					},
 				})
 
-				return { success: true, data: newEquity as any }
+				return newEquity
 			}
 
-			return { success: true, data: equity as any }
+			return equity
 		} catch (error: any) {
 			console.error('Error getting project equity:', error)
-			return { success: false, error: error.message }
+			throw new Error(error.message || 'The error occurred while getting the project equity')
 		}
 	}
 
 	/**
 	 * Update project equity data
 	 */
-	static async updateProjectEquity(
-		projectId: string,
-		data: prismaClient.ProjectEquity
-	): Promise<ApiResponse<prismaClient.ProjectEquity>> {
+	static async updateProjectEquity(projectId: string, data: prismaClient.ProjectEquity) {
 		try {
 			// Check if project exists
 			const project = await prisma.project.findUnique({
@@ -113,7 +120,7 @@ export class ProjectEquityRepository {
 			})
 
 			if (!project) {
-				return { success: false, error: 'Project not found' }
+				throw new Error('Project not found')
 			}
 
 			// Update main equity data
@@ -135,10 +142,129 @@ export class ProjectEquityRepository {
 				},
 			})
 
-			return { success: true, data: updatedEquity as any }
+			return updatedEquity
 		} catch (error: any) {
 			console.error('Error updating project equity:', error)
-			return { success: false, error: error.message }
+			throw new Error(error.message || 'The error occurred while updating the project equity')
+		}
+	}
+
+	/**
+	 * Get member share
+	 */
+	static async getMemberShare(projectId: string, memberId: string) {
+		try {
+			// Get data about project and member
+			const teamMember = await prisma.teamMember.findUnique({
+				where: { id: memberId },
+				include: { user: true },
+			})
+
+			if (!teamMember) {
+				throw new Error('Team member not found')
+			}
+
+			// Get data about project equity
+			const equity = await prisma.projectEquity.findUnique({
+				where: { projectId },
+				include: {
+					equityAllocations: true,
+				},
+			})
+
+			if (!equity) {
+				throw new Error('Project equity not found')
+			}
+
+			// Get member share
+			const memberPromise = equity.equityAllocations.find((allocation) => allocation.teamMemberId === memberId)
+			const memberShare = equity.equityAllocations.find((allocation) => allocation.teamMemberId === memberId)
+
+			return memberShare
+		} catch (error: any) {
+			console.error('Error getting member share:', error)
+			throw new Error(error.message || 'The error occurred while getting the member share')
+		}
+	}
+
+	/**
+	 * Create member share
+	 */
+	static async createMemberShare(data: CreateMemberShareRequest) {
+		try {
+			const { projectId, memberId, percentage, targetStepId, createdById } = data
+
+			// Get data about project and member
+			const teamMember = await prisma.teamMember.findUnique({
+				where: { id: memberId },
+				include: { user: true },
+			})
+
+			if (!teamMember) {
+				throw new Error('Team member not found')
+			}
+
+			// Get data about project equity
+			const equity = await prisma.projectEquity.findUnique({
+				where: { projectId },
+				include: {
+					equityAllocations: true,
+				},
+			})
+
+			if (!equity) {
+				throw new Error('Project equity not found')
+			}
+
+			// Check if allocation already exists for this member
+			let allocation = await prisma.equityAllocation.findFirst({
+				where: {
+					equityId: equity.id,
+					teamMemberId: memberId,
+				},
+			})
+
+			if (allocation) {
+				throw new Error('Allocation already exists for this member')
+			}
+
+			// Create empty allocation
+			allocation = await prisma.equityAllocation.create({
+				data: {
+					equityId: equity.id,
+					ownerId: teamMember.userId,
+					teamMemberId: memberId,
+					percentage: 0,
+				},
+			})
+
+			// Then create promise if needed
+			if (targetStepId) {
+				await prisma.equityPromise.create({
+					data: {
+						allocationId: allocation.id,
+						percentage,
+						targetStepId,
+						createdById,
+					},
+				})
+			}
+
+			// Create transaction for initial allocation
+			await prisma.equityTransaction.create({
+				data: {
+					toAllocationId: allocation.id,
+					percentage,
+					transactionType: prismaClient.EquityTransactionType.InitialAllocation,
+					reason: 'Initial equity allocation',
+					createdById,
+				},
+			})
+
+			return allocation
+		} catch (error: any) {
+			console.error('Error creating member share:', error)
+			throw new Error(error.message || 'The error occurred while creating the member share')
 		}
 	}
 
@@ -151,7 +277,7 @@ export class ProjectEquityRepository {
 		percentage: number,
 		vested: boolean,
 		targetStepId?: string
-	): Promise<ApiResponse<any>> {
+	) {
 		try {
 			// Get data about project and member
 			const teamMember = await prisma.teamMember.findUnique({
@@ -160,7 +286,7 @@ export class ProjectEquityRepository {
 			})
 
 			if (!teamMember) {
-				return { success: false, error: 'Team member not found' }
+				throw new Error('Team member not found')
 			}
 
 			// Get data about project equity
@@ -172,7 +298,7 @@ export class ProjectEquityRepository {
 			})
 
 			if (!equity) {
-				return { success: false, error: 'Project equity not found' }
+				throw new Error('Project equity not found')
 			}
 
 			// First check if allocation already exists for this member
@@ -247,22 +373,22 @@ export class ProjectEquityRepository {
 				}
 			}
 
-			return { success: true, data: allocation }
+			return allocation
 		} catch (error: any) {
 			console.error('Error updating member share:', error)
-			return { success: false, error: error.message }
+			throw new Error(error.message || 'The error occurred while updating the member share')
 		}
 	}
 
 	/**
 	 * Transfer share from one participant to another
 	 */
-	static async transferShare(data: EquityTransferRequest): Promise<ApiResponse<any>> {
+	static async transferShare(data: EquityTransferRequest) {
 		try {
 			const { projectId, fromUserId, toUserId, percentage, reason } = data
 
 			if (fromUserId === toUserId) {
-				return { success: false, error: 'Cannot transfer equity to the same user' }
+				throw new Error('Cannot transfer equity to the same user')
 			}
 
 			// Get data about project equity
@@ -275,7 +401,7 @@ export class ProjectEquityRepository {
 			})
 
 			if (!equity) {
-				return { success: false, error: 'Project equity not found' }
+				throw new Error('Project equity not found')
 			}
 
 			// Check if sender has allocation
@@ -287,11 +413,11 @@ export class ProjectEquityRepository {
 			})
 
 			if (!fromAllocation) {
-				return { success: false, error: 'Sender does not have any equity allocation' }
+				throw new Error('Sender does not have any equity allocation')
 			}
 
 			if (fromAllocation.percentage < percentage) {
-				return { success: false, error: 'Not enough equity to transfer' }
+				throw new Error('Not enough equity to transfer')
 			}
 
 			// Find or create allocation for recipient
@@ -349,23 +475,20 @@ export class ProjectEquityRepository {
 			])
 
 			return {
-				success: true,
-				data: {
-					fromUser: { id: fromUserId, newPercentage: fromAllocation.percentage - percentage },
-					toUser: { id: toUserId, newPercentage: toAllocation.percentage + percentage },
-					transferredPercentage: percentage,
-				},
+				fromUser: { id: fromUserId, newPercentage: fromAllocation.percentage - percentage },
+				toUser: { id: toUserId, newPercentage: toAllocation.percentage + percentage },
+				transferredPercentage: percentage,
 			}
 		} catch (error: any) {
 			console.error('Error transferring equity:', error)
-			return { success: false, error: error.message }
+			throw new Error(error.message || 'The error occurred while transferring the share')
 		}
 	}
 
 	/**
 	 * Get transaction history
 	 */
-	static async getTransactionHistory(data: GetEquityHistoryInput): Promise<ApiResponse<GetEquityHistoryOutput>> {
+	static async getTransactionHistory(data: GetEquityHistoryInput) {
 		try {
 			const { projectId, userId, page = 1, limit = 10 } = data
 
@@ -375,7 +498,7 @@ export class ProjectEquityRepository {
 			})
 
 			if (!equity) {
-				return { success: false, error: 'Project equity not found' }
+				throw new Error('Project equity not found')
 			}
 
 			// Build query for filtering transactions
@@ -454,20 +577,17 @@ export class ProjectEquityRepository {
 			})
 
 			return {
-				success: true,
-				data: {
-					transactions,
-					pagination: {
-						total,
-						page,
-						limit,
-						totalPages: Math.ceil(total / limit),
-					},
+				transactions,
+				pagination: {
+					total,
+					page,
+					limit,
+					totalPages: Math.ceil(total / limit),
 				},
 			}
 		} catch (error: any) {
 			console.error('Error getting transaction history:', error)
-			return { success: false, error: error.message }
+			throw new Error(error.message || 'The error occurred while getting the transaction history')
 		}
 	}
 }

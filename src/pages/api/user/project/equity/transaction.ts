@@ -1,10 +1,8 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { EquityTransferRequest, ProjectEquityRepository } from '@/repositories/project-equity.repository'
 import { prisma } from '@/services/prisma'
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator'
-import { Body, createHandler, Get, Post, Query, ValidationPipe } from 'next-api-decorators'
-import { getServerSession } from 'next-auth'
+import { Body, createHandler, Get, Post, Query, Req, ValidationPipe } from 'next-api-decorators'
 
 class ProjectEquityQueryDto {
 	@IsString()
@@ -36,12 +34,6 @@ class EquityTransferDto {
 	reason?: string
 }
 
-interface ApiResponse<T> {
-	success: boolean
-	data?: T
-	error?: string
-}
-
 @NextAuthGuard('user')
 class ApiEquityTransactionHandler {
 	/**
@@ -49,61 +41,36 @@ class ApiEquityTransactionHandler {
 	 */
 	@Get()
 	public async getProjectTransactions(
+		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { projectId }: ProjectEquityQueryDto
-	): Promise<ApiResponse<any>> {
-		try {
-			// Check if the project exists
-			const project = await prisma.project.findUnique({
-				where: { id: projectId },
-			})
+	) {
+		// Check if the project exists
+		const project = await prisma.project.findUnique({
+			where: { id: projectId },
+		})
 
-			if (!project) {
-				return {
-					success: false,
-					error: 'Project not found',
-				}
-			}
-
-			// Check if the user has permission to view the project
-			const session = await getServerSession(authOptions)
-			if (!session || !session.user) {
-				return {
-					success: false,
-					error: 'Authorization is required',
-				}
-			}
-
-			// Only the project author or participants can get the transaction history
-			const teamMember = await prisma.teamMember.findFirst({
-				where: {
-					userId: session.user.id,
-					team: { project: { id: projectId } },
-				},
-			})
-
-			if (project.authorId !== session.user.id && !teamMember) {
-				return {
-					success: false,
-					error: 'You do not have permission to view the transaction history',
-				}
-			}
-
-			// Get the transactions
-			const transactions = await ProjectEquityRepository.getTransactionHistory({
-				projectId,
-			})
-
-			return {
-				success: true,
-				data: transactions,
-			}
-		} catch (error: any) {
-			console.error('The error occurred while getting the transaction history:', error)
-			return {
-				success: false,
-				error: error.message || 'The error occurred while getting the transaction history',
-			}
+		if (!project) {
+			throw new Error('Project not found')
 		}
+
+		// Only the project author or participants can get the transaction history
+		const teamMember = await prisma.teamMember.findFirst({
+			where: {
+				userId: req.user.id,
+				team: { project: { id: projectId } },
+			},
+		})
+
+		if (project.authorId !== req.user.id && !teamMember) {
+			throw new Error('You do not have permission to view the transaction history')
+		}
+
+		// Get the transactions
+		const transactions = await ProjectEquityRepository.getTransactionHistory({
+			projectId,
+		})
+
+		return transactions
 	}
 
 	/**
@@ -111,117 +78,69 @@ class ApiEquityTransactionHandler {
 	 */
 	@Get('user')
 	public async getUserTransactions(
+		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { projectId, userId }: UserEquityQueryDto
-	): Promise<ApiResponse<any>> {
-		try {
-			// Check if the project exists
-			const project = await prisma.project.findUnique({
-				where: { id: projectId },
-			})
+	) {
+		// Check if the project exists
+		const project = await prisma.project.findUnique({
+			where: { id: projectId },
+		})
 
-			if (!project) {
-				return {
-					success: false,
-					error: 'Project not found',
-				}
-			}
-
-			// Check if the user has permission to view the project
-			const session = await getServerSession(authOptions)
-			if (!session || !session.user) {
-				return {
-					success: false,
-					error: 'Authorization is required',
-				}
-			}
-
-			// The user can only get their own history or if they are the project author
-			if (userId !== session.user.id && project.authorId !== session.user.id) {
-				return {
-					success: false,
-					error: 'You do not have permission to view the transaction history of this user',
-				}
-			}
-
-			// Get the transactions
-			const transactions = await ProjectEquityRepository.getTransactionHistory({
-				projectId,
-				userId,
-			})
-
-			return {
-				success: true,
-				data: transactions,
-			}
-		} catch (error: any) {
-			console.error('The error occurred while getting the transaction history:', error)
-			return {
-				success: false,
-				error: error.message || 'The error occurred while getting the transaction history',
-			}
+		if (!project) {
+			throw new Error('Project not found')
 		}
+
+		// The user can only get their own history or if they are the project author
+		if (userId !== req.user.id && project.authorId !== req.user.id) {
+			throw new Error('You do not have permission to view the transaction history of this user')
+		}
+
+		// Get the transactions
+		const transactions = await ProjectEquityRepository.getTransactionHistory({
+			projectId,
+			userId,
+		})
+
+		return transactions
 	}
 
 	/**
 	 * Transfer share to another user
 	 */
 	@Post('transfer')
-	public async transferEquity(@Body(ValidationPipe) data: EquityTransferDto): Promise<ApiResponse<any>> {
-		try {
-			const { projectId, toUserId, percentage, reason } = data
+	public async transferEquity(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: EquityTransferDto) {
+		const { projectId, toUserId, percentage, reason } = data
 
-			// Check if the project exists
-			const project = await prisma.project.findUnique({
-				where: { id: projectId },
-			})
+		// Check if the project exists
+		const project = await prisma.project.findUnique({
+			where: { id: projectId },
+		})
 
-			if (!project) {
-				return {
-					success: false,
-					error: 'Project not found',
-				}
-			}
-
-			// Check if the user has permission to view the project
-			const session = await getServerSession(authOptions)
-			if (!session || !session.user) {
-				return {
-					success: false,
-					error: 'Authorization is required',
-				}
-			}
-
-			// Get the shares of the current user
-			const fromUserId = session.user.id
-
-			const transferRequest: EquityTransferRequest = {
-				fromUserId,
-				toUserId,
-				projectId,
-				percentage,
-				reason,
-			}
-
-			// Perform the share transfer
-			const result = await ProjectEquityRepository.transferShare({
-				fromUserId,
-				toUserId,
-				projectId,
-				percentage,
-				reason,
-			})
-
-			return {
-				success: true,
-				data: result,
-			}
-		} catch (error: any) {
-			console.error('The error occurred while transferring the share:', error)
-			return {
-				success: false,
-				error: error.message || 'The error occurred while transferring the share',
-			}
+		if (!project) {
+			throw new Error('Project not found')
 		}
+
+		// Get the shares of the current user
+		const fromUserId = req.user.id
+
+		const transferRequest: EquityTransferRequest = {
+			fromUserId,
+			toUserId,
+			projectId,
+			percentage,
+			reason,
+		}
+
+		// Perform the share transfer
+		const result = await ProjectEquityRepository.transferShare({
+			fromUserId,
+			toUserId,
+			projectId,
+			percentage,
+			reason,
+		})
+
+		return result
 	}
 }
 
