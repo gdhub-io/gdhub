@@ -98,17 +98,44 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 						mentorFundShare={equityData?.mentorFundShare}
 						investmentReserve={equityData?.investmentReserve}
 						teamShares={
-							equityData?.equityAllocations?.map((allocation: any) => ({
-								id: allocation.id,
-								memberId: allocation.teamMemberId,
-								userId: allocation.ownerId,
-								name:
-									teamMembers.find((m: any) => m.userId === allocation.ownerId)?.user?.name ||
-									allocation.owner?.name ||
-									t('Team Member'),
-								percentage: allocation.percentage,
-								promises: allocation.promises || [],
-							})) || []
+							equityData?.equityAllocations?.flatMap((allocation: any) => {
+								// Результирующий массив teamShares
+								const shares = []
+
+								// Добавляем основную (фактическую, vested) долю, если она есть
+								if (allocation.percentage > 0) {
+									shares.push({
+										id: allocation.id,
+										memberId: allocation.teamMemberId,
+										userId: allocation.ownerId,
+										name:
+											teamMembers.find((m: any) => m.userId === allocation.ownerId)?.user?.name ||
+											allocation.owner?.name ||
+											t('Team Member'),
+										percentage: allocation.percentage,
+										vested: true,
+										isFixed: allocation.isFixed || false,
+									})
+								}
+
+								// Добавляем обещанную (promised) долю, если она есть
+								if (allocation.promises && allocation.promises.length > 0 && allocation.promises[0].percentage > 0) {
+									shares.push({
+										id: `${allocation.id}-promise`,
+										memberId: allocation.teamMemberId,
+										userId: allocation.ownerId,
+										name:
+											teamMembers.find((m: any) => m.userId === allocation.ownerId)?.user?.name ||
+											allocation.owner?.name ||
+											t('Team Member'),
+										percentage: allocation.promises[0].percentage,
+										vested: false,
+										isFixed: allocation.isFixed || false,
+									})
+								}
+
+								return shares
+							}) || []
 						}
 					/>
 				</div>
