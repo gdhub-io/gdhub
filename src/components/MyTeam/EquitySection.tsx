@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import EquityTransferModal from '@/components/modals/EquityTransferModal'
 import { AiOutlineHistory } from '@react-icons/all-files/ai/AiOutlineHistory'
+import { AiOutlineInfoCircle } from '@react-icons/all-files/ai/AiOutlineInfoCircle'
 import { useTolgee } from '@tolgee/react'
-import { Card, Typography, Button, Space, Modal } from 'antd'
+import { Card, Typography, Button, Space, Modal, Popover } from 'antd'
 import { useSession } from 'next-auth/react'
 import EquityPlot from './EquityPlot'
 import styles from './EquitySection.module.scss'
@@ -37,11 +38,43 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 
 	const hasUserEquity = !!userAllocation && userAllocation.percentage > 0
 
+	const equityInfoContent = (
+		<div style={{ maxWidth: 400 }}>
+			<Typography.Paragraph>
+				<strong>Platform:</strong> {t('equity.platform.description', 'Commission for using the service')}
+			</Typography.Paragraph>
+			<Typography.Paragraph>
+				<strong>Mentors Fund:</strong>{' '}
+				{t('equity.mentorsFund.description', 'Share for rewarding mentors of the project when it is sold or released')}
+			</Typography.Paragraph>
+			<Typography.Paragraph>
+				<strong>Investment Reserve:</strong>{' '}
+				{t('equity.investmentReserve.description', 'Reserved shares for future investors (can be changed)')}
+			</Typography.Paragraph>
+			<Typography.Paragraph>
+				<strong>Team:</strong>{' '}
+				{t('equity.team.description', 'Shares of the team members (vested or promised when the goal is reached)')}
+			</Typography.Paragraph>
+			<Typography.Paragraph style={{ marginBottom: 0 }}>
+				<strong>Unallocated:</strong>{' '}
+				{t('equity.unallocated.description', 'Free shares for distributing to new participants')}
+			</Typography.Paragraph>
+		</div>
+	)
+
 	return (
 		<Card className={styles.equityCard}>
 			<Space direction="vertical" style={{ width: '100%' }} size="middle">
 				<div className={styles.titleContainer}>
-					<Typography.Text strong>{t('Equity Distribution')}</Typography.Text>
+					<Space align="center">
+						<Typography.Text strong>{t('equity.title', 'Equity Distribution')}</Typography.Text>
+						<Popover content={equityInfoContent} trigger="hover" placement="right">
+							<AiOutlineInfoCircle
+								size={16}
+								style={{ cursor: 'pointer', color: 'rgba(0, 0, 0, 0.45)', position: 'relative', top: 2 }}
+							/>
+						</Popover>
+					</Space>
 					<Space>
 						{hasUserEquity && !isProjectAuthor && (
 							<Button onClick={() => setTransferModalVisible(true)} type="default">

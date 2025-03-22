@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as Plot from '@observablehq/plot'
+import * as d3 from 'd3'
 import styles from './EquityPlot.module.scss'
 
 interface EquityShare {
@@ -33,53 +34,80 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 	const containerRef = useRef<HTMLDivElement>(null)
 	const [chartWidth, setChartWidth] = useState<number>(0)
 
-	// Функция для рендеринга графика
+	// Function for rendering the chart
 	const renderChart = () => {
 		if (!containerRef.current) return
 
-		// Получаем текущую ширину контейнера
+		// Get the current width of the container
 		const currentWidth = containerRef.current.clientWidth
 		setChartWidth(currentWidth)
 
-		// Преобразуем данные в формат, подходящий для Plot
-		const data: DataItem[] = []
-
-		// Платформа - фиксированная доля, которую автор не может менять - серая и менее насыщенная
-		data.push({ category: 'Platform', value: platformShare, color: '#9E9E9E', type: 'system' })
-		// Менторы - можно менять только общую долю, есть минимум - ограниченная возможность изменения
-		data.push({ category: 'Mentor Fund', value: mentorFundShare, color: '#78909C', type: 'system' })
-		// Инвестиционный резерв - более гибкий, но тоже системное ограничение
-		data.push({ category: 'Investment Reserve', value: investmentReserve, color: '#5C6BC0', type: 'system' })
-
-		// Добавляем доли команды - более гибкие, но зависят от общей картины
-
-		data.push({
-			category: 'Team Member',
-			value: teamShares.map((m) => m.percentage).reduce((sum, share) => sum + share, 0),
-			color: '#3949AB', // Более насыщенный для выданных долей, менее для обещанных
-			type: 'team',
-		})
-
-		// Рассчитываем нераспределенные доли
-		const allocatedShares =
-			platformShare + mentorFundShare + investmentReserve + teamShares.reduce((sum, share) => sum + share.percentage, 0)
-
-		// Неиспользуемые доли - самые свободные, которые можно распределять
-		if (100 - allocatedShares > 0) {
-			data.push({
-				category: 'Unallocated',
-				value: 100 - allocatedShares,
-				color: '#42A5F5', // Яркий синий для неиспользуемых долей - самых свободных
-				type: 'unallocated',
-			})
-		}
-
-		// Очищаем контейнер перед созданием нового графика
+		// Clear the container before creating a new graph
 		if (containerRef.current) {
 			containerRef.current.innerHTML = ''
 		}
 
-		// Создаем график с помощью Plot
+		// Create SVG pattern for the unallocated section
+		const svg = d3.create('svg').attr('width', 0).attr('height', 0).style('position', 'absolute')
+
+		// Define the pattern
+		const defs = svg.append('defs')
+		const pattern = defs
+			.append('pattern')
+			.attr('id', 'unallocated-pattern')
+			.attr('patternUnits', 'userSpaceOnUse')
+			.attr('width', 5)
+			.attr('height', 5)
+			.attr('patternTransform', 'rotate(45)')
+
+		// Add stripes to the pattern
+		pattern.append('rect').attr('width', 5).attr('height', 5).attr('fill', 'rgba(158, 158, 158, 0.3)') // Base color for unallocated
+
+		pattern
+			.append('line')
+			.attr('x1', 0)
+			.attr('y1', 0)
+			.attr('x2', 0)
+			.attr('y2', 5)
+			.attr('stroke', 'rgba(250, 250, 250, 1)')
+			.attr('stroke-width', 4)
+
+		// Append the SVG to the body to make the pattern available
+		document.body.appendChild(svg.node()!)
+
+		// Convert data to a format suitable for Plot
+		const data: DataItem[] = []
+
+		// Platform - fixed share that the author cannot change - gray and less saturated
+		data.push({ category: 'Platform', value: platformShare, color: '#9E9E9E', type: 'system' })
+		// Mentors - can only change the total share, has a minimum - limited ability to change
+		data.push({ category: 'Mentor Fund', value: mentorFundShare, color: '#78909C', type: 'system' })
+		// Investment Reserve - more flexible, but also a system constraint
+		data.push({ category: 'Investment Reserve', value: investmentReserve, color: '#5C6BC0', type: 'system' })
+
+		// Add team shares - more flexible, but depend on the overall picture
+		data.push({
+			category: 'Team Member',
+			value: teamShares.map((m) => m.percentage).reduce((sum, share) => sum + share, 0),
+			color: '#3949AB', // More saturated for issued shares, less for promised
+			type: 'team',
+		})
+
+		// Calculate unallocated shares
+		const allocatedShares =
+			platformShare + mentorFundShare + investmentReserve + teamShares.reduce((sum, share) => sum + share.percentage, 0)
+
+		// Unused shares - the most free, which can be distributed
+		if (100 - allocatedShares > 0) {
+			data.push({
+				category: 'Unallocated',
+				value: 100 - allocatedShares,
+				color: 'url(#unallocated-pattern)', // Use the pattern for unallocated shares
+				type: 'unallocated',
+			})
+		}
+
+		// Create a graph using Plot
 		const chart = Plot.plot({
 			width: currentWidth,
 			height: 60,
@@ -90,19 +118,19 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 				borderRadius: '6px',
 			},
 			x: {
-				axis: null, // Убираем ось X
+				axis: null, // Remove the X axis
 			},
 			y: {
-				axis: null, // Убираем ось Y
+				axis: null, // Remove the Y axis
 			},
 			color: {
-				// Убираем рамку вокруг легенды
+				// Remove the border around the legend
 				legend: false,
 			},
-			// Убираем рамку вокруг графика
+			// Remove the border around the graph
 			grid: false,
 			marks: [
-				// Основные бары
+				// Main bars
 				Plot.barX(data, {
 					y: 0,
 					x: 'value',
@@ -111,24 +139,24 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 						const vestedStatus = d.type === 'team' && d.original ? (d.original.vested ? 'vested' : 'promised') : ''
 						return `${d.category}: ${d.value.toFixed(1)}% ${vestedStatus}`
 					},
-					sort: null, // Сохраняем исходный порядок
+					sort: null, // Keep the original order
 					inset: 0,
-					// Убираем границу элементов
+					// Remove the border of the elements
 					stroke: null,
 				}),
-				// Текст с процентами для больших сегментов
+				// Text with percentages for large segments
 				Plot.text(
 					data.filter((d) => d.value >= 5),
 					{
 						y: 0,
 						x: (d: DataItem) => {
-							// Найдем позицию центра для каждого сегмента
+							// Find the position of the center for each segment
 							const index = data.indexOf(d)
 							const prevSum = data.slice(0, index).reduce((sum, item) => sum + item.value, 0)
 							return prevSum + d.value / 2
 						},
 						text: (d: DataItem) => `${d.value > 10 ? d.category : ''} ${d.value.toFixed(1)}%`,
-						fill: 'white',
+						fill: (d: DataItem) => (d.type === 'unallocated' ? 'black' : 'white'),
 						fontWeight: 'bold',
 						fontSize: 12,
 						textAnchor: 'middle',
@@ -137,47 +165,47 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 			],
 		})
 
-		// Добавляем border-radius для элементов графика после рендеринга
+		// Add border-radius for the graph elements after rendering
 		const barElements = chart.querySelectorAll('rect')
 		if (barElements.length > 0) {
-			// Определяем первый и последний элементы для скругления углов
+			// Determine the first and last elements for rounding the corners
 			const firstBar = barElements[0]
 			const lastBar = barElements[barElements.length - 1]
-			// Скругляем только левые углы у первого элемента с помощью SVG path
-			// SVG не поддерживает скругление отдельных углов, поэтому используем clip-path
+			// Round only the left corners of the first element using SVG path
+			// SVG does not support rounding individual corners, so we use clip-path
 			const firstBarWidth = parseFloat(firstBar.getAttribute('width') || '0')
 			const firstBarHeight = parseFloat(firstBar.getAttribute('height') || '0')
-			// Создаем путь для скругления левой стороны первого элемента
+			// Create a path for rounding the left side of the first element
 			firstBar.setAttribute(
 				'style',
 				`clip-path: path('M6,0 H${firstBarWidth} V${firstBarHeight} H6 Q0,${firstBarHeight} 0,${firstBarHeight - 6} V6 Q0,0 6,0 Z');`
 			)
-			// Скругляем только правые углы у последнего элемента
+			// Round only the right corners of the last element
 			const lastBarWidth = parseFloat(lastBar.getAttribute('width') || '0')
 			const lastBarHeight = parseFloat(lastBar.getAttribute('height') || '0')
 			const lastBarX = parseFloat(lastBar.getAttribute('x') || '0')
-			// Создаем путь для скругления правой стороны последнего элемента
+			// Create a path for rounding the right side of the last element
 			lastBar.setAttribute(
 				'style',
 				`clip-path: path('M0,0 H${lastBarWidth - 6} Q${lastBarWidth},0 ${lastBarWidth},6 V${lastBarHeight - 6} Q${lastBarWidth},${lastBarHeight} ${lastBarWidth - 6},${lastBarHeight} H0 V0 Z');`
 			)
 		}
 
-		// Добавляем всплывающие подсказки для маленьких сегментов
+		// Add tooltips for small segments
 		barElements.forEach((bar, index) => {
 			if (index < data.length) {
 				const barData = data[index]
 				if (barData.value < 5) {
-					// Создаем элемент подсказки
+					// Create a tooltip element
 					bar.setAttribute('data-tooltip', `${barData.category}: ${barData.value.toFixed(1)}%`)
 					bar.setAttribute('class', styles.tooltipTrigger || 'tooltip-trigger')
-					// Добавляем слушатель событий для показа/скрытия подсказки
+					// Add an event listener for showing/hiding the tooltip
 					bar.addEventListener('mouseenter', (e) => {
 						const tooltip = document.createElement('div')
 						tooltip.className = styles.tooltip
 						tooltip.textContent = `${barData.category}: ${barData.value.toFixed(1)}%`
 
-						// Позиционируем подсказку над сегментом
+						// Position the tooltip above the segment
 						const rect = bar.getBoundingClientRect()
 						tooltip.style.top = `${rect.top - 30}px`
 						tooltip.style.left = `${rect.left + rect.width / 2}px`
@@ -196,29 +224,29 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 			}
 		})
 
-		// Очищаем контейнер и добавляем новый график
+		// Clear the container and add a new graph
 		if (containerRef.current) {
 			containerRef.current.appendChild(chart)
 		}
 	}
 
-	// Эффект для первичного рендеринга и при изменении данных
+	// Effect for initial rendering and when data changes
 	useEffect(() => {
 		renderChart()
 
-		// Создаем ResizeObserver для отслеживания изменений размера контейнера
+		// Create a ResizeObserver to track changes in the container size
 		const resizeObserver = new ResizeObserver(() => {
 			if (containerRef.current && containerRef.current.clientWidth !== chartWidth) {
 				renderChart()
 			}
 		})
 
-		// Наблюдаем за контейнером
+		// Observe the container
 		if (containerRef.current) {
 			resizeObserver.observe(containerRef.current)
 		}
 
-		// Очистка при размонтировании
+		// Cleanup when unmounting
 		return () => {
 			if (containerRef.current) {
 				containerRef.current.innerHTML = ''
@@ -267,7 +295,7 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 						teamShares.reduce((sum, share) => sum + share.percentage, 0) >
 						0 && (
 						<div style={{ display: 'flex', alignItems: 'center' }}>
-							<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#42A5F5' }} />
+							<div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'rgba(158, 158, 158, 0.3)' }} />
 							<span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(0, 0, 0, 0.45)' }}>Unallocated</span>
 						</div>
 					)}

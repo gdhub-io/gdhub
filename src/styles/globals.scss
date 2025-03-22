@@ -158,6 +158,11 @@ a.text-link {
 		column-gap: 12px;
 	}
 
+	&:not(.ant-btn-icon-only):has(.ant-btn-icon, .ant-btn-sm) {
+		padding-left: 4px !important;
+		column-gap: 8px !important;
+	}
+
 	&-default {
 		background-color: transparent;
 	}
@@ -198,6 +203,18 @@ a.text-link {
 		&:active {
 			background-color: #031625 !important;
 			color: #FFFDFC !important;
+		}
+	}
+
+	&.light-gray-text-btn {
+		border-color: transparent;
+		color: #202020;
+		box-shadow: none;
+
+		&:hover,
+		&:active {
+			background-color: #03162517 !important;
+			color: #202020 !important;
 		}
 	}
 

@@ -1,14 +1,18 @@
 import { useContext, useState } from 'react'
 import EquityShareModal from '@/components/modals/EquityShareModal'
 import InviteMemberModal from '@/components/modals/InviteMemberModal'
-import MemberShareModal from '@/components/modals/MemberShareModal'
+import MemberEquityPromiseModal from '@/components/modals/MemberEquityPromiseModal'
 import ModernTable from '@/components/ModernTable'
 import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { BiTransfer } from '@react-icons/all-files/bi/BiTransfer'
+import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
+import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
+import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Flex, Typography, Tag, Space, Popconfirm } from 'antd'
+import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -22,7 +26,7 @@ const MyTeam = () => {
 	const contextProject = useContext(ProjectContext)?.contextProject
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 	const [isEquityModalOpen, setIsEquityModalOpen] = useState(false)
-	const [isMemberShareModalOpen, setIsMemberShareModalOpen] = useState(false)
+	const [isMemberEquityPromiseModalOpen, setIsMemberEquityPromiseModalOpen] = useState(false)
 	const [selectedMember, setSelectedMember] = useState<(prismaClient.TeamMember & { user: prismaClient.User }) | null>(
 		null
 	)
@@ -148,23 +152,23 @@ const MyTeam = () => {
 		return projectEquity.data.equityAllocations.find((share: any) => share.teamMemberId === memberId)
 	}
 
-	const handleOpenMemberShareModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
+	const handleOpenMemberEquityPromiseModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
 		setSelectedMember(member)
-		setIsMemberShareModalOpen(true)
+		setIsMemberEquityPromiseModalOpen(true)
 	}
 
-	const handleCloseMemberShareModal = () => {
-		setIsMemberShareModalOpen(false)
+	const handleCloseMemberEquityPromiseModal = () => {
+		setIsMemberEquityPromiseModalOpen(false)
 		setSelectedMember(null)
 	}
 
-	const handleMemberShareUpdateSuccess = (percentage: number, vested: boolean, targetStepId?: string) => {
-		handleCloseMemberShareModal()
+	const handleMemberEquityPromiseUpdateSuccess = (percentage: number, vested: boolean, targetStepId?: string) => {
+		handleCloseMemberEquityPromiseModal()
 		fetchProjectEquity()
 	}
 
 	const getMaxAvailableShare = (currentShare: number) => {
-		if (!projectEquity?.data) return 50
+		if (!projectEquity?.data) return 0
 
 		const teamTotal = projectEquity.data.equityAllocations?.reduce(
 			(sum: number, share: any) => sum + share.percentage,
@@ -177,7 +181,7 @@ const MyTeam = () => {
 			teamTotal
 		const remainingPercentage = 100 - allocated + currentShare
 
-		return Math.min(currentShare + remainingPercentage, 50)
+		return Math.min(currentShare + remainingPercentage, 97)
 	}
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
@@ -235,44 +239,22 @@ const MyTeam = () => {
 			},
 		},
 		{
-			key: 'fire',
-			hidden: !contextProject?.isProjectAuthor,
-			title: 'Status',
-			render: (value, member) => {
-				if (member.status === prismaClient.TeamMemberStatus.Founder) {
-					return null
-				}
-
-				if (member.status === prismaClient.TeamMemberStatus.Hired) {
-					return (
-						<Popconfirm
-							title={t('Are you sure you want to fire this member?')}
-							onConfirm={() => handleFired(member.id)}
-							okText={t('Yes')}
-							cancelText={t('No')}
-						>
-							<Button danger ghost>
-								{t('team.member.fire', 'Fire')}
-							</Button>
-						</Popconfirm>
-					)
-				}
-
-				if (member.status === prismaClient.TeamMemberStatus.Fired) {
-					return <Text className={tableStyles.tableStatusFired}>{t('Fired')}</Text>
-				}
-
-				return null
-			},
-		},
-		{
 			title: t('Promises'),
 			key: 'promises',
 			render: (_, member) => {
 				const memberShare = getMemberShare(member.id)
 
 				if (!memberShare?.promises[0]) {
-					return null
+					return (
+						<Button
+							type="text"
+							size="small"
+							icon={<MdOutlineHandshake />}
+							onClick={() => handleOpenMemberEquityPromiseModal(member)}
+						>
+							<T>Make Promise</T>
+						</Button>
+					)
 				}
 
 				return <Text>{memberShare.promises[0].percentage.toFixed(1)}%</Text>
@@ -285,22 +267,61 @@ const MyTeam = () => {
 				const shares = getMemberShare(member.id)
 
 				if (!shares) {
-					return null
+					return <Text type="secondary">-</Text>
 				}
 
 				return <Text>{shares.percentage.toFixed(1)}%</Text>
 			},
 		},
 		{
-			title: t('Actions'),
+			title: '',
 			key: 'actions',
 			render: (_, member) => {
+				if (!contextProject?.isProjectAuthor) return null
+
+				const items = [
+					{
+						key: 'edit-promise',
+						label: t('Change Promise'),
+						icon: <MdOutlineHandshake size={16} />,
+						onClick: () => handleOpenMemberEquityPromiseModal(member),
+					},
+
+					{
+						key: 'transfer-share',
+						label: t('Transfer Share'),
+						icon: <BiTransfer size={16} />,
+						disabled: true,
+					},
+					{
+						type: 'divider',
+					},
+					{
+						key: 'fire-member',
+						label: t('Fire Member'),
+						icon: <BiTrash size={16} />,
+						disabled:
+							member.status === prismaClient.TeamMemberStatus.Founder ||
+							member.status === prismaClient.TeamMemberStatus.Fired,
+						danger: true,
+						onClick: () => handleFired(member.id),
+					},
+				]
+
 				return (
-					contextProject?.isProjectAuthor && (
-						<Button type="link" onClick={() => handleOpenMemberShareModal(member)} size="small">
-							<T>Edit</T>
-						</Button>
-					)
+					<Dropdown
+						menu={{
+							items: items as any,
+							onClick: ({ key, domEvent }) => {
+								domEvent.stopPropagation()
+								const item = items.find((i) => i.key === key)
+								item?.onClick?.()
+							},
+						}}
+						trigger={['click']}
+					>
+						<Button icon={<TbDotsVertical />} type="text" className="light-gray-text-btn" />
+					</Dropdown>
 				)
 			},
 		},
@@ -400,11 +421,12 @@ const MyTeam = () => {
 						projectEquity={projectEquity?.data}
 					/>
 					{selectedMember && (
-						<MemberShareModal
-							open={isMemberShareModalOpen}
-							onOk={handleMemberShareUpdateSuccess}
-							onCancel={handleCloseMemberShareModal}
+						<MemberEquityPromiseModal
+							open={isMemberEquityPromiseModalOpen}
+							onOk={handleMemberEquityPromiseUpdateSuccess}
+							onCancel={handleCloseMemberEquityPromiseModal}
 							memberId={selectedMember.id}
+							memberName={selectedMember.user.name || 'Unknown'}
 							currentShare={getMemberShare(selectedMember.id)?.percentage || 0}
 							maxShare={getMaxAvailableShare(getMemberShare(selectedMember.id)?.percentage || 0)}
 							projectId={contextProject?.id || ''}

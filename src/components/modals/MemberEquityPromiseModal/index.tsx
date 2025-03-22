@@ -6,27 +6,29 @@ import axios from 'axios'
 
 const { Text, Paragraph } = Typography
 
-interface MemberShareModalProps {
+interface MemberEquityPromiseModalProps {
 	open: boolean
 	onOk: (percentage: number, vested: boolean, targetStepId?: string) => void
 	onCancel: () => void
 	memberId: string
+	memberName: string
 	currentShare: number
 	maxShare: number
 	projectId: string
 	isVested?: boolean
 }
 
-const MemberShareModal = ({
+const MemberEquityPromiseModal = ({
 	open,
 	onOk,
 	onCancel,
 	memberId,
+	memberName,
 	currentShare,
 	maxShare,
 	projectId,
 	isVested = true,
-}: MemberShareModalProps) => {
+}: MemberEquityPromiseModalProps) => {
 	const { t } = useTolgee()
 	const [form] = Form.useForm()
 	const [percentage, setPercentage] = useState<number>(currentShare)
@@ -103,7 +105,7 @@ const MemberShareModal = ({
 
 	return (
 		<Modal
-			title={t('Edit Member Share')}
+			title={t('modal.memberEquityPromise.title', 'New Promise for {memberName}', { memberName })}
 			open={open}
 			width={600}
 			onCancel={onCancel}
@@ -141,7 +143,17 @@ const MemberShareModal = ({
 					>
 						<Flex align="center" gap={16}>
 							<div style={{ flex: 1 }}>
-								<Slider min={0} max={maxShare} step={0.1} value={percentage} onChange={handlePercentageChange} />
+								<Slider
+									min={0}
+									max={maxShare}
+									step={0.1}
+									value={percentage}
+									marks={Object.fromEntries([
+										...[...Array(Math.floor(maxShare / 10))].map((_, i) => [i * 10, `${i * 10}%`]),
+										[maxShare, `${maxShare}%`],
+									])}
+									onChange={handlePercentageChange}
+								/>
 							</div>
 							<InputNumber
 								min={0}
@@ -155,11 +167,7 @@ const MemberShareModal = ({
 						</Flex>
 					</Form.Item>
 
-					<Form.Item
-						label={t('Vesting at Workflow Step')}
-						name="targetStepId"
-						tooltip={t('Shares will be automatically vested when the project reaches this step')}
-					>
+					<Form.Item label={t('Vesting at Workflow Step')} name="targetStepId">
 						<Select
 							placeholder={t('Select the step for vesting')}
 							onChange={handleTargetStepChange}
@@ -173,4 +181,4 @@ const MemberShareModal = ({
 	)
 }
 
-export default MemberShareModal
+export default MemberEquityPromiseModal
