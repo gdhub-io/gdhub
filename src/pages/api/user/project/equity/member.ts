@@ -2,9 +2,9 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { ProjectEquityRepository } from '@/repositories/project-equity.repository'
 import { prisma } from '@/services/prisma'
 import { IsNotEmpty, IsNumber, IsString, Min, IsOptional } from 'class-validator'
-import { Body, Post, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import { Body, Post, Put, Delete, Req, ValidationPipe, createHandler, Query } from 'next-api-decorators'
 
-class UpdateMemberShareDto {
+class CreateMemberShareDto {
 	@IsString()
 	@IsNotEmpty()
 	projectId: string
@@ -22,10 +22,24 @@ class UpdateMemberShareDto {
 	targetStepId?: string
 }
 
+class UpdateMemberShareDto {
+	@IsString()
+	@IsNotEmpty()
+	promiseId: string
+
+	@IsNumber()
+	@Min(0)
+	percentage: number
+
+	@IsString()
+	@IsOptional()
+	targetStepId?: string
+}
+
 @NextAuthGuard('user')
 class ApiMemberShareHandler {
 	@Post()
-	public async updateMemberShare(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: UpdateMemberShareDto) {
+	public async createMemberShare(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: CreateMemberShareDto) {
 		const { projectId, memberId, percentage, targetStepId } = data
 
 		if (!targetStepId) {
@@ -99,6 +113,21 @@ class ApiMemberShareHandler {
 		}
 
 		return { ...memberShare, percentage }
+	}
+
+	@Put()
+	public async updateMemberShare(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: UpdateMemberShareDto) {
+		const { promiseId, percentage, targetStepId } = data
+
+		return await prisma.equityPromise.update({
+			where: { id: promiseId },
+			data: { percentage, targetStepId },
+		})
+	}
+
+	@Delete()
+	public async deleteMemberShare(@Query('promiseId') promiseId: string) {
+		return await prisma.equityPromise.delete({ where: { id: promiseId } })
 	}
 }
 

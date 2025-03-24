@@ -102,7 +102,7 @@ const EquityShareModal = ({ projectEquity, open, onOk, onCancel }: EquityShareMo
 					<Title level={5}>{t('Equity Distribution Rules')}</Title>
 					<ul>
 						<li>{t('3% is fixed for the platform')}</li>
-						<li>{t('At least 7% is allocated to the mentor fund')}</li>
+						<li>{t('At least 2% is allocated to the mentor fund')}</li>
 						<li>{t('A portion should be reserved for future investments')}</li>
 					</ul>
 				</div>

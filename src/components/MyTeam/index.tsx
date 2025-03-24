@@ -152,6 +152,18 @@ const MyTeam = () => {
 		return projectEquity.data.equityAllocations.find((share: any) => share.teamMemberId === memberId)
 	}
 
+	const getMemberPromisePercentage = (memberId: string) => {
+		if (!projectEquity?.data?.equityAllocations) return null
+
+		const memberPromises = projectEquity.data.equityAllocations
+			.filter((allocation: any) => allocation.teamMemberId === memberId)
+			.flatMap((allocation: any) => allocation.promises)
+
+		console.log(memberId, memberPromises)
+
+		return memberPromises.reduce((acc: number, promise: any) => acc + promise.percentage, 0)
+	}
+
 	const handleOpenMemberEquityPromiseModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
 		setSelectedMember(member)
 		setIsMemberEquityPromiseModalOpen(true)
@@ -162,16 +174,22 @@ const MyTeam = () => {
 		setSelectedMember(null)
 	}
 
+	const handleDeleteMemberEquityPromise = () => {
+		handleCloseMemberEquityPromiseModal()
+		fetchProjectEquity()
+	}
+
 	const handleMemberEquityPromiseUpdateSuccess = (percentage: number, vested: boolean, targetStepId?: string) => {
 		handleCloseMemberEquityPromiseModal()
 		fetchProjectEquity()
 	}
 
-	const getMaxAvailableShare = (currentShare: number) => {
+	const getMaxAvailableShare = (currentPromiseShare: number) => {
 		if (!projectEquity?.data) return 0
 
 		const teamTotal = projectEquity.data.equityAllocations?.reduce(
-			(sum: number, share: any) => sum + share.percentage,
+			(sum: number, share: any) =>
+				sum + share.percentage + share.promises.reduce((acc: number, promise: any) => acc + promise.percentage, 0),
 			0
 		)
 		const allocated =
@@ -179,9 +197,10 @@ const MyTeam = () => {
 			projectEquity.data.mentorFundShare +
 			projectEquity.data.investmentReserve +
 			teamTotal
-		const remainingPercentage = 100 - allocated + currentShare
 
-		return Math.min(currentShare + remainingPercentage, 97)
+		const remainingPercentage = 100 - allocated + currentPromiseShare
+
+		return Math.min(remainingPercentage, 97)
 	}
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
@@ -244,7 +263,7 @@ const MyTeam = () => {
 			render: (_, member) => {
 				const memberShare = getMemberShare(member.id)
 
-				if (!memberShare?.promises[0]) {
+				if (!memberShare?.promises.length) {
 					return (
 						<Button
 							type="text"
@@ -425,10 +444,11 @@ const MyTeam = () => {
 							open={isMemberEquityPromiseModalOpen}
 							onOk={handleMemberEquityPromiseUpdateSuccess}
 							onCancel={handleCloseMemberEquityPromiseModal}
+							onDelete={handleDeleteMemberEquityPromise}
 							memberId={selectedMember.id}
 							memberName={selectedMember.user.name || 'Unknown'}
-							currentShare={getMemberShare(selectedMember.id)?.percentage || 0}
-							maxShare={getMaxAvailableShare(getMemberShare(selectedMember.id)?.percentage || 0)}
+							promiseId={getMemberShare(selectedMember.id)?.promises[0]?.id}
+							maxShare={getMaxAvailableShare(getMemberPromisePercentage(selectedMember.id) || 0)}
 							projectId={contextProject?.id || ''}
 							isVested={getMemberShare(selectedMember.id)?.vested || true}
 						/>

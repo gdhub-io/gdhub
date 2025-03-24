@@ -265,9 +265,11 @@ body:has(.ant-modal-root) {
 	}
 }
 
-.ant-checkbox+span {
-	padding-inline-start: 8px;
-	padding-inline-end: 8px;
+.ant-checkbox {
+	// padding-inline-start: 8px;
+	margin-inline-end: 8px;
+	align-self: baseline;
+	top: 4px;
 }
 
 @media screen and (max-width: 575px) {
