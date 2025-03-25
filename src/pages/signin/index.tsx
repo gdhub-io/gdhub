@@ -10,7 +10,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
-import { signIn } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const { Paragraph, Title } = Typography
@@ -37,6 +37,12 @@ const LoginPage: NextPage = () => {
 	React.useEffect(() => {
 		if (error === 'RefreshTokenExpired') {
 			message.error(t('refresh_token_expired', 'Your session has expired. Please sign in again.'))
+			signOut()
+		}
+
+		if (error === 'InvalidGrantError') {
+			message.error(t('invalid_grant_error', 'Invalid authorization. Please sign in again.'))
+			signOut()
 		}
 	}, [error, t])
 

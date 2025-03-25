@@ -26,7 +26,7 @@ import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { SessionProvider } from 'next-auth/react'
+import { SessionProvider, signOut } from 'next-auth/react'
 import 'dayjs/locale/en'
 import { DefaultSeo } from 'next-seo'
 import NProgress from 'nprogress'
@@ -79,6 +79,14 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 			setTimeout(() => setShowContent(true), 150)
 		}, 150)
 	}
+
+	useEffect(() => {
+		if (session?.error === 'InvalidGrantError') {
+			signOut().then(() => {
+				router.push('/signin')
+			})
+		}
+	}, [session?.error])
 
 	useEffect(() => {
 		setLoadingOff()
