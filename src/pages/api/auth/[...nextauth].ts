@@ -109,6 +109,13 @@ export const authOptions: NextAuthOptions = {
 						if (tokens.error === 'invalid_grant') {
 							console.error('Invalid grant error - refresh token is expired or revoked')
 							session.error = 'InvalidGrantError'
+
+							// Clear session and redirect to signin
+							return {
+								...session,
+								error: 'InvalidGrantError',
+								redirect: '/signin',
+							}
 						}
 
 						throw tokens
