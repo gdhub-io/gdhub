@@ -27,6 +27,8 @@ const nextConfig = {
 	transpilePackages: [
 		'@mdxeditor/editor',
 		'@ant-design',
+		'@rc-component/util',
+		'rc-input',
 		'rc-util',
 		'rc-pagination',
 		'rc-picker',
@@ -42,6 +44,11 @@ const nextConfig = {
 		})
 
 		config.experiments = { ...config.experiments, topLevelAwait: true }
+
+		config.cache = {
+			type: 'memory',
+			cacheUnaffected: true,
+		}
 
 		return config
 	},

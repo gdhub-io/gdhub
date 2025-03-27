@@ -1,23 +1,36 @@
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
+import EquityShareModal from '@/components/modals/EquityShareModal'
 import InviteMemberModal from '@/components/modals/InviteMemberModal'
+import MemberEquityPromiseModal from '@/components/modals/MemberEquityPromiseModal'
 import ModernTable from '@/components/ModernTable'
 import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
+import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
+import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Flex, Typography, Tag, Space, Popconfirm } from 'antd'
+import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown, Modal } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import EquitySection from './EquitySection'
 
 const { Text } = Typography
 
 const MyTeam = () => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
+	const [modal, contextHolder] = Modal.useModal()
 	const contextProject = useContext(ProjectContext)?.contextProject
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+	const [isEquityModalOpen, setIsEquityModalOpen] = useState(false)
+	const [isMemberEquityPromiseModalOpen, setIsMemberEquityPromiseModalOpen] = useState(false)
+	const [selectedMember, setSelectedMember] = useState<(prismaClient.TeamMember & { user: prismaClient.User }) | null>(
+		null
+	)
 
 	const {
 		data: team,
@@ -52,6 +65,21 @@ const MyTeam = () => {
 		}
 	)
 
+	const {
+		data: projectEquity,
+		refetch: fetchProjectEquity,
+		isLoading: isLoadingEquity,
+	} = useQuery(
+		['project-equity', contextProject?.id],
+		() =>
+			axios.get('/api/user/project/equity', {
+				params: { projectId: contextProject?.id },
+			}),
+		{
+			enabled: !!contextProject?.id,
+		}
+	)
+
 	const { mutateAsync: fireMember, isLoading: isFiring } = useMutation(
 		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/fire', data),
 		{
@@ -70,18 +98,34 @@ const MyTeam = () => {
 		}
 	)
 
-	const handleFired = async (teamMemberId: string) => {
-		try {
-			await fireMember({ id: teamMemberId })
-			fetchMyTeam()
+	const handleFired = useCallback(
+		async (teamMemberId: string) => {
+			modal.confirm({
+				title: t('Are you sure you want to fire this member?'),
+				destroyOnClose: true,
+				type: 'confirm',
+				okText: 'Yes',
+				okType: 'primary',
+				cancelText: 'No',
+				icon: <ExclamationCircleOutlined />,
+				content: t('This action will dismisse the member from the team and delete all their equity promises.'),
+				async onOk() {
+					try {
+						await fireMember({ id: teamMemberId })
+						fetchMyTeam()
 
-			message.success(t('The employee is dismissed'))
-		} catch (error: any) {
-			console.log(error)
+						message.success(t('The employee is dismissed'))
+					} catch (error: any) {
+						console.log(error)
 
-			message.error(error.message)
-		}
-	}
+						message.error(error.message)
+					}
+				},
+				onCancel() {},
+			})
+		},
+		[t, fireMember, fetchMyTeam]
+	)
 
 	const handleCancelInvitation = async (invitationId: string) => {
 		try {
@@ -105,6 +149,75 @@ const MyTeam = () => {
 		setIsInviteModalOpen(false)
 		fetchMyTeam()
 		fetchPendingInvitations()
+	}
+
+	const handleOpenEquityModal = () => {
+		setIsEquityModalOpen(true)
+	}
+
+	const handleCloseEquityModal = () => {
+		setIsEquityModalOpen(false)
+	}
+
+	const handleEquityUpdateSuccess = () => {
+		setIsEquityModalOpen(false)
+		fetchProjectEquity()
+	}
+
+	const getMemberShare = (memberId: string) => {
+		if (!projectEquity?.data?.equityAllocations) return null
+		return projectEquity.data.equityAllocations.find((share: any) => share.teamMemberId === memberId)
+	}
+
+	const getMemberPromisePercentage = (memberId: string) => {
+		if (!projectEquity?.data?.equityAllocations) return null
+
+		const memberPromises = projectEquity.data.equityAllocations
+			.filter((allocation: any) => allocation.teamMemberId === memberId)
+			.flatMap((allocation: any) => allocation.promises)
+
+		console.log(memberId, memberPromises)
+
+		return memberPromises.reduce((acc: number, promise: any) => acc + promise.percentage, 0)
+	}
+
+	const handleOpenMemberEquityPromiseModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
+		setSelectedMember(member)
+		setIsMemberEquityPromiseModalOpen(true)
+	}
+
+	const handleCloseMemberEquityPromiseModal = () => {
+		setIsMemberEquityPromiseModalOpen(false)
+		setSelectedMember(null)
+	}
+
+	const handleDeleteMemberEquityPromise = () => {
+		handleCloseMemberEquityPromiseModal()
+		fetchProjectEquity()
+	}
+
+	const handleMemberEquityPromiseUpdateSuccess = (percentage: number, vested: boolean, targetStepId?: string) => {
+		handleCloseMemberEquityPromiseModal()
+		fetchProjectEquity()
+	}
+
+	const getMaxAvailableShare = (currentPromiseShare: number) => {
+		if (!projectEquity?.data) return 0
+
+		const teamTotal = projectEquity.data.equityAllocations?.reduce(
+			(sum: number, share: any) =>
+				sum + share.percentage + share.promises.reduce((acc: number, promise: any) => acc + promise.percentage, 0),
+			0
+		)
+		const allocated =
+			projectEquity.data.platformShare +
+			projectEquity.data.mentorFundShare +
+			projectEquity.data.investmentReserve +
+			teamTotal
+
+		const remainingPercentage = 100 - allocated + currentPromiseShare
+
+		return Math.min(remainingPercentage, 97)
 	}
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
@@ -162,34 +275,122 @@ const MyTeam = () => {
 			},
 		},
 		{
-			key: 'fire',
-			hidden: !contextProject?.isProjectAuthor,
-			title: 'Status',
-			render: (value, member) => {
-				if (member.status === prismaClient.TeamMemberStatus.Founder) {
-					return null
-				}
+			title: t('Time for work'),
+			dataIndex: ['user', 'profile', 'timeForWork'],
+			key: 'timeForWork',
+			responsive: ['md'],
+			render: (value) => {
+				if (!value) return null
 
-				if (member.status === prismaClient.TeamMemberStatus.Hired) {
+				if (value[0] === value[1]) {
 					return (
-						<Popconfirm
-							title={t('Are you sure you want to fire this member?')}
-							onConfirm={() => handleFired(member.id)}
-							okText={t('Yes')}
-							cancelText={t('No')}
-						>
-							<Button danger ghost>
-								{t('team.member.fire', 'Fire')}
-							</Button>
-						</Popconfirm>
+						<Text>
+							{value[0]} {t('hours/week')}
+						</Text>
 					)
 				}
 
-				if (member.status === prismaClient.TeamMemberStatus.Fired) {
-					return <Text className={tableStyles.tableStatusFired}>{t('Fired')}</Text>
+				return (
+					<Text>
+						{value[0]} - {value[1]} {t('hours/week')}
+					</Text>
+				)
+			},
+		},
+		{
+			title: t('Promises'),
+			key: 'promises',
+			align: 'center',
+			render: (_, member) => {
+				if (
+					member.status === prismaClient.TeamMemberStatus.Fired ||
+					member.status === prismaClient.TeamMemberStatus.Rejected
+				) {
+					return <Text type="secondary">-</Text>
 				}
 
-				return null
+				const memberShare = getMemberShare(member.id)
+
+				if (!memberShare?.promises.length) {
+					return (
+						<Button
+							type="text"
+							size="small"
+							icon={<MdOutlineHandshake />}
+							onClick={() => handleOpenMemberEquityPromiseModal(member)}
+						>
+							<T>Make Promise</T>
+						</Button>
+					)
+				}
+
+				return <Text>{memberShare.promises[0].percentage.toFixed(1)}%</Text>
+			},
+		},
+		{
+			title: t('Shares'),
+			key: 'shares',
+			align: 'center',
+			render: (_, member) => {
+				const shares = getMemberShare(member.id)
+
+				if (!shares) {
+					return <Text type="secondary">-</Text>
+				}
+
+				return <Text>{shares.percentage.toFixed(1)}%</Text>
+			},
+		},
+
+		{
+			title: '',
+			key: 'actions',
+			render: (_, member) => {
+				if (!contextProject?.isProjectAuthor || member.status === prismaClient.TeamMemberStatus.Fired) return null
+
+				const items = [
+					{
+						key: 'edit-promise',
+						label: t('Change Promise'),
+						disabled: !getMemberShare(member.id)?.promises.length,
+						icon: <MdOutlineHandshake size={16} />,
+						onClick: () => handleOpenMemberEquityPromiseModal(member),
+					},
+
+					// {
+					// 	key: 'transfer-share',
+					// 	label: t('Transfer Share'),
+					// 	icon: <BiTransfer size={16} />,
+					// 	disabled: true,
+					// },
+					{
+						type: 'divider',
+					},
+					{
+						key: 'fire-member',
+						label: t('Fire Member'),
+						icon: <BiTrash size={16} />,
+						disabled:
+							member.status === prismaClient.TeamMemberStatus.Founder ||
+							member.status === (prismaClient.TeamMemberStatus.Fired as any),
+						danger: true,
+						onClick: () => handleFired(member.id),
+					},
+				]
+
+				return (
+					<Dropdown
+						menu={{
+							items: items as any,
+							onClick: ({ key, domEvent }) => {
+								domEvent.stopPropagation()
+							},
+						}}
+						trigger={['click']}
+					>
+						<Button icon={<TbDotsVertical />} type="text" className="light-gray-text-btn" />
+					</Dropdown>
+				)
 			},
 		},
 	]
@@ -232,18 +433,28 @@ const MyTeam = () => {
 
 	return (
 		<>
-			{Boolean(contextProject?.isProjectAuthor) && (
-				<Flex justify="space-between" align="center" wrap>
-					<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
-
-					{/* temp */}
-					{contextProject?.isProjectAuthor && (
-						<Button type="primary" onClick={handleOpenInviteModal}>
-							<T>Invite Member</T>
-						</Button>
-					)}
-				</Flex>
+			{/* Отображение информации о долях проекта */}
+			{projectEquity?.data && contextProject?.id && (
+				<EquitySection
+					projectId={contextProject.id}
+					isProjectAuthor={contextProject.isProjectAuthor || false}
+					equityData={projectEquity.data}
+					teamMembers={team?.data.members || []}
+					onManageEquity={handleOpenEquityModal}
+				/>
 			)}
+
+			{/* Заголовок таблицы участников с кнопкой "Пригласить участника" */}
+			<Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
+				<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
+
+				{contextProject?.isProjectAuthor && (
+					<Button type="primary" onClick={handleOpenInviteModal}>
+						<T>Invite Member</T>
+					</Button>
+				)}
+			</Flex>
+
 			<ModernTable
 				loading={isLoadingMyTeam || isFiring}
 				columns={columns}
@@ -264,12 +475,35 @@ const MyTeam = () => {
 			)}
 
 			{contextProject?.teamId && (
-				<InviteMemberModal
-					teamId={contextProject.teamId}
-					open={isInviteModalOpen}
-					onOk={handleInviteSuccess}
-					onCancel={handleCloseInviteModal}
-				/>
+				<>
+					{contextHolder}
+					<InviteMemberModal
+						open={isInviteModalOpen}
+						onOk={handleInviteSuccess}
+						onCancel={handleCloseInviteModal}
+						teamId={contextProject?.teamId || ''}
+					/>
+					<EquityShareModal
+						open={isEquityModalOpen}
+						onOk={handleEquityUpdateSuccess}
+						onCancel={handleCloseEquityModal}
+						projectEquity={projectEquity?.data}
+					/>
+					{selectedMember && (
+						<MemberEquityPromiseModal
+							open={isMemberEquityPromiseModalOpen}
+							onOk={handleMemberEquityPromiseUpdateSuccess}
+							onCancel={handleCloseMemberEquityPromiseModal}
+							onDelete={handleDeleteMemberEquityPromise}
+							memberId={selectedMember.id}
+							memberName={selectedMember.user.name || 'Unknown'}
+							promiseId={getMemberShare(selectedMember.id)?.promises[0]?.id}
+							maxShare={getMaxAvailableShare(getMemberPromisePercentage(selectedMember.id) || 0)}
+							projectId={contextProject?.id || ''}
+							isVested={getMemberShare(selectedMember.id)?.vested || true}
+						/>
+					)}
+				</>
 			)}
 		</>
 	)

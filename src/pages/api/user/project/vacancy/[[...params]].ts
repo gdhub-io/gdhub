@@ -270,9 +270,15 @@ class ApiUserTeamVacancyHandler {
 		const { t } = tolgeeService
 		const firedMember = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Hired },
-			data: { status: prismaClient.TeamMemberStatus.Fired, finishedAt: dayjs().toISOString() },
+			data: {
+				status: prismaClient.TeamMemberStatus.Fired,
+				finishedAt: dayjs().toISOString(),
+			},
 			select: { user: true, team: true },
 		})
+
+		// Delete all equity allocations for the fired member
+		await prisma.equityPromise.deleteMany({ where: { allocation: { teamMemberId: id } } })
 
 		try {
 			await NovuService.send({

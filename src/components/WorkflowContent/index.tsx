@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { ProjectContext } from '@/contexts/ProjectContext'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { CiViewList } from '@react-icons/all-files/ci/CiViewList'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, Drawer, Flex, Grid, Popover, Row, Space, Steps, Typography } from 'antd'
+import { Button, Col, Drawer, Flex, Grid, Modal, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import styles from './style.module.scss'
 import WorkflowStepContent from './WorkflowStepContent'
@@ -14,19 +15,42 @@ const { Title, Text } = Typography
 
 export type ProjectWorkflow = prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
 
+type EquityPromise = {
+	id: string
+	percentage: number
+	owner: {
+		id: string
+		name: string
+	}
+	allocation: {
+		owner: {
+			name: string
+		}
+		percentage: number
+	}
+}
+
 type ProjctWorkflowWithSteps = ProjectWorkflow & {
-	steps: prismaClient.ProjectWorkflowStep[]
-	currentStep: prismaClient.ProjectWorkflowStep & { tasks: prismaClient.ProjectWorkflowTask[] }
+	steps: (prismaClient.ProjectWorkflowStep & {
+		equityPromises?: EquityPromise[]
+	})[]
+	currentStep: prismaClient.ProjectWorkflowStep & {
+		tasks: prismaClient.ProjectWorkflowTask[]
+		equityPromises?: (EquityPromise & { allocation: { owner: { name: string } } })[]
+	}
 }
 
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
+	const projectContext = useContext(ProjectContext)?.contextProject
 	const [conditionStatus, setConditionStatus] = useState<any>({ completed: false })
 	const [workflow, setWorkflow] = useState<ProjctWorkflowWithSteps>()
 	const [drawerVisible, setDrawerVisible] = useState(false)
 	const [popoverVisible, setPopoverVisible] = useState(false)
 	const [taskStatuses, setTaskStatuses] = useState<Record<string, boolean>>({})
+	const [equityTransferModalVisible, setEquityTransferModalVisible] = useState(false)
 	const { t } = useTolgee()
+	const isAuthor = useMemo(() => projectContext?.isProjectAuthor, [projectContext])
 
 	// const mockTasks: ExtendedTask[] = useMemo(
 	// 	() => [
@@ -92,7 +116,16 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	}
 
 	const handleNextStep = () => {
-		moveProjectToStep({ projectId, direction: 'next' })
+		if (workflow?.currentStep.equityPromises && workflow.currentStep.equityPromises.length > 0) {
+			setEquityTransferModalVisible(true)
+		} else {
+			moveProjectToStep({ projectId, direction: 'next' })
+		}
+	}
+
+	const handleEquityTransferConfirm = async () => {
+		await moveProjectToStep({ projectId, direction: 'next' })
+		setEquityTransferModalVisible(false)
 	}
 
 	useEffect(() => {
@@ -146,33 +179,35 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 							)}
 						</Title>
 					</div>
-					<div className={styles.stepTasks}>
-						{currentStepOrder > 0 && (
-							<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
-								<T keyName="workflow.previous-step">Previous</T>
-							</Button>
-						)}
+					{isAuthor && (
+						<div className={styles.stepTasks}>
+							{currentStepOrder > 0 && (
+								<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
+									<T keyName="workflow.previous-step">Previous</T>
+								</Button>
+							)}
 
-						<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
-							<Button type="text" icon={<CiViewList size={24} />} />
-						</Popover>
+							<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
+								<Button type="text" icon={<CiViewList size={24} />} />
+							</Popover>
 
-						{currentStepOrder < workflow.steps.length - 1 && (
-							<>
-								{conditionStatus.completed == false ? (
-									<Popover content={t('Tasks are not completed')}>
-										<Button disabled={conditionStatus.completed == false}>
+							{currentStepOrder < workflow.steps.length - 1 && (
+								<>
+									{conditionStatus.completed == false ? (
+										<Popover content={t('Tasks are not completed')}>
+											<Button disabled={conditionStatus.completed == false}>
+												<T keyName="workflow.next-step">Next step</T>
+											</Button>
+										</Popover>
+									) : (
+										<Button onClick={handleNextStep} disabled={isMoving}>
 											<T keyName="workflow.next-step">Next step</T>
 										</Button>
-									</Popover>
-								) : (
-									<Button onClick={handleNextStep} disabled={isMoving}>
-										<T keyName="workflow.next-step">Next step</T>
-									</Button>
-								)}
-							</>
-						)}
-					</div>
+									)}
+								</>
+							)}
+						</div>
+					)}
 				</Flex>
 
 				<Row gutter={[32, 32]}>
@@ -234,6 +269,34 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 					)}
 				</Row>
 			</Space>
+
+			<Modal
+				title={<T keyName="workflow.equity-transfer.title">Equity Transfer Confirmation</T>}
+				open={equityTransferModalVisible}
+				onOk={handleEquityTransferConfirm}
+				onCancel={() => setEquityTransferModalVisible(false)}
+				confirmLoading={isMoving}
+			>
+				<Space direction="vertical" style={{ width: '100%' }}>
+					<Text>
+						<T keyName="workflow.equity-transfer.description">
+							By proceeding to the next step, the following equity promises will be transferred to actual allocations:
+						</T>
+					</Text>
+					{workflow?.currentStep.equityPromises?.map((promise) => (
+						<Space key={promise.id} style={{ width: '100%' }}>
+							<Text>
+								<Text strong>{promise.allocation.owner.name}:</Text> +{promise.percentage}%
+							</Text>
+							<Text type="secondary">
+								{t('workflow.equity-transfer.total', 'Total after transfer: {total}%', {
+									total: (promise.allocation.percentage + promise.percentage).toString(),
+								})}
+							</Text>
+						</Space>
+					))}
+				</Space>
+			</Modal>
 
 			<Drawer
 				title={<T keyName="workflow.all-steps">All steps</T>}
