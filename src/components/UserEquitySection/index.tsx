@@ -1,6 +1,7 @@
+import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Card, Typography, Space, Row, Col, Statistic } from 'antd'
+import { Card, Typography, Space, Row, Col, Statistic, Skeleton } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
@@ -13,11 +14,7 @@ interface UserEquitySectionProps {
 const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 	const { t } = useTolgee()
 
-	const {
-		data: summary,
-		refetch: fetchMemberEquity,
-		isLoading: isLoadingMemberEquity,
-	} = useQuery(
+	const { data: summary, isLoading: isLoadingMemberEquity } = useQuery(
 		['project-equity-member-current', projectId],
 		() =>
 			axios.get('/api/user/project/member/summary', {
@@ -40,6 +37,28 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 		fontWeight: 400,
 	}
 
+	const renderStatistic = (title: string, value: string | number, suffix?: string, description?: string) => {
+		return (
+			<>
+				<Statistic
+					title={title}
+					value={value}
+					valueRender={() =>
+						isLoadingMemberEquity ? <Skeleton.Input style={{ width: 100, height: 24 }} active /> : value
+					}
+					suffix={suffix && <span style={suffixStyle}>{suffix}</span>}
+					precision={1}
+					valueStyle={valueStyle}
+				/>
+				{description && (
+					<Text type="secondary" style={{ fontSize: '12px' }}>
+						{description}
+					</Text>
+				)}
+			</>
+		)
+	}
+
 	return (
 		<Space direction="vertical" size="middle" style={{ width: '100%', marginBottom: '32px' }}>
 			<Title level={4}>{t('Your Participation')}</Title>
@@ -48,22 +67,22 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 				{Boolean(summary?.data.promisedEquity) && (
 					<Col xs={24} sm={12} md={6}>
 						<Card style={{ height: '100%', textAlign: 'center' }}>
-							<Statistic
-								title={t('Promised Equity')}
-								value={summary?.data.promisedEquity}
-								suffix={<span style={suffixStyle}>%</span>}
-								precision={1}
-								valueStyle={valueStyle}
-							/>
-							{summary?.data.workflowStepForVested && (
-								<Text type="secondary" style={{ fontSize: '12px' }}>
-									{t('After completing')} <b>&quot;{summary?.data.workflowStepForVested}&quot;</b>{' '}
-									{t('promised equity will become actual')}
-								</Text>
+							{renderStatistic(
+								t('Promised Equity'),
+								summary?.data.promisedEquity,
+								'%',
+								summary?.data.workflowStepForVested
+									? `${t('After completing')} "${summary?.data.workflowStepForVested}" ${t('promised equity will become actual')}`
+									: undefined
 							)}
 							{summary?.data.nextMilestone && (
 								<Text type="secondary" style={{ fontSize: '12px' }}>
-									{t('Next milestone')}: {summary?.data.nextMilestone}
+									{t('Next milestone')}:{' '}
+									{isLoadingMemberEquity ? (
+										<Skeleton.Input style={{ width: 60, height: 16 }} active />
+									) : (
+										summary?.data.nextMilestone
+									)}
 								</Text>
 							)}
 						</Card>
@@ -73,47 +92,32 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 				{Boolean(summary?.data.actualEquity) && (
 					<Col xs={24} sm={12} md={6}>
 						<Card style={{ height: '100%', textAlign: 'center' }}>
-							<Statistic
-								title={t('Actual Equity')}
-								value={summary?.data.actualEquity}
-								suffix={<span style={suffixStyle}>%</span>}
-								precision={1}
-								valueStyle={valueStyle}
-							/>
-							<Text type="secondary" style={{ fontSize: '12px' }}>
-								{t('Current vested equity')}
-							</Text>
+							{renderStatistic(t('Actual Equity'), summary?.data.actualEquity, '%', t('Current vested equity'))}
 						</Card>
 					</Col>
 				)}
 
 				<Col xs={24} sm={12} md={6}>
 					<Card style={{ height: '100%', textAlign: 'center' }}>
-						<Statistic
-							title={t('Days on Project')}
-							value={daysOnProject}
-							suffix={<span style={suffixStyle}>{t('days')}</span>}
-							valueStyle={valueStyle}
-						/>
-						{summary?.data.startedAt && (
-							<Text type="secondary" style={{ fontSize: '12px' }}>
-								{t('Since')}: {dayjs(summary?.data.startedAt).format('DD.MM.YYYY')}
-							</Text>
+						{renderStatistic(
+							t('Days on Project'),
+							daysOnProject,
+							t('days'),
+							summary?.data.startedAt
+								? `${t('Since')}: ${dayjs(summary?.data.startedAt).format('DD.MM.YYYY')}`
+								: undefined
 						)}
 					</Card>
 				</Col>
 
 				<Col xs={24} sm={12} md={6}>
 					<Card style={{ height: '100%', textAlign: 'center' }}>
-						<Statistic
-							title={t('Available Hours')}
-							value={summary?.data.availableHours[0] + ' - ' + summary?.data.availableHours[1]}
-							suffix={<span style={suffixStyle}>{t('hours/week')}</span>}
-							valueStyle={valueStyle}
-						/>
-						<Text type="secondary" style={{ fontSize: '12px' }}>
-							{t('Weekly commitment')}
-						</Text>
+						{renderStatistic(
+							t('Available Hours'),
+							summary?.data.availableHours[0] + ' - ' + summary?.data.availableHours[1],
+							t('hours/week'),
+							t('Weekly commitment')
+						)}
 					</Card>
 				</Col>
 			</Row>
