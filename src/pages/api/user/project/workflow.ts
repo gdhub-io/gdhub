@@ -1,8 +1,8 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 
 class UserProjectWorkflowDto {
 	@IsString()

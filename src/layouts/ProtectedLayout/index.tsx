@@ -7,6 +7,7 @@ import { useTelegram } from '@/helpers/useTelegram'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { T, useTolgee } from '@tolgee/react'
 import {
@@ -33,7 +34,6 @@ import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { NextSeo, NextSeoProps } from 'next-seo'
 import styles from './style.module.scss'
-import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 
 interface ProtectedLayoutProps {
 	children: ReactNode

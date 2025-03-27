@@ -3,10 +3,10 @@
 import { Suspense, useState } from 'react'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Card, Carousel, Grid, Typography } from 'antd'
-import ReactNiceAvatar from 'react-nice-avatar'
 import dynamic from 'next/dynamic'
-import styles from './style.module.scss'
+import ReactNiceAvatar from 'react-nice-avatar'
 import { MasonryProps, ResponsiveMasonryProps } from 'react-responsive-masonry'
+import styles from './style.module.scss'
 
 const { Title } = Typography
 
@@ -231,23 +231,20 @@ export const LandingFeedbackSection = () => {
 					{screens.lg && (
 						<>
 							<Suspense>
-								<ResponsiveMasonryComponent
-									columnsCountBreakPoints={{ 350: 1, 750: 2, 1200: 3, 1440: 4 }}
-									children={
-										<MasonryComponent gutter="16px">
-											{feedbackList.map((feedback, index) => (
-												<Card rootClassName={styles.feedbackCard} key={'feedback-card-' + index}>
-													<Card.Meta
-														avatar={feedback.avatar}
-														title={t(`landing.feedback.title` + index, feedback.name)}
-														description={t(`landing.feedback.description` + index, feedback.position)}
-													/>
-													<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
-												</Card>
-											))}
-										</MasonryComponent>
-									}
-								/>
+								<ResponsiveMasonryComponent columnsCountBreakPoints={{ 350: 1, 750: 2, 1200: 3, 1440: 4 }}>
+									<MasonryComponent gutter="16px">
+										{feedbackList.map((feedback, index) => (
+											<Card rootClassName={styles.feedbackCard} key={'feedback-card-' + index}>
+												<Card.Meta
+													avatar={feedback.avatar}
+													title={t(`landing.feedback.title` + index, feedback.name)}
+													description={t(`landing.feedback.description` + index, feedback.position)}
+												/>
+												<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
+											</Card>
+										))}
+									</MasonryComponent>
+								</ResponsiveMasonryComponent>
 							</Suspense>
 							{maxHeight != 'none' ? (
 								<Button className={styles.readMoreBtn} onClick={() => setMaxHeight('none')}>

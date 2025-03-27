@@ -156,7 +156,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 				open={transactionsModalVisible}
 				onCancel={() => setTransactionsModalVisible(false)}
 				footer={null}
-				width={"80%"}
+				width={'80%'}
 			>
 				<EquityTransactions projectId={projectId} />
 			</Modal>
