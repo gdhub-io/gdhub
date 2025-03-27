@@ -27,6 +27,7 @@ const nextConfig = {
 	transpilePackages: [
 		'@mdxeditor/editor',
 		'@ant-design',
+		'@rc-component/util',
 		'rc-util',
 		'rc-pagination',
 		'rc-picker',

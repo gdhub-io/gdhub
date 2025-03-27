@@ -7,7 +7,7 @@ declare module 'next-auth/jwt' {
 		roles: UserRole[]
 		onboardingDone: boolean
 		lang: string
-		error?: 'RefreshAccessTokenError'
+		error?: 'RefreshAccessTokenError' | 'InvalidGrantError'
 		activeSubscription?: string
 		telegramId?: string
 	}
@@ -15,7 +15,7 @@ declare module 'next-auth/jwt' {
 
 declare module 'next-auth' {
 	interface Session {
-		error?: 'RefreshAccessTokenError' | 'InvalidGrantError'
+		error?: 'InvalidGrantError' | 'RefreshAccessTokenError'
 		user: {
 			id: string
 			roles: UserRole[]

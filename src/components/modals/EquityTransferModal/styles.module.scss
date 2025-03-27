@@ -1,0 +1,37 @@
+.container {
+  padding: 8px;
+}
+
+.infoBox {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 8px;
+  
+  :global(.ant-typography) {
+    margin-bottom: 8px;
+  }
+  
+  :global(.ant-divider) {
+    margin: 12px 0;
+  }
+}
+
+.form {
+  width: 100%;
+}
+
+.memberOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  span {
+    margin-left: 8px;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+} 

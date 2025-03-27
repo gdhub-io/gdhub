@@ -1,0 +1,23 @@
+.equityBarContainer {
+  width: 100%;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  transform: translateX(-50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.tooltipTrigger {
+  cursor: pointer;
+} 
