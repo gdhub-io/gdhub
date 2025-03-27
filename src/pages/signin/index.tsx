@@ -37,12 +37,10 @@ const LoginPage: NextPage = () => {
 	React.useEffect(() => {
 		if (error === 'RefreshTokenExpired') {
 			message.error(t('refresh_token_expired', 'Your session has expired. Please sign in again.'))
-			signOut()
 		}
 
 		if (error === 'InvalidGrantError') {
 			message.error(t('invalid_grant_error', 'Invalid authorization. Please sign in again.'))
-			signOut()
 		}
 	}, [error, t])
 
