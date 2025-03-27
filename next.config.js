@@ -28,6 +28,7 @@ const nextConfig = {
 		'@mdxeditor/editor',
 		'@ant-design',
 		'@rc-component/util',
+		'rc-input',
 		'rc-util',
 		'rc-pagination',
 		'rc-picker',
