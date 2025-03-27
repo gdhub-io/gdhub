@@ -1,6 +1,7 @@
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import ModernTable from '@/components/ModernTable'
 import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
+import UserEquitySection from '@/components/UserEquitySection'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
@@ -12,20 +13,12 @@ import dayjs from 'dayjs'
 
 const { Text } = Typography
 
-const MyTeam = () => {
+const UserTeam = () => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 	const contextProject = useContext(ProjectContext)?.contextProject
-	const [isMemberEquityPromiseModalOpen, setIsMemberEquityPromiseModalOpen] = useState(false)
-	const [selectedMember, setSelectedMember] = useState<(prismaClient.TeamMember & { user: prismaClient.User }) | null>(
-		null
-	)
 
-	const {
-		data: team,
-		refetch: fetchMyTeam,
-		isLoading: isLoadingMyTeam,
-	} = useQuery(
+	const { data: team, isLoading: isLoadingMyTeam } = useQuery(
 		['user-project-team', contextProject?.teamId],
 		() =>
 			axios.get<prismaClient.Team & { members: (prismaClient.TeamMember & { user: prismaClient.User })[] }>(
@@ -36,21 +29,6 @@ const MyTeam = () => {
 			),
 		{
 			enabled: !!contextProject?.teamId,
-		}
-	)
-
-	const {
-		data: memberEquity,
-		refetch: fetchMemberEquity,
-		isLoading: isLoadingMemberEquity,
-	} = useQuery(
-		['project-equity', contextProject?.id],
-		() =>
-			axios.get('/api/user/project/equity', {
-				params: { projectId: contextProject?.id },
-			}),
-		{
-			enabled: !!contextProject?.id,
 		}
 	)
 
@@ -110,46 +88,9 @@ const MyTeam = () => {
 		},
 	]
 
-	const pendingInvitationsColumns: ColumnsType<prismaClient.TeamInvitation> = [
-		{
-			title: t('Email'),
-			key: 'email',
-			dataIndex: 'email',
-		},
-		{
-			title: t('Position'),
-			dataIndex: 'position',
-			key: 'position',
-		},
-		{
-			title: t('Invited At'),
-			dataIndex: 'createdAt',
-			key: 'createdAt',
-			responsive: ['md'],
-			render: (value) => dayjs(value).format('DD.MM.YYYY'),
-		},
-		{
-			title: t('Expires At'),
-			dataIndex: 'expiresAt',
-			key: 'expiresAt',
-			responsive: ['md'],
-			render: (value) => dayjs(value).format('DD.MM.YYYY'),
-		},
-	]
-
 	return (
 		<>
-			{/* Отображение информации о долях проекта */}
-			{memberEquity?.data && contextProject?.id && (
-				<></>
-				// <UserEquitySection
-				// 	projectId={contextProject.id}
-				// 	isProjectAuthor={contextProject.isProjectAuthor || false}
-				// 	equityData={projectEquity.data}
-				// 	teamMembers={team?.data.members || []}
-				// 	onManageEquity={handleOpenEquityModal}
-				// />
-			)}
+			<UserEquitySection projectId={contextProject?.id} />
 
 			<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
 
@@ -163,4 +104,4 @@ const MyTeam = () => {
 	)
 }
 
-export default MyTeam
+export default UserTeam
