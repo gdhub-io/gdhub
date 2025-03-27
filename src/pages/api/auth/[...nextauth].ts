@@ -4,7 +4,6 @@ import { brevoApi } from '@/services/brevo'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { redirect } from 'next/navigation'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
 import GoogleProvider from 'next-auth/providers/google'
@@ -76,7 +75,7 @@ export const authOptions: NextAuthOptions = {
 			return { ...token, ...user, activeSubscription: activeSubscription?.id } as any
 		},
 		async session({ session, token, user, newSession }) {
-			if (!token) return redirect('/signin')
+			if (!token) return { ...session, error: 'InvalidGrantError' }
 
 			session.user = token as any
 
