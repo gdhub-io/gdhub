@@ -43,13 +43,8 @@ class TeamMemberSummary {
 				(acc, curr) => acc + curr.promises.reduce((acc, curr) => acc + curr.percentage, 0),
 				0
 			),
-			actualEquity: teamMember.equityAllocations.reduce(
-				(acc, curr) => acc + curr.promises.reduce((acc, curr) => acc + curr.percentage, 0),
-				0
-			),
-			nextMilestone: teamMember.equityAllocations
-				.find((allocation) => allocation.promises.some((promise) => promise.isExecuted === false))
-				?.promises.find((promise) => promise.isExecuted === false)?.targetStep?.name,
+			actualEquity: teamMember.equityAllocations.reduce((acc, curr) => acc + curr.percentage, 0),
+			workflowStepForVested: teamMember.equityAllocations[0]?.promises[0]?.targetStep?.name,
 		}
 	}
 }

@@ -35,21 +35,32 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 		fontWeight: 600,
 	}
 
+	const suffixStyle = {
+		fontSize: '16px',
+		fontWeight: 400,
+	}
+
 	return (
-		<Space direction="vertical" size="middle" style={{ width: '100%' }}>
-			<Title level={4}>{t('Your Project Equity')}</Title>
+		<Space direction="vertical" size="middle" style={{ width: '100%', marginBottom: '32px' }}>
+			<Title level={4}>{t('Your Participation')}</Title>
 
 			<Row gutter={[16, 16]}>
 				{Boolean(summary?.data.promisedEquity) && (
 					<Col xs={24} sm={12} md={6}>
-						<Card style={{ height: '100%' }}>
+						<Card style={{ height: '100%', textAlign: 'center' }}>
 							<Statistic
 								title={t('Promised Equity')}
 								value={summary?.data.promisedEquity}
-								suffix="%"
+								suffix={<span style={suffixStyle}>%</span>}
 								precision={1}
 								valueStyle={valueStyle}
 							/>
+							{summary?.data.workflowStepForVested && (
+								<Text type="secondary" style={{ fontSize: '12px' }}>
+									{t('After completing')} <b>&quot;{summary?.data.workflowStepForVested}&quot;</b>{' '}
+									{t('promised equity will become actual')}
+								</Text>
+							)}
 							{summary?.data.nextMilestone && (
 								<Text type="secondary" style={{ fontSize: '12px' }}>
 									{t('Next milestone')}: {summary?.data.nextMilestone}
@@ -61,11 +72,11 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 
 				{Boolean(summary?.data.actualEquity) && (
 					<Col xs={24} sm={12} md={6}>
-						<Card style={{ height: '100%' }}>
+						<Card style={{ height: '100%', textAlign: 'center' }}>
 							<Statistic
 								title={t('Actual Equity')}
 								value={summary?.data.actualEquity}
-								suffix="%"
+								suffix={<span style={suffixStyle}>%</span>}
 								precision={1}
 								valueStyle={valueStyle}
 							/>
@@ -77,8 +88,13 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 				)}
 
 				<Col xs={24} sm={12} md={6}>
-					<Card style={{ height: '100%' }}>
-						<Statistic title={t('Days on Project')} value={daysOnProject} suffix={t('days')} valueStyle={valueStyle} />
+					<Card style={{ height: '100%', textAlign: 'center' }}>
+						<Statistic
+							title={t('Days on Project')}
+							value={daysOnProject}
+							suffix={<span style={suffixStyle}>{t('days')}</span>}
+							valueStyle={valueStyle}
+						/>
 						{summary?.data.startedAt && (
 							<Text type="secondary" style={{ fontSize: '12px' }}>
 								{t('Since')}: {dayjs(summary?.data.startedAt).format('DD.MM.YYYY')}
@@ -88,11 +104,11 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 				</Col>
 
 				<Col xs={24} sm={12} md={6}>
-					<Card style={{ height: '100%' }}>
+					<Card style={{ height: '100%', textAlign: 'center' }}>
 						<Statistic
 							title={t('Available Hours')}
 							value={summary?.data.availableHours[0] + ' - ' + summary?.data.availableHours[1]}
-							suffix={t('hours/week')}
+							suffix={<span style={suffixStyle}>{t('hours/week')}</span>}
 							valueStyle={valueStyle}
 						/>
 						<Text type="secondary" style={{ fontSize: '12px' }}>
@@ -101,19 +117,6 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 					</Card>
 				</Col>
 			</Row>
-
-			{summary?.data.nextMilestone && summary?.data.currentStep && (
-				<Card>
-					<Space direction="vertical" size="small" style={{ width: '100%' }}>
-						<Text type="secondary">
-							{t('Current Step')}: {summary?.data.currentStep}
-						</Text>
-						<Text type="secondary">
-							{t('Next Milestone')}: {summary?.data.nextMilestone}
-						</Text>
-					</Space>
-				</Card>
-			)}
 		</Space>
 	)
 }
