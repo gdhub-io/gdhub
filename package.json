@@ -19,8 +19,10 @@
   },
   "dependencies": {
     "@9gustin/react-notion-render": "^3.11.2",
+    "@ant-design/colors": "^8.0.0",
     "@ant-design/cssinjs": "^1.23.0",
     "@ant-design/icons": "^6.0.0",
+    "@ctrl/tinycolor": "^4.1.0",
     "@daily-co/daily-js": "^0.60.0",
     "@daily-co/daily-react": "^0.17.3",
     "@gdhub-io/gdhub-prisma": "^1.7.8",
