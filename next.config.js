@@ -44,6 +44,11 @@ const nextConfig = {
 
 		config.experiments = { ...config.experiments, topLevelAwait: true }
 
+		config.cache = {
+			type: 'memory',
+			cacheUnaffected: true,
+		}
+
 		return config
 	},
 	headers: async () => [
