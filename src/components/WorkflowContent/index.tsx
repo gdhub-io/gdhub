@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { ProjectContext } from '@/contexts/ProjectContext'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { CiViewList } from '@react-icons/all-files/ci/CiViewList'
@@ -41,6 +42,7 @@ type ProjctWorkflowWithSteps = ProjectWorkflow & {
 
 const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; locale?: string }) => {
 	const screens = Grid.useBreakpoint()
+	const projectContext = useContext(ProjectContext)?.contextProject
 	const [conditionStatus, setConditionStatus] = useState<any>({ completed: false })
 	const [workflow, setWorkflow] = useState<ProjctWorkflowWithSteps>()
 	const [drawerVisible, setDrawerVisible] = useState(false)
@@ -48,6 +50,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const [taskStatuses, setTaskStatuses] = useState<Record<string, boolean>>({})
 	const [equityTransferModalVisible, setEquityTransferModalVisible] = useState(false)
 	const { t } = useTolgee()
+	const isAuthor = useMemo(() => projectContext?.isProjectAuthor, [projectContext])
 
 	// const mockTasks: ExtendedTask[] = useMemo(
 	// 	() => [
@@ -176,33 +179,35 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 							)}
 						</Title>
 					</div>
-					<div className={styles.stepTasks}>
-						{currentStepOrder > 0 && (
-							<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
-								<T keyName="workflow.previous-step">Previous</T>
-							</Button>
-						)}
+					{isAuthor && (
+						<div className={styles.stepTasks}>
+							{currentStepOrder > 0 && (
+								<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
+									<T keyName="workflow.previous-step">Previous</T>
+								</Button>
+							)}
 
-						<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
-							<Button type="text" icon={<CiViewList size={24} />} />
-						</Popover>
+							<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
+								<Button type="text" icon={<CiViewList size={24} />} />
+							</Popover>
 
-						{currentStepOrder < workflow.steps.length - 1 && (
-							<>
-								{conditionStatus.completed == false ? (
-									<Popover content={t('Tasks are not completed')}>
-										<Button disabled={conditionStatus.completed == false}>
+							{currentStepOrder < workflow.steps.length - 1 && (
+								<>
+									{conditionStatus.completed == false ? (
+										<Popover content={t('Tasks are not completed')}>
+											<Button disabled={conditionStatus.completed == false}>
+												<T keyName="workflow.next-step">Next step</T>
+											</Button>
+										</Popover>
+									) : (
+										<Button onClick={handleNextStep} disabled={isMoving}>
 											<T keyName="workflow.next-step">Next step</T>
 										</Button>
-									</Popover>
-								) : (
-									<Button onClick={handleNextStep} disabled={isMoving}>
-										<T keyName="workflow.next-step">Next step</T>
-									</Button>
-								)}
-							</>
-						)}
-					</div>
+									)}
+								</>
+							)}
+						</div>
+					)}
 				</Flex>
 
 				<Row gutter={[32, 32]}>
