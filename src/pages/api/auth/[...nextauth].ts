@@ -104,6 +104,16 @@ export const authOptions: NextAuthOptions = {
 					if (!response.ok) {
 						console.error('Token refresh response not OK:', tokens)
 
+						// Delete the account if the refresh token is expired or revoked
+						await prisma.account.delete({
+							where: {
+								provider_providerAccountId: {
+									provider: 'google',
+									providerAccountId: google.providerAccountId,
+								},
+							},
+						})
+
 						// Check for invalid_grant error specifically
 						if (tokens.error === 'invalid_grant') {
 							console.error('Invalid grant error - refresh token is expired or revoked')
