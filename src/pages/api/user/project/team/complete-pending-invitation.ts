@@ -132,7 +132,7 @@ class ApiUserTeamCompletePendingInvitationHandler {
 			return {
 				success: true,
 				message: 'You have successfully joined the team',
-				redirect: `/project/${invitation.team.project?.slug || invitation.team.project?.id}`,
+				redirect: `/my/projects/${invitation.team.project?.slug || invitation.team.project?.id}`,
 			}
 		} catch (error: any) {
 			console.error('[team.complete-pending-invitation]', error)
