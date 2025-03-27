@@ -10,6 +10,7 @@ import { useCurrentProject } from '@/hooks/project'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { T, useTolgee } from '@tolgee/react'
@@ -149,8 +150,22 @@ export const ProtectedProjectLayout = ({
 			{
 				key: 'tg-community',
 				label: (
-					<Link href="https://t.me/+HD91s6-i7uAwZDIy" target="_blank" title="Telegram community chat">
-						Telegram community chat
+					<Link href="https://t.me/gdhub_io" target="_blank" title="Telegram community chat">
+						<Flex justify="space-between" align="center" gap={16}>
+							<Text>Community chat</Text>
+							<GoLinkExternal size={12} color="gray" />
+						</Flex>
+					</Link>
+				),
+			},
+			{
+				key: 'website',
+				label: (
+					<Link href="https://gdhub.io" target="_blank" title="Website">
+						<Flex justify="space-between" align="center" gap={16}>
+							<Text>Website</Text>
+							<GoLinkExternal size={12} color="gray" />
+						</Flex>
 					</Link>
 				),
 			},
@@ -255,7 +270,7 @@ export const ProtectedProjectLayout = ({
 											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
 												<Button
 													type="text"
-													style={{ display: 'block', padding: 0 }}
+													style={{ display: 'block', padding: 0, lineHeight: 0, borderRadius: '50%' }}
 													icon={
 														session?.user.image ? (
 															<Avatar

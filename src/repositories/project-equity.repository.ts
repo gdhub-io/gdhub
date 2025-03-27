@@ -222,21 +222,30 @@ export class ProjectEquityRepository {
 					equityId: equity.id,
 					teamMemberId: memberId,
 				},
-			})
-
-			if (allocation) {
-				throw new Error('Allocation already exists for this member')
-			}
-
-			// Create empty allocation
-			allocation = await prisma.equityAllocation.create({
-				data: {
-					equityId: equity.id,
-					ownerId: teamMember.userId,
-					teamMemberId: memberId,
-					percentage: 0,
+				include: {
+					promises: true,
 				},
 			})
+
+			// Check if promise already exists for this member
+			if (allocation?.promises.length) {
+				throw new Error('Promise already exists for this member')
+			}
+
+			// Create empty allocation if it doesn't exist
+			if (!allocation) {
+				allocation = await prisma.equityAllocation.create({
+					data: {
+						equityId: equity.id,
+						ownerId: teamMember.userId,
+						teamMemberId: memberId,
+						percentage: 0,
+					},
+					include: {
+						promises: true,
+					},
+				})
+			}
 
 			// Then create promise if needed
 			if (targetStepId) {

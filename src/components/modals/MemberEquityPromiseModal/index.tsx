@@ -15,8 +15,10 @@ import {
 	Checkbox,
 	notification,
 	Popconfirm,
+	Spin,
 } from 'antd'
 import axios from 'axios'
+import _ from 'lodash'
 
 const { Text, Paragraph } = Typography
 
@@ -60,7 +62,7 @@ const MemberEquityPromiseModal = ({
 		}
 	)
 
-	const { data: promiseData } = useQuery(
+	const { isLoading } = useQuery(
 		['project-promise', promiseId],
 		() => axios.get('/api/user/project/equity/promise', { params: { promiseId } }),
 		{
@@ -79,9 +81,9 @@ const MemberEquityPromiseModal = ({
 	// Получаем доступные для выбора шаги (только следующие за текущим)
 	const availableSteps = workflowData?.data?.steps
 		? workflowData.data.steps
-				.filter((step: any) => step.order > (workflowData.data.currentStep?.order || 0))
+				.filter((step: any) => step.order >= (workflowData.data.currentStep?.order || 0))
 				.map((step: any) => ({
-					label: step.name,
+					label: step.order === workflowData.data.currentStep?.order ? `${step.name} (current)` : step.name,
 					value: step.id,
 				}))
 		: []
@@ -108,7 +110,7 @@ const MemberEquityPromiseModal = ({
 	}
 
 	// Mutation for creating a member share
-	const { mutateAsync: createMemberShare, isLoading: isSaving } = useMutation(
+	const { mutateAsync: createMemberShare, isLoading: isCreating } = useMutation(
 		(data: { projectId: string; memberId: string; percentage: number; targetStepId?: string }) =>
 			axios.post<any>('/api/user/project/equity/member', data),
 		{
@@ -207,6 +209,7 @@ const MemberEquityPromiseModal = ({
 			open={open}
 			width={600}
 			onCancel={onCancel}
+			confirmLoading={isCreating || isUpdating}
 			footer={
 				<Flex style={{ width: '100%' }} justify="space-between">
 					<div>
@@ -243,7 +246,7 @@ const MemberEquityPromiseModal = ({
 						<Button key="cancel" onClick={onCancel}>
 							{t('Cancel')}
 						</Button>
-						<Button key="submit" type="primary" onClick={handleOk} loading={isSaving || isUpdating}>
+						<Button key="submit" type="primary" onClick={handleOk} loading={isCreating || isUpdating}>
 							{t('Save')}
 						</Button>
 					</Space>
@@ -255,71 +258,77 @@ const MemberEquityPromiseModal = ({
 					{t('Promised shares will be automatically vested when the project reaches the specified workflow step.')}
 				</Paragraph>
 
-				<Form form={form} variant="filled" layout="vertical">
-					<Form.Item label={t('Share Percentage')} name="percentage" initialValue={0}>
-						<Flex align="center" gap={16}>
-							<div style={{ flex: 1 }}>
-								<Slider
+				<Spin spinning={isLoading && !!promiseId}>
+					<Form form={form} variant="filled" layout="vertical">
+						<Form.Item label={t('Share Percentage')} name="percentage" initialValue={0} required>
+							<Flex align="center" gap={16}>
+								<div style={{ flex: 1 }}>
+									<Slider
+										min={0}
+										max={_.round(maxShare, 2)}
+										step={0.1}
+										value={percentage}
+										marks={Object.fromEntries([
+											...[...Array(Math.floor(maxShare / 10))].map((_, i) => [i * 10, `${i * 10}%`]),
+											[_.round(maxShare, 2), `${_.round(maxShare, 2)}%`],
+										])}
+										onChange={handlePercentageChange}
+									/>
+								</div>
+								<InputNumber
 									min={0}
-									max={maxShare}
+									max={_.round(maxShare, 2)}
 									step={0.1}
 									value={percentage}
-									marks={Object.fromEntries([
-										...[...Array(Math.floor(maxShare / 10))].map((_, i) => [i * 10, `${i * 10}%`]),
-										[maxShare, `${maxShare}%`],
-									])}
 									onChange={handlePercentageChange}
+									addonAfter="%"
+									style={{ width: '110px' }}
 								/>
-							</div>
-							<InputNumber
-								min={0}
-								max={maxShare}
-								step={0.1}
-								value={percentage}
-								onChange={handlePercentageChange}
-								addonAfter="%"
-								style={{ width: '110px' }}
+							</Flex>
+						</Form.Item>
+
+						<Form.Item
+							name="targetStepId"
+							label={t('Vesting at Workflow Step')}
+							rules={[{ required: true, message: t('This field is required') }]}
+						>
+							<Select
+								placeholder={t('Select the step for vesting')}
+								onChange={handleTargetStepChange}
+								allowClear
+								options={availableSteps}
 							/>
-						</Flex>
-					</Form.Item>
+						</Form.Item>
 
-					<Form.Item name="targetStepId" label={t('Vesting at Workflow Step')}>
-						<Select
-							placeholder={t('Select the step for vesting')}
-							onChange={handleTargetStepChange}
-							allowClear
-							options={availableSteps}
-						/>
-					</Form.Item>
-
-					<Form.Item
-						name="confirmEquityTerms"
-						valuePropName="checked"
-						noStyle
-						rules={[
-							{
-								validator: (_, value) => {
-									if (!value) {
-										notification.error({
-											message: t(
-												'equityPromise.confirm.error',
-												'You should confirm the accuracy of the information entered'
-											),
-										})
-									}
-									return value ? Promise.resolve() : Promise.reject()
+						<Form.Item
+							name="confirmEquityTerms"
+							valuePropName="checked"
+							noStyle
+							rules={[
+								{
+									validator: (_, value) => {
+										if (!value) {
+											notification.error({
+												message: t(
+													'equityPromise.confirm.error',
+													'You should confirm the accuracy of the information entered'
+												),
+											})
+										}
+										return value ? Promise.resolve() : Promise.reject()
+									},
 								},
-							},
-						]}
-					>
-						<Checkbox>
-							{t(
-								'equityPromise.confirm',
-								'I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions.'
-							)}
-						</Checkbox>
-					</Form.Item>
-				</Form>
+							]}
+						>
+							<Checkbox>
+								{t(
+									'equityPromise.confirm',
+									'I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions.'
+								)}
+							</Checkbox>
+						</Form.Item>
+					</Form>
+				</Spin>
 			</Space>
 		</Modal>
 	)

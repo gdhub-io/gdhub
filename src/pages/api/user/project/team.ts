@@ -26,6 +26,7 @@ class ApiUserTeamHandler {
 							],
 						},
 					},
+					orderBy: { createdAt: 'asc' },
 					include: { user: { select: { name: true, image: true } } },
 				},
 			},

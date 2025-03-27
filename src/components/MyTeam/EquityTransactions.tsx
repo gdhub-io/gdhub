@@ -53,7 +53,7 @@ interface Transaction {
 const EquityTransactions: React.FC<EquityTransactionsProps> = ({ projectId, userId }) => {
 	const { t } = useTolgee()
 
-	// Получаем транзакции
+	// Get transactions
 	const {
 		data: transactionsData,
 		isLoading,
@@ -73,79 +73,79 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({ projectId, user
 		}
 	)
 
-	// Функция для отображения типа транзакции
+	// Function to render transaction type
 	const renderTransactionType = (type: prismaClient.EquityTransactionType) => {
 		switch (type) {
 			case prismaClient.EquityTransactionType.InitialAllocation:
-				return <Tag color="green">{t('Первичное распределение')}</Tag>
+				return <Tag color="green">{t('First allocation')}</Tag>
 			case prismaClient.EquityTransactionType.Vesting:
-				return <Tag color="blue">{t('Вестинг')}</Tag>
+				return <Tag color="blue">{t('Vesting')}</Tag>
 			case prismaClient.EquityTransactionType.Transfer:
-				return <Tag color="orange">{t('Передача')}</Tag>
+				return <Tag color="orange">{t('Transfer')}</Tag>
 			case prismaClient.EquityTransactionType.Dilution:
-				return <Tag color="red">{t('Уменьшение доли')}</Tag>
+				return <Tag color="red">{t('Dilution')}</Tag>
 			case prismaClient.EquityTransactionType.Increase:
-				return <Tag color="green">{t('Увеличение доли')}</Tag>
+				return <Tag color="green">{t('Increase')}</Tag>
 			default:
-				return <Tag>{t('Другой тип')}</Tag>
+				return <Tag>{t('Other type')}</Tag>
 		}
 	}
 
-	// Функция для отображения информации о пользователе
+	// Function to render user information
 	const renderUser = (user: Transaction['toAllocation']['owner']) => {
 		return (
 			<div className={styles.userInfo}>
 				<Avatar size="small" src={user.image} icon={!user.image} className={styles.userAvatar} />
-				<Text>{user.name || user.email || 'Пользователь'}</Text>
+				<Text>{user.name || user.email || 'User'}</Text>
 			</div>
 		)
 	}
 
-	// Колонки для таблицы
+	// Columns for the table
 	const columns = [
 		{
-			title: t('Дата'),
+			title: t('Date'),
 			dataIndex: 'createdAt',
 			key: 'createdAt',
 			render: (date: string) => dayjs(date).format('DD.MM.YYYY HH:mm'),
 		},
 		{
-			title: t('Тип'),
+			title: t('Type'),
 			dataIndex: 'transactionType',
 			key: 'transactionType',
 			render: renderTransactionType,
 		},
 		{
-			title: t('От'),
+			title: t('From'),
 			dataIndex: 'fromAllocation',
 			key: 'fromAllocation',
 			render: (fromAllocation: Transaction['fromAllocation']) =>
 				fromAllocation ? renderUser(fromAllocation.owner) : <Text>—</Text>,
 		},
 		{
-			title: t('Кому'),
+			title: t('To'),
 			dataIndex: 'toAllocation',
 			key: 'toAllocation',
 			render: (toAllocation: Transaction['toAllocation']) => renderUser(toAllocation.owner),
 		},
 		{
-			title: t('Доля'),
+			title: t('Percentage'),
 			dataIndex: 'percentage',
 			key: 'percentage',
 			render: (percentage: number) => <Text>{percentage.toFixed(2)}%</Text>,
 		},
 		{
-			title: t('Причина'),
+			title: t('Reason'),
 			dataIndex: 'reason',
 			key: 'reason',
 			render: (reason: string, record: Transaction) => (
 				<Text>
-					{reason || (record.promise?.description ? `Выполнение обещания: ${record.promise.description}` : '—')}
+					{reason || (record.promise?.description ? `Realization of promise: ${record.promise.description}` : '—')}
 				</Text>
 			),
 		},
 		{
-			title: t('Инициатор'),
+			title: t('Initiator'),
 			dataIndex: 'createdBy',
 			key: 'createdBy',
 			render: (createdBy: Transaction['createdBy']) => renderUser(createdBy),
@@ -160,7 +160,7 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({ projectId, user
 		return <div className={styles.error}>{t('Error loading transaction history')}</div>
 	}
 
-	const transactions = transactionsData?.data || []
+	const transactions = transactionsData?.transactions || []
 
 	return (
 		<Card className={styles.container}>

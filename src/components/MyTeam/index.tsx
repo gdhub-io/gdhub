@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import EquityShareModal from '@/components/modals/EquityShareModal'
 import InviteMemberModal from '@/components/modals/InviteMemberModal'
 import MemberEquityPromiseModal from '@/components/modals/MemberEquityPromiseModal'
@@ -6,13 +6,13 @@ import ModernTable from '@/components/ModernTable'
 import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { BiTransfer } from '@react-icons/all-files/bi/BiTransfer'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
 import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown } from 'antd'
+import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown, Modal } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -23,6 +23,7 @@ const { Text } = Typography
 const MyTeam = () => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
+	const [modal, contextHolder] = Modal.useModal()
 	const contextProject = useContext(ProjectContext)?.contextProject
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 	const [isEquityModalOpen, setIsEquityModalOpen] = useState(false)
@@ -97,18 +98,34 @@ const MyTeam = () => {
 		}
 	)
 
-	const handleFired = async (teamMemberId: string) => {
-		try {
-			await fireMember({ id: teamMemberId })
-			fetchMyTeam()
+	const handleFired = useCallback(
+		async (teamMemberId: string) => {
+			modal.confirm({
+				title: t('Are you sure you want to fire this member?'),
+				destroyOnClose: true,
+				type: 'confirm',
+				okText: 'Yes',
+				okType: 'primary',
+				cancelText: 'No',
+				icon: <ExclamationCircleOutlined />,
+				content: t('This action will dismisse the member from the team and delete all their equity promises.'),
+				async onOk() {
+					try {
+						await fireMember({ id: teamMemberId })
+						fetchMyTeam()
 
-			message.success(t('The employee is dismissed'))
-		} catch (error: any) {
-			console.log(error)
+						message.success(t('The employee is dismissed'))
+					} catch (error: any) {
+						console.log(error)
 
-			message.error(error.message)
-		}
-	}
+						message.error(error.message)
+					}
+				},
+				onCancel() {},
+			})
+		},
+		[t, fireMember, fetchMyTeam]
+	)
 
 	const handleCancelInvitation = async (invitationId: string) => {
 		try {
@@ -261,6 +278,13 @@ const MyTeam = () => {
 			title: t('Promises'),
 			key: 'promises',
 			render: (_, member) => {
+				if (
+					member.status === prismaClient.TeamMemberStatus.Fired ||
+					member.status === prismaClient.TeamMemberStatus.Rejected
+				) {
+					return <Text type="secondary">-</Text>
+				}
+
 				const memberShare = getMemberShare(member.id)
 
 				if (!memberShare?.promises.length) {
@@ -296,22 +320,23 @@ const MyTeam = () => {
 			title: '',
 			key: 'actions',
 			render: (_, member) => {
-				if (!contextProject?.isProjectAuthor) return null
+				if (!contextProject?.isProjectAuthor || member.status === prismaClient.TeamMemberStatus.Fired) return null
 
 				const items = [
 					{
 						key: 'edit-promise',
 						label: t('Change Promise'),
+						disabled: !getMemberShare(member.id)?.promises.length,
 						icon: <MdOutlineHandshake size={16} />,
 						onClick: () => handleOpenMemberEquityPromiseModal(member),
 					},
 
-					{
-						key: 'transfer-share',
-						label: t('Transfer Share'),
-						icon: <BiTransfer size={16} />,
-						disabled: true,
-					},
+					// {
+					// 	key: 'transfer-share',
+					// 	label: t('Transfer Share'),
+					// 	icon: <BiTransfer size={16} />,
+					// 	disabled: true,
+					// },
 					{
 						type: 'divider',
 					},
@@ -321,7 +346,7 @@ const MyTeam = () => {
 						icon: <BiTrash size={16} />,
 						disabled:
 							member.status === prismaClient.TeamMemberStatus.Founder ||
-							member.status === prismaClient.TeamMemberStatus.Fired,
+							member.status === (prismaClient.TeamMemberStatus.Fired as any),
 						danger: true,
 						onClick: () => handleFired(member.id),
 					},
@@ -333,8 +358,6 @@ const MyTeam = () => {
 							items: items as any,
 							onClick: ({ key, domEvent }) => {
 								domEvent.stopPropagation()
-								const item = items.find((i) => i.key === key)
-								item?.onClick?.()
 							},
 						}}
 						trigger={['click']}
@@ -427,6 +450,7 @@ const MyTeam = () => {
 
 			{contextProject?.teamId && (
 				<>
+					{contextHolder}
 					<InviteMemberModal
 						open={isInviteModalOpen}
 						onOk={handleInviteSuccess}

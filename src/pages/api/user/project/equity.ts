@@ -34,7 +34,11 @@ class ApiProjectEquityHandler {
 			include: {
 				equityAllocations: {
 					include: {
-						promises: { take: 1, orderBy: { createdAt: 'desc' } },
+						promises: {
+							where: { isExecuted: false },
+							take: 1,
+							orderBy: { createdAt: 'desc' },
+						},
 					},
 				},
 			},

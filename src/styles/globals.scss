@@ -105,6 +105,21 @@ a.text-link {
 	.ant-typography-ellipsis-single-line {
 		vertical-align: middle;
 	}
+
+	.ant-select-clear {
+		width: 24px;
+		height: 24px;
+		margin-top: -12px;
+		inset-inline-end: 12px;
+		font-size: 24px;
+	}
+
+	.ant-select-arrow {
+		inset-inline-end: 16px;
+		height: 18px;
+		margin-top: -8px;
+		font-size: 18px;
+	}
 }
 
 .rnr-container {
@@ -140,14 +155,14 @@ a.text-link {
 	border-width: 2px;
 	font-weight: 500;
 
-	&-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
-	&-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active,
-	&:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
-	&:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active {
-		background-color: #F33921;
-		border-color: transparent;
-		color: #FFFDFC;
-	}
+	// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
+	// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active,
+	// &:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
+	// &:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active {
+	// 	background-color: #F33921;
+	// 	border-color: transparent;
+	// 	color: #FFFDFC;
+	// }
 
 	&:not(.ant-btn-icon-only)>.ant-btn-icon:not(:last-child) {
 		margin-inline-end: 16px;
@@ -190,7 +205,7 @@ a.text-link {
 		&:active {
 			background-color: #031625 !important;
 			color: #FFFDFC !important;
-			border-color: #031625;
+			border-color: #031625 !important;
 		}
 	}
 
@@ -248,6 +263,27 @@ a.text-link {
 
 	.ant-form-item .ant-form-item-label>label {
 		color: #333;
+	}
+}
+
+.ant-modal-confirm {
+	.ant-modal-confirm-title {
+		font-size: 18px;
+		line-height: 1.5;
+	}
+
+	.ant-modal-confirm-btns {
+		margin-top: 16px;
+	}
+}
+
+.ant-modal {
+	.ant-modal-confirm-body:has(svg) {
+		column-gap: 8px;
+
+		svg {
+			width: 42px;
+		}
 	}
 }
 

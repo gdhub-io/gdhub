@@ -33,6 +33,7 @@ import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import { NextSeo, NextSeoProps } from 'next-seo'
 import styles from './style.module.scss'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 
 interface ProtectedLayoutProps {
 	children: ReactNode
@@ -146,7 +147,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 			{
 				label: (
 					<Link href="/profile">
-						<T>Profile</T>
+						<T>User Settings</T>
 					</Link>
 				),
 				key: 'profile',
@@ -156,7 +157,21 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 				key: 'tg-community',
 				label: (
 					<Link href={linkToChat} target="_blank" title={t('Community Chat')}>
-						<T>Community Chat</T>
+						<Flex justify="space-between" align="center" gap={16}>
+							<Text>Community Chat</Text>
+							<GoLinkExternal size={12} color="gray" />
+						</Flex>
+					</Link>
+				),
+			},
+			{
+				key: 'website',
+				label: (
+					<Link href="https://gdhub.io" target="_blank" title="Website">
+						<Flex justify="space-between" align="center" gap={16}>
+							<Text>Website</Text>
+							<GoLinkExternal size={12} color="gray" />
+						</Flex>
 					</Link>
 				),
 			},
@@ -278,7 +293,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 												<Button
 													type="text"
 													shape="circle"
-													style={{ display: 'block', padding: 0 }}
+													style={{ display: 'block', padding: 0, lineHeight: 0, borderRadius: '50%' }}
 													icon={
 														session?.user.image ? (
 															<Avatar
