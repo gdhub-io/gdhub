@@ -5,13 +5,18 @@ import { ProjectContext } from '@/contexts/ProjectContext'
 import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
 import { useTolgee } from '@tolgee/react'
 
+const RenderTeam = () => {
+	const contextProject = useContext(ProjectContext)
+
+	return contextProject?.contextProject?.isProjectAuthor && contextProject?.isLoaded ? <MyTeam /> : <UserTeam />
+}
+
 export const MyProjectTeamPage = () => {
 	const { t } = useTolgee()
-	const contextProject = useContext(ProjectContext)?.contextProject
 
 	return (
 		<ProtectedProjectLayout title={t('Project Team')}>
-			{contextProject?.isProjectAuthor ? <MyTeam /> : <UserTeam />}
+			<RenderTeam />
 		</ProtectedProjectLayout>
 	)
 }

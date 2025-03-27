@@ -10,6 +10,7 @@ export type ContextProject = {
 export const ProjectContext = createContext<
 	| {
 			contextProject?: ContextProject
+			isLoaded: boolean
 			setContextProject: Dispatch<SetStateAction<ContextProject | undefined>>
 	  }
 	| undefined

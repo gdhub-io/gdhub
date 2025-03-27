@@ -72,7 +72,7 @@ export const ProtectedProjectLayout = ({
 		if (!project) return
 
 		setContextProject({ id: project.id, name: project.name, teamId: project.teamId, isProjectAuthor })
-	}, [project])
+	}, [project, isProjectAuthor])
 
 	const seoSettings: NextSeoProps = {
 		title: title || 'Project',
@@ -224,7 +224,7 @@ export const ProtectedProjectLayout = ({
 	}
 
 	return (
-		<ProjectContext.Provider value={{ contextProject, setContextProject }}>
+		<ProjectContext.Provider value={{ contextProject, isLoaded: isFetched, setContextProject }}>
 			<NextSeo {...seoSettings} />
 			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<style jsx global>{`
