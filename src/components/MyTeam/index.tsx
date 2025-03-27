@@ -275,8 +275,32 @@ const MyTeam = () => {
 			},
 		},
 		{
+			title: t('Time for work'),
+			dataIndex: ['user', 'profile', 'timeForWork'],
+			key: 'timeForWork',
+			responsive: ['md'],
+			render: (value) => {
+				if (!value) return null
+
+				if (value[0] === value[1]) {
+					return (
+						<Text>
+							{value[0]} {t('hours/week')}
+						</Text>
+					)
+				}
+
+				return (
+					<Text>
+						{value[0]} - {value[1]} {t('hours/week')}
+					</Text>
+				)
+			},
+		},
+		{
 			title: t('Promises'),
 			key: 'promises',
+			align: 'center',
 			render: (_, member) => {
 				if (
 					member.status === prismaClient.TeamMemberStatus.Fired ||
@@ -306,6 +330,7 @@ const MyTeam = () => {
 		{
 			title: t('Shares'),
 			key: 'shares',
+			align: 'center',
 			render: (_, member) => {
 				const shares = getMemberShare(member.id)
 
@@ -316,6 +341,7 @@ const MyTeam = () => {
 				return <Text>{shares.percentage.toFixed(1)}%</Text>
 			},
 		},
+
 		{
 			title: '',
 			key: 'actions',
