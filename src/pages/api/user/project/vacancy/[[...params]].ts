@@ -3,7 +3,7 @@ import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import { tolgeeService } from '@/services/tolgee'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
 import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -28,6 +28,12 @@ class UserTeamVacancyCreateDto {
 	finishedAt: string
 	@IsString()
 	teamId: string
+	@IsNumber()
+	@IsOptional()
+	promisePercentage?: number
+	@IsString()
+	@IsOptional()
+	promiseTargetStepId?: string
 }
 
 class UserTeamVacancyUpdateDto {
@@ -49,6 +55,12 @@ class UserTeamVacancyUpdateDto {
 	@IsString()
 	@IsOptional()
 	finishedAt?: string
+	@IsNumber()
+	@IsOptional()
+	promisePercentage?: number
+	@IsString()
+	@IsOptional()
+	promiseTargetStepId?: string
 }
 
 @NextAuthGuard('user')
@@ -72,6 +84,7 @@ class ApiUserTeamVacancyHandler {
 					},
 				},
 				_count: { select: { applicants: true } },
+				promise: true,
 			},
 		})
 
@@ -83,7 +96,20 @@ class ApiUserTeamVacancyHandler {
 	@Post()
 	public async create(@Body(ValidationPipe) data: UserTeamVacancyCreateDto) {
 		try {
-			await prisma.teamVacancy.create({ data })
+			const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
+			const vacancy = await prisma.teamVacancy.create({ data: vacancyData })
+
+			if (promisePercentage && promiseTargetStepId) {
+				await prisma.equityPromise.create({
+					data: {
+						percentage: promisePercentage,
+						targetStepId: promiseTargetStepId,
+						vacancyId: vacancy.id,
+					},
+				})
+			}
+
+			return vacancy
 		} catch (error) {
 			console.error('[project.create]', error)
 			throw error
@@ -92,55 +118,45 @@ class ApiUserTeamVacancyHandler {
 
 	@Put()
 	public async update(@Query(ValidationPipe) { id }: IDParamDto, @Body(ValidationPipe) data: UserTeamVacancyUpdateDto) {
-		await prisma.teamVacancy.update({ where: { id }, data })
+		const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
+		const vacancy = await prisma.teamVacancy.update({ where: { id }, data: vacancyData })
+
+		if (promisePercentage !== undefined || promiseTargetStepId !== undefined) {
+			const existingPromise = await prisma.equityPromise.findFirst({
+				where: { vacancyId: id },
+			})
+
+			if (existingPromise) {
+				if (promisePercentage === undefined && promiseTargetStepId === undefined) {
+					await prisma.equityPromise.delete({
+						where: { id: existingPromise.id },
+					})
+				} else {
+					await prisma.equityPromise.update({
+						where: { id: existingPromise.id },
+						data: {
+							percentage: promisePercentage,
+							targetStepId: promiseTargetStepId,
+						},
+					})
+				}
+			} else if (promisePercentage !== undefined && promiseTargetStepId !== undefined) {
+				await prisma.equityPromise.create({
+					data: {
+						percentage: promisePercentage,
+						targetStepId: promiseTargetStepId,
+						vacancyId: id,
+					},
+				})
+			}
+		}
+
+		return vacancy
 	}
 
 	@Delete()
 	public async delete(@Query(ValidationPipe) { id }: IDParamDto) {
 		await prisma.teamVacancy.update({ where: { id }, data: { status: prismaClient.TeamVacancyStatus.Closed } })
-	}
-
-	@Put('/withdraw')
-	public async withdraw(@Req() req: NextApiRequestWithUser, @Body() { teamMemberId }: { teamMemberId: string }) {
-		const { t } = tolgeeService
-
-		const deletedMember = await prisma.teamMember.delete({
-			where: { id: teamMemberId },
-			select: {
-				user: true,
-				vacancy: true,
-				team: {
-					select: {
-						members: { where: { status: prismaClient.TeamMemberStatus.Founder }, select: { userId: true, user: true } },
-					},
-				},
-			},
-		})
-
-		if (!deletedMember.vacancy) return
-
-		for (const founderMember of deletedMember.team.members) {
-			try {
-				await NovuService.send({
-					template: 'default-message',
-					to: {
-						subscriberId: founderMember.userId,
-						email: founderMember.user.email!,
-					},
-					payload: {
-						message: t(
-							'send-message.novu.candidate-reject',
-							'The candidate {candidateName} rejected his candidacy for the position {vacancyName}',
-							{ candidateName: deletedMember.user.name, vacancyName: deletedMember.vacancy.title }
-						),
-					},
-				})
-
-				console.info('New notification was sent to ' + founderMember.userId)
-			} catch (e) {
-				console.error('[NovuService]', e)
-			}
-		}
 	}
 
 	@Post('/apply')
@@ -162,7 +178,10 @@ class ApiUserTeamVacancyHandler {
 
 		const vacancy = await prisma.teamVacancy.findUnique({
 			where: { id: vacancyId },
-			include: { team: { select: { project: { include: { author: true } } } } },
+			include: {
+				team: { select: { project: { include: { author: true } } } },
+				promise: true,
+			},
 		})
 
 		if (!vacancy || !req.user.id) return
@@ -242,8 +261,33 @@ class ApiUserTeamVacancyHandler {
 		const member = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
 			data: { status: prismaClient.TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
-			select: { user: true, team: true },
+			select: { user: true, team: true, vacancy: { include: { promise: true } } },
 		})
+
+		// If vacancy has a promise, create an equity allocation for the member
+		if (member.vacancy?.promise) {
+			const team = await prisma.team.findUnique({
+				where: { id: member.team.id },
+				include: { project: true },
+			})
+
+			if (team) {
+				await prisma.equityAllocation.create({
+					data: {
+						teamMemberId: member.id,
+						projectId: team.project.id,
+						percentage: 0,
+						promises: {
+							create: {
+								percentage: member.vacancy.promise.percentage,
+								targetStepId: member.vacancy.promise.targetStepId,
+								createdById: member.userId,
+							},
+						},
+					},
+				})
+			}
+		}
 
 		try {
 			await NovuService.send({
@@ -260,39 +304,6 @@ class ApiUserTeamVacancyHandler {
 			})
 
 			console.info('New notification was sent to ' + member.user.id)
-		} catch (e) {
-			console.error('[NovuService]', e)
-		}
-	}
-
-	@Put('/candidate/fire')
-	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
-		const { t } = tolgeeService
-		const firedMember = await prisma.teamMember.update({
-			where: { id, status: prismaClient.TeamMemberStatus.Hired },
-			data: {
-				status: prismaClient.TeamMemberStatus.Fired,
-				finishedAt: dayjs().toISOString(),
-			},
-			select: { user: true, team: true },
-		})
-
-		// Delete all equity allocations for the fired member
-		await prisma.equityPromise.deleteMany({ where: { allocation: { teamMemberId: id } } })
-
-		try {
-			await NovuService.send({
-				template: 'default-message',
-				to: {
-					subscriberId: firedMember.user.id,
-					email: firedMember.user.email!,
-				},
-				payload: {
-					message: t('', `You have been kicked off the team {firedMemberName}`, { firedMember: firedMember.team.name }),
-				},
-			})
-
-			console.info('New notification was sent to ' + firedMember.user.id)
 		} catch (e) {
 			console.error('[NovuService]', e)
 		}

@@ -1,16 +1,19 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useWorkDirections } from '@/hooks/library'
+import { DeleteOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
+import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin, InputNumber, Card } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import styles from './style.module.scss'
 
 const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
 	const { options: directionsOptions } = useWorkDirections()
+	const [showPromiseFields, setShowPromiseFields] = useState(false)
 
 	const {
 		data: vacancy,
@@ -23,8 +26,21 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			enabled: !!vacancyId,
 			staleTime: Infinity,
 			onSuccess: ({ data }) => {
-				form.setFieldsValue({ ...data, finishedAt: dayjs(data.finishedAt) })
+				form.setFieldsValue({
+					...data,
+					finishedAt: dayjs(data.finishedAt),
+					showPromiseFields: !!data.promisePercentage,
+				})
+				setShowPromiseFields(!!data.promisePercentage)
 			},
+		}
+	)
+
+	const { data: workflowData } = useQuery(
+		['project-workflow', teamId],
+		() => axios.get('/api/user/project/workflow', { params: { projectId: teamId } }),
+		{
+			enabled: !!teamId,
 		}
 	)
 
@@ -82,9 +98,20 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 		onCancel()
 	}
 
+	// Получаем доступные для выбора шаги (только следующие за текущим)
+	const availableSteps = workflowData?.data?.steps
+		? workflowData.data.steps
+				.filter((step: any) => step.order >= (workflowData.data.currentStep?.order || 0))
+				.map((step: any) => ({
+					label: step.order === workflowData.data.currentStep?.order ? `${step.name} (current)` : step.name,
+					value: step.id,
+				}))
+		: []
+
 	return (
 		<Modal
 			centered
+			className={styles.modal}
 			title={vacancyId ? <T>Change the vacancy</T> : <T>Create a new vacancy</T>}
 			width={800}
 			destroyOnClose
@@ -171,7 +198,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 					<Form.Item
 						name="description"
 						label={t('Vacancy description')}
-						help={
+						tooltip={
 							<T keyName="modal.vacancy.descriptionHelp">
 								Describe the requirements/wishes for the candidate, describe the kaku a job he has to do
 							</T>
@@ -187,6 +214,71 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 							)}
 						/>
 					</Form.Item>
+
+					{!showPromiseFields && (
+						<Form.Item wrapperCol={{ span: 24 }}>
+							<Button type="text" onClick={() => setShowPromiseFields(true)}>
+								<T>Add equity promise</T>
+							</Button>
+						</Form.Item>
+					)}
+
+					{showPromiseFields && (
+						<Card
+							className={styles.promiseCard}
+							title={<T>Equity Promise</T>}
+							extra={
+								<Button
+									type="link"
+									danger
+									style={{ padding: 0 }}
+									icon={<DeleteOutlined />}
+									onClick={() => {
+										setShowPromiseFields(false)
+										form.setFieldsValue({ promisePercentage: undefined, promiseTargetStepId: undefined })
+									}}
+								>
+									<T>Remove</T>
+								</Button>
+							}
+						>
+							<Row gutter={[16, 16]}>
+								<Col span={12}>
+									<Form.Item
+										name="promisePercentage"
+										label={t('Promised equity percentage')}
+										tooltip={t('Percentage of equity that will be promised to the candidate')}
+										wrapperCol={{ span: 24 }}
+										style={{ marginBottom: 0 }}
+										rules={[{ required: true }]}
+									>
+										<InputNumber
+											min={0}
+											max={100}
+											style={{ width: '100%', height: 40 }}
+											placeholder={t('Enter percentage')}
+										/>
+									</Form.Item>
+								</Col>
+								<Col span={12}>
+									<Form.Item
+										name="promiseTargetStepId"
+										label={t('Required workflow step')}
+										tooltip={t('Step that needs to be completed to receive the promised equity')}
+										wrapperCol={{ span: 24 }}
+										style={{ marginBottom: 0 }}
+										rules={[{ required: true }]}
+									>
+										<Select
+											style={{ width: '100%', height: 40 }}
+											placeholder={t('Select step')}
+											options={availableSteps}
+										/>
+									</Form.Item>
+								</Col>
+							</Row>
+						</Card>
+					)}
 				</Form>
 			</Spin>
 		</Modal>
