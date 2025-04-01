@@ -44,7 +44,7 @@ class UserTeamVacancyCreateDto {
 	promisePercentage?: number
 	@IsString()
 	@IsOptional()
-	promiseTargetStepId?: string
+	promiseStepId?: string
 }
 
 class UserTeamVacancyUpdateDto {
@@ -71,7 +71,7 @@ class UserTeamVacancyUpdateDto {
 	promisePercentage?: number
 	@IsString()
 	@IsOptional()
-	promiseTargetStepId?: string
+	promiseStepId?: string
 }
 
 @NextAuthGuard('user')
@@ -107,14 +107,14 @@ class ApiUserTeamVacancyHandler {
 	@Post()
 	public async create(@Body(ValidationPipe) data: UserTeamVacancyCreateDto) {
 		try {
-			const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
-			const hasEquityPromise = promisePercentage && promiseTargetStepId
+			const { promisePercentage, promiseStepId, ...vacancyData } = data
+			const hasEquityPromise = promisePercentage && promiseStepId
 
 			const vacancy = await prisma.teamVacancy.create({
 				data: {
 					...vacancyData,
 					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
-					promiseStepId: hasEquityPromise ? promiseTargetStepId : undefined,
+					promiseStepId: hasEquityPromise ? promiseStepId : undefined,
 				},
 			})
 
@@ -127,15 +127,14 @@ class ApiUserTeamVacancyHandler {
 
 	@Put()
 	public async update(@Query(ValidationPipe) { id }: IDParamDto, @Body(ValidationPipe) data: UserTeamVacancyUpdateDto) {
-		const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
-		const hasEquityPromise = promisePercentage && promiseTargetStepId
+		const { promisePercentage, promiseStepId, ...vacancyData } = data
 
 		const vacancy = await prisma.teamVacancy.update({
 			where: { id },
 			data: {
 				...vacancyData,
-				promisePercentage: hasEquityPromise ? promisePercentage : undefined,
-				promiseStepId: hasEquityPromise ? promiseTargetStepId : undefined,
+				promisePercentage,
+				promiseStepId,
 			},
 		})
 
