@@ -20,6 +20,7 @@ import {
 	InputNumber,
 	Card,
 	Popconfirm,
+	Popover,
 } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -54,7 +55,6 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 				form.setFieldsValue({
 					...data,
 					finishedAt: dayjs(data.finishedAt),
-					showPromiseFields: !!data.promisePercentage,
 				})
 				setShowPromiseFields(!!data.promisePercentage)
 			},
@@ -69,34 +69,20 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 		}
 	)
 
-	const { data: projectEquity } = useQuery(
-		['project-equity', projectId],
-		() => axios.get('/api/user/project/equity', { params: { projectId } }),
-		{
-			enabled: !!projectId,
-		}
+	const { data: maxAvailableShareData, refetch: refetchAvailableShare } = useQuery(
+		['team-max-available-share', teamId],
+		() =>
+			axios.get('/api/user/project/team/max-available-share', {
+				params: { id: teamId },
+			}),
+		{ enabled: !!teamId, refetchInterval: false, refetchOnWindowFocus: false }
 	)
 
-	const getMaxAvailableShare = () => {
-		if (!projectEquity?.data) return 0
+	const maxAvailableShare = maxAvailableShareData?.data?.maxAvailableShare || 0
+	const currentVacancyPromise = vacancy?.data?.promisePercentage || 0
 
-		const teamTotal = projectEquity.data.equityAllocations?.reduce(
-			(sum: number, share: any) =>
-				sum + share.percentage + share.promises.reduce((acc: number, promise: any) => acc + promise.percentage, 0),
-			0
-		)
-		const allocated =
-			projectEquity.data.platformShare +
-			projectEquity.data.mentorFundShare +
-			projectEquity.data.investmentReserve +
-			(teamTotal || 0)
-
-		const remainingPercentage = 100 - allocated
-
-		return Math.min(remainingPercentage, 97)
-	}
-
-	const maxAvailableShare = getMaxAvailableShare()
+	// Calculate max available share considering current vacancy's promise
+	const adjustedMaxAvailableShare = maxAvailableShare + currentVacancyPromise
 
 	const { mutateAsync: createVacancy, isLoading: isCreating } = useMutation((data: Record<string, any>) =>
 		axios.post<any>('/api/user/project/vacancy', data)
@@ -107,6 +93,8 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 	)
 
 	useEffect(() => {
+		if (open) refetchAvailableShare()
+
 		if (open && vacancyId) {
 			fetchVacancy()
 		}
@@ -124,6 +112,8 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 						publishedAt: asDraft ? null : dayjs().toISOString(),
 						status: asDraft ? prismaClient.TeamVacancyStatus.Draft : prismaClient.TeamVacancyStatus.Published,
 						teamId,
+						promisePercentage: formData.promisePercentage || null,
+						promiseStepId: formData.promiseStepId || null,
 					},
 				})
 			} else {
@@ -132,6 +122,8 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 					publishedAt: asDraft ? null : dayjs().toISOString(),
 					status: asDraft ? prismaClient.TeamVacancyStatus.Draft : prismaClient.TeamVacancyStatus.Published,
 					teamId,
+					promisePercentage: formData.promisePercentage || null,
+					promiseStepId: formData.promiseStepId || null,
 				})
 			}
 
@@ -272,9 +264,16 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 
 					{!showPromiseFields && (
 						<Form.Item wrapperCol={{ span: 24 }}>
-							<Button type="text" icon={<MdOutlineHandshake />} onClick={() => setShowPromiseFields(true)}>
-								{t('Add equity promise')}
-							</Button>
+							<Popover content={adjustedMaxAvailableShare <= 0 ? t('No available equity') : ''} placement="topRight">
+								<Button
+									type="text"
+									disabled={adjustedMaxAvailableShare <= 0}
+									icon={<MdOutlineHandshake />}
+									onClick={() => setShowPromiseFields(true)}
+								>
+									{t('Add equity promise')}
+								</Button>
+							</Popover>
 						</Form.Item>
 					)}
 
@@ -287,8 +286,8 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 									title={t('Remove equity promise')}
 									placement="topRight"
 									onConfirm={() => {
+										form.setFieldsValue({ promisePercentage: null, promiseStepId: null })
 										setShowPromiseFields(false)
-										form.setFieldsValue({ promisePercentage: undefined, promiseTargetStepId: undefined })
 									}}
 								>
 									<Button
@@ -315,14 +314,14 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 									>
 										<InputNumber
 											min={0}
-											max={maxAvailableShare}
+											max={adjustedMaxAvailableShare}
 											style={{ width: '100%', height: 40 }}
 											placeholder={t('Enter percentage')}
 										/>
 									</Form.Item>
-									{maxAvailableShare > 0 && (
+									{adjustedMaxAvailableShare > 0 && (
 										<div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 4 }}>
-											{t('Maximum available equity')}: {maxAvailableShare.toFixed(2)}%
+											{t('Maximum available equity')}: {adjustedMaxAvailableShare.toFixed(2)}%
 										</div>
 									)}
 								</Col>
