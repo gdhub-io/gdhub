@@ -10,7 +10,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
-import { signIn, signOut } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const { Paragraph, Title } = Typography
