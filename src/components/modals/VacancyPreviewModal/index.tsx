@@ -114,7 +114,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		}
 
 		// if (hasRole(prismaClient.UserRole.Member, session)) {
-		return vacancy?.data.myTeamMemberId ? t('Reveal the response') : t('Respond')
+		return vacancy?.data.myTeamMemberId
+			? t('modal.vacancy.cancelMyResponse', 'Cancel my response')
+			: t('modal.vacancy.apply', 'Respond')
 		// }
 	}
 

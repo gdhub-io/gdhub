@@ -322,7 +322,7 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 									</Form.Item>
 									{maxAvailableShare > 0 && (
 										<div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 4 }}>
-											{t('Maximum available equity')}: {maxAvailableShare}%
+											{t('Maximum available equity')}: {maxAvailableShare.toFixed(2)}%
 										</div>
 									)}
 								</Col>

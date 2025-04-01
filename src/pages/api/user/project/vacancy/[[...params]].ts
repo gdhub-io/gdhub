@@ -221,8 +221,6 @@ class ApiUserTeamVacancyHandler {
 
 		if (isTeamMember) throw new BadRequestException('You are already a member of this team')
 
-		const hasEquityPromise = vacancy?.promisePercentage && vacancy?.promiseStepId
-
 		if (!vacancy || !req.user.id) return
 
 		const candidate = await prisma.teamMember.create({
@@ -237,38 +235,6 @@ class ApiUserTeamVacancyHandler {
 			},
 			include: { user: true },
 		})
-
-		if (hasEquityPromise) {
-			await prisma.equityAllocation.upsert({
-				where: {
-					equityId_ownerId: {
-						equityId: vacancy.team!.project!.equity!.id,
-						ownerId: candidate.user.id,
-					},
-				},
-				create: {
-					equityId: vacancy.team!.project!.equity!.id,
-					ownerId: candidate.user.id,
-					percentage: 0,
-					promises: {
-						create: {
-							percentage: vacancy.promisePercentage!,
-							targetStepId: vacancy.promiseStepId!,
-							createdById: req.user.id,
-						},
-					},
-				},
-				update: {
-					promises: {
-						create: {
-							percentage: vacancy.promisePercentage!,
-							targetStepId: vacancy.promiseStepId!,
-							createdById: req.user.id,
-						},
-					},
-				},
-			})
-		}
 
 		try {
 			await NovuService.send({
@@ -333,7 +299,7 @@ class ApiUserTeamVacancyHandler {
 		const member = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
 			data: { status: prismaClient.TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
-			select: { user: true, team: true, vacancy: true },
+			select: { id: true, user: true, team: true, vacancy: true },
 		})
 
 		// If vacancy has a promise, create an equity allocation for the member
@@ -356,6 +322,7 @@ class ApiUserTeamVacancyHandler {
 					create: {
 						equityId: team.project!.equity!.id,
 						ownerId: member.user.id,
+						teamMemberId: member.id,
 						percentage: 0,
 						promises: {
 							create: {
@@ -366,6 +333,7 @@ class ApiUserTeamVacancyHandler {
 						},
 					},
 					update: {
+						teamMemberId: member.id,
 						promises: {
 							create: {
 								percentage: member.vacancy!.promisePercentage!,
@@ -413,6 +381,10 @@ class ApiUserTeamVacancyHandler {
 
 		// Delete all equity allocations for the fired member
 		await prisma.equityPromise.deleteMany({ where: { allocation: { teamMemberId: id } } })
+		await prisma.equityAllocation.updateMany({
+			where: { teamMemberId: id },
+			data: { teamMemberId: { set: null } },
+		})
 
 		try {
 			await NovuService.send({
