@@ -1,17 +1,20 @@
 import { useEffect } from 'react'
 import React from 'react'
-import { useGameDifficulties, useGameGenres, useGameSettings } from '@/hooks/library'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
+import { TbClock } from '@react-icons/all-files/tb/TbClock'
+import { TbFileText } from '@react-icons/all-files/tb/TbFileText'
 import { TbMail } from '@react-icons/all-files/tb/TbMail'
+import { TbMapPin } from '@react-icons/all-files/tb/TbMapPin'
+import { TbQuote } from '@react-icons/all-files/tb/TbQuote'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Col, Descriptions, Modal, Row, Space, Spin, Button } from 'antd'
+import { Button, Card, Col, Modal, Row, Space, Spin, Tag, Typography, theme, message } from 'antd'
 import axios from 'axios'
-import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.scss'
+
+const { Paragraph, Text, Title } = Typography
 
 interface TeamMemberCardProps {
 	memberId: string
@@ -20,10 +23,8 @@ interface TeamMemberCardProps {
 }
 
 const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
+	const { token } = theme.useToken()
 	const { t } = useTolgee()
-	const { getGameGenreName } = useGameGenres()
-	const { getGameSettingName } = useGameSettings()
-	const { getGameDifficultyName } = useGameDifficulties()
 
 	const {
 		data: member,
@@ -32,20 +33,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 	} = useQuery(
 		['team-member', memberId],
 		() =>
-			axios.get<
-				prismaClient.TeamMember & {
-					team: { project: prismaClient.Project }
-					speciality: prismaClient.Speciality
-					user: prismaClient.User & {
-						specialities: prismaClient.Speciality[]
-						profile: prismaClient.Profile & {
-							preferedGenres: prismaClient.GameGenre[]
-							preferedSettings: prismaClient.GameSetting[]
-							preferedDifficulties: prismaClient.GameDifficultyLevel[]
-						}
-					}
-				}
-			>('/api/user/project/team/member', {
+			axios.get('/api/user/project/team/member', {
 				params: { id: memberId },
 			}),
 		{ enabled: !!memberId, refetchInterval: false, refetchOnWindowFocus: false }
@@ -61,115 +49,191 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 		onCancel()
 	}
 
+	const renderSkillTags = (skills: string | null) => {
+		if (!skills) return <T>(not pointed)</T>
+		return skills.split(',').map((skill, index) => (
+			<Tag key={index} className={styles.skillTag}>
+				{skill.trim()}
+			</Tag>
+		))
+	}
+
 	return (
 		<Modal
 			centered
-			title={<T>Team Member Card</T>}
+			title={null}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
 			open={open}
+			classNames={{ content: styles.modalContent }}
 			onCancel={handleCancel}
-			confirmLoading={processing}
 			footer={null}
 		>
 			<Spin spinning={processing}>
 				{!!member && (
-					<>
-						<Row gutter={[24, 24]}>
-							<Col xs={{ span: 24, order: 1 }} md={{ span: 18, order: 0 }}>
-								<div className={styles.specialityTitle}>
-									<h1>{member?.data.user.name}</h1>
-									{member?.data.speciality.name} ({member?.data.speciality.level})
-								</div>
-
-								<Descriptions layout="horizontal" column={1} size="small" labelStyle={{ fontWeight: 'bold' }}>
-									<Descriptions.Item label={t('Project')}>{member.data.team.project.name}</Descriptions.Item>
-									<Descriptions.Item label={t('Joined')}>
-										{dayjs(member.data.startedAt).format('LLL')}
-									</Descriptions.Item>
-								</Descriptions>
-
-								<Descriptions
-									title={t('About the participant')}
-									className={styles.descriptionBlock}
-									layout="horizontal"
-									column={1}
-									size="small"
-									labelStyle={{ fontWeight: 'bold' }}
-								>
-									{!!member?.data.speciality.portfolioUrl && (
-										<Descriptions.Item label={<T>CV/Portfolio</T>}>
-											<Link href={member?.data.speciality.portfolioUrl} target="_blank">
-												<Button size="small">
-													<T>Go</T>
-												</Button>
-											</Link>
-										</Descriptions.Item>
-									)}
-									<Descriptions.Item label={<T>Free time</T>}>
-										<T
-											keyName="fromTo"
-											defaultValue="from {fromDate} to {toDate} hours a week"
-											params={{
-												fromDate: member.data.user.profile.timeForWork[0],
-												toDate: member.data.user.profile.timeForWork[1],
-											}}
+					<Space direction="vertical" style={{ width: '100%' }}>
+						<div className={styles.cardHeader}>
+							<Row gutter={24} align="middle">
+								<Col xs={24} md={18}>
+									<Row>
+										<Col>
+											<Text type="secondary" className={styles.cardType}>
+												<T>Team Member Card</T>
+											</Text>
+											<div className={styles.specialityTitle}>
+												<Title level={2} style={{ margin: 0 }}>
+													{member.data.user.name}
+												</Title>
+												<span className={styles.levelBadge}>{member.data.speciality.level}</span>
+											</div>
+										</Col>
+									</Row>
+									<Row gutter={[24, 24]}>
+										<Col xs={24}>
+											<Card className={styles.cardWrapper} bordered={false}>
+												<Row gutter={[24, 16]} className={styles.profileInfo}>
+													{!!member.data.user.profile.country && (
+														<Col xs={24} sm={12}>
+															<Space>
+																<TbMapPin size={18} style={{ color: token.colorPrimary }} />
+																<Text>
+																	{[member.data.user.profile.country, member.data.user.profile.city].join(', ')}
+																</Text>
+															</Space>
+														</Col>
+													)}
+													<Col xs={24} sm={12}>
+														<Space>
+															<TbClock size={18} style={{ color: token.colorPrimary }} />
+															<Text>
+																<T
+																	keyName="fromTo"
+																	defaultValue="from {fromDate} to {toDate} hours a week"
+																	params={{
+																		fromDate: member.data.user.profile.timeForWork[0],
+																		toDate: member.data.user.profile.timeForWork[1],
+																	}}
+																/>
+															</Text>
+														</Space>
+													</Col>
+													{!!member.data.speciality.portfolioUrl && (
+														<Col span={24}>
+															<Space>
+																<TbFileText size={18} style={{ color: token.colorPrimary }} />
+																<Link href={member.data.speciality.portfolioUrl} target="_blank">
+																	<Button type="text" ghost size="small">
+																		<T>Summary/portfolio</T>
+																	</Button>
+																</Link>
+															</Space>
+														</Col>
+													)}
+													{!!member.data.user.profile.tgNickname && (
+														<Col span={24}>
+															<div className={styles.contactItem}>
+																<TbBrandTelegram size={18} style={{ color: token.colorPrimary }} />
+																<Text copyable={{ text: `https://t.me/${member.data.user.profile.tgNickname}` }}>
+																	@{member.data.user.profile.tgNickname}
+																</Text>
+															</div>
+														</Col>
+													)}
+													{!!!member.data.user.profile.tgNickname && !!member.data.user.email && (
+														<Col span={24}>
+															<div className={styles.contactItem}>
+																<TbMail size={18} style={{ color: token.colorPrimary }} />
+																<Text copyable={{ text: member.data.user.email }}>{member.data.user.email}</Text>
+															</div>
+														</Col>
+													)}
+												</Row>
+											</Card>
+										</Col>
+									</Row>
+								</Col>
+								<Col xs={24} md={6}>
+									<div className={styles.avatarWrapper}>
+										<Image
+											src={member.data.user.image || '/images/avatar.png'}
+											alt={member.data.user.name}
+											width={120}
+											height={120}
+											className={styles.avatar}
 										/>
-									</Descriptions.Item>
-									<Descriptions.Item label={<T>Place of residence</T>}>
-										{[member.data.user.profile.country, member.data.user.profile.city].join(', ')}
-									</Descriptions.Item>
-									<Descriptions.Item label={<T>Motivation</T>}>{member.data.user.profile.motivation}</Descriptions.Item>
-								</Descriptions>
-							</Col>
-							<Col xs={{ span: 24, order: 0 }} md={{ span: 6, order: 1 }}>
-								<Space direction="vertical" align="center" style={{ width: '100%' }}>
-									{!!member.data.user.image && (
-										<div className={styles.avatar}>
-											<Image src={member.data.user.image} alt="project member avatar" width={160} height={160} />
+									</div>
+								</Col>
+							</Row>
+						</div>
+
+						{member.data.user.profile.motivation && (
+							<Card className={styles.cardWrapper} title={<T>About me</T>} bordered={false}>
+								<Row>
+									<Col span={24}>
+										<div className={styles.quoteBlock}>
+											<TbQuote size={24} style={{ color: token.colorPrimary, marginRight: 8 }} />
+											<Paragraph>{member.data.user.profile.motivation}</Paragraph>
+										</div>
+									</Col>
+								</Row>
+							</Card>
+						)}
+
+						<Card className={styles.cardWrapper} title={<T>Professional info</T>} bordered={false}>
+							<Row gutter={[24, 24]}>
+								<Col xs={24} md={12}>
+									<div>
+										<Text type="secondary" className={styles.fieldLabel}>
+											<T>Specialization</T>
+										</Text>
+										<Paragraph>{member.data.speciality.specialization}</Paragraph>
+									</div>
+
+									{member.data.speciality.tools && (
+										<div style={{ marginTop: 16 }}>
+											<Text type="secondary" className={styles.fieldLabel}>
+												<T>I use it in work</T>
+											</Text>
+											<Paragraph>{member.data.speciality.tools}</Paragraph>
 										</div>
 									)}
-									{!!member.data?.allowedContacts.includes('email') && (
-										<Link target="_blank" href={'mailto:' + member.data.user.email}>
-											<Button icon={<TbMail size={16} style={{ position: 'relative', marginRight: 5 }} />}>
-												Email
-											</Button>
-										</Link>
+								</Col>
+
+								<Col xs={24} md={12}>
+									{member.data.speciality.jobs && (
+										<div>
+											<Text type="secondary" className={styles.fieldLabel}>
+												<T>Experience</T>
+											</Text>
+											<Paragraph>{member.data.speciality.jobs}</Paragraph>
+										</div>
 									)}
 
-									{!!member.data?.allowedContacts.includes('telegram') && (
-										<Link target="_blank" href={'https://t.me/' + member.data?.user.profile.tgNickname}>
-											<Button icon={<TbBrandTelegram size={16} style={{ position: 'relative', marginRight: 5 }} />}>
-												Telegram
-											</Button>
-										</Link>
+									{member.data.speciality.schools && (
+										<div style={{ marginTop: 16 }}>
+											<Text type="secondary" className={styles.fieldLabel}>
+												<T>Where I received knowledge</T>
+											</Text>
+											<Paragraph>{member.data.speciality.schools}</Paragraph>
+										</div>
 									)}
-								</Space>
-							</Col>
-						</Row>
-
-						<Descriptions
-							title={t('About specialty')}
-							className={styles.descriptionBlock}
-							layout="vertical"
-							column={1}
-							size="small"
-							labelStyle={{ fontWeight: 'bold' }}
-						>
-							<Descriptions.Item label={t('Specialization')}>{member.data.speciality.specialization}</Descriptions.Item>
-							<Descriptions.Item label={t('Skills')}>{member.data.speciality.skills}</Descriptions.Item>
-							<Descriptions.Item label={t('I use it in work')}>
-								{member.data.speciality.tools || t('(tools are not indicated)')}
-							</Descriptions.Item>
-							<Descriptions.Item label={t('Experience')}>
-								{member.data.speciality.jobs || t('(places of work are not indicated)')}
-							</Descriptions.Item>
-							<Descriptions.Item label={t('Where I received knowledge')}>
-								{member.data.speciality.schools || t('(places of training are not indicated)')}
-							</Descriptions.Item>
-						</Descriptions>
-					</>
+								</Col>
+							</Row>
+							<Row gutter={[24, 24]}>
+								<Col span={24}>
+									{member.data.speciality.skills && (
+										<div style={{ marginTop: 16 }}>
+											<Text type="secondary" className={styles.fieldLabel}>
+												<T>Skills</T>
+											</Text>
+											<div style={{ marginTop: 4 }}>{renderSkillTags(member.data.speciality.skills)}</div>
+										</div>
+									)}
+								</Col>
+							</Row>
+						</Card>
+					</Space>
 				)}
 			</Spin>
 		</Modal>
