@@ -13,7 +13,7 @@ interface EquityTransferModalProps {
 	onCancel: () => void
 	projectId: string
 	currentUserId: string
-	teamMembers: any[] // Предполагается, что это массив участников команды
+	teamMembers: any[] // Assuming this is an array of team members
 }
 
 interface TransferFormData {
@@ -105,12 +105,12 @@ const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMem
 			<div className={styles.container}>
 				<Space direction="vertical" style={{ width: '100%' }} size="large">
 					<div className={styles.infoBox}>
-						<Title level={5}>{t('Ваша текущая доля в проекте')}</Title>
+						<Title level={5}>{t('Your current equity share in the project')}</Title>
 						<Text strong>{currentEquity.toFixed(2)}%</Text>
 						<Divider />
 						<Text type="secondary">
 							{t(
-								'Передавая долю другому участнику, вы соглашаетесь передать часть своих прав в проекте. Это действие нельзя отменить.'
+								'Transferring equity to another team member means you are transferring part of your rights in the project. This action cannot be undone.'
 							)}
 						</Text>
 					</div>
@@ -118,10 +118,10 @@ const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMem
 					<Form form={form} layout="vertical" requiredMark={false} className={styles.form}>
 						<Form.Item
 							name="toUserId"
-							label={t('Получатель доли')}
-							rules={[{ required: true, message: t('Выберите получателя') }]}
+							label={t('Recipient of the equity share')}
+							rules={[{ required: true, message: t('Select a recipient') }]}
 						>
-							<Select placeholder={t('Выберите участника')}>
+							<Select placeholder={t('Select a participant')}>
 								{filteredTeamMembers.map((member) => (
 									<Option key={member.userId} value={member.userId}>
 										<div className={styles.memberOption}>
@@ -135,8 +135,11 @@ const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMem
 
 						<Form.Item
 							name="percentage"
-							label={t('Доля для передачи (%)')}
-							rules={[{ required: true, message: t('Укажите долю для передачи') }, { validator: validatePercentage }]}
+							label={t('Equity share to transfer (%)')}
+							rules={[
+								{ required: true, message: t('Specify the equity share to transfer') },
+								{ validator: validatePercentage },
+							]}
 						>
 							<InputNumber
 								min={0.01}
@@ -148,15 +151,15 @@ const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMem
 							/>
 						</Form.Item>
 
-						<Form.Item name="reason" label={t('Причина передачи (необязательно)')}>
-							<Input.TextArea rows={3} placeholder={t('Укажите причину передачи доли')} />
+						<Form.Item name="reason" label={t('Reason for transfer (optional)')}>
+							<Input.TextArea rows={3} placeholder={t('Specify the reason for transferring the equity share')} />
 						</Form.Item>
 					</Form>
 
 					<div className={styles.actions}>
-						<Button onClick={onCancel}>{t('Отмена')}</Button>
+						<Button onClick={onCancel}>{t('Cancel')}</Button>
 						<Button type="primary" loading={isTransferring} onClick={handleOk} disabled={currentEquity <= 0}>
-							{t('Передать долю')}
+							{t('Transfer equity')}
 						</Button>
 					</div>
 				</Space>
