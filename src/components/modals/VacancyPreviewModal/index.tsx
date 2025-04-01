@@ -28,6 +28,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		() =>
 			axios.get<
 				prismaClient.TeamVacancy & {
+					promiseStep: prismaClient.ProjectWorkflowStep
 					team: {
 						project: {
 							id: string
@@ -86,12 +87,12 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				vacancyId: vacancy.data.id,
 			})
 
-			message.success(<T keyName="modal.vacancy.applySuccess">Your response is sent</T>)
+			message.success(t('modal.vacancy.applySuccess', 'Your response is sent'))
 			setShowSpecialitySelectModal(false)
 			setTimeout(onCancel, 600)
 		} catch (error: any) {
 			console.log(error)
-			message.error(error.message)
+			message.error(error.response?.data.message || error.message)
 		}
 	}
 
@@ -99,24 +100,22 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		try {
 			await withdrawApply(data)
 
-			message.success(<T keyName="modal.vacancy.withdrawSuccess">Your response is withdrawn</T>)
+			message.success(t('modal.vacancy.withdrawSuccess', 'Your response is withdrawn'))
 			onCancel()
 		} catch (error: any) {
 			console.log(error)
-			message.error(error.message)
+			message.error(error.response?.data.message || error.message)
 		}
 	}
 
 	const statusOkButton = () => {
 		if (!session?.data) {
-			return <T keyName="signin">Signin</T>
+			return t('signin', 'Signin')
 		}
 
-		if (hasRole(prismaClient.UserRole.Member, session)) {
-			return vacancy?.data.myTeamMemberId ? <T>Reveal the response</T> : <T>Respond</T>
-		}
-
-		return <T>Respond</T>
+		// if (hasRole(prismaClient.UserRole.Member, session)) {
+		return vacancy?.data.myTeamMemberId ? t('Reveal the response') : t('Respond')
+		// }
 	}
 
 	const functionOkButton = async () => {
@@ -136,11 +135,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			<Modal
 				centered
 				title={
-					session?.data ? (
-						<T keyName="modal.vacancy.titleSession">Job vacancy</T>
-					) : (
-						<T keyName="needAuth">Requested authorization</T>
-					)
+					session?.data ? t('modal.vacancy.titleSession', 'Job vacancy') : t('needAuth', 'Requested authorization')
 				}
 				width={800}
 				destroyOnClose
@@ -148,14 +143,13 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				okText={statusOkButton()}
 				onOk={functionOkButton}
 				// okButtonProps={{ disabled: !session?.data?.user }}
-				cancelText={<T keyName="close">Close</T>}
+				cancelText={t('close', 'Close')}
 				open={open}
 				onCancel={handleCancel}
 				confirmLoading={processing}
 			>
-				{!session?.data && (
-					<T keyName="needAuthDescription">Viewing vacancies is available only to authorized lpatform users.</T>
-				)}
+				{!session?.data &&
+					t('needAuthDescription', 'Viewing vacancies is available only to authorized lpatform users.')}
 
 				<Spin spinning={processing}>
 					{!!vacancy && (
@@ -174,18 +168,30 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 								</Descriptions.Item>
 							</Descriptions>
 
+							{vacancy.data.promisePercentage && vacancy.data.promiseStep?.name && (
+								<Alert
+									type="info"
+									style={{ marginTop: 16 }}
+									message={`${t('modal.vacancy.equityPromise', 'Equity Promise')}: ${vacancy.data.promisePercentage}% ${t(
+										'modal.vacancy.equityPromiseDescription',
+										'of project equity will be allocated upon reaching the required workflow step {step}',
+										{ step: vacancy.data.promiseStep.name }
+									)}`}
+								/>
+							)}
+
 							{vacancy.data.myTeamMemberId ? (
 								<Alert
 									type="success"
-									message={<T keyName="modal.vacancy.applied">You have already responded to this vacancy</T>}
+									style={{ marginTop: 16 }}
+									message={t('modal.vacancy.applied', 'You have already responded to this vacancy')}
 								/>
 							) : null}
 							{!session?.data?.user && (
 								<Alert
 									type="error"
-									message={
-										<T keyName="modal.vacancy.notAuth">Only registered users with a completed specialty can respond.</T>
-									}
+									style={{ marginTop: 16 }}
+									message={t('modal.vacancy.notAuth', 'Only registered users with a completed specialty can respond.')}
 								/>
 							)}
 						</>

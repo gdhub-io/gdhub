@@ -5,7 +5,18 @@ import { tolgeeService } from '@/services/tolgee'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
-import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import {
+	BadRequestException,
+	Body,
+	Delete,
+	Get,
+	Post,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+	createHandler,
+} from 'next-api-decorators'
 
 class IDParamDto {
 	@IsString()
@@ -70,6 +81,7 @@ class ApiUserTeamVacancyHandler {
 		const data = await prisma.teamVacancy.findFirst({
 			where: { id },
 			include: {
+				promiseStep: true,
 				team: {
 					select: {
 						id: true,
@@ -135,6 +147,50 @@ class ApiUserTeamVacancyHandler {
 		await prisma.teamVacancy.update({ where: { id }, data: { status: prismaClient.TeamVacancyStatus.Closed } })
 	}
 
+	@Put('/withdraw')
+	public async withdraw(@Req() req: NextApiRequestWithUser, @Body() { teamMemberId }: { teamMemberId: string }) {
+		const { t } = tolgeeService
+
+		const deletedMember = await prisma.teamMember.delete({
+			where: { id: teamMemberId },
+			select: {
+				user: true,
+				vacancy: true,
+				team: {
+					select: {
+						members: { where: { status: prismaClient.TeamMemberStatus.Founder }, select: { userId: true, user: true } },
+					},
+				},
+			},
+		})
+
+		if (!deletedMember.vacancy) return
+
+		for (const founderMember of deletedMember.team.members) {
+			try {
+				await NovuService.send({
+					template: 'default-message',
+					to: {
+						subscriberId: founderMember.userId,
+						email: founderMember.user.email!,
+					},
+					payload: {
+						title: t('send-message.novu.candidate-reject.title', `Candidate rejected`),
+						message: t(
+							'send-message.novu.candidate-reject',
+							'The candidate {candidateName} rejected his candidacy for the position {vacancyName}',
+							{ candidateName: deletedMember.user.name, vacancyName: deletedMember.vacancy.title }
+						),
+					},
+				})
+
+				console.info('New notification was sent to ' + founderMember.userId)
+			} catch (e) {
+				console.error('[NovuService]', e)
+			}
+		}
+	}
+
 	@Post('/apply')
 	public async apply(
 		@Req() req: NextApiRequestWithUser,
@@ -159,6 +215,12 @@ class ApiUserTeamVacancyHandler {
 			},
 		})
 
+		const isTeamMember = await prisma.teamMember.findFirst({
+			where: { userId: req.user.id, teamId: vacancy?.teamId },
+		})
+
+		if (isTeamMember) throw new BadRequestException('You are already a member of this team')
+
 		const hasEquityPromise = vacancy?.promisePercentage && vacancy?.promiseStepId
 
 		if (!vacancy || !req.user.id) return
@@ -177,11 +239,26 @@ class ApiUserTeamVacancyHandler {
 		})
 
 		if (hasEquityPromise) {
-			await prisma.equityAllocation.create({
-				data: {
+			await prisma.equityAllocation.upsert({
+				where: {
+					equityId_ownerId: {
+						equityId: vacancy.team!.project!.equity!.id,
+						ownerId: candidate.user.id,
+					},
+				},
+				create: {
 					equityId: vacancy.team!.project!.equity!.id,
-					ownerId: vacancy.team!.project!.authorId,
+					ownerId: candidate.user.id,
 					percentage: 0,
+					promises: {
+						create: {
+							percentage: vacancy.promisePercentage!,
+							targetStepId: vacancy.promiseStepId!,
+							createdById: req.user.id,
+						},
+					},
+				},
+				update: {
 					promises: {
 						create: {
 							percentage: vacancy.promisePercentage!,
@@ -201,7 +278,7 @@ class ApiUserTeamVacancyHandler {
 					email: vacancy.team!.project?.author.email!,
 				},
 				payload: {
-					title: t('message.new-job-response.title', 'New job response to the {project}', {
+					title: t('message.new-job-response.title', 'New job response', {
 						project: vacancy.team!.project?.name,
 					}),
 					message: t('message.new-job-response.content', `for vacancy "{vacancy}" from {name}`, {
@@ -235,6 +312,7 @@ class ApiUserTeamVacancyHandler {
 					email: rejectedCandidate.user.email!,
 				},
 				payload: {
+					title: t('send-message.novu.candidate-reject.title', `Candidate rejected`),
 					message: t(
 						'send-message.novu.your-candidacy-reject',
 						'Your candidacy for a position on the team {teamName} has been rejected {vacancyName}',
@@ -268,11 +346,26 @@ class ApiUserTeamVacancyHandler {
 			})
 
 			if (team) {
-				await prisma.equityAllocation.create({
-					data: {
+				await prisma.equityAllocation.upsert({
+					where: {
+						equityId_ownerId: {
+							equityId: team.project!.equity!.id,
+							ownerId: member.user.id,
+						},
+					},
+					create: {
 						equityId: team.project!.equity!.id,
 						ownerId: member.user.id,
 						percentage: 0,
+						promises: {
+							create: {
+								percentage: member.vacancy!.promisePercentage!,
+								targetStepId: member.vacancy!.promiseStepId!,
+								createdById: member.user.id,
+							},
+						},
+					},
+					update: {
 						promises: {
 							create: {
 								percentage: member.vacancy!.promisePercentage!,
@@ -293,6 +386,7 @@ class ApiUserTeamVacancyHandler {
 					email: member.user.email!,
 				},
 				payload: {
+					title: t('send-message.novu.your-candidacy-approve.title', `Accepted into the team`),
 					message: t('send-message.novu.your-candidacy-approve', `You have been accepted into the team {memberName}`, {
 						memberName: member.team.name,
 					}),
@@ -300,6 +394,42 @@ class ApiUserTeamVacancyHandler {
 			})
 
 			console.info('New notification was sent to ' + member.user.id)
+		} catch (e) {
+			console.error('[NovuService]', e)
+		}
+	}
+
+	@Put('/candidate/fire')
+	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
+		const { t } = tolgeeService
+		const firedMember = await prisma.teamMember.update({
+			where: { id, status: prismaClient.TeamMemberStatus.Hired },
+			data: {
+				status: prismaClient.TeamMemberStatus.Fired,
+				finishedAt: dayjs().toISOString(),
+			},
+			select: { user: true, team: true },
+		})
+
+		// Delete all equity allocations for the fired member
+		await prisma.equityPromise.deleteMany({ where: { allocation: { teamMemberId: id } } })
+
+		try {
+			await NovuService.send({
+				template: 'default-message',
+				to: {
+					subscriberId: firedMember.user.id,
+					email: firedMember.user.email!,
+				},
+				payload: {
+					title: t('send-message.novu.candidate-fire.title', `Candidate fired`),
+					message: t('send-message.novu.candidate-fire', `You have been kicked off the team {firedMemberName}`, {
+						firedMember: firedMember.team.name,
+					}),
+				},
+			})
+
+			console.info('New notification was sent to ' + firedMember.user.id)
 		} catch (e) {
 			console.error('[NovuService]', e)
 		}
