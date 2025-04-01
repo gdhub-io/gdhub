@@ -4,6 +4,7 @@ import InviteMemberModal from '@/components/modals/InviteMemberModal'
 import MemberEquityPromiseModal from '@/components/modals/MemberEquityPromiseModal'
 import ModernTable from '@/components/ModernTable'
 import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
+import TeamMemberCard from '@/components/TeamMemberCard'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
@@ -12,7 +13,7 @@ import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown, Modal } from 'antd'
+import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown, Modal, Avatar } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -28,9 +29,8 @@ const MyTeam = () => {
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
 	const [isEquityModalOpen, setIsEquityModalOpen] = useState(false)
 	const [isMemberEquityPromiseModalOpen, setIsMemberEquityPromiseModalOpen] = useState(false)
-	const [selectedMember, setSelectedMember] = useState<(prismaClient.TeamMember & { user: prismaClient.User }) | null>(
-		null
-	)
+	const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
+	const [showMemberCard, setShowMemberCard] = useState(false)
 
 	const {
 		data: team,
@@ -182,13 +182,13 @@ const MyTeam = () => {
 	}
 
 	const handleOpenMemberEquityPromiseModal = (member: prismaClient.TeamMember & { user: prismaClient.User }) => {
-		setSelectedMember(member)
+		setSelectedMemberId(member.id)
 		setIsMemberEquityPromiseModalOpen(true)
 	}
 
 	const handleCloseMemberEquityPromiseModal = () => {
 		setIsMemberEquityPromiseModalOpen(false)
-		setSelectedMember(null)
+		setSelectedMemberId(null)
 	}
 
 	const handleDeleteMemberEquityPromise = () => {
@@ -220,24 +220,32 @@ const MyTeam = () => {
 		return Math.min(remainingPercentage, 97)
 	}
 
+	const handleShowMemberCard = (memberId: string) => {
+		setSelectedMemberId(memberId)
+		setShowMemberCard(true)
+	}
+
+	const handleCloseMemberCard = () => {
+		setShowMemberCard(false)
+		setSelectedMemberId(null)
+	}
+
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
 		{
-			title: t('Member Name'),
-			key: 'userName',
-			render: (_, member) => {
-				return (
-					<Space direction="vertical" size={0}>
-						<Text className={tableStyles.tableMemberName}>{member.user.name}</Text>
-						{!screens.md && (
-							<Text className={tableStyles.tableMemberPosition}>
-								{member.status === prismaClient.TeamMemberStatus.Founder
-									? `${member.position} (founder)`
-									: member.position}
-							</Text>
-						)}
-					</Space>
-				)
-			},
+			title: t('Team Member'),
+			dataIndex: 'id',
+			key: 'id',
+			render: (value, record) => (
+				<>
+					<div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleShowMemberCard(record.id)}>
+						<Space>
+							<Avatar shape="square" size={32} src={record.user.image || null} />
+							{record.user.name}
+						</Space>
+					</div>
+					<small>{record.position || t('No position specified')}</small>
+				</>
+			),
 		},
 		{
 			title: t('Position'),
@@ -489,21 +497,25 @@ const MyTeam = () => {
 						onCancel={handleCloseEquityModal}
 						projectEquity={projectEquity?.data}
 					/>
-					{selectedMember && (
+					{selectedMemberId && (
 						<MemberEquityPromiseModal
 							open={isMemberEquityPromiseModalOpen}
 							onOk={handleMemberEquityPromiseUpdateSuccess}
 							onCancel={handleCloseMemberEquityPromiseModal}
 							onDelete={handleDeleteMemberEquityPromise}
-							memberId={selectedMember.id}
-							memberName={selectedMember.user.name || 'Unknown'}
-							promiseId={getMemberShare(selectedMember.id)?.promises[0]?.id}
-							maxShare={getMaxAvailableShare(getMemberPromisePercentage(selectedMember.id) || 0)}
+							memberId={selectedMemberId}
+							memberName={team?.data.members.find((m: any) => m.id === selectedMemberId)?.user.name || 'Unknown'}
+							promiseId={getMemberShare(selectedMemberId)?.promises[0]?.id}
+							maxShare={getMaxAvailableShare(getMemberPromisePercentage(selectedMemberId) || 0)}
 							projectId={contextProject?.id || ''}
-							isVested={getMemberShare(selectedMember.id)?.vested || true}
+							isVested={getMemberShare(selectedMemberId)?.vested || true}
 						/>
 					)}
 				</>
+			)}
+
+			{selectedMemberId && (
+				<TeamMemberCard memberId={selectedMemberId} open={showMemberCard} onCancel={handleCloseMemberCard} />
 			)}
 		</>
 	)
