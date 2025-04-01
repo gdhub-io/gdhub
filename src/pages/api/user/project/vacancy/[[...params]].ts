@@ -3,9 +3,20 @@ import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import { tolgeeService } from '@/services/tolgee'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import dayjs from 'dayjs'
-import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import {
+	BadRequestException,
+	Body,
+	Delete,
+	Get,
+	Post,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+	createHandler,
+} from 'next-api-decorators'
 
 class IDParamDto {
 	@IsString()
@@ -28,6 +39,12 @@ class UserTeamVacancyCreateDto {
 	finishedAt: string
 	@IsString()
 	teamId: string
+	@IsNumber()
+	@IsOptional()
+	promisePercentage?: number
+	@IsString()
+	@IsOptional()
+	promiseTargetStepId?: string
 }
 
 class UserTeamVacancyUpdateDto {
@@ -49,6 +66,12 @@ class UserTeamVacancyUpdateDto {
 	@IsString()
 	@IsOptional()
 	finishedAt?: string
+	@IsNumber()
+	@IsOptional()
+	promisePercentage?: number
+	@IsString()
+	@IsOptional()
+	promiseTargetStepId?: string
 }
 
 @NextAuthGuard('user')
@@ -58,6 +81,7 @@ class ApiUserTeamVacancyHandler {
 		const data = await prisma.teamVacancy.findFirst({
 			where: { id },
 			include: {
+				promiseStep: true,
 				team: {
 					select: {
 						id: true,
@@ -83,7 +107,18 @@ class ApiUserTeamVacancyHandler {
 	@Post()
 	public async create(@Body(ValidationPipe) data: UserTeamVacancyCreateDto) {
 		try {
-			await prisma.teamVacancy.create({ data })
+			const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
+			const hasEquityPromise = promisePercentage && promiseTargetStepId
+
+			const vacancy = await prisma.teamVacancy.create({
+				data: {
+					...vacancyData,
+					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
+					promiseStepId: hasEquityPromise ? promiseTargetStepId : undefined,
+				},
+			})
+
+			return vacancy
 		} catch (error) {
 			console.error('[project.create]', error)
 			throw error
@@ -92,7 +127,19 @@ class ApiUserTeamVacancyHandler {
 
 	@Put()
 	public async update(@Query(ValidationPipe) { id }: IDParamDto, @Body(ValidationPipe) data: UserTeamVacancyUpdateDto) {
-		await prisma.teamVacancy.update({ where: { id }, data })
+		const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
+		const hasEquityPromise = promisePercentage && promiseTargetStepId
+
+		const vacancy = await prisma.teamVacancy.update({
+			where: { id },
+			data: {
+				...vacancyData,
+				promisePercentage: hasEquityPromise ? promisePercentage : undefined,
+				promiseStepId: hasEquityPromise ? promiseTargetStepId : undefined,
+			},
+		})
+
+		return vacancy
 	}
 
 	@Delete()
@@ -128,6 +175,7 @@ class ApiUserTeamVacancyHandler {
 						email: founderMember.user.email!,
 					},
 					payload: {
+						title: t('send-message.novu.candidate-reject.title', `Candidate rejected`),
 						message: t(
 							'send-message.novu.candidate-reject',
 							'The candidate {candidateName} rejected his candidacy for the position {vacancyName}',
@@ -162,8 +210,16 @@ class ApiUserTeamVacancyHandler {
 
 		const vacancy = await prisma.teamVacancy.findUnique({
 			where: { id: vacancyId },
-			include: { team: { select: { project: { include: { author: true } } } } },
+			include: {
+				team: { select: { project: { include: { author: true, equity: true } } } },
+			},
 		})
+
+		const isTeamMember = await prisma.teamMember.findFirst({
+			where: { userId: req.user.id, teamId: vacancy?.teamId },
+		})
+
+		if (isTeamMember) throw new BadRequestException('You are already a member of this team')
 
 		if (!vacancy || !req.user.id) return
 
@@ -188,7 +244,7 @@ class ApiUserTeamVacancyHandler {
 					email: vacancy.team!.project?.author.email!,
 				},
 				payload: {
-					title: t('message.new-job-response.title', 'New job response to the {project}', {
+					title: t('message.new-job-response.title', 'New job response', {
 						project: vacancy.team!.project?.name,
 					}),
 					message: t('message.new-job-response.content', `for vacancy "{vacancy}" from {name}`, {
@@ -222,6 +278,7 @@ class ApiUserTeamVacancyHandler {
 					email: rejectedCandidate.user.email!,
 				},
 				payload: {
+					title: t('send-message.novu.candidate-reject.title', `Candidate rejected`),
 					message: t(
 						'send-message.novu.your-candidacy-reject',
 						'Your candidacy for a position on the team {teamName} has been rejected {vacancyName}',
@@ -242,8 +299,52 @@ class ApiUserTeamVacancyHandler {
 		const member = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
 			data: { status: prismaClient.TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
-			select: { user: true, team: true },
+			select: { id: true, user: true, team: true, vacancy: true },
 		})
+
+		// If vacancy has a promise, create an equity allocation for the member
+		const hasEquityPromise = member.vacancy?.promisePercentage && member.vacancy?.promiseStepId
+
+		if (hasEquityPromise) {
+			const team = await prisma.team.findUnique({
+				where: { id: member.team.id },
+				include: { project: { include: { equity: true } } },
+			})
+
+			if (team) {
+				await prisma.equityAllocation.upsert({
+					where: {
+						equityId_ownerId: {
+							equityId: team.project!.equity!.id,
+							ownerId: member.user.id,
+						},
+					},
+					create: {
+						equityId: team.project!.equity!.id,
+						ownerId: member.user.id,
+						teamMemberId: member.id,
+						percentage: 0,
+						promises: {
+							create: {
+								percentage: member.vacancy!.promisePercentage!,
+								targetStepId: member.vacancy!.promiseStepId!,
+								createdById: member.user.id,
+							},
+						},
+					},
+					update: {
+						teamMemberId: member.id,
+						promises: {
+							create: {
+								percentage: member.vacancy!.promisePercentage!,
+								targetStepId: member.vacancy!.promiseStepId!,
+								createdById: member.user.id,
+							},
+						},
+					},
+				})
+			}
+		}
 
 		try {
 			await NovuService.send({
@@ -253,6 +354,7 @@ class ApiUserTeamVacancyHandler {
 					email: member.user.email!,
 				},
 				payload: {
+					title: t('send-message.novu.your-candidacy-approve.title', `Accepted into the team`),
 					message: t('send-message.novu.your-candidacy-approve', `You have been accepted into the team {memberName}`, {
 						memberName: member.team.name,
 					}),
@@ -279,6 +381,10 @@ class ApiUserTeamVacancyHandler {
 
 		// Delete all equity allocations for the fired member
 		await prisma.equityPromise.deleteMany({ where: { allocation: { teamMemberId: id } } })
+		await prisma.equityAllocation.updateMany({
+			where: { teamMemberId: id },
+			data: { teamMemberId: { set: null } },
+		})
 
 		try {
 			await NovuService.send({
@@ -288,7 +394,10 @@ class ApiUserTeamVacancyHandler {
 					email: firedMember.user.email!,
 				},
 				payload: {
-					message: t('', `You have been kicked off the team {firedMemberName}`, { firedMember: firedMember.team.name }),
+					title: t('send-message.novu.candidate-fire.title', `Candidate fired`),
+					message: t('send-message.novu.candidate-fire', `You have been kicked off the team {firedMemberName}`, {
+						firedMember: firedMember.team.name,
+					}),
 				},
 			})
 

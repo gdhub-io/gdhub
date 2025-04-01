@@ -1,2 +1,19 @@
 @media screen and (min-width: 576px) and (max-width: 767px) {
+
+  .header,
+  .fixedHeader {
+    padding: 0 48px;
+  }
+
+  .container {
+    :global {
+      .ant-layout-content {
+        padding: 0 48px;
+
+        .layout-background {
+          padding: 16px 0px;
+        }
+      }
+    }
+  }
 }

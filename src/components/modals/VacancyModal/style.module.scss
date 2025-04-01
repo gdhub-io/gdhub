@@ -1,0 +1,14 @@
+.modal {
+	.promiseCard {
+		margin-top: 16px;
+		background: #f5f5f5;
+		border: none;
+		border-radius: 8px;
+
+		.ant-card-head {
+			&::after {
+				content: none;
+			}
+		}
+	}
+}

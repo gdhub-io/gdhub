@@ -1,16 +1,44 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useWorkDirections } from '@/hooks/library'
+import { DeleteOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin } from 'antd'
+import { useTolgee } from '@tolgee/react'
+import {
+	Button,
+	Col,
+	DatePicker,
+	Form,
+	Input,
+	message,
+	Modal,
+	Row,
+	Select,
+	Space,
+	Spin,
+	InputNumber,
+	Card,
+	Popconfirm,
+} from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import styles from './style.module.scss'
 
-const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
+interface VacancyModalProps {
+	teamId?: string
+	projectId?: string
+	vacancyId?: string
+	open: boolean
+	onOk: () => void
+	onCancel: () => void
+}
+
+const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: VacancyModalProps) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
 	const { options: directionsOptions } = useWorkDirections()
+	const [showPromiseFields, setShowPromiseFields] = useState(false)
 
 	const {
 		data: vacancy,
@@ -23,10 +51,52 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			enabled: !!vacancyId,
 			staleTime: Infinity,
 			onSuccess: ({ data }) => {
-				form.setFieldsValue({ ...data, finishedAt: dayjs(data.finishedAt) })
+				form.setFieldsValue({
+					...data,
+					finishedAt: dayjs(data.finishedAt),
+					showPromiseFields: !!data.promisePercentage,
+				})
+				setShowPromiseFields(!!data.promisePercentage)
 			},
 		}
 	)
+
+	const { data: workflowData, isLoading: isLoadingWorkflow } = useQuery(
+		['project-workflow', projectId],
+		() => axios.get('/api/user/project/workflow', { params: { projectId } }),
+		{
+			enabled: !!projectId,
+		}
+	)
+
+	const { data: projectEquity } = useQuery(
+		['project-equity', projectId],
+		() => axios.get('/api/user/project/equity', { params: { projectId } }),
+		{
+			enabled: !!projectId,
+		}
+	)
+
+	const getMaxAvailableShare = () => {
+		if (!projectEquity?.data) return 0
+
+		const teamTotal = projectEquity.data.equityAllocations?.reduce(
+			(sum: number, share: any) =>
+				sum + share.percentage + share.promises.reduce((acc: number, promise: any) => acc + promise.percentage, 0),
+			0
+		)
+		const allocated =
+			projectEquity.data.platformShare +
+			projectEquity.data.mentorFundShare +
+			projectEquity.data.investmentReserve +
+			(teamTotal || 0)
+
+		const remainingPercentage = 100 - allocated
+
+		return Math.min(remainingPercentage, 97)
+	}
+
+	const maxAvailableShare = getMaxAvailableShare()
 
 	const { mutateAsync: createVacancy, isLoading: isCreating } = useMutation((data: Record<string, any>) =>
 		axios.post<any>('/api/user/project/vacancy', data)
@@ -66,26 +136,39 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			}
 
 			form.resetFields()
-			message.success(vacancyId ? <T>The vacancy is changed</T> : <T>A new vacancy has been added</T>)
+			setShowPromiseFields(false)
+			message.success(vacancyId ? t('The vacancy is changed') : t('A new vacancy has been added'))
 			onOk()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(<T keyName="form.error">Error.Check if all data is entered correctly</T>)
+				message.error(t('form.error', 'Error.Check if all data is entered correctly'))
 			}
 		}
 	}
 
 	const handleCancel = () => {
 		form.resetFields()
+		setShowPromiseFields(false)
 		onCancel()
 	}
+
+	// Получаем доступные для выбора шаги (только следующие за текущим)
+	const availableSteps = workflowData?.data?.steps
+		? workflowData.data.steps
+				.filter((step: any) => step.order >= (workflowData.data.currentStep?.order || 0))
+				.map((step: any) => ({
+					label: step.order === workflowData.data.currentStep?.order ? `${step.name} (current)` : step.name,
+					value: step.id,
+				}))
+		: []
 
 	return (
 		<Modal
 			centered
-			title={vacancyId ? <T>Change the vacancy</T> : <T>Create a new vacancy</T>}
+			className={styles.modal}
+			title={vacancyId ? t('Change the vacancy') : t('Create a new vacancy')}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
@@ -95,14 +178,14 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			footer={[
 				<Space key="form-buttons" wrap>
 					<Button key="close" onClick={handleCancel} disabled={isLoadingVacancy || isUpdating || isCreating}>
-						<T>Close</T>
+						{t('Close')}
 					</Button>
 					<Button
 						key="draft"
 						disabled={isLoadingVacancy || isUpdating || isCreating}
 						onClick={() => handleOk({ asDraft: true })}
 					>
-						<T>Save as draft</T>
+						{t('Save as draft')}
 					</Button>
 					<Button
 						key="public"
@@ -110,7 +193,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 						type="primary"
 						onClick={() => handleOk()}
 					>
-						{vacancy?.data.status == prismaClient.TeamVacancyStatus.Published ? <T>Save</T> : <T>Publish</T>}
+						{vacancy?.data.status == prismaClient.TeamVacancyStatus.Published ? t('Save') : t('Publish')}
 					</Button>
 				</Space>,
 			]}
@@ -171,11 +254,10 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 					<Form.Item
 						name="description"
 						label={t('Vacancy description')}
-						help={
-							<T keyName="modal.vacancy.descriptionHelp">
-								Describe the requirements/wishes for the candidate, describe the kaku a job he has to do
-							</T>
-						}
+						tooltip={t(
+							'modal.vacancy.descriptionHelp',
+							'Describe the requirements/wishes for the candidate, describe the kaku a job he has to do'
+						)}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -187,6 +269,83 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 							)}
 						/>
 					</Form.Item>
+
+					{!showPromiseFields && (
+						<Form.Item wrapperCol={{ span: 24 }}>
+							<Button type="text" icon={<MdOutlineHandshake />} onClick={() => setShowPromiseFields(true)}>
+								{t('Add equity promise')}
+							</Button>
+						</Form.Item>
+					)}
+
+					{showPromiseFields && (
+						<Card
+							className={styles.promiseCard}
+							title={t('Equity Promise')}
+							extra={
+								<Popconfirm
+									title={t('Remove equity promise')}
+									placement="topRight"
+									onConfirm={() => {
+										setShowPromiseFields(false)
+										form.setFieldsValue({ promisePercentage: undefined, promiseTargetStepId: undefined })
+									}}
+								>
+									<Button
+										type="text"
+										size="small"
+										danger
+										icon={<DeleteOutlined />}
+										onClick={(e) => {
+											e.stopPropagation()
+										}}
+									/>
+								</Popconfirm>
+							}
+						>
+							<Row gutter={[16, 16]}>
+								<Col span={12}>
+									<Form.Item
+										name="promisePercentage"
+										label={t('Promised equity percentage')}
+										tooltip={t('Percentage of equity that will be promised to the candidate')}
+										wrapperCol={{ span: 24 }}
+										style={{ marginBottom: 0 }}
+										rules={[{ required: true }]}
+									>
+										<InputNumber
+											min={0}
+											max={maxAvailableShare}
+											style={{ width: '100%', height: 40 }}
+											placeholder={t('Enter percentage')}
+										/>
+									</Form.Item>
+									{maxAvailableShare > 0 && (
+										<div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 4 }}>
+											{t('Maximum available equity')}: {maxAvailableShare.toFixed(2)}%
+										</div>
+									)}
+								</Col>
+								<Col span={12}>
+									<Form.Item
+										name="promiseStepId"
+										label={t('Required workflow step')}
+										tooltip={t('Step that needs to be completed to receive the promised equity')}
+										wrapperCol={{ span: 24 }}
+										style={{ marginBottom: 0 }}
+										rules={[{ required: true }]}
+									>
+										<Select
+											style={{ width: '100%', height: 40 }}
+											placeholder={t('Select step')}
+											options={availableSteps}
+											loading={isLoadingWorkflow}
+										/>
+									</Form.Item>
+								</Col>
+							</Row>
+						</Card>
+					)}
 				</Form>
 			</Spin>
 		</Modal>

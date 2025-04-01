@@ -177,6 +177,7 @@ const MyProjectVacancies = () => {
 
 			<VacancyModal
 				teamId={contextProject?.teamId}
+				projectId={contextProject?.id}
 				vacancyId={selectedVacancyId}
 				open={showVacancyModal}
 				onCancel={() => {
