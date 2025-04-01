@@ -28,6 +28,7 @@
       flex-direction: row-reverse;
       max-width: 780px;
       background-color: white;
+      border-radius: 16px;
     }
 
     .login-form {
@@ -61,6 +62,7 @@
       .login-box {
         flex-direction: column;
         box-shadow: none;
+        border-radius: 16px;
       }
 
       .login-form {
