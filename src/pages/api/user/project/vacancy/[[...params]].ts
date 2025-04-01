@@ -84,7 +84,6 @@ class ApiUserTeamVacancyHandler {
 					},
 				},
 				_count: { select: { applicants: true } },
-				promise: true,
 			},
 		})
 
@@ -97,17 +96,15 @@ class ApiUserTeamVacancyHandler {
 	public async create(@Body(ValidationPipe) data: UserTeamVacancyCreateDto) {
 		try {
 			const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
-			const vacancy = await prisma.teamVacancy.create({ data: vacancyData })
+			const hasEquityPromise = promisePercentage && promiseTargetStepId
 
-			if (promisePercentage && promiseTargetStepId) {
-				await prisma.equityPromise.create({
-					data: {
-						percentage: promisePercentage,
-						targetStepId: promiseTargetStepId,
-						vacancyId: vacancy.id,
-					},
-				})
-			}
+			const vacancy = await prisma.teamVacancy.create({
+				data: {
+					...vacancyData,
+					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
+					promiseStepId: hasEquityPromise ? promiseTargetStepId : undefined,
+				},
+			})
 
 			return vacancy
 		} catch (error) {
@@ -119,37 +116,16 @@ class ApiUserTeamVacancyHandler {
 	@Put()
 	public async update(@Query(ValidationPipe) { id }: IDParamDto, @Body(ValidationPipe) data: UserTeamVacancyUpdateDto) {
 		const { promisePercentage, promiseTargetStepId, ...vacancyData } = data
-		const vacancy = await prisma.teamVacancy.update({ where: { id }, data: vacancyData })
+		const hasEquityPromise = promisePercentage && promiseTargetStepId
 
-		if (promisePercentage !== undefined || promiseTargetStepId !== undefined) {
-			const existingPromise = await prisma.equityPromise.findFirst({
-				where: { vacancyId: id },
-			})
-
-			if (existingPromise) {
-				if (promisePercentage === undefined && promiseTargetStepId === undefined) {
-					await prisma.equityPromise.delete({
-						where: { id: existingPromise.id },
-					})
-				} else {
-					await prisma.equityPromise.update({
-						where: { id: existingPromise.id },
-						data: {
-							percentage: promisePercentage,
-							targetStepId: promiseTargetStepId,
-						},
-					})
-				}
-			} else if (promisePercentage !== undefined && promiseTargetStepId !== undefined) {
-				await prisma.equityPromise.create({
-					data: {
-						percentage: promisePercentage,
-						targetStepId: promiseTargetStepId,
-						vacancyId: id,
-					},
-				})
-			}
-		}
+		const vacancy = await prisma.teamVacancy.update({
+			where: { id },
+			data: {
+				...vacancyData,
+				promisePercentage: hasEquityPromise ? promisePercentage : undefined,
+				promiseStepId: hasEquityPromise ? promiseTargetStepId : undefined,
+			},
+		})
 
 		return vacancy
 	}
@@ -179,10 +155,11 @@ class ApiUserTeamVacancyHandler {
 		const vacancy = await prisma.teamVacancy.findUnique({
 			where: { id: vacancyId },
 			include: {
-				team: { select: { project: { include: { author: true } } } },
-				promise: true,
+				team: { select: { project: { include: { author: true, equity: true } } } },
 			},
 		})
+
+		const hasEquityPromise = vacancy?.promisePercentage && vacancy?.promiseStepId
 
 		if (!vacancy || !req.user.id) return
 
@@ -198,6 +175,23 @@ class ApiUserTeamVacancyHandler {
 			},
 			include: { user: true },
 		})
+
+		if (hasEquityPromise) {
+			await prisma.equityAllocation.create({
+				data: {
+					equityId: vacancy.team!.project!.equity!.id,
+					ownerId: vacancy.team!.project!.authorId,
+					percentage: 0,
+					promises: {
+						create: {
+							percentage: vacancy.promisePercentage!,
+							targetStepId: vacancy.promiseStepId!,
+							createdById: req.user.id,
+						},
+					},
+				},
+			})
+		}
 
 		try {
 			await NovuService.send({
@@ -261,27 +255,29 @@ class ApiUserTeamVacancyHandler {
 		const member = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
 			data: { status: prismaClient.TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
-			select: { user: true, team: true, vacancy: { include: { promise: true } } },
+			select: { user: true, team: true, vacancy: true },
 		})
 
 		// If vacancy has a promise, create an equity allocation for the member
-		if (member.vacancy?.promise) {
+		const hasEquityPromise = member.vacancy?.promisePercentage && member.vacancy?.promiseStepId
+
+		if (hasEquityPromise) {
 			const team = await prisma.team.findUnique({
 				where: { id: member.team.id },
-				include: { project: true },
+				include: { project: { include: { equity: true } } },
 			})
 
 			if (team) {
 				await prisma.equityAllocation.create({
 					data: {
-						teamMemberId: member.id,
-						projectId: team.project.id,
+						equityId: team.project!.equity!.id,
+						ownerId: member.user.id,
 						percentage: 0,
 						promises: {
 							create: {
-								percentage: member.vacancy.promise.percentage,
-								targetStepId: member.vacancy.promise.targetStepId,
-								createdById: member.userId,
+								percentage: member.vacancy!.promisePercentage!,
+								targetStepId: member.vacancy!.promiseStepId!,
+								createdById: member.user.id,
 							},
 						},
 					},
