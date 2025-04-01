@@ -2,14 +2,40 @@ import { useEffect, useState } from 'react'
 import { useWorkDirections } from '@/hooks/library'
 import { DeleteOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, DatePicker, Form, Input, message, Modal, Row, Select, Space, Spin, InputNumber, Card } from 'antd'
+import { useTolgee } from '@tolgee/react'
+import {
+	Button,
+	Col,
+	DatePicker,
+	Form,
+	Input,
+	message,
+	Modal,
+	Row,
+	Select,
+	Space,
+	Spin,
+	InputNumber,
+	Card,
+	Popover,
+	Popconfirm,
+} from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import styles from './style.module.scss'
 
-const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
+interface VacancyModalProps {
+	teamId?: string
+	projectId?: string
+	vacancyId?: string
+	open: boolean
+	onOk: () => void
+	onCancel: () => void
+}
+
+const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: VacancyModalProps) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
 	const { options: directionsOptions } = useWorkDirections()
@@ -36,11 +62,11 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 		}
 	)
 
-	const { data: workflowData } = useQuery(
-		['project-workflow', teamId],
-		() => axios.get('/api/user/project/workflow', { params: { projectId: teamId } }),
+	const { data: workflowData, isLoading: isLoadingWorkflow } = useQuery(
+		['project-workflow', projectId],
+		() => axios.get('/api/user/project/workflow', { params: { projectId } }),
 		{
-			enabled: !!teamId,
+			enabled: !!projectId,
 		}
 	)
 
@@ -82,19 +108,21 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			}
 
 			form.resetFields()
-			message.success(vacancyId ? <T>The vacancy is changed</T> : <T>A new vacancy has been added</T>)
+			setShowPromiseFields(false)
+			message.success(vacancyId ? t('The vacancy is changed') : t('A new vacancy has been added'))
 			onOk()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
 				message.error(error.message)
 			} else {
-				message.error(<T keyName="form.error">Error.Check if all data is entered correctly</T>)
+				message.error(t('form.error', 'Error.Check if all data is entered correctly'))
 			}
 		}
 	}
 
 	const handleCancel = () => {
 		form.resetFields()
+		setShowPromiseFields(false)
 		onCancel()
 	}
 
@@ -112,7 +140,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 		<Modal
 			centered
 			className={styles.modal}
-			title={vacancyId ? <T>Change the vacancy</T> : <T>Create a new vacancy</T>}
+			title={vacancyId ? t('Change the vacancy') : t('Create a new vacancy')}
 			width={800}
 			destroyOnClose
 			maskClosable={false}
@@ -122,14 +150,14 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 			footer={[
 				<Space key="form-buttons" wrap>
 					<Button key="close" onClick={handleCancel} disabled={isLoadingVacancy || isUpdating || isCreating}>
-						<T>Close</T>
+						{t('Close')}
 					</Button>
 					<Button
 						key="draft"
 						disabled={isLoadingVacancy || isUpdating || isCreating}
 						onClick={() => handleOk({ asDraft: true })}
 					>
-						<T>Save as draft</T>
+						{t('Save as draft')}
 					</Button>
 					<Button
 						key="public"
@@ -137,7 +165,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 						type="primary"
 						onClick={() => handleOk()}
 					>
-						{vacancy?.data.status == prismaClient.TeamVacancyStatus.Published ? <T>Save</T> : <T>Publish</T>}
+						{vacancy?.data.status == prismaClient.TeamVacancyStatus.Published ? t('Save') : t('Publish')}
 					</Button>
 				</Space>,
 			]}
@@ -198,11 +226,10 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 					<Form.Item
 						name="description"
 						label={t('Vacancy description')}
-						tooltip={
-							<T keyName="modal.vacancy.descriptionHelp">
-								Describe the requirements/wishes for the candidate, describe the kaku a job he has to do
-							</T>
-						}
+						tooltip={t(
+							'modal.vacancy.descriptionHelp',
+							'Describe the requirements/wishes for the candidate, describe the kaku a job he has to do'
+						)}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -217,8 +244,8 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 
 					{!showPromiseFields && (
 						<Form.Item wrapperCol={{ span: 24 }}>
-							<Button type="text" onClick={() => setShowPromiseFields(true)}>
-								<T>Add equity promise</T>
+							<Button type="text" icon={<MdOutlineHandshake />} onClick={() => setShowPromiseFields(true)}>
+								{t('Add equity promise')}
 							</Button>
 						</Form.Item>
 					)}
@@ -226,20 +253,26 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 					{showPromiseFields && (
 						<Card
 							className={styles.promiseCard}
-							title={<T>Equity Promise</T>}
+							title={t('Equity Promise')}
 							extra={
-								<Button
-									type="link"
-									danger
-									style={{ padding: 0 }}
-									icon={<DeleteOutlined />}
-									onClick={() => {
+								<Popconfirm
+									title={t('Remove equity promise')}
+									placement="topRight"
+									onConfirm={() => {
 										setShowPromiseFields(false)
 										form.setFieldsValue({ promisePercentage: undefined, promiseTargetStepId: undefined })
 									}}
 								>
-									<T>Remove</T>
-								</Button>
+									<Button
+										type="text"
+										size="small"
+										danger
+										icon={<DeleteOutlined />}
+										onClick={(e) => {
+											e.stopPropagation()
+										}}
+									/>
+								</Popconfirm>
 							}
 						>
 							<Row gutter={[16, 16]}>
@@ -273,6 +306,7 @@ const VacancyModal = ({ teamId, vacancyId, open, onOk, onCancel }: any) => {
 											style={{ width: '100%', height: 40 }}
 											placeholder={t('Select step')}
 											options={availableSteps}
+											loading={isLoadingWorkflow}
 										/>
 									</Form.Item>
 								</Col>
