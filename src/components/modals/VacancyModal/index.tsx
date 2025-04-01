@@ -19,7 +19,6 @@ import {
 	Spin,
 	InputNumber,
 	Card,
-	Popover,
 	Popconfirm,
 } from 'antd'
 import axios from 'axios'
@@ -69,6 +68,35 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 			enabled: !!projectId,
 		}
 	)
+
+	const { data: projectEquity } = useQuery(
+		['project-equity', projectId],
+		() => axios.get('/api/user/project/equity', { params: { projectId } }),
+		{
+			enabled: !!projectId,
+		}
+	)
+
+	const getMaxAvailableShare = () => {
+		if (!projectEquity?.data) return 0
+
+		const teamTotal = projectEquity.data.equityAllocations?.reduce(
+			(sum: number, share: any) =>
+				sum + share.percentage + share.promises.reduce((acc: number, promise: any) => acc + promise.percentage, 0),
+			0
+		)
+		const allocated =
+			projectEquity.data.platformShare +
+			projectEquity.data.mentorFundShare +
+			projectEquity.data.investmentReserve +
+			(teamTotal || 0)
+
+		const remainingPercentage = 100 - allocated
+
+		return Math.min(remainingPercentage, 97)
+	}
+
+	const maxAvailableShare = getMaxAvailableShare()
 
 	const { mutateAsync: createVacancy, isLoading: isCreating } = useMutation((data: Record<string, any>) =>
 		axios.post<any>('/api/user/project/vacancy', data)
@@ -287,15 +315,20 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 									>
 										<InputNumber
 											min={0}
-											max={100}
+											max={maxAvailableShare}
 											style={{ width: '100%', height: 40 }}
 											placeholder={t('Enter percentage')}
 										/>
 									</Form.Item>
+									{maxAvailableShare > 0 && (
+										<div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 4 }}>
+											{t('Maximum available equity')}: {maxAvailableShare}%
+										</div>
+									)}
 								</Col>
 								<Col span={12}>
 									<Form.Item
-										name="promiseTargetStepId"
+										name="promiseStepId"
 										label={t('Required workflow step')}
 										tooltip={t('Step that needs to be completed to receive the promised equity')}
 										wrapperCol={{ span: 24 }}
