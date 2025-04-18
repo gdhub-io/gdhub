@@ -4,6 +4,7 @@ import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
 import { useTelegram } from '@/helpers/useTelegram'
+import { ArrowLeftOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
@@ -41,12 +42,15 @@ interface ProtectedLayoutProps {
 	subTitle?: string
 	seo?: NextSeoProps
 	backgroundImage?: string
+	showBackButton?: boolean
+	projectName?: string
+	extra?: ReactNode
 }
 
 const { Header, Content } = Layout
 const { Title, Text } = Typography
 
-export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLayoutProps) => {
+export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton = false }: ProtectedLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage, changeLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -258,7 +262,6 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
-						{/* <Flex align="middle" justify="space-between"> */}
 						<Row wrap={false} align="middle">
 							<Col flex="auto">
 								<Flex align="center" justify="start" gap={8}>
@@ -320,14 +323,25 @@ export const ProtectedLayout = ({ title, subTitle, seo, children }: ProtectedLay
 								</Space>
 							</Col>
 						</Row>
-						{/* </Flex> */}
-						{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
 						<Menu items={menuItems} mode="horizontal" selectedKeys={[router.pathname]} className={styles.appMenu} />
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							{!!title && <Title>{title}</Title>}
-							{!!subTitle && <div>{subTitle}</div>} <br />
+							<Flex align="center" gap={16} style={{ marginBottom: 24 }}>
+								{showBackButton && (
+									<Button
+										type="text"
+										icon={<ArrowLeftOutlined />}
+										onClick={() => router.back()}
+										style={{ padding: 0 }}
+									/>
+								)}
+								{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+							</Flex>
+
+							{!!subTitle && !showBackButton && <div>{subTitle}</div>}
+							{!!subTitle && showBackButton && <div style={{ marginLeft: 52 }}>{subTitle}</div>}
+
 							{children}
 						</div>
 					</Content>

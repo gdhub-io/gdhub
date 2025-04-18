@@ -45,6 +45,24 @@ class ApiProjectReportHandler {
 	public async get(@Query(ValidationPipe) { id }: ParamIdDto) {
 		const report = await prisma.projectReport.findFirst({
 			where: { id },
+			include: {
+				project: {
+					select: {
+						id: true,
+						name: true,
+						slug: true,
+						coverImage: true,
+						description: true,
+					},
+				},
+				author: {
+					select: {
+						id: true,
+						name: true,
+						image: true,
+					},
+				},
+			},
 		})
 
 		return report
