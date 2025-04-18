@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { PageViews } from '@/components/PageViews'
 import { ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
@@ -49,6 +50,18 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 	const router = useRouter()
 	const [imageError, setImageError] = useState(false)
 	const [contentImageError, setContentImageError] = useState(false)
+
+	const cleanMarkdown = (text: string) => {
+		return text
+			.replace(/\*\*(.*?)\*\*/g, '$1') // Удаляем **
+			.replace(/\*(.*?)\*/g, '$1') // Удаляем *
+			.replace(/\[(.*?)\]\((.*?)\)/g, '$1') // Удаляем [text](url)
+			.replace(/!\[(.*?)\]\((.*?)\)/g, '') // Удаляем ![alt](url)
+			.replace(/#{1,6}\s/g, '') // Удаляем заголовки
+			.replace(/`(.*?)`/g, '$1') // Удаляем код
+			.replace(/```.*?\n([\s\S]*?)```/g, '$1') // Удаляем блоки кода
+			.trim()
+	}
 
 	const handleProjectClick = (e: React.MouseEvent) => {
 		e.stopPropagation()
@@ -131,16 +144,17 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 						)}
 					</div>
 					<div className={styles.textContent}>
-						<p className={styles.postExcerpt}>{truncateText(stripHtml(post.content), 300)}</p>
+						<p className={styles.postExcerpt}>{truncateText(cleanMarkdown(stripHtml(post.content)), 300)}</p>
 						<div className={styles.postMeta}>
 							<Link href={`/project/${post.project?.slug}`} onClick={(e) => e.stopPropagation()}>
 								{post.project?.name}
 							</Link>
-							<span>•</span>
+							<span role="separator">•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
 								{formatDate(post.publishedAt)}
 							</span>
+							<PageViews path={`/devlog/${post.id}`} />
 						</div>
 					</div>
 				</div>

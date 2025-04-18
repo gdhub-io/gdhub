@@ -1,8 +1,9 @@
+import { PageViews } from '@/components/PageViews'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { ClockCircleOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Card, Typography, Spin } from 'antd'
+import { Card, Typography, Spin, Space, Image as AntImage } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -65,59 +66,56 @@ const DevlogPostPage = () => {
 
 	const content = (
 		<div className={styles.container}>
-			{isLoading ? (
-				<Spin size="large" />
-			) : !post ? (
-				<Title level={2}>{t('Post not found')}</Title>
-			) : (
-				<Card className={styles.postCard}>
-					<div className={styles.postHeader}>
-						<div className={styles.authorInfo}>
-							{post.author?.image && (
+			<Card className={styles.postCard}>
+				{isLoading ? (
+					<Spin />
+				) : (
+					<>
+						<div className={styles.postHeader}>
+							<Title level={2}>{getPageTitle()}</Title>
+							<Space>
+								<ClockCircleOutlined />
+								<Text>{formatDate(post?.publishedAt)}</Text>
+								<PageViews />
+							</Space>
+						</div>
+						{post?.coverImage && (
+							<div className={styles.coverImage}>
 								<Image
-									src={post.author.image}
-									alt={post.author.name || 'Author'}
-									width={24}
-									height={24}
-									className={styles.authorAvatar}
+									src={post.coverImage}
+									alt={post.project?.name || ''}
+									fill
+									sizes="(max-width: 800px) 100vw, 800px"
+									priority
 								/>
-							)}
-							<span className={styles.authorName}>{post.author?.name}</span>
-						</div>
-						<div className={styles.postMeta}>
-							<span>
-								<ClockCircleOutlined style={{ marginRight: 4 }} />
-								{formatDate(post.publishedAt)}
-							</span>
-						</div>
-					</div>
-
-					<div className={styles.postContent}>
-						<ReactMarkdown
-							rehypePlugins={[rehypeRaw as any]}
-							components={{
-								img: (props) => (
-									<Image
-										src={props.src || ''}
-										alt={props.alt || ''}
-										width={800}
-										height={600}
-										style={{ maxWidth: '100%', height: 'auto' }}
-									/>
-								),
-							}}
-						>
-							{post.content}
-						</ReactMarkdown>
-
-						{!!post.video && (
-							<div className={styles.playerWrapper}>
-								<ReactPlayer url={post.video} light width="100%" height="100%" />
 							</div>
 						)}
-					</div>
-				</Card>
-			)}
+						<div className={styles.content}>
+							<ReactMarkdown
+								rehypePlugins={[rehypeRaw as any]}
+								components={{
+									img: (props) => (
+										<AntImage
+											src={props.src || ''}
+											alt={props.alt || ''}
+											width={props.width}
+											height={props.height}
+											preview
+										/>
+									),
+								}}
+							>
+								{post?.content || ''}
+							</ReactMarkdown>
+						</div>
+						{post?.video && (
+							<div className={styles.video}>
+								<ReactPlayer url={post.video} width="100%" height="100%" controls />
+							</div>
+						)}
+					</>
+				)}
+			</Card>
 		</div>
 	)
 

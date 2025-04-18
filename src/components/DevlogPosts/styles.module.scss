@@ -83,16 +83,36 @@
 
 .postMeta {
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   align-items: center;
-  gap: 8px;
   color: rgba(0, 0, 0, 0.45);
   font-size: 12px;
+  margin-top: 12px;
 
   a {
-    color: rgba(0, 0, 0, 0.85);
+    color: rgba(0, 0, 0, 0.45);
+    text-decoration: none;
 
     &:hover {
-      color: rgba(0, 0, 0, 1);
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .postMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    span[role="separator"] {
+      display: none;
     }
   }
 }
