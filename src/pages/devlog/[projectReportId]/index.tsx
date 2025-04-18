@@ -72,11 +72,31 @@ const DevlogPostPage = () => {
 				) : (
 					<>
 						<div className={styles.postHeader}>
-							<Title level={2}>{getPageTitle()}</Title>
-							<Space>
-								<ClockCircleOutlined />
-								<Text>{formatDate(post?.publishedAt)}</Text>
-								<PageViews />
+							<Space align="center">
+								{post?.author?.image && (
+									<Image
+										src={post.author.image}
+										alt={post.author.name || ''}
+										width={32}
+										height={32}
+										style={{ borderRadius: '50%' }}
+									/>
+								)}
+								<Title level={4}>{post?.author?.name || t('Unknown Author')}</Title>
+							</Space>
+							<Space size={8}>
+								<ClockCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
+								<Text type="secondary">{formatDate(post?.publishedAt)}</Text>
+								<Text
+									type="secondary"
+									style={{ fontSize: '10px', display: 'flex', alignItems: 'center', opacity: 0.3 }}
+								>
+									•
+								</Text>
+								<PageViews
+									textStyle={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.45)' }}
+									iconStyle={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.45)' }}
+								/>
 							</Space>
 						</div>
 						{post?.coverImage && (
