@@ -234,7 +234,6 @@ export const ProtectedProjectLayout = ({
 				`}</style>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
-						{/* <Flex align="middle" justify="space-between"> */}
 						<Row wrap={false} align="middle">
 							<Col flex="auto">
 								<Flex align="center" justify="start" gap={8}>
@@ -298,14 +297,24 @@ export const ProtectedProjectLayout = ({
 								</Space>
 							</Col>
 						</Row>
-						{/* </Flex> */}
-						{/* <Tabs defaultActiveKey="1" items={menuItems} onChange={() => {}} /> */}
-						<Menu
-							items={menuItems.filter((r) => !r.disabled)}
-							mode="horizontal"
-							selectedKeys={[router.asPath]}
-							className={styles.appMenu}
-						/>
+						<Flex align="center" justify="space-between" className={styles.menuContainer}>
+							<Menu
+								items={menuItems.filter((r) => !r.disabled)}
+								mode="horizontal"
+								selectedKeys={[router.asPath]}
+								className={styles.appMenu}
+							/>
+							<Link
+								href={`/project/${projectSlug}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								className={styles.publicPageLink}
+							>
+								<Button type="primary" danger>
+									{t('Public page', 'Public page')} <GoLinkExternal size={14} />
+								</Button>
+							</Link>
+						</Flex>
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
@@ -313,7 +322,6 @@ export const ProtectedProjectLayout = ({
 							{children}
 						</div>
 					</Content>
-					{/* <Footer></Footer> */}
 				</Layout>
 				{!screens.lg && (
 					<Drawer

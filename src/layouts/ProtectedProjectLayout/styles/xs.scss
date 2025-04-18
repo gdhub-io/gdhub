@@ -31,4 +31,25 @@
       }
 		}
 	}
+
+	.header {
+		:global {
+			.ant-flex {
+				flex-direction: column;
+				align-items: flex-start !important;
+				gap: 12px;
+			}
+
+			.ant-menu {
+				width: 100%;
+				margin-right: 0;
+				margin-bottom: 8px;
+			}
+
+			.ant-btn {
+				margin-left: 0;
+				width: 100%;
+			}
+		}
+	}
 }
