@@ -16,9 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 	try {
 		const { path } = req.query
-		const pathValue = (path as string).startsWith('http') 
-			? new URL(path as string).pathname 
-			: path as string
+		const pathValue = (path as string).startsWith('http') ? new URL(path as string).pathname : (path as string)
 
 		const [response] = await analyticsDataClient.runReport({
 			property: `properties/${process.env.GOOGLE_ANALYTICS_PROPERTY_ID}`,
