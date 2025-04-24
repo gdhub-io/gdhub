@@ -1,5 +1,5 @@
 import QueueCronLog from '@/decorators/QueueCronLog'
-import { NextAuthGuard } from '@/lib/api-middlewares'
+// import { NextAuthGuard } from '@/lib/api-middlewares'
 import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
@@ -9,7 +9,7 @@ import { createHandler, Get } from 'next-api-decorators'
 const reminderMonth = 3
 const diffBetweenLogsInMonths = 1
 
-@NextAuthGuard('vercel_cron')
+// @NextAuthGuard('vercel_cron')
 class CronDevlogReminderHandler {
 	@Get()
 	@QueueCronLog('devlog-reminder')
