@@ -4,14 +4,14 @@ import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import dayjs from 'dayjs'
-import { createHandler, Post } from 'next-api-decorators'
+import { createHandler, Get } from 'next-api-decorators'
 
 const reminderMonth = 3
 const diffBetweenLogsInMonths = 1
 
 @NextAuthGuard('vercel_cron')
 class CronDevlogReminderHandler {
-	@Post()
+	@Get()
 	@QueueCronLog('devlog-reminder')
 	public async handler() {
 		const projects = await prisma.project.findMany({
