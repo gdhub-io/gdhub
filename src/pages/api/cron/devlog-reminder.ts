@@ -1,4 +1,5 @@
 import QueueCronLog from '@/decorators/QueueCronLog'
+import { NextAuthGuard } from '@/lib/api-middlewares'
 import { NovuService } from '@/services/novu'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
@@ -7,6 +8,7 @@ import { createHandler, Post } from 'next-api-decorators'
 
 const reminderMonth = 1
 
+@NextAuthGuard('vercel_cron')
 class CronDevlogReminderHandler {
 	@Post()
 	@QueueCronLog('devlog-reminder')
@@ -70,7 +72,7 @@ class CronDevlogReminderHandler {
 		})
 
 		if (projects.length === 0) {
-			return { status: 'success', message: 'No projects found' }
+			return
 		}
 
 		console.log(`found ${projects.length} projects without new reports in the last ${reminderMonth} months`)
