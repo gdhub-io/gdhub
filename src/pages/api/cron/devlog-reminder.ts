@@ -9,7 +9,7 @@ import { createHandler, Post } from 'next-api-decorators'
 const reminderMonth = 3
 const diffBetweenLogsInMonths = 1
 
-// @NextAuthGuard('vercel_cron')
+@NextAuthGuard('vercel_cron')
 class CronDevlogReminderHandler {
 	@Post()
 	@QueueCronLog('devlog-reminder')
