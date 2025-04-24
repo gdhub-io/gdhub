@@ -6,9 +6,10 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import dayjs from 'dayjs'
 import { createHandler, Post } from 'next-api-decorators'
 
-const reminderMonth = 1
+const reminderMonth = 3
+const diffBetweenLogsInMonths = 1
 
-@NextAuthGuard('vercel_cron')
+// @NextAuthGuard('vercel_cron')
 class CronDevlogReminderHandler {
 	@Post()
 	@QueueCronLog('devlog-reminder')
@@ -24,28 +25,21 @@ class CronDevlogReminderHandler {
 					profile: { isActive: true },
 				},
 				OR: [
-					// no reports
+					// no reports at all
 					{
 						reports: {
 							none: {},
 						},
 					},
-					// has not any reports in the last 3 months
+					// has reports but the latest one is older than reminderMonth
 					{
-						AND: [
-							{
-								reports: {
-									some: {},
+						reports: {
+							none: {
+								publishedAt: {
+									gte: dayjs().subtract(reminderMonth, 'month').startOf('day').toDate(),
 								},
 							},
-							{
-								reports: {
-									none: {
-										publishedAt: { gte: dayjs().subtract(reminderMonth, 'month').startOf('day').toDate() },
-									},
-								},
-							},
-						],
+						},
 					},
 				],
 			},
@@ -66,7 +60,6 @@ class CronDevlogReminderHandler {
 					orderBy: {
 						publishedAt: 'desc',
 					},
-					take: 1,
 				},
 			},
 		})
@@ -75,9 +68,43 @@ class CronDevlogReminderHandler {
 			return
 		}
 
-		console.log(`found ${projects.length} projects without new reports in the last ${reminderMonth} months`)
+		// Get logs from the last month to check which projects already received notifications
+		const lastLogs = await prisma.queueJobLog.findMany({
+			where: {
+				name: 'devlog-reminder',
+				OR: projects.map((project) => ({
+					data: {
+						path: ['projectIds'],
+						array_contains: [project.id],
+					},
+				})),
+				createdAt: {
+					gte: dayjs().subtract(diffBetweenLogsInMonths, 'month').startOf('day').toDate(),
+					lt: dayjs().endOf('day').toDate(),
+				},
+			},
+			select: {
+				data: true,
+			},
+		})
 
-		for (const project of projects) {
+		// Extract projectIds from today's logs
+		const alreadyNotifiedProjectIds = new Set(
+			lastLogs.map((log) => (log.data as { projectIds?: string[] })?.projectIds || []).flat()
+		)
+
+		console.log(
+			`Found ${projects.length} projects without new reports in the last ${reminderMonth} months (skipped ${alreadyNotifiedProjectIds.size})`
+		)
+
+		// If all projects have already been notified, skip the rest of the function
+		if (alreadyNotifiedProjectIds.size === projects.length) {
+			return
+		}
+
+		const needToNotifyProjects = []
+
+		for (const project of projects.filter((project) => !alreadyNotifiedProjectIds.has(project.id))) {
 			await NovuService.send({
 				template: 'share-project-news',
 				to: { subscriberId: project.authorId, email: project.author.email || undefined },
@@ -87,7 +114,12 @@ class CronDevlogReminderHandler {
 					addDevlogPostUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${project.slug}`,
 				},
 			})
+
+			needToNotifyProjects.push(project.id)
 		}
+
+		// Return projectIds to be saved in the log by the decorator
+		return { projectIds: needToNotifyProjects }
 	}
 }
 

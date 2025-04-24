@@ -15,6 +15,7 @@ function QueueCronLog(jobName: string) {
 						name: jobName,
 						status: prismaClient.QueueJobStatus.Completed,
 						type: prismaClient.QueueJobType.Cron,
+						data: result || null,
 					},
 				})
 
@@ -29,7 +30,7 @@ function QueueCronLog(jobName: string) {
 					},
 				})
 
-				return null
+				return
 			}
 		}
 	}
