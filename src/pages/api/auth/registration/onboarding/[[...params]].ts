@@ -19,43 +19,47 @@ class ApiRegistrationHandler {
 
 	@Put('/profile')
 	public async saveOnboardingProfile(@Req() req: NextApiRequestWithUser, @Body() body: Record<string, any>) {
-		const locale = getServerLocale(req)
-		const { name, yearOfBirth, country, city, confirmUserData, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
-			body
+		try {
+			const locale = getServerLocale(req)
+			const { name, yearOfBirth, country, city, confirmUserData, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
+				body
 
-		const user = await prisma.user.findUnique({ where: { id: req.user.id }, include: { profile: true } })
+			const user = await prisma.user.findUnique({ where: { id: req.user.id }, include: { profile: true } })
 
-		if (!user) throw new BadRequestException('The user is not exist')
+			if (!user) throw new BadRequestException('The user is not exist')
 
-		const agreements: any = user?.agreements || {}
+			const agreements: any = user?.agreements || {}
 
-		agreements.confirmUserData = confirmUserData
-		if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
-		if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
+			agreements.confirmUserData = confirmUserData
+			if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
+			if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
 
-		if (user?.profile) {
-			await prisma.profile.update({
-				where: { userId: req.user.id },
-				data: {
-					name,
-					city,
-					yearOfBirth,
-					country,
-					user: { update: { agreements, lang: locale } },
-				},
-			})
-		} else {
-			await prisma.profile.create({
-				data: {
-					name,
-					city,
-					yearOfBirth,
-					country,
-					user: { connect: { id: user.id } },
-				},
-			})
+			if (user?.profile) {
+				await prisma.profile.update({
+					where: { userId: req.user.id },
+					data: {
+						name,
+						city,
+						yearOfBirth,
+						country,
+						user: { update: { agreements, lang: locale } },
+					},
+				})
+			} else {
+				await prisma.profile.create({
+					data: {
+						name,
+						city,
+						yearOfBirth,
+						country,
+						user: { connect: { id: user.id } },
+					},
+				})
+			}
 
 			await prisma.user.update({ where: { id: user.id }, data: { agreements } })
+		} catch (error) {
+			console.error('saveOnboardingProfile: error', error)
 		}
 	}
 
