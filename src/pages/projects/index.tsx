@@ -1,27 +1,23 @@
+import GameCardList from '@/components/GameCard/GameCardList'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { getWorkedProjects } from '@/services/prisma/queries'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Card, Col, Descriptions, Grid, Row, Typography } from 'antd'
+import { Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
-const { Title, Paragraph } = Typography
+const { Paragraph } = Typography
 
 type ProjectIncludeAll = prismaClient.Project & {
 	author: prismaClient.User
-	currentStep: prismaClient.ProjectWorkflowStep & { workflow: prismaClient.ProjectWorkflow }
+	workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
 }
 type ProjectsPageParams = { projects: ProjectIncludeAll[] }
 
 const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 	const { t } = useTolgee()
-	const screens = Grid.useBreakpoint()
-	const { data: session } = useSession()
 
 	return (
 		<PublicLayout
@@ -30,56 +26,8 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 			seo={{ description: t('Indie games that are developed by platform users') }}
 		>
 			<div className={styles.container}>
-				<Row
-					gutter={[
-						{ md: 24, xs: 24 },
-						{ md: 24, xs: 24 },
-					]}
-				>
-					{!projects.length && <Paragraph type="secondary">There are no projects available to view</Paragraph>}
-					{projects?.map((project: ProjectIncludeAll, idx: number) => (
-						<Col key={idx} xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }} xl={{ span: 6 }}>
-							<Card
-								className={styles.card}
-								cover={
-									project.coverImage ? (
-										<Link href={`/project/${project.slug}`} title={project.name}>
-											<Image title={project.name + ' cover'} alt="cover" src={project.coverImage} fill />
-										</Link>
-									) : null
-								}
-							>
-								<Card.Meta
-									description={
-										<div className={styles.projectDescriptions}>
-											<Descriptions
-												title={
-													<>
-														<Title level={2} style={{ fontSize: 16 }}>
-															{project.name}
-														</Title>
-													</>
-												}
-												layout={screens.md ? 'horizontal' : 'vertical'}
-												column={1}
-											>
-												<Descriptions.Item label={t('Author')}>{project.author.name} </Descriptions.Item>
-												<Descriptions.Item label={t('Genre')}>{project.genre}</Descriptions.Item>
-												<Descriptions.Item label={t('Setting')}>{project.setting}</Descriptions.Item>
-												<Descriptions.Item label={t('Platform')}>{project.platform}</Descriptions.Item>
-											</Descriptions>
-											<Link href={`/project/${project.slug}`} title={project.name}>
-												<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
-													<T>Go to project page</T>
-												</Button>
-											</Link>
-										</div>
-									}
-								/>
-							</Card>
-						</Col>
-					))}
-				</Row>
+				{!projects.length && <Paragraph type="secondary">There are no projects available to view</Paragraph>}
+				<GameCardList games={projects} loading={false} />
 			</div>
 		</PublicLayout>
 	)
@@ -98,6 +46,25 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 				finishedAt: p.finishedAt?.toISOString() || null,
 				lastPostAt: p.lastPostAt?.toISOString() || null,
 				firstPostAt: p.firstPostAt?.toISOString() || null,
+				author: {
+					...p.author,
+					createdAt: p.author.createdAt?.toISOString() || null,
+					updatedAt: p.author.updatedAt?.toISOString() || null,
+				},
+				workflow: p.workflow
+					? {
+							...p.workflow,
+							createdAt: p.workflow.createdAt?.toISOString() || null,
+							updatedAt: p.workflow.updatedAt?.toISOString() || null,
+							currentStep: p.workflow.currentStep,
+							steps:
+								p.workflow.steps?.map((step: prismaClient.ProjectWorkflowStep) => ({
+									...step,
+									createdAt: step.createdAt?.toISOString() || null,
+									updatedAt: step.updatedAt?.toISOString() || null,
+								})) || [],
+						}
+					: null,
 			})),
 		},
 		revalidate: 60,
