@@ -54,6 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						name: report.project.name,
 						slug: report.project.slug,
 						description: report.project.description,
+						coverImage: report.project.coverImage,
 					}
 				: undefined,
 		}

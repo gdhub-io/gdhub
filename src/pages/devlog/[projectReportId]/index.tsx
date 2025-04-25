@@ -1,18 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { PageViews } from '@/components/PageViews'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined } from '@ant-design/icons'
-import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Button, Card, Flex, Image as AntImage, Spin, Typography } from 'antd'
+import { Button, Card, Flex, Image as AntImage, Typography } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
-import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import styles from './styles.module.scss'
 
@@ -57,12 +56,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 		const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 		const { data: post } = await axios.get(`${baseUrl}/api/devlog/${projectReportId}`)
 
-		console.log('Post data:', {
-			coverImage: post.coverImage,
-			projectCoverImage: post.project?.coverImage,
-			contentLength: post.content?.length,
-		})
-
 		// Обрезаем контент для неавторизованных пользователей
 		if (!session) {
 			const truncatedContent = post.content.length > 500 ? post.content.slice(0, 500) + '...' : post.content
@@ -71,14 +64,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 
 		// Определяем pageCover из контента
 		const markdownImages = post.content.match(/!\[.*?\]\((.*?)\)/g) || []
-		const htmlImages = post.content.match(/<img[^>]+src="([^">]+)"/g) || []
+		const htmlImages = post.content.match(/<img[^>]+src="([^">]+)"[^>]*>/g) || []
 		const allImages = [...markdownImages, ...htmlImages]
-
-		console.log('Found images:', {
-			markdownImages,
-			htmlImages,
-			allImages,
-		})
 
 		const firstImageFromContent =
 			allImages.length > 0
@@ -97,14 +84,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 						.filter(Boolean)[0]
 				: null
 
-		console.log('Image extraction:', {
-			firstImageFromContent,
-			projectCoverImage: post.project?.image,
-		})
-
-		post.pageCover = firstImageFromContent || post.project?.image
-
-		console.log('Final pageCover:', post.pageCover)
+		// Убедимся, что pageCover всегда строка или null
+		post.pageCover = firstImageFromContent || post.project?.coverImage || null
 
 		return {
 			props: {
@@ -120,23 +101,43 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 	}
 }
 
-const MarkdownImage = ({ src, alt }: { src: string; alt: string }) => {
+const MarkdownImage = ({
+	src,
+	alt,
+	width,
+	height,
+	isInline,
+}: {
+	src: string
+	alt: string
+	width?: string
+	height?: string
+	isInline?: boolean
+}) => {
 	const [isClient, setIsClient] = useState(false)
 
 	useEffect(() => {
 		setIsClient(true)
 	}, [])
 
+	const containerStyle = {
+		display: isInline ? 'inline-block' : 'block',
+		margin: isInline ? '0 8px' : '16px 0',
+		verticalAlign: 'middle',
+	}
+
 	if (!isClient) {
 		return (
-			<span style={{ display: 'block', margin: '16px 0' }}>
+			<span style={containerStyle}>
 				<img
 					src={src}
 					alt={alt}
+					width={width}
 					style={{
 						maxWidth: '100%',
 						height: 'auto',
 						borderRadius: '8px',
+						verticalAlign: 'middle',
 					}}
 				/>
 			</span>
@@ -144,19 +145,44 @@ const MarkdownImage = ({ src, alt }: { src: string; alt: string }) => {
 	}
 
 	return (
-		<span style={{ display: 'block', margin: '16px 0' }}>
+		<span style={containerStyle} className={styles.imagePreview}>
 			<AntImage
 				src={src}
 				alt={alt}
-				preview={true}
+				width={width}
+				preview={{
+					rootClassName: styles.imagePreview,
+				}}
 				style={{
 					maxWidth: '100%',
 					height: 'auto',
 					borderRadius: '8px',
+					verticalAlign: 'middle',
 				}}
 			/>
 		</span>
 	)
+}
+
+const getCleanTextContent = (content: string) => {
+	// Удаляем markdown изображения
+	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, '')
+	// Удаляем HTML изображения
+	const withoutHtmlImages = withoutMarkdownImages.replace(/<img[^>]*>/g, '')
+	// Удаляем все HTML теги
+	const withoutHtml = withoutHtmlImages.replace(/<[^>]*>/g, '')
+	// Удаляем markdown синтаксис
+	const withoutMarkdown = withoutHtml
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1') // ссылки [text](url) -> text
+		.replace(/[*_~`]+/g, '') // жирный, курсив, зачеркнутый текст и код
+		.replace(/#{1,6}\s/g, '') // заголовки
+		.replace(/^\s*[-+*]\s/gm, '') // списки
+		.replace(/^\s*\d+\.\s/gm, '') // нумерованные списки
+		.replace(/\n\s*>\s*/g, ' ') // цитаты
+		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, ' ') // таблицы
+	// Удаляем лишние пробелы и переносы строк
+	const cleanText = withoutMarkdown.replace(/\s+/g, ' ').trim()
+	return cleanText.slice(0, 200)
 }
 
 export default function ProjectReport({ post, isAuthenticated }: PageProps) {
@@ -196,6 +222,7 @@ export default function ProjectReport({ post, isAuthenticated }: PageProps) {
 			<Button
 				icon={<ArrowLeftOutlined />}
 				type="text"
+				className={styles.backButton}
 				style={{
 					color: 'rgba(255, 255, 255, 0.65)',
 					transition: 'color 0.3s',
@@ -210,14 +237,6 @@ export default function ProjectReport({ post, isAuthenticated }: PageProps) {
 
 	return (
 		<>
-			<Head>
-				{post.pageCover && (
-					<>
-						<meta property="og:image" content={post.pageCover} />
-						<meta property="twitter:image" content={post.pageCover} />
-					</>
-				)}
-			</Head>
 			<PublicLayout
 				title={t('page.devlog.title', 'Project report by {projectName}', {
 					projectName: post?.project?.name || 'Untitled',
@@ -225,6 +244,18 @@ export default function ProjectReport({ post, isAuthenticated }: PageProps) {
 				subTitle={post?.project?.description || undefined}
 				extra={headerExtra}
 				backgroundImage={post.pageCover || undefined}
+				seo={{
+					title: post?.project?.name || 'Untitled',
+					description: getCleanTextContent(post?.content || ''),
+					openGraph: {
+						images: [
+							{
+								url: post.pageCover || '',
+								alt: post?.project?.name || 'Untitled',
+							},
+						],
+					},
+				}}
 			>
 				<div className={styles.container}>
 					<Card>
@@ -254,9 +285,38 @@ export default function ProjectReport({ post, isAuthenticated }: PageProps) {
 
 						<div className={styles.content} style={{ position: 'relative' }}>
 							<ReactMarkdown
-								rehypePlugins={[rehypeSanitize]}
+								rehypePlugins={[
+									[rehypeRaw as any],
+									[
+										rehypeSanitize as any,
+										{
+											tagNames: ['img', 'u', 'strong', 'em', 'a', 'p', 'br', 'div', 'span'],
+											attributes: {
+												img: ['src', 'alt', 'width', 'height', 'style'],
+												a: ['href', 'target', 'rel'],
+												'*': ['style', 'className'],
+											},
+										},
+									],
+								]}
 								components={{
-									img: ({ node, ...props }) => <MarkdownImage src={props.src || ''} alt={props.alt || ''} />,
+									img: ({ node, ...props }) => {
+										// Проверяем, есть ли пробелы до и после тега img
+										const isInline =
+											(node?.position?.start?.column ?? 0) > 1 &&
+											post?.content?.charAt(node?.position?.start?.offset ?? 0 - 1) !== '\n' &&
+											post?.content?.charAt(node?.position?.end?.offset ?? 0) !== '\n'
+
+										return (
+											<MarkdownImage
+												src={props.src || ''}
+												alt={props.alt || ''}
+												width={props.width as string}
+												height={props.height as string}
+												isInline={isInline}
+											/>
+										)
+									},
 									p: ({ node, ...props }) => (
 										<p
 											{...props}

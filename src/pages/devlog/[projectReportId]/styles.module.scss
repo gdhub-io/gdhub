@@ -2,13 +2,30 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 0 24px;
+
+  @media (max-width: 576px) {
+    padding: 0 12px;
+  }
 }
 
-// Стили для выравнивания подзаголовка по заголовку
-:global {
-  .ant-layout-content {
-    .content {
-      // Добавляем отступ слева для подзаголовка, если есть кнопка назад
+.pageHeader {
+  :global(.ant-page-header) {
+    @media (max-width: 576px) {
+      :global(.ant-page-header-back) {
+        position: relative;
+        display: block;
+        margin-bottom: 16px;
+      }
+
+      :global(.ant-page-header-heading) {
+        flex-direction: column;
+        align-items: flex-start;
+        
+        :global(.ant-page-header-heading-left) {
+          margin: 0;
+          margin-bottom: 8px;
+        }
+      }
     }
   }
 }
@@ -65,13 +82,21 @@
   font-size: 16px;
   line-height: 1.6;
   color: rgba(0, 0, 0, 0.85);
+  overflow: hidden;
 
   :global {
+    .ant-image {
+      max-width: 100%;
+      display: block;
+      margin: 16px 0;
+    }
+
     img {
       max-width: 100%;
       height: auto;
       border-radius: 8px;
-      margin: 16px 0;
+      display: block;
+      object-fit: contain;
     }
 
     p {
@@ -193,4 +218,92 @@
   border-radius: 8px;
   overflow: hidden;
   aspect-ratio: 16/9;
+}
+
+.defaultCover {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.defaultCoverContent {
+  text-align: center;
+  color: white;
+}
+
+.defaultCoverInitials {
+  font-size: 48px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.imagePreview {
+  :global {
+    .ant-image {
+      display: inline-block;
+      position: relative;
+      line-height: 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .ant-image-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .ant-image-mask {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: transparent !important;
+      cursor: zoom-in !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      z-index: 1 !important;
+
+      .anticon {
+        font-size: 24px;
+        color: #fff;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1) !important;
+
+        .anticon {
+          opacity: 1;
+        }
+      }
+    }
+
+    .ant-image-preview-img {
+      border-radius: 8px;
+    }
+
+    .ant-image-preview-operations {
+      border-radius: 8px;
+    }
+  }
+}
+
+.backButton {
+  @media (max-width: 576px) {
+    display: none;
+  }
 } 
