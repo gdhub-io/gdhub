@@ -188,7 +188,7 @@ export default function ProjectReport() {
 							</Flex>
 						</Flex>
 
-						<div className={styles.content}>
+						<div className={styles.content} style={{ position: 'relative' }}>
 							<ReactMarkdown
 								rehypePlugins={[rehypeSanitize]}
 								components={{
@@ -235,26 +235,43 @@ export default function ProjectReport() {
 							>
 								{(session ? post?.content : contentWithLimitedImages) || ''}
 							</ReactMarkdown>
-							{true && (
-								<Card
+							{!session && (
+								<div
 									style={{
-										marginTop: 24,
-										background: 'rgba(0, 0, 0, 0.02)',
-										border: '1px solid rgba(0, 0, 0, 0.06)',
+										position: 'absolute',
+										bottom: 0,
+										left: 0,
+										right: 0,
+										height: '300px',
+										background:
+											'linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 1) 100%)',
+										pointerEvents: 'none',
 									}}
 								>
-									<Flex align="center" justify="space-between">
-										<Flex align="center" gap={8}>
-											<LockOutlined />
-											<Text type="secondary">
-												{t('page.devlog.contentLocked', 'Full text is available to authorized users')}
-											</Text>
+									<Card
+										style={{
+											position: 'absolute',
+											bottom: 0,
+											left: 0,
+											right: 0,
+											background: 'transparent',
+											border: 'none',
+											pointerEvents: 'auto',
+										}}
+									>
+										<Flex align="center" justify="space-between">
+											<Flex align="center" gap={8}>
+												<LockOutlined style={{ fontSize: '18px' }} />
+												<Text strong style={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.85)' }}>
+													{t('page.devlog.contentLocked', 'Full text is available to authorized users')}
+												</Text>
+											</Flex>
+											<Link href="/signin">
+												<Button type="primary">{t('page.devlog.signIn', 'Sign in')}</Button>
+											</Link>
 										</Flex>
-										<Link href="/signin">
-											<Button type="primary">{t('page.devlog.signIn', 'Sign in')}</Button>
-										</Link>
-									</Flex>
-								</Card>
+									</Card>
+								</div>
 							)}
 						</div>
 					</Card>
