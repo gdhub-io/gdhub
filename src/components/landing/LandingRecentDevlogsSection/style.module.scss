@@ -4,6 +4,7 @@
   position: relative;
   background-color: #0b0b0d;
   padding: 96px 165px;
+  color: #fff;
 }
 
 .container {
@@ -11,30 +12,36 @@
   margin: 0 auto;
   text-align: center;
 
-  .preTitle {
-    color: #FFBB55;
-    font-size: 16px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
   h2 {
     font-size: 48px;
     font-weight: 700;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     color: #fff;
-  }
-
-  .description {
-    font-size: 18px;
-    max-width: 800px;
-    margin: 0 auto 48px;
-    color: rgba(255, 255, 255, 0.85);
   }
 }
 
+.preTitle {
+  font-size: 16px;
+  color: #FFBB55;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.description {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 40px;
+  max-width: 800px;
+  line-height: 1.6;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .devlogsContainer {
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 
 .devlogCard {
@@ -48,8 +55,7 @@
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    border-color: rgba(241, 85, 65, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   }
 
   .cardHeader {
@@ -82,8 +88,73 @@
   }
 }
 
+.cardImage {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  
+  .image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.defaultCover {
+  width: 100%;
+  height: 200px;
+  background-color: #0f0f0f;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.defaultCoverContent {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.defaultCoverInitials {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.cardHeader {
+  margin-bottom: 16px;
+}
+
+.projectInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardContent {
+  margin-bottom: 16px;
+}
+
+.cardFooter {
+  margin-top: auto;
+}
+
 .actionContainer {
-  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
 
   .actionButton {
     min-width: 200px;

@@ -5,6 +5,8 @@ export interface DevlogPost {
 	authorId: string
 	projectId: string
 	video?: string
+	pageCover?: string
+	createdAt: string
 	author?: {
 		name: string
 		image?: string
@@ -13,5 +15,6 @@ export interface DevlogPost {
 		name: string
 		slug: string
 		description?: string
+		coverImage?: string
 	}
 }
