@@ -1,19 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from 'react'
 import { PageViews } from '@/components/PageViews'
+import { getCleanTextContent, getPageCover } from '@/helpers/content'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined } from '@ant-design/icons'
 import { useTolgee } from '@tolgee/react'
 import { Button, Card, Flex, Image as AntImage, Typography } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { getSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import styles from './styles.module.scss'
+
+const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 
 const { Text } = Typography
 
@@ -24,6 +27,7 @@ interface Post {
 	coverImage?: string
 	createdAt: string
 	viewsCount: number
+	video?: string
 	author: {
 		name: string
 		image?: string
@@ -64,30 +68,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 			post.content = truncatedContent
 		}
 
-		// Определяем pageCover из контента
-		const markdownImages = post.content.match(/!\[.*?\]\((.*?)\)/g) || []
-		const htmlImages = post.content.match(/<img[^>]+src="([^">]+)"[^>]*>/g) || []
-		const allImages = [...markdownImages, ...htmlImages]
-
-		const firstImageFromContent =
-			allImages.length > 0
-				? allImages
-						.map((match: string) => {
-							// Пробуем найти URL в markdown формате
-							const markdownMatch = match.match(/\((.*?)\)/)
-							if (markdownMatch) return markdownMatch[1]
-
-							// Пробуем найти URL в HTML формате
-							const htmlMatch = match.match(/src="([^">]+)"/)
-							if (htmlMatch) return htmlMatch[1]
-
-							return null
-						})
-						.filter(Boolean)[0]
-				: null
-
-		// Убедимся, что pageCover всегда строка или null
-		post.pageCover = firstImageFromContent || post.project?.coverImage || null
+		// Определяем pageCover
+		post.pageCover = getPageCover(post)
 
 		return {
 			props: {
@@ -167,49 +149,8 @@ const MarkdownImage = ({
 	)
 }
 
-const getCleanTextContent = (content: string) => {
-	// Удаляем markdown изображения
-	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, '')
-	// Удаляем HTML изображения
-	const withoutHtmlImages = withoutMarkdownImages.replace(/<img[^>]*>/g, '')
-	// Удаляем все HTML теги
-	const withoutHtml = withoutHtmlImages.replace(/<[^>]*>/g, '')
-	// Удаляем markdown синтаксис
-	const withoutMarkdown = withoutHtml
-		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1') // ссылки [text](url) -> text
-		.replace(/[*_~`]+/g, '') // жирный, курсив, зачеркнутый текст и код
-		.replace(/#{1,6}\s/g, '') // заголовки
-		.replace(/^\s*[-+*]\s/gm, '') // списки
-		.replace(/^\s*\d+\.\s/gm, '') // нумерованные списки
-		.replace(/\n\s*>\s*/g, ' ') // цитаты
-		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, ' ') // таблицы
-	// Удаляем лишние пробелы и переносы строк
-	const cleanText = withoutMarkdown.replace(/\s+/g, ' ').trim()
-	return cleanText.slice(0, 200)
-}
-
 export default function ProjectReport({ post, contentLength, isAuthenticated }: PageProps) {
-	const router = useRouter()
-	const { projectReportId } = router.query
 	const { t } = useTolgee()
-
-	const getInitials = (title: string) => {
-		if (!title) return ''
-		return title
-			.split(' ')
-			.map((word) => word[0])
-			.join('')
-			.toUpperCase()
-			.slice(0, 2)
-	}
-
-	const DefaultCover = () => (
-		<div className={styles.defaultCover}>
-			<div className={styles.defaultCoverContent}>
-				<div className={styles.defaultCoverInitials}>{getInitials(post?.project?.name || '')}</div>
-			</div>
-		</div>
-	)
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString)
@@ -244,7 +185,7 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 				title={t('page.devlog.title', 'Project report by {projectName}', {
 					projectName: post?.project?.name || 'Untitled',
 				})}
-				subTitle={post?.project?.description || undefined}
+				subTitle={getCleanTextContent(post?.project?.description || '', 100) || undefined}
 				extra={headerExtra}
 				backgroundImage={post.pageCover || undefined}
 				seo={{
@@ -287,6 +228,11 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 						</Flex>
 
 						<div className={styles.content} style={{ position: 'relative' }}>
+							{post.video && (
+								<div className={styles.video}>
+									<ReactPlayer url={post.video} width="100%" height="100%" controls />
+								</div>
+							)}
 							<ReactMarkdown
 								rehypePlugins={[
 									[rehypeRaw as any],

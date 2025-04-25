@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { PageViews } from '@/components/PageViews'
+import { getPageCover } from '@/helpers/content'
 import { ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
@@ -26,15 +27,6 @@ interface DevlogPost {
 	}
 }
 
-interface PostsResponse {
-	data: DevlogPost[]
-	meta: {
-		total: number
-		page: number
-		limit: number
-	}
-}
-
 interface DevlogPostsProps {
 	projectId?: string
 }
@@ -53,17 +45,16 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 	const { t } = useTolgee()
 	const router = useRouter()
 	const [imageError, setImageError] = useState(false)
-	const [contentImageError, setContentImageError] = useState(false)
 
 	const cleanMarkdown = (text: string) => {
 		return text
-			.replace(/\*\*(.*?)\*\*/g, '$1') // Удаляем **
-			.replace(/\*(.*?)\*/g, '$1') // Удаляем *
-			.replace(/\[(.*?)\]\((.*?)\)/g, '$1') // Удаляем [text](url)
-			.replace(/!\[(.*?)\]\((.*?)\)/g, '') // Удаляем ![alt](url)
-			.replace(/#{1,6}\s/g, '') // Удаляем заголовки
-			.replace(/`(.*?)`/g, '$1') // Удаляем код
-			.replace(/```.*?\n([\s\S]*?)```/g, '$1') // Удаляем блоки кода
+			.replace(/\*\*(.*?)\*\*/g, '$1')
+			.replace(/\*(.*?)\*/g, '$1')
+			.replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+			.replace(/!\[(.*?)\]\((.*?)\)/g, '')
+			.replace(/#{1,6}\s/g, '')
+			.replace(/`(.*?)`/g, '$1')
+			.replace(/```.*?\n([\s\S]*?)```/g, '$1')
 			.trim()
 	}
 
@@ -98,53 +89,32 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 		}
 	}
 
-	const getImageFromContent = (content: string) => {
-		const imgMatch = content.match(/!\[.*?\]\((.*?)\)/) || content.match(/<img[^>]+src="([^">]+)"/)
-		return imgMatch ? imgMatch[1] : null
-	}
-
 	const stripHtml = (html: string) => {
 		return html.replace(/<[^>]*>/g, '')
 	}
+
+	const pageCover = getPageCover({
+		content: post.content,
+		video: post.video,
+		project: post.project,
+	})
 
 	return (
 		<Link href={`/devlog/${post.id}`}>
 			<div className={styles.postCard} onClick={onClick}>
 				<div className={styles.postContent}>
 					<div className={styles.postImage}>
-						{!imageError && post.coverImage ? (
+						{!imageError && pageCover ? (
 							<Image
-								src={post.coverImage}
+								src={pageCover}
 								alt={post.project?.name || ''}
 								width={240}
 								height={240}
 								unoptimized
 								onError={() => setImageError(true)}
 							/>
-						) : !contentImageError && getImageFromContent(post.content) ? (
-							<Image
-								src={getImageFromContent(post.content)!}
-								alt={post.project?.name || ''}
-								width={240}
-								height={240}
-								unoptimized
-								onError={() => setContentImageError(true)}
-							/>
-						) : !contentImageError && post.project?.coverImage ? (
-							<Image
-								src={post.project.coverImage}
-								alt={post.project.name}
-								width={240}
-								height={240}
-								unoptimized
-								onError={() => setContentImageError(true)}
-							/>
 						) : (
-							<div className={styles.defaultCover}>
-								<div className={styles.defaultCoverContent}>
-									<div className={styles.defaultCoverInitials}>{getInitials(post.project?.name || '')}</div>
-								</div>
-							</div>
+							<DefaultCover title={post.project?.name || ''} />
 						)}
 					</div>
 					<div className={styles.textContent}>
@@ -195,8 +165,10 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
 		queryKey: ['devlog-posts', projectId],
 		queryFn: async ({ pageParam = 1 }) => {
-			const url = `/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ''}`
-			const response = await axios.get<DevlogPost[]>(url)
+			const response = await axios.get<DevlogPost[]>(
+				`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ''}`
+			)
+
 			console.log('API Response:', response.data)
 
 			// Если это первая страница, возвращаем только первые 5 постов

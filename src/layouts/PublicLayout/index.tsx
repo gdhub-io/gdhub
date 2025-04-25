@@ -317,7 +317,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, 
 								{extra}
 								{!!title && <Title className={styles.title}>{title}</Title>}
 							</Flex>
-							{!!subTitle && <Text type="secondary">{subTitle}</Text>}
+							{!!subTitle && <div className={styles.subTitle}>{subTitle}</div>}
 						</div>
 					</Header>
 					<Content>

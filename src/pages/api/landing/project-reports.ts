@@ -28,6 +28,7 @@ class ApiDevlogsRecentHandler {
 						name: true,
 						slug: true,
 						description: true,
+						coverImage: true,
 					},
 				},
 			},

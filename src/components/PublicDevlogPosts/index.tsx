@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { PageViews } from '@/components/PageViews'
+import { getPageCover } from '@/helpers/content'
 import { ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
@@ -41,10 +42,8 @@ const DefaultCover = ({ title }: { title: string }) => {
 }
 
 const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => void }> = ({ post, onClick }) => {
-	const { t } = useTolgee()
 	const router = useRouter()
 	const [imageError, setImageError] = useState(false)
-	const [contentImageError, setContentImageError] = useState(false)
 
 	const cleanMarkdown = (text: string) => {
 		return text
@@ -58,25 +57,10 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 			.trim()
 	}
 
-	const handleProjectClick = (e: React.MouseEvent) => {
-		e.stopPropagation()
-		router.push(`/project/${post.project?.slug}`)
-	}
-
 	const truncateText = (text: string | undefined, maxLength: number) => {
 		if (!text) return ''
 		if (text.length <= maxLength) return text
 		return text.slice(0, maxLength) + '...'
-	}
-
-	const getInitials = (title: string) => {
-		if (!title) return ''
-		return title
-			.split(' ')
-			.map((word) => word[0])
-			.join('')
-			.toUpperCase()
-			.slice(0, 2)
 	}
 
 	const formatDate = (dateString: string | undefined) => {
@@ -89,46 +73,33 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 		}
 	}
 
-	const getImageFromContent = (content: string) => {
-		const imgMatch = content.match(/!\[.*?\]\((.*?)\)/) || content.match(/<img[^>]+src="([^">]+)"/)
-		return imgMatch ? imgMatch[1] : null
-	}
-
 	const stripHtml = (html: string) => {
 		return html.replace(/<[^>]*>/g, '')
 	}
+
+	const pageCover = useMemo(
+		() =>
+			getPageCover({
+				content: post.content,
+				video: post.video,
+				project: post.project,
+			}),
+		[post]
+	)
 
 	return (
 		<Link href={`/devlog/${post.id}`}>
 			<div className={styles.postCard} onClick={onClick}>
 				<div className={styles.postContent}>
 					<div className={styles.postImage}>
-						{!imageError && post.coverImage ? (
+						{!imageError && pageCover ? (
 							<Image
-								src={post.coverImage}
+								src={pageCover}
 								alt={post.project?.name || ''}
 								width={240}
 								height={240}
 								unoptimized
 								onError={() => setImageError(true)}
-							/>
-						) : !contentImageError && getImageFromContent(post.content) ? (
-							<Image
-								src={getImageFromContent(post.content)!}
-								alt={post.project?.name || ''}
-								width={240}
-								height={240}
-								unoptimized
-								onError={() => setContentImageError(true)}
-							/>
-						) : !contentImageError && post.project?.coverImage ? (
-							<Image
-								src={post.project.coverImage}
-								alt={post.project.name}
-								width={240}
-								height={240}
-								unoptimized
-								onError={() => setContentImageError(true)}
 							/>
 						) : (
 							<DefaultCover title={post.project?.name || ''} />
