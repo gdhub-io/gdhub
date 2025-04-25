@@ -11,6 +11,27 @@ dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || 'en')
 
+const getCleanTextContent = (content: string) => {
+	// Удаляем markdown изображения
+	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, '')
+	// Удаляем HTML изображения
+	const withoutHtmlImages = withoutMarkdownImages.replace(/<img[^>]*>/g, '')
+	// Удаляем все HTML теги
+	const withoutHtml = withoutHtmlImages.replace(/<[^>]*>/g, '')
+	// Удаляем markdown синтаксис
+	const withoutMarkdown = withoutHtml
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1') // ссылки [text](url) -> text
+		.replace(/[*_~`]+/g, '') // жирный, курсив, зачеркнутый текст и код
+		.replace(/#{1,6}\s/g, '') // заголовки
+		.replace(/^\s*[-+*]\s/gm, '') // списки
+		.replace(/^\s*\d+\.\s/gm, '') // нумерованные списки
+		.replace(/\n\s*>\s*/g, ' ') // цитаты
+		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, ' ') // таблицы
+	// Удаляем лишние пробелы и переносы строк
+	const cleanText = withoutMarkdown.replace(/\s+/g, ' ').trim()
+	return cleanText.slice(0, 250)
+}
+
 export const newProjectReportsMessageRu = (
 	reports: (prismaClient.ProjectReport & { project: { name: string; slug: string } })[]
 ) => {
@@ -19,9 +40,9 @@ export const newProjectReportsMessageRu = (
 	reports.map((report) => {
 		message += `\n\n<b>Проект ${report.project.name}</b>\n`
 		message += '<i>Опубликовано: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
+		message += '<blockquote>' + getCleanTextContent(report.content) + '</blockquote>\n'
 		message += report.video ? `\n<a href="${report.video}">Прикрепленное видео</a>` : ''
-		message += `\n\n<a href="https://gdhub.io/project/${report.project.slug}">На страницу проекта</a>`
+		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>`
 	})
 
 	return message
@@ -35,9 +56,9 @@ export const newProjectReportsMessageEn = (
 	reports.map((report) => {
 		message += `\n\n<b>Project ${report.project.name}</b>\n`
 		message += '<i>Published: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '<blockquote expandable>' + report.content + '</blockquote>\n'
+		message += '<blockquote expandable>' + getCleanTextContent(report.content) + '</blockquote>\n'
 		message += report.video ? `\n<a href="${report.video}">Attached video</a>` : ''
-		message += `\n<a href="https://gdhub.io/project/${report.project.slug}">Read more</a>`
+		message += `\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>`
 	})
 
 	return message
