@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 	}
 
 	try {
-		const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 		const { data: post } = await axios.get(`${baseUrl}/api/devlog/${projectReportId}`)
 		const contentLength = post.content.length
 
