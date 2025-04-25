@@ -1,20 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react'
+/* eslint-disable @next/next/no-img-element */
+import React, { useEffect, useRef, useState } from 'react'
 import { PageViews } from '@/components/PageViews'
+import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Button, Card, Flex, Image, Spin, Typography } from 'antd'
+import { Button, Card, Flex, Image as AntImage, Spin, Typography } from 'antd'
 import axios from 'axios'
+import { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
+import { getSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeSanitize from 'rehype-sanitize'
 import styles from './styles.module.scss'
-import { PublicLayout } from '../../../layouts/PublicLayout'
 
-const { Title, Text } = Typography
+const { Text } = Typography
 
 interface Post {
 	id: string
@@ -33,48 +35,134 @@ interface Post {
 		description?: string
 		coverImage?: string
 	}
+	pageCover?: string
 }
 
-export default function ProjectReport() {
+interface PageProps {
+	post: Post
+	isAuthenticated: boolean
+}
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
+	const projectReportId = context.params?.projectReportId as string
+	const session = await getSession(context)
+
+	if (!projectReportId) {
+		return {
+			notFound: true,
+		}
+	}
+
+	try {
+		const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+		const { data: post } = await axios.get(`${baseUrl}/api/devlog/${projectReportId}`)
+
+		console.log('Post data:', {
+			coverImage: post.coverImage,
+			projectCoverImage: post.project?.coverImage,
+			contentLength: post.content?.length,
+		})
+
+		// Обрезаем контент для неавторизованных пользователей
+		if (!session) {
+			const truncatedContent = post.content.length > 500 ? post.content.slice(0, 500) + '...' : post.content
+			post.content = truncatedContent
+		}
+
+		// Определяем pageCover из контента
+		const markdownImages = post.content.match(/!\[.*?\]\((.*?)\)/g) || []
+		const htmlImages = post.content.match(/<img[^>]+src="([^">]+)"/g) || []
+		const allImages = [...markdownImages, ...htmlImages]
+
+		console.log('Found images:', {
+			markdownImages,
+			htmlImages,
+			allImages,
+		})
+
+		const firstImageFromContent =
+			allImages.length > 0
+				? allImages
+						.map((match: string) => {
+							// Пробуем найти URL в markdown формате
+							const markdownMatch = match.match(/\((.*?)\)/)
+							if (markdownMatch) return markdownMatch[1]
+
+							// Пробуем найти URL в HTML формате
+							const htmlMatch = match.match(/src="([^">]+)"/)
+							if (htmlMatch) return htmlMatch[1]
+
+							return null
+						})
+						.filter(Boolean)[0]
+				: null
+
+		console.log('Image extraction:', {
+			firstImageFromContent,
+			projectCoverImage: post.project?.image,
+		})
+
+		post.pageCover = firstImageFromContent || post.project?.image
+
+		console.log('Final pageCover:', post.pageCover)
+
+		return {
+			props: {
+				post,
+				isAuthenticated: !!session,
+			},
+		}
+	} catch (error) {
+		console.error('Error fetching post:', error)
+		return {
+			notFound: true,
+		}
+	}
+}
+
+const MarkdownImage = ({ src, alt }: { src: string; alt: string }) => {
+	const [isClient, setIsClient] = useState(false)
+
+	useEffect(() => {
+		setIsClient(true)
+	}, [])
+
+	if (!isClient) {
+		return (
+			<span style={{ display: 'block', margin: '16px 0' }}>
+				<img
+					src={src}
+					alt={alt}
+					style={{
+						maxWidth: '100%',
+						height: 'auto',
+						borderRadius: '8px',
+					}}
+				/>
+			</span>
+		)
+	}
+
+	return (
+		<span style={{ display: 'block', margin: '16px 0' }}>
+			<AntImage
+				src={src}
+				alt={alt}
+				preview={true}
+				style={{
+					maxWidth: '100%',
+					height: 'auto',
+					borderRadius: '8px',
+				}}
+			/>
+		</span>
+	)
+}
+
+export default function ProjectReport({ post, isAuthenticated }: PageProps) {
 	const router = useRouter()
 	const { projectReportId } = router.query
 	const { t } = useTolgee()
-	const { data: session } = useSession()
-	const [imageError, setImageError] = useState(false)
-	const [contentImageError, setContentImageError] = useState(false)
-	const [contentHeight, setContentHeight] = useState(0)
-	const contentRef = useRef<HTMLDivElement>(null)
-
-	const { data: post, isLoading } = useQuery<Post>({
-		queryKey: ['projectReport', projectReportId],
-		queryFn: async () => {
-			const { data } = await axios.get(`/api/devlog/${projectReportId}`)
-			return data
-		},
-		enabled: !!projectReportId,
-	})
-
-	useEffect(() => {
-		if (contentRef.current) {
-			const height = contentRef.current.offsetHeight
-			setContentHeight(height)
-		}
-	}, [post?.content])
-
-	const getImageFromContent = (content: string) => {
-		const imgMatches = content.match(/!\[.*?\]\((.*?)\)/g) || content.match(/<img[^>]+src="([^">]+)"/g)
-		return imgMatches
-			? imgMatches
-					.map((match) => {
-						const srcMatch = match.match(/\((.*?)\)/) || match.match(/src="([^">]+)"/)
-						return srcMatch ? srcMatch[1] : null
-					})
-					.filter(Boolean)
-			: []
-	}
-
-	const firstImageFromContent = post?.content ? getImageFromContent(post.content)[0] : null
-	const allImages = post?.content ? getImageFromContent(post.content) : []
 
 	const getInitials = (title: string) => {
 		if (!title) return ''
@@ -94,33 +182,9 @@ export default function ProjectReport() {
 		</div>
 	)
 
-	const headerImage = post?.coverImage
-		? post.coverImage
-		: firstImageFromContent
-			? firstImageFromContent
-			: post?.project?.coverImage
-				? post.project.coverImage
-				: undefined
-
-	const isContentTruncated = post?.content ? post.content.length > 500 : false
-	const truncatedContent = isContentTruncated && !session ? post?.content?.slice(0, 500) + '...' : post?.content || ''
-
-	const contentWithLimitedImages =
-		!session && allImages.length > 3
-			? allImages.slice(0, 3).reduce((content, img) => {
-					const imgPattern = new RegExp(`!\\[.*?\\]\\(${img}\\)|<img[^>]+src="${img}"`, 'g')
-					return (content || '').replace(imgPattern, '')
-				}, post?.content || '')
-			: post?.content || ''
-
-	if (isLoading) {
-		return (
-			<PublicLayout>
-				<Flex justify="center" align="center" style={{ height: '100vh' }}>
-					<Spin size="large" />
-				</Flex>
-			</PublicLayout>
-		)
+	const formatDate = (dateString: string) => {
+		const date = new Date(dateString)
+		return date.toISOString().split('T')[0].split('-').reverse().join('/')
 	}
 
 	if (!post) {
@@ -147,10 +211,10 @@ export default function ProjectReport() {
 	return (
 		<>
 			<Head>
-				{headerImage && (
+				{post.pageCover && (
 					<>
-						<meta property="og:image" content={headerImage} />
-						<meta property="twitter:image" content={headerImage} />
+						<meta property="og:image" content={post.pageCover} />
+						<meta property="twitter:image" content={post.pageCover} />
 					</>
 				)}
 			</Head>
@@ -160,14 +224,14 @@ export default function ProjectReport() {
 				})}
 				subTitle={post?.project?.description || undefined}
 				extra={headerExtra}
-				backgroundImage={headerImage || undefined}
+				backgroundImage={post.pageCover || undefined}
 			>
 				<div className={styles.container}>
 					<Card>
 						<Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
 							<Flex align="center" gap={8}>
 								{post?.author?.image && (
-									<Image
+									<AntImage
 										src={post.author.image}
 										alt={post.author.name}
 										width={32}
@@ -181,7 +245,7 @@ export default function ProjectReport() {
 								<Flex align="center" gap={8}>
 									<ClockCircleOutlined style={{ fontSize: '12px' }} />
 									<Text type="secondary" style={{ fontSize: '12px' }}>
-										{post?.createdAt ? new Date(post.createdAt).toLocaleDateString() : ''}
+										{post?.createdAt ? formatDate(post.createdAt) : ''}
 									</Text>
 								</Flex>
 								<PageViews path={`/devlog/${post?.id}`} containerStyle={{ fontSize: '12px' }} />
@@ -192,25 +256,14 @@ export default function ProjectReport() {
 							<ReactMarkdown
 								rehypePlugins={[rehypeSanitize]}
 								components={{
-									img: ({ node, ...props }) => (
-										<div style={{ margin: '16px 0' }}>
-											<Image
-												src={props.src || ''}
-												alt={props.alt || ''}
-												style={{
-													maxWidth: '100%',
-													height: 'auto',
-													borderRadius: '8px',
-												}}
-											/>
-										</div>
-									),
+									img: ({ node, ...props }) => <MarkdownImage src={props.src || ''} alt={props.alt || ''} />,
 									p: ({ node, ...props }) => (
 										<p
 											{...props}
 											style={{
 												margin: '16px 0',
 												lineHeight: '1.6',
+												whiteSpace: 'pre-wrap',
 											}}
 										/>
 									),
@@ -231,11 +284,19 @@ export default function ProjectReport() {
 											}}
 										/>
 									),
+									u: ({ node, ...props }) => (
+										<u
+											{...props}
+											style={{
+												textDecoration: 'underline',
+											}}
+										/>
+									),
 								}}
 							>
-								{(session ? post?.content : contentWithLimitedImages) || ''}
+								{post?.content || ''}
 							</ReactMarkdown>
-							{!session && (
+							{!isAuthenticated && (
 								<div
 									style={{
 										position: 'absolute',

@@ -40,7 +40,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		// Transform the data to match the expected format in the frontend
 		const post = {
 			id: report.id,
-			title: `Отчет проекта ${report.project?.name || 'Untitled'}`,
 			content: report.content,
 			coverImage: report.project?.coverImage,
 			createdAt: report.publishedAt,
