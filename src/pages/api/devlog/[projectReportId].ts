@@ -43,6 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			content: report.content,
 			coverImage: report.project?.coverImage,
 			createdAt: report.publishedAt,
+			video: report.video,
 			author: report.author
 				? {
 						name: report.author.name,

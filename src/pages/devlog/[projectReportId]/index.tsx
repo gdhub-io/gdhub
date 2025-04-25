@@ -8,12 +8,15 @@ import { useTolgee } from '@tolgee/react'
 import { Button, Card, Flex, Image as AntImage, Typography } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { getSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import styles from './styles.module.scss'
+
+const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 
 const { Text } = Typography
 
@@ -24,6 +27,7 @@ interface Post {
 	coverImage?: string
 	createdAt: string
 	viewsCount: number
+	video?: string
 	author: {
 		name: string
 		image?: string
@@ -246,6 +250,11 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 						</Flex>
 
 						<div className={styles.content} style={{ position: 'relative' }}>
+							{post.video && (
+								<div className={styles.video}>
+									<ReactPlayer url={post.video} width="100%" height="100%" controls />
+								</div>
+							)}
 							<ReactMarkdown
 								rehypePlugins={[
 									[rehypeRaw as any],
