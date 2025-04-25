@@ -247,11 +247,11 @@ export default function ProjectReport() {
 										<Flex align="center" gap={8}>
 											<LockOutlined />
 											<Text type="secondary">
-												{t('page.devlog.contentLocked', 'Полный текст доступен только авторизованным пользователям')}
+												{t('page.devlog.contentLocked', 'Full text is available to authorized users')}
 											</Text>
 										</Flex>
 										<Link href="/signin">
-											<Button type="primary">{t('page.devlog.signIn', 'Войти')}</Button>
+											<Button type="primary">{t('page.devlog.signIn', 'Sign in')}</Button>
 										</Link>
 									</Flex>
 								</Card>
