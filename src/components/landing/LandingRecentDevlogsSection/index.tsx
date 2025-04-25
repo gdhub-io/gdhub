@@ -1,41 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
-import { getCleanTextContent } from '@/helpers/content'
+import { getCleanTextContent, getPageCover } from '@/helpers/content'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
-import { Avatar, Button, Card, Col, Grid, Row, Skeleton, Space, Typography } from 'antd'
+import { useTolgee } from '@tolgee/react'
+import { Card, Col, Grid, Row, Skeleton, Space, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import ReactMarkdown from 'react-markdown'
-import rehypeRaw from 'rehype-raw'
 import styles from './style.module.scss'
 import { DevlogPost } from './types'
 
 const { Title, Text, Paragraph } = Typography
 const { useBreakpoint } = Grid
 
-// Функция для получения изображения из контента
-const getImageFromContent = (content: string): string | null => {
-	// Ищем markdown изображения
-	const markdownImages = content.match(/!\[.*?\]\((.*?)\)/g) || []
-	// Ищем HTML изображения
-	const htmlImages = content.match(/<img[^>]+src="([^">]+)"[^>]*>/g) || []
-	const allImages = [...markdownImages, ...htmlImages]
-
-	if (allImages.length > 0) {
-		// Пробуем найти URL в markdown формате
-		const markdownMatch = allImages[0].match(/\((.*?)\)/)
-		if (markdownMatch) return markdownMatch[1]
-
-		// Пробуем найти URL в HTML формате
-		const htmlMatch = allImages[0].match(/src="([^">]+)"/)
-		if (htmlMatch) return htmlMatch[1]
-	}
-
-	return null
-}
-
-// Функция для получения инициалов
 const getInitials = (title: string): string => {
 	if (!title) return ''
 	return title
@@ -47,12 +23,7 @@ const getInitials = (title: string): string => {
 }
 
 export const LandingRecentDevlogsSection = () => {
-	const screens = useBreakpoint()
 	const { t } = useTolgee()
-
-	// Use mock data
-	// const isLoading = false
-	// const recentDevlogs = { data: mockDevlogs }
 
 	// Use real data
 	const { data: recentDevlogs, isLoading } = useQuery({
@@ -87,16 +58,20 @@ export const LandingRecentDevlogsSection = () => {
 					) : (
 						<Row gutter={[24, 24]}>
 							{recentDevlogs?.data?.map((devlog: DevlogPost) => {
-								const imageUrl = devlog.pageCover || getImageFromContent(devlog.content)
+								const pageCover = getPageCover({
+									content: devlog.content,
+									video: devlog.video,
+									project: devlog.project,
+								})
 								const initials = getInitials(devlog.project?.name || '')
 
 								return (
 									<Col key={devlog.id} xs={24} sm={12} md={8}>
 										<Link href={`/devlog/${devlog.id}`}>
 											<Card className={styles.devlogCard}>
-												{imageUrl ? (
+												{pageCover ? (
 													<div className={styles.cardImage}>
-														<img src={imageUrl} alt={devlog.project?.name} className={styles.image} />
+														<img src={pageCover} alt={devlog.project?.name} className={styles.image} />
 													</div>
 												) : (
 													<div className={styles.defaultCover}>

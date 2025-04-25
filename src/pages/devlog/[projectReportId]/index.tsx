@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from 'react'
 import { PageViews } from '@/components/PageViews'
-import { getCleanTextContent } from '@/helpers/content'
+import { getCleanTextContent, getPageCover } from '@/helpers/content'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined } from '@ant-design/icons'
 import { useTolgee } from '@tolgee/react'
@@ -68,30 +68,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 			post.content = truncatedContent
 		}
 
-		// Определяем pageCover из контента
-		const markdownImages = post.content.match(/!\[.*?\]\((.*?)\)/g) || []
-		const htmlImages = post.content.match(/<img[^>]+src="([^">]+)"[^>]*>/g) || []
-		const allImages = [...markdownImages, ...htmlImages]
-
-		const firstImageFromContent =
-			allImages.length > 0
-				? allImages
-						.map((match: string) => {
-							// Пробуем найти URL в markdown формате
-							const markdownMatch = match.match(/\((.*?)\)/)
-							if (markdownMatch) return markdownMatch[1]
-
-							// Пробуем найти URL в HTML формате
-							const htmlMatch = match.match(/src="([^">]+)"/)
-							if (htmlMatch) return htmlMatch[1]
-
-							return null
-						})
-						.filter(Boolean)[0]
-				: null
-
-		// Убедимся, что pageCover всегда строка или null
-		post.pageCover = firstImageFromContent || post.project?.coverImage || null
+		// Определяем pageCover
+		post.pageCover = getPageCover(post)
 
 		return {
 			props: {
