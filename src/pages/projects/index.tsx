@@ -96,6 +96,8 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 				updatedAt: p.updatedAt?.toISOString() || null,
 				startedAt: p.startedAt?.toISOString() || null,
 				finishedAt: p.finishedAt?.toISOString() || null,
+				lastPostAt: p.lastPostAt?.toISOString() || null,
+				firstPostAt: p.firstPostAt?.toISOString() || null,
 			})),
 		},
 		revalidate: 60,

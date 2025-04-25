@@ -1,20 +1,18 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { prisma } from '.'
 
-export const getWorkedProjects = async () => {
-	const projects = await prisma.project.findMany({
-		where: {
-			status: { in: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
-			workflow: { currentStep: { order: { gt: 0 } } },
-		},
-		include: {
-			author: { select: { name: true } },
-			workflow: { select: { currentStep: { select: { id: true, name: true } } } },
-		},
-	})
+export type ProjectWithActivity = prismaClient.Project & {
+	reportCount: number
+	lastPostAt: Date | null
+	firstPostAt: Date | null
+	recentProjectReportCount: number
+	recentProjectChangeCount: number
+	activityScore: number
+	isInactive: boolean
+}
 
-	return projects as (prismaClient.Project & {
-		author: prismaClient.User
-		workflow: prismaClient.ProjectWorkflow & { currentStep: prismaClient.ProjectWorkflowStep }
-	})[]
+export const getWorkedProjects = async () => {
+	const projects = await prisma.project.getProjectsOrderedByActivity({ order: 'desc' })
+
+	return projects as ProjectWithActivity[]
 }
