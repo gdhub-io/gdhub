@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from 'react'
 import { PageViews } from '@/components/PageViews'
+import { getCleanTextContent } from '@/helpers/content'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined } from '@ant-design/icons'
 import { useTolgee } from '@tolgee/react'
@@ -8,7 +9,6 @@ import { Button, Card, Flex, Image as AntImage, Typography } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { getSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
@@ -167,49 +167,8 @@ const MarkdownImage = ({
 	)
 }
 
-const getCleanTextContent = (content: string) => {
-	// Удаляем markdown изображения
-	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, '')
-	// Удаляем HTML изображения
-	const withoutHtmlImages = withoutMarkdownImages.replace(/<img[^>]*>/g, '')
-	// Удаляем все HTML теги
-	const withoutHtml = withoutHtmlImages.replace(/<[^>]*>/g, '')
-	// Удаляем markdown синтаксис
-	const withoutMarkdown = withoutHtml
-		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1') // ссылки [text](url) -> text
-		.replace(/[*_~`]+/g, '') // жирный, курсив, зачеркнутый текст и код
-		.replace(/#{1,6}\s/g, '') // заголовки
-		.replace(/^\s*[-+*]\s/gm, '') // списки
-		.replace(/^\s*\d+\.\s/gm, '') // нумерованные списки
-		.replace(/\n\s*>\s*/g, ' ') // цитаты
-		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, ' ') // таблицы
-	// Удаляем лишние пробелы и переносы строк
-	const cleanText = withoutMarkdown.replace(/\s+/g, ' ').trim()
-	return cleanText.slice(0, 200)
-}
-
 export default function ProjectReport({ post, contentLength, isAuthenticated }: PageProps) {
-	const router = useRouter()
-	const { projectReportId } = router.query
 	const { t } = useTolgee()
-
-	const getInitials = (title: string) => {
-		if (!title) return ''
-		return title
-			.split(' ')
-			.map((word) => word[0])
-			.join('')
-			.toUpperCase()
-			.slice(0, 2)
-	}
-
-	const DefaultCover = () => (
-		<div className={styles.defaultCover}>
-			<div className={styles.defaultCoverContent}>
-				<div className={styles.defaultCoverInitials}>{getInitials(post?.project?.name || '')}</div>
-			</div>
-		</div>
-	)
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString)
@@ -244,7 +203,7 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 				title={t('page.devlog.title', 'Project report by {projectName}', {
 					projectName: post?.project?.name || 'Untitled',
 				})}
-				subTitle={post?.project?.description || undefined}
+				subTitle={getCleanTextContent(post?.project?.description || '', 100) || undefined}
 				extra={headerExtra}
 				backgroundImage={post.pageCover || undefined}
 				seo={{

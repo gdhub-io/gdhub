@@ -1,3 +1,4 @@
+import { getCleanTextContent } from '@/helpers/content'
 import { useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Avatar, Button, Card, Col, Grid, Row, Skeleton, Space, Typography } from 'antd'
@@ -81,7 +82,7 @@ export const LandingRecentDevlogsSection = () => {
 															h3: ({ children }) => <span>{children}</span>,
 														}}
 													>
-														{truncateContent(devlog.content)}
+														{getCleanTextContent(devlog.content, 300)}
 													</ReactMarkdown>
 												</Paragraph>
 											</div>
