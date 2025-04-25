@@ -63,7 +63,7 @@ export const LandingRecentDevlogsSection = () => {
 							{recentDevlogs?.data.map((devlog: DevlogPost) => (
 								<Col xs={24} md={12} lg={8} key={devlog.id}>
 									<Card className={styles.devlogCard} hoverable>
-										<Link href={`/project/${devlog.project?.slug}`}>
+										<Link href={`/devlog/${devlog.id}`}>
 											<div className={styles.cardHeader}>
 												<div className={styles.projectInfo}>
 													<Title level={4}>{devlog.project?.name}</Title>

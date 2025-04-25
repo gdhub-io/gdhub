@@ -10,7 +10,20 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { T, useTolgee } from '@tolgee/react'
-import { Avatar, Button, ConfigProvider, Drawer, Grid, Layout, Menu, MenuProps, Space, Tooltip, Typography } from 'antd'
+import {
+	Avatar,
+	Button,
+	ConfigProvider,
+	Drawer,
+	Grid,
+	Layout,
+	Menu,
+	MenuProps,
+	Space,
+	Tooltip,
+	Typography,
+	Flex,
+} from 'antd'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
 import Image from 'next/image'
@@ -26,12 +39,13 @@ interface PublicLayoutProps {
 	seo?: DefaultSeoProps
 	subTitle?: string
 	backgroundImage?: string
+	extra?: ReactNode
 }
 
 const { Header, Footer, Content } = Layout
 const { Text, Title } = Typography
 
-export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }: PublicLayoutProps) => {
+export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, extra }: PublicLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -299,7 +313,10 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage }
 					>
 						<MainHeader />
 						<div className={styles.titleContainer}>
-							{!!title && <Title className={styles.title}>{title}</Title>}
+							<Flex align="center" gap={16}>
+								{extra}
+								{!!title && <Title className={styles.title}>{title}</Title>}
+							</Flex>
 							{!!subTitle && <Text type="secondary">{subTitle}</Text>}
 						</div>
 					</Header>

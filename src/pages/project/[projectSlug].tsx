@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DevLogPublicWall } from '@/components/DevLogPublicWall'
+import DevlogPosts from '@/components/DevlogPosts'
 import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
 import { PublicLayout } from '@/layouts/PublicLayout'
@@ -91,7 +91,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 
 								<ProjectVacancies teamId={project.teamId} />
 
-								<DevLogPublicWall projectId={project.id} />
+								<DevlogPosts projectId={project.id} />
 							</Space>
 						</Col>
 						<Col xs={{ span: 24, order: 0 }} md={{ span: 12, order: 1 }} lg={{ span: 8, order: 1 }}>

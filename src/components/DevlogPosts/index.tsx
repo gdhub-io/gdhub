@@ -35,6 +35,10 @@ interface PostsResponse {
 	}
 }
 
+interface DevlogPostsProps {
+	projectId?: string
+}
+
 const DefaultCover = ({ title }: { title: string }) => {
 	return (
 		<div className={styles.defaultCover}>
@@ -184,14 +188,15 @@ const PostSkeleton = () => {
 	)
 }
 
-const DevlogPosts = () => {
+const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 	const { t } = useTolgee()
 	const limit = 5
 
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-		queryKey: ['devlog-posts'],
+		queryKey: ['devlog-posts', projectId],
 		queryFn: async ({ pageParam = 1 }) => {
-			const response = await axios.get<DevlogPost[]>(`/api/devlogs?page=${pageParam}&limit=${limit}`)
+			const url = `/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ''}`
+			const response = await axios.get<DevlogPost[]>(url)
 			console.log('API Response:', response.data)
 
 			// Если это первая страница, возвращаем только первые 5 постов
