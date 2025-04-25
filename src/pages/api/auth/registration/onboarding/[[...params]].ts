@@ -60,6 +60,7 @@ class ApiRegistrationHandler {
 			await prisma.user.update({ where: { id: user.id }, data: { agreements } })
 		} catch (error) {
 			console.error('saveOnboardingProfile: error', error)
+			throw new BadRequestException('Failed to save onboarding profile')
 		}
 	}
 
