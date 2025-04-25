@@ -48,20 +48,20 @@ export function formatNestedJson(obj: any, parentKey = '', output = '') {
 }
 
 export const getServerLocale = (req: NextApiRequestWithUser | NextApiRequest) => {
-	let locale = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE')
+	let locale = AvailableLocales.en
 
 	const acceptLanguage = req.headers['accept-language']
 
 	if (acceptLanguage) {
-		const [fullLocale] = acceptLanguage?.split(';')
-		locale = fullLocale.split(',')[1]
-		locale = locale.split('-')[0]
+		const [availabeLocales] = acceptLanguage?.split(';')
+		const fullLocale = availabeLocales?.split(',')[1]
+		const shortLocale = fullLocale?.split('-')[0]
 
 		// check allowed locales
-		if (Object.values(AvailableLocales).includes(locale as any) == false) {
-			locale = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE')
+		if (shortLocale && Object.values(AvailableLocales).includes(shortLocale as any)) {
+			locale = shortLocale as AvailableLocales
 		}
 	}
 
-	return (locale as AvailableLocales) || AvailableLocales.en
+	return locale
 }
