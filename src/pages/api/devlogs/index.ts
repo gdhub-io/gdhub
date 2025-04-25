@@ -7,7 +7,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	}
 
 	try {
+		const { projectId } = req.query
+
 		const reports = await prisma.projectReport.findMany({
+			where: projectId
+				? {
+						projectId: String(projectId),
+					}
+				: undefined,
 			orderBy: {
 				publishedAt: 'desc',
 			},

@@ -1,6 +1,5 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BadRequestException, Get, createHandler } from 'next-api-decorators'
 
 @NextAuthGuard('user')

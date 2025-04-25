@@ -1,6 +1,5 @@
 import { AvailableLocales } from '@/config/locale'
 import { NextApiRequest } from 'next'
-import { env } from './env'
 
 export const isValidJSON = (text: any) => {
 	if (typeof text !== 'string') {
