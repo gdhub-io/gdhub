@@ -39,6 +39,7 @@ interface Post {
 
 interface PageProps {
 	post: Post
+	contentLength: number
 	isAuthenticated: boolean
 }
 
@@ -55,10 +56,11 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 	try {
 		const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 		const { data: post } = await axios.get(`${baseUrl}/api/devlog/${projectReportId}`)
+		const contentLength = post.content.length
 
 		// Обрезаем контент для неавторизованных пользователей
 		if (!session) {
-			const truncatedContent = post.content.length > 500 ? post.content.slice(0, 500) + '...' : post.content
+			const truncatedContent = post.content.length > 1000 ? post.content.slice(0, 1000) + '...' : post.content
 			post.content = truncatedContent
 		}
 
@@ -90,6 +92,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 		return {
 			props: {
 				post,
+				contentLength,
 				isAuthenticated: !!session,
 			},
 		}
@@ -185,7 +188,7 @@ const getCleanTextContent = (content: string) => {
 	return cleanText.slice(0, 200)
 }
 
-export default function ProjectReport({ post, isAuthenticated }: PageProps) {
+export default function ProjectReport({ post, contentLength, isAuthenticated }: PageProps) {
 	const router = useRouter()
 	const { projectReportId } = router.query
 	const { t } = useTolgee()
@@ -356,7 +359,7 @@ export default function ProjectReport({ post, isAuthenticated }: PageProps) {
 							>
 								{post?.content || ''}
 							</ReactMarkdown>
-							{!isAuthenticated && (
+							{!isAuthenticated && contentLength > post?.content?.length && (
 								<div
 									style={{
 										position: 'absolute',
