@@ -6,12 +6,14 @@
   "About us": "About us",
   "Accept the team": "Accept the team",
   "Achiever": "Achiever",
+  "Actual Equity": "Actual Equity",
   "Add a report": "Add a report",
   "Add specialty": "Add specialty",
   "Add the vacancy": "Add the vacancy",
   "Add your project idea": "Add your project idea",
   "Added a new game project": "Added a new game project",
   "Administration": "Administration",
+  "After completing": "After completing",
   "Allows you to contribute to game development through advising": "Allows you to contribute to game development through advising",
   "Appendix": "Appendix",
   "Archive": "Archive",
@@ -21,6 +23,7 @@
   "Audition": "Audition",
   "Author": "Author",
   "Autonomy": "Autonomy",
+  "Available Hours": "Available Hours",
   "Back": "Back",
   "Back to home": "Back to home",
   "Back to main": "Back to main",
@@ -56,7 +59,9 @@
   "Create": "Create",
   "Create a new vacancy": "Create a new vacancy",
   "Create new account": "Create new account",
+  "Current vested equity": "Current vested equity",
   "Date": "Date",
+  "Days on Project": "Days on Project",
   "Details": "Details",
   "Development Log": "Development Log",
   "Discord": "Discord",
@@ -145,6 +150,8 @@
     "": "Projects developed independently by users."
   },
   "Projects preparing for pitch": "Projects preparing for pitch",
+  "Promised Equity": "Promised Equity",
+  "Public page": "Public page",
   "Publish": "Publish",
   "Pursuing oppurtunities instead of settling": "Pursuing oppurtunities instead of settling",
   "Read more": "Read more",
@@ -209,6 +216,7 @@
   "We help game industry professionals find an interesting role for themselves in new projects": {
     "": "We help game industry professionals find an interesting role for themselves in new projects."
   },
+  "Weekly commitment": "Weekly commitment",
   "Welcome to the community where games are made": {
     "": "Welcome to the community where games are made."
   },
@@ -226,6 +234,7 @@
   "You have no projects": "You have no projects",
   "You should not be younger than 16 years": "You should not be younger than 16 years",
   "Your Name": "Your Name",
+  "Your Participation": "Your Participation",
   "Your profile was successfully completed!": "Your profile was successfully completed!",
   "Your vote has been counted": "Your vote has been counted",
   "Youtube": "Youtube",
@@ -299,6 +308,7 @@
   "cvLink": "CV/Portfolio link",
   "cvLink.plachehloder": "Linkedin, Artstation or other links",
   "dance": "Dance/rhythm",
+  "days": "days",
   "demoday": {
     "text1": {
       "part1": "Join our",
@@ -356,6 +366,7 @@
   "historic": "Historic",
   "hours": "hours",
   "hours a week": "hours a week",
+  "hours/week": "hours/week",
   "hub": {
     "lectures": {
       "text1": {
@@ -600,7 +611,9 @@
     },
     "vacancy": {
       "applied": "You have already responded to this vacancy",
+      "apply": "Respond",
       "applySuccess": "Your response is sent",
+      "cancelMyResponse": "Cancel my response",
       "descriptionHelp": "Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",
       "notAuth": "Only registered users with a completed specialty can respond.",
       "titleSession": "Job vacancy",
@@ -672,6 +685,9 @@
   "oriental fantasy": "Oriental Fantasy",
   "other": "Other",
   "page": {
+    "devlog": {
+      "title": "Project updates"
+    },
     "documentation": {
       "title": "Documentation"
     },
@@ -689,6 +705,14 @@
           "part2": "specialists are registered."
         },
         "text3": "Authors of indie projects have access to a database of specialists and can invite them to their projects. For this you need to create a project and and bring your project to the recruiting stage."
+      },
+      "user-projects": "My projects",
+      "user-projects.empty.description": "You haven't created or joined any projects yet. Begin your game development journey by creating your own project or joining an existing team.",
+      "user-projects.empty.title": "Start Your Game Development Journey"
+    },
+    "project": {
+      "members": {
+        "table-title": "Members"
       }
     },
     "vacancies": {
@@ -706,6 +730,7 @@
       "text": "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy."
     }
   },
+  "present": "from {fromDate} to current time",
   "profile-form": {
     "mentorship": {
       "card": {
@@ -817,6 +842,7 @@
     "create": "Create project"
   },
   "projectListByStage": "List of projects at the current stage",
+  "promised equity will become actual": "promised equity will become actual",
   "puzzle": "Puzzle",
   "qualified specialists": "qualified specialists",
   "real life": "Real Life",
