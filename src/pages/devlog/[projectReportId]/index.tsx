@@ -5,7 +5,7 @@ import { getCleanTextContent, getPageCover } from '@/helpers/content'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined } from '@ant-design/icons'
 import { useTolgee } from '@tolgee/react'
-import { Button, Card, Flex, Image as AntImage, Typography } from 'antd'
+import { Button, Card, Flex, Image as AntImage, Typography, Space } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
 import dynamic from 'next/dynamic'
@@ -18,7 +18,7 @@ import styles from './styles.module.scss'
 
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 
-const { Text } = Typography
+const { Text, Title } = Typography
 
 interface Post {
 	id: string
@@ -161,35 +161,64 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 		return null
 	}
 
-	const headerExtra = (
-		<Link href={`/project/${post.project?.slug}`}>
-			<Button
-				icon={<ArrowLeftOutlined />}
-				type="text"
-				className={styles.backButton}
-				style={{
-					color: 'rgba(255, 255, 255, 0.65)',
-					transition: 'color 0.3s',
-					position: 'relative',
-					top: '4px',
-				}}
-				onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-				onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.65)')}
-			/>
-		</Link>
-	)
-
 	return (
 		<>
 			<PublicLayout
-				title={t('page.devlog.title', 'Project report by {projectName}', {
-					projectName: post?.project?.name || 'Untitled',
-				})}
+				title={
+					<div className={styles.titleContainer}>
+						<Link href={`/project/${post.project?.slug}`}>
+							<Button
+								type="text"
+								size="small"
+								className={styles.projectTitle}
+								onMouseEnter={(e) => {
+									const button = e.currentTarget
+									const arrow = button.querySelector('.arrow') as HTMLElement
+									if (arrow) {
+										arrow.style.width = '16px'
+										arrow.style.marginRight = '8px'
+										arrow.style.opacity = '1'
+									}
+									button.style.paddingLeft = '8px'
+									button.style.paddingRight = '8px'
+								}}
+								onMouseLeave={(e) => {
+									const button = e.currentTarget
+									const arrow = button.querySelector('.arrow') as HTMLElement
+									if (arrow) {
+										arrow.style.width = '0'
+										arrow.style.marginRight = '0'
+										arrow.style.opacity = '0'
+									}
+									button.style.paddingLeft = '0'
+									button.style.paddingRight = '0'
+								}}
+							>
+								<Space size={0}>
+									<ArrowLeftOutlined
+										className="arrow"
+										style={{
+											width: 0,
+											marginRight: 0,
+											opacity: 0,
+											transition: 'all 0.3s ease',
+											overflow: 'hidden',
+											color: '#ff4d4f',
+										}}
+									/>
+									<span style={{ color: '#ff4d4f' }}>
+										{post.project?.name || t('page.devlog.untitledProject', 'Game Project')}
+									</span>
+								</Space>
+							</Button>
+						</Link>
+						<Title className={styles.title}>{t('page.devlog.title', 'Project reports')}</Title>
+					</div>
+				}
 				subTitle={getCleanTextContent(post?.project?.description || '', 100) || undefined}
-				extra={headerExtra}
 				backgroundImage={post.pageCover || undefined}
 				seo={{
-					title: post?.project?.name || 'Untitled',
+					title: `${post.project?.name || 'Untitled Project'} - ${t('page.devlog.title', 'Project reports')}`,
 					description: getCleanTextContent(post?.content || ''),
 					openGraph: {
 						images: [

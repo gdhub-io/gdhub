@@ -35,7 +35,7 @@ import styles from './style.module.scss'
 
 interface PublicLayoutProps {
 	children: ReactNode
-	title?: string
+	title?: ReactNode
 	seo?: DefaultSeoProps
 	subTitle?: string
 	backgroundImage?: string
@@ -54,7 +54,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, 
 	const { data: session }: any = useSession()
 
 	const seoParams: NextSeoProps = {
-		title,
+		title: seo?.title || (typeof title === 'string' ? title : ''),
 		description: seo?.description || subTitle,
 		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		openGraph: {
@@ -62,7 +62,9 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, 
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${title}&st=${t(seo?.description || subTitle || '')}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
+								seo?.description || subTitle || ''
+							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
 					alt: 'Indie Game Developers Page Cover',
 				},
 			],
