@@ -40,12 +40,21 @@ interface PublicLayoutProps {
 	subTitle?: string
 	backgroundImage?: string
 	extra?: ReactNode
+	styles?: Record<string, object>
 }
 
 const { Header, Footer, Content } = Layout
 const { Text, Title } = Typography
 
-export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, extra }: PublicLayoutProps) => {
+export const PublicLayout = ({
+	children,
+	title,
+	seo,
+	subTitle,
+	backgroundImage,
+	extra,
+	styles: layoutStyles,
+}: PublicLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -322,7 +331,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, 
 							{!!subTitle && <div className={styles.subTitle}>{subTitle}</div>}
 						</div>
 					</Header>
-					<Content>
+					<Content style={layoutStyles?.content}>
 						<div className="layout-background">{children}</div>
 					</Content>
 					<Footer className={styles.footer}>

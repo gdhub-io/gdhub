@@ -229,6 +229,7 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 						],
 					},
 				}}
+				styles={{ content: { padding: 0 } }}
 			>
 				<div className={styles.container}>
 					<Card>
