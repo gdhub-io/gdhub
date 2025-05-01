@@ -332,7 +332,9 @@ export const PublicLayout = ({
 						</div>
 					</Header>
 					<Content style={layoutStyles?.content}>
-						<div className="layout-background">{children}</div>
+						<div className="layout-background" style={layoutStyles?.layoutBackground}>
+							{children}
+						</div>
 					</Content>
 					<Footer className={styles.footer}>
 						<MainFooter />

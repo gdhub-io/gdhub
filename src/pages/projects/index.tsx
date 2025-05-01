@@ -21,9 +21,9 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
 
 	return (
 		<PublicLayout
-			title={t('page.projects.title', 'Indie Game Projects')}
-			subTitle={t('page.projects.subtitle', 'Projects developed independently by users')}
-			seo={{ description: t('Indie games that are developed by platform users') }}
+			title={t('page.projects.title', 'Video Games')}
+			subTitle={t('page.projects.subtitle', 'Projects developed independently by users and teams')}
+			seo={{ description: t('Indie games that are developed by platform users and teams') }}
 		>
 			<div className={styles.container}>
 				{!projects.length && <Paragraph type="secondary">There are no projects available to view</Paragraph>}
