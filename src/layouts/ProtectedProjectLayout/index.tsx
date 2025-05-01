@@ -212,6 +212,16 @@ export const ProtectedProjectLayout = ({
 			disabled: !isProjectAuthor,
 			label: <Link href={`/my/projects/${projectSlug}/settings`}>{t('app.user.menu.settings', 'Settings')}</Link>,
 		},
+		{
+			key: `/project/${projectSlug}`,
+			disabled: false,
+			className: styles.publicPageMenuItem,
+			label: (
+				<Link href={`/project/${projectSlug}`} target="_blank" rel="noopener noreferrer">
+					{t('Public page', 'Public page')} <GoLinkExternal size={14} />
+				</Link>
+			),
+		},
 	]
 
 	if (isFetched && !project) {
@@ -269,10 +279,12 @@ export const ProtectedProjectLayout = ({
 											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
 												<Button
 													type="text"
-													style={{ display: 'block', padding: 0, lineHeight: 0, borderRadius: '50%' }}
+													shape="circle"
+													style={{ display: 'block', padding: 0, lineHeight: 0 }}
 													icon={
 														session?.user.image ? (
 															<Avatar
+																size={32}
 																src={
 																	session?.user?.image ? (
 																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
@@ -297,24 +309,13 @@ export const ProtectedProjectLayout = ({
 								</Space>
 							</Col>
 						</Row>
-						<Flex align="center" justify="space-between" className={styles.menuContainer}>
-							<Menu
-								items={menuItems.filter((r) => !r.disabled)}
-								mode="horizontal"
-								selectedKeys={[router.asPath]}
-								className={styles.appMenu}
-							/>
-							<Link
-								href={`/project/${projectSlug}`}
-								target="_blank"
-								rel="noopener noreferrer"
-								className={styles.publicPageLink}
-							>
-								<Button type="primary" danger>
-									{t('Public page', 'Public page')} <GoLinkExternal size={14} />
-								</Button>
-							</Link>
-						</Flex>
+
+						<Menu
+							items={menuItems.filter((r) => !r.disabled)}
+							mode="horizontal"
+							selectedKeys={[router.asPath]}
+							className={styles.appMenu}
+						/>
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
