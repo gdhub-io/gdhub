@@ -4,7 +4,13 @@
   padding: 0 24px;
 
   @media (max-width: 576px) {
-    padding: 0 12px;
+    padding: 0;
+  }
+
+  :global {
+    .ant-card {
+      margin: 0;
+    }
   }
 }
 
@@ -230,9 +236,17 @@
 }
 
 .video {
-  border-radius: 8px;
-  overflow: hidden;
-  aspect-ratio: 16/9;
+  position: relative;
+  padding-top: 56.25%;
+  margin-bottom: 24px;
+
+  :global {
+    .react-player {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
 }
 
 .defaultCover {
@@ -313,6 +327,7 @@
 
     .ant-image-preview-operations {
       border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.3);
     }
   }
 }
@@ -320,5 +335,49 @@
 .backButton {
   @media (max-width: 576px) {
     display: none;
+  }
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  color: #fff !important;
+  margin: 0 !important;
+  font-size: 48px !important;
+}
+
+.projectTitle {
+  height: auto !important;
+  font-size: 16px !important;
+  transition: padding 0.3s ease !important;
+}
+
+.content {
+  position: relative;
+}
+
+.video {
+  position: relative;
+  padding-top: 56.25%;
+  margin-bottom: 24px;
+
+  :global {
+    .react-player {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+}
+
+.imagePreview {
+  :global {
+    .ant-image-preview-operations {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
   }
 } 

@@ -6,12 +6,14 @@
   "About us": "О нас",
   "Accept the team": "Принять команду",
   "Achiever": "Добиваться успеха",
+  "Actual Equity": "Фактическая доля",
   "Add a report": "Добавить отчет",
   "Add specialty": "Добавить специальность",
   "Add the vacancy": "Добавить вакансию",
   "Add your project idea": "Добавьте идею вашего проекта",
   "Added a new game project": "Добавлен новый игровой проект",
   "Administration": "Администрация",
+  "After completing": "По завершении шага",
   "Allows you to contribute to game development through advising": "Позволяет вам внести свой вклад в разработку игр посредством консультирования",
   "Appendix": "Приложение",
   "Archive": "Архив",
@@ -21,6 +23,7 @@
   "Audition": "Прослушивание",
   "Author": "Автор",
   "Autonomy": "Автономия",
+  "Available Hours": "Доступное время",
   "Back": "Назад",
   "Back to home": "Вернуться на главную",
   "Back to main": "На главную",
@@ -56,7 +59,9 @@
   "Create": "Создать",
   "Create a new vacancy": "Создать новую вакансию",
   "Create new account": "Регистрация",
+  "Current vested equity": "Текущая закрепленная доля",
   "Date": "Дата",
+  "Days on Project": "Дней на проекте",
   "Details": "Подробнее",
   "Development Log": "Журнал разработки",
   "Discord": "Дискорд",
@@ -145,6 +150,8 @@
     "": "Проекты, разрабатываемые другими пользователями"
   },
   "Projects preparing for pitch": "Проекты готовятся к питчу",
+  "Promised Equity": "Обещанная доля",
+  "Public page": "Публичная страница",
   "Publish": "Опубликовать",
   "Pursuing oppurtunities instead of settling": "Поиск возможностей вместо того, чтобы останавливаться на достигнутом",
   "Read more": "Смотреть еще",
@@ -209,6 +216,7 @@
   "We help game industry professionals find an interesting role for themselves in new projects": {
     "": "Мы помогаем профессионалам игровой индустрии найти для себя интересную роль в новых проектах."
   },
+  "Weekly commitment": "Еженедельное обязательство",
   "Welcome to the community where games are made": {
     "": "Добро пожаловать в сообщество, где создаются игры."
   },
@@ -226,6 +234,7 @@
   "You have no projects": "У вас нет проектов",
   "You should not be younger than 16 years": "Вы не должны быть моложе 16 лет",
   "Your Name": "Ваше имя",
+  "Your Participation": "Ваше участие",
   "Your profile was successfully completed!": "Ваш профиль успешно заполнен!",
   "Your vote has been counted": "Ваш голос засчитан",
   "Youtube": "Youtube",
@@ -299,6 +308,7 @@
   "cvLink": "Ссылка на резюме/портфолио",
   "cvLink.plachehloder": "Ссылка на Linkedin, Artstation или другой сервис",
   "dance": "Танцевальные, ритмичные",
+  "days": "дней",
   "demoday": {
     "text1": {
       "part1": "Присоединяйтесь к нашему",
@@ -356,6 +366,7 @@
   "historic": "Исторический",
   "hours": "часов",
   "hours a week": "часов в неделю",
+  "hours/week": "часов/неделю",
   "hub": {
     "lectures": {
       "text1": {
@@ -600,7 +611,9 @@
     },
     "vacancy": {
       "applied": "Вы уже откликнулись на эту вакансию",
-      "applySuccess": "Ваш ответ отправлен",
+      "apply": "Откликнуться",
+      "applySuccess": "Ваш ответ отозван",
+      "cancelMyResponse": "Отменить мою заявку",
       "descriptionHelp": "Опишите требования/пожелания к кандидату, опишите каку работу, которую ему предстоит выполнять.",
       "descriptionPlaceholder": "Например: Я ищу концепт-художника, который специализируется на быстром создании скетчей реалистичных персонажей",
       "notAuth": "Отвечать могут только зарегистрированные пользователи с заполненными данными о специальности.",
@@ -673,6 +686,9 @@
   "oriental fantasy": "Азиатская фэнтэзи",
   "other": "Другие",
   "page": {
+    "devlog": {
+      "title": "Обновления проекта"
+    },
     "documentation": {
       "title": "Документация"
     },
@@ -690,6 +706,14 @@
           "part2": "специалистов зарегистрированы."
         },
         "text3": "Авторы инди-проектов имеют доступ к базе специалистов и могут приглашать их в свои проекты. Для этого вам необходимо создать проект и довести его до стадии рекрутинга."
+      },
+      "user-projects": "Мои проекты",
+      "user-projects.empty.description": "Вы еще не создали или не присоединились к какому либо проекту. Начините свой путь с создания свой игры или присоединитесь к существующим командам.",
+      "user-projects.empty.title": "Начни своё путешествие в мир разработки игр"
+    },
+    "project": {
+      "members": {
+        "table-title": "Участники"
       }
     },
     "vacancies": {
@@ -707,6 +731,7 @@
       "text": "Этот веб-сайт использует файлы cookie для улучшения пользовательского опыта. Используя наш веб-сайт, вы соглашаетесь на использование всех файлов cookie в соответствии с нашей Политикой использования файлов cookie."
     }
   },
+  "present": "c {fromDate} по настоящее время",
   "profile-form": {
     "mentorship": {
       "card": {
@@ -818,6 +843,7 @@
     "create": "Создать проект"
   },
   "projectListByStage": "Список проектов на текущей стадии",
+  "promised equity will become actual": "обещанная доля перейдет в ваше владение",
   "puzzle": "Пазлы",
   "qualified specialists": "специалистов",
   "real life": "Реальная жизнь",

@@ -42,8 +42,12 @@
 				padding: 0 $public-padding-xs;
 
 				.layout-background {
-					padding: 24px 0px;
+					padding: 0px;
 					min-height: 360px;
+
+					.ant-card {
+            border-radius: 0px;
+          }
 				}
 			}
 		}

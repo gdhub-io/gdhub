@@ -35,17 +35,26 @@ import styles from './style.module.scss'
 
 interface PublicLayoutProps {
 	children: ReactNode
-	title?: string
+	title?: ReactNode
 	seo?: DefaultSeoProps
 	subTitle?: string
 	backgroundImage?: string
 	extra?: ReactNode
+	styles?: Record<string, object>
 }
 
 const { Header, Footer, Content } = Layout
 const { Text, Title } = Typography
 
-export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, extra }: PublicLayoutProps) => {
+export const PublicLayout = ({
+	children,
+	title,
+	seo,
+	subTitle,
+	backgroundImage,
+	extra,
+	styles: layoutStyles,
+}: PublicLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -54,7 +63,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, 
 	const { data: session }: any = useSession()
 
 	const seoParams: NextSeoProps = {
-		title,
+		title: seo?.title || (typeof title === 'string' ? title : ''),
 		description: seo?.description || subTitle,
 		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
 		openGraph: {
@@ -62,7 +71,9 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, 
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${title}&st=${t(seo?.description || subTitle || '')}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
+								seo?.description || subTitle || ''
+							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
 					alt: 'Indie Game Developers Page Cover',
 				},
 			],
@@ -320,7 +331,7 @@ export const PublicLayout = ({ children, title, seo, subTitle, backgroundImage, 
 							{!!subTitle && <div className={styles.subTitle}>{subTitle}</div>}
 						</div>
 					</Header>
-					<Content>
+					<Content style={layoutStyles?.content}>
 						<div className="layout-background">{children}</div>
 					</Content>
 					<Footer className={styles.footer}>
