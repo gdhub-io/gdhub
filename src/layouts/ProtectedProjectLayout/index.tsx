@@ -269,10 +269,12 @@ export const ProtectedProjectLayout = ({
 											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
 												<Button
 													type="text"
-													style={{ display: 'block', padding: 0, lineHeight: 0, borderRadius: '50%' }}
+													shape="circle"
+													style={{ display: 'block', padding: 0, lineHeight: 0 }}
 													icon={
 														session?.user.image ? (
 															<Avatar
+																size={32}
 																src={
 																	session?.user?.image ? (
 																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
