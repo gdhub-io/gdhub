@@ -25,6 +25,7 @@ const { Title, Paragraph } = Typography
 type ProjectPageParams = {
 	project: prismaClient.Project & {
 		author: prismaClient.User & { profile: { tgNickname: prismaClient.Profile['tgNickname'] } }
+		workflow: prismaClient.ProjectWorkflow & { currentStep: prismaClient.ProjectWorkflowStep }
 	}
 	seo?: { title: string; description?: string; image?: string }
 }
@@ -55,8 +56,6 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 				<Descriptions.Item label={<T>Game Setting</T>}>{project.setting}</Descriptions.Item>
 				<Descriptions.Item label={<T>Audition</T>}>{project.audition}</Descriptions.Item>
 				<Descriptions.Item label={<T>Platform</T>}>{project.platform}</Descriptions.Item>
-			</Descriptions>
-			<Descriptions size="small" layout="vertical" column={1}>
 				<Descriptions.Item label={<T>Visual Style</T>}>{project.visualStyle}</Descriptions.Item>
 			</Descriptions>
 		</div>
@@ -84,6 +83,9 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 									</Title>
 									<Paragraph>
 										<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
+									</Paragraph>
+									<Paragraph type="secondary">
+										<T>Development stage</T>: {project.workflow.currentStep.name}
 									</Paragraph>
 								</div>
 
@@ -151,7 +153,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 			slug: projectSlug,
 			// status: { notIn: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
 		},
-		include: { author: { select: { name: true, profile: { select: { tgNickname: true } } } } },
+		include: {
+			author: { select: { name: true, profile: { select: { tgNickname: true } } } },
+			workflow: { select: { currentStep: { select: { name: true } } } },
+		},
 	})
 
 	if (!project) {
