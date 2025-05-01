@@ -148,13 +148,24 @@
 	}
 }
 
-.publicPageLink {
-	@media (max-width: 575px) {
-		width: 100%;
-		
+.publicPageMenuItem {
+	:global {
+		.ant-menu-title-content {
+			a {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 8px;
+				color: #ff4d4f !important;
+				font-weight: 500;
+			}
+		}
+	}
+
+	&:hover {
 		:global {
-			.ant-btn {
-				width: 100%;
+			.ant-menu-title-content a {
+				color: #ff7875 !important;
 			}
 		}
 	}

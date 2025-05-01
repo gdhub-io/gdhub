@@ -212,6 +212,16 @@ export const ProtectedProjectLayout = ({
 			disabled: !isProjectAuthor,
 			label: <Link href={`/my/projects/${projectSlug}/settings`}>{t('app.user.menu.settings', 'Settings')}</Link>,
 		},
+		{
+			key: `/project/${projectSlug}`,
+			disabled: false,
+			className: styles.publicPageMenuItem,
+			label: (
+				<Link href={`/project/${projectSlug}`} target="_blank" rel="noopener noreferrer">
+					{t('Public page', 'Public page')} <GoLinkExternal size={14} />
+				</Link>
+			),
+		},
 	]
 
 	if (isFetched && !project) {
@@ -299,24 +309,13 @@ export const ProtectedProjectLayout = ({
 								</Space>
 							</Col>
 						</Row>
-						<Flex align="center" justify="space-between" className={styles.menuContainer}>
-							<Menu
-								items={menuItems.filter((r) => !r.disabled)}
-								mode="horizontal"
-								selectedKeys={[router.asPath]}
-								className={styles.appMenu}
-							/>
-							<Link
-								href={`/project/${projectSlug}`}
-								target="_blank"
-								rel="noopener noreferrer"
-								className={styles.publicPageLink}
-							>
-								<Button type="primary" danger>
-									{t('Public page', 'Public page')} <GoLinkExternal size={14} />
-								</Button>
-							</Link>
-						</Flex>
+
+						<Menu
+							items={menuItems.filter((r) => !r.disabled)}
+							mode="horizontal"
+							selectedKeys={[router.asPath]}
+							className={styles.appMenu}
+						/>
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
