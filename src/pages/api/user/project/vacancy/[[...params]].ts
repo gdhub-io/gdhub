@@ -174,12 +174,8 @@ class ApiUserTeamVacancyHandler {
 						email: founderMember.user.email!,
 					},
 					payload: {
-						title: t('send-message.novu.candidate-reject.title', `Candidate rejected`),
-						message: t(
-							'send-message.novu.candidate-reject',
-							'The candidate {candidateName} rejected his candidacy for the position {vacancyName}',
-							{ candidateName: deletedMember.user.name, vacancyName: deletedMember.vacancy.title }
-						),
+						title: 'Candidate rejected',
+						message: `The candidate ${deletedMember.user.name} rejected his candidacy for the position ${deletedMember.vacancy.title}`,
 					},
 				})
 
@@ -243,13 +239,8 @@ class ApiUserTeamVacancyHandler {
 					email: vacancy.team!.project?.author.email!,
 				},
 				payload: {
-					title: t('message.new-job-response.title', 'New job response', {
-						project: vacancy.team!.project?.name,
-					}),
-					message: t('message.new-job-response.content', `for vacancy "{vacancy}" from {name}`, {
-						name: candidate.user.name,
-						vacancy: vacancy.title,
-					}),
+					title: 'New job response',
+					message: `for vacancy "${vacancy.title}" from ${candidate.user.name}`,
 					redirectUrl: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.team!.project?.id,
 				},
 			})
@@ -277,12 +268,8 @@ class ApiUserTeamVacancyHandler {
 					email: rejectedCandidate.user.email!,
 				},
 				payload: {
-					title: t('send-message.novu.candidate-reject.title', `Candidate rejected`),
-					message: t(
-						'send-message.novu.your-candidacy-reject',
-						'Your candidacy for a position on the team {teamName} has been rejected {vacancyName}',
-						{ teamName: rejectedCandidate.team.name, vacancyName: rejectedCandidate.vacancy?.title }
-					),
+					title: 'Candidate rejected',
+					message: `Your candidacy for a position on the team ${rejectedCandidate.team.name} has been rejected ${rejectedCandidate.vacancy?.title}`,
 				},
 			})
 
@@ -353,10 +340,8 @@ class ApiUserTeamVacancyHandler {
 					email: member.user.email!,
 				},
 				payload: {
-					title: t('send-message.novu.your-candidacy-approve.title', `Accepted into the team`),
-					message: t('send-message.novu.your-candidacy-approve', `You have been accepted into the team {memberName}`, {
-						memberName: member.team.name,
-					}),
+					title: 'Accepted into the team',
+					message: `You have been accepted into the team ${member.team.name}`,
 				},
 			})
 
@@ -393,10 +378,8 @@ class ApiUserTeamVacancyHandler {
 					email: firedMember.user.email!,
 				},
 				payload: {
-					title: t('send-message.novu.candidate-fire.title', `Candidate fired`),
-					message: t('send-message.novu.candidate-fire', `You have been kicked off the team {firedMemberName}`, {
-						firedMember: firedMember.team.name,
-					}),
+					title: 'Candidate fired',
+					message: `You have been kicked off the team ${firedMember.team.name}`,
 				},
 			})
 
