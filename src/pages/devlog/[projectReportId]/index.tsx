@@ -242,6 +242,7 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 										width={32}
 										height={32}
 										style={{ borderRadius: '50%' }}
+										preview={false}
 									/>
 								)}
 								<Text strong>{post?.author?.name || 'Аноним'}</Text>
