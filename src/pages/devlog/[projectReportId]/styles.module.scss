@@ -250,8 +250,12 @@
 }
 
 .video {
+  width: 100%;
+  aspect-ratio: 16/9;
   position: relative;
-  padding-top: 56.25%;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
   margin-bottom: 24px;
 
   :global {
