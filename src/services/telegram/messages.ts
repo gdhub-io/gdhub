@@ -41,8 +41,7 @@ export const newProjectReportsMessageRu = (
 		message += `\n\n<b>Проект ${report.project.name}</b>\n`
 		message += '<i>Опубликовано: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '<blockquote>' + getCleanTextContent(report.content) + '</blockquote>\n'
-		message += report.video ? `\n<a href="${report.video}">Прикрепленное видео</a>` : ''
-		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>`
+		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>\n`
 	})
 
 	return message
@@ -57,8 +56,7 @@ export const newProjectReportsMessageEn = (
 		message += `\n\n<b>Project ${report.project.name}</b>\n`
 		message += '<i>Published: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
 		message += '<blockquote expandable>' + getCleanTextContent(report.content) + '</blockquote>\n'
-		message += report.video ? `\n<a href="${report.video}">Attached video</a>` : ''
-		message += `\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>`
+		message += `\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>\n`
 	})
 
 	return message
