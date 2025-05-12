@@ -10,13 +10,16 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
 import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
+import { MdOutlineMonetizationOn } from '@react-icons/all-files/md/MdOutlineMonetizationOn'
+import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown, Modal, Avatar } from 'antd'
+import { Button, Grid, message, Typography, Tag, Space, Dropdown, Modal, Avatar, Tabs, Empty } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import EquitySection from './EquitySection'
 
 const { Text } = Typography
@@ -62,6 +65,38 @@ const MyTeam = () => {
 			}),
 		{
 			enabled: !!contextProject?.teamId && !!contextProject?.isProjectAuthor,
+		}
+	)
+
+	const {
+		data: advisors,
+		refetch: fetchAdvisors,
+		isLoading: isLoadingAdvisors,
+		isFetched: isFetchedAdvisors,
+	} = useQuery(
+		['team-advisors', contextProject?.teamId],
+		() =>
+			axios.get<prismaClient.TeamAdvisor & { user: prismaClient.User }[]>('/api/user/project/team/advisors', {
+				params: { teamId: contextProject?.teamId },
+			}),
+		{
+			enabled: !!contextProject?.teamId,
+		}
+	)
+
+	const {
+		data: investors,
+		refetch: fetchInvestors,
+		isLoading: isLoadingInvestors,
+		isFetched: isFetchedInvestors,
+	} = useQuery(
+		['team-investors', contextProject?.teamId],
+		() =>
+			axios.get<prismaClient.TeamInvestor[]>('/api/user/project/team/investors', {
+				params: { teamId: contextProject?.teamId },
+			}),
+		{
+			enabled: !!contextProject?.teamId,
 		}
 	)
 
@@ -439,6 +474,22 @@ const MyTeam = () => {
 		},
 	]
 
+	const advisorsColumns: ColumnsType<{ key: string; user: prismaClient.User }> = [
+		{
+			key: 'name',
+			title: t('Name'),
+			dataIndex: ['user', 'name'],
+		},
+	]
+
+	const investorsColumns: ColumnsType<{ key: string; name: string }> = [
+		{
+			key: 'name',
+			title: t('Name'),
+			dataIndex: 'name',
+		},
+	]
+
 	return (
 		<>
 			{/* Отображение информации о долях проекта */}
@@ -452,35 +503,79 @@ const MyTeam = () => {
 				/>
 			)}
 
-			{/* Заголовок таблицы участников с кнопкой "Пригласить участника" */}
-			<Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
-				<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
-
-				{contextProject?.isProjectAuthor && (
-					<Button type="primary" onClick={handleOpenInviteModal}>
-						<T>Invite Member</T>
-					</Button>
-				)}
-			</Flex>
-
-			<ModernTable
-				loading={isLoadingMyTeam || isFiring}
-				columns={columns}
-				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
-				pagination={false}
-			/>
-
-			{contextProject?.isProjectAuthor && pendingInvitations?.data && pendingInvitations.data.length > 0 && (
-				<>
-					<h3 style={{ marginTop: 24 }}>{t('Pending Invitations')}</h3>
+			<Tabs
+				size="large"
+				tabBarExtraContent={{
+					right: (
+						<>
+							{contextProject?.isProjectAuthor && (
+								<Button type="primary" onClick={handleOpenInviteModal}>
+									<T>Invite Member</T>
+								</Button>
+							)}
+						</>
+					),
+				}}
+			>
+				<Tabs.TabPane tab={t('Members')} key="members">
 					<ModernTable
-						loading={isLoadingPendingInvitations || isCanceling}
-						columns={pendingInvitationsColumns}
-						dataSource={pendingInvitations.data.map((invitation) => ({ ...invitation, key: invitation.id }))}
+						loading={isLoadingMyTeam || isFiring}
+						columns={columns}
+						dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 						pagination={false}
 					/>
-				</>
-			)}
+				</Tabs.TabPane>
+				{contextProject?.isProjectAuthor && pendingInvitations?.data && pendingInvitations.data.length > 0 && (
+					<Tabs.TabPane tab={t('Pending Invitations')} key="pending-invitations">
+						<ModernTable
+							loading={isLoadingPendingInvitations || isCanceling}
+							columns={pendingInvitationsColumns}
+							dataSource={pendingInvitations?.data?.map((invitation) => ({ ...invitation, key: invitation.id })) || []}
+							pagination={false}
+						/>
+					</Tabs.TabPane>
+				)}
+				<Tabs.TabPane tab={t('Advisors')} key="advisors">
+					{isFetchedAdvisors && advisors?.data?.length ? (
+						<ModernTable
+							loading={isLoadingAdvisors}
+							columns={advisorsColumns}
+							dataSource={advisors?.data?.map((advisor) => ({ key: advisor.user.id, user: advisor.user })) || []}
+							pagination={false}
+						/>
+					) : (
+						<Empty
+							style={{ marginTop: 32 }}
+							image={<MdOutlineSupportAgent size={64} color="#bfbfbf" />}
+							description={
+								<span>
+									{t('Does not have any advisors yet.')}
+									<br />
+									{t('If you need one, you can find experts or mentors on the ')}
+									<Link href="/hub/mentors">Mentors page</Link>
+									{t(' and send a consultation request.')}
+								</span>
+							}
+						/>
+					)}
+				</Tabs.TabPane>
+				<Tabs.TabPane tab={t('Investors')} key="investors">
+					{isFetchedInvestors && investors?.data?.length ? (
+						<ModernTable
+							loading={isLoadingInvestors}
+							columns={investorsColumns}
+							dataSource={investors?.data?.map((investor) => ({ ...investor, key: investor.id })) || []}
+							pagination={false}
+						/>
+					) : (
+						<Empty
+							style={{ marginTop: 32 }}
+							image={<MdOutlineMonetizationOn size={64} color="#bfbfbf" />}
+							description={t('Does not have any investors yet')}
+						/>
+					)}
+				</Tabs.TabPane>
+			</Tabs>
 
 			{contextProject?.teamId && (
 				<>
