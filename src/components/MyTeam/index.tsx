@@ -26,6 +26,10 @@ import InvestorModal from './InvestorModal'
 
 const { Text } = Typography
 
+const getTelegramExpertLink = (specialityId: string) => {
+	return `https://t.me/gdhub_experts_bot/app?startapp=expert_${specialityId}`
+}
+
 const MyTeam = () => {
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
@@ -80,9 +84,12 @@ const MyTeam = () => {
 	} = useQuery(
 		['team-advisors', contextProject?.teamId],
 		() =>
-			axios.get<(prismaClient.User & { _count: any })[]>('/api/user/project/team/advisors', {
-				params: { teamId: contextProject?.teamId },
-			}),
+			axios.get<(prismaClient.User & { _count: any; specialities: { id: string; name: string }[] })[]>(
+				'/api/user/project/team/advisors',
+				{
+					params: { teamId: contextProject?.teamId },
+				}
+			),
 		{
 			enabled: !!contextProject?.teamId,
 		}
@@ -481,7 +488,7 @@ const MyTeam = () => {
 		},
 	]
 
-	const advisorsColumns: ColumnsType<prismaClient.User> = [
+	const advisorsColumns: ColumnsType<prismaClient.User & { _count: any; specialities: any[] }> = [
 		{
 			key: 'name',
 			title: t('Name'),
@@ -504,6 +511,20 @@ const MyTeam = () => {
 				const share = (requests / totalAdviceRequests) * mentorFundShare
 				return share.toFixed(2) + '%'
 			},
+		},
+		{
+			key: 'actions',
+			title: '',
+			render: (_, advisor) => (
+				<a
+					href={getTelegramExpertLink(advisor.specialities[0].id)}
+					target="_blank"
+					rel="noopener noreferrer"
+					style={{ marginLeft: 8 }}
+				>
+					<T>New request</T>
+				</a>
+			),
 		},
 	]
 

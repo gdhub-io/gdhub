@@ -42,6 +42,12 @@ class ApiTeamAdvisorHandler {
 						name: true,
 					},
 				},
+				specialities: {
+					select: {
+						id: true,
+						name: true,
+					},
+				},
 			},
 		})
 
