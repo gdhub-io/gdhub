@@ -80,7 +80,7 @@ const MyTeam = () => {
 	} = useQuery(
 		['team-advisors', contextProject?.teamId],
 		() =>
-			axios.get<prismaClient.TeamAdvisor & { user: prismaClient.User }[]>('/api/user/project/team/advisors', {
+			axios.get<prismaClient.User[]>('/api/user/project/team/advisors', {
 				params: { teamId: contextProject?.teamId },
 			}),
 		{
@@ -478,11 +478,23 @@ const MyTeam = () => {
 		},
 	]
 
-	const advisorsColumns: ColumnsType<{ key: string; user: prismaClient.User }> = [
+	const advisorsColumns: ColumnsType<prismaClient.User> = [
 		{
 			key: 'name',
 			title: t('Name'),
-			dataIndex: ['user', 'name'],
+			dataIndex: ['profile', 'name'],
+		},
+		{
+			key: 'requests',
+			title: t('Requests'),
+			dataIndex: ['_count', 'adviceRequestsForMe'],
+			render: (value) => value || '-',
+		},
+		{
+			key: 'approximateShares',
+			title: t('Approximate shares'),
+			dataIndex: 'approximateShares',
+			render: (value) => value || '-',
 		},
 	]
 
@@ -565,7 +577,7 @@ const MyTeam = () => {
 						<ModernTable
 							loading={isLoadingAdvisors}
 							columns={advisorsColumns}
-							dataSource={advisors?.data?.map((advisor) => ({ key: advisor.user.id, user: advisor.user })) || []}
+							dataSource={advisors?.data?.map((advisor) => ({ ...advisor, key: advisor.id })) || []}
 							pagination={false}
 						/>
 					) : (

@@ -2,7 +2,6 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { IsString } from 'class-validator'
 import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
-import { AdviceRequestStatus } from '../../../../../../node_modules/.prisma/client/index.d'
 
 class ParamIdDto {
 	@IsString()
@@ -13,46 +12,40 @@ class ParamIdDto {
 class ApiTeamAdvisorHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { teamId }: ParamIdDto) {
-		// const team = await prisma.team.findUnique({
-		// 	where: { id: teamId },
-		// 	select: {
-		// 		project: {
-		// 			select: {
-		// 				id: true,
-		// 			},
-		// 		},
-		// 	},
-		// })
-
-		const teamAdvisors = await prisma.teamAdvisor.findMany({
-			where: { teamId },
-			include: {
-				speciality: {
+		const team = await prisma.team.findUnique({
+			where: { id: teamId },
+			select: {
+				project: {
 					select: {
 						id: true,
-						name: true,
-					},
-				},
-				user: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						image: true,
-						profile: {
-							include: {
-								preferredGenres: true,
-								preferredLevels: true,
-								preferredSettings: true,
-							},
-						},
-						// adviceRequestsForMe: { where: { status: AdviceRequestStatus.Approved, projectId: team?.project?.id } },
 					},
 				},
 			},
 		})
 
-		return { teamAdvisors }
+		const teamAdvisors = await prisma.user.findMany({
+			where: {
+				adviceRequestsForMe: {
+					some: {
+						projectId: team?.project?.id,
+					},
+				},
+			},
+			include: {
+				_count: {
+					select: {
+						adviceRequestsForMe: true,
+					},
+				},
+				profile: {
+					select: {
+						name: true,
+					},
+				},
+			},
+		})
+
+		return teamAdvisors
 	}
 }
 
