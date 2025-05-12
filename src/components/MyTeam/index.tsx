@@ -8,6 +8,7 @@ import TeamMemberCard from '@/components/TeamMemberCard'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { AiOutlineRight } from '@react-icons/all-files/ai/AiOutlineRight'
 import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
 import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
 import { MdOutlineMonetizationOn } from '@react-icons/all-files/md/MdOutlineMonetizationOn'
@@ -34,6 +35,8 @@ const MyTeam = () => {
 	const [isMemberEquityPromiseModalOpen, setIsMemberEquityPromiseModalOpen] = useState(false)
 	const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
 	const [showMemberCard, setShowMemberCard] = useState(false)
+	const [activeTab, setActiveTab] = useState<string>('members')
+	const [isAddInvestorModalOpen, setIsAddInvestorModalOpen] = useState(false)
 
 	const {
 		data: team,
@@ -505,15 +508,37 @@ const MyTeam = () => {
 
 			<Tabs
 				size="large"
+				activeKey={activeTab}
+				onChange={setActiveTab}
 				tabBarExtraContent={{
 					right: (
-						<>
-							{contextProject?.isProjectAuthor && (
-								<Button type="primary" onClick={handleOpenInviteModal}>
-									<T>Invite Member</T>
-								</Button>
-							)}
-						</>
+						<div style={{ marginTop: -4 }}>
+							{contextProject?.isProjectAuthor &&
+								(activeTab === 'members' || activeTab === 'pending-invitations' ? (
+									<Button type="primary" onClick={handleOpenInviteModal}>
+										<T>Invite Member</T>
+									</Button>
+								) : activeTab === 'advisors' ? (
+									<Link href="/hub/mentors" passHref legacyBehavior>
+										<Button type="default" style={{ marginLeft: 8 }}>
+											<T>Find mentors</T>
+											<AiOutlineRight style={{ marginLeft: 8 }} />
+										</Button>
+									</Link>
+								) : activeTab === 'investors' ? (
+									<Button type="primary" onClick={() => setIsAddInvestorModalOpen(true)}>
+										<T>Add investor</T>
+									</Button>
+								) : null)}
+							<Modal
+								open={isAddInvestorModalOpen}
+								title={t('Add investor')}
+								onCancel={() => setIsAddInvestorModalOpen(false)}
+								footer={null}
+							>
+								{/* TODO: Add investor form here */}
+							</Modal>
+						</div>
 					),
 				}}
 			>
