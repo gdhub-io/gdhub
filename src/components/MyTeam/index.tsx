@@ -285,15 +285,20 @@ const MyTeam = () => {
 			dataIndex: 'id',
 			key: 'id',
 			render: (value, record) => (
-				<>
-					<div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleShowMemberCard(record.id)}>
-						<Space>
-							<Avatar shape="square" size={32} src={record.user.image || null} />
-							{record.user.name}
-						</Space>
+				<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+					<div style={{ display: 'flex', alignItems: 'center' }} onClick={() => handleShowMemberCard(record.id)}>
+						<Avatar
+							shape="square"
+							size={32}
+							src={record.user.image || null}
+							style={{ marginRight: 8, cursor: 'pointer' }}
+						/>
+						<span style={{ fontWeight: 500, cursor: 'pointer' }}>{record.user.name}</span>
 					</div>
-					<small>{record.position || t('No position specified')}</small>
-				</>
+					<Text type="secondary" style={{ fontSize: 12, marginLeft: 40 }}>
+						{record.position || t('No position specified')}
+					</Text>
+				</div>
 			),
 		},
 		{
@@ -493,6 +498,21 @@ const MyTeam = () => {
 			key: 'name',
 			title: t('Name'),
 			dataIndex: ['profile', 'name'],
+			render: (value, advisor) => {
+				return (
+					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+						<div style={{ display: 'flex', alignItems: 'center' }}>
+							<Avatar shape="square" size={32} src={advisor.image || null} style={{ marginRight: 8 }} />
+							<span style={{ fontWeight: 500 }}>{value}</span>
+						</div>
+						{advisor.specialities?.length ? (
+							<Text type="secondary" style={{ fontSize: 12, marginLeft: 40 }}>
+								{advisor.specialities.map((s: any) => s.name).join(', ')}
+							</Text>
+						) : null}
+					</div>
+				)
+			},
 		},
 		{
 			key: 'requests',
@@ -514,16 +534,18 @@ const MyTeam = () => {
 		},
 		{
 			key: 'actions',
+			align: 'right',
 			title: '',
 			render: (_, advisor) => (
-				<a
+				<Button
+					type="text"
 					href={getTelegramExpertLink(advisor.specialities[0].id)}
 					target="_blank"
 					rel="noopener noreferrer"
 					style={{ marginLeft: 8 }}
 				>
-					<T>New request</T>
-				</a>
+					{t('New request')}
+				</Button>
 			),
 		},
 	]
