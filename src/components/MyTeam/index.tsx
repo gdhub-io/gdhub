@@ -22,6 +22,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import EquitySection from './EquitySection'
+import InvestorModal from './InvestorModal'
 
 const { Text } = Typography
 
@@ -530,14 +531,13 @@ const MyTeam = () => {
 										<T>Add investor</T>
 									</Button>
 								) : null)}
-							<Modal
+							<InvestorModal
 								open={isAddInvestorModalOpen}
-								title={t('Add investor')}
+								onOk={() => setIsAddInvestorModalOpen(false)}
 								onCancel={() => setIsAddInvestorModalOpen(false)}
-								footer={null}
-							>
-								{/* TODO: Add investor form here */}
-							</Modal>
+								investmentReserve={projectEquity?.data?.investmentReserve || 0}
+								investors={investors?.data || []}
+							/>
 						</div>
 					),
 				}}
