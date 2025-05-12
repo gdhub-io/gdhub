@@ -80,7 +80,7 @@ const MyTeam = () => {
 	} = useQuery(
 		['team-advisors', contextProject?.teamId],
 		() =>
-			axios.get<prismaClient.User[]>('/api/user/project/team/advisors', {
+			axios.get<(prismaClient.User & { _count: any })[]>('/api/user/project/team/advisors', {
 				params: { teamId: contextProject?.teamId },
 			}),
 		{
@@ -268,6 +268,9 @@ const MyTeam = () => {
 		setShowMemberCard(false)
 		setSelectedMemberId(null)
 	}
+
+	const totalAdviceRequests = advisors?.data?.reduce((sum, adv) => sum + (adv._count?.adviceRequestsForMe || 0), 0) || 0
+	const mentorFundShare = projectEquity?.data?.mentorFundShare || 0
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
 		{
@@ -493,8 +496,14 @@ const MyTeam = () => {
 		{
 			key: 'approximateShares',
 			title: t('Approximate shares'),
-			dataIndex: 'approximateShares',
-			render: (value) => value || '-',
+			dataIndex: '_count',
+			render: (_count, advisor) => {
+				if (!totalAdviceRequests || !mentorFundShare) return '-'
+				const requests = _count?.adviceRequestsForMe || 0
+				if (requests < 3) return '-'
+				const share = (requests / totalAdviceRequests) * mentorFundShare
+				return share.toFixed(2) + '%'
+			},
 		},
 	]
 
