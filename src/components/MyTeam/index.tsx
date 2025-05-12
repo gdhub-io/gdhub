@@ -8,18 +8,27 @@ import TeamMemberCard from '@/components/TeamMemberCard'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { AiOutlineRight } from '@react-icons/all-files/ai/AiOutlineRight'
 import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
 import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
+import { MdOutlineMonetizationOn } from '@react-icons/all-files/md/MdOutlineMonetizationOn'
+import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Flex, Typography, Tag, Space, Dropdown, Modal, Avatar } from 'antd'
+import { Button, Grid, message, Typography, Tag, Space, Dropdown, Modal, Avatar, Tabs, Empty } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import EquitySection from './EquitySection'
+import InvestorModal from './InvestorModal'
 
 const { Text } = Typography
+
+const getTelegramExpertLink = (specialityId: string) => {
+	return `https://t.me/gdhub_experts_bot/app?startapp=expert_${specialityId}`
+}
 
 const MyTeam = () => {
 	const screens = Grid.useBreakpoint()
@@ -31,6 +40,8 @@ const MyTeam = () => {
 	const [isMemberEquityPromiseModalOpen, setIsMemberEquityPromiseModalOpen] = useState(false)
 	const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
 	const [showMemberCard, setShowMemberCard] = useState(false)
+	const [activeTab, setActiveTab] = useState<string>('members')
+	const [isAddInvestorModalOpen, setIsAddInvestorModalOpen] = useState(false)
 
 	const {
 		data: team,
@@ -62,6 +73,41 @@ const MyTeam = () => {
 			}),
 		{
 			enabled: !!contextProject?.teamId && !!contextProject?.isProjectAuthor,
+		}
+	)
+
+	const {
+		data: advisors,
+		refetch: fetchAdvisors,
+		isLoading: isLoadingAdvisors,
+		isFetched: isFetchedAdvisors,
+	} = useQuery(
+		['team-advisors', contextProject?.teamId],
+		() =>
+			axios.get<(prismaClient.User & { _count: any; specialities: { id: string; name: string }[] })[]>(
+				'/api/user/project/team/advisors',
+				{
+					params: { teamId: contextProject?.teamId },
+				}
+			),
+		{
+			enabled: !!contextProject?.teamId,
+		}
+	)
+
+	const {
+		data: investors,
+		refetch: fetchInvestors,
+		isLoading: isLoadingInvestors,
+		isFetched: isFetchedInvestors,
+	} = useQuery(
+		['team-investors', contextProject?.teamId],
+		() =>
+			axios.get<prismaClient.TeamInvestor[]>('/api/user/project/team/investors', {
+				params: { teamId: contextProject?.teamId },
+			}),
+		{
+			enabled: !!contextProject?.teamId,
 		}
 	)
 
@@ -230,21 +276,29 @@ const MyTeam = () => {
 		setSelectedMemberId(null)
 	}
 
+	const totalAdviceRequests = advisors?.data?.reduce((sum, adv) => sum + (adv._count?.adviceRequestsForMe || 0), 0) || 0
+	const mentorFundShare = projectEquity?.data?.mentorFundShare || 0
+
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
 		{
 			title: t('Team Member'),
 			dataIndex: 'id',
 			key: 'id',
 			render: (value, record) => (
-				<>
-					<div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleShowMemberCard(record.id)}>
-						<Space>
-							<Avatar shape="square" size={32} src={record.user.image || null} />
-							{record.user.name}
-						</Space>
+				<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+					<div style={{ display: 'flex', alignItems: 'center' }} onClick={() => handleShowMemberCard(record.id)}>
+						<Avatar
+							shape="square"
+							size={32}
+							src={record.user.image || null}
+							style={{ marginRight: 8, cursor: 'pointer' }}
+						/>
+						<span style={{ fontWeight: 500, cursor: 'pointer' }}>{record.user.name}</span>
 					</div>
-					<small>{record.position || t('No position specified')}</small>
-				</>
+					<Text type="secondary" style={{ fontSize: 12, marginLeft: 40 }}>
+						{record.position || t('No position specified')}
+					</Text>
+				</div>
 			),
 		},
 		{
@@ -439,6 +493,71 @@ const MyTeam = () => {
 		},
 	]
 
+	const advisorsColumns: ColumnsType<prismaClient.User & { _count: any; specialities: any[] }> = [
+		{
+			key: 'name',
+			title: t('Name'),
+			dataIndex: ['profile', 'name'],
+			render: (value, advisor) => {
+				return (
+					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+						<div style={{ display: 'flex', alignItems: 'center' }}>
+							<Avatar shape="square" size={32} src={advisor.image || null} style={{ marginRight: 8 }} />
+							<span style={{ fontWeight: 500 }}>{value}</span>
+						</div>
+						{advisor.specialities?.length ? (
+							<Text type="secondary" style={{ fontSize: 12, marginLeft: 40 }}>
+								{advisor.specialities.map((s: any) => s.name).join(', ')}
+							</Text>
+						) : null}
+					</div>
+				)
+			},
+		},
+		{
+			key: 'requests',
+			title: t('Requests'),
+			dataIndex: ['_count', 'adviceRequestsForMe'],
+			render: (value) => value || '-',
+		},
+		{
+			key: 'approximateShares',
+			title: t('Approximate shares'),
+			dataIndex: '_count',
+			render: (_count, advisor) => {
+				if (!totalAdviceRequests || !mentorFundShare) return '-'
+				const requests = _count?.adviceRequestsForMe || 0
+				if (requests < 3) return '-'
+				const share = (requests / totalAdviceRequests) * mentorFundShare
+				return share.toFixed(2) + '%'
+			},
+		},
+		{
+			key: 'actions',
+			align: 'right',
+			title: '',
+			render: (_, advisor) => (
+				<Button
+					type="text"
+					href={getTelegramExpertLink(advisor.specialities[0].id)}
+					target="_blank"
+					rel="noopener noreferrer"
+					style={{ marginLeft: 8 }}
+				>
+					{t('New request')}
+				</Button>
+			),
+		},
+	]
+
+	const investorsColumns: ColumnsType<{ key: string; name: string }> = [
+		{
+			key: 'name',
+			title: t('Name'),
+			dataIndex: 'name',
+		},
+	]
+
 	return (
 		<>
 			{/* Отображение информации о долях проекта */}
@@ -452,35 +571,100 @@ const MyTeam = () => {
 				/>
 			)}
 
-			{/* Заголовок таблицы участников с кнопкой "Пригласить участника" */}
-			<Flex justify="space-between" align="center" style={{ marginBottom: 16 }}>
-				<h3 style={{ margin: 0 }}>{t('page.project.members.table-title', 'Members')}</h3>
-
-				{contextProject?.isProjectAuthor && (
-					<Button type="primary" onClick={handleOpenInviteModal}>
-						<T>Invite Member</T>
-					</Button>
-				)}
-			</Flex>
-
-			<ModernTable
-				loading={isLoadingMyTeam || isFiring}
-				columns={columns}
-				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
-				pagination={false}
-			/>
-
-			{contextProject?.isProjectAuthor && pendingInvitations?.data && pendingInvitations.data.length > 0 && (
-				<>
-					<h3 style={{ marginTop: 24 }}>{t('Pending Invitations')}</h3>
+			<Tabs
+				size="large"
+				activeKey={activeTab}
+				onChange={setActiveTab}
+				tabBarExtraContent={{
+					right: (
+						<div style={{ marginTop: -4 }}>
+							{contextProject?.isProjectAuthor &&
+								(activeTab === 'members' || activeTab === 'pending-invitations' ? (
+									<Button type="primary" onClick={handleOpenInviteModal}>
+										<T>Invite Member</T>
+									</Button>
+								) : activeTab === 'advisors' ? (
+									<Link href="/hub/mentors" passHref legacyBehavior>
+										<Button type="default" style={{ marginLeft: 8 }}>
+											<T>Find mentors</T>
+											<AiOutlineRight style={{ marginLeft: 8 }} />
+										</Button>
+									</Link>
+								) : activeTab === 'investors' ? (
+									<Button type="primary" onClick={() => setIsAddInvestorModalOpen(true)}>
+										<T>Add investor</T>
+									</Button>
+								) : null)}
+							<InvestorModal
+								open={isAddInvestorModalOpen}
+								onOk={() => setIsAddInvestorModalOpen(false)}
+								onCancel={() => setIsAddInvestorModalOpen(false)}
+								investmentReserve={projectEquity?.data?.investmentReserve || 0}
+								investors={investors?.data || []}
+							/>
+						</div>
+					),
+				}}
+			>
+				<Tabs.TabPane tab={t('Members')} key="members">
 					<ModernTable
-						loading={isLoadingPendingInvitations || isCanceling}
-						columns={pendingInvitationsColumns}
-						dataSource={pendingInvitations.data.map((invitation) => ({ ...invitation, key: invitation.id }))}
+						loading={isLoadingMyTeam || isFiring}
+						columns={columns}
+						dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 						pagination={false}
 					/>
-				</>
-			)}
+				</Tabs.TabPane>
+				{contextProject?.isProjectAuthor && pendingInvitations?.data && pendingInvitations.data.length > 0 && (
+					<Tabs.TabPane tab={t('Pending Invitations')} key="pending-invitations">
+						<ModernTable
+							loading={isLoadingPendingInvitations || isCanceling}
+							columns={pendingInvitationsColumns}
+							dataSource={pendingInvitations?.data?.map((invitation) => ({ ...invitation, key: invitation.id })) || []}
+							pagination={false}
+						/>
+					</Tabs.TabPane>
+				)}
+				<Tabs.TabPane tab={t('Advisors')} key="advisors">
+					{isFetchedAdvisors && advisors?.data?.length ? (
+						<ModernTable
+							loading={isLoadingAdvisors}
+							columns={advisorsColumns}
+							dataSource={advisors?.data?.map((advisor) => ({ ...advisor, key: advisor.id })) || []}
+							pagination={false}
+						/>
+					) : (
+						<Empty
+							style={{ marginTop: 32 }}
+							image={<MdOutlineSupportAgent size={64} color="#bfbfbf" />}
+							description={
+								<span>
+									{t('Does not have any advisors yet.')}
+									<br />
+									{t('If you need one, you can find experts or mentors on the ')}
+									<Link href="/hub/mentors">Mentors page</Link>
+									{t(' and send a consultation request.')}
+								</span>
+							}
+						/>
+					)}
+				</Tabs.TabPane>
+				<Tabs.TabPane tab={t('Investors')} key="investors">
+					{isFetchedInvestors && investors?.data?.length ? (
+						<ModernTable
+							loading={isLoadingInvestors}
+							columns={investorsColumns}
+							dataSource={investors?.data?.map((investor) => ({ ...investor, key: investor.id })) || []}
+							pagination={false}
+						/>
+					) : (
+						<Empty
+							style={{ marginTop: 32 }}
+							image={<MdOutlineMonetizationOn size={64} color="#bfbfbf" />}
+							description={t('Does not have any investors yet')}
+						/>
+					)}
+				</Tabs.TabPane>
+			</Tabs>
 
 			{contextProject?.teamId && (
 				<>
