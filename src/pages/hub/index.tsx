@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import DevlogPosts from '@/components/DevlogPosts'
+import MyAdviceRequests from '@/components/MyAdviceRequests'
 import MyProjectList from '@/components/MyProjectList'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -77,6 +78,7 @@ const HubPage: NextPageWithLayout = () => {
 				{session.status == 'authenticated' && !!session.data.user.onboardingDone && (
 					<>
 						<MyProjectList />
+						<MyAdviceRequests />
 						<DevlogPosts />
 					</>
 				)}

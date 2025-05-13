@@ -8,8 +8,8 @@ import TeamMemberCard from '@/components/TeamMemberCard'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { AiOutlineRight } from '@react-icons/all-files/ai/AiOutlineRight'
 import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
 import { MdOutlineMonetizationOn } from '@react-icons/all-files/md/MdOutlineMonetizationOn'
 import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
@@ -23,6 +23,7 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import EquitySection from './EquitySection'
 import InvestorModal from './InvestorModal'
+import ProjectAdviceArchiveModal from './ProjectAdviceArchiveModal'
 
 const { Text } = Typography
 
@@ -42,6 +43,13 @@ const MyTeam = () => {
 	const [showMemberCard, setShowMemberCard] = useState(false)
 	const [activeTab, setActiveTab] = useState<string>('members')
 	const [isAddInvestorModalOpen, setIsAddInvestorModalOpen] = useState(false)
+	const [adviceArchiveModal, setAdviceArchiveModal] = useState<{
+		open: boolean
+		advisor: any | null
+	}>({
+		open: false,
+		advisor: null,
+	})
 
 	const {
 		data: team,
@@ -515,15 +523,17 @@ const MyTeam = () => {
 			},
 		},
 		{
-			key: 'requests',
-			title: t('Requests'),
+			key: 'approvedRequests',
+			title: t('Approved requests'),
 			dataIndex: ['_count', 'adviceRequestsForMe'],
+			align: 'center',
 			render: (value) => value || '-',
 		},
 		{
 			key: 'approximateShares',
 			title: t('Approximate shares'),
 			dataIndex: '_count',
+			align: 'center',
 			render: (_count, advisor) => {
 				if (!totalAdviceRequests || !mentorFundShare) return '-'
 				const requests = _count?.adviceRequestsForMe || 0
@@ -537,15 +547,20 @@ const MyTeam = () => {
 			align: 'right',
 			title: '',
 			render: (_, advisor) => (
-				<Button
-					type="text"
-					href={getTelegramExpertLink(advisor.specialities[0].id)}
-					target="_blank"
-					rel="noopener noreferrer"
-					style={{ marginLeft: 8 }}
-				>
-					{t('New request')}
-				</Button>
+				<>
+					<Button
+						type="default"
+						href={getTelegramExpertLink(advisor.specialities[0].id)}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{t('New request')}
+						<GoLinkExternal style={{ marginLeft: 8 }} />
+					</Button>
+					<Button type="text" style={{ marginLeft: 8 }} onClick={() => handleOpenAdviceArchive(advisor)}>
+						{t('Archive')}
+					</Button>
+				</>
 			),
 		},
 	]
@@ -557,6 +572,13 @@ const MyTeam = () => {
 			dataIndex: 'name',
 		},
 	]
+
+	const handleOpenAdviceArchive = (advisor: any) => {
+		setAdviceArchiveModal({ open: true, advisor })
+	}
+	const handleCloseAdviceArchive = () => {
+		setAdviceArchiveModal({ open: false, advisor: null })
+	}
 
 	return (
 		<>
@@ -585,9 +607,8 @@ const MyTeam = () => {
 									</Button>
 								) : activeTab === 'advisors' ? (
 									<Link href="/hub/mentors" passHref legacyBehavior>
-										<Button type="default" style={{ marginLeft: 8 }}>
+										<Button type="primary" style={{ marginLeft: 8 }}>
 											<T>Find mentors</T>
-											<AiOutlineRight style={{ marginLeft: 8 }} />
 										</Button>
 									</Link>
 								) : activeTab === 'investors' ? (
@@ -701,6 +722,13 @@ const MyTeam = () => {
 			{selectedMemberId && (
 				<TeamMemberCard memberId={selectedMemberId} open={showMemberCard} onCancel={handleCloseMemberCard} />
 			)}
+
+			<ProjectAdviceArchiveModal
+				open={adviceArchiveModal.open}
+				advisor={adviceArchiveModal.advisor}
+				projectId={contextProject?.id || ''}
+				onClose={handleCloseAdviceArchive}
+			/>
 		</>
 	)
 }
