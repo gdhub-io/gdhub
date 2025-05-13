@@ -37,8 +37,8 @@ const MyAdviceRequests: React.FC = () => {
 	)
 
 	const userId = session?.user?.id
-	const incoming = useMemo(() => (data ? data.data.filter((r: any) => r.toUser.id === userId) : []), [data, userId])
-	const outgoing = useMemo(() => (data ? data.data.filter((r: any) => r.fromUser.id === userId) : []), [data, userId])
+	const incoming = useMemo(() => (data ? data.data.filter((r: any) => r.toUser?.id === userId) : []), [data, userId])
+	const outgoing = useMemo(() => (data ? data.data.filter((r: any) => r.fromUser?.id === userId) : []), [data, userId])
 
 	if (!isFetched || (!isLoading && incoming.length === 0 && outgoing.length === 0)) {
 		return null
@@ -121,7 +121,7 @@ const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ re
 		<div className={styles.requestCard}>
 			<Flex align="center" gap={16}>
 				<div style={{ position: 'relative', display: 'inline-block' }}>
-					<Avatar src={type === 'incoming' ? req.fromUser.image : req.toUser.image} />
+					<Avatar src={type === 'incoming' ? req.fromUser?.image : req.toUser?.image} />
 					<span
 						style={{
 							position: 'absolute',
@@ -137,7 +137,7 @@ const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ re
 				</div>
 				<div>
 					<Text strong>
-						{type === 'incoming' ? 'From ' + req.fromUser.profile?.name : 'To ' + req.toUser.profile?.name}
+						{type === 'incoming' ? 'From ' + req.fromUser?.profile?.name : 'To ' + req.toUser?.profile?.name}
 					</Text>
 					<div>{req.topic}</div>
 					<div style={{ color: '#888' }}>{req.comment}</div>
