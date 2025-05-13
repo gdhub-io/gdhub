@@ -2,8 +2,9 @@ import { useState } from 'react'
 import EquityTransferModal from '@/components/modals/EquityTransferModal'
 import { AiOutlineHistory } from '@react-icons/all-files/ai/AiOutlineHistory'
 import { AiOutlineInfoCircle } from '@react-icons/all-files/ai/AiOutlineInfoCircle'
+import { AiOutlineSetting } from '@react-icons/all-files/ai/AiOutlineSetting'
 import { useTolgee } from '@tolgee/react'
-import { Card, Typography, Button, Space, Modal, Popover } from 'antd'
+import { Card, Typography, Button, Space, Modal, Popover, Grid } from 'antd'
 import { useSession } from 'next-auth/react'
 import EquityPlot from './EquityPlot'
 import styles from './EquitySection.module.scss'
@@ -28,6 +29,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 }) => {
 	const { t } = useTolgee()
 	const { data: session } = useSession()
+	const screen = Grid.useBreakpoint()
 	const [transferModalVisible, setTransferModalVisible] = useState<boolean>(false)
 	const [transactionsModalVisible, setTransactionsModalVisible] = useState<boolean>(false)
 
@@ -87,7 +89,14 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 							onClick={() => setTransactionsModalVisible(true)}
 							type="text"
 						></Button>
-						{isProjectAuthor && <Button onClick={onManageEquity}>{t('Manage Equity')}</Button>}
+						{isProjectAuthor &&
+							(screen.xs ? (
+								<Button onClick={onManageEquity} icon={<AiOutlineSetting />} />
+							) : (
+								<Button onClick={onManageEquity} icon={<AiOutlineSetting />}>
+									{t('Manage Equity')}
+								</Button>
+							))}
 					</Space>
 				</div>
 

@@ -51,6 +51,7 @@ class ApiAdviceRequestsHandler {
 				fromUser: { select: { id: true, image: true, profile: { select: { name: true } } } },
 				toUser: { select: { id: true, image: true, profile: { select: { name: true } } } },
 				project: { select: { id: true, name: true } },
+				fromTelegramUser: true,
 				createdAt: true,
 				finishedAt: true,
 				status: true,

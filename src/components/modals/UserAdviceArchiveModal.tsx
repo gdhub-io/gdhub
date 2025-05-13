@@ -1,15 +1,17 @@
 import React from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaBan } from '@react-icons/all-files/fa/FaBan'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { MdCancel } from '@react-icons/all-files/md/MdCancel'
 import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
 import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Modal, theme, Tooltip } from 'antd'
+import { Button, Modal, theme, Tooltip } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import ModernTable from '../ModernTable'
 
 interface UserAdviceArchiveModalProps {
@@ -84,7 +86,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, u
 			title: t('From'),
 			dataIndex: 'fromUser',
 			key: 'fromUser',
-			render: (fromUser: any) => fromUser?.profile?.name || '-',
+			render: (fromUser: any, record: any) => fromUser?.profile?.name || record?.fromTelegramUser?.name || '-',
 		},
 		{
 			title: t('To'),
@@ -119,6 +121,18 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, u
 			dataIndex: 'finishedAt',
 			key: 'finishedAt',
 			render: (date: string) => (date ? dayjs(date).format('DD.MM.YYYY HH:mm') : '-'),
+		},
+		{
+			title: t('Actions'),
+			key: 'actions',
+			render: (_: any, record: prismaClient.AdviceRequest) => (
+				<Link href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${record.id}`}>
+					<Button type="text" size="small">
+						{t('Go to request')}
+						<GoLinkExternal />
+					</Button>
+				</Link>
+			),
 		},
 	]
 

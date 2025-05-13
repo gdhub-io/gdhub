@@ -18,6 +18,12 @@ import styles from './styles.module.scss'
 
 const { Title, Text } = Typography
 
+type RequestCardData = prismaClient.AdviceRequest & {
+	fromUser?: prismaClient.User & { profile: prismaClient.Profile }
+	toUser: prismaClient.User & { profile: prismaClient.Profile }
+	fromTelegramUser?: { name: string; image: string }
+}
+
 const MyAdviceRequests: React.FC = () => {
 	const { t } = useTolgee()
 	const { data: session } = useSession()
@@ -26,11 +32,7 @@ const MyAdviceRequests: React.FC = () => {
 	const { data, isLoading, isFetched } = useQuery(['advice-requests'], () =>
 		axios.get('/api/user/advice-requests', {
 			params: {
-				status: [
-					prismaClient.AdviceRequestStatus.Created,
-					prismaClient.AdviceRequestStatus.Approved,
-					prismaClient.AdviceRequestStatus.Rejected,
-				],
+				status: [prismaClient.AdviceRequestStatus.Created],
 			},
 			paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
 		})
@@ -68,7 +70,7 @@ const MyAdviceRequests: React.FC = () => {
 				<Space direction="vertical" size={32} style={{ width: '100%' }}>
 					{incoming.length > 0 && (
 						<div>
-							<Title level={4}>{t('page.hub.incoming-requests', 'Incoming requests')}</Title>
+							<Title level={4}>{t('page.hub.incoming-requests', 'Incoming')}</Title>
 							{isLoading ? (
 								<Spin />
 							) : (
@@ -82,7 +84,7 @@ const MyAdviceRequests: React.FC = () => {
 					)}
 					{outgoing.length > 0 && (
 						<div>
-							<Title level={4}>{t('page.hub.outgoing-requests', 'Outgoing requests')}</Title>
+							<Title level={4}>{t('page.hub.outgoing-requests', 'Outgoing')}</Title>
 							{isLoading ? (
 								<Spin />
 							) : (
@@ -116,7 +118,16 @@ const getStatusIcon = (status: string) => {
 	}
 }
 
-const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ req, type }) => {
+const RequestCard: React.FC<{
+	req: RequestCardData
+	type: 'incoming' | 'outgoing'
+}> = ({ req, type }) => {
+	const { t } = useTolgee()
+
+	const isTelegramUser = useMemo(() => Boolean(req.fromUser) === false, [req])
+	const fromUserName = useMemo(() => (req.fromUser ? req.fromUser.profile.name : req.fromTelegramUser?.name), [req])
+	const toUserName = useMemo(() => (req.toUser ? req.toUser.profile.name : t('Unknown')), [req])
+
 	return (
 		<div className={styles.requestCard}>
 			<Flex align="center" gap={16}>
@@ -125,7 +136,7 @@ const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ re
 					<span
 						style={{
 							position: 'absolute',
-							bottom: -2,
+							bottom: -8,
 							right: -2,
 							background: 'transparent',
 							borderRadius: '50%',
@@ -136,9 +147,10 @@ const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ re
 					</span>
 				</div>
 				<div>
-					<Text strong>
-						{type === 'incoming' ? 'From ' + req.fromUser?.profile?.name : 'To ' + req.toUser?.profile?.name}
-					</Text>
+					<Space>
+						<Text strong>{type === 'incoming' ? 'From ' + fromUserName : 'To ' + toUserName}</Text>
+						{isTelegramUser && <Text type="secondary">({t('Telegram user')})</Text>}
+					</Space>
 					<div>{req.topic}</div>
 					<div style={{ color: '#888' }}>{req.comment}</div>
 				</div>

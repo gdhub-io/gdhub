@@ -20,6 +20,7 @@ export function ModernTable<T extends object>({
 				<Table<T>
 					{...props}
 					showHeader={showHeader}
+					scroll={{ x: 'max-content' }}
 					rowClassName={(record, index) => {
 						const baseClassName = 'table-row'
 						return typeof rowClassName === 'function'
