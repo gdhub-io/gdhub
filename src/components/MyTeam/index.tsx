@@ -8,6 +8,7 @@ import TeamMemberCard from '@/components/TeamMemberCard'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { AiOutlinePlus } from '@react-icons/all-files/ai/AiOutlinePlus'
 import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
@@ -602,19 +603,33 @@ const MyTeam = () => {
 						<div style={{ marginTop: -4 }}>
 							{contextProject?.isProjectAuthor &&
 								(activeTab === 'members' || activeTab === 'pending-invitations' ? (
-									<Button type="primary" onClick={handleOpenInviteModal}>
-										<T>Invite Member</T>
-									</Button>
-								) : activeTab === 'advisors' ? (
-									<Link href="/hub/mentors" passHref legacyBehavior>
-										<Button type="primary" style={{ marginLeft: 8 }}>
-											<T>Find mentors</T>
+									screens.xs ? (
+										<Button type="primary" onClick={handleOpenInviteModal} icon={<AiOutlinePlus />} />
+									) : (
+										<Button type="primary" onClick={handleOpenInviteModal} icon={<AiOutlinePlus />}>
+											<T>Invite Member</T>
 										</Button>
-									</Link>
+									)
+								) : activeTab === 'advisors' ? (
+									screens.xs ? (
+										<Link href="/hub/mentors" passHref legacyBehavior>
+											<Button type="primary" style={{ marginLeft: 8 }} icon={<AiOutlinePlus />} />
+										</Link>
+									) : (
+										<Link href="/hub/mentors" passHref legacyBehavior>
+											<Button type="primary" style={{ marginLeft: 8 }} icon={<AiOutlinePlus />}>
+												<T>Find mentors</T>
+											</Button>
+										</Link>
+									)
 								) : activeTab === 'investors' ? (
-									<Button type="primary" onClick={() => setIsAddInvestorModalOpen(true)}>
-										<T>Add investor</T>
-									</Button>
+									screens.xs ? (
+										<Button type="primary" onClick={() => setIsAddInvestorModalOpen(true)} icon={<AiOutlinePlus />} />
+									) : (
+										<Button type="primary" onClick={() => setIsAddInvestorModalOpen(true)} icon={<AiOutlinePlus />}>
+											<T>Add investor</T>
+										</Button>
+									)
 								) : null)}
 							<InvestorModal
 								open={isAddInvestorModalOpen}
