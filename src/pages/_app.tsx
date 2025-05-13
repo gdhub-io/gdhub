@@ -6,7 +6,7 @@ import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
 import { publicThemeConfig, secondFont } from '@/config/theme'
 import { hasGoogleConsent } from '@/helpers/googleConsent'
-import { GTM_ID, pageview } from '@/helpers/gtm'
+import { GTM_ID } from '@/helpers/gtm'
 import { useAuthErrorHandler } from '@/hooks/useAuthErrorHandler'
 import { tolgeeService } from '@/services/tolgee'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -29,7 +29,7 @@ import Script from 'next/script'
 import { SessionProvider, signOut } from 'next-auth/react'
 import 'dayjs/locale/en'
 import { DefaultSeo } from 'next-seo'
-import NProgress from 'nprogress'
+import NextNProgress from 'nextjs-progressbar'
 
 dayjs.extend(localizedFormat)
 dayjs.extend(utc)
@@ -38,8 +38,6 @@ dayjs.extend(localeData)
 dayjs.extend(relativeTime)
 dayjs.extend(weekday)
 dayjs.locale(defaultLocale)
-
-NProgress.configure({ showSpinner: false })
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
 	getLayout?: (page: ReactNode) => ReactNode
@@ -98,26 +96,6 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 		document.body.style.overflow = showContent ? 'unset' : 'hidden'
 	}, [showContent])
 
-	const routeChangeStart = (...args: any) => {
-		NProgress.start()
-	}
-
-	const routeChangeComplete = (url: string) => {
-		if (process.env.NODE_ENV == 'production') pageview(url)
-
-		NProgress.done()
-	}
-
-	useEffect(() => {
-		router.events.on('routeChangeStart', routeChangeStart)
-		router.events.on('routeChangeComplete', routeChangeComplete)
-
-		return () => {
-			router.events.off('routeChangeStart', routeChangeStart)
-			router.events.off('routeChangeComplete', routeChangeComplete)
-		}
-	}, [router.events])
-
 	return (
 		<>
 			<DefaultSeo {...SEOSettings[ssrTolgee.getLanguage() as AvailableLocales]} />
@@ -161,6 +139,13 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 				</QueryClientProvider>
 				{/* </ErrorBoundary> */}
 			</TolgeeProvider>
+			<NextNProgress
+				color="#F15541"
+				startPosition={0.3}
+				stopDelayMs={200}
+				height={3}
+				options={{ showSpinner: false }}
+			/>
 		</>
 	)
 }

@@ -6,10 +6,12 @@ import { FaBan } from '@react-icons/all-files/fa/FaBan'
 import { MdCancel } from '@react-icons/all-files/md/MdCancel'
 import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
 import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
+import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Button, Flex, Typography, Spin, Space, Avatar } from 'antd'
 import axios from 'axios'
+import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import qs from 'qs'
 import styles from './styles.module.scss'
@@ -46,7 +48,10 @@ const MyAdviceRequests: React.FC = () => {
 		<>
 			<div className={styles.adviceRequestsContainer}>
 				<Flex justify="space-between" align="center" wrap>
-					<Title level={2}>{t('page.hub.advice-requests', 'Advice Requests')}</Title>
+					<Space>
+						<MdOutlineSupportAgent size={36} />
+						<Title level={2}>{t('page.hub.advice-requests', 'Advice Requests')}</Title>
+					</Space>
 					<Space>
 						<Button
 							type="text"
@@ -55,7 +60,9 @@ const MyAdviceRequests: React.FC = () => {
 							aria-label="Archive"
 							title={t('Archive')}
 						/>
-						<Button type="primary">{t('page.hub.ask-question', 'Ask a question')}</Button>
+						<Link href="/hub/mentors">
+							<Button type="primary">{t('page.hub.ask-question', 'Ask a question')}</Button>
+						</Link>
 					</Space>
 				</Flex>
 				<Space direction="vertical" size={32} style={{ width: '100%' }}>
@@ -89,6 +96,7 @@ const MyAdviceRequests: React.FC = () => {
 					)}
 				</Space>
 			</div>
+
 			<UserAdviceArchiveModal open={showArchive} user={session?.user} onClose={() => setShowArchive(false)} />
 		</>
 	)
@@ -137,14 +145,20 @@ const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ re
 				<div style={{ marginLeft: 'auto', color: '#888', display: 'flex', alignItems: 'center', gap: 8 }}>
 					{type === 'incoming' ? (
 						req.status === 'Created' ? (
-							<Button type="primary" size="small">
-								Reply
-							</Button>
+							<Link href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${req.id}`} target="_blank">
+								<Button type="primary" size="small">
+									Reply
+								</Button>
+							</Link>
 						) : (
-							<Button size="small">View</Button>
+							<Link href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${req.id}`} target="_blank">
+								<Button size="small">View</Button>
+							</Link>
 						)
 					) : (
-						<Button size="small">View</Button>
+						<Link href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${req.id}`} target="_blank">
+							<Button size="small">View</Button>
+						</Link>
 					)}
 				</div>
 			</Flex>
