@@ -23,7 +23,7 @@ const MyAdviceRequests: React.FC = () => {
 	const { data: session } = useSession()
 	const [showArchive, setShowArchive] = React.useState(false)
 
-	const { data, isLoading, error, refetch } = useQuery(['advice-requests'], () =>
+	const { data, isLoading, isFetched } = useQuery(['advice-requests'], () =>
 		axios.get('/api/user/advice-requests', {
 			params: {
 				status: [
@@ -40,7 +40,7 @@ const MyAdviceRequests: React.FC = () => {
 	const incoming = useMemo(() => (data ? data.data.filter((r: any) => r.toUser.id === userId) : []), [data, userId])
 	const outgoing = useMemo(() => (data ? data.data.filter((r: any) => r.fromUser.id === userId) : []), [data, userId])
 
-	if (!isLoading && incoming.length === 0 && outgoing.length === 0) {
+	if (!isFetched || (!isLoading && incoming.length === 0 && outgoing.length === 0)) {
 		return null
 	}
 
