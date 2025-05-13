@@ -1,5 +1,6 @@
 import React from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { FaBan } from '@react-icons/all-files/fa/FaBan'
 import { MdCancel } from '@react-icons/all-files/md/MdCancel'
 import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
 import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
@@ -63,6 +64,10 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({ o
 						icon = <MdCancel style={{ color: '#ff4d4f', fontSize: 22 }} />
 						text = t('Rejected')
 						break
+					case 'Closed':
+						icon = <FaBan style={{ color: themeToken.colorTextSecondary, fontSize: 16 }} />
+						text = t('Closed')
+						break
 					case 'Created':
 					default:
 						icon = <MdFiberManualRecord style={{ color: '#1890ff', fontSize: 8 }} />
@@ -105,6 +110,12 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({ o
 			dataIndex: 'createdAt',
 			key: 'createdAt',
 			render: (date: string) => dayjs(date).format('DD.MM.YYYY HH:mm'),
+		},
+		{
+			title: t('Finished At'),
+			dataIndex: 'finishedAt',
+			key: 'finishedAt',
+			render: (date: string) => (date ? dayjs(date).format('DD.MM.YYYY HH:mm') : '-'),
 		},
 	]
 

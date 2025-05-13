@@ -1,5 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -34,7 +35,11 @@ class ApiTeamAdvisorHandler {
 			include: {
 				_count: {
 					select: {
-						adviceRequestsForMe: true,
+						adviceRequestsForMe: {
+							where: {
+								status: prismaClient.AdviceRequestStatus.Approved,
+							},
+						},
 					},
 				},
 				profile: {
