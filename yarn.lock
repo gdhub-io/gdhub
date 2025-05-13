@@ -1836,10 +1836,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.9.tgz#50dea3616bc8191fb8e112283b49eaff03e78429"
   integrity sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==
 
-"@gdhub-io/gdhub-prisma@^1.9.2":
-  version "1.9.2"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.9.2/2f2a344d067955c9b4cb1db5951dbe8dc8c688ac#2f2a344d067955c9b4cb1db5951dbe8dc8c688ac"
-  integrity sha512-GvzaJ5nbe5KEGBY0ee5BRvZ13IIP/ibJKPxXvcC/tc71MzAof/6yTYPHF5qu8ZfOApeYxKEHGXpXw+v8bvxFjA==
+"@gdhub-io/gdhub-prisma@^1.10.0-beta.1":
+  version "1.10.0-beta.1"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.10.0-beta.1/1cc8c6e9b8e91910fdc2dbe2d16db24389b400b0#1cc8c6e9b8e91910fdc2dbe2d16db24389b400b0"
+  integrity sha512-U+ghmnZrqm1rBdmIBz8Ds3EXjFFzNoPyI1PLubosZ2ewlFLKbZ+OrXzj9G9y9gSwcPlT98wr5g8VRpkkB3oAoQ==
   dependencies:
     "@faker-js/faker" "^9.2.0"
     "@gdhub-io/gdhub-typesense" "^1.0.6"
@@ -4361,7 +4361,7 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/nprogress@^0.2.3":
+"@types/nprogress@^0.2.0", "@types/nprogress@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@types/nprogress/-/nprogress-0.2.3.tgz#b2150b054a13622fabcba12cf6f0b54c48b14287"
   integrity sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==
@@ -9712,6 +9712,15 @@ next@^14.2.14:
     "@next/swc-win32-arm64-msvc" "14.2.26"
     "@next/swc-win32-ia32-msvc" "14.2.26"
     "@next/swc-win32-x64-msvc" "14.2.26"
+
+nextjs-progressbar@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/nextjs-progressbar/-/nextjs-progressbar-0.0.16.tgz#d2c1e54ffc2c6d52b64282c0d764a44241fbc36e"
+  integrity sha512-GV0fD38EMD3vSDCmkq+tObmoup6QA91a6a9MxGuhJZuRk/9TNsrHGnIQQQ/sggkMkXuT4fBgF6jRjFwScDT3zA==
+  dependencies:
+    "@types/nprogress" "^0.2.0"
+    nprogress "^0.2.0"
+    prop-types "^15.8.1"
 
 node-abi@^3.3.0:
   version "3.56.0"
