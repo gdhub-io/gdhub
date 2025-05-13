@@ -1,17 +1,25 @@
 import React, { useMemo } from 'react'
+import UserAdviceArchiveModal from '@/components/modals/UserAdviceArchiveModal'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { AiOutlineHistory } from '@react-icons/all-files/ai/AiOutlineHistory'
+import { FaBan } from '@react-icons/all-files/fa/FaBan'
+import { MdCancel } from '@react-icons/all-files/md/MdCancel'
+import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
+import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Button, Flex, Typography, Spin, Space, Avatar, Empty } from 'antd'
+import { Button, Flex, Typography, Spin, Space, Avatar } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import qs from 'qs'
 import styles from './styles.module.scss'
+
 const { Title, Text } = Typography
 
 const MyAdviceRequests: React.FC = () => {
 	const { t } = useTolgee()
 	const { data: session } = useSession()
+	const [showArchive, setShowArchive] = React.useState(false)
 
 	const { data, isLoading, error, refetch } = useQuery(['advice-requests'], () =>
 		axios.get('/api/user/advice-requests', {
@@ -30,51 +38,95 @@ const MyAdviceRequests: React.FC = () => {
 	const incoming = useMemo(() => (data ? data.data.filter((r: any) => r.toUser.id === userId) : []), [data, userId])
 	const outgoing = useMemo(() => (data ? data.data.filter((r: any) => r.fromUser.id === userId) : []), [data, userId])
 
+	if (!isLoading && incoming.length === 0 && outgoing.length === 0) {
+		return null
+	}
+
 	return (
-		<div className={styles.adviceRequestsContainer}>
-			<Flex justify="space-between" align="center" wrap>
-				<Title level={2}>{t('page.hub.advice-requests', 'Advice Requests')}</Title>
-				<Button type="primary">{t('page.hub.ask-question', 'Ask a question')}</Button>
-			</Flex>
-			<Space direction="vertical" size={32} style={{ width: '100%' }}>
-				<div>
-					<Title level={4}>{t('page.hub.incoming-requests', 'Incoming requests')}</Title>
-					{isLoading ? (
-						<Spin />
-					) : incoming.length === 0 ? (
-						<Empty description={t('No incoming requests')} />
-					) : (
-						<div className={styles.requestsList}>
-							{incoming.map((req: any) => (
-								<RequestCard key={req.id} req={req} type="incoming" />
-							))}
+		<>
+			<div className={styles.adviceRequestsContainer}>
+				<Flex justify="space-between" align="center" wrap>
+					<Title level={2}>{t('page.hub.advice-requests', 'Advice Requests')}</Title>
+					<Space>
+						<Button
+							type="text"
+							icon={<AiOutlineHistory />}
+							onClick={() => setShowArchive(true)}
+							aria-label="Archive"
+							title={t('Archive')}
+						/>
+						<Button type="primary">{t('page.hub.ask-question', 'Ask a question')}</Button>
+					</Space>
+				</Flex>
+				<Space direction="vertical" size={32} style={{ width: '100%' }}>
+					{incoming.length > 0 && (
+						<div>
+							<Title level={4}>{t('page.hub.incoming-requests', 'Incoming requests')}</Title>
+							{isLoading ? (
+								<Spin />
+							) : (
+								<div className={styles.requestsList}>
+									{incoming.map((req: any) => (
+										<RequestCard key={req.id} req={req} type="incoming" />
+									))}
+								</div>
+							)}
 						</div>
 					)}
-				</div>
-				<div>
-					<Title level={4}>{t('page.hub.outgoing-requests', 'Outgoing requests')}</Title>
-					{isLoading ? (
-						<Spin />
-					) : outgoing.length === 0 ? (
-						<Empty description={t('No outgoing requests')} />
-					) : (
-						<div className={styles.requestsList}>
-							{outgoing.map((req: any) => (
-								<RequestCard key={req.id} req={req} type="outgoing" />
-							))}
+					{outgoing.length > 0 && (
+						<div>
+							<Title level={4}>{t('page.hub.outgoing-requests', 'Outgoing requests')}</Title>
+							{isLoading ? (
+								<Spin />
+							) : (
+								<div className={styles.requestsList}>
+									{outgoing.map((req: any) => (
+										<RequestCard key={req.id} req={req} type="outgoing" />
+									))}
+								</div>
+							)}
 						</div>
 					)}
-				</div>
-			</Space>
-		</div>
+				</Space>
+			</div>
+			<UserAdviceArchiveModal open={showArchive} user={session?.user} onClose={() => setShowArchive(false)} />
+		</>
 	)
+}
+
+const getStatusIcon = (status: string) => {
+	switch (status) {
+		case 'Approved':
+			return <MdCheckCircle style={{ color: '#52c41a', fontSize: 16, background: '#fff', borderRadius: '50%' }} />
+		case 'Rejected':
+			return <MdCancel style={{ color: '#ff4d4f', fontSize: 16, background: '#fff', borderRadius: '50%' }} />
+		case 'Closed':
+			return <FaBan style={{ color: '#888', fontSize: 16, background: '#fff', borderRadius: '50%' }} />
+		case 'Created':
+		default:
+			return <MdFiberManualRecord style={{ color: '#1890ff', fontSize: 12, background: '#fff', borderRadius: '50%' }} />
+	}
 }
 
 const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ req, type }) => {
 	return (
 		<div className={styles.requestCard}>
 			<Flex align="center" gap={16}>
-				<Avatar src={type === 'incoming' ? req.fromUser.image : req.toUser.image} />
+				<div style={{ position: 'relative', display: 'inline-block' }}>
+					<Avatar src={type === 'incoming' ? req.fromUser.image : req.toUser.image} />
+					<span
+						style={{
+							position: 'absolute',
+							bottom: -2,
+							right: -2,
+							background: 'transparent',
+							borderRadius: '50%',
+							zIndex: 2,
+						}}
+					>
+						{getStatusIcon(req.status)}
+					</span>
+				</div>
 				<div>
 					<Text strong>
 						{type === 'incoming' ? 'From ' + req.fromUser.profile?.name : 'To ' + req.toUser.profile?.name}
@@ -83,11 +135,14 @@ const RequestCard: React.FC<{ req: any; type: 'incoming' | 'outgoing' }> = ({ re
 					<div style={{ color: '#888' }}>{req.comment}</div>
 				</div>
 				<div style={{ marginLeft: 'auto', color: '#888', display: 'flex', alignItems: 'center', gap: 8 }}>
-					<span>{req.status}</span>
 					{type === 'incoming' ? (
-						<Button type="primary" size="small">
-							Reply
-						</Button>
+						req.status === 'Created' ? (
+							<Button type="primary" size="small">
+								Reply
+							</Button>
+						) : (
+							<Button size="small">View</Button>
+						)
 					) : (
 						<Button size="small">View</Button>
 					)}

@@ -50,6 +50,7 @@ class ApiAdviceRequestsHandler {
 			select: {
 				fromUser: { select: { id: true, image: true, profile: { select: { name: true } } } },
 				toUser: { select: { id: true, image: true, profile: { select: { name: true } } } },
+				project: { select: { id: true, name: true } },
 				createdAt: true,
 				finishedAt: true,
 				status: true,
