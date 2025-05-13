@@ -23,6 +23,7 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import EquitySection from './EquitySection'
 import InvestorModal from './InvestorModal'
+import ProjectAdviceArchiveModal from './ProjectAdviceArchiveModal'
 
 const { Text } = Typography
 
@@ -42,6 +43,14 @@ const MyTeam = () => {
 	const [showMemberCard, setShowMemberCard] = useState(false)
 	const [activeTab, setActiveTab] = useState<string>('members')
 	const [isAddInvestorModalOpen, setIsAddInvestorModalOpen] = useState(false)
+	const [adviceArchiveModal, setAdviceArchiveModal] = useState<{
+		open: boolean
+		advisor: any | null
+	}>({
+		open: false,
+		advisor: null,
+	})
+	const [selectedAdvisorId, setSelectedAdvisorId] = useState<string | null>(null)
 
 	const {
 		data: team,
@@ -537,15 +546,20 @@ const MyTeam = () => {
 			align: 'right',
 			title: '',
 			render: (_, advisor) => (
-				<Button
-					type="text"
-					href={getTelegramExpertLink(advisor.specialities[0].id)}
-					target="_blank"
-					rel="noopener noreferrer"
-					style={{ marginLeft: 8 }}
-				>
-					{t('New request')}
-				</Button>
+				<>
+					<Button
+						type="text"
+						href={getTelegramExpertLink(advisor.specialities[0].id)}
+						target="_blank"
+						rel="noopener noreferrer"
+						style={{ marginLeft: 8 }}
+					>
+						{t('New request')}
+					</Button>
+					<Button type="default" style={{ marginLeft: 8 }} onClick={() => handleOpenAdviceArchive(advisor)}>
+						{t('Archive')}
+					</Button>
+				</>
 			),
 		},
 	]
@@ -557,6 +571,15 @@ const MyTeam = () => {
 			dataIndex: 'name',
 		},
 	]
+
+	const handleOpenAdviceArchive = (advisor: any) => {
+		setSelectedAdvisorId(advisor.id)
+		setAdviceArchiveModal({ open: true, advisor })
+	}
+	const handleCloseAdviceArchive = () => {
+		setAdviceArchiveModal({ open: false, advisor: null })
+		setSelectedAdvisorId(null)
+	}
 
 	return (
 		<>
@@ -701,6 +724,13 @@ const MyTeam = () => {
 			{selectedMemberId && (
 				<TeamMemberCard memberId={selectedMemberId} open={showMemberCard} onCancel={handleCloseMemberCard} />
 			)}
+
+			<ProjectAdviceArchiveModal
+				open={adviceArchiveModal.open}
+				advisor={adviceArchiveModal.advisor}
+				projectId={contextProject?.id || ''}
+				onClose={handleCloseAdviceArchive}
+			/>
 		</>
 	)
 }
