@@ -83,7 +83,7 @@ export const ProtectedProjectLayout = ({
 	}
 
 	useEffect(() => {
-		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('langiage is changed'))
+		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('language is changed'))
 	}, [session?.user.lang])
 
 	useEffect(() => {

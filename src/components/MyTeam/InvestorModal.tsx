@@ -1,6 +1,8 @@
-import { useState } from 'react'
-import { T } from '@tolgee/react'
-import { Modal, Form, Input, InputNumber, Slider, Checkbox, Row, Col, Typography, DatePicker } from 'antd'
+import { useEffect, useMemo, useState } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { T, useTranslate } from '@tolgee/react'
+import { Modal, Form, Input, InputNumber, Slider, Checkbox, Row, Col, Typography, DatePicker, message } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 
 const { Paragraph } = Typography
@@ -11,16 +13,55 @@ interface AddInvestorModalProps {
 	onCancel: () => void
 	investmentReserve: number
 	investors: { share: number }[]
+	teamInvestorId?: string
+	teamId: string
 }
 
-const InvestorModal = ({ open, onOk, onCancel, investmentReserve, investors }: AddInvestorModalProps) => {
+const InvestorModal = ({
+	teamInvestorId,
+	open,
+	onOk,
+	onCancel,
+	investmentReserve,
+	investors,
+	teamId,
+}: AddInvestorModalProps) => {
+	const { t } = useTranslate()
 	const [form] = Form.useForm()
 	const [confirm, setConfirm] = useState(false)
 
-	const usedShare = investors.reduce((sum, inv) => sum + (inv.share || 0), 0)
-	const maxShare = Math.max(0.1, Number((investmentReserve - usedShare).toFixed(2)))
+	const { data, isLoading } = useQuery({
+		queryKey: ['teamInvestor', teamInvestorId],
+		queryFn: () => axios.get(`/api/project/team-investor/${teamInvestorId}`),
+		enabled: !!teamInvestorId,
+	})
 
-	// Генерируем marks для слайдера: 0.1, 1/4, 1/2, 3/4, maxShare
+	const { mutateAsync: createTeamInvestor } = useMutation({
+		mutationFn: (values: any) => axios.post('/api/project/team-investor', values),
+	})
+
+	const { mutateAsync: updateTeamInvestor } = useMutation({
+		mutationFn: ({ id, values }: { id: string; values: any }) => axios.put(`/api/project/team-investor/${id}`, values),
+	})
+
+	useEffect(() => {
+		if (data) {
+			form.setFieldsValue({
+				name: data.data.name,
+				share: data.data.share,
+				currency: data.data.currency,
+				value: data.data.value,
+				purchasedAt: dayjs(data.data.purchasedAt),
+			})
+		}
+	}, [open, data])
+
+	const usedShare = useMemo(() => investors.reduce((sum, inv) => sum + (inv.share || 0), 0), [investors])
+	const maxShare = useMemo(
+		() => Math.max(0.1, Number((investmentReserve - usedShare).toFixed(2))) + (data?.data.share || 0),
+		[investmentReserve, usedShare, data?.data.share]
+	)
+
 	const getSliderMarks = () => {
 		if (maxShare <= 0.1) return { 0.1: '0.1', [maxShare]: maxShare.toString() }
 		const step = (maxShare - 0.1) / 4
@@ -35,7 +76,6 @@ const InvestorModal = ({ open, onOk, onCancel, investmentReserve, investors }: A
 		return marks
 	}
 
-	// Синхронизация значения между Slider и InputNumber
 	const shareValue = Form.useWatch('share', form)
 	const handleShareChange = (value: number | null) => {
 		form.setFieldsValue({ share: value ?? 0.1 })
@@ -44,11 +84,25 @@ const InvestorModal = ({ open, onOk, onCancel, investmentReserve, investors }: A
 	const handleOk = async () => {
 		try {
 			const values = await form.validateFields()
-			if (!confirm) return
+
+			if (teamInvestorId) {
+				await updateTeamInvestor({
+					id: teamInvestorId,
+					values,
+				})
+			} else {
+				await createTeamInvestor({
+					...values,
+					teamId,
+				})
+			}
+
 			onOk(values)
 			form.resetFields()
 			setConfirm(false)
-		} catch (e) {}
+		} catch (e) {
+			message.error('Failed to save investor')
+		}
 	}
 
 	const handleCancel = () => {
@@ -60,7 +114,7 @@ const InvestorModal = ({ open, onOk, onCancel, investmentReserve, investors }: A
 	return (
 		<Modal
 			open={open}
-			title={<T>Add investor</T>}
+			title={teamInvestorId ? t('Edit investor') : t('Add investor')}
 			onOk={handleOk}
 			onCancel={handleCancel}
 			okButtonProps={{ disabled: !confirm }}
@@ -125,7 +179,7 @@ const InvestorModal = ({ open, onOk, onCancel, investmentReserve, investors }: A
 					</Col>
 				</Row>
 				<Form.Item
-					name="dealDate"
+					name="purchasedAt"
 					label={<T>Deal date</T>}
 					rules={[{ required: true, message: 'Please select deal date' }]}
 				>
@@ -138,7 +192,15 @@ const InvestorModal = ({ open, onOk, onCancel, investmentReserve, investors }: A
 				</Form.Item>
 				<Form.Item>
 					<Checkbox checked={confirm} onChange={(e) => setConfirm(e.target.checked)}>
-						<T>I confirm that the share sale has already been completed between the author and the investor</T>
+						{teamInvestorId
+							? t(
+									'modal.confirm.editInvestor',
+									'I confirm that the change in the share sale has already been confirmed between the author and the investor'
+								)
+							: t(
+									'modal.confirm.investor',
+									'I confirm that the share sale has already been completed between the author and the investor'
+								)}
 					</Checkbox>
 				</Form.Item>
 			</Form>

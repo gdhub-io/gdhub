@@ -1,24 +1,32 @@
 {
+  " and send a consultation request": {
+    "": "и отправьте запрос на консультацию."
+  },
   "(not pointed)": "(не указано)",
+  "3% is fixed for the platform": "3% зафиксированы за платформой",
   "A new report has been added": "Добавлен новый отчет",
   "A new vacancy has been added": "Добавлена новая вакансия",
+  "A portion should be reserved for future investments": "Часть долей рекомендуем зарезервировать для будущих инвесторов",
   "About Game": "Об игре",
   "About us": "О нас",
   "Accept the team": "Принять команду",
   "Achiever": "Добиваться успеха",
   "Actual Equity": "Фактическая доля",
   "Add a report": "Добавить отчет",
+  "Add investor": "Добавить инвестора",
   "Add specialty": "Добавить специальность",
   "Add the vacancy": "Добавить вакансию",
   "Add your project idea": "Добавьте идею вашего проекта",
   "Added a new game project": "Добавлен новый игровой проект",
   "Administration": "Администрация",
+  "Advisors": "Менторы",
   "After completing": "По завершении шага",
   "Allows you to contribute to game development through advising": "Позволяет вам внести свой вклад в разработку игр посредством консультирования",
   "Appendix": "Приложение",
   "Archive": "Архив",
   "Are you sure?": "Вы уверены?",
   "Assemble a team": "Собрать команду",
+  "At least 2% is allocated to the mentor fund": "Не менее 2% должно быть указано для фонда менторов",
   "At the moment, reports are not provided": "На данный момент отчеты не предоставляются",
   "Audition": "Прослушивание",
   "Author": "Автор",
@@ -62,15 +70,22 @@
   "Current vested equity": "Текущая закрепленная доля",
   "Date": "Дата",
   "Days on Project": "Дней на проекте",
+  "Deal date": "Дата сделки",
   "Details": "Подробнее",
   "Development Log": "Журнал разработки",
   "Discord": "Дискорд",
   "Display Name": "Отображаемое имя",
   "Documentation": "Документация",
+  "Does not have any advisors yet": {
+    "": "У вас пока нет менторов."
+  },
+  "Does not have any investors yet": "У вас еще не указана информация об инвесторах",
   "Email": "Эл. почта",
   "End stream": "Завершить трансляцию",
   "Enter Email": "Введите Email",
   "Enter to see": "Войдите, чтобы увидеть",
+  "Equity Distribution Rules": "Правила распределения долей",
+  "Equity Settings": "Настройки распределения долей",
   "Error 404": "Ошибка 404",
   "Error!": "Ошибка!",
   "Experienced": "Опытный",
@@ -78,12 +93,14 @@
   "Exploration": "Исследлование",
   "Fill in from CV/resume": "Заполнить из резюме",
   "Filter": "Фильтр",
+  "Find mentors": "Найти ментора",
   "Fire": "Уволить",
   "Follow this link before the lecture": "Перед началом лекции перейдите по этой ссылке",
   "For Authors": "Для авторов",
   "For Specialists": "Для специалистов",
   "For Users": "Длф пользователей",
   "For example: The concept of the environment": "Например: концепт-художник по окружению",
+  "Form for adding information about investors who have invested in your project financially (bought a share)": "Форма для добавления информации об инвесторах, которые вложили в ваш проект финансовые средства (купили долю)",
   "Free time": "Свободное время",
   "From": "От",
   "GDD": "ГДД",
@@ -109,6 +126,7 @@
   },
   "I want to give a lecture": "Я хочу прочитать лекцию",
   "I'm available for offering": "Я доступен для предложений участия в проектах",
+  "If you need one, you can find experts or mentors on the ": "Если вам это нужно, вы можете найти менторов или экспертов на ",
   "Im available for offering": "Я открыт для предложений",
   "IncubaMation program GameLab": "Инкубационная программа GameLab",
   "Indie Game Projects": "Игровые проекты сообщества",
@@ -117,6 +135,10 @@
   "Information about your main speciality": "Информация о вас, как специалисте в геймдеве",
   "Insert video url": "Вставьте ссылку на видео",
   "Interests and preferences": "Интересы и предпочтения",
+  "Investment Reserve": "Зарезервировать для инвестиций",
+  "Investor name": "Наименование инвестора",
+  "Investors": "Инвесторы",
+  "Invite Member": "Пригласить участника",
   "Join the team": "Присоединиться",
   "Join us and become a part of new era in the gaming industry!": "Присоединяйтесь к нам и станьте частью новой эры игровой индустрии!",
   "Language": "Язык",
@@ -126,14 +148,20 @@
   "Log in": "Войти",
   "Log in with Google": "Войти через Google",
   "Log in with email": "Войти через Email",
+  "Make Promise": "Дать обещание",
+  "Manage Equity": "Настройки распределения",
   "Mastering communication and networking skills": "Овладение коммуникативными и сетевыми навыками",
   "Member Name": "Участник",
+  "Members": "Участники",
   "Mentor": "Ментор",
+  "Mentor Fund Share (minimum 2%)": "Фонд менторов (минимум 2%)",
   "Mentor of digital art": "Ментор по цифровому искусству",
   "Mentor of game design": "Ментор по геймдизайну инди-игр",
   "Mentor of game development": "Ментор по программированию игр",
   "Mentor of team management": "Ментор по управлению проектами",
   "My Projects": "Мои проекты",
+  "Name": "Инвестор",
+  "No data about transactions": "Нет данных",
   "Novice": "Без опыта",
   "On the page of the project": "На страницу проекта",
   "Our Core Values": "Наши ключевые ценности",
@@ -151,6 +179,10 @@
   },
   "Projects preparing for pitch": "Проекты готовятся к питчу",
   "Promised Equity": "Обещанная доля",
+  "Promised shares will be automatically vested when the project reaches the specified workflow step": {
+    "": "Обещанные доли будут автоматически переданы, когда проект достигнет указанного этапа рабочего процесса."
+  },
+  "Promises": "Обещания",
   "Public page": "Публичная страница",
   "Publish": "Опубликовать",
   "Pursuing oppurtunities instead of settling": "Поиск возможностей вместо того, чтобы останавливаться на достигнутом",
@@ -174,6 +206,11 @@
   "Send registration link": "Продолжить регистрацию",
   "Setting goals and working towards them": "Ставим цели и работаем над их достижением",
   "Settings": "Настройки",
+  "Share": "Доля",
+  "Share (%)": "Доля (%)",
+  "Share Percentage": "Размер доли",
+  "Share price paid, USD": "Стоимость доли, USD",
+  "Shares": "Доли",
   "Sign out": "Выйти",
   "Skillful": "Средний уровень",
   "Sorry, we couldn't find the page you're looking for": {
@@ -183,6 +220,7 @@
   "Start and End Dates": "Период участия",
   "Support": "Поддержка",
   "Taking risks and making mistakes": "Рисковать и совершать ошибки",
+  "Team Member": "Участник команды",
   "Technical officer": "Основатель и разработчик портала",
   "Telegram": "Телеграм",
   "Terms of use": "Правила использования",
@@ -197,12 +235,16 @@
   "The registration link is incorrect or has already been used": "Ссылка регистрации неправильная или была уже использована",
   "There are no applications for participation at the moment": "В данный момент откликов на вакансии нет",
   "There are no open vacancies at the moment": "В данный момент вакансий нет",
+  "Time for work": "Доступное время",
+  "Transactions History": "История транзакций",
   "UI/UX designer": "Веб-дизайнер портала",
   "Updated": "Обновлено",
   "Upload PDF": "Загрузить PDF",
   "Vacancies": "Вакансии",
   "Vacancy description": "Описание вакансии",
   "Valid until": "Актуальна до",
+  "Value": "Стоимость",
+  "Vesting at Workflow Step": "Наделение правами при завершении этапа рабочего процесса",
   "Video report": "Видеоотчет",
   "View the presentation": "Посмотреть презентацию",
   "Visual Style": "Визуальный стиль",
@@ -332,6 +374,15 @@
   "education": "Учебные заведения, где вы получили знания по этой специальности",
   "education.plachehloder": "Например:\n2000-2010 гг., Гимназия № 145; \n2011, Курс на Udemy «Как стать тестировщиком»",
   "email": "Электронная почта",
+  "equity": {
+    "platform": {
+      "description": "Платформа: комиссия за использование платформы"
+    },
+    "title": "Распределение долей"
+  },
+  "equityPromise": {
+    "confirm": "Я подтверждаю, что обсудил условия обещания доли с участником, и он согласился с этими условиями."
+  },
   "experience": "Ваш опыт работы по этой специальности",
   "experience.plachehloder": "Например:\n2015-2020, ООО «Геймбук», Unity разработчик \n2020-настоящее время, ООО «Лукоморье», Звукорежиссер\nEсть только опыт выполнения учебных работ",
   "fairy": "Сказочный",
@@ -447,6 +498,9 @@
   "military": "Военный",
   "mmorpg": "Многопользовательская ролевая онлайн игра (MMORPG)",
   "modal": {
+    "confirm": {
+      "investor": "Я подтверждаю, что продажа доли между автором и инвестором уже завершена."
+    },
     "create-project": {
       "field": {
         "agree": {
@@ -489,6 +543,11 @@
       "title": "Я хочу прочитать эту лекцию",
       "updateSuccess": "Ваше предложение обновлено",
       "wishes": "Пожелания к содержанию лекции"
+    },
+    "memberEquityPromise": {
+      "create": {
+        "title": "Новое обещание для {memberName}"
+      }
     },
     "project": {
       "audition": {
@@ -731,7 +790,7 @@
       "text": "Этот веб-сайт использует файлы cookie для улучшения пользовательского опыта. Используя наш веб-сайт, вы соглашаетесь на использование всех файлов cookie в соответствии с нашей Политикой использования файлов cookie."
     }
   },
-  "present": "c {fromDate} по настоящее время",
+  "present": "настоящее время",
   "profile-form": {
     "mentorship": {
       "card": {
@@ -898,6 +957,7 @@
   "sport": "Спортивный",
   "sports": "Спортивные",
   "stage-expired": "На данный момент прием идей завершен. Наставники по игровому дизайну обсуждают представленные идеи, общаются с их авторами. По итогам обсуждения будет определен список проектов, которые пройдут дальше в стадию. Подготовка проекта.",
+  "start-and-end-dates": "c {fromDate} по {toDate} ",
   "subscribeToNewsletter": "Получать новости платформы",
   "survival horror": "Ужас выживания",
   "tbs": "Пошаговые стратегии",

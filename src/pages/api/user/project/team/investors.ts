@@ -31,6 +31,9 @@ class ApiTeamInvestorHandler {
 					},
 				},
 			},
+			orderBy: {
+				purchasedAt: 'desc',
+			},
 		})
 
 		return teamInvestors

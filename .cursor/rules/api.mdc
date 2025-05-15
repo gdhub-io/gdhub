@@ -1,0 +1,8 @@
+---
+description: 
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+for request to endpoints on frontend use @tanstack/react-query with axios packages
+
+for endpoints on backend use next-api-decorators, class-validator for input data (body or query)

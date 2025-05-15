@@ -1,24 +1,32 @@
 {
+  " and send a consultation request": {
+    "": "and send a consultation request."
+  },
   "(not pointed)": "(not pointed)",
+  "3% is fixed for the platform": "3% is fixed for the platform",
   "A new report has been added": "A new report has been added",
   "A new vacancy has been added": "A new vacancy has been added",
+  "A portion should be reserved for future investments": "A portion should be reserved for future investments",
   "About Game": "About Game",
   "About us": "About us",
   "Accept the team": "Accept the team",
   "Achiever": "Achiever",
   "Actual Equity": "Actual Equity",
   "Add a report": "Add a report",
+  "Add investor": "Add investor",
   "Add specialty": "Add specialty",
   "Add the vacancy": "Add the vacancy",
   "Add your project idea": "Add your project idea",
   "Added a new game project": "Added a new game project",
   "Administration": "Administration",
+  "Advisors": "Advisors",
   "After completing": "After completing",
   "Allows you to contribute to game development through advising": "Allows you to contribute to game development through advising",
   "Appendix": "Appendix",
   "Archive": "Archive",
   "Are you sure?": "Are you sure?",
   "Assemble a team": "Assemble a team",
+  "At least 2% is allocated to the mentor fund": "At least 2% is allocated to the mentor fund",
   "At the moment, reports are not provided": "At the moment, reports are not provided",
   "Audition": "Audition",
   "Author": "Author",
@@ -62,15 +70,22 @@
   "Current vested equity": "Current vested equity",
   "Date": "Date",
   "Days on Project": "Days on Project",
+  "Deal date": "Deal date",
   "Details": "Details",
   "Development Log": "Development Log",
   "Discord": "Discord",
   "Display Name": "Display Name",
   "Documentation": "Documentation",
+  "Does not have any advisors yet": {
+    "": "Does not have any advisors yet. "
+  },
+  "Does not have any investors yet": "Does not have any investors yet",
   "Email": "Email",
   "End stream": "End stream",
   "Enter Email": "Enter Email",
   "Enter to see": "Enter to see",
+  "Equity Distribution Rules": "Equity Distribution Rules ",
+  "Equity Settings": "Equity Settings",
   "Error 404": "Error 404",
   "Error!": "Error!",
   "Experienced": "Experienced",
@@ -78,12 +93,14 @@
   "Exploration": "Exploration",
   "Fill in from CV/resume": "Fill in from CV/resume",
   "Filter": "Filter",
+  "Find mentors": "Find mentors",
   "Fire": "Fire",
   "Follow this link before the lecture": "Follow this link before the lecture",
   "For Authors": "For Authors",
   "For Specialists": "For Specialists",
   "For Users": "For Users",
   "For example: The concept of the environment": "For example: The concept artist of the environment",
+  "Form for adding information about investors who have invested in your project financially (bought a share)": "Form for adding information about investors who have invested in your project financially (bought a share) ",
   "Free time": "Free time",
   "From": "From",
   "GDD": "GDD",
@@ -109,6 +126,7 @@
   },
   "I want to give a lecture": "I want to give a lecture",
   "I'm available for offering": "I am available for offers of participation in projects",
+  "If you need one, you can find experts or mentors on the ": "If you need one, you can find experts or mentors on the ",
   "Im available for offering": "I'm available for offering",
   "IncubaMation program GameLab": "Incubation program GameLab",
   "Indie Game Projects": "Indie Game Projects",
@@ -117,6 +135,10 @@
   "Information about your main speciality": "Information about your main speciality",
   "Insert video url": "Insert video url",
   "Interests and preferences": "Interests and preferences",
+  "Investment Reserve": "Investment Reserve ",
+  "Investor name": "Investor name",
+  "Investors": "Investors",
+  "Invite Member": "Invite Member",
   "Join the team": "Join the team",
   "Join us and become a part of new era in the gaming industry!": "Join us and become a part of new era in the gaming industry!",
   "Language": "Language",
@@ -126,14 +148,20 @@
   "Log in": "Log in",
   "Log in with Google": "Log in with Google",
   "Log in with email": "Log in with email",
+  "Make Promise": "Make Promise",
+  "Manage Equity": "Manage Equity",
   "Mastering communication and networking skills": "Mastering communication and networking skills",
   "Member Name": "Member",
+  "Members": "Members",
   "Mentor": "Mentor",
+  "Mentor Fund Share (minimum 2%)": "Mentor Fund Share (minimum 2%)",
   "Mentor of digital art": "Mentor of digital art",
   "Mentor of game design": "Mentor of game design",
   "Mentor of game development": "Mentor of game development",
   "Mentor of team management": "Mentor of team management",
   "My Projects": "My Projects",
+  "Name": "Name",
+  "No data about transactions": "No data about transactions",
   "Novice": "Novice",
   "On the page of the project": "On the page of the project",
   "Our Core Values": "Our Core Values",
@@ -151,6 +179,10 @@
   },
   "Projects preparing for pitch": "Projects preparing for pitch",
   "Promised Equity": "Promised Equity",
+  "Promised shares will be automatically vested when the project reaches the specified workflow step": {
+    "": "Promised shares will be automatically vested when the project reaches the specified workflow step."
+  },
+  "Promises": "Promises",
   "Public page": "Public page",
   "Publish": "Publish",
   "Pursuing oppurtunities instead of settling": "Pursuing oppurtunities instead of settling",
@@ -174,6 +206,11 @@
   "Send registration link": "Send registration link",
   "Setting goals and working towards them": "Setting goals and working towards them",
   "Settings": "Settings",
+  "Share": "Share",
+  "Share (%)": "Share (%)",
+  "Share Percentage": "Share Percentage",
+  "Share price paid, USD": "Share price paid, USD",
+  "Shares": "Shares",
   "Sign out": "Sign out",
   "Skillful": "Skillful",
   "Sorry, we couldn't find the page you're looking for": {
@@ -183,6 +220,7 @@
   "Start and End Dates": "Start and End Dates",
   "Support": "Support",
   "Taking risks and making mistakes": "Taking risks and making mistakes",
+  "Team Member": "Team Member",
   "Technical officer": "Technical officer",
   "Telegram": "Telegram",
   "Terms of use": "Terms of use",
@@ -197,12 +235,16 @@
   "The registration link is incorrect or has already been used": "The registration link is incorrect or has already been used",
   "There are no applications for participation at the moment": "There are no applications for participation at the moment",
   "There are no open vacancies at the moment": "There are no open vacancies at the moment",
+  "Time for work": "Time for work",
+  "Transactions History": "Transactions History",
   "UI/UX designer": "UI/UX designer",
   "Updated": "Updated",
   "Upload PDF": "Upload PDF",
   "Vacancies": "Vacancies",
   "Vacancy description": "Vacancy description",
   "Valid until": "Valid until",
+  "Value": "Value",
+  "Vesting at Workflow Step": "Vesting at Workflow Step",
   "Video report": "Video report",
   "View the presentation": "View the presentation",
   "Visual Style": "Visual Style",
@@ -332,6 +374,15 @@
   "education": "Education",
   "education.plachehloder": "For example:\n2000-2010, Gymnasium No. 145; \n2011, Course on Udemy “How to become a tester”",
   "email": "Email",
+  "equity": {
+    "platform": {
+      "description": "Platform: Commission for using the service"
+    },
+    "title": "Equity Distribution"
+  },
+  "equityPromise": {
+    "confirm": "I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions."
+  },
   "experience": "Experience",
   "experience.plachehloder": "For example: \n2015-2020, GameBook LLC, Unity developer \n2020-present, Lukomorye LLC, Sound designer\nI only have experience doing academic work",
   "fairy": "Fairy",
@@ -447,6 +498,9 @@
   "military": "Military",
   "mmorpg": "Massively multiplayer online role playing game (MMORPG)",
   "modal": {
+    "confirm": {
+      "investor": "I confirm that the share sale has already been completed between the author and the investor."
+    },
     "create-project": {
       "field": {
         "agree": {
@@ -489,6 +543,11 @@
       "title": "I want to give this lecture",
       "updateSuccess": "Your proposal is updated",
       "wishes": "Wishes for the content of the lecture"
+    },
+    "memberEquityPromise": {
+      "create": {
+        "title": "New Promise for {memberName}"
+      }
     },
     "project": {
       "audition": {
@@ -730,7 +789,7 @@
       "text": "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy."
     }
   },
-  "present": "from {fromDate} to current time",
+  "present": "present",
   "profile-form": {
     "mentorship": {
       "card": {
@@ -897,6 +956,7 @@
   "sport": "Sport",
   "sports": "Sports",
   "stage-expired": "At the moment, the reception of ideas is completed.Mentors on the game design are discussing the presented ideas, communicate with their authors.At the end of the discussion, a list of projects that will go further to the stage will be determined Project preparation",
+  "start-and-end-dates": "from {fromDate} to {toDate} ",
   "subscribeToNewsletter": "Receive platform news",
   "survival horror": "Survival horror",
   "tbs": "Turn based strategy",
