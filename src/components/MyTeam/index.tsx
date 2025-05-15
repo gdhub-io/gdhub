@@ -535,7 +535,8 @@ const MyTeam = () => {
 		},
 	]
 
-	const advisorsColumns: ColumnsType<prismaClient.User & { _count: any; specialities: any[] }> = [
+	// Advisors columns (conditionally hide some columns for non-authors)
+	const advisorsColumnsBase: ColumnsType<prismaClient.User & { _count: any; specialities: any[] }> = [
 		{
 			key: 'name',
 			title: t('Name'),
@@ -591,13 +592,19 @@ const MyTeam = () => {
 						{t('New request')}
 						<GoLinkExternal style={{ marginLeft: 8 }} />
 					</Button>
-					<Button type="text" style={{ marginLeft: 8 }} onClick={() => handleOpenAdviceArchive(advisor)}>
-						{t('Archive')}
-					</Button>
+					{contextProject?.isProjectAuthor && (
+						<Button type="text" style={{ marginLeft: 8 }} onClick={() => handleOpenAdviceArchive(advisor)}>
+							{t('Archive')}
+						</Button>
+					)}
 				</>
 			),
 		},
 	]
+
+	const advisorsColumns = contextProject?.isProjectAuthor
+		? advisorsColumnsBase
+		: advisorsColumnsBase.filter((col) => col.key === 'name' || col.key === 'actions')
 
 	const investorsColumns: ColumnsType<prismaClient.TeamInvestor> = [
 		{
@@ -847,56 +854,59 @@ const MyTeam = () => {
 						/>
 					)}
 				</Tabs.TabPane>
-				<Tabs.TabPane tab={t('Investors')} key="investors">
-					{isFetchedInvestors && investors?.data?.length ? (
-						<>
-							<Paragraph type="secondary" style={{ marginTop: 16 }}>
-								{t('table.investors.description')}
-							</Paragraph>
+				{contextProject?.isProjectAuthor && (
+					<Tabs.TabPane tab={t('Investors')} key="investors">
+						{isFetchedInvestors && investors?.data?.length ? (
+							<>
+								<Paragraph type="secondary" style={{ marginTop: 16 }}>
+									{t('table.investors.description')}
+								</Paragraph>
 
-							<ModernTable
-								loading={isLoadingInvestors}
-								columns={investorsColumns}
-								dataSource={investors?.data?.map((investor) => ({ ...investor, key: investor.id })) || []}
-								pagination={false}
-								summary={(pageData) => {
-									// Calculate total value and share
-									const totalValueByCurrency: Record<string, number> = {}
-									let totalShare = 0
-									;(investors?.data || []).forEach((inv) => {
-										if (inv.currency) {
-											totalValueByCurrency[inv.currency] = (totalValueByCurrency[inv.currency] || 0) + (inv.value || 0)
-										}
-										totalShare += inv.share || 0
-									})
-									return (
-										<Table.Summary.Row style={{ background: '#eee' }}>
-											<Table.Summary.Cell index={(investors?.data?.length || 0) + 1}>
-												<Text strong>Total</Text>
-											</Table.Summary.Cell>
-											<Table.Summary.Cell index={(investors?.data?.length || 0) + 2}>
-												<Text strong>
-													{Object.entries(totalValueByCurrency)
-														.map(([currency, value]) => `${value} ${currency}`)
-														.join(', ')}
-												</Text>
-											</Table.Summary.Cell>
-											<Table.Summary.Cell index={(investors?.data?.length || 0) + 3} colSpan={3}>
-												<Text strong>{totalShare}%</Text>
-											</Table.Summary.Cell>
-										</Table.Summary.Row>
-									)
-								}}
+								<ModernTable
+									loading={isLoadingInvestors}
+									columns={investorsColumns}
+									dataSource={investors?.data?.map((investor) => ({ ...investor, key: investor.id })) || []}
+									pagination={false}
+									summary={(pageData) => {
+										// Calculate total value and share
+										const totalValueByCurrency: Record<string, number> = {}
+										let totalShare = 0
+										;(investors?.data || []).forEach((inv) => {
+											if (inv.currency) {
+												totalValueByCurrency[inv.currency] =
+													(totalValueByCurrency[inv.currency] || 0) + (inv.value || 0)
+											}
+											totalShare += inv.share || 0
+										})
+										return (
+											<Table.Summary.Row style={{ background: '#eee' }}>
+												<Table.Summary.Cell index={(investors?.data?.length || 0) + 1}>
+													<Text strong>Total</Text>
+												</Table.Summary.Cell>
+												<Table.Summary.Cell index={(investors?.data?.length || 0) + 2}>
+													<Text strong>
+														{Object.entries(totalValueByCurrency)
+															.map(([currency, value]) => `${value} ${currency}`)
+															.join(', ')}
+													</Text>
+												</Table.Summary.Cell>
+												<Table.Summary.Cell index={(investors?.data?.length || 0) + 3} colSpan={3}>
+													<Text strong>{totalShare}%</Text>
+												</Table.Summary.Cell>
+											</Table.Summary.Row>
+										)
+									}}
+								/>
+							</>
+						) : (
+							<Empty
+								style={{ marginTop: 32 }}
+								image={<MdOutlineMonetizationOn size={64} color="#bfbfbf" />}
+								description={t('Does not have any investors yet')}
 							/>
-						</>
-					) : (
-						<Empty
-							style={{ marginTop: 32 }}
-							image={<MdOutlineMonetizationOn size={64} color="#bfbfbf" />}
-							description={t('Does not have any investors yet')}
-						/>
-					)}
-				</Tabs.TabPane>
+						)}
+					</Tabs.TabPane>
+				)}
 			</Tabs>
 
 			{contextProject?.teamId && (
