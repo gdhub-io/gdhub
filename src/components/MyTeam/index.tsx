@@ -923,6 +923,7 @@ const MyTeam = () => {
 						onOk={handleEquityUpdateSuccess}
 						onCancel={handleCloseEquityModal}
 						projectEquity={projectEquity?.data}
+						investors={investors?.data}
 					/>
 					{selectedMemberId && (
 						<MemberEquityPromiseModal
