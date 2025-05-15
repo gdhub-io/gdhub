@@ -7,6 +7,7 @@ import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import TeamMemberCard from '@/components/TeamMemberCard'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { EditOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlinePlus } from '@react-icons/all-files/ai/AiOutlinePlus'
 import { BiTrash } from '@react-icons/all-files/bi/BiTrash'
@@ -17,7 +18,7 @@ import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSuppor
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Typography, Tag, Space, Dropdown, Modal, Avatar, Tabs, Empty } from 'antd'
+import { Button, Grid, message, Typography, Tag, Space, Dropdown, Modal, Avatar, Tabs, Empty, Flex, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -26,7 +27,7 @@ import EquitySection from './EquitySection'
 import InvestorModal from './InvestorModal'
 import ProjectAdviceArchiveModal from './ProjectAdviceArchiveModal'
 
-const { Text } = Typography
+const { Paragraph, Text } = Typography
 
 const getTelegramExpertLink = (specialityId: string) => {
 	return `https://t.me/gdhub_experts_bot/app?startapp=expert_${specialityId}`
@@ -44,6 +45,7 @@ const MyTeam = () => {
 	const [showMemberCard, setShowMemberCard] = useState(false)
 	const [activeTab, setActiveTab] = useState<string>('members')
 	const [isAddInvestorModalOpen, setIsAddInvestorModalOpen] = useState(false)
+	const [selectedInvestorId, setSelectedInvestorId] = useState<string | null>(null)
 	const [adviceArchiveModal, setAdviceArchiveModal] = useState<{
 		open: boolean
 		advisor: any | null
@@ -150,6 +152,17 @@ const MyTeam = () => {
 			onSuccess: () => {
 				fetchPendingInvitations()
 			},
+		}
+	)
+
+	const { mutateAsync: deleteInvestor } = useMutation(
+		(id: string) => axios.delete(`/api/project/team-investor/${id}`),
+		{
+			onSuccess: () => {
+				fetchInvestors()
+				message.success(t('Investor deleted'))
+			},
+			onError: () => message.error(t('Failed to delete investor')),
 		}
 	)
 
@@ -333,14 +346,14 @@ const MyTeam = () => {
 			key: 'startedAt',
 			render(value, member) {
 				let startedAt = dayjs(member.startedAt).format('DD.MM.YYYY')
-				let finishedAt = member.finishedAt ? dayjs(member.finishedAt).format('DD.MM.YYYY') : t('present')
+				let finishedAt = member.finishedAt ? dayjs(member.finishedAt).format('DD.MM.YYYY') : t('present').toString()
+
 				return (
 					<Text className={tableStyles.tableMemberDates}>
-						<T
-							keyName="fromToWithDates"
-							defaultValue="from {fromDate} to {toDate}"
-							params={{ fromDate: startedAt, toDate: finishedAt }}
-						/>
+						{t('start-and-end-dates', 'from {fromDate} to {toDate}', {
+							fromDate: startedAt,
+							toDate: finishedAt,
+						})}
 					</Text>
 				)
 			},
@@ -566,11 +579,88 @@ const MyTeam = () => {
 		},
 	]
 
-	const investorsColumns: ColumnsType<{ key: string; name: string }> = [
+	const investorsColumns: ColumnsType<prismaClient.TeamInvestor> = [
 		{
 			key: 'name',
 			title: t('Name'),
 			dataIndex: 'name',
+			render: (value) => {
+				return <Text strong>{value}</Text>
+			},
+		},
+		{
+			key: 'value',
+			title: t('Value'),
+			dataIndex: 'value',
+			render: (value, record) => {
+				return (
+					<Text>
+						{value} {record.currency}
+					</Text>
+				)
+			},
+		},
+		{
+			key: 'share',
+			title: t('Share'),
+			dataIndex: 'share',
+			render: (value) => {
+				return <Text>{value}%</Text>
+			},
+		},
+		{
+			key: 'purchasedAt',
+			title: t('Deal date'),
+			dataIndex: 'purchasedAt',
+			render: (value) => {
+				return <Text>{value ? dayjs(value).format('DD.MM.YYYY') : '-'}</Text>
+			},
+		},
+		{
+			key: 'actions',
+			align: 'right',
+			render: (_, investor) => {
+				const items = [
+					{
+						key: 'edit',
+						label: (
+							<span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+								<EditOutlined style={{ fontSize: 16 }} />
+								{t('Edit')}
+							</span>
+						),
+						onClick: () => handleEditInvestor(investor.id),
+					},
+					{
+						type: 'divider',
+					},
+					{
+						key: 'delete',
+						label: (
+							<Flex align="center" gap={8}>
+								<BiTrash style={{ fontSize: 16 }} />
+								{t('Delete')}
+							</Flex>
+						),
+						danger: true,
+						onClick: () => handleDeleteInvestor(investor.id),
+					},
+				]
+				return (
+					<Dropdown
+						menu={{
+							items: items as any,
+							onClick: ({ key, domEvent }) => {
+								domEvent.stopPropagation()
+								if (key === 'edit') handleEditInvestor(investor.id)
+							},
+						}}
+						trigger={['click']}
+					>
+						<Button icon={<TbDotsVertical />} type="text" className="light-gray-text-btn" />
+					</Dropdown>
+				)
+			},
 		},
 	]
 
@@ -579,6 +669,28 @@ const MyTeam = () => {
 	}
 	const handleCloseAdviceArchive = () => {
 		setAdviceArchiveModal({ open: false, advisor: null })
+	}
+
+	const handleEditInvestor = (id: string) => {
+		setSelectedInvestorId(id)
+		setIsAddInvestorModalOpen(true)
+	}
+
+	const handleDeleteInvestor = async (id: string) => {
+		const investor = investors?.data?.find((inv) => inv.id === id)
+		Modal.confirm({
+			title: (
+				<span>
+					{t('modal.confirm.deleteInvestor', 'Are you sure you want to delete investor information for {name}?', {
+						name: investor?.name,
+					})}
+				</span>
+			),
+			okType: 'danger',
+			onOk: async () => {
+				await deleteInvestor(id)
+			},
+		})
 	}
 
 	return (
@@ -631,13 +743,24 @@ const MyTeam = () => {
 										</Button>
 									)
 								) : null)}
-							<InvestorModal
-								open={isAddInvestorModalOpen}
-								onOk={() => setIsAddInvestorModalOpen(false)}
-								onCancel={() => setIsAddInvestorModalOpen(false)}
-								investmentReserve={projectEquity?.data?.investmentReserve || 0}
-								investors={investors?.data || []}
-							/>
+							{contextProject?.teamId && (
+								<InvestorModal
+									teamId={contextProject.teamId}
+									open={isAddInvestorModalOpen}
+									onOk={() => {
+										setIsAddInvestorModalOpen(false)
+										setSelectedInvestorId(null)
+										fetchInvestors()
+									}}
+									onCancel={() => {
+										setIsAddInvestorModalOpen(false)
+										setSelectedInvestorId(null)
+									}}
+									investmentReserve={projectEquity?.data?.investmentReserve || 0}
+									investors={investors?.data || []}
+									teamInvestorId={selectedInvestorId || undefined}
+								/>
+							)}
 						</div>
 					),
 				}}
@@ -686,12 +809,46 @@ const MyTeam = () => {
 				</Tabs.TabPane>
 				<Tabs.TabPane tab={t('Investors')} key="investors">
 					{isFetchedInvestors && investors?.data?.length ? (
-						<ModernTable
-							loading={isLoadingInvestors}
-							columns={investorsColumns}
-							dataSource={investors?.data?.map((investor) => ({ ...investor, key: investor.id })) || []}
-							pagination={false}
-						/>
+						<>
+							<Paragraph type="secondary" style={{ marginTop: 16 }}>
+								{t('table.investors.description')}
+							</Paragraph>
+
+							<ModernTable
+								loading={isLoadingInvestors}
+								columns={investorsColumns}
+								dataSource={investors?.data?.map((investor) => ({ ...investor, key: investor.id })) || []}
+								pagination={false}
+								summary={(pageData) => {
+									// Calculate total value and share
+									const totalValueByCurrency: Record<string, number> = {}
+									let totalShare = 0
+									;(investors?.data || []).forEach((inv) => {
+										if (inv.currency) {
+											totalValueByCurrency[inv.currency] = (totalValueByCurrency[inv.currency] || 0) + (inv.value || 0)
+										}
+										totalShare += inv.share || 0
+									})
+									return (
+										<Table.Summary.Row style={{ background: '#eee' }}>
+											<Table.Summary.Cell index={(investors?.data?.length || 0) + 1}>
+												<Text strong>Total</Text>
+											</Table.Summary.Cell>
+											<Table.Summary.Cell index={(investors?.data?.length || 0) + 2}>
+												<Text strong>
+													{Object.entries(totalValueByCurrency)
+														.map(([currency, value]) => `${value} ${currency}`)
+														.join(', ')}
+												</Text>
+											</Table.Summary.Cell>
+											<Table.Summary.Cell index={(investors?.data?.length || 0) + 3} colSpan={3}>
+												<Text strong>{totalShare}%</Text>
+											</Table.Summary.Cell>
+										</Table.Summary.Row>
+									)
+								}}
+							/>
+						</>
 					) : (
 						<Empty
 							style={{ marginTop: 32 }}
