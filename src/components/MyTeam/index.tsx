@@ -18,7 +18,22 @@ import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSuppor
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Grid, message, Typography, Tag, Space, Dropdown, Modal, Avatar, Tabs, Empty, Flex, Table } from 'antd'
+import {
+	Button,
+	Grid,
+	message,
+	Typography,
+	Tag,
+	Space,
+	Dropdown,
+	Modal,
+	Avatar,
+	Tabs,
+	Empty,
+	Flex,
+	Table,
+	Popover,
+} from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -300,6 +315,11 @@ const MyTeam = () => {
 
 	const totalAdviceRequests = advisors?.data?.reduce((sum, adv) => sum + (adv._count?.adviceRequestsForMe || 0), 0) || 0
 	const mentorFundShare = projectEquity?.data?.mentorFundShare || 0
+
+	// Calculate if all investment reserve is distributed
+	const investmentReserve = projectEquity?.data?.investmentReserve || 0
+	const totalInvestorShare = (investors?.data || []).reduce((sum, inv) => sum + (inv.share || 0), 0)
+	const noAvailableInvestorShare = investmentReserve > 0 && totalInvestorShare >= investmentReserve
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
 		{
@@ -736,11 +756,31 @@ const MyTeam = () => {
 									)
 								) : activeTab === 'investors' ? (
 									screens.xs ? (
-										<Button type="primary" onClick={() => setIsAddInvestorModalOpen(true)} icon={<AiOutlinePlus />} />
+										<Popover
+											content={noAvailableInvestorShare ? t('No available shares for new investor') : undefined}
+											trigger={noAvailableInvestorShare ? 'hover' : undefined}
+										>
+											<Button
+												type="primary"
+												onClick={() => setIsAddInvestorModalOpen(true)}
+												icon={<AiOutlinePlus />}
+												disabled={noAvailableInvestorShare}
+											/>
+										</Popover>
 									) : (
-										<Button type="primary" onClick={() => setIsAddInvestorModalOpen(true)} icon={<AiOutlinePlus />}>
-											<T>Add investor</T>
-										</Button>
+										<Popover
+											content={noAvailableInvestorShare ? t('No available shares for new investor') : undefined}
+											trigger={noAvailableInvestorShare ? 'hover' : undefined}
+										>
+											<Button
+												type="primary"
+												onClick={() => setIsAddInvestorModalOpen(true)}
+												icon={<AiOutlinePlus />}
+												disabled={noAvailableInvestorShare}
+											>
+												<T>Add investor</T>
+											</Button>
+										</Popover>
 									)
 								) : null)}
 							{contextProject?.teamId && (
