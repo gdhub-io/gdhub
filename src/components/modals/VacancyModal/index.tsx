@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import { useWorkDirections } from '@/hooks/library'
 import { DeleteOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
@@ -125,6 +126,7 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 					promisePercentage: formData.promisePercentage || null,
 					promiseStepId: formData.promiseStepId || null,
 				})
+				gtmEventTrigger('vacancy_create', { teamId, title: formData.title })
 			}
 
 			form.resetFields()

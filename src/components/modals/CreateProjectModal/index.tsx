@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiRocketDuotone } from '@react-icons/all-files/pi/PiRocketDuotone'
 import { useMutation } from '@tanstack/react-query'
@@ -41,6 +42,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 		if (!data) return
 
 		const project = await createProject(data)
+		gtmEventTrigger('project_create', { projectId: project.data.id, name: project.data.name })
 
 		router.push('/my/projects/' + project.data.slug)
 	}

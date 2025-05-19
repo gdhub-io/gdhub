@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import { useWorkDirections } from '@/hooks/library'
 import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -44,6 +45,11 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 				position: formData.position,
 				directionId: formData.directionId,
 				startedAt: formData.startedAt ? formData.startedAt.toISOString() : new Date().toISOString(),
+			})
+			gtmEventTrigger('team_invite', {
+				teamId,
+				position: formData.position,
+				direction: directionsOptions?.find((direction) => direction.value === formData.directionId)?.label,
 			})
 		} catch (error) {
 			console.error('Validation failed:', error)

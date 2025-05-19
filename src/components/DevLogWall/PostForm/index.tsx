@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { AiOutlineVideoCameraAdd } from '@react-icons/all-files/ai/AiOutlineVideoCameraAdd'
@@ -25,6 +26,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 		{
 			onSuccess: () => {
 				onCreate()
+				gtmEventTrigger('devlog_create', { projectId })
 			},
 		}
 	)
