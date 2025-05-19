@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { setCookie } from '@/helpers/cookie'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { FaGoogle } from '@react-icons/all-files/fa/FaGoogle'
@@ -54,6 +55,7 @@ const RegistrationPage: NextPage = () => {
 
 		if (response?.ok) {
 			setRegistrationStep({ step: 3, provider: 'email' })
+			gtmEventTrigger('user_registration', { provider: 'email' })
 		}
 
 		if (response?.error) {
@@ -85,6 +87,8 @@ const RegistrationPage: NextPage = () => {
 			},
 			{ prompt: 'select_account consent' }
 		)
+
+		gtmEventTrigger('user_registration', { provider: 'google' })
 
 		setIsRegistration(false)
 	}

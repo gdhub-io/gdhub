@@ -10,5 +10,14 @@ export const pageview = (url: string) => {
 	window.dataLayer.push({
 		event: 'page_view',
 		page: url,
+		timestamp: new Date().toISOString(),
+	})
+}
+
+export const gtmEventTrigger = (event: string, data: Record<string, any>) => {
+	window.dataLayer.push({
+		event,
+		timestamp: new Date().toISOString(),
+		...data,
 	})
 }

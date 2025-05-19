@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import React from 'react'
 import LogingBgImage from '@/assets/images/login-bg.jpg'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { FaGoogle } from '@react-icons/all-files/fa/FaGoogle'
 import { T, useTolgee } from '@tolgee/react'
@@ -57,7 +58,10 @@ const LoginPage: NextPage = () => {
 		setSubmitting(false)
 		setEmail(email)
 
-		if (response?.ok) setLoginStep(3)
+		if (response?.ok) {
+			setLoginStep(3)
+			gtmEventTrigger('user_login', { provider: 'email' })
+		}
 		if (response?.error) message.error(response?.error)
 	}
 

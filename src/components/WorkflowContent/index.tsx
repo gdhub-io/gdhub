@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { ProjectContext } from '@/contexts/ProjectContext'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { CiViewList } from '@react-icons/all-files/ci/CiViewList'
@@ -113,6 +114,12 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 
 	const handlePreviousStep = () => {
 		moveProjectToStep({ projectId, direction: 'previous' })
+		gtmEventTrigger('workflow_move', {
+			projectId,
+			direction: 'previous',
+			currentStep: workflow?.currentStep.name,
+			previousStep: workflow?.steps[currentStepOrder - 1].name,
+		})
 	}
 
 	const handleNextStep = () => {
@@ -120,6 +127,12 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 			setEquityTransferModalVisible(true)
 		} else {
 			moveProjectToStep({ projectId, direction: 'next' })
+			gtmEventTrigger('workflow_move', {
+				projectId,
+				direction: 'next',
+				currentStep: workflow?.currentStep.name,
+				nextStep: workflow?.steps[currentStepOrder + 1].name,
+			})
 		}
 	}
 

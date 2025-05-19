@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Grid, Spin } from 'antd'
@@ -60,6 +61,13 @@ export const OnboardingCompleted = () => {
 			}
 		}
 	}, [user])
+
+	// После проверки, что нет pendingInvitation и не идет загрузка, отправляем событие
+	useEffect(() => {
+		if (!isProcessingInvitation && !isCompletingInvitation && !isLoadingUser) {
+			gtmEventTrigger('onboarding_complete', {})
+		}
+	}, [isProcessingInvitation, isCompletingInvitation, isLoadingUser])
 
 	// Если обрабатываем приглашение, показываем спиннер
 	if (isProcessingInvitation || isCompletingInvitation || isLoadingUser) {
