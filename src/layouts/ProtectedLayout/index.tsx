@@ -50,7 +50,14 @@ interface ProtectedLayoutProps {
 const { Header, Content } = Layout
 const { Title, Text } = Typography
 
-export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton = false }: ProtectedLayoutProps) => {
+export const ProtectedLayout = ({
+	title,
+	subTitle,
+	seo,
+	children,
+	showBackButton = false,
+	extra,
+}: ProtectedLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage, changeLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -235,6 +242,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton
 		},
 		{
 			key: '/hub/events',
+			disabled: true,
 			label: (
 				<Link href="/hub/events">
 					<T keyName="app.user.menu.events">Events</T>
@@ -335,16 +343,19 @@ export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							<Flex align="center" gap={16} style={{ marginBottom: 24 }}>
-								{showBackButton && (
-									<Button
-										type="text"
-										icon={<ArrowLeftOutlined />}
-										onClick={() => router.back()}
-										style={{ padding: 0 }}
-									/>
-								)}
-								{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+							<Flex align="center" justify="space-between" gap={16} style={{ marginBottom: 24 }}>
+								<Space>
+									{showBackButton && (
+										<Button
+											type="text"
+											icon={<ArrowLeftOutlined />}
+											onClick={() => router.back()}
+											style={{ padding: 0 }}
+										/>
+									)}
+									{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+								</Space>
+								{extra}
 							</Flex>
 
 							{!!subTitle && !showBackButton && <div>{subTitle}</div>}
