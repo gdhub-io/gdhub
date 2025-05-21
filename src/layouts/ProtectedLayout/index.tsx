@@ -234,6 +234,14 @@ export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton
 			),
 		},
 		{
+			key: '/hub/events',
+			label: (
+				<Link href="/hub/events">
+					<T keyName="app.user.menu.events">Events</T>
+				</Link>
+			),
+		},
+		{
 			key: '/hub/mentors',
 			label: (
 				<Link href="/hub/mentors">
