@@ -1,30 +1,37 @@
 import React from 'react'
-import { Event, mockEvents } from '@/mock/events.data'
+// import { Event, mockEvents } from '@/mock/events.data'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Carousel, Button, Tag, theme } from 'antd'
+import axios from 'axios'
+import dayjs from 'dayjs'
 import Image from 'next/image'
-
-function getEventStatus(event: Event, now: Date): 'upcoming' | 'ongoing' | 'past' {
-	const start = new Date(event.startDate)
-	const end = new Date(event.endDate)
-	if (now < start) return 'upcoming'
-	if (now > end) return 'past'
-	return 'ongoing'
-}
+import qs from 'qs'
 
 export const BannerEventSlider = () => {
 	const { token } = theme.useToken()
 	const { t } = useTolgee()
-	const now = new Date()
-	const events = mockEvents.filter(
-		(e) => (e.type === 'CONFERENCE' || e.type === 'GAMELAB') && getEventStatus(e, now) === 'upcoming'
+
+	const { data: events } = useQuery(['slider-events'], () =>
+		axios.get<(prismaClient.Event & { schedule: Pick<prismaClient.EventScheduleItem, 'startDate' | 'endDate'>[] })[]>(
+			'/api/events',
+			{
+				params: {
+					type: [prismaClient.$Enums.EventType.Conference, prismaClient.$Enums.EventType.GameLab],
+					withDates: true,
+				},
+				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
+			}
+		)
 	)
-	if (!events.length) return null
+
+	if (!events?.data.length) return null
 
 	return (
 		<div style={{ marginBottom: 48 }}>
-			<Carousel autoplay dots={events.length > 1}>
-				{events.map((event) => (
+			<Carousel autoplay dots={events.data.length > 1}>
+				{events.data.map((event) => (
 					<div key={event.id} style={{ position: 'relative', width: '100%' }}>
 						<div
 							style={{
@@ -39,7 +46,7 @@ export const BannerEventSlider = () => {
 							}}
 						>
 							<Image
-								src={event.image}
+								src={event.image || ''}
 								alt={event.title}
 								fill
 								style={{ objectFit: 'cover', aspectRatio: '2.5/1' }}
@@ -67,7 +74,7 @@ export const BannerEventSlider = () => {
 										marginBottom: 8,
 									}}
 								>
-									{event.startDate}
+									{dayjs(event.schedule[0].startDate).format('DD MMMM')}
 								</div>
 								<div style={{ fontSize: 38, fontWeight: 800, textShadow: '0 2px 8px #000' }}>{event.title}</div>
 								<div style={{ fontSize: 22, textShadow: '0 2px 8px #000' }}>{event.description}</div>
