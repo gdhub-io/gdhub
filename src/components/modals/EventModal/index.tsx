@@ -54,21 +54,12 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	const [speakersOptions, setSpeakersOptions] = useState<any[]>([])
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
 	const { data: session } = useSession()
-	const isAdmin = session?.user?.role === 'Admin' || session?.user?.role === 'admin'
+	const isAdmin =
+		session?.user?.role === 'Admin' || session?.user?.role === 'admin' || process.env.NODE_ENV === 'development'
 	const currentUser = session?.user
 	const [imageProcessing, setImageProcessing] = useState(false)
 	const [fileList, setFileList] = useState<any[]>([])
 	const [editingScheduleItemIdx, setEditingScheduleItemIdx] = useState<number | null>(null)
-
-	// Загрузка списка спикеров (можно заменить на useQuery)
-	const fetchSpeakers = async (search: string) => {
-		try {
-			const res = await axios.get('/api/user/search', { params: { q: search } })
-			setSpeakersOptions(res.data.map((u: any) => ({ label: u.name, value: u.id })))
-		} catch {
-			setSpeakersOptions([])
-		}
-	}
 
 	const { mutate: createEvent } = useMutation({
 		mutationFn: (values: any) => axios.post('/api/user/event', values),

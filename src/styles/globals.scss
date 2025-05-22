@@ -101,6 +101,11 @@ a.text-link {
 	}
 }
 
+.ant-select-multiple .ant-select-selection-overflow .ant-select-selection-item {
+	padding-inline-start: 8px !important;
+	padding-inline-end: 8px !important;
+}
+
 .ant-select {
 	.ant-typography-ellipsis-single-line {
 		vertical-align: middle;

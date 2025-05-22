@@ -1,8 +1,11 @@
 import React from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Modal, Form, Input, DatePicker, Select, Row, Col } from 'antd'
+import { Modal, Form, Input, DatePicker, Select, Row, Col, Avatar, Spin } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
+import debounce from 'lodash/debounce'
 
 type LocalEventScheduleItem = prismaClient.EventScheduleItem & {
 	speakers: (prismaClient.Speciality & { user: prismaClient.User })[]
@@ -29,6 +32,48 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 }) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
+
+	const [searchValue, setSearchValue] = React.useState('')
+	const [options, setOptions] = React.useState<
+		{ label: string; value: string; avatar?: string; speciality?: string }[]
+	>([])
+
+	const handleSearch = React.useMemo(
+		() =>
+			debounce((value: string) => {
+				setSearchValue(value)
+			}, 500),
+		[]
+	)
+
+	const { data: speakersData, isFetching } = useQuery({
+		queryKey: ['speakers-search', searchValue],
+		queryFn: async () => {
+			if (!searchValue) return []
+			const res = await axios.get('/api/speakers/search', { params: { query: searchValue } })
+			return res.data
+		},
+		enabled: !!searchValue && isAdmin,
+	})
+
+	React.useEffect(() => {
+		if (speakersData && Array.isArray(speakersData)) {
+			setOptions(
+				speakersData.map((item: any) => ({
+					label: item.name,
+					value: item.id,
+					avatar: item.image,
+					speciality: item.speciality || item.direction || 'No speciality',
+				}))
+			)
+		} else {
+			setOptions([])
+		}
+	}, [speakersData])
+
+	React.useEffect(() => {
+		if (!open) setOptions([])
+	}, [open])
 
 	const handleOk = async () => {
 		try {
@@ -105,9 +150,27 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 							allowClear
 							showSearch
 							placeholder={t('event.schedule.speakers.placeholder', 'Select speakers')}
-							options={speakersOptions}
-							style={{ width: '100%' }}
 							filterOption={false}
+							onSearch={handleSearch}
+							options={options}
+							loading={isFetching}
+							style={{ width: '100%' }}
+							optionLabelProp="label"
+							notFoundContent={isFetching ? <Spin size="small" /> : null}
+							optionRender={(option) => {
+								const { label, avatar, speciality } = option.data
+								return (
+									<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+										<Avatar size={24} src={avatar} style={{ marginRight: 8 }}>
+											{!avatar && label ? label[0] : null}
+										</Avatar>
+										<div>
+											<div>{label}</div>
+											<div style={{ fontSize: 12, color: '#888' }}>{speciality || 'No speciality'}</div>
+										</div>
+									</div>
+								)
+							}}
 						/>
 					) : (
 						<Select
