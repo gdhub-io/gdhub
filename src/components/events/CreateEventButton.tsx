@@ -1,4 +1,5 @@
 import React from 'react'
+import EventModal from '@/components/modals/EventModal'
 import { hasRole } from '@/helpers/user'
 import { EventType } from '@/pages/hub/events/mock.data'
 import { DownOutlined } from '@ant-design/icons'
@@ -46,6 +47,9 @@ const CreateEventButton: React.FC = () => {
 	const { t } = useTolgee()
 	const { token } = theme.useToken()
 	const isAdmin = hasRole(prismaClient.$Enums.UserRole.Admin, { data: session })
+
+	const [modalOpen, setModalOpen] = React.useState(false)
+	const [eventType, setEventType] = React.useState<EventType | undefined>(undefined)
 
 	const { data: userEventCount } = useQuery(
 		['user-event-count', session?.user?.id],
@@ -129,8 +133,20 @@ const CreateEventButton: React.FC = () => {
 	].filter((item): item is Exclude<typeof item, boolean | null> => Boolean(item))
 
 	const handleMenuClick: MenuProps['onClick'] = (e) => {
-		message.info(`Create event: ${eventTypeLabels[e.key as EventType]}`)
-		// TODO: router.push(`/hub/events/create?type=${e.key}`)
+		setEventType(e.key as EventType)
+		setModalOpen(true)
+	}
+
+	const handleModalCancel = () => {
+		setModalOpen(false)
+		setEventType(undefined)
+	}
+
+	const handleModalSubmit = (data: any) => {
+		// TODO: реализовать отправку данных на сервер
+		setModalOpen(false)
+		setEventType(undefined)
+		message.success('Event created!')
 	}
 
 	return (
@@ -149,6 +165,13 @@ const CreateEventButton: React.FC = () => {
 					<Button type="text">My Events</Button>
 				</Link>
 			)}
+
+			<EventModal
+				open={modalOpen}
+				onCancel={handleModalCancel}
+				onSubmit={handleModalSubmit}
+				initialValues={eventType ? { type: eventType } : {}}
+			/>
 		</Space>
 	)
 }

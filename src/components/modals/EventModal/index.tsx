@@ -1,0 +1,345 @@
+import React, { useState } from 'react'
+import { getBase64File } from '@/helpers/file'
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
+import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
+import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
+import { T, useTolgee } from '@tolgee/react'
+import {
+	Modal,
+	Form,
+	Input,
+	Button,
+	DatePicker,
+	Space,
+	Upload,
+	Select,
+	message,
+	Typography,
+	Divider,
+	Row,
+	Col,
+	Card,
+	Popover,
+	Spin,
+	DraggerProps,
+} from 'antd'
+import ImgCrop from 'antd-img-crop'
+import axios from 'axios'
+import dayjs from 'dayjs'
+import Image from 'next/image'
+import { useSession } from 'next-auth/react'
+import ScheduleItemModal from './ScheduleItemModal'
+import styles from './style.module.scss'
+
+// Типы для расписания и события
+interface EventScheduleItem {
+	title?: string
+	description?: string
+	start: string
+	end: string
+	speakers: string[]
+	link?: string
+}
+
+interface EventModalProps {
+	open: boolean
+	onCancel: () => void
+	onSubmit: (data: any) => void
+	initialValues?: any
+}
+
+const { Text } = Typography
+
+const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initialValues }) => {
+	const [form] = Form.useForm()
+	const { t } = useTolgee()
+	const [schedule, setSchedule] = useState<EventScheduleItem[]>(initialValues?.schedule || [])
+	const [uploading, setUploading] = useState(false)
+	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
+	const [speakersOptions, setSpeakersOptions] = useState<any[]>([])
+	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
+	const { data: session } = useSession()
+	const isAdmin = session?.user?.role === 'Admin' || session?.user?.role === 'admin'
+	const currentUser = session?.user
+	const [imageProcessing, setImageProcessing] = useState(false)
+	const [fileList, setFileList] = useState<any[]>([])
+
+	// Загрузка списка спикеров (можно заменить на useQuery)
+	const fetchSpeakers = async (search: string) => {
+		try {
+			const res = await axios.get('/api/user/search', { params: { q: search } })
+			setSpeakersOptions(res.data.map((u: any) => ({ label: u.name, value: u.id })))
+		} catch {
+			setSpeakersOptions([])
+		}
+	}
+
+	const uploadEventImage = async (file: any) => {
+		try {
+			const data = new FormData()
+			data.append('file', file)
+			data.append('filename', 'event-image')
+			data.append('tag', 'event')
+			const res = await axios.post('/api/file', data)
+			return await res.data
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const removeEventImage = async (fileUrl: string) => {
+		try {
+			await axios.delete('/api/file', { params: { fileUrl } })
+			setImageUrl(undefined)
+			form.setFieldValue('image', undefined)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const uploadProps: DraggerProps = {
+		name: 'file',
+		multiple: false,
+		accept: 'image/png, image/jpeg',
+		customRequest: async (options: any) => {
+			const { file, onSuccess, onError } = options
+			setImageProcessing(true)
+			try {
+				const uploadedFileData = await uploadEventImage(file)
+				setImageUrl(uploadedFileData.url)
+				setFileList([
+					{
+						uid: file.uid || Date.now(),
+						name: file.name,
+						status: 'done',
+						url: uploadedFileData.url,
+					},
+				])
+				form.setFieldValue('image', uploadedFileData.url)
+				if (onSuccess) onSuccess('ok')
+			} catch (e) {
+				if (onError) onError(e)
+			}
+			setImageProcessing(false)
+		},
+		fileList,
+		onRemove: async (file: any) => {
+			if (file.url) {
+				await removeEventImage(file.url)
+			}
+			setFileList([])
+			setImageUrl(undefined)
+			form.setFieldValue('image', undefined)
+		},
+		showUploadList: false,
+	}
+
+	const handleImageDelete = async () => {
+		if (!imageUrl) return
+		setImageProcessing(true)
+		await removeEventImage(imageUrl)
+		setImageProcessing(false)
+	}
+
+	// Добавить новый item расписания
+	const handleAddScheduleItem = () => {
+		setScheduleItemModalOpen(true)
+	}
+
+	const handleScheduleItemModalCancel = () => {
+		setScheduleItemModalOpen(false)
+	}
+
+	const handleScheduleItemModalSubmit = (item: EventScheduleItem) => {
+		setSchedule([...schedule, item])
+		setScheduleItemModalOpen(false)
+	}
+
+	// Удалить item расписания
+	const removeScheduleItem = (idx: number) => {
+		setSchedule(schedule.filter((_, i) => i !== idx))
+	}
+
+	// Обновить поле расписания
+	const updateScheduleItem = (idx: number, field: keyof EventScheduleItem, value: any) => {
+		const updated = [...schedule]
+		updated[idx][field] = value
+		setSchedule(updated)
+	}
+
+	// Сохранить событие
+	const handleOk = async () => {
+		try {
+			const values = await form.validateFields()
+			if (schedule.length === 0 || schedule.some((item) => !item.start || !item.end || !item.speakers.length)) {
+				message.error('Fill all required schedule fields')
+				return
+			}
+			onSubmit({ ...values, image: imageUrl, schedule })
+			form.resetFields()
+			setSchedule([])
+			setImageUrl(undefined)
+		} catch (err) {
+			// Ошибки валидации
+		}
+	}
+
+	const handleCancel = () => {
+		form.resetFields()
+		setSchedule([])
+		setImageUrl(undefined)
+		setFileList([])
+		onCancel()
+	}
+
+	return (
+		<Modal
+			open={open}
+			onCancel={handleCancel}
+			onOk={handleOk}
+			title={
+				<Space>
+					<FaRegCalendarCheck size={24} />
+					{t('event.modal.title', 'Event')}
+				</Space>
+			}
+			width={720}
+			okText={<T>Create</T>}
+			cancelText={<T>Cancel</T>}
+			destroyOnClose
+			maskClosable={false}
+		>
+			<Form form={form} variant="filled" layout="vertical" initialValues={initialValues} requiredMark="optional">
+				<Row gutter={16}>
+					<Col span={8}>
+						{!imageUrl ? (
+							<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="file" noStyle>
+								<ImgCrop aspect={4 / 5} cropShape="rect" showGrid showReset>
+									<Upload.Dragger {...uploadProps} className={styles.cover}>
+										<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
+										<p className="ant-upload-hint">
+											{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 16:9 recommended.')}
+										</p>
+									</Upload.Dragger>
+								</ImgCrop>
+							</Form.Item>
+						) : (
+							<Spin spinning={imageProcessing}>
+								<div className={styles.cover}>
+									<Image src={imageUrl + '?w=750'} fill alt="" />
+									<Popover content={t('event.modal.image.deletePopover', 'Remove image')}>
+										<Button
+											shape="circle"
+											type="primary"
+											className="remove-cover-btn"
+											onClick={handleImageDelete}
+											icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+										/>
+									</Popover>
+								</div>
+							</Spin>
+						)}
+					</Col>
+					<Col span={16}>
+						<Form.Item
+							label={t('event.modal.title.label', 'Title')}
+							name="title"
+							rules={[{ required: true, message: t('event.modal.title.required', 'Title is required') }]}
+						>
+							<Input placeholder={t('event.modal.title.placeholder', 'Event title')} />
+						</Form.Item>
+						<Form.Item
+							label={t('event.modal.description.label', 'Short Description')}
+							name="description"
+							rules={[{ required: true, message: t('event.modal.description.required', 'Description is required') }]}
+						>
+							<Input.TextArea rows={3} placeholder={t('event.modal.description.placeholder', 'Event description')} />
+						</Form.Item>
+						<Form.Item label={t('event.modal.link', 'Link')} name="link">
+							<Input placeholder={t('event.modal.link.placeholder', 'https://')} />
+						</Form.Item>
+					</Col>
+				</Row>
+				<Divider orientation="left">{t('event.modal.schedule', 'Schedule')}</Divider>
+				{schedule.map((item, idx) => (
+					<Card key={idx} size="small" style={{ marginBottom: 16 }}>
+						<Row gutter={8} align="middle">
+							<Col span={6}>
+								<Input
+									placeholder={t('event.modal.schedule.title', 'Item title')}
+									value={item.title}
+									onChange={(e) => updateScheduleItem(idx, 'title', e.target.value)}
+									allowClear
+								/>
+							</Col>
+							<Col span={8}>
+								<Input
+									placeholder={t('event.modal.schedule.description', 'Item description')}
+									value={item.description}
+									onChange={(e) => updateScheduleItem(idx, 'description', e.target.value)}
+									allowClear
+								/>
+							</Col>
+							<Col span={4}>
+								<DatePicker
+									showTime
+									placeholder={t('event.modal.schedule.start', 'Start')}
+									value={item.start ? dayjs(item.start) : undefined}
+									onChange={(v) => updateScheduleItem(idx, 'start', v ? v.toISOString() : '')}
+									style={{ width: '100%' }}
+								/>
+							</Col>
+							<Col span={4}>
+								<DatePicker
+									showTime
+									placeholder={t('event.modal.schedule.end', 'End')}
+									value={item.end ? dayjs(item.end) : undefined}
+									onChange={(v) => updateScheduleItem(idx, 'end', v ? v.toISOString() : '')}
+									style={{ width: '100%' }}
+								/>
+							</Col>
+							<Col span={8}>
+								<Select
+									mode="multiple"
+									allowClear
+									showSearch
+									placeholder={t('event.modal.schedule.speakers', 'Speakers')}
+									value={item.speakers}
+									onSearch={fetchSpeakers}
+									onChange={(v) => updateScheduleItem(idx, 'speakers', v)}
+									options={speakersOptions}
+									style={{ width: '100%' }}
+									filterOption={false}
+								/>
+							</Col>
+							<Col span={6}>
+								<Input
+									placeholder={t('event.modal.schedule.link', 'Link')}
+									value={item.link}
+									onChange={(e) => updateScheduleItem(idx, 'link', e.target.value)}
+									allowClear
+								/>
+							</Col>
+							<Col>
+								<Button icon={<DeleteOutlined />} danger onClick={() => removeScheduleItem(idx)} />
+							</Col>
+						</Row>
+					</Card>
+				))}
+				<Button icon={<PlusOutlined />} onClick={handleAddScheduleItem} block type="dashed">
+					{t('event.modal.schedule.add', 'Add schedule item')}
+				</Button>
+			</Form>
+			<ScheduleItemModal
+				open={scheduleItemModalOpen}
+				onCancel={handleScheduleItemModalCancel}
+				onSubmit={handleScheduleItemModalSubmit}
+				speakersOptions={speakersOptions}
+				isAdmin={isAdmin}
+				currentUser={currentUser ? { label: currentUser.name, value: currentUser.id } : undefined}
+			/>
+		</Modal>
+	)
+}
+
+export default EventModal

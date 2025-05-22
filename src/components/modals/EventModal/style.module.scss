@@ -1,0 +1,26 @@
+.cover {
+	background-color: #161616;
+	width: 100%;
+	position: relative;
+	aspect-ratio: 4 / 5;
+	border-radius: 8px;
+	overflow: hidden;
+
+	img {
+		object-fit: contain;
+	}
+
+	:global {
+		.remove-cover-btn {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			box-shadow: none !important;
+			background: #222;
+			&:hover, &:focus {
+				box-shadow: none !important;
+				background: #222;
+			}
+		}
+	}
+} 
