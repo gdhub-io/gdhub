@@ -343,7 +343,7 @@ export const ProtectedLayout = ({
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							<Flex align="center" justify="space-between" gap={16} style={{ marginBottom: 24 }}>
+							<Flex align="center" justify="space-between" gap={16} style={{ marginBottom: 24 }} wrap={true}>
 								<Space>
 									{showBackButton && (
 										<Button

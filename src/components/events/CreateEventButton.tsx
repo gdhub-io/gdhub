@@ -1,19 +1,20 @@
 import React from 'react'
-import { DownOutlined } from '@ant-design/icons'
-import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
-import { theme, Dropdown, MenuProps, message, Space, Button } from 'antd'
-import axios from 'axios'
-import qs from 'qs'
-import { useSession } from 'next-auth/react'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { hasRole } from '@/helpers/user'
+import { EventType } from '@/pages/hub/events/mock.data'
+import { DownOutlined } from '@ant-design/icons'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'
 import { FaMicroscope } from '@react-icons/all-files/fa/FaMicroscope'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
-import { EventType } from '@/pages/hub/events/mock.data'
+import { useQuery } from '@tanstack/react-query'
+import { useTolgee } from '@tolgee/react'
+import { theme, Dropdown, MenuProps, message, Space, Button } from 'antd'
+import axios from 'axios'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+import qs from 'qs'
 
 const eventTypeLabels: Record<EventType, string> = {
 	MEETUP: 'Meetup',
@@ -45,6 +46,12 @@ const CreateEventButton: React.FC = () => {
 	const { t } = useTolgee()
 	const { token } = theme.useToken()
 	const isAdmin = hasRole(prismaClient.$Enums.UserRole.Admin, { data: session })
+
+	const { data: userEventCount } = useQuery(
+		['user-event-count', session?.user?.id],
+		() => axios.get('/api/user/event/count').then((res) => res.data),
+		{ enabled: !!session?.user?.id }
+	)
 
 	const { data: specialityLevels } = useQuery(
 		['user-speciality-levels', session?.user?.id],
@@ -128,7 +135,6 @@ const CreateEventButton: React.FC = () => {
 
 	return (
 		<Space>
-			<Button type="text">My Events</Button>
 			<Dropdown menu={{ items, onClick: handleMenuClick }} trigger={['click']}>
 				<Button type="primary">
 					<Space>
@@ -137,6 +143,12 @@ const CreateEventButton: React.FC = () => {
 					</Space>
 				</Button>
 			</Dropdown>
+
+			{Boolean(userEventCount) && userEventCount > 0 && (
+				<Link href="/my/events">
+					<Button type="text">My Events</Button>
+				</Link>
+			)}
 		</Space>
 	)
 }

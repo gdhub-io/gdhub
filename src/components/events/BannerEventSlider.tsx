@@ -1,5 +1,5 @@
 import React from 'react'
-import { Event } from '@/pages/hub/events/mock.data'
+import { Event, mockEvents } from '@/pages/hub/events/mock.data'
 import { Carousel, Button, Tag, theme } from 'antd'
 import Image from 'next/image'
 
@@ -11,11 +11,14 @@ function getEventStatus(event: Event, now: Date): 'upcoming' | 'ongoing' | 'past
 	return 'ongoing'
 }
 
-export const BannerEventSlider = ({ events: propEvents }: { events?: Event[] }) => {
+export const BannerEventSlider = () => {
 	const { token } = theme.useToken()
 	const now = new Date()
-	const events = propEvents ?? []
+	const events = mockEvents.filter(
+		(e) => (e.type === 'CONFERENCE' || e.type === 'GAMELAB') && getEventStatus(e, now) === 'upcoming'
+	)
 	if (!events.length) return null
+
 	return (
 		<div style={{ marginBottom: 48 }}>
 			<Carousel autoplay dots={events.length > 1}>
