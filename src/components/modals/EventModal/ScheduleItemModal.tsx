@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
@@ -38,6 +38,10 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		{ label: string; value: string; avatar?: string; speciality?: string }[]
 	>([])
 
+	useEffect(() => {
+		if (open) refetchSpeakers()
+	}, [open])
+
 	const handleSearch = React.useMemo(
 		() =>
 			debounce((value: string) => {
@@ -46,10 +50,14 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		[]
 	)
 
-	const { data: speakersData, isFetching } = useQuery({
+	const {
+		data: speakersData,
+		isFetching,
+		refetch: refetchSpeakers,
+	} = useQuery({
 		queryKey: ['speakers-search', searchValue],
 		queryFn: async () => {
-			if (!searchValue) return []
+			// if (!searchValue) return []
 			const res = await axios.get('/api/speakers/search', { params: { query: searchValue } })
 			return res.data
 		},

@@ -1,6 +1,5 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { IsString } from 'class-validator'
 import { Get, Query, createHandler, Req } from 'next-api-decorators'
 
@@ -17,18 +16,23 @@ class ApiSpeakersSearchHandler {
 		// 	return []
 		// }
 
-		if (!query) return []
+		// if (!query) return []
 
 		const q = query.trim()
 
 		const specialities = await prisma.speciality.findMany({
-			where: {
-				OR: [
-					{ user: { name: { contains: q, mode: 'insensitive' } } },
-					{ user: { profile: { name: { contains: q, mode: 'insensitive' } } } },
-					{ name: { contains: q, mode: 'insensitive' } },
-				],
-			},
+			where: q
+				? {
+						OR: [
+							{ user: { name: { contains: q, mode: 'insensitive' } } },
+							{ user: { profile: { name: { contains: q, mode: 'insensitive' } } } },
+							{ name: { contains: q, mode: 'insensitive' } },
+							{ user: { id: req.user?.id } },
+						],
+					}
+				: {
+						user: { id: req.user?.id },
+					},
 			include: {
 				user: true,
 				direction: true,
