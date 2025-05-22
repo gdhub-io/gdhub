@@ -1,7 +1,7 @@
 import React from 'react'
 import EventModal from '@/components/modals/EventModal'
 import { hasRole } from '@/helpers/user'
-import { EventType } from '@/pages/hub/events/mock.data'
+import { EventType } from '@/mock/events.data'
 import { DownOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'

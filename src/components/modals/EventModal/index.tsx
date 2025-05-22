@@ -26,7 +26,6 @@ import {
 } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import axios from 'axios'
-import dayjs from 'dayjs'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import ScheduleItemModal from './ScheduleItemModal'

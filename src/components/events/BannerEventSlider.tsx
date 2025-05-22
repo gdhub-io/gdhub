@@ -1,5 +1,5 @@
 import React from 'react'
-import { Event, mockEvents } from '@/pages/hub/events/mock.data'
+import { Event, mockEvents } from '@/mock/events.data'
 import { Carousel, Button, Tag, theme } from 'antd'
 import Image from 'next/image'
 

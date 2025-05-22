@@ -1,8 +1,8 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Transform, Type } from 'class-transformer'
-import { IsArray, IsEnum, IsOptional, ValidateNested } from 'class-validator'
+import { Transform } from 'class-transformer'
+import { IsArray, IsEnum, IsOptional } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class GetSpecialityLevelsDto {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Event, EventType, mockEvents } from '@/pages/hub/events/mock.data'
+import { Event, EventType, mockEvents } from '@/mock/events.data'
 import { Row, Col } from 'antd'
 
 interface EventSectionProps {

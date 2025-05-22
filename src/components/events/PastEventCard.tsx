@@ -1,5 +1,5 @@
 import React from 'react'
-import { Event } from '@/pages/hub/events/mock.data'
+import { Event } from '@/mock/events.data'
 import { Card } from 'antd'
 import Image from 'next/image'
 

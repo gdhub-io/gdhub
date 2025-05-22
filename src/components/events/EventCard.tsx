@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { Event, EventType } from '@/pages/hub/events/mock.data'
+import { Event, EventType } from '@/mock/events.data'
 import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'
 import { FaMicroscope } from '@react-icons/all-files/fa/FaMicroscope'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
