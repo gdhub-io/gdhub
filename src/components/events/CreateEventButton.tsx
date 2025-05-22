@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useCallback } from 'react'
 import EventModal from '@/components/modals/EventModal'
 import { hasRole } from '@/helpers/user'
 import { EventType } from '@/mock/events.data'
@@ -17,17 +17,17 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import qs from 'qs'
 
-function getTypeIcon(type: EventType, args: { size: number; color: string }) {
+function getTypeIcon(type: prismaClient.$Enums.EventType, args: { size: number; color: string }) {
 	switch (type) {
-		case 'MEETUP':
+		case prismaClient.$Enums.EventType.Meetup:
 			return <FaUsers {...args} />
-		case 'GAMEJAM':
+		case prismaClient.$Enums.EventType.GameJam:
 			return <GiGamepad {...args} />
-		case 'WORKSHOP':
+		case prismaClient.$Enums.EventType.Workshop:
 			return <FaChalkboardTeacher {...args} />
-		case 'GAMELAB':
+		case prismaClient.$Enums.EventType.GameLab:
 			return <FaMicroscope {...args} />
-		case 'CONFERENCE':
+		case prismaClient.$Enums.EventType.Conference:
 			return <FaRegCalendarCheck {...args} />
 		default:
 			return null
@@ -43,6 +43,7 @@ const CreateEventButton: React.FC = () => {
 	const [modalOpen, setModalOpen] = React.useState(false)
 	const [eventType, setEventType] = React.useState<EventType | undefined>(undefined)
 
+	// TODO: переделать на useMutation
 	const { data: userEventCount } = useQuery(
 		['user-event-count', session?.user?.id],
 		() => axios.get('/api/user/event/count').then((res) => res.data),
@@ -65,71 +66,55 @@ const CreateEventButton: React.FC = () => {
 
 	const canCreateMeetupOrWorkshop = isAdmin || (Array.isArray(specialityLevels) && specialityLevels.length > 0)
 
-	const eventTypeLabels: Record<EventType, string> = useMemo(
-		() => ({
-			MEETUP: t('event.format.meetup', 'Meetup'),
-			WORKSHOP: t('event.format.workshop', 'Workshop'),
-			GAMEJAM: t('event.format.gamejam', 'Game Jam'),
-			GAMELAB: t('event.format.gamelab', 'Game Lab'),
-			CONFERENCE: t('event.format.conference', 'Conference'),
-		}),
+	const eventLabel = useCallback(
+		(eventType: prismaClient.$Enums.EventType) => {
+			const labels = {
+				[prismaClient.$Enums.EventType.Meetup]: t('event.format.meetup', 'Meetup'),
+				[prismaClient.$Enums.EventType.Workshop]: t('event.format.workshop', 'Workshop'),
+				[prismaClient.$Enums.EventType.GameJam]: t('event.format.gamejam', 'Game Jam'),
+				[prismaClient.$Enums.EventType.GameLab]: t('event.format.gamelab', 'Game Lab'),
+				[prismaClient.$Enums.EventType.Conference]: t('event.format.conference', 'Conference'),
+			}
+
+			return (
+				<Space size={8}>
+					{getTypeIcon(eventType, { size: 24, color: token.colorTextSecondary })}
+					{labels[eventType]}
+				</Space>
+			)
+		},
 		[t]
 	)
 
 	const items: MenuProps['items'] = [
 		canCreateMeetupOrWorkshop && {
-			label: (
-				<Space size={8}>
-					{getTypeIcon('MEETUP', { size: 24, color: token.colorTextSecondary })}
-					{eventTypeLabels.MEETUP}
-				</Space>
-			),
-			key: 'MEETUP',
+			label: eventLabel(prismaClient.$Enums.EventType.Meetup),
+			key: 'meetup',
 			icon: null,
 		},
 		canCreateMeetupOrWorkshop && {
-			label: (
-				<Space size={8}>
-					{getTypeIcon('WORKSHOP', { size: 24, color: token.colorTextSecondary })}
-					{eventTypeLabels.WORKSHOP}
-				</Space>
-			),
-			key: 'WORKSHOP',
+			label: eventLabel(prismaClient.$Enums.EventType.Workshop),
+			key: 'workshop',
 			icon: null,
 		},
 		isAdmin
 			? {
-					label: (
-						<Space size={8}>
-							{getTypeIcon('GAMEJAM', { size: 24, color: token.colorTextSecondary })}
-							{eventTypeLabels.GAMEJAM}
-						</Space>
-					),
-					key: 'GAMEJAM',
+					label: eventLabel(prismaClient.$Enums.EventType.GameJam),
+					key: 'gamejam',
 					icon: null,
 				}
 			: null,
 		isAdmin
 			? {
-					label: (
-						<Space size={8}>
-							{getTypeIcon('GAMELAB', { size: 24, color: token.colorTextSecondary })}
-							{eventTypeLabels.GAMELAB}
-						</Space>
-					),
-					key: 'GAMELAB',
+					label: eventLabel(prismaClient.$Enums.EventType.GameLab),
+					key: 'gamelab',
 					icon: null,
 				}
 			: null,
 		isAdmin
 			? {
-					label: (
-						<Space size={8}>
-							{getTypeIcon('CONFERENCE', { size: 24, color: token.colorTextSecondary })}
-							{eventTypeLabels.CONFERENCE}
-						</Space>
-					),
-					key: 'CONFERENCE',
+					label: eventLabel(prismaClient.$Enums.EventType.Conference),
+					key: 'conference',
 					icon: null,
 				}
 			: null,
@@ -145,7 +130,7 @@ const CreateEventButton: React.FC = () => {
 		setEventType(undefined)
 	}
 
-	const handleModalSubmit = (data: any) => {
+	const handleModalSubmit = () => {
 		// TODO: реализовать отправку данных на сервер
 		setModalOpen(false)
 		setEventType(undefined)

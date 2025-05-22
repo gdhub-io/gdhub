@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import ModernTable from '@/components/ModernTable'
 import { formatEventPeriod } from '@/helpers/format'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
+import { useMutation } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import {
 	Modal,
@@ -31,20 +33,14 @@ import { useSession } from 'next-auth/react'
 import ScheduleItemModal from './ScheduleItemModal'
 import styles from './style.module.scss'
 
-// Типы для расписания и события
-interface EventScheduleItem {
-	title?: string
-	description?: string
-	start: string
-	end: string
-	speakers: string[]
-	link?: string
+type LocalEventScheduleItem = prismaClient.EventScheduleItem & {
+	speakers: (prismaClient.Speciality & { user: prismaClient.User })[]
 }
 
 interface EventModalProps {
 	open: boolean
 	onCancel: () => void
-	onSubmit: (data: any) => void
+	onSubmit: () => void
 	initialValues?: any
 }
 
@@ -53,8 +49,7 @@ const { Text } = Typography
 const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initialValues }) => {
 	const [form] = Form.useForm()
 	const { t, getLanguage } = useTolgee()
-	const [schedule, setSchedule] = useState<EventScheduleItem[]>(initialValues?.schedule || [])
-	const [uploading, setUploading] = useState(false)
+	const [schedule, setSchedule] = useState<LocalEventScheduleItem[]>(initialValues?.schedule || [])
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
 	const [speakersOptions, setSpeakersOptions] = useState<any[]>([])
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
@@ -74,6 +69,10 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 			setSpeakersOptions([])
 		}
 	}
+
+	const { mutate: createEvent } = useMutation({
+		mutationFn: (values: any) => axios.post('/api/user/event', values),
+	})
 
 	const uploadEventImage = async (file: any) => {
 		try {
@@ -153,7 +152,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 		setEditingScheduleItemIdx(null)
 	}
 
-	const handleScheduleItemModalSubmit = (item: EventScheduleItem) => {
+	const handleScheduleItemModalSubmit = (item: LocalEventScheduleItem) => {
 		if (editingScheduleItemIdx !== null) {
 			const updated = [...schedule]
 			updated[editingScheduleItemIdx] = item
@@ -171,7 +170,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	}
 
 	// Обновить поле расписания
-	const updateScheduleItem = (idx: number, field: keyof EventScheduleItem, value: any) => {
+	const updateScheduleItem = (idx: number, field: keyof LocalEventScheduleItem, value: any) => {
 		const updated = [...schedule]
 		updated[idx][field] = value
 		setSchedule(updated)
@@ -181,11 +180,16 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	const handleOk = async () => {
 		try {
 			const values = await form.validateFields()
-			if (schedule.length === 0 || schedule.some((item) => !item.start || !item.end || !item.speakers.length)) {
-				message.error('Fill all required schedule fields')
+
+			if (schedule.length === 0 && !values.schedule) {
+				message.error('Required to add at least one schedule item')
 				return
 			}
-			onSubmit({ ...values, image: imageUrl, schedule })
+
+			await createEvent({ ...values, schedule })
+
+			onSubmit()
+
 			form.resetFields()
 			setSchedule([])
 			setImageUrl(undefined)
@@ -212,6 +216,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 			open={open}
 			onCancel={handleCancel}
 			onOk={handleOk}
+			centered
 			title={
 				<Space>
 					<FaRegCalendarCheck size={24} />
@@ -353,6 +358,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 					{t('event.modal.schedule.add', 'Add item')}
 				</Button>
 			</Form>
+
 			<ScheduleItemModal
 				open={scheduleItemModalOpen}
 				onCancel={handleScheduleItemModalCancel}

@@ -1,22 +1,18 @@
 import React from 'react'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useTolgee } from '@tolgee/react'
 import { Modal, Form, Input, DatePicker, Select, Row, Col } from 'antd'
 import dayjs from 'dayjs'
 
-interface ScheduleItem {
-	title?: string
-	description?: string
-	start: string
-	end: string
-	speakers: string[]
-	link?: string
+type LocalEventScheduleItem = prismaClient.EventScheduleItem & {
+	speakers: (prismaClient.Speciality & { user: prismaClient.User })[]
 }
 
 interface ScheduleItemModalProps {
 	open: boolean
 	onCancel: () => void
-	onSubmit: (item: ScheduleItem) => void
-	initialValues?: Partial<ScheduleItem>
+	onSubmit: (item: LocalEventScheduleItem) => void
+	initialValues?: Partial<LocalEventScheduleItem>
 	speakersOptions: { label: string; value: string }[]
 	isAdmin: boolean
 	currentUser?: { label: string; value: string }
@@ -64,8 +60,8 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				layout="vertical"
 				initialValues={{
 					...initialValues,
-					start: initialValues?.start ? dayjs(initialValues.start) : undefined,
-					end: initialValues?.end ? dayjs(initialValues.end) : undefined,
+					start: initialValues?.startDate ? dayjs(initialValues.startDate) : undefined,
+					end: initialValues?.endDate ? dayjs(initialValues.endDate) : undefined,
 					speakers: isAdmin ? initialValues?.speakers : currentUser,
 				}}
 				requiredMark="optional"
