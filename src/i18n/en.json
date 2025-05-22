@@ -300,6 +300,7 @@
     },
     "user": {
       "menu": {
+        "events": "Events",
         "hub": "Overview",
         "lectures": "Lectures",
         "members": "Members",
@@ -382,6 +383,41 @@
   },
   "equityPromise": {
     "confirm": "I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions."
+  },
+  "event": {
+    "modal": {
+      "description": {
+        "label": "Short description",
+        "placeholder": "Event description"
+      },
+      "image": {
+        "add": "Add event image",
+        "hint": "Click or drag image here. JPG, PNG. 4:5 recommended."
+      },
+      "link": "Link",
+      "schedule": "Schedule",
+      "schedule.add": "Add Item",
+      "title": "Event",
+      "title.label": "Title",
+      "title.placeholder": "Event title"
+    },
+    "schedule": {
+      "description": "Description",
+      "description.placeholder": "Item description",
+      "end": "End Date",
+      "link": "Link",
+      "modal": {
+        "title": "Schedule Item"
+      },
+      "speakers": "Speakers",
+      "start": "Start Date",
+      "title": "Title",
+      "title.placeholder": "Item title"
+    },
+    "type": {
+      "free": "Free",
+      "paid": "Paid"
+    }
   },
   "experience": "Experience",
   "experience.plachehloder": "For example: \n2015-2020, GameBook LLC, Unity developer \n2020-present, Lukomorye LLC, Sound designer\nI only have experience doing academic work",
@@ -749,6 +785,16 @@
     },
     "documentation": {
       "title": "Documentation"
+    },
+    "events": {
+      "createEvent": "Create Event",
+      "gameJamsAndExperiments": "Experience & Experiments",
+      "gameJamsAndExperimentsDescription": "Game jams for practice, experiments, and new connections.",
+      "newKnowledge": "New Knowledge",
+      "newKnowledgeDescription": "Meetups and workshops for sharing experience, learning, and networking.",
+      "pastEvents": "Some Past Events",
+      "pastEventsDescription": "Here are some of the platform's completed events.",
+      "title": "Events"
     },
     "hab": {
       "projects": {

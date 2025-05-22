@@ -15,7 +15,7 @@ const EventsPage: NextPageWithLayout = () => {
 
 	return (
 		<ProtectedLayout
-			title={t('page.events.title', 'All Events')}
+			title={t('page.events.title', 'Events')}
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
 			extra={<CreateEventButton />}
 		>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import EventModal from '@/components/modals/EventModal'
 import { hasRole } from '@/helpers/user'
 import { EventType } from '@/mock/events.data'
@@ -16,14 +16,6 @@ import axios from 'axios'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import qs from 'qs'
-
-const eventTypeLabels: Record<EventType, string> = {
-	MEETUP: 'Meetup',
-	WORKSHOP: 'Workshop',
-	GAMEJAM: 'Game Jam',
-	GAMELAB: 'Game Lab',
-	CONFERENCE: 'Conference',
-}
 
 function getTypeIcon(type: EventType, args: { size: number; color: string }) {
 	switch (type) {
@@ -72,6 +64,17 @@ const CreateEventButton: React.FC = () => {
 	)
 
 	const canCreateMeetupOrWorkshop = isAdmin || (Array.isArray(specialityLevels) && specialityLevels.length > 0)
+
+	const eventTypeLabels: Record<EventType, string> = useMemo(
+		() => ({
+			MEETUP: t('event.format.meetup', 'Meetup'),
+			WORKSHOP: t('event.format.workshop', 'Workshop'),
+			GAMEJAM: t('event.format.gamejam', 'Game Jam'),
+			GAMELAB: t('event.format.gamelab', 'Game Lab'),
+			CONFERENCE: t('event.format.conference', 'Conference'),
+		}),
+		[t]
+	)
 
 	const items: MenuProps['items'] = [
 		canCreateMeetupOrWorkshop && {
