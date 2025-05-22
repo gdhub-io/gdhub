@@ -1,5 +1,5 @@
 import React from 'react'
-import { Event, mockEvents } from '@/pages/hub/events/mock.data'
+import { Event } from '@/pages/hub/events/mock.data'
 import { Carousel, Button, Tag, theme } from 'antd'
 import Image from 'next/image'
 
@@ -11,12 +11,10 @@ function getEventStatus(event: Event, now: Date): 'upcoming' | 'ongoing' | 'past
 	return 'ongoing'
 }
 
-export const BannerEventSlider = () => {
+export const BannerEventSlider = ({ events: propEvents }: { events?: Event[] }) => {
 	const { token } = theme.useToken()
 	const now = new Date()
-	const events = mockEvents.filter(
-		(e) => (e.type === 'CONFERENCE' || e.type === 'GAMELAB') && getEventStatus(e, now) === 'upcoming'
-	)
+	const events = propEvents ?? []
 	if (!events.length) return null
 	return (
 		<div style={{ marginBottom: 48 }}>
