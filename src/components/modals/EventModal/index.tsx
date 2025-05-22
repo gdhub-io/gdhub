@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { getBase64File } from '@/helpers/file'
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
+import ModernTable from '@/components/ModernTable'
+import { formatEventPeriod } from '@/helpers/format'
+import { PlusOutlined, MoreOutlined } from '@ant-design/icons'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { T, useTolgee } from '@tolgee/react'
@@ -9,19 +10,19 @@ import {
 	Form,
 	Input,
 	Button,
-	DatePicker,
 	Space,
 	Upload,
-	Select,
 	message,
 	Typography,
 	Divider,
 	Row,
 	Col,
-	Card,
 	Popover,
 	Spin,
 	DraggerProps,
+	Avatar,
+	Dropdown,
+	Menu,
 } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import axios from 'axios'
@@ -52,7 +53,7 @@ const { Text } = Typography
 
 const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initialValues }) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const [schedule, setSchedule] = useState<EventScheduleItem[]>(initialValues?.schedule || [])
 	const [uploading, setUploading] = useState(false)
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
@@ -63,6 +64,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	const currentUser = session?.user
 	const [imageProcessing, setImageProcessing] = useState(false)
 	const [fileList, setFileList] = useState<any[]>([])
+	const [editingScheduleItemIdx, setEditingScheduleItemIdx] = useState<number | null>(null)
 
 	// Загрузка списка спикеров (можно заменить на useQuery)
 	const fetchSpeakers = async (search: string) => {
@@ -143,16 +145,25 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 
 	// Добавить новый item расписания
 	const handleAddScheduleItem = () => {
+		setEditingScheduleItemIdx(null)
 		setScheduleItemModalOpen(true)
 	}
 
 	const handleScheduleItemModalCancel = () => {
 		setScheduleItemModalOpen(false)
+		setEditingScheduleItemIdx(null)
 	}
 
 	const handleScheduleItemModalSubmit = (item: EventScheduleItem) => {
-		setSchedule([...schedule, item])
+		if (editingScheduleItemIdx !== null) {
+			const updated = [...schedule]
+			updated[editingScheduleItemIdx] = item
+			setSchedule(updated)
+		} else {
+			setSchedule([...schedule, item])
+		}
 		setScheduleItemModalOpen(false)
+		setEditingScheduleItemIdx(null)
 	}
 
 	// Удалить item расписания
@@ -192,6 +203,11 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 		onCancel()
 	}
 
+	const handleEditScheduleItem = (idx: number) => {
+		setEditingScheduleItemIdx(idx)
+		setScheduleItemModalOpen(true)
+	}
+
 	return (
 		<Modal
 			open={open}
@@ -218,7 +234,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 									<Upload.Dragger {...uploadProps} className={styles.cover}>
 										<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
 										<p className="ant-upload-hint">
-											{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 16:9 recommended.')}
+											{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 4:5 recommended.')}
 										</p>
 									</Upload.Dragger>
 								</ImgCrop>
@@ -260,80 +276,89 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 						</Form.Item>
 					</Col>
 				</Row>
-				<Divider orientation="left">{t('event.modal.schedule', 'Schedule')}</Divider>
-				{schedule.map((item, idx) => (
-					<Card key={idx} size="small" style={{ marginBottom: 16 }}>
-						<Row gutter={8} align="middle">
-							<Col span={6}>
-								<Input
-									placeholder={t('event.modal.schedule.title', 'Item title')}
-									value={item.title}
-									onChange={(e) => updateScheduleItem(idx, 'title', e.target.value)}
-									allowClear
-								/>
-							</Col>
-							<Col span={8}>
-								<Input
-									placeholder={t('event.modal.schedule.description', 'Item description')}
-									value={item.description}
-									onChange={(e) => updateScheduleItem(idx, 'description', e.target.value)}
-									allowClear
-								/>
-							</Col>
-							<Col span={4}>
-								<DatePicker
-									showTime
-									placeholder={t('event.modal.schedule.start', 'Start')}
-									value={item.start ? dayjs(item.start) : undefined}
-									onChange={(v) => updateScheduleItem(idx, 'start', v ? v.toISOString() : '')}
-									style={{ width: '100%' }}
-								/>
-							</Col>
-							<Col span={4}>
-								<DatePicker
-									showTime
-									placeholder={t('event.modal.schedule.end', 'End')}
-									value={item.end ? dayjs(item.end) : undefined}
-									onChange={(v) => updateScheduleItem(idx, 'end', v ? v.toISOString() : '')}
-									style={{ width: '100%' }}
-								/>
-							</Col>
-							<Col span={8}>
-								<Select
-									mode="multiple"
-									allowClear
-									showSearch
-									placeholder={t('event.modal.schedule.speakers', 'Speakers')}
-									value={item.speakers}
-									onSearch={fetchSpeakers}
-									onChange={(v) => updateScheduleItem(idx, 'speakers', v)}
-									options={speakersOptions}
-									style={{ width: '100%' }}
-									filterOption={false}
-								/>
-							</Col>
-							<Col span={6}>
-								<Input
-									placeholder={t('event.modal.schedule.link', 'Link')}
-									value={item.link}
-									onChange={(e) => updateScheduleItem(idx, 'link', e.target.value)}
-									allowClear
-								/>
-							</Col>
-							<Col>
-								<Button icon={<DeleteOutlined />} danger onClick={() => removeScheduleItem(idx)} />
-							</Col>
-						</Row>
-					</Card>
-				))}
-				<Button icon={<PlusOutlined />} onClick={handleAddScheduleItem} block type="dashed">
-					{t('event.modal.schedule.add', 'Add schedule item')}
+				<Divider orientation="left" style={{ marginTop: 16 }}>
+					{t('event.modal.schedule', 'Schedule')}
+				</Divider>
+				{schedule.length > 0 && (
+					<ModernTable
+						size="small"
+						dataSource={schedule.map((item, idx) => ({ ...item, key: idx }))}
+						pagination={false}
+						columns={[
+							{
+								title: t('event.modal.schedule.period', 'Date'),
+								dataIndex: 'start',
+								key: 'period',
+								render: (start: string, record: any) => formatEventPeriod(start, record.end, getLanguage()),
+							},
+							{
+								title: t('event.modal.schedule.title', 'Title'),
+								dataIndex: 'title',
+								key: 'title',
+							},
+							{
+								title: t('event.modal.schedule.speakers', 'Speakers'),
+								dataIndex: 'speakers',
+								key: 'speakers',
+								render: (speakers: any[]) => {
+									const speakersArr = Array.isArray(speakers) ? speakers : speakers ? [speakers] : []
+									return (
+										<span style={{ display: 'flex', gap: 8 }}>
+											{speakersArr.map((id) => {
+												const speaker = speakersOptions.find((s) => s.value === id)
+												if (!speaker) return null
+												return (
+													<span key={id} style={{ display: 'inline-flex', alignItems: 'center', marginRight: 8 }}>
+														<Avatar size={24} src={speaker.avatar} style={{ marginRight: 4 }} />
+														<span>{speaker.label}</span>
+													</span>
+												)
+											})}
+										</span>
+									)
+								},
+							},
+							{
+								title: '',
+								key: 'actions',
+								width: 48,
+								render: (_: any, record: any, idx: number) => {
+									const menu = (
+										<Menu>
+											<Menu.Item key="edit" onClick={() => handleEditScheduleItem(idx)}>
+												{t('Edit', 'Edit')}
+											</Menu.Item>
+											<Menu.Item key="delete" onClick={() => removeScheduleItem(idx)} danger>
+												{t('Delete', 'Delete')}
+											</Menu.Item>
+										</Menu>
+									)
+									return (
+										<Dropdown overlay={menu} trigger={['click']}>
+											<Button type="text" icon={<MoreOutlined />} />
+										</Dropdown>
+									)
+								},
+							},
+						]}
+						style={{ marginBottom: 16 }}
+					/>
+				)}
+				<Button
+					block
+					icon={<PlusOutlined />}
+					onClick={handleAddScheduleItem}
+					type="text"
+					className={styles.addItemButton}
+				>
+					{t('event.modal.schedule.add', 'Add item')}
 				</Button>
 			</Form>
 			<ScheduleItemModal
 				open={scheduleItemModalOpen}
 				onCancel={handleScheduleItemModalCancel}
 				onSubmit={handleScheduleItemModalSubmit}
+				initialValues={editingScheduleItemIdx !== null ? schedule[editingScheduleItemIdx] : undefined}
 				speakersOptions={speakersOptions}
 				isAdmin={isAdmin}
 				currentUser={currentUser ? { label: currentUser.name, value: currentUser.id } : undefined}

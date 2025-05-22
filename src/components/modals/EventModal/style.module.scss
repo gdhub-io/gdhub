@@ -17,10 +17,17 @@
 			right: 5px;
 			box-shadow: none !important;
 			background: #222;
-			&:hover, &:focus {
+
+			&:hover,
+			&:focus {
 				box-shadow: none !important;
 				background: #222;
 			}
 		}
 	}
-} 
+}
+
+.addItemButton {
+	background: #efefef66;
+	color: #222;
+}

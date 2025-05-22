@@ -70,19 +70,6 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				}}
 				requiredMark="optional"
 			>
-				<Form.Item label={t('event.schedule.title', 'Title')} name="title">
-					<Input placeholder={t('event.schedule.title.placeholder', 'Item title')} allowClear />
-				</Form.Item>
-				<Form.Item label={t('event.schedule.link', 'Link')} name="link">
-					<Input placeholder={t('event.schedule.link.placeholder', 'https://')} allowClear />
-				</Form.Item>
-				<Form.Item label={t('event.schedule.description', 'Description')} name="description">
-					<Input.TextArea
-						rows={2}
-						placeholder={t('event.schedule.description.placeholder', 'Item description')}
-						allowClear
-					/>
-				</Form.Item>
 				<Row gutter={8}>
 					<Col span={12}>
 						<Form.Item
@@ -135,6 +122,19 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 							style={{ width: '100%' }}
 						/>
 					)}
+				</Form.Item>
+				<Form.Item label={t('event.schedule.title', 'Title')} name="title">
+					<Input placeholder={t('event.schedule.title.placeholder', 'Item title')} allowClear />
+				</Form.Item>
+				<Form.Item label={t('event.schedule.link', 'Link')} name="link">
+					<Input placeholder={t('event.schedule.link.placeholder', 'https://')} allowClear />
+				</Form.Item>
+				<Form.Item label={t('event.schedule.description', 'Description')} name="description">
+					<Input.TextArea
+						rows={2}
+						placeholder={t('event.schedule.description.placeholder', 'Item description')}
+						allowClear
+					/>
 				</Form.Item>
 			</Form>
 		</Modal>
