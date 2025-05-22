@@ -232,14 +232,14 @@ export const ProtectedLayout = ({
 				</Link>
 			),
 		},
-		{
-			key: '/hub/lectures',
-			label: (
-				<Link href="/hub/lectures">
-					<T keyName="app.user.menu.lectures">Lectures</T>
-				</Link>
-			),
-		},
+		// {
+		// 	key: '/hub/lectures',
+		// 	label: (
+		// 		<Link href="/hub/lectures">
+		// 			<T keyName="app.user.menu.lectures">Lectures</T>
+		// 		</Link>
+		// 	),
+		// },
 		{
 			key: '/hub/events',
 			disabled: true,

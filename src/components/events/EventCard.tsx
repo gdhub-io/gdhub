@@ -5,6 +5,7 @@ import { FaMicroscope } from '@react-icons/all-files/fa/FaMicroscope'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
+import { useTolgee } from '@tolgee/react'
 import { Card, Tag } from 'antd'
 import Image from 'next/image'
 import styles from './style.module.scss'
@@ -27,6 +28,7 @@ function getTypeIcon(type: EventType) {
 }
 
 export const EventCard = ({ event, token }: { event: Event; token: any }) => {
+	const { t } = useTolgee()
 	const now = useMemo(() => new Date(), [])
 	const [hovered, setHovered] = useState(false)
 	const typeLabels: Record<EventType, string> = {
@@ -135,7 +137,7 @@ export const EventCard = ({ event, token }: { event: Event; token: any }) => {
 							fontWeight: 600,
 						}}
 					>
-						{event.isFree ? 'Free' : 'Paid'}
+						{event.isFree ? t('event.type.free', 'Free') : t('event.type.paid', 'Paid')}
 					</Tag>
 				</div>
 			}

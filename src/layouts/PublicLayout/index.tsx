@@ -243,20 +243,20 @@ export const PublicLayout = ({
 					),
 					key: '/hub/members',
 				},
-				{
-					label: (
-						<Link href="/hub/lectures" title={t('Community Lectures')}>
-							{screens.lg ? (
-								<Button type="text">
-									<T>Lectures</T>
-								</Button>
-							) : (
-								<T>Lectures</T>
-							)}
-						</Link>
-					),
-					key: '/hub/lectures',
-				},
+				// {
+				// 	label: (
+				// 		<Link href="/hub/lectures" title={t('Community Lectures')}>
+				// 			{screens.lg ? (
+				// 				<Button type="text">
+				// 					<T>Lectures</T>
+				// 				</Button>
+				// 			) : (
+				// 				<T>Lectures</T>
+				// 			)}
+				// 		</Link>
+				// 	),
+				// 	key: '/hub/lectures',
+				// },
 				...menu.slice(1),
 			]
 		}

@@ -23,24 +23,30 @@ const EventsPage: NextPageWithLayout = () => {
 				<BannerEventSlider />
 
 				<EventSection
-					title="New Knowledge"
-					description="Meetups and workshops for sharing experience, learning, and networking."
+					title={t('page.events.newKnowledge', 'New Knowledge')}
+					description={t(
+						'page.events.newKnowledgeDescription',
+						'Meetups and workshops for sharing experience, learning, and networking.'
+					)}
 					eventTypes={['MEETUP', 'WORKSHOP']}
 					eventStatus="upcoming"
 					CardComponent={EventCard}
 					token={token}
 				/>
 				<EventSection
-					title="Experience & Experiments"
-					description="Game jams for practice, experiments, and new connections."
+					title={t('page.events.gameJamsAndExperiments', 'Experience & Experiments')}
+					description={t(
+						'page.events.gameJamsAndExperimentsDescription',
+						'Game jams for practice, experiments, and new connections.'
+					)}
 					eventTypes={['GAMEJAM', 'GAMELAB']}
 					eventStatus="upcoming"
 					CardComponent={EventCard}
 					token={token}
 				/>
 				<EventSection
-					title="Some Past Events"
-					description="Here are some of the platform's completed events."
+					title={t('page.events.pastEvents', 'Some Past Events')}
+					description={t('page.events.pastEventsDescription', "Here are some of the platform's completed events.")}
 					eventTypes={['MEETUP', 'WORKSHOP', 'GAMEJAM', 'GAMELAB', 'CONFERENCE']}
 					eventStatus="past"
 					CardComponent={PastEventCard}
