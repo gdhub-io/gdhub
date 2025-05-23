@@ -1,22 +1,29 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
+import { IsArray, IsOptional, IsString } from 'class-validator'
 import { Get, Query, createHandler, Req } from 'next-api-decorators'
 
 class SearchQueryDto {
 	@IsString()
 	query: string
+
+	@IsOptional()
+	@IsArray()
+	@IsString({ each: true })
+	ids?: string[]
 }
 
 @NextAuthGuard('user')
 class ApiSpeakersSearchHandler {
 	@Get()
-	async search(@Req() req: any, @Query() { query }: SearchQueryDto) {
+	async search(@Req() req: any, @Query() { query, ids }: SearchQueryDto) {
 		// if (!req.user?.roles?.includes(prismaClient.UserRole.Admin)) {
 		// 	return []
 		// }
 
 		// if (!query) return []
+
+		console.log('ids', ids)
 
 		const q = query.trim()
 
@@ -31,7 +38,7 @@ class ApiSpeakersSearchHandler {
 						],
 					}
 				: {
-						user: { id: req.user?.id },
+						OR: [{ user: { id: req.user?.id } }, { id: ids ? { in: Array.isArray(ids) ? ids : [ids] } : undefined }],
 					},
 			include: {
 				user: true,

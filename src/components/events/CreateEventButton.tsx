@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import EventModal from '@/components/modals/EventModal'
 import { hasRole } from '@/helpers/user'
-import { EventType } from '@/mock/events.data'
 import { DownOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'
@@ -38,10 +37,11 @@ const CreateEventButton: React.FC = () => {
 	const { data: session } = useSession()
 	const { t } = useTolgee()
 	const { token } = theme.useToken()
-	const isAdmin = hasRole(prismaClient.$Enums.UserRole.Admin, { data: session })
+	const isAdmin =
+		hasRole(prismaClient.$Enums.UserRole.Admin, { data: session }) || process.env.NODE_ENV === 'development'
 
 	const [modalOpen, setModalOpen] = React.useState(false)
-	const [eventType, setEventType] = React.useState<EventType | undefined>(undefined)
+	const [eventType, setEventType] = React.useState<prismaClient.$Enums.EventType | undefined>(undefined)
 
 	// TODO: переделать на useMutation
 	const { data: userEventCount } = useQuery(
@@ -89,39 +89,39 @@ const CreateEventButton: React.FC = () => {
 	const items: MenuProps['items'] = [
 		canCreateMeetupOrWorkshop && {
 			label: eventLabel(prismaClient.$Enums.EventType.Meetup),
-			key: 'meetup',
+			key: prismaClient.$Enums.EventType.Meetup,
 			icon: null,
 		},
 		canCreateMeetupOrWorkshop && {
 			label: eventLabel(prismaClient.$Enums.EventType.Workshop),
-			key: 'workshop',
+			key: prismaClient.$Enums.EventType.Workshop,
 			icon: null,
 		},
 		isAdmin
 			? {
 					label: eventLabel(prismaClient.$Enums.EventType.GameJam),
-					key: 'gamejam',
+					key: prismaClient.$Enums.EventType.GameJam,
 					icon: null,
 				}
 			: null,
 		isAdmin
 			? {
 					label: eventLabel(prismaClient.$Enums.EventType.GameLab),
-					key: 'gamelab',
+					key: prismaClient.$Enums.EventType.GameLab,
 					icon: null,
 				}
 			: null,
 		isAdmin
 			? {
 					label: eventLabel(prismaClient.$Enums.EventType.Conference),
-					key: 'conference',
+					key: prismaClient.$Enums.EventType.Conference,
 					icon: null,
 				}
 			: null,
 	].filter((item): item is Exclude<typeof item, boolean | null> => Boolean(item))
 
 	const handleMenuClick: MenuProps['onClick'] = (e) => {
-		setEventType(e.key as EventType)
+		setEventType(e.key as prismaClient.$Enums.EventType)
 		setModalOpen(true)
 	}
 
@@ -156,6 +156,7 @@ const CreateEventButton: React.FC = () => {
 
 			<EventModal
 				open={modalOpen}
+				eventType={eventType}
 				onCancel={handleModalCancel}
 				onSubmit={handleModalSubmit}
 				initialValues={eventType ? { type: eventType } : {}}

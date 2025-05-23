@@ -28,31 +28,35 @@ import {
 } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import axios from 'axios'
-import dayjs from 'dayjs'
 import _ from 'lodash'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import ScheduleItemModal from './ScheduleItemModal'
 import styles from './style.module.scss'
 
-type LocalEventScheduleItem = prismaClient.EventScheduleItem & {
-	speakers: (Pick<prismaClient.Speciality, 'name' | 'id'> & {
-		user: Pick<prismaClient.User, 'name' | 'id' | 'image'> & { profile: Pick<prismaClient.Profile, 'name'> }
-	})[]
-}
-
 interface EventModalProps {
 	open: boolean
 	eventId?: string
+	eventType?: prismaClient.EventType
 	onCancel: () => void
 	onSubmit: () => void
 	initialValues?: any
 }
 
-const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initialValues, eventId }) => {
+export type ScheduleItemFormValues = {
+	id: string | null
+	title?: string
+	description?: string
+	link?: string
+	startDate: string
+	endDate: string
+	speakers: { name: string; speciality: string; id: string }[]
+}
+
+const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSubmit, initialValues, eventId }) => {
 	const [form] = Form.useForm()
 	const { t, getLanguage } = useTolgee()
-	const [schedule, setSchedule] = useState<LocalEventScheduleItem[]>(initialValues?.schedule || [])
+	const [schedule, setSchedule] = useState<ScheduleItemFormValues[]>(initialValues?.schedule || [])
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
 	const { data: session } = useSession()
@@ -74,7 +78,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 		console.log('schedule', schedule)
 	}, [schedule])
 
-	const { mutate: createEvent } = useMutation({
+	const { mutate: createEvent, isLoading: isEventCreating } = useMutation({
 		mutationFn: (values: any) => axios.post('/api/user/event', values),
 	})
 
@@ -156,7 +160,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 		setEditingScheduleItemId(null)
 	}
 
-	const handleScheduleItemModalSubmit = (item: LocalEventScheduleItem) => {
+	const handleScheduleItemModalSubmit = (item: ScheduleItemFormValues) => {
 		if (editingScheduleItemId !== null) {
 			updateScheduleItem(editingScheduleItemId, item)
 		} else {
@@ -173,7 +177,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	}
 
 	// Обновить поле расписания
-	const updateScheduleItem = (id: string, item: LocalEventScheduleItem) => {
+	const updateScheduleItem = (id: string, item: ScheduleItemFormValues) => {
 		const updated = [...schedule]
 		const idx = updated.findIndex((i) => i.id === id)
 
@@ -184,7 +188,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 		setSchedule(updated)
 	}
 
-	const addNewScheduleItem = (item: LocalEventScheduleItem) => {
+	const addNewScheduleItem = (item: ScheduleItemFormValues) => {
 		setSchedule((prev) => {
 			if (!eventId) {
 				// Для новых событий id = индекс (строкой)
@@ -207,7 +211,17 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 			if (eventId) {
 				// await updateEvent({ eventId, data: { ...values, schedule } })
 			} else {
-				await createEvent({ ...values, schedule })
+				await createEvent({
+					...values,
+					image: imageUrl,
+					type: eventType,
+					schedule: schedule.map((item) => ({
+						...item,
+						speakers: item.speakers.map((s) => s.id),
+					})),
+				})
+
+				message.success(t('event.modal.success', 'Event created successfully'))
 			}
 
 			onSubmit()
@@ -233,17 +247,44 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 		setScheduleItemModalOpen(true)
 	}
 
+	const eventLabel = (eventType: prismaClient.$Enums.EventType) => {
+		switch (eventType) {
+			case prismaClient.$Enums.EventType.Meetup:
+				return t('event.modal.meetup', 'Meetup')
+			case prismaClient.$Enums.EventType.Workshop:
+				return t('event.modal.workshop', 'Workshop')
+			case prismaClient.$Enums.EventType.GameJam:
+				return t('event.modal.gamejam', 'Game Jam')
+			case prismaClient.$Enums.EventType.GameLab:
+				return t('event.modal.gamelab', 'Game Lab')
+			case prismaClient.$Enums.EventType.Conference:
+				return t('event.modal.conference', 'Conference')
+			default:
+				return t('event.modal.event', 'Event')
+		}
+	}
+
+	if (!eventType) return null
+
 	return (
 		<Modal
 			open={open}
 			onCancel={handleCancel}
+			loading={isEventCreating}
 			onOk={handleOk}
 			centered
 			title={
-				<Space>
-					<FaRegCalendarCheck size={24} />
-					{t('event.modal.title', 'Event')}
-				</Space>
+				eventId ? (
+					<Space>
+						<FaRegCalendarCheck size={24} />
+						{t('event.modal.edit', 'Edit event')}
+					</Space>
+				) : (
+					<Space>
+						<FaRegCalendarCheck size={24} />
+						{t('event.modal.create', 'Create {eventType}', { eventType: eventLabel(eventType) })}
+					</Space>
+				)
 			}
 			width={720}
 			okText={<T>Create</T>}
@@ -255,7 +296,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 				<Row gutter={16}>
 					<Col span={8}>
 						{!imageUrl ? (
-							<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="file" noStyle>
+							<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="image" noStyle>
 								<ImgCrop aspect={4 / 5} cropShape="rect" showGrid showReset>
 									<Upload.Dragger {...uploadProps} className={styles.cover}>
 										<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
@@ -399,9 +440,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 				open={scheduleItemModalOpen}
 				onCancel={handleScheduleItemModalCancel}
 				onSubmit={handleScheduleItemModalSubmit}
-				initialValues={
-					editingScheduleItemId !== null ? schedule.find((i) => i.id === editingScheduleItemId) : undefined
-				}
+				initialValues={editingScheduleItemId ? schedule.find((i) => i.id === editingScheduleItemId) : undefined}
 				isAdmin={isAdmin}
 				currentUser={currentUser ? { label: currentUser.name, value: currentUser.id } : undefined}
 			/>
