@@ -88,7 +88,10 @@ const SpecialityModal = ({ speciality, teamInvitation, open, onOk, onCancel }: S
 
 			setProcessing(true)
 			if (speciality) {
-				await updateSpeciality({ id: speciality?.id || null, data: { ...formData, tools: formData.tools.join('\n') } })
+				await updateSpeciality({
+					id: speciality?.id || null,
+					data: { ...formData, tools: formData.tools?.join('\n') },
+				})
 			} else {
 				await createSpeciality({ data: { ...formData, tools: formData.tools?.join('\n') } })
 			}
