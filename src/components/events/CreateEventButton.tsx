@@ -10,7 +10,7 @@ import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { theme, Dropdown, MenuProps, message, Space, Button } from 'antd'
+import { theme, Dropdown, MenuProps, Space, Button } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import qs from 'qs'
@@ -32,7 +32,7 @@ function getTypeIcon(type: prismaClient.$Enums.EventType, args: { size: number; 
 	}
 }
 
-const CreateEventButton: React.FC = () => {
+const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({ onCreation = () => {} }) => {
 	const { data: session } = useSession()
 	const { t } = useTolgee()
 	const { token } = theme.useToken()
@@ -126,7 +126,7 @@ const CreateEventButton: React.FC = () => {
 		// TODO: реализовать отправку данных на сервер
 		setModalOpen(false)
 		setEventType(undefined)
-		message.success('Event created!')
+		onCreation()
 	}
 
 	if (specialityLevels?.length === 0) {

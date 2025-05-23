@@ -1,11 +1,10 @@
 import React from 'react'
 import { EventCard, PastEventCard, EventSection, BannerEventSlider } from '@/components/events'
-import CreateEventButton from '@/components/events/CreateEventButton'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Button, Space, theme } from 'antd'
+import { Button, theme } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -29,14 +28,11 @@ const EventsPage: NextPageWithLayout = () => {
 			title={t('page.events.title', 'Events')}
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
 			extra={
-				<Space>
-					<CreateEventButton />
-					{!!userEventCount && (
-						<Link href="/hub/events/my">
-							<Button type="text">My Events</Button>
-						</Link>
-					)}
-				</Space>
+				!!userEventCount && (
+					<Link href="/hub/events/my">
+						<Button type="text">{t('page.events.myEvents', 'My Events')}</Button>
+					</Link>
+				)
 			}
 		>
 			<div className={styles.container}>
