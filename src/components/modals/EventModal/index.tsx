@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ModernTable from '@/components/ModernTable'
 import { formatEventPeriod } from '@/helpers/format'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons'
+import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
@@ -15,7 +16,6 @@ import {
 	Space,
 	Upload,
 	message,
-	Typography,
 	Divider,
 	Row,
 	Col,
@@ -28,6 +28,8 @@ import {
 } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import axios from 'axios'
+import dayjs from 'dayjs'
+import _ from 'lodash'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import ScheduleItemModal from './ScheduleItemModal'
@@ -41,26 +43,32 @@ type LocalEventScheduleItem = prismaClient.EventScheduleItem & {
 
 interface EventModalProps {
 	open: boolean
+	eventId?: string
 	onCancel: () => void
 	onSubmit: () => void
 	initialValues?: any
 }
 
-const { Text } = Typography
-
-const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initialValues }) => {
+const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initialValues, eventId }) => {
 	const [form] = Form.useForm()
 	const { t, getLanguage } = useTolgee()
 	const [schedule, setSchedule] = useState<LocalEventScheduleItem[]>(initialValues?.schedule || [])
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
 	const { data: session } = useSession()
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 1,
+			},
+		})
+	)
 	const isAdmin =
 		session?.user?.role === 'Admin' || session?.user?.role === 'admin' || process.env.NODE_ENV === 'development'
 	const currentUser = session?.user
 	const [imageProcessing, setImageProcessing] = useState(false)
 	const [fileList, setFileList] = useState<any[]>([])
-	const [editingScheduleItemIdx, setEditingScheduleItemIdx] = useState<number | null>(null)
+	const [editingScheduleItemId, setEditingScheduleItemId] = useState<string | null>(null)
 
 	useEffect(() => {
 		console.log('schedule', schedule)
@@ -139,41 +147,51 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 
 	// Добавить новый item расписания
 	const handleAddScheduleItem = () => {
-		setEditingScheduleItemIdx(null)
+		setEditingScheduleItemId(null)
 		setScheduleItemModalOpen(true)
 	}
 
 	const handleScheduleItemModalCancel = () => {
 		setScheduleItemModalOpen(false)
-		setEditingScheduleItemIdx(null)
+		setEditingScheduleItemId(null)
 	}
 
 	const handleScheduleItemModalSubmit = (item: LocalEventScheduleItem) => {
-		if (editingScheduleItemIdx !== null) {
-			updateScheduleItem(editingScheduleItemIdx, item)
+		if (editingScheduleItemId !== null) {
+			updateScheduleItem(editingScheduleItemId, item)
 		} else {
 			addNewScheduleItem(item)
 		}
 
 		setScheduleItemModalOpen(false)
-		setEditingScheduleItemIdx(null)
+		setEditingScheduleItemId(null)
 	}
 
 	// Удалить item расписания
-	const removeScheduleItem = (idx: number) => {
-		setSchedule(schedule.filter((_, i) => i !== idx))
+	const removeScheduleItem = (id: string) => {
+		setSchedule(schedule.filter((i) => i.id !== id))
 	}
 
 	// Обновить поле расписания
-	const updateScheduleItem = (idx: number, item: LocalEventScheduleItem) => {
+	const updateScheduleItem = (id: string, item: LocalEventScheduleItem) => {
 		const updated = [...schedule]
-		updated[idx] = item
+		const idx = updated.findIndex((i) => i.id === id)
+
+		if (idx !== -1) {
+			updated[idx] = item
+		}
 
 		setSchedule(updated)
 	}
 
 	const addNewScheduleItem = (item: LocalEventScheduleItem) => {
-		setSchedule([...schedule, item])
+		setSchedule((prev) => {
+			if (!eventId) {
+				// Для новых событий id = индекс (строкой)
+				return [...prev, { ...item, id: String(prev.length) }]
+			}
+			return [...prev, item]
+		})
 	}
 
 	// Сохранить событие
@@ -186,7 +204,11 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 				return
 			}
 
-			await createEvent({ ...values, schedule })
+			if (eventId) {
+				// await updateEvent({ eventId, data: { ...values, schedule } })
+			} else {
+				await createEvent({ ...values, schedule })
+			}
 
 			onSubmit()
 
@@ -206,8 +228,8 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 		onCancel()
 	}
 
-	const handleEditScheduleItem = (idx: number) => {
-		setEditingScheduleItemIdx(idx)
+	const handleEditScheduleItem = (id: string) => {
+		setEditingScheduleItemId(id)
 		setScheduleItemModalOpen(true)
 	}
 
@@ -286,9 +308,16 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 				{schedule.length > 0 && (
 					<ModernTable
 						size="small"
-						dataSource={schedule.map((item, idx) => ({ ...item, key: idx }))}
+						dataSource={_.orderBy(schedule, ['start'], 'asc')}
 						pagination={false}
+						rowKey="id"
 						columns={[
+							{
+								key: 'index',
+								render: (_, __, idx: number) => {
+									return idx + 1
+								},
+							},
 							{
 								title: t('event.modal.schedule.speakers', 'Speakers'),
 								dataIndex: 'speakers',
@@ -296,7 +325,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 								render: (speakers) => {
 									const speakersArr = Array.isArray(speakers) ? speakers : speakers ? [speakers] : []
 									return (
-										<span style={{ display: 'flex', gap: 8 }}>
+										<Space direction="vertical">
 											{speakersArr.map((speaker) => {
 												return (
 													<span key={speaker.id} style={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -311,7 +340,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 													</span>
 												)
 											})}
-										</span>
+										</Space>
 									)
 								},
 							},
@@ -336,10 +365,10 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 								render: (_: any, record: any, idx: number) => {
 									const menu = (
 										<Menu>
-											<Menu.Item key="edit" onClick={() => handleEditScheduleItem(idx)}>
+											<Menu.Item key="edit" onClick={() => handleEditScheduleItem(record.id)}>
 												{t('Edit', 'Edit')}
 											</Menu.Item>
-											<Menu.Item key="delete" onClick={() => removeScheduleItem(idx)} danger>
+											<Menu.Item key="delete" onClick={() => removeScheduleItem(record.id)} danger>
 												{t('Delete', 'Delete')}
 											</Menu.Item>
 										</Menu>
@@ -370,7 +399,9 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 				open={scheduleItemModalOpen}
 				onCancel={handleScheduleItemModalCancel}
 				onSubmit={handleScheduleItemModalSubmit}
-				initialValues={editingScheduleItemIdx !== null ? schedule[editingScheduleItemIdx] : undefined}
+				initialValues={
+					editingScheduleItemId !== null ? schedule.find((i) => i.id === editingScheduleItemId) : undefined
+				}
 				isAdmin={isAdmin}
 				currentUser={currentUser ? { label: currentUser.name, value: currentUser.id } : undefined}
 			/>

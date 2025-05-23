@@ -91,6 +91,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 
 			onSubmit({
 				...values,
+				id: initialValues?.id,
 				start: values.start.toISOString(),
 				end: values.end.toISOString(),
 				speakers: speakersData?.filter((speaker: any) => values.speakers.includes(speaker.id)),
