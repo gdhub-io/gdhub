@@ -75,13 +75,11 @@ class ApiUserEventEndpointHandler {
 
 	@Get('/count')
 	public async count(@Req() req: NextApiRequestWithUser) {
-		// return prisma.event.count({
-		// 	where: {
-		// 		createdById: req.user.id,
-		// 	},
-		// })
-
-		return 0
+		return await prisma.event.count({
+			where: {
+				createdById: req.user.id,
+			},
+		})
 	}
 
 	@Post()

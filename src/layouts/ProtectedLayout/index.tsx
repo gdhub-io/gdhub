@@ -43,6 +43,7 @@ interface ProtectedLayoutProps {
 	seo?: NextSeoProps
 	backgroundImage?: string
 	showBackButton?: boolean
+	backButtonUrl?: string
 	projectName?: string
 	extra?: ReactNode
 }
@@ -56,6 +57,7 @@ export const ProtectedLayout = ({
 	seo,
 	children,
 	showBackButton = false,
+	backButtonUrl,
 	extra,
 }: ProtectedLayoutProps) => {
 	const router = useRouter()
@@ -346,15 +348,24 @@ export const ProtectedLayout = ({
 							<Flex align="center" justify="space-between" gap={16} style={{ marginBottom: 24 }} wrap={true}>
 								<Space>
 									{showBackButton && (
-										<Button
-											type="text"
-											icon={<ArrowLeftOutlined />}
-											onClick={() => router.back()}
-											style={{ padding: 0 }}
-										/>
+										<>
+											{backButtonUrl ? (
+												<Link href={backButtonUrl}>
+													<Button type="text" icon={<ArrowLeftOutlined />} style={{ padding: 0 }} />
+												</Link>
+											) : (
+												<Button
+													type="text"
+													icon={<ArrowLeftOutlined />}
+													onClick={() => router.back()}
+													style={{ padding: 0 }}
+												/>
+											)}
+										</>
 									)}
 									{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
 								</Space>
+
 								{extra}
 							</Flex>
 

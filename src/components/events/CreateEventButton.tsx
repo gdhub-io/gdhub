@@ -12,7 +12,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { theme, Dropdown, MenuProps, message, Space, Button } from 'antd'
 import axios from 'axios'
-import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import qs from 'qs'
 
@@ -42,13 +41,6 @@ const CreateEventButton: React.FC = () => {
 
 	const [modalOpen, setModalOpen] = React.useState(false)
 	const [eventType, setEventType] = React.useState<prismaClient.$Enums.EventType | undefined>(undefined)
-
-	// TODO: переделать на useMutation
-	const { data: userEventCount } = useQuery(
-		['user-event-count', session?.user?.id],
-		() => axios.get('/api/user/event/count').then((res) => res.data),
-		{ enabled: !!session?.user?.id }
-	)
 
 	const { data: specialityLevels } = useQuery(
 		['user-speciality-levels', session?.user?.id],
@@ -137,8 +129,12 @@ const CreateEventButton: React.FC = () => {
 		message.success('Event created!')
 	}
 
+	if (specialityLevels?.length === 0) {
+		return null
+	}
+
 	return (
-		<Space>
+		<>
 			<Dropdown menu={{ items, onClick: handleMenuClick }} trigger={['click']}>
 				<Button type="primary">
 					<Space>
@@ -148,12 +144,6 @@ const CreateEventButton: React.FC = () => {
 				</Button>
 			</Dropdown>
 
-			{Boolean(userEventCount) && userEventCount > 0 && (
-				<Link href="/my/events">
-					<Button type="text">My Events</Button>
-				</Link>
-			)}
-
 			<EventModal
 				open={modalOpen}
 				eventType={eventType}
@@ -161,7 +151,7 @@ const CreateEventButton: React.FC = () => {
 				onSubmit={handleModalSubmit}
 				initialValues={eventType ? { type: eventType } : {}}
 			/>
-		</Space>
+		</>
 	)
 }
 

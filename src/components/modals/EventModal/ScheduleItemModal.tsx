@@ -150,43 +150,33 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 					name="speakers"
 					rules={[{ required: true, message: t('event.schedule.speakers.required', 'At least one speaker required') }]}
 				>
-					{isAdmin ? (
-						<Select
-							mode="multiple"
-							allowClear
-							showSearch
-							placeholder={t('event.schedule.speakers.placeholder', 'Select speakers')}
-							filterOption={false}
-							onSearch={handleSearch}
-							options={speakerOptions}
-							loading={isFetching}
-							style={{ width: '100%' }}
-							optionLabelProp="label"
-							notFoundContent={isFetching ? <Spin size="small" /> : null}
-							optionRender={(option) => {
-								const { label, avatar, speciality } = option.data
-								return (
-									<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-										<Avatar size={24} src={avatar} style={{ marginRight: 8 }}>
-											{!avatar && label ? label[0] : null}
-										</Avatar>
-										<div>
-											<div>{label}</div>
-											<div style={{ fontSize: 12, color: '#888' }}>{speciality || 'No speciality'}</div>
-										</div>
+					<Select
+						mode="multiple"
+						allowClear
+						showSearch
+						placeholder={t('event.schedule.speakers.placeholder', 'Select speakers')}
+						filterOption={false}
+						onSearch={handleSearch}
+						options={speakerOptions}
+						loading={isFetching}
+						style={{ width: '100%' }}
+						optionLabelProp="label"
+						notFoundContent={isFetching ? <Spin size="small" /> : null}
+						optionRender={(option) => {
+							const { label, avatar, speciality } = option.data
+							return (
+								<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+									<Avatar size={24} src={avatar} style={{ marginRight: 8 }}>
+										{!avatar && label ? label[0] : null}
+									</Avatar>
+									<div>
+										<div>{label}</div>
+										<div style={{ fontSize: 12, color: '#888' }}>{speciality || 'No speciality'}</div>
 									</div>
-								)
-							}}
-						/>
-					) : (
-						<Select
-							mode="multiple"
-							disabled
-							value={currentUser ? [currentUser.value] : []}
-							options={currentUser ? [currentUser] : []}
-							style={{ width: '100%' }}
-						/>
-					)}
+								</div>
+							)
+						}}
+					/>
 				</Form.Item>
 				<Form.Item label={t('event.schedule.title', 'Title')} name="title">
 					<Input placeholder={t('event.schedule.title.placeholder', 'Item title')} allowClear />
