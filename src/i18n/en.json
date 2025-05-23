@@ -386,10 +386,14 @@
   },
   "event": {
     "modal": {
+      "cancel": "Cancel",
+      "create": "Сreate",
       "description": {
         "label": "Short description",
         "placeholder": "Event description"
       },
+      "gamejam": "Game Jam",
+      "gamelab": "GameLab",
       "image": {
         "add": "Add event image",
         "hint": "Click or drag image here. JPG, PNG. 4:5 recommended."
@@ -397,11 +401,12 @@
       "link": "Link",
       "schedule": "Schedule",
       "schedule.add": "Add Item",
-      "title": "Event",
+      "title": "New {eventType} ",
       "title.label": "Title",
       "title.placeholder": "Event title"
     },
     "schedule": {
+      "dates": "Start/End Dates",
       "description": "Description",
       "description.placeholder": "Item description",
       "end": "End Date",

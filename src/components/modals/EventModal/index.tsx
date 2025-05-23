@@ -7,7 +7,7 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import {
 	Modal,
 	Form,
@@ -69,6 +69,8 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 	)
 	const isAdmin =
 		session?.user?.role === 'Admin' || session?.user?.role === 'admin' || process.env.NODE_ENV === 'development'
+	const isBigEvent =
+		eventType === prismaClient.$Enums.EventType.GameLab || eventType === prismaClient.$Enums.EventType.Conference
 	const currentUser = session?.user
 	const [imageProcessing, setImageProcessing] = useState(false)
 	const [fileList, setFileList] = useState<any[]>([])
@@ -282,48 +284,80 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 				) : (
 					<Space>
 						<FaRegCalendarCheck size={24} />
-						{t('event.modal.create', 'Create {eventType}', { eventType: eventLabel(eventType) })}
+						{t('event.modal.title', 'Add {eventType}', { eventType: eventLabel(eventType) })}
 					</Space>
 				)
 			}
 			width={720}
-			okText={<T>Create</T>}
-			cancelText={<T>Cancel</T>}
+			okText={eventId ? t('event.modal.save', 'Save') : t('event.modal.create', 'Create')}
+			cancelText={t('event.modal.cancel', 'Cancel')}
 			destroyOnClose
 			maskClosable={false}
 		>
 			<Form form={form} variant="filled" layout="vertical" initialValues={initialValues} requiredMark="optional">
 				<Row gutter={16}>
-					<Col span={8}>
-						{!imageUrl ? (
-							<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="image" noStyle>
-								<ImgCrop aspect={4 / 5} cropShape="rect" showGrid showReset>
-									<Upload.Dragger {...uploadProps} className={styles.cover}>
-										<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
-										<p className="ant-upload-hint">
-											{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 4:5 recommended.')}
-										</p>
-									</Upload.Dragger>
-								</ImgCrop>
-							</Form.Item>
-						) : (
-							<Spin spinning={imageProcessing}>
-								<div className={styles.cover}>
-									<Image src={imageUrl + '?w=750'} fill alt="" />
-									<Popover content={t('event.modal.image.deletePopover', 'Remove image')}>
-										<Button
-											shape="circle"
-											type="primary"
-											className="remove-cover-btn"
-											onClick={handleImageDelete}
-											icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
-										/>
-									</Popover>
-								</div>
-							</Spin>
-						)}
+					{isBigEvent ? (
+						<Col span={24} style={{ marginBottom: 24 }}>
+							{!imageUrl ? (
+								<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="image" noStyle>
+									<ImgCrop aspect={16 / 9} cropShape="rect" showGrid showReset>
+										<Upload.Dragger {...uploadProps} className={styles.cover}>
+											<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
+											<p className="ant-upload-hint">
+												{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 16:9 recommended.')}
+											</p>
+										</Upload.Dragger>
+									</ImgCrop>
+								</Form.Item>
+							) : (
+								<Spin spinning={imageProcessing}>
+									<div className={styles.cover} style={{ aspectRatio: '16/9' }}>
+										<Image src={imageUrl + '?w=1200'} fill alt="" />
+										<Popover content={t('event.modal.image.deletePopover', 'Remove image')}>
+											<Button
+												shape="circle"
+												type="primary"
+												className="remove-cover-btn"
+												onClick={handleImageDelete}
+												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+											/>
+										</Popover>
+									</div>
+								</Spin>
+							)}
+						</Col>
+					) : null}
+					<Col span={isBigEvent ? 24 : 8}>
+						{!isBigEvent &&
+							(!imageUrl ? (
+								<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="image" noStyle>
+									<ImgCrop aspect={4 / 5} cropShape="rect" showGrid showReset>
+										<Upload.Dragger {...uploadProps} className={styles.cover}>
+											<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
+											<p className="ant-upload-hint">
+												{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 4:5 recommended.')}
+											</p>
+										</Upload.Dragger>
+									</ImgCrop>
+								</Form.Item>
+							) : (
+								<Spin spinning={imageProcessing}>
+									<div className={styles.cover}>
+										<Image src={imageUrl + '?w=750'} fill alt="" />
+										<Popover content={t('event.modal.image.deletePopover', 'Remove image')}>
+											<Button
+												shape="circle"
+												type="primary"
+												className="remove-cover-btn"
+												onClick={handleImageDelete}
+												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+											/>
+										</Popover>
+									</div>
+								</Spin>
+							))}
 					</Col>
-					<Col span={16}>
+					<Col span={isBigEvent ? 24 : 16}>
 						<Form.Item
 							label={t('event.modal.title.label', 'Title')}
 							name="title"

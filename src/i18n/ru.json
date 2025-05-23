@@ -386,10 +386,14 @@
   },
   "event": {
     "modal": {
+      "cancel": "Отмена",
+      "create": "Создать",
       "description": {
         "label": "Краткое описание",
         "placeholder": "Описание события"
       },
+      "gamejam": "Геймджем",
+      "gamelab": "Геймлаб",
       "image": {
         "add": "Добавить превью",
         "hint": "Нажмите или перетащите картинку сюда. Формат JPG, PNG. Соотношение сторон 4:5"
@@ -397,11 +401,12 @@
       "link": "Ссылка",
       "schedule": "Расписание",
       "schedule.add": "Добавить",
-      "title": "Событие",
+      "title": "Новый {eventType} ",
       "title.label": "Заголовок",
       "title.placeholder": "Заголовок события"
     },
     "schedule": {
+      "dates": "Время начала и окончания",
       "description": "Описание",
       "description.placeholder": "Описание элемента",
       "end": "Дата окончания",

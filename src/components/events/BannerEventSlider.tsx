@@ -74,7 +74,7 @@ export const BannerEventSlider = () => {
 										marginBottom: 8,
 									}}
 								>
-									{dayjs(event.schedule[0].startDate).format('DD MMMM')}
+									{event.schedule[0] ? dayjs(event.schedule[0].startDate).format('DD MMMM') : ''}
 								</div>
 								<div style={{ fontSize: 38, fontWeight: 800, textShadow: '0 2px 8px #000' }}>{event.title}</div>
 								<div style={{ fontSize: 22, textShadow: '0 2px 8px #000' }}>{event.description}</div>
