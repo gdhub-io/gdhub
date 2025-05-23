@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ModernTable from '@/components/ModernTable'
 import { formatEventPeriod } from '@/helpers/format'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons'
@@ -34,7 +34,9 @@ import ScheduleItemModal from './ScheduleItemModal'
 import styles from './style.module.scss'
 
 type LocalEventScheduleItem = prismaClient.EventScheduleItem & {
-	speakers: (prismaClient.Speciality & { user: prismaClient.User })[]
+	speakers: (Pick<prismaClient.Speciality, 'name' | 'id'> & {
+		user: Pick<prismaClient.User, 'name' | 'id' | 'image'> & { profile: Pick<prismaClient.Profile, 'name'> }
+	})[]
 }
 
 interface EventModalProps {
@@ -51,7 +53,6 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	const { t, getLanguage } = useTolgee()
 	const [schedule, setSchedule] = useState<LocalEventScheduleItem[]>(initialValues?.schedule || [])
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
-	const [speakersOptions, setSpeakersOptions] = useState<any[]>([])
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
 	const { data: session } = useSession()
 	const isAdmin =
@@ -60,6 +61,10 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	const [imageProcessing, setImageProcessing] = useState(false)
 	const [fileList, setFileList] = useState<any[]>([])
 	const [editingScheduleItemIdx, setEditingScheduleItemIdx] = useState<number | null>(null)
+
+	useEffect(() => {
+		console.log('schedule', schedule)
+	}, [schedule])
 
 	const { mutate: createEvent } = useMutation({
 		mutationFn: (values: any) => axios.post('/api/user/event', values),
@@ -145,12 +150,11 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 
 	const handleScheduleItemModalSubmit = (item: LocalEventScheduleItem) => {
 		if (editingScheduleItemIdx !== null) {
-			const updated = [...schedule]
-			updated[editingScheduleItemIdx] = item
-			setSchedule(updated)
+			updateScheduleItem(editingScheduleItemIdx, item)
 		} else {
-			setSchedule([...schedule, item])
+			addNewScheduleItem(item)
 		}
+
 		setScheduleItemModalOpen(false)
 		setEditingScheduleItemIdx(null)
 	}
@@ -161,10 +165,15 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 	}
 
 	// Обновить поле расписания
-	const updateScheduleItem = (idx: number, field: keyof LocalEventScheduleItem, value: any) => {
+	const updateScheduleItem = (idx: number, item: LocalEventScheduleItem) => {
 		const updated = [...schedule]
-		updated[idx][field] = value
+		updated[idx] = item
+
 		setSchedule(updated)
+	}
+
+	const addNewScheduleItem = (item: LocalEventScheduleItem) => {
+		setSchedule([...schedule, item])
 	}
 
 	// Сохранить событие
@@ -281,37 +290,44 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 						pagination={false}
 						columns={[
 							{
-								title: t('event.modal.schedule.period', 'Date'),
-								dataIndex: 'start',
-								key: 'period',
-								render: (start: string, record: any) => formatEventPeriod(start, record.end, getLanguage()),
-							},
-							{
-								title: t('event.modal.schedule.title', 'Title'),
-								dataIndex: 'title',
-								key: 'title',
-							},
-							{
 								title: t('event.modal.schedule.speakers', 'Speakers'),
 								dataIndex: 'speakers',
 								key: 'speakers',
-								render: (speakers: any[]) => {
+								render: (speakers) => {
 									const speakersArr = Array.isArray(speakers) ? speakers : speakers ? [speakers] : []
 									return (
 										<span style={{ display: 'flex', gap: 8 }}>
-											{speakersArr.map((id) => {
-												const speaker = speakersOptions.find((s) => s.value === id)
-												if (!speaker) return null
+											{speakersArr.map((speaker) => {
 												return (
-													<span key={id} style={{ display: 'inline-flex', alignItems: 'center', marginRight: 8 }}>
-														<Avatar size={24} src={speaker.avatar} style={{ marginRight: 4 }} />
-														<span>{speaker.label}</span>
+													<span key={speaker.id} style={{ display: 'inline-flex', alignItems: 'center' }}>
+														{speaker.image ? (
+															<Avatar size={24} src={speaker.image} style={{ marginRight: 8 }} />
+														) : (
+															<Avatar size={24} style={{ marginRight: 8 }}>
+																{speaker.name.charAt(0).toUpperCase()}
+															</Avatar>
+														)}
+														<span>{speaker.name}</span>
 													</span>
 												)
 											})}
 										</span>
 									)
 								},
+							},
+							{
+								title: t('event.modal.schedule.title', 'Title'),
+								dataIndex: 'title',
+								key: 'title',
+								render: (title: string, record: any) => {
+									return title || '-'
+								},
+							},
+							{
+								title: t('event.modal.schedule.period', 'Date'),
+								dataIndex: 'start',
+								key: 'period',
+								render: (start: string, record: any) => formatEventPeriod(start, record.end, getLanguage()),
 							},
 							{
 								title: '',
@@ -355,7 +371,6 @@ const EventModal: React.FC<EventModalProps> = ({ open, onCancel, onSubmit, initi
 				onCancel={handleScheduleItemModalCancel}
 				onSubmit={handleScheduleItemModalSubmit}
 				initialValues={editingScheduleItemIdx !== null ? schedule[editingScheduleItemIdx] : undefined}
-				speakersOptions={speakersOptions}
 				isAdmin={isAdmin}
 				currentUser={currentUser ? { label: currentUser.name, value: currentUser.id } : undefined}
 			/>

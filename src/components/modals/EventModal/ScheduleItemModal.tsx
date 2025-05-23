@@ -2,13 +2,15 @@ import React, { useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Modal, Form, Input, DatePicker, Select, Row, Col, Avatar, Spin } from 'antd'
+import { Modal, Form, Input, DatePicker, Select, Row, Col, Avatar, Spin, message } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import debounce from 'lodash/debounce'
 
 type LocalEventScheduleItem = prismaClient.EventScheduleItem & {
-	speakers: (prismaClient.Speciality & { user: prismaClient.User })[]
+	speakers: (Pick<prismaClient.Speciality, 'name' | 'id'> & {
+		user: Pick<prismaClient.User, 'name' | 'id' | 'image'> & { profile: Pick<prismaClient.Profile, 'name'> }
+	})[]
 }
 
 interface ScheduleItemModalProps {
@@ -16,7 +18,6 @@ interface ScheduleItemModalProps {
 	onCancel: () => void
 	onSubmit: (item: LocalEventScheduleItem) => void
 	initialValues?: Partial<LocalEventScheduleItem>
-	speakersOptions: { label: string; value: string }[]
 	isAdmin: boolean
 	currentUser?: { label: string; value: string }
 }
@@ -26,7 +27,6 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 	onCancel,
 	onSubmit,
 	initialValues,
-	speakersOptions,
 	isAdmin,
 	currentUser,
 }) => {
@@ -86,14 +86,20 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 	const handleOk = async () => {
 		try {
 			const values = await form.validateFields()
+
+			console.log('values', values)
+
 			onSubmit({
 				...values,
 				start: values.start.toISOString(),
 				end: values.end.toISOString(),
+				speakers: speakersData?.filter((speaker: any) => values.speakers.includes(speaker.id)),
 			})
+
 			form.resetFields()
-		} catch {
-			// Ошибки валидации
+		} catch (err) {
+			console.log('error', err)
+			message.error(t('event.schedule.modal.error', 'Error saving schedule item'))
 		}
 	}
 
