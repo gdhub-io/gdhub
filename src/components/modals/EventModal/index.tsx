@@ -25,6 +25,7 @@ import {
 	Dropdown,
 	Menu,
 	Typography,
+	Select,
 } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import axios from 'axios'
@@ -117,6 +118,14 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 			}
 		}
 	}, [eventData?.data])
+
+	const { data: workDirections } = useQuery(
+		['workDirections'],
+		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		{
+			staleTime: Infinity,
+		}
+	)
 
 	const { mutate: createEvent, isLoading: isEventCreating } = useMutation({
 		mutationFn: (values: any) => axios.post('/api/user/event', values),
@@ -333,6 +342,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 			onCancel={handleCancel}
 			loading={isEventCreating || isEventUpdating}
 			onOk={handleOk}
+			width={1000}
 			centered
 			title={
 				eventId ? (
@@ -347,13 +357,18 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 					</Space>
 				)
 			}
-			width={720}
 			okText={eventId ? t('event.modal.save', 'Save') : t('event.modal.create', 'Create')}
 			cancelText={t('event.modal.cancel', 'Cancel')}
 			destroyOnClose
 			maskClosable={false}
 		>
-			<Form form={form} variant="filled" layout="vertical" initialValues={initialValues} requiredMark="optional">
+			<Form
+				form={form}
+				variant="filled"
+				layout="vertical"
+				initialValues={{ ...initialValues, format: initialValues?.format || prismaClient.$Enums.EventFormat.Online }}
+				requiredMark="optional"
+			>
 				<Row gutter={16}>
 					{isBigEvent ? (
 						<Col span={24} style={{ marginBottom: 24 }}>
@@ -424,21 +439,43 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 						>
 							<Input placeholder={t('event.modal.title.placeholder', 'Event title')} />
 						</Form.Item>
+						<Form.Item label={t('event.modal.shortDescription.label', 'Short Description')} name="shortDescription">
+							<Input.TextArea
+								rows={2}
+								maxLength={200}
+								showCount
+								autoSize={{ minRows: 2, maxRows: 3 }}
+								placeholder={t('event.modal.shortDescription.placeholder', 'Event short description')}
+							/>
+						</Form.Item>
 						<Form.Item
-							label={t('event.modal.description.label', 'Short Description')}
+							label={t('event.modal.description.label', 'Description')}
 							name="description"
 							rules={[{ required: true, message: t('event.modal.description.required', 'Description is required') }]}
 						>
 							<Input.TextArea
-								rows={3}
-								maxLength={200}
+								rows={5}
+								maxLength={20000}
 								showCount
-								autoSize={{ minRows: 2, maxRows: 6 }}
+								autoSize={{ minRows: 5, maxRows: 10 }}
 								placeholder={t('event.modal.description.placeholder', 'Event description')}
 							/>
 						</Form.Item>
 						<Form.Item label={t('event.modal.link', 'Link')} name="url">
 							<Input placeholder={t('event.modal.link.placeholder', 'https://')} />
+						</Form.Item>
+
+						<Form.Item
+							label={t('event.modal.format.label', 'Format')}
+							name="format"
+							rules={[{ required: true, message: t('event.modal.format.required', 'Format is required') }]}
+						>
+							<Select
+								options={Object.values(prismaClient.$Enums.EventFormat).map((format) => ({
+									label: format,
+									value: format,
+								}))}
+							/>
 						</Form.Item>
 					</Col>
 				</Row>
