@@ -1,5 +1,6 @@
 import React from 'react'
 import CreateEventButton from '@/components/events/CreateEventButton'
+import EventModal from '@/components/modals/EventModal'
 import ModernTable from '@/components/ModernTable'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -9,7 +10,7 @@ import { FaMicroscope } from '@react-icons/all-files/fa/FaMicroscope'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Button, Dropdown, Menu, Popconfirm, message, Space, Typography, theme } from 'antd'
 import type { Breakpoint } from 'antd/es/_util/responsiveObserver'
@@ -42,26 +43,44 @@ const MyEventsPage: NextPageWithLayout = () => {
 	const { t } = useTolgee()
 	const router = useRouter()
 	const { token } = theme.useToken()
-	const queryClient = useQueryClient()
+	const [editModalOpen, setEditModalOpen] = React.useState(false)
+	const [editingEvent, setEditingEvent] = React.useState<any | null>(null)
 
 	// Получение событий пользователя
-	const { data, isLoading } = useQuery(['my-events'], () => axios.get('/api/user/events').then((res) => res.data))
+	const {
+		data,
+		isLoading,
+		refetch: refetchMyEvents,
+	} = useQuery(['my-events'], () => axios.get('/api/user/events').then((res) => res.data))
 
 	// Мутация для удаления события
 	const { mutate: deleteEvent } = useMutation((id: string) => axios.delete('/api/user/event', { params: { id } }), {
 		onSuccess: () => {
 			message.success(t('event.delete.success', 'Event deleted'))
-			queryClient.invalidateQueries(['my-events'])
+			refetchMyEvents()
 		},
 		onError: () => {
 			message.error(t('event.delete.error', 'Error deleting event'))
 		},
 	})
 
-	// Обработчик редактирования (заглушка)
 	const handleEdit = (id: string) => {
-		// router.push(`/hub/events/edit/${id}`)
-		message.info(t('event.edit.soon', 'Edit coming soon'))
+		const event = data?.find((e: any) => e.id === id)
+		setEditingEvent(event)
+		setEditModalOpen(true)
+	}
+
+	const handleEditModalCancel = () => {
+		setEditModalOpen(false)
+		setEditingEvent(null)
+	}
+
+	const handleEditModalSubmit = async () => {
+		setEditModalOpen(false)
+		setEditingEvent(null)
+		await refetchMyEvents()
+
+		message.success(t('event.edit.success', 'Event edited successfully'))
 	}
 
 	const columns: ColumnsType<any> = [
@@ -133,7 +152,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 		<ProtectedLayout
 			title={t('page.myEvents.title', 'My Events')}
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
-			extra={<CreateEventButton onCreation={() => queryClient.invalidateQueries(['my-events'])} />}
+			extra={<CreateEventButton onCreation={() => refetchMyEvents()} />}
 			showBackButton
 			backButtonUrl="/hub/events"
 		>
@@ -144,6 +163,14 @@ const MyEventsPage: NextPageWithLayout = () => {
 					loading={isLoading}
 					showHeader
 					pagination={false}
+				/>
+				<EventModal
+					open={editModalOpen}
+					eventId={editingEvent?.id}
+					eventType={editingEvent?.type}
+					initialValues={editingEvent}
+					onCancel={handleEditModalCancel}
+					onSubmit={handleEditModalSubmit}
 				/>
 			</div>
 		</ProtectedLayout>

@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react'
 import ModernTable from '@/components/ModernTable'
 import { formatEventPeriod } from '@/helpers/format'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons'
-import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import {
 	Modal,
@@ -25,6 +24,7 @@ import {
 	Avatar,
 	Dropdown,
 	Menu,
+	Typography,
 } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import axios from 'axios'
@@ -33,6 +33,8 @@ import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import ScheduleItemModal from './ScheduleItemModal'
 import styles from './style.module.scss'
+
+const { Text } = Typography
 
 interface EventModalProps {
 	open: boolean
@@ -47,7 +49,7 @@ export type ScheduleItemFormValues = {
 	id: string | null
 	title?: string
 	description?: string
-	link?: string
+	url?: string
 	startDate: string
 	endDate: string
 	speakers: { name: string; speciality: string; id: string }[]
@@ -57,16 +59,10 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 	const [form] = Form.useForm()
 	const { t, getLanguage } = useTolgee()
 	const [schedule, setSchedule] = useState<ScheduleItemFormValues[]>(initialValues?.schedule || [])
+	const [scheduleHasChanges, setScheduleHasChanges] = useState(false)
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
 	const { data: session } = useSession()
-	const sensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: {
-				distance: 1,
-			},
-		})
-	)
 	const isAdmin =
 		session?.user?.role === 'Admin' || session?.user?.role === 'admin' || process.env.NODE_ENV === 'development'
 	const isBigEvent =
@@ -76,12 +72,64 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 	const [fileList, setFileList] = useState<any[]>([])
 	const [editingScheduleItemId, setEditingScheduleItemId] = useState<string | null>(null)
 
+	const { data: eventData, isLoading: isEventLoading } = useQuery({
+		queryKey: ['event', eventId],
+		queryFn: () => axios.get(`/api/user/event/${eventId}`),
+		enabled: !!eventId,
+	})
+
 	useEffect(() => {
-		console.log('schedule', schedule)
-	}, [schedule])
+		if (eventData?.data) {
+			form.setFieldsValue({
+				title: eventData.data.title,
+				description: eventData.data.description,
+				link: eventData.data.link,
+				image: eventData.data.image,
+			})
+
+			setSchedule(
+				eventData.data.schedule?.map((item: any) => ({
+					id: item.id,
+					title: item.title,
+					description: item.description,
+					link: item.link,
+					startDate: item.startDate,
+					endDate: item.endDate,
+					speakers: item.speakers.map((speciality: any) => ({
+						id: speciality.id,
+						name: speciality.user?.profile?.name,
+						speciality: speciality.name,
+						image: speciality.user?.image,
+					})),
+				}))
+			)
+
+			if (eventData.data.image) {
+				setImageUrl(eventData.data.image)
+				setFileList([
+					{
+						uid: eventData.data.image,
+						name: eventData.data.image,
+						status: 'done',
+						url: eventData.data.image,
+					},
+				])
+			}
+		}
+	}, [eventData?.data])
 
 	const { mutate: createEvent, isLoading: isEventCreating } = useMutation({
 		mutationFn: (values: any) => axios.post('/api/user/event', values),
+		onSuccess: () => {
+			onSubmit()
+		},
+	})
+
+	const { mutate: updateEvent, isLoading: isEventUpdating } = useMutation({
+		mutationFn: ({ _eventId, data }: any) => axios.put(`/api/user/event/${_eventId}`, data),
+		onSuccess: () => {
+			onSubmit()
+		},
 	})
 
 	const uploadEventImage = async (file: any) => {
@@ -169,6 +217,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 			addNewScheduleItem(item)
 		}
 
+		setScheduleHasChanges(true)
 		setScheduleItemModalOpen(false)
 		setEditingScheduleItemId(null)
 	}
@@ -211,7 +260,19 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 			}
 
 			if (eventId) {
-				// await updateEvent({ eventId, data: { ...values, schedule } })
+				await updateEvent({
+					_eventId: eventId,
+					data: {
+						...values,
+						image: imageUrl,
+						schedule: scheduleHasChanges
+							? schedule.map((item) => ({
+									...item,
+									speakers: item.speakers.map((s) => s.id),
+								}))
+							: undefined,
+					},
+				})
 			} else {
 				await createEvent({
 					...values,
@@ -225,8 +286,6 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 
 				message.success(t('event.modal.success', 'Event created successfully'))
 			}
-
-			onSubmit()
 
 			form.resetFields()
 			setSchedule([])
@@ -272,7 +331,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 		<Modal
 			open={open}
 			onCancel={handleCancel}
-			loading={isEventCreating}
+			loading={isEventCreating || isEventUpdating}
 			onOk={handleOk}
 			centered
 			title={
@@ -370,9 +429,15 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 							name="description"
 							rules={[{ required: true, message: t('event.modal.description.required', 'Description is required') }]}
 						>
-							<Input.TextArea rows={3} placeholder={t('event.modal.description.placeholder', 'Event description')} />
+							<Input.TextArea
+								rows={3}
+								maxLength={200}
+								showCount
+								autoSize={{ minRows: 2, maxRows: 6 }}
+								placeholder={t('event.modal.description.placeholder', 'Event description')}
+							/>
 						</Form.Item>
-						<Form.Item label={t('event.modal.link', 'Link')} name="link">
+						<Form.Item label={t('event.modal.link', 'Link')} name="url">
 							<Input placeholder={t('event.modal.link.placeholder', 'https://')} />
 						</Form.Item>
 					</Col>
@@ -405,13 +470,18 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 												return (
 													<span key={speaker.id} style={{ display: 'inline-flex', alignItems: 'center' }}>
 														{speaker.image ? (
-															<Avatar size={24} src={speaker.image} style={{ marginRight: 8 }} />
+															<Avatar size={36} src={speaker.image} style={{ marginRight: 8 }} />
 														) : (
-															<Avatar size={24} style={{ marginRight: 8 }}>
+															<Avatar size={36} style={{ marginRight: 8 }}>
 																{speaker.name.charAt(0).toUpperCase()}
 															</Avatar>
 														)}
-														<span>{speaker.name}</span>
+														<Space direction="vertical" size={0}>
+															<Text>{speaker.name}</Text>
+															<Text type="secondary" style={{ fontSize: 12 }}>
+																{speaker.speciality}
+															</Text>
+														</Space>
 													</span>
 												)
 											})}
@@ -424,14 +494,19 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 								dataIndex: 'title',
 								key: 'title',
 								render: (title: string, record: any) => {
-									return title || '-'
+									return <Text>{title || '-'}</Text>
 								},
 							},
 							{
 								title: t('event.modal.schedule.period', 'Date'),
 								dataIndex: 'start',
 								key: 'period',
-								render: (start: string, record: any) => formatEventPeriod(start, record.end, getLanguage()),
+								render: (_, record: any) => {
+									const startDate = record.startDate
+									const endDate = record.endDate
+
+									return <Text>{formatEventPeriod(startDate, endDate, getLanguage())}</Text>
+								},
 							},
 							{
 								title: '',

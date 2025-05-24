@@ -19,7 +19,7 @@ const EventsPage: NextPageWithLayout = () => {
 
 	const { data: userEventCount } = useQuery(
 		['user-event-count', session?.user?.id],
-		() => axios.get('/api/user/event/count').then((res) => res.data),
+		() => axios.get('/api/user/event/count'),
 		{ enabled: !!session?.user?.id }
 	)
 
@@ -28,7 +28,7 @@ const EventsPage: NextPageWithLayout = () => {
 			title={t('page.events.title', 'Events')}
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
 			extra={
-				!!userEventCount && (
+				!!userEventCount?.data?.count && (
 					<Link href="/hub/events/my">
 						<Button type="text">{t('page.events.myEvents', 'My Events')}</Button>
 					</Link>

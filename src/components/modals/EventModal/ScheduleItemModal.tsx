@@ -105,7 +105,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				id: initialValues?.id || null,
 				title: values.title,
 				description: values.description,
-				link: values.link,
+				url: values.url,
 				startDate: dayjs(values.dates[0]).toISOString(),
 				endDate: dayjs(values.dates[1]).toISOString(),
 				speakers: speakersData?.data?.filter((speaker: any) => values.speakers.includes(speaker.id)),
@@ -122,8 +122,10 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		<Modal
 			open={open}
 			title={t('event.schedule.modal.title', 'Schedule Item')}
+			centered
 			onCancel={onCancel}
 			onOk={handleOk}
+			maskClosable={false}
 			okText={t('common.save', 'Save')}
 			cancelText={t('common.cancel', 'Cancel')}
 			destroyOnClose
@@ -181,7 +183,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				<Form.Item label={t('event.schedule.title', 'Title')} name="title">
 					<Input placeholder={t('event.schedule.title.placeholder', 'Item title')} allowClear />
 				</Form.Item>
-				<Form.Item label={t('event.schedule.link', 'Link')} name="link">
+				<Form.Item label={t('event.schedule.link', 'Link')} name="url">
 					<Input placeholder={t('event.schedule.link.placeholder', 'https://')} allowClear />
 				</Form.Item>
 				<Form.Item label={t('event.schedule.description', 'Description')} name="description">

@@ -19,6 +19,7 @@ class ApiUserEventsHandler {
 					},
 				},
 			},
+			orderBy: { createdAt: 'asc' },
 		})
 
 		return events
