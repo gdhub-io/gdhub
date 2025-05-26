@@ -1875,10 +1875,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.9.tgz#50dea3616bc8191fb8e112283b49eaff03e78429"
   integrity sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==
 
-"@gdhub-io/gdhub-prisma@1.10.0-beta.4":
-  version "1.10.0-beta.4"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.10.0-beta.4/1d62f0927e6734e4ed3057c6b00a45a6ffff9f5c#1d62f0927e6734e4ed3057c6b00a45a6ffff9f5c"
-  integrity sha512-wTKIgFqE0cXM1HB9Hk6V4KsreAg0Uv+aUdw2yR077G3IKJ8aoBPf03jwt3/6H1mC/FUQRk4GWcQU598xXHBaxw==
+"@gdhub-io/gdhub-prisma@1.10.0-beta.5":
+  version "1.10.0-beta.5"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.10.0-beta.5/ad322dcc4132c68bcd64b1be2b9e9bb4a01d556e#ad322dcc4132c68bcd64b1be2b9e9bb4a01d556e"
+  integrity sha512-x82JoUvMP84CxWSr1idEDo1WsxpNOE0xyjDxfOFfl8Mk0UeKhSLqzf5QVK8KTr6O24dpOt7J6VwpoXLQdCCZjQ==
   dependencies:
     "@faker-js/faker" "^9.2.0"
     "@gdhub-io/gdhub-typesense" "^1.0.6"
