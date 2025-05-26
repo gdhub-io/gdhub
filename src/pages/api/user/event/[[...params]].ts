@@ -42,6 +42,14 @@ class UserEventScheduleItemDto {
 
 	@IsString()
 	directionId: string
+
+	@IsString()
+	@IsOptional()
+	format: prismaClient.$Enums.EventFormat
+
+	@IsString()
+	@IsOptional()
+	language: prismaClient.$Enums.Language
 }
 
 class UserEventCreateDto {
@@ -66,9 +74,6 @@ class UserEventCreateDto {
 	@IsString()
 	@IsEnum(prismaClient.EventType)
 	type: prismaClient.EventType
-
-	@IsString()
-	format: prismaClient.$Enums.EventFormat
 
 	@IsBoolean()
 	@IsOptional()
@@ -99,9 +104,6 @@ class UserEventUpdateDto {
 	@IsString()
 	@IsOptional()
 	image?: string
-
-	@IsString()
-	format: prismaClient.$Enums.EventFormat
 
 	@IsBoolean()
 	@IsOptional()
@@ -169,7 +171,6 @@ class ApiUserEventEndpointHandler {
 				description: data.description,
 				url: data.url,
 				image: data.image,
-				format: data.format,
 				createdById: req.user.id,
 			},
 		})
@@ -182,6 +183,8 @@ class ApiUserEventEndpointHandler {
 					description: item.description,
 					url: item.url,
 					directionId: item.directionId,
+					format: item.format,
+					language: item.language,
 					startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
 					endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
 					speakers: {
@@ -209,7 +212,6 @@ class ApiUserEventEndpointHandler {
 				description: data.description,
 				url: data.url,
 				image: data.image,
-				format: data.format,
 				isFree: data.isFree,
 			},
 		})
@@ -223,6 +225,8 @@ class ApiUserEventEndpointHandler {
 						description: item.description,
 						directionId: item.directionId,
 						url: item.url,
+						format: item.format,
+						language: item.language,
 						startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
 						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
 					},
@@ -248,6 +252,38 @@ class ApiUserEventEndpointHandler {
 		}
 
 		return event
+	}
+
+	@Put('/:id/publish')
+	public async publish(@Param('id') id: string) {
+		await prisma.event.update({
+			where: { id },
+			data: { status: prismaClient.$Enums.EventStatus.Published, publishedAt: new Date().toISOString() },
+		})
+	}
+
+	@Put('/:id/cancel')
+	public async cancel(@Param('id') id: string) {
+		await prisma.event.update({
+			where: { id },
+			data: { status: prismaClient.$Enums.EventStatus.Closed, publishedAt: null },
+		})
+	}
+
+	@Put('/:id/unpublish')
+	public async unpublish(@Param('id') id: string) {
+		await prisma.event.update({
+			where: { id },
+			data: { status: prismaClient.$Enums.EventStatus.Draft, publishedAt: null },
+		})
+	}
+
+	@Put('/:id/archive	')
+	public async archive(@Param('id') id: string) {
+		await prisma.event.update({
+			where: { id },
+			data: { status: prismaClient.$Enums.EventStatus.Archived },
+		})
 	}
 
 	@Delete()

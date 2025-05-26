@@ -2,9 +2,11 @@ import React from 'react'
 import CreateEventButton from '@/components/events/CreateEventButton'
 import EventModal from '@/components/modals/EventModal'
 import ModernTable from '@/components/ModernTable'
+import { formatEventPeriod } from '@/helpers/format'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { MoreOutlined } from '@ant-design/icons'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'
 import { FaMicroscope } from '@react-icons/all-files/fa/FaMicroscope'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
@@ -12,11 +14,10 @@ import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Button, Dropdown, Menu, Popconfirm, message, Space, Typography, theme } from 'antd'
+import { Button, Dropdown, Image, Menu, Popconfirm, message, Space, Typography, theme, Alert, Tag } from 'antd'
 import type { Breakpoint } from 'antd/es/_util/responsiveObserver'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
-import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
@@ -40,7 +41,7 @@ function getTypeIcon(type: string, size = 20) {
 }
 
 const MyEventsPage: NextPageWithLayout = () => {
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 	const router = useRouter()
 	const { token } = theme.useToken()
 	const [editModalOpen, setEditModalOpen] = React.useState(false)
@@ -54,15 +55,87 @@ const MyEventsPage: NextPageWithLayout = () => {
 	} = useQuery(['my-events'], () => axios.get('/api/user/events').then((res) => res.data))
 
 	// Мутация для удаления события
-	const { mutate: deleteEvent } = useMutation((id: string) => axios.delete('/api/user/event', { params: { id } }), {
-		onSuccess: () => {
-			message.success(t('event.delete.success', 'Event deleted'))
-			refetchMyEvents()
-		},
-		onError: () => {
-			message.error(t('event.delete.error', 'Error deleting event'))
-		},
-	})
+	const { mutateAsync: deleteEvent } = useMutation(
+		(id: string) => axios.delete('/api/user/event', { params: { id } }),
+		{
+			onSuccess: () => {
+				message.success(t('event.delete.success', 'Event deleted'))
+				refetchMyEvents()
+			},
+			onError: () => {
+				message.error(t('event.delete.error', 'Error deleting event'))
+			},
+		}
+	)
+
+	const { mutateAsync: publishEvent, isLoading: isPublishingEvent } = useMutation(
+		(id: string) => axios.put(`/api/user/event/${id}/publish`),
+		{
+			onSuccess: () => {
+				message.success(t('event.publish.success', 'Event published'))
+				refetchMyEvents()
+			},
+			onError: () => {
+				message.error(t('event.publish.error', 'Error publishing event'))
+			},
+		}
+	)
+
+	const handleEventPublish = async (id: string) => {
+		try {
+			await publishEvent(id)
+
+			message.success(t('event.publish.success', 'Event published'))
+		} catch (error) {
+			message.error(t('event.publish.error', 'Error publishing event'))
+		}
+	}
+
+	const { mutateAsync: cancelEvent, isLoading: isCancellingEvent } = useMutation(
+		(id: string) => axios.put(`/api/user/event/${id}/cancel`),
+		{
+			onSuccess: () => {
+				message.success(t('event.cancel.success', 'Event canceled'))
+				refetchMyEvents()
+			},
+			onError: () => {
+				message.error(t('event.cancel.error', 'Error canceling event'))
+			},
+		}
+	)
+
+	const { mutateAsync: unpublishEvent, isLoading: isUnpublishingEvent } = useMutation(
+		(id: string) => axios.put(`/api/user/event/${id}/unpublish`),
+		{
+			onSuccess: () => {
+				message.success(t('event.unpublish.success', 'Event unpublished'))
+				refetchMyEvents()
+			},
+			onError: () => {
+				message.error(t('event.unpublish.error', 'Error unpublishing event'))
+			},
+		}
+	)
+
+	const handleEventCancel = async (id: string) => {
+		try {
+			await cancelEvent(id)
+
+			message.success(t('event.cancel.success', 'Event canceled'))
+		} catch (error) {
+			message.error(t('event.cancel.error', 'Error canceling event'))
+		}
+	}
+
+	const handleEventUnpublish = async (id: string) => {
+		try {
+			await unpublishEvent(id)
+
+			message.success(t('event.cancel.success', 'Event canceled'))
+		} catch (error) {
+			message.error(t('event.cancel.error', 'Error canceling event'))
+		}
+	}
 
 	const handleEdit = (id: string) => {
 		const event = data?.find((e: any) => e.id === id)
@@ -85,6 +158,14 @@ const MyEventsPage: NextPageWithLayout = () => {
 
 	const columns: ColumnsType<any> = [
 		{
+			title: t('event.cover', 'Cover'),
+			dataIndex: 'image',
+			key: 'image',
+			render: (value: string) => (value ? <Image src={value} alt="Cover" /> : null),
+			responsive: ['md' as Breakpoint],
+			width: 100,
+		},
+		{
 			title: t('event.title', 'Title'),
 			dataIndex: 'title',
 			key: 'title',
@@ -94,6 +175,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 					<Text strong>{value}</Text>
 				</Space>
 			),
+			width: 200,
 		},
 		{
 			title: t('event.type', 'Type'),
@@ -107,16 +189,43 @@ const MyEventsPage: NextPageWithLayout = () => {
 			dataIndex: 'schedule',
 			key: 'schedule',
 			render: (schedule: any[]) => {
-				if (!schedule || !schedule.length) return null
+				if (!schedule || !schedule.length)
+					return <Alert message={t('event.noDates', 'You need to set a schedule')} banner type="warning" />
 				const first = schedule[0]
 				const last = schedule[schedule.length - 1]
-				return (
-					<Text type="secondary">
-						{dayjs(first.startDate).format('LL')} - {dayjs(last.endDate).format('LL')}
-					</Text>
-				)
+				return <Text>{formatEventPeriod(first.startDate, last.endDate, getLanguage())}</Text>
 			},
 			responsive: ['md' as Breakpoint],
+		},
+		{
+			dataIndex: 'status',
+			key: 'status',
+			width: 150,
+			align: 'right',
+			render: (status: prismaClient.$Enums.EventStatus, record: any) => {
+				switch (status) {
+					case prismaClient.$Enums.EventStatus.Draft:
+						return (
+							<Space>
+								<Tag color="default">{t('event.status.draft', 'Draft')}</Tag>
+								<Button
+									type="primary"
+									onClick={() => handleEventPublish(record.id)}
+									disabled={record.schedule.length === 0}
+									loading={isPublishingEvent}
+								>
+									{t('event.publish', 'Publish')}
+								</Button>
+							</Space>
+						)
+					case prismaClient.$Enums.EventStatus.Published:
+						return <Tag color="success">{t('event.status.published', 'Published')}</Tag>
+					case prismaClient.$Enums.EventStatus.Closed:
+						return <Tag color="error">{t('event.status.closed', 'Closed')}</Tag>
+					default:
+						return null
+				}
+			},
 		},
 		{
 			key: 'actions',
@@ -126,6 +235,32 @@ const MyEventsPage: NextPageWithLayout = () => {
 					<Menu>
 						<Menu.Item key="edit" onClick={() => handleEdit(record.id)}>
 							{t('event.edit', 'Edit')}
+						</Menu.Item>
+						<Menu.Item
+							key="cancel"
+							onClick={() => handleEventCancel(record.id)}
+							disabled={record.status !== prismaClient.$Enums.EventStatus.Published}
+						>
+							<Popconfirm
+								title={t('event.cancel.confirm', 'Cancel this event?')}
+								okText={t('popconfirm.ok', 'Ok')}
+								cancelText={t('popconfirm.cancel', 'Cancel')}
+							>
+								<span>{t('event.cancel', 'Cancel')}</span>
+							</Popconfirm>
+						</Menu.Item>
+						<Menu.Item
+							key="unpublish"
+							onClick={() => handleEventUnpublish(record.id)}
+							disabled={record.status !== prismaClient.$Enums.EventStatus.Published}
+						>
+							<Popconfirm
+								title={t('event.unpublish.confirm', 'Unpublish this event?')}
+								okText={t('popconfirm.ok', 'Ok')}
+								cancelText={t('popconfirm.cancel', 'Cancel')}
+							>
+								<span>{t('event.unpublish', 'Unpublish')}</span>
+							</Popconfirm>
 						</Menu.Item>
 						<Menu.Item key="delete">
 							<Popconfirm

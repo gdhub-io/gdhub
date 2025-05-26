@@ -30,7 +30,7 @@ const InvitePage = () => {
 	})
 
 	// Мутация для принятия приглашения
-	const { mutate: acceptInvite, isLoading: isAccepting } = useMutation(
+	const { mutateAsync: acceptInvite, isLoading: isAccepting } = useMutation(
 		() => axios.get(`/api/user/project/team/accept-invite?token=${token}`),
 		{
 			onSuccess: (response) => {
@@ -45,7 +45,7 @@ const InvitePage = () => {
 	)
 
 	// Мутация для отклонения приглашения
-	const { mutate: declineInvite, isLoading: isDeclining } = useMutation(
+	const { mutateAsync: declineInvite, isLoading: isDeclining } = useMutation(
 		() => axios.get(`/api/user/project/team/decline-invite?token=${token}`),
 		{
 			onSuccess: () => {

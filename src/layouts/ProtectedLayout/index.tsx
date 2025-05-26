@@ -240,11 +240,10 @@ export const ProtectedLayout = ({
 		// 		<Link href="/hub/lectures">
 		// 			<T keyName="app.user.menu.lectures">Lectures</T>
 		// 		</Link>
-		// 	),
+		// 	),p
 		// },
 		{
 			key: '/hub/events',
-			disabled: true,
 			label: (
 				<Link href="/hub/events">
 					<T keyName="app.user.menu.events">Events</T>

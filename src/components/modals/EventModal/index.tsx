@@ -25,7 +25,6 @@ import {
 	Dropdown,
 	Menu,
 	Typography,
-	Select,
 } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import axios from 'axios'
@@ -54,6 +53,9 @@ export type ScheduleItemFormValues = {
 	startDate: string
 	endDate: string
 	speakers: { name: string; speciality: string; id: string }[]
+	format?: prismaClient.$Enums.EventFormat
+	language?: prismaClient.$Enums.Language
+	directionId: string
 }
 
 const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSubmit, initialValues, eventId }) => {
@@ -96,6 +98,9 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 					link: item.link,
 					startDate: item.startDate,
 					endDate: item.endDate,
+					directionId: item.directionId,
+					format: item.format,
+					language: item.language,
 					speakers: item.speakers.map((speciality: any) => ({
 						id: speciality.id,
 						name: speciality.user?.profile?.name,
@@ -127,14 +132,14 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 		}
 	)
 
-	const { mutate: createEvent, isLoading: isEventCreating } = useMutation({
+	const { mutateAsync: createEvent, isLoading: isEventCreating } = useMutation({
 		mutationFn: (values: any) => axios.post('/api/user/event', values),
 		onSuccess: () => {
 			onSubmit()
 		},
 	})
 
-	const { mutate: updateEvent, isLoading: isEventUpdating } = useMutation({
+	const { mutateAsync: updateEvent, isLoading: isEventUpdating } = useMutation({
 		mutationFn: ({ _eventId, data }: any) => axios.put(`/api/user/event/${_eventId}`, data),
 		onSuccess: () => {
 			onSubmit()
@@ -263,10 +268,10 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 		try {
 			const values = await form.validateFields()
 
-			if (schedule.length === 0 && !values.schedule) {
-				message.error('Required to add at least one schedule item')
-				return
-			}
+			// if (schedule.length === 0 && !values.schedule) {
+			// 	message.error('Required to add at least one schedule item')
+			// 	return
+			// }
 
 			if (eventId) {
 				await updateEvent({
@@ -300,7 +305,8 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 			setSchedule([])
 			setImageUrl(undefined)
 		} catch (err) {
-			// Ошибки валидации
+			console.error(err)
+			message.error(t('event.modal.error', 'Error creating event'))
 		}
 	}
 
@@ -357,25 +363,23 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 					</Space>
 				)
 			}
-			okText={eventId ? t('event.modal.save', 'Save') : t('event.modal.create', 'Create')}
+			okText={eventId ? t('event.modal.save', 'Save') : t('event.modal.create', 'Save draft')}
 			cancelText={t('event.modal.cancel', 'Cancel')}
 			destroyOnClose
 			maskClosable={false}
 		>
-			<Form
-				form={form}
-				variant="filled"
-				layout="vertical"
-				initialValues={{ ...initialValues, format: initialValues?.format || prismaClient.$Enums.EventFormat.Online }}
-				requiredMark="optional"
-			>
+			<Form form={form} variant="filled" layout="vertical" initialValues={{ ...initialValues }} requiredMark="optional">
 				<Row gutter={16}>
 					{isBigEvent ? (
 						<Col span={24} style={{ marginBottom: 24 }}>
 							{!imageUrl ? (
 								<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="image" noStyle>
 									<ImgCrop aspect={16 / 9} cropShape="rect" showGrid showReset>
-										<Upload.Dragger {...uploadProps} className={styles.cover}>
+										<Upload.Dragger
+											{...uploadProps}
+											className={styles.cover}
+											style={{ aspectRatio: '16 / 9', width: '100%', maxHeight: 500 }}
+										>
 											<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
 											<p className="ant-upload-hint">
 												{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 16:9 recommended.')}
@@ -385,7 +389,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 								</Form.Item>
 							) : (
 								<Spin spinning={imageProcessing}>
-									<div className={styles.cover} style={{ aspectRatio: '16/9' }}>
+									<div className={styles.cover} style={{ aspectRatio: '16 / 9' }}>
 										<Image src={imageUrl + '?w=1200'} fill alt="" />
 										<Popover content={t('event.modal.image.deletePopover', 'Remove image')}>
 											<Button
@@ -406,7 +410,11 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 							(!imageUrl ? (
 								<Form.Item label={t('event.modal.image', 'Image')} name="image" valuePropName="image" noStyle>
 									<ImgCrop aspect={4 / 5} cropShape="rect" showGrid showReset>
-										<Upload.Dragger {...uploadProps} className={styles.cover}>
+										<Upload.Dragger
+											{...uploadProps}
+											className={styles.cover}
+											style={{ aspectRatio: '4 / 5', maxHeight: 500 }}
+										>
 											<p className="ant-upload-text">{t('event.modal.image.add', 'Add event image')}</p>
 											<p className="ant-upload-hint">
 												{t('event.modal.image.hint', 'Click or drag image here. JPG, PNG. 4:5 recommended.')}
@@ -416,7 +424,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 								</Form.Item>
 							) : (
 								<Spin spinning={imageProcessing}>
-									<div className={styles.cover}>
+									<div className={styles.cover} style={{ aspectRatio: '4 / 5' }}>
 										<Image src={imageUrl + '?w=750'} fill alt="" />
 										<Popover content={t('event.modal.image.deletePopover', 'Remove image')}>
 											<Button
@@ -461,27 +469,21 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 								placeholder={t('event.modal.description.placeholder', 'Event description')}
 							/>
 						</Form.Item>
+
 						<Form.Item label={t('event.modal.link', 'Link')} name="url">
 							<Input placeholder={t('event.modal.link.placeholder', 'https://')} />
-						</Form.Item>
-
-						<Form.Item
-							label={t('event.modal.format.label', 'Format')}
-							name="format"
-							rules={[{ required: true, message: t('event.modal.format.required', 'Format is required') }]}
-						>
-							<Select
-								options={Object.values(prismaClient.$Enums.EventFormat).map((format) => ({
-									label: format,
-									value: format,
-								}))}
-							/>
 						</Form.Item>
 					</Col>
 				</Row>
 				<Divider orientation="left" style={{ marginTop: 16 }}>
 					{t('event.modal.schedule', 'Schedule')}
 				</Divider>
+				<Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+					{t(
+						'event.modal.schedule.hint',
+						'You can add one or multiple schedule items to the event. Each item can have multiple speakers.'
+					)}
+				</Typography.Paragraph>
 				{schedule.length > 0 && (
 					<ModernTable
 						size="small"

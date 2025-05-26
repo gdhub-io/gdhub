@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Modal, Form, Input, DatePicker, Select, Avatar, Spin, message } from 'antd'
+import { Modal, Form, Input, DatePicker, Select, Avatar, Spin, message, Row, Col } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import debounce from 'lodash/debounce'
+import { useSession } from 'next-auth/react'
 import qs from 'qs'
 import { ScheduleItemFormValues } from '.'
-
 const { RangePicker } = DatePicker
 
 interface ScheduleItemModalProps {
@@ -29,6 +30,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 }) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
+	const { data: session } = useSession()
 	const [searchSpeakersValue, setSearchSpeakersValue] = React.useState('')
 	const [speakerOptions, setSpeakerOptions] = React.useState<
 		{ label: string; value: string; avatar?: string; speciality?: string }[]
@@ -78,6 +80,10 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		}
 	)
 
+	const { data: workDirections } = useQuery(['work-directions'], () =>
+		axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions').then((res) => res.data)
+	)
+
 	useEffect(() => {
 		if (speakersData?.data) {
 			setSpeakerOptions(
@@ -109,6 +115,9 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				startDate: dayjs(values.dates[0]).toISOString(),
 				endDate: dayjs(values.dates[1]).toISOString(),
 				speakers: speakersData?.data?.filter((speaker: any) => values.speakers.includes(speaker.id)),
+				directionId: values.directionId,
+				format: values.format,
+				language: values.language,
 			})
 
 			form.resetFields()
@@ -130,7 +139,16 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 			cancelText={t('common.cancel', 'Cancel')}
 			destroyOnClose
 		>
-			<Form form={form} variant="filled" layout="vertical" requiredMark="optional">
+			<Form
+				form={form}
+				variant="filled"
+				layout="vertical"
+				requiredMark="optional"
+				initialValues={{
+					format: prismaClient.$Enums.EventFormat.Online,
+					language: session?.user?.lang || prismaClient.$Enums.Language.en,
+				}}
+			>
 				<Form.Item
 					label={t('event.schedule.dates', 'Dates')}
 					name="dates"
@@ -180,6 +198,51 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 						}}
 					/>
 				</Form.Item>
+
+				<Row gutter={16}>
+					<Col span={12}>
+						<Form.Item
+							name="format"
+							rules={[{ required: true, message: t('event.schedule.format.required', 'Format required') }]}
+							label={t('event.schedule.format', 'Format')}
+						>
+							<Select
+								options={Object.values(prismaClient.$Enums.EventFormat).map((format) => ({
+									label: format,
+									value: format,
+								}))}
+							/>
+						</Form.Item>
+					</Col>
+					<Col span={12}>
+						<Form.Item
+							name="language"
+							rules={[{ required: true, message: t('event.schedule.language.required', 'Language required') }]}
+							label={t('event.schedule.language', 'Language')}
+						>
+							<Select
+								options={Object.values(prismaClient.$Enums.Language).map((language) => ({
+									label: language.toUpperCase(),
+									value: language,
+								}))}
+							/>
+						</Form.Item>
+					</Col>
+				</Row>
+
+				<Form.Item
+					label={t('event.schedule.direction', 'Direction')}
+					name="directionId"
+					rules={[{ required: true, message: t('event.schedule.direction.required', 'Direction required') }]}
+				>
+					<Select
+						options={workDirections?.map((direction) => ({
+							label: direction.name,
+							value: direction.id,
+						}))}
+					/>
+				</Form.Item>
+
 				<Form.Item label={t('event.schedule.title', 'Title')} name="title">
 					<Input placeholder={t('event.schedule.title.placeholder', 'Item title')} allowClear />
 				</Form.Item>

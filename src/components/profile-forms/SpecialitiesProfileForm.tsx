@@ -39,7 +39,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		{ onSuccess: () => queryClient.invalidateQueries(['user-specialities']) }
 	)
 
-	const { mutate: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
+	const { mutateAsync: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
 		(invitationId: string) =>
 			axios.get(`/api/user/project/team/complete-pending-invitation?invitationId=${pendingInvitationId}`),
 		{
