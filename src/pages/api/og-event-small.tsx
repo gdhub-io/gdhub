@@ -7,13 +7,13 @@ export const config = {
 	runtime: 'edge',
 }
 
-function upperFirst(str: string) {
-	return str.charAt(0).toUpperCase() + str.slice(1)
-}
-
 export default async function handler(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url)
+
+		function upperFirst(str: string) {
+			return str.charAt(0).toUpperCase() + str.slice(1)
+		}
 
 		// ?img=<imageId>
 		// https://cdn.sanity.io/images/3ao2jrg0/prod/6819158b4ecfd87ff4aac88b84dbb433d863d76d-616x353.jpg
