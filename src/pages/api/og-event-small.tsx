@@ -1,11 +1,14 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from '@vercel/og'
-import { upperFirst } from 'lodash'
 import { NextRequest } from 'next/server'
 
 export const config = {
 	runtime: 'edge',
+}
+
+function upperFirst(str: string) {
+	return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 export default async function handler(request: NextRequest) {

@@ -7,6 +7,10 @@ export const config = {
 	runtime: 'edge',
 }
 
+function upperFirst(str: string) {
+	return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 export default async function handler(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url)
@@ -212,7 +216,10 @@ export default async function handler(request: NextRequest) {
 										marginLeft: 0,
 									}}
 								>
-									/ <span style={{ marginLeft: 16 }}>{eventType ? decodeURIComponent(eventType) : 'Event'}</span>
+									/{' '}
+									<span style={{ marginLeft: 16 }}>
+										{eventType ? upperFirst(decodeURIComponent(eventType)) : 'Event'}
+									</span>
 								</span>
 							)}
 						</div>
