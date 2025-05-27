@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import EventConferenceOrGamelabView from '@/components/event/EventConferenceOrGamelabView'
 import EventDefaultView from '@/components/event/EventDefaultView'
+import { formatEventPeriod } from '@/helpers/format'
 import { useWorkDirections } from '@/hooks/library'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
+import { useTolgee } from '@tolgee/react'
 import { GetServerSidePropsContext } from 'next'
 
 interface EventPageProps {
@@ -14,7 +16,7 @@ interface EventPageProps {
 
 const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 	const { data: workDirections } = useWorkDirections()
-
+	const { getLanguage } = useTolgee()
 	// --- КЛИЕНТСКОЕ форматирование дат для устранения ошибки гидратации ---
 	const [formattedSchedule, setFormattedSchedule] = useState<any[]>([])
 
@@ -67,6 +69,18 @@ const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 			title={!isConferenceOrGamelab ? event.title : undefined}
 			subTitle={!isConferenceOrGamelab ? event.shortDescription : undefined}
 			backgroundImage={event.image || undefined}
+			ogImageType={isConferenceOrGamelab ? 'event-big' : 'event-small'}
+			ogImageParams={{
+				type: event.type,
+				date: event.schedule?.length
+					? formatEventPeriod(
+							event.schedule[0].startDate,
+							event.schedule[event.schedule.length - 1].endDate,
+							getLanguage(),
+							'day'
+						)
+					: '',
+			}}
 		>
 			{isConferenceOrGamelab ? (
 				<EventConferenceOrGamelabView event={event} workDirections={workDirections} schedule={schedule} />

@@ -41,6 +41,8 @@ interface PublicLayoutProps {
 	backgroundImage?: string
 	extra?: ReactNode
 	styles?: Record<string, object>
+	ogImageType?: string
+	ogImageParams?: Record<string, string>
 }
 
 const { Header, Footer, Content } = Layout
@@ -54,6 +56,8 @@ export const PublicLayout = ({
 	backgroundImage,
 	extra,
 	styles: layoutStyles,
+	ogImageType,
+	ogImageParams,
 }: PublicLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage } = useTolgee()
@@ -71,9 +75,13 @@ export const PublicLayout = ({
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
+						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
 								seo?.description || subTitle || ''
-							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}&${Object.entries(
+								ogImageParams || {}
+							)
+								.map(([key, value]) => `${key}=${value}`)
+								.join('&')}`,
 					alt: 'Indie Game Developers Page Cover',
 				},
 			],
