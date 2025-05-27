@@ -302,7 +302,7 @@ export const PublicLayout = ({
 
 	const setBackground = useCallback(() => {
 		if (title && !backgroundImage) return `url(${PublicHeaderBg.src})`
-		if (title && backgroundImage)
+		if (backgroundImage)
 			return `linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.3)), url(${backgroundImage})`
 	}, [title, backgroundImage])
 
