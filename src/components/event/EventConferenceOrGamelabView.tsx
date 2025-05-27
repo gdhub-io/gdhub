@@ -4,6 +4,7 @@ import { useTolgee } from '@tolgee/react'
 import { Button, Row, Col, Space, Typography, Divider, Avatar, Flex, Grid } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 
@@ -14,6 +15,7 @@ const MAX_VISIBLE_SPEAKERS = 3
 const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) => {
 	const { t, getLanguage } = useTolgee()
 	const screens = Grid.useBreakpoint()
+	const { data: session } = useSession()
 
 	return (
 		<div style={{ position: 'relative', maxWidth: 1100, margin: '0 auto', padding: 24 }}>
@@ -194,11 +196,19 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 			{/* Кнопка регистрации внизу страницы */}
 			{event.url && (
 				<div style={{ maxWidth: 420, margin: '40px auto 0', textAlign: 'center' }}>
-					<Link href={event.url} target="_blank">
-						<Button type="primary" size="large" style={{ width: '100%', maxWidth: 420 }}>
-							{t('event.register', 'Register')}
-						</Button>
-					</Link>
+					{session ? (
+						<Link href={event.url} target="_blank">
+							<Button type="primary" size="large" style={{ width: '100%', maxWidth: 420 }}>
+								{t('event.register', 'Register')}
+							</Button>
+						</Link>
+					) : (
+						<Link href="/registration">
+							<Button type="primary" size="large" style={{ width: '100%', maxWidth: 420 }}>
+								{t('event.loginOrRegister', 'Login / Register')}
+							</Button>
+						</Link>
+					)}
 				</div>
 			)}
 		</div>
