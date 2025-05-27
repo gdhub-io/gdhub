@@ -17,7 +17,7 @@ interface EventPageProps {
 const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 	const { data: workDirections } = useWorkDirections()
 	const { getLanguage } = useTolgee()
-	// --- КЛИЕНТСКОЕ форматирование дат для устранения ошибки гидратации ---
+
 	const [formattedSchedule, setFormattedSchedule] = useState<any[]>([])
 
 	useEffect(() => {
@@ -48,19 +48,6 @@ const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 	if (!event) return null
 
 	const schedule = formattedSchedule.length ? formattedSchedule : event.schedule || []
-	const isSingleSchedule = schedule.length === 1
-
-	// Получить цвет направления
-	const getDirectionColor = (directionId: string) => {
-		const dir = workDirections?.find((d) => d.id === directionId)
-		if (!dir) return '#eee'
-		// Преобразуем name в css-переменную
-		const cssVar = `--bg-direc-${dir.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`
-		return typeof window !== 'undefined'
-			? getComputedStyle(document.documentElement).getPropertyValue(cssVar) || '#eee'
-			: '#eee'
-	}
-
 	const isConferenceOrGamelab = ['conference', 'gamelab'].includes((event.type || '').toLowerCase())
 
 	return (
