@@ -1,9 +1,23 @@
+import { randomUUID } from 'crypto'
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { Type, Transform } from 'class-transformer'
 import { IsArray, IsBoolean, IsDate, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator'
-import { Body, Delete, Get, Param, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import {
+	Body,
+	Delete,
+	Get,
+	NotFoundException,
+	Param,
+	Post,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+	createHandler,
+} from 'next-api-decorators'
+import slugify from 'slugify'
 
 class IDParamDto {
 	@IsString()
@@ -58,6 +72,10 @@ class UserEventCreateDto {
 
 	@IsString()
 	@IsOptional()
+	slug?: string
+
+	@IsString()
+	@IsOptional()
 	shortDescription?: string
 
 	@IsString()
@@ -89,6 +107,10 @@ class UserEventCreateDto {
 class UserEventUpdateDto {
 	@IsString()
 	title: string
+
+	@IsString()
+	@IsOptional()
+	slug?: string
 
 	@IsString()
 	description: string
@@ -176,6 +198,7 @@ class ApiUserEventEndpointHandler {
 				url: data.url,
 				image: data.image,
 				createdById: req.user.id,
+				slug: data.slug || slugify(data.title, { lower: true, strict: true }) + '-' + randomUUID().slice(-6),
 			},
 		})
 
@@ -205,7 +228,6 @@ class ApiUserEventEndpointHandler {
 
 	@Put('/:id')
 	public async update(@Param('id') id: string, @Body(ValidationPipe) data: UserEventUpdateDto) {
-		console.log(id, data)
 		const event = await prisma.event.update({
 			where: {
 				id,
@@ -217,6 +239,7 @@ class ApiUserEventEndpointHandler {
 				url: data.url,
 				image: data.image,
 				isFree: data.isFree,
+				slug: data.slug,
 			},
 		})
 
@@ -288,6 +311,22 @@ class ApiUserEventEndpointHandler {
 			where: { id },
 			data: { status: prismaClient.$Enums.EventStatus.Draft, publishedAt: null },
 		})
+	}
+
+	@Put('/:id/generate-slug')
+	public async generateSlug(@Param('id') id: string) {
+		const event = await prisma.event.findUnique({ where: { id }, select: { title: true } })
+
+		if (!event) {
+			throw new NotFoundException('Event not found')
+		}
+
+		const updatedEvent = await prisma.event.update({
+			where: { id },
+			data: { slug: slugify(event.title, { lower: true, strict: true }) + '-' + randomUUID().slice(-6) },
+		})
+
+		return { slug: updatedEvent.slug }
 	}
 
 	@Delete()

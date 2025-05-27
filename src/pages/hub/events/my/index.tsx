@@ -12,6 +12,7 @@ import { FaMicroscope } from '@react-icons/all-files/fa/FaMicroscope'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
 import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
+import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Button, Dropdown, Image, message, Space, Typography, theme, Alert, Tag, MenuProps } from 'antd'
@@ -19,6 +20,7 @@ import type { Breakpoint } from 'antd/es/_util/responsiveObserver'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
@@ -118,6 +120,19 @@ const MyEventsPage: NextPageWithLayout = () => {
 		}
 	)
 
+	const { mutateAsync: generateSlug, isLoading: isGeneratingSlug } = useMutation(
+		(id: string) => axios.put(`/api/user/event/${id}/generate-slug`),
+		{
+			onSuccess: () => {
+				message.success(t('event.generateSlug.success', 'Slug generated'))
+				refetchMyEvents()
+			},
+			onError: () => {
+				message.error(t('event.generateSlug.error', 'Error generating slug'))
+			},
+		}
+	)
+
 	const handleEventRestore = async (id: string) => {
 		await restoreEvent(id)
 	}
@@ -187,6 +202,21 @@ const MyEventsPage: NextPageWithLayout = () => {
 			responsive: ['md' as Breakpoint],
 		},
 		{
+			dataIndex: 'slug',
+			key: 'slug',
+			render: (value: string) =>
+				!value ? (
+					<Text type="secondary">{'-'}</Text>
+				) : (
+					<Link href={`/event/${value}`}>
+						<Button type="text" icon={<GoLinkExternal />} iconPosition="end">
+							{t('event.goToEvent', 'Go to event')}
+						</Button>
+					</Link>
+				),
+			responsive: ['md' as Breakpoint],
+		},
+		{
 			dataIndex: 'status',
 			key: 'status',
 			width: 150,
@@ -233,6 +263,11 @@ const MyEventsPage: NextPageWithLayout = () => {
 						key: 'edit',
 						label: t('event.edit', 'Edit'),
 						onClick: () => handleEdit(record.id),
+					},
+					{
+						key: 'generate-slug',
+						label: t('event.generateSlug', 'Generate Slug'),
+						onClick: () => generateSlug(record.id),
 					},
 				]
 
