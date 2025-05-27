@@ -5,7 +5,7 @@ import { AvailableLocales } from './locale'
 const config: Record<AvailableLocales, DefaultSeoProps> = {
 	en: {
 		defaultTitle: 'Game Developers Hub',
-		titleTemplate: '%s | GDHub',
+		titleTemplate: '%s',
 		description: 'Web service & community for everyone who wants to create or participate in indie games',
 		openGraph: {
 			type: 'website',

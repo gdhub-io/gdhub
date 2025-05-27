@@ -12,5 +12,7 @@ Disallow: /admin
 # Allow
 Allow: /
 Allow: /api/og/*
+Allow: /api/og-event-small/*
+Allow: /api/og-event-big/*
 
 Sitemap: https://gdhub.io/sitemap.xml
