@@ -14,10 +14,11 @@ import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Button, Dropdown, Image, Menu, Popconfirm, message, Space, Typography, theme, Alert, Tag } from 'antd'
+import { Button, Dropdown, Image, message, Space, Typography, theme, Alert, Tag, MenuProps } from 'antd'
 import type { Breakpoint } from 'antd/es/_util/responsiveObserver'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
@@ -91,19 +92,6 @@ const MyEventsPage: NextPageWithLayout = () => {
 		}
 	}
 
-	const { mutateAsync: cancelEvent, isLoading: isCancellingEvent } = useMutation(
-		(id: string) => axios.put(`/api/user/event/${id}/cancel`),
-		{
-			onSuccess: () => {
-				message.success(t('event.cancel.success', 'Event canceled'))
-				refetchMyEvents()
-			},
-			onError: () => {
-				message.error(t('event.cancel.error', 'Error canceling event'))
-			},
-		}
-	)
-
 	const { mutateAsync: unpublishEvent, isLoading: isUnpublishingEvent } = useMutation(
 		(id: string) => axios.put(`/api/user/event/${id}/unpublish`),
 		{
@@ -117,24 +105,25 @@ const MyEventsPage: NextPageWithLayout = () => {
 		}
 	)
 
-	const handleEventCancel = async (id: string) => {
-		try {
-			await cancelEvent(id)
-
-			message.success(t('event.cancel.success', 'Event canceled'))
-		} catch (error) {
-			message.error(t('event.cancel.error', 'Error canceling event'))
+	const { mutateAsync: restoreEvent, isLoading: isRestoringEvent } = useMutation(
+		(id: string) => axios.put(`/api/user/event/${id}/restore`),
+		{
+			onSuccess: () => {
+				message.success(t('event.restore.success', 'Event is restored'))
+				refetchMyEvents()
+			},
+			onError: () => {
+				message.error(t('event.restore.error', 'Error restoring event'))
+			},
 		}
+	)
+
+	const handleEventRestore = async (id: string) => {
+		await restoreEvent(id)
 	}
 
 	const handleEventUnpublish = async (id: string) => {
-		try {
-			await unpublishEvent(id)
-
-			message.success(t('event.cancel.success', 'Event canceled'))
-		} catch (error) {
-			message.error(t('event.cancel.error', 'Error canceling event'))
-		}
+		await unpublishEvent(id)
 	}
 
 	const handleEdit = (id: string) => {
@@ -219,7 +208,13 @@ const MyEventsPage: NextPageWithLayout = () => {
 							</Space>
 						)
 					case prismaClient.$Enums.EventStatus.Published:
-						return <Tag color="success">{t('event.status.published', 'Published')}</Tag>
+						return (
+							<Tag color="success">
+								{t('event.status.published', 'Published at {publishedAt}', {
+									publishedAt: dayjs(record.publishedAt).format('lll'),
+								})}
+							</Tag>
+						)
 					case prismaClient.$Enums.EventStatus.Closed:
 						return <Tag color="error">{t('event.status.closed', 'Closed')}</Tag>
 					default:
@@ -231,51 +226,54 @@ const MyEventsPage: NextPageWithLayout = () => {
 			key: 'actions',
 			width: 48,
 			render: (_: any, record: any) => {
-				const menu = (
-					<Menu>
-						<Menu.Item key="edit" onClick={() => handleEdit(record.id)}>
-							{t('event.edit', 'Edit')}
-						</Menu.Item>
-						<Menu.Item
-							key="cancel"
-							onClick={() => handleEventCancel(record.id)}
-							disabled={record.status !== prismaClient.$Enums.EventStatus.Published}
-						>
-							<Popconfirm
-								title={t('event.cancel.confirm', 'Cancel this event?')}
-								okText={t('popconfirm.ok', 'Ok')}
-								cancelText={t('popconfirm.cancel', 'Cancel')}
-							>
-								<span>{t('event.cancel', 'Cancel')}</span>
-							</Popconfirm>
-						</Menu.Item>
-						<Menu.Item
-							key="unpublish"
-							onClick={() => handleEventUnpublish(record.id)}
-							disabled={record.status !== prismaClient.$Enums.EventStatus.Published}
-						>
-							<Popconfirm
-								title={t('event.unpublish.confirm', 'Unpublish this event?')}
-								okText={t('popconfirm.ok', 'Ok')}
-								cancelText={t('popconfirm.cancel', 'Cancel')}
-							>
-								<span>{t('event.unpublish', 'Unpublish')}</span>
-							</Popconfirm>
-						</Menu.Item>
-						<Menu.Item key="delete">
-							<Popconfirm
-								title={t('event.delete.confirm', 'Delete this event?')}
-								okText={t('event.delete', 'Delete')}
-								cancelText={t('event.cancel', 'Cancel')}
-								onConfirm={() => deleteEvent(record.id)}
-							>
-								<span style={{ color: token.colorError }}>{t('event.delete', 'Delete')}</span>
-							</Popconfirm>
-						</Menu.Item>
-					</Menu>
-				)
+				const menu: MenuProps['items'] = []
+
+				const startOfMenu: MenuProps['items'] = [
+					{
+						key: 'edit',
+						label: t('event.edit', 'Edit'),
+						onClick: () => handleEdit(record.id),
+					},
+				]
+
+				const endOfMenu: MenuProps['items'] = [
+					{
+						key: 'divider',
+						type: 'divider',
+					},
+					{
+						key: 'delete',
+						label: t('event.delete', 'Delete'),
+						danger: true,
+						onClick: () => deleteEvent(record.id),
+					},
+				]
+
+				if (record.status === prismaClient.$Enums.EventStatus.Draft) {
+					menu.push(...startOfMenu)
+				}
+
+				if (record.status === prismaClient.$Enums.EventStatus.Published) {
+					menu.push(...startOfMenu)
+					menu.push({
+						key: 'unpublish',
+						label: t('event.unpublish', 'Unpublish'),
+						onClick: () => handleEventUnpublish(record.id),
+					})
+				}
+
+				if (record.status === prismaClient.$Enums.EventStatus.Closed) {
+					menu.push({
+						key: 'restore',
+						label: t('event.restore', 'Restore'),
+						onClick: () => handleEventRestore(record.id),
+					})
+				}
+
+				menu.push(...endOfMenu)
+
 				return (
-					<Dropdown overlay={menu} trigger={['click']}>
+					<Dropdown menu={{ items: menu }} trigger={['click']}>
 						<Button type="text" icon={<MoreOutlined />} />
 					</Dropdown>
 				)

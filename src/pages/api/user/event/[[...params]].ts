@@ -262,14 +262,6 @@ class ApiUserEventEndpointHandler {
 		})
 	}
 
-	@Put('/:id/cancel')
-	public async cancel(@Param('id') id: string) {
-		await prisma.event.update({
-			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Closed, publishedAt: null },
-		})
-	}
-
 	@Put('/:id/unpublish')
 	public async unpublish(@Param('id') id: string) {
 		await prisma.event.update({
@@ -278,11 +270,19 @@ class ApiUserEventEndpointHandler {
 		})
 	}
 
-	@Put('/:id/archive	')
-	public async archive(@Param('id') id: string) {
+	@Put('/:id/close')
+	public async close(@Param('id') id: string) {
 		await prisma.event.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Archived },
+			data: { status: prismaClient.$Enums.EventStatus.Closed },
+		})
+	}
+
+	@Put('/:id/restore')
+	public async restore(@Param('id') id: string) {
+		await prisma.event.update({
+			where: { id },
+			data: { status: prismaClient.$Enums.EventStatus.Draft, publishedAt: null },
 		})
 	}
 

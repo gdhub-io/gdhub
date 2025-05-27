@@ -150,7 +150,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				}}
 			>
 				<Form.Item
-					label={t('event.schedule.dates', 'Dates')}
+					label={t('event.schedule.dates', 'Dates (local time)')}
 					name="dates"
 					rules={[{ required: true, message: t('event.schedule.dates.required', 'Dates required') }]}
 				>
@@ -162,6 +162,31 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 							start: 'startDate',
 							end: 'endDate',
 						}}
+						disabledTime={(date) => {
+							if (!date || isAdmin) return {}
+
+							const now = dayjs()
+
+							if (date.isSame(now, 'day')) {
+								const currentHour = now.hour()
+								const currentMinute = now.minute()
+								return {
+									disabledHours: () => Array.from({ length: 24 }, (_, i) => i).filter((h) => h < currentHour),
+									disabledMinutes: () =>
+										date.hour() === currentHour
+											? Array.from({ length: 60 }, (_, i) => i).filter((m) => m < currentMinute)
+											: [],
+									disabledSeconds: () => [],
+								}
+							}
+
+							return {
+								disabledHours: () => [],
+								disabledMinutes: () => [],
+								disabledSeconds: () => [],
+							}
+						}}
+						disabledDate={(current) => current && !isAdmin && current < dayjs().startOf('day')}
 					/>
 				</Form.Item>
 
@@ -240,6 +265,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 							label: direction.name,
 							value: direction.id,
 						}))}
+						placeholder={t('event.schedule.direction.placeholder', 'Select direction')}
 					/>
 				</Form.Item>
 
