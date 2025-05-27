@@ -67,7 +67,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
 	const { data: session } = useSession()
-	const isAdmin = hasRole(prismaClient.UserRole.Admin, session) || process.env.NODE_ENV === 'development'
+	const isAdmin = hasRole(prismaClient.UserRole.Admin, { data: session })
 	const isBigEvent =
 		eventType === prismaClient.$Enums.EventType.GameLab || eventType === prismaClient.$Enums.EventType.Conference
 	const currentUser = session?.user
