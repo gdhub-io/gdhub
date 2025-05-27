@@ -12,15 +12,20 @@ class GetEventsDto {
 	@IsBoolean()
 	@IsOptional()
 	withDates?: boolean
+
+	@IsEnum(prismaClient.EventStatus, { each: true })
+	@IsOptional()
+	status?: prismaClient.EventStatus[]
 }
 
 @NextAuthGuard('user')
 class ApiEventsEndpointHandler {
 	@Get()
-	public async get(@Query(ValidationPipe) { type, withDates = false }: GetEventsDto) {
+	public async get(@Query(ValidationPipe) { type, status, withDates = false }: GetEventsDto) {
 		const events = await prisma.event.findMany({
 			where: {
 				type: type ? { in: type } : undefined,
+				status: status ? { in: status } : prismaClient.$Enums.EventStatus.Published,
 			},
 			include: withDates
 				? {

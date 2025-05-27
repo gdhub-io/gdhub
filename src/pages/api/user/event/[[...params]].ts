@@ -118,6 +118,19 @@ class UserEventUpdateDto {
 
 @NextAuthGuard('user')
 class ApiUserEventEndpointHandler {
+	@Get('/count')
+	public async count(@Req() req: NextApiRequestWithUser) {
+		console.log('user', req.user)
+
+		const count = await prisma.event.count({
+			where: {
+				createdById: req.user.id,
+			},
+		})
+
+		return { count }
+	}
+
 	@Get('/:id')
 	public async get(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
 		const isAdmin = req.user.role === prismaClient.UserRole.Admin
@@ -148,15 +161,6 @@ class ApiUserEventEndpointHandler {
 						},
 					},
 				},
-			},
-		})
-	}
-
-	@Get('/count')
-	public async count(@Req() req: NextApiRequestWithUser) {
-		return await prisma.event.count({
-			where: {
-				createdById: req.user.id,
 			},
 		})
 	}

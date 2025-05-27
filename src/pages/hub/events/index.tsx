@@ -2,6 +2,7 @@ import React from 'react'
 import { EventCard, PastEventCard, EventSection, BannerEventSlider } from '@/components/events'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Button, theme } from 'antd'
@@ -19,8 +20,8 @@ const EventsPage: NextPageWithLayout = () => {
 
 	const { data: userEventCount } = useQuery(
 		['user-event-count', session?.user?.id],
-		() => axios.get('/api/user/event/count'),
-		{ enabled: !!session?.user?.id }
+		() => axios.get('/api/user/event/count').then((res) => res.data),
+		{ enabled: Boolean(session?.user?.id) }
 	)
 
 	return (
@@ -28,7 +29,7 @@ const EventsPage: NextPageWithLayout = () => {
 			title={t('page.events.title', 'Events')}
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
 			extra={
-				!!userEventCount?.data?.count && (
+				!!userEventCount && (
 					<Link href="/hub/events/my">
 						<Button type="text">{t('page.events.myEvents', 'My Events')}</Button>
 					</Link>
@@ -44,7 +45,7 @@ const EventsPage: NextPageWithLayout = () => {
 						'page.events.newKnowledgeDescription',
 						'Meetups and workshops for sharing experience, learning, and networking.'
 					)}
-					eventTypes={['MEETUP', 'WORKSHOP']}
+					eventTypes={[prismaClient.$Enums.EventType.Meetup, prismaClient.$Enums.EventType.Workshop]}
 					eventStatus="upcoming"
 					CardComponent={EventCard}
 					token={token}
@@ -55,7 +56,7 @@ const EventsPage: NextPageWithLayout = () => {
 						'page.events.gameJamsAndExperimentsDescription',
 						'Game jams for practice, experiments, and new connections.'
 					)}
-					eventTypes={['GAMEJAM', 'GAMELAB']}
+					eventTypes={[prismaClient.$Enums.EventType.GameJam, prismaClient.$Enums.EventType.GameLab]}
 					eventStatus="upcoming"
 					CardComponent={EventCard}
 					token={token}
@@ -63,7 +64,13 @@ const EventsPage: NextPageWithLayout = () => {
 				<EventSection
 					title={t('page.events.pastEvents', 'Some Past Events')}
 					description={t('page.events.pastEventsDescription', "Here are some of the platform's completed events.")}
-					eventTypes={['MEETUP', 'WORKSHOP', 'GAMEJAM', 'GAMELAB', 'CONFERENCE']}
+					eventTypes={[
+						prismaClient.$Enums.EventType.Meetup,
+						prismaClient.$Enums.EventType.Workshop,
+						prismaClient.$Enums.EventType.GameJam,
+						prismaClient.$Enums.EventType.GameLab,
+						prismaClient.$Enums.EventType.Conference,
+					]}
 					eventStatus="past"
 					CardComponent={PastEventCard}
 					token={token}
