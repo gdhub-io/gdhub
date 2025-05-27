@@ -15,7 +15,7 @@ import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Button, Dropdown, Image, message, Space, Typography, theme, Alert, Tag, MenuProps } from 'antd'
+import { Button, Dropdown, Image, message, Space, Typography, theme, Alert, Tag, MenuProps, Grid, Modal } from 'antd'
 import type { Breakpoint } from 'antd/es/_util/responsiveObserver'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -47,6 +47,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 	const { t, getLanguage } = useTolgee()
 	const router = useRouter()
 	const { token } = theme.useToken()
+	const screens = Grid.useBreakpoint()
 	const [editModalOpen, setEditModalOpen] = React.useState(false)
 	const [editingEvent, setEditingEvent] = React.useState<any | null>(null)
 
@@ -208,7 +209,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 				!value ? (
 					<Text type="secondary">{'-'}</Text>
 				) : (
-					<Link href={`/event/${value}`}>
+					<Link href={`/event/${value}`} target="_blank">
 						<Button type="text" icon={<GoLinkExternal />} iconPosition="end">
 							{t('event.goToEvent', 'Go to event')}
 						</Button>
@@ -222,9 +223,11 @@ const MyEventsPage: NextPageWithLayout = () => {
 			width: 150,
 			align: 'right',
 			render: (status: prismaClient.$Enums.EventStatus, record: any) => {
+				const buttons = []
+
 				switch (status) {
 					case prismaClient.$Enums.EventStatus.Draft:
-						return (
+						buttons.push(
 							<Space>
 								<Tag color="default">{t('event.status.draft', 'Draft')}</Tag>
 								<Button
@@ -237,19 +240,27 @@ const MyEventsPage: NextPageWithLayout = () => {
 								</Button>
 							</Space>
 						)
+						break
 					case prismaClient.$Enums.EventStatus.Published:
-						return (
+						buttons.push(
 							<Tag color="success">
 								{t('event.status.published', 'Published at {publishedAt}', {
 									publishedAt: dayjs(record.publishedAt).format('lll'),
 								})}
 							</Tag>
 						)
+						break
 					case prismaClient.$Enums.EventStatus.Closed:
-						return <Tag color="error">{t('event.status.closed', 'Closed')}</Tag>
-					default:
-						return null
+						buttons.push(<Tag color="error">{t('event.status.closed', 'Closed')}</Tag>)
 				}
+
+				buttons.push(
+					<Button type="primary" onClick={() => handleEdit(record.id)}>
+						{t('event.edit', 'Edit')}
+					</Button>
+				)
+
+				return <Space>{buttons}</Space>
 			},
 		},
 		{
@@ -258,16 +269,31 @@ const MyEventsPage: NextPageWithLayout = () => {
 			render: (_: any, record: any) => {
 				const menu: MenuProps['items'] = []
 
-				const startOfMenu: MenuProps['items'] = [
-					{
+				if (!screens.md) {
+					menu.push({
 						key: 'edit',
 						label: t('event.edit', 'Edit'),
 						onClick: () => handleEdit(record.id),
-					},
+					})
+				}
+
+				const startOfMenu: MenuProps['items'] = [
 					{
 						key: 'generate-slug',
 						label: t('event.generateSlug', 'Generate Slug'),
-						onClick: () => generateSlug(record.id),
+						onClick: () =>
+							Modal.confirm({
+								title: t('event.generateSlug.confirm', 'Are you sure you want to generate a slug?'),
+								content: (
+									<Space>
+										<Text>{t('event.generateSlug.confirm', 'Old link will no longer be available')}</Text>
+									</Space>
+								),
+								onOk: () => generateSlug(record.id),
+								onCancel: () => {},
+								okText: t('event.generateSlug.confirm', 'Generate'),
+								cancelText: t('event.generateSlug.cancel', 'Cancel'),
+							}),
 					},
 				]
 
@@ -280,7 +306,13 @@ const MyEventsPage: NextPageWithLayout = () => {
 						key: 'delete',
 						label: t('event.delete', 'Delete'),
 						danger: true,
-						onClick: () => deleteEvent(record.id),
+						onClick: () =>
+							Modal.confirm({
+								title: t('event.delete.confirm', 'Are you sure you want to delete this event?'),
+								content: <Text>{t('event.delete.confirm', 'This action cannot be undone')}</Text>,
+								onOk: () => deleteEvent(record.id),
+								onCancel: () => {},
+							}),
 					},
 				]
 
