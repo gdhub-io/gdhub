@@ -75,7 +75,12 @@ export const getServerLocale = (req: NextApiRequestWithUser | NextApiRequest) =>
  * @param locale string (e.g. 'en', 'ru')
  * @returns {string}
  */
-export function formatEventPeriod(start: string | Date, end: string | Date, locale: string = 'en'): string {
+export function formatEventPeriod(
+	start: string | Date,
+	end: string | Date,
+	locale: string = 'en',
+	format: 'day' | 'daytime' = 'daytime'
+): string {
 	const dStart = dayjs(start).locale(locale)
 	const dEnd = dayjs(end).locale(locale)
 	const nowYear = dayjs().year()
@@ -89,6 +94,23 @@ export function formatEventPeriod(start: string | Date, end: string | Date, loca
 	const yearFormat = 'YYYY'
 
 	const showYear = periodYear !== nowYear || dEnd.year() !== nowYear
+
+	if (format === 'day') {
+		if (sameDay) {
+			// Jan 16, 2025
+			return `${dStart.format(dateFormat)}${showYear ? ', ' + dStart.format(yearFormat) : ''}`.trim()
+		} else if (sameYear && dStart.month() === dEnd.month()) {
+			// 10 - 15 Jun, 2025
+			const monthLabel = dStart.format(locale === 'ru' ? 'MMM' : 'MMM')
+			return `${dStart.format('D')} - ${dEnd.format('D')} ${monthLabel}${showYear ? ', ' + dStart.format(yearFormat) : ''}`
+		} else if (sameYear) {
+			// Jan 16 - Jan 17, 2025
+			return `${dStart.format(dateFormat)} - ${dEnd.format(dateFormat)}${showYear ? ', ' + dStart.format(yearFormat) : ''}`
+		} else {
+			// Jan 16, 2025 - Jan 17, 2026
+			return `${dStart.format(`${dateFormat}${showYear ? ', ' + yearFormat : ''}`)} - ${dEnd.format(`${dateFormat}${dEnd.year() !== nowYear ? ', ' + yearFormat : ''}`)}`
+		}
+	}
 
 	if (sameDay) {
 		// Jan 16, 2025 10:00-12:00

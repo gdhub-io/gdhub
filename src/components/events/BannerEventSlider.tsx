@@ -1,17 +1,17 @@
 import React from 'react'
 // import { Event, mockEvents } from '@/mock/events.data'
+import { formatEventPeriod } from '@/helpers/format'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Carousel, Button, Tag, theme } from 'antd'
 import axios from 'axios'
-import dayjs from 'dayjs'
 import Image from 'next/image'
 import qs from 'qs'
 
 export const BannerEventSlider = () => {
 	const { token } = theme.useToken()
-	const { t } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 
 	const { data: events } = useQuery(['slider-events'], () =>
 		axios.get<(prismaClient.Event & { schedule: Pick<prismaClient.EventScheduleItem, 'startDate' | 'endDate'>[] })[]>(
@@ -74,10 +74,15 @@ export const BannerEventSlider = () => {
 										marginBottom: 8,
 									}}
 								>
-									{event.schedule[0] ? dayjs(event.schedule[0].startDate).format('DD MMMM') : ''}
+									{formatEventPeriod(
+										event.schedule[0].startDate,
+										event.schedule[event.schedule.length - 1].endDate,
+										getLanguage(),
+										'day'
+									)}
 								</div>
 								<div style={{ fontSize: 38, fontWeight: 800, textShadow: '0 2px 8px #000' }}>{event.title}</div>
-								<div style={{ fontSize: 22, textShadow: '0 2px 8px #000' }}>{event.description}</div>
+								<div style={{ fontSize: 22, textShadow: '0 2px 8px #000' }}>{event.shortDescription}</div>
 								<Button
 									type="primary"
 									size="large"
@@ -92,7 +97,7 @@ export const BannerEventSlider = () => {
 									Details
 								</Button>
 							</div>
-							<Tag
+							{/* <Tag
 								color={event.isFree ? 'green' : 'red'}
 								style={{
 									position: 'absolute',
@@ -103,7 +108,7 @@ export const BannerEventSlider = () => {
 								}}
 							>
 								{event.isFree ? t('event.type.free', 'Free') : t('event.type.paid', 'Paid')}
-							</Tag>
+							</Tag> */}
 						</div>
 					</div>
 				))}

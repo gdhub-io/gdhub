@@ -127,7 +127,7 @@ export const EventCard = ({ event, token }: { event: Event; token: any }) => {
 					>
 						{event.startDate ? event.startDate : ''}
 					</Tag>
-					<Tag
+					{/* <Tag
 						color={event.isFree ? 'green' : 'red'}
 						style={{
 							position: 'absolute',
@@ -138,7 +138,7 @@ export const EventCard = ({ event, token }: { event: Event; token: any }) => {
 						}}
 					>
 						{event.isFree ? t('event.type.free', 'Free') : t('event.type.paid', 'Paid')}
-					</Tag>
+					</Tag> */}
 				</div>
 			}
 		/>
