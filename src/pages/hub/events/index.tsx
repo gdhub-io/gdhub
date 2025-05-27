@@ -18,7 +18,7 @@ const EventsPage: NextPageWithLayout = () => {
 	const { token } = theme.useToken()
 	const { data: session } = useSession()
 
-	const { data: eventCount } = useQuery(
+	const { data: eventCount, isFetched: isCountFetched } = useQuery(
 		['user-event-count', session?.user?.id],
 		() => axios.get('/api/user/event/count').then((res) => res.data),
 		{ enabled: Boolean(session?.user?.id) }
@@ -79,9 +79,9 @@ const EventsPage: NextPageWithLayout = () => {
 							colSpan={{ xs: 24, sm: 12, md: 8, lg: 6, xl: 4 }}
 						/>
 					</>
-				) : (
+				) : isCountFetched ? (
 					<EmptyEventState />
-				)}
+				) : null}
 			</div>
 		</ProtectedLayout>
 	)
