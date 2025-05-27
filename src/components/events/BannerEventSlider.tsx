@@ -46,7 +46,7 @@ const SlideProgressCircle = ({
 	}, [isActive, duration, keyReset])
 
 	const size = 40
-	const stroke = 4
+	const stroke = 2
 	const radius = (size - stroke) / 2
 	const circ = 2 * Math.PI * radius
 	return (
@@ -60,13 +60,14 @@ const SlideProgressCircle = ({
 				justifyContent: 'center',
 			}}
 		>
-			<svg width={size} height={size} style={{ position: 'absolute', top: 0, left: 0 }}>
-				<circle cx={size / 2} cy={size / 2} r={radius} stroke="#e5e6eb" strokeWidth={stroke} fill="none" />
+			<svg width={size} height={size} style={{ position: 'absolute', top: 0, left: -3 }}>
+				<circle cx={size / 2} cy={size / 2} r={radius} stroke="transparent" strokeWidth={stroke} fill="none" />
 				<circle
 					cx={size / 2}
 					cy={size / 2}
 					r={radius}
-					stroke={token.colorPrimary}
+					stroke="#fff"
+					opacity={0.5}
 					strokeWidth={stroke}
 					fill="none"
 					strokeDasharray={circ}
@@ -83,7 +84,7 @@ const SlideProgressCircle = ({
 					zIndex: 2,
 					fontWeight: 800,
 					fontSize: 18,
-					color: '#222',
+					color: '#fff',
 					userSelect: 'none',
 				}}
 			>
@@ -93,7 +94,7 @@ const SlideProgressCircle = ({
 	)
 }
 
-const SLIDE_DURATION = 4000
+const SLIDE_DURATION = 9000
 
 export const BannerEventSlider = () => {
 	const { token } = theme.useToken()
