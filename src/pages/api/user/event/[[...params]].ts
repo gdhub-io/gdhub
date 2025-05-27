@@ -142,15 +142,19 @@ class UserEventUpdateDto {
 class ApiUserEventEndpointHandler {
 	@Get('/count')
 	public async count(@Req() req: NextApiRequestWithUser) {
-		console.log('user', req.user)
-
-		const count = await prisma.event.count({
+		const userCount = await prisma.event.count({
 			where: {
 				createdById: req.user.id,
 			},
 		})
 
-		return { count }
+		const totalPublishedCount = await prisma.event.count({
+			where: {
+				status: prismaClient.$Enums.EventStatus.Published,
+			},
+		})
+
+		return { userCount, totalPublishedCount }
 	}
 
 	@Get('/:id')

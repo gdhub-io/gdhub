@@ -15,21 +15,7 @@ import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import {
-	Button,
-	Dropdown,
-	Image,
-	message,
-	Space,
-	Typography,
-	theme,
-	Alert,
-	Tag,
-	MenuProps,
-	Grid,
-	Popconfirm,
-	Modal,
-} from 'antd'
+import { Button, Dropdown, Image, message, Space, Typography, theme, Alert, Tag, MenuProps, Grid, Modal } from 'antd'
 import type { Breakpoint } from 'antd/es/_util/responsiveObserver'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -320,7 +306,13 @@ const MyEventsPage: NextPageWithLayout = () => {
 						key: 'delete',
 						label: t('event.delete', 'Delete'),
 						danger: true,
-						onClick: () => deleteEvent(record.id),
+						onClick: () =>
+							Modal.confirm({
+								title: t('event.delete.confirm', 'Are you sure you want to delete this event?'),
+								content: <Text>{t('event.delete.confirm', 'This action cannot be undone')}</Text>,
+								onOk: () => deleteEvent(record.id),
+								onCancel: () => {},
+							}),
 					},
 				]
 

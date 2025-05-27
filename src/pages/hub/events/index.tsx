@@ -1,5 +1,5 @@
 import React from 'react'
-import { EventCard, PastEventCard, EventSection, BannerEventSlider } from '@/components/events'
+import { EventCard, PastEventCard, EventSection, BannerEventSlider, EmptyEventState } from '@/components/events'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
@@ -18,7 +18,7 @@ const EventsPage: NextPageWithLayout = () => {
 	const { token } = theme.useToken()
 	const { data: session } = useSession()
 
-	const { data: userEventCount } = useQuery(
+	const { data: eventCount } = useQuery(
 		['user-event-count', session?.user?.id],
 		() => axios.get('/api/user/event/count').then((res) => res.data),
 		{ enabled: Boolean(session?.user?.id) }
@@ -29,7 +29,7 @@ const EventsPage: NextPageWithLayout = () => {
 			title={t('page.events.title', 'Events')}
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
 			extra={
-				!!userEventCount && (
+				!!eventCount?.userCount && (
 					<Link href="/hub/events/my">
 						<Button type="text">{t('page.events.myEvents', 'My Events')}</Button>
 					</Link>
@@ -37,45 +37,51 @@ const EventsPage: NextPageWithLayout = () => {
 			}
 		>
 			<div className={styles.container}>
-				<BannerEventSlider />
+				{Boolean(eventCount?.totalPublishedCount) ? (
+					<>
+						<BannerEventSlider />
 
-				<EventSection
-					title={t('page.events.newKnowledge', 'New Knowledge')}
-					description={t(
-						'page.events.newKnowledgeDescription',
-						'Meetups and workshops for sharing experience, learning, and networking.'
-					)}
-					eventTypes={[prismaClient.$Enums.EventType.Meetup, prismaClient.$Enums.EventType.Workshop]}
-					eventStatus="upcoming"
-					CardComponent={EventCard}
-					token={token}
-				/>
-				<EventSection
-					title={t('page.events.gameJamsAndExperiments', 'Experience & Experiments')}
-					description={t(
-						'page.events.gameJamsAndExperimentsDescription',
-						'Game jams for practice, experiments, and new connections.'
-					)}
-					eventTypes={[prismaClient.$Enums.EventType.GameJam, prismaClient.$Enums.EventType.GameLab]}
-					eventStatus="upcoming"
-					CardComponent={EventCard}
-					token={token}
-				/>
-				<EventSection
-					title={t('page.events.pastEvents', 'Some Past Events')}
-					description={t('page.events.pastEventsDescription', "Here are some of the platform's completed events.")}
-					eventTypes={[
-						prismaClient.$Enums.EventType.Meetup,
-						prismaClient.$Enums.EventType.Workshop,
-						prismaClient.$Enums.EventType.GameJam,
-						prismaClient.$Enums.EventType.GameLab,
-						prismaClient.$Enums.EventType.Conference,
-					]}
-					eventStatus="past"
-					CardComponent={PastEventCard}
-					token={token}
-					colSpan={{ xs: 24, sm: 12, md: 8, lg: 6, xl: 4 }}
-				/>
+						<EventSection
+							title={t('page.events.newKnowledge', 'New Knowledge')}
+							description={t(
+								'page.events.newKnowledgeDescription',
+								'Meetups and workshops for sharing experience, learning, and networking.'
+							)}
+							eventTypes={[prismaClient.$Enums.EventType.Meetup, prismaClient.$Enums.EventType.Workshop]}
+							eventStatus="upcoming"
+							CardComponent={EventCard}
+							token={token}
+						/>
+						<EventSection
+							title={t('page.events.gameJamsAndExperiments', 'Experience & Experiments')}
+							description={t(
+								'page.events.gameJamsAndExperimentsDescription',
+								'Game jams for practice, experiments, and new connections.'
+							)}
+							eventTypes={[prismaClient.$Enums.EventType.GameJam, prismaClient.$Enums.EventType.GameLab]}
+							eventStatus="upcoming"
+							CardComponent={EventCard}
+							token={token}
+						/>
+						<EventSection
+							title={t('page.events.pastEvents', 'Some Past Events')}
+							description={t('page.events.pastEventsDescription', "Here are some of the platform's completed events.")}
+							eventTypes={[
+								prismaClient.$Enums.EventType.Meetup,
+								prismaClient.$Enums.EventType.Workshop,
+								prismaClient.$Enums.EventType.GameJam,
+								prismaClient.$Enums.EventType.GameLab,
+								prismaClient.$Enums.EventType.Conference,
+							]}
+							eventStatus="past"
+							CardComponent={PastEventCard}
+							token={token}
+							colSpan={{ xs: 24, sm: 12, md: 8, lg: 6, xl: 4 }}
+						/>
+					</>
+				) : (
+					<EmptyEventState />
+				)}
 			</div>
 		</ProtectedLayout>
 	)
