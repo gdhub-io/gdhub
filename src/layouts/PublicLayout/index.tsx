@@ -69,15 +69,15 @@ export const PublicLayout = ({
 	const seoParams: NextSeoProps = {
 		title: seo?.title || (typeof title === 'string' ? title : ''),
 		description: seo?.description || subTitle,
-		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		openGraph: {
 			images: [
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
+						: `${process.env.NEXT_PUBLIC_APP_URL}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
 								seo?.description || subTitle || ''
-							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}&${Object.entries(
+							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src}&${Object.entries(
 								ogImageParams || {}
 							)
 								.map(([key, value]) => `${key}=${value}`)

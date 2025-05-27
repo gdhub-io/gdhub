@@ -3,7 +3,7 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import dayjs from 'dayjs'
 import { GetServerSidePropsContext } from 'next'
 
-const websiteUrl = process.env.NEXT_PUBLIC_APP_URI as string
+const websiteUrl = process.env.NEXT_PUBLIC_APP_URL as string
 
 class SiteMapXML {
 	xml: string[] = []
