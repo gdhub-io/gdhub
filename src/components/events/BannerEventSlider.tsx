@@ -6,6 +6,7 @@ import { useTolgee } from '@tolgee/react'
 import { Carousel, Button, theme, Flex } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
+import Link from 'next/link'
 import qs from 'qs'
 import styles from './BannerEventSlider.module.scss'
 
@@ -180,9 +181,11 @@ export const BannerEventSlider = () => {
 									)}
 								</div>
 							</div>
-							<Button type="text" className={styles.readMoreBtn} style={{ marginTop: 'auto' }}>
-								{t('events.banner.read_more', 'Read More')}
-							</Button>
+							<Link href={`/event/${events.data[active].slug}`} target="_blank" style={{ marginTop: 'auto' }}>
+								<Button type="text" className={styles.readMoreBtn}>
+									{t('events.banner.read_more', 'Read More')}
+								</Button>
+							</Link>
 						</Flex>
 					</div>
 				</div>
