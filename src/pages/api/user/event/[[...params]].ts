@@ -228,19 +228,13 @@ class ApiUserEventEndpointHandler {
 
 	@Put('/:id')
 	public async update(@Param('id') id: string, @Body(ValidationPipe) data: UserEventUpdateDto) {
+		const { schedule, ...itemData } = data
+
 		const event = await prisma.event.update({
 			where: {
 				id,
 			},
-			data: {
-				title: data.title,
-				shortDescription: data.shortDescription,
-				description: data.description,
-				url: data.url,
-				image: data.image,
-				isFree: data.isFree,
-				slug: data.slug,
-			},
+			data: itemData,
 		})
 
 		for (const item of data.schedule ?? []) {
@@ -256,6 +250,11 @@ class ApiUserEventEndpointHandler {
 						language: item.language,
 						startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
 						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
+						speakers: {
+							set: item.speakers.map((userId) => ({
+								id: userId,
+							})),
+						},
 					},
 				})
 			} else {

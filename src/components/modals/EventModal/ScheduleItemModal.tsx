@@ -14,20 +14,12 @@ const { RangePicker } = DatePicker
 interface ScheduleItemModalProps {
 	open: boolean
 	onCancel: () => void
-	onSubmit: (item: ScheduleItemFormValues) => void
+	onSubmit: (item: ScheduleItemFormValues) => void | Promise<any>
 	initialValues?: ScheduleItemFormValues
 	isAdmin: boolean
-	currentUser?: { label: string; value: string }
 }
 
-const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
-	open,
-	onCancel,
-	onSubmit,
-	initialValues,
-	isAdmin,
-	currentUser,
-}) => {
+const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, onSubmit, initialValues, isAdmin }) => {
 	const [form] = Form.useForm()
 	const { t } = useTolgee()
 	const { data: session } = useSession()
@@ -35,10 +27,13 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 	const [speakerOptions, setSpeakerOptions] = React.useState<
 		{ label: string; value: string; avatar?: string; speciality?: string }[]
 	>([])
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
 
 	// on open modal, set initial values and refetch speakers
 	useEffect(() => {
 		if (open) {
+			console.log('ScheduleItemModal', 'input', initialValues)
+
 			if (initialValues) {
 				form.setFieldsValue({
 					...initialValues,
@@ -69,18 +64,18 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		dataUpdatedAt: speakersDataUpdatedAt,
 		refetch: refetchSpeakers,
 	} = useQuery(
-		['speakers-search', searchSpeakersValue],
+		['speakers-search', searchSpeakersValue, initialValues?.speakers?.length],
 		() =>
 			axios.get('/api/speakers/search', {
 				params: { query: searchSpeakersValue, ids: initialValues?.speakers?.map((s) => s.id) },
 				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
 			}),
 		{
-			enabled: !!searchSpeakersValue && isAdmin,
+			enabled:
+				(!!searchSpeakersValue || !!initialValues?.speakers?.length) &&
+				(isAdmin || process.env.NODE_ENV === 'development'),
 		}
 	)
-
-	console.log('isAdmin', isAdmin)
 
 	const { data: workDirections } = useQuery(['work-directions'], () =>
 		axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions').then((res) => res.data)
@@ -107,9 +102,9 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		try {
 			const values = await form.validateFields()
 
-			console.log('values', values)
+			console.log(console.log('ScheduleItemModal', 'input', initialValues))
 
-			onSubmit({
+			const data = {
 				id: initialValues?.id || null,
 				title: values.title,
 				description: values.description,
@@ -120,7 +115,17 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				directionId: values.directionId,
 				format: values.format,
 				language: values.language,
-			})
+			}
+
+			console.log('ScheduleItemModal', 'response', data)
+
+			setIsSubmitting(true)
+
+			debugger
+
+			await onSubmit(data)
+
+			setIsSubmitting(false)
 
 			form.resetFields()
 		} catch (err) {
@@ -140,6 +145,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 			okText={t('common.save', 'Save')}
 			cancelText={t('common.cancel', 'Cancel')}
 			destroyOnClose
+			loading={isSubmitting}
 		>
 			<Form
 				form={form}

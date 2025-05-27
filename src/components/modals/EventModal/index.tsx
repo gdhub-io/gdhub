@@ -590,7 +590,6 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 				onSubmit={handleScheduleItemModalSubmit}
 				initialValues={editingScheduleItemId ? schedule.find((i) => i.id === editingScheduleItemId) : undefined}
 				isAdmin={isAdmin}
-				currentUser={currentUser ? { label: currentUser.name, value: currentUser.id } : undefined}
 			/>
 		</Modal>
 	)
