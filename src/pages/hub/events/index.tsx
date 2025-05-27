@@ -48,7 +48,7 @@ const EventsPage: NextPageWithLayout = () => {
 								'Meetups and workshops for sharing experience, learning, and networking.'
 							)}
 							eventTypes={[prismaClient.$Enums.EventType.Meetup, prismaClient.$Enums.EventType.Workshop]}
-							eventStatus="upcoming"
+							timeStatus={['ongoing', 'upcoming']}
 							CardComponent={EventCard}
 							token={token}
 						/>
@@ -59,7 +59,7 @@ const EventsPage: NextPageWithLayout = () => {
 								'Game jams for practice, experiments, and new connections.'
 							)}
 							eventTypes={[prismaClient.$Enums.EventType.GameJam, prismaClient.$Enums.EventType.GameLab]}
-							eventStatus="upcoming"
+							timeStatus={['ongoing', 'upcoming']}
 							CardComponent={EventCard}
 							token={token}
 						/>
@@ -73,7 +73,7 @@ const EventsPage: NextPageWithLayout = () => {
 								prismaClient.$Enums.EventType.GameLab,
 								prismaClient.$Enums.EventType.Conference,
 							]}
-							eventStatus="past"
+							timeStatus={['past']}
 							CardComponent={PastEventCard}
 							token={token}
 							colSpan={{ xs: 24, sm: 12, md: 8, lg: 6, xl: 4 }}

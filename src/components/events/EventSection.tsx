@@ -9,7 +9,7 @@ interface EventSectionProps {
 	title: string
 	description?: string
 	eventTypes: prismaClient.$Enums.EventType[]
-	eventStatus: 'upcoming' | 'ongoing' | 'past'
+	timeStatus: ('upcoming' | 'ongoing' | 'past')[]
 	CardComponent: React.ComponentType<{
 		event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] }
 		token: any
@@ -22,7 +22,7 @@ export const EventSection = ({
 	title,
 	description,
 	eventTypes,
-	eventStatus,
+	timeStatus,
 	CardComponent,
 	token,
 	colSpan,
@@ -30,11 +30,12 @@ export const EventSection = ({
 	const now = new Date()
 
 	const { data: events, isLoading } = useQuery({
-		queryKey: ['events', eventTypes, eventStatus],
+		queryKey: ['events', eventTypes, timeStatus],
 		queryFn: () => {
 			return axios.get(`/api/events`, {
 				params: {
 					type: eventTypes,
+					timeStatus,
 					withDates: true,
 				},
 				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),

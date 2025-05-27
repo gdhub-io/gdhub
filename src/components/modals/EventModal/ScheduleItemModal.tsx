@@ -121,8 +121,6 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, o
 
 			setIsSubmitting(true)
 
-			debugger
-
 			await onSubmit(data)
 
 			setIsSubmitting(false)
