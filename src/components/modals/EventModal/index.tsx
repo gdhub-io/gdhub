@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ModernTable from '@/components/ModernTable'
 import { formatEventPeriod } from '@/helpers/format'
+import { hasRole } from '@/helpers/user'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
@@ -66,8 +67,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 	const [imageUrl, setImageUrl] = useState<string | undefined>(initialValues?.image)
 	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false)
 	const { data: session } = useSession()
-	const isAdmin =
-		session?.user?.role === 'Admin' || session?.user?.role === 'admin' || process.env.NODE_ENV === 'development'
+	const isAdmin = hasRole(prismaClient.UserRole.Admin, session) || process.env.NODE_ENV === 'development'
 	const isBigEvent =
 		eventType === prismaClient.$Enums.EventType.GameLab || eventType === prismaClient.$Enums.EventType.Conference
 	const currentUser = session?.user
