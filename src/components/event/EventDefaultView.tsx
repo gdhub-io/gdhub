@@ -63,7 +63,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 				</Flex>
 
 				<Divider />
-				<Title level={2}>{t('event.speakers', 'Speakers')}</Title>
+				<Title level={2}>{t('event.schedule', 'Schedule')}</Title>
 				<div
 					style={{
 						background: '#fff',
@@ -84,28 +84,54 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 								style={{
 									borderBottom: idx !== schedule.length - 1 ? '1px solid #f0f0f0' : 'none',
 									padding: '18px 20px',
+									flexDirection: screens.md ? 'row' : 'column',
+									alignItems: screens.md ? 'stretch' : 'flex-start',
 								}}
 							>
-								<div
-									style={{
-										width: 120,
-										textAlign: 'right',
-										fontWeight: 600,
-										fontSize: 14,
-										color: '#222',
-										flexShrink: 0,
-									}}
-								>
-									{schedule.length === 1 ? (
-										formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')
-									) : (
-										<>
-											<span>{item.formattedStartTime24}</span>
-											<span style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>{item.formattedAMPM}</span>
-										</>
+								{/* Дата/время для больших экранов */}
+								{screens.md && (
+									<div
+										style={{
+											width: 120,
+											textAlign: 'right',
+											fontWeight: 600,
+											fontSize: 14,
+											color: '#222',
+											flexShrink: 0,
+										}}
+									>
+										{schedule.length === 1 ? (
+											formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')
+										) : (
+											<>
+												<span>{item.formattedStartTime24}</span>
+												<span style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>{item.formattedAMPM}</span>
+											</>
+										)}
+									</div>
+								)}
+
+								<Flex vertical gap={0} style={{ flex: 1, minWidth: 0, width: '100%' }}>
+									{/* Дата/время для малых экранов */}
+									{!screens.md && (
+										<div
+											style={{
+												fontWeight: 600,
+												fontSize: 14,
+												color: '#222',
+												marginBottom: 8,
+											}}
+										>
+											{schedule.length === 1 ? (
+												formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')
+											) : (
+												<>
+													<span>{item.formattedStartTime24}</span>
+													<span style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>{item.formattedAMPM}</span>
+												</>
+											)}
+										</div>
 									)}
-								</div>
-								<Flex vertical gap={0} style={{ flex: 1, minWidth: 0 }}>
 									<div
 										style={{
 											fontWeight: 600,
@@ -172,7 +198,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 				)}
 			</div>
 			{/* Правая колонка: картинка */}
-			{event.image && (
+			{event.image && screens.md && (
 				<div style={{ flex: 'auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
 					<div
 						style={{
