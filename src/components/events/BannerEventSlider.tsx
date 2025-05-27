@@ -159,7 +159,12 @@ export const BannerEventSlider = () => {
 				</div>
 				<div style={{ width: '100%' }}>
 					<div className={styles.card}>
-						<Flex vertical gap={4} className={styles.cardContent} style={{ opacity: fadeContent ? 1 : 0 }}>
+						<Flex
+							vertical
+							gap={4}
+							className={styles.cardContent}
+							style={{ opacity: fadeContent ? 1 : 0, height: '100%' }}
+						>
 							<div>
 								<div className={styles.cardSubtitle}>{t('events.banner.subtitle', 'Event')}</div>
 								<div className={styles.cardTitle}>{events.data[active].title}</div>
@@ -175,7 +180,7 @@ export const BannerEventSlider = () => {
 									)}
 								</div>
 							</div>
-							<Button type="link" className={styles.readMoreBtn}>
+							<Button type="text" className={styles.readMoreBtn} style={{ marginTop: 'auto' }}>
 								{t('events.banner.read_more', 'Read More')}
 							</Button>
 						</Flex>
