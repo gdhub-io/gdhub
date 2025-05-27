@@ -77,10 +77,10 @@ export default async function handler(request: NextRequest) {
 						>
 							<span
 								style={{
-									color: '#222',
+									color: '#fff',
 									fontSize: 36,
 									fontWeight: 700,
-									background: 'rgba(255,255,255,0.92)',
+									background: '#F15541',
 									borderRadius: 12,
 									padding: '6px 20px',
 									boxShadow: '0 2px 12px #0002',
@@ -229,7 +229,7 @@ export default async function handler(request: NextRequest) {
 						style={{
 							paddingTop: 32,
 							color: '#fff',
-							fontSize: 82,
+							fontSize: title && title.length > 52 ? 48 : 82,
 							lineHeight: 1,
 							paddingLeft: 64,
 							paddingRight: 64,
