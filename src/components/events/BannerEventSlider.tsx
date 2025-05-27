@@ -5,7 +5,7 @@ import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft'
 import { FaArrowRight } from '@react-icons/all-files/fa/FaArrowRight'
 import { useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
-import { Carousel, Button, theme } from 'antd'
+import { Carousel, Button, theme, Flex } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
 import qs from 'qs'
@@ -60,7 +60,7 @@ const SlideProgressCircle = ({
 				justifyContent: 'center',
 			}}
 		>
-			<svg width={size} height={size} style={{ position: 'absolute', top: 0, left: -3 }}>
+			<svg width={size} height={size} style={{ position: 'absolute', top: 0, left: -1 }}>
 				<circle cx={size / 2} cy={size / 2} r={radius} stroke="transparent" strokeWidth={stroke} fill="none" />
 				<circle
 					cx={size / 2}
@@ -142,10 +142,143 @@ export const BannerEventSlider = () => {
 				borderRadius: 24,
 				overflow: 'hidden',
 				boxShadow: token.boxShadowSecondary,
+				position: 'relative',
 			}}
 		>
-			{/* Left: Image */}
-			<div style={{ flex: 1.5, position: 'relative', minHeight: 480, overflow: 'hidden' }}>
+			{/* Vertical nav moved to left edge */}
+			<div
+				style={{
+					position: 'absolute',
+					top: 80,
+					left: 20,
+					bottom: 80,
+					width: 60,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					gap: 12,
+					zIndex: 10,
+				}}
+			>
+				{events.data.map((_, idx) => (
+					<div
+						key={idx}
+						style={{
+							width: 38,
+							height: 38,
+							borderRadius: '50%',
+							background: 'transparent',
+							color: idx === active ? token.colorPrimary : token.colorTextLightSolid,
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							fontWeight: 700,
+							fontSize: 16,
+							cursor: 'pointer',
+							// border: idx === active ? `2px solid ${token.colorPrimary}` : '2px solid transparent',
+							position: 'relative',
+						}}
+						onClick={() => {
+							carouselRef.current?.goTo(idx)
+							setActive(idx)
+						}}
+					>
+						<SlideProgressCircle isActive={idx === active} duration={SLIDE_DURATION} keyReset={active}>
+							{`0${idx + 1}`}
+						</SlideProgressCircle>
+					</div>
+				))}
+				<div
+					style={{
+						writingMode: 'vertical-rl',
+						transform: 'rotate(180deg)',
+						marginTop: 24,
+						letterSpacing: 2,
+						fontWeight: 600,
+						fontSize: 14,
+						opacity: 0.7,
+						color: token.colorTextLightSolid,
+					}}
+				>
+					{t('events.banner.vertical_text', 'SLIDES')}
+				</div>
+			</div>
+			{/* Left: Content (красный блок) */}
+			<div
+				style={{
+					flex: 1,
+					background: '#111111',
+					color: token.colorTextLightSolid,
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					position: 'relative',
+					padding: '48px 40px 32px 80px',
+					minWidth: 420,
+				}}
+			>
+				<div style={{ position: 'absolute', top: 32, left: 40, fontSize: 18, letterSpacing: 2, opacity: 0.7 }}>
+					{t('events.banner.see_whats_going_on', "SEE WHAT'S GOING ON")}
+				</div>
+				<div style={{ display: 'flex', alignItems: 'flex-start', gap: 32 }}>
+					{/* Main card (fade only content) */}
+					<div
+						style={{
+							flex: 1,
+							background: token.colorBgContainer,
+							color: token.colorText,
+							borderRadius: 16,
+							boxShadow: token.boxShadowTertiary,
+							padding: '32px 32px 24px 32px',
+							minWidth: 420,
+							minHeight: 320,
+							display: 'flex',
+							flexDirection: 'column',
+							gap: 16,
+							overflow: 'hidden',
+							position: 'relative',
+							right: -10,
+							zIndex: 4,
+						}}
+					>
+						<Flex
+							vertical
+							gap={4}
+							style={{
+								height: '100%',
+								transition: 'opacity 0.4s',
+								opacity: fadeContent ? 1 : 0,
+								display: 'flex',
+								flexDirection: 'column',
+								justifyContent: 'space-between',
+							}}
+						>
+							<Flex vertical gap={4}>
+								<div style={{ fontWeight: 600, fontSize: 16, color: token.colorPrimary, marginBottom: 4 }}>
+									{t('events.banner.subtitle', "Let's see what you got")}
+								</div>
+								<div style={{ fontSize: 38, fontWeight: 800, marginBottom: 8 }}>{events.data[active].title}</div>
+								<div style={{ fontSize: 16, color: token.colorTextDescription, marginBottom: 8 }}>
+									{events.data[active].shortDescription}
+								</div>
+								<div style={{ fontSize: 15, color: token.colorText, marginBottom: 8 }}>
+									{formatEventPeriod(
+										events.data[active].schedule[0].startDate,
+										events.data[active].schedule[events.data[active].schedule.length - 1].endDate,
+										getLanguage(),
+										'day'
+									)}
+								</div>
+							</Flex>
+							<Button type="link" style={{ padding: 0, fontWeight: 700, fontSize: 16, alignSelf: 'flex-start' }}>
+								Read More
+							</Button>
+						</Flex>
+					</div>
+				</div>
+			</div>
+			{/* Right: Image */}
+			<div style={{ flex: 3, position: 'relative', minHeight: 480, overflow: 'hidden' }}>
 				{/* Previous image (underneath) */}
 				<Image
 					key={events.data[prevActive].id + '-prev'}
@@ -186,138 +319,28 @@ export const BannerEventSlider = () => {
 					style={{
 						position: 'absolute',
 						inset: 0,
-						background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0) 100%)',
+						background: 'linear-gradient(90deg, #111111 0%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0) 100%)',
 						zIndex: 3,
 					}}
 				/>
 			</div>
-			{/* Right: Content */}
-			<div
+			{/* Bottom nav */}
+			{/* <div
 				style={{
-					flex: 1,
-					background: token.colorPrimary,
-					color: token.colorTextLightSolid,
+					position: 'absolute',
+					bottom: 24,
+					left: 40,
+					right: 40,
 					display: 'flex',
-					flexDirection: 'column',
-					justifyContent: 'center',
-					position: 'relative',
-					padding: '48px 40px 32px 40px',
-					minWidth: 420,
+					alignItems: 'center',
+					justifyContent: 'space-between',
 				}}
 			>
-				<div style={{ position: 'absolute', top: 32, right: 40, fontSize: 18, letterSpacing: 2, opacity: 0.7 }}>
-					{t('events.banner.see_whats_going_on', "SEE WHAT'S GOING ON")}
+				<div style={{ display: 'flex', gap: 12 }}>
+					<Button shape="circle" icon={<FaArrowLeft size={18} />} onClick={() => carouselRef.current?.prev()} />
+					<Button shape="circle" icon={<FaArrowRight size={18} />} onClick={() => carouselRef.current?.next()} />
 				</div>
-				<div style={{ display: 'flex', alignItems: 'flex-start', gap: 32 }}>
-					{/* Vertical nav */}
-					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginTop: 8 }}>
-						{events.data.map((_, idx) => (
-							<div
-								key={idx}
-								style={{
-									width: 38,
-									height: 38,
-									borderRadius: '50%',
-									background: 'transparent',
-									color: idx === active ? token.colorPrimary : token.colorTextLightSolid,
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									fontWeight: 700,
-									fontSize: 16,
-									cursor: 'pointer',
-									border: idx === active ? `2px solid ${token.colorPrimary}` : '2px solid transparent',
-									position: 'relative',
-								}}
-								onClick={() => {
-									carouselRef.current?.goTo(idx)
-									setActive(idx)
-								}}
-							>
-								<SlideProgressCircle isActive={idx === active} duration={SLIDE_DURATION} keyReset={active}>
-									{`0${idx + 1}`}
-								</SlideProgressCircle>
-							</div>
-						))}
-						<div
-							style={{
-								writingMode: 'vertical-rl',
-								transform: 'rotate(180deg)',
-								marginTop: 24,
-								letterSpacing: 2,
-								fontWeight: 600,
-								fontSize: 14,
-								opacity: 0.7,
-							}}
-						>
-							{t('events.banner.vertical_text', 'SLIDES')}
-						</div>
-					</div>
-					{/* Main card (fade only content) */}
-					<div
-						style={{
-							flex: 1,
-							background: token.colorBgContainer,
-							color: token.colorText,
-							borderRadius: 16,
-							boxShadow: token.boxShadowTertiary,
-							padding: '32px 32px 24px 32px',
-							minWidth: 320,
-							minHeight: 320,
-							display: 'flex',
-							flexDirection: 'column',
-							gap: 16,
-							overflow: 'hidden',
-						}}
-					>
-						<div
-							style={{
-								transition: 'opacity 0.4s',
-								opacity: fadeContent ? 1 : 0,
-							}}
-						>
-							<div style={{ fontWeight: 600, fontSize: 16, color: token.colorPrimary, marginBottom: 4 }}>
-								{t('events.banner.subtitle', "Let's see what you got")}
-							</div>
-							<div style={{ fontSize: 38, fontWeight: 800, marginBottom: 8 }}>{events.data[active].title}</div>
-							<div style={{ fontSize: 16, color: token.colorTextDescription, marginBottom: 8 }}>
-								{events.data[active].shortDescription}
-							</div>
-							<div style={{ fontSize: 15, color: token.colorText, marginBottom: 8 }}>
-								{formatEventPeriod(
-									events.data[active].schedule[0].startDate,
-									events.data[active].schedule[events.data[active].schedule.length - 1].endDate,
-									getLanguage(),
-									'day'
-								)}
-							</div>
-							<Button type="link" style={{ padding: 0, fontWeight: 700, fontSize: 16, alignSelf: 'flex-start' }}>
-								Read More
-							</Button>
-						</div>
-					</div>
-				</div>
-				{/* Bottom nav */}
-				<div
-					style={{
-						position: 'absolute',
-						bottom: 24,
-						left: 40,
-						right: 40,
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-					}}
-				>
-					<div style={{ fontWeight: 600, fontSize: 16, letterSpacing: 1 }}>
-						{t('events.banner.more_events', 'MORE EVENTS')}
-					</div>
-					<div style={{ display: 'flex', gap: 12 }}>
-						<Button shape="circle" icon={<FaArrowLeft size={18} />} onClick={() => carouselRef.current?.prev()} />
-						<Button shape="circle" icon={<FaArrowRight size={18} />} onClick={() => carouselRef.current?.next()} />
-					</div>
-				</div>
-			</div>
+			</div> */}
 			{/* Hidden Carousel for logic */}
 			<Carousel
 				ref={carouselRef}
