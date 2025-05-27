@@ -12,7 +12,12 @@ const { Text } = Typography
 export const HeroStats = ({
 	stats,
 }: {
-	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
+	stats: {
+		usersCount: number | null
+		specialitiesCount: number | null
+		projectsCount: number | null
+		vacanciesCount: number | null
+	}
 }) => {
 	const screen = Grid.useBreakpoint()
 

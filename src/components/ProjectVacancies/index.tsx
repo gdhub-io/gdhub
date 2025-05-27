@@ -3,7 +3,7 @@ import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowDownRight } from '@react-icons/all-files/go/GoArrowDownRight'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Space, Row, Col, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -73,11 +73,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 						<span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleEditVacancy(record.id)}>
 							{value}
 						</span>{' '}
-						{record.status == 'draft' && (
-							<Tag color="lime">
-								<T keyName={record.status} />
-							</Tag>
-						)}
+						{record.status == 'draft' && <Tag color="lime">{t(`vacancy.status.${record.status}`, record.status)}</Tag>}
 					</>
 				) : (
 					<span style={{ fontWeight: 'bold' }}>{value}</span>
@@ -105,14 +101,10 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 			responsive: ['md'],
 			render: (value, record) =>
 				session ? (
-					<Button onClick={() => handleEditVacancy(record.id)}>
-						<T>Details</T>
-					</Button>
+					<Button onClick={() => handleEditVacancy(record.id)}>{t('vacancy.details', 'Details')}</Button>
 				) : (
 					<Link href={`/signin?callbackUrl=${router.asPath}`}>
-						<Button>
-							<T>Enter to see</T>
-						</Button>
+						<Button>{t('vacancy.enterToSee', 'Enter to see')}</Button>
 					</Link>
 				),
 		},
@@ -143,19 +135,13 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	return (
 		<>
 			<Space direction="vertical" style={{ width: '100%' }}>
-				<Title level={2}>
-					<T>Vacancies</T>
-				</Title>
+				<Title level={2}>{t('vacancy.title', 'Vacancies')}</Title>
 				{!!projectVacancies?.data.length && (
 					<p style={{ fontSize: 12 }}>
-						<T keyName="vacancies.list.description">
-							All project participants, responding to vacancies, accept the conditions that for the period of
-							participation in the selected project, work is not paid until the moment of receipt of funding or if,
-							other conditions are not indicated in vacancies.The time you spent is investment in the project that you
-							choose.From how every member teams, and the team as a whole, will work on the project, depends whether
-							these investments will be able to convert In money or not.In any case, your resume will become more
-							significant when it will have information about participation In real projects.
-						</T>
+						{t(
+							'vacancies.list.description',
+							'All project participants, responding to vacancies, accept the conditions that for the period of participation in the selected project, work is not paid until the moment of receipt of funding or if, other conditions are not indicated in vacancies.The time you spent is investment in the project that you choose.From how every member teams, and the team as a whole, will work on the project, depends whether these investments will be able to convert In money or not.In any case, your resume will become more significant when it will have information about participation In real projects.'
+						)}
 					</p>
 				)}
 			</Space>
@@ -174,7 +160,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 										].join(' ')}
 									>
 										<div className={styles.validDate}>
-											<T>Valid until</T> {dayjs(vacancy.finishedAt).format('ll')}
+											{t('vacancy.validUntil', 'Valid until')} {dayjs(vacancy.finishedAt).format('ll')}
 										</div>
 										<div className={styles.content}>
 											<Title level={2} className={styles.title}>
@@ -203,9 +189,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 					/>
 				</>
 			) : (
-				<p>
-					<T>There are no open vacancies at the moment</T>
-				</p>
+				<p>{t('vacancy.noOpenVacancies', 'There are no open vacancies at the moment')}</p>
 			)}
 		</>
 	)

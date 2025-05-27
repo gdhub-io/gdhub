@@ -279,7 +279,7 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 						</Form.Item>
 					)}
 
-					{showPromiseFields && (
+					{!!showPromiseFields && (
 						<Card
 							className={styles.promiseCard}
 							title={t('Equity Promise')}

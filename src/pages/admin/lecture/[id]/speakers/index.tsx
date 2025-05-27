@@ -35,7 +35,7 @@ const LectureSpeakersAdminPage: NextPageWithLayout = () => {
 		{ enabled: !!router.query.id }
 	)
 
-	const { mutate: updateStage, isLoading: isUpdatig } = useMutation(
+	const { mutateAsync: updateStage, isLoading: isUpdatig } = useMutation(
 		({ id, isSpeaker }: any) => axios.put(`/api/admin/lecture/speaker`, { isSpeaker }, { params: { id } }),
 		{
 			onError() {

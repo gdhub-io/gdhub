@@ -142,7 +142,7 @@ const PostSkeleton = () => {
 		<div className={styles.postCard}>
 			<div className={styles.postContent}>
 				<div className={styles.postImage}>
-					<Skeleton.Image active style={{ width: '100%', height: '100%' }} />
+					<Skeleton.Node active style={{ width: 240, height: 240 }} />
 				</div>
 				<div className={styles.textContent}>
 					<Skeleton.Input active style={{ width: '70%', height: 24, marginBottom: 8 }} />

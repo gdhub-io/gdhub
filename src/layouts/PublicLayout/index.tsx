@@ -41,6 +41,8 @@ interface PublicLayoutProps {
 	backgroundImage?: string
 	extra?: ReactNode
 	styles?: Record<string, object>
+	ogImageType?: string
+	ogImageParams?: Record<string, string>
 }
 
 const { Header, Footer, Content } = Layout
@@ -54,6 +56,8 @@ export const PublicLayout = ({
 	backgroundImage,
 	extra,
 	styles: layoutStyles,
+	ogImageType,
+	ogImageParams,
 }: PublicLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage } = useTolgee()
@@ -65,15 +69,19 @@ export const PublicLayout = ({
 	const seoParams: NextSeoProps = {
 		title: seo?.title || (typeof title === 'string' ? title : ''),
 		description: seo?.description || subTitle,
-		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		openGraph: {
 			images: [
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
+						: `${process.env.NEXT_PUBLIC_APP_URL}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
 								seo?.description || subTitle || ''
-							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src}&${Object.entries(
+								ogImageParams || {}
+							)
+								.map(([key, value]) => `${key}=${value}`)
+								.join('&')}`,
 					alt: 'Indie Game Developers Page Cover',
 				},
 			],
@@ -243,20 +251,20 @@ export const PublicLayout = ({
 					),
 					key: '/hub/members',
 				},
-				{
-					label: (
-						<Link href="/hub/lectures" title={t('Community Lectures')}>
-							{screens.lg ? (
-								<Button type="text">
-									<T>Lectures</T>
-								</Button>
-							) : (
-								<T>Lectures</T>
-							)}
-						</Link>
-					),
-					key: '/hub/lectures',
-				},
+				// {
+				// 	label: (
+				// 		<Link href="/hub/lectures" title={t('Community Lectures')}>
+				// 			{screens.lg ? (
+				// 				<Button type="text">
+				// 					<T>Lectures</T>
+				// 				</Button>
+				// 			) : (
+				// 				<T>Lectures</T>
+				// 			)}
+				// 		</Link>
+				// 	),
+				// 	key: '/hub/lectures',
+				// },
 				...menu.slice(1),
 			]
 		}
@@ -302,7 +310,7 @@ export const PublicLayout = ({
 
 	const setBackground = useCallback(() => {
 		if (title && !backgroundImage) return `url(${PublicHeaderBg.src})`
-		if (title && backgroundImage)
+		if (backgroundImage)
 			return `linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.3)), url(${backgroundImage})`
 	}, [title, backgroundImage])
 
@@ -320,8 +328,10 @@ export const PublicLayout = ({
 						className={styles.header}
 						style={{
 							backgroundImage: setBackground(),
+							position: 'relative',
 						}}
 					>
+						{backgroundImage && <div className={styles.headerBlur} />}
 						<MainHeader />
 						<div className={styles.titleContainer}>
 							<Flex align="center" gap={16}>

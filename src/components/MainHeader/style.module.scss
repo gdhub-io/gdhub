@@ -13,6 +13,8 @@
     display: inline-flex;
     width: auto;
     height: 50px;
+    position: relative;
+    z-index: 1;
   }
 
   .topLine {
@@ -35,7 +37,7 @@
 
     :global {
       .ant-menu-item {
-        padding-inline: 24px;
+        padding-inline: 16px;
         margin-inline: 4px;
         border-radius: 4px;
         transition: all 0.3s ease;

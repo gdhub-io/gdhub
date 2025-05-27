@@ -43,6 +43,7 @@ interface ProtectedLayoutProps {
 	seo?: NextSeoProps
 	backgroundImage?: string
 	showBackButton?: boolean
+	backButtonUrl?: string
 	projectName?: string
 	extra?: ReactNode
 }
@@ -50,7 +51,15 @@ interface ProtectedLayoutProps {
 const { Header, Content } = Layout
 const { Title, Text } = Typography
 
-export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton = false }: ProtectedLayoutProps) => {
+export const ProtectedLayout = ({
+	title,
+	subTitle,
+	seo,
+	children,
+	showBackButton = false,
+	backButtonUrl,
+	extra,
+}: ProtectedLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage, changeLanguage } = useTolgee()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
@@ -61,7 +70,7 @@ export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton
 	const seoSettings: NextSeoProps = {
 		title,
 		description: subTitle,
-		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		nofollow: true,
 		noindex: true,
 		...seo,
@@ -225,11 +234,19 @@ export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton
 				</Link>
 			),
 		},
+		// {
+		// 	key: '/hub/lectures',
+		// 	label: (
+		// 		<Link href="/hub/lectures">
+		// 			<T keyName="app.user.menu.lectures">Lectures</T>
+		// 		</Link>
+		// 	),p
+		// },
 		{
-			key: '/hub/lectures',
+			key: '/hub/events',
 			label: (
-				<Link href="/hub/lectures">
-					<T keyName="app.user.menu.lectures">Lectures</T>
+				<Link href="/hub/events">
+					<T keyName="app.user.menu.events">Events</T>
 				</Link>
 			),
 		},
@@ -327,16 +344,28 @@ export const ProtectedLayout = ({ title, subTitle, seo, children, showBackButton
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							<Flex align="center" gap={16} style={{ marginBottom: 24 }}>
-								{showBackButton && (
-									<Button
-										type="text"
-										icon={<ArrowLeftOutlined />}
-										onClick={() => router.back()}
-										style={{ padding: 0 }}
-									/>
-								)}
-								{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+							<Flex align="center" justify="space-between" gap={16} style={{ marginBottom: 24 }} wrap={true}>
+								<Space>
+									{showBackButton && (
+										<>
+											{backButtonUrl ? (
+												<Link href={backButtonUrl}>
+													<Button type="text" icon={<ArrowLeftOutlined />} style={{ padding: 0 }} />
+												</Link>
+											) : (
+												<Button
+													type="text"
+													icon={<ArrowLeftOutlined />}
+													onClick={() => router.back()}
+													style={{ padding: 0 }}
+												/>
+											)}
+										</>
+									)}
+									{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+								</Space>
+
+								{extra}
 							</Flex>
 
 							{!!subTitle && !showBackButton && <div>{subTitle}</div>}

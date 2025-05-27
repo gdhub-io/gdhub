@@ -9,9 +9,9 @@ class ApiSpecialityHandler {
 	constructor() {}
 
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser) {
+	public async get(@Req() req: NextApiRequestWithUser, @Query('id') id: string) {
 		const speciality = await prisma.speciality.findFirst({
-			where: { userId: req.user.id },
+			where: { userId: req.user.id, id },
 			include: { direction: true },
 		})
 

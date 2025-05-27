@@ -18,7 +18,7 @@ export const SpecialityCreated = () => {
 	})
 
 	// Мутация для обработки ожидающего приглашения
-	const { mutate: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
+	const { mutateAsync: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
 		(invitationId: string) =>
 			axios.get(`/api/user/project/team/complete-pending-invitation?invitationId=${invitationId}`),
 		{

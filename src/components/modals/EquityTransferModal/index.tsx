@@ -48,7 +48,7 @@ const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMem
 	)
 
 	// Мутация для передачи доли
-	const { mutate: transferEquity, isLoading: isTransferring } = useMutation(
+	const { mutateAsync: transferEquity, isLoading: isTransferring } = useMutation(
 		(data: TransferFormData) =>
 			axios.post('/api/user/project/equity/transaction/transfer', {
 				projectId,

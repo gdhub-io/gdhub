@@ -241,7 +241,7 @@ class ApiUserTeamVacancyHandler {
 				payload: {
 					title: 'New job response',
 					message: `for vacancy "${vacancy.title}" from ${candidate.user.name}`,
-					redirectUrl: process.env.NEXT_PUBLIC_APP_URI + '/my/projects/' + vacancy.team!.project?.id,
+					redirectUrl: process.env.NEXT_PUBLIC_APP_URL + '/my/projects/' + vacancy.team!.project?.id,
 				},
 			})
 

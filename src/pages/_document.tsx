@@ -10,7 +10,7 @@ import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/do
 // 					<link rel="icon" href="/favicon.svg" />
 // 				</Head>
 // 				<body>
-// 					{process.env.NEXT_PUBLIC_APP_URI !== 'http://localhost:3000' && (
+// 					{process.env.NEXT_PUBLIC_APP_URL !== 'http://localhost:3000' && (
 // 						<noscript>
 // 							<iframe
 // 								src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

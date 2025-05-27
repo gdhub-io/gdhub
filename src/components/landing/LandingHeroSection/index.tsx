@@ -12,9 +12,20 @@ const { Title, Text } = Typography
 export const LandingHeroSection = ({
 	stats,
 }: {
-	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
+	stats: {
+		usersCount: number | null
+		specialitiesCount: number | null
+		projectsCount: number | null
+		vacanciesCount: number | null
+	}
 }) => {
 	const screens = Grid.useBreakpoint()
+
+	const hasEmptyStats =
+		stats.usersCount === null ||
+		stats.specialitiesCount === null ||
+		stats.projectsCount === null ||
+		stats.vacanciesCount === null
 
 	return (
 		<div
@@ -72,7 +83,7 @@ export const LandingHeroSection = ({
 						</Space>
 					</Col>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }} style={{ position: 'relative' }}>
-						<HeroStats stats={stats} />
+						{!hasEmptyStats && <HeroStats stats={stats} />}
 					</Col>
 				</Row>
 			</div>

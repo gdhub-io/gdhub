@@ -1,0 +1,192 @@
+.container {
+	width: 100%;
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 32px 16px;
+}
+
+.headerRow {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 24px;
+}
+
+.createBtn {
+	padding: 10px 24px;
+	font-weight: 600;
+	background: #07ad92;
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background 0.2s;
+	font-size: 16px;
+}
+.createBtn:hover {
+	background: #008775;
+}
+
+.mainEventBlock {
+	background: linear-gradient(90deg, #e0f7fa 0%, #b2ebf2 100%);
+	border-radius: 16px;
+	box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+	padding: 40px 32px 32px 32px;
+	margin-bottom: 40px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+.mainEventType {
+	font-size: 18px;
+	font-weight: 700;
+	color: #0288d1;
+	margin-bottom: 8px;
+}
+.mainEventTitle {
+	font-size: 32px;
+	font-weight: 800;
+	margin-bottom: 12px;
+	color: #222;
+}
+.mainEventDates {
+	font-size: 16px;
+	color: #555;
+	margin-bottom: 16px;
+}
+.mainEventDesc {
+	font-size: 18px;
+	color: #333;
+	line-height: 1.5;
+}
+
+.section {
+	margin-bottom: 32px;
+}
+.sectionTitle {
+	margin-bottom: 16px;
+	font-size: 22px;
+	font-weight: 700;
+	color: #222;
+}
+.eventsList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+.eventCard {
+	border: 1px solid #eee;
+	border-radius: 8px;
+	padding: 18px 20px;
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	transition: box-shadow 0.2s;
+}
+.eventCard:hover {
+	box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.eventCardHeader {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+.eventType {
+	font-weight: 700;
+	color: #ffffff;
+}
+.eventDates {
+	color: #888;
+	font-size: 15px;
+}
+.eventTitle {
+	font-size: 18px;
+	font-weight: 600;
+	color: #222;
+}
+.eventDesc {
+	color: #555;
+	font-size: 16px;
+}
+
+.eventsGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 32px;
+}
+
+.eventCardModern {
+	display: flex;
+	flex-direction: column;
+	border-radius: 16px;
+	overflow: hidden;
+	transition: box-shadow 0.2s, transform 0.2s;
+	position: relative;
+	min-height: 420px;
+}
+.eventCardModern:hover {
+	box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+	transform: translateY(-2px) scale(1.01);
+}
+.eventCardImageWrap {
+	position: relative;
+	height: 180px;
+	width: 100%;
+	overflow: hidden;
+}
+.eventCardImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+.eventCardStatus {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	padding: 4px 16px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 700;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	z-index: 2;
+}
+.eventCardDate {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	padding: 4px 12px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	z-index: 2;
+}
+.eventCardContent {
+	padding: 24px 20px 20px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	flex: 1;
+}
+.eventCardHeaderModern {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+.eventCardBtn {
+	margin-top: auto;
+	padding: 10px 0;
+	border: none;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.eventCardBtn:hover {
+	filter: brightness(0.95);
+}

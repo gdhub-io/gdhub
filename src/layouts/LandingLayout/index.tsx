@@ -38,7 +38,7 @@ export const LandingLayout = ({ children }: any) => {
 	const seoSettings: NextSeoProps = {
 		title: t('landing.seo.title', 'Game Developers Hub'),
 		description: t('landing.seo.description', 'Game Developers Hub is a platform for game developers and specialists.'),
-		canonical: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		openGraph: {
 			title: t('landing.seo.title', 'Game Developers Hub'),
 			description: t(
@@ -46,7 +46,7 @@ export const LandingLayout = ({ children }: any) => {
 				'Game Developers Hub is a platform for game developers and specialists.'
 			),
 			type: 'website',
-			url: process.env.NEXT_PUBLIC_APP_URI + router.asPath,
+			url: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		},
 	}
 

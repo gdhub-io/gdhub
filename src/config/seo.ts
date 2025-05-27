@@ -5,7 +5,7 @@ import { AvailableLocales } from './locale'
 const config: Record<AvailableLocales, DefaultSeoProps> = {
 	en: {
 		defaultTitle: 'Game Developers Hub',
-		titleTemplate: '%s | GDHub',
+		titleTemplate: '%s',
 		description: 'Web service & community for everyone who wants to create or participate in indie games',
 		openGraph: {
 			type: 'website',
@@ -13,7 +13,7 @@ const config: Record<AvailableLocales, DefaultSeoProps> = {
 			siteName: 'Game Developers Hub',
 			images: [
 				{
-					url: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${'Game Developers Hub'}&st=for%20everyone%20who%20wants%20to%20make%20video%20games&img=${process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+					url: `${process.env.NEXT_PUBLIC_APP_URL}/api/og?t=${'Game Developers Hub'}&st=for%20everyone%20who%20wants%20to%20make%20video%20games&img=${process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src}`,
 					width: 1200,
 					height: 360,
 					alt: 'Game Developers Hub Cover',
@@ -38,7 +38,7 @@ const config: Record<AvailableLocales, DefaultSeoProps> = {
 			siteName: 'Game Developers Hub',
 			images: [
 				{
-					url: `${process.env.NEXT_PUBLIC_APP_URI}/api/og?t=${'Хаб разработчиков игр'}&st=${'для всех, кто хочет делать видеоигры'}&img=${process.env.NEXT_PUBLIC_APP_URI + HeroBgImage.src}`,
+					url: `${process.env.NEXT_PUBLIC_APP_URL}/api/og?t=${'Хаб разработчиков игр'}&st=${'для всех, кто хочет делать видеоигры'}&img=${process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src}`,
 					width: 512,
 					height: 512,
 					alt: 'Game Developers Logo',

@@ -25,7 +25,12 @@ declare global {
 
 interface LandingPageParams {
 	isHealthy: boolean
-	stats: { usersCount: number; specialitiesCount: number; projectsCount: number; vacanciesCount: number }
+	stats: {
+		usersCount: number | null
+		specialitiesCount: number | null
+		projectsCount: number | null
+		vacanciesCount: number | null
+	}
 }
 
 const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
@@ -89,20 +94,25 @@ export async function getStaticProps() {
 		return { props: { isHealthy: false } }
 	}
 
-	const usersCount = await prisma.user.count()
-	const specialitiesCount = await prisma.speciality.count()
+	const stats: LandingPageParams['stats'] = {
+		usersCount: null,
+		specialitiesCount: null,
+		projectsCount: null,
+		vacanciesCount: null,
+	}
 
-	const projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
-	const vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
+	try {
+		stats.usersCount = await prisma.user.count()
+		stats.specialitiesCount = await prisma.speciality.count()
+		stats.projectsCount = await prisma.project.count({ where: { status: 'Approved' } })
+		stats.vacanciesCount = await prisma.teamVacancy.count({ where: { status: 'Published' } })
+	} catch (error) {
+		console.error(error)
+	}
 
 	return {
 		props: {
-			stats: {
-				usersCount,
-				specialitiesCount,
-				projectsCount,
-				vacanciesCount,
-			},
+			stats,
 		},
 		revalidate: 360,
 	}
