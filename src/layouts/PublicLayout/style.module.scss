@@ -12,10 +12,14 @@
     color: rgba(255, 255, 255, 0.5);
     line-height: 1.5;
     margin-top: 16px;
+    position: relative;
+    z-index: 1;
   }
 
   .titleContainer {
     padding: 60px 0 40px;
+    position: relative;
+    z-index: 1;
 
     :global {
       h1 {
@@ -43,6 +47,8 @@
       display: flex;
       gap: 8px;
       align-items: center;
+      position: relative;
+      z-index: 1;
     }
 
     .username {
@@ -77,6 +83,18 @@
       color: #fff;
     }
   }
+}
+
+.headerBlur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(6px);
+  background: inherit;
 }
 
 @import './styles/xs.scss'; // screen < 576px

@@ -320,8 +320,10 @@ export const PublicLayout = ({
 						className={styles.header}
 						style={{
 							backgroundImage: setBackground(),
+							position: 'relative',
 						}}
 					>
+						{backgroundImage && <div className={styles.headerBlur} />}
 						<MainHeader />
 						<div className={styles.titleContainer}>
 							<Flex align="center" gap={16}>

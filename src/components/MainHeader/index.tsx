@@ -83,8 +83,12 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		() => [
 			{
 				label: (
-					<Link href={writeInternalLink('#about')} title={t('About us')} onClick={(e) => scrollToAnchor(e, '#about')}>
-						<T>About us</T>
+					<Link
+						href={writeInternalLink('#about')}
+						title={t('public-menu.about-us', 'About us')}
+						onClick={(e) => scrollToAnchor(e, '#about')}
+					>
+						{t('public-menu.about-us', 'About us')}
 					</Link>
 				),
 				key: '#about',
@@ -93,10 +97,10 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				label: (
 					<Link
 						href={writeInternalLink('#for-authors')}
-						title={t('For Authors')}
+						title={t('public-menu.for-authors', 'For Authors')}
 						onClick={(e) => scrollToAnchor(e, '#for-authors')}
 					>
-						<T>For Authors</T>
+						{t('public-menu.for-authors', 'For Authors')}
 					</Link>
 				),
 				key: '#for-authors',
@@ -105,30 +109,38 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				label: (
 					<Link
 						href={writeInternalLink('#for-specialists')}
-						title={t('For Specialists')}
+						title={t('public-menu.for-specialists', 'For Specialists')}
 						onClick={(e) => scrollToAnchor(e, '#for-specialists')}
 					>
-						<T>For Specialists</T>
+						{t('public-menu.for-specialists', 'For Specialists')}
 					</Link>
 				),
 				key: '#for-specialists',
 			},
 			{
 				label: (
-					<Link href="/projects" title={t('Game Projects')}>
-						<T>Game Projects</T>
+					<Link href="/projects" title={t('Video Games')}>
+						{t('public-menu.video-games', 'Video Games')}
 					</Link>
 				),
 				key: '/projects',
 			},
 			{
 				label: (
+					<Link href="/events" title={t('public-menu.events', 'Events')}>
+						{t('public-menu.events', 'Events')}
+					</Link>
+				),
+				key: '/events',
+			},
+			{
+				label: (
 					<Link
 						href={writeInternalLink('#contacts')}
-						title={t('Contacts')}
+						title={t('public-menu.contacts', 'Contacts')}
 						onClick={(e) => scrollToAnchor(e, '#contacts')}
 					>
-						<T>Contacts</T>
+						{t('public-menu.contacts', 'Contacts')}
 					</Link>
 				),
 				key: '#contacts',
