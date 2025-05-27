@@ -69,16 +69,18 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		dataUpdatedAt: speakersDataUpdatedAt,
 		refetch: refetchSpeakers,
 	} = useQuery(
-		['speakers-search', searchSpeakersValue, initialValues?.speakers?.length],
+		['speakers-search', searchSpeakersValue],
 		() =>
 			axios.get('/api/speakers/search', {
 				params: { query: searchSpeakersValue, ids: initialValues?.speakers?.map((s) => s.id) },
 				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
 			}),
 		{
-			enabled: (!!searchSpeakersValue || !!initialValues?.speakers?.length) && isAdmin,
+			enabled: !!searchSpeakersValue && isAdmin,
 		}
 	)
+
+	console.log('isAdmin', isAdmin)
 
 	const { data: workDirections } = useQuery(['work-directions'], () =>
 		axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions').then((res) => res.data)

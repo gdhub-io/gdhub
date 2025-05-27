@@ -36,8 +36,7 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({ onCreation =
 	const { data: session } = useSession()
 	const { t } = useTolgee()
 	const { token } = theme.useToken()
-	const isAdmin =
-		hasRole(prismaClient.$Enums.UserRole.Admin, { data: session }) || process.env.NODE_ENV === 'development'
+	const isAdmin = hasRole(prismaClient.$Enums.UserRole.Admin, { data: session })
 
 	const [modalOpen, setModalOpen] = React.useState(false)
 	const [eventType, setEventType] = React.useState<prismaClient.$Enums.EventType | undefined>(undefined)
