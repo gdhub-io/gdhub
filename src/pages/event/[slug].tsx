@@ -7,7 +7,11 @@ import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { useTolgee } from '@tolgee/react'
+import { Divider, Flex, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
+import styles from './style.module.scss'
+
+const { Text } = Typography
 
 interface EventPageProps {
 	event: any
@@ -53,6 +57,24 @@ const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 	return (
 		<PublicLayout
 			seo={seo}
+			extraPosition="top"
+			extraGap={0}
+			extra={
+				<Flex gap={8} align="center">
+					<Text className={styles.extraText}>{event.type}</Text>
+					<span style={{ color: '#ffffff54', lineHeight: 1, fontSize: 16 }}>/</span>
+					<Text strong style={{ color: '#fff' }}>
+						{schedule.length > 0
+							? formatEventPeriod(
+									schedule[0].startDate,
+									schedule[schedule.length - 1].endDate,
+									getLanguage() || 'en',
+									'day'
+								)
+							: '-'}
+					</Text>
+				</Flex>
+			}
 			title={!isConferenceOrGamelab ? event.title : undefined}
 			subTitle={!isConferenceOrGamelab ? event.shortDescription : undefined}
 			backgroundImage={event.image || undefined}

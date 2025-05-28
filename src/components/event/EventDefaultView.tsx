@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
-
+import styles from './EventDefaultView.module.scss'
 const { Title, Paragraph, Text } = Typography
 
 const MAX_VISIBLE_SPEAKERS = 3
@@ -18,7 +18,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 	const { data: session } = useSession()
 
 	return (
-		<Flex gap={48} align="flex-start" style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
+		<Flex gap={48} align="flex-start" className={styles.leftContainer}>
 			{/* Левая колонка: инфо */}
 			<div style={{ flex: 1 }}>
 				<Title level={2}>{t('event.about', 'About')}</Title>
@@ -26,64 +26,25 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 					<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{event.description || ''}</ReactMarkdown>
 				</Paragraph>
 
-				<Flex justify="flex-start" align="middle" gap={32} style={{ margin: '24px 0 0 0' }}>
-					<Flex vertical align="center" gap={0}>
-						<Text type="secondary" style={{ fontSize: 13 }}>
-							{t('event.type', 'Type')}
-						</Text>
-						<Text strong style={{ fontSize: 16 }}>
-							{event.type}
-						</Text>
-					</Flex>
-					<Flex vertical align="center" gap={0}>
-						<Text type="secondary" style={{ fontSize: 13 }}>
-							{t('event.format', 'Format')}
-						</Text>
-						<Text strong style={{ fontSize: 16 }}>
-							{event.format === 'online' || event.format === 'Онлайн'
-								? t('event.format.online', 'Online')
-								: t('event.format.offline', 'Offline')}
-						</Text>
-					</Flex>
-					<Flex vertical align="center" gap={0}>
-						<Text type="secondary" style={{ fontSize: 13 }}>
-							{t('event.dates', 'Dates')}
-						</Text>
-						<Text strong style={{ fontSize: 16 }}>
-							{schedule.length > 0
-								? formatEventPeriod(
-										schedule[0].startDate,
-										schedule[schedule.length - 1].endDate,
-										getLanguage() || 'en',
-										'day'
-									)
-								: '-'}
-						</Text>
-					</Flex>
-				</Flex>
-
 				<Divider />
+
 				<Title level={2}>{t('event.schedule', 'Schedule')}</Title>
 				<div
 					style={{
-						background: '#fff',
-						borderRadius: 18,
-						boxShadow: '0 2px 16px #0001',
-						overflow: 'hidden',
-						padding: 24,
 						marginBottom: 32,
 					}}
 				>
 					{schedule.map((item: any, idx: number) => {
 						const visibleSpeakers = (item.speakers || []).slice(0, MAX_VISIBLE_SPEAKERS)
 						const extraCount = (item.speakers?.length || 0) - MAX_VISIBLE_SPEAKERS
+
 						return (
 							<Flex
 								key={item.id || idx}
 								gap={32}
 								style={{
 									borderBottom: idx !== schedule.length - 1 ? '1px solid #f0f0f0' : 'none',
-									padding: '18px 20px',
+									// padding: '18px 20px',
 									flexDirection: screens.md ? 'row' : 'column',
 									alignItems: screens.md ? 'stretch' : 'flex-start',
 								}}
@@ -100,14 +61,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 											flexShrink: 0,
 										}}
 									>
-										{schedule.length === 1 ? (
-											formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')
-										) : (
-											<>
-												<span>{item.formattedStartTime24}</span>
-												<span style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>{item.formattedAMPM}</span>
-											</>
-										)}
+										{formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')}
 									</div>
 								)}
 
@@ -203,7 +157,6 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 					<div
 						style={{
 							position: 'relative',
-							top: screens.md ? -136 : 0,
 							width: '100%',
 							maxWidth: 600,
 							aspectRatio: '4/5',
