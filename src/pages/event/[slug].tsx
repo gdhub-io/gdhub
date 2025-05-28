@@ -142,7 +142,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 			},
 			seo: {
 				title: event.title || null,
-				description: event.shortDescription || event.description?.slice(0, 160) || null,
+				description: event.shortDescription || null,
 				image: event.image || null,
 			},
 		},
