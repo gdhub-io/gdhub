@@ -60,20 +60,22 @@ const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 			extraPosition="top"
 			extraGap={0}
 			extra={
-				<Flex gap={8} align="center">
-					<Text className={styles.extraText}>{event.type}</Text>
-					<span style={{ color: '#ffffff54', lineHeight: 1, fontSize: 16 }}>/</span>
-					<Text strong style={{ color: '#fff' }}>
-						{schedule.length > 0
-							? formatEventPeriod(
-									schedule[0].startDate,
-									schedule[schedule.length - 1].endDate,
-									getLanguage() || 'en',
-									'day'
-								)
-							: '-'}
-					</Text>
-				</Flex>
+				!isConferenceOrGamelab && (
+					<Flex gap={8} align="center">
+						<Text className={styles.extraText}>{event.type}</Text>
+						<span style={{ color: '#ffffff54', lineHeight: 1, fontSize: 16 }}>/</span>
+						<Text strong style={{ color: '#fff' }}>
+							{schedule.length > 0
+								? formatEventPeriod(
+										schedule[0].startDate,
+										schedule[schedule.length - 1].endDate,
+										getLanguage() || 'en',
+										'day'
+									)
+								: '-'}
+						</Text>
+					</Flex>
+				)
 			}
 			title={!isConferenceOrGamelab ? event.title : undefined}
 			subTitle={!isConferenceOrGamelab ? event.shortDescription : undefined}

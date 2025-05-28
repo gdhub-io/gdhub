@@ -22,7 +22,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 	const { token } = theme.useToken()
 
 	return (
-		<Flex gap={48} align="flex-start" className={styles.leftContainer}>
+		<Flex gap={48} align="flex-start" className={styles.contentContainer}>
 			{/* Левая колонка: инфо */}
 			<div style={{ flex: 1 }}>
 				<Title level={2}>{t('event.about', 'About')}</Title>
@@ -121,6 +121,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 						)
 					})}
 				</div>
+
 				{!!event.url && dayjs().isBefore(dayjs(event.schedule[0]?.startDate)) && (
 					<div style={{ maxWidth: 420, margin: '40px 0 0', textAlign: 'center' }}>
 						{session ? (
