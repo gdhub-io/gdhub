@@ -1,12 +1,15 @@
 import React from 'react'
 import { formatEventPeriod } from '@/helpers/format'
+import { gtmEventTrigger } from '@/helpers/gtm'
 import { useTolgee } from '@tolgee/react'
-import { Button, Typography, Divider, Avatar, Flex, Grid } from 'antd'
+import { Button, Typography, Divider, Avatar, Flex, Grid, theme } from 'antd'
+import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import styles from './EventDefaultView.module.scss'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -16,9 +19,10 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 	const { t, getLanguage } = useTolgee()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
+	const { token } = theme.useToken()
 
 	return (
-		<Flex gap={48} align="flex-start" style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
+		<Flex gap={48} align="flex-start" className={styles.contentContainer}>
 			{/* Левая колонка: инфо */}
 			<div style={{ flex: 1 }}>
 				<Title level={2}>{t('event.about', 'About')}</Title>
@@ -26,163 +30,113 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 					<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{event.description || ''}</ReactMarkdown>
 				</Paragraph>
 
-				<Flex justify="flex-start" align="middle" gap={32} style={{ margin: '24px 0 0 0' }}>
-					<Flex vertical align="center" gap={0}>
-						<Text type="secondary" style={{ fontSize: 13 }}>
-							{t('event.type', 'Type')}
-						</Text>
-						<Text strong style={{ fontSize: 16 }}>
-							{event.type}
-						</Text>
-					</Flex>
-					<Flex vertical align="center" gap={0}>
-						<Text type="secondary" style={{ fontSize: 13 }}>
-							{t('event.format', 'Format')}
-						</Text>
-						<Text strong style={{ fontSize: 16 }}>
-							{event.format === 'online' || event.format === 'Онлайн'
-								? t('event.format.online', 'Online')
-								: t('event.format.offline', 'Offline')}
-						</Text>
-					</Flex>
-					<Flex vertical align="center" gap={0}>
-						<Text type="secondary" style={{ fontSize: 13 }}>
-							{t('event.dates', 'Dates')}
-						</Text>
-						<Text strong style={{ fontSize: 16 }}>
-							{schedule.length > 0
-								? formatEventPeriod(
-										schedule[0].startDate,
-										schedule[schedule.length - 1].endDate,
-										getLanguage() || 'en',
-										'day'
-									)
-								: '-'}
-						</Text>
-					</Flex>
-				</Flex>
-
 				<Divider />
+
 				<Title level={2}>{t('event.schedule', 'Schedule')}</Title>
 				<div
 					style={{
-						background: '#fff',
-						borderRadius: 18,
-						boxShadow: '0 2px 16px #0001',
-						overflow: 'hidden',
-						padding: 24,
 						marginBottom: 32,
 					}}
 				>
 					{schedule.map((item: any, idx: number) => {
 						const visibleSpeakers = (item.speakers || []).slice(0, MAX_VISIBLE_SPEAKERS)
 						const extraCount = (item.speakers?.length || 0) - MAX_VISIBLE_SPEAKERS
+
 						return (
-							<Flex
+							<div
 								key={item.id || idx}
-								gap={32}
 								style={{
-									borderBottom: idx !== schedule.length - 1 ? '1px solid #f0f0f0' : 'none',
-									padding: '18px 20px',
-									flexDirection: screens.md ? 'row' : 'column',
-									alignItems: screens.md ? 'stretch' : 'flex-start',
+									background: '#fdfdfd',
+									paddingInline: 16,
+									borderRadius: 8,
+									paddingBlock: 16,
+									marginBottom: 16,
 								}}
 							>
-								{/* Дата/время для больших экранов */}
-								{screens.md && (
-									<div
-										style={{
-											width: 120,
-											textAlign: 'right',
-											fontWeight: 600,
-											fontSize: 14,
-											color: '#222',
-											flexShrink: 0,
-										}}
-									>
-										{schedule.length === 1 ? (
-											formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')
-										) : (
-											<>
-												<span>{item.formattedStartTime24}</span>
-												<span style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>{item.formattedAMPM}</span>
-											</>
-										)}
-									</div>
-								)}
+								{/* Линия 1: дата и title */}
+								<Flex align="center" gap={16} style={{ marginBottom: 4 }}>
+									<span style={{ fontWeight: 600, fontSize: 15, color: '#222', whiteSpace: 'nowrap' }}>
+										{formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')}
+									</span>
 
-								<Flex vertical gap={0} style={{ flex: 1, minWidth: 0, width: '100%' }}>
-									{/* Дата/время для малых экранов */}
-									{!screens.md && (
-										<div
-											style={{
-												fontWeight: 600,
-												fontSize: 14,
-												color: '#222',
-												marginBottom: 8,
-											}}
-										>
-											{schedule.length === 1 ? (
-												formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')
-											) : (
-												<>
-													<span>{item.formattedStartTime24}</span>
-													<span style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>{item.formattedAMPM}</span>
-												</>
-											)}
-										</div>
-									)}
-									<div
-										style={{
-											fontWeight: 600,
-											fontSize: 17,
-											color: '#222',
-											marginBottom: 16,
-											whiteSpace: 'nowrap',
-											overflow: 'hidden',
-											textOverflow: 'ellipsis',
-										}}
-									>
-										{item.title}
-									</div>
-									{item.speakers?.length > 0 && (
-										<Flex gap={8} style={{ marginTop: 4 }}>
-											{visibleSpeakers.map((sp: any, i: number) => {
-												const speakerName = sp?.user?.profile?.name || sp?.name || ''
-												const speakerAvatar = sp?.user?.image || ''
-												return (
-													<Flex key={sp.id} gap={16}>
-														<Avatar
-															size={42}
-															src={speakerAvatar}
-															style={{ marginRight: 2, background: '#eee', color: '#222', fontSize: 14 }}
-														>
-															{!speakerAvatar && speakerName ? speakerName[0] : null}
-														</Avatar>
-														<Flex vertical gap={0}>
-															<span style={{ fontWeight: 500, fontSize: 14 }}>{speakerName}</span>
-															{sp.name && <Text style={{ fontSize: 13 }}>{sp.name}</Text>}
-														</Flex>
-													</Flex>
-												)
-											})}
-											{extraCount > 0 && (
-												<span style={{ marginLeft: 8, color: '#888', fontSize: 13 }}>+{extraCount}</span>
-											)}
-										</Flex>
-									)}
-									{item.description && (
-										<div style={{ color: '#888', fontSize: 14, marginTop: 16 }}>{item.description}</div>
+									{!!item.title && (
+										<>
+											<Divider type="vertical" style={{ height: 24 }} />
+
+											<span
+												style={{
+													fontWeight: 600,
+													fontSize: 15,
+													color: '#222',
+												}}
+											>
+												{item.title}
+											</span>
+										</>
 									)}
 								</Flex>
-							</Flex>
+
+								{/* Линия 2: описание */}
+								{item.description && (
+									<Text type="secondary" style={{ fontSize: 15, margin: '4px 0 10px 0' }}>
+										<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{item.description || ''}</ReactMarkdown>
+									</Text>
+								)}
+
+								{/* Линия 3: спикеры */}
+								{item.speakers?.length > 0 && (
+									<Flex gap={24} style={{ marginTop: 16, flexWrap: 'wrap' }}>
+										{visibleSpeakers.map((sp: any, i: number) => {
+											const speakerName = sp?.user?.profile?.name || sp?.user?.name || ''
+											const speakerAvatar = sp?.user?.image || ''
+											const speakerSpeciality = sp?.name || ''
+											const speakerSummary = sp?.summary || ''
+											return (
+												<Flex key={sp.id || i} align="center" gap={12} style={{ minWidth: 220 }}>
+													<Avatar
+														size={48}
+														src={speakerAvatar}
+														style={{ background: '#eee', color: '#222', fontSize: 18 }}
+													>
+														{!speakerAvatar && speakerName ? speakerName[0] : null}
+													</Avatar>
+													<Flex vertical gap={0} style={{ minWidth: 0 }}>
+														<span style={{ fontWeight: 600, fontSize: 15 }}>{speakerName}</span>
+														{speakerSpeciality && (
+															<span style={{ fontSize: 13, color: token.colorTextSecondary, fontWeight: 500 }}>
+																{speakerSpeciality}
+															</span>
+														)}
+														{speakerSummary && <span style={{ fontSize: 13, color: '#888' }}>{speakerSummary}</span>}
+													</Flex>
+												</Flex>
+											)
+										})}
+										{extraCount > 0 && (
+											<span style={{ marginLeft: 8, color: '#888', fontSize: 13 }}>+{extraCount}</span>
+										)}
+									</Flex>
+								)}
+							</div>
 						)
 					})}
 				</div>
-				{event.url && (
+
+				{!!event.url && dayjs().isBefore(dayjs(event.schedule[0]?.startDate)) && (
 					<div style={{ maxWidth: 420, margin: '40px 0 0', textAlign: 'center' }}>
 						{session ? (
-							<Link href={event.url} target="_blank">
+							<Link
+								href={event.url}
+								target="_blank"
+								onClick={() => {
+									gtmEventTrigger('event-register-click', {
+										event_category: event.type,
+										event_label: event.title,
+										value: event.url,
+										page_url: window.location.href,
+									})
+								}}
+							>
 								<Button type="primary" size="large" style={{ width: '100%', maxWidth: 420 }}>
 									{t('event.register', 'Register')}
 								</Button>
@@ -203,7 +157,6 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 					<div
 						style={{
 							position: 'relative',
-							top: screens.md ? -136 : 0,
 							width: '100%',
 							maxWidth: 600,
 							aspectRatio: '4/5',

@@ -194,19 +194,20 @@ export default async function handler(request: NextRequest) {
 							<p
 								style={{
 									color: '#fff',
-									fontSize: title && title.length > 52 ? 68 : 82,
+									fontSize: title && title.length > 32 ? 64 : 82,
 									lineHeight: 1,
 									textAlign: 'left',
 									margin: 0,
 									padding: 0,
+									paddingTop: 32,
 								}}
 							>
 								{title ? decodeURIComponent(title) : 'Title'}
 							</p>
 							<p style={{ color: '#ffffff80', fontSize: 32, textAlign: 'left', margin: 0, padding: 0, marginTop: 24 }}>
 								{subTitle
-									? subTitle.length > 52
-										? subTitle.slice(0, 52) + '...'
+									? subTitle.length > 90
+										? subTitle.slice(0, 90) + '...'
 										: decodeURIComponent(subTitle)
 									: 'Subtitle'}
 							</p>

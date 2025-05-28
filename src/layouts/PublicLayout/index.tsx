@@ -40,6 +40,8 @@ interface PublicLayoutProps {
 	subTitle?: string
 	backgroundImage?: string
 	extra?: ReactNode
+	extraPosition?: 'left' | 'top'
+	extraGap?: number
 	styles?: Record<string, object>
 	ogImageType?: string
 	ogImageParams?: Record<string, string>
@@ -55,6 +57,8 @@ export const PublicLayout = ({
 	subTitle,
 	backgroundImage,
 	extra,
+	extraPosition = 'left',
+	extraGap = 16,
 	styles: layoutStyles,
 	ogImageType,
 	ogImageParams,
@@ -75,12 +79,12 @@ export const PublicLayout = ({
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URL}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
+						: `${process.env.NEXT_PUBLIC_APP_URL}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${encodeURIComponent(seo?.title || (typeof title === 'string' ? title : ''))}&st=${t(
 								seo?.description || subTitle || ''
 							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src}&${Object.entries(
 								ogImageParams || {}
 							)
-								.map(([key, value]) => `${key}=${value}`)
+								.map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
 								.join('&')}`,
 					alt: 'Indie Game Developers Page Cover',
 				},
@@ -334,9 +338,13 @@ export const PublicLayout = ({
 						{backgroundImage && <div className={styles.headerBlur} />}
 						<MainHeader />
 						<div className={styles.titleContainer}>
-							<Flex align="center" gap={16}>
+							<Flex
+								align={extraPosition === 'top' ? 'start' : 'center'}
+								gap={extraGap}
+								vertical={extraPosition === 'top'}
+							>
 								{extra}
-								{!!title && <Title className={styles.title}>{title}</Title>}
+								{!!title && <Title className={extraPosition === 'top' ? styles.titleTop : styles.title}>{title}</Title>}
 							</Flex>
 							{!!subTitle && <div className={styles.subTitle}>{subTitle}</div>}
 						</div>
