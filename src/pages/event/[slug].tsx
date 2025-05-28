@@ -7,7 +7,7 @@ import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import { useTolgee } from '@tolgee/react'
-import { Divider, Flex, Typography } from 'antd'
+import { Flex, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import styles from './style.module.scss'
 
