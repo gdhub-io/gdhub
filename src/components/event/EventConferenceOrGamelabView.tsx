@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
 import styles from './EventDefaultView.module.scss'
 
 const { Title, Paragraph, Text } = Typography
@@ -20,7 +21,7 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 	const { token } = theme.useToken()
 
 	return (
-		<div style={{ position: 'relative', maxWidth: 1100, margin: '0 auto', padding: 24 }}>
+		<div className={styles.contentContainer} style={{ position: 'relative' }}>
 			{/* Картинка мероприятия по центру, перекрывает header */}
 			{event.image && (
 				<div
@@ -78,14 +79,14 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 			<Row gutter={[32, 16]}>
 				<Col xs={24}>
 					<Space className={styles.contentContainer} direction="vertical" size={32} style={{ width: '100%' }}>
-						<div>
+						<>
 							<Title level={2}>{t('event.about', 'About')}</Title>
-							<Paragraph style={{ fontSize: 18 }}>
-								<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{event.description || ''}</ReactMarkdown>
-							</Paragraph>
-						</div>
-
-						<Divider />
+							<div style={{ fontSize: 18, whiteSpace: 'pre-line' }}>
+								<ReactMarkdown rehypePlugins={[rehypeRaw as any]} remarkPlugins={[remarkGfm]} skipHtml={false}>
+									{event.description || ''}
+								</ReactMarkdown>
+							</div>
+						</>
 
 						<Title level={2}>{t('event.schedule', 'Schedule')}</Title>
 						<div
@@ -133,9 +134,11 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 
 										{/* Линия 2: описание */}
 										{item.description && (
-											<Text type="secondary" style={{ fontSize: 15, margin: '4px 0 10px 0' }}>
-												<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{item.description || ''}</ReactMarkdown>
-											</Text>
+											<div style={{ fontSize: 15, color: '#888', margin: '4px 0 10px 0', whiteSpace: 'pre-line' }}>
+												<ReactMarkdown rehypePlugins={[rehypeRaw as any]} remarkPlugins={[remarkGfm]} skipHtml={false}>
+													{item.description || ''}
+												</ReactMarkdown>
+											</div>
 										)}
 
 										{/* Линия 3: спикеры */}

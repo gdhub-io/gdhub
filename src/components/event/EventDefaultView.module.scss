@@ -8,4 +8,14 @@
     color: #888;
     font-weight: lighter;
   }
+
+  @media (max-width: 600px) {
+    padding: 8px;
+    h2 {
+      font-size: 15px;
+    }
+    p, .ant-typography, .ant-typography p {
+      font-size: 15px !important;
+    }
+  }
 }

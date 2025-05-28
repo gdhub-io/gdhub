@@ -79,12 +79,12 @@ export const PublicLayout = ({
 				{
 					url: seo?.openGraph?.images?.length
 						? seo?.openGraph.images[0].url
-						: `${process.env.NEXT_PUBLIC_APP_URL}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${seo?.title || (typeof title === 'string' ? title : '')}&st=${t(
+						: `${process.env.NEXT_PUBLIC_APP_URL}/api/og${ogImageType ? `-${ogImageType}` : ''}?t=${encodeURIComponent(seo?.title || (typeof title === 'string' ? title : ''))}&st=${t(
 								seo?.description || subTitle || ''
 							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src}&${Object.entries(
 								ogImageParams || {}
 							)
-								.map(([key, value]) => `${key}=${value}`)
+								.map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
 								.join('&')}`,
 					alt: 'Indie Game Developers Page Cover',
 				},
