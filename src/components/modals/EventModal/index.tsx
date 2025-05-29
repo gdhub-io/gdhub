@@ -70,7 +70,6 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 	const isAdmin = hasRole(prismaClient.UserRole.Admin, { data: session })
 	const isBigEvent =
 		eventType === prismaClient.$Enums.EventType.GameLab || eventType === prismaClient.$Enums.EventType.Conference
-	const currentUser = session?.user
 	const [imageProcessing, setImageProcessing] = useState(false)
 	const [fileList, setFileList] = useState<any[]>([])
 	const [editingScheduleItemId, setEditingScheduleItemId] = useState<string | null>(null)
@@ -83,8 +82,10 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 
 	useEffect(() => {
 		if (eventData?.data) {
+			form.resetFields()
 			form.setFieldsValue({
 				title: eventData.data.title,
+				shortDescription: eventData.data.shortDescription,
 				description: eventData.data.description,
 				link: eventData.data.link,
 				image: eventData.data.image,
@@ -348,7 +349,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 		<Modal
 			open={open}
 			onCancel={handleCancel}
-			loading={isEventCreating || isEventUpdating}
+			confirmLoading={isEventCreating || isEventUpdating}
 			onOk={handleOk}
 			width={1000}
 			centered
