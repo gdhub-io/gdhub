@@ -77,36 +77,13 @@ export const EventCard = ({
 								style={{ objectFit: 'cover', aspectRatio: '1/1.1' }}
 								sizes="(max-width: 600px) 100vw, 33vw"
 							/>
-							<div
-								style={{
-									position: 'absolute',
-									bottom: 0,
-									left: 0,
-									width: '100%',
-									padding: 20,
-									background: 'linear-gradient(0deg, rgba(0,0,0,0.75) 70%, rgba(0,0,0,0.1) 100%, rgba(0,0,0,0) 100%)',
-									color: '#fff',
-									zIndex: 2,
-									display: 'flex',
-									flexDirection: 'column',
-									gap: 8,
-								}}
-							>
+							<div className={styles.eventCardContent}>
 								<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
 									<span className={styles.eventTypeIcon}>{getTypeIcon(event.type)}</span>
 									<span className={styles.eventType}>{typeLabels[event.type]}</span>
 								</div>
-								<div
-									className={styles.eventTitle}
-									style={{ color: '#fff', fontWeight: 700, fontSize: 20, textShadow: '0 2px 8px #000' }}
-								>
-									{event.title}
-								</div>
-								{event.shortDescription ? (
-									<div style={{ color: '#fff', fontSize: 15, textShadow: '0 2px 8px #000' }}>
-										{event.shortDescription}
-									</div>
-								) : null}
+								<div className={styles.eventTitle}>{event.title}</div>
+								{event.shortDescription ? <div className={styles.eventDesc}>{event.shortDescription}</div> : null}
 								<div
 									style={{
 										fontWeight: 600,

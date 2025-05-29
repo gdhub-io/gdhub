@@ -42,6 +42,8 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 						const visibleSpeakers = (item.speakers || []).slice(0, MAX_VISIBLE_SPEAKERS)
 						const extraCount = (item.speakers?.length || 0) - MAX_VISIBLE_SPEAKERS
 
+						console.log(item.speakers)
+
 						return (
 							<div
 								key={item.id || idx}
@@ -96,7 +98,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 													<Avatar
 														size={48}
 														src={speakerAvatar}
-														style={{ background: '#eee', color: '#222', fontSize: 18 }}
+														style={{ minWidth: 48, background: '#eee', color: '#222', fontSize: 18 }}
 													>
 														{!speakerAvatar && speakerName ? speakerName[0] : null}
 													</Avatar>
