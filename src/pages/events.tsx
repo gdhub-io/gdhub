@@ -1,4 +1,5 @@
 import React from 'react'
+import eventBackgroundImage from '@/assets/images/public-events-header-bg.jpg'
 import { EventCard, PastEventCard, EventSection, BannerEventSlider, EmptyEventState } from '@/components/events'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -20,7 +21,11 @@ const EventsPage: NextPageWithLayout = () => {
 	)
 
 	return (
-		<PublicLayout title={t('page.events.title', 'Events')} seo={{ openGraph: { type: 'website', url: '/events' } }}>
+		<PublicLayout
+			title={t('page.events.title', 'Events')}
+			backgroundImage={eventBackgroundImage.src}
+			seo={{ openGraph: { type: 'website', url: '/events' } }}
+		>
 			<div className={styles.container}>
 				{Boolean(eventCount?.count) ? (
 					<>
