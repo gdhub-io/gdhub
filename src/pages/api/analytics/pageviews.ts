@@ -1,4 +1,5 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
+import dayjs from 'dayjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const analyticsDataClient = new BetaAnalyticsDataClient({
@@ -15,15 +16,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	}
 
 	try {
-		const { path } = req.query
+		const { path, startDate, endDate } = req.query
 		const pathValue = (path as string).startsWith('http') ? new URL(path as string).pathname : (path as string)
 
 		const [response] = await analyticsDataClient.runReport({
 			property: `properties/${process.env.GOOGLE_ANALYTICS_PROPERTY_ID}`,
 			dateRanges: [
 				{
-					startDate: '30daysAgo',
-					endDate: 'today',
+					startDate: startDate ? dayjs(startDate as string).format('YYYY-MM-DD') : '30daysAgo',
+					endDate: endDate ? dayjs(endDate as string).format('YYYY-MM-DD') : 'today',
 				},
 			],
 			dimensions: [

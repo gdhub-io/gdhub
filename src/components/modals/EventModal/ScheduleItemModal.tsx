@@ -141,7 +141,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, o
 			okText={t('common.save', 'Save')}
 			cancelText={t('common.cancel', 'Cancel')}
 			destroyOnClose
-			loading={isSubmitting}
+			confirmLoading={isSubmitting}
 		>
 			<Form
 				form={form}

@@ -2,6 +2,7 @@ import React from 'react'
 import CreateEventButton from '@/components/events/CreateEventButton'
 import EventModal from '@/components/modals/EventModal'
 import ModernTable from '@/components/ModernTable'
+import { PageViews } from '@/components/PageViews'
 import { formatEventPeriod } from '@/helpers/format'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
@@ -262,6 +263,14 @@ const MyEventsPage: NextPageWithLayout = () => {
 
 				return <Space>{buttons}</Space>
 			},
+		},
+		{
+			title: t('event.pageViews', 'Page views'),
+			dataIndex: 'slug',
+			key: 'page-views',
+			align: 'center',
+			render: (id: string, record: any) => <PageViews path={`/event/${record.slug}`} startDate={record.publishedAt} />,
+			responsive: ['md' as Breakpoint],
 		},
 		{
 			key: 'actions',
