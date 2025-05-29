@@ -218,11 +218,14 @@ class ApiUserEventEndpointHandler {
 					language: item.language,
 					startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
 					endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-					speakers: {
-						connect: item.speakers.map((speaker) => ({
-							id: speaker,
-						})),
-					},
+					speakers:
+						item.speakers?.length > 0
+							? {
+									connect: item.speakers.map((speaker) => ({
+										id: speaker,
+									})),
+								}
+							: undefined,
 				},
 			})
 		}
@@ -254,11 +257,13 @@ class ApiUserEventEndpointHandler {
 						language: item.language,
 						startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
 						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: {
-							set: item.speakers.map((userId) => ({
-								id: userId,
-							})),
-						},
+						speakers: item.speakers?.length
+							? {
+									set: item.speakers.map((userId) => ({
+										id: userId,
+									})),
+								}
+							: undefined,
 					},
 				})
 			} else {
@@ -271,11 +276,13 @@ class ApiUserEventEndpointHandler {
 						directionId: item.directionId,
 						startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
 						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: {
-							connect: item.speakers.map((speaker) => ({
-								id: speaker,
-							})),
-						},
+						speakers: item.speakers?.length
+							? {
+									connect: item.speakers.map((speaker) => ({
+										id: speaker,
+									})),
+								}
+							: undefined,
 					},
 				})
 			}

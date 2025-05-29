@@ -117,8 +117,6 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, o
 				language: values.language,
 			}
 
-			console.log('ScheduleItemModal', 'response', data)
-
 			setIsSubmitting(true)
 
 			await onSubmit(data)
@@ -196,11 +194,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, o
 					/>
 				</Form.Item>
 
-				<Form.Item
-					label={t('event.schedule.speakers', 'Speakers')}
-					name="speakers"
-					rules={[{ required: true, message: t('event.schedule.speakers.required', 'At least one speaker required') }]}
-				>
+				<Form.Item label={t('event.schedule.speakers', 'Speakers')} name="speakers">
 					<Select
 						mode="multiple"
 						allowClear
