@@ -101,12 +101,14 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 					directionId: item.directionId,
 					format: item.format,
 					language: item.language,
-					speakers: item.speakers.map((speciality: any) => ({
-						id: speciality.id,
-						name: speciality.user?.profile?.name,
-						speciality: speciality.name,
-						image: speciality.user?.image,
-					})),
+					speakers: item.speakers?.length
+						? item.speakers.map((speciality: any) => ({
+								id: speciality.id,
+								name: speciality.user?.profile?.name,
+								speciality: speciality.name,
+								image: speciality.user?.image,
+							}))
+						: [],
 				}))
 			)
 
@@ -282,7 +284,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 						schedule: scheduleHasChanges
 							? schedule.map((item) => ({
 									...item,
-									speakers: item.speakers.map((s) => s.id),
+									speakers: item.speakers?.length ? item.speakers.map((s) => s.id) : [],
 								}))
 							: undefined,
 					},
@@ -294,7 +296,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 					type: eventType,
 					schedule: schedule.map((item) => ({
 						...item,
-						speakers: item.speakers.map((s) => s.id),
+						speakers: item.speakers?.length ? item.speakers.map((s) => s.id) : [],
 					})),
 				})
 
