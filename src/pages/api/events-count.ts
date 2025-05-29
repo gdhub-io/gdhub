@@ -34,7 +34,10 @@ class GetEventsDto {
 @NextAuthGuard('user')
 class ApiEventsEndpointHandler {
 	@Get()
-	public async get(@Query(ValidationPipe) { type, status, timeStatus, withDates = false }: GetEventsDto) {
+	public async get(
+		@Query(ValidationPipe)
+		{ type, status, timeStatus = [EventTimeStatus.Upcoming, EventTimeStatus.Ongoing], withDates = false }: GetEventsDto
+	) {
 		const timeWhere: prismaClient.Prisma.EventScheduleItemWhereInput = {
 			startDate: {
 				lt: new Date(),
