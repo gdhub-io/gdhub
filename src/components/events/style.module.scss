@@ -22,6 +22,7 @@
 	transition: background 0.2s;
 	font-size: 16px;
 }
+
 .createBtn:hover {
 	background: #008775;
 }
@@ -29,30 +30,34 @@
 .mainEventBlock {
 	background: linear-gradient(90deg, #e0f7fa 0%, #b2ebf2 100%);
 	border-radius: 16px;
-	box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 	padding: 40px 32px 32px 32px;
 	margin-bottom: 40px;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 }
+
 .mainEventType {
 	font-size: 18px;
 	font-weight: 700;
 	color: #0288d1;
 	margin-bottom: 8px;
 }
+
 .mainEventTitle {
 	font-size: 32px;
 	font-weight: 800;
 	margin-bottom: 12px;
 	color: #222;
 }
+
 .mainEventDates {
 	font-size: 16px;
 	color: #555;
 	margin-bottom: 16px;
 }
+
 .mainEventDesc {
 	font-size: 18px;
 	color: #333;
@@ -62,52 +67,79 @@
 .section {
 	margin-bottom: 32px;
 }
+
 .sectionTitle {
 	margin-bottom: 16px;
 	font-size: 22px;
 	font-weight: 700;
 	color: #222;
 }
+
 .eventsList {
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
 }
+
 .eventCard {
 	border: 1px solid #eee;
 	border-radius: 8px;
 	padding: 18px 20px;
 	background: #fff;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 	transition: box-shadow 0.2s;
 }
+
 .eventCard:hover {
-	box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
+
 .eventCardHeader {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 }
+
 .eventType {
 	font-weight: 700;
 	color: #ffffff;
 }
+
 .eventDates {
 	color: #888;
 	font-size: 15px;
 }
-.eventTitle {
-	font-size: 18px;
-	font-weight: 600;
-	color: #222;
+
+.eventCardContent {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	padding: 20px;
+	background: linear-gradient(9deg, rgba(0, 0, 0, 0.75) 50%, rgba(0, 0, 0, 0.1) 70%, rgba(0, 0, 0, 0) 80%);
+;
+	color: #fff;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
+
+.eventTitle {
+	color: rgb(255, 255, 255);
+	font-size: 18px;
+	line-height: 1.2;
+	text-shadow: 0 0 6px #000000;
+}
+
 .eventDesc {
-	color: #555;
+	color: rgb(255 255 255 / 62%);
 	font-size: 16px;
+	font-weight: lighter;
+	line-height: 1.2;
 }
 
 .eventsGrid {
@@ -125,22 +157,26 @@
 	position: relative;
 	min-height: 420px;
 }
+
 .eventCardModern:hover {
-	box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
 	transform: translateY(-2px) scale(1.01);
 }
+
 .eventCardImageWrap {
 	position: relative;
 	height: 180px;
 	width: 100%;
 	overflow: hidden;
 }
+
 .eventCardImage {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 	display: block;
 }
+
 .eventCardStatus {
 	position: absolute;
 	top: 16px;
@@ -149,9 +185,10 @@
 	border-radius: 8px;
 	font-size: 14px;
 	font-weight: 700;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 	z-index: 2;
 }
+
 .eventCardDate {
 	position: absolute;
 	top: 16px;
@@ -160,22 +197,17 @@
 	border-radius: 8px;
 	font-size: 14px;
 	font-weight: 600;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 	z-index: 2;
 }
-.eventCardContent {
-	padding: 24px 20px 20px 20px;
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	flex: 1;
-}
+
 .eventCardHeaderModern {
 	display: flex;
 	align-items: center;
 	gap: 10px;
 	margin-bottom: 4px;
 }
+
 .eventCardBtn {
 	margin-top: auto;
 	padding: 10px 0;
@@ -185,8 +217,9 @@
 	font-weight: 700;
 	cursor: pointer;
 	transition: background 0.2s, color 0.2s;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
+
 .eventCardBtn:hover {
 	filter: brightness(0.95);
 }

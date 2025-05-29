@@ -154,7 +154,7 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 															<Avatar
 																size={48}
 																src={speakerAvatar}
-																style={{ background: '#eee', color: '#222', fontSize: 18 }}
+																style={{ minWidth: 48, background: '#eee', color: '#222', fontSize: 18 }}
 															>
 																{!speakerAvatar && speakerName ? speakerName[0] : null}
 															</Avatar>

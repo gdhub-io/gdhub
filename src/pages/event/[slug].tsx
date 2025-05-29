@@ -111,7 +111,12 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 			schedule: {
 				include: {
 					speakers: {
-						select: { id: true, name: true, user: { select: { image: true, profile: { select: { name: true } } } } },
+						select: {
+							id: true,
+							name: true,
+							user: { select: { image: true, profile: { select: { name: true } } } },
+							summary: true,
+						},
 					},
 				},
 				orderBy: { startDate: 'asc' },

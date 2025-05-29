@@ -450,7 +450,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 						<Form.Item label={t('event.modal.shortDescription.label', 'Short Description')} name="shortDescription">
 							<Input.TextArea
 								rows={2}
-								maxLength={200}
+								maxLength={90}
 								showCount
 								autoSize={{ minRows: 2, maxRows: 3 }}
 								placeholder={t('event.modal.shortDescription.placeholder', 'Event short description')}
