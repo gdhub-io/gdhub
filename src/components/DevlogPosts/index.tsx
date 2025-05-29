@@ -128,7 +128,7 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
 								{formatDate(post.publishedAt)}
 							</span>
-							<PageViews path={`/devlog/${post.id}`} />
+							<PageViews path={`/devlog/${post.id}`} startDate={post.publishedAt} />
 						</div>
 					</div>
 				</div>

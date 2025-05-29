@@ -254,7 +254,11 @@ export default function ProjectReport({ post, contentLength, isAuthenticated }: 
 										{post?.createdAt ? formatDate(post.createdAt) : ''}
 									</Text>
 								</Flex>
-								<PageViews path={`/devlog/${post?.id}`} containerStyle={{ fontSize: '12px' }} />
+								<PageViews
+									path={`/devlog/${post?.id}`}
+									containerStyle={{ fontSize: '12px' }}
+									startDate={post?.createdAt}
+								/>
 							</Flex>
 						</Flex>
 

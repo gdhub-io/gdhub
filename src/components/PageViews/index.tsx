@@ -12,10 +12,12 @@ interface PageViewsProps {
 	iconStyle?: CSSProperties
 	textStyle?: CSSProperties
 	minViews?: number
+	startDate?: string
 }
 
 export const PageViews = ({
 	path,
+	startDate,
 	containerStyle,
 	iconStyle = { fontSize: '12px' },
 	textStyle = { fontSize: '12px' },
@@ -28,7 +30,7 @@ export const PageViews = ({
 		const fetchPageviews = async () => {
 			try {
 				const currentPath = router.asPath
-				const response = await fetch(`/api/analytics/pageviews?path=${path || currentPath}`)
+				const response = await fetch(`/api/analytics/pageviews?path=${path || currentPath}&startDate=${startDate}`)
 				const data = await response.json()
 				setPageviews(data.pageviews)
 			} catch (error) {
