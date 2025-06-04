@@ -53,11 +53,11 @@
 <pattern id="pattern6" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use href="#team_member_4" transform="scale(0.00194167, 0.0017)"/>
 </pattern>
-<image id="team_member_1" width="512" height="592" href="/images/team/team-member-1.png" />
-<image id="team_member_2" width="512" height="592" href="/images/team/team-member-2.png" />
-<image id="team_member_3" width="512" height="592" href="/images/team/team-member-3.png" />
-<image id="team_member_4" width="512" height="592" href="/images/team/team-member-4.png" />
-<image id="team_member_5" width="512" height="592" href="/images/team/team-member-5.png" />
+<image id="team_member_1" width="512" height="592" href="/images/team/dima-drynau.png" />
+<image id="team_member_2" width="512" height="592" href="/images/team/kate-shtirts.jpeg" />
+<image id="team_member_3" width="512" height="592" href="/images/team/vitaly-moroz.jpg" />
+<image id="team_member_4" width="512" height="592" href="/images/team/nik-evtihiev.jpg" />
+<image id="team_member_5" width="512" height="592" href="/images/team/olga-khaladovich.jpg" />
 <image id="team_member_6" width="512" height="592" href="/images/team/team-member-6.png" />
 <image id="team_member_7" width="512" height="592" href="/images/team/team-member-7.png" />
 </defs>
