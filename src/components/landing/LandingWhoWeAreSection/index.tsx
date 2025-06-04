@@ -14,13 +14,13 @@ import styles from './style.module.scss'
 const { Title, Paragraph, Text } = Typography
 
 const members: any = {
-	'team_svg__team-member-1': 'Mentor of team management',
-	'team_svg__team-member-2': 'Mentor of game design',
-	'team_svg__team-member-3': 'Legal officer',
-	'team_svg__team-member-4': 'Technical officer',
-	'team_svg__team-member-5': 'Mentor of game development',
-	'team_svg__team-member-6': 'UI/UX designer',
-	'team_svg__team-member-7': 'Community members',
+	'team_svg__team-member-1': 'Expert in team management',
+	'team_svg__team-member-2': 'Expert in game design',
+	'team_svg__team-member-3': 'Expert in Unreal Engine',
+	'team_svg__team-member-4': 'Expert in education in the game industry',
+	'team_svg__team-member-5': 'Expert in programming',
+	'team_svg__team-member-6': 'Expert in game design',
+	'team_svg__team-member-7': 'You',
 }
 
 export const LandingWhoWeAreSection = () => {
