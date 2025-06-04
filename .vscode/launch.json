@@ -25,16 +25,11 @@
         "action": "debugWithChrome"
       }
     },
-    // For server side rendering debug
-    // {
-    //   "type": "node", //Fixed
-    //   "request": "attach", //Fixed
-    //   "name": "Next.js: Attach to Node",
-    //   "port": 9229,
-    //   "address": "0.0.0.0",
-    //   "localRoot": "${workspaceFolder}",
-    //   "remoteRoot": "/app",
-    //   "protocol": "inspector"
-    // },
+    {
+      "name": "Run script",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn dotenv -e .env.production.local clear",
+    }
   ]
 }
