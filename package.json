@@ -12,7 +12,8 @@
     "refresh-translations": "node import-translations.js",
     "db:generate": "gdhub-prisma generate --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
     "db:deploy": "gdhub-prisma deploy --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
-    "db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma"
+    "db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
+    "test": "vitest"
   },
   "prisma": {
     "seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
@@ -142,7 +143,9 @@
     "sass": "^1.86.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "node-mocks-http": "^1.11.0",
+    "vitest": "^1.5.0"
   },
   "resolutions": {
     "@babel/runtime": "^7.24.6"
