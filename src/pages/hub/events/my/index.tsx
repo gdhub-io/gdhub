@@ -251,6 +251,9 @@ const MyEventsPage: NextPageWithLayout = () => {
 							</Tag>
 						)
 						break
+					case prismaClient.$Enums.EventStatus.Archived:
+						buttons.push(<Tag color="error">{t('event.status.archived', 'Archived')}</Tag>)
+						break
 					case prismaClient.$Enums.EventStatus.Closed:
 						buttons.push(<Tag color="error">{t('event.status.closed', 'Closed')}</Tag>)
 				}

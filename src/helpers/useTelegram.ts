@@ -16,23 +16,23 @@ export const useTelegram = () => {
 	const [app, setApp] = useState<TelegramWebApp | null>(null)
 	const [isOpenedInTelegram, setIsOpenedInTelegram] = useState<boolean>(false)
 
-	useEffect(() => {
-		if (
-			typeof window !== 'undefined' &&
-			typeof window.Telegram !== 'undefined' &&
-			typeof window.Telegram.WebApp !== 'undefined'
-		) {
+        useEffect(() => {
+                if (
+                        typeof window !== 'undefined' &&
+                        typeof window.Telegram !== 'undefined' &&
+                        typeof window.Telegram.WebApp !== 'undefined'
+                ) {
 			setApp(window.Telegram.WebApp)
 			setIsOpenedInTelegram(window.Telegram.WebApp.initData.length > 0)
 
 			window.Telegram.WebApp.expand()
-		}
+                }
 
-		return () => {
-			setApp(null)
-			setIsOpenedInTelegram(false)
-		}
-	})
+                return () => {
+                        setApp(null)
+                        setIsOpenedInTelegram(false)
+                }
+        }, [])
 
 	return [isOpenedInTelegram, app?.initDataUnsafe.user, app]
 }
