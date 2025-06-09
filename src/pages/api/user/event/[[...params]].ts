@@ -150,7 +150,7 @@ class ApiUserEventEndpointHandler {
 
 		const totalPublishedCount = await prisma.event.count({
 			where: {
-				status: prismaClient.$Enums.EventStatus.Published,
+				status: { in: [prismaClient.$Enums.EventStatus.Published, prismaClient.$Enums.EventStatus.Archived] },
 			},
 		})
 

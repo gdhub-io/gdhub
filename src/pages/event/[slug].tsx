@@ -6,9 +6,11 @@ import { useWorkDirections } from '@/hooks/library'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
+import { ArrowLeftOutlined } from '@ant-design/icons'
 import { useTolgee } from '@tolgee/react'
-import { Flex, Typography } from 'antd'
+import { Button, Flex, Space, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
+import Link from 'next/link'
 import styles from './style.module.scss'
 
 const { Text } = Typography
@@ -20,7 +22,7 @@ interface EventPageProps {
 
 const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 	const { data: workDirections } = useWorkDirections()
-	const { getLanguage } = useTolgee()
+	const { getLanguage, t } = useTolgee()
 
 	const [formattedSchedule, setFormattedSchedule] = useState<any[]>([])
 
@@ -62,6 +64,51 @@ const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 			extra={
 				!isConferenceOrGamelab && (
 					<Flex gap={8} align="center">
+						<Link href={`/events`}>
+							<Button
+								type="text"
+								size="small"
+								className={styles.parentLink}
+								onMouseEnter={(e) => {
+									const button = e.currentTarget
+									const arrow = button.querySelector('.arrow') as HTMLElement
+									if (arrow) {
+										arrow.style.width = '16px'
+										arrow.style.marginRight = '8px'
+										arrow.style.opacity = '1'
+									}
+									button.style.paddingLeft = '8px'
+									button.style.paddingRight = '8px'
+								}}
+								onMouseLeave={(e) => {
+									const button = e.currentTarget
+									const arrow = button.querySelector('.arrow') as HTMLElement
+									if (arrow) {
+										arrow.style.width = '0'
+										arrow.style.marginRight = '0'
+										arrow.style.opacity = '0'
+									}
+									button.style.paddingLeft = '0'
+									button.style.paddingRight = '0'
+								}}
+							>
+								<Space size={0}>
+									<ArrowLeftOutlined
+										className="arrow"
+										style={{
+											width: 0,
+											marginRight: 0,
+											opacity: 0,
+											transition: 'all 0.3s ease',
+											overflow: 'hidden',
+											color: '#ff4d4f',
+										}}
+									/>
+									<Text className={styles.extraText}>{t('page.events.allEvents', 'Events')}</Text>
+								</Space>
+							</Button>
+						</Link>
+						<span style={{ color: '#ffffff54', lineHeight: 1, fontSize: 16 }}>/</span>
 						<Text className={styles.extraText}>{event.type}</Text>
 						<span style={{ color: '#ffffff54', lineHeight: 1, fontSize: 16 }}>/</span>
 						<Text strong style={{ color: '#fff' }}>

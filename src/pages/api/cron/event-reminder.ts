@@ -10,7 +10,7 @@ class CronEventReminderHandler {
 	@QueueCronLog('event-reminder')
 	public async handler() {
 		// set closed for old events
-		const closedEvents = await prisma.event.updateMany({
+		const archivedEvents = await prisma.event.updateMany({
 			where: {
 				status: prismaClient.EventStatus.Published,
 				schedule: {
@@ -22,12 +22,12 @@ class CronEventReminderHandler {
 				},
 			},
 			data: {
-				status: prismaClient.EventStatus.Closed,
+				status: prismaClient.EventStatus.Archived,
 			},
 		})
 
 		return {
-			closedEvents: closedEvents.count,
+			archivedEvents: archivedEvents.count,
 		}
 	}
 }

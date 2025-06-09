@@ -96,9 +96,9 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 											return (
 												<Flex key={sp.id || i} align="center" gap={12} style={{ minWidth: 220 }}>
 													<Avatar
-														size={48}
+														size={64}
 														src={speakerAvatar}
-														style={{ minWidth: 48, background: '#eee', color: '#222', fontSize: 18 }}
+														style={{ minWidth: 64, background: '#eee', color: '#222', fontSize: 18 }}
 													>
 														{!speakerAvatar && speakerName ? speakerName[0] : null}
 													</Avatar>
