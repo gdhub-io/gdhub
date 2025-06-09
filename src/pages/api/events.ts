@@ -81,7 +81,9 @@ class ApiEventsEndpointHandler {
 		const events = await prisma.event.findMany({
 			where: {
 				type: type ? { in: type } : undefined,
-				status: status ? { in: status } : { notIn: [prismaClient.$Enums.EventStatus.Closed] },
+				status: status
+					? { in: status }
+					: { notIn: [prismaClient.$Enums.EventStatus.Closed, prismaClient.$Enums.EventStatus.Draft] },
 				schedule: {
 					some: timeWhere,
 				},
