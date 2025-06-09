@@ -32,7 +32,7 @@ export const useTelegram = () => {
 			setApp(null)
 			setIsOpenedInTelegram(false)
 		}
-	})
+	}, [])
 
 	return [isOpenedInTelegram, app?.initDataUnsafe.user, app]
 }
