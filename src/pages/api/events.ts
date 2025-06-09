@@ -36,7 +36,12 @@ class ApiEventsEndpointHandler {
 	@Get()
 	public async get(
 		@Query(ValidationPipe)
-		{ type, status, timeStatus = [EventTimeStatus.Upcoming, EventTimeStatus.Ongoing], withDates = false }: GetEventsDto
+		{
+			type,
+			status,
+			timeStatus = [EventTimeStatus.Upcoming, EventTimeStatus.Ongoing, EventTimeStatus.Past],
+			withDates = false,
+		}: GetEventsDto
 	) {
 		const timeWhere: prismaClient.Prisma.EventScheduleItemWhereInput = {
 			startDate: {
@@ -76,7 +81,7 @@ class ApiEventsEndpointHandler {
 		const events = await prisma.event.findMany({
 			where: {
 				type: type ? { in: type } : undefined,
-				status: status ? { in: status } : prismaClient.$Enums.EventStatus.Published,
+				status: status ? { in: status } : { notIn: [prismaClient.$Enums.EventStatus.Closed] },
 				schedule: {
 					some: timeWhere,
 				},

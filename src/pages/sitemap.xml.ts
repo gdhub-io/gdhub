@@ -69,7 +69,7 @@ export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 
 	const events = await prisma.event.findMany({
 		where: {
-			status: prismaClient.EventStatus.Published,
+			status: { in: [prismaClient.EventStatus.Published, prismaClient.EventStatus.Archived] },
 			schedule: { some: {} },
 		},
 		orderBy: { updatedAt: 'desc' },
@@ -99,7 +99,7 @@ export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 		sitemap.add({
 			localUrl: `/event/${event.slug}`,
 			updatedAt: dayjs(event.updatedAt).format('YYYY-MM-DD'),
-			priority: 0.7,
+			priority: event.status === prismaClient.EventStatus.Archived ? 0.3 : 0.7,
 		})
 	})
 

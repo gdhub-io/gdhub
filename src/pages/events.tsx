@@ -1,6 +1,7 @@
 import React from 'react'
 import eventBackgroundImage from '@/assets/images/public-events-header-bg.jpg'
 import { EventCard, PastEventCard, EventSection, BannerEventSlider, EmptyEventState } from '@/components/events'
+import SectionSkeleton from '@/components/events/SectionSkeleton'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import styles from '@/pages/hub/events/style.module.scss'
@@ -20,6 +21,16 @@ const EventsPage: NextPageWithLayout = () => {
 		{ enabled: true }
 	)
 
+	const [loadingSections, setLoadingSections] = React.useState({
+		knowledge: true,
+		experiments: true,
+		past: true,
+	})
+
+	const handleLoadingChange = React.useCallback((key: keyof typeof loadingSections, isLoading: boolean) => {
+		setLoadingSections((prev) => ({ ...prev, [key]: isLoading }))
+	}, [])
+
 	return (
 		<PublicLayout
 			title={t('page.events.title', 'Events')}
@@ -27,9 +38,41 @@ const EventsPage: NextPageWithLayout = () => {
 			seo={{ openGraph: { type: 'website', url: '/events' } }}
 		>
 			<div className={styles.container}>
-				{Boolean(eventCount?.count) ? (
+				{isCountFetched && eventCount?.count ? (
 					<>
 						<BannerEventSlider />
+
+						{(loadingSections.knowledge || loadingSections.experiments || loadingSections.past) && (
+							<>
+								{loadingSections.knowledge && (
+									<SectionSkeleton
+										title={t('page.events.newKnowledge', 'New Knowledge')}
+										description={t(
+											'page.events.newKnowledgeDescription',
+											'Meetups and workshops for sharing experience, learning, and networking.'
+										)}
+									/>
+								)}
+								{loadingSections.experiments && (
+									<SectionSkeleton
+										title={t('page.events.gameJamsAndExperiments', 'Experience & Experiments')}
+										description={t(
+											'page.events.gameJamsAndExperimentsDescription',
+											'Game jams for practice, experiments, and new connections.'
+										)}
+									/>
+								)}
+								{loadingSections.past && (
+									<SectionSkeleton
+										title={t('page.events.pastEvents', 'Some Past Events')}
+										description={t(
+											'page.events.pastEventsDescription',
+											"Here are some of the platform's completed events."
+										)}
+									/>
+								)}
+							</>
+						)}
 
 						<EventSection
 							title={t('page.events.newKnowledge', 'New Knowledge')}
@@ -41,6 +84,7 @@ const EventsPage: NextPageWithLayout = () => {
 							timeStatus={['ongoing', 'upcoming']}
 							CardComponent={EventCard}
 							token={token}
+							onLoadingChange={(isLoading) => handleLoadingChange('knowledge', isLoading)}
 						/>
 						<EventSection
 							title={t('page.events.gameJamsAndExperiments', 'Experience & Experiments')}
@@ -52,6 +96,7 @@ const EventsPage: NextPageWithLayout = () => {
 							timeStatus={['ongoing', 'upcoming']}
 							CardComponent={EventCard}
 							token={token}
+							onLoadingChange={(isLoading) => handleLoadingChange('experiments', isLoading)}
 						/>
 						<EventSection
 							title={t('page.events.pastEvents', 'Some Past Events')}
@@ -67,6 +112,7 @@ const EventsPage: NextPageWithLayout = () => {
 							CardComponent={PastEventCard}
 							token={token}
 							colSpan={{ xs: 24, sm: 12, md: 8, lg: 6, xl: 4 }}
+							onLoadingChange={(isLoading) => handleLoadingChange('past', isLoading)}
 						/>
 					</>
 				) : isCountFetched ? (
