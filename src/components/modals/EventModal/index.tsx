@@ -242,6 +242,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 	// Удалить item расписания
 	const removeScheduleItem = (id: string) => {
 		setSchedule(schedule.filter((i) => i.id !== id))
+		setScheduleHasChanges(true)
 	}
 
 	// Обновить поле расписания
@@ -264,6 +265,8 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 			}
 			return [...prev, item]
 		})
+
+		setScheduleHasChanges(true)
 	}
 
 	// Сохранить событие
