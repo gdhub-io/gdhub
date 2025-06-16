@@ -112,6 +112,7 @@ export const BannerEventSlider = () => {
 				params: {
 					type: [prismaClient.$Enums.EventType.Conference, prismaClient.$Enums.EventType.GameLab],
 					withDates: true,
+					status: [prismaClient.$Enums.EventStatus.Published],
 				},
 				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
 			}
