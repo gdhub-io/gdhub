@@ -83,7 +83,7 @@ export const LandingRecentDevlogsSection = () => {
 												<div className={styles.cardHeader}>
 													<Space direction="vertical" size={4} className={styles.projectInfo}>
 														<Text strong>{devlog.project?.name}</Text>
-														<Text type="secondary">{dayjs(devlog.createdAt).format('MMMM D, YYYY')}</Text>
+														<Text type="secondary">{dayjs(devlog.publishedAt).format('MMMM D, YYYY')}</Text>
 													</Space>
 												</div>
 												<div className={styles.cardContent}>

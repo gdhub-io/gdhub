@@ -6,7 +6,6 @@ export interface DevlogPost {
 	projectId: string
 	video?: string
 	pageCover?: string
-	createdAt: string
 	author?: {
 		name: string
 		image?: string
