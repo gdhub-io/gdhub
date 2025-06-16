@@ -44,38 +44,34 @@ class ApiEventsEndpointHandler {
 		}: GetEventsDto
 	) {
 		const timeWhere: prismaClient.Prisma.EventScheduleItemWhereInput = {
-			startDate: {
-				lt: new Date(),
-			},
+			OR: [],
 		}
 
 		if (timeStatus?.includes(EventTimeStatus.Ongoing)) {
-			timeWhere.startDate = {
-				lte: new Date(),
-			}
-			timeWhere.endDate = {
-				gte: new Date(),
-			}
+			timeWhere.OR?.push({
+				startDate: {
+					lte: new Date(),
+				},
+				endDate: {
+					gte: new Date(),
+				},
+			})
 		}
 
 		if (timeStatus?.includes(EventTimeStatus.Past)) {
-			timeWhere.endDate = {
-				lt: new Date(),
-			}
+			timeWhere.OR?.push({
+				endDate: {
+					lt: new Date(),
+				},
+			})
 		}
 
 		if (timeStatus?.includes(EventTimeStatus.Upcoming)) {
-			timeWhere.startDate = {
-				gte: new Date(),
-			}
-		}
-
-		if (timeStatus?.includes(EventTimeStatus.Upcoming) && timeStatus?.includes(EventTimeStatus.Ongoing)) {
-			timeWhere.OR = [
-				{
-					OR: [{ startDate: { gte: new Date() } }, { startDate: { lt: new Date() }, endDate: { gte: new Date() } }],
+			timeWhere.OR?.push({
+				startDate: {
+					gte: new Date(),
 				},
-			]
+			})
 		}
 
 		const events = await prisma.event.findMany({
@@ -84,9 +80,11 @@ class ApiEventsEndpointHandler {
 				status: status
 					? { in: status }
 					: { notIn: [prismaClient.$Enums.EventStatus.Closed, prismaClient.$Enums.EventStatus.Draft] },
-				schedule: {
-					some: timeWhere,
-				},
+				schedule: !!timeWhere.OR?.length
+					? {
+							some: timeWhere,
+						}
+					: undefined,
 			},
 			include: withDates
 				? {
