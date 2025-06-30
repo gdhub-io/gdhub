@@ -75,8 +75,6 @@ export const ProtectedLayout = ({
 		return access.some((role) => session.user.roles.includes(role))
 	}, [session, access])
 
-	console.log('hasAccess', hasAccess)
-
 	const seoSettings: NextSeoProps = {
 		title,
 		description: subTitle,
