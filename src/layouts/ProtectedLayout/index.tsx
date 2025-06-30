@@ -46,6 +46,7 @@ interface ProtectedLayoutProps {
 	backButtonUrl?: string
 	projectName?: string
 	extra?: ReactNode
+	access?: prismaClient.UserRole[]
 }
 
 const { Header, Content } = Layout
@@ -59,6 +60,7 @@ export const ProtectedLayout = ({
 	showBackButton = false,
 	backButtonUrl,
 	extra,
+	access = [prismaClient.UserRole.Member],
 }: ProtectedLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage, changeLanguage } = useTolgee()
@@ -66,6 +68,14 @@ export const ProtectedLayout = ({
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
+
+	const hasAccess = useMemo(() => {
+		if (!session) return false
+
+		return access.some((role) => session.user.roles.includes(role))
+	}, [session, access])
+
+	console.log('hasAccess', hasAccess)
 
 	const seoSettings: NextSeoProps = {
 		title,
@@ -94,6 +104,12 @@ export const ProtectedLayout = ({
 	useEffect(() => {
 		if (!screens.lg) setOpenMobileMenu(false)
 	}, [session, screens])
+
+	useEffect(() => {
+		if (!hasAccess && session?.user) {
+			router.push('/hub')
+		}
+	}, [hasAccess, router, session?.user])
 
 	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = [
@@ -147,11 +163,11 @@ export const ProtectedLayout = ({
 		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
 				label: (
-					<Link href="/admin/seasons">
+					<Link href="/admin/posts">
 						<T>Administration</T>
 					</Link>
 				),
-				key: '/admin/seasons',
+				key: '/admin/posts',
 			})
 		}
 

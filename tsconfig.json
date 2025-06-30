@@ -47,7 +47,7 @@
     "src/**/*.tsx",
     "prisma/**/*.ts",
     "tests/**/*.ts"
-  ],
+, "src/components/admin/BlogPostEditor"  ],
   "exclude": [
     "node_modules",
     "tsconfig.json",
