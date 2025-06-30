@@ -1806,6 +1806,13 @@
   resolved "https://registry.yarnpkg.com/@editorjs/helpers/-/helpers-0.0.4.tgz#9351373f609e9f8333e0421f7b396c7c7fd41bfa"
   integrity sha512-ieg3dzo2m1/ELze/RMNADiAiC5amXxIlVXoJ5vvXITOu/p/dPsrF+Oi3h5gBYvtGk9vg5LJUSG5YWU0tBUO1tw==
 
+"@editorjs/image@^2.10.2":
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/@editorjs/image/-/image-2.10.2.tgz#d2d6f523507d1a8e51216e7522354834dfafac86"
+  integrity sha512-SU0nP9NhqwA7+Jlco/E7zjYjtRUrVGSOW8bsrrEnH8my588UW7mPGa1zwAHFs/UMB0x8LXKOb1iq40db+2iC6A==
+  dependencies:
+    "@codexteam/icons" "^0.3.0"
+
 "@editorjs/link@^2.6.2":
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/@editorjs/link/-/link-2.6.2.tgz#d9c17e01ecc3518ae4be61e0a024f7f225e09e5a"

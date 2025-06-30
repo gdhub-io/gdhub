@@ -56,10 +56,13 @@ class ApiBlogPostsAdminHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Body(ValidationPipe) { title, content, slug, authors }: CreateBlogPostDto
 	) {
+		const coverImage = (content as any)?.blocks?.find((block: any) => block.type === 'image')?.data?.file?.url as string
+
 		const post = await prisma.blogPost.create({
 			data: {
 				title,
 				content: content || {},
+				image: coverImage || undefined,
 				slug: slug || slugify(title, { lower: true, strict: true }),
 				authors: { connect: authors?.map((author) => ({ id: author.id })) || [{ id: req.user.id }] },
 			},
@@ -86,12 +89,15 @@ class ApiBlogPostsAdminHandler {
 		@Param('id') id: string,
 		@Body(ValidationPipe) { title, content, slug, status, authors }: UpdateBlogPostDto
 	) {
+		const coverImage = (content as any)?.blocks?.find((block: any) => block.type === 'image')?.data?.file?.url as string
+
 		const post = await prisma.blogPost.update({
 			where: { id },
 			data: {
 				title: title || undefined,
 				content: content || undefined,
 				slug: slug || undefined,
+				image: coverImage || undefined,
 				authors: { connect: authors?.map((author) => ({ id: author.id })) || [] },
 				status: status || undefined,
 				publishedAt: status === prismaClient.BlogPostStatus.Published ? new Date() : null,

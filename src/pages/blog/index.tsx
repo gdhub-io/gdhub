@@ -1,9 +1,10 @@
 import { PublicLayout } from '@/layouts/PublicLayout'
-import { ClockCircleOutlined, UserOutlined } from '@ant-design/icons'
+import { UserOutlined } from '@ant-design/icons'
 import { useTolgee } from '@tolgee/react'
-import { Card, Flex, Image as AntImage, Typography } from 'antd'
+import { Button, Card, Typography } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.scss'
 
@@ -14,7 +15,7 @@ interface BlogPost {
 	title: string
 	slug: string
 	content: any
-	coverImage?: string
+	image?: string
 	publishedAt: string
 	description?: string
 	authors: Array<{
@@ -63,55 +64,52 @@ export default function BlogPage({ posts }: PageProps) {
 			seo={{ title: 'Blog | gdhub.io' }}
 		>
 			<div className={styles.container}>
-				<div className={styles.header}>
-					<Title level={2}>{t('page.blog.postsCount', '{{count}} posts', { count: posts.length })}</Title>
-				</div>
-
 				<div className={styles.posts}>
-					{posts.map((post) => {
+					{posts.map((post, idx) => {
 						const author = post.authors?.[0]
 						return (
-							<Link key={post.id} href={`/blog/${post.slug}`} className={styles.cardLink}>
-								<Card className={styles.postCard} hoverable>
-									{post.coverImage && (
-										<div className={styles.coverImage}>
-											<AntImage
-												src={post.coverImage}
-												alt={post.title}
-												preview={false}
-												style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-											/>
-										</div>
-									)}
-									<div className={styles.postContent}>
-										<div className={styles.postTopMeta}>
-											<Text className={styles.postDate}>{formatDate(post.publishedAt)}</Text>
-											<div className={styles.authorWrap}>
-												{author?.image ? (
-													<AntImage
-														src={author.image}
-														alt={author.name}
-														width={28}
-														height={28}
-														style={{ borderRadius: '50%' }}
-														preview={false}
-													/>
-												) : (
-													<UserOutlined style={{ fontSize: '20px' }} />
-												)}
-												<Text className={styles.authorName}>{author?.name || 'Anonymous'}</Text>
-											</div>
-										</div>
-										<Title level={4} className={styles.postTitle}>
-											{post.title}
-										</Title>
-										{post.description && <Text className={styles.postExcerpt}>{post.description}</Text>}
-										<div className={styles.readMoreWrap}>
-											<button className={styles.readMoreBtn}>{t('page.blog.readMore', 'Read More')}</button>
+							<Card className={styles.postCard} key={'post-' + idx}>
+								{post.image && (
+									<div className={styles.coverImage}>
+										<Image
+											src={post.image}
+											alt={post.title}
+											width={512}
+											height={512}
+											style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+											className={styles.coverImage}
+											priority
+										/>
+									</div>
+								)}
+								<div className={styles.postContent}>
+									<div className={styles.postTopMeta}>
+										<Text className={styles.postDate}>{formatDate(post.publishedAt)}</Text>
+										<div className={styles.authorWrap}>
+											{author?.image ? (
+												<Image
+													src={author.image}
+													alt={author.name}
+													width={24}
+													height={24}
+													style={{ borderRadius: '50%' }}
+												/>
+											) : (
+												<UserOutlined style={{ fontSize: '20px' }} />
+											)}
 										</div>
 									</div>
-								</Card>
-							</Link>
+									<Title level={4} className={styles.postTitle}>
+										{post.title}
+									</Title>
+									{post.description && <Text className={styles.postExcerpt}>{post.description}</Text>}
+									<Link href={`/blog/${post.slug}`}>
+										<Button type="default" className="gray-btn" style={{ width: '100%' }}>
+											{t('page.blog.readMore', 'Read More')}
+										</Button>
+									</Link>
+								</div>
+							</Card>
 						)
 					})}
 				</div>
