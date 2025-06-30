@@ -11,11 +11,13 @@ import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const { Title, Text, Paragraph } = Typography
 
 const BlogPostsAdminPage: NextPageWithLayout = () => {
+	const router = useRouter()
 	const [showModal, setShowModal] = useState(false)
 	const [postId, setPostId] = useState<string | undefined>(undefined)
 	const {
@@ -23,14 +25,11 @@ const BlogPostsAdminPage: NextPageWithLayout = () => {
 		refetch: refetchPosts,
 		isFetching,
 	} = useQuery(['admin', 'posts'], () => axios.get('/api/admin/posts'), { refetchOnWindowFocus: false })
-	const { mutateAsync: deletePost } = useMutation(
-		({ id }: { id: string }) => axios.delete(`/api/admin/post`, { params: { id } }),
-		{
-			onSuccess: () => {
-				refetchPosts()
-			},
-		}
-	)
+	const { mutateAsync: deletePost } = useMutation(({ id }: { id: string }) => axios.delete(`/api/admin/post/${id}`), {
+		onSuccess: () => {
+			refetchPosts()
+		},
+	})
 
 	// const handleChange = (recordId: string) => {
 	// 	setLectureId(recordId)
@@ -42,25 +41,19 @@ const BlogPostsAdminPage: NextPageWithLayout = () => {
 		setPostId(undefined)
 	}
 
-	const handleCreatePost = (values: any) => {
-		console.log(values)
+	const handleCreatePost = (id: string) => {
+		setPostId(id)
+		setShowModal(false)
+
+		router.push(`/admin/post/${id}`)
 	}
 
 	const columns: ColumnsType<prismaClient.BlogPost> = [
 		{
 			title: 'Title',
-			dataIndex: 'name',
-			key: 'name',
-			render: (value, record) => (
-				<>
-					<Paragraph strong style={{ marginBottom: 0 }}>
-						{value}
-					</Paragraph>
-					<Space size="large">
-						<Link href={`/admin/post/${record.id}/authors`}>Authors ({record.authorIds.length})</Link>
-					</Space>
-				</>
-			),
+			dataIndex: 'title',
+			key: 'title',
+			render: (value, record) => <Link href={`/admin/post/${record.id}`}>{value}</Link>,
 		},
 		{
 			title: 'Date',
@@ -105,7 +98,9 @@ const BlogPostsAdminPage: NextPageWithLayout = () => {
 			render(value, record) {
 				return (
 					<Space size="large">
-						{/* <Button onClick={() => handleChange(record.id)}>Edit</Button> */}
+						<Link href={`/blog/${record.slug}`} target="_blank">
+							<Button type="text">Go to post</Button>
+						</Link>
 						<Popconfirm title="Are you sure you want to delete this entry?" onConfirm={() => handleDelete(record.id)}>
 							<Button type="text" danger icon={<GoTrash />} />
 						</Popconfirm>

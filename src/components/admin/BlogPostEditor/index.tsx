@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { OutputData } from '@editorjs/editorjs'
 import EditorJS from '@editorjs/editorjs'
+import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Breadcrumb, Button, Flex, message, Space, theme, Typography } from 'antd'
+import { Breadcrumb, Button, Flex, message, Popover, Space, Switch, theme, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { trim, unescape } from 'lodash'
@@ -18,7 +19,7 @@ const generateHash = (content: any): string => {
 	return JSON.stringify(content)
 }
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 export default function BlogPostEditor({ id }: { id?: string }) {
 	const { token } = theme.useToken()
@@ -44,6 +45,19 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		refetchOnReconnect: false,
 		refetchInterval: false,
 		refetchIntervalInBackground: false,
+	})
+
+	const { mutateAsync: changeStatus, isLoading: isChangingStatus } = useMutation({
+		mutationFn: (status: prismaClient.BlogPostStatus) => {
+			return axios.put(`/api/admin/post/${id}`, { status })
+		},
+		onSuccess: () => {
+			refetchPost()
+			message.success('Blog post status changed successfully')
+		},
+		onError: () => {
+			message.error('Failed to change blog post status')
+		},
 	})
 
 	const { mutateAsync: saveDocument, isLoading: isSavingDocument } = useMutation({
@@ -257,6 +271,13 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		}
 	}, [saveDocument])
 
+	const handleChangeStatus = useCallback(
+		async (checked: boolean) => {
+			await changeStatus(checked ? prismaClient.BlogPostStatus.Published : prismaClient.BlogPostStatus.Draft)
+		},
+		[changeStatus]
+	)
+
 	return (
 		<div>
 			<Breadcrumb
@@ -289,12 +310,20 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 						>
 							{postTitle}
 						</Title>
-						<p className={styles.postSubtitle}>
-							Last updated by {post?.data?.createdBy?.name ?? 'unknown'} on{' '}
-							{dayjs(post?.data?.updatedAt).format('DD/MM/YYYY')}
-						</p>
+						<p className={styles.postSubtitle}>Last updated on {dayjs(post?.data?.updatedAt).format('DD/MM/YYYY')}</p>
 					</div>
 					<Space>
+						<Space>
+							<Text type="secondary">{post?.data?.status}</Text>
+							<Popover content={hasUnsavedChanges ? 'You should save the post first' : 'Change status'}>
+								<Switch
+									title="Change status"
+									disabled={hasUnsavedChanges}
+									checked={post?.data?.status === prismaClient.BlogPostStatus.Published}
+									onChange={handleChangeStatus}
+								/>
+							</Popover>
+						</Space>
 						<Button
 							type="primary"
 							onClick={handleSaveBlogPost}

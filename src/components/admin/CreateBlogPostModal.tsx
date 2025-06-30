@@ -19,13 +19,14 @@ export const CreateBlogPostModal = ({
 		mutationFn: (values: { title: string }) => {
 			return axios.post('/api/admin/post', values)
 		},
+		onSuccess: (data) => {
+			onOk(data.data?.id)
+		},
 	})
 
 	const handleOk = async () => {
 		const values = form.getFieldsValue()
-		const post = await createPost(values)
-
-		onOk(post.data)
+		await createPost(values)
 	}
 
 	return (
