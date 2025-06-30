@@ -75,6 +75,13 @@ export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 		orderBy: { updatedAt: 'desc' },
 	})
 
+	const blogPosts = await prisma.blogPost.findMany({
+		where: {
+			status: { in: [prismaClient.BlogPostStatus.Published, prismaClient.BlogPostStatus.Archived] },
+		},
+		orderBy: { updatedAt: 'desc' },
+	})
+
 	const sitemap = new SiteMapXML()
 
 	// static pages
@@ -83,7 +90,8 @@ export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 	sitemap.add({ localUrl: '/projects', updatedAt: dayjs(projects[0]?.updatedAt).format('YYYY-MM-DD') })
 	sitemap.add({ localUrl: '/vacancies', updatedAt: dayjs(vacancies[0]?.updatedAt).format('YYYY-MM-DD') })
 	sitemap.add({ localUrl: '/events', updatedAt: dayjs(events[0]?.updatedAt).format('YYYY-MM-DD') })
-
+	sitemap.add({ localUrl: '/blog', updatedAt: dayjs(blogPosts[0]?.updatedAt).format('YYYY-MM-DD') })
+	// blog posts
 	// dynamic pages
 	projects.forEach((project) => {
 		sitemap.add({
@@ -100,6 +108,16 @@ export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 			localUrl: `/event/${event.slug}`,
 			updatedAt: dayjs(event.updatedAt).format('YYYY-MM-DD'),
 			priority: event.status === prismaClient.EventStatus.Archived ? 0.3 : 0.7,
+		})
+	})
+
+	// blog posts
+	blogPosts.forEach((post) => {
+		sitemap.add({
+			localUrl: `/blog/${post.slug}`,
+			updatedAt: dayjs(post.updatedAt).format('YYYY-MM-DD'),
+			priority: 0.7,
+			freq: 'weekly',
 		})
 	})
 

@@ -1,3 +1,5 @@
+import { Blocks } from '@editorjs/editorjs/types/api'
+
 export const getCleanTextContent = (content: string, maxLength: number = 200) => {
 	// Удаляем markdown изображения
 	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, '')
@@ -78,4 +80,10 @@ export const getPageCover = (post: {
 	const result = videoThumbnail || firstImageFromContent || post.project?.coverImage || null
 	console.log('Final result:', result)
 	return result
+}
+
+export const getEditorjsPageCover = (content: any) => {
+	const firstImage = content?.blocks?.find((block: any) => block.type === 'image')
+
+	return firstImage?.data?.file?.url || null
 }

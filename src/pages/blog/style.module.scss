@@ -1,0 +1,126 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.posts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+  gap: 32px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.cardLink {
+  text-decoration: none;
+}
+
+.postCard {
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+  background: #fff;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  :global {
+    .ant-card-body {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+  }
+}
+
+.coverImage {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.postContent {
+  padding: 24px 24px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.postTopMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.postDate {
+  font-size: 14px;
+  color: #888;
+}
+
+.authorWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.authorName {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.postTitle {
+  margin-bottom: 10px !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  color: #222 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.postExcerpt {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 12px;
+  min-height: 40px;
+}
+
+.featuresList {
+  margin: 0 0 16px 0;
+  padding-left: 18px;
+  color: #444;
+  font-size: 15px;
+
+  li {
+    margin-bottom: 4px;
+    list-style: disc;
+  }
+}
+
+.readMoreWrap {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.readMoreBtn {
+  width: 100%;
+}
