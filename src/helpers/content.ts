@@ -1,5 +1,3 @@
-import { Blocks } from '@editorjs/editorjs/types/api'
-
 export const getCleanTextContent = (content: string, maxLength: number = 200) => {
 	// Удаляем markdown изображения
 	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, '')

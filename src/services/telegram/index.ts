@@ -149,7 +149,10 @@ export default class TelegramService {
 		const reports = await prisma.projectReport.findMany({
 			where: {
 				publishedAt: { gte: lastLogDate },
-				project: { status: prismaClient.ProjectStatus.Approved },
+				project: {
+					status: prismaClient.ProjectStatus.Approved,
+					workflow: { currentStep: { name: { notIn: ['Introduction', 'Ideation'], mode: 'insensitive' } } },
+				},
 			},
 			include: { project: { select: { name: true, slug: true } } },
 		})

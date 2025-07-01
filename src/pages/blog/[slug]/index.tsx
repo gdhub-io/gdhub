@@ -22,6 +22,8 @@ interface BlogPost {
 	updatedAt: string
 	publishedAt: string
 	viewsCount?: number
+	slug: string
+	description: string
 	authors: Array<{
 		name: string
 		image?: string
@@ -29,7 +31,7 @@ interface BlogPost {
 }
 
 interface PageProps {
-	post: BlogPost & { description: string }
+	post: BlogPost
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({ query }) => {
@@ -171,7 +173,7 @@ export default function BlogPost({ post }: PageProps) {
 									</Text>
 								</Flex>
 								<PageViews
-									path={`/blog/${post?.id}`}
+									path={`/blog/${post?.slug}`}
 									containerStyle={{ fontSize: '12px' }}
 									startDate={post?.publishedAt}
 								/>
