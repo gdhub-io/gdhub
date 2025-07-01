@@ -21,7 +21,7 @@ export const PageViews = ({
 	containerStyle,
 	iconStyle = { fontSize: '12px' },
 	textStyle = { fontSize: '12px' },
-	minViews = 0,
+	minViews = 10,
 }: PageViewsProps) => {
 	const [pageviews, setPageviews] = useState<string>('0')
 	const router = useRouter()
@@ -44,8 +44,10 @@ export const PageViews = ({
 	}, [path, router.asPath, router.isReady])
 
 	const formatPageviews = (views: string): string | null => {
-		const num = parseInt(views, minViews)
+		const num = parseInt(views)
+
 		if (isNaN(num) || num < minViews) return null
+
 		if (num >= 1000000) {
 			return (num / 1000000).toFixed(1) + 'M'
 		} else if (num >= 1000) {
@@ -55,6 +57,7 @@ export const PageViews = ({
 	}
 
 	const formattedViews = formatPageviews(pageviews)
+
 	if (!formattedViews) return null
 
 	return (
