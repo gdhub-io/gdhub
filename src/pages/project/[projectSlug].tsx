@@ -84,9 +84,11 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 									<Paragraph>
 										<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
 									</Paragraph>
-									<Paragraph type="secondary">
-										<T>Development stage</T>: {project.workflow.currentStep.name}
-									</Paragraph>
+									{!!project.workflow?.currentStep && (
+										<Paragraph type="secondary">
+											<T>Development stage</T>: {project.workflow.currentStep.name}
+										</Paragraph>
+									)}
 								</div>
 
 								{!screens.md && generalData}

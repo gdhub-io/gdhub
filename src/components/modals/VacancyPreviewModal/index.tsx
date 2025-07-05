@@ -2,21 +2,27 @@ import { useEffect, useState } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
-import { Alert, Descriptions, Form, message, Modal, Spin } from 'antd'
+import { T, useTolgee } from '@tolgee/react'
+import { Alert, Button, Card, Col, Form, message, Modal, Row, Space, Spin, Typography } from 'antd'
+import { theme } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 import SpecialitySelectModal from '../SpecialitySelectModal'
 
+const { Text, Title, Paragraph } = Typography
+
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
+	const { token } = theme.useToken()
 	const session: any = useSession()
 	const { t } = useTolgee()
 	const router = useRouter()
 	const [form] = Form.useForm()
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
+	const [showPitchVideo, setShowPitchVideo] = useState(false)
 
 	const {
 		data: vacancy,
@@ -33,6 +39,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							id: string
 							slug: string
 							name: string
+							description: string
+							coverImage: string
+							videoLink: string
 							workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
 						}
 					}
@@ -112,11 +121,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			return t('signin', 'Signin')
 		}
 
-		// if (hasRole(prismaClient.UserRole.Member, session)) {
 		return vacancy?.data.myTeamMemberId
 			? t('modal.vacancy.cancelMyResponse', 'Cancel my response')
 			: t('modal.vacancy.apply', 'Respond')
-		// }
 	}
 
 	const functionOkButton = async () => {
@@ -131,48 +138,125 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		return null
 	}
 
+	const handleCoverClick = () => setShowPitchVideo(true)
+
 	return (
 		<>
 			<Modal
 				centered
-				title={
-					session?.data ? t('modal.vacancy.titleSession', 'Job vacancy') : t('needAuth', 'Requested authorization')
-				}
+				title={null}
 				width={800}
 				destroyOnClose
 				maskClosable={false}
-				okText={statusOkButton()}
-				onOk={functionOkButton}
-				// okButtonProps={{ disabled: !session?.data?.user }}
-				cancelText={t('close', 'Close')}
 				open={open}
 				onCancel={handleCancel}
-				confirmLoading={processing}
+				footer={[
+					<Space key="form-buttons" wrap>
+						<Button key="close" onClick={handleCancel} disabled={processing}>
+							<T>Close</T>
+						</Button>
+						{session?.data && (
+							<Button key="action" type="primary" onClick={functionOkButton} loading={processing}>
+								{statusOkButton()}
+							</Button>
+						)}
+					</Space>,
+				]}
 			>
-				{!session?.data &&
-					t('needAuthDescription', 'Viewing vacancies is available only to authorized lpatform users.')}
-
 				<Spin spinning={processing}>
 					{!!vacancy && (
-						<>
-							<h1>{vacancy.data.title}</h1>
+						<Space direction="vertical" style={{ width: '100%' }}>
+							<div className={styles.cardHeader}>
+								<Text type="secondary" className={styles.cardType}>
+									<T>Vacancy card</T>
+								</Text>
+								<div className={styles.vacancyTitle}>
+									<Title level={2} style={{ margin: 0 }}>
+										{vacancy.data.title}
+									</Title>
+								</div>
+							</div>
 
-							<Descriptions layout="horizontal" column={1} size="small">
-								<Descriptions.Item label={t('Project')}>{vacancy.data.team.project.name}</Descriptions.Item>
-								<Descriptions.Item label={t('The vacancy is acute before')}>
-									{dayjs(vacancy.data.finishedAt).format('LL')}
-								</Descriptions.Item>
-							</Descriptions>
-							<Descriptions layout="vertical" column={1}>
-								<Descriptions.Item className={styles.vacancyDescription} label={t('Vacancy description')}>
-									<TextWithLineBreak text={vacancy.data.description} />
-								</Descriptions.Item>
-							</Descriptions>
+							{/* Project Information Card */}
+							<Card className={styles.cardWrapper} bordered={false}>
+								<Row gutter={[24, 24]}>
+									<Col xs={24} md={16}>
+										<Space direction="vertical" style={{ width: '100%' }}>
+											<div>
+												<Text type="secondary" className={styles.fieldLabel}>
+													<T>Project</T>
+												</Text>
+												<Title level={4} style={{ margin: '8px 0' }}>
+													{vacancy.data.team.project.name}
+												</Title>
+											</div>
 
-							{vacancy.data.promisePercentage && vacancy.data.promiseStep?.name && (
+											{vacancy.data.team.project.description && (
+												<div>
+													<Text type="secondary" className={styles.fieldLabel}>
+														<T>Project description</T>
+													</Text>
+													<Paragraph style={{ margin: '8px 0' }}>
+														{vacancy.data.team.project.description.slice(0, 200)}
+														{vacancy.data.team.project.description.length > 200 && '...'}
+													</Paragraph>
+												</div>
+											)}
+										</Space>
+									</Col>
+
+									<Col xs={24} md={8}>
+										{!showPitchVideo && vacancy.data.team.project.coverImage && (
+											<div className={styles.projectCover}>
+												{vacancy.data.team.project.videoLink && (
+													<div className={styles.coverButtonContainer}>
+														<Button onClick={handleCoverClick} type="primary" size="small">
+															<T>Watch</T>
+														</Button>
+													</div>
+												)}
+												<Image
+													src={vacancy.data.team.project.coverImage}
+													alt="Project cover"
+													fill
+													style={{ objectFit: 'cover' }}
+												/>
+											</div>
+										)}
+										{showPitchVideo && vacancy.data.team.project.videoLink && (
+											<div className={styles.videoContainer}>
+												<iframe
+													src={`https://www.youtube.com/embed/${vacancy.data.team.project.videoLink}?autoplay=1`}
+													title="Project video"
+													width="100%"
+													height="200"
+													style={{ border: 'none', borderRadius: '8px' }}
+													onEnded={() => setShowPitchVideo(false)}
+												/>
+											</div>
+										)}
+									</Col>
+								</Row>
+							</Card>
+
+							{/* Vacancy Description Card */}
+							<Card className={styles.cardWrapper} title={<T>Vacancy description</T>} bordered={false}>
+								<Space direction="vertical" style={{ width: '100%' }}>
+									<div className={styles.vacancyDescription}>
+										<TextWithLineBreak text={vacancy.data.description} />
+									</div>
+									<div className={styles.vacancyDeadline}>
+										<Text type="secondary">
+											<T>The vacancy is acute before</T>: {dayjs(vacancy.data.finishedAt).format('LL')}
+										</Text>
+									</div>
+								</Space>
+							</Card>
+
+							{/* Equity Promise Alert */}
+							{!!vacancy.data.promisePercentage && !!vacancy.data.promiseStep?.name && (
 								<Alert
 									type="info"
-									style={{ marginTop: 16 }}
 									message={`${t('modal.vacancy.equityPromise', 'Equity Promise')}: ${vacancy.data.promisePercentage}% ${t(
 										'modal.vacancy.equityPromiseDescription',
 										'of project equity will be allocated upon reaching the required workflow step {step}',
@@ -181,21 +265,31 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 								/>
 							)}
 
+							{/* Status Alerts */}
 							{vacancy.data.myTeamMemberId ? (
 								<Alert
 									type="success"
-									style={{ marginTop: 16 }}
 									message={t('modal.vacancy.applied', 'You have already responded to this vacancy')}
 								/>
 							) : null}
+
+							{!session?.data && (
+								<Alert
+									type="warning"
+									message={t(
+										'needAuthDescription',
+										'Viewing vacancies is available only to authorized platform users.'
+									)}
+								/>
+							)}
+
 							{!session?.data?.user && (
 								<Alert
 									type="error"
-									style={{ marginTop: 16 }}
 									message={t('modal.vacancy.notAuth', 'Only registered users with a completed specialty can respond.')}
 								/>
 							)}
-						</>
+						</Space>
 					)}
 				</Spin>
 			</Modal>
