@@ -13,6 +13,8 @@ const { Paragraph } = Typography
 type ProjectIncludeAll = prismaClient.Project & {
 	author: prismaClient.User
 	workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
+	lastPostAt: Date
+	firstPostAt: Date
 }
 type ProjectsPageParams = { projects: ProjectIncludeAll[] }
 
@@ -38,7 +40,7 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 
 	return {
 		props: {
-			projects: projects.map((p) => ({
+			projects: projects.map((p: ProjectIncludeAll) => ({
 				...p,
 				createdAt: p.createdAt?.toISOString() || null,
 				updatedAt: p.updatedAt?.toISOString() || null,
@@ -56,7 +58,7 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 							...p.workflow,
 							createdAt: p.workflow.createdAt?.toISOString() || null,
 							updatedAt: p.workflow.updatedAt?.toISOString() || null,
-							currentStep: p.workflow.currentStep,
+							currentStep: p.workflow.currentStepId,
 							steps:
 								p.workflow.steps?.map((step: prismaClient.ProjectWorkflowStep) => ({
 									...step,

@@ -27,7 +27,7 @@ class ApiSpecialityHandler {
 			select: { level: true },
 		})
 
-		const levels = specialities.map((speciality) => speciality.level)
+		const levels = specialities.map((speciality: { level: prismaClient.$Enums.SkillLevel }) => speciality.level)
 		const uniqueLevels = [...new Set(levels)]
 
 		return uniqueLevels

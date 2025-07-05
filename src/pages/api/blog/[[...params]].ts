@@ -18,7 +18,7 @@ class ApiBlogPostHandler {
 		})
 
 		// description
-		const postsWithDescription = posts.map((post) => {
+		const postsWithDescription = posts.map((post: { content: any; description: string }) => {
 			const firstParagraph = (post.content as any)?.blocks?.find((block: any) => block.type === 'paragraph')
 			const description = firstParagraph?.data?.text?.slice(0, 100) || ''
 			const hasMore = firstParagraph?.data?.text?.length > 100

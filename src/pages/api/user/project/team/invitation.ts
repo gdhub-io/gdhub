@@ -62,7 +62,7 @@ class ApiUserTeamInvitationHandler {
 
 		// Проверяем, что пользователь имеет право отменить приглашение
 		// (должен быть основателем команды)
-		const isTeamMember = invitation.team.members.some((member) => member.userId === req.user.id)
+		const isTeamMember = invitation.team.members.some((member: { userId: string }) => member.userId === req.user.id)
 
 		if (!isTeamMember) {
 			throw new Error('You do not have permission to cancel this invitation')

@@ -73,7 +73,9 @@ class ApiUserTeamAcceptInviteHandler {
 			// Проверяем, есть ли у пользователя хотя бы одна специализация
 			const hasSpeciality =
 				user.specialities &&
-				user.specialities.filter((speciality) => speciality.workDirectionId === invitation.directionId).length > 0
+				user.specialities.filter(
+					(speciality: prismaClient.Speciality) => speciality.workDirectionId === invitation.directionId
+				).length > 0
 
 			// Если пользователь не завершил onboarding или не имеет специализации,
 			// сохраняем информацию о приглашении для последующего добавления в команду

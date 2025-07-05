@@ -72,7 +72,7 @@ class CronDevlogReminderHandler {
 		const lastLogs = await prisma.queueJobLog.findMany({
 			where: {
 				name: 'devlog-reminder',
-				OR: projects.map((project) => ({
+				OR: projects.map((project: { id: string }) => ({
 					data: {
 						path: ['projectIds'],
 						array_contains: [project.id],
@@ -90,7 +90,7 @@ class CronDevlogReminderHandler {
 
 		// Extract projectIds from today's logs
 		const alreadyNotifiedProjectIds = new Set(
-			lastLogs.map((log) => (log.data as { projectIds?: string[] })?.projectIds || []).flat()
+			lastLogs.map((log: { data: { projectIds?: string[] } }) => log.data?.projectIds || []).flat()
 		)
 
 		console.log(
@@ -104,7 +104,7 @@ class CronDevlogReminderHandler {
 
 		const needToNotifyProjects = []
 
-		for (const project of projects.filter((project) => !alreadyNotifiedProjectIds.has(project.id))) {
+		for (const project of projects.filter((project: { id: string }) => !alreadyNotifiedProjectIds.has(project.id))) {
 			await NovuService.send({
 				template: 'share-project-news',
 				to: { subscriberId: project.authorId, email: project.author.email || undefined },

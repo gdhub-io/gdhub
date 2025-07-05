@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
 					if (userExist) {
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							to: [{ email }],
-							templateId: brevoTemplates[userExist.lang].signin,
+							templateId: brevoTemplates[userExist.lang as keyof typeof brevoTemplates].signin,
 							params: {
 								link: url,
 							},
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
 
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							to: [{ email }],
-							templateId: brevoTemplates[locale].registration,
+							templateId: brevoTemplates[locale as keyof typeof brevoTemplates].registration,
 							params: {
 								link: url,
 							},

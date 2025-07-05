@@ -248,10 +248,12 @@ class ApiUserEventEndpointHandler {
 		})
 
 		//find and remove items for removing
-		const removedItems = event.schedule.filter((i) => !schedule?.some((item) => item.id === i.id))
+		const removedItems = event.schedule.filter((i: { id: string }) => !schedule?.some((item) => item.id === i.id))
 
 		if (removedItems.length > 0) {
-			await prisma.eventScheduleItem.deleteMany({ where: { id: { in: removedItems.map((i) => i.id) } } })
+			await prisma.eventScheduleItem.deleteMany({
+				where: { id: { in: removedItems.map((i: { id: string }) => i.id) } },
+			})
 		}
 
 		// update or create items

@@ -66,8 +66,8 @@ class OpenAI {
 				specialization: { type: 'string' },
 				workAreaId: {
 					type: 'string',
-					enum: workDirections.map((wd) => wd.id),
-					default: workDirections.find((wd) => wd.name == 'other')?.id,
+					enum: workDirections.map((wd: { id: string }) => wd.id),
+					default: workDirections.find((wd: { name: string }) => wd.name == 'other')?.id,
 				},
 				skills: { type: 'array', items: { type: 'string' } },
 				experience: {
@@ -127,7 +127,7 @@ class OpenAI {
         10. Find a link to your portfolio/resume if available.
 
         Areas of activity data:\n
-        ${workDirections.map((wd) => `id=${wd.id} name=${wd.name}\n`)}
+        ${workDirections.map((wd: { id: string; name: string }) => `id=${wd.id} name=${wd.name}\n`)}
 				
         Resume text:\n
 				"""${text}"""
