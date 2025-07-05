@@ -175,6 +175,12 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 				updatedAt: project.updatedAt.toISOString(),
 				startedAt: project.startedAt?.toISOString(),
 				finishedAt: project.finishedAt ? project.finishedAt.toISOString() : null,
+				workflow: project.workflow
+					? {
+							...project.workflow,
+							currentStep: project.workflow.currentStep || null,
+						}
+					: null,
 			},
 			seo: {
 				title: project.name || null,

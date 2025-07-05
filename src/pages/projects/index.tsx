@@ -58,7 +58,7 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 							...p.workflow,
 							createdAt: p.workflow.createdAt?.toISOString() || null,
 							updatedAt: p.workflow.updatedAt?.toISOString() || null,
-							currentStep: p.workflow.currentStepId,
+							currentStep: p.workflow.currentStepId || null,
 							steps:
 								p.workflow.steps?.map((step: prismaClient.ProjectWorkflowStep) => ({
 									...step,
