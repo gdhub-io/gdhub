@@ -41,15 +41,8 @@ export const LandingHeroSection = ({
 							<div>
 								<span>
 									<Title>
-										<T>Game Developers Hub</T>
+										<T>Community-driven platform for video game creators</T>
 									</Title>
-								</span>
-								<br />
-								<span className={styles.subTitle}>
-									<T>for everyone who wants to make</T>{' '}
-									<span style={{ color: '#F15541' }}>
-										<T>video games</T>
-									</span>
 								</span>
 							</div>
 							<ul>

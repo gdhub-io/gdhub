@@ -169,7 +169,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 								</Descriptions.Item>
 							</Descriptions>
 
-							{vacancy.data.promisePercentage && vacancy.data.promiseStep?.name && (
+							{!!vacancy.data.promisePercentage && !!vacancy.data.promiseStep?.name && (
 								<Alert
 									type="info"
 									style={{ marginTop: 16 }}
