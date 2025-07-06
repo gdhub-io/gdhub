@@ -70,7 +70,7 @@ class CronAdviceRequestReminderHandler {
 			// Extract projectIds from today's logs
 			const alreadyNotifiedAdviceRequestIds = new Set(
 				lastLogs
-					.map((log) => (log.data as { remindedAdviceRequestIds?: string[] })?.remindedAdviceRequestIds || [])
+					.map((log: { data: { remindedAdviceRequestIds?: string[] } }) => log.data?.remindedAdviceRequestIds || [])
 					.flat()
 			)
 
@@ -79,7 +79,9 @@ class CronAdviceRequestReminderHandler {
 			)
 
 			// If all projects have already been notified, skip the rest of the function
-			needToNotifyAdviceRequests = adviceRequestsToRemind.filter((r) => !alreadyNotifiedAdviceRequestIds.has(r.id))
+			needToNotifyAdviceRequests = adviceRequestsToRemind.filter(
+				(r: { id: string }) => !alreadyNotifiedAdviceRequestIds.has(r.id)
+			)
 
 			for (const adviceRequest of needToNotifyAdviceRequests) {
 				// send reminder to the recipient of the advice request
@@ -122,7 +124,7 @@ class CronAdviceRequestReminderHandler {
 
 		if (expiredAdviceRequests.length > 0) {
 			await prisma.adviceRequest.updateMany({
-				where: { id: { in: expiredAdviceRequests.map((r) => r.id) } },
+				where: { id: { in: expiredAdviceRequests.map((r: { id: string }) => r.id) } },
 				data: {
 					status: prismaClient.AdviceRequestStatus.Closed,
 					finishedAt: new Date(),
@@ -163,8 +165,8 @@ class CronAdviceRequestReminderHandler {
 		}
 
 		return {
-			remindedAdviceRequestIds: needToNotifyAdviceRequests.map((r) => r.id),
-			expiredAdviceRequestIds: expiredAdviceRequests.map((r) => r.id),
+			remindedAdviceRequestIds: needToNotifyAdviceRequests.map((r: { id: string }) => r.id),
+			expiredAdviceRequestIds: expiredAdviceRequests.map((r: { id: string }) => r.id),
 		}
 	}
 }

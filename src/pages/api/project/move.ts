@@ -49,11 +49,15 @@ class ApiProjectMoveHandler {
 				if (!currentStep) return
 
 				if (direction == 'next') {
-					changedStep = project.workflow?.steps.find((step) => step.order === (currentStep?.order || 0) + 1)
+					changedStep = project.workflow?.steps.find(
+						(step: { order: number }) => step.order === (currentStep?.order || 0) + 1
+					)
 				}
 
 				if (direction == 'previous' && currentStep?.order > 0) {
-					changedStep = project.workflow?.steps.find((step) => step.order === (currentStep?.order || 0) - 1)
+					changedStep = project.workflow?.steps.find(
+						(step: { order: number }) => step.order === (currentStep?.order || 0) - 1
+					)
 				}
 
 				if (changedStep) {

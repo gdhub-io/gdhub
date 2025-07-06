@@ -51,23 +51,35 @@ class ApiTeamMaxAvailableShareHandler {
 		}
 
 		// Считаем общую сумму промисов из вакансий
-		const vacanciesPromisesSum = team.vacancies.reduce((sum, vacancy) => {
+		const vacanciesPromisesSum = team.vacancies.reduce((sum: number, vacancy: { promisePercentage: number }) => {
 			return sum + (vacancy.promisePercentage || 0)
 		}, 0)
 
 		// Считаем общую сумму промисов из членов команды
-		const membersPromisesSum = team.members.reduce((sum, member) => {
-			return sum + member.equityAllocations.reduce((promiseSum, promise) => promiseSum + promise.percentage, 0)
-		}, 0)
+		const membersPromisesSum = team.members.reduce(
+			(sum: number, member: { equityAllocations: { percentage: number }[] }) => {
+				return (
+					sum +
+					member.equityAllocations.reduce(
+						(promiseSum: number, promise: { percentage: number }) => promiseSum + promise.percentage,
+						0
+					)
+				)
+			},
+			0
+		)
 
 		// Считаем общую сумму промисов из распределения долей проекта
-		const projectPromisesSum = team.project?.equity?.equityAllocations.reduce((sum, allocation) => {
-			return (
-				sum +
-				allocation.percentage +
-				allocation.promises.reduce((promiseSum, promise) => promiseSum + promise.percentage, 0)
-			)
-		}, 0)
+		const projectPromisesSum = team.project?.equity?.equityAllocations.reduce(
+			(sum: number, allocation: { percentage: number; promises: { percentage: number }[] }) => {
+				return (
+					sum +
+					allocation.percentage +
+					allocation.promises.reduce((promiseSum, promise) => promiseSum + promise.percentage, 0)
+				)
+			},
+			0
+		)
 
 		// Считаем системные доли
 		const systemShares =

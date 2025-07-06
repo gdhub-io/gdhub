@@ -73,7 +73,9 @@ class ApiUserTeamCompletePendingInvitationHandler {
 				throw new Error('Pending invitation not found')
 			}
 
-			const neededSpeciality = user?.specialities.find((s) => s.workDirectionId === pendingInvitation.directionId)
+			const neededSpeciality = user?.specialities.find(
+				(s: { workDirectionId: string }) => s.workDirectionId === pendingInvitation.directionId
+			)
 
 			if (!neededSpeciality) {
 				throw new Error('Speciality not found')

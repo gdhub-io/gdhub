@@ -24,20 +24,26 @@ export async function migrate(searchClient: SearchEngineService) {
 		})
 
 		try {
-			const documents = specialists.map((s) => {
-				const { user, userId, workDirectionId, ...otherData } = s
+			const documents = specialists.map(
+				(s: {
+					id: string
+					user: { profile: { isActive: boolean; timeForWork: number[]; country: string; city: string } }
+					direction: { name: string }
+				}) => {
+					const { user, ...otherData } = s
 
-				return prepareData({
-					...otherData,
-					externalId: s.id,
-					isActive: s.user.profile?.isActive,
-					timeForWorkMin: user.profile?.timeForWork[0],
-					timeForWorkMax: user.profile?.timeForWork[1],
-					direction: s.direction.name,
-					country: user.profile?.country,
-					city: user.profile?.city,
-				})
-			}) as any[]
+					return prepareData({
+						...otherData,
+						externalId: s.id,
+						isActive: s.user.profile?.isActive,
+						timeForWorkMin: user.profile?.timeForWork[0],
+						timeForWorkMax: user.profile?.timeForWork[1],
+						direction: s.direction.name,
+						country: user.profile?.country,
+						city: user.profile?.city,
+					})
+				}
+			) as any[]
 			await searchClient.client
 				.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
 				.documents()

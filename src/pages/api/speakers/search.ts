@@ -48,13 +48,15 @@ class ApiSpeakersSearchHandler {
 			orderBy: { updatedAt: 'desc' },
 		})
 
-		return specialities.map((s) => ({
-			id: s.id,
-			name: s.user?.name || '',
-			image: s.user?.image || '',
-			speciality: s.name,
-			direction: s.direction?.name || '',
-		}))
+		return specialities.map(
+			(s: { id: string; user: { name: string; image: string }; name: string; direction: { name: string } }) => ({
+				id: s.id,
+				name: s.user?.name || '',
+				image: s.user?.image || '',
+				speciality: s.name,
+				direction: s.direction?.name || '',
+			})
+		)
 	}
 }
 

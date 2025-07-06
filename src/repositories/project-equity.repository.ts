@@ -177,8 +177,12 @@ export class ProjectEquityRepository {
 			}
 
 			// Get member share
-			const memberPromise = equity.equityAllocations.find((allocation) => allocation.teamMemberId === memberId)
-			const memberShare = equity.equityAllocations.find((allocation) => allocation.teamMemberId === memberId)
+			const memberPromise = equity.equityAllocations.find(
+				(allocation: { teamMemberId: string }) => allocation.teamMemberId === memberId
+			)
+			const memberShare = equity.equityAllocations.find(
+				(allocation: { teamMemberId: string }) => allocation.teamMemberId === memberId
+			)
 
 			return memberShare
 		} catch (error: any) {
@@ -523,7 +527,7 @@ export class ProjectEquityRepository {
 					select: { id: true },
 				})
 
-				const allocationIds = allocations.map((a) => a.id)
+				const allocationIds = allocations.map((a: { id: string }) => a.id)
 
 				// Filter transactions where user was sender or recipient
 				where.OR = [{ fromAllocationId: { in: allocationIds } }, { toAllocationId: { in: allocationIds } }]
@@ -536,7 +540,7 @@ export class ProjectEquityRepository {
 					select: { id: true },
 				})
 
-				const allocationIds = allocations.map((a) => a.id)
+				const allocationIds = allocations.map((a: { id: string }) => a.id)
 
 				// Filter transactions for all allocations of this equity
 				where.OR = [{ fromAllocationId: { in: allocationIds } }, { toAllocationId: { in: allocationIds } }]

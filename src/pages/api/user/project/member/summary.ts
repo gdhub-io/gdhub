@@ -40,10 +40,14 @@ class TeamMemberSummary {
 				: dayjs().diff(dayjs(teamMember.startedAt), 'day'),
 			availableHours: teamMember?.user.profile?.timeForWork || 0,
 			promisedEquity: teamMember.equityAllocations.reduce(
-				(acc, curr) => acc + curr.promises.reduce((acc, curr) => acc + curr.percentage, 0),
+				(acc: number, curr: { promises: { percentage: number }[] }) =>
+					acc + curr.promises.reduce((acc: number, curr: { percentage: number }) => acc + curr.percentage, 0),
 				0
 			),
-			actualEquity: teamMember.equityAllocations.reduce((acc, curr) => acc + curr.percentage, 0),
+			actualEquity: teamMember.equityAllocations.reduce(
+				(acc: number, curr: { percentage: number }) => acc + curr.percentage,
+				0
+			),
 			workflowStepForVested: teamMember.equityAllocations[0]?.promises[0]?.targetStep?.name,
 		}
 	}

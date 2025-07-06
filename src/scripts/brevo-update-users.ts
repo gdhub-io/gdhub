@@ -57,7 +57,10 @@ async function main() {
 					COUNTRY: user.profile?.country,
 					ONBOARDING_DONE: user.onboardingDone,
 					DIRECTIONS: user.specialities
-						.map((speciality) => `${speciality.direction.name} (${speciality.level})`)
+						.map(
+							(speciality: { direction: { name: string }; level: string }) =>
+								`${speciality.direction.name} (${speciality.level})`
+						)
 						.join(', '),
 				},
 			})
