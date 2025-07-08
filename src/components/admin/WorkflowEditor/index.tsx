@@ -400,45 +400,6 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 				</Card>
 			)}
 
-			{isProjectWorkflow && (
-				<Card title="Управление проектом" style={{ marginBottom: 24 }}>
-					<Row gutter={[16, 16]}>
-						<Col span={12}>
-							<Space direction="vertical" style={{ width: '100%' }}>
-								<Text strong>Текущий этап:</Text>
-								<Select
-									style={{ width: '100%' }}
-									placeholder="Выберите текущий этап"
-									value={currentStepId}
-									onChange={handleCurrentStepChange}
-									allowClear
-								>
-									{(workflowData?.steps || []).map((step: any) => (
-										<Select.Option key={step.id} value={step.id}>
-											{step.name}
-										</Select.Option>
-									))}
-								</Select>
-							</Space>
-						</Col>
-						<Col span={12}>
-							<Space direction="vertical" style={{ width: '100%' }}>
-								<Text strong>Статус:</Text>
-								<div>
-									{currentStepId ? (
-										<Text type="success">
-											Активно - {workflowData?.steps?.find((s: any) => s.id === currentStepId)?.name}
-										</Text>
-									) : (
-										<Text type="secondary">Не начато</Text>
-									)}
-								</div>
-							</Space>
-						</Col>
-					</Row>
-				</Card>
-			)}
-
 			<div>
 				<Flex justify="space-between" align="center">
 					<div>
@@ -458,6 +419,24 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 						</p>
 					</div>
 					<div className={styles.headerActions}>
+						{isProjectWorkflow && (
+							<Space>
+								<Text strong>Текущий этап:</Text>
+								<Select
+									style={{ width: 200 }}
+									placeholder="Выберите текущий этап"
+									value={currentStepId}
+									onChange={handleCurrentStepChange}
+									allowClear
+								>
+									{(workflowData?.steps || []).map((step: any) => (
+										<Select.Option key={step.id} value={step.id}>
+											{step.name}
+										</Select.Option>
+									))}
+								</Select>
+							</Space>
+						)}
 						{!isProjectWorkflow && (
 							<Button icon={<SettingOutlined />} onClick={() => setSettingsModalVisible(true)}>
 								Настройки
