@@ -24,6 +24,7 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import StepEditModal from './StepEditModal'
 import styles from './style.module.scss'
+import TaskEditModal from './TaskEditModal'
 import WorkflowSettingsModal from './WorkflowSettingsModal'
 
 const { Title, Text } = Typography
@@ -62,6 +63,19 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 		isNew: false,
 	})
 	const [settingsModalVisible, setSettingsModalVisible] = useState(false)
+	const [taskEditModal, setTaskEditModal] = useState<{
+		visible: boolean
+		task: WorkflowTaskTemplate | null
+		stepIndex: number
+		taskIndex: number
+		isNew: boolean
+	}>({
+		visible: false,
+		task: null,
+		stepIndex: -1,
+		taskIndex: -1,
+		isNew: false,
+	})
 
 	// Choose endpoints based on type
 	const getEndpoint = () => {
@@ -272,6 +286,66 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 		}
 	}
 
+	const addTask = (stepIndex: number) => {
+		setTaskEditModal({
+			visible: true,
+			task: null,
+			stepIndex,
+			taskIndex: -1,
+			isNew: true,
+		})
+	}
+
+	const editTask = (stepIndex: number, taskIndex: number) => {
+		const steps = form.getFieldValue('steps') || []
+		const task = steps[stepIndex]?.tasks?.[taskIndex]
+		if (task) {
+			setTaskEditModal({
+				visible: true,
+				task,
+				stepIndex,
+				taskIndex,
+				isNew: false,
+			})
+		}
+	}
+
+	const handleTaskSave = (updatedTask: WorkflowTaskTemplate) => {
+		const steps = form.getFieldValue('steps') || []
+
+		if (taskEditModal.isNew) {
+			// Add new task
+			if (!steps[taskEditModal.stepIndex].tasks) {
+				steps[taskEditModal.stepIndex].tasks = []
+			}
+			steps[taskEditModal.stepIndex].tasks.push(updatedTask)
+		} else {
+			// Update existing task
+			steps[taskEditModal.stepIndex].tasks[taskEditModal.taskIndex] = updatedTask
+		}
+
+		form.setFieldValue('steps', [...steps])
+		setHasUnsavedChanges(true)
+		setTaskEditModal({ visible: false, task: null, stepIndex: -1, taskIndex: -1, isNew: false })
+	}
+
+	const removeTask = (stepIndex: number, taskIndex: number) => {
+		const steps = form.getFieldValue('steps') || []
+		if (steps[stepIndex]?.tasks) {
+			steps[stepIndex].tasks.splice(taskIndex, 1)
+			form.setFieldValue('steps', [...steps])
+			setHasUnsavedChanges(true)
+		}
+	}
+
+	const handleTaskModalClose = () => {
+		setTaskEditModal({ visible: false, task: null, stepIndex: -1, taskIndex: -1, isNew: false })
+		// Ensure body scroll is restored
+		setTimeout(() => {
+			document.body.style.overflow = ''
+		}, 100)
+	}
+
 	// Ensure body scroll is restored when component unmounts
 	useEffect(() => {
 		return () => {
@@ -396,128 +470,161 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 				</Flex>
 			</div>
 
-			<Form form={form} layout="vertical">
-				<Row gutter={[24, 24]}>
-					<Col span={24}>
-						<Card
-							title={isProjectWorkflow ? 'Шаги проекта' : 'Этапы (Steps)'}
-							className={styles.mainCard}
-							extra={
-								<Button type="primary" icon={<PlusOutlined />} onClick={addStep}>
-									Добавить этап
-								</Button>
-							}
-						>
-							<DragDropContext onDragEnd={onDragEnd}>
-								<Droppable droppableId="steps">
-									{(provided) => (
-										<div {...provided.droppableProps} ref={provided.innerRef}>
-											<Form.List name="steps">
-												{(fields) => (
-													<>
-														{fields.map((field, stepIndex) => (
-															<Draggable key={field.key} draggableId={`step-${field.key}`} index={stepIndex}>
-																{(provided) => (
-																	<div ref={provided.innerRef} {...provided.draggableProps} className={styles.stepCard}>
-																		<Card
-																			size="small"
-																			title={
-																				<div className={styles.stepHeader}>
-																					<div {...provided.dragHandleProps} className={styles.dragHandle}>
-																						<MenuOutlined />
-																					</div>
-																					<span>
-																						{form.getFieldValue(['steps', stepIndex, 'title']) ||
-																							form.getFieldValue(['steps', stepIndex, 'name']) ||
-																							`Шаг ${stepIndex + 1}`}
-																					</span>
-																					<div className={styles.stepActions}>
-																						<Button
-																							type="text"
-																							icon={<EditOutlined />}
-																							onClick={() => editStep(stepIndex)}
-																							size="small"
-																						>
-																							Редактировать
-																						</Button>
-																						<Popconfirm title="Удалить этап?" onConfirm={() => removeStep(stepIndex)}>
-																							<Button type="text" danger icon={<DeleteOutlined />} size="small" />
-																						</Popconfirm>
-																					</div>
-																				</div>
-																			}
-																		>
-																			<div className={styles.stepDescription}>
-																				{form.getFieldValue(['steps', stepIndex, 'description']) || 'Нет описания'}
+			<div style={{ marginBottom: 24 }}>
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+					<Title level={2} style={{ margin: 0 }}>
+						{isProjectWorkflow ? 'Шаги проекта' : 'Этапы (Steps)'}
+					</Title>
+					<Button type="primary" icon={<PlusOutlined />} onClick={addStep}>
+						Добавить этап
+					</Button>
+				</div>
+
+				<Form form={form} layout="vertical">
+					<DragDropContext onDragEnd={onDragEnd}>
+						<Droppable droppableId="steps">
+							{(provided) => (
+								<div {...provided.droppableProps} ref={provided.innerRef}>
+									<Form.List name="steps">
+										{(fields) => (
+											<>
+												{fields.map((field, stepIndex) => (
+													<Draggable key={field.key} draggableId={`step-${field.key}`} index={stepIndex}>
+														{(provided) => (
+															<div ref={provided.innerRef} {...provided.draggableProps} className={styles.stepCard}>
+																<Card
+																	size="small"
+																	title={
+																		<div className={styles.stepHeader}>
+																			<div {...provided.dragHandleProps} className={styles.dragHandle}>
+																				<MenuOutlined />
 																			</div>
-																			{isProjectWorkflow && (
-																				<div style={{ marginTop: 12 }}>
-																					<Text strong>Задачи:</Text>
-																					<div style={{ marginTop: 8 }}>
-																						{(form.getFieldValue(['steps', stepIndex, 'tasks']) || []).map(
-																							(task: any, taskIndex: number) => (
-																								<div
-																									key={task.id || taskIndex}
-																									style={{
-																										display: 'flex',
-																										alignItems: 'center',
-																										marginBottom: 4,
-																										padding: '4px 0',
-																									}}
-																								>
-																									<Checkbox
-																										checked={Boolean(task.done)}
-																										onChange={(e) =>
-																											handleTaskStatusChange(stepIndex, taskIndex, e.target.checked)
-																										}
-																										style={{ marginRight: 8 }}
-																									>
-																										<span
-																											style={{
-																												textDecoration: task.done ? 'line-through' : 'none',
-																												color: task.done ? '#999' : 'inherit',
-																											}}
-																										>
-																											{task.title ||
-																												task.name ||
-																												task.description ||
-																												`Задача ${taskIndex + 1}`}
-																										</span>
-																									</Checkbox>
-																								</div>
-																							)
-																						)}
-																						{(!form.getFieldValue(['steps', stepIndex, 'tasks']) ||
-																							form.getFieldValue(['steps', stepIndex, 'tasks']).length === 0) && (
-																							<Text type="secondary" style={{ fontSize: '12px' }}>
-																								Нет задач
-																							</Text>
-																						)}
-																					</div>
-																				</div>
-																			)}
-																			{!isProjectWorkflow && (
-																				<div className={styles.stepTaskCount}>
-																					{form.getFieldValue(['steps', stepIndex, 'tasks'])?.length || 0} задач
-																				</div>
-																			)}
-																		</Card>
+																			<span>
+																				{form.getFieldValue(['steps', stepIndex, 'title']) ||
+																					form.getFieldValue(['steps', stepIndex, 'name']) ||
+																					`Шаг ${stepIndex + 1}`}
+																			</span>
+																			<div className={styles.stepActions}>
+																				<Button
+																					type="text"
+																					icon={<EditOutlined />}
+																					onClick={() => editStep(stepIndex)}
+																					size="small"
+																				>
+																					Редактировать
+																				</Button>
+																				<Popconfirm title="Удалить этап?" onConfirm={() => removeStep(stepIndex)}>
+																					<Button type="text" danger icon={<DeleteOutlined />} size="small" />
+																				</Popconfirm>
+																			</div>
+																		</div>
+																	}
+																>
+																	<div className={styles.stepDescription}>
+																		{form.getFieldValue(['steps', stepIndex, 'description']) || 'Нет описания'}
 																	</div>
-																)}
-															</Draggable>
-														))}
-														{provided.placeholder}
-													</>
-												)}
-											</Form.List>
-										</div>
-									)}
-								</Droppable>
-							</DragDropContext>
-						</Card>
-					</Col>
-				</Row>
-			</Form>
+																	{isProjectWorkflow && (
+																		<div style={{ marginTop: 12 }}>
+																			<div
+																				style={{
+																					display: 'flex',
+																					justifyContent: 'space-between',
+																					alignItems: 'center',
+																					marginBottom: 8,
+																				}}
+																			>
+																				<Text strong>Задачи:</Text>
+																				<Button
+																					type="link"
+																					size="small"
+																					icon={<PlusOutlined />}
+																					onClick={() => addTask(stepIndex)}
+																				>
+																					Добавить
+																				</Button>
+																			</div>
+																			<div style={{ marginTop: 8 }}>
+																				{(form.getFieldValue(['steps', stepIndex, 'tasks']) || []).map(
+																					(task: any, taskIndex: number) => (
+																						<div
+																							key={task.id || taskIndex}
+																							style={{
+																								display: 'flex',
+																								alignItems: 'center',
+																								justifyContent: 'space-between',
+																								marginBottom: 4,
+																								padding: '4px 8px',
+																								backgroundColor: '#f8f9fa',
+																								borderRadius: '4px',
+																							}}
+																						>
+																							<div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+																								<Checkbox
+																									checked={Boolean(task.done)}
+																									onChange={(e) =>
+																										handleTaskStatusChange(stepIndex, taskIndex, e.target.checked)
+																									}
+																									style={{ marginRight: 8 }}
+																								>
+																									<span
+																										style={{
+																											textDecoration: task.done ? 'line-through' : 'none',
+																											color: task.done ? '#999' : 'inherit',
+																										}}
+																									>
+																										{task.title ||
+																											task.name ||
+																											task.description ||
+																											`Задача ${taskIndex + 1}`}
+																									</span>
+																								</Checkbox>
+																							</div>
+																							<div style={{ display: 'flex', gap: 4 }}>
+																								<Button
+																									type="text"
+																									size="small"
+																									icon={<EditOutlined />}
+																									onClick={() => editTask(stepIndex, taskIndex)}
+																								/>
+																								<Popconfirm
+																									title="Удалить задачу?"
+																									onConfirm={() => removeTask(stepIndex, taskIndex)}
+																								>
+																									<Button type="text" size="small" danger icon={<DeleteOutlined />} />
+																								</Popconfirm>
+																							</div>
+																						</div>
+																					)
+																				)}
+																				{(!form.getFieldValue(['steps', stepIndex, 'tasks']) ||
+																					form.getFieldValue(['steps', stepIndex, 'tasks']).length === 0) && (
+																					<Text type="secondary" style={{ fontSize: '12px' }}>
+																						Нет задач
+																					</Text>
+																				)}
+																			</div>
+																		</div>
+																	)}
+																	{!isProjectWorkflow && (
+																		<div className={styles.stepTaskCount}>
+																			{form.getFieldValue(['steps', stepIndex, 'tasks'])?.length || 0} задач
+																		</div>
+																	)}
+																</Card>
+															</div>
+														)}
+													</Draggable>
+												))}
+												{provided.placeholder}
+											</>
+										)}
+									</Form.List>
+								</div>
+							)}
+						</Droppable>
+					</DragDropContext>
+				</Form>
+			</div>
 
 			<StepEditModal
 				visible={stepEditModal.visible}
@@ -539,6 +646,14 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 					}}
 				/>
 			)}
+
+			<TaskEditModal
+				visible={taskEditModal.visible}
+				onClose={handleTaskModalClose}
+				onSave={handleTaskSave}
+				task={taskEditModal.task}
+				isNew={taskEditModal.isNew}
+			/>
 		</div>
 	)
 }
