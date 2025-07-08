@@ -1,7 +1,7 @@
 import heroBgImage from '@/assets/images/landing/gdhub-hero-img.png'
 import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -20,6 +20,7 @@ export const LandingHeroSection = ({
 	}
 }) => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 
 	const hasEmptyStats =
 		stats.usersCount === null ||
@@ -38,13 +39,8 @@ export const LandingHeroSection = ({
 				<Row gutter={[screens.lg ? 64 : 0, 64]}>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Space size={[64, 64]} direction="vertical" className={styles.heroMain}>
-							<div>
-								<span>
-									<Title>
-										<T>Community-driven platform for video game creators</T>
-									</Title>
-								</span>
-							</div>
+							<Title>{t('landing.hero.title', 'Community-driven platform for video game creators')}</Title>
+
 							<ul>
 								<li>
 									<Space>
@@ -68,11 +64,14 @@ export const LandingHeroSection = ({
 									</Space>
 								</li>
 							</ul>
-							<Link href="/registration">
-								<Button className={styles.heroButton} type="primary">
-									<T>Get started</T>
-								</Button>
-							</Link>
+							<Space direction="vertical">
+								<Link href="/registration">
+									<Button className={styles.heroButton} type="primary">
+										<T>Get started for free</T>
+									</Button>
+								</Link>
+								<Text type="secondary">No credit card required</Text>
+							</Space>
 						</Space>
 					</Col>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }} style={{ position: 'relative' }}>

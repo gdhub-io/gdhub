@@ -50,6 +50,7 @@
   "Close": "Close",
   "Comment": "Comment",
   "Community Chat": "Community Chat",
+  "Community Members": "Talent Pool",
   "Community Projects": "Community Projects",
   "Community member": "Community member",
   "Community members": "Community members",
@@ -73,6 +74,7 @@
   "Deal date": "Deal date",
   "Details": "Details",
   "Development Log": "Development Log",
+  "Direction": "Direction",
   "Discord": "Discord",
   "Display Name": "Display Name",
   "Documentation": "Documentation",
@@ -145,6 +147,7 @@
   "Last updates": "Last updates",
   "Legal officer": "Legal officer",
   "Let's go": "Let's go",
+  "Level": "Level",
   "Log in": "Log in",
   "Log in with Google": "Log in with Google",
   "Log in with email": "Log in with email",
@@ -213,6 +216,7 @@
   "Shares": "Shares",
   "Sign out": "Sign out",
   "Skillful": "Skillful",
+  "Skills": "Skills",
   "Sorry, we couldn't find the page you're looking for": {
     "": "Sorry, we couldn't find the page you're looking for."
   },
@@ -240,6 +244,7 @@
   "UI/UX designer": "UI/UX designer",
   "Updated": "Updated",
   "Upload PDF": "Upload PDF",
+  "User Settings": "User Settings",
   "Vacancies": "Vacancies",
   "Vacancy description": "Vacancy description",
   "Valid until": "Valid until",
@@ -303,7 +308,7 @@
         "events": "Events",
         "hub": "Overview",
         "lectures": "Lectures",
-        "members": "Members",
+        "members": "Talent Pool",
         "mentors": "Mentors",
         "projects": "Projects",
         "settings": "Settings",
@@ -385,12 +390,18 @@
     "confirm": "I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions."
   },
   "event": {
+    "about": "About",
+    "dates": "Dates",
+    "format": "Format",
     "modal": {
       "cancel": "Cancel",
-      "create": "Сreate",
+      "create": "Сreate draft",
       "description": {
-        "label": "Short description",
+        "label": "Description",
         "placeholder": "Event description"
+      },
+      "format": {
+        "label": "Format"
       },
       "gamejam": "Game Jam",
       "gamelab": "GameLab",
@@ -399,29 +410,44 @@
         "hint": "Click or drag image here. JPG, PNG. 4:5 recommended."
       },
       "link": "Link",
+      "location": "Location",
       "schedule": "Schedule",
       "schedule.add": "Add Item",
+      "schedule.hint": "You can add one or multiple schedule items to the event. Each item can have multiple speakers.",
+      "shortDescription": {
+        "label": "Short Description",
+        "placeholder": "Short description or a phrase"
+      },
       "title": "New {eventType} ",
       "title.label": "Title",
       "title.placeholder": "Event title"
     },
-    "schedule": {
-      "dates": "Start/End Dates",
-      "description": "Description",
-      "description.placeholder": "Item description",
-      "end": "End Date",
-      "link": "Link",
-      "modal": {
-        "title": "Schedule Item"
-      },
-      "speakers": "Speakers",
-      "start": "Start Date",
-      "title": "Title",
-      "title.placeholder": "Item title"
-    },
-    "type": {
-      "free": "Free",
-      "paid": "Paid"
+    "readMore": "Click to read more",
+    "register": "Register",
+    "schedule": "Schedule",
+    "schedule.dates": "Start/End Dates (local time)",
+    "schedule.description": "Description",
+    "schedule.description.placeholder": "Item description",
+    "schedule.direction": "Direction",
+    "schedule.end": "End Date",
+    "schedule.format": "Format",
+    "schedule.language": "Language",
+    "schedule.link": "Link",
+    "schedule.modal.title": "Schedule Item",
+    "schedule.speakers": "Speakers",
+    "schedule.start": "Start Date",
+    "schedule.title": "Title",
+    "schedule.title.placeholder": "Item title",
+    "type": "Type",
+    "type.free": "Free",
+    "type.paid": "Paid"
+  },
+  "events": {
+    "banner": {
+      "read_more": "Read More",
+      "see_whats_going_on": "SEE WHAT'S GOING ON",
+      "subtitle": "Event",
+      "vertical_text": "SLIDES"
     }
   },
   "experience": "Experience",
@@ -716,7 +742,7 @@
       "cancelMyResponse": "Cancel my response",
       "descriptionHelp": "Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",
       "notAuth": "Only registered users with a completed specialty can respond.",
-      "titleSession": "Job vacancy",
+      "titleSession": "Open Role",
       "withdrawSuccess": "Your response is withdrawn"
     }
   },
@@ -795,6 +821,7 @@
       "createEvent": "Create Event",
       "gameJamsAndExperiments": "Experience & Experiments",
       "gameJamsAndExperimentsDescription": "Game jams for practice, experiments, and new connections.",
+      "myEvents": "My Events",
       "newKnowledge": "New Knowledge",
       "newKnowledgeDescription": "Meetups and workshops for sharing experience, learning, and networking.",
       "pastEvents": "Some Past Events",
@@ -820,13 +847,16 @@
       "user-projects.empty.description": "You haven't created or joined any projects yet. Begin your game development journey by creating your own project or joining an existing team.",
       "user-projects.empty.title": "Start Your Game Development Journey"
     },
+    "myEvents": {
+      "title": "My Events"
+    },
     "project": {
       "members": {
         "table-title": "Members"
       }
     },
     "vacancies": {
-      "subTitle": "Invest your time in the success of new game projects",
+      "subTitle": "Current project roles and collaboration offers available to join",
       "title": "Vacancies"
     }
   },
@@ -1023,7 +1053,7 @@
   "users-proposed-concepts-total": "In total, members proposed {total} ideas",
   "vacancies": {
     "list": {
-      "description": "All project participants, responding to vacancies, accept the conditions that for the period of participation in the selected project the work is not paid until funding is received or unless other conditions are specified in the vacancies. The time you spent is investment in the project that you choose. How each team member and the team as a whole works on the project determines whether this investment can be converted into money or not. In any case, your resume will become more significant if it contains information about participation in real projects."
+      "description": "Invest your time in the success of new game projects"
     }
   },
   "video games": "video games",
