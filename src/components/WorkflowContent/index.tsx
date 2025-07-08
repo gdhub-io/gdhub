@@ -142,7 +142,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	}
 
 	useEffect(() => {
-		const stepTasks = workflow?.currentStep.tasks
+		const stepTasks = workflow?.currentStep?.tasks
 
 		if (!stepTasks || stepTasks.length === 0) {
 			setConditionStatus({ completed: true })
@@ -152,7 +152,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		if (stepTasks.every((t) => t.done)) {
 			setConditionStatus({ completed: true })
 		}
-	}, [workflow?.currentStep.tasks])
+	}, [workflow?.currentStep?.tasks])
 
 	const handleTaskStatusChange = (taskId: string, checked: boolean) => {
 		if (taskId === '1') {
@@ -230,13 +230,13 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<WorkflowStepContent step={workflow.currentStep} locale={locale} />
 							</div>
 
-							{!screens.lg && workflow.currentStep.tasks.length > 0 && (
+							{!screens.lg && workflow.currentStep?.tasks?.length > 0 && (
 								<div className={styles.stepContent}>
 									<Title level={3}>
 										<T keyName="workflow.tasks.title">Tasks</T>
 									</Title>
 									<div className={styles.tasksContainer}>
-										{workflow.currentStep.tasks.map((task) => (
+										{workflow.currentStep?.tasks?.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
@@ -258,9 +258,9 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 								<Title level={3}>
 									<T keyName="workflow.tasks.title">Tasks</T>
 								</Title>
-								{workflow.currentStep.tasks.length > 0 ? (
+								{workflow.currentStep?.tasks?.length > 0 ? (
 									<div className={styles.tasksContainer}>
-										{workflow.currentStep.tasks.map((task) => (
+										{workflow.currentStep?.tasks?.map((task) => (
 											<WorkflowTaskCard
 												key={task.id}
 												id={task.id}
@@ -296,7 +296,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 							By proceeding to the next step, the following equity promises will be transferred to actual allocations:
 						</T>
 					</Text>
-					{workflow?.currentStep.equityPromises?.map((promise) => (
+					{workflow?.currentStep?.equityPromises?.map((promise) => (
 						<Space key={promise.id} style={{ width: '100%' }}>
 							<Text>
 								<Text strong>{promise.allocation.owner.name}:</Text> +{promise.percentage}%
