@@ -2,45 +2,43 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { type JsonValue } from '@prisma/client/runtime/library'
-import { IsArray, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator'
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import { Body, Delete, Get, Param, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
-import slugify from 'slugify'
 
 class CreateWorkflowDto {
 	@IsString()
 	@IsNotEmpty()
+	name: string
+
 	@IsString()
+	@IsNotEmpty()
 	title: string
 
-	@IsObject()
-	@IsOptional()
-	content?: JsonValue
-
 	@IsString()
 	@IsOptional()
-	slug: string
+	description?: string
 
 	@IsArray()
 	@IsOptional()
-	authors?: { id: string }[]
+	steps?: JsonValue[]
 }
 
 class UpdateWorkflowDto {
 	@IsString()
 	@IsOptional()
-	title?: string
-
-	@IsObject()
-	@IsOptional()
-	content?: JsonValue
+	name?: string
 
 	@IsString()
 	@IsOptional()
-	slug?: string
+	title?: string
+
+	@IsString()
+	@IsOptional()
+	description?: string
 
 	@IsArray()
 	@IsOptional()
-	authors?: { id: string }[]
+	steps?: JsonValue[]
 }
 
 @NextAuthGuard('user', [prismaClient.UserRole.Admin])
@@ -50,17 +48,14 @@ class ApiWorkflowsAdminHandler {
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { title, content, slug, authors }: CreateWorkflowDto
+		@Body(ValidationPipe) { name, title, description, steps }: CreateWorkflowDto
 	) {
-		const coverImage = (content as any)?.blocks?.find((block: any) => block.type === 'image')?.data?.file?.url as string
-
 		const workflow = await prisma.workflowSchema.create({
 			data: {
+				name,
 				title,
-				content: content || {},
-				image: coverImage || undefined,
-				slug: slug || slugify(title, { lower: true, strict: true }),
-				authors: { connect: authors?.map((author) => ({ id: author.id })) || [{ id: req.user.id }] },
+				description: description || undefined,
+				steps: steps || [],
 			},
 		})
 
@@ -80,18 +75,15 @@ class ApiWorkflowsAdminHandler {
 	public async update(
 		@Req() req: NextApiRequestWithUser,
 		@Param('id') id: string,
-		@Body(ValidationPipe) { title, content, slug, authors }: UpdateWorkflowDto
+		@Body(ValidationPipe) { name, title, description, steps }: UpdateWorkflowDto
 	) {
-		const coverImage = (content as any)?.blocks?.find((block: any) => block.type === 'image')?.data?.file?.url as string
-
 		const workflow = await prisma.workflowSchema.update({
 			where: { id },
 			data: {
+				name: name || undefined,
 				title: title || undefined,
-				content: content || undefined,
-				slug: slug || undefined,
-				image: coverImage || undefined,
-				authors: { connect: authors?.map((author) => ({ id: author.id })) || [] },
+				description: description || undefined,
+				steps: steps || undefined,
 			},
 		})
 

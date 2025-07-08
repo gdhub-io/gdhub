@@ -1,0 +1,212 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mainCard {
+  margin-bottom: 24px;
+  
+  .ant-card-head {
+    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+  }
+}
+
+.stepCard {
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 2px dashed transparent;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: #1890ff;
+    background-color: rgba(24, 144, 255, 0.02);
+  }
+}
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  span {
+    flex: 1;
+    font-weight: 600;
+  }
+}
+
+.stepActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.workflowTitle {
+  margin: 24px 0px 8px 0px;
+}
+
+.workflowSubtitle {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-text);
+  margin: 0px 0px 24px 0px;
+}
+
+.dragHandle {
+  cursor: grab;
+  padding: 4px;
+  border-radius: 4px;
+  color: #999;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f0f0f0;
+    color: #666;
+  }
+  
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.tasksSection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.tasksSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  
+  h5 {
+    margin: 0;
+    color: #666;
+  }
+}
+
+.taskCard {
+  margin-bottom: 12px;
+  padding: 4px;
+  border: 1px dashed transparent;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #52c41a;
+    background-color: rgba(82, 196, 26, 0.02);
+  }
+}
+
+.task {
+  border: 1px solid #e8e8e8;
+  
+  .ant-card-body {
+    padding: 16px;
+  }
+}
+
+.taskHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  
+  span {
+    flex: 1;
+    font-weight: 500;
+    font-size: 13px;
+    color: #666;
+  }
+}
+
+.saveSection {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+  border-top: 2px solid #f0f0f0;
+  margin-top: 24px;
+  
+  .ant-btn {
+    min-width: 200px;
+    height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+    
+    &:hover {
+      box-shadow: 0 6px 16px rgba(24, 144, 255, 0.3);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Dragging states
+.react-beautiful-dnd-dragging {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  transform: rotate(3deg) !important;
+}
+
+.react-beautiful-dnd-drag-disabled {
+  cursor: not-allowed !important;
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .stepHeader,
+  .taskHeader {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .saveSection {
+    .ant-btn {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+  
+  .tasksSectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+// Form styling improvements
+.ant-form-item-label {
+  label {
+    font-weight: 600;
+    color: #262626;
+  }
+}
+
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  
+  .ant-card-head {
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+// Loading state
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  font-size: 16px;
+  color: #666;
+}
+
