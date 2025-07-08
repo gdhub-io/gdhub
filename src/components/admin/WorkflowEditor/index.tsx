@@ -1,9 +1,24 @@
 import { useState, useEffect } from 'react'
-import { WorkflowSchema, WorkflowStepTemplate, WorkflowTaskTemplate, normalizeWorkflowSteps } from '@/types/workflow'
+import { WorkflowStepTemplate, WorkflowTaskTemplate, normalizeWorkflowSteps } from '@/types/workflow'
 import { PlusOutlined, DeleteOutlined, MenuOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Breadcrumb, theme, Form, Button, Card, Typography, Popconfirm, message, Row, Col, Space, Flex } from 'antd'
+import {
+	Breadcrumb,
+	theme,
+	Form,
+	Button,
+	Card,
+	Typography,
+	Popconfirm,
+	message,
+	Row,
+	Col,
+	Space,
+	Flex,
+	Select,
+	Checkbox,
+} from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -18,7 +33,14 @@ export const validateWorkflowName = (name: string): boolean => {
 	return /^[a-z0-9-]+$/.test(name)
 }
 
-export const WorkflowEditor = ({ id }: { id: string }) => {
+type WorkflowType = 'template' | 'project'
+
+interface WorkflowEditorProps {
+	id: string
+	type?: WorkflowType
+}
+
+export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) => {
 	const { token } = theme.useToken()
 	const queryClient = useQueryClient()
 	const [form] = Form.useForm()
@@ -26,6 +48,7 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 	const [workflowTitle, setWorkflowTitle] = useState('New Workflow')
 	const [workflowDescription, setWorkflowDescription] = useState('')
 	const [workflowName, setWorkflowName] = useState('')
+	const [currentStepId, setCurrentStepId] = useState<string | null>(null)
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 	const [stepEditModal, setStepEditModal] = useState<{
 		visible: boolean
@@ -40,38 +63,83 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 	})
 	const [settingsModalVisible, setSettingsModalVisible] = useState(false)
 
-	const { data: workflow, isLoading } = useQuery(['workflow', id], () => axios.get(`/api/admin/workflow/${id}`), {
+	// Choose endpoints based on type
+	const getEndpoint = () => {
+		if (type === 'project') {
+			return `/api/admin/project-workflow/${id}`
+		}
+		return `/api/admin/workflow/${id}`
+	}
+
+	const queryKey = type === 'project' ? ['project-workflow', id] : ['workflow', id]
+
+	const { data: workflow, isLoading } = useQuery(queryKey, () => axios.get(getEndpoint()), {
 		onSuccess: (response) => {
-			const workflowData = response.data as WorkflowSchema
-			console.log('Loaded workflow data:', workflowData)
+			const workflowData = response.data
 
-			// Set component state
-			setWorkflowTitle(workflowData.title || workflowData.name || 'New Workflow')
-			setWorkflowDescription(workflowData.description || '')
-			setWorkflowName(workflowData.name || '')
+			if (type === 'project') {
+				// Handle ProjectWorkflow data structure
+				setWorkflowTitle(workflowData.title || workflowData.project?.name || 'Project Workflow')
+				setWorkflowDescription(workflowData.description || '')
+				setWorkflowName(workflowData.name || '')
+				setCurrentStepId(workflowData.currentStepId || null)
 
-			// Normalize the steps from JSON format
-			const normalizedSteps = normalizeWorkflowSteps(workflowData.steps || [])
+				// Convert ProjectWorkflow steps to WorkflowStepTemplate format
+				const normalizedSteps = (workflowData.steps || []).map((step: any) => ({
+					id: step.id,
+					name: step.name,
+					title: step.name,
+					description: step.description || '',
+					order: step.order || 0,
+					tasks: (step.tasks || []).map((task: any) => ({
+						id: task.id,
+						name: task.description || '', // Use description as name since ProjectWorkflowTask has no name field
+						title: task.description || '', // Use description as title since ProjectWorkflowTask has no name field
+						description: task.description || '',
+						required: Boolean(task.required),
+						order: task.order || 0,
+						done: Boolean(task.done),
+					})),
+				}))
 
-			form.setFieldsValue({
-				steps: normalizedSteps,
-			})
+				form.setFieldsValue({
+					steps: normalizedSteps,
+				})
+			} else {
+				// Handle WorkflowSchema data structure
+				setWorkflowTitle(workflowData.title || workflowData.name || 'New Workflow')
+				setWorkflowDescription(workflowData.description || '')
+				setWorkflowName(workflowData.name || '')
+
+				// Normalize the steps from JSON format
+				const normalizedSteps = normalizeWorkflowSteps(workflowData.steps || [])
+
+				form.setFieldsValue({
+					steps: normalizedSteps,
+				})
+			}
 
 			setIsFormInitialized(true)
-			console.log('Form initialized with steps:', normalizedSteps)
 		},
 	})
 
 	const { mutateAsync: updateWorkflow, isLoading: isSaving } = useMutation(
-		(data: any) => axios.put(`/api/admin/workflow/${id}`, data),
+		(data: any) => axios.put(getEndpoint(), data),
 		{
 			onSuccess: () => {
-				message.success('Воркфлоу успешно сохранен!')
-				queryClient.invalidateQueries(['workflow', id])
+				message.success(type === 'project' ? 'Проектный воркфлоу успешно сохранен!' : 'Воркфлоу успешно сохранен!')
+				queryClient.invalidateQueries(queryKey)
+				if (type === 'project') {
+					queryClient.invalidateQueries(['admin', 'project-workflows'])
+				} else {
+					queryClient.invalidateQueries(['admin', 'workflows'])
+				}
 				setHasUnsavedChanges(false)
 			},
 			onError: () => {
-				message.error('Ошибка при сохранении воркфлоу')
+				message.error(
+					type === 'project' ? 'Ошибка при сохранении проектного воркфлоу' : 'Ошибка при сохранении воркфлоу'
+				)
 			},
 		}
 	)
@@ -80,22 +148,40 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 		try {
 			const values = await form.validateFields()
 
-			// Convert steps back to JSON format for database
-			const stepsWithOrder = (values.steps || []).map((step: WorkflowStepTemplate, index: number) => ({
-				...step,
-				order: index,
-				tasks: (step.tasks || []).map((task: WorkflowTaskTemplate, taskIndex: number) => ({
-					...task,
-					order: taskIndex,
-				})),
-			}))
+			if (type === 'project') {
+				// For ProjectWorkflow, save both title and steps structure
+				const stepsWithOrder = (values.steps || []).map((step: WorkflowStepTemplate, index: number) => ({
+					...step,
+					order: index,
+					tasks: (step.tasks || []).map((task: WorkflowTaskTemplate, taskIndex: number) => ({
+						...task,
+						order: taskIndex,
+					})),
+				}))
 
-			await updateWorkflow({
-				name: workflowName,
-				title: workflowTitle,
-				description: workflowDescription,
-				steps: stepsWithOrder,
-			})
+				await updateWorkflow({
+					title: workflowTitle,
+					steps: stepsWithOrder,
+					currentStepId: currentStepId,
+				})
+			} else {
+				// For WorkflowSchema, save the full structure
+				const stepsWithOrder = (values.steps || []).map((step: WorkflowStepTemplate, index: number) => ({
+					...step,
+					order: index,
+					tasks: (step.tasks || []).map((task: WorkflowTaskTemplate, taskIndex: number) => ({
+						...task,
+						order: taskIndex,
+					})),
+				}))
+
+				await updateWorkflow({
+					name: workflowName,
+					title: workflowTitle,
+					description: workflowDescription,
+					steps: stepsWithOrder,
+				})
+			}
 		} catch (error) {
 			console.error('Validation failed:', error)
 		}
@@ -172,6 +258,20 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 		setHasUnsavedChanges(true)
 	}
 
+	const handleCurrentStepChange = (stepId: string) => {
+		setCurrentStepId(stepId)
+		setHasUnsavedChanges(true)
+	}
+
+	const handleTaskStatusChange = (stepIndex: number, taskIndex: number, done: boolean) => {
+		const steps = form.getFieldValue('steps') || []
+		if (steps[stepIndex] && steps[stepIndex].tasks && steps[stepIndex].tasks[taskIndex]) {
+			steps[stepIndex].tasks[taskIndex].done = done
+			form.setFieldValue('steps', [...steps])
+			setHasUnsavedChanges(true)
+		}
+	}
+
 	// Ensure body scroll is restored when component unmounts
 	useEffect(() => {
 		return () => {
@@ -182,6 +282,9 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 	if (isLoading) {
 		return <div>Загрузка...</div>
 	}
+
+	const workflowData = workflow?.data
+	const isProjectWorkflow = type === 'project'
 
 	return (
 		<div className={styles.container}>
@@ -195,11 +298,72 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 						),
 					},
 					{
+						title: isProjectWorkflow ? 'Project Workflows' : 'Templates',
+					},
+					{
 						title: <span>{workflowTitle}</span>,
 					},
 				]}
 				style={{ marginBottom: 24 }}
 			/>
+
+			{isProjectWorkflow && workflowData?.project && (
+				<Card style={{ marginBottom: 24 }}>
+					<Row gutter={[16, 16]}>
+						<Col span={12}>
+							<Text strong>Проект:</Text> {workflowData.project.name}
+						</Col>
+						<Col span={12}>
+							<Text strong>Автор:</Text> {workflowData.project.author.name}
+						</Col>
+						<Col span={12}>
+							<Text strong>Создан:</Text> {dayjs(workflowData.createdAt).format('DD/MM/YYYY')}
+						</Col>
+						<Col span={12}>
+							<Text strong>Шагов:</Text> {workflowData.steps?.length || 0}
+						</Col>
+					</Row>
+				</Card>
+			)}
+
+			{isProjectWorkflow && (
+				<Card title="Управление проектом" style={{ marginBottom: 24 }}>
+					<Row gutter={[16, 16]}>
+						<Col span={12}>
+							<Space direction="vertical" style={{ width: '100%' }}>
+								<Text strong>Текущий этап:</Text>
+								<Select
+									style={{ width: '100%' }}
+									placeholder="Выберите текущий этап"
+									value={currentStepId}
+									onChange={handleCurrentStepChange}
+									allowClear
+								>
+									{(workflowData?.steps || []).map((step: any) => (
+										<Select.Option key={step.id} value={step.id}>
+											{step.name}
+										</Select.Option>
+									))}
+								</Select>
+							</Space>
+						</Col>
+						<Col span={12}>
+							<Space direction="vertical" style={{ width: '100%' }}>
+								<Text strong>Статус:</Text>
+								<div>
+									{currentStepId ? (
+										<Text type="success">
+											Активно - {workflowData?.steps?.find((s: any) => s.id === currentStepId)?.name}
+										</Text>
+									) : (
+										<Text type="secondary">Не начато</Text>
+									)}
+								</div>
+							</Space>
+						</Col>
+					</Row>
+				</Card>
+			)}
 
 			<div>
 				<Flex justify="space-between" align="center">
@@ -216,13 +380,15 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 							{workflowTitle}
 						</Title>
 						<p className={styles.workflowSubtitle}>
-							Last updated on {dayjs(workflow?.data?.updatedAt).format('DD/MM/YYYY')}
+							Last updated on {dayjs(workflowData?.updatedAt).format('DD/MM/YYYY')}
 						</p>
 					</div>
 					<div className={styles.headerActions}>
-						<Button icon={<SettingOutlined />} onClick={() => setSettingsModalVisible(true)}>
-							Настройки
-						</Button>
+						{!isProjectWorkflow && (
+							<Button icon={<SettingOutlined />} onClick={() => setSettingsModalVisible(true)}>
+								Настройки
+							</Button>
+						)}
 						<Button type="primary" onClick={handleSave} disabled={!hasUnsavedChanges} loading={isSaving}>
 							Сохранить
 						</Button>
@@ -234,7 +400,7 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 				<Row gutter={[24, 24]}>
 					<Col span={24}>
 						<Card
-							title="Этапы (Steps)"
+							title={isProjectWorkflow ? 'Шаги проекта' : 'Этапы (Steps)'}
 							className={styles.mainCard}
 							extra={
 								<Button type="primary" icon={<PlusOutlined />} onClick={addStep}>
@@ -262,7 +428,8 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 																					</div>
 																					<span>
 																						{form.getFieldValue(['steps', stepIndex, 'title']) ||
-																							`Этап ${stepIndex + 1}`}
+																							form.getFieldValue(['steps', stepIndex, 'name']) ||
+																							`Шаг ${stepIndex + 1}`}
 																					</span>
 																					<div className={styles.stepActions}>
 																						<Button
@@ -283,9 +450,57 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 																			<div className={styles.stepDescription}>
 																				{form.getFieldValue(['steps', stepIndex, 'description']) || 'Нет описания'}
 																			</div>
-																			<div className={styles.stepTaskCount}>
-																				{form.getFieldValue(['steps', stepIndex, 'tasks'])?.length || 0} задач
-																			</div>
+																			{isProjectWorkflow && (
+																				<div style={{ marginTop: 12 }}>
+																					<Text strong>Задачи:</Text>
+																					<div style={{ marginTop: 8 }}>
+																						{(form.getFieldValue(['steps', stepIndex, 'tasks']) || []).map(
+																							(task: any, taskIndex: number) => (
+																								<div
+																									key={task.id || taskIndex}
+																									style={{
+																										display: 'flex',
+																										alignItems: 'center',
+																										marginBottom: 4,
+																										padding: '4px 0',
+																									}}
+																								>
+																									<Checkbox
+																										checked={Boolean(task.done)}
+																										onChange={(e) =>
+																											handleTaskStatusChange(stepIndex, taskIndex, e.target.checked)
+																										}
+																										style={{ marginRight: 8 }}
+																									>
+																										<span
+																											style={{
+																												textDecoration: task.done ? 'line-through' : 'none',
+																												color: task.done ? '#999' : 'inherit',
+																											}}
+																										>
+																											{task.title ||
+																												task.name ||
+																												task.description ||
+																												`Задача ${taskIndex + 1}`}
+																										</span>
+																									</Checkbox>
+																								</div>
+																							)
+																						)}
+																						{(!form.getFieldValue(['steps', stepIndex, 'tasks']) ||
+																							form.getFieldValue(['steps', stepIndex, 'tasks']).length === 0) && (
+																							<Text type="secondary" style={{ fontSize: '12px' }}>
+																								Нет задач
+																							</Text>
+																						)}
+																					</div>
+																				</div>
+																			)}
+																			{!isProjectWorkflow && (
+																				<div className={styles.stepTaskCount}>
+																					{form.getFieldValue(['steps', stepIndex, 'tasks'])?.length || 0} задач
+																				</div>
+																			)}
 																		</Card>
 																	</div>
 																)}
@@ -312,16 +527,18 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 				isNew={stepEditModal.isNew}
 			/>
 
-			<WorkflowSettingsModal
-				visible={settingsModalVisible}
-				onClose={() => setSettingsModalVisible(false)}
-				onSave={handleSettingsSave}
-				settings={{
-					title: workflowTitle,
-					description: workflowDescription,
-					name: workflowName,
-				}}
-			/>
+			{!isProjectWorkflow && (
+				<WorkflowSettingsModal
+					visible={settingsModalVisible}
+					onClose={() => setSettingsModalVisible(false)}
+					onSave={handleSettingsSave}
+					settings={{
+						title: workflowTitle,
+						description: workflowDescription,
+						name: workflowName,
+					}}
+				/>
+			)}
 		</div>
 	)
 }

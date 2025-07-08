@@ -23,6 +23,7 @@ export interface WorkflowTaskTemplate {
 	description: string
 	required: boolean
 	order?: number
+	done?: boolean
 }
 
 // Extended types for the editor
@@ -50,6 +51,7 @@ export const normalizeWorkflowSteps = (steps: any[]): WorkflowStepTemplate[] => 
 			description: task.description || '',
 			required: Boolean(task.required),
 			order: task.order || taskIndex,
+			done: Boolean(task.done),
 		})),
 	}))
 }
