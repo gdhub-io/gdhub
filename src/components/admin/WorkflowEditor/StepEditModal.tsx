@@ -43,7 +43,6 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 				name: '',
 				title: '',
 				description: '',
-				tasks: [],
 			})
 		}
 	}, [visible, step, form, isNew])
@@ -54,6 +53,7 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 			const updatedStep: WorkflowStepTemplate = {
 				id: step?.id || Date.now().toString(),
 				...values,
+				tasks: isNew ? [] : values.tasks || [],
 			}
 			onSave(updatedStep)
 			onClose()
@@ -157,75 +157,78 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 						</Col>
 					</Row>
 
-					<Divider />
+					{!isNew && (
+						<>
+							<Divider />
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+								<Title level={4} style={{ margin: 0 }}>
+									Задачи
+								</Title>
+								<Button type="primary" icon={<PlusOutlined />} onClick={addTask}>
+									Добавить задачу
+								</Button>
+							</div>
 
-					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-						<Title level={4} style={{ margin: 0 }}>
-							Задачи
-						</Title>
-						<Button type="primary" icon={<PlusOutlined />} onClick={addTask}>
-							Добавить задачу
-						</Button>
-					</div>
-
-					<DragDropContext onDragEnd={onDragEnd}>
-						<Droppable droppableId="tasks">
-							{(provided) => (
-								<div {...provided.droppableProps} ref={provided.innerRef}>
-									<Form.List name="tasks">
-										{(fields) => (
-											<>
-												{fields.map((field, taskIndex) => (
-													<Draggable key={field.key} draggableId={`task-${field.key}`} index={taskIndex}>
-														{(provided) => (
-															<div ref={provided.innerRef} {...provided.draggableProps}>
-																<Card
-																	size="small"
-																	style={{ marginBottom: 8 }}
-																	title={
-																		<div
-																			style={{
-																				display: 'flex',
-																				alignItems: 'center',
-																				justifyContent: 'space-between',
-																			}}
-																		>
-																			<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-																				<div {...provided.dragHandleProps} style={{ cursor: 'move' }}>
-																					<MenuOutlined />
+							<DragDropContext onDragEnd={onDragEnd}>
+								<Droppable droppableId="tasks">
+									{(provided) => (
+										<div {...provided.droppableProps} ref={provided.innerRef}>
+											<Form.List name="tasks">
+												{(fields) => (
+													<>
+														{fields.map((field, taskIndex) => (
+															<Draggable key={field.key} draggableId={`task-${field.key}`} index={taskIndex}>
+																{(provided) => (
+																	<div ref={provided.innerRef} {...provided.draggableProps}>
+																		<Card
+																			size="small"
+																			style={{ marginBottom: 8 }}
+																			title={
+																				<div
+																					style={{
+																						display: 'flex',
+																						alignItems: 'center',
+																						justifyContent: 'space-between',
+																					}}
+																				>
+																					<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+																						<div {...provided.dragHandleProps} style={{ cursor: 'move' }}>
+																							<MenuOutlined />
+																						</div>
+																						<span>
+																							{form.getFieldValue(['tasks', taskIndex, 'title']) ||
+																								`Задача ${taskIndex + 1}`}
+																						</span>
+																					</div>
+																					<div style={{ display: 'flex', gap: 8 }}>
+																						<Button type="text" size="small" onClick={() => editTask(taskIndex)}>
+																							Редактировать
+																						</Button>
+																						<Popconfirm title="Удалить задачу?" onConfirm={() => removeTask(taskIndex)}>
+																							<Button type="text" danger icon={<DeleteOutlined />} size="small" />
+																						</Popconfirm>
+																					</div>
 																				</div>
-																				<span>
-																					{form.getFieldValue(['tasks', taskIndex, 'title']) ||
-																						`Задача ${taskIndex + 1}`}
-																				</span>
+																			}
+																		>
+																			<div style={{ color: '#666' }}>
+																				{form.getFieldValue(['tasks', taskIndex, 'description']) || 'Нет описания'}
 																			</div>
-																			<div style={{ display: 'flex', gap: 8 }}>
-																				<Button type="text" size="small" onClick={() => editTask(taskIndex)}>
-																					Редактировать
-																				</Button>
-																				<Popconfirm title="Удалить задачу?" onConfirm={() => removeTask(taskIndex)}>
-																					<Button type="text" danger icon={<DeleteOutlined />} size="small" />
-																				</Popconfirm>
-																			</div>
-																		</div>
-																	}
-																>
-																	<div style={{ color: '#666' }}>
-																		{form.getFieldValue(['tasks', taskIndex, 'description']) || 'Нет описания'}
+																		</Card>
 																	</div>
-																</Card>
-															</div>
-														)}
-													</Draggable>
-												))}
-												{provided.placeholder}
-											</>
-										)}
-									</Form.List>
-								</div>
-							)}
-						</Droppable>
-					</DragDropContext>
+																)}
+															</Draggable>
+														))}
+														{provided.placeholder}
+													</>
+												)}
+											</Form.List>
+										</div>
+									)}
+								</Droppable>
+							</DragDropContext>
+						</>
+					)}
 				</Form>
 			</Modal>
 
