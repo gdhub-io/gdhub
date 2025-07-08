@@ -128,7 +128,7 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 					</div>
 				}
 			>
-				<Form form={form} layout="vertical">
+				<Form form={form} layout="vertical" className="formSection">
 					<Row gutter={[16, 16]}>
 						<Col xs={24} lg={12}>
 							<Form.Item name="title" label="Название этапа" rules={[{ required: true, message: 'Введите название' }]}>

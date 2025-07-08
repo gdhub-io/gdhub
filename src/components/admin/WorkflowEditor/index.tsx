@@ -219,14 +219,14 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 							Last updated on {dayjs(workflow?.data?.updatedAt).format('DD/MM/YYYY')}
 						</p>
 					</div>
-					<Space>
+					<div className={styles.headerActions}>
 						<Button icon={<SettingOutlined />} onClick={() => setSettingsModalVisible(true)}>
 							Настройки
 						</Button>
 						<Button type="primary" onClick={handleSave} disabled={!hasUnsavedChanges} loading={isSaving}>
 							Сохранить
 						</Button>
-					</Space>
+					</div>
 				</Flex>
 			</div>
 
@@ -235,6 +235,7 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 					<Col span={24}>
 						<Card
 							title="Этапы (Steps)"
+							className={styles.mainCard}
 							extra={
 								<Button type="primary" icon={<PlusOutlined />} onClick={addStep}>
 									Добавить этап
@@ -279,11 +280,11 @@ export const WorkflowEditor = ({ id }: { id: string }) => {
 																				</div>
 																			}
 																		>
-																			<div style={{ color: '#666' }}>
+																			<div className={styles.stepDescription}>
 																				{form.getFieldValue(['steps', stepIndex, 'description']) || 'Нет описания'}
 																			</div>
-																			<div style={{ marginTop: 8, color: '#999', fontSize: '12px' }}>
-																				Задач: {form.getFieldValue(['steps', stepIndex, 'tasks'])?.length || 0}
+																			<div className={styles.stepTaskCount}>
+																				{form.getFieldValue(['steps', stepIndex, 'tasks'])?.length || 0} задач
 																			</div>
 																		</Card>
 																	</div>
