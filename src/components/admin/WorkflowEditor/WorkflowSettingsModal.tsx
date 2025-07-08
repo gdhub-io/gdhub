@@ -1,7 +1,5 @@
 import React from 'react'
-import { Modal, Form, Input, Button, Row, Col } from 'antd'
-
-const { TextArea } = Input
+import { Modal, Form, Input, Button, Space } from 'antd'
 
 interface WorkflowSettingsModalProps {
 	visible: boolean
@@ -43,47 +41,30 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({ vi
 			open={visible}
 			onCancel={onClose}
 			width={600}
-			destroyOnClose={true}
+			centered
+			destroyOnClose
 			maskClosable={false}
-			getContainer={() => document.body}
 			footer={
-				<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+				<Space>
 					<Button onClick={onClose}>Отмена</Button>
 					<Button type="primary" onClick={handleSave}>
 						Сохранить
 					</Button>
-				</div>
+				</Space>
 			}
 		>
-			<Form form={form} layout="vertical" className="formSection">
-				<Row gutter={[16, 16]}>
-					<Col span={24}>
-						<Form.Item
-							name="title"
-							label="Название (Title)"
-							rules={[{ required: true, message: 'Введите название воркфлоу' }]}
-						>
-							<Input placeholder="Название воркфлоу для отображения" />
-						</Form.Item>
-					</Col>
-					<Col span={24}>
-						<Form.Item
-							name="name"
-							label="Идентификатор (Name)"
-							rules={[
-								{ required: true, message: 'Введите идентификатор' },
-								{ pattern: /^[a-z0-9-]+$/, message: 'Только маленькие латинские буквы, цифры и дефисы' },
-							]}
-						>
-							<Input placeholder="workflow-name" />
-						</Form.Item>
-					</Col>
-					<Col span={24}>
-						<Form.Item name="description" label="Описание">
-							<TextArea rows={4} placeholder="Описание воркфлоу" />
-						</Form.Item>
-					</Col>
-				</Row>
+			<Form form={form} layout="vertical" variant="filled" requiredMark="optional">
+				<Form.Item name="title" label="Название воркфлоу" rules={[{ required: true, message: 'Введите название' }]}>
+					<Input placeholder="Название воркфлоу" />
+				</Form.Item>
+
+				<Form.Item name="name" label="Системное имя" rules={[{ required: true, message: 'Введите системное имя' }]}>
+					<Input placeholder="workflow-name" />
+				</Form.Item>
+
+				<Form.Item name="description" label="Описание">
+					<Input.TextArea rows={4} placeholder="Описание воркфлоу" />
+				</Form.Item>
 			</Form>
 		</Modal>
 	)

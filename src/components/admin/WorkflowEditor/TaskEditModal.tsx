@@ -1,71 +1,64 @@
 import React from 'react'
-import { WorkflowTaskTemplate } from '@/types/workflow'
-import { Modal, Form, Input, Button, Checkbox, Row, Col } from 'antd'
+import { Modal, Form, Input, Button, Row, Col, Checkbox, Space } from 'antd'
 
 const { TextArea } = Input
 
 interface TaskEditModalProps {
 	visible: boolean
 	onClose: () => void
-	onSave: (task: WorkflowTaskTemplate) => void
-	task: WorkflowTaskTemplate | null
-	isNew?: boolean
+	onSave: (task: any) => void
+	task: any
+	isNew: boolean
 }
 
-export const TaskEditModal: React.FC<TaskEditModalProps> = ({ visible, onClose, onSave, task, isNew = false }) => {
+export const TaskEditModal: React.FC<TaskEditModalProps> = ({ visible, onClose, onSave, task, isNew }) => {
 	const [form] = Form.useForm()
 
 	React.useEffect(() => {
-		if (visible && task) {
+		if (visible) {
 			form.setFieldsValue({
-				name: task.name || '',
-				title: task.title || '',
-				description: task.description || '',
-				required: task.required || false,
-			})
-		} else if (visible && isNew) {
-			form.setFieldsValue({
-				name: '',
-				title: '',
-				description: '',
-				required: false,
+				title: task?.title || '',
+				name: task?.name || '',
+				description: task?.description || '',
+				required: task?.required || false,
 			})
 		}
-	}, [visible, task, form, isNew])
+	}, [visible, task, form])
 
 	const handleSave = async () => {
 		try {
 			const values = await form.validateFields()
-			const updatedTask: WorkflowTaskTemplate = {
-				id: task?.id || Date.now().toString(),
-				...values,
-			}
-			onSave(updatedTask)
+			onSave(values)
 			onClose()
 		} catch (error) {
 			console.error('Validation failed:', error)
 		}
 	}
 
+	const handleClose = () => {
+		form.resetFields()
+		onClose()
+	}
+
 	return (
 		<Modal
 			title={isNew ? 'Новая задача' : 'Редактировать задачу'}
 			open={visible}
-			onCancel={onClose}
+			onCancel={handleClose}
 			width={600}
-			destroyOnClose={true}
+			centered
+			destroyOnClose
 			maskClosable={false}
-			getContainer={() => document.body}
 			footer={
-				<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-					<Button onClick={onClose}>Отмена</Button>
+				<Space>
+					<Button onClick={handleClose}>Отмена</Button>
 					<Button type="primary" onClick={handleSave}>
 						{isNew ? 'Создать' : 'Сохранить'}
 					</Button>
-				</div>
+				</Space>
 			}
 		>
-			<Form form={form} layout="vertical" className="formSection">
+			<Form form={form} layout="vertical" variant="filled" requiredMark="optional">
 				<Row gutter={[16, 16]}>
 					<Col xs={24} lg={12}>
 						<Form.Item name="title" label="Название задачи" rules={[{ required: true, message: 'Введите название' }]}>

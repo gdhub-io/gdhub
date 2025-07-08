@@ -53,7 +53,7 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 	const [stepEditModal, setStepEditModal] = useState<{
 		visible: boolean
-		step: WorkflowStepTemplate | null
+		step: any
 		stepIndex: number
 		isNew: boolean
 	}>({
@@ -65,7 +65,7 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 	const [settingsModalVisible, setSettingsModalVisible] = useState(false)
 	const [taskEditModal, setTaskEditModal] = useState<{
 		visible: boolean
-		task: WorkflowTaskTemplate | null
+		task: any
 		stepIndex: number
 		taskIndex: number
 		isNew: boolean
@@ -164,10 +164,10 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 
 			if (type === 'project') {
 				// For ProjectWorkflow, save both title and steps structure
-				const stepsWithOrder = (values.steps || []).map((step: WorkflowStepTemplate, index: number) => ({
+				const stepsWithOrder = (values.steps || []).map((step: any, index: number) => ({
 					...step,
 					order: index,
-					tasks: (step.tasks || []).map((task: WorkflowTaskTemplate, taskIndex: number) => ({
+					tasks: (step.tasks || []).map((task: any, taskIndex: number) => ({
 						...task,
 						order: taskIndex,
 					})),
@@ -179,11 +179,11 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 					currentStepId: currentStepId,
 				})
 			} else {
-				// For WorkflowSchema, save the full structure
-				const stepsWithOrder = (values.steps || []).map((step: WorkflowStepTemplate, index: number) => ({
+				// For WorkflowSchema, save the full structure with tasks
+				const stepsWithOrder = (values.steps || []).map((step: any, index: number) => ({
 					...step,
 					order: index,
-					tasks: (step.tasks || []).map((task: WorkflowTaskTemplate, taskIndex: number) => ({
+					tasks: (step.tasks || []).map((task: any, taskIndex: number) => ({
 						...task,
 						order: taskIndex,
 					})),
@@ -227,13 +227,21 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 		})
 	}
 
-	const handleStepSave = (updatedStep: WorkflowStepTemplate) => {
+	const handleStepSave = (updatedStep: any) => {
 		const steps = form.getFieldValue('steps') || []
 
 		if (stepEditModal.isNew) {
-			steps.push(updatedStep)
+			const newStep = {
+				...updatedStep,
+				id: Date.now().toString(),
+				tasks: [], // All workflows can have tasks
+			}
+			steps.push(newStep)
 		} else {
-			steps[stepEditModal.stepIndex] = updatedStep
+			steps[stepEditModal.stepIndex] = {
+				...steps[stepEditModal.stepIndex],
+				...updatedStep,
+			}
 		}
 
 		form.setFieldValue('steps', [...steps])
@@ -310,7 +318,7 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 		}
 	}
 
-	const handleTaskSave = (updatedTask: WorkflowTaskTemplate) => {
+	const handleTaskSave = (updatedTask: any) => {
 		const steps = form.getFieldValue('steps') || []
 
 		if (taskEditModal.isNew) {
@@ -318,10 +326,18 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 			if (!steps[taskEditModal.stepIndex].tasks) {
 				steps[taskEditModal.stepIndex].tasks = []
 			}
-			steps[taskEditModal.stepIndex].tasks.push(updatedTask)
+			const newTask = {
+				...updatedTask,
+				id: Date.now().toString(),
+				done: false,
+			}
+			steps[taskEditModal.stepIndex].tasks.push(newTask)
 		} else {
 			// Update existing task
-			steps[taskEditModal.stepIndex].tasks[taskEditModal.taskIndex] = updatedTask
+			steps[taskEditModal.stepIndex].tasks[taskEditModal.taskIndex] = {
+				...steps[taskEditModal.stepIndex].tasks[taskEditModal.taskIndex],
+				...updatedTask,
+			}
 		}
 
 		form.setFieldValue('steps', [...steps])
@@ -502,42 +518,42 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 																	<div className={styles.stepDescription}>
 																		{form.getFieldValue(['steps', stepIndex, 'description']) || 'Нет описания'}
 																	</div>
-																	{isProjectWorkflow && (
-																		<div style={{ marginTop: 12 }}>
-																			<div
-																				style={{
-																					display: 'flex',
-																					justifyContent: 'space-between',
-																					alignItems: 'center',
-																					marginBottom: 8,
-																				}}
+																	<div style={{ marginTop: 12 }}>
+																		<div
+																			style={{
+																				display: 'flex',
+																				justifyContent: 'space-between',
+																				alignItems: 'center',
+																				marginBottom: 8,
+																			}}
+																		>
+																			<Text strong>Задачи:</Text>
+																			<Button
+																				type="link"
+																				size="small"
+																				icon={<PlusOutlined />}
+																				onClick={() => addTask(stepIndex)}
 																			>
-																				<Text strong>Задачи:</Text>
-																				<Button
-																					type="link"
-																					size="small"
-																					icon={<PlusOutlined />}
-																					onClick={() => addTask(stepIndex)}
-																				>
-																					Добавить
-																				</Button>
-																			</div>
-																			<div style={{ marginTop: 8 }}>
-																				{(form.getFieldValue(['steps', stepIndex, 'tasks']) || []).map(
-																					(task: any, taskIndex: number) => (
-																						<div
-																							key={task.id || taskIndex}
-																							style={{
-																								display: 'flex',
-																								alignItems: 'center',
-																								justifyContent: 'space-between',
-																								marginBottom: 4,
-																								padding: '4px 8px',
-																								backgroundColor: '#f8f9fa',
-																								borderRadius: '4px',
-																							}}
-																						>
-																							<div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+																				Добавить
+																			</Button>
+																		</div>
+																		<div style={{ marginTop: 8 }}>
+																			{(form.getFieldValue(['steps', stepIndex, 'tasks']) || []).map(
+																				(task: any, taskIndex: number) => (
+																					<div
+																						key={task.id || taskIndex}
+																						style={{
+																							display: 'flex',
+																							alignItems: 'center',
+																							justifyContent: 'space-between',
+																							marginBottom: 4,
+																							padding: '4px 8px',
+																							backgroundColor: '#f8f9fa',
+																							borderRadius: '4px',
+																						}}
+																					>
+																						<div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+																							{isProjectWorkflow ? (
 																								<Checkbox
 																									checked={Boolean(task.done)}
 																									onChange={(e) =>
@@ -557,38 +573,40 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 																											`Задача ${taskIndex + 1}`}
 																									</span>
 																								</Checkbox>
-																							</div>
-																							<div style={{ display: 'flex', gap: 4 }}>
-																								<Button
-																									type="text"
-																									size="small"
-																									icon={<EditOutlined />}
-																									onClick={() => editTask(stepIndex, taskIndex)}
-																								/>
-																								<Popconfirm
-																									title="Удалить задачу?"
-																									onConfirm={() => removeTask(stepIndex, taskIndex)}
-																								>
-																									<Button type="text" size="small" danger icon={<DeleteOutlined />} />
-																								</Popconfirm>
-																							</div>
+																							) : (
+																								<span style={{ marginLeft: 8 }}>
+																									{task.title ||
+																										task.name ||
+																										task.description ||
+																										`Задача ${taskIndex + 1}`}
+																								</span>
+																							)}
 																						</div>
-																					)
-																				)}
-																				{(!form.getFieldValue(['steps', stepIndex, 'tasks']) ||
-																					form.getFieldValue(['steps', stepIndex, 'tasks']).length === 0) && (
-																					<Text type="secondary" style={{ fontSize: '12px' }}>
-																						Нет задач
-																					</Text>
-																				)}
-																			</div>
+																						<div style={{ display: 'flex', gap: 4 }}>
+																							<Button
+																								type="text"
+																								size="small"
+																								icon={<EditOutlined />}
+																								onClick={() => editTask(stepIndex, taskIndex)}
+																							/>
+																							<Popconfirm
+																								title="Удалить задачу?"
+																								onConfirm={() => removeTask(stepIndex, taskIndex)}
+																							>
+																								<Button type="text" size="small" danger icon={<DeleteOutlined />} />
+																							</Popconfirm>
+																						</div>
+																					</div>
+																				)
+																			)}
+																			{(!form.getFieldValue(['steps', stepIndex, 'tasks']) ||
+																				form.getFieldValue(['steps', stepIndex, 'tasks']).length === 0) && (
+																				<Text type="secondary" style={{ fontSize: '12px' }}>
+																					Нет задач
+																				</Text>
+																			)}
 																		</div>
-																	)}
-																	{!isProjectWorkflow && (
-																		<div className={styles.stepTaskCount}>
-																			{form.getFieldValue(['steps', stepIndex, 'tasks'])?.length || 0} задач
-																		</div>
-																	)}
+																	</div>
 																</Card>
 															</div>
 														)}

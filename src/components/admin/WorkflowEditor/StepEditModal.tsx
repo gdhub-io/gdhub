@@ -1,71 +1,63 @@
 import React from 'react'
-import { WorkflowStepTemplate } from '@/types/workflow'
-import { Modal, Form, Input, Button, Row, Col } from 'antd'
+import { Modal, Form, Input, Button, Row, Col, Space } from 'antd'
 
 const { TextArea } = Input
 
 interface StepEditModalProps {
 	visible: boolean
 	onClose: () => void
-	onSave: (step: WorkflowStepTemplate) => void
-	step: WorkflowStepTemplate | null
-	isNew?: boolean
+	onSave: (step: any) => void
+	step: any
+	isNew: boolean
 }
 
-export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, onSave, step, isNew = false }) => {
+export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, onSave, step, isNew }) => {
 	const [form] = Form.useForm()
 
 	React.useEffect(() => {
-		if (visible && step) {
+		if (visible) {
 			form.setFieldsValue({
-				name: step.name || '',
-				title: step.title || '',
-				description: step.description || '',
-				tasks: step.tasks || [],
-			})
-		} else if (visible && isNew) {
-			form.setFieldsValue({
-				name: '',
-				title: '',
-				description: '',
+				title: step?.title || '',
+				name: step?.name || '',
+				description: step?.description || '',
 			})
 		}
-	}, [visible, step, form, isNew])
+	}, [visible, step, form])
 
 	const handleSave = async () => {
 		try {
 			const values = await form.validateFields()
-			const updatedStep: WorkflowStepTemplate = {
-				id: step?.id || Date.now().toString(),
-				...values,
-				tasks: isNew ? [] : values.tasks || [],
-			}
-			onSave(updatedStep)
+			onSave(values)
 			onClose()
 		} catch (error) {
 			console.error('Validation failed:', error)
 		}
 	}
 
+	const handleClose = () => {
+		form.resetFields()
+		onClose()
+	}
+
 	return (
 		<Modal
 			title={isNew ? 'Новый этап' : 'Редактировать этап'}
 			open={visible}
-			onCancel={onClose}
+			onCancel={handleClose}
 			width={800}
-			destroyOnClose={true}
+			centered
+			destroyOnClose
 			maskClosable={false}
-			getContainer={false}
 			footer={
-				<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-					<Button onClick={onClose}>Отмена</Button>
+				<Space>
+					<Button onClick={handleClose}>Отмена</Button>
 					<Button type="primary" onClick={handleSave}>
 						{isNew ? 'Создать' : 'Сохранить'}
 					</Button>
-				</div>
+				</Space>
 			}
 		>
-			<Form form={form} layout="vertical" className="formSection">
+			<Form form={form} layout="vertical" variant="filled" requiredMark="optional">
 				<Row gutter={[16, 16]}>
 					<Col xs={24} lg={12}>
 						<Form.Item name="title" label="Название этапа" rules={[{ required: true, message: 'Введите название' }]}>
