@@ -292,8 +292,30 @@ a.text-link {
 	}
 }
 
-.ant-modal .ant-modal-footer {
-	margin-top: 52px;
+.ant-modal {
+	.ant-modal-content {
+		padding: 24px;
+		border: 1px solid rgb(226, 232, 240);
+	}
+
+	.ant-modal-footer {
+		margin-top: 52px;
+	}
+
+	.ant-modal-close {
+		top: 16px;
+		right: 16px;
+	}
+}
+
+// .ant-modal-wrap {
+// 	backdrop-filter: blur(8px);
+// }
+
+.ant-modal-root {
+	.ant-modal-content {
+		padding: 24px;
+	}
 }
 
 body:has(.ant-modal-root) {

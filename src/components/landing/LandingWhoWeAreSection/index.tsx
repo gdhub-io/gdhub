@@ -108,7 +108,7 @@ export const LandingWhoWeAreSection = () => {
 							<Tooltip
 								open={!!member}
 								title={member ? t(member) : ''}
-								destroyTooltipOnHide
+								destroyOnHidden
 								classNames={{ root: styles.tooltip }}
 							/>
 						</div>

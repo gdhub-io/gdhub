@@ -1568,6 +1568,16 @@
   dependencies:
     tslib "^2.0.0"
 
+"@documenso/embed-react@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@documenso/embed-react/-/embed-react-0.2.3.tgz#9d899923d2027a14c33aca4bd380ab54d2a17b8a"
+  integrity sha512-mDeU/wjfJX+kaCJ/epDCSYDg6mPtrga9mDfeURKLfgFR6WyLFc8qs/JKWa4EYgWAAOSwfNZK0ZeVHmvZB1GPUg==
+
+"@documenso/sdk-typescript@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@documenso/sdk-typescript/-/sdk-typescript-0.3.1.tgz#aeca9f1753ba0975c0566524757d07834d4cbbc5"
+  integrity sha512-hzNn4NNoGUp4bvBHoXBammafcnPMDx4vVO4o2LLoNORJsKKUgLi2dgpaG4S+YJUvWJhmT/mgQSDEXr2CKjraUQ==
+
 "@editorjs/checklist@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@editorjs/checklist/-/checklist-1.6.0.tgz#f3e501b0422917ca78fd08cb51578098a26a1823"
@@ -5055,10 +5065,10 @@ antd-img-crop@^4.25.0:
     react-easy-crop "^5.4.1"
     tslib "^2.8.1"
 
-antd@^5.24.5:
-  version "5.26.3"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-5.26.3.tgz#cbbb7e1b48a972dc7b6ee8b6948f51cc91c263f8"
-  integrity sha512-M/s9Q39h/+G7AWnS6fbNxmAI9waTH4ti022GVEXBLq2j810V1wJ3UOQps13nEilzDNcyxnFN/EIbqIgS7wSYaA==
+antd@^5.26.4:
+  version "5.26.4"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-5.26.4.tgz#bfa5da007c30a60e2f8a1e4bfb83b8d6e3363e8c"
+  integrity sha512-e1EnOvEkvvqcQ18dxfzChBJyJACyih13WpNf2OtnP9z2POh/SF0fXL+ynUemT1zfr+p+P1po/tmHXaMc5PMghg==
   dependencies:
     "@ant-design/colors" "^7.2.1"
     "@ant-design/cssinjs" "^1.23.0"
@@ -13430,10 +13440,10 @@ zod-to-json-schema@^3.24.5:
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.24.6.tgz#5920f020c4d2647edfbb954fa036082b92c9e12d"
   integrity sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==
 
-zod@^3.24.2:
-  version "3.25.74"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.74.tgz#9368a3986fe756bd94b9a5baad9919660ff3f250"
-  integrity sha512-J8poo92VuhKjNknViHRAIuuN6li/EwFbAC8OedzI8uxpEPGiXHGQu9wemIAioIpqgfB4SySaJhdk0mH5Y4ICBg==
+zod@^3.25.76:
+  version "3.25.76"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.76.tgz#26841c3f6fd22a6a2760e7ccb719179768471e34"
+  integrity sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==
 
 zwitch@^2.0.0:
   version "2.0.4"

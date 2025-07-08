@@ -172,6 +172,8 @@ export const publicThemeConfig: ThemeConfig = {
 			titleFontSize: 24,
 			titleLineHeight: 2,
 			fontWeightStrong: 700,
+			paddingContentHorizontal: 24,
+			paddingContentVertical: 24,
 		},
 	},
 
@@ -316,6 +318,12 @@ export const appThemeConfig: ThemeConfig = {
 			titleFontSize: 24,
 			titleLineHeight: 2,
 			fontWeightStrong: 700,
+			paddingContentHorizontal: 24,
+			paddingContentVertical: 24,
+			colorBgMask: 'rgba(255, 255, 255, 0.66)',
+			colorBorder: 'rgb(226, 232, 240)',
+			boxShadow:
+				'rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px',
 		},
 		Checkbox: {
 			controlInteractiveSize: 18,
