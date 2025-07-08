@@ -51,7 +51,7 @@
 
         &:hover {
           background-color: rgba(255, 255, 255, 0.08);
-          
+
           a {
             color: #fff;
           }
@@ -59,7 +59,7 @@
 
         &-active {
           background-color: rgba(241, 85, 65, 0.1);
-          
+
           a {
             color: #fff !important;
           }
@@ -80,9 +80,23 @@
     border-radius: 4px;
     font-weight: 500;
     transition: all 0.3s ease;
-    
+
     &:hover {
       background-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .actionButtonSkeleton {
+    width: 100%;
+
+    line-height: normal;
+    display: block;
+
+    :global {
+      .ant-skeleton-button {
+        min-width: 100px;
+        height: 40px;
+      }
     }
   }
 

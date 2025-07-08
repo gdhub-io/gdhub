@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import React from 'react'
 import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
+import { LogoutOutlined } from '@ant-design/icons'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { T, useTolgee } from '@tolgee/react'
-import { Button, Drawer, Flex, Grid, Menu, MenuProps, Space } from 'antd'
+import { Button, Drawer, Flex, Grid, Menu, MenuProps, Skeleton, Space } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 import { SwitchLanguage } from '../SwitchLanguage'
 
 export const MainHeader = ({ className }: { className?: string }) => {
-	const { data: session }: any = useSession()
+	const { data: session, status: authStatus }: any = useSession()
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
 	const { t } = useTolgee()
@@ -149,6 +150,46 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		[screens, session]
 	)
 
+	const actionButton = useMemo(() => {
+		if (authStatus === 'loading') {
+			return (
+				<div className={styles.actionButtonSkeleton}>
+					<Skeleton.Button active size="large" block />
+				</div>
+			)
+		}
+
+		if (authStatus === 'unauthenticated') {
+			return (
+				<Link href="/signin">
+					<Button type="primary" className={styles.actionButton} block>
+						<T>Log in</T>
+					</Button>
+				</Link>
+			)
+		}
+
+		if (authStatus === 'authenticated') {
+			return (
+				<Link href="/hub">
+					<Button className={styles.actionButton} block>
+						<T>Go to app</T>
+					</Button>
+				</Link>
+			)
+		}
+	}, [authStatus])
+
+	const logoutButton = useMemo(() => {
+		if (authStatus === 'authenticated') {
+			return (
+				<Button type="text" size="small" onClick={() => signOut()}>
+					<LogoutOutlined /> Logout
+				</Button>
+			)
+		}
+	}, [authStatus])
+
 	return (
 		<div className={[styles.container, className].join(' ')}>
 			<Flex align="center" justify="space-between" className={styles.topLine}>
@@ -171,21 +212,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				{/* right signin button */}
 				{screens.lg && (
 					<Space align="center" className={styles.rightControls}>
-						<>
-							{!!session ? (
-								<Link href="/hub">
-									<Button className={styles.actionButton}>
-										<T>Go to app</T>
-									</Button>
-								</Link>
-							) : (
-								<Link href="/signin">
-									<Button className={styles.actionButton}>
-										<T>Log in</T>
-									</Button>
-								</Link>
-							)}
-						</>
+						{actionButton}
 						<SwitchLanguage />
 					</Space>
 				)}
@@ -202,7 +229,12 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					height={'100%'}
 					afterOpenChange={handleOpenMobileMenu}
 					closeIcon={<AiOutlineClose size={24} />}
-					title={<Flex justify="end">{<SwitchLanguage border={true} size="small" />}</Flex>}
+					title={
+						<Flex justify="end" align="center" gap={16}>
+							{logoutButton}
+							<SwitchLanguage border={true} size="small" />
+						</Flex>
+					}
 					placement="right"
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
@@ -218,19 +250,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 							selectedKeys={[activeMenuKey]}
 						/>
 
-						{!!session ? (
-							<Link href="/hub">
-								<Button type="primary" style={{ width: '100%' }}>
-									<T>Go to app</T>
-								</Button>
-							</Link>
-						) : (
-							<Link href="/signin">
-								<Button type="primary" style={{ width: '100%' }}>
-									<T>Log in</T>
-								</Button>
-							</Link>
-						)}
+						{actionButton}
 					</Space>
 				</Drawer>
 			)}
