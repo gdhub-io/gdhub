@@ -8,7 +8,7 @@ import axios from 'axios'
 import styles from './style.module.scss'
 
 const prepareContentRequest = (step: prismaClient.ProjectWorkflowStep) => {
-	const [source, path] = step.description?.split('::') || []
+	const [source, path] = step?.description?.split('::') || []
 
 	if (source === 'notion' && path) {
 		const [table, slug] = path?.split('.')
