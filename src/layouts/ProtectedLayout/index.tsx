@@ -129,7 +129,7 @@ export const ProtectedLayout = ({
 
 			{
 				label: (
-					<Link href="/hub/docs">
+					<Link href="https://docs.gdhub.io" target="_blank">
 						{screens.lg ? <Button size="small">Documentation</Button> : <strong>Documentation</strong>}
 					</Link>
 				),
@@ -317,7 +317,7 @@ export const ProtectedLayout = ({
 								<Space>
 									{screens.xl ? (
 										<>
-											<Link href="/hub/docs">
+											<Link href="https://docs.gdhub.io" target="_blank">
 												<Button type="text" style={{ fontSize: 14 }}>
 													<T>Documentation</T>
 												</Button>

@@ -221,7 +221,7 @@ export const PublicLayout = ({
 			...publicMenuItems,
 			{
 				label: (
-					<Link href="/hub/docs" title={t('Documentation')}>
+					<Link href="https://docs.gdhub.io" target="_blank" title={t('Documentation')}>
 						{screens.lg ? (
 							<Button type="primary">
 								<T>Documentation</T>
