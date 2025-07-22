@@ -28,8 +28,6 @@ class CronRelevantVacanciesHandler {
 		})
 
 		console.log(`${updatedVacancies.count} vacancies archived`)
-
-		return { vacancyIds: updatedVacancies.map((vacancy: { id: string }) => vacancy.id) }
 	}
 }
 
