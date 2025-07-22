@@ -1,0 +1,44 @@
+import { prisma } from '@/services/prisma'
+import { IsString } from 'class-validator'
+import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+
+class ProjectVacancyParams {
+	@IsString()
+	id: string
+}
+
+class ApiProjectVacancyHandler {
+	constructor() {}
+
+	@Get()
+	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { id }: ProjectVacancyParams) {
+		console.log(id)
+		const data = await prisma.teamVacancy.findFirst({
+			where: { id },
+			include: {
+				promiseStep: true,
+				team: {
+					select: {
+						id: true,
+						project: {
+							select: {
+								id: true,
+								name: true,
+								slug: true,
+								description: true,
+								coverImage: true,
+								videoLink: true,
+								workflow: { select: { steps: { select: { id: true, name: true } } } },
+							},
+						},
+					},
+				},
+				_count: { select: { applicants: true } },
+			},
+		})
+
+		return data
+	}
+}
+
+export default createHandler(ApiProjectVacancyHandler)

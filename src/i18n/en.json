@@ -741,7 +741,7 @@
       "applySuccess": "Your response is sent",
       "cancelMyResponse": "Cancel my response",
       "descriptionHelp": "Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",
-      "notAuth": "Only registered users with a completed specialty can respond.",
+      "notAuth": "Only registered users can respond to this vacancy. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>.",
       "titleSession": "Open Role",
       "withdrawSuccess": "Your response is withdrawn"
     }
