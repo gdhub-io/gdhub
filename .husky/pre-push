@@ -4,7 +4,7 @@
 yarn refresh-translations
 
 # Add changed translation files
-git add src/i18n/en.json src/i18n/ru.json
+git add src/i18n/*
 
 # If there are changes — make a commit
 if ! git diff --cached --quiet; then
