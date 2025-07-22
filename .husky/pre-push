@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+yarn refresh-translations
+
+# Add changed translation files
+git add src/i18n/*
+
+# If there are changes — make a commit
+if ! git diff --cached --quiet; then
+	git commit -m 'chore: update translations before push'
+fi
