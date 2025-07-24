@@ -322,8 +322,7 @@ export const appThemeConfig: ThemeConfig = {
 			paddingContentVertical: 24,
 			colorBgMask: 'rgba(255, 255, 255, 0.66)',
 			colorBorder: 'rgb(226, 232, 240)',
-			boxShadow:
-				'rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px',
+			boxShadow: 'rgba(0, 0, 0, 0.4) 0px 30px 90px',
 		},
 		Checkbox: {
 			controlInteractiveSize: 18,

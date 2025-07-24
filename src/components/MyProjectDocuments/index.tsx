@@ -4,7 +4,7 @@ import tableStyles from '@/components/ModernTable/ModernTable.module.scss'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { HiOutlineTrash } from '@react-icons/all-files/hi/HiOutlineTrash'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTolgee } from '@tolgee/react'
 import { Button, Flex, Grid, message, Popconfirm, Space, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table'
@@ -14,7 +14,7 @@ import dynamic from 'next/dynamic'
 
 const { Text } = Typography
 
-const DocumentModal = dynamic(() => import('@/components/modals/CreateProjectModal'), { ssr: false })
+const CreateDocumentModal = dynamic(() => import('@/components/modals/CreateDocumentModal'), { ssr: false })
 
 interface ProjectDocument {
 	key: string
@@ -48,14 +48,20 @@ const MyProjectDocuments = () => {
 		}
 	)
 
+	const { mutateAsync: deleteDocument } = useMutation(({ id, teamId }: { id: string; teamId: string }) =>
+		axios.delete(`/api/user/project/documents/${id}`, {
+			params: { teamId },
+		})
+	)
+
 	const documentsColumns: ColumnsType<ProjectDocument> = [
 		{
 			title: t('project.documents.title', 'Title'),
-			dataIndex: 'title',
-			key: 'title',
+			dataIndex: 'name',
+			key: 'name',
 			width: '50%',
 			render: (value, data) => (
-				<Space direction="vertical" size={0}>
+				<Space direction="vertical" size={0} style={{ width: '100%' }}>
 					<Text
 						className={tableStyles.tableMemberName}
 						onClick={() => handleEditDocument(data.id)}
@@ -63,25 +69,19 @@ const MyProjectDocuments = () => {
 					>
 						{value}
 					</Text>
+					<Text ellipsis type="secondary" style={{ maxWidth: '120px' }}>
+						{data.description}
+					</Text>
 				</Space>
 			),
 		},
 		{
-			title: t('project.documents.type', 'Type'),
-			dataIndex: 'type',
-			key: 'type',
+			title: t('project.documents.updatedAt', 'Updated At'),
+			dataIndex: 'updatedAt',
+			key: 'updatedAt',
+			align: 'right',
 			responsive: ['md'],
-			render: (value) => <Text className={tableStyles.tableMemberPosition}>{value}</Text>,
-		},
-		{
-			title: t('project.documents.uploadedAt', 'Uploaded at'),
-			dataIndex: 'uploadedAt',
-			key: 'uploadedAt',
-			responsive: ['md'],
-			render: (value) =>
-				value ? (
-					<Text className={tableStyles.tableMemberDates}>{t('to') + ' ' + dayjs(value).format('LLL')}</Text>
-				) : null,
+			render: (value) => dayjs(value).format('LLL'),
 		},
 		{
 			key: 'actions',
@@ -92,7 +92,7 @@ const MyProjectDocuments = () => {
 						title={t('You definitely want to delete the document?')}
 						okText={t('Yes', 'Yes')}
 						cancelText={t('No', 'No')}
-						onConfirm={() => handleDeleteDocument(record.id)}
+						onConfirm={() => handleDeleteDocument({ id: record.id, teamId: contextProject?.teamId })}
 					>
 						<Button type="text" danger>
 							<HiOutlineTrash />
@@ -108,19 +108,25 @@ const MyProjectDocuments = () => {
 		setShowDocumentModal(true)
 	}
 
-	const handleDeleteDocument = async (id: string) => {
-		// await fetcher({ url: '/api/user/project/vacancy/close', data: { id } })
-		// await deleteDocument({ id })
+	const handleDeleteDocument = async ({ id, teamId }: { id: string; teamId?: string }) => {
+		if (!teamId) return
+
+		await deleteDocument({ id, teamId })
 		setSelectedDocumentId(undefined)
 		fetchMyProjectDocuments()
 
 		message.success(t('project.documents.documentDeleted', 'Document deleted'))
 	}
 
-	const handleSaveVacancy = () => {
+	const handleCreateDocument = () => {
 		setShowDocumentModal(false)
 		setSelectedDocumentId(undefined)
 		fetchMyProjectDocuments()
+	}
+
+	const handleCancelCreateDocument = () => {
+		setShowDocumentModal(false)
+		setSelectedDocumentId(undefined)
 	}
 
 	return (
@@ -129,7 +135,7 @@ const MyProjectDocuments = () => {
 				<Space align="center">
 					<h3 style={{ margin: 0 }}>{t('project.documents.title', 'Documents')}</h3>
 					<Button onClick={() => setShowDocumentModal(true)}>
-						{t('project.documents.addDocument', 'Upload document')}
+						{t('project.documents.addDocument', 'Add document')}
 					</Button>
 				</Space>
 			</Flex>
@@ -148,16 +154,13 @@ const MyProjectDocuments = () => {
 				</p>
 			)}
 
-			<DocumentModal
+			<CreateDocumentModal
 				teamId={contextProject?.teamId}
 				projectId={contextProject?.id}
 				documentId={selectedDocumentId}
 				open={showDocumentModal}
-				onCancel={() => {
-					setShowDocumentModal(false)
-					setSelectedDocumentId(undefined)
-				}}
-				onOk={() => {}}
+				onCancel={handleCreateDocument}
+				onCreate={handleCreateDocument}
 			/>
 		</>
 	)
