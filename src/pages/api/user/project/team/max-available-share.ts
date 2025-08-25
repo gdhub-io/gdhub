@@ -51,9 +51,12 @@ class ApiTeamMaxAvailableShareHandler {
 		}
 
 		// Считаем общую сумму промисов из вакансий
-		const vacanciesPromisesSum = team.vacancies.reduce((sum: number, vacancy: { promisePercentage: number }) => {
-			return sum + (vacancy.promisePercentage || 0)
-		}, 0)
+		const vacanciesPromisesSum = team.vacancies.reduce(
+			(sum: number, vacancy: { promisePercentage?: number | null }) => {
+				return sum + (vacancy.promisePercentage || 0)
+			},
+			0
+		)
 
 		// Считаем общую сумму промисов из членов команды
 		const membersPromisesSum = team.members.reduce(

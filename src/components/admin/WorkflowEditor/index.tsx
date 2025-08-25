@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { WorkflowStepTemplate, WorkflowTaskTemplate, normalizeWorkflowSteps } from '@/types/workflow'
+import { normalizeWorkflowSteps } from '@/types/workflow'
 import { PlusOutlined, DeleteOutlined, MenuOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
