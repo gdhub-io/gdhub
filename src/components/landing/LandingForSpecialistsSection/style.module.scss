@@ -103,6 +103,69 @@
         outline-offset: 3px;
       }
     }
+
+    .latestProjectsList {
+      margin-top: 24px;
+
+      h3.ant-typography {
+        margin-bottom: 16px;
+      }
+
+      .projectsGrid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .projectCard {
+        background: rgba(255,255,255,0.02);
+        border-color: rgba(255,255,255,0.08);
+      }
+
+      .projectCardBody {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .projectCover {
+        flex: 0 0 auto;
+        width: 96px;
+        height: 64px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.06);
+      }
+
+      .projectCoverPlaceholder {
+        width: 96px;
+        height: 64px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.06);
+      }
+
+      .projectInfo {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .projectName {
+        font-weight: 600;
+        color: #fff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .projectMeta {
+        color: rgba(255,255,255,0.65);
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
   }
 }
 
