@@ -178,10 +178,10 @@ export class ProjectEquityRepository {
 
 			// Get member share
 			const memberPromise = equity.equityAllocations.find(
-				(allocation: { teamMemberId: string }) => allocation.teamMemberId === memberId
+				(allocation: { teamMemberId?: string | null }) => allocation.teamMemberId === memberId
 			)
 			const memberShare = equity.equityAllocations.find(
-				(allocation: { teamMemberId: string }) => allocation.teamMemberId === memberId
+				(allocation: { teamMemberId?: string | null }) => allocation.teamMemberId === memberId
 			)
 
 			return memberShare

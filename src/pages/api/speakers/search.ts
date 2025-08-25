@@ -49,7 +49,12 @@ class ApiSpeakersSearchHandler {
 		})
 
 		return specialities.map(
-			(s: { id: string; user: { name: string; image: string }; name: string; direction: { name: string } }) => ({
+			(s: {
+				id: string
+				user: { name?: string | null; image?: string | null }
+				name: string
+				direction: { name: string }
+			}) => ({
 				id: s.id,
 				name: s.user?.name || '',
 				image: s.user?.image || '',

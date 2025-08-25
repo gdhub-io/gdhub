@@ -139,7 +139,7 @@ class ApiProjectHandler {
 		if (!user) throw Error('User not found')
 
 		const existingProjectTeam = user?.memberInTeams.find(
-			(member: { status: prismaClient.TeamMemberStatus; team: { project: { slug: string } } }) =>
+			(member: { status: prismaClient.TeamMemberStatus; team: { project: { slug: string } | null } }) =>
 				member.status == prismaClient.TeamMemberStatus.Founder && member.team.project?.slug == slugify(name)
 		)
 

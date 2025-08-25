@@ -27,7 +27,9 @@ export async function migrate(searchClient: SearchEngineService) {
 			const documents = specialists.map(
 				(s: {
 					id: string
-					user: { profile: { isActive: boolean; timeForWork: number[]; country: string; city: string } }
+					user: {
+						profile: { isActive: boolean; timeForWork: number[]; country?: string | null; city?: string | null } | null
+					}
 					direction: { name: string }
 				}) => {
 					const { user, ...otherData } = s

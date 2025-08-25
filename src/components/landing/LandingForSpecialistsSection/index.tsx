@@ -1,8 +1,10 @@
 import Star2Icon from '@/assets/images/icons/star-2.svg'
 import BgImageXS from '@/assets/images/landing/bg-image-for-specialists-section-xs.png'
 import BgImage from '@/assets/images/landing/bg-image-for-specialists-section.png'
+import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
-import { Button, Col, Grid, Row, Space, Typography } from 'antd'
+import { Button, Card, Col, Grid, Row, Space, Typography } from 'antd'
+import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -12,6 +14,20 @@ const { Title, Text } = Typography
 export const LandingForSpecialistsSection = () => {
 	const screens = Grid.useBreakpoint()
 
+	const { data: latestProjects } = useQuery(
+		['latest-projects'],
+		() =>
+			axios
+				.get<
+					{ id: string; name: string; slug: string; coverImage: string; genre?: string; platform?: string }[]
+				>('/api/projects/latest')
+				.then((r) => r.data),
+		{ staleTime: 1000 * 60 * 5 }
+	)
+
+	const gridColumns = screens.lg ? 5 : screens.md ? 3 : 1
+	const visibleProjects = (latestProjects || []).slice(0, screens.lg ? 5 : 3)
+
 	return (
 		<div>
 			<div
@@ -20,8 +36,8 @@ export const LandingForSpecialistsSection = () => {
 				style={screens.md ? { backgroundImage: `url(${BgImage.src})` } : undefined}
 			>
 				<div className={styles.container}>
-					<Row>
-						<Col xs={{ span: 24 }} lg={{ span: 12 }}></Col>
+					<Row gutter={[24, 24]}>
+						<Col xs={{ span: 24 }} lg={{ span: 12 }} />
 						<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 							<div className={styles.preTitle}>
 								<T keyName="landing.specialist.pretitle">what are our advantages</T>
@@ -53,6 +69,54 @@ export const LandingForSpecialistsSection = () => {
 											</T>
 										</Text>
 									</Space>
+
+									{visibleProjects.length > 0 && (
+										<div className={styles.latestProjectsList}>
+											<Space style={{ marginBottom: 16 }}>
+												<Title level={3} style={{ marginBottom: 0 }}>
+													<T>Latest projects</T>
+												</Title>
+												<Link href="/projects">
+													<Button size="small" shape="round" color="blue" style={{ height: 'auto' }}>
+														<T>See all projects</T>
+													</Button>
+												</Link>
+											</Space>
+
+											<div
+												className={styles.projectsGrid}
+												style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+											>
+												{visibleProjects.map((p, idx) => (
+													<Card key={p.id || `${p.slug}-${idx}`} className={styles.projectCard} hoverable>
+														<div className={styles.projectCardBody}>
+															<div className={styles.projectCover}>
+																{p.coverImage ? (
+																	<Image
+																		src={p.coverImage}
+																		alt={p.name}
+																		width={96}
+																		height={64}
+																		style={{ objectFit: 'cover', borderRadius: 8 }}
+																	/>
+																) : (
+																	<div className={styles.projectCoverPlaceholder} />
+																)}
+															</div>
+															<div className={styles.projectInfo}>
+																<div className={styles.projectName}>{p.name}</div>
+																<div className={styles.projectMeta}>
+																	{p.genre || ''}
+																	{p.platform ? ` · ${p.platform}` : ''}
+																</div>
+															</div>
+														</div>
+													</Card>
+												))}
+											</div>
+										</div>
+									)}
+
 									<Link href="/registration?for=specialist">
 										<Button className={styles.heroButton} type="primary">
 											<T>Join the team</T>

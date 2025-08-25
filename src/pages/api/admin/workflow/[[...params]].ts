@@ -1,7 +1,7 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { type JsonValue } from '@prisma/client/runtime/library'
+import { Prisma } from '@prisma/client'
 import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import { Body, Delete, Get, Param, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
@@ -20,7 +20,7 @@ class CreateWorkflowDto {
 
 	@IsArray()
 	@IsOptional()
-	steps?: JsonValue[]
+	steps?: Prisma.InputJsonValue[]
 }
 
 class UpdateWorkflowDto {
@@ -38,7 +38,7 @@ class UpdateWorkflowDto {
 
 	@IsArray()
 	@IsOptional()
-	steps?: JsonValue[]
+	steps?: Prisma.InputJsonValue[]
 }
 
 @NextAuthGuard('user', [prismaClient.UserRole.Admin])
@@ -55,7 +55,7 @@ class ApiWorkflowsAdminHandler {
 				name,
 				title,
 				description: description || undefined,
-				steps: steps || [],
+				steps: (steps ?? []) as Prisma.InputJsonValue[],
 			},
 		})
 
@@ -83,7 +83,7 @@ class ApiWorkflowsAdminHandler {
 				name: name || undefined,
 				title: title || undefined,
 				description: description || undefined,
-				steps: steps || undefined,
+				steps: steps as Prisma.InputJsonValue[] | undefined,
 			},
 		})
 

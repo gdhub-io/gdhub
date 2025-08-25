@@ -183,7 +183,7 @@ class ApiProjectWorkflowAdminHandler {
 						name: stepData.name || stepData.title,
 						description: stepData.description || '',
 						order: index,
-						workflowId,
+						projectWorkflowId: workflowId,
 					},
 				})
 

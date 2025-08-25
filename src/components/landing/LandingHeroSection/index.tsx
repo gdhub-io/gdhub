@@ -23,10 +23,11 @@ export const LandingHeroSection = ({
 	const { t } = useTolgee()
 
 	const hasEmptyStats =
-		stats.usersCount === null ||
-		stats.specialitiesCount === null ||
-		stats.projectsCount === null ||
-		stats.vacanciesCount === null
+		!stats ||
+		stats?.usersCount === null ||
+		stats?.specialitiesCount === null ||
+		stats?.projectsCount === null ||
+		stats?.vacanciesCount === null
 
 	return (
 		<div
