@@ -43,6 +43,20 @@
 					font-size: 14px !important;
 				}
 			}
+
+			// latest projects: image left, text right in a row on small screens
+			.latestProjectsList {
+				.projectCardBody {
+					flex-direction: row !important;
+					align-items: center;
+					gap: 12px;
+				}
+
+ 				.projectInfo {
+					flex: 1 1 auto;
+					min-width: 0;
+				}
+			}
 		}
 	}
 }
