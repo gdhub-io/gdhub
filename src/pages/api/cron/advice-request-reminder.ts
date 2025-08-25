@@ -70,7 +70,7 @@ class CronAdviceRequestReminderHandler {
 			// Extract projectIds from today's logs
 			const alreadyNotifiedAdviceRequestIds = new Set(
 				lastLogs
-					.map((log) => {
+					.map((log: { data: unknown }) => {
 						const data = log.data as any
 						const ids = (data?.remindedAdviceRequestIds ?? []) as string[]
 						return Array.isArray(ids) ? ids : []
