@@ -73,6 +73,57 @@
         outline-offset: 3px;
       }
     }
+
+    .latestSpecialistsList {
+      margin-top: 24px;
+
+      h3.ant-typography {
+        margin-bottom: 16px;
+      }
+
+      .specialistsGrid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .specialistCard {
+        background: rgba(255,255,255,0.02);
+        border-color: rgba(255,255,255,0.08);
+      }
+
+      .specialistCardBody {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .specialistAvatar {
+        flex: 0 0 auto;
+      }
+
+      .specialistInfo {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .specialistName {
+        font-weight: 600;
+        color: #fff;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .specialistMeta {
+        color: rgba(255,255,255,0.65);
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
   }
 }
 

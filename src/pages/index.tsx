@@ -74,7 +74,7 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 			</Head> */}
 			<LandingLayout className={styles.container}>
 				<div className={styles.main}>
-					{Boolean(stats) && <LandingHeroSection stats={stats} />}
+					<LandingHeroSection stats={stats} />
 					<LandingWhoWeAreSection />
 					<LandingForAuthorsSection />
 					<LandingForSpecialistsSection />
