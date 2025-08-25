@@ -21,7 +21,7 @@ class ApiLatestSpecialistsHandler {
 			take: 5,
 		})
 
-		return specialities.map((s) => ({
+		return specialities.map((s: any) => ({
 			...s,
 			specialization: s.specialization.length > 100 ? s.specialization.slice(0, 100) + '...' : s.specialization,
 		}))
