@@ -106,8 +106,10 @@ export const LandingForSpecialistsSection = () => {
 															<div className={styles.projectInfo}>
 																<div className={styles.projectName}>{p.name}</div>
 																<div className={styles.projectMeta}>
-																	{p.genre || ''}
-																	{p.platform ? ` · ${p.platform}` : ''}
+																	<Text ellipsis={{ tooltip: true }}>
+																		{p.genre || ''}
+																		{p.platform ? ` · ${p.platform}` : ''}
+																	</Text>
 																</div>
 															</div>
 														</div>
