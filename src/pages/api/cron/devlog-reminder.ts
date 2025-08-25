@@ -91,7 +91,7 @@ class CronDevlogReminderHandler {
 		// Extract projectIds from today's logs
 		const alreadyNotifiedProjectIds = new Set(
 			lastLogs
-				.map((log) => {
+				.map((log: { data: unknown }) => {
 					const data = log.data as any
 					const ids = (data?.projectIds ?? []) as string[]
 					return Array.isArray(ids) ? ids : []
