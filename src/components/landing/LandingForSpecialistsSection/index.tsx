@@ -3,7 +3,7 @@ import BgImageXS from '@/assets/images/landing/bg-image-for-specialists-section-
 import BgImage from '@/assets/images/landing/bg-image-for-specialists-section.png'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
-import { Button, Card, Grid, Space, Typography } from 'antd'
+import { Button, Card, Col, Grid, Row, Space, Typography } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -36,84 +36,96 @@ export const LandingForSpecialistsSection = () => {
 				style={screens.md ? { backgroundImage: `url(${BgImage.src})` } : undefined}
 			>
 				<div className={styles.container}>
-					<div className={styles.preTitle}>
-						<T keyName="landing.specialist.pretitle">what are our advantages</T>
-					</div>
-					<Title level={2}>
-						<T keyName="landing.specialist.title">FOR SPECIALISTS</T>
-					</Title>
+					<Row gutter={[24, 24]}>
+						<Col xs={{ span: 24 }} lg={{ span: 12 }} />
+						<Col xs={{ span: 24 }} lg={{ span: 12 }}>
+							<div className={styles.preTitle}>
+								<T keyName="landing.specialist.pretitle">what are our advantages</T>
+							</div>
+							<Title level={2}>
+								<T keyName="landing.specialist.title">FOR SPECIALISTS</T>
+							</Title>
 
-					<div className={styles.content}>
-						<Space direction="vertical" size={screens.lg ? 46 : 32}>
-							<Space size={screens.lg ? 32 : 16} align="center">
-								<div className={styles.star}>
-									<Star2Icon />
-								</div>
-								<Text>
-									<T keyName="landing.specialist.text1">
-										Each Specialist in the gaming industry has an opportunity to join one of the indie projects under
-										development in order to gain experience and make new friends.
-									</T>
-								</Text>
-							</Space>
-							<Space size={screens.lg ? 32 : 16} align="center">
-								<div className={styles.star}>
-									<Star2Icon />
-								</div>
-								<Text>
-									<T keyName="landing.specialist.text2">
-										You can become a part of a new video game or share your expertise as a Mentor
-									</T>
-								</Text>
-							</Space>
+							<div className={styles.content}>
+								<Space direction="vertical" size={screens.lg ? 46 : 32}>
+									<Space size={screens.lg ? 32 : 16} align="center">
+										<div className={styles.star}>
+											<Star2Icon />
+										</div>
+										<Text>
+											<T keyName="landing.specialist.text1">
+												Each Specialist in the gaming industry has an opportunity to join one of the indie projects
+												under development in order to gain experience and make new friends.
+											</T>
+										</Text>
+									</Space>
+									<Space size={screens.lg ? 32 : 16} align="center">
+										<div className={styles.star}>
+											<Star2Icon />
+										</div>
+										<Text>
+											<T keyName="landing.specialist.text2">
+												You can become a part of a new video game or share your expertise as a Mentor
+											</T>
+										</Text>
+									</Space>
 
-							{visibleProjects.length > 0 && (
-								<div className={styles.latestProjectsList}>
-									<Title level={3}>
-										<T>Latest projects</T>
-									</Title>
+									{visibleProjects.length > 0 && (
+										<div className={styles.latestProjectsList}>
+											<Space style={{ marginBottom: 16 }}>
+												<Title level={3} style={{ marginBottom: 0 }}>
+													<T>Latest projects</T>
+												</Title>
+												<Link href="/projects">
+													<Button size="small" shape="round" color="blue" style={{ height: 'auto' }}>
+														<T>See all projects</T>
+													</Button>
+												</Link>
+											</Space>
 
-									<div
-										className={styles.projectsGrid}
-										style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
-									>
-										{visibleProjects.map((p, idx) => (
-											<Card key={p.id || `${p.slug}-${idx}`} className={styles.projectCard} hoverable>
-												<div className={styles.projectCardBody}>
-													<div className={styles.projectCover}>
-														{p.coverImage ? (
-															<Image
-																src={p.coverImage}
-																alt={p.name}
-																width={96}
-																height={64}
-																style={{ objectFit: 'cover', borderRadius: 8 }}
-															/>
-														) : (
-															<div className={styles.projectCoverPlaceholder} />
-														)}
-													</div>
-													<div className={styles.projectInfo}>
-														<div className={styles.projectName}>{p.name}</div>
-														<div className={styles.projectMeta}>
-															{p.genre || ''}
-															{p.platform ? ` · ${p.platform}` : ''}
+											<div
+												className={styles.projectsGrid}
+												style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
+											>
+												{visibleProjects.map((p, idx) => (
+													<Card key={p.id || `${p.slug}-${idx}`} className={styles.projectCard} hoverable>
+														<div className={styles.projectCardBody}>
+															<div className={styles.projectCover}>
+																{p.coverImage ? (
+																	<Image
+																		src={p.coverImage}
+																		alt={p.name}
+																		width={96}
+																		height={64}
+																		style={{ objectFit: 'cover', borderRadius: 8 }}
+																	/>
+																) : (
+																	<div className={styles.projectCoverPlaceholder} />
+																)}
+															</div>
+															<div className={styles.projectInfo}>
+																<div className={styles.projectName}>{p.name}</div>
+																<div className={styles.projectMeta}>
+																	{p.genre || ''}
+																	{p.platform ? ` · ${p.platform}` : ''}
+																</div>
+															</div>
 														</div>
-													</div>
-												</div>
-											</Card>
-										))}
-									</div>
-								</div>
-							)}
+													</Card>
+												))}
+											</div>
+										</div>
+									)}
 
-							<Link href="/registration?for=specialist">
-								<Button className={styles.heroButton} type="primary">
-									<T>Join the team</T>
-								</Button>
-							</Link>
-						</Space>
-					</div>
+									<Link href="/registration?for=specialist">
+										<Button className={styles.heroButton} type="primary">
+											<T>Join the team</T>
+										</Button>
+									</Link>
+								</Space>
+							</div>
+						</Col>
+					</Row>
 				</div>
 			</div>
 			{screens.md ? null : (

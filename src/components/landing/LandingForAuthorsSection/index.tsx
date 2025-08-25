@@ -86,7 +86,7 @@ export const LandingForAuthorsSection = () => {
 							{visibleSpecialists.length > 0 && (
 								<div className={styles.latestSpecialistsList}>
 									<Title level={3}>
-										<T>Latest specialists ready to invest their time in your project</T>
+										<T>Latest specialists from Talent Pool</T>
 									</Title>
 
 									<div
