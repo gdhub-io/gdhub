@@ -187,7 +187,7 @@ export default class TelegramService {
 			await this.sendMessage({
 				chatId: env<number>('TELEGRAM_EN_CHAT_ID'),
 				topicId: env<number>('TELEGRAM_EN_TOPIC_REPORTS'),
-				message,
+				message: newProjectReportsMessageEn(reports),
 			})
 		} catch (error) {
 			console.error('Error sending message to EN Telegram chat (new project reports)', error)
@@ -195,7 +195,7 @@ export default class TelegramService {
 
 		// Send to Discord
 		try {
-			await DiscordService.init().sendProjectNewsMessage(message)
+			await DiscordService.init().sendProjectNewsMessage(newProjectReportsMessageEn(reports))
 		} catch (error) {
 			console.error('Error sending message to Discord (new project reports)', error)
 		}
@@ -261,7 +261,7 @@ export default class TelegramService {
 			await this.sendMessage({
 				chatId: env<number>('TELEGRAM_EN_CHAT_ID'),
 				topicId: env<number>('TELEGRAM_EN_TOPIC_NEWS'),
-				message,
+				message: newSpecialitiesMessageEn(specialities),
 			})
 		} catch (error) {
 			console.error('Error sending message to EN Telegram chat (new specialities)', error)
@@ -269,7 +269,7 @@ export default class TelegramService {
 
 		// Send to Discord
 		try {
-			await DiscordService.init().sendPlatformNewsMessage(message)
+			await DiscordService.init().sendPlatformNewsMessage(newSpecialitiesMessageEn(specialities))
 		} catch (error) {
 			console.error('Error sending message to Discord (new specialities)', error)
 		}
@@ -345,7 +345,7 @@ export default class TelegramService {
 			await this.sendMessage({
 				chatId: env<number>('TELEGRAM_EN_CHAT_ID'),
 				topicId: env<number>('TELEGRAM_EN_TOPIC_VACANCIES'),
-				message,
+				message: newVacanciesMessageEn(projectWithVacancies),
 			})
 		} catch (error) {
 			console.error('Error sending message to EN Telegram chat (new vacancies)', error)
@@ -353,7 +353,7 @@ export default class TelegramService {
 
 		// Send to Discord
 		try {
-			await DiscordService.init().sendProjectNewsMessage(message)
+			await DiscordService.init().sendProjectNewsMessage(newVacanciesMessageEn(projectWithVacancies))
 		} catch (error) {
 			console.error('Error sending message to Discord (new vacancies)', error)
 		}
