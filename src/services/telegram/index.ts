@@ -18,6 +18,7 @@ import {
 	newVacanciesMessageEn,
 	newVacanciesMessageRu,
 } from './messages'
+import DiscordService from '../discord'
 import { prisma } from '../prisma'
 
 export default class TelegramService {
@@ -170,11 +171,34 @@ export default class TelegramService {
 				break
 		}
 
-		await this.sendMessage({
-			chatId: env<number>('TELEGRAM_CHAT_ID'),
-			topicId: env<number>('TELEGRAM_TOPIC_REPORTS'),
-			message,
-		})
+		// Send to RU chat
+		try {
+			await this.sendMessage({
+				chatId: env<number>('TELEGRAM_CHAT_ID'),
+				topicId: env<number>('TELEGRAM_TOPIC_REPORTS'),
+				message,
+			})
+		} catch (error) {
+			console.error('Error sending message to RU Telegram chat (new project reports)', error)
+		}
+
+		// Send to EN chat
+		try {
+			await this.sendMessage({
+				chatId: env<number>('TELEGRAM_EN_CHAT_ID'),
+				topicId: env<number>('TELEGRAM_EN_TOPIC_REPORTS'),
+				message,
+			})
+		} catch (error) {
+			console.error('Error sending message to EN Telegram chat (new project reports)', error)
+		}
+
+		// Send to Discord
+		try {
+			await DiscordService.init().sendProjectNewsMessage(message)
+		} catch (error) {
+			console.error('Error sending message to Discord (new project reports)', error)
+		}
 
 		return { sent: reports.length }
 	}
@@ -221,11 +245,34 @@ export default class TelegramService {
 				break
 		}
 
-		await this.sendMessage({
-			chatId: env<number>('TELEGRAM_CHAT_ID'),
-			topicId: env<number>('TELEGRAM_TOPIC_NEWS'),
-			message,
-		})
+		// Send to RU chat
+		try {
+			await this.sendMessage({
+				chatId: env<number>('TELEGRAM_CHAT_ID'),
+				topicId: env<number>('TELEGRAM_TOPIC_NEWS'),
+				message,
+			})
+		} catch (error) {
+			console.error('Error sending message to RU Telegram chat (new specialities)', error)
+		}
+
+		// Send to EN chat
+		try {
+			await this.sendMessage({
+				chatId: env<number>('TELEGRAM_EN_CHAT_ID'),
+				topicId: env<number>('TELEGRAM_EN_TOPIC_NEWS'),
+				message,
+			})
+		} catch (error) {
+			console.error('Error sending message to EN Telegram chat (new specialities)', error)
+		}
+
+		// Send to Discord
+		try {
+			await DiscordService.init().sendPlatformNewsMessage(message)
+		} catch (error) {
+			console.error('Error sending message to Discord (new specialities)', error)
+		}
 
 		return { sent: specialities.length }
 	}
@@ -282,11 +329,34 @@ export default class TelegramService {
 				break
 		}
 
-		await this.sendMessage({
-			chatId: env<number>('TELEGRAM_CHAT_ID'),
-			topicId: env<number>('TELEGRAM_TOPIC_VACANCIES'),
-			message,
-		})
+		// Send to RU chat
+		try {
+			await this.sendMessage({
+				chatId: env<number>('TELEGRAM_CHAT_ID'),
+				topicId: env<number>('TELEGRAM_TOPIC_VACANCIES'),
+				message,
+			})
+		} catch (error) {
+			console.error('Error sending message to RU Telegram chat (new vacancies)', error)
+		}
+
+		// Send to EN chat
+		try {
+			await this.sendMessage({
+				chatId: env<number>('TELEGRAM_EN_CHAT_ID'),
+				topicId: env<number>('TELEGRAM_EN_TOPIC_VACANCIES'),
+				message,
+			})
+		} catch (error) {
+			console.error('Error sending message to EN Telegram chat (new vacancies)', error)
+		}
+
+		// Send to Discord
+		try {
+			await DiscordService.init().sendProjectNewsMessage(message)
+		} catch (error) {
+			console.error('Error sending message to Discord (new vacancies)', error)
+		}
 
 		return { sent: projectWithVacancies.length }
 	}
