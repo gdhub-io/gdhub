@@ -1,6 +1,6 @@
 import EmailIcon from '@/assets/images/icons/email.svg'
 import TelegramIcon from '@/assets/images/icons/telegram.svg'
-import BgImage from '@/assets/images/landing/bg-image-for-contacts-section.png'
+import BgImage from '@/assets/images/landing/gdhub-contacts-image.png'
 import { BiLogoLinkedin } from '@react-icons/all-files/bi/BiLogoLinkedin'
 import { BiLogoYoutube } from '@react-icons/all-files/bi/BiLogoYoutube'
 import { T } from '@tolgee/react'

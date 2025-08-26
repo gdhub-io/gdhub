@@ -5,7 +5,10 @@
   padding: 96px 165px;
   padding-bottom: 156px;
   background-position: center bottom;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #0b0107;
+  background-blend-mode: luminosity;
 }
 
 .container {

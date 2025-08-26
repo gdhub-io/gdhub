@@ -1,6 +1,6 @@
 import Star2Icon from '@/assets/images/icons/star-2.svg'
-import BgImageXS from '@/assets/images/landing/bg-image-for-authors-section-xs.png'
-import BgImage from '@/assets/images/landing/bg-image-for-authors-section.png'
+// import BgImageXS from '@/assets/images/landing/gdhub-talent-pool.png'
+import BgImage from '@/assets/images/landing/gdhub-talent-pool.png'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Button, Card, Grid, Space, Typography } from 'antd'
@@ -41,7 +41,7 @@ export const LandingForAuthorsSection = () => {
 			<div
 				id="for-authors"
 				className={styles.section}
-				style={screens.md ? { backgroundImage: `url(${BgImage.src})` } : undefined}
+				style={screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined}
 			>
 				<div className={styles.container}>
 					<div className={styles.preTitle}>
@@ -52,7 +52,7 @@ export const LandingForAuthorsSection = () => {
 					</Title>
 
 					<div className={styles.content}>
-						<Space direction="vertical" size={screens.lg ? 46 : 32}>
+						<Space direction="vertical" size={screens.lg ? 46 : 24}>
 							<Space size={screens.lg ? 32 : 16} align="center">
 								<div className={styles.star}>
 									<Star2Icon />
@@ -83,6 +83,7 @@ export const LandingForAuthorsSection = () => {
 									</T>
 								</Text>
 							</Space>
+
 							{visibleSpecialists.length > 0 && (
 								<div className={styles.latestSpecialistsList}>
 									<Title level={3}>
@@ -115,6 +116,13 @@ export const LandingForAuthorsSection = () => {
 									</div>
 								</div>
 							)}
+
+							{screens.xl ? null : (
+								<div className={styles.sectionImageXS}>
+									<Image src={BgImage} alt="" fill style={{ objectFit: 'contain' }} />
+								</div>
+							)}
+
 							<Link href="/registration?for=author">
 								<Button className={styles.heroButton} type="primary">
 									<T>Assemble a team</T>
@@ -124,11 +132,6 @@ export const LandingForAuthorsSection = () => {
 					</div>
 				</div>
 			</div>
-			{screens.md ? null : (
-				<div className={styles.sectionImageXS}>
-					<Image src={BgImageXS} alt="" fill />
-				</div>
-			)}
 		</div>
 	)
 }

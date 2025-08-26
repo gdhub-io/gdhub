@@ -10,6 +10,7 @@ class ApiLatestProjectsHandler {
 		const projects = await prisma.project.findMany({
 			where: {
 				status: prismaClient.ProjectStatus.Approved,
+				coverImage: { not: null },
 				workflow: { currentStep: { order: { gt: 1 } } },
 			},
 			select: {

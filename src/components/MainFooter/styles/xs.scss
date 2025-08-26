@@ -1,17 +1,17 @@
 @media screen and (max-width: 575px) {
 	.section {
-		padding: 40px 16px;
+		padding: 20px 12px;
 		text-align: center;
 
 		:global {
 
 			div.ant-typography,
 			a {
-				font-size: 12px;
+				font-size: 11px;
 			}
 
 			.ant-anchor {
-				row-gap: 16px;
+				row-gap: 6px;
 			}
 		}
 	}
