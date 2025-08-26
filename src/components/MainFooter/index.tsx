@@ -1,6 +1,6 @@
 import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { T } from '@tolgee/react'
-import { Anchor, Col, Divider, Grid, Row, Space, Typography } from 'antd'
+import { Anchor, Col, Divider, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
@@ -8,7 +8,6 @@ import styles from './style.module.scss'
 const { Title, Paragraph } = Typography
 
 export const MainFooter = () => {
-	const screens = Grid.useBreakpoint()
 	const router = useRouter()
 
 	const writeInternalLink = (internalLink: string) => {
@@ -18,7 +17,13 @@ export const MainFooter = () => {
 	return (
 		<div className={styles.section}>
 			<div className={styles.container}>
-				<Row gutter={[32, 32]} style={{ marginBottom: 32 }}>
+				<Row
+					gutter={[
+						{ xs: 12, sm: 24, lg: 32 },
+						{ xs: 8, sm: 12, lg: 16 },
+					]}
+					style={{ marginBottom: 12 }}
+				>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<GdhubLogo style={{ width: 'auto', height: '31px' }} />
 						<Paragraph style={{ marginTop: 12, maxWidth: 510 }}>
@@ -28,9 +33,9 @@ export const MainFooter = () => {
 							</T>
 						</Paragraph>
 					</Col>
-					<Col xs={{ span: 24 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={8}>
-							<Title level={5}>
+					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
+						<Space direction="vertical" size={6}>
+							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
 								<T>Platform</T>
 							</Title>
 							<Anchor
@@ -42,9 +47,9 @@ export const MainFooter = () => {
 							/>
 						</Space>
 					</Col>
-					<Col xs={{ span: 24 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={8}>
-							<Title level={5}>
+					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
+						<Space direction="vertical" size={6}>
+							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
 								<T>For Users</T>
 							</Title>
 							<Anchor
@@ -59,9 +64,9 @@ export const MainFooter = () => {
 							/>
 						</Space>
 					</Col>
-					<Col xs={{ span: 24 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={8}>
-							<Title level={5}>
+					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
+						<Space direction="vertical" size={6}>
+							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
 								<T>Support</T>
 							</Title>
 							<Link href="/cookie-policy">
@@ -74,7 +79,7 @@ export const MainFooter = () => {
 					</Col>
 				</Row>
 
-				<Divider />
+				<Divider style={{ margin: '16px 0' }} />
 
 				<Paragraph className={styles.copyright}>
 					© 2023-2024 <T keyName="copyright">GDHub, All rights reserved.</T>
