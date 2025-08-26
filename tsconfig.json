@@ -28,7 +28,9 @@
         "name": "next"
       }
     ],
-    "types": ["vitest"],
+    "types": [
+      "vitest"
+    ],
     "paths": {
       "@/*": [
         "src/*"
@@ -46,8 +48,10 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "prisma/**/*.ts",
-    "tests/**/*.ts"
-, "src/components/admin/BlogPostEditor"  ],
+    "tests/**/*.ts",
+    "src/components/admin/BlogPostEditor",
+    ".next/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
     "tsconfig.json",

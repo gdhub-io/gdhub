@@ -24,8 +24,8 @@ export const LandingForSpecialistsSection = () => {
 		{ staleTime: 1000 * 60 * 5 }
 	)
 
-	const gridColumns = screens.lg ? 5 : screens.md ? 3 : 1
-	const visibleProjects = (latestProjects || []).slice(0, screens.lg ? 5 : 3)
+	const gridColumns = screens.md ? 2 : 1
+	const visibleProjects = (latestProjects || []).slice(0, 4)
 
 	return (
 		<div>
@@ -100,7 +100,9 @@ export const LandingForSpecialistsSection = () => {
 																)}
 															</div>
 															<div className={styles.projectInfo}>
-																<div className={styles.projectName}>{p.name}</div>
+																<Text className={styles.projectName} ellipsis={{ tooltip: true }}>
+																	{p.name}
+																</Text>
 																<div className={styles.projectMeta}>
 																	<Text ellipsis={{ tooltip: true }}>
 																		{p.genre || ''}
