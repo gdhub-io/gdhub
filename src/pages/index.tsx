@@ -1,21 +1,35 @@
 import { useEffect, useState } from 'react'
 import { LandingContactsSection } from '@/components/landing/LandingContactsSection'
 import { LandingFeedbackSection } from '@/components/landing/LandingFeedbackSection'
-import { LandingForAuthorsSection } from '@/components/landing/LandingForAuthorsSection'
-import { LandingForSpecialistsSection } from '@/components/landing/LandingForSpecialistsSection'
-import { LandingHeroSection } from '@/components/landing/LandingHeroSection'
-import { LandingRecentDevlogsSection } from '@/components/landing/LandingRecentDevlogsSection'
 import { LandingWhoWeAreSection } from '@/components/landing/LandingWhoWeAreSection'
 import { useTelegram } from '@/helpers/useTelegram'
-import { LandingLayout } from '@/layouts/LandingLayout'
 import { prisma } from '@/services/prisma'
-import { Typography } from 'antd'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
 import { NextPageWithLayout } from './_app'
 import styles from './home.module.scss'
 
-const { Title } = Typography
+const LandingLayout = dynamic(() => import('@/layouts/LandingLayout').then((m) => m.LandingLayout), {
+	ssr: false,
+})
+const LandingHeroSection = dynamic(
+	() => import('@/components/landing/LandingHeroSection').then((m) => m.LandingHeroSection),
+	{ ssr: false }
+)
+
+const LandingForAuthorsSection = dynamic(
+	() => import('@/components/landing/LandingForAuthorsSection').then((m) => m.LandingForAuthorsSection),
+	{ ssr: false }
+)
+const LandingForSpecialistsSection = dynamic(
+	() => import('@/components/landing/LandingForSpecialistsSection').then((m) => m.LandingForSpecialistsSection),
+	{ ssr: false }
+)
+const LandingRecentDevlogsSection = dynamic(
+	() => import('@/components/landing/LandingRecentDevlogsSection').then((m) => m.LandingRecentDevlogsSection),
+	{ ssr: false }
+)
 
 declare global {
 	interface Window {

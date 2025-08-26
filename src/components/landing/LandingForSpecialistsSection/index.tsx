@@ -1,6 +1,5 @@
 import Star2Icon from '@/assets/images/icons/star-2.svg'
-import BgImageXS from '@/assets/images/landing/bg-image-for-specialists-section-xs.png'
-import BgImage from '@/assets/images/landing/bg-image-for-specialists-section.png'
+import BgImage from '@/assets/images/landing/gdhub-specialist-image.png'
 import { useQuery } from '@tanstack/react-query'
 import { T } from '@tolgee/react'
 import { Button, Card, Col, Grid, Row, Space, Typography } from 'antd'
@@ -33,7 +32,7 @@ export const LandingForSpecialistsSection = () => {
 			<div
 				id="for-specialists"
 				className={styles.section}
-				style={screens.md ? { backgroundImage: `url(${BgImage.src})` } : undefined}
+				style={screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined}
 			>
 				<div className={styles.container}>
 					<Row gutter={[24, 24]}>
@@ -47,7 +46,7 @@ export const LandingForSpecialistsSection = () => {
 							</Title>
 
 							<div className={styles.content}>
-								<Space direction="vertical" size={screens.lg ? 46 : 32}>
+								<Space direction="vertical" size={screens.lg ? 46 : 24}>
 									<Space size={screens.lg ? 32 : 16} align="center">
 										<div className={styles.star}>
 											<Star2Icon />
@@ -73,12 +72,9 @@ export const LandingForSpecialistsSection = () => {
 									{visibleProjects.length > 0 && (
 										<div className={styles.latestProjectsList}>
 											<Space style={{ marginBottom: 16 }}>
-												<Title level={3} style={{ marginBottom: 0 }}>
-													<T>Latest projects</T>
-												</Title>
 												<Link href="/projects">
-													<Button size="small" shape="round" color="blue" style={{ height: 'auto' }}>
-														<T>See all projects</T>
+													<Button type="text" size="small">
+														<T>Latest projects</T>
 													</Button>
 												</Link>
 											</Space>
@@ -88,7 +84,7 @@ export const LandingForSpecialistsSection = () => {
 												style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
 											>
 												{visibleProjects.map((p, idx) => (
-													<Card key={p.id || `${p.slug}-${idx}`} className={styles.projectCard} hoverable>
+													<Card key={p.id || `${p.slug}-${idx}`} className={styles.projectCard}>
 														<div className={styles.projectCardBody}>
 															<div className={styles.projectCover}>
 																{p.coverImage ? (
@@ -119,6 +115,12 @@ export const LandingForSpecialistsSection = () => {
 										</div>
 									)}
 
+									{screens.md ? null : (
+										<div className={styles.sectionImageXS}>
+											<Image src={BgImage} alt="" fill style={{ objectFit: 'contain' }} />
+										</div>
+									)}
+
 									<Link href="/registration?for=specialist">
 										<Button className={styles.heroButton} type="primary">
 											<T>Join the team</T>
@@ -130,11 +132,7 @@ export const LandingForSpecialistsSection = () => {
 					</Row>
 				</div>
 			</div>
-			{screens.md ? null : (
-				<div className={styles.sectionImageXS}>
-					<Image src={BgImageXS} alt="" fill />
-				</div>
-			)}
+			{/* remove standalone mobile image, now rendered above the button inside content */}
 		</div>
 	)
 }

@@ -3,4 +3,12 @@
 		padding: 48px;
 		background-size: cover;
 	}
+
+	.sectionImageXS {
+		position: relative;
+		width: 100%;
+		// aspect-ratio: 3/2 auto;
+		padding-top: 100%;
+		/* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
+	}
 }

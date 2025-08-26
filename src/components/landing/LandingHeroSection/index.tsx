@@ -1,4 +1,4 @@
-import heroBgImage from '@/assets/images/landing/gdhub-hero-img.png'
+import heroBgImage from '@/assets/images/landing/gdhub-hero-image.png'
 import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
 import { T, useTolgee } from '@tolgee/react'
