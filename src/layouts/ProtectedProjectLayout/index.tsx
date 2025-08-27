@@ -48,10 +48,12 @@ const { Title, Text } = Typography
 
 export const ProtectedProjectLayout = ({
 	title,
+	description,
 	seo,
 	children,
 }: {
 	title?: string
+	description?: string
 	seo?: NextSeoProps
 	children: ReactNode
 }) => {
@@ -79,6 +81,7 @@ export const ProtectedProjectLayout = ({
 		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		nofollow: true,
 		noindex: true,
+		description,
 		...seo,
 	}
 
@@ -208,6 +211,13 @@ export const ProtectedProjectLayout = ({
 			label: <Link href={`/my/projects/${projectSlug}/team`}>{t('app.user-project.menu.team', 'Team')}</Link>,
 		},
 		{
+			key: `/my/projects/${projectSlug}/documents`,
+			disabled: false,
+			label: (
+				<Link href={`/my/projects/${projectSlug}/documents`}>{t('app.user-project.menu.documents', 'Documents')}</Link>
+			),
+		},
+		{
 			key: `/my/projects/${projectSlug}/settings`,
 			disabled: !isProjectAuthor,
 			label: <Link href={`/my/projects/${projectSlug}/settings`}>{t('app.user.menu.settings', 'Settings')}</Link>,
@@ -319,7 +329,10 @@ export const ProtectedProjectLayout = ({
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							{!!title && <Title>{title}</Title>}
+							<Space direction="vertical" size={0} style={{ marginBottom: 24 }}>
+								{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+								{!!description && <Text type="secondary">{description}</Text>}
+							</Space>
 							{children}
 						</div>
 					</Content>

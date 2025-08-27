@@ -49,20 +49,27 @@ const LoginPage: NextPage = () => {
 		setSubmitting(true)
 
 		const { email } = await form.validateFields()
-		const response = await signIn('email', {
-			email,
-			redirect: false,
-			callbackUrl: (router.query.callbackUrl as string) || '/hub',
-		})
 
-		setSubmitting(false)
-		setEmail(email)
+		try {
+			const response = await signIn('email', {
+				email,
+				redirect: false,
+				callbackUrl: (router.query.callbackUrl as string) || '/hub',
+			})
 
-		if (response?.ok) {
-			setLoginStep(3)
-			gtmEventTrigger('user_login', { provider: 'email' })
+			setSubmitting(false)
+			setEmail(email)
+
+			if (response?.ok) {
+				setLoginStep(3)
+				gtmEventTrigger('user_login', { provider: 'email' })
+			}
+			if (response?.error) message.error(response?.error)
+		} catch (error) {
+			message.error(t('error_sending_email', 'Error sending email. Please try again.'))
+		} finally {
+			setSubmitting(false)
 		}
-		if (response?.error) message.error(response?.error)
 	}
 
 	return (

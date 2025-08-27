@@ -104,10 +104,10 @@ export const ProtectedLayout = ({
 	}, [session, screens])
 
 	useEffect(() => {
-		if (!hasAccess && session?.user) {
+		if (!hasAccess && session?.user && router.pathname !== '/hub') {
 			router.push('/hub')
 		}
-	}, [hasAccess, router, session?.user])
+	}, [hasAccess, router.pathname, session?.user])
 
 	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = [
