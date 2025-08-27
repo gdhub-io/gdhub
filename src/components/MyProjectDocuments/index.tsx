@@ -16,13 +16,8 @@ const { Text } = Typography
 
 const CreateDocumentModal = dynamic(() => import('@/components/modals/CreateDocumentModal'), { ssr: false })
 
-interface ProjectDocument {
-	key: string
-	Name: string
-	Description: string
-	FinishedAt: string
-	Status: prismaClient.TeamVacancyStatus
-	[key: string]: any
+type TeamDocumentWithCreatedByUser = prismaClient.TeamDocument & {
+	createdByUser: prismaClient.User
 }
 
 const LinkPreviewText = ({ link }: { link: string }) => {
@@ -64,7 +59,7 @@ const MyProjectDocuments = () => {
 		})
 	)
 
-	const documentsColumns: ColumnsType<ProjectDocument> = [
+	const documentsColumns: ColumnsType<TeamDocumentWithCreatedByUser> = [
 		{
 			title: t('project.documents.title', 'Title'),
 			dataIndex: 'name',
@@ -169,7 +164,7 @@ const MyProjectDocuments = () => {
 				<ModernTable
 					loading={isLoadingMyProjectDocuments}
 					columns={documentsColumns}
-					dataSource={projectDocuments?.data?.map((m: any) => ({ ...m, key: m.id }))}
+					dataSource={projectDocuments?.data?.map((m: TeamDocumentWithCreatedByUser) => ({ ...m, key: m.id }))}
 					pagination={false}
 				/>
 			) : (
