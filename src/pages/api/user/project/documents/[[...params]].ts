@@ -66,6 +66,14 @@ class ApiTeamDocumentHandler {
 		const documents = await prisma.teamDocument.findMany({
 			where: { teamId },
 			orderBy: { updatedAt: 'desc' },
+			include: {
+				createdByUser: {
+					select: {
+						name: true,
+						image: true,
+					},
+				},
+			},
 		})
 
 		return documents

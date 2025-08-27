@@ -8,7 +8,10 @@ export const MyProjectVacanciesPage = () => {
 	return (
 		<ProtectedProjectLayout
 			title={t('project.documents.title', 'Documents')}
-			description={t('project.documents.description', 'Game design documents, legal documents, etc.')}
+			description={t(
+				'project.documents.description',
+				'Links to project-specific documents accessible to you and your team'
+			)}
 		>
 			<MyProjectDocuments />
 		</ProtectedProjectLayout>

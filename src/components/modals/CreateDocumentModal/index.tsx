@@ -15,7 +15,7 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 	const {
 		mutateAsync: createDocument,
 		error: createDocumentError,
-		isLoading: isCreateProcessing,
+		isPending: isCreateProcessing,
 	} = useMutation((data) => axios.post<prismaClient.Project>('/api/user/project/documents', data))
 
 	useEffect(() => {
@@ -41,6 +41,8 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 
 		const document = await createDocument({ ...data, teamId })
 		gtmEventTrigger('document_create', { projectId: document.data.id, name: document.data.name })
+
+		form.resetFields()
 
 		onCreate()
 	}
@@ -94,7 +96,7 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 					form={form}
 					variant="filled"
 					layout="vertical"
-					wrapperCol={{ span: 12 }}
+					wrapperCol={{ span: 24 }}
 					onFinish={() => {}}
 					onFinishFailed={() => {}}
 					autoComplete="off"
@@ -110,14 +112,13 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 						<Select
 							placeholder="Select document type"
 							options={[
-								{ label: 'Concept Document', value: prismaClient.TeamDocumentType.Concept },
+								// { label: 'Concept Document', value: prismaClient.TeamDocumentType.Concept },
 								{ label: 'Game Design Document', value: prismaClient.TeamDocumentType.GDD },
-								{ label: 'NDA', value: prismaClient.TeamDocumentType.NDA },
+								// { label: 'NDA', value: prismaClient.TeamDocumentType.NDA },
 								{ label: 'Other', value: prismaClient.TeamDocumentType.Other },
 							]}
 						/>
 					</Form.Item>
-
 					<Form.Item
 						label={<T keyName="modal.create-document.field.name.label">Title</T>}
 						name="name"
@@ -142,7 +143,7 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 						wrapperCol={{ span: 24 }}
 					>
 						<Input.TextArea
-							rows={6}
+							rows={3}
 							placeholder={t('modal.create-document.field.description.placeholder', 'This document is about...')}
 						/>
 					</Form.Item>
