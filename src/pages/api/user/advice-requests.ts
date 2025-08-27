@@ -36,10 +36,6 @@ class ApiAdviceRequestsHandler {
 		let needUserRequests = !teamId && !projectId && !advisorId
 		let userId = needUserRequests ? req.user.id : undefined
 
-		console.log('userId', userId)
-		console.log('status', status)
-		console.log('needUserRequests', needUserRequests)
-
 		const adviceRequests = await prisma.adviceRequest.findMany({
 			where: {
 				project: { teamId, id: projectId },

@@ -119,6 +119,7 @@
   "Go to project page": "View details",
   "Go to registration": "Go to registration",
   "Goal-oriented": "Goal-oriented",
+  "Home": "Home",
   "How can you be useful to teams?": "How can you be useful to teams?",
   "How many hours a week can you devote to projects?": "How many hours a week can you devote to projects?",
   "Hub": "Hub",
@@ -137,6 +138,7 @@
   "Information about your main speciality": "Information about your main speciality",
   "Insert video url": "Insert video url",
   "Interests and preferences": "Interests and preferences",
+  "Interests and preferences updated": "Interests and preferences updated",
   "Investment Reserve": "Investment Reserve ",
   "Investor name": "Investor name",
   "Investors": "Investors",
@@ -145,6 +147,8 @@
   "Join us and become a part of new era in the gaming industry!": "Join us and become a part of new era in the gaming industry!",
   "Language": "Language",
   "Last updates": "Last updates",
+  "Lecture Information": "Lecture Information",
+  "Lecture Proposal Information": "Lecture Proposal Information",
   "Legal officer": "Legal officer",
   "Let's go": "Let's go",
   "Level": "Level",
@@ -1040,6 +1044,11 @@
   "start-and-end-dates": "from {fromDate} to {toDate} ",
   "subscribeToNewsletter": "Receive platform news",
   "survival horror": "Survival horror",
+  "table": {
+    "investors": {
+      "description": "List of investors, their investments and purchased shares."
+    }
+  },
   "tbs": "Turn based strategy",
   "th from": "th from",
   "th of": "th of",

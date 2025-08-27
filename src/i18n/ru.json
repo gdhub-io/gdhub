@@ -119,6 +119,7 @@
   "Go to project page": "Подробнее",
   "Go to registration": "Начать регистрацию заново",
   "Goal-oriented": "Целеориентированность",
+  "Home": "Главная",
   "How can you be useful to teams?": "Чем вы можете быть полезны командам?",
   "How many hours a week can you devote to projects?": "Сколько часов в неделю вы можете уделять участию в проектах?",
   "Hub": "Хаб",
@@ -137,6 +138,7 @@
   "Information about your main speciality": "Информация о вас, как специалисте в геймдеве",
   "Insert video url": "Вставьте ссылку на видео",
   "Interests and preferences": "Интересы и предпочтения",
+  "Interests and preferences updated": "Интересы и предпочтения обновлены",
   "Investment Reserve": "Зарезервировать для инвестиций",
   "Investor name": "Наименование инвестора",
   "Investors": "Инвесторы",
@@ -145,6 +147,8 @@
   "Join us and become a part of new era in the gaming industry!": "Присоединяйтесь к нам и станьте частью новой эры игровой индустрии!",
   "Language": "Язык",
   "Last updates": "Последние обновления",
+  "Lecture Information": "Информация о лекции",
+  "Lecture Proposal Information": "Информация о предложении лекции",
   "Legal officer": "Юрист в геймдеве",
   "Let's go": "Вперед!",
   "Level": "Уровень владения",
@@ -1041,6 +1045,11 @@
   "start-and-end-dates": "c {fromDate} по {toDate} ",
   "subscribeToNewsletter": "Получать новости платформы",
   "survival horror": "Ужас выживания",
+  "table": {
+    "investors": {
+      "description": "Список инвесторов, их вложения и купленные доли."
+    }
+  },
   "tbs": "Пошаговые стратегии",
   "th from": " от",
   "th of": " из",

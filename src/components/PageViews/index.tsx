@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { CSSProperties } from 'react'
 import { EyeOutlined } from '@ant-design/icons'
+import { useQuery } from '@tanstack/react-query'
 import { Typography, Space } from 'antd'
+import axios from 'axios'
 import { useRouter } from 'next/router'
 
 const { Text } = Typography
@@ -23,25 +25,27 @@ export const PageViews = ({
 	textStyle = { fontSize: '12px' },
 	minViews = 10,
 }: PageViewsProps) => {
-	const [pageviews, setPageviews] = useState<string>('0')
 	const router = useRouter()
 
-	useEffect(() => {
-		const fetchPageviews = async () => {
+	const { data: pageviews = 0, refetch: refetchPageviews } = useQuery({
+		queryKey: ['pageviews', path, router.asPath, startDate],
+		queryFn: () => fetchPageviews(path, startDate),
+		enabled: router.isReady,
+	})
+
+	const fetchPageviews = useCallback(
+		async (path: string | undefined, startDate: string | undefined) => {
 			try {
 				const currentPath = router.asPath
-				const response = await fetch(`/api/analytics/pageviews?path=${path || currentPath}&startDate=${startDate}`)
-				const data = await response.json()
-				setPageviews(data.pageviews)
+				const response = await axios.get(`/api/analytics/pageviews?path=${path || currentPath}&startDate=${startDate}`)
+
+				return response?.data?.pageviews || 0
 			} catch (error) {
 				console.error('Error fetching pageviews:', error)
 			}
-		}
-
-		if (router.isReady) {
-			fetchPageviews()
-		}
-	}, [path, router.asPath, router.isReady])
+		},
+		[router]
+	)
 
 	const formatPageviews = (views: string): string | null => {
 		const num = parseInt(views)

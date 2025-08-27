@@ -2,7 +2,7 @@ import enLocale from '@/i18n/en.json'
 import ruLocale from '@/i18n/ru.json'
 import { FormatIcu } from '@tolgee/format-icu'
 import { Tolgee, TolgeeInstance, LanguageStorage, LanguageDetector } from '@tolgee/react'
-import { InContextTools } from '@tolgee/web/tools'
+import { InContextTools, ContextUi } from '@tolgee/web/tools'
 
 declare global {
 	// eslint-disable-next-line no-var
@@ -24,6 +24,7 @@ const createTolgeeService = () => {
 				credentials: tolgeeCredentials,
 			})
 		)
+		tolgee.use(ContextUi())
 	}
 
 	tolgee.use(FormatIcu())
