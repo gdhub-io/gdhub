@@ -147,15 +147,11 @@ const MyProjectVacancies = () => {
 
 	return (
 		<>
-			<Flex justify="space-between" align="center" style={{ marginTop: 60 }}>
-				<Space align="center">
-					<h3 style={{ margin: 0 }}>
-						<T>Vacancies</T>
-					</h3>
-					<Button onClick={() => setShowVacancyModal(true)}>
-						<T>Add the vacancy</T>
-					</Button>
-				</Space>
+			<Flex justify="space-between" align="center">
+				<Button onClick={() => setShowVacancyModal(true)}>
+					<T>Add the vacancy</T>
+				</Button>
+
 				<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
 					<T>Archive</T>
 				</Button>
