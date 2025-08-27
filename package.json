@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "refresh-translations",
+    "prebuild": "node import-translations.js",
     "export": "next export",
     "start": "next start",
     "lint": "next lint",
