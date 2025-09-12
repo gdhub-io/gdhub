@@ -27,9 +27,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		data: vacancy,
 		refetch: refetchVacancy,
 		isFetching: processing,
-	} = useQuery(
-		['vacancy', vacancyId],
-		() =>
+	} = useQuery({
+		queryKey: ['vacancy', vacancyId],
+		queryFn: () =>
 			axios.get<
 				prismaClient.TeamVacancy & {
 					promiseStep: prismaClient.ProjectWorkflowStep
@@ -49,20 +49,18 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			>('/api/project/vacancy', {
 				params: { id: vacancyId },
 			}),
-		{
-			enabled: !!vacancyId,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!vacancyId,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: withdrawApply } = useMutation((data: { teamMemberId: string }) =>
-		axios.put<void>('/api/user/project/vacancy/withdraw', data)
-	)
+	const { mutateAsync: withdrawApply } = useMutation({
+		mutationFn: (data: { teamMemberId: string }) => axios.put<void>('/api/user/project/vacancy/withdraw', data),
+	})
 
-	const { mutateAsync: vacancyApply } = useMutation(
-		(data: { specialityId: string; contactType: string[]; telegramNickname?: string; vacancyId: string }) =>
-			axios.post<void>('/api/user/project/vacancy/apply', data)
-	)
+	const { mutateAsync: vacancyApply } = useMutation({
+		mutationFn: (data: { specialityId: string; contactType: string[]; telegramNickname?: string; vacancyId: string }) =>
+			axios.post<void>('/api/user/project/vacancy/apply', data),
+	})
 
 	useEffect(() => {
 		if (open && vacancyId && session?.data) {

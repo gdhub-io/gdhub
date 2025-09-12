@@ -17,8 +17,8 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 	const {
 		mutateAsync: createProject,
 		error: createProjectError,
-		isLoading: isCreateProcessing,
-	} = useMutation((data) => axios.post<prismaClient.Project>('/api/user/project', data))
+		isPending: isCreateProcessing,
+	} = useMutation({ mutationFn: (data) => axios.post<prismaClient.Project>('/api/user/project', data) })
 
 	useEffect(() => {
 		const error = createProjectError as any

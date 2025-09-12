@@ -26,7 +26,9 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 		data: workflowsResponse,
 		refetch: refetchWorkflows,
 		isFetching: isFetchingWorkflows,
-	} = useQuery(['admin', 'workflows'], () => axios.get('/api/admin/workflows'), {
+	} = useQuery({
+		queryKey: ['admin', 'workflows'],
+		queryFn: () => axios.get('/api/admin/workflows'),
 		refetchOnWindowFocus: false,
 	})
 
@@ -35,18 +37,18 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 		data: projectWorkflowsResponse,
 		refetch: refetchProjectWorkflows,
 		isFetching: isFetchingProjectWorkflows,
-	} = useQuery(['admin', 'project-workflows'], () => axios.get('/api/admin/project-workflows'), {
+	} = useQuery({
+		queryKey: ['admin', 'project-workflows'],
+		queryFn: () => axios.get('/api/admin/project-workflows'),
 		refetchOnWindowFocus: false,
 	})
 
-	const { mutateAsync: deleteWorkflow } = useMutation(
-		({ id }: { id: string }) => axios.delete(`/api/admin/workflow/${id}`),
-		{
-			onSuccess: () => {
-				refetchWorkflows()
-			},
-		}
-	)
+	const { mutateAsync: deleteWorkflow } = useMutation({
+		mutationFn: ({ id }: { id: string }) => axios.delete(`/api/admin/workflow/${id}`),
+		onSuccess: () => {
+			refetchWorkflows()
+		},
+	})
 
 	const handleDelete = (recordId: string) => {
 		deleteWorkflow({ id: recordId })

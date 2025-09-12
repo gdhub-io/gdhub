@@ -139,7 +139,9 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		data: pageContent,
 		isLoading,
 		refetch: refetchPage,
-	} = useQuery(['documentation', pageSlug], () => axios.post(`/api/notion/page`, { pageSlug, locale: getLanguage() }), {
+	} = useQuery({
+		queryKey: ['documentation', pageSlug],
+		queryFn: () => axios.post(`/api/notion/page`, { pageSlug, locale: getLanguage() }),
 		enabled: !!pageSlug && !!getLanguage(),
 		refetchInterval: false,
 		refetchOnWindowFocus: false,

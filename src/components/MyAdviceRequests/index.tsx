@@ -29,14 +29,16 @@ const MyAdviceRequests: React.FC = () => {
 	const { data: session } = useSession()
 	const [showArchive, setShowArchive] = React.useState(false)
 
-	const { data, isLoading, isFetched } = useQuery(['advice-requests'], () =>
-		axios.get('/api/user/advice-requests', {
-			params: {
-				status: [prismaClient.AdviceRequestStatus.Created],
-			},
-			paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
-		})
-	)
+	const { data, isLoading, isFetched } = useQuery({
+		queryKey: ['advice-requests'],
+		queryFn: () =>
+			axios.get('/api/user/advice-requests', {
+				params: {
+					status: [prismaClient.AdviceRequestStatus.Created],
+				},
+				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
+			}),
+	})
 
 	const userId = session?.user?.id
 	const incoming = useMemo(() => (data ? data.data.filter((r: any) => r.toUser?.id === userId) : []), [data, userId])

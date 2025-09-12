@@ -22,9 +22,9 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 		data: specialist,
 		refetch: fetchSpecialist,
 		isLoading,
-	} = useQuery(
-		['specialist', specialistId],
-		() =>
+	} = useQuery({
+		queryKey: ['specialist', specialistId],
+		queryFn: () =>
 			axios.get<
 				prismaClient.Speciality & {
 					availableProjects: (prismaClient.MatchingSpecialistAndProject & { project: { name: string } })[]
@@ -32,8 +32,9 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 					user: prismaClient.User & { profile: prismaClient.Profile & { [key: string]: any } }
 				}
 			>('/api/specialist', { params: { id: specialistId } }),
-		{ staleTime: Infinity, enabled: open }
-	)
+		staleTime: Infinity,
+		enabled: open,
+	})
 
 	useEffect(() => {
 		if (open && specialistId) {

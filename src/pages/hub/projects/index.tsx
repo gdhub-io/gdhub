@@ -25,7 +25,7 @@ const ProjectsPage: NextPageWithLayout = () => {
 		data: projects,
 		isSuccess,
 		isLoading,
-	} = useQuery(['projects'], () => axios.get('/api/projects'), { enabled: !!session?.user })
+	} = useQuery({ queryKey: ['projects'], queryFn: () => axios.get('/api/projects'), enabled: !!session?.user })
 
 	return (
 		<ProtectedLayout

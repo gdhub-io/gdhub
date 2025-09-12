@@ -21,19 +21,15 @@ const ConnectProfileForm = ({ profile, saveProfile }: ConnectProfileFormArgs) =>
 	const [processing, setProcessing] = useState(false)
 	const { data: session, update: sessionUpdate } = useSession()
 
-	const { mutateAsync: addSocialConnection } = useMutation(
-		({ telegram }: { telegram: { id: string } }) => axios.post<any>('/api/user/connection', { telegram }),
-		{
-			onSuccess: sessionUpdate,
-		}
-	)
+	const { mutateAsync: addSocialConnection } = useMutation({
+		mutationFn: ({ telegram }: { telegram: { id: string } }) => axios.post<any>('/api/user/connection', { telegram }),
+		onSuccess: sessionUpdate,
+	})
 
-	const { mutateAsync: removeSocialConnection } = useMutation(
-		({ telegram }: { telegram: boolean }) => axios.put<any>('/api/user/connection', { telegram }),
-		{
-			onSuccess: sessionUpdate,
-		}
-	)
+	const { mutateAsync: removeSocialConnection } = useMutation({
+		mutationFn: ({ telegram }: { telegram: boolean }) => axios.put<any>('/api/user/connection', { telegram }),
+		onSuccess: sessionUpdate,
+	})
 
 	const handleConnectToTelegram = async (response: TelegramLoggedUser) => {
 		await addSocialConnection({ telegram: { id: response.id.toString() } })

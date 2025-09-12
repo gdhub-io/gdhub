@@ -27,25 +27,21 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 	const [processing, setProcessing] = useState(true)
-	const { data: gameGenres } = useQuery(
-		['gameGenres'],
-		() => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
-		{
-			staleTime: Infinity,
-		}
-	)
-	const { data: gameSettings } = useQuery(
-		['gameSettings'],
-		() => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
-		{ staleTime: Infinity }
-	)
-	const { data: gameLevels } = useQuery(
-		['gameLevels'],
-		() => axios.get<prismaClient.GameDifficultyLevel[]>('/api/dictionary/game-levels'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: gameGenres } = useQuery({
+		queryKey: ['gameGenres'],
+		queryFn: () => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
+		staleTime: Infinity,
+	})
+	const { data: gameSettings } = useQuery({
+		queryKey: ['gameSettings'],
+		queryFn: () => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
+		staleTime: Infinity,
+	})
+	const { data: gameLevels } = useQuery({
+		queryKey: ['gameLevels'],
+		queryFn: () => axios.get<prismaClient.GameDifficultyLevel[]>('/api/dictionary/game-levels'),
+		staleTime: Infinity,
+	})
 
 	useEffect(() => {
 		if (profile) {

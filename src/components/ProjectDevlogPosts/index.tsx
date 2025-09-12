@@ -182,17 +182,15 @@ const PostSkeleton = () => {
 const ProjectDevlogPosts: React.FC<ProjectDevlogPostsProps> = ({ projectId }) => {
 	const { t } = useTolgee()
 
-	const { data: projectReports, isLoading } = useQuery(
-		['project-reports', projectId],
-		() =>
+	const { data: projectReports, isLoading } = useQuery({
+		queryKey: ['project-reports', projectId],
+		queryFn: () =>
 			axios.get<DevlogPost[]>(`/api/project/reports`, {
 				params: { projectId },
 			}),
-		{
-			enabled: !!projectId,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!projectId,
+		refetchOnWindowFocus: false,
+	})
 
 	const posts = projectReports?.data || []
 

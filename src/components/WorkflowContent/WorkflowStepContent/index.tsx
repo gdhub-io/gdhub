@@ -27,20 +27,18 @@ const WorkflowStepContent = ({ step, locale = 'en' }: { step: prismaClient.Proje
 		data: content,
 		isLoading,
 		refetch: refetchContent,
-	} = useQuery(
-		['workflow-step-content', step?.id],
-		() =>
+	} = useQuery({
+		queryKey: ['workflow-step-content', step?.id],
+		queryFn: () =>
 			axios.post(`/api/notion/page`, {
 				table: contentRequest?.table,
 				locale: locale || getLanguage(),
 				pageSlug: contentRequest?.slug,
 			}),
-		{
-			enabled: !!contentRequest,
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!contentRequest,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+	})
 
 	if (!step) return null
 

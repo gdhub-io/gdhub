@@ -35,31 +35,27 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
 
 	const {
 		data: projectVacancies,
 		refetch: fetchMyProjectVacancies,
 		isFetching: isLoadingMyProjectVacancies,
-	} = useQuery(
-		['team-vacancy', teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['team-vacancy', teamId],
+		queryFn: () =>
 			axios.get<
 				(prismaClient.TeamVacancy & {
 					direction: prismaClient.WorkDirection
 					team: { project: { id: string; slug: string; name: string; description: string } }
 				})[]
 			>('/api/project/vacancies', { params: { teamId: teamId } }),
-		{
-			enabled: !!teamId,
-		}
-	)
+		enabled: !!teamId,
+	})
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{

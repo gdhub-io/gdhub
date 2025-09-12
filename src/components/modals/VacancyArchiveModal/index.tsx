@@ -14,22 +14,20 @@ const VacancyArchiveModal = ({ projectId, projectName, teamId, open, onRestore, 
 		data: archivedProjectVacancies,
 		refetch: fetchArchivedProjectVacancies,
 		isLoading: isLoadingMyArchivedProjectVacancies,
-	} = useQuery(
-		['project-team-vacancies', 'archive', teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['project-team-vacancies', 'archive', teamId],
+		queryFn: () =>
 			axios.get('/api/user/project/vacancies', {
 				params: { teamId, isArchive: true },
 			}),
-		{
-			enabled: !!teamId,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!teamId,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: saveVacancy, isLoading: isUpdating } = useMutation(
-		(params: { id: string; data: Record<string, any> }) =>
-			axios.put<any>('/api/user/project/vacancy', params.data, { params: { id: params.id } })
-	)
+	const { mutateAsync: saveVacancy, isPending: isUpdating } = useMutation({
+		mutationFn: (params: { id: string; data: Record<string, any> }) =>
+			axios.put<any>('/api/user/project/vacancy', params.data, { params: { id: params.id } }),
+	})
 
 	useEffect(() => {
 		if (open) {

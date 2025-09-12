@@ -18,19 +18,17 @@ const UserTeam = () => {
 	const { t } = useTolgee()
 	const contextProject = useContext(ProjectContext)?.contextProject
 
-	const { data: team, isLoading: isLoadingMyTeam } = useQuery(
-		['user-project-team', contextProject?.teamId],
-		() =>
+	const { data: team, isLoading: isLoadingMyTeam } = useQuery({
+		queryKey: ['user-project-team', contextProject?.teamId],
+		queryFn: () =>
 			axios.get<prismaClient.Team & { members: (prismaClient.TeamMember & { user: prismaClient.User })[] }>(
 				'/api/user/project/team',
 				{
 					params: { teamId: contextProject?.teamId },
 				}
 			),
-		{
-			enabled: !!contextProject?.teamId,
-		}
-	)
+		enabled: !!contextProject?.teamId,
+	})
 
 	const columns: ColumnsType<prismaClient.TeamMember & { user: prismaClient.User }> = [
 		{

@@ -15,20 +15,18 @@ interface TeamMembersArgs {
 
 const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	const { data: session } = useSession()
-	const { data: team } = useQuery(
-		['team-members', teamId],
-		() =>
+	const { data: team } = useQuery({
+		queryKey: ['team-members', teamId],
+		queryFn: () =>
 			axios.get<prismaClient.Team & { members: (prismaClient.TeamMember & { user: prismaClient.User })[] }>(
 				'/api/project/team',
 				{
 					params: { teamId },
 				}
 			),
-		{
-			enabled: !!teamId,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!teamId,
+		refetchOnWindowFocus: false,
+	})
 
 	const data: { title: string | null; description: string | null; avatar: string | null }[] | undefined =
 		useMemo(() => {

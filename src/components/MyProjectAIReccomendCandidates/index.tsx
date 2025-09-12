@@ -23,9 +23,9 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 		data: aiCandidates,
 		refetch: refetchAICandidates,
 		isFetching: isLoadingAICandidates,
-	} = useQuery(
-		['AICandidates', projectId],
-		() =>
+	} = useQuery({
+		queryKey: ['AICandidates', projectId],
+		queryFn: () =>
 			axios.get<
 				(prismaClient.MatchingSpecialistAndProject & {
 					specialist: prismaClient.Speciality & { user: prismaClient.User }
@@ -33,8 +33,8 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 			>('/api/user/project/ai-candidates', {
 				params: { projectId },
 			}),
-		{ enabled: !!projectId }
-	)
+		enabled: !!projectId,
+	})
 
 	const calculateMatcingColor = useCallback((percent: number) => {
 		if (percent >= 60 && percent < 80) {

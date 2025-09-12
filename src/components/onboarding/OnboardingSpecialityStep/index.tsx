@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { skillLevelsList } from '@/components/ui/skillLevel'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineDown } from '@react-icons/all-files/ai/AiOutlineDown'
@@ -50,66 +50,65 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 		data: workDirections,
 		isLoading,
 		isFetched,
-	} = useQuery(['workDirections'], () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'), {
+	} = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
 		staleTime: Infinity,
 	})
 
-	useQuery(
-		['onboarding', 'speciality'],
-		() =>
+	const { data: specialityResponse } = useQuery({
+		queryKey: ['onboarding', 'speciality'],
+		queryFn: () =>
 			axios.get<prismaClient.Speciality & { direction: prismaClient.WorkDirection }>(
 				'/api/auth/registration/onboarding/speciality'
 			),
-		{
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			onSuccess(response) {
-				const { id, name, level, direction, skills, tools, summary, specialization, portfolioUrl, jobs, schools } =
-					response.data
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+	})
 
-				form.setFieldsValue({
-					id,
-					name,
-					level,
-					workDirectionId: direction?.id,
-					specialization,
-					portfolioUrl,
-					skills,
-					tools: tools?.split('\n'),
-					summary,
-					jobs,
-					schools,
-				})
+	useEffect(() => {
+		if (!specialityResponse?.data) return
+		const { id, name, level, direction, skills, tools, summary, specialization, portfolioUrl, jobs, schools } =
+			specialityResponse.data
+		form.setFieldsValue({
+			id,
+			name,
+			level,
+			workDirectionId: direction?.id,
+			specialization,
+			portfolioUrl,
+			skills,
+			tools: tools?.split('\n'),
+			summary,
+			jobs,
+			schools,
+		})
+		const existNameValue = !!form.getFieldValue('name')
+		setShowParseCVButton(existNameValue)
+	}, [specialityResponse])
 
-				const existNameValue = !!form.getFieldValue('name')
-				setShowParseCVButton(existNameValue)
-			},
-		}
-	)
+	const { data: pendingInvitation } = useQuery({
+		queryKey: ['team-invite', pendingInvitationId],
+		queryFn: () => axios.get<any>(`/api/user/pending-invitation/${pendingInvitationId}`),
+		enabled: !!pendingInvitationId,
+	})
 
-	const { data: pendingInvitation } = useQuery(
-		['team-invite', pendingInvitationId],
-		() => axios.get<any>(`/api/user/pending-invitation/${pendingInvitationId}`),
-		{
-			enabled: !!pendingInvitationId,
-			onSuccess(response) {
-				console.log('pendingInvitation', response)
-				form.setFieldsValue({
-					name: response.data.position,
-					workDirectionId: response.data.directionId,
-				})
-				setShowParseCVButton(true)
-			},
-		}
-	)
+	useEffect(() => {
+		if (!pendingInvitation?.data) return
+		form.setFieldsValue({
+			name: pendingInvitation.data.position,
+			workDirectionId: pendingInvitation.data.directionId,
+		})
+		setShowParseCVButton(true)
+	}, [pendingInvitation])
 
-	const { mutateAsync: createSpeciality, isLoading: isCreating } = useMutation(({ data }: any) =>
-		axios.post<any>('/api/auth/registration/onboarding/speciality', { data })
-	)
+	const { mutateAsync: createSpeciality, isPending: isCreating } = useMutation({
+		mutationFn: ({ data }: any) => axios.post<any>('/api/auth/registration/onboarding/speciality', { data }),
+	})
 
-	const { mutateAsync: updateSpeciality, isLoading: isUpdating } = useMutation(({ id, data }: any) =>
-		axios.put<any>('/api/auth/registration/onboarding/speciality', { id, data })
-	)
+	const { mutateAsync: updateSpeciality, isPending: isUpdating } = useMutation({
+		mutationFn: ({ id, data }: any) => axios.put<any>('/api/auth/registration/onboarding/speciality', { id, data }),
+	})
 
 	const workDirectionOptions = workDirections?.data.map((direction) => ({
 		value: direction.id,

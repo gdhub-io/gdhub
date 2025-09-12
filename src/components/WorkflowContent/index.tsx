@@ -83,30 +83,29 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	// 	[conditionStatus.completed, taskStatuses]
 	// )
 
-	const { refetch: refetchWorkflowData } = useQuery(
-		['project-workflow', projectId],
-		() =>
+	const { data: workflowResponse, refetch: refetchWorkflowData } = useQuery({
+		queryKey: ['project-workflow', projectId],
+		queryFn: () =>
 			axios.get<ProjctWorkflowWithSteps>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
-		{
-			enabled: !!projectId,
-			refetchOnWindowFocus: false,
-			onSuccess({ data }) {
-				setWorkflow(data)
-			},
-		}
-	)
+		enabled: !!projectId,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: moveProjectToStep, isLoading: isMoving } = useMutation(
-		(data: { projectId: string; direction: 'next' | 'previous'; targetStepId?: string }) =>
-			axios.put<void>(`/api/project/move`, data),
-		{
-			onSuccess: () => {
-				refetchWorkflowData()
-			},
+	useEffect(() => {
+		if (workflowResponse?.data) {
+			setWorkflow(workflowResponse.data)
 		}
-	)
+	}, [workflowResponse])
+
+	const { mutateAsync: moveProjectToStep, isPending: isMoving } = useMutation({
+		mutationFn: (data: { projectId: string; direction: 'next' | 'previous'; targetStepId?: string }) =>
+			axios.put<void>(`/api/project/move`, data),
+		onSuccess: () => {
+			refetchWorkflowData()
+		},
+	})
 
 	const currentStepOrder = useMemo(() => {
 		return workflow?.currentStep?.order || 0

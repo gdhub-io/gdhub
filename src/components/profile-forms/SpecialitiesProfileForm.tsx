@@ -21,41 +21,41 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
-	const { data: specialities, isFetching: processing } = useQuery(['user-specialities'], () =>
-		axios.get<prismaClient.Speciality[]>('/api/user/specialities')
-	)
+	const { data: specialities, isFetching: processing } = useQuery({
+		queryKey: ['user-specialities'],
+		queryFn: () => axios.get<prismaClient.Speciality[]>('/api/user/specialities'),
+	})
 
-	const { data: pendingTeamInvitation } = useQuery(
-		['pending-invitation', pendingInvitationId],
-		() =>
+	const { data: pendingTeamInvitation } = useQuery({
+		queryKey: ['pending-invitation', pendingInvitationId],
+		queryFn: () =>
 			axios.get<prismaClient.TeamInvitation[]>('/api/user/project/team/invitation', {
 				params: { teamInvitationId: pendingInvitationId },
 			}),
-		{ enabled: !!pendingInvitationId, refetchOnWindowFocus: false }
-	)
+		enabled: !!pendingInvitationId,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: deleteSpeciality } = useMutation(
-		(params: any) => axios.delete('/api/user/speciality', { params }),
-		{ onSuccess: () => queryClient.invalidateQueries(['user-specialities']) }
-	)
+	const { mutateAsync: deleteSpeciality } = useMutation({
+		mutationFn: (params: any) => axios.delete('/api/user/speciality', { params }),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ['user-specialities'] }),
+	})
 
-	const { mutateAsync: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
-		(invitationId: string) =>
+	const { mutateAsync: completePendingInvitation, isPending: isCompletingInvitation } = useMutation({
+		mutationFn: (invitationId: string) =>
 			axios.get(`/api/user/project/team/complete-pending-invitation?invitationId=${pendingInvitationId}`),
-		{
-			onSuccess: (response) => {
-				if (response.data.redirect) {
-					router.push(response.data.redirect)
-				} else {
-					router.push('/profile/specialities')
-				}
-			},
-			onError: () => {
-				// В случае ошибки просто перенаправляем на страницу специализаций
+		onSuccess: (response) => {
+			if (response.data.redirect) {
+				router.push(response.data.redirect)
+			} else {
 				router.push('/profile/specialities')
-			},
-		}
-	)
+			}
+		},
+		onError: () => {
+			// В случае ошибки просто перенаправляем на страницу специализаций
+			router.push('/profile/specialities')
+		},
+	})
 
 	useEffect(() => {
 		if (!pendingInvitationId) return
@@ -76,7 +76,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 			await completePendingInvitation(pendingInvitationId as string)
 		}
 		// update speciality list
-		await queryClient.invalidateQueries(['user-specialities'])
+		await queryClient.invalidateQueries({ queryKey: ['user-specialities'] })
 		// refresh session data
 		await session.update({ roles: session.data?.user.roles.includes(prismaClient.UserRole.Member) })
 	}

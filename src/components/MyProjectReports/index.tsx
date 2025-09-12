@@ -22,14 +22,14 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 		data: MyProjectReports,
 		refetch: fetchMyProjectReports,
 		isLoading: isLoadingMyProjectReports,
-	} = useQuery(
-		['project-reports', project?.id],
-		() => axios.get('/api/user/project/reports', { params: { projectId: project?.id } }),
-		{ enabled: !!project }
-	)
-	const { mutateAsync: deleteProjectReport } = useMutation((params: { id: string }) =>
-		axios.delete<void>('/api/user/project/report', { params })
-	)
+	} = useQuery({
+		queryKey: ['project-reports', project?.id],
+		queryFn: () => axios.get('/api/user/project/reports', { params: { projectId: project?.id } }),
+		enabled: !!project,
+	})
+	const { mutateAsync: deleteProjectReport } = useMutation({
+		mutationFn: (params: { id: string }) => axios.delete<void>('/api/user/project/report', { params }),
+	})
 
 	const columns: ColumnsType<any> = [
 		{

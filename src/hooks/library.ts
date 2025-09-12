@@ -4,13 +4,11 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 export const useWorkDirections = () => {
-	const { data: records } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: records } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
 
 	const options = useMemo(() => {
 		if (!records) return
@@ -24,13 +22,11 @@ export const useWorkDirections = () => {
 }
 
 export const useGameGenres = () => {
-	const { data: records } = useQuery(
-		['gameGenres'],
-		() => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: records } = useQuery({
+		queryKey: ['gameGenres'],
+		queryFn: () => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
+		staleTime: Infinity,
+	})
 
 	const options = useMemo(() => {
 		if (!records) return
@@ -44,13 +40,11 @@ export const useGameGenres = () => {
 }
 
 export const useGameSettings = () => {
-	const { data: records } = useQuery(
-		['gameSettings'],
-		() => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: records } = useQuery({
+		queryKey: ['gameSettings'],
+		queryFn: () => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
+		staleTime: Infinity,
+	})
 
 	const options = useMemo(() => {
 		if (!records) return
@@ -64,13 +58,11 @@ export const useGameSettings = () => {
 }
 
 export const useGameDifficulties = () => {
-	const { data: records } = useQuery(
-		['gameDifficulties'],
-		() => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-levels'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: records } = useQuery({
+		queryKey: ['gameDifficulties'],
+		queryFn: () => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-levels'),
+		staleTime: Infinity,
+	})
 
 	const options = useMemo(() => {
 		if (!records) return

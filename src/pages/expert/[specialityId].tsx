@@ -29,11 +29,11 @@ export default function ExpertPage({ expert, seo, isAuthenticated }: ExpertPageP
 	const [selectedTopic, setSelectedTopic] = React.useState<string | undefined>()
 	const [comment, setComment] = React.useState('')
 
-	const { data: projectsData, isLoading: projectsLoading } = useQuery(
-		['userProjects'],
-		() => axios.get('/api/user/projects'),
-		{ enabled: !!session }
-	)
+	const { data: projectsData, isLoading: projectsLoading } = useQuery({
+		queryKey: ['userProjects'],
+		queryFn: () => axios.get('/api/user/projects'),
+		enabled: !!session,
+	})
 
 	const projects = projectsData?.data || []
 
