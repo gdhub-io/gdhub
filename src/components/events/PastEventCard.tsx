@@ -66,7 +66,12 @@ export const PastEventCard = ({
 				aspectRatio: '1/1.1',
 				margin: '0 auto',
 			}}
-			bodyStyle={{ padding: 0, height: 0 }}
+			styles={{
+				body: {
+					padding: 0,
+					height: 0,
+				},
+			}}
 		/>
 	)
 }

@@ -69,7 +69,7 @@ const VacancyArchiveModal = ({ projectId, projectName, teamId, open, onRestore, 
 				/>
 			}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			open={open}
 			onCancel={handleCancel}

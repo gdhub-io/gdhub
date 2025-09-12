@@ -211,7 +211,7 @@ const SpecialityModal = ({ speciality, teamInvitation, open, onOk, onCancel }: S
 		<Modal
 			title={renderTitle()}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			cancelText={t('modal.speciality.title.close', 'Close')}
 			okText={t('modal.speciality.title.save', 'Save')}

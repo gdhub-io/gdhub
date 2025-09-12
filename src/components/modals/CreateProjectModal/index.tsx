@@ -62,7 +62,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 				</Flex>
 			}
 			width={640}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			okText={<T>Create</T>}
 			cancelText={<T>Cancel</T>}

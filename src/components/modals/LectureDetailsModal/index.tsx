@@ -106,7 +106,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			className={styles.container}
 			centered
 			title={modalTitle()}
-			destroyOnClose
+			destroyOnHidden
 			width={screens.lg ? '50vw' : '100%'}
 			maskClosable={false}
 			cancelText={<T>Close</T>}

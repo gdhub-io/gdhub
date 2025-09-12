@@ -102,7 +102,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 				centered
 				title={<T>Candidate card</T>}
 				width={800}
-				destroyOnClose
+				destroyOnHidden
 				maskClosable={false}
 				open={open}
 				onCancel={handleCancel}

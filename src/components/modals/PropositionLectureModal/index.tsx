@@ -79,7 +79,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			centered
 			title={lectureId ? <T>Change the parametes of lectures</T> : <T>I want to give a lecture</T>}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			cancelText={<T>Close</T>}
 			okText={lectureId ? <T>Save</T> : <T>Publish</T>}

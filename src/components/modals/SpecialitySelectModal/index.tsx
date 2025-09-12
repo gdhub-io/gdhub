@@ -80,7 +80,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 			<Modal
 				centered
 				title={<T keyName="modal.speciality-select.title">Indicate the specialty</T>}
-				destroyOnClose
+				destroyOnHidden
 				okButtonProps={{
 					disabled:
 						!selectedItem ||

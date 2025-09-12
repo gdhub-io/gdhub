@@ -118,7 +118,7 @@ export default function ExpertPage({ expert, seo, isAuthenticated }: ExpertPageP
 				</Flex>
 
 				{/* Вопросы/темы */}
-				<AntCard style={{ marginBottom: 24 }} bodyStyle={{ padding: 0 }}>
+				<AntCard style={{ marginBottom: 24 }} styles={{ body: { padding: 0 } }}>
 					<div style={{ padding: 16 }}>
 						<Text type="secondary" style={{ fontSize: 14, letterSpacing: 1 }}>
 							Ready to answer questions about
@@ -149,7 +149,7 @@ export default function ExpertPage({ expert, seo, isAuthenticated }: ExpertPageP
 				</AntCard>
 
 				{/* About */}
-				<AntCard style={{ marginBottom: 36 }} bodyStyle={{ padding: 0 }}>
+				<AntCard style={{ marginBottom: 36 }} styles={{ body: { padding: 0 } }}>
 					<div style={{ padding: 16 }}>
 						<Text type="secondary" style={{ fontSize: 14, letterSpacing: 1 }}>
 							About the expert

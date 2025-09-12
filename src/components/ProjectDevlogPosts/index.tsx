@@ -141,9 +141,9 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 					<div className={styles.textContent}>
 						<p className={styles.postExcerpt}>{truncateText(cleanMarkdown(stripHtml(post.content)), 300)}</p>
 						<div className={styles.postMeta}>
-							<Link href={`/project/${post.project?.slug}`} onClick={(e) => e.stopPropagation()}>
+							<span role="link" tabIndex={0} onClick={handleProjectClick}>
 								{post.project?.name}
-							</Link>
+							</span>
 							<span role="separator">•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />

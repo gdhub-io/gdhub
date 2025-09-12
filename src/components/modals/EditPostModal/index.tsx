@@ -83,7 +83,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 			centered
 			title={<T keyName="modal.edit-devlog-post.title">Edit post</T>}
 			width={640}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			okText={<T>Save</T>}
 			cancelText={<T>Cancel</T>}

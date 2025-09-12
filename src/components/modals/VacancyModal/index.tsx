@@ -159,7 +159,7 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 			className={styles.modal}
 			title={vacancyId ? t('Change the vacancy') : t('Create a new vacancy')}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			open={open}
 			onCancel={handleCancel}

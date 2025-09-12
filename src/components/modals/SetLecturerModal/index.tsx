@@ -129,7 +129,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			centered
 			title={<T keyName="modal.lecturerRequest.title">I want to give this lecture</T>}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			cancelText={<T>Close</T>}
 			okText={speakerRequest ? <T>Save</T> : <T>Offer</T>}

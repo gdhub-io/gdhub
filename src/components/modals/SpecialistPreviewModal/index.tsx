@@ -73,7 +73,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 				centered
 				title={null}
 				width={800}
-				destroyOnClose
+				destroyOnHidden
 				maskClosable={false}
 				open={open}
 				onCancel={handleCancel}

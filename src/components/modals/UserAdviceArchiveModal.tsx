@@ -142,7 +142,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, u
 			title={t('Your advice requests archive')}
 			width={'80%'}
 			footer={null}
-			destroyOnClose
+			destroyOnHidden
 		>
 			<ModernTable
 				loading={isLoading}

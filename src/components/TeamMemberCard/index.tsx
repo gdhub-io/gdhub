@@ -65,7 +65,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 			centered
 			title={null}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			open={open}
 			classNames={{ content: styles.modalContent }}

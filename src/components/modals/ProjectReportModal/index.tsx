@@ -99,7 +99,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			centered
 			title={reportId ? <T>Change the report</T> : <T>Add a report</T>}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			okText={<T>Save</T>}
 			cancelText={<T>Close</T>}

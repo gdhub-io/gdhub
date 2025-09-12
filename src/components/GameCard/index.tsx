@@ -34,7 +34,7 @@ const GameCard: React.FC<GameCardProps> = ({
 }) => {
 	return (
 		<Link href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`} className={styles.gameCardLink}>
-			<Card className={styles.gameCard} bodyStyle={{ padding: 0 }}>
+			<Card className={styles.gameCard} styles={{ body: { padding: 0 } }}>
 				<div className={styles.gameCardContent}>
 					<div className={styles.gameCardImageContainer}>
 						{coverImage ? (

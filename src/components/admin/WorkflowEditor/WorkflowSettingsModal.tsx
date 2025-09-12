@@ -42,7 +42,7 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({ vi
 			onCancel={onClose}
 			width={600}
 			centered
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			footer={
 				<Space>

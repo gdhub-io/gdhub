@@ -369,7 +369,7 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 			}
 			okText={eventId ? t('event.modal.save', 'Save') : t('event.modal.create', 'Save draft')}
 			cancelText={t('event.modal.cancel', 'Cancel')}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 		>
 			<Form form={form} variant="filled" layout="vertical" initialValues={{ ...initialValues }} requiredMark="optional">

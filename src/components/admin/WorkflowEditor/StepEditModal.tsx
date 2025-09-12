@@ -46,7 +46,7 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 			onCancel={handleClose}
 			width={800}
 			centered
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			footer={
 				<Space>

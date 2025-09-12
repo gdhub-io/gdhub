@@ -77,7 +77,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			centered
 			title={lectureId ? <T>Change the lecture request</T> : <T>Request a new lecture</T>}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			cancelText={<T>Close</T>}
 			okText={lectureId ? <T>Save</T> : <T>Publish</T>}
