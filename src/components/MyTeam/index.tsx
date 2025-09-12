@@ -169,7 +169,7 @@ const MyTeam = () => {
 		async (teamMemberId: string) => {
 			modal.confirm({
 				title: t('Are you sure you want to fire this member?'),
-				destroyOnHidden: true,
+				destroyOnClose: true,
 				type: 'confirm',
 				okText: 'Yes',
 				okType: 'primary',
