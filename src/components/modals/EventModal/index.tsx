@@ -127,22 +127,20 @@ const EventModal: React.FC<EventModalProps> = ({ open, eventType, onCancel, onSu
 		}
 	}, [eventData?.data])
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
 
-	const { mutateAsync: createEvent, isLoading: isEventCreating } = useMutation({
+	const { mutateAsync: createEvent, isPending: isEventCreating } = useMutation({
 		mutationFn: (values: any) => axios.post('/api/user/event', values),
 		onSuccess: () => {
 			onSubmit()
 		},
 	})
 
-	const { mutateAsync: updateEvent, isLoading: isEventUpdating } = useMutation({
+	const { mutateAsync: updateEvent, isPending: isEventUpdating } = useMutation({
 		mutationFn: ({ _eventId, data }: any) => axios.put(`/api/user/event/${_eventId}`, data),
 		onSuccess: () => {
 			onSubmit()

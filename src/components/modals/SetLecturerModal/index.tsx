@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -14,57 +14,63 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const { data: session } = useSession()
 	const [speakerRequest, setSpeakerRequest] = useState<prismaClient.LecturerRequest>()
 
-	const { isLoading: isLoadingLecture } = useQuery(
-		['lecturer-requestv', lectureId],
-		() =>
+	const { data: lectureRequest, isLoading: isLoadingLecture } = useQuery({
+		queryKey: ['lecturer-request', lectureId],
+		queryFn: () =>
 			axios.get<prismaClient.Lecture & { lecturerRequests: prismaClient.LecturerRequest[] }>('/api/user/lecture', {
 				params: { id: lectureId },
 			}),
-		{
-			enabled: !!lectureId,
-			refetchOnWindowFocus: false,
-			refetchOnReconnect: false,
-			refetchOnMount: false,
-			onSuccess: ({ data }) => {
+		enabled: !!lectureId,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		refetchOnMount: false,
+	})
+
+	useEffect(() => {
+		if (!lectureRequest?.data) return
+
+		form.setFieldsValue({
+			name: lectureRequest.data.name,
+			wishes: lectureRequest.data.wishes,
+			directionId: lectureRequest.data.directionId,
+		})
+
+		if (session) {
+			const speakerRequest = lectureRequest.data.lecturerRequests?.find((r) => r.userId == session.user.id)
+
+			if (speakerRequest) {
+				setSpeakerRequest(speakerRequest)
+
 				form.setFieldsValue({
-					name: data.name,
-					wishes: data.wishes,
-					directionId: data.directionId,
+					linkToStream: speakerRequest.linkToStream,
+					curriculum: speakerRequest.curriculum,
+					date: speakerRequest.date ? dayjs(speakerRequest.date) : undefined,
+					time: speakerRequest.date ? dayjs(speakerRequest.date) : undefined,
 				})
-
-				if (session) {
-					const speakerRequest = data.lecturerRequests?.find((r) => r.userId == session.user.id)
-
-					if (speakerRequest) {
-						setSpeakerRequest(speakerRequest)
-
-						form.setFieldsValue({
-							linkToStream: speakerRequest.linkToStream,
-							curriculum: speakerRequest.curriculum,
-							date: speakerRequest.date ? dayjs(speakerRequest.date) : undefined,
-							time: speakerRequest.date ? dayjs(speakerRequest.date) : undefined,
-						})
-					}
-				}
-			},
+			}
 		}
-	)
+	}, [lectureRequest?.data])
 
-	const { mutateAsync: createLecturerRequest } = useMutation((data: Partial<prismaClient.LecturerRequest>) =>
-		axios.post<any>(`/api/user/lecture/${lectureId}/lecturer`, data)
-	)
-	const { mutateAsync: updateLecturerRequest } = useMutation(
-		({ lecturerRequestId, data }: { lecturerRequestId: string; data: Partial<prismaClient.LecturerRequest> }) =>
-			axios.put<any>(`/api/user/lecture/${lectureId}/lecturer/${lecturerRequestId}`, data)
-	)
+	const { mutateAsync: createLecturerRequest } = useMutation({
+		mutationFn: (data: Partial<prismaClient.LecturerRequest>) =>
+			axios.post<any>(`/api/user/lecture/${lectureId}/lecturer`, data),
+	})
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { mutateAsync: updateLecturerRequest } = useMutation({
+		mutationFn: ({
+			lecturerRequestId,
+			data,
+		}: {
+			lecturerRequestId: string
+			data: Partial<prismaClient.LecturerRequest>
+		}) => axios.put<any>(`/api/user/lecture/${lectureId}/lecturer/${lecturerRequestId}`, data),
+	})
+
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
 
 	const directionsOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
 

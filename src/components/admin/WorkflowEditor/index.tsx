@@ -87,76 +87,64 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 
 	const queryKey = type === 'project' ? ['project-workflow', id] : ['workflow', id]
 
-	const { data: workflow, isLoading } = useQuery(queryKey, () => axios.get(getEndpoint()), {
-		onSuccess: (response) => {
-			const workflowData = response.data
-
-			if (type === 'project') {
-				// Handle ProjectWorkflow data structure
-				setWorkflowTitle(workflowData.title || workflowData.project?.name || 'Project Workflow')
-				setWorkflowDescription(workflowData.description || '')
-				setWorkflowName(workflowData.name || '')
-				setCurrentStepId(workflowData.currentStepId || null)
-
-				// Convert ProjectWorkflow steps to WorkflowStepTemplate format
-				const normalizedSteps = (workflowData.steps || []).map((step: any) => ({
-					id: step.id,
-					name: step.name,
-					title: step.name,
-					description: step.description || '',
-					order: step.order || 0,
-					tasks: (step.tasks || []).map((task: any) => ({
-						id: task.id,
-						name: task.description || '', // Use description as name since ProjectWorkflowTask has no name field
-						title: task.description || '', // Use description as title since ProjectWorkflowTask has no name field
-						description: task.description || '',
-						required: Boolean(task.required),
-						order: task.order || 0,
-						done: Boolean(task.done),
-					})),
-				}))
-
-				form.setFieldsValue({
-					steps: normalizedSteps,
-				})
-			} else {
-				// Handle WorkflowSchema data structure
-				setWorkflowTitle(workflowData.title || workflowData.name || 'New Workflow')
-				setWorkflowDescription(workflowData.description || '')
-				setWorkflowName(workflowData.name || '')
-
-				// Normalize the steps from JSON format
-				const normalizedSteps = normalizeWorkflowSteps(workflowData.steps || [])
-
-				form.setFieldsValue({
-					steps: normalizedSteps,
-				})
-			}
-
-			setIsFormInitialized(true)
-		},
+	const { data: workflow, isLoading } = useQuery({
+		queryKey,
+		queryFn: () => axios.get(getEndpoint()),
 	})
 
-	const { mutateAsync: updateWorkflow, isLoading: isSaving } = useMutation(
-		(data: any) => axios.put(getEndpoint(), data),
-		{
-			onSuccess: () => {
-				message.success(type === 'project' ? 'Проектный воркфлоу успешно сохранен!' : 'Воркфлоу успешно сохранен!')
-				queryClient.invalidateQueries(queryKey)
-				if (type === 'project') {
-					queryClient.invalidateQueries(['admin', 'project-workflows'])
-				} else {
-					queryClient.invalidateQueries(['admin', 'workflows'])
-				}
-				setHasUnsavedChanges(false)
-			},
-			onError: () => {
-				message.error(
-					type === 'project' ? 'Ошибка при сохранении проектного воркфлоу' : 'Ошибка при сохранении воркфлоу'
-				)
-			},
+	useEffect(() => {
+		if (!workflow) return
+
+		const workflowData = workflow.data
+
+		if (type === 'project') {
+			// Handle ProjectWorkflow data structure
+			setWorkflowTitle(workflowData.title || workflowData.project?.name || 'Project Workflow')
+			setWorkflowDescription(workflowData.description || '')
+			setWorkflowName(workflowData.name || '')
+			setCurrentStepId(workflowData.currentStepId || null)
+
+			// Convert ProjectWorkflow steps to WorkflowStepTemplate format
+			const normalizedSteps = (workflowData.steps || []).map((step: any) => ({
+				id: step.id,
+				name: step.name,
+				title: step.name,
+				description: step.description || '',
+				order: step.order || 0,
+				tasks: (step.tasks || []).map((task: any) => ({
+					id: task.id,
+					name: task.description || '', // Use description as name since ProjectWorkflowTask has no name field
+					title: task.description || '', // Use description as title since ProjectWorkflowTask has no name field
+					description: task.description || '',
+					required: Boolean(task.required),
+					order: task.order || 0,
+					done: Boolean(task.done),
+				})),
+			}))
+
+			form.setFieldsValue({
+				steps: normalizedSteps,
+			})
+		} else {
+			// Handle WorkflowSchema data structure
+			setWorkflowTitle(workflowData.title || workflowData.name || 'New Workflow')
+			setWorkflowDescription(workflowData.description || '')
+			setWorkflowName(workflowData.name || '')
+
+			// Normalize the steps from JSON format
+			const normalizedSteps = normalizeWorkflowSteps(workflowData.steps || [])
+
+			form.setFieldsValue({
+				steps: normalizedSteps,
+			})
 		}
-	)
+
+		setIsFormInitialized(true)
+	}, [workflow])
+
+	const { mutateAsync: updateWorkflow, isPending: isSaving } = useMutation({
+		mutationFn: (data: any) => axios.put(getEndpoint(), data),
+	})
 
 	const handleSave = async () => {
 		try {
@@ -178,6 +166,17 @@ export const WorkflowEditor = ({ id, type = 'template' }: WorkflowEditorProps) =
 					steps: stepsWithOrder,
 					currentStepId: currentStepId,
 				})
+
+				message.success(type === 'project' ? 'Проектный воркфлоу успешно сохранен!' : 'Воркфлоу успешно сохранен!')
+
+				queryClient.invalidateQueries({ queryKey })
+				if (type === 'project') {
+					queryClient.invalidateQueries({ queryKey: ['admin', 'project-workflows'] })
+				} else {
+					queryClient.invalidateQueries({ queryKey: ['admin', 'workflows'] })
+				}
+
+				setHasUnsavedChanges(false)
 			} else {
 				// For WorkflowSchema, save the full structure with tasks
 				const stepsWithOrder = (values.steps || []).map((step: any, index: number) => ({

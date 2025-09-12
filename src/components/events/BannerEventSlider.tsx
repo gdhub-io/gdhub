@@ -105,19 +105,21 @@ export const BannerEventSlider = () => {
 	const [fadeContent, setFadeContent] = useState(true)
 	const [prevActive, setPrevActive] = useState(0)
 
-	const { data: events } = useQuery(['slider-events'], () =>
-		axios.get<(prismaClient.Event & { schedule: Pick<prismaClient.EventScheduleItem, 'startDate' | 'endDate'>[] })[]>(
-			'/api/events',
-			{
-				params: {
-					type: [prismaClient.$Enums.EventType.Conference, prismaClient.$Enums.EventType.GameLab],
-					withDates: true,
-					status: [prismaClient.$Enums.EventStatus.Published],
-				},
-				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
-			}
-		)
-	)
+	const { data: events } = useQuery({
+		queryKey: ['slider-events'],
+		queryFn: () =>
+			axios.get<(prismaClient.Event & { schedule: Pick<prismaClient.EventScheduleItem, 'startDate' | 'endDate'>[] })[]>(
+				'/api/events',
+				{
+					params: {
+						type: [prismaClient.$Enums.EventType.Conference, prismaClient.$Enums.EventType.GameLab],
+						withDates: true,
+						status: [prismaClient.$Enums.EventStatus.Published],
+					},
+					paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
+				}
+			),
+	})
 
 	if (!events?.data.length) return null
 

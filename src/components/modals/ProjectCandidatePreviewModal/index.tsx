@@ -25,9 +25,9 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		data: candidate,
 		refetch: refetchCandidate,
 		isFetching: processing,
-	} = useQuery(
-		['candidate', candidateId],
-		() =>
+	} = useQuery({
+		queryKey: ['candidate', candidateId],
+		queryFn: () =>
 			axios.get<
 				prismaClient.TeamMember & {
 					vacancy: prismaClient.TeamVacancy
@@ -45,25 +45,23 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 			>('/api/user/project/candidate', {
 				params: { id: candidateId },
 			}),
-		{ enabled: !!candidateId, refetchInterval: false, refetchOnWindowFocus: false }
-	)
+		enabled: !!candidateId,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: rejectCandidate, isLoading: isRejecting } = useMutation(
-		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/reject', data),
-		{
-			onSuccess: () => {
-				queryClient.invalidateQueries(['user-project-team', candidate?.data.teamId])
-			},
-		}
-	)
-	const { mutateAsync: hireCandidate, isLoading: isHiring } = useMutation(
-		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/hire', data),
-		{
-			onSuccess: () => {
-				queryClient.invalidateQueries(['user-project-team', candidate?.data.teamId])
-			},
-		}
-	)
+	const { mutateAsync: rejectCandidate, isPending: isRejecting } = useMutation({
+		mutationFn: (data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/reject', data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['user-project-team', candidate?.data.teamId] })
+		},
+	})
+	const { mutateAsync: hireCandidate, isPending: isHiring } = useMutation({
+		mutationFn: (data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/hire', data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['user-project-team', candidate?.data.teamId] })
+		},
+	})
 
 	useEffect(() => {
 		if (open && candidateId) {

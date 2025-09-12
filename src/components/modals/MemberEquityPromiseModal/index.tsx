@@ -54,29 +54,28 @@ const MemberEquityPromiseModal = ({
 	const [deleteConfirmed, setDeleteConfirmed] = useState<boolean>(false)
 
 	// Получаем информацию о текущем шаге проекта и все возможные шаги
-	const { data: workflowData } = useQuery(
-		['project-workflow', projectId, open],
-		() => axios.get('/api/user/project/workflow', { params: { projectId } }),
-		{
-			enabled: !!projectId && open,
-		}
-	)
+	const { data: workflowData } = useQuery({
+		queryKey: ['project-workflow', projectId, open],
+		queryFn: () => axios.get('/api/user/project/workflow', { params: { projectId } }),
+		enabled: !!projectId && open,
+	})
 
-	const { isLoading } = useQuery(
-		['project-promise', promiseId],
-		() => axios.get('/api/user/project/equity/promise', { params: { promiseId } }),
-		{
-			enabled: !!promiseId,
-			onSuccess: ({ data }) => {
-				setPercentage(data.percentage)
-				setTargetStepId(data.targetStepId)
-				form.setFieldsValue({
-					percentage: data.percentage,
-					targetStepId: data.targetStepId,
-				})
-			},
-		}
-	)
+	const { data: projectPromiseData, isLoading } = useQuery({
+		queryKey: ['project-promise', promiseId],
+		queryFn: () => axios.get('/api/user/project/equity/promise', { params: { promiseId } }),
+		enabled: !!promiseId,
+	})
+
+	useEffect(() => {
+		if (!projectPromiseData?.data) return
+
+		setPercentage(projectPromiseData.data.percentage)
+		setTargetStepId(projectPromiseData.data.targetStepId)
+		form.setFieldsValue({
+			percentage: projectPromiseData.data.percentage,
+			targetStepId: projectPromiseData.data.targetStepId,
+		})
+	}, [projectPromiseData?.data])
 
 	// Получаем доступные для выбора шаги (только следующие за текущим)
 	const availableSteps = workflowData?.data?.steps
@@ -110,46 +109,41 @@ const MemberEquityPromiseModal = ({
 	}
 
 	// Mutation for creating a member share
-	const { mutateAsync: createMemberShare, isLoading: isCreating } = useMutation(
-		(data: { projectId: string; memberId: string; percentage: number; targetStepId?: string }) =>
+	const { mutateAsync: createMemberShare, isPending: isCreating } = useMutation({
+		mutationFn: (data: { projectId: string; memberId: string; percentage: number; targetStepId?: string }) =>
 			axios.post<any>('/api/user/project/equity/member', data),
-		{
-			onSuccess: () => {
-				onOk(percentage, isVested, targetStepId)
-			},
-			onError: (error: any) => {
-				console.error('Error while creating member share:', error)
-			},
-		}
-	)
+		onSuccess: () => {
+			onOk(percentage, isVested, targetStepId)
+		},
+		onError: (error: any) => {
+			console.error('Error while creating member share:', error)
+		},
+	})
 
 	// Mutation for updating a member share
-	const { mutateAsync: updateMemberShare, isLoading: isUpdating } = useMutation(
-		(data: { promiseId: string; percentage: number; targetStepId?: string }) =>
+	const { mutateAsync: updateMemberShare, isPending: isUpdating } = useMutation({
+		mutationFn: (data: { promiseId: string; percentage: number; targetStepId?: string }) =>
 			axios.put<any>('/api/user/project/equity/member', data),
-		{
-			onSuccess: () => {
-				onOk(percentage, isVested, targetStepId)
-			},
-			onError: (error: any) => {
-				console.error('Error while updating member share:', error)
-			},
-		}
-	)
+		onSuccess: () => {
+			onOk(percentage, isVested, targetStepId)
+		},
+		onError: (error: any) => {
+			console.error('Error while updating member share:', error)
+		},
+	})
 
 	// Mutation for deleting a member share
-	const { mutateAsync: deleteMemberShare, isLoading: isDeleting } = useMutation(
-		() => axios.delete<any>('/api/user/project/equity/member', { params: { promiseId } }),
-		{
-			onSuccess: () => {
-				if (onDelete) onDelete()
-				onCancel()
-			},
-			onError: (error: any) => {
-				console.error('Error while deleting member share:', error)
-			},
-		}
-	)
+	const { mutateAsync: deleteMemberShare, isPending: isDeleting } = useMutation({
+		mutationFn: (data: { promiseId: string }) =>
+			axios.delete<any>('/api/user/project/equity/member', { params: { promiseId } }),
+		onSuccess: () => {
+			if (onDelete) onDelete()
+			onCancel()
+		},
+		onError: (error: any) => {
+			console.error('Error while deleting member share:', error)
+		},
+	})
 
 	// Обработчик сохранения
 	const handleOk = async () => {
@@ -176,7 +170,7 @@ const MemberEquityPromiseModal = ({
 	}
 
 	// Обработчик удаления
-	const handleDelete = async () => {
+	const handleDelete = async (promiseId: string) => {
 		if (!deleteConfirmed) {
 			notification.error({
 				message: t(
@@ -188,7 +182,7 @@ const MemberEquityPromiseModal = ({
 		}
 
 		try {
-			await deleteMemberShare()
+			await deleteMemberShare({ promiseId })
 			onCancel()
 		} catch (error) {
 			console.error('Error during deletion:', error)
@@ -233,7 +227,7 @@ const MemberEquityPromiseModal = ({
 										</Checkbox>
 									</div>
 								}
-								onConfirm={handleDelete}
+								onConfirm={() => handleDelete(promiseId)}
 								okText={t('Delete')}
 								cancelText={t('Cancel')}
 								okButtonProps={{ danger: true, loading: isDeleting }}

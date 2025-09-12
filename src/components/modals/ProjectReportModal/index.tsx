@@ -17,26 +17,37 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 	const [content, setContent] = useState('')
 	const editorRef = useRef<MDXEditorMethods | null>()
 
-	const { refetch: fetchReport, isFetching } = useQuery(
-		['project-report', reportId],
-		() => axios.get<prismaClient.ProjectReport>('/api/user/project/report', { params: { id: reportId } }),
-		{
-			enabled: !!reportId,
-			onSuccess(data) {
-				const { id, publishedAt, content, video } = data.data
-				form.setFieldsValue({ reportId: id, content, video, publishedAt: dayjs(publishedAt) })
-				setContent(content)
-				editorRef.current?.setMarkdown(content.replace('\n', '\n\n'))
-			},
-			staleTime: Infinity,
-		}
-	)
-	const { mutateAsync: createProjectReport } = useMutation((data: Omit<Partial<prismaClient.ProjectReport>, 'id'>) =>
-		axios.post<void>('/api/user/project/report', data)
-	)
-	const { mutateAsync: updateProjectReport } = useMutation((data: Partial<prismaClient.ProjectReport>) =>
-		axios.put<void>('/api/user/project/report', data)
-	)
+	const {
+		data: report,
+		refetch: fetchReport,
+		isFetching,
+	} = useQuery({
+		queryKey: ['project-report', reportId],
+		queryFn: () => axios.get<prismaClient.ProjectReport>('/api/user/project/report', { params: { id: reportId } }),
+		enabled: !!reportId,
+		staleTime: Infinity,
+	})
+
+	const { mutateAsync: createProjectReport } = useMutation({
+		mutationFn: (data: Omit<Partial<prismaClient.ProjectReport>, 'id'>) =>
+			axios.post<void>('/api/user/project/report', data),
+	})
+
+	const { mutateAsync: updateProjectReport } = useMutation({
+		mutationFn: (data: Partial<prismaClient.ProjectReport>) => axios.put<void>('/api/user/project/report', data),
+	})
+
+	useEffect(() => {
+		if (!report) return
+
+		const { id, publishedAt, content, video } = report.data
+
+		form.setFieldsValue({ reportId: id, content, video, publishedAt: dayjs(publishedAt) })
+
+		setContent(content)
+
+		editorRef.current?.setMarkdown(content.replace('\n', '\n\n'))
+	}, [report])
 
 	useEffect(() => {
 		if (open && reportId) {

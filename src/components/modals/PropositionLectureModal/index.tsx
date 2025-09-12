@@ -12,20 +12,20 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const { data: session } = useSession()
 	const { t } = useTolgee()
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
-	const { mutateAsync: createLecture, isLoading: isCreating } = useMutation((data: Partial<prismaClient.Lecture>) =>
-		axios.post<prismaClient.Lecture>('/api/user/lecture', { ...data, stage: prismaClient.LectureStage.Proposed })
-	)
-	const { mutateAsync: updateLecture, isLoading: isUpdating } = useMutation(
-		({ id, data }: { id: string; data: Partial<prismaClient.Lecture> }) =>
-			axios.put<prismaClient.Lecture>('/api/user/lecture', data, { params: { id } })
-	)
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
+	const { mutateAsync: createLecture, isPending: isCreating } = useMutation({
+		mutationFn: (data: Partial<prismaClient.Lecture>) =>
+			axios.post<prismaClient.Lecture>('/api/user/lecture', { ...data, stage: prismaClient.LectureStage.Proposed }),
+	})
+
+	const { mutateAsync: updateLecture, isPending: isUpdating } = useMutation({
+		mutationFn: ({ id, data }: { id: string; data: Partial<prismaClient.Lecture> }) =>
+			axios.put<prismaClient.Lecture>('/api/user/lecture', data, { params: { id } }),
+	})
 
 	const directionsOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
 

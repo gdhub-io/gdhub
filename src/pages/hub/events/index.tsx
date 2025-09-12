@@ -19,11 +19,11 @@ const EventsPage: NextPageWithLayout = () => {
 	const { token } = theme.useToken()
 	const { data: session } = useSession()
 
-	const { data: eventCount, isFetched: isCountFetched } = useQuery(
-		['user-event-count', session?.user?.id],
-		() => axios.get('/api/user/event/count').then((res) => res.data),
-		{ enabled: Boolean(session?.user?.id) }
-	)
+	const { data: eventCount, isFetched: isCountFetched } = useQuery({
+		queryKey: ['user-event-count', session?.user?.id],
+		queryFn: () => axios.get('/api/user/event/count').then((res) => res.data),
+		enabled: Boolean(session?.user?.id),
+	})
 
 	const [loadingSections, setLoadingSections] = React.useState({
 		knowledge: true,
