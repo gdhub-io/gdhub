@@ -15,7 +15,7 @@ export const CreateBlogPostModal = ({
 	const { t } = useTolgee()
 	const [form] = Form.useForm()
 
-	const { mutateAsync: createPost, isLoading } = useMutation({
+	const { mutateAsync: createPost, isPending } = useMutation({
 		mutationFn: (values: { title: string }) => {
 			return axios.post('/api/admin/post', values)
 		},
@@ -38,7 +38,7 @@ export const CreateBlogPostModal = ({
 			open={open}
 			onCancel={onCancel}
 			onOk={handleOk}
-			confirmLoading={isLoading}
+			confirmLoading={isPending}
 		>
 			<Form form={form} onFinish={onOk} layout="vertical" requiredMark={false} variant="filled">
 				<Form.Item

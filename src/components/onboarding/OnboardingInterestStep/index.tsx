@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
@@ -39,25 +39,21 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 		}
 	}, [router.query.for])
 
-	useQuery({
+	const { data: profileData } = useQuery({
 		queryKey: ['profile', session?.user.id],
 		queryFn: () => axios.get<any>('/api/auth/registration/onboarding/interest'),
 		enabled: !!session?.user.id,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
-		onSuccess: (response) => {
-			if (!response.data) return
-
-			const { primaryInterest, preferredGenres, preferredSettings, preferredLevels } = response.data
-
-			form.setFieldsValue({
-				primaryInterest: preSelectedInterest || primaryInterest, //selected or default option
-				preferredGenres: preferredGenres.map((d: Record<string, string>) => d.id),
-				preferredSettings: preferredSettings.map((d: Record<string, string>) => d.id),
-				preferredLevels: preferredLevels.map((d: Record<string, string>) => d.id),
-			})
-		},
 	})
+
+	useEffect(() => {
+		if (profileData?.data) {
+			form.setFieldsValue({
+				primaryInterest: preSelectedInterest || profileData.data.primaryInterest,
+			})
+		}
+	}, [profileData?.data])
 
 	const { data: gameGenres } = useQuery({
 		queryKey: ['gameGenres'],
