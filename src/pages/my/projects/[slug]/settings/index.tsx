@@ -56,11 +56,14 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 		enabled: !!projectSlug,
 		refetchOnWindowFocus: false,
 		refetchInterval: false,
-		onSuccess({ data }) {
-			setCover(data.coverImage)
-			setDescription(data.description || '')
-		},
 	})
+
+	useEffect(() => {
+		if (project?.data) {
+			setCover(project.data.coverImage)
+			setDescription(project.data.description || '')
+		}
+	}, [project?.data])
 
 	const { mutateAsync: updateProject, isPending: isUpdating } = useMutation({
 		mutationFn: (data: any) =>

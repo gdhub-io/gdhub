@@ -89,9 +89,9 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 
 		if (open && vacancyId) {
 			fetchVacancy().then((res) => {
-				const data = res.data
-				form.setFieldsValue({ ...data, finishedAt: dayjs(data.finishedAt) })
-				setShowPromiseFields(!!data.promisePercentage)
+				const data = res.data?.data
+				form.setFieldsValue({ ...data, finishedAt: dayjs(data?.finishedAt) })
+				setShowPromiseFields(!!data?.promisePercentage)
 			})
 		}
 	}, [open])

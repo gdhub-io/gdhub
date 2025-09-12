@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Checkbox, Col, Form, Input, InputNumber, Row, Space, Typography, message } from 'antd'
@@ -22,27 +23,28 @@ export const OnboardingResourceStep = ({
 	const { t } = useTolgee()
 	const { data: session, update: updateSession } = useSession()
 
-	useQuery({
+	const { data: profileData } = useQuery({
 		queryKey: ['profile', session?.user.id],
 		queryFn: () => axios.get<any>('/api/auth/registration/onboarding/resources'),
 		enabled: !!session?.user.id,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
-		onSuccess: (response) => {
-			if (!response.data) return
-
-			const { timeForWork, isActive, otherResources } = response.data
-
-			form.setFieldsValue({
-				timeForWorkMin: timeForWork[0],
-				timeForWorkMax: timeForWork[1],
-				isActive,
-				otherResources,
-			})
-
-			onLoading()
-		},
 	})
+
+	useEffect(() => {
+		if (!profileData?.data) return
+
+		const { timeForWork, isActive, otherResources } = profileData.data
+
+		form.setFieldsValue({
+			timeForWorkMin: timeForWork[0],
+			timeForWorkMax: timeForWork[1],
+			isActive,
+			otherResources,
+		})
+
+		onLoading()
+	}, [profileData?.data])
 
 	const { mutateAsync: saveUserResources, isPending: isSaving } = useMutation({
 		mutationFn: (data: any) => axios.put<any>('/api/auth/registration/onboarding/resources', data),

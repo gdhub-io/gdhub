@@ -145,10 +145,13 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		enabled: !!pageSlug && !!getLanguage(),
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
-		onSuccess: () => {
-			setPageProperties(getPageProperties(pageSlug))
-		},
 	})
+
+	useEffect(() => {
+		if (pageContent?.data) {
+			setPageProperties(getPageProperties(pageSlug))
+		}
+	}, [pageContent?.data])
 
 	return (
 		<ProtectedLayout title={t('page.documentation.title', 'Documentation')}>
