@@ -178,8 +178,6 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 				`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ''}`
 			)
 
-			console.log('API Response:', response.data)
-
 			// Если это первая страница, возвращаем только первые 5 постов
 			if (pageParam === 1) {
 				return {
