@@ -60,7 +60,7 @@ export const ProtectedLayout = ({
 	showBackButton = false,
 	backButtonUrl,
 	extra,
-	access = [prismaClient.UserRole.Member],
+	access = [],
 }: ProtectedLayoutProps) => {
 	const router = useRouter()
 	const { t, getLanguage, changeLanguage } = useTolgee()
@@ -71,6 +71,7 @@ export const ProtectedLayout = ({
 
 	const hasAccess = useMemo(() => {
 		if (!session) return false
+		if (!access || access.length === 0) return true
 
 		return access.some((role) => session.user.roles.includes(role))
 	}, [session, access])
@@ -301,14 +302,7 @@ export const ProtectedLayout = ({
 									</Link>
 									<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
 									<Space>
-										<Avatar
-											src={
-												session?.user?.image ? (
-													<Image src={session?.user.image} width={24} height={24} alt="avatar" />
-												) : null
-											}
-											size={24}
-										/>
+										<Avatar src={session?.user?.image ?? undefined} size={24} />
 										{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
 									</Space>
 								</Flex>
@@ -396,14 +390,7 @@ export const ProtectedLayout = ({
 						height={'100%'}
 						title={
 							<Space>
-								<Avatar
-									src={
-										session?.user?.image ? (
-											<Image src={session?.user.image} width={32} height={32} alt="avatar" />
-										) : null
-									}
-									shape="square"
-								/>
+								<Avatar src={session?.user?.image ?? undefined} shape="square" />
 								<div className="username">{session?.user?.name}</div>
 							</Space>
 						}

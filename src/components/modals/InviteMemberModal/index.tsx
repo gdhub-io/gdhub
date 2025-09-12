@@ -20,20 +20,18 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 	const { options: directionsOptions } = useWorkDirections()
 	const [isEmailValid, setIsEmailValid] = useState(true)
 
-	const { mutateAsync: inviteMember, isLoading: isInviting } = useMutation(
-		(data: Record<string, any>) => axios.post<any>('/api/user/project/team/invite', data),
-		{
-			onSuccess: () => {
-				message.success(t('Invitation sent successfully'))
-				form.resetFields()
-				onOk()
-			},
-			onError: (error: any) => {
-				console.error(error)
-				message.error(error.response?.data?.message || error.message || t('Failed to send invitation'))
-			},
-		}
-	)
+	const { mutateAsync: inviteMember, isPending: isInviting } = useMutation({
+		mutationFn: (data: Record<string, any>) => axios.post<any>('/api/user/project/team/invite', data),
+		onSuccess: () => {
+			message.success(t('Invitation sent successfully'))
+			form.resetFields()
+			onOk()
+		},
+		onError: (error: any) => {
+			console.error(error)
+			message.error(error.response?.data?.message || error.message || t('Failed to send invitation'))
+		},
+	})
 
 	const handleOk = async () => {
 		try {

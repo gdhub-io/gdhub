@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import InterestAuthorIcon from '@/assets/images/icons/interest-author-icon.svg'
 import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
@@ -39,47 +39,41 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 		}
 	}, [router.query.for])
 
-	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/auth/registration/onboarding/interest'), {
+	const { data: profileData } = useQuery({
+		queryKey: ['profile', session?.user.id],
+		queryFn: () => axios.get<any>('/api/auth/registration/onboarding/interest'),
 		enabled: !!session?.user.id,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
-		onSuccess: (response) => {
-			if (!response.data) return
-
-			const { primaryInterest, preferredGenres, preferredSettings, preferredLevels } = response.data
-
-			form.setFieldsValue({
-				primaryInterest: preSelectedInterest || primaryInterest, //selected or default option
-				preferredGenres: preferredGenres.map((d: Record<string, string>) => d.id),
-				preferredSettings: preferredSettings.map((d: Record<string, string>) => d.id),
-				preferredLevels: preferredLevels.map((d: Record<string, string>) => d.id),
-			})
-		},
 	})
 
-	const { data: gameGenres } = useQuery(
-		['gameGenres'],
-		() => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
-		{
-			staleTime: Infinity,
+	useEffect(() => {
+		if (profileData?.data) {
+			form.setFieldsValue({
+				primaryInterest: preSelectedInterest || profileData.data.primaryInterest,
+			})
 		}
-	)
-	const { data: gameSettings } = useQuery(
-		['gameSettings'],
-		() => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
-		{ staleTime: Infinity }
-	)
-	const { data: gameLevels } = useQuery(
-		['gameLevels'],
-		() => axios.get<prismaClient.GameDifficultyLevel[]>('/api/dictionary/game-levels'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	}, [profileData?.data])
 
-	const { mutateAsync: updateProfile, isLoading: isUpdatingInterests } = useMutation(({ data }: any) =>
-		axios.put<any>('/api/auth/registration/onboarding/interest', data)
-	)
+	const { data: gameGenres } = useQuery({
+		queryKey: ['gameGenres'],
+		queryFn: () => axios.get<prismaClient.GameGenre[]>('/api/dictionary/game-genres'),
+		staleTime: Infinity,
+	})
+	const { data: gameSettings } = useQuery({
+		queryKey: ['gameSettings'],
+		queryFn: () => axios.get<prismaClient.GameSetting[]>('/api/dictionary/game-settings'),
+		staleTime: Infinity,
+	})
+	const { data: gameLevels } = useQuery({
+		queryKey: ['gameLevels'],
+		queryFn: () => axios.get<prismaClient.GameDifficultyLevel[]>('/api/dictionary/game-levels'),
+		staleTime: Infinity,
+	})
+
+	const { mutateAsync: updateProfile, isPending: isUpdatingInterests } = useMutation({
+		mutationFn: ({ data }: any) => axios.put<any>('/api/auth/registration/onboarding/interest', data),
+	})
 
 	const prepareOptions = (data?: any[]) => {
 		if (!data) return []

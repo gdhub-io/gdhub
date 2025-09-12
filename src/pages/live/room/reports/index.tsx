@@ -41,11 +41,13 @@ const LiveReportsPage = () => {
 	)
 	const [showTitleSlate, setShowTitleSlate] = useState<boolean>(false)
 
-	const { data: token } = useQuery(
-		['daily-co-token', session?.user.id],
-		() => axios.get<{ token: string }>('/api/live/token', { params: { roomName: 'reports' } }),
-		{ refetchOnWindowFocus: false, refetchInterval: false, refetchOnMount: false }
-	)
+	const { data: token } = useQuery({
+		queryKey: ['daily-co-token', session?.user.id],
+		queryFn: () => axios.get<{ token: string }>('/api/live/token', { params: { roomName: 'reports' } }),
+		refetchOnWindowFocus: false,
+		refetchInterval: false,
+		refetchOnMount: false,
+	})
 
 	const callFrame = useCallFrame({
 		parentEl: callRef.current,

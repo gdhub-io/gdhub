@@ -17,15 +17,15 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 	const editorRef = useRef<MDXEditorMethods | null>()
 	const [content, setContent] = useState('')
 
-	const { data: report, isLoading } = useQuery(
-		['project-report', postId],
-		() => axios.get<prismaClient.ProjectReport>('/api/user/project/report', { params: { id: postId } }),
-		{ enabled: !!postId }
-	)
+	const { data: report, isLoading } = useQuery({
+		queryKey: ['project-report', postId],
+		queryFn: () => axios.get<prismaClient.ProjectReport>('/api/user/project/report', { params: { id: postId } }),
+		enabled: !!postId,
+	})
 
-	const { mutateAsync: editProjectReport, isLoading: isUpdating } = useMutation((data) =>
-		axios.put<void>('/api/user/project/report', data)
-	)
+	const { mutateAsync: editProjectReport, isPending: isUpdating } = useMutation({
+		mutationFn: (data) => axios.put<void>('/api/user/project/report', data),
+	})
 
 	useEffect(() => {
 		if (!report?.data) return
@@ -62,9 +62,9 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 		onCancel()
 	}
 
-	const { mutateAsync: deleteProjectReport } = useMutation((params: { id: string }) =>
-		axios.delete<void>('/api/user/project/report', { params })
-	)
+	const { mutateAsync: deleteProjectReport } = useMutation({
+		mutationFn: (params: { id: string }) => axios.delete<void>('/api/user/project/report', { params }),
+	})
 
 	const handleDeleteReport = async (id: string) => {
 		form.resetFields()
@@ -83,7 +83,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 			centered
 			title={<T keyName="modal.edit-devlog-post.title">Edit post</T>}
 			width={640}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			okText={<T>Save</T>}
 			cancelText={<T>Cancel</T>}

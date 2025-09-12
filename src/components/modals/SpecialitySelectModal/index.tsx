@@ -19,13 +19,16 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		data: specialities,
 		isLoading,
 		refetch: fetchSpecialities,
-	} = useQuery(['user-specialities'], () => axios.get<prismaClient.Speciality[]>('/api/user/specialities'))
+	} = useQuery({
+		queryKey: ['user-specialities'],
+		queryFn: () => axios.get<prismaClient.Speciality[]>('/api/user/specialities'),
+	})
 
 	const {
 		data: contacts,
 		isLoading: isContactsLoading,
 		refetch: fetchContacts,
-	} = useQuery(['user-contacts'], (): Promise<any> => axios.get('/api/user/contacts'))
+	} = useQuery({ queryKey: ['user-contacts'], queryFn: (): Promise<any> => axios.get('/api/user/contacts') })
 
 	useEffect(() => {
 		if (open) {
@@ -77,7 +80,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 			<Modal
 				centered
 				title={<T keyName="modal.speciality-select.title">Indicate the specialty</T>}
-				destroyOnClose
+				destroyOnHidden
 				okButtonProps={{
 					disabled:
 						!selectedItem ||

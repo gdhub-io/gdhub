@@ -21,41 +21,42 @@ const InvitePage = () => {
 		data: invitation,
 		isLoading: isLoadingInvitation,
 		error: invitationError,
-	} = useQuery(['invitation', token], () => axios.get(`/api/invitation/${token}`), {
+	} = useQuery({
+		queryKey: ['invitation', token],
+		queryFn: () => axios.get(`/api/invitation/${token}`),
 		enabled: !!token,
 		retry: false,
+	})
+
+	useEffect(() => {
+		if (invitationError) {
+			setError(invitationError.message || 'Failed to load invitation')
+		}
+	}, [invitationError])
+
+	// Мутация для принятия приглашения
+	const { mutateAsync: acceptInvite, isPending: isAccepting } = useMutation({
+		mutationFn: () => axios.get(`/api/user/project/team/accept-invite?token=${token}`),
+		onSuccess: (response) => {
+			if (response.data.redirect) {
+				router.push(response.data.redirect)
+			}
+		},
 		onError: (err: any) => {
-			setError(err.response?.data?.message || 'Failed to load invitation')
+			setError(err.response?.data?.message || 'Failed to accept invitation')
 		},
 	})
 
-	// Мутация для принятия приглашения
-	const { mutateAsync: acceptInvite, isLoading: isAccepting } = useMutation(
-		() => axios.get(`/api/user/project/team/accept-invite?token=${token}`),
-		{
-			onSuccess: (response) => {
-				if (response.data.redirect) {
-					router.push(response.data.redirect)
-				}
-			},
-			onError: (err: any) => {
-				setError(err.response?.data?.message || 'Failed to accept invitation')
-			},
-		}
-	)
-
 	// Мутация для отклонения приглашения
-	const { mutateAsync: declineInvite, isLoading: isDeclining } = useMutation(
-		() => axios.get(`/api/user/project/team/decline-invite?token=${token}`),
-		{
-			onSuccess: () => {
-				router.push('/')
-			},
-			onError: (err: any) => {
-				setError(err.response?.data?.message || 'Failed to decline invitation')
-			},
-		}
-	)
+	const { mutateAsync: declineInvite, isPending: isDeclining } = useMutation({
+		mutationFn: () => axios.get(`/api/user/project/team/decline-invite?token=${token}`),
+		onSuccess: () => {
+			router.push('/')
+		},
+		onError: (err: any) => {
+			setError(err.response?.data?.message || 'Failed to decline invitation')
+		},
+	})
 
 	// Если пользователь не авторизован, перенаправляем на страницу входа
 	useEffect(() => {

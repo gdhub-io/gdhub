@@ -18,7 +18,10 @@ export const HeldLectures = () => {
 		data: lectures,
 		refetch: updateList,
 		isLoading,
-	} = useQuery(['lectures'], () => axios.get('/api/lectures', { params: { stage: prismaClient.LectureStage.Held } }))
+	} = useQuery({
+		queryKey: ['lectures'],
+		queryFn: () => axios.get('/api/lectures', { params: { stage: prismaClient.LectureStage.Held } }),
+	})
 
 	const columns: ColumnsType<LectureDetails> = useMemo(
 		() => [

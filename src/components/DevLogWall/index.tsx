@@ -31,19 +31,19 @@ export const DevLogWall = ({ slug }: { slug: string }) => {
 	const [editablePostId, setEditablePostId] = useState<string>()
 	const { data: session } = useSession()
 
-	const { data: project } = useQuery(
-		['project', slug],
-		() => axios.get<Partial<prismaClient.Project>>(`/api/user/project`, { params: { slug } }),
-		{
-			enabled: !!slug,
-		}
-	)
+	const { data: project } = useQuery({
+		queryKey: ['project', slug],
+		queryFn: () => axios.get<Partial<prismaClient.Project>>(`/api/user/project`, { params: { slug } }),
+		enabled: !!slug,
+	})
 
 	const {
 		data: projectReports,
 		isLoading: isLoading,
 		refetch,
-	} = useQuery(['project-reports', slug], () => axios.get<any[]>('/api/user/project/reports', { params: { slug } }), {
+	} = useQuery({
+		queryKey: ['project-reports', slug],
+		queryFn: () => axios.get<any[]>('/api/user/project/reports', { params: { slug } }),
 		enabled: !!slug,
 		refetchInterval: 60000 * 5,
 		refetchOnWindowFocus: false,

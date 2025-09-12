@@ -63,23 +63,22 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, o
 		isFetching,
 		dataUpdatedAt: speakersDataUpdatedAt,
 		refetch: refetchSpeakers,
-	} = useQuery(
-		['speakers-search', searchSpeakersValue, initialValues?.speakers?.length],
-		() =>
+	} = useQuery({
+		queryKey: ['speakers-search', searchSpeakersValue, initialValues?.speakers?.length],
+		queryFn: () =>
 			axios.get('/api/speakers/search', {
 				params: { query: searchSpeakersValue, ids: initialValues?.speakers?.map((s) => s.id) },
 				paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
 			}),
-		{
-			enabled:
-				(!!searchSpeakersValue || !!initialValues?.speakers?.length) &&
-				(isAdmin || process.env.NODE_ENV === 'development'),
-		}
-	)
+		enabled:
+			(!!searchSpeakersValue || !!initialValues?.speakers?.length) &&
+			(isAdmin || process.env.NODE_ENV === 'development'),
+	})
 
-	const { data: workDirections } = useQuery(['work-directions'], () =>
-		axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions').then((res) => res.data)
-	)
+	const { data: workDirections } = useQuery({
+		queryKey: ['work-directions'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions').then((res) => res.data),
+	})
 
 	useEffect(() => {
 		if (speakersData?.data) {
@@ -140,7 +139,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, o
 			maskClosable={false}
 			okText={t('common.save', 'Save')}
 			cancelText={t('common.cancel', 'Cancel')}
-			destroyOnClose
+			destroyOnHidden
 			confirmLoading={isSubmitting}
 		>
 			<Form

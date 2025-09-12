@@ -20,9 +20,9 @@ const MyProjectCandidates = () => {
 		data: candidates,
 		refetch: refetchCandidates,
 		isFetching: isLoadingCandidates,
-	} = useQuery(
-		['candidates', contextProject?.id],
-		() =>
+	} = useQuery({
+		queryKey: ['candidates', contextProject?.id],
+		queryFn: () =>
 			axios.get<
 				(prismaClient.TeamMember & {
 					vacancy: prismaClient.TeamVacancy
@@ -32,8 +32,8 @@ const MyProjectCandidates = () => {
 			>('/api/user/project/candidates', {
 				params: { teamId: contextProject?.teamId },
 			}),
-		{ enabled: !!contextProject }
-	)
+		enabled: !!contextProject,
+	})
 
 	const columns: ColumnsType<
 		prismaClient.TeamMember & {

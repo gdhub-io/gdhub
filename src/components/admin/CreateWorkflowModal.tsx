@@ -15,7 +15,7 @@ export const CreateWorkflowModal = ({
 	const { t } = useTolgee()
 	const [form] = Form.useForm()
 
-	const { mutateAsync: createWorkflow, isLoading } = useMutation({
+	const { mutateAsync: createWorkflow, isPending } = useMutation({
 		mutationFn: (values: { title: string }) => {
 			return axios.post('/api/admin/workflow', values)
 		},
@@ -38,7 +38,7 @@ export const CreateWorkflowModal = ({
 			open={open}
 			onCancel={onCancel}
 			onOk={handleOk}
-			confirmLoading={isLoading}
+			confirmLoading={isPending}
 		>
 			<Form form={form} onFinish={onOk} layout="vertical" requiredMark={false} variant="filled">
 				<Form.Item

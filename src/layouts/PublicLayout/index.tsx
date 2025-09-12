@@ -26,7 +26,6 @@ import {
 } from 'antd'
 import enLocale from 'antd/locale/en_US'
 import ruLocale from 'antd/locale/ru_RU'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
@@ -365,12 +364,7 @@ export const PublicLayout = ({
 						height={'100%'}
 						title={
 							<Space>
-								<Avatar
-									src={
-										session?.user?.image ? <Image src={session.user.image} width={32} height={32} alt="avatar" /> : null
-									}
-									shape="square"
-								/>
+								<Avatar src={session?.user?.image ?? undefined} shape="square" />
 								<div className="username">{session?.user?.name}</div>
 							</Space>
 						}

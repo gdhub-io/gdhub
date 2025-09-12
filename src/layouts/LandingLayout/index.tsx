@@ -19,7 +19,6 @@ import {
 	Space,
 	Typography,
 } from 'antd'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
@@ -204,14 +203,7 @@ export const LandingLayout = ({ children }: any) => {
 						title={
 							!!session && (
 								<Flex align="center" justify="space-between">
-									<Avatar
-										src={
-											session.user?.image ? (
-												<Image src={session.user.image} width={32} height={32} alt="avatar" />
-											) : null
-										}
-										shape="square"
-									/>
+									<Avatar src={session.user?.image ?? undefined} shape="square" />
 									<Text className="username" ellipsis>
 										{session.user?.name}
 									</Text>

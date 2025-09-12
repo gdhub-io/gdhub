@@ -42,20 +42,18 @@ const SpecialityModal = ({ speciality, teamInvitation, open, onOk, onCancel }: S
 	const [isParsing, setIsParsing] = useState(false)
 	const [jobPosition, setJobPosition] = useState<string>('')
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
 
-	const { mutateAsync: createSpeciality } = useMutation((variables: any) =>
-		axios.post<void>('/api/user/speciality', variables)
-	)
-	const { mutateAsync: updateSpeciality } = useMutation((variables: any) =>
-		axios.put<void>('/api/user/speciality', variables)
-	)
+	const { mutateAsync: createSpeciality } = useMutation({
+		mutationFn: (variables: any) => axios.post<void>('/api/user/speciality', variables),
+	})
+	const { mutateAsync: updateSpeciality } = useMutation({
+		mutationFn: (variables: any) => axios.put<void>('/api/user/speciality', variables),
+	})
 
 	useEffect(() => {
 		if (teamInvitation) {
@@ -213,7 +211,7 @@ const SpecialityModal = ({ speciality, teamInvitation, open, onOk, onCancel }: S
 		<Modal
 			title={renderTitle()}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			cancelText={t('modal.speciality.title.close', 'Close')}
 			okText={t('modal.speciality.title.save', 'Save')}

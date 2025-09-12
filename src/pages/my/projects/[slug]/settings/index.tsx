@@ -43,9 +43,9 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 	const [description, setDescription] = useState('')
 	const [coverProcessing, setCoverProcessing] = useState(false)
 
-	const { data: project, isFetching } = useQuery(
-		['user-project', projectSlug],
-		() =>
+	const { data: project, isFetching } = useQuery({
+		queryKey: ['user-project', projectSlug],
+		queryFn: () =>
 			axios.get<
 				prismaClient.Project & {
 					workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
@@ -53,20 +53,22 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 			>('/api/user/project', {
 				params: { slug: projectSlug },
 			}),
-		{
-			enabled: !!projectSlug,
-			refetchOnWindowFocus: false,
-			refetchInterval: false,
-			onSuccess({ data }) {
-				setCover(data.coverImage)
-				setDescription(data.description || '')
-			},
-		}
-	)
+		enabled: !!projectSlug,
+		refetchOnWindowFocus: false,
+		refetchInterval: false,
+	})
 
-	const { mutateAsync: updateProject, isLoading: isUpdating } = useMutation((data: any) =>
-		axios.put<prismaClient.Project>('/api/user/project', data, { params: { id: project?.data.id } })
-	)
+	useEffect(() => {
+		if (project?.data) {
+			setCover(project.data.coverImage)
+			setDescription(project.data.description || '')
+		}
+	}, [project?.data])
+
+	const { mutateAsync: updateProject, isPending: isUpdating } = useMutation({
+		mutationFn: (data: any) =>
+			axios.put<prismaClient.Project>('/api/user/project', data, { params: { id: project?.data.id } }),
+	})
 
 	useEffect(() => {
 		if (projectSlug) {

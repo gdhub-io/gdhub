@@ -21,15 +21,14 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false)
 	let editorRef = useRef<MDXEditorMethods | null>()
 
-	const { mutateAsync: createProjectReport, isLoading } = useMutation(
-		(data: Omit<Partial<prismaClient.ProjectReport>, 'id'>) => axios.post<void>('/api/user/project/report', data),
-		{
-			onSuccess: () => {
-				onCreate()
-				gtmEventTrigger('devlog_create', { projectId })
-			},
-		}
-	)
+	const { mutateAsync: createProjectReport, isPending: isLoading } = useMutation({
+		mutationFn: (data: Omit<Partial<prismaClient.ProjectReport>, 'id'>) =>
+			axios.post<void>('/api/user/project/report', data),
+		onSuccess: () => {
+			onCreate()
+			gtmEventTrigger('devlog_create', { projectId })
+		},
+	})
 
 	const handleOk = async () => {
 		try {

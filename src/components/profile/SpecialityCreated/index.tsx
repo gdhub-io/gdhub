@@ -12,29 +12,29 @@ export const SpecialityCreated = () => {
 	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false)
 
 	// Проверяем, есть ли ожидающие приглашения
-	const { data: user, isLoading: isLoadingUser } = useQuery(['user', 'current'], () => axios.get('/api/user/me'), {
+	const { data: user, isLoading: isLoadingUser } = useQuery({
+		queryKey: ['user', 'current'],
+		queryFn: () => axios.get('/api/user/me'),
 		enabled: !pendingInvitation, // Не запрашиваем, если есть pendingInvitation в URL
 		refetchOnWindowFocus: false,
 	})
 
 	// Мутация для обработки ожидающего приглашения
-	const { mutateAsync: completePendingInvitation, isLoading: isCompletingInvitation } = useMutation(
-		(invitationId: string) =>
+	const { mutateAsync: completePendingInvitation, isPending: isCompletingInvitation } = useMutation({
+		mutationFn: (invitationId: string) =>
 			axios.get(`/api/user/project/team/complete-pending-invitation?invitationId=${invitationId}`),
-		{
-			onSuccess: (response) => {
-				if (response.data.redirect) {
-					router.push(response.data.redirect)
-				} else {
-					router.push('/profile/specialities')
-				}
-			},
-			onError: () => {
-				// В случае ошибки просто перенаправляем на страницу специализаций
+		onSuccess: (response) => {
+			if (response.data.redirect) {
+				router.push(response.data.redirect)
+			} else {
 				router.push('/profile/specialities')
-			},
-		}
-	)
+			}
+		},
+		onError: () => {
+			// В случае ошибки просто перенаправляем на страницу специализаций
+			router.push('/profile/specialities')
+		},
+	})
 
 	// Обрабатываем приглашение из URL параметра
 	useEffect(() => {

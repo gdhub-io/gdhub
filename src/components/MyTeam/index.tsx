@@ -73,113 +73,97 @@ const MyTeam = () => {
 		data: team,
 		refetch: fetchMyTeam,
 		isLoading: isLoadingMyTeam,
-	} = useQuery(
-		['user-project-team', contextProject?.teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['user-project-team', contextProject?.teamId],
+		queryFn: () =>
 			axios.get<prismaClient.Team & { members: (prismaClient.TeamMember & { user: prismaClient.User })[] }>(
 				'/api/user/project/team',
 				{
 					params: { teamId: contextProject?.teamId },
 				}
 			),
-		{
-			enabled: !!contextProject?.teamId,
-		}
-	)
+		enabled: !!contextProject?.teamId,
+	})
 
 	const {
 		data: pendingInvitations,
 		refetch: fetchPendingInvitations,
 		isLoading: isLoadingPendingInvitations,
-	} = useQuery(
-		['team-pending-invitations', contextProject?.teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['team-pending-invitations', contextProject?.teamId],
+		queryFn: () =>
 			axios.get<prismaClient.TeamInvitation[]>('/api/user/project/team/pending-invitations', {
 				params: { teamId: contextProject?.teamId },
 			}),
-		{
-			enabled: !!contextProject?.teamId && !!contextProject?.isProjectAuthor,
-		}
-	)
+		enabled: !!contextProject?.teamId && !!contextProject?.isProjectAuthor,
+	})
 
 	const {
 		data: advisors,
 		refetch: fetchAdvisors,
 		isLoading: isLoadingAdvisors,
 		isFetched: isFetchedAdvisors,
-	} = useQuery(
-		['team-advisors', contextProject?.teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['team-advisors', contextProject?.teamId],
+		queryFn: () =>
 			axios.get<(prismaClient.User & { _count: any; specialities: { id: string; name: string }[] })[]>(
 				'/api/user/project/team/advisors',
 				{
 					params: { teamId: contextProject?.teamId },
 				}
 			),
-		{
-			enabled: !!contextProject?.teamId,
-		}
-	)
+		enabled: !!contextProject?.teamId,
+	})
 
 	const {
 		data: investors,
 		refetch: fetchInvestors,
 		isLoading: isLoadingInvestors,
 		isFetched: isFetchedInvestors,
-	} = useQuery(
-		['team-investors', contextProject?.teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['team-investors', contextProject?.teamId],
+		queryFn: () =>
 			axios.get<prismaClient.TeamInvestor[]>('/api/user/project/team/investors', {
 				params: { teamId: contextProject?.teamId },
 			}),
-		{
-			enabled: !!contextProject?.teamId,
-		}
-	)
+		enabled: !!contextProject?.teamId,
+	})
 
 	const {
 		data: projectEquity,
 		refetch: fetchProjectEquity,
 		isLoading: isLoadingEquity,
-	} = useQuery(
-		['project-equity', contextProject?.id],
-		() =>
+	} = useQuery({
+		queryKey: ['project-equity', contextProject?.id],
+		queryFn: () =>
 			axios.get('/api/user/project/equity', {
 				params: { projectId: contextProject?.id },
 			}),
-		{
-			enabled: !!contextProject?.id,
-		}
-	)
+		enabled: !!contextProject?.id,
+	})
 
-	const { mutateAsync: fireMember, isLoading: isFiring } = useMutation(
-		(data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/fire', data),
-		{
-			onSuccess: () => {
-				fetchMyTeam()
-			},
-		}
-	)
+	const { mutateAsync: fireMember, isPending: isFiring } = useMutation({
+		mutationFn: (data: { id: string }) => axios.put<void>('/api/user/project/vacancy/candidate/fire', data),
+		onSuccess: () => {
+			fetchMyTeam()
+		},
+	})
 
-	const { mutateAsync: cancelInvitation, isLoading: isCanceling } = useMutation(
-		(data: { id: string }) => axios.delete<void>('/api/user/project/team/invitation', { params: data }),
-		{
-			onSuccess: () => {
-				fetchPendingInvitations()
-			},
-		}
-	)
+	const { mutateAsync: cancelInvitation, isPending: isCanceling } = useMutation({
+		mutationFn: (data: { id: string }) => axios.delete<void>('/api/user/project/team/invitation', { params: data }),
+		onSuccess: () => {
+			fetchPendingInvitations()
+		},
+	})
 
-	const { mutateAsync: deleteInvestor } = useMutation(
-		(id: string) => axios.delete(`/api/project/team-investor/${id}`),
-		{
-			onSuccess: () => {
-				fetchInvestors()
-				message.success(t('Investor deleted'))
-			},
-			onError: () => message.error(t('Failed to delete investor')),
-		}
-	)
+	const { mutateAsync: deleteInvestor } = useMutation({
+		mutationFn: (id: string) => axios.delete(`/api/project/team-investor/${id}`),
+		onSuccess: () => {
+			fetchInvestors()
+			message.success(t('Investor deleted'))
+		},
+		onError: () => message.error(t('Failed to delete investor')),
+	})
 
 	const handleFired = useCallback(
 		async (teamMemberId: string) => {

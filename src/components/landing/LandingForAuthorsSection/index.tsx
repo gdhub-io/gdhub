@@ -15,16 +15,16 @@ const { Title, Text } = Typography
 export const LandingForAuthorsSection = () => {
 	const screens = Grid.useBreakpoint()
 
-	const { data: latestSpecialists } = useQuery(
-		['latest-specialists'],
-		() =>
+	const { data: latestSpecialists } = useQuery({
+		queryKey: ['latest-specialists'],
+		queryFn: () =>
 			axios
 				.get<
 					{ id: string; name: string; level: string; specialization: string; direction: { name: string } }[]
 				>(' /api/specialists/latest'.replace(' ', ''))
 				.then((r) => r.data),
-		{ staleTime: 1000 * 60 * 5 }
-	)
+		staleTime: 1000 * 60 * 5,
+	})
 
 	const formatLevel = (level?: string) => {
 		if (!level) return ''

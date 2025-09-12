@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
@@ -13,36 +14,37 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 		refetch: fetchLecture,
 		isFetching,
 		isPaused,
-	} = useQuery(
-		['lecture', lectureId],
-		() => axios.get<prismaClient.Lecture>('/api/lecture', { params: { id: lectureId } }),
-		{
-			enabled: !!lectureId,
-			onSuccess({ data }) {
-				form.setFieldsValue({
-					name: data.name,
-					wishes: data.wishes,
-					directionId: data.directionId,
-				})
-			},
-		}
-	)
+	} = useQuery({
+		queryKey: ['lecture', lectureId],
+		queryFn: () => axios.get<prismaClient.Lecture>('/api/lecture', { params: { id: lectureId } }),
+		enabled: !!lectureId,
+	})
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	useEffect(() => {
+		if (!lecture?.data) return
 
-	const { mutateAsync: createLecture } = useMutation((data: Partial<prismaClient.Lecture>) =>
-		axios.post<prismaClient.Lecture>('/api/user/lecture', { ...data, stage: prismaClient.LectureStage.Requested })
-	)
-	const { mutateAsync: updateLecture } = useMutation(
-		({ id, data }: { id: string; data: Partial<prismaClient.Lecture> }) =>
-			axios.put<prismaClient.Lecture>('/api/user/lecture', data, { params: { id } })
-	)
+		form.setFieldsValue({
+			name: lecture.data.name,
+			wishes: lecture.data.wishes,
+			directionId: lecture.data.directionId,
+		})
+	}, [lecture?.data])
+
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
+
+	const { mutateAsync: createLecture } = useMutation({
+		mutationFn: (data: Partial<prismaClient.Lecture>) =>
+			axios.post<prismaClient.Lecture>('/api/user/lecture', { ...data, stage: prismaClient.LectureStage.Requested }),
+	})
+
+	const { mutateAsync: updateLecture } = useMutation({
+		mutationFn: ({ id, data }: { id: string; data: Partial<prismaClient.Lecture> }) =>
+			axios.put<prismaClient.Lecture>('/api/user/lecture', data, { params: { id } }),
+	})
 
 	const workDirectionOptions = workDirections?.data.map((direction) => ({ value: direction.id, label: direction.name }))
 
@@ -75,7 +77,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			centered
 			title={lectureId ? <T>Change the lecture request</T> : <T>Request a new lecture</T>}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			cancelText={<T>Close</T>}
 			okText={lectureId ? <T>Save</T> : <T>Publish</T>}

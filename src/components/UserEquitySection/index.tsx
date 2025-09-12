@@ -14,16 +14,14 @@ interface UserEquitySectionProps {
 const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 	const { t } = useTolgee()
 
-	const { data: summary, isLoading: isLoadingMemberEquity } = useQuery(
-		['project-equity-member-current', projectId],
-		() =>
+	const { data: summary, isLoading: isLoadingMemberEquity } = useQuery({
+		queryKey: ['project-equity-member-current', projectId],
+		queryFn: () =>
 			axios.get('/api/user/project/member/summary', {
 				params: { projectId },
 			}),
-		{
-			enabled: !!projectId,
-		}
-	)
+		enabled: !!projectId,
+	})
 
 	const daysOnProject = summary?.data.periodOnProject
 

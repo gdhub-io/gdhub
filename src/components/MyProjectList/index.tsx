@@ -19,7 +19,9 @@ const MyProjectList: React.FC = () => {
 		isSuccess,
 		isLoading,
 		error,
-	} = useQuery(['userProjects'], () => axios.get('/api/user/projects'), {
+	} = useQuery({
+		queryKey: ['userProjects'],
+		queryFn: () => axios.get('/api/user/projects'),
 		refetchOnWindowFocus: false,
 	})
 

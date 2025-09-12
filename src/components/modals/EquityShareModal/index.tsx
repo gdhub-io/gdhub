@@ -63,14 +63,12 @@ const EquityShareModal = ({ projectEquity, open, onOk, onCancel, investors = [] 
 	}, [projectEquity])
 
 	// Mutation for saving equity distribution
-	const { mutateAsync: saveEquity, isLoading: isSaving } = useMutation(
-		(data: Partial<prismaClient.ProjectEquity>) => axios.put('/api/user/project/equity', data),
-		{
-			onSuccess: () => {
-				onOk()
-			},
-		}
-	)
+	const { mutateAsync: saveEquity, isPending: isSaving } = useMutation({
+		mutationFn: (data: Partial<prismaClient.ProjectEquity>) => axios.put('/api/user/project/equity', data),
+		onSuccess: () => {
+			onOk()
+		},
+	})
 
 	// Handler for changing mentor fund share
 	const handleMentorFundChange = (value: number | null) => {

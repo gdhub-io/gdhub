@@ -120,9 +120,18 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 					<div className={styles.textContent}>
 						<p className={styles.postExcerpt}>{truncateText(cleanMarkdown(stripHtml(post.content)), 300)}</p>
 						<div className={styles.postMeta}>
-							<Link href={`/project/${post.project?.slug}`} onClick={(e) => e.stopPropagation()}>
+							<span
+								role="link"
+								tabIndex={0}
+								onClick={handleProjectClick}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										handleProjectClick(e as unknown as React.MouseEvent)
+									}
+								}}
+							>
 								{post.project?.name}
-							</Link>
+							</span>
 							<span role="separator">•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
@@ -169,8 +178,6 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 				`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ''}`
 			)
 
-			console.log('API Response:', response.data)
-
 			// Если это первая страница, возвращаем только первые 5 постов
 			if (pageParam === 1) {
 				return {
@@ -188,6 +195,7 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 			}
 		},
 		getNextPageParam: (lastPage) => lastPage.nextPage,
+		initialPageParam: 1,
 	})
 
 	const posts = data?.pages.flatMap((page) => page.posts || []) || []

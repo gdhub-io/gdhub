@@ -66,7 +66,12 @@ export const EventCard = ({
 					transition: 'box-shadow 0.2s',
 					border: undefined,
 				}}
-				bodyStyle={{ padding: 0, height: 0 }}
+				styles={{
+					body: {
+						padding: 0,
+						height: 0,
+					},
+				}}
 				cover={
 					event.image ? (
 						<div style={{ position: 'relative', width: '100%', aspectRatio: '1/1.1', overflow: 'hidden' }}>

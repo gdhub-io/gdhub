@@ -41,23 +41,22 @@ const MyProjectDocuments = () => {
 		data: projectDocuments,
 		refetch: fetchMyProjectDocuments,
 		isLoading: isLoadingMyProjectDocuments,
-	} = useQuery(
-		['project-team-documents', contextProject?.teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['project-team-documents', contextProject?.teamId],
+		queryFn: () =>
 			axios.get('/api/user/project/documents', {
 				params: { teamId: contextProject?.teamId },
 			}),
-		{
-			enabled: !!contextProject?.teamId,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!contextProject?.teamId,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: deleteDocument } = useMutation(({ id, teamId }: { id: string; teamId: string }) =>
-		axios.delete(`/api/user/project/documents/${id}`, {
-			params: { teamId },
-		})
-	)
+	const { mutateAsync: deleteDocument } = useMutation({
+		mutationFn: ({ id, teamId }: { id: string; teamId: string }) =>
+			axios.delete(`/api/user/project/documents/${id}`, {
+				params: { teamId },
+			}),
+	})
 
 	const documentsColumns: ColumnsType<TeamDocumentWithCreatedByUser> = [
 		{

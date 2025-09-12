@@ -27,17 +27,15 @@ const { Title, Paragraph, Text } = Typography
 export const DevLogPublicWall = ({ projectId }: any) => {
 	const router = useRouter()
 
-	const { data: projectReports } = useQuery(
-		['project-reports', projectId],
-		() =>
+	const { data: projectReports } = useQuery({
+		queryKey: ['project-reports', projectId],
+		queryFn: () =>
 			axios.get<(prismaClient.ProjectReport & { author: Record<string, any> })[]>('/api/project/reports', {
 				params: { projectId },
 			}),
-		{
-			enabled: !!projectId,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!projectId,
+		refetchOnWindowFocus: false,
+	})
 
 	// const items: ProjectReportItem = useMemo(() => {
 	// 	let reports = projectReports?.data.map((report: prismaClient.ProjectReport) => {

@@ -31,49 +31,40 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false)
 	const [showPropositionLectureModal, setShowPropositionLectureModal] = useState(false)
 	// Queries & mutations
-	const { mutateAsync: createListener } = useMutation(
-		(params: { lectureId: string }) => axios.post('/api/user/lecture/listener', undefined, { params }),
-		{
-			onSuccess: () => {
-				updateList()
-			},
-		}
-	)
-	const { mutateAsync: deleteListener } = useMutation(
-		(params: { lectureId: string }) => axios.delete('/api/user/lecture/listener', { params }),
-		{
-			onSuccess: () => {
-				updateList()
-			},
-		}
-	)
+	const { mutateAsync: createListener } = useMutation({
+		mutationFn: (params: { lectureId: string }) => axios.post('/api/user/lecture/listener', undefined, { params }),
+		onSuccess: () => {
+			updateList()
+		},
+	})
+	const { mutateAsync: deleteListener } = useMutation({
+		mutationFn: (params: { lectureId: string }) => axios.delete('/api/user/lecture/listener', { params }),
+		onSuccess: () => {
+			updateList()
+		},
+	})
 
-	const { mutateAsync: deleteLecture } = useMutation(
-		({ id }: { id: string }) => axios.delete('/api/user/lecture', { params: { id } }),
-		{
-			onSuccess: () => {
-				updateList()
-			},
-		}
-	)
+	const { mutateAsync: deleteLecture } = useMutation({
+		mutationFn: ({ id }: { id: string }) => axios.delete('/api/user/lecture', { params: { id } }),
+		onSuccess: () => {
+			updateList()
+		},
+	})
 
-	const { mutateAsync: deleteLecturerRequest } = useMutation(
-		({ id, lectureId }: { id: string; lectureId: string }) =>
+	const { mutateAsync: deleteLecturerRequest } = useMutation({
+		mutationFn: ({ id, lectureId }: { id: string; lectureId: string }) =>
 			axios.delete(`/api/user/lecture/${lectureId}/lecturer/${id}`),
-		{
-			onSuccess: () => {
-				updateList()
-			},
-		}
-	)
+		onSuccess: () => {
+			updateList()
+		},
+	})
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+
+		staleTime: Infinity,
+	})
 
 	const mobileMenu: ItemType[] = useMemo(
 		() => [
@@ -93,19 +84,21 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		data: requestedLectures,
 		refetch: updateList,
 		isLoading,
-	} = useQuery(['lectures', 'requested'], () =>
-		axios.get<
-			(prismaClient.Lecture & {
-				listeners: prismaClient.LectureListener[]
-				direction: prismaClient.WorkDirection
-				lecturerRequests: (prismaClient.LecturerRequest & { user: prismaClient.User })[]
-				isRelevant: boolean
-				isAuthor: boolean
-			})[]
-		>('/api/lectures', {
-			params: { stage: [prismaClient.LectureStage.Requested, prismaClient.LectureStage.Actualized].join(',') },
-		})
-	)
+	} = useQuery({
+		queryKey: ['lectures', 'requested'],
+		queryFn: () =>
+			axios.get<
+				(prismaClient.Lecture & {
+					listeners: prismaClient.LectureListener[]
+					direction: prismaClient.WorkDirection
+					lecturerRequests: (prismaClient.LecturerRequest & { user: prismaClient.User })[]
+					isRelevant: boolean
+					isAuthor: boolean
+				})[]
+			>('/api/lectures', {
+				params: { stage: [prismaClient.LectureStage.Requested, prismaClient.LectureStage.Actualized].join(',') },
+			}),
+	})
 
 	const columns: ColumnsType<
 		prismaClient.Lecture & {

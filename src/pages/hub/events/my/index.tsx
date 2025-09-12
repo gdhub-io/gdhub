@@ -57,34 +57,30 @@ const MyEventsPage: NextPageWithLayout = () => {
 		data,
 		isLoading,
 		refetch: refetchMyEvents,
-	} = useQuery(['my-events'], () => axios.get('/api/user/events').then((res) => res.data))
+	} = useQuery({ queryKey: ['my-events'], queryFn: () => axios.get('/api/user/events').then((res) => res.data) })
 
 	// Мутация для удаления события
-	const { mutateAsync: deleteEvent } = useMutation(
-		(id: string) => axios.delete('/api/user/event', { params: { id } }),
-		{
-			onSuccess: () => {
-				message.success(t('event.delete.success', 'Event deleted'))
-				refetchMyEvents()
-			},
-			onError: () => {
-				message.error(t('event.delete.error', 'Error deleting event'))
-			},
-		}
-	)
+	const { mutateAsync: deleteEvent } = useMutation({
+		mutationFn: (id: string) => axios.delete('/api/user/event', { params: { id } }),
+		onSuccess: () => {
+			message.success(t('event.delete.success', 'Event deleted'))
+			refetchMyEvents()
+		},
+		onError: () => {
+			message.error(t('event.delete.error', 'Error deleting event'))
+		},
+	})
 
-	const { mutateAsync: publishEvent, isLoading: isPublishingEvent } = useMutation(
-		(id: string) => axios.put(`/api/user/event/${id}/publish`),
-		{
-			onSuccess: () => {
-				message.success(t('event.publish.success', 'Event published'))
-				refetchMyEvents()
-			},
-			onError: () => {
-				message.error(t('event.publish.error', 'Error publishing event'))
-			},
-		}
-	)
+	const { mutateAsync: publishEvent, isPending: isPublishingEvent } = useMutation({
+		mutationFn: (id: string) => axios.put(`/api/user/event/${id}/publish`),
+		onSuccess: () => {
+			message.success(t('event.publish.success', 'Event published'))
+			refetchMyEvents()
+		},
+		onError: () => {
+			message.error(t('event.publish.error', 'Error publishing event'))
+		},
+	})
 
 	const handleEventPublish = async (id: string) => {
 		try {
@@ -96,44 +92,38 @@ const MyEventsPage: NextPageWithLayout = () => {
 		}
 	}
 
-	const { mutateAsync: unpublishEvent, isLoading: isUnpublishingEvent } = useMutation(
-		(id: string) => axios.put(`/api/user/event/${id}/unpublish`),
-		{
-			onSuccess: () => {
-				message.success(t('event.unpublish.success', 'Event unpublished'))
-				refetchMyEvents()
-			},
-			onError: () => {
-				message.error(t('event.unpublish.error', 'Error unpublishing event'))
-			},
-		}
-	)
+	const { mutateAsync: unpublishEvent, isPending: isUnpublishingEvent } = useMutation({
+		mutationFn: (id: string) => axios.put(`/api/user/event/${id}/unpublish`),
+		onSuccess: () => {
+			message.success(t('event.unpublish.success', 'Event unpublished'))
+			refetchMyEvents()
+		},
+		onError: () => {
+			message.error(t('event.unpublish.error', 'Error unpublishing event'))
+		},
+	})
 
-	const { mutateAsync: restoreEvent, isLoading: isRestoringEvent } = useMutation(
-		(id: string) => axios.put(`/api/user/event/${id}/restore`),
-		{
-			onSuccess: () => {
-				message.success(t('event.restore.success', 'Event is restored'))
-				refetchMyEvents()
-			},
-			onError: () => {
-				message.error(t('event.restore.error', 'Error restoring event'))
-			},
-		}
-	)
+	const { mutateAsync: restoreEvent, isPending: isRestoringEvent } = useMutation({
+		mutationFn: (id: string) => axios.put(`/api/user/event/${id}/restore`),
+		onSuccess: () => {
+			message.success(t('event.restore.success', 'Event is restored'))
+			refetchMyEvents()
+		},
+		onError: () => {
+			message.error(t('event.restore.error', 'Error restoring event'))
+		},
+	})
 
-	const { mutateAsync: generateSlug, isLoading: isGeneratingSlug } = useMutation(
-		(id: string) => axios.put(`/api/user/event/${id}/generate-slug`),
-		{
-			onSuccess: () => {
-				message.success(t('event.generateSlug.success', 'Slug generated'))
-				refetchMyEvents()
-			},
-			onError: () => {
-				message.error(t('event.generateSlug.error', 'Error generating slug'))
-			},
-		}
-	)
+	const { mutateAsync: generateSlug, isPending: isGeneratingSlug } = useMutation({
+		mutationFn: (id: string) => axios.put(`/api/user/event/${id}/generate-slug`),
+		onSuccess: () => {
+			message.success(t('event.generateSlug.success', 'Slug generated'))
+			refetchMyEvents()
+		},
+		onError: () => {
+			message.error(t('event.generateSlug.error', 'Error generating slug'))
+		},
+	})
 
 	const handleEventRestore = async (id: string) => {
 		await restoreEvent(id)

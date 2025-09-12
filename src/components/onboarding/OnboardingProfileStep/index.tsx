@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { deleteCookie, getCookie } from '@/helpers/cookie'
 import { FiChevronDown } from '@react-icons/all-files/fi/FiChevronDown'
 import { GoInfo } from '@react-icons/all-files/go/GoInfo'
@@ -39,36 +39,41 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 	const { data: session } = useSession()
 	const countries = useMemo(() => countryList().getData(), [])
 
-	const { isLoading, isFetched } = useQuery(
-		['profile', session?.user.id],
-		() => axios.get<any>('/api/auth/registration/onboarding/profile'),
-		{
-			enabled: !!session?.user.id,
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			onSuccess: (response) => {
-				if (!response.data) return
+	const {
+		data: profileData,
+		isLoading,
+		isFetched,
+	} = useQuery({
+		queryKey: ['profile', session?.user.id],
+		queryFn: () => axios.get<any>('/api/auth/registration/onboarding/profile'),
+		enabled: !!session?.user.id,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+	})
 
-				const { data } = response
+	useEffect(() => {
+		if (!isFetched) return
 
-				const [firstName, lastName] = data.name.split(' ')
-				form.setFieldsValue({
-					firstName,
-					lastName,
-					yearOfBirth: data.yearOfBirth,
-					country: data.country,
-					city: data.city,
-					confirmUserData: data.user.agreements.confirmUserData,
-				})
+		if (!profileData?.data) return
 
-				onLoading(data)
-			},
-		}
-	)
+		const { data } = profileData
 
-	const { mutateAsync: saveUserProfile, isLoading: isSaving } = useMutation((data: any) =>
-		axios.put<any>('/api/auth/registration/onboarding/profile', data)
-	)
+		const [firstName, lastName] = data.name.split(' ')
+		form.setFieldsValue({
+			firstName,
+			lastName,
+			yearOfBirth: data.yearOfBirth,
+			country: data.country,
+			city: data.city,
+			confirmUserData: data.user.agreements.confirmUserData,
+		})
+
+		onLoading(data)
+	}, [profileData?.data])
+
+	const { mutateAsync: saveUserProfile, isPending: isSaving } = useMutation({
+		mutationFn: (data: any) => axios.put<any>('/api/auth/registration/onboarding/profile', data),
+	})
 
 	const yearOptions = useMemo(
 		() =>

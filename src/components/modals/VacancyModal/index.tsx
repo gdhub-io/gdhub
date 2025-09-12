@@ -46,38 +46,29 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 		data: vacancy,
 		refetch: fetchVacancy,
 		isFetching: isLoadingVacancy,
-	} = useQuery(
-		['vacancy', vacancyId],
-		() => axios.get<prismaClient.TeamVacancy>('/api/user/project/vacancy', { params: { id: vacancyId } }),
-		{
-			enabled: !!vacancyId,
-			staleTime: Infinity,
-			onSuccess: ({ data }) => {
-				form.setFieldsValue({
-					...data,
-					finishedAt: dayjs(data.finishedAt),
-				})
-				setShowPromiseFields(!!data.promisePercentage)
-			},
-		}
-	)
+	} = useQuery({
+		queryKey: ['vacancy', vacancyId],
+		queryFn: () => axios.get<prismaClient.TeamVacancy>('/api/user/project/vacancy', { params: { id: vacancyId } }),
+		enabled: !!vacancyId,
+		staleTime: Infinity,
+	})
 
-	const { data: workflowData, isLoading: isLoadingWorkflow } = useQuery(
-		['project-workflow', projectId],
-		() => axios.get('/api/user/project/workflow', { params: { projectId } }),
-		{
-			enabled: !!projectId,
-		}
-	)
+	const { data: workflowData, isLoading: isLoadingWorkflow } = useQuery({
+		queryKey: ['project-workflow', projectId],
+		queryFn: () => axios.get('/api/user/project/workflow', { params: { projectId } }),
+		enabled: !!projectId,
+	})
 
-	const { data: maxAvailableShareData, refetch: refetchAvailableShare } = useQuery(
-		['team-max-available-share', teamId],
-		() =>
+	const { data: maxAvailableShareData, refetch: refetchAvailableShare } = useQuery({
+		queryKey: ['team-max-available-share', teamId],
+		queryFn: () =>
 			axios.get('/api/user/project/team/max-available-share', {
 				params: { id: teamId },
 			}),
-		{ enabled: !!teamId, refetchInterval: false, refetchOnWindowFocus: false }
-	)
+		enabled: !!teamId,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+	})
 
 	const maxAvailableShare = maxAvailableShareData?.data?.maxAvailableShare || 0
 	const currentVacancyPromise = vacancy?.data?.promisePercentage || 0
@@ -85,19 +76,23 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 	// Calculate max available share considering current vacancy's promise
 	const adjustedMaxAvailableShare = maxAvailableShare + currentVacancyPromise
 
-	const { mutateAsync: createVacancy, isLoading: isCreating } = useMutation((data: Record<string, any>) =>
-		axios.post<any>('/api/user/project/vacancy', data)
-	)
-	const { mutateAsync: saveVacancy, isLoading: isUpdating } = useMutation(
-		(params: { id: string; data: Record<string, any> }) =>
-			axios.put<any>('/api/user/project/vacancy', params.data, { params: { id: params.id } })
-	)
+	const { mutateAsync: createVacancy, isPending: isCreating } = useMutation({
+		mutationFn: (data: Record<string, any>) => axios.post<any>('/api/user/project/vacancy', data),
+	})
+	const { mutateAsync: saveVacancy, isPending: isUpdating } = useMutation({
+		mutationFn: (params: { id: string; data: Record<string, any> }) =>
+			axios.put<any>('/api/user/project/vacancy', params.data, { params: { id: params.id } }),
+	})
 
 	useEffect(() => {
 		if (open) refetchAvailableShare()
 
 		if (open && vacancyId) {
-			fetchVacancy()
+			fetchVacancy().then((res) => {
+				const data = res.data?.data
+				form.setFieldsValue({ ...data, finishedAt: dayjs(data?.finishedAt) })
+				setShowPromiseFields(!!data?.promisePercentage)
+			})
 		}
 	}, [open])
 
@@ -164,7 +159,7 @@ const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: Va
 			className={styles.modal}
 			title={vacancyId ? t('Change the vacancy') : t('Create a new vacancy')}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			open={open}
 			onCancel={handleCancel}

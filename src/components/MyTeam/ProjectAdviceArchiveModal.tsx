@@ -29,16 +29,14 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({ o
 		data: advisorAdviceRequests,
 		isLoading: isLoadingAdvisorAdviceRequests,
 		refetch: fetchProjectAdviceRequests,
-	} = useQuery(
-		['project-advice-requests', projectId, advisor?.id],
-		() =>
+	} = useQuery({
+		queryKey: ['project-advice-requests', projectId, advisor?.id],
+		queryFn: () =>
 			axios.get<prismaClient.AdviceRequest[]>('/api/user/advice-requests', {
 				params: { projectId, advisorId: advisor?.id },
 			}),
-		{
-			enabled: !!projectId && !!advisor?.id,
-		}
-	)
+		enabled: !!projectId && !!advisor?.id,
+	})
 
 	React.useEffect(() => {
 		if (open && projectId) {

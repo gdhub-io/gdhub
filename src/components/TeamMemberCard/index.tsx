@@ -30,14 +30,16 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 		data: member,
 		refetch: refetchMember,
 		isFetching: processing,
-	} = useQuery(
-		['team-member', memberId],
-		() =>
+	} = useQuery({
+		queryKey: ['team-member', memberId],
+		queryFn: () =>
 			axios.get('/api/user/project/team/member', {
 				params: { id: memberId },
 			}),
-		{ enabled: !!memberId, refetchInterval: false, refetchOnWindowFocus: false }
-	)
+		enabled: !!memberId,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+	})
 
 	useEffect(() => {
 		if (open && memberId) {
@@ -63,7 +65,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 			centered
 			title={null}
 			width={800}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			open={open}
 			classNames={{ content: styles.modalContent }}
