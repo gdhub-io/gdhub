@@ -35,6 +35,19 @@ const EventsPage: NextPageWithLayout = () => {
 		setLoadingSections((prev) => ({ ...prev, [key]: isLoading }))
 	}, [])
 
+	const onKnowledgeLoadingChange = React.useCallback(
+		(isLoading: boolean) => handleLoadingChange('knowledge', isLoading),
+		[handleLoadingChange]
+	)
+	const onExperimentsLoadingChange = React.useCallback(
+		(isLoading: boolean) => handleLoadingChange('experiments', isLoading),
+		[handleLoadingChange]
+	)
+	const onPastLoadingChange = React.useCallback(
+		(isLoading: boolean) => handleLoadingChange('past', isLoading),
+		[handleLoadingChange]
+	)
+
 	return (
 		<ProtectedLayout
 			title={t('page.events.title', 'Events')}
@@ -73,7 +86,7 @@ const EventsPage: NextPageWithLayout = () => {
 								timeStatus={['ongoing', 'upcoming']}
 								CardComponent={EventCard}
 								token={token}
-								onLoadingChange={(isLoading) => handleLoadingChange('knowledge', isLoading)}
+								onLoadingChange={onKnowledgeLoadingChange}
 							/>
 						</Suspense>
 						<Suspense>
@@ -87,7 +100,7 @@ const EventsPage: NextPageWithLayout = () => {
 								timeStatus={['ongoing', 'upcoming']}
 								CardComponent={EventCard}
 								token={token}
-								onLoadingChange={(isLoading) => handleLoadingChange('experiments', isLoading)}
+								onLoadingChange={onExperimentsLoadingChange}
 							/>
 						</Suspense>
 						<Suspense>
@@ -108,7 +121,7 @@ const EventsPage: NextPageWithLayout = () => {
 								CardComponent={PastEventCard}
 								token={token}
 								colSpan={{ xs: 24, sm: 12, md: 8, lg: 6, xl: 4 }}
-								onLoadingChange={(isLoading) => handleLoadingChange('past', isLoading)}
+								onLoadingChange={onPastLoadingChange}
 							/>
 						</Suspense>
 					</>

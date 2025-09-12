@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { formatEventPeriod } from '@/helpers/format'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
@@ -121,10 +121,15 @@ export const BannerEventSlider = () => {
 			),
 	})
 
-	if (!events?.data.length) return null
+	// Keep latest active in a ref to avoid re-creating callbacks
+	const activeRef = useRef(active)
 
-	const handleBeforeChange = (_: number, next: number) => {
-		setPrevActive(active)
+	useEffect(() => {
+		activeRef.current = active
+	}, [active])
+
+	const handleBeforeChange = useCallback((_: number, next: number) => {
+		setPrevActive(activeRef.current)
 		setFadeImage(false)
 		setFadeContent(false)
 		setTimeout(() => {
@@ -132,7 +137,9 @@ export const BannerEventSlider = () => {
 			setFadeImage(true)
 			setFadeContent(true)
 		}, 350)
-	}
+	}, [])
+
+	if (!events?.data.length) return null
 
 	return (
 		<div className={styles.sliderWrapper}>
