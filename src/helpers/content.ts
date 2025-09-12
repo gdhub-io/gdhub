@@ -26,8 +26,6 @@ export const getPageCover = (post: {
 		coverImage?: string | null
 	} | null
 }): string | null => {
-	console.log('post', post)
-
 	// Получаем изображения из контента
 	const markdownImages = post.content.match(/!\[.*?\]\((.*?)\)/g) || []
 	const htmlImages = post.content.match(/<img[^>]+src="([^">]+)"[^>]*>/g) || []
@@ -76,7 +74,6 @@ export const getPageCover = (post: {
 
 	// Возвращаем pageCover с учетом приоритета
 	const result = videoThumbnail || firstImageFromContent || post.project?.coverImage || null
-	console.log('Final result:', result)
 	return result
 }
 

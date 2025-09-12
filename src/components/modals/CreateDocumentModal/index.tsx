@@ -16,7 +16,7 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 		mutateAsync: createDocument,
 		error: createDocumentError,
 		isPending: isCreateProcessing,
-	} = useMutation((data) => axios.post<prismaClient.Project>('/api/user/project/documents', data))
+	} = useMutation({ mutationFn: (data) => axios.post<prismaClient.Project>('/api/user/project/documents', data) })
 
 	useEffect(() => {
 		const error = createDocumentError as any

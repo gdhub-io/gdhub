@@ -108,9 +108,16 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 					<div className={styles.textContent}>
 						<p className={styles.postExcerpt}>{truncateText(cleanMarkdown(stripHtml(post.content)), 300)}</p>
 						<div className={styles.postMeta}>
-							<Link href={`/project/${post.project?.slug}`} onClick={(e) => e.stopPropagation()}>
+							<span
+								role="link"
+								tabIndex={0}
+								onClick={(e) => {
+									e.stopPropagation()
+									router.push(`/project/${post.project?.slug}`)
+								}}
+							>
 								{post.project?.name}
-							</Link>
+							</span>
 							<span role="separator">•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
@@ -150,18 +157,16 @@ const PublicDevlogPosts = ({ projectId }: PublicDevlogPostsProps) => {
 	const { t } = useTolgee()
 	const limit = 5
 
-	const { data: posts, isLoading } = useQuery<DevlogPost[]>(
-		['public-devlog-posts', projectId],
-		async () => {
+	const { data: posts, isLoading } = useQuery<DevlogPost[]>({
+		queryKey: ['public-devlog-posts', projectId],
+		queryFn: async () => {
 			const url = `/api/devlogs?limit=${limit}${projectId ? `&projectId=${projectId}` : ''}`
 			const response = await axios.get<DevlogPost[]>(url)
 			return response.data.slice(0, limit)
 		},
-		{
-			enabled: true,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: true,
+		refetchOnWindowFocus: false,
+	})
 
 	if (isLoading) {
 		return (

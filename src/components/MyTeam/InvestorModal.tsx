@@ -118,7 +118,7 @@ const InvestorModal = ({
 			onOk={handleOk}
 			onCancel={handleCancel}
 			okButtonProps={{ disabled: !confirm }}
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 		>
 			<Paragraph type="secondary">

@@ -58,9 +58,9 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({ projectId, user
 		data: transactionsData,
 		isLoading,
 		error,
-	} = useQuery(
-		['equity-transactions', projectId, userId],
-		async () => {
+	} = useQuery({
+		queryKey: ['equity-transactions', projectId, userId],
+		queryFn: async () => {
 			const url = userId
 				? `/api/user/project/equity/transaction/user?projectId=${projectId}&userId=${userId}`
 				: `/api/user/project/equity/transaction?projectId=${projectId}`
@@ -68,10 +68,8 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({ projectId, user
 			const response = await axios.get(url)
 			return response.data
 		},
-		{
-			enabled: !!projectId,
-		}
-	)
+		enabled: !!projectId,
+	})
 
 	// Function to render transaction type
 	const renderTransactionType = (type: prismaClient.EquityTransactionType) => {

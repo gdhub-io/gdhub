@@ -9,10 +9,13 @@ import Link from 'next/link'
 import styles from './style.module.scss'
 
 const CheckHealth = ({ children }: any) => {
-	const { data, isFetched } = useQuery(['app-health'], () => axios.get<boolean>('/api/internal/health'), {
+	const { data, isFetched } = useQuery({
+		queryKey: ['app-health'],
+		queryFn: () => axios.get<boolean>('/api/internal/health'),
 		refetchInterval: false,
 		retry: 0,
 	})
+
 	const { getLanguage } = useTolgee()
 
 	if (data?.data === false && isFetched) {

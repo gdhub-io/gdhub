@@ -13,16 +13,16 @@ const { Title, Text } = Typography
 export const LandingForSpecialistsSection = () => {
 	const screens = Grid.useBreakpoint()
 
-	const { data: latestProjects } = useQuery(
-		['latest-projects'],
-		() =>
+	const { data: latestProjects } = useQuery({
+		queryKey: ['latest-projects'],
+		queryFn: () =>
 			axios
 				.get<
 					{ id: string; name: string; slug: string; coverImage: string; genre?: string; platform?: string }[]
 				>('/api/projects/latest')
 				.then((r) => r.data),
-		{ staleTime: 1000 * 60 * 5 }
-	)
+		staleTime: 1000 * 60 * 5,
+	})
 
 	const gridColumns = screens.md ? 2 : 1
 	const visibleProjects = (latestProjects || []).slice(0, 4)

@@ -47,7 +47,7 @@ export const TaskEditModal: React.FC<TaskEditModalProps> = ({ visible, onClose, 
 			onCancel={handleClose}
 			width={600}
 			centered
-			destroyOnClose
+			destroyOnHidden
 			maskClosable={false}
 			footer={
 				<Space>

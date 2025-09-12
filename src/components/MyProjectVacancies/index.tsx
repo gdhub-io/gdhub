@@ -36,21 +36,19 @@ const MyProjectVacancies = () => {
 		data: projectVacancies,
 		refetch: fetchMyProjectVacancies,
 		isLoading: isLoadingMyMyProjectVacancies,
-	} = useQuery(
-		['project-team-vacancies', contextProject?.teamId],
-		() =>
+	} = useQuery({
+		queryKey: ['project-team-vacancies', contextProject?.teamId],
+		queryFn: () =>
 			axios.get('/api/user/project/vacancies', {
 				params: { teamId: contextProject?.teamId },
 			}),
-		{
-			enabled: !!contextProject?.teamId,
-			refetchOnWindowFocus: false,
-		}
-	)
+		enabled: !!contextProject?.teamId,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: cancelVacany } = useMutation((data: { id: string }) =>
-		axios.delete<any>('/api/user/project/vacancy', { params: data })
-	)
+	const { mutateAsync: cancelVacany } = useMutation({
+		mutationFn: (data: { id: string }) => axios.delete<any>('/api/user/project/vacancy', { params: data }),
+	})
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{

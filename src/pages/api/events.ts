@@ -74,11 +74,13 @@ class ApiEventsEndpointHandler {
 			})
 		}
 
+		const preparedStatus = typeof status === 'string' ? [status] : status
+
 		const events = await prisma.event.findMany({
 			where: {
 				type: type ? { in: type } : undefined,
-				status: status
-					? { in: status }
+				status: preparedStatus
+					? { in: preparedStatus }
 					: { notIn: [prismaClient.$Enums.EventStatus.Closed, prismaClient.$Enums.EventStatus.Draft] },
 				schedule: !!timeWhere.OR?.length
 					? {

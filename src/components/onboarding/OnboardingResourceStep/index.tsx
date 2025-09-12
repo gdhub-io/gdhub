@@ -22,7 +22,9 @@ export const OnboardingResourceStep = ({
 	const { t } = useTolgee()
 	const { data: session, update: updateSession } = useSession()
 
-	useQuery(['profile', session?.user.id], () => axios.get<any>('/api/auth/registration/onboarding/resources'), {
+	useQuery({
+		queryKey: ['profile', session?.user.id],
+		queryFn: () => axios.get<any>('/api/auth/registration/onboarding/resources'),
 		enabled: !!session?.user.id,
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
@@ -42,9 +44,9 @@ export const OnboardingResourceStep = ({
 		},
 	})
 
-	const { mutateAsync: saveUserResources, isLoading: isSaving } = useMutation((data: any) =>
-		axios.put<any>('/api/auth/registration/onboarding/resources', data)
-	)
+	const { mutateAsync: saveUserResources, isPending: isSaving } = useMutation({
+		mutationFn: (data: any) => axios.put<any>('/api/auth/registration/onboarding/resources', data),
+	})
 
 	const handleSave = async () => {
 		try {

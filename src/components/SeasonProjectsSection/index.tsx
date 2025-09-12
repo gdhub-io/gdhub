@@ -18,17 +18,17 @@ export const SeasonProjectsSection = ({ seasonId, seasonSlug }: ProjectsSectionA
 	const { data: session } = useSession()
 	const { t } = useTolgee()
 
-	const { data: projects, isFetching: isLoadingProjecs } = useQuery(
-		['projects', seasonId],
-		() =>
+	const { data: projects, isFetching: isLoadingProjecs } = useQuery({
+		queryKey: ['projects', seasonId],
+		queryFn: () =>
 			axios.get<
 				(prismaClient.Project & {
 					availableSpecialists: prismaClient.MatchingSpecialistAndProject[]
 					author: prismaClient.User
 				})[]
 			>('/api/projects', {}),
-		{ enabled: !!seasonId || !!seasonSlug }
-	)
+		enabled: !!seasonId || !!seasonSlug,
+	})
 
 	if (!projects?.data.length) {
 		return <p>No project yet.</p>

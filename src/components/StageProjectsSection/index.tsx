@@ -21,11 +21,13 @@ export const StageProjectsSection = ({
 	const screens = Grid.useBreakpoint()
 	const { t } = useTolgee()
 
-	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery(['projects', stageId], () =>
-		axios.get<(prismaClient.Project & { author: prismaClient.User })[]>('/api/season/stage/projects', {
-			params: { stageId, status },
-		})
-	)
+	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery({
+		queryKey: ['projects', stageId],
+		queryFn: () =>
+			axios.get<(prismaClient.Project & { author: prismaClient.User })[]>('/api/season/stage/projects', {
+				params: { stageId, status },
+			}),
+	})
 
 	if (!projects?.data.length) {
 		return (

@@ -27,21 +27,21 @@ const ProfilePage: NextPageWithLayout = () => {
 	const { t } = useTolgee()
 	const queryClient = useQueryClient()
 	const { data: session } = useSession()
-	const { data: profile } = useQuery(
-		['profile-setting', session?.user.id],
-		() => axios.get<prismaClient.Profile & { user: Partial<prismaClient.User> }>('/api/user/profile'),
-		{
-			enabled: !!session?.user,
-		}
-	)
-	const { mutateAsync: saveProfile } = useMutation<any, any, any>(
-		(variables: any) => axios.put<void>('/api/user/profile', variables),
-		{
-			onSuccess: async () => {
-				await queryClient.invalidateQueries(['profile'])
-			},
-		}
-	)
+	const { data: profile } = useQuery({
+		queryKey: ['profile-setting', session?.user.id],
+		queryFn: () => axios.get<prismaClient.Profile & { user: Partial<prismaClient.User> }>('/api/user/profile'),
+		enabled: !!session?.user,
+	})
+	const { mutateAsync: saveProfileMutate } = useMutation({
+		mutationFn: (variables: any) => axios.put<void>('/api/user/profile', variables),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ['profile'] })
+		},
+	})
+
+	const saveProfile = async (variables: any) => {
+		await saveProfileMutate(variables)
+	}
 
 	const settingsMenu: any[] = [
 		{
@@ -93,7 +93,7 @@ const ProfilePage: NextPageWithLayout = () => {
 					<MentorshipProfileForm
 						profile={profile.data}
 						onUpdate={async () => {
-							await queryClient.invalidateQueries(['profile'])
+							await queryClient.invalidateQueries({ queryKey: ['profile'] })
 						}}
 					/>
 				)

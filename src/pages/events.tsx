@@ -15,11 +15,11 @@ const EventsPage: NextPageWithLayout = () => {
 	const { t } = useTolgee()
 	const { token } = theme.useToken()
 
-	const { data: eventCount, isFetched: isCountFetched } = useQuery(
-		['events-count'],
-		() => axios.get('/api/events-count').then((res) => res.data),
-		{ enabled: true }
-	)
+	const { data: eventCount, isFetched: isCountFetched } = useQuery({
+		queryKey: ['events-count'],
+		queryFn: () => axios.get('/api/events-count').then((res) => res.data),
+		enabled: true,
+	})
 
 	const [loadingSections, setLoadingSections] = React.useState({
 		knowledge: true,

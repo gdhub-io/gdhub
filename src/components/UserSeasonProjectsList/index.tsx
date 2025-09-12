@@ -25,15 +25,16 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 		data: projects,
 		isFetching: isLoadingUserSeasonProjects,
 		refetch: refreshUserProjects,
-	} = useQuery(
-		['user-season-projects', seasonId],
-		() => axios.get<prismaClient.Project[]>('/api/user/projects', { params: { seasonId, status } }),
-		{ refetchInterval: Infinity, refetchOnWindowFocus: false }
-	)
+	} = useQuery({
+		queryKey: ['user-season-projects', seasonId],
+		queryFn: () => axios.get<prismaClient.Project[]>('/api/user/projects', { params: { seasonId, status } }),
+		refetchInterval: Infinity,
+		refetchOnWindowFocus: false,
+	})
 
-	const { mutateAsync: deleteProject } = useMutation(({ id }: { id: string }) =>
-		axios.delete<prismaClient.Project>('/api/user/project', { params: { id } })
-	)
+	const { mutateAsync: deleteProject } = useMutation({
+		mutationFn: ({ id }: { id: string }) => axios.delete<prismaClient.Project>('/api/user/project', { params: { id } }),
+	})
 
 	const handleEditUserProject = (userProjectId: string) => {
 		setSelectedProject(userProjectId)

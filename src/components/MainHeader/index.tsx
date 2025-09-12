@@ -47,27 +47,32 @@ export const MainHeader = ({ className }: { className?: string }) => {
 
 	// Function for smooth scrolling to anchor
 	const scrollToAnchor = (e: React.MouseEvent<HTMLAnchorElement>, selector: string) => {
-		// Check if this is an anchor link
-		if (selector.startsWith('#')) {
+		if (!selector.startsWith('#')) return
+
+		const isHomePage = router.pathname === '/'
+
+		// On non-home pages, navigate programmatically to "/#anchor" to avoid Menu swallowing link clicks
+		if (!isHomePage) {
 			e.preventDefault()
+			router.push(`/${selector}`)
+			if (openMobileMenu) setOpenMobileMenu(false)
+			return
+		}
 
-			const offset = 100 // Отступ от верха
-			const element = document.querySelector(selector)
+		const offset = 100 // top offset
+		const element = document.querySelector(selector)
+		if (!element) return
 
-			if (element) {
-				window.scrollTo({
-					behavior: 'smooth',
-					top: element.getBoundingClientRect().top + window.scrollY - offset,
-				})
+		// Smooth scroll on the same page
+		e.preventDefault()
+		window.scrollTo({
+			behavior: 'smooth',
+			top: element.getBoundingClientRect().top + window.scrollY - offset,
+		})
 
-				// Set active menu item
-				setActiveMenuKey(selector)
-
-				// Close mobile menu if it is open
-				if (openMobileMenu) {
-					setOpenMobileMenu(false)
-				}
-			}
+		setActiveMenuKey(selector)
+		if (openMobileMenu) {
+			setOpenMobileMenu(false)
 		}
 	}
 

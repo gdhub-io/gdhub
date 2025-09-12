@@ -15,20 +15,18 @@ const VacanciesList = () => {
 	const { t } = useTolgee()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
-	const { data: vacancies } = useQuery(
-		['vacancies'],
-		() =>
+	const { data: vacancies } = useQuery({
+		queryKey: ['vacancies'],
+		queryFn: () =>
 			axios.get<
 				(prismaClient.TeamVacancy & {
 					direction: prismaClient.WorkDirection
 					team: { project: { id: string; slug: string; name: string; description: string } }
 				})[]
 			>('/api/vacancies'),
-		{
-			refetchOnWindowFocus: false,
-			refetchInterval: 60000,
-		}
-	)
+		refetchOnWindowFocus: false,
+		refetchInterval: 60000,
+	})
 
 	const handleShowVacancy = (id: string) => {
 		setSelectedVacancyId(id)

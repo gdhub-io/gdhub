@@ -35,11 +35,11 @@ const MentorsPage = () => {
 	const [selectedWorkDirection, setSelectedWorkDirection] = useState<string | undefined>(undefined)
 	const { options: workDirectionOptions } = useWorkDirections()
 
-	const { data: mentors, isLoading } = useQuery<Mentor[]>(
-		['mentors', selectedWorkDirection],
-		() => axios.get('/api/mentors', { params: { workDirectionId: selectedWorkDirection } }).then((res) => res.data),
-		{ keepPreviousData: true }
-	)
+	const { data: mentors, isLoading } = useQuery<{ data: Mentor[] }>({
+		queryKey: ['mentors', selectedWorkDirection],
+		queryFn: () => axios.get('/api/mentors', { params: { workDirectionId: selectedWorkDirection } }),
+		staleTime: Infinity,
+	})
 
 	const handleFilterChange = (value: string) => {
 		setSelectedWorkDirection(value || undefined)
@@ -84,7 +84,7 @@ const MentorsPage = () => {
 
 			<Spin spinning={isLoading}>
 				<Row gutter={[24, 24]} className={styles.mentorsGrid}>
-					{mentors?.map((mentor) => (
+					{mentors?.data.map((mentor) => (
 						<Col xs={24} sm={12} md={8} lg={6} key={mentor.id}>
 							<Card className={styles.mentorCard} hoverable onClick={() => handleMentorClick(mentor)}>
 								<div className={styles.mentorCardHeader}>
@@ -120,8 +120,8 @@ const MentorsPage = () => {
 											<T keyName="mentors.page.telegram.questions">Ready to answer questions about:</T>
 										</Text>
 										<ul className={styles.questionsList}>
-											{mentor.specialities.flatMap((s) =>
-												s.openForQuestions.map((q, idx) => <li key={`${s.id}-${idx}`}>{q}</li>)
+											{mentor.specialities.flatMap((s: any) =>
+												s.openForQuestions.map((q: any, idx: number) => <li key={`${s.id}-${idx}`}>{q}</li>)
 											)}
 										</ul>
 									</div>
@@ -131,7 +131,7 @@ const MentorsPage = () => {
 					))}
 				</Row>
 
-				{mentors?.length === 0 && !isLoading && (
+				{mentors?.data.length === 0 && !isLoading && (
 					<div className={styles.noResults}>
 						<Text>
 							<T keyName="mentors.page.noResults">No mentors found with the selected filter.</T>

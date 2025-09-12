@@ -15,19 +15,19 @@ export const ReadyLectures = () => {
 	const screens = Grid.useBreakpoint()
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)
-	const { data: readyLectures, isLoading: isLoadingReadyLectures } = useQuery(['lectures', 'ready'], () =>
-		axios.get<LectureDetails[]>('/api/lectures', {
-			params: { stage: [prismaClient.LectureStage.Ready, prismaClient.LectureStage.Proposed].join(',') },
-		})
-	)
+	const { data: readyLectures, isLoading: isLoadingReadyLectures } = useQuery({
+		queryKey: ['lectures', 'ready'],
+		queryFn: () =>
+			axios.get<LectureDetails[]>('/api/lectures', {
+				params: { stage: [prismaClient.LectureStage.Ready, prismaClient.LectureStage.Proposed].join(',') },
+			}),
+	})
 
-	const { data: workDirections } = useQuery(
-		['workDirections'],
-		() => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
-		{
-			staleTime: Infinity,
-		}
-	)
+	const { data: workDirections } = useQuery({
+		queryKey: ['workDirections'],
+		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		staleTime: Infinity,
+	})
 
 	const columns: ColumnsType<LectureDetails> = useMemo(
 		() => [

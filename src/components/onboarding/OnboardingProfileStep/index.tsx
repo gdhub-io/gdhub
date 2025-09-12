@@ -39,36 +39,34 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 	const { data: session } = useSession()
 	const countries = useMemo(() => countryList().getData(), [])
 
-	const { isLoading, isFetched } = useQuery(
-		['profile', session?.user.id],
-		() => axios.get<any>('/api/auth/registration/onboarding/profile'),
-		{
-			enabled: !!session?.user.id,
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			onSuccess: (response) => {
-				if (!response.data) return
+	const { isLoading, isFetched } = useQuery({
+		queryKey: ['profile', session?.user.id],
+		queryFn: () => axios.get<any>('/api/auth/registration/onboarding/profile'),
+		enabled: !!session?.user.id,
+		refetchInterval: false,
+		refetchOnWindowFocus: false,
+		onSuccess: (response) => {
+			if (!response.data) return
 
-				const { data } = response
+			const { data } = response
 
-				const [firstName, lastName] = data.name.split(' ')
-				form.setFieldsValue({
-					firstName,
-					lastName,
-					yearOfBirth: data.yearOfBirth,
-					country: data.country,
-					city: data.city,
-					confirmUserData: data.user.agreements.confirmUserData,
-				})
+			const [firstName, lastName] = data.name.split(' ')
+			form.setFieldsValue({
+				firstName,
+				lastName,
+				yearOfBirth: data.yearOfBirth,
+				country: data.country,
+				city: data.city,
+				confirmUserData: data.user.agreements.confirmUserData,
+			})
 
-				onLoading(data)
-			},
-		}
-	)
+			onLoading(data)
+		},
+	})
 
-	const { mutateAsync: saveUserProfile, isLoading: isSaving } = useMutation((data: any) =>
-		axios.put<any>('/api/auth/registration/onboarding/profile', data)
-	)
+	const { mutateAsync: saveUserProfile, isPending: isSaving } = useMutation({
+		mutationFn: (data: any) => axios.put<any>('/api/auth/registration/onboarding/profile', data),
+	})
 
 	const yearOptions = useMemo(
 		() =>

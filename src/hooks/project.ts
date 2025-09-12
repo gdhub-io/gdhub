@@ -14,11 +14,12 @@ export const useCurrentProject = () => {
 		refetch,
 		isLoading,
 		isFetched,
-	} = useQuery(
-		['project-data', slug, session?.user.id],
-		() => axios.get<prismaClient.Project>('/api/user/project', { params: { slug } }),
-		{ enabled: !!slug, refetchOnWindowFocus: false }
-	)
+	} = useQuery({
+		queryKey: ['project-data', slug, session?.user.id],
+		queryFn: () => axios.get<prismaClient.Project>('/api/user/project', { params: { slug } }),
+		enabled: !!slug,
+		refetchOnWindowFocus: false,
+	})
 
 	return { project: project?.data, refetch, isLoading, isFetched }
 }

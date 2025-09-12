@@ -24,8 +24,13 @@ const BlogPostsAdminPage: NextPageWithLayout = () => {
 		data: response,
 		refetch: refetchPosts,
 		isFetching,
-	} = useQuery(['admin', 'posts'], () => axios.get('/api/admin/posts'), { refetchOnWindowFocus: false })
-	const { mutateAsync: deletePost } = useMutation(({ id }: { id: string }) => axios.delete(`/api/admin/post/${id}`), {
+	} = useQuery({
+		queryKey: ['admin', 'posts'],
+		queryFn: () => axios.get('/api/admin/posts'),
+		refetchOnWindowFocus: false,
+	})
+	const { mutateAsync: deletePost } = useMutation({
+		mutationFn: ({ id }: { id: string }) => axios.delete(`/api/admin/post/${id}`),
 		onSuccess: () => {
 			refetchPosts()
 		},

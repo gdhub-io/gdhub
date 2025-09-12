@@ -22,12 +22,10 @@ const MentorshipProfileForm = ({ profile, onUpdate = () => {} }: MentorshipProfi
 	const [selectedSpecialityId, setSelectedSpecialityId] = useState<string | null>(null)
 	const { data: session, update: refreshSession } = useSession()
 
-	const { mutateAsync: switchMentorship, isLoading: isSwitching } = useMutation(
-		({ enabled }: { enabled: boolean }) => axios.put<any>('/api/user/profile/mentorship', { enabled }),
-		{
-			onSuccess: ({ data }) => setEnabled(data.enabled),
-		}
-	)
+	const { mutateAsync: switchMentorship, isPending: isSwitching } = useMutation({
+		mutationFn: ({ enabled }: { enabled: boolean }) => axios.put<any>('/api/user/profile/mentorship', { enabled }),
+		onSuccess: ({ data }) => setEnabled(data.enabled),
+	})
 
 	useEffect(() => {
 		if (session) {
@@ -48,31 +46,29 @@ const MentorshipProfileForm = ({ profile, onUpdate = () => {} }: MentorshipProfi
 		}
 	}, [selectedSpecialityId])
 
-	const { mutateAsync: saveMentorshipSetting, isLoading: isSaving } = useMutation(
-		(data: { specialityId: string; timeForMentoring: string; openForQuestions: string[] }) =>
+	const { mutateAsync: saveMentorshipSetting, isPending: isSaving } = useMutation({
+		mutationFn: (data: { specialityId: string; timeForMentoring: string; openForQuestions: string[] }) =>
 			axios.put<any>('/api/user/profile/mentorship', data),
-		{
-			onSuccess: async () => {
-				await refetchSpecialityList()
-			},
-		}
-	)
+		onSuccess: async () => {
+			await refetchSpecialityList()
+		},
+	})
 
 	const {
 		data: specialities,
 		isLoading: isSpecialityFetching,
 		refetch: refetchSpecialityList,
 		dataUpdatedAt,
-	} = useQuery(
-		['user-specialities', 'mentorship'],
-		() =>
+	} = useQuery({
+		queryKey: ['user-specialities', 'mentorship'],
+		queryFn: () =>
 			axios.get<any>('/api/user/specialities', {
 				params: {
 					level: [prismaClient.$Enums.SkillLevel.Experienced, prismaClient.$Enums.SkillLevel.Expert],
 				},
 			}),
-		{ enabled }
-	)
+		enabled,
+	})
 
 	useEffect(() => {
 		if (!selectedSpecialityId && specialities?.data) {

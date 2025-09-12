@@ -41,9 +41,9 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({ onCreation =
 	const [modalOpen, setModalOpen] = React.useState(false)
 	const [eventType, setEventType] = React.useState<prismaClient.$Enums.EventType | undefined>(undefined)
 
-	const { data: specialityLevels } = useQuery(
-		['user-speciality-levels', session?.user?.id],
-		() =>
+	const { data: specialityLevels } = useQuery({
+		queryKey: ['user-speciality-levels', session?.user?.id],
+		queryFn: () =>
 			axios
 				.get('/api/user/speciality-levels', {
 					params: {
@@ -52,8 +52,8 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({ onCreation =
 					paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
 				})
 				.then((res) => res.data),
-		{ enabled: !!session?.user?.id }
-	)
+		enabled: !!session?.user?.id,
+	})
 
 	const canCreateMeetupOrWorkshop = isAdmin || (Array.isArray(specialityLevels) && specialityLevels.length > 0)
 

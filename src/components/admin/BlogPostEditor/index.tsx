@@ -47,7 +47,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		refetchIntervalInBackground: false,
 	})
 
-	const { mutateAsync: changeStatus, isLoading: isChangingStatus } = useMutation({
+	const { mutateAsync: changeStatus, isPending: isChangingStatus } = useMutation({
 		mutationFn: (status: prismaClient.BlogPostStatus) => {
 			return axios.put(`/api/admin/post/${id}`, { status })
 		},
@@ -60,7 +60,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		},
 	})
 
-	const { mutateAsync: saveDocument, isLoading: isSavingDocument } = useMutation({
+	const { mutateAsync: saveDocument, isPending: isSavingDocument } = useMutation({
 		mutationFn: (content: OutputData) => {
 			return axios.put(`/api/admin/post/${id}`, { title: postTitle, content, status: post?.data?.status })
 		},

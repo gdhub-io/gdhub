@@ -28,16 +28,14 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, u
 		data: adviceRequests,
 		isLoading,
 		refetch,
-	} = useQuery(
-		['user-advice-archive', user?.id],
-		() =>
+	} = useQuery({
+		queryKey: ['user-advice-archive', user?.id],
+		queryFn: () =>
 			axios.get<prismaClient.AdviceRequest[]>('/api/user/advice-requests', {
 				params: { userId: user?.id },
 			}),
-		{
-			enabled: !!user?.id,
-		}
-	)
+		enabled: !!user?.id,
+	})
 
 	React.useEffect(() => {
 		if (open && user?.id) {
@@ -144,7 +142,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, u
 			title={t('Your advice requests archive')}
 			width={'80%'}
 			footer={null}
-			destroyOnClose
+			destroyOnHidden
 		>
 			<ModernTable
 				loading={isLoading}

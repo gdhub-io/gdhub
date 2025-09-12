@@ -29,43 +29,39 @@ const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMem
 	const [currentEquity, setCurrentEquity] = useState<number>(0)
 
 	// Получаем данные о долях текущего проекта
-	const { data: equityData, isLoading: isLoadingEquity } = useQuery(
-		['project-equity', projectId],
-		async () => {
-			const response = await axios.get('/api/user/project/equity', {
+	const { data: equityData, isLoading: isLoadingEquity } = useQuery({
+		queryKey: ['project-equity', projectId],
+		queryFn: () =>
+			axios.get('/api/user/project/equity', {
 				params: { projectId },
-			})
-			return response.data
-		},
-		{
-			enabled: open && !!projectId,
-			onSuccess: (data) => {
-				// Находим долю текущего пользователя
-				const currentUserShare = data.equityAllocations?.find((allocation: any) => allocation.ownerId === currentUserId)
-				setCurrentEquity(currentUserShare?.percentage || 0)
-			},
-		}
-	)
+			}),
+		enabled: open && !!projectId,
+	})
+
+	useEffect(() => {
+		const currentUserShare = equityData?.data.equityAllocations?.find(
+			(allocation: any) => allocation.ownerId === currentUserId
+		)
+		setCurrentEquity(currentUserShare?.percentage || 0)
+	}, [equityData])
 
 	// Мутация для передачи доли
-	const { mutateAsync: transferEquity, isLoading: isTransferring } = useMutation(
-		(data: TransferFormData) =>
+	const { mutateAsync: transferEquity, isPending: isTransferring } = useMutation({
+		mutationFn: (data: TransferFormData) =>
 			axios.post('/api/user/project/equity/transaction/transfer', {
 				projectId,
 				toUserId: data.toUserId,
 				percentage: data.percentage,
 				reason: data.reason,
 			}),
-		{
-			onSuccess: () => {
-				// Инвалидируем запросы на получение долей и транзакций
-				queryClient.invalidateQueries(['project-equity', projectId])
-				queryClient.invalidateQueries(['equity-transactions', projectId])
-				onCancel()
-				form.resetFields()
-			},
-		}
-	)
+		onSuccess: () => {
+			// Инвалидируем запросы на получение долей и транзакций
+			queryClient.invalidateQueries({ queryKey: ['project-equity', projectId] })
+			queryClient.invalidateQueries({ queryKey: ['equity-transactions', projectId] })
+			onCancel()
+			form.resetFields()
+		},
+	})
 
 	// Сбрасываем форму при открытии модального окна
 	useEffect(() => {

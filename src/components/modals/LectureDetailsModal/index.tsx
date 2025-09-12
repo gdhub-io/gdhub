@@ -31,16 +31,22 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 		data: lecture,
 		isLoading: processing,
 		refetch,
-	} = useQuery(['lecture-data', lectureId], () => axios.get<LectureDetails>(`/api/user/lecture/${lectureId}/show`), {
+	} = useQuery({
+		queryKey: ['lecture-data', lectureId],
+		queryFn: () => axios.get<LectureDetails>(`/api/user/lecture/${lectureId}/show`),
 		enabled: false,
-		onSuccess(data) {
-			setIsReady(true)
-			setUserIsRegistered(!!data.data.listeners.find((l) => l.userId == session?.user.id))
-		},
 	})
-	const { mutateAsync: registrationToLecture, isLoading: registrationProcessing } = useMutation(
-		(params: { lectureId: string }) => axios.post<any>(`/api/user/lecture/${lectureId}/registration`)
-	)
+
+	useEffect(() => {
+		if (!lecture?.data) return
+
+		setIsReady(true)
+		setUserIsRegistered(!!lecture.data.listeners.find((l) => l.userId == session?.user.id))
+	}, [lecture?.data])
+
+	const { mutateAsync: registrationToLecture, isPending: registrationProcessing } = useMutation({
+		mutationFn: (params: { lectureId: string }) => axios.post<any>(`/api/user/lecture/${lectureId}/registration`),
+	})
 
 	useEffect(() => {
 		if (open && lectureId) {
@@ -100,7 +106,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			className={styles.container}
 			centered
 			title={modalTitle()}
-			destroyOnClose
+			destroyOnHidden
 			width={screens.lg ? '50vw' : '100%'}
 			maskClosable={false}
 			cancelText={<T>Close</T>}
