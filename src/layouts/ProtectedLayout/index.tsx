@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
+import { AIAgentDrawer } from '@/components/AIAgentDrawer'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
@@ -10,6 +11,7 @@ import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
+import { TbRobot } from '@react-icons/all-files/tb/TbRobot'
 import { T, useTolgee } from '@tolgee/react'
 import {
 	Avatar,
@@ -68,6 +70,7 @@ export const ProtectedLayout = ({
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
+	const [openAgentDrawer, setOpenAgentDrawer] = useState(false)
 
 	const hasAccess = useMemo(() => {
 		if (!session) return false
@@ -311,6 +314,14 @@ export const ProtectedLayout = ({
 								<Space>
 									{screens.xl ? (
 										<>
+											<Button
+												type="text"
+												style={{ fontSize: 14 }}
+												icon={<TbRobot />}
+												onClick={() => setOpenAgentDrawer(true)}
+											>
+												{t('app.user.menu.aiAssistant', 'AI Assistant')}
+											</Button>
 											<Link href="https://docs.gdhub.io" target="_blank">
 												<Button type="text" style={{ fontSize: 14 }}>
 													<T>Documentation</T>
@@ -339,6 +350,13 @@ export const ProtectedLayout = ({
 										</>
 									) : (
 										<>
+											<Button
+												type="text"
+												shape="circle"
+												icon={<TbRobot size={18} />}
+												color="blue"
+												onClick={() => setOpenAgentDrawer(true)}
+											/>
 											<NotificationsBell />
 											<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
 												<AiOutlineMenu />
@@ -406,6 +424,9 @@ export const ProtectedLayout = ({
 						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 					</Drawer>
 				) : null}
+
+				{/* agent drawer */}
+				<AIAgentDrawer open={openAgentDrawer} onClose={() => setOpenAgentDrawer(false)} />
 			</ConfigProvider>
 		</>
 	)

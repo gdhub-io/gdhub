@@ -1,0 +1,31 @@
+$drawer-border-radius: 16px;
+
+.agentDrawerWrapper {
+  border-radius: $drawer-border-radius $drawer-border-radius 0 0;
+  width: 640px;
+  margin-inline: auto;
+}
+
+.agentDrawerContent {
+  padding: 0;
+  border-radius: $drawer-border-radius $drawer-border-radius 0 0;
+}
+
+.agentDrawerFooter {
+  border-top: 0 !important;
+  margin-bottom: 32px;
+  padding-inline: 32px;
+}
+
+.agentDrawerInputWrapper {
+  align-items: flex-end;
+  border-radius: 28px;
+  box-shadow: 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0px 4px 4px 0px #0000000a, 0px 0px 1px 0px #0000009e;
+}
+
+.agentDrawerInputButton {
+  margin: 8px;
+  min-width: 30px !important;
+  width: 30px;
+  height: 30px;
+}
