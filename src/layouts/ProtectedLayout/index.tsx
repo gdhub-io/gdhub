@@ -79,6 +79,14 @@ export const ProtectedLayout = ({
 		return access.some((role) => session.user.roles.includes(role))
 	}, [session, access])
 
+	const isAdmin = useMemo(() => {
+		if (!session) return false
+
+		console.log(session.user.roles)
+
+		return hasRole(prismaClient.UserRole.Admin, { data: session })
+	}, [session])
+
 	const seoSettings: NextSeoProps = {
 		title,
 		description: subTitle,
@@ -162,7 +170,7 @@ export const ProtectedLayout = ({
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = []
 
-		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
+		if (isAdmin) {
 			menu.push({
 				label: (
 					<Link href="/admin/posts">
@@ -314,14 +322,16 @@ export const ProtectedLayout = ({
 								<Space>
 									{screens.xl ? (
 										<>
-											<Button
-												type="text"
-												style={{ fontSize: 14 }}
-												icon={<TbRobot />}
-												onClick={() => setOpenAgentDrawer(true)}
-											>
-												{t('app.user.menu.aiAssistant', 'AI Assistant')}
-											</Button>
+											{isAdmin && (
+												<Button
+													type="text"
+													style={{ fontSize: 14 }}
+													icon={<TbRobot size={18} />}
+													onClick={() => setOpenAgentDrawer(true)}
+												>
+													{t('app.user.menu.aiAssistant', 'Tri Assistant')}
+												</Button>
+											)}
 											<Link href="https://docs.gdhub.io" target="_blank">
 												<Button type="text" style={{ fontSize: 14 }}>
 													<T>Documentation</T>
@@ -350,13 +360,15 @@ export const ProtectedLayout = ({
 										</>
 									) : (
 										<>
-											<Button
-												type="text"
-												shape="circle"
-												icon={<TbRobot size={18} />}
-												color="blue"
-												onClick={() => setOpenAgentDrawer(true)}
-											/>
+											{isAdmin && (
+												<Button
+													type="text"
+													shape="circle"
+													icon={<TbRobot size={18} />}
+													color="blue"
+													onClick={() => setOpenAgentDrawer(true)}
+												/>
+											)}
 											<NotificationsBell />
 											<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
 												<AiOutlineMenu />
@@ -426,7 +438,7 @@ export const ProtectedLayout = ({
 				) : null}
 
 				{/* agent drawer */}
-				<AIAgentDrawer open={openAgentDrawer} onClose={() => setOpenAgentDrawer(false)} />
+				{isAdmin && <AIAgentDrawer open={openAgentDrawer} onClose={() => setOpenAgentDrawer(false)} />}
 			</ConfigProvider>
 		</>
 	)

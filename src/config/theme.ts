@@ -256,22 +256,21 @@ export const publicThemeConfig: ThemeConfig = {
 
 export const appThemeConfig: ThemeConfig = {
 	algorithm: [theme.compactAlgorithm],
-	cssVar: true,
+	cssVar: false,
 	token: {
 		fontFamily: mainFont.style.fontFamily,
-		colorPrimary: 'rgb(241,85,65)',
-		colorInfo: 'rgb(241,85,65)',
+		colorPrimary: '#0a0a0a',
+		colorInfo: '#0a0a0a',
 		colorBgBase: '#FFFDFC',
-		colorTextBase: '#050505',
 		colorWhite: '#FFFDFC',
 		fontSize: 16,
-		sizeStep: 4,
-		sizeUnit: 4,
 		borderRadius: 8,
 		wireframe: false,
 		colorBgElevated: '#FFFDFC',
 		colorBgLayout: '#FFFDFC',
 		colorBorder: '#050505',
+		colorLink: '#ff4d4f',
+		colorPrimaryBg: '#d7d7d7',
 	},
 	components: {
 		Avatar: {
@@ -280,16 +279,14 @@ export const appThemeConfig: ThemeConfig = {
 		Button: {
 			size: 14,
 			sizeLG: 18,
-			// colorTextBase: '#FFFDFC',
 			controlHeight: 36,
 			controlHeightLG: 32,
 			controlHeightSM: 24,
-			fontSize: 14,
 			fontSizeLG: 18,
 			colorBgContainer: 'transparent',
-			colorBorder: '#050505',
-			paddingContentHorizontal: 32,
-			paddingContentVertical: 16,
+			paddingContentHorizontal: 16,
+			paddingContentVertical: 8,
+			fontSize: 14,
 		},
 		Typography: {
 			fontSize: 16,
@@ -308,7 +305,9 @@ export const appThemeConfig: ThemeConfig = {
 			fontSize: 16,
 			itemPaddingInline: 16,
 		},
-		Dropdown: { fontSize: 16 },
+		Dropdown: {
+			fontSize: 16,
+		},
 		Spin: {
 			fontSize: 16,
 			controlHeight: 48,

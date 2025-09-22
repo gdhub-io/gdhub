@@ -103,7 +103,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 						<Button icon={<TbTrash size={24} />} type="text" danger style={{ lineHeight: 'initial' }} />
 					</Popconfirm>
 					<Space size={4}>
-						<Button onClick={handleCancel}>
+						<Button onClick={handleCancel} type="text">
 							<T>Cancel</T>
 						</Button>
 						<Button type="primary" onClick={handleOk}>

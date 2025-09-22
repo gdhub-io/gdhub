@@ -1,38 +1,33 @@
-@layer antd, app;
+@use './nprogress';
+@use './variables' as *;
 
-@layer antd {
-	@import 'antd/dist/reset.css';
-}
+@layer antd, base;
 
-@import './variables';
-@import './nprogress';
+@layer base {
 
+	:root {
+		--background-color: #0b0b0d;
 
-:root {
-	--background-color: #0b0b0d;
-
-	// work direction colors
-	--bg-direc-development: #E5F1FF;
-	--bg-direc-web-development: #D3F7FF;
-	--bg-direc-game-design: #FDFEC8;
-	--bg-direc-2d-art-animation: #FFEBEB;
-	--bg-direc-3d-art-animation: #FFF4CF;
-	--bg-direc-management: #F0EBFF;
-	--bg-direc-game-writer: #FDFEC8;
-	--bg-direc-learning: #DCFFF9;
-	--bg-direc-technical-art: #F2FEE6;
-	--bg-direc-music-sound: #C9EBFF;
-	--bg-direc-marketing: #FFD5C8;
-	--bg-direc-vfx: #FFD7BA;
-	--bg-direc-qa: #F2DDFF;
-	--bg-direc-hr: #FFE2F0;
-	--bg-direc-video-editing: #FFEDFB;
-	--bg-direc-backend-development: #F6FFBF;
-	--bg-direc-investment: #FFCECE;
-	--bg-direc-other: #eeeeee;
-}
-
-@layer app {
+		// work direction colors
+		--bg-direc-development: #E5F1FF;
+		--bg-direc-web-development: #D3F7FF;
+		--bg-direc-game-design: #FDFEC8;
+		--bg-direc-2d-art-animation: #FFEBEB;
+		--bg-direc-3d-art-animation: #FFF4CF;
+		--bg-direc-management: #F0EBFF;
+		--bg-direc-game-writer: #FDFEC8;
+		--bg-direc-learning: #DCFFF9;
+		--bg-direc-technical-art: #F2FEE6;
+		--bg-direc-music-sound: #C9EBFF;
+		--bg-direc-marketing: #FFD5C8;
+		--bg-direc-vfx: #FFD7BA;
+		--bg-direc-qa: #F2DDFF;
+		--bg-direc-hr: #FFE2F0;
+		--bg-direc-video-editing: #FFEDFB;
+		--bg-direc-backend-development: #F6FFBF;
+		--bg-direc-investment: #FFCECE;
+		--bg-direc-other: #eeeeee;
+	}
 
 	@each $work-direction in $work-directions {
 		.bg-direc-#{$work-direction} {
@@ -162,11 +157,17 @@
 	}
 
 	.ant-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		border-width: 2px;
-		font-weight: 500;
+		display: inline-flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		border-width: 2px !important;
+		font-weight: 500 !important;
+
+		padding-inline: 16px !important;
+
+		&.ant-btn-sm {
+			padding-inline: 8px !important;
+		}
 
 		// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
 		// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active,
@@ -178,11 +179,11 @@
 		// }
 
 		&:not(.ant-btn-icon-only)>.ant-btn-icon:not(:last-child) {
-			margin-inline-end: 16px;
+			margin-inline-end: 4px;
 		}
 
 		&:not(.ant-btn-icon-only):has(.ant-btn-icon-start) {
-			padding-left: 16px;
+			padding-left: 8px;
 			column-gap: 8px;
 		}
 
@@ -326,7 +327,7 @@
 		}
 	}
 
-	body:has(.ant-modal-root) {
+	body:has(.ant-modal-root, .ant-drawer-open) {
 		overflow: hidden !important;
 	}
 

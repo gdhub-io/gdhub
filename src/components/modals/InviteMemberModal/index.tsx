@@ -71,7 +71,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 			open={open}
 			onCancel={handleCancel}
 			footer={[
-				<Button key="cancel" onClick={handleCancel}>
+				<Button key="cancel" onClick={handleCancel} type="text">
 					<T>Cancel</T>
 				</Button>,
 				<Button key="submit" type="primary" loading={isInviting} onClick={handleOk} disabled={!isEmailValid}>

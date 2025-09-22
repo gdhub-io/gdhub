@@ -63,7 +63,7 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
 		originalRenderPage({
 			// Useful for wrapping the whole react tree
 			enhanceApp: (App) => (props) => (
-				<StyleProvider cache={cache} layer>
+				<StyleProvider layer>
 					<App {...props} />
 				</StyleProvider>
 			),

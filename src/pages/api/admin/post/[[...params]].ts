@@ -1,6 +1,6 @@
 import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { BlogPostStatus, UserRole } from '@gdhub-io/gdhub-prisma'
 import { type JsonValue } from '@prisma/client/runtime/library'
 import { IsArray, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator'
 import { Body, Delete, Get, Param, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
@@ -42,12 +42,12 @@ class UpdateBlogPostDto {
 	@IsOptional()
 	authors?: { id: string }[]
 
-	@IsEnum(prismaClient.BlogPostStatus)
+	@IsEnum(BlogPostStatus)
 	@IsOptional()
-	status?: prismaClient.BlogPostStatus
+	status?: BlogPostStatus
 }
 
-@NextAuthGuard('user', [prismaClient.UserRole.Admin])
+@NextAuthGuard('user', [UserRole.Admin])
 class ApiBlogPostsAdminHandler {
 	constructor() {}
 
@@ -100,7 +100,7 @@ class ApiBlogPostsAdminHandler {
 				image: coverImage || undefined,
 				authors: { connect: authors?.map((author) => ({ id: author.id })) || [] },
 				status: status || undefined,
-				publishedAt: status === prismaClient.BlogPostStatus.Published ? new Date() : null,
+				publishedAt: status === BlogPostStatus.Published ? new Date() : null,
 			},
 		})
 

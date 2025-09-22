@@ -149,8 +149,8 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				onCancel={handleCancel}
 				footer={[
 					<Space key="form-buttons" wrap>
-						<Button key="close" onClick={handleCancel} disabled={processing}>
-							<T>Close</T>
+						<Button key="close" onClick={handleCancel} disabled={processing} type="text">
+							<T>Cancel</T>
 						</Button>
 						{session?.data && (
 							<Button key="action" type="primary" onClick={functionOkButton} loading={processing}>
