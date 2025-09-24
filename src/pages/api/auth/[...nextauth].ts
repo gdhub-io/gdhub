@@ -5,6 +5,7 @@ import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
+import Credentials from 'next-auth/providers/credentials'
 import EmailProvider from 'next-auth/providers/email'
 import GoogleProvider from 'next-auth/providers/google'
 
@@ -64,6 +65,33 @@ export const authOptions: NextAuthOptions = {
 				}
 			},
 		}),
+		...(process.env.NODE_ENV !== 'production'
+			? [
+					Credentials({
+						id: 'e2e',
+						name: 'E2E Credentials',
+						credentials: { email: { label: 'Email', type: 'text' } },
+						async authorize(credentials) {
+							if (!credentials?.email) return null
+							const email = String(credentials.email)
+							let user = await prisma.user.findUnique({ where: { email } })
+							if (!user) {
+								user = await prisma.user.create({
+									data: {
+										email,
+										name: 'E2E User',
+										emailVerified: new Date(),
+										roles: [],
+										agreements: {},
+									},
+								})
+								await prisma.profile.create({ data: { userId: user.id, name: 'E2E User' } })
+							}
+							return user as any
+						},
+					}),
+				]
+			: []),
 	],
 	callbacks: {
 		async jwt({ token }) {

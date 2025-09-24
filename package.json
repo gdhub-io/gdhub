@@ -14,7 +14,9 @@
     "db:generate": "gdhub-prisma generate --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
     "db:deploy": "gdhub-prisma deploy --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
     "db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
-    "test": "dotenv vitest"
+    "test": "dotenv vitest",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui"
   },
   "prisma": {
     "seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
@@ -122,8 +124,10 @@
     "zod-to-json-schema": "^3.24.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.2",
     "@svgr/webpack": "^6.3.1",
     "@tanstack/react-query-devtools": "^5.87.4",
+    "@testcontainers/postgresql": "^11.6.0",
     "@tolgee/cli": "^2.14.0",
     "@types/common-tags": "^1.8.4",
     "@types/cookie": "^0.5.1",
