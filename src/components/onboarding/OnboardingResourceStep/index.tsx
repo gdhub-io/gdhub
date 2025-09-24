@@ -36,9 +36,11 @@ export const OnboardingResourceStep = ({
 
 		const { timeForWork, isActive, otherResources } = profileData.data
 
+		const hasTimeForWork = timeForWork && timeForWork.length === 2
+
 		form.setFieldsValue({
-			timeForWorkMin: timeForWork.length > 0 ? timeForWork[0] : undefined,
-			timeForWorkMax: timeForWork.length === 2 ? timeForWork[1] : undefined,
+			timeForWorkMin: hasTimeForWork ? timeForWork[0] : undefined,
+			timeForWorkMax: hasTimeForWork ? timeForWork[1] : undefined,
 			isActive,
 			otherResources,
 		})
