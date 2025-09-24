@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
+import IconGDHubTriangle from '@/assets/images/gdhub-triangle.svg'
 import { AIAgentDrawer } from '@/components/AIAgentDrawer'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
@@ -8,7 +9,6 @@ import { useTelegram } from '@/helpers/useTelegram'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
-import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { TbRobot } from '@react-icons/all-files/tb/TbRobot'
@@ -21,6 +21,7 @@ import {
 	Drawer,
 	Dropdown,
 	Flex,
+	FloatButton,
 	Grid,
 	Layout,
 	Menu,
@@ -322,16 +323,6 @@ export const ProtectedLayout = ({
 								<Space>
 									{screens.xl ? (
 										<>
-											{isAdmin && (
-												<Button
-													type="text"
-													style={{ fontSize: 14 }}
-													icon={<TbRobot size={18} />}
-													onClick={() => setOpenAgentDrawer(true)}
-												>
-													{t('app.user.menu.aiAssistant', 'Tri Assistant')}
-												</Button>
-											)}
 											<Link href="https://docs.gdhub.io" target="_blank">
 												<Button type="text" style={{ fontSize: 14 }}>
 													<T>Documentation</T>
@@ -359,21 +350,7 @@ export const ProtectedLayout = ({
 											</Dropdown>
 										</>
 									) : (
-										<>
-											{isAdmin && (
-												<Button
-													type="text"
-													shape="circle"
-													icon={<TbRobot size={18} />}
-													color="blue"
-													onClick={() => setOpenAgentDrawer(true)}
-												/>
-											)}
-											<NotificationsBell />
-											<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
-												<AiOutlineMenu />
-											</Button>
-										</>
+										<NotificationsBell />
 									)}
 								</Space>
 							</Col>
@@ -438,7 +415,19 @@ export const ProtectedLayout = ({
 				) : null}
 
 				{/* agent drawer */}
-				{isAdmin && <AIAgentDrawer open={openAgentDrawer} onClose={() => setOpenAgentDrawer(false)} />}
+				{isAdmin && (
+					<>
+						<FloatButton
+							style={{ insetInlineEnd: 64 }}
+							rootClassName={styles.agentDrawerFloatButton}
+							tooltip={t('app.user.menu.aiAssistant', 'Tri Assistant')}
+							icon={<IconGDHubTriangle style={{ width: 60, height: 60 }} />}
+							onClick={() => setOpenAgentDrawer(true)}
+						/>
+
+						<AIAgentDrawer open={openAgentDrawer} onClose={() => setOpenAgentDrawer(false)} />
+					</>
+				)}
 			</ConfigProvider>
 		</>
 	)

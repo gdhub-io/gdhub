@@ -94,10 +94,14 @@ class LangGraphService {
 	public async sendHumanMessageAndWait(threadId: string, text: string, assistantId?: string, route?: string) {
 		const targetAssistantId = assistantId || (await this.getDefaultAssistantId())
 		const page = LANGGRAPH_PAGES.find((p) => p.path === route)
-		const content = route
-			? `${text}\n\nAdditional information: user is on the page: ${route} - ${page?.title}: ${page?.description}`
-			: text
-		const input = { messages: [{ type: 'human', content: content } satisfies HumanMessage] }
+		const contextMessage = route
+			? `Additional information: user is on the page: ${route} - ${page?.title}: ${page?.description}`
+			: undefined
+		const messages = [
+			...(contextMessage ? ([{ type: 'system', content: contextMessage }] as const) : []),
+			{ type: 'human', content: text } satisfies HumanMessage,
+		]
+		const input = { messages }
 		const values = await this.client.runs.wait(threadId, targetAssistantId, { input })
 		return values
 	}

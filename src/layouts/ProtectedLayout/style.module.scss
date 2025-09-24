@@ -122,6 +122,31 @@
 	}
 }
 
+.agentDrawerFloatButton {
+	width: 64px !important;
+	height: 64px !important;
+
+	outline: 2px solid transparent !important;
+	outline-offset: 3px !important;
+
+	&:hover {
+		outline-color: #2b2b2b !important;
+	}
+
+	:global {
+		.ant-float-btn-content {
+			width: 64px !important;
+			height: 64px !important;
+			position: absolute !important;
+
+			.ant-float-btn-icon {
+				width: 60px !important;
+				height: 60px !important;
+			}
+		}
+	}
+}
+
 @import './styles/xs.scss'; // screen < 576px
 @import './styles/sm.scss'; // screen ≥ 576px
 @import './styles/md.scss'; // screen ≥ 768px

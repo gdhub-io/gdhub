@@ -9,12 +9,16 @@ class CreateThreadDto {
 	metadata?: Record<string, unknown>
 }
 
-class ThreadQueryDto {
+class StateQueryDto {
+	@IsOptional()
 	@IsString()
-	threadId: string
+	threadId?: string
 }
 
-class SendMessageDto extends ThreadQueryDto {
+class SendMessageDto {
+	@IsOptional()
+	@IsString()
+	threadId?: string
 	@IsString()
 	text: string
 	@IsOptional()
@@ -26,14 +30,14 @@ class SendMessageDto extends ThreadQueryDto {
 class AssistantsQueryDto {
 	@IsOptional()
 	@IsString()
-	graphId?: string
+	graphKey?: string
 }
 
 @NextAuthGuard('user')
 class ApiUserAIHandler {
 	@Get('/assistants')
-	public async assistants(@Query(ValidationPipe) { graphId }: AssistantsQueryDto) {
-		return langGraphService.listAssistants(graphId)
+	public async assistants(@Query(ValidationPipe) { graphKey }: AssistantsQueryDto) {
+		return langGraphService.listAssistants(graphKey)
 	}
 
 	@Post('/thread')
@@ -57,10 +61,21 @@ class ApiUserAIHandler {
 	}
 
 	@Get('/state')
-	public async getState(@Query(ValidationPipe) { threadId }: ThreadQueryDto) {
+	public async getState(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { threadId }: StateQueryDto) {
+		if (!threadId) {
+			const lastThread = await prisma.aIThread.findFirst({
+				where: { userId: req.user.id },
+				orderBy: { updatedAt: 'desc' },
+			})
+
+			if (!lastThread) return null
+
+			threadId = lastThread.externalThreadId
+		}
+
 		const state = await langGraphService.getThreadState(threadId)
 		const messages = langGraphService.normalizeValuesToMessages(state.values)
-		return { state, messages }
+		return { threadId, state, messages }
 	}
 
 	@Post('/send')
@@ -68,6 +83,22 @@ class ApiUserAIHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Body(ValidationPipe) { threadId, text, assistantId, route }: SendMessageDto
 	) {
+		if (!threadId) {
+			const generatedChatName = `Chat ${new Date().toISOString().slice(0, 10)} ${new Date().toISOString().slice(11, 16)}`
+
+			const thread = await langGraphService.createThread({ name: generatedChatName })
+
+			await prisma.aIThread.create({
+				data: {
+					externalThreadId: thread.thread_id,
+					assistantId,
+					userId: req.user.id,
+				},
+			})
+
+			threadId = thread.thread_id
+		}
+
 		const values = await langGraphService.sendHumanMessageAndWait(threadId, text, assistantId, route)
 		const messages = langGraphService.normalizeValuesToMessages(values)
 
@@ -78,7 +109,7 @@ class ApiUserAIHandler {
 			},
 		})
 
-		return { values, messages }
+		return { threadId, values, messages }
 	}
 
 	@Get('/history')
@@ -90,6 +121,7 @@ class ApiUserAIHandler {
 				id: true,
 				title: true,
 				lastMessageAt: true,
+				externalThreadId: true,
 			},
 		})
 

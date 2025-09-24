@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { hasImageUrl, renderContentWithImageUrl } from '@/helpers/react-content'
 import { MenuOutlined } from '@ant-design/icons'
 import { LuArrowUp } from '@react-icons/all-files/lu/LuArrowUp'
 import { LuPlus } from '@react-icons/all-files/lu/LuPlus'
@@ -22,6 +23,7 @@ type Message = {
 
 export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 	const [threadId, setThreadId] = useState<string | null>(null)
+	const [allowAutoAttach, setAllowAutoAttach] = useState(true)
 	const [input, setInput] = useState('')
 	const [assistantId, setAssistantId] = useState<string | null>(null)
 	const [errorText, setErrorText] = useState('')
@@ -33,7 +35,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 	const { data: assistantsData } = useQuery({
 		queryKey: ['ai-assistants'],
 		queryFn: async () => {
-			const res = await axios.get('/api/user/ai/assistants', { params: { graphId: 'chat' } })
+			const res = await axios.get('/api/user/ai/assistants', { params: { graphKey: 'assistant@v1' } })
 			return res.data as Array<{ assistant_id: string; name?: string }>
 		},
 		staleTime: 60_000,
@@ -45,7 +47,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 		queryKey: ['ai-history'],
 		queryFn: async () => {
 			const res = await axios.get('/api/user/ai/history')
-			return res.data as Array<{ id: string; title: string; lastMessageAt: string }>
+			return res.data as Array<{ id: string; title: string; lastMessageAt: string; externalThreadId: string }>
 		},
 	})
 
@@ -55,36 +57,45 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 		}
 	}, [assistantsData])
 
-	const createThreadMutation = useMutation({
-		mutationFn: async () => {
-			const res = await axios.post('/api/user/ai/thread')
-			return res.data as { thread_id: string }
-		},
-		onSuccess: (data: any) => {
-			setThreadId(data.thread_id)
-		},
-	})
-
-	useEffect(() => {
-		if (open && !threadId && !createThreadMutation.isPending) {
-			createThreadMutation.mutate()
-		}
-	}, [open])
+	// const createThreadMutation = useMutation({
+	// 	mutationFn: async () => {
+	// 		const res = await axios.post('/api/user/ai/thread')
+	// 		return res.data as { thread_id: string }
+	// 	},
+	// 	onSuccess: (data: any) => {
+	// 		setThreadId(data.thread_id)
+	// 	},
+	// })
 
 	const { data: stateData, isLoading: isLoadingState } = useQuery({
 		queryKey: ['ai-state', threadId],
 		queryFn: async () => {
-			const res = await axios.get('/api/user/ai/state', { params: { threadId } })
-			return res.data as { state: any; messages: Message[] }
+			const params = threadId ? { threadId } : {}
+			const res = await axios.get('/api/user/ai/state', { params })
+			return res.data as { threadId: string; state: any; messages: Message[] } | null
 		},
-		enabled: Boolean(threadId && open),
+		enabled: open && (Boolean(threadId) || allowAutoAttach),
 		refetchOnWindowFocus: false,
 	})
+
+	// enable auto-attach on open if user didn't explicitly start a new chat
+	useEffect(() => {
+		if (open && threadId === null) {
+			setAllowAutoAttach(true)
+		}
+	}, [open])
+
+	// pick last threadId if allowed and not set
+	useEffect(() => {
+		if (open && allowAutoAttach && stateData?.threadId && !threadId) {
+			setThreadId(stateData.threadId)
+		}
+	}, [open, allowAutoAttach, stateData?.threadId])
 
 	const sendMessageMutation = useMutation({
 		mutationFn: async (text: string) => {
 			const res = await axios.post('/api/user/ai/send', { threadId, text, assistantId, route: router.asPath })
-			return res.data as { values: any; messages: Message[] }
+			return res.data as { threadId: string; values: any; messages: Message[] }
 		},
 		onMutate: async (text: string) => {
 			await queryClient.cancelQueries({ queryKey: ['ai-state', threadId] })
@@ -98,8 +109,13 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 			})
 			return { previous }
 		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['ai-state', threadId] })
+		onSuccess: (data) => {
+			if (!threadId && data?.threadId) {
+				setThreadId(data.threadId)
+				setAllowAutoAttach(true)
+			}
+			queryClient.invalidateQueries({ queryKey: ['ai-state', data?.threadId || threadId] })
+			queryClient.invalidateQueries({ queryKey: ['ai-history'] })
 		},
 		onError: (err: any, _text, context) => {
 			const msg = err?.response?.data?.message || err?.message || 'Unknown error'
@@ -110,13 +126,17 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 		},
 	})
 
-	const messages: Message[] = useMemo(
-		() =>
+	const [messages, setMessages] = useState<Message[]>([])
+
+	useEffect(() => {
+		if (!stateData) return
+		if (!allowAutoAttach && !threadId) return
+		setMessages(
 			stateData?.messages.filter(
 				(message: Message) => Boolean(message.content) && ['ai', 'human'].includes(message.role)
-			) ?? [],
-		[stateData]
-	)
+			) ?? []
+		)
+	}, [stateData, allowAutoAttach, threadId])
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -125,12 +145,23 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 	const historyMenuItems: MenuProps['items'] = useMemo(() => {
 		return (
 			historyData?.map((item) => ({
-				label:
-					item.title || 'Chat ' + item.id.slice(-8) + ' at ' + dayjs(item.lastMessageAt).format('DD.MM.YYYY HH:mm'),
-				key: item.id,
+				label: item.title || 'Chat ' + ' at ' + dayjs(item.lastMessageAt).format('DD.MM.YYYY HH:mm'),
+				key: item.externalThreadId,
 			})) ?? []
 		)
-	}, [])
+	}, [historyData])
+
+	const handleNewChat = () => {
+		setAllowAutoAttach(false)
+		setThreadId(null)
+		setMessages([])
+		queryClient.removeQueries({ queryKey: ['ai-state'] })
+	}
+
+	const handleHistoryItemClick = (item: any) => {
+		setAllowAutoAttach(true)
+		setThreadId(item.key)
+	}
 
 	return (
 		<Drawer
@@ -146,10 +177,17 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 			title="Triangle Assistant"
 			extra={
 				<Space>
-					<Button size="small" icon={<LuPlus />} onClick={() => router.push('/user/ai')}>
+					<Button size="small" type="text" icon={<LuPlus />} onClick={handleNewChat}>
 						New chat
 					</Button>
-					<Dropdown menu={{ items: historyMenuItems }} trigger={['click']}>
+					<Dropdown
+						menu={{
+							items: historyMenuItems,
+							onClick: handleHistoryItemClick,
+							selectedKeys: threadId ? [threadId] : [],
+						}}
+						trigger={['click']}
+					>
 						<Button size="small" type="text" icon={<MenuOutlined />}></Button>
 					</Dropdown>
 				</Space>
@@ -166,7 +204,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 						onPressEnter={(e) => {
 							if (!e.shiftKey) {
 								e.preventDefault()
-								if (input.trim() && threadId && !sendMessageMutation.isPending) {
+								if (input.trim() && !sendMessageMutation.isPending) {
 									sendMessageMutation.mutate(input.trim())
 									setInput('')
 								}
@@ -178,12 +216,9 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 						shape="circle"
 						icon={<LuArrowUp />}
 						className={styles.agentDrawerInputButton}
-						disabled={!input.trim() || !threadId || sendMessageMutation.isPending}
+						disabled={!input.trim() || sendMessageMutation.isPending}
 						onClick={() => {
-							if (input.trim() && threadId) {
-								sendMessageMutation.mutate(input.trim())
-								setInput('')
-							}
+							sendMessageMutation.mutate(input.trim())
 						}}
 					/>
 				</Flex>
@@ -196,19 +231,22 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 							dataSource={messages}
 							split={false}
 							rowKey="id"
-							renderItem={(item: Message) => {
+							renderItem={(item: Message, index: number) => {
 								const isHuman = item.role === 'human'
 								const authorLabel = isHuman ? 'you' : item.role
+								const preparedContent = hasImageUrl(item.content)
+									? renderContentWithImageUrl(item.content)
+									: item.content
 								return (
 									<List.Item
-										key={item.id || `${item.role}-${item.content}`}
+										key={item.id || `${item.role}-${index}`}
 										className={`${styles.message} ${isHuman ? styles.messageHuman : styles.messageOther}`}
 									>
 										<div className={styles.messageWrapper}>
 											<div className={styles.messageAuthor} style={{ textAlign: isHuman ? 'right' : 'left' }}>
 												{authorLabel}
 											</div>
-											<div className={styles.messageContent}>{item.content}</div>
+											<div className={styles.messageContent}>{preparedContent}</div>
 										</div>
 									</List.Item>
 								)

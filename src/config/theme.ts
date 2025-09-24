@@ -307,6 +307,7 @@ export const appThemeConfig: ThemeConfig = {
 		},
 		Dropdown: {
 			fontSize: 16,
+			controlItemBgActiveHover: '#d7d7d7',
 		},
 		Spin: {
 			fontSize: 16,
