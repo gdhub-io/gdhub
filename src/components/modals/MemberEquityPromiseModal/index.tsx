@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { HiOutlineTrash } from '@react-icons/all-files/hi/HiOutlineTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import {
 	Modal,
 	Form,
@@ -47,7 +47,7 @@ const MemberEquityPromiseModal = ({
 	isVested = true,
 	onDelete,
 }: MemberEquityPromiseModalProps) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [form] = Form.useForm()
 	const [percentage, setPercentage] = useState<number>(0)
 	const [targetStepId, setTargetStepId] = useState<string | undefined>(undefined)

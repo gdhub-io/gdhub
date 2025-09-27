@@ -3,7 +3,7 @@ import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowDownRight } from '@react-icons/all-files/go/GoArrowDownRight'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Col, Row, Space, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -12,7 +12,7 @@ import styles from './style.module.scss'
 const { Title, Text } = Typography
 
 const VacanciesList = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 	const { data: vacancies } = useQuery({

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Card, Typography, Space, Row, Col, Statistic, Skeleton } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -12,7 +12,7 @@ interface UserEquitySectionProps {
 }
 
 const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const { data: summary, isLoading: isLoadingMemberEquity } = useQuery({
 		queryKey: ['project-equity-member-current', projectId],

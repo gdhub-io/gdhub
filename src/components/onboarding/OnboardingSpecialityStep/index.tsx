@@ -5,7 +5,7 @@ import { AiOutlineDown } from '@react-icons/all-files/ai/AiOutlineDown'
 import { AiOutlineUp } from '@react-icons/all-files/ai/AiOutlineUp'
 import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import {
 	Flex,
 	Form,
@@ -112,7 +112,7 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 
 	const workDirectionOptions = workDirections?.data.map((direction) => ({
 		value: direction.id,
-		label: <T keyName={`workDirection-${direction.name}`}>{direction.name}</T>,
+		label: t(`workDirection-${direction.name}`, direction.name),
 	}))
 
 	const handleSave = async () => {
@@ -209,13 +209,19 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 								<Flex align="center" gap={4}>
 									<PiWarningCircleLight size={20} color="#05050573" style={{ height: 20 }} />
 									<Text type="secondary" italic>
-										<T>You can change it or add more ones after</T>
+										{t(
+											'onboarding.speciality.you-can-change-it-or-add-more-ones-after',
+											'You can change it or add more ones after'
+										)}
 									</Text>
 								</Flex>
 							</Flex>
 
 							<Paragraph italic>
-								<T>Information about your main speciality</T>
+								{t(
+									'onboarding.speciality.information-about-your-main-speciality',
+									'Information about your main speciality'
+								)}
 							</Paragraph>
 						</Space>
 
@@ -249,12 +255,10 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 											extra={
 												showParseCVButton && (
 													<Space style={{ marginTop: 4 }}>
-														<Text>
-															<T>Fill in from CV/resume</T>
-														</Text>
+														<Text>{t('onboarding.speciality.fill-in-from-cv-resume', 'Fill in from CV/resume')}</Text>
 														<Upload {...uploadProps} disabled={isParsing}>
 															<Button size="small" disabled={isParsing} loading={isParsing}>
-																<T>Upload PDF</T>
+																{t('onboarding.speciality.upload-pdf', 'Upload PDF')}
 															</Button>
 														</Upload>
 													</Space>
@@ -343,7 +347,9 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 
 								<a onClick={(e) => setShowOptionalFields((prev) => !prev)}>
 									<Space>
-										{showOptionalFields ? <T>Hide additional fields</T> : <T>Fill additional fields</T>}
+										{showOptionalFields
+											? t('onboarding.speciality.hide-additional-fields', 'Hide additional fields')
+											: t('onboarding.speciality.fill-additional-fields', 'Fill additional fields')}
 										{showOptionalFields ? <AiOutlineUp /> : <AiOutlineDown />}
 									</Space>
 								</a>
@@ -356,15 +362,13 @@ export const OnboardingSpecialityStep = ({ onSave, onPreviousStep = () => {} }: 
 						size={16}
 						style={screens.lg ? { flexDirection: 'row' } : { flexDirection: 'column-reverse' }}
 					>
-						<Button onClick={onPreviousStep}>
-							<T keyName="back">Back</T>
-						</Button>
+						<Button onClick={onPreviousStep}>{t('onboarding.speciality.back', 'Back')}</Button>
 						<Space>
 							{/* <Button type="text" onClick={() => router.push('/hub')}>
 							<T keyName="onboarding.welcome.later">Continue later</T>
 						</Button> */}
 							<Button type="primary" onClick={handleSave} loading={isCreating || isUpdating}>
-								<T keyName="saveAndContinue">Save and continue</T>
+								{t('onboarding.speciality.save-and-continue', 'Save and continue')}
 							</Button>
 						</Space>
 					</Space>

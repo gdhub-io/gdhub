@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { T } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Card } from 'antd'
 import { useSession } from 'next-auth/react'
 
@@ -15,6 +15,7 @@ export const RequestedContent = ({
 	}
 }) => {
 	const { data: session } = useSession()
+	const { t } = useTranslate()
 	const lecturer = useMemo(() => lecture.lecturerRequests.find((r) => r.userId == session?.user.id), [lecture])
 
 	const lectureAvatar = () => {
@@ -23,14 +24,13 @@ export const RequestedContent = ({
 
 	return (
 		<>
-			<small>
-				<T>Theme</T>
-			</small>
+			<small>{t('modal.lecturedetails.theme', 'Theme')}</small>
 			<h2>{lecture.name}</h2>
 			<small style={{ marginTop: 16 }}>
 				{lecture.stage == 'Proposed'
-					? <T>The lecturer offers</T> + ':'
-					: <T>The author of the request is interested</T> + ':'}
+					? t('modal.lecturedetails.theLecturerOffers', 'The lecturer offers') + ':'
+					: t('modal.lecturedetails.theAuthorOfTheRequestIsInterested', 'The author of the request is interested') +
+						':'}
 			</small>
 			<div className="lecture-description">
 				<TextWithLineBreak text={lecture.stage == 'Proposed' ? lecturer?.curriculum : lecture.wishes} />
@@ -38,25 +38,21 @@ export const RequestedContent = ({
 
 			{!!lecturer && (
 				<>
-					<div style={{ marginTop: 16 }}>
-						<T>Lecturer</T>:
-					</div>
+					<div style={{ marginTop: 16 }}>{t('modal.lecturedetails.lecturer', 'Lecturer')}:</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
 							title={lecturer.user.name}
 							description={
 								<>
-									{lecturer.user.specialities ? (
-										lecturer.user.specialities.map((s: prismaClient.Speciality) => (
-											<Fragment key={s.name}>
-												{s.name} ({s.level})
-												<br />
-											</Fragment>
-										))
-									) : (
-										<T>Community member</T>
-									)}
+									{lecturer.user.specialities
+										? lecturer.user.specialities.map((s: prismaClient.Speciality) => (
+												<Fragment key={s.name}>
+													{s.name} ({s.level})
+													<br />
+												</Fragment>
+											))
+										: t('modal.lecturedetails.communityMember', 'Community member')}
 								</>
 							}
 						/>

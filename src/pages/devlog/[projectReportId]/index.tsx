@@ -4,7 +4,7 @@ import { PageViews } from '@/components/PageViews'
 import { getCleanTextContent, getPageCover } from '@/helpers/content'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined, LockOutlined } from '@ant-design/icons'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Flex, Image as AntImage, Typography, Space } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
@@ -150,7 +150,7 @@ const MarkdownImage = ({
 }
 
 export default function ProjectReport({ post, contentLength, isAuthenticated }: PageProps) {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString)

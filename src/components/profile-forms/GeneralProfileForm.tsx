@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AvailableLocales } from '@/config/locale'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { AutoComplete, Button, Card, Flex, Form, Input, message, Select, Spin } from 'antd'
 import { useSession } from 'next-auth/react'
 import countryList from 'react-select-country-list'
@@ -68,26 +68,31 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 				}}
 			>
 				<Flex vertical gap={16}>
-					<Card title={<T keyName="profile-forms.general.card.account">Account</T>} bordered={false}>
-						<Form.Item label={<T>Display Name</T>} name="name" rules={[{ required: true }]} required>
+					<Card title={t('components.profile-forms.general.card.account', 'Account')} bordered={false}>
+						<Form.Item
+							label={t('components.profile-forms.general.card.account', 'Display Name')}
+							name="name"
+							rules={[{ required: true }]}
+							required
+						>
 							<Input />
 						</Form.Item>
 						<Form.Item
-							label={<T keyName="profile-forms.general.field.email.title">Email</T>}
+							label={t('components.profile-forms.general.field.email.title', 'Email')}
 							tooltip={{ title: t('profile-forms.general.field.email.tooltip', 'Received from your Google account') }}
 							required
 						>
 							<Input disabled readOnly value={session?.user?.email || ''} />
 						</Form.Item>
 						<Form.Item
-							label={<T keyName="profile-forms.general.field.tgNickname.title">Telegram nickname</T>}
+							label={t('components.profile-forms.general.field.tgNickname.title', 'Telegram nickname')}
 							name="tgNickname"
-							extra={<T keyName="profile-forms.general.field.tgNickname.extra">Indicate without symbol @</T>}
+							extra={t('components.profile-forms.general.field.tgNickname.extra', 'Indicate without symbol @')}
 						>
 							<Input />
 						</Form.Item>
 						<Form.Item
-							label={<T keyName="profile-forms.general.field.language">Platform language</T>}
+							label={t('components.profile-forms.general.field.language', 'Platform language')}
 							name="lang"
 							rules={[{ required: true }]}
 						>
@@ -101,11 +106,16 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 						</Form.Item>
 					</Card>
 
-					<Card title={<T keyName="profile-forms.general.card.location">Location</T>} bordered={false}>
-						<Form.Item label={<T>Country</T>} name="country" rules={[{ required: true }]} required>
+					<Card title={t('components.profile-forms.general.card.location', 'Location')} bordered={false}>
+						<Form.Item
+							label={t('components.profile-forms.general.card.country', 'Country')}
+							name="country"
+							rules={[{ required: true }]}
+							required
+						>
 							<AutoComplete
 								allowClear
-								placeholder={<T>Country</T>}
+								placeholder={t('components.profile-forms.general.card.country', 'Country')}
 								filterOption={(inputValue, option) =>
 									option?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
 								}
@@ -117,13 +127,17 @@ const GeneralProfileForm = ({ profile, saveProfile }: GeneralProfileFormArgs) =>
 								))}
 							</AutoComplete>
 						</Form.Item>
-						<Form.Item label={<T>City</T>} name="city" rules={[{ required: false }]}>
+						<Form.Item
+							label={t('components.profile-forms.general.card.city', 'City')}
+							name="city"
+							rules={[{ required: false }]}
+						>
 							<Input />
 						</Form.Item>
 					</Card>
 					<Card bordered={false} styles={{ body: { paddingTop: 0 } }}>
 						<Button type="primary" onClick={handleForm} loading={processing}>
-							<T>Save</T>
+							{t('components.profile-forms.general.card.save', 'Save')}
 						</Button>
 					</Card>
 				</Flex>

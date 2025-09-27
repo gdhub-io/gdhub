@@ -5,7 +5,7 @@ import { MdCancel } from '@react-icons/all-files/md/MdCancel'
 import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
 import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Modal, theme, Tooltip } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -21,7 +21,7 @@ interface ProjectAdviceArchiveModalProps {
 }
 
 const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({ open, projectId, advisor, onClose }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 	const { token: themeToken } = theme.useToken()
 

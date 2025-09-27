@@ -7,7 +7,7 @@ import { OnboardingProfileStep } from '@/components/onboarding/OnboardingProfile
 import { OnboardingResourceStep } from '@/components/onboarding/OnboardingResourceStep'
 import { OnboardingSpecialityStep } from '@/components/onboarding/OnboardingSpecialityStep'
 import { OnboardingWelcome } from '@/components/onboarding/OnboardingWelcome'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Typography, Row, Col, Steps, Flex, Menu, Grid } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'
 import styles from './style.module.scss'
@@ -21,7 +21,7 @@ declare global {
 }
 
 const OnboardingPage = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const screens = Grid.useBreakpoint()
 	const containerRef = useRef<HTMLDivElement>(null)
 	const [error, setError] = useState<string>()
@@ -99,9 +99,7 @@ const OnboardingPage = () => {
 					<div className="onboarding-box">
 						<div className="onboarding-header">
 							<Flex align="center">
-								<Title style={{ flex: '400px' }}>
-									<T keyName="registration">Registration</T>
-								</Title>
+								<Title style={{ flex: '400px' }}>{t('onboarding.registration.title', 'Registration')}</Title>
 								{screens.lg && (
 									<Steps
 										current={onboardingStep}

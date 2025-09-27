@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BsCheckLg } from '@react-icons/all-files/bs/BsCheckLg'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Checkbox, Form, Input, List, Modal, Spin } from 'antd'
 import axios from 'axios'
 import styles from './style.module.scss'
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [processing, setProcessing] = useState(false)
 	const [selectedItem, setSelectedItem] = useState<string>()
 	const [contactType, setContactType] = useState<string[]>(['email'])
@@ -79,7 +79,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		<>
 			<Modal
 				centered
-				title={<T keyName="modal.speciality-select.title">Indicate the specialty</T>}
+				title={t('modal.speciality-select.title', 'Indicate the specialty')}
 				destroyOnHidden
 				okButtonProps={{
 					disabled:
@@ -88,18 +88,16 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 						(!contacts?.data.telegram && contactType.includes('telegram') && !telegramNickname),
 				}}
 				maskClosable={false}
-				okText={<T keyName="modal.speciality-select.okText">Choose</T>}
+				okText={t('modal.speciality-select.okText', 'Choose')}
 				onOk={handleOk}
-				cancelText={<T>Close</T>}
+				cancelText={t('modal.specialitySelect.close', 'Close')}
 				open={open}
 				onCancel={handleCancel}
 				confirmLoading={isLoading || isContactsLoading || processing}
 			>
 				<Spin spinning={isLoading || isContactsLoading || processing}>
 					<p>
-						<T keyName="modal.speciality-select.choose-text">
-							Choose your specialty that corresponds to the selected vacancy
-						</T>
+						{t('modal.speciality-select.choose-text', 'Choose your specialty that corresponds to the selected vacancy')}
 					</p>
 					<List
 						bordered
@@ -115,9 +113,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 						)}
 					/>
 					<br />
-					<p>
-						<T keyName="modal.speciality-select.contact-text">How to contact the author of the project with you?</T>
-					</p>
+					<p>{t('modal.speciality-select.contact-text', 'How to contact the author of the project with you?')}</p>
 					<Checkbox.Group
 						rootClassName={styles.contactTypes}
 						options={options}

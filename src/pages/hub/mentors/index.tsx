@@ -3,7 +3,7 @@ import { useWorkDirections } from '@/hooks/library'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Card, Col, Form, Row, Select, Spin, Tag, Typography } from 'antd'
 import axios from 'axios'
 import styles from './styles.module.scss'
@@ -31,7 +31,7 @@ type Mentor = {
 }
 
 const MentorsPage = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [selectedWorkDirection, setSelectedWorkDirection] = useState<string | undefined>(undefined)
 	const { options: workDirectionOptions } = useWorkDirections()
 
@@ -117,7 +117,7 @@ const MentorsPage = () => {
 								<div className={styles.mentorCardContent}>
 									<div className={styles.questionsSection}>
 										<Text type="secondary" strong>
-											<T keyName="mentors.page.telegram.questions">Ready to answer questions about:</T>
+											{t('mentors.page.telegram.questions', 'Ready to answer questions about:')}
 										</Text>
 										<ul className={styles.questionsList}>
 											{mentor.specialities.flatMap((s: any) =>
@@ -133,9 +133,7 @@ const MentorsPage = () => {
 
 				{mentors?.data.length === 0 && !isLoading && (
 					<div className={styles.noResults}>
-						<Text>
-							<T keyName="mentors.page.noResults">No mentors found with the selected filter.</T>
-						</Text>
+						<Text>{t('mentors.page.noResults', 'No mentors found with the selected filter.')}</Text>
 					</div>
 				)}
 			</Spin>

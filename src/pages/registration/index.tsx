@@ -5,7 +5,7 @@ import { gtmEventTrigger } from '@/helpers/gtm'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { FaGoogle } from '@react-icons/all-files/fa/FaGoogle'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Space, Typography, Form, Input, message, Checkbox, notification, Grid, Flex } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
@@ -105,11 +105,7 @@ const RegistrationPage: NextPage = () => {
 				<div className="login-box">
 					<div className="login-form">
 						<Space direction="vertical" size={40}>
-							{registrationStep.step < 3 && (
-								<Title>
-									<T>Registration</T>
-								</Title>
-							)}
+							{registrationStep.step < 3 && <Title>{t('Registration', 'Registration')}</Title>}
 							{registrationStep.step == 1 && (
 								<>
 									<Space direction="vertical" size={24}>
@@ -118,7 +114,7 @@ const RegistrationPage: NextPage = () => {
 											style={{ width: '100%' }}
 											onClick={() => setRegistrationStep({ step: 2, provider: 'email' })}
 										>
-											<T>Create new account</T>
+											{t('Create new account', 'Create new account')}
 										</Button>
 										<Button
 											type="primary"
@@ -126,14 +122,14 @@ const RegistrationPage: NextPage = () => {
 											icon={<FaGoogle size={16} />}
 											onClick={() => setRegistrationStep({ step: 2, provider: 'google' })}
 										>
-											<T>Registration with Google</T>
+											{t('page.registration.registrationWithGoogle', 'Registration with Google')}
 										</Button>
 										<Link href="/signin" className={styles.createAccountLink}>
-											<T>I already have an account</T>
+											{t('page.registration.iAlreadyHaveAnAccount', 'I already have an account')}
 										</Link>
 										<Link href="/">
 											<Button className="btn-default-on-white" style={{ width: '100%' }}>
-												<T>Back to main</T>
+												{t('page.registration.backToMain', 'Back to main')}
 											</Button>
 										</Link>
 									</Space>
@@ -165,25 +161,24 @@ const RegistrationPage: NextPage = () => {
 												]}
 											>
 												<Checkbox>
-													<T keyName="agreeWithTermsAndPrivacy">
-														By joining, you agree to our Terms of Service and Privacy Policy
-													</T>
+													{t(
+														'page.registration.agreeWithTermsAndPrivacy',
+														'By joining, you agree to our Terms of Service and Privacy Policy'
+													)}
 												</Checkbox>
 											</Form.Item>
 
 											<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
-												<Checkbox>
-													<T keyName="subscribeToNewsletter">Receive platform news</T>
-												</Checkbox>
+												<Checkbox>{t('page.registration.subscribeToNewsletter', 'Receive platform news')}</Checkbox>
 											</Form.Item>
 										</Form>
 
 										<Flex justify="center" wrap="wrap" gap={16}>
 											<Button type="primary" onClick={handleSendWithGoogle} loading={isRegistration}>
-												<T>Continue with Google</T>
+												{t('page.registration.continueWithGoogle', 'Continue with Google')}
 											</Button>
 											<Button type="link" onClick={() => setRegistrationStep({ step: 1, provider: 'email' })}>
-												<T>Back</T>
+												{t('page.registration.back', 'Back')}
 											</Button>
 										</Flex>
 									</Space>
@@ -194,16 +189,20 @@ const RegistrationPage: NextPage = () => {
 								<>
 									<Space direction="vertical" size={24}>
 										<Paragraph>
-											<T keyName="registration.email.subtitle">
-												We will send a letter to email with a registration link
-											</T>
+											{t('page.registration.email.subtitle', 'We will send a letter to email with a registration link')}
 										</Paragraph>
 
 										<Form form={formRegEmail} layout="vertical">
 											<Form.Item
 												name="email"
-												label={<T>Enter Email</T>}
-												rules={[{ type: 'email', required: true, message: <T>Please enter Email</T> }]}
+												label={t('page.registration.email.enterEmail', 'Enter Email')}
+												rules={[
+													{
+														type: 'email',
+														required: true,
+														message: t('page.registration.email.pleaseEnterEmail', 'Please enter Email'),
+													},
+												]}
 											>
 												<Input />
 											</Form.Item>
@@ -229,25 +228,24 @@ const RegistrationPage: NextPage = () => {
 												]}
 											>
 												<Checkbox>
-													<T keyName="agreeWithTermsAndPrivacy">
-														By joining, you agree to our Terms of Service and Privacy Policy
-													</T>
+													{t(
+														'page.registration.agreeWithTermsAndPrivacy',
+														'By joining, you agree to our Terms of Service and Privacy Policy'
+													)}
 												</Checkbox>
 											</Form.Item>
 
 											<Form.Item name="needSubscribeToNewsletter" valuePropName="checked" noStyle>
-												<Checkbox>
-													<T keyName="subscribeToNewsletter">Receive platform news</T>
-												</Checkbox>
+												<Checkbox>{t('page.registration.subscribeToNewsletter', 'Receive platform news')}</Checkbox>
 											</Form.Item>
 										</Form>
 
 										<Flex justify="center" wrap="wrap" gap={16}>
 											<Button type="primary" onClick={handleSendWithEmail} loading={isRegistration}>
-												<T>Send registration link</T>
+												{t('page.registration.sendRegistrationLink', 'Send registration link')}
 											</Button>
 											<Button type="link" onClick={() => setRegistrationStep({ step: 1, provider: 'email' })}>
-												<T>Back</T>
+												{t('page.registration.back', 'Back')}
 											</Button>
 										</Flex>
 									</Space>
@@ -257,15 +255,16 @@ const RegistrationPage: NextPage = () => {
 							{registrationStep.step == 3 && registrationStep.provider == 'email' && (
 								<Space direction="vertical" size={24}>
 									<Paragraph style={{ maxWidth: 400 }}>
-										<T keyName="registration.email.complete" params={{ email }}>
-											We have sent an email to email with an access link. Follow the link and complete the following
-											registration steps.
-										</T>
+										{t(
+											'page.registration.email.complete',
+											'We have sent an email to {email} with an access link. Follow the link and complete the following registration steps.',
+											{ email }
+										)}
 									</Paragraph>
 
 									<Link href="/">
 										<Button className="btn-default-on-white" style={{ width: '100%' }}>
-											<T>Back to main</T>
+											{t('page.registration.backToMain', 'Back to main')}
 										</Button>
 									</Link>
 								</Space>

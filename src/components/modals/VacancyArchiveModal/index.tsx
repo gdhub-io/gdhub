@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { BsCheckLg } from '@react-icons/all-files/bs/BsCheckLg'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { List, Modal, Spin } from 'antd'
 import axios from 'axios'
 
 const VacancyArchiveModal = ({ projectId, projectName, teamId, open, onRestore, onCancel }: any) => {
+	const { t } = useTranslate()
 	const [processing, setProcessing] = useState(true)
 	const [selectedItem, setSelectedItem] = useState<string>()
 
@@ -61,29 +62,21 @@ const VacancyArchiveModal = ({ projectId, projectName, teamId, open, onRestore, 
 	return (
 		<Modal
 			centered
-			title={
-				<T
-					keyName="modal.vacancy-archive.title"
-					defaultValue="Archive of vacancies from the {projectName} project"
-					params={{ projectName }}
-				/>
-			}
+			title={t('modal.vacancyArchive.title', 'Archive of vacancies from the {projectName} project', { projectName })}
 			width={800}
 			destroyOnHidden
 			maskClosable={false}
 			open={open}
 			onCancel={handleCancel}
 			confirmLoading={processing}
-			okText={<T>Restore</T>}
+			okText={t('modal.vacancyArchive.restore', 'Restore')}
 			onOk={handleOk}
 			okButtonProps={{
 				disabled: !selectedItem,
 			}}
 		>
 			<Spin spinning={processing}>
-				<p>
-					<T>Select the vacancy you want to restore</T>
-				</p>
+				<p>{t('modal.vacancyArchive.selectVacancy', 'Select the vacancy you want to restore')}</p>
 				<List
 					bordered
 					dataSource={archivedProjectVacancies?.data}

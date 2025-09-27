@@ -1,6 +1,6 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Col, Card, Descriptions, Typography, Button, Row, Grid, Space } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -19,7 +19,7 @@ export const StageProjectsSection = ({
 	status = prismaClient.ProjectStatus.Registered,
 }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery({
 		queryKey: ['projects', stageId],
@@ -32,21 +32,15 @@ export const StageProjectsSection = ({
 	if (!projects?.data.length) {
 		return (
 			<Space style={{ width: '100%', marginTop: 32 }} direction="vertical">
-				<Title level={5}>
-					<T keyName="projectListByStage" />
-				</Title>
-				<p>
-					<T keyName="no-projects-yet" />
-				</p>
+				<Title level={5}>{t('component.stageProjectsSection.projectListByStage', 'Project list by stage')}</Title>
+				<p>{t('component.stageProjectsSection.noProjectsYet', 'No projects yet')}</p>
 			</Space>
 		)
 	}
 
 	return (
 		<Space style={{ width: '100%', marginTop: 32 }} direction="vertical">
-			<Title level={5}>
-				<T keyName="projectListByStage" />
-			</Title>
+			<Title level={5}>{t('component.stageProjectsSection.projectListByStage', 'Project list by stage')}</Title>
 			{projects.data.map((project, idx: number) => (
 				<Row
 					key={'season-project-' + idx}
@@ -77,7 +71,7 @@ export const StageProjectsSection = ({
 										</Descriptions>
 										<Link href={`/project/${project.slug}`} target="_blank">
 											<Button type="primary" style={{ width: '100%', marginTop: '10px' }}>
-												<T>On the page of the project</T>
+												{t('component.stageProjectsSection.onThePageOfTheProject', 'On the page of the project')}
 											</Button>
 										</Link>
 									</div>

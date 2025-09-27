@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useState } from 'react'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Carousel, Grid, Typography } from 'antd'
 import dynamic from 'next/dynamic'
 import ReactNiceAvatar from 'react-nice-avatar'
@@ -211,21 +211,17 @@ const feedbackList = [
 ]
 
 export const LandingFeedbackSection = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const screens = Grid.useBreakpoint()
 	const [maxHeight, setMaxHeight] = useState('833px')
 
 	return (
 		<div id="reviews" className={styles.section} style={{ maxHeight: maxHeight }}>
 			<div className={styles.container}>
-				<div className={styles.preTitle}>
-					<T keyName="landing.feedback.pretitle">Testimonials</T>
-				</div>
-				<Title level={2}>
-					<T keyName="landing.feedback.title">What our users say</T>
-				</Title>
+				<div className={styles.preTitle}>{t('landing.feedback.pretitle', 'Testimonials')}</div>
+				<Title level={2}>{t('landing.feedback.title', 'What our users say')}</Title>
 				<div className={styles.subTitle}>
-					<T keyName="landing.feedback.subtitle">We are happy to work long-term with our users!</T>
+					{t('landing.feedback.subtitle', 'We are happy to work long-term with our users!')}
 				</div>
 				<div className={styles.content}>
 					{screens.lg && (
@@ -240,7 +236,7 @@ export const LandingFeedbackSection = () => {
 													title={t(`landing.feedback.title` + index, feedback.name)}
 													description={t(`landing.feedback.description` + index, feedback.position)}
 												/>
-												<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
+												{t(`landing.feedback.text` + index, feedback.text)}
 											</Card>
 										))}
 									</MasonryComponent>
@@ -248,7 +244,7 @@ export const LandingFeedbackSection = () => {
 							</Suspense>
 							{maxHeight != 'none' ? (
 								<Button className={styles.readMoreBtn} onClick={() => setMaxHeight('none')}>
-									<T>Read more</T>
+									{t('component.landingFeedbackSection.readMore', 'Read more')}
 								</Button>
 							) : null}
 						</>
@@ -271,7 +267,7 @@ export const LandingFeedbackSection = () => {
 												title={t(`landing.feedback.title` + index, feedback.name)}
 												description={t(`landing.feedback.description` + index, feedback.position)}
 											/>
-											<T keyName={`landing.feedback.text` + index}>{feedback.text}</T>
+											{t(`landing.feedback.text` + index, feedback.text)}
 										</Card>
 									</div>
 								))}

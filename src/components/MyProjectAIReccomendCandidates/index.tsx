@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
-import { Avatar, Grid, Space, Table, Tag, Typography, theme } from 'antd'
+import { useTranslate } from '@tolgee/react'
+import { Avatar, Space, Table, Tag, Typography, theme } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
 import SpecialistPreviewModal from '../modals/SpecialistPreviewModal'
@@ -14,9 +14,8 @@ interface MyProjectAIReccomendCandidatesArgs {
 const { Text } = Typography
 
 const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandidatesArgs) => {
-	const screens = Grid.useBreakpoint()
 	const { token } = theme.useToken()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<string | undefined>()
 
 	const {
@@ -151,7 +150,10 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 		<>
 			<Space align="center" style={{ marginTop: 60 }}>
 				<h3 style={{ margin: 0 }}>
-					<T>AI Reccomendation Specialists</T>
+					{t(
+						'components.my-project-ai-reccomend-candidates.aiReccomendationSpecialists',
+						'AI Reccomendation Specialists'
+					)}
 				</h3>
 				<Tag color="gray">{aiCandidates?.data.length || 0}</Tag>
 			</Space>
@@ -174,7 +176,10 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 				</>
 			) : (
 				<p style={{ marginTop: 12, color: 'gray' }}>
-					<T>There are currently no AI recommendations for specialists.</T>
+					{t(
+						'components.my-project-ai-reccomend-candidates.noAiRecommendations',
+						'There are currently no AI recommendations for specialists.'
+					)}
 				</p>
 			)}
 		</>

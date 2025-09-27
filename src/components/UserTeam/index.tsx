@@ -5,7 +5,7 @@ import UserEquitySection from '@/components/UserEquitySection'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Grid, Typography, Tag, Space } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -15,7 +15,7 @@ const { Text } = Typography
 
 const UserTeam = () => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const contextProject = useContext(ProjectContext)?.contextProject
 
 	const { data: team, isLoading: isLoadingMyTeam } = useQuery({
@@ -75,11 +75,10 @@ const UserTeam = () => {
 				let finishedAt = member.finishedAt ? dayjs(member.finishedAt).format('DD.MM.YYYY') : t('present')
 				return (
 					<Text className={tableStyles.tableMemberDates}>
-						<T
-							keyName="fromToWithDates"
-							defaultValue="from {fromDate} to {toDate}"
-							params={{ fromDate: startedAt, toDate: finishedAt }}
-						/>
+						{t('fromToWithDates', 'from {fromDate} to {toDate}', {
+							fromDate: startedAt,
+							toDate: finishedAt,
+						})}
 					</Text>
 				)
 			},

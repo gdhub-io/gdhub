@@ -9,7 +9,7 @@ import { useTelegram } from '@/helpers/useTelegram'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -133,13 +133,7 @@ export const PublicLayout = ({
 			{
 				label: (
 					<Link href="/projects" title="Projects">
-						{screens.lg ? (
-							<Button type="text">
-								<T>Projects</T>
-							</Button>
-						) : (
-							<T>Projects</T>
-						)}
+						{screens.lg ? <Button type="text">{t('Projects', 'Projects')}</Button> : t('Projects', 'Projects')}
 					</Link>
 				),
 				key: '/projects',
@@ -147,13 +141,7 @@ export const PublicLayout = ({
 			{
 				label: (
 					<Link href="/vacancies" title="Vacancies">
-						{screens.lg ? (
-							<Button type="text">
-								<T>Vacancies</T>
-							</Button>
-						) : (
-							<T>Vacancies</T>
-						)}
+						{screens.lg ? <Button type="text">{t('Vacancies', 'Vacancies')}</Button> : t('Vacancies', 'Vacancies')}
 					</Link>
 				),
 				key: '/vacancies',
@@ -167,7 +155,7 @@ export const PublicLayout = ({
 			{
 				label: (
 					<Link href="#about" title={t('About us')}>
-						<T>About us</T>
+						{t('About us', 'About us')}
 					</Link>
 				),
 				key: '#about',
@@ -175,7 +163,7 @@ export const PublicLayout = ({
 			{
 				label: (
 					<Link href="#for-authors" title={t('For Authors')}>
-						<T>For Authors</T>
+						{t('For Authors', 'For Authors')}
 					</Link>
 				),
 				key: '#for-authors',
@@ -183,7 +171,7 @@ export const PublicLayout = ({
 			{
 				label: (
 					<Link href="#for-specialists" title={t('For Specialists')}>
-						<T>For Specialists</T>
+						{t('For Specialists', 'For Specialists')}
 					</Link>
 				),
 				key: '#for-specialists',
@@ -191,7 +179,7 @@ export const PublicLayout = ({
 			{
 				label: (
 					<Link href="#contacts" title={t('Contacts')}>
-						<T>Contacts</T>
+						{t('Contacts', 'Contacts')}
 					</Link>
 				),
 				key: '#contacts',
@@ -206,13 +194,7 @@ export const PublicLayout = ({
 				style: { display: screens.lg ? 'none' : 'block' },
 				label: (
 					<Link href="/hub" title={t('Main Page')}>
-						{screens.lg ? (
-							<Button type="primary">
-								<T>Home</T>
-							</Button>
-						) : (
-							<T>Home</T>
-						)}
+						{screens.lg ? <Button type="primary">{t('Home', 'Home')}</Button> : t('Home', 'Home')}
 					</Link>
 				),
 				key: '/hub',
@@ -222,13 +204,9 @@ export const PublicLayout = ({
 				label: (
 					<Link href="https://docs.gdhub.io" target="_blank" title={t('Documentation')}>
 						{screens.lg ? (
-							<Button type="primary">
-								<T>Documentation</T>
-							</Button>
+							<Button type="primary">{t('Documentation', 'Documentation')}</Button>
 						) : (
-							<strong>
-								<T>Documentation</T>
-							</strong>
+							<strong>{t('Documentation', 'Documentation')}</strong>
 						)}
 					</Link>
 				),
@@ -243,13 +221,7 @@ export const PublicLayout = ({
 				{
 					label: (
 						<Link href="/hub/members" title={t('Community Members')}>
-							{screens.lg ? (
-								<Button type="text">
-									<T>Members</T>
-								</Button>
-							) : (
-								<T>Members</T>
-							)}
+							{screens.lg ? <Button type="text">{t('Members', 'Members')}</Button> : t('Members', 'Members')}
 						</Link>
 					),
 					key: '/hub/members',
@@ -259,10 +231,10 @@ export const PublicLayout = ({
 				// 		<Link href="/hub/lectures" title={t('Community Lectures')}>
 				// 			{screens.lg ? (
 				// 				<Button type="text">
-				// 					<T>Lectures</T>
+				// 					{t('Lectures', 'Lectures')}
 				// 				</Button>
 				// 			) : (
-				// 				<T>Lectures</T>
+				// 				{t('Lectures', 'Lectures')}
 				// 			)}
 				// 		</Link>
 				// 	),
@@ -280,11 +252,7 @@ export const PublicLayout = ({
 
 		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
-				label: (
-					<Link href="/admin/seasons">
-						<T>Administration</T>
-					</Link>
-				),
+				label: <Link href="/admin/seasons">{t('Administration', 'Administration')}</Link>,
 				key: '/admin/seasons',
 			})
 		}
@@ -292,11 +260,7 @@ export const PublicLayout = ({
 		menu = [
 			...menu,
 			{
-				label: (
-					<Link href="/profile">
-						<T>Profile</T>
-					</Link>
-				),
+				label: <Link href="/profile">{t('Profile', 'Profile')}</Link>,
 				key: 'profile',
 			},
 			{

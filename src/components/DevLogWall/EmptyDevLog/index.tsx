@@ -1,9 +1,9 @@
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Typography } from 'antd'
 import styles from './style.module.scss'
 
 export const EmptyDevLog = ({ projectName }: { projectName?: string }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<div className={styles.emptyDevLog}>

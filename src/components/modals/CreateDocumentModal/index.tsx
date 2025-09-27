@@ -3,14 +3,14 @@ import { gtmEventTrigger } from '@/helpers/gtm'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiFileDuotone } from '@react-icons/all-files/pi/PiFileDuotone'
 import { useMutation } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Flex, Form, Input, message, Modal, Select, Spin } from 'antd'
 import axios from 'axios'
 
 const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, teamId }: any) => {
 	const [form] = Form.useForm()
 	const selectedDocumentType = Form.useWatch('type', form)
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const {
 		mutateAsync: createDocument,
@@ -79,13 +79,13 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 			title={
 				<Flex align="center" gap={8}>
 					<PiFileDuotone size={32} />
-					<T keyName="modal.create-document.title">Add new team document</T>
+					{t('modal.create-document.title', 'Add new team document')}
 				</Flex>
 			}
 			width={640}
 			maskClosable={false}
-			okText={<T>Add</T>}
-			cancelText={<T>Cancel</T>}
+			okText={t('modal.create-document.ok-text', 'Add')}
+			cancelText={t('modal.create-document.cancel-text', 'Cancel')}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -104,13 +104,13 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 					initialValues={{ agree: false }}
 				>
 					<Form.Item
-						label={<T keyName="modal.create-document.field.type.label">Type</T>}
+						label={t('modal.create-document.field.type.label', 'Type')}
 						name="type"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
 						<Select
-							placeholder="Select document type"
+							placeholder={t('modal.create-document.field.type.placeholder', 'Select document type')}
 							options={[
 								// { label: 'Concept Document', value: prismaClient.TeamDocumentType.Concept },
 								{ label: 'Game Design Document', value: prismaClient.TeamDocumentType.GDD },
@@ -120,26 +120,28 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 						/>
 					</Form.Item>
 					<Form.Item
-						label={<T keyName="modal.create-document.field.name.label">Title</T>}
+						label={t('modal.create-document.field.name.label', 'Title')}
 						name="name"
 						rules={[{ required: selectedDocumentType === 'other' }]}
 						wrapperCol={{ span: 24 }}
 						hidden={selectedDocumentType != 'other'}
 					>
-						<Input placeholder="Document title" />
+						<Input placeholder={t('modal.create-document.field.name.placeholder', 'Document title')} />
 					</Form.Item>
 
 					<Form.Item
-						label={<T keyName="modal.create-document.field.link.label">Link to document</T>}
+						label={t('modal.create-document.field.link.label', 'Link to document')}
 						name="link"
 						rules={[{ required: true, type: 'url' }]}
 						wrapperCol={{ span: 24 }}
 					>
-						<Input placeholder="https://example.com/document.pdf" />
+						<Input
+							placeholder={t('modal.create-document.field.link.placeholder', 'https://example.com/document.pdf')}
+						/>
 					</Form.Item>
 					<Form.Item
 						name="description"
-						label={<T keyName="modal.create-document.field.description.label">Short Description</T>}
+						label={t('modal.create-document.field.description.label', 'Short Description')}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input.TextArea

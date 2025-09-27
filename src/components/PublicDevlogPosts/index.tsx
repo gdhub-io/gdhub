@@ -3,7 +3,7 @@ import { PageViews } from '@/components/PageViews'
 import { getPageCover } from '@/helpers/content'
 import { ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Flex, Typography, Skeleton } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -154,7 +154,7 @@ const PostSkeleton = () => {
 }
 
 const PublicDevlogPosts = ({ projectId }: PublicDevlogPostsProps) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const limit = 5
 
 	const { data: posts, isLoading } = useQuery<DevlogPost[]>({

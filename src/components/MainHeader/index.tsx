@@ -4,7 +4,7 @@ import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { LogoutOutlined } from '@ant-design/icons'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Drawer, Flex, Grid, Menu, MenuProps, Skeleton, Space } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -16,7 +16,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	const { data: session, status: authStatus }: any = useSession()
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [activeMenuKey, setActiveMenuKey] = useState<string>('')
 
@@ -168,7 +168,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			return (
 				<Link href="/signin">
 					<Button type="primary" className={styles.actionButton} block>
-						<T>Log in</T>
+						{t('mainHeader.logIn', 'Log in')}
 					</Button>
 				</Link>
 			)
@@ -178,7 +178,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			return (
 				<Link href="/hub">
 					<Button className={styles.actionButton} block>
-						<T>Go to app</T>
+						{t('mainHeader.goToApp', 'Go to app')}
 					</Button>
 				</Link>
 			)
@@ -189,7 +189,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		if (authStatus === 'authenticated') {
 			return (
 				<Button type="text" size="small" onClick={() => signOut()}>
-					<LogoutOutlined /> Logout
+					<LogoutOutlined /> {t('mainHeader.logout', 'Logout')}
 				</Button>
 			)
 		}

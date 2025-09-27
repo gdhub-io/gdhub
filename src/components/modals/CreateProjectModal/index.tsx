@@ -58,14 +58,14 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 			title={
 				<Flex align="center" gap={8}>
 					<PiRocketDuotone size={32} />
-					<T keyName="modal.create-project.title">Create new game project</T>
+					{t('modal.create-project.title', 'Create new game project')}
 				</Flex>
 			}
 			width={640}
 			destroyOnHidden
 			maskClosable={false}
-			okText={<T>Create</T>}
-			cancelText={<T>Cancel</T>}
+			okText={t('modal.create-project.ok-text', 'Create')}
+			cancelText={t('modal.create-project.cancel-text', 'Cancel')}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -84,7 +84,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 					initialValues={{ agree: false }}
 				>
 					<Form.Item
-						label={<T keyName="modal.create-project.field.name.label">Title</T>}
+						label={t('modal.create-project.field.name.label', 'Title')}
 						name="name"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
@@ -94,7 +94,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 
 					<Form.Item
 						name="description"
-						label={<T keyName="modal.create-project.field.description.label">Short Description</T>}
+						label={t('modal.create-project.field.description.label', 'Short Description')}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input.TextArea
@@ -124,24 +124,26 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 						]}
 					>
 						<Checkbox className={styles.checkbox}>
-							<T
-								keyName="modal.create-project.field.agree.label"
-								defaultValue="I confirm that I have read and agree to the <a>requirements for game projects published on the gdhub.io platform</a>."
-								params={{
-									a: (
-										<a
-											href={
-												getLanguage() == 'ru'
-													? 'https://gdhub.notion.site/gdhub-io-157dcc9e9c9d805f8bace76c04d0a36b'
-													: 'https://gdhub.notion.site/Requirements-for-game-projects-published-on-the-gdhub-io-platform-157dcc9e9c9d80c3ab0ae8d12035dc30'
-											}
-											target="_blank"
-											rel="noreferrer"
-											className={styles.link}
-										/>
-									),
-								}}
-							/>
+							{
+								<T
+									keyName="modal.create-project.field.agree.label"
+									defaultValue="I confirm that I have read and agree to the <a>requirements for game projects published on the gdhub.io platform</a>."
+									params={{
+										a: (
+											<a
+												href={
+													getLanguage() == 'ru'
+														? 'https://gdhub.notion.site/gdhub-io-157dcc9e9c9d805f8bace76c04d0a36b'
+														: 'https://gdhub.notion.site/Requirements-for-game-projects-published-on-the-gdhub-io-platform-157dcc9e9c9d80c3ab0ae8d12035dc30'
+												}
+												target="_blank"
+												rel="noreferrer"
+												className={styles.link}
+											/>
+										),
+									}}
+								/>
+							}
 						</Checkbox>
 					</Form.Item>
 				</Form>

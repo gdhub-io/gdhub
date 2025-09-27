@@ -3,7 +3,7 @@ import { PageViews } from '@/components/PageViews'
 import { getEditorjsPageCover } from '@/helpers/content'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { ArrowLeftOutlined, ClockCircleOutlined } from '@ant-design/icons'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Button, Card, Flex, Space, Typography } from 'antd'
 import axios from 'axios'
 import Blocks from 'editorjs-blocks-react-renderer'
@@ -74,7 +74,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({ query 
 }
 
 export default function BlogPost({ post }: PageProps) {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString)

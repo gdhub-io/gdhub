@@ -4,7 +4,7 @@ import { GiSkills } from '@react-icons/all-files/gi/GiSkills'
 import { GoPlus } from '@react-icons/all-files/go/GoPlus'
 import { GoTrash } from '@react-icons/all-files/go/GoTrash'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -17,7 +17,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const pendingInvitationId = useMemo(() => router.query.pendingInvitation, [router.query.pendingInvitation])
 	const session = useSession()
 	const queryClient = useQueryClient()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>()
 
@@ -102,13 +102,14 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	}
 
 	return (
-		<Card title={<T keyName="profile-form.specialities.card.title">Specialties</T>} bordered={false}>
+		<Card title={t('profile-forms.specialities.card.title', 'Specialties')} bordered={false}>
 			<Spin spinning={processing}>
 				<Space direction="vertical" size="large" style={{ width: '100%' }}>
 					<Text>
-						<T keyName="profile-form.specialities.card.description">
-							Specialties allow you to respond to vacancies from existing projects and conduct lectures.
-						</T>
+						{t(
+							'profile-forms.specialities.card.description',
+							'Specialties allow you to respond to vacancies from existing projects and conduct lectures.'
+						)}
 					</Text>
 					{specialities?.data && (
 						<List
@@ -119,12 +120,13 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 									<Space direction="vertical">
 										<GiSkills size={24} />
 										<span>
-											<T keyName="profile-form.specialities.card.no-specialities">
-												You have not added a single specialty yet.
-											</T>
+											{t(
+												'profile-forms.specialities.card.no-specialities',
+												'You have not added a single specialty yet.'
+											)}
 										</span>
 										<Button type="primary" icon={<GoPlus />} onClick={showModal}>
-											<T keyName="profile-form.specialities.card.button.add-speciality">Add</T>
+											{t('profile-forms.specialities.card.button.add-speciality', 'Add')}
 										</Button>
 									</Space>
 								),
@@ -143,12 +145,15 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 									/>
 									<Space>
 										<Button onClick={() => handleEditSpeciality(speciality)}>
-											<T keyName="profile-form.specialities.card.button.change-speciality">Change</T>
+											{t('profile-forms.specialities.card.button.change-speciality', 'Change')}
 										</Button>
 										<Popconfirm
-											title={<T>You definitely want to remove?</T>}
-											okText={<T>Yes</T>}
-											cancelText={<T>No</T>}
+											title={t(
+												'profile-forms.specialities.card.button.delete-speciality',
+												'You definitely want to remove?'
+											)}
+											okText={t('profile-forms.specialities.card.button.delete-speciality-yes', 'Yes')}
+											cancelText={t('profile-forms.specialities.card.button.delete-speciality-no', 'No')}
 											onConfirm={() => handleDeleteSpeciality(speciality.id)}
 										>
 											<Button type="text" danger icon={<GoTrash />} />
@@ -160,7 +165,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 					)}
 					{!!specialities?.data.length && (
 						<Button type="primary" onClick={showModal}>
-							<T>Add specialty</T>
+							{t('profile-forms.specialities.card.button.add-speciality', 'Add specialty')}
 						</Button>
 					)}
 				</Space>

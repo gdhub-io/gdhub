@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Empty, Flex, Space, Spin, Typography } from 'antd'
 import { Row, Col } from 'antd'
 import axios from 'axios'
@@ -12,7 +12,7 @@ const { Title } = Typography
 
 const MyProjectList: React.FC = () => {
 	const [openCreateProjectModal, setOpenCreateProjectModal] = useState(false)
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const {
 		data: projects,

@@ -1,7 +1,7 @@
 import heroBgImage from '@/assets/images/landing/gdhub-hero-image.png'
 import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Col, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -20,7 +20,7 @@ export const LandingHeroSection = ({
 	}
 }) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const hasEmptyStats =
 		!stats ||
@@ -47,10 +47,10 @@ export const LandingHeroSection = ({
 									<Space>
 										<Icon component={StarIcon} style={{ fontSize: screens.md ? 32 : 19 }} />
 										<Text>
-											<T>
-												We help Authors of new video games to assemble a team of game designers, programmers, artists,
-												animators, etc.
-											</T>
+											{t(
+												'landing.hero.text1',
+												'We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc.'
+											)}
 										</Text>
 									</Space>
 								</li>
@@ -58,9 +58,10 @@ export const LandingHeroSection = ({
 									<Space>
 										<Icon component={StarIcon} style={{ fontSize: screens.md ? 32 : 19 }} />
 										<Text>
-											<T>
-												We help game industry professionals find an interesting role for themselves in new projects.
-											</T>
+											{t(
+												'landing.hero.text2',
+												'We help game industry professionals find an interesting role for themselves in new projects.'
+											)}
 										</Text>
 									</Space>
 								</li>
@@ -68,10 +69,10 @@ export const LandingHeroSection = ({
 							<Space direction="vertical">
 								<Link href="/registration">
 									<Button className={styles.heroButton} type="primary">
-										<T>Get started for free</T>
+										{t('landing.hero.getStartedForFree', 'Get started for free')}
 									</Button>
 								</Link>
-								<Text type="secondary">No credit card required</Text>
+								<Text type="secondary">{t('landing.hero.noCreditCardRequired', 'No credit card required')}</Text>
 							</Space>
 						</Space>
 					</Col>

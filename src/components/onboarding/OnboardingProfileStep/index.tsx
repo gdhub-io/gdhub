@@ -3,7 +3,7 @@ import { deleteCookie, getCookie } from '@/helpers/cookie'
 import { FiChevronDown } from '@react-icons/all-files/fi/FiChevronDown'
 import { GoInfo } from '@react-icons/all-files/go/GoInfo'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import {
 	Spin,
 	Form,
@@ -35,7 +35,7 @@ const { Paragraph, Title } = Typography
 export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboardingProfileStep) => {
 	const router = useRouter()
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 	const countries = useMemo(() => countryList().getData(), [])
 
@@ -116,12 +116,8 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 			<div className="onboarding-content">
 				<div className="onboarding-form">
 					<div className="onboarding-form-title">
-						<Title level={2}>
-							<T keyName="user-profile">User Profile</T>
-						</Title>
-						<Paragraph italic>
-							<T>General information about new member</T>
-						</Paragraph>
+						<Title level={2}>{t('onboarding.profile.title', 'User Profile')}</Title>
+						<Paragraph italic>{t('onboarding.profile.description', 'General information about new member')}</Paragraph>
 					</div>
 
 					<Form
@@ -137,19 +133,19 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={12}>
 									<Form.Item name="firstName" label={t('firstName')} rules={[{ required: true }]}>
-										<Input placeholder={t('firstName.plachehloder')} />
+										<Input placeholder={t('onboarding.profile.firstName.placeholder', 'First name')} />
 									</Form.Item>
 								</Col>
 								<Col xs={24} lg={12}>
 									<Form.Item name="lastName" label={t('lastName')} rules={[{ required: true }]}>
-										<Input placeholder={t('lastName.plachehloder')} />
+										<Input placeholder={t('onboarding.profile.lastName.placeholder', 'Last name')} />
 									</Form.Item>
 								</Col>
 								<Col xs={24} lg={12}>
 									<Form.Item label={t('email')} required rules={[{ required: true }]}>
 										<Input
 											value={session?.user.email || undefined}
-											placeholder="max.pain@website.com"
+											placeholder={t('onboarding.profile.email.placeholder', 'Email')}
 											disabled
 											readOnly
 										/>
@@ -162,7 +158,10 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 										name="yearOfBirth"
 										label={t('yearOfBirth')}
 										rules={[{ required: true }]}
-										tooltip={{ icon: <GoInfo />, title: <T>You should not be younger than 16 years</T> }}
+										tooltip={{
+											icon: <GoInfo />,
+											title: t('onboarding.profile.yearOfBirth.tooltip', 'You should not be younger than 16 years'),
+										}}
 									>
 										<Select options={yearOptions} showSearch placeholder={dayjs().subtract(16, 'years').year()} />
 									</Form.Item>
@@ -189,7 +188,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 								</Col>
 								<Col xs={24} lg={12}>
 									<Form.Item name="city" label={t('city')}>
-										<Input placeholder={t('city.placeholder')} />
+										<Input placeholder={t('onboarding.profile.city.placeholder', 'City')} />
 									</Form.Item>
 								</Col>
 							</Row>
@@ -215,7 +214,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 								]}
 							>
 								<Checkbox>
-									<T keyName="confirmUserData">I confirm the accuracy of the information entered</T>
+									{t('onboarding.profile.confirmUserData', 'I confirm the accuracy of the information entered')}
 								</Checkbox>
 							</Form.Item>
 						</Space>
@@ -224,7 +223,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 				<div className="onboarding-footer">
 					<span></span>
 					<Button type="primary" onClick={handleSaveProfileAndNextStep} loading={isSaving}>
-						<T keyName="saveAndContinue">Save and continue</T>
+						{t('onboarding.profile.saveAndContinue', 'Save and continue')}
 					</Button>
 				</div>
 			</div>

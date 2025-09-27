@@ -3,7 +3,7 @@ import { PageViews } from '@/components/PageViews'
 import { getPageCover } from '@/helpers/content'
 import { ClockCircleOutlined, HistoryOutlined } from '@ant-design/icons'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Flex, Typography, Spin, Skeleton } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -42,7 +42,7 @@ const DefaultCover = ({ title }: { title: string }) => {
 }
 
 const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => void }> = ({ post, onClick }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const [imageError, setImageError] = useState(false)
 
@@ -168,7 +168,7 @@ const PostSkeleton = () => {
 }
 
 const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const limit = 5
 
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({

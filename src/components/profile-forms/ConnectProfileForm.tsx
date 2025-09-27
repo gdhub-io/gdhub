@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Divider, Flex, Form, message, Spin, Typography } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -17,7 +17,7 @@ type ConnectProfileFormArgs = {
 
 const ConnectProfileForm = ({ profile, saveProfile }: ConnectProfileFormArgs) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [processing, setProcessing] = useState(false)
 	const { data: session, update: sessionUpdate } = useSession()
 
@@ -46,15 +46,18 @@ const ConnectProfileForm = ({ profile, saveProfile }: ConnectProfileFormArgs) =>
 	}, [session])
 
 	return (
-		<Card title={<T keyName="profile-forms.connect.card.title">Telegram connection</T>} bordered={false}>
+		<Card title={t('components.profile-forms.connect.card.title', 'Telegram connection')} bordered={false}>
 			<Spin spinning={processing}>
 				{session?.user.telegramId ? (
 					<Flex justify="space-between">
 						<Text>
-							<T>Your Telegram account is connected</T>
+							{t(
+								'components.profile-forms.connect.card.yourTelegramAccountIsConnected',
+								'Your Telegram account is connected'
+							)}
 						</Text>
 						<Button onClick={handleDisconnectToTelegram} size="small" danger>
-							<T>Disconnect</T>
+							{t('components.profile-forms.connect.card.disconnect', 'Disconnect')}
 						</Button>
 					</Flex>
 				) : (
@@ -70,9 +73,12 @@ const ConnectProfileForm = ({ profile, saveProfile }: ConnectProfileFormArgs) =>
 			</Spin>
 			<Divider />
 			<Text type="secondary">
-				<T>Connecting to Telegram will allow you to request advice from community mentors through the app</T>{' '}
+				{t(
+					'components.profile-forms.connect.card.description',
+					'Connecting to Telegram will allow you to request advice from community mentors through the app'
+				)}{' '}
 				<Link href={'https://t.me/gdhub_experts_bot'} target="_blank">
-					<T keyName="application.experts.name">Mentors from gamedev</T>
+					{t('components.profile-forms.connect.card.application.experts.name', 'Mentors from gamedev')}
 				</Link>
 				.
 			</Text>

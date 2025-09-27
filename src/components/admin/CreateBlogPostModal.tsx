@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Form, Input, Modal } from 'antd'
 import axios from 'axios'
 
@@ -12,7 +12,7 @@ export const CreateBlogPostModal = ({
 	onCancel: () => void
 	onOk: (values: any) => void
 }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [form] = Form.useForm()
 
 	const { mutateAsync: createPost, isPending } = useMutation({

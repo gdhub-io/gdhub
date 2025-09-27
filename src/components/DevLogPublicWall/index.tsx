@@ -2,7 +2,7 @@
 import { useMemo } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Flex, List, Space, Typography } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -26,6 +26,7 @@ const { Title, Paragraph, Text } = Typography
 
 export const DevLogPublicWall = ({ projectId }: any) => {
 	const router = useRouter()
+	const { t } = useTranslate()
 
 	const { data: projectReports } = useQuery({
 		queryKey: ['project-reports', projectId],
@@ -104,9 +105,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 
 	return (
 		<>
-			<Title level={2}>
-				<T>Last updates</T>
-			</Title>
+			<Title level={2}>{t('page.devlog.wall.title', 'Last updates')}</Title>
 
 			<List
 				bordered={false}

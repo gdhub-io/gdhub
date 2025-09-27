@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Col, Form, Input, InputNumber, message, Row, Space, Spin, Typography } from 'antd'
 
 const { Text } = Typography
@@ -12,7 +12,7 @@ type ResourcesProfileFormArgs = {
 
 const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [processing, setProcessing] = useState(true)
 
 	useEffect(() => {
@@ -44,7 +44,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 	}
 
 	return (
-		<Card title={<T keyName="profile-forms.resources.card.title">Resources</T>} bordered={false}>
+		<Card title={t('profile-forms.resources.card.title', 'Resources')} bordered={false}>
 			<Spin spinning={processing}>
 				<Form
 					form={form}
@@ -57,7 +57,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 					initialValues={{ otherResources: profile?.otherResources }}
 				>
 					<Form.Item
-						label={<T keyName="profile-forms.resources.field.timeForWork.title">Available time (per week)</T>}
+						label={t('profile-forms.resources.field.timeForWork.title', 'Available time (per week)')}
 						tooltip={{
 							title: t(
 								'profile-forms.resources.field.timeForWork.tooltip',
@@ -71,15 +71,11 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 						<Row>
 							<Col md={{ span: 12 }} xs={{ span: 24 }}>
 								<Space>
-									<Text>
-										<T>From</T>{' '}
-									</Text>
+									<Text>{t('profile-forms.resources.field.timeForWork.from', 'From')} </Text>
 									<Form.Item name="timeForWorkMin" noStyle rules={[{ required: true }]}>
 										<InputNumber min={1} max={55} placeholder={t('minimum')} />
 									</Form.Item>
-									<Text>
-										<T>to</T>
-									</Text>
+									<Text>{t('profile-forms.resources.field.timeForWork.to', 'to')}</Text>
 									<Form.Item
 										name="timeForWorkMax"
 										noStyle
@@ -100,10 +96,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 									>
 										<InputNumber min={2} max={56} placeholder={t('maximum')} />
 									</Form.Item>
-									<Text>
-										{' '}
-										<T>hours a week</T>
-									</Text>
+									<Text> {t('profile-forms.resources.field.timeForWork.hoursAWeek', 'hours a week')}</Text>
 								</Space>
 							</Col>
 						</Row>
@@ -117,7 +110,7 @@ const ResourcesProfileForm = ({ profile, saveProfile }: ResourcesProfileFormArgs
 					</Form.Item>
 
 					<Button type="primary" onClick={handleForm} loading={processing}>
-						<T>Save</T>
+						{t('profile-forms.resources.card.save', 'Save')}
 					</Button>
 				</Form>
 			</Spin>

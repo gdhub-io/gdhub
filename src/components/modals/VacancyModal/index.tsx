@@ -5,7 +5,7 @@ import { DeleteOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MdOutlineHandshake } from '@react-icons/all-files/md/MdOutlineHandshake'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import {
 	Button,
 	Col,
@@ -38,7 +38,7 @@ interface VacancyModalProps {
 
 const VacancyModal = ({ teamId, projectId, vacancyId, open, onOk, onCancel }: VacancyModalProps) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { options: directionsOptions } = useWorkDirections()
 	const [showPromiseFields, setShowPromiseFields] = useState(false)
 

@@ -7,7 +7,7 @@ import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { InstantsearchAdapter } from '@gdhub-io/gdhub-typesense/dist/adapter'
 import { BsFilter } from '@react-icons/all-files/bs/BsFilter'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import { getSession, useSession } from 'next-auth/react'
@@ -29,7 +29,7 @@ const { Paragraph, Text, Title } = Typography
 
 const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, hasApprovedProjects = false }: any) => {
 	const session = useSession()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [openedFilter, setOpenFilter] = useState(false)
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<string | undefined>()
 	const screens = Grid.useBreakpoint()
@@ -99,24 +99,24 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 			<ProtectedLayout title={t('Community Members')}>
 				<div className={styles.container}>
 					<p>
-						<T keyName="page.hub.members.text1">
-							Any registered user of our portal is considered a community member. Today we are
-						</T>{' '}
+						{t(
+							'page.hub.members.text1',
+							'Any registered user of our portal is considered a community member. Today we are'
+						)}{' '}
 						<strong>{usersCount}</strong>.
 					</p>
 					<p>
-						<T keyName="page.hub.members.text2.part1">
-							Those of us who have indicated a major in our profile are considered members who are open to offers to
-							participate in the development of indie projects. As of today
-						</T>{' '}
-						<strong>{specialitiesCount}</strong>{' '}
-						<T keyName="page.hub.members.text2.part2">specialists are registered.</T>
+						{t(
+							'page.hub.members.text2.part1',
+							'Those of us who have indicated a major in our profile are considered members who are open to offers to participate in the development of indie projects. As of today'
+						)}{' '}
+						<strong>{specialitiesCount}</strong> {t('page.hub.members.text2.part2', 'specialists are registered.')}
 					</p>
 					<p>
-						<T keyName="page.hub.members.text3">
-							Authors of indie projects have access to a database of specialists and can invite them to their projects.
-							For this you need to create a project and and bring your project to the recruiting stage.
-						</T>
+						{t(
+							'page.hub.members.text3',
+							'Authors of indie projects have access to a database of specialists and can invite them to their projects. For this you need to create a project and and bring your project to the recruiting stage.'
+						)}
 					</p>
 				</div>
 			</ProtectedLayout>
@@ -133,7 +133,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 					<Configure optionalFilters={['isActive:true']} />
 					<Row gutter={[16, 16]} align="middle" style={{ marginBottom: 24 }}>
 						<Col flex="auto">
-							<SearchBox placeholder="Type search query..." />
+							<SearchBox placeholder={t('hub.members.searchPlaceholder', 'Type search query...')} />
 						</Col>
 						{!screens.lg && (
 							<Col>
@@ -159,7 +159,7 @@ const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, ha
 
 					<Drawer
 						open={openedFilter}
-						title={<T>Search filter</T>}
+						title={t('hub.members.searchFilter', 'Search filter')}
 						className={styles.container}
 						onClose={() => setOpenFilter(false)}
 						placement="right"
@@ -196,38 +196,33 @@ function NoResultsBoundary({ children, fallback }: any) {
 
 function NoResults() {
 	const { indexUiState } = useInstantSearch()
+	const { t } = useTranslate()
 
 	return (
 		<Paragraph type="secondary">
-			No results for <q>{indexUiState.query}</q>.
+			{t('hub.members.noResults', 'No results for')}&nbsp;<q>{indexUiState.query}</q>.
 		</Paragraph>
 	)
 }
 
 const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<Card className={styles.filterCard}>
 			<Space direction="vertical" size={24} style={{ width: '100%' }}>
 				<div>
-					<Title level={5}>
-						<T>Direction</T>
-					</Title>
+					<Title level={5}>{t('hub.members.direction', 'Direction')}</Title>
 					<RefinementList attribute="direction" />
 				</div>
 
 				<div>
-					<Title level={5}>
-						<T>Level</T>
-					</Title>
+					<Title level={5}>{t('hub.members.level', 'Level')}</Title>
 					<RefinementList attribute="level" />
 				</div>
 
 				<div>
-					<Title level={5}>
-						<T>Skills</T>
-					</Title>
+					<Title level={5}>{t('hub.members.skills', 'Skills')}</Title>
 					<RefinementList attribute="skills" />
 				</div>
 
@@ -240,6 +235,7 @@ const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
 function SearchMobileFilter({ onClick, resetButtonText }: any) {
 	const { indexUiState } = useInstantSearch()
 	const [count, setCount] = useState(0)
+	const { t } = useTranslate()
 
 	useEffect(() => {
 		let _count = 0
@@ -259,7 +255,7 @@ function SearchMobileFilter({ onClick, resetButtonText }: any) {
 	return (
 		<Space>
 			<Button onClick={onClick} icon={<BsFilter />}>
-				<T>Filter</T>&nbsp;
+				{t('hub.members.filter', 'Filter')}&nbsp;
 				<Badge count={count} size="small" />
 			</Button>
 			{count > 0 && <ClearRefinements translations={{ resetButtonText }} />}

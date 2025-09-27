@@ -3,14 +3,15 @@ import { ProjectContext } from '@/contexts/ProjectContext'
 import { gtmEventTrigger } from '@/helpers/gtm'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { CiViewList } from '@react-icons/all-files/ci/CiViewList'
+import { IoMdArrowForward } from '@react-icons/all-files/io/IoMdArrowForward'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
-import { Button, Col, Drawer, Flex, Grid, Modal, Popover, Row, Space, Steps, Typography } from 'antd'
+import { useTranslate } from '@tolgee/react'
+import { Button, Col, Drawer, Grid, Modal, Popover, Row, Space, Steps, Typography } from 'antd'
 import axios from 'axios'
 import styles from './style.module.scss'
 import WorkflowStepContent from './WorkflowStepContent'
 import WorkflowTaskCard from './WorkflowTaskCard'
+import { RoadmapChart } from '../RoadmapChart'
 
 const { Title, Text } = Typography
 
@@ -31,7 +32,7 @@ type EquityPromise = {
 	}
 }
 
-type ProjctWorkflowWithSteps = ProjectWorkflow & {
+export type ProjectWorkflowWithSteps = ProjectWorkflow & {
 	steps: (prismaClient.ProjectWorkflowStep & {
 		equityPromises?: EquityPromise[]
 	})[]
@@ -45,12 +46,12 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const screens = Grid.useBreakpoint()
 	const projectContext = useContext(ProjectContext)?.contextProject
 	const [conditionStatus, setConditionStatus] = useState<any>({ completed: false })
-	const [workflow, setWorkflow] = useState<ProjctWorkflowWithSteps>()
+	const [workflow, setWorkflow] = useState<ProjectWorkflowWithSteps>()
 	const [drawerVisible, setDrawerVisible] = useState(false)
 	const [popoverVisible, setPopoverVisible] = useState(false)
 	const [taskStatuses, setTaskStatuses] = useState<Record<string, boolean>>({})
 	const [equityTransferModalVisible, setEquityTransferModalVisible] = useState(false)
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const isAuthor = useMemo(() => projectContext?.isProjectAuthor, [projectContext])
 
 	// const mockTasks: ExtendedTask[] = useMemo(
@@ -86,7 +87,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const { data: workflowResponse, refetch: refetchWorkflowData } = useQuery({
 		queryKey: ['project-workflow', projectId],
 		queryFn: () =>
-			axios.get<ProjctWorkflowWithSteps>('/api/user/project/workflow', {
+			axios.get<ProjectWorkflowWithSteps>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
 		enabled: !!projectId,
@@ -110,6 +111,13 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const currentStepOrder = useMemo(() => {
 		return workflow?.currentStep?.order || 0
 	}, [workflow])
+
+	const isIntroductionStep = useMemo(() => workflow?.currentStep.order === 0, [workflow?.currentStep.order])
+	const isCompletionStep = useMemo(
+		() => workflow && workflow?.currentStep.order === workflow?.steps.length - 1,
+		[workflow?.currentStep.order, workflow?.steps]
+	)
+	const isRoadmapStep = useMemo(() => !isIntroductionStep && !isCompletionStep, [isIntroductionStep, isCompletionStep])
 
 	const handlePreviousStep = () => {
 		moveProjectToStep({ projectId, direction: 'previous' })
@@ -180,60 +188,50 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	return (
 		<div className={styles.container}>
 			<Space direction="vertical" style={{ width: '100%' }}>
-				<Flex justify="space-between" align="center" className={styles.stepHeader}>
-					<div className={styles.stepTitle}>
-						<Text style={{ margin: 0 }}>
-							<T keyName="workflow.current-step">Current step</T>
-						</Text>
-						<Title level={2} className={styles.stepName}>
-							{capitalize(
-								t(`workflow.${workflow.title}.step${currentStepOrder + 1}.name`, workflow.steps[currentStepOrder]?.name)
-							)}
-						</Title>
-					</div>
-					{isAuthor && (
-						<div className={styles.stepTasks}>
-							{currentStepOrder > 0 && (
-								<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
-									<T keyName="workflow.previous-step">Previous</T>
-								</Button>
-							)}
-
-							<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
-								<Button type="text" icon={<CiViewList size={24} />} />
-							</Popover>
-
-							{currentStepOrder < workflow.steps.length - 1 && (
-								<>
-									{conditionStatus.completed == false ? (
-										<Popover content={t('Tasks are not completed')}>
-											<Button disabled={conditionStatus.completed == false}>
-												<T keyName="workflow.next-step">Next step</T>
-											</Button>
-										</Popover>
-									) : (
-										<Button onClick={handleNextStep} disabled={isMoving}>
-											<T keyName="workflow.next-step">Next step</T>
-										</Button>
-									)}
-								</>
-							)}
-						</div>
-					)}
-				</Flex>
+				{!isIntroductionStep && !isCompletionStep && <RoadmapChart workflow={workflow} editable={isAuthor} />}
 
 				<Row gutter={[32, 32]}>
 					<Col xs={24} lg={16}>
-						<Space direction="vertical" size={32} style={{ width: '100%' }}>
+						<Space direction="vertical" size={[32, 16]} style={{ width: '100%' }}>
 							<div className={styles.stepContent}>
 								<WorkflowStepContent step={workflow.currentStep} locale={locale} />
 							</div>
 
+							{isIntroductionStep && isAuthor && (
+								<Button type="primary" onClick={handleNextStep} disabled={isMoving}>
+									<Space size={8}>
+										{t('workflow.start-step', 'Go to the next step')}
+										<IoMdArrowForward style={{ display: 'block' }} />
+									</Space>
+								</Button>
+							)}
+
+							{isRoadmapStep && isAuthor && (
+								<Space size={8}>
+									{currentStepOrder > 1 && (
+										<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
+											{t('workflow.previous-step', 'Previous')}
+										</Button>
+									)}
+									<>
+										{conditionStatus.completed == false ? (
+											<Popover content={t('Tasks are not completed')}>
+												<Button disabled={conditionStatus.completed == false}>
+													{t('workflow.next-step', 'Next step')}
+												</Button>
+											</Popover>
+										) : (
+											<Button onClick={handleNextStep} disabled={isMoving}>
+												{t('workflow.next-step', 'Next step')}
+											</Button>
+										)}
+									</>
+								</Space>
+							)}
+
 							{!screens.lg && workflow.currentStep?.tasks?.length > 0 && (
 								<div className={styles.stepContent}>
-									<Title level={3}>
-										<T keyName="workflow.tasks.title">Tasks</T>
-									</Title>
+									<Title level={3}>{t('workflow.tasks.title', 'Tasks')}</Title>
 									<div className={styles.tasksContainer}>
 										{workflow.currentStep?.tasks?.map((task) => (
 											<WorkflowTaskCard
@@ -251,12 +249,10 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 							)}
 						</Space>
 					</Col>
-					{screens.lg && (
+					{screens.lg && isRoadmapStep && (
 						<Col xs={24} lg={8}>
 							<div className={styles.sidebarContent}>
-								<Title level={3}>
-									<T keyName="workflow.tasks.title">Tasks</T>
-								</Title>
+								<Title level={3}>{t('workflow.tasks.title', 'Tasks')}</Title>
 								{workflow.currentStep?.tasks?.length > 0 ? (
 									<div className={styles.tasksContainer}>
 										{workflow.currentStep?.tasks?.map((task) => (
@@ -272,9 +268,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 										))}
 									</div>
 								) : (
-									<Text type="secondary">
-										<T keyName="workflow.no-tasks">No tasks for this step</T>
-									</Text>
+									<Text type="secondary">{t('workflow.no-tasks', 'No tasks for this step')}</Text>
 								)}
 							</div>
 						</Col>
@@ -283,7 +277,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 			</Space>
 
 			<Modal
-				title={<T keyName="workflow.equity-transfer.title">Equity Transfer Confirmation</T>}
+				title={t('workflow.equity-transfer.title', 'Equity Transfer Confirmation')}
 				open={equityTransferModalVisible}
 				onOk={handleEquityTransferConfirm}
 				onCancel={() => setEquityTransferModalVisible(false)}
@@ -291,9 +285,10 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 			>
 				<Space direction="vertical" style={{ width: '100%' }}>
 					<Text>
-						<T keyName="workflow.equity-transfer.description">
-							By proceeding to the next step, the following equity promises will be transferred to actual allocations:
-						</T>
+						{t(
+							'workflow.equity-transfer.description',
+							'By proceeding to the next step, the following equity promises will be transferred to actual allocations:'
+						)}
 					</Text>
 					{workflow?.currentStep?.equityPromises?.map((promise) => (
 						<Space key={promise.id} style={{ width: '100%' }}>
@@ -311,7 +306,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 			</Modal>
 
 			<Drawer
-				title={<T keyName="workflow.all-steps">All steps</T>}
+				title={t('workflow.all-steps', 'All steps')}
 				placement="right"
 				onClose={() => setDrawerVisible(false)}
 				open={drawerVisible}

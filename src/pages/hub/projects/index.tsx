@@ -4,7 +4,7 @@ import GameCardList from '@/components/GameCard/GameCardList'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Typography } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -18,7 +18,7 @@ const { Paragraph } = Typography
  * @returns {JSX.Element} Rendered component
  */
 const ProjectsPage: NextPageWithLayout = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 
 	const {

@@ -1,7 +1,7 @@
 import Star2Icon from '@/assets/images/icons/star-2.svg'
 import BgImage from '@/assets/images/landing/gdhub-specialist-image.png'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Col, Grid, Row, Space, Typography } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -12,6 +12,7 @@ const { Title, Text } = Typography
 
 export const LandingForSpecialistsSection = () => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTranslate()
 
 	const { data: latestProjects } = useQuery({
 		queryKey: ['latest-projects'],
@@ -38,12 +39,8 @@ export const LandingForSpecialistsSection = () => {
 					<Row gutter={[24, 24]}>
 						<Col xs={{ span: 24 }} lg={{ span: 12 }} />
 						<Col xs={{ span: 24 }} lg={{ span: 12 }}>
-							<div className={styles.preTitle}>
-								<T keyName="landing.specialist.pretitle">what are our advantages</T>
-							</div>
-							<Title level={2}>
-								<T keyName="landing.specialist.title">FOR SPECIALISTS</T>
-							</Title>
+							<div className={styles.preTitle}>{t('landing.specialist.pretitle', 'what are our advantages')}</div>
+							<Title level={2}>{t('landing.specialist.title', 'FOR SPECIALISTS')}</Title>
 
 							<div className={styles.content}>
 								<Space direction="vertical" size={screens.lg ? 46 : 24}>
@@ -52,10 +49,10 @@ export const LandingForSpecialistsSection = () => {
 											<Star2Icon />
 										</div>
 										<Text>
-											<T keyName="landing.specialist.text1">
-												Each Specialist in the gaming industry has an opportunity to join one of the indie projects
-												under development in order to gain experience and make new friends.
-											</T>
+											{t(
+												'landing.specialist.text1',
+												'Each Specialist in the gaming industry has an opportunity to join one of the indie projects under development in order to gain experience and make new friends.'
+											)}
 										</Text>
 									</Space>
 									<Space size={screens.lg ? 32 : 16} align="center">
@@ -63,9 +60,10 @@ export const LandingForSpecialistsSection = () => {
 											<Star2Icon />
 										</div>
 										<Text>
-											<T keyName="landing.specialist.text2">
-												You can become a part of a new video game or share your expertise as a Mentor
-											</T>
+											{t(
+												'landing.specialist.text2',
+												'You can become a part of a new video game or share your expertise as a Mentor'
+											)}
 										</Text>
 									</Space>
 
@@ -74,7 +72,7 @@ export const LandingForSpecialistsSection = () => {
 											<Space style={{ marginBottom: 16 }}>
 												<Link href="/projects">
 													<Button type="text" size="small">
-														<T>Latest projects</T>
+														{t('component.landingForSpecialistsSection.latestProjects', 'Latest projects')}
 													</Button>
 												</Link>
 											</Space>
@@ -125,7 +123,7 @@ export const LandingForSpecialistsSection = () => {
 
 									<Link href="/registration?for=specialist">
 										<Button className={styles.heroButton} type="primary">
-											<T>Join the team</T>
+											{t('component.landingForSpecialistsSection.joinTheTeam', 'Join the team')}
 										</Button>
 									</Link>
 								</Space>

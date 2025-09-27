@@ -5,7 +5,7 @@ import { DailyCallOptions } from '@daily-co/daily-js'
 import { DailyProvider, useCallFrame } from '@daily-co/daily-react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Divider, Form, Input, InputRef, Select, Space } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -27,6 +27,7 @@ const dailyCallOptions: DailyCallOptions = {
 
 const LiveReportsPage = () => {
 	const { data: session } = useSession()
+	const { t } = useTranslate()
 	const uuid = uuidv4()
 	const callRef = useRef(null)
 	const titleRef = useRef<InputRef>(null)
@@ -150,7 +151,11 @@ const LiveReportsPage = () => {
 									initialValues={{ rtmpUrl, streamKey }}
 								>
 									<Form.Item name="rtmpUrl" rules={[{ required: true }]}>
-										<Input placeholder="Rtml Url" htmlSize={40} onChange={(e) => setrtmpUrl(e.target.value)} />
+										<Input
+											placeholder={t('pages.live.room.reports.rtmpUrl', 'Rtml Url')}
+											htmlSize={40}
+											onChange={(e) => setrtmpUrl(e.target.value)}
+										/>
 									</Form.Item>
 									<Form.Item name="streamKey" rules={[{ required: true }]}>
 										<Input placeholder="Stream Key" htmlSize={30} onChange={(e) => setStreamKey(e.target.value)} />
@@ -158,12 +163,10 @@ const LiveReportsPage = () => {
 								</Form>
 								{!instanceId ? (
 									<Button onClick={startLiveStream} disabled={!readyToStream} type="primary">
-										<T>Start a stream</T>
+										{t('pages.live.room.reports.startStream', 'Start a stream')}
 									</Button>
 								) : (
-									<Button onClick={stopLiveStream}>
-										<T>End stream</T>
-									</Button>
+									<Button onClick={stopLiveStream}>{t('pages.live.room.reports.endStream', 'End stream')}</Button>
 								)}
 							</Space>
 
@@ -173,19 +176,30 @@ const LiveReportsPage = () => {
 										style={{ width: 200 }}
 										defaultValue={streamMode}
 										options={[
-											{ value: 'single', label: 'Single' },
-											{ value: 'split', label: 'Split' },
-											{ value: 'grid', label: 'Grid' },
-											{ value: 'dominant', label: 'Dominant' },
-											{ value: 'pip', label: 'Pip' },
+											{ value: 'single', label: t('pages.live.room.reports.single', 'Single') },
+											{ value: 'split', label: t('pages.live.room.reports.split', 'Split') },
+											{ value: 'grid', label: t('pages.live.room.reports.grid', 'Grid') },
+											{ value: 'dominant', label: t('pages.live.room.reports.dominant', 'Dominant') },
+											{ value: 'pip', label: t('pages.live.room.reports.pip', 'Pip') },
 										]}
 										onSelect={(value) => setStreamMode(value)}
 									/>
 									<Divider type="vertical" />
-									<Input ref={titleRef} placeholder="Title" defaultValue="Title" />
-									<Input ref={subTitleRef} placeholder="Subtitle" defaultValue="Subtitle" />
+									<Input
+										ref={titleRef}
+										placeholder={t('pages.live.room.reports.title', 'Title')}
+										defaultValue="Title"
+									/>
+									<Input
+										ref={subTitleRef}
+										placeholder={t('pages.live.room.reports.subtitle', 'Subtitle')}
+										defaultValue="Subtitle"
+									/>
 									<Button onClick={() => setShowTitleSlate((prev) => !prev)}>
-										{showTitleSlate ? 'Hide' : 'Show'} Title Slate
+										{showTitleSlate
+											? t('pages.live.room.reports.hideTitleSlate', 'Hide')
+											: t('pages.live.room.reports.showTitleSlate', 'Show')}{' '}
+										Title Slate
 									</Button>
 								</Space>
 							)}

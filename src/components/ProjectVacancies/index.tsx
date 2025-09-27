@@ -3,7 +3,7 @@ import VacancyPreviewModal from '@/components/modals/VacancyPreviewModal'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { GoArrowDownRight } from '@react-icons/all-files/go/GoArrowDownRight'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Space, Row, Col, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -31,7 +31,7 @@ interface ProjectVacanciesArgs {
 const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const { data: session } = useSession()
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()
 

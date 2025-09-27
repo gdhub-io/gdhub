@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { gtmEventTrigger } from '@/helpers/gtm'
 import { useWorkDirections } from '@/hooks/library'
 import { useMutation } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Form, Input, message, Modal, Select, DatePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -16,7 +16,7 @@ interface InviteMemberModalProps {
 
 const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalProps) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { options: directionsOptions } = useWorkDirections()
 	const [isEmailValid, setIsEmailValid] = useState(true)
 
@@ -67,15 +67,15 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 
 	return (
 		<Modal
-			title={<T>Invite Team Member</T>}
+			title={t('inviteMemberModal.title', 'Invite Team Member')}
 			open={open}
 			onCancel={handleCancel}
 			footer={[
 				<Button key="cancel" onClick={handleCancel}>
-					<T>Cancel</T>
+					{t('inviteMemberModal.cancel', 'Cancel')}
 				</Button>,
 				<Button key="submit" type="primary" loading={isInviting} onClick={handleOk} disabled={!isEmailValid}>
-					<T>Send Invitation</T>
+					{t('inviteMemberModal.sendInvitation', 'Send Invitation')}
 				</Button>,
 			]}
 		>
@@ -87,7 +87,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 			>
 				<Form.Item
 					name="email"
-					label={<T>Email</T>}
+					label={t('inviteMemberModal.email', 'Email')}
 					rules={[
 						{ required: true, message: t('Please enter email') },
 						{
@@ -101,7 +101,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 
 				<Form.Item
 					name="position"
-					label={<T>Position</T>}
+					label={t('inviteMemberModal.position', 'Position')}
 					rules={[{ required: true, message: t('Please enter position') }]}
 				>
 					<Input placeholder={t('Enter position')} />
@@ -109,7 +109,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 
 				<Form.Item
 					name="directionId"
-					label={<T>Work Direction</T>}
+					label={t('inviteMemberModal.workDirection', 'Work Direction')}
 					rules={[{ required: true, message: t('Please select work direction') }]}
 				>
 					<Select placeholder={t('Select work direction')} options={directionsOptions} />
@@ -117,7 +117,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 
 				<Form.Item
 					name="startedAt"
-					label={<T>Start Date</T>}
+					label={t('inviteMemberModal.startDate', 'Start Date')}
 					rules={[{ required: true, message: t('Please select start date') }]}
 				>
 					<DatePicker format="DD.MM.YYYY" placeholder={t('Select start date')} style={{ width: '100%' }} />

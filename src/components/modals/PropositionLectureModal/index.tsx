@@ -1,6 +1,6 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react'
 const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const { data: workDirections } = useQuery({
 		queryKey: ['workDirections'],
@@ -77,12 +77,20 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={lectureId ? <T>Change the parametes of lectures</T> : <T>I want to give a lecture</T>}
+			title={
+				lectureId
+					? t('modal.proposition-lecture.title.change', 'Change the parametes of lectures')
+					: t('modal.proposition-lecture.title.give', 'I want to give a lecture')
+			}
 			width={800}
 			destroyOnHidden
 			maskClosable={false}
-			cancelText={<T>Close</T>}
-			okText={lectureId ? <T>Save</T> : <T>Publish</T>}
+			cancelText={t('modal.proposition-lecture.title.close', 'Close')}
+			okText={
+				lectureId
+					? t('modal.proposition-lecture.title.save', 'Save')
+					: t('modal.proposition-lecture.title.publish', 'Publish')
+			}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -109,12 +117,16 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					<Form.Item name="lecturerId" required hidden noStyle>
 						<Input />
 					</Form.Item>
-					<Form.Item label={<T>Lecturer</T>} required wrapperCol={{ span: 24 }}>
+					<Form.Item
+						label={t('modal.proposition-lecture.field.lecturer.label', 'Lecturer')}
+						required
+						wrapperCol={{ span: 24 }}
+					>
 						<Input style={{ color: '#666' }} width={'100%'} readOnly disabled value={session?.user.name || ''} />
 					</Form.Item>
 
 					<Form.Item
-						label={<T>Lecture Theme</T>}
+						label={t('modal.proposition-lecture.field.name.label', 'Lecture Theme')}
 						name="name"
 						rules={[{ required: true }]}
 						required
@@ -174,7 +186,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 								wrapperCol={{ span: 24 }}
 								extra={
 									<small>
-										<T>Time zone</T> {dayjs().tz().offsetName('short')}
+										{t('modal.proposition-lecture.field.time.extra', 'Time zone')} {dayjs().tz().offsetName('short')}
 									</small>
 								}
 							>
@@ -188,13 +200,14 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						name="linkToStream"
 						extra={
 							<div>
-								<T keyName="modal.proposition-lecture.field.linkToStream.extra.part1">Create a link to broadcast in</T>{' '}
+								{t('modal.proposition-lecture.field.linkToStream.extra.part1', 'Create a link to broadcast in')}{' '}
 								<Link href="https://meet.google.com/" target="_blank">
 									Google Meet
 								</Link>{' '}
-								<T keyName="modal.proposition-lecture.field.linkToStream.extra.part2">
-									(or on another service) and insert into this field.
-								</T>
+								{t(
+									'modal.proposition-lecture.field.linkToStream.extra.part2',
+									'(or on another service) and insert into this field.'
+								)}
 							</div>
 						}
 						rules={[{ required: true, type: 'url' }]}

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
 import { gtmEventTrigger } from '@/helpers/gtm'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Grid, Spin } from 'antd'
 import { Typography, Space } from 'antd'
 import axios from 'axios'
@@ -14,7 +14,7 @@ const { Title } = Typography
 export const OnboardingCompleted = () => {
 	const router = useRouter()
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { pendingInvitation } = router.query
 	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false)
 
@@ -73,7 +73,7 @@ export const OnboardingCompleted = () => {
 	if (isProcessingInvitation || isCompletingInvitation || isLoadingUser) {
 		return (
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-				<Spin size="large" tip={t('Processing your invitation...')} />
+				<Spin size="large" tip={t('onboarding.completed.processingInvitation', 'Processing your invitation...')} />
 			</div>
 		)
 	}
@@ -86,11 +86,9 @@ export const OnboardingCompleted = () => {
 			<div className="onboarding-box">
 				<div className="onboarding-content">
 					<Space direction="vertical" size={56}>
-						<Title>
-							<T>Your profile was successfully completed!</T>
-						</Title>
+						<Title>{t('onboarding.completed.title', 'Your profile was successfully completed!')}</Title>
 						<Button style={{ width: '300px' }} onClick={() => router.push('/hub')}>
-							<T>Let&apos;s go</T>
+							{t('onboarding.completed.button', 'Let&apos;s go')}
 						</Button>
 					</Space>
 				</div>

@@ -4,7 +4,7 @@ import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Form, Grid, Input, message, Radio, Segmented, Select, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -25,7 +25,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 	const [form] = Form.useForm()
 	const { update: updateSession } = useSession()
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [processing, setProcessing] = useState(true)
 	const { data: gameGenres } = useQuery({
 		queryKey: ['gameGenres'],
@@ -58,7 +58,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 			await updateSession({ user: { roles: [formData.primaryInterest] } })
 			setProcessing(false)
 
-			message.success(<T>Interests and preferences updated</T>)
+			message.success(t('Interests and preferences updated', 'Interests and preferences updated'))
 		} catch (error: any) {
 			setProcessing(false)
 			message.error(error.message)
@@ -66,29 +66,17 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 	}
 
 	const gameGenresOptions = gameGenres?.data.map((i) => ({
-		label: (
-			<Typography.Text ellipsis>
-				<T>{i.name}</T>
-			</Typography.Text>
-		),
+		label: <Typography.Text ellipsis>{t(`gameGenres.${i.name}`, i.name)}</Typography.Text>,
 		value: i.id,
 	}))
 
 	const graphicSettingsOptions = gameSettings?.data.map((i) => ({
-		label: (
-			<Typography.Text ellipsis>
-				<T>{i.name}</T>
-			</Typography.Text>
-		),
+		label: <Typography.Text ellipsis>{t(`gameSettings.${i.name}`, i.name)}</Typography.Text>,
 		value: i.id,
 	}))
 
 	const gameLevelsOptions = gameLevels?.data.map((i) => ({
-		label: (
-			<Typography.Text ellipsis>
-				<T>{i.name}</T>
-			</Typography.Text>
-		),
+		label: <Typography.Text ellipsis>{t(`gameLevels.${i.name}`, i.name)}</Typography.Text>,
 		value: i.id,
 	}))
 
@@ -96,10 +84,10 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 		<Card title={t('Interests and preferences')} className={styles.content} bordered={false}>
 			<Spin spinning={processing}>
 				<Paragraph>
-					<T keyName="interestsAndPreferencesDescription">
-						This information will help us more accurately configure recommendations on projects, candidates for projects
-						for you.
-					</T>
+					{t(
+						'interestsAndPreferencesDescription',
+						'This information will help us more accurately configure recommendations on projects, candidates for projects for you.'
+					)}
 				</Paragraph>
 
 				<Form
@@ -132,16 +120,11 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 												<div className="segmented-option-content">
 													<InterestAuthorIcon height={56} width={56} />
 													<Paragraph>
-														<T keyName="wantToBe.text">I want to be</T>{' '}
-														<Text italic>
-															<T>Author</T>
-														</Text>
+														{t('wantToBe.text', 'I want to be')} <Text italic>{t('Author', 'Author')}</Text>
 													</Paragraph>
 												</div>
 												<div className="segmented-option-footer">
-													<Text>
-														<T keyName="wantToBe.author.description">I want to create my own games</T>
-													</Text>
+													<Text>{t('wantToBe.author.description', 'I want to create my own games')}</Text>
 												</div>
 											</div>
 										),
@@ -153,16 +136,11 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 												<div className="segmented-option-content">
 													<InterestSpecialistIcon height={56} width={56} />
 													<Paragraph>
-														<T keyName="wantToBe.text">I want to be</T>{' '}
-														<Text italic>
-															<T>Specialist</T>
-														</Text>
+														{t('wantToBe.text', 'I want to be')} <Text italic>{t('Specialist', 'Specialist')}</Text>
 													</Paragraph>
 												</div>
 												<div className="segmented-option-footer">
-													<Text>
-														<T keyName="wantToBe.specialist.description">I want to join the team</T>
-													</Text>
+													<Text>{t('wantToBe.specialist.description', 'I want to join the team')}</Text>
 												</div>
 											</div>
 										),
@@ -174,16 +152,11 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 												<div className="segmented-option-content">
 													<InterestMentorIcon height={56} width={56} />
 													<Paragraph>
-														<T keyName="wantToBe.text">I want to be</T>{' '}
-														<Text italic>
-															<T>Mentor</T>
-														</Text>
+														{t('wantToBe.text', 'I want to be')} <Text italic>{t('Mentor', 'Mentor')}</Text>
 													</Paragraph>
 												</div>
 												<div className="segmented-option-footer">
-													<Text>
-														<T keyName="wantToBe.mentor.description">I want to share my expertise</T>
-													</Text>
+													<Text>{t('wantToBe.mentor.description', 'I want to share my expertise')}</Text>
 												</div>
 											</div>
 										),
@@ -197,43 +170,33 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 							<Radio.Group>
 								<Space direction="vertical">
 									<Radio value={prismaClient.PrimaryInterest.Author}>
-										<T keyName="wantToBe.text">I want to be</T>{' '}
-										<Text italic>
-											<T keyName="wantToBe.author">Author</T>
-										</Text>
+										{t('wantToBe.text', 'I want to be')} <Text italic>{t('Author', 'Author')}</Text>
 									</Radio>
 									<Radio value={prismaClient.PrimaryInterest.Specialist}>
-										<T keyName="wantToBe.text">I want to be</T>{' '}
-										<Text italic>
-											<T keyName="wantToBe.specialist">Specialist</T>
-										</Text>
+										{t('wantToBe.text', 'I want to be')} <Text italic>{t('Specialist', 'Specialist')}</Text>
 									</Radio>
 									<Radio value={prismaClient.PrimaryInterest.Mentor}>
-										<T keyName="wantToBe.text">I want to be</T>{' '}
-										<Text italic>
-											<T keyName="wantToBe.mentor">Mentor</T>
-										</Text>
+										{t('wantToBe.text', 'I want to be')} <Text italic>{t('Mentor', 'Mentor')}</Text>
+										<Text italic>{t('Mentor', 'Mentor')}</Text>
 									</Radio>
 								</Space>
 							</Radio.Group>
 						)}
 					</Form.Item>
 					<Form.Item
-						label={
-							<T keyName="profile-forms.interests.field.motivation.label">
-								Your motivation for participation in projects or in their creation
-							</T>
-						}
+						label={t(
+							'profile-forms.interests.field.motivation.label',
+							'Your motivation for participation in projects or in their creation'
+						)}
 						name="motivation"
 					>
 						<Input.TextArea rows={4} />
 					</Form.Item>
 					<Form.Item
-						label={
-							<T keyName="profile-forms.interests.field.preferredGenres.label">
-								Games genres in the development of which you would be interested to participate
-							</T>
-						}
+						label={t(
+							'profile-forms.interests.field.preferredGenres.label',
+							'Games genres in the development of which you would be interested to participate'
+						)}
 						name="preferredGenres"
 					>
 						<Select
@@ -279,7 +242,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 					</Form.Item>
 
 					<Button type="primary" onClick={handleForm} loading={processing}>
-						<T>Save</T>
+						{t('Save', 'Save')}
 					</Button>
 				</Form>
 			</Spin>

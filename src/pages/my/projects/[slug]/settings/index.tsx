@@ -6,7 +6,7 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import {
 	Button,
 	Col,
@@ -33,7 +33,7 @@ const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr:
 const { Text } = Typography
 
 const MyProjectSettingsPage: NextPageWithLayout = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const projectSlug = router.query.slug as string
 	const { token } = theme.useToken()
@@ -200,21 +200,25 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 								<Form.Item
 									wrapperCol={{ xs: 12 }}
 									name="coverImage"
-									label={<T keyName="modal.project.coverImage.label">Cover for the project</T>}
+									label={t('page.my.projects.settings.coverImage.label', 'Cover for the project')}
 									valuePropName="file"
 									getValueFromEvent={normUploadFile}
 									noStyle
 								>
 									<Upload.Dragger {...uploadProps}>
 										<p className="ant-upload-text">
-											<T keyName="modal.project.coverImage.text">Add a project cover</T>
+											{t('page.my.projects.settings.coverImage.text', 'Add a project cover')}
 										</p>
 										<p className="ant-upload-hint">
-											<T>To upload an image, click or drag it into this field.</T>
+											{t(
+												'page.my.projects.settings.coverImage.hint',
+												'To upload an image, click or drag it into this field.'
+											)}
 											<br />
-											<T keyName="modal.project.coverImage.hint">
-												Files in jpg, png formats are allowed. Aspect ratio 16/9. For example, the size is 1920x1080px.
-											</T>
+											{t(
+												'page.my.projects.settings.coverImage.hint',
+												'Files in jpg, png formats are allowed. Aspect ratio 16/9. For example, the size is 1920x1080px.'
+											)}
 										</p>
 									</Upload.Dragger>
 								</Form.Item>
@@ -222,7 +226,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 								<Spin spinning={coverProcessing}>
 									<div className={styles.cover}>
 										<Image src={cover + '?w=750'} fill alt="" />
-										<Popover content={t('modal.project.coverImage.deletePopover', 'Remove project cover')}>
+										<Popover content={t('page.my.projects.settings.coverImage.deletePopover', 'Remove project cover')}>
 											<Button
 												shape="circle"
 												type="primary"
@@ -240,7 +244,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 					<Row gutter={[16, 0]} align="middle" style={{ marginTop: 30 }}>
 						<Col flex={1} xs={{ span: 24 }} md={{ span: 16 }}>
 							<Form.Item
-								label={<T keyName="modal.project.name.label">Project Name</T>}
+								label={t('page.my.projects.settings.name.label', 'Project Name')}
 								name="name"
 								rules={[{ required: true }]}
 								required
@@ -248,7 +252,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 							>
 								<Input
 									width={'100%'}
-									placeholder={t('modal.project.name.placeholder', `Example: Hitman`)}
+									placeholder={t('page.my.projects.settings.name.placeholder', `Example: Hitman`)}
 									size="large"
 								/>
 							</Form.Item>
@@ -256,14 +260,14 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						<Col xs={{ span: 24 }} md={{ span: 8 }}>
 							<Form.Item
 								name="platform"
-								label={<T keyName="modal.project.platform.label">Platform</T>}
+								label={t('page.my.projects.settings.platform.label', 'Platform')}
 								wrapperCol={{ span: 24 }}
 								rules={[{ required: true }]}
 								required
 							>
 								<Input
 									width={'100%'}
-									placeholder={t('modal.project.platform.placeholder', 'Example: PC')}
+									placeholder={t('page.my.projects.settings.platform.placeholder', 'Example: PC')}
 									size="large"
 								/>
 							</Form.Item>
@@ -272,7 +276,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 
 					<Form.Item
 						name="description"
-						label={<T keyName="modal.project.description.label">Short Description</T>}
+						label={t('page.my.projects.settings.description.label', 'Short Description')}
 						required
 						rules={[
 							{
@@ -280,7 +284,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 									const value = editorRef.current?.getMarkdown()
 
 									if (!value) {
-										return Promise.reject(t('form.error.required.text', 'This field is required'))
+										return Promise.reject(t('page.my.projects.settings.description.error', 'This field is required'))
 									}
 
 									return Promise.resolve()
@@ -307,7 +311,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 								<Col md={{ span: 16 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item
 										name="pitchdeckLink"
-										label={<T keyName="modal.project.pitchdeckLink.label">Link to presentation (to pitch)</T>}
+										label={t('page.my.projects.settings.pitchdeckLink.label', 'Link to presentation (to pitch)')}
 										wrapperCol={{ span: 24 }}
 										rules={[{ type: 'url' }]}
 									>
@@ -317,13 +321,16 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 								<Col md={{ span: 8 }} sm={{ span: 12 }} xs={{ span: 24 }}>
 									<Form.Item
 										name="videoLink"
-										label={<T keyName="modal.project.videoLink.label">Pitch video</T>}
+										label={t('page.my.projects.settings.videoLink.label', 'Pitch video')}
 										wrapperCol={{ span: 24 }}
 										rules={[{ max: 64, min: 4 }]}
 									>
 										<Input
 											width={'100%'}
-											placeholder={t('modal.project.videoLink.placeholder', 'Specify video ID: ECxL-7DWVSE')}
+											placeholder={t(
+												'page.my.projects.settings.videoLink.placeholder',
+												'Specify video ID: ECxL-7DWVSE'
+											)}
 										/>
 									</Form.Item>
 								</Col>
@@ -333,31 +340,31 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 
 					<Form.Item
 						name="genre"
-						label={<T keyName="modal.project.genre.label">Genre</T>}
+						label={t('page.my.projects.settings.genre.label', 'Genre')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
 					>
 						<Input
 							width={'100%'}
-							placeholder={t('modal.project.genre.placeholder', 'Example: arcade idle + tower defense')}
+							placeholder={t('page.my.projects.settings.genre.placeholder', 'Example: arcade idle + tower defense')}
 						/>
 					</Form.Item>
 					<Form.Item
 						name="setting"
-						label={<T keyName="modal.project.setting.label">Game Setting</T>}
+						label={t('page.my.projects.settings.setting.label', 'Game Setting')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
 					>
 						<Input
 							width={'100%'}
-							placeholder={t('modal.project.setting.placeholder', 'Example: post-apocalyptic/zombie')}
+							placeholder={t('page.my.projects.settings.setting.placeholder', 'Example: post-apocalyptic/zombie')}
 						/>
 					</Form.Item>
 					<Form.Item
 						name="visualStyle"
-						label={<T keyName="modal.project.visualStyle.label">Visual Style</T>}
+						label={t('page.my.projects.settings.visualStyle.label', 'Visual Style')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
@@ -365,38 +372,40 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 						<Input
 							width={'100%'}
 							placeholder={t(
-								'modal.project.visualStyle.placeholder',
+								'page.my.projects.settings.visualStyle.placeholder',
 								'Example: low poly or something reminiscent of brawlstars'
 							)}
 						/>
 					</Form.Item>
 					<Form.Item
 						name="audition"
-						label={<T keyName="modal.project.audition.label">Audition</T>}
+						label={t('page.my.projects.settings.audition.label', 'Audition')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
 					>
-						<Input width={'100%'} placeholder={t('modal.project.audition.placeholder', 'Example: men 16-45')} />
+						<Input
+							width={'100%'}
+							placeholder={t('page.my.projects.settings.audition.placeholder', 'Example: men 16-45')}
+						/>
 					</Form.Item>
 
 					<Form.Item
 						name="coreMechanics"
-						label={<T keyName="modal.project.coreMechanics.label">Core Mechanics</T>}
+						label={t('page.my.projects.settings.coreMechanics.label', 'Core Mechanics')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
-						extra={
-							<T keyName="modal.project.coreMechanics.extra">
-								Start typing. To enter a new mechanic, press Enter on your keyboard and enter text
-							</T>
-						}
+						extra={t(
+							'page.my.projects.settings.coreMechanics.extra',
+							'Start typing. To enter a new mechanic, press Enter on your keyboard and enter text'
+						)}
 					>
 						<Select
 							mode="tags"
 							style={{ width: '100%' }}
 							placeholder={t(
-								'modal.project.coreMechanics.placeholder',
+								'page.my.projects.settings.coreMechanics.placeholder',
 								'For example: run, climb cliffs, move through a portal'
 							)}
 						/>
@@ -405,7 +414,7 @@ const MyProjectSettingsPage: NextPageWithLayout = () => {
 			</Spin>
 
 			<Button type="primary" onClick={handleOk} loading={isUpdating}>
-				<T keyName="button.save">Save</T>
+				{t('page.my.projects.settings.button.save', 'Save')}
 			</Button>
 		</ProtectedProjectLayout>
 	)

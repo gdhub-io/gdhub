@@ -1,6 +1,6 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Table, Tag, Typography, Card, Avatar } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -51,7 +51,7 @@ interface Transaction {
 }
 
 const EquityTransactions: React.FC<EquityTransactionsProps> = ({ projectId, userId }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	// Get transactions
 	const {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTranslate } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Modal, Form, Input, InputNumber, Slider, Checkbox, Row, Col, Typography, DatePicker, message } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -122,19 +122,24 @@ const InvestorModal = ({
 			maskClosable={false}
 		>
 			<Paragraph type="secondary">
-				<T>
-					Form for adding information about investors who have invested in your project financially (bought a share)
-				</T>
+				{t(
+					'modal.investor.formDescription',
+					'Form for adding information about investors who have invested in your project financially (bought a share)'
+				)}
 			</Paragraph>
 			<Form form={form} layout="vertical" requiredMark={false} variant="filled">
 				<Form.Item
 					name="name"
-					label={<T>Investor name</T>}
+					label={t('modal.investor.investorName', 'Investor name')}
 					rules={[{ required: true, message: 'Please enter investor name' }]}
 				>
 					<Input placeholder="Investor name or company" style={{ height: 40 }} />
 				</Form.Item>
-				<Form.Item name="share" label={<T>Share (%)</T>} rules={[{ required: true, message: 'Please specify share' }]}>
+				<Form.Item
+					name="share"
+					label={t('modal.investor.share', 'Share (%)')}
+					rules={[{ required: true, message: 'Please specify share' }]}
+				>
 					<Row gutter={8} align="middle" style={{ alignItems: 'center' }}>
 						<Col flex="auto">
 							<Slider
@@ -164,7 +169,7 @@ const InvestorModal = ({
 					<Col span={24}>
 						<Form.Item
 							name="value"
-							label={<T>Share price paid, USD</T>}
+							label={t('modal.investor.sharePricePaid', 'Share price paid, USD')}
 							rules={[
 								{ required: true, message: 'Please specify amount' },
 								{ type: 'number', min: 0.01, message: 'Amount must be greater than 0' },
@@ -180,7 +185,7 @@ const InvestorModal = ({
 				</Row>
 				<Form.Item
 					name="purchasedAt"
-					label={<T>Deal date</T>}
+					label={t('modal.investor.dealDate', 'Deal date')}
 					rules={[{ required: true, message: 'Please select deal date' }]}
 				>
 					<DatePicker

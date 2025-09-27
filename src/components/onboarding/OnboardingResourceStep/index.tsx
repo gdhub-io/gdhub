@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Checkbox, Col, Form, Input, InputNumber, Row, Space, Typography, message } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -20,7 +20,7 @@ export const OnboardingResourceStep = ({
 	onPreviousStep = () => {},
 }: IOnboardingResourceStep) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session, update: updateSession } = useSession()
 
 	const { data: profileData } = useQuery({
@@ -77,17 +77,13 @@ export const OnboardingResourceStep = ({
 			<div className="onboarding-content">
 				<div className="onboarding-form">
 					<div className="onboarding-form-title">
-						<Title level={2}>
-							<T keyName="resources">Recources</T>
-						</Title>
-						<Paragraph italic>
-							<T>How can you be useful to teams?</T>
-						</Paragraph>
+						<Title level={2}>{t('onboarding.resources.title', 'Recources')}</Title>
+						<Paragraph italic>{t('onboarding.resources.description', 'How can you be useful to teams?')}</Paragraph>
 						<Paragraph italic type="secondary">
-							<T>
-								The main resource is your time, which you are willing to spend on participating in projects. You can
-								also provide additional information
-							</T>
+							{t(
+								'onboarding.resources.description2',
+								'The main resource is your time, which you are willing to spend on participating in projects. You can also provide additional information'
+							)}
 						</Paragraph>
 					</div>
 
@@ -102,7 +98,7 @@ export const OnboardingResourceStep = ({
 					>
 						<Space direction="vertical" size={16} style={{ width: '100%' }}>
 							<Form.Item
-								label={<T keyName="availableTime" />}
+								label={t('onboarding.resources.availableTime', 'Available time')}
 								tooltip={{ title: t('How many hours a week can you devote to projects?') }}
 								wrapperCol={{ span: 24 }}
 								required
@@ -137,23 +133,22 @@ export const OnboardingResourceStep = ({
 							</Form.Item>
 
 							<Form.Item name="isActive" valuePropName="checked">
-								<Checkbox>
-									<T>I&apos;m available for offering</T>
-								</Checkbox>
+								<Checkbox>{t('onboarding.resources.availableForOffering', 'I&apos;m available for offering')}</Checkbox>
 							</Form.Item>
 
-							<Form.Item name="otherResources" label={t('additionalInformation')}>
+							<Form.Item
+								name="otherResources"
+								label={t('onboarding.resources.additionalInformation', 'Additional information')}
+							>
 								<Input.TextArea rows={8} />
 							</Form.Item>
 						</Space>
 					</Form>
 				</div>
 				<Space wrap className="onboarding-footer">
-					<Button onClick={onPreviousStep}>
-						<T keyName="back">Back</T>
-					</Button>
+					<Button onClick={onPreviousStep}>{t('onboarding.resources.back', 'Back')}</Button>
 					<Button type="primary" onClick={handleSave} loading={isSaving}>
-						<T keyName="save">Save</T>
+						{t('onboarding.resources.save', 'Save')}
 					</Button>
 				</Space>
 			</div>

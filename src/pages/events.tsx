@@ -7,12 +7,12 @@ import { NextPageWithLayout } from '@/pages/_app'
 import styles from '@/pages/hub/events/style.module.scss'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { theme } from 'antd'
 import axios from 'axios'
 
 const EventsPage: NextPageWithLayout = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { token } = theme.useToken()
 
 	const { data: eventCount, isFetched: isCountFetched } = useQuery({

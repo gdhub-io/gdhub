@@ -6,7 +6,7 @@ import { MdCancel } from '@react-icons/all-files/md/MdCancel'
 import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
 import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Modal, theme, Tooltip } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -21,7 +21,7 @@ interface UserAdviceArchiveModalProps {
 }
 
 const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, user, onClose }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { token: themeToken } = theme.useToken()
 
 	const {

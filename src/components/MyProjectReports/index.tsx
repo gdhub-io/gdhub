@@ -2,7 +2,7 @@ import { useState } from 'react'
 import ProjectReportModal from '@/components/modals/ProjectReportModal'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Grid, Popconfirm, Space, Table, message } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -14,7 +14,7 @@ interface MyProjectReportsArgs {
 
 const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [showProjectReportModal, setShowProjectReportModal] = useState(false)
 	const [selectedReportId, setSelectedReportId] = useState<string>()
 
@@ -33,11 +33,12 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 
 	const columns: ColumnsType<any> = [
 		{
-			title: <T>Report</T>,
+			title: t('components.my-project-reports.report', 'Report'),
 			dataIndex: 'ID',
 			key: 'ID',
 			width: '100%',
-			render: (value, record) => t('Report from') + ' ' + dayjs(record.publishedAt).format('lll'),
+			render: (value, record) =>
+				t('components.my-project-reports.report-from', 'Report from') + ' ' + dayjs(record.publishedAt).format('lll'),
 		},
 		{
 			key: 'actions',
@@ -45,13 +46,13 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 			render: (value, record) => (
 				<Space>
 					<Button onClick={() => handleEditReport(record.id)}>
-						<T>Change</T>
+						{t('components.my-project-reports.change', 'Change')}
 					</Button>
 					<Popconfirm
 						key={record.id}
 						title={t('You definitely want to delete this report?')}
-						okText={<T>Yes</T>}
-						cancelText={<T>No</T>}
+						okText={t('components.my-project-reports.yes', 'Yes')}
+						cancelText={t('components.my-project-reports.no', 'No')}
 						onConfirm={() => handleDeleteReport(record.id)}
 					>
 						<Button icon={<TbTrash />} type="text" danger style={{ lineHeight: 'initial' }} />
@@ -69,7 +70,7 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 	const handleDeleteReport = async (id: string) => {
 		await deleteProjectReport({ id })
 
-		message.success('Report was deleted')
+		message.success(t('components.my-project-reports.report-deleted', 'Report was deleted'))
 
 		await fetchMyProjectReports()
 	}
@@ -87,11 +88,9 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 	return (
 		<>
 			<Space align="center" style={{ marginTop: 60 }}>
-				<h3 style={{ margin: 0 }}>
-					<T>Reports</T>
-				</h3>
+				<h3 style={{ margin: 0 }}>{t('components.my-project-reports.reports', 'Reports')}</h3>
 				<Button onClick={() => handleAddReport()}>
-					<T>Add a report</T>
+					{t('components.my-project-reports.add-report', 'Add a report')}
 				</Button>
 			</Space>
 
@@ -107,7 +106,10 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 				</>
 			) : (
 				<p style={{ marginTop: 12, color: 'gray' }}>
-					<T>At the moment, reports are not provided</T>
+					{t(
+						'components.my-project-reports.at-the-moment-reports-are-not-provided',
+						'At the moment, reports are not provided'
+					)}
 				</p>
 			)}
 

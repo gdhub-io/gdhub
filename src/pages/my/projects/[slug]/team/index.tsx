@@ -3,7 +3,7 @@ import MyTeam from '@/components/MyTeam'
 import UserTeam from '@/components/UserTeam'
 import { ProjectContext } from '@/contexts/ProjectContext'
 import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 
 const RenderTeam = () => {
 	const contextProject = useContext(ProjectContext)
@@ -12,7 +12,7 @@ const RenderTeam = () => {
 }
 
 export const MyProjectTeamPage = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<ProtectedProjectLayout title={t('Project Team')}>
