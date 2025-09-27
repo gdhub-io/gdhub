@@ -2,7 +2,7 @@ import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { Type } from 'class-transformer'
-import { IsDate, IsOptional, IsString, ValidateIf } from 'class-validator'
+import { IsDate, IsString, ValidateIf } from 'class-validator'
 import { Body, Get, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
 
 class UserProjectWorkflowDto {
