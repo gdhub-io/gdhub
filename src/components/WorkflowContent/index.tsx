@@ -189,28 +189,31 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	return (
 		<div className={styles.container}>
 			<Space direction="vertical" style={{ width: '100%' }}>
-				{!isIntroductionStep && !isCompletionStep && (
-					<Flex justify="space-between" align="center" gap={32} className={styles.stepHeader}>
-						<RoadmapChart workflow={workflow} editable={isAuthor} />
+				{!isIntroductionStep && !isCompletionStep && <RoadmapChart workflow={workflow} editable={isAuthor} />}
 
-						{isAuthor && (
-							<div className={styles.stepTasks}>
-								{currentStepOrder > 0 && (
-									<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
-										<T keyName="workflow.previous-step">Previous</T>
-									</Button>
-								)}
+				<Row gutter={[32, 32]}>
+					<Col xs={24} lg={16}>
+						<Space direction="vertical" size={[32, 16]} style={{ width: '100%' }}>
+							<div className={styles.stepContent}>
+								<WorkflowStepContent step={workflow.currentStep} locale={locale} />
+							</div>
 
-								<Popover
-									content={stepsStepsList}
-									trigger="click"
-									open={popoverVisible}
-									onOpenChange={setPopoverVisible}
-								>
-									<Button type="text" icon={<CiViewList size={24} />} />
-								</Popover>
+							{isIntroductionStep && isAuthor && (
+								<Button type="primary" onClick={handleNextStep} disabled={isMoving}>
+									<Space size={8}>
+										{t('workflow.start-step', 'Go to the next step')}
+										<IoMdArrowForward style={{ display: 'block' }} />
+									</Space>
+								</Button>
+							)}
 
-								{currentStepOrder < workflow.steps.length - 1 && (
+							{isRoadmapStep && isAuthor && (
+								<Space size={8}>
+									{currentStepOrder > 1 && (
+										<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
+											<T keyName="workflow.previous-step">Previous</T>
+										</Button>
+									)}
 									<>
 										{conditionStatus.completed == false ? (
 											<Popover content={t('Tasks are not completed')}>
@@ -224,26 +227,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 											</Button>
 										)}
 									</>
-								)}
-							</div>
-						)}
-					</Flex>
-				)}
-
-				<Row gutter={[32, 32]}>
-					<Col xs={24} lg={16}>
-						<Space direction="vertical" size={[32, 16]} style={{ width: '100%' }}>
-							<div className={styles.stepContent}>
-								<WorkflowStepContent step={workflow.currentStep} locale={locale} />
-							</div>
-
-							{isIntroductionStep && (
-								<Button type="primary" onClick={handleNextStep} disabled={isMoving}>
-									<Space size={8}>
-										{t('workflow.start-step', 'Go to the next step')}
-										<IoMdArrowForward style={{ display: 'block' }} />
-									</Space>
-								</Button>
+								</Space>
 							)}
 
 							{!screens.lg && workflow.currentStep?.tasks?.length > 0 && (

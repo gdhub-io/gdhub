@@ -2,7 +2,8 @@ import { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { MdBeenhere } from '@react-icons/all-files/md/MdBeenhere'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ConfigProvider, DatePicker, Flex, Typography } from 'antd'
+import { useTolgee } from '@tolgee/react'
+import { ConfigProvider, DatePicker, Flex, message, Typography } from 'antd'
 import axios from 'axios'
 import dayjs, { Dayjs } from 'dayjs'
 import styles from './style.module.scss'
@@ -17,6 +18,7 @@ export const RoadmapChart = ({
 	workflow: ProjectWorkflowWithSteps
 	editable?: boolean
 }) => {
+	const { t } = useTolgee()
 	const queryClient = useQueryClient()
 	const roadmapRef = useRef<HTMLDivElement>(null)
 	const stepRefs = useRef<HTMLDivElement[]>([])
@@ -25,8 +27,22 @@ export const RoadmapChart = ({
 
 	const { mutate: updateStepMutation } = useMutation({
 		mutationFn: (data: { id: string; plannedAt: Date | null }) => axios.put('/api/user/project/workflow/step', data),
-		onSuccess: () => {
+		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({ queryKey: ['project-workflow', workflow.projectId] })
+
+			const messageSetDateText = t('modal.roadmapChart.updateSuccess', 'Set {date} date for {step}', {
+				date: dayjs(variables.plannedAt).format('ll'),
+				step: steps.find((step) => step.id === variables.id)?.name,
+			})
+
+			const messageClearDateText = t('modal.roadmapChart.clearSuccess', 'Clear date for {step}', {
+				step: steps.find((step) => step.id === variables.id)?.name,
+			})
+
+			message.success(variables.plannedAt != null ? messageSetDateText : messageClearDateText)
+		},
+		onError: (error) => {
+			message.error(t('modal.roadmapChart.updateError', 'Error updating step date'))
 		},
 	})
 

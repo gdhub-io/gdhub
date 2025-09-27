@@ -21,93 +21,110 @@ class ApiProjectMoveHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Body(ValidationPipe) { projectId, direction, targetStepId }: ApiProjectMoveDto
 	) {
-		let changedStep
-
-		if (['next', 'previous'].includes(direction)) {
-			const project = await prisma.project.findFirst({
-				where: { id: projectId },
-				select: {
-					workflow: {
-						include: {
-							currentStep: {
-								include: {
-									equityPromises: {
-										where: { isExecuted: false },
-										include: { allocation: { include: { owner: true } } },
-									},
+		const project = await prisma.project.findFirst({
+			where: { id: projectId },
+			select: {
+				workflow: {
+					include: {
+						currentStep: {
+							include: {
+								equityPromises: {
+									where: { isExecuted: false },
+									include: { allocation: { include: { owner: true } } },
 								},
 							},
-							steps: { include: { tasks: true } },
 						},
+						steps: { include: { tasks: true } },
 					},
 				},
-			})
+			},
+		})
 
-			if (project) {
-				const currentStep = project.workflow?.currentStep
+		if (!project) throw new Error('Project not found')
 
-				if (!currentStep) return
+		const currentStep = project.workflow?.currentStep
 
-				if (direction == 'next') {
-					changedStep = project.workflow?.steps.find(
-						(step: { order: number }) => step.order === (currentStep?.order || 0) + 1
-					)
-				}
+		if (direction) {
+			let changedStep
 
-				if (direction == 'previous' && currentStep?.order > 0) {
-					changedStep = project.workflow?.steps.find(
-						(step: { order: number }) => step.order === (currentStep?.order || 0) - 1
-					)
-				}
+			if (!currentStep) throw new Error('Current step not found')
 
-				if (changedStep) {
-					await prisma.projectWorkflow.update({
-						where: { projectId },
-						data: { currentStepId: changedStep.id },
+			if (direction == 'next') {
+				changedStep = project.workflow?.steps.find(
+					(step: { order: number }) => step.order === (currentStep?.order || 0) + 1
+				)
+			}
+
+			if (direction == 'previous' && currentStep?.order > 0) {
+				changedStep = project.workflow?.steps.find(
+					(step: { order: number }) => step.order === (currentStep?.order || 0) - 1
+				)
+			}
+
+			if (changedStep) {
+				await prisma.projectWorkflow.update({
+					where: { projectId },
+					data: { currentStepId: changedStep.id },
+				})
+
+				// set step date if it's not set
+				if (!changedStep?.plannedAt && direction == 'next') {
+					await prisma.projectWorkflowStep.update({
+						where: { id: changedStep.id },
+						data: { plannedAt: new Date() },
 					})
+				}
 
-					// Transfer equity promises to allocations
-					if (direction == 'next' && currentStep.equityPromises) {
-						for (const promise of currentStep.equityPromises) {
-							// Update allocation percentage
-							await prisma.equityAllocation.update({
-								where: { id: promise.allocation.id },
-								data: { percentage: promise.allocation.percentage + promise.percentage },
-							})
+				// Transfer equity promises to allocations
+				if (direction == 'next' && currentStep.equityPromises) {
+					for (const promise of currentStep.equityPromises) {
+						// Update allocation percentage
+						await prisma.equityAllocation.update({
+							where: { id: promise.allocation.id },
+							data: { percentage: promise.allocation.percentage + promise.percentage },
+						})
 
-							// Mark promise as executed
-							await prisma.equityPromise.update({
-								where: { id: promise.id },
-								data: { isExecuted: true, executedAt: new Date() },
-							})
+						// Mark promise as executed
+						await prisma.equityPromise.update({
+							where: { id: promise.id },
+							data: { isExecuted: true, executedAt: new Date() },
+						})
 
-							await prisma.equityTransaction.create({
-								data: {
-									percentage: promise.percentage,
-									reason: 'Realized equity promise from step ' + currentStep.name,
-									transactionType: prismaClient.EquityTransactionType.Vesting,
-									fromAllocation: { connect: { id: promise.allocation.id } },
-									toAllocation: { connect: { id: promise.allocation.id } },
-									promise: { connect: { id: promise.id } },
-									createdBy: { connect: { id: req.user.id } },
-								},
-							})
-						}
+						await prisma.equityTransaction.create({
+							data: {
+								percentage: promise.percentage,
+								reason: 'Realized equity promise from step ' + currentStep.name,
+								transactionType: prismaClient.EquityTransactionType.Vesting,
+								fromAllocation: { connect: { id: promise.allocation.id } },
+								toAllocation: { connect: { id: promise.allocation.id } },
+								promise: { connect: { id: promise.id } },
+								createdBy: { connect: { id: req.user.id } },
+							},
+						})
 					}
 				}
 			}
 		}
 
 		if (targetStepId) {
-			const step = await prisma.projectWorkflowStep.findFirst({
+			const targetStep = await prisma.projectWorkflowStep.findFirst({
 				where: { id: targetStepId },
 			})
 
-			if (step) {
+			if (targetStep) {
+				// set step as current step
 				await prisma.projectWorkflow.update({
 					where: { projectId },
-					data: { currentStepId: step.id },
+					data: { currentStepId: targetStep.id },
 				})
+
+				// set step date if it's not set and current step is after target step
+				if (!targetStep?.plannedAt && currentStep?.order && currentStep?.order > targetStep?.order) {
+					await prisma.projectWorkflowStep.update({
+						where: { id: targetStepId },
+						data: { plannedAt: new Date() },
+					})
+				}
 			}
 		}
 	}

@@ -10,7 +10,7 @@ export const MyProjectWorkflowPage = () => {
 	const { data: session } = useSession()
 
 	return (
-		<ProtectedProjectLayout title={t('Roadmap')}>
+		<ProtectedProjectLayout title={t('Workflow')}>
 			{!!project && <WorkflowContent projectId={project.id} locale={session?.user.lang} />}
 		</ProtectedProjectLayout>
 	)
