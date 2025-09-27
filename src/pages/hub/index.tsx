@@ -42,7 +42,6 @@ const HubPage: NextPageWithLayout = () => {
 							userName: session?.data?.user.name || 'user',
 						})}
 					</Title>
-					<Text>{t('hub.text1', 'I think now is the perfect time to make games.')}</Text>
 				</Space>
 
 				{session.status == 'authenticated' && !session.data.user.onboardingDone && (
