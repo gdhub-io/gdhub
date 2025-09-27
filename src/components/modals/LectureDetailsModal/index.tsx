@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Grid, message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -79,23 +79,25 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 		if (!lecture?.data) return null
 
 		if (lecture.data.stage == prismaClient.LectureStage.Ready) {
-			return userIsRegistered ? <T>You are already registered</T> : <T>Registration for the lecture</T>
+			return userIsRegistered
+				? t('modal.lectureDetails.youAreAlreadyRegistered', 'You are already registered')
+				: t('modal.lectureDetails.registrationForTheLecture', 'Registration for the lecture')
 		}
 
 		return null
 	}
 
 	const modalTitle = () => {
-		const defaultTitle = <T>Lecture Information</T>
+		const defaultTitle = t('modal.lectureDetails.lectureInformation', 'Lecture Information')
 
 		if (!lecture?.data) return defaultTitle
 
 		if (['Requested', 'Actualized'].includes(lecture.data.stage)) {
-			return <T>Lecture Request Information</T>
+			return t('modal.lectureDetails.lectureRequestInformation', 'Lecture Request Information')
 		}
 
 		if (['Proposed'].includes(lecture.data.stage)) {
-			return <T>Lecture Proposal Information</T>
+			return t('modal.lectureDetails.lectureProposalInformation', 'Lecture Proposal Information')
 		}
 
 		return defaultTitle
@@ -109,7 +111,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			destroyOnHidden
 			width={screens.lg ? '50vw' : '100%'}
 			maskClosable={false}
-			cancelText={<T>Close</T>}
+			cancelText={t('modal.lectureDetails.close', 'Close')}
 			okText={okText()}
 			okButtonProps={{ hidden: lecture?.data.stage !== prismaClient.LectureStage.Ready }}
 			open={open}

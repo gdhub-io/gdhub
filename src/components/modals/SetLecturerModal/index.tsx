@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -94,7 +94,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					},
 				})
 
-				message.success(<T keyName="modal.lecturerRequest.updateSuccess">Your proposal is updated</T>)
+				message.success(t('modal.setLecturer.updateSuccess', 'Your proposal is updated'))
 			} else {
 				await createLecturerRequest({
 					directionId: formData.directionId,
@@ -104,7 +104,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					date: date.toISOString(),
 				})
 
-				message.success(<T keyName="modal.lecturerRequest.createSuccess">Your proposal to conduct a lecture sent</T>)
+				message.success(t('modal.setLecturer.createSuccess', 'Your proposal to conduct a lecture sent'))
 			}
 
 			form.resetFields()
@@ -127,12 +127,12 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={<T keyName="modal.lecturerRequest.title">I want to give this lecture</T>}
+			title={t('modal.setLecturer.title', 'I want to give this lecture')}
 			width={800}
 			destroyOnHidden
 			maskClosable={false}
-			cancelText={<T>Close</T>}
-			okText={speakerRequest ? <T>Save</T> : <T>Offer</T>}
+			cancelText={t('modal.setLecturer.close', 'Close')}
+			okText={speakerRequest ? t('modal.setLecturer.save', 'Save') : t('modal.setLecturer.offer', 'Offer')}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -155,7 +155,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Form.Item>
 
 					<Form.Item
-						label={<T>Lecture theme</T>}
+						label={t('modal.setLecturer.lectureTheme', 'Lecture theme')}
 						name="name"
 						rules={[{ required: true }]}
 						required
@@ -172,7 +172,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="wishes"
-						label={<T keyName="modal.lecturerRequest.wishes">Wishes for the content of the lecture</T>}
+						label={t('modal.setLecturer.wishes', 'Wishes for the content of the lecture')}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -181,7 +181,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="directionId"
-						label={<T keyName="modal.lecturerRequest.direction">What direction does this lecture belong</T>}
+						label={t('modal.setLecturer.direction', 'What direction does this lecture belong')}
 						wrapperCol={{ span: 24 }}
 						required
 					>
@@ -190,7 +190,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="curriculum"
-						label={<T keyName="modal.lecturerRequest.curriculum">Lecture plan.What are you planning to talk about</T>}
+						label={t('modal.setLecturer.curriculum', 'Lecture plan.What are you planning to talk about')}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -199,19 +199,24 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Row>
 						<Col>
-							<Form.Item name="date" label={<T>Date</T>} rules={[{ required: true }]} wrapperCol={{ span: 24 }}>
+							<Form.Item
+								name="date"
+								label={t('modal.setLecturer.date', 'Date')}
+								rules={[{ required: true }]}
+								wrapperCol={{ span: 24 }}
+							>
 								<DatePicker format="DD.MM.YYYY" disabledDate={(current) => current && current < dayjs().endOf('day')} />
 							</Form.Item>
 						</Col>
 						<Col offset={1}>
 							<Form.Item
 								name="time"
-								label={<T>Time</T>}
+								label={t('modal.setLecturer.time', 'Time')}
 								rules={[{ required: true }]}
 								wrapperCol={{ span: 24 }}
 								extra={
 									<small>
-										<T>Time zone</T> {dayjs().tz().offsetName('short')}
+										{t('modal.setLecturer.timeZone', 'Time zone')} {dayjs().tz().offsetName('short')}
 									</small>
 								}
 							>
@@ -221,17 +226,15 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					</Row>
 
 					<Form.Item
-						label={<T keyName="modal.lecturerRequest.linkToStream">Link to the broadcast</T>}
+						label={t('modal.setLecturer.linkToStream', 'Link to the broadcast')}
 						name="linkToStream"
 						extra={
 							<div>
-								<T keyName="modal.lecturerRequest.linkToStream.extra.part1">Create a link to a broadcast in</T>{' '}
+								{t('modal.setLecturer.linkToStream.extra.part1', 'Create a link to a broadcast in')}{' '}
 								<Link href="https://meet.google.com/" target="_blank">
 									Google Meet
 								</Link>{' '}
-								<T keyName="modal.lecturerRequest.linkToStream.extra.part2">
-									(or on another service) and insert into this field.
-								</T>
+								{t('modal.setLecturer.linkToStream.extra.part2', '(or on another service) and insert into this field.')}
 							</div>
 						}
 						rules={[{ type: 'url' }]}

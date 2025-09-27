@@ -2,7 +2,7 @@ import Star2Icon from '@/assets/images/icons/star-2.svg'
 // import BgImageXS from '@/assets/images/landing/gdhub-talent-pool.png'
 import BgImage from '@/assets/images/landing/gdhub-talent-pool.png'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Card, Grid, Space, Typography } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -14,6 +14,7 @@ const { Title, Text } = Typography
 
 export const LandingForAuthorsSection = () => {
 	const screens = Grid.useBreakpoint()
+	const { t } = useTolgee()
 
 	const { data: latestSpecialists } = useQuery({
 		queryKey: ['latest-specialists'],
@@ -44,12 +45,8 @@ export const LandingForAuthorsSection = () => {
 				style={screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined}
 			>
 				<div className={styles.container}>
-					<div className={styles.preTitle}>
-						<T keyName="landing.author.pretitle">what are our advantages</T>
-					</div>
-					<Title level={2}>
-						<T keyName="landing.author.title">FOR AUTHORS</T>
-					</Title>
+					<div className={styles.preTitle}>{t('landing.author.pretitle', 'what are our advantages')}</div>
+					<Title level={2}>{t('landing.author.title', 'FOR AUTHORS')}</Title>
 
 					<div className={styles.content}>
 						<Space direction="vertical" size={screens.lg ? 46 : 24}>
@@ -58,36 +55,37 @@ export const LandingForAuthorsSection = () => {
 									<Star2Icon />
 								</div>
 								<Text>
-									<T keyName="landing.author.text1">
-										Our platform is actively used by more than 250 professionals from various fields - game designers,
-										programmers, artists, animators, etc.
-									</T>
+									{t(
+										'landing.author.text1',
+										'Our platform is actively used by more than 250 professionals from various fields - game designers, programmers, artists, animators, etc.'
+									)}
 								</Text>
 							</Space>
 							<Space size={screens.lg ? 32 : 16} align="center">
 								<div className={styles.star}>
 									<Star2Icon />
 								</div>
-								<Text>
-									<T keyName="landing.author.text2">Specialists of your team will develop a video game for free</T>
-								</Text>
+								<Text>{t('landing.author.text2', 'Specialists of your team will develop a video game for free')}</Text>
 							</Space>
 							<Space size={screens.lg ? 32 : 16} align="center">
 								<div className={styles.star}>
 									<Star2Icon />
 								</div>
 								<Text>
-									<T keyName="landing.author.text3">
-										Each Author can choose the format of work on our portal: as a part of the Gamelab incubation program
-										or work independently at his own pace
-									</T>
+									{t(
+										'landing.author.text3',
+										'Each Author can choose the format of work on our portal: as a part of the Gamelab incubation program or work independently at his own pace'
+									)}
 								</Text>
 							</Space>
 
 							{visibleSpecialists.length > 0 && (
 								<div className={styles.latestSpecialistsList}>
 									<Title level={3}>
-										<T>Latest specialists from Talent Pool</T>
+										{t(
+											'component.landingForAuthorsSection.latestSpecialistsFromTalentPool',
+											'Latest specialists from Talent Pool'
+										)}
 									</Title>
 
 									<div
@@ -125,7 +123,7 @@ export const LandingForAuthorsSection = () => {
 
 							<Link href="/registration?for=author">
 								<Button className={styles.heroButton} type="primary">
-									<T>Assemble a team</T>
+									{t('component.landingForAuthorsSection.assembleATeam', 'Assemble a team')}
 								</Button>
 							</Link>
 						</Space>

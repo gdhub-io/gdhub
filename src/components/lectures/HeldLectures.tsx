@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -55,7 +55,7 @@ export const HeldLectures = () => {
 							<small>{lecture.directionId}</small>
 							<br />
 							<small>
-								<T>Date</T>: {_date}
+								{t('components.lectures.heldLectures.date', 'Date')}: {_date}
 							</small>
 						</div>
 					)
@@ -89,9 +89,7 @@ export const HeldLectures = () => {
 		<>
 			{lectures?.data?.length > 0 ? (
 				<div>
-					<h3>
-						<T>Past Lectures</T>
-					</h3>
+					<h3>{t('components.lectures.heldLectures.pastLectures', 'Past Lectures')}</h3>
 					<Spin spinning={isLoading}>
 						<Table
 							style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px' }}

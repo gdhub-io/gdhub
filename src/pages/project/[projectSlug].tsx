@@ -7,7 +7,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Image from 'next/image'
@@ -52,11 +52,13 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 	const generalData = (
 		<div className={styles.projectMeta}>
 			<Descriptions size="small" layout={screens.md ? 'horizontal' : 'vertical'} column={1}>
-				<Descriptions.Item label={<T>Genre</T>}>{project.genre}</Descriptions.Item>
-				<Descriptions.Item label={<T>Game Setting</T>}>{project.setting}</Descriptions.Item>
-				<Descriptions.Item label={<T>Audition</T>}>{project.audition}</Descriptions.Item>
-				<Descriptions.Item label={<T>Platform</T>}>{project.platform}</Descriptions.Item>
-				<Descriptions.Item label={<T>Visual Style</T>}>{project.visualStyle}</Descriptions.Item>
+				<Descriptions.Item label={t('page.project.genre', 'Genre')}>{project.genre}</Descriptions.Item>
+				<Descriptions.Item label={t('page.project.setting', 'Game Setting')}>{project.setting}</Descriptions.Item>
+				<Descriptions.Item label={t('page.project.audition', 'Audition')}>{project.audition}</Descriptions.Item>
+				<Descriptions.Item label={t('page.project.platform', 'Platform')}>{project.platform}</Descriptions.Item>
+				<Descriptions.Item label={t('page.project.visualStyle', 'Visual Style')}>
+					{project.visualStyle}
+				</Descriptions.Item>
 			</Descriptions>
 		</div>
 	)
@@ -78,15 +80,13 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 						<Col xs={{ span: 24, order: 1 }} md={{ span: 12, order: 0 }} lg={{ span: 16, order: 0 }}>
 							<Space direction="vertical" size={64} style={{ width: '100%' }}>
 								<div className="project-description">
-									<Title level={2}>
-										<T>About Game</T>
-									</Title>
+									<Title level={2}>{t('page.project.aboutGame', 'About Game')}</Title>
 									<Paragraph>
 										<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>{project.description || ''}</ReactMarkdown>
 									</Paragraph>
 									{!!project.workflow?.currentStep && (
 										<Paragraph type="secondary">
-											<T>Development stage</T>: {project.workflow.currentStep.name}
+											{t('page.project.developmentStage', 'Development stage')}: {project.workflow.currentStep.name}
 										</Paragraph>
 									)}
 								</div>
@@ -106,7 +106,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 											{project.videoLink && (
 												<div className={styles.coverButtonContainer}>
 													<Button onClick={handleCoverClick} type="primary">
-														<T>View the presentation</T>
+														{t('page.project.viewThePresentation', 'View the presentation')}
 													</Button>
 												</div>
 											)}
@@ -131,7 +131,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 									style={{ display: 'block', width: 'fit-content' }}
 								>
 									<Button shape="round" type="dashed" className={styles.writeToAuthorButton}>
-										<TbBrandTelegram size={16} /> <T>Contact the author</T>
+										<TbBrandTelegram size={16} /> {t('page.project.contactTheAuthor', 'Contact the author')}
 									</Button>
 								</Link>
 							) : null}

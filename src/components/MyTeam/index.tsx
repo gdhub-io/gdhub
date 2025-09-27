@@ -17,7 +17,7 @@ import { MdOutlineMonetizationOn } from '@react-icons/all-files/md/MdOutlineMone
 import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import {
 	Button,
 	Grid,
@@ -407,7 +407,7 @@ const MyTeam = () => {
 							icon={<MdOutlineHandshake />}
 							onClick={() => handleOpenMemberEquityPromiseModal(member)}
 						>
-							<T>Make Promise</T>
+							{t('component.myTeam.makePromise', 'Make Promise')}
 						</Button>
 					)
 				}
@@ -513,7 +513,7 @@ const MyTeam = () => {
 			title: t('Actions'),
 			render: (_, invitation) => (
 				<Button danger ghost onClick={() => handleCancelInvitation(invitation.id)}>
-					<T>Cancel</T>
+					{t('component.myTeam.cancel', 'Cancel')}
 				</Button>
 			),
 		},
@@ -730,7 +730,7 @@ const MyTeam = () => {
 										<Button type="primary" onClick={handleOpenInviteModal} icon={<AiOutlinePlus />} />
 									) : (
 										<Button type="primary" onClick={handleOpenInviteModal} icon={<AiOutlinePlus />}>
-											<T>Invite Member</T>
+											{t('component.myTeam.inviteMember', 'Invite Member')}
 										</Button>
 									)
 								) : activeTab === 'advisors' ? (
@@ -741,7 +741,7 @@ const MyTeam = () => {
 									) : (
 										<Link href="/hub/mentors" passHref legacyBehavior>
 											<Button type="primary" style={{ marginLeft: 8 }} icon={<AiOutlinePlus />}>
-												<T>Find mentors</T>
+												{t('component.myTeam.findMentors', 'Find mentors')}
 											</Button>
 										</Link>
 									)
@@ -769,7 +769,7 @@ const MyTeam = () => {
 												icon={<AiOutlinePlus />}
 												disabled={noAvailableInvestorShare}
 											>
-												<T>Add investor</T>
+												{t('component.myTeam.addInvestor', 'Add investor')}
 											</Button>
 										</Popover>
 									)
@@ -865,7 +865,7 @@ const MyTeam = () => {
 										return (
 											<Table.Summary.Row style={{ background: '#eee' }}>
 												<Table.Summary.Cell index={(investors?.data?.length || 0) + 1}>
-													<Text strong>Total</Text>
+													<Text strong>{t('component.myTeam.total', 'Total')}</Text>
 												</Table.Summary.Cell>
 												<Table.Summary.Cell index={(investors?.data?.length || 0) + 2}>
 													<Text strong>

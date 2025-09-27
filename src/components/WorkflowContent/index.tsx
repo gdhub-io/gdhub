@@ -4,6 +4,7 @@ import { gtmEventTrigger } from '@/helpers/gtm'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { CiViewList } from '@react-icons/all-files/ci/CiViewList'
+import { IoMdArrowForward } from '@react-icons/all-files/io/IoMdArrowForward'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { T, useTolgee } from '@tolgee/react'
 import { Button, Col, Drawer, Flex, Grid, Modal, Popover, Row, Space, Steps, Typography } from 'antd'
@@ -112,6 +113,13 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		return workflow?.currentStep?.order || 0
 	}, [workflow])
 
+	const isIntroductionStep = useMemo(() => workflow?.currentStep.order === 0, [workflow?.currentStep.order])
+	const isCompletionStep = useMemo(
+		() => workflow && workflow?.currentStep.order === workflow?.steps.length - 1,
+		[workflow?.currentStep.order, workflow?.steps]
+	)
+	const isRoadmapStep = useMemo(() => !isIntroductionStep && !isCompletionStep, [isIntroductionStep, isCompletionStep])
+
 	const handlePreviousStep = () => {
 		moveProjectToStep({ projectId, direction: 'previous' })
 		gtmEventTrigger('workflow_move', {
@@ -181,46 +189,62 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	return (
 		<div className={styles.container}>
 			<Space direction="vertical" style={{ width: '100%' }}>
-				<Flex justify="space-between" align="center" gap={32} className={styles.stepHeader}>
-					<RoadmapChart workflow={workflow} editable={isAuthor} />
+				{!isIntroductionStep && !isCompletionStep && (
+					<Flex justify="space-between" align="center" gap={32} className={styles.stepHeader}>
+						<RoadmapChart workflow={workflow} editable={isAuthor} />
 
-					{isAuthor && (
-						<div className={styles.stepTasks}>
-							{currentStepOrder > 0 && (
-								<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
-									<T keyName="workflow.previous-step">Previous</T>
-								</Button>
-							)}
+						{isAuthor && (
+							<div className={styles.stepTasks}>
+								{currentStepOrder > 0 && (
+									<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
+										<T keyName="workflow.previous-step">Previous</T>
+									</Button>
+								)}
 
-							<Popover content={stepsStepsList} trigger="click" open={popoverVisible} onOpenChange={setPopoverVisible}>
-								<Button type="text" icon={<CiViewList size={24} />} />
-							</Popover>
+								<Popover
+									content={stepsStepsList}
+									trigger="click"
+									open={popoverVisible}
+									onOpenChange={setPopoverVisible}
+								>
+									<Button type="text" icon={<CiViewList size={24} />} />
+								</Popover>
 
-							{currentStepOrder < workflow.steps.length - 1 && (
-								<>
-									{conditionStatus.completed == false ? (
-										<Popover content={t('Tasks are not completed')}>
-											<Button disabled={conditionStatus.completed == false}>
+								{currentStepOrder < workflow.steps.length - 1 && (
+									<>
+										{conditionStatus.completed == false ? (
+											<Popover content={t('Tasks are not completed')}>
+												<Button disabled={conditionStatus.completed == false}>
+													<T keyName="workflow.next-step">Next step</T>
+												</Button>
+											</Popover>
+										) : (
+											<Button onClick={handleNextStep} disabled={isMoving}>
 												<T keyName="workflow.next-step">Next step</T>
 											</Button>
-										</Popover>
-									) : (
-										<Button onClick={handleNextStep} disabled={isMoving}>
-											<T keyName="workflow.next-step">Next step</T>
-										</Button>
-									)}
-								</>
-							)}
-						</div>
-					)}
-				</Flex>
+										)}
+									</>
+								)}
+							</div>
+						)}
+					</Flex>
+				)}
 
 				<Row gutter={[32, 32]}>
 					<Col xs={24} lg={16}>
-						<Space direction="vertical" size={32} style={{ width: '100%' }}>
+						<Space direction="vertical" size={[32, 16]} style={{ width: '100%' }}>
 							<div className={styles.stepContent}>
 								<WorkflowStepContent step={workflow.currentStep} locale={locale} />
 							</div>
+
+							{isIntroductionStep && (
+								<Button type="primary" onClick={handleNextStep} disabled={isMoving}>
+									<Space size={8}>
+										{t('workflow.start-step', 'Go to the next step')}
+										<IoMdArrowForward style={{ display: 'block' }} />
+									</Space>
+								</Button>
+							)}
 
 							{!screens.lg && workflow.currentStep?.tasks?.length > 0 && (
 								<div className={styles.stepContent}>
@@ -244,7 +268,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 							)}
 						</Space>
 					</Col>
-					{screens.lg && (
+					{screens.lg && isRoadmapStep && (
 						<Col xs={24} lg={8}>
 							<div className={styles.sidebarContent}>
 								<Title level={3}>

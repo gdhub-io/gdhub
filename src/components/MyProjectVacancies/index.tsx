@@ -6,7 +6,7 @@ import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { HiOutlineLockClosed } from '@react-icons/all-files/hi/HiOutlineLockClosed'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Flex, Grid, message, Popconfirm, Space, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -65,11 +65,7 @@ const MyProjectVacancies = () => {
 					>
 						{value}
 					</Text>
-					{data.status == 'Draft' && (
-						<Tag color="lime">
-							<T keyName={data.status} />
-						</Tag>
-					)}
+					{data.status == 'Draft' && <Tag color="lime">{t(`vacancy.status.${data.status}`, data.status)}</Tag>}
 				</Space>
 			),
 		},
@@ -96,14 +92,12 @@ const MyProjectVacancies = () => {
 			render: (value, record) => (
 				<Space>
 					{screens.md && (
-						<Button onClick={() => handleEditVacancy(record.id)}>
-							<T>Change</T>
-						</Button>
+						<Button onClick={() => handleEditVacancy(record.id)}>{t('MyProjectVacancies.change', 'Change')}</Button>
 					)}
 					<Popconfirm
 						title={t('You definitely want to close the vacancy?')}
-						okText={<T>Yes</T>}
-						cancelText={<T>No</T>}
+						okText={t('MyProjectVacancies.yes', 'Yes')}
+						cancelText={t('MyProjectVacancies.no', 'No')}
 						onConfirm={() => handleCloseVacancy(record.id)}
 					>
 						<Button type="text" danger>
@@ -126,7 +120,7 @@ const MyProjectVacancies = () => {
 		setSelectedVacancyId(undefined)
 		fetchMyProjectVacancies()
 
-		message.success(<T>The vacancy is closed</T>)
+		message.success(t('MyProjectVacancies.theVacancyIsClosed', 'The vacancy is closed'))
 	}
 
 	const handleSaveVacancy = () => {
@@ -147,11 +141,11 @@ const MyProjectVacancies = () => {
 		<>
 			<Flex justify="space-between" align="center">
 				<Button onClick={() => setShowVacancyModal(true)}>
-					<T>Add the vacancy</T>
+					{t('MyProjectVacancies.addTheVacancy', 'Add the vacancy')}
 				</Button>
 
 				<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
-					<T>Archive</T>
+					{t('MyProjectVacancies.archive', 'Archive')}
 				</Button>
 			</Flex>
 
@@ -165,7 +159,7 @@ const MyProjectVacancies = () => {
 				/>
 			) : (
 				<p style={{ marginTop: 12, color: 'gray' }}>
-					<T>There are no open vacancies at the moment</T>
+					{t('MyProjectVacancies.thereAreNoOpenVacanciesAtTheMoment', 'There are no open vacancies at the moment')}
 				</p>
 			)}
 

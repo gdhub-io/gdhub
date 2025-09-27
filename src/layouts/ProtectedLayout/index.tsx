@@ -10,7 +10,7 @@ import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -118,10 +118,10 @@ export const ProtectedLayout = ({
 					<Link href="/hub" title={t('Home')}>
 						{screens.lg ? (
 							<Button type="primary" size="small">
-								<T>Home</T>
+								{t('hub.menu.home', 'Home')}
 							</Button>
 						) : (
-							<T>Home</T>
+							t('hub.menu.home', 'Home')
 						)}
 					</Link>
 				),
@@ -131,7 +131,11 @@ export const ProtectedLayout = ({
 			{
 				label: (
 					<Link href="https://docs.gdhub.io" target="_blank">
-						{screens.lg ? <Button size="small">Documentation</Button> : <strong>Documentation</strong>}
+						{screens.lg ? (
+							<Button size="small">{t('hub.menu.documentation', 'Documentation')}</Button>
+						) : (
+							<strong>{t('hub.menu.documentation', 'Documentation')}</strong>
+						)}
 					</Link>
 				),
 				key: '/hub/docs',
@@ -161,11 +165,7 @@ export const ProtectedLayout = ({
 
 		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
-				label: (
-					<Link href="/admin/posts">
-						<T>Administration</T>
-					</Link>
-				),
+				label: <Link href="/admin/posts">{t('hub.menu.administration', 'Administration')}</Link>,
 				key: '/admin/posts',
 			})
 		}
@@ -173,11 +173,7 @@ export const ProtectedLayout = ({
 		menu = [
 			...menu,
 			{
-				label: (
-					<Link href="/profile">
-						<T>User Settings</T>
-					</Link>
-				),
+				label: <Link href="/profile">{t('hub.menu.userSettings', 'User Settings')}</Link>,
 				key: 'profile',
 			},
 			{ type: 'divider' },
@@ -186,7 +182,7 @@ export const ProtectedLayout = ({
 				label: (
 					<Link href={linkToChat} target="_blank" title={t('Community Chat')}>
 						<Flex justify="space-between" align="center" gap={16}>
-							<Text>Community Chat</Text>
+							<Text>{t('hub.menu.communityChat', 'Community Chat')}</Text>
 							<GoLinkExternal size={12} color="gray" />
 						</Flex>
 					</Link>
@@ -197,7 +193,7 @@ export const ProtectedLayout = ({
 				label: (
 					<Link href="https://gdhub.io" target="_blank" title="Website">
 						<Flex justify="space-between" align="center" gap={16}>
-							<Text>Website</Text>
+							<Text>{t('hub.menu.website', 'Website')}</Text>
 							<GoLinkExternal size={12} color="gray" />
 						</Flex>
 					</Link>
@@ -206,7 +202,7 @@ export const ProtectedLayout = ({
 			{ type: 'divider' },
 			{
 				style: { display: isOpenedInTelegram ? 'none' : 'block' },
-				label: t('Sign out'),
+				label: t('hub.menu.signOut', 'Sign out'),
 				key: 'logout',
 				danger: true,
 				onClick: () => signOut({ redirect: true, callbackUrl: '/' }),
@@ -219,35 +215,19 @@ export const ProtectedLayout = ({
 	const menuItems: MenuProps['items'] = [
 		{
 			key: '/hub',
-			label: (
-				<Link href="/hub">
-					<T keyName="app.user.menu.hub">Overview</T>
-				</Link>
-			),
+			label: <Link href="/hub">{t('hub.menu.overview', 'Overview')}</Link>,
 		},
 		{
 			key: '/hub/vacancies',
-			label: (
-				<Link href="/hub/vacancies">
-					<T keyName="app.user.menu.vacancies">Vacancies</T>
-				</Link>
-			),
+			label: <Link href="/hub/vacancies">{t('hub.menu.vacancies', 'Vacancies')}</Link>,
 		},
 		{
 			key: '/hub/members',
-			label: (
-				<Link href="/hub/members">
-					<T keyName="app.user.menu.members">Members</T>
-				</Link>
-			),
+			label: <Link href="/hub/members">{t('hub.menu.members', 'Members')}</Link>,
 		},
 		{
 			key: '/hub/projects',
-			label: (
-				<Link href="/hub/projects">
-					<T keyName="app.user.menu.projects">Projects</T>
-				</Link>
-			),
+			label: <Link href="/hub/projects">{t('hub.menu.projects', 'Projects')}</Link>,
 		},
 		// {
 		// 	key: '/hub/lectures',
@@ -259,27 +239,15 @@ export const ProtectedLayout = ({
 		// },
 		{
 			key: '/hub/events',
-			label: (
-				<Link href="/hub/events">
-					<T keyName="app.user.menu.events">Events</T>
-				</Link>
-			),
+			label: <Link href="/hub/events">{t('hub.menu.events', 'Events')}</Link>,
 		},
 		{
 			key: '/hub/mentors',
-			label: (
-				<Link href="/hub/mentors">
-					<T keyName="app.user.menu.mentors">Mentors</T>
-				</Link>
-			),
+			label: <Link href="/hub/mentors">{t('hub.menu.mentors', 'Mentors')}</Link>,
 		},
 		{
 			key: '/profile/settings/general',
-			label: (
-				<Link href="/profile">
-					<T keyName="app.user.menu.settings">Settings</T>
-				</Link>
-			),
+			label: <Link href="/profile">{t('hub.menu.settings', 'Settings')}</Link>,
 		},
 	]
 
@@ -313,7 +281,7 @@ export const ProtectedLayout = ({
 										<>
 											<Link href="https://docs.gdhub.io" target="_blank">
 												<Button type="text" style={{ fontSize: 14 }}>
-													<T>Documentation</T>
+													{t('hub.menu.documentation', 'Documentation')}
 												</Button>
 											</Link>
 											<NotificationsBell />

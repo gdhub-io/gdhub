@@ -7,7 +7,7 @@ import PeopleIcon from '@/assets/images/icons/people.svg'
 import StarIcon from '@/assets/images/icons/star.svg'
 import TeamMap from '@/assets/images/landing/team.svg'
 import Icon from '@ant-design/icons'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Col, Grid, Row, Tooltip, Typography } from 'antd'
 import styles from './style.module.scss'
 
@@ -62,17 +62,13 @@ export const LandingWhoWeAreSection = () => {
 	return (
 		<div id="about" className={styles.section}>
 			<div className={styles.container}>
-				<div className={styles.preTitle}>
-					<T keyName="landing.about.abovetitle">Know about us</T>
-				</div>
-				<Title level={2}>
-					<T keyName="landing.about.title">WHO WE ARE</T>
-				</Title>
+				<div className={styles.preTitle}>{t('landing.about.abovetitle', 'Know about us')}</div>
+				<Title level={2}>{t('landing.about.title', 'WHO WE ARE')}</Title>
 				<div className={styles.subTitle}>
-					<T keyName="landing.about.subtitle">
-						We are a community of professionals from the gaming world who don’t want to be limited to traditional
-						employment.
-					</T>
+					{t(
+						'landing.about.subtitle',
+						'We are a community of professionals from the gaming world who don’t want to be limited to traditional employment.'
+					)}
 				</div>
 				<Row
 					gutter={[screens.xs ? 0 : 135, screens.md ? 48 : 40]}
@@ -82,24 +78,22 @@ export const LandingWhoWeAreSection = () => {
 				>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Paragraph>
-							<T keyName="landing.about.text1">
-								We started our journey in 2015 when we organized a game development incubator, where we trained and
-								supported young developers, helping them to bring their ideas to life. Since then we have grown to
-								become Gdhub - a unique platform that brings together experienced professionals from different areas of
-								game development into dynamic and creative teams.
-							</T>
+							{t(
+								'landing.about.text1',
+								'We started our journey in 2015 when we organized a game development incubator, where we trained and supported young developers, helping them to bring their ideas to life. Since then we have grown to become Gdhub - a unique platform that brings together experienced professionals from different areas of game development into dynamic and creative teams.'
+							)}
 						</Paragraph>
 						<Paragraph>
-							<T keyName="landing.about.text2">
-								On Gdhub you can find partners to co-develop commercial video games, as well as share knowledge and
-								experience with other members of the community.
-							</T>
+							{t(
+								'landing.about.text2',
+								'On Gdhub you can find partners to co-develop commercial video games, as well as share knowledge and experience with other members of the community.'
+							)}
 						</Paragraph>
 						<Paragraph>
-							<T keyName="landing.about.text3">
-								We work in a gig economy - an economy of temporary and non-permanent work, which gives us flexibility
-								and independence. We value freedom, creativity and the ability to choose interesting projects.
-							</T>
+							{t(
+								'landing.about.text3',
+								'We work in a gig economy - an economy of temporary and non-permanent work, which gives us flexibility and independence. We value freedom, creativity and the ability to choose interesting projects.'
+							)}
 						</Paragraph>
 					</Col>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
@@ -115,7 +109,7 @@ export const LandingWhoWeAreSection = () => {
 					</Col>
 				</Row>
 				<Title level={3} style={{ textTransform: 'uppercase', marginBottom: screens.xs ? 12 : 48 }}>
-					<T>Our Core Values</T>
+					{t('component.landingWhoWeAreSection.coreValues', 'Our Core Values')}
 				</Title>
 				<div className={styles.valuesLine} />
 				<Row gutter={[32, 32]}>
@@ -123,9 +117,7 @@ export const LandingWhoWeAreSection = () => {
 						<Tooltip title={t('The need for liberty')} classNames={{ root: styles.tooltip }}>
 							<div className={styles.valuesBlock}>
 								<Icon component={LightingIcon} rev="span" size={40} />
-								<Text>
-									<T>Autonomy</T>
-								</Text>
+								<Text>{t('component.landingWhoWeAreSection.autonomy', 'Autonomy')}</Text>
 							</div>
 						</Tooltip>
 					</Col>
@@ -133,9 +125,7 @@ export const LandingWhoWeAreSection = () => {
 						<Tooltip title={t('The power of self-identity')} classNames={{ root: styles.tooltip }}>
 							<div className={styles.valuesBlock}>
 								<Icon component={DiamondIcon} rev="span" size={40} />
-								<Text>
-									<T>Individuality</T>
-								</Text>
+								<Text>{t('component.landingWhoWeAreSection.individuality', 'Individuality')}</Text>
 							</div>
 						</Tooltip>
 					</Col>
@@ -143,9 +133,7 @@ export const LandingWhoWeAreSection = () => {
 						<Tooltip title={t('Pursuing oppurtunities instead of settling')} classNames={{ root: styles.tooltip }}>
 							<div className={styles.valuesBlock}>
 								<Icon component={ClockIcon} rev="span" size={40} />
-								<Text>
-									<T>Exploration</T>
-								</Text>
+								<Text>{t('component.landingWhoWeAreSection.exploration', 'Exploration')}</Text>
 							</div>
 						</Tooltip>
 					</Col>
@@ -153,9 +141,7 @@ export const LandingWhoWeAreSection = () => {
 						<Tooltip title={t('Setting goals and working towards them')} classNames={{ root: styles.tooltip }}>
 							<div className={styles.valuesBlock}>
 								<Icon component={GoalIcon} rev="span" size={40} />
-								<Text>
-									<T>Goal-oriented</T>
-								</Text>
+								<Text>{t('component.landingWhoWeAreSection.goalOriented', 'Goal-oriented')}</Text>
 							</div>
 						</Tooltip>
 					</Col>
@@ -163,9 +149,7 @@ export const LandingWhoWeAreSection = () => {
 						<Tooltip title={t('Taking risks and making mistakes')} classNames={{ root: styles.tooltip }}>
 							<div className={styles.valuesBlock}>
 								<Icon component={StarIcon} rev="span" size={40} />
-								<Text>
-									<T>Achiever</T>
-								</Text>
+								<Text>{t('component.landingWhoWeAreSection.achiever', 'Achiever')}</Text>
 							</div>
 						</Tooltip>
 					</Col>
@@ -173,9 +157,7 @@ export const LandingWhoWeAreSection = () => {
 						<Tooltip title={t('Mastering communication and networking skills')} classNames={{ root: styles.tooltip }}>
 							<div className={styles.valuesBlock}>
 								<Icon component={PeopleIcon} rev="span" />
-								<Text>
-									<T>Player</T>
-								</Text>
+								<Text>{t('component.landingWhoWeAreSection.player', 'Player')}</Text>
 							</div>
 						</Tooltip>
 					</Col>

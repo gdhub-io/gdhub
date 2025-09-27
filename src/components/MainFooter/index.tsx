@@ -1,5 +1,5 @@
 import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
-import { T } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Anchor, Col, Divider, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -9,6 +9,7 @@ const { Title, Paragraph } = Typography
 
 export const MainFooter = () => {
 	const router = useRouter()
+	const { t } = useTolgee()
 
 	const writeInternalLink = (internalLink: string) => {
 		return router.pathname == '/' ? internalLink : `/${internalLink}`
@@ -27,22 +28,22 @@ export const MainFooter = () => {
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<GdhubLogo style={{ width: 'auto', height: '31px' }} />
 						<Paragraph style={{ marginTop: 12, maxWidth: 510 }}>
-							<T keyName="app-short-description">
-								A community of game industry professionals whose members form teams to develop new games. Do you want to
-								get a new experience or develop your own game? Join now!
-							</T>
+							{t(
+								'mainFooter.appShortDescription',
+								'A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!'
+							)}
 						</Paragraph>
 					</Col>
 					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={6}>
 							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
-								<T>Platform</T>
+								{t('mainFooter.platform', 'Platform')}
 							</Title>
 							<Anchor
 								items={[
-									{ href: '/projects', title: <T>Game Projects</T>, key: 'projects' },
-									{ href: '/vacancies', title: <T>Vacancies</T>, key: 'vacancies' },
-									{ href: writeInternalLink('#about'), title: <T>About us</T>, key: 'about' },
+									{ href: '/projects', title: t('mainFooter.gameProjects', 'Game Projects'), key: 'projects' },
+									{ href: '/vacancies', title: t('mainFooter.vacancies', 'Vacancies'), key: 'vacancies' },
+									{ href: writeInternalLink('#about'), title: t('mainFooter.aboutUs', 'About us'), key: 'about' },
 								]}
 							/>
 						</Space>
@@ -50,14 +51,18 @@ export const MainFooter = () => {
 					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={6}>
 							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
-								<T>For Users</T>
+								{t('mainFooter.forUsers', 'For Users')}
 							</Title>
 							<Anchor
 								items={[
-									{ href: writeInternalLink('#for-authors'), title: <T>For Authors</T>, key: 'for-authors' },
+									{
+										href: writeInternalLink('#for-authors'),
+										title: t('mainFooter.forAuthors', 'For Authors'),
+										key: 'for-authors',
+									},
 									{
 										href: writeInternalLink('#for-specialists'),
-										title: <T>For Specialists</T>,
+										title: t('mainFooter.forSpecialists', 'For Specialists'),
 										key: 'for-specialists',
 									},
 								]}
@@ -67,14 +72,10 @@ export const MainFooter = () => {
 					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
 						<Space direction="vertical" size={6}>
 							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
-								<T>Support</T>
+								{t('mainFooter.support', 'Support')}
 							</Title>
-							<Link href="/cookie-policy">
-								<T>Cookie Policy</T>
-							</Link>
-							<Link href="/terms">
-								<T>Terms of use</T>
-							</Link>
+							<Link href="/cookie-policy">{t('mainFooter.cookiePolicy', 'Cookie Policy')}</Link>
+							<Link href="/terms">{t('mainFooter.termsOfUse', 'Terms of use')}</Link>
 						</Space>
 					</Col>
 				</Row>
@@ -82,7 +83,7 @@ export const MainFooter = () => {
 				<Divider style={{ margin: '16px 0' }} />
 
 				<Paragraph className={styles.copyright}>
-					© 2023-2024 <T keyName="copyright">GDHub, All rights reserved.</T>
+					© 2023-{new Date().getFullYear()} {t('mainFooter.copyright', 'GDHub, All rights reserved.')}
 				</Paragraph>
 			</div>
 		</div>

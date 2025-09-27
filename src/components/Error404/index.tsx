@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode } from 'react'
-import { T } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Space, Button, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -8,7 +8,7 @@ const { Paragraph } = Typography
 
 export const Error404 = ({
 	callbackUrl = '/',
-	textBackButton = <T>Back to home</T>,
+	textBackButton,
 	theme = 'dark',
 	containerStyle,
 }: {
@@ -17,19 +17,19 @@ export const Error404 = ({
 	theme?: 'dark' | 'light'
 	containerStyle?: CSSProperties
 }) => {
+	const { t } = useTolgee()
+
 	return (
 		<div className={`${styles.errorPageContainer} ${styles[`theme-` + theme]}`} style={containerStyle}>
 			<Space direction="vertical">
 				<div className={styles.notFound}>
-					<h1>
-						<T>Error 404</T>
-					</h1>
+					<h1>{t('page.error404.title', 'Error 404')}</h1>
 				</div>
 				<Paragraph>
-					<T>Sorry, we couldn&apos;t find the page you&apos;re looking for.</T>
+					{t('page.error404.description', 'Sorry, we couldn&apos;t find the page you&apos;re looking for.')}
 				</Paragraph>
 				<Button>
-					<Link href={callbackUrl}>{textBackButton}</Link>
+					<Link href={callbackUrl}>{textBackButton || t('page.error404.backToHome', 'Back to home')}</Link>
 				</Button>
 			</Space>
 		</div>

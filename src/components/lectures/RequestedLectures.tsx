@@ -125,9 +125,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					>
 						<strong>{text}</strong>
 						<br />
-						<small>
-							<T keyName={lecture.stage} />
-						</small>
+						<small>{t(`lecture.${lecture.stage}`, lecture.stage)}</small>
 					</div>
 				) : (
 					<div
@@ -177,13 +175,14 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 										}}
 									>
 										<Space align="center">
-											<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> <T>My Proposal</T>
+											<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} />{' '}
+											{t('lecture.myProposal', 'My Proposal')}
 										</Space>
 									</Button>
 									<Popconfirm
-										title={<T>Are you sure?</T>}
-										okText={<T>Yes</T>}
-										cancelText={<T>No</T>}
+										title={t('lecture.areYouSure', 'Are you sure?')}
+										okText={t('lecture.yes', 'Yes')}
+										cancelText={t('lecture.no', 'No')}
 										onConfirm={() => handleDeleteLecturerRequest(lecture.id, myLecturerRequest.id)}
 									>
 										<Tooltip title={t("Don't want to be a lecturer")}>
@@ -194,15 +193,14 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 							) : (
 								<Button type="primary" onClick={() => handleSetLecturer(lecture?.id)}>
 									<Space align="center">
-										<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} /> <T>Become a Lecturer</T>
+										<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} />{' '}
+										{t('lecture.becomeALecturer', 'Become a Lecturer')}
 									</Space>
 								</Button>
 							)}
 						</>
 					) : (
-						<small>
-							<T>Not yet, we are waiting for more people to come</T>
-						</small>
+						<small>{t('lecture.notYet', 'Not yet, we are waiting for more people to come')}</small>
 					)
 				}
 			},
@@ -214,7 +212,7 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				<Space direction="vertical">
 					{lecture.isRelevant ? (
 						<Space align="center">
-							<T>Relevant</T>
+							{t('lecture.relevant', 'Relevant')}
 							<Tooltip title={t('No longer relevant')}>
 								<Button
 									type="text"
@@ -226,13 +224,14 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					) : (
 						<Button type="primary" onClick={() => handleSetRelevantForMe(lecture.id, true)}>
 							<Space align="center">
-								<TbHeart style={{ position: 'relative', top: '2px' }} /> <T>Want to attend</T>
+								<TbHeart style={{ position: 'relative', top: '2px' }} /> {t('lecture.wantToAttend', 'Want to attend')}
 							</Space>
 						</Button>
 					)}
 					{lecture.listeners.length >= 3 && (
 						<small>
-							<T>relevant for</T> {lecture.listeners.length} <T>participants</T>
+							{t('lecture.relevantFor', 'relevant for')} {lecture.listeners.length}{' '}
+							{t('lecture.participants', 'participants')}
 						</small>
 					)}
 				</Space>
@@ -249,13 +248,11 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				  (lecture.stage === prismaClient.LectureStage.Requested ||
 						lecture.stage === prismaClient.LectureStage.Proposed) ? (
 					<Space wrap={screens.md ? false : true}>
-						<Button onClick={() => handleEditLectureRequest(lecture.id)}>
-							<T>Change</T>
-						</Button>
+						<Button onClick={() => handleEditLectureRequest(lecture.id)}>{t('lecture.change', 'Change')}</Button>
 						<Popconfirm
 							title={t('Are you sure you want to delete it?')}
-							okText={t('Yes')}
-							cancelText={t('No')}
+							okText={t('lecture.yes', 'Yes')}
+							cancelText={t('lecture.no', 'No')}
 							onConfirm={() => handleDeleteLectureRequest(lecture.id)}
 						>
 							<Button type="text" danger>
@@ -333,18 +330,19 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 		<>
 			<Space wrap>
 				<Button type="primary" onClick={() => setShowLectureRequestModal(true)}>
-					<T>Request a new lecture</T>
+					{t('lecture.requestANewLecture', 'Request a new lecture')}
 				</Button>
-				{/* <Button onClick={() => setShowPropositionLectureModal(true)}><T>Offer to give a lecture</T></Button>*/}
+				{/* <Button onClick={() => setShowPropositionLectureModal(true)}>{t('lecture.offerToGiveALecture', 'Offer to give a lecture')}</Button>*/}
 			</Space>
 
 			{requestedLectures?.data?.length ? (
 				<>
 					<div style={{ marginTop: 32 }}>
-						<Title level={4}>
-							<T>Requests for lectures</T>
-						</Title>
-						<T>Mark lectures that you would be interested in attending.</T>
+						<Title level={4}>{t('lecture.requestsForLectures', 'Requests for lectures')}</Title>
+						{t(
+							'lecture.markLecturesThatYouWouldBeInterestedInAttending',
+							'Mark lectures that you would be interested in attending.'
+						)}
 						<Spin spinning={isLoading}>
 							<Table
 								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px', marginTop: 16 }}

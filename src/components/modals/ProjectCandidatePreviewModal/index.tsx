@@ -5,7 +5,7 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -100,7 +100,7 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 		<>
 			<Modal
 				centered
-				title={<T>Candidate card</T>}
+				title={t('projectCandidatePreviewModal.title', 'Candidate card')}
 				width={800}
 				destroyOnHidden
 				maskClosable={false}
@@ -110,13 +110,13 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 				footer={[
 					<Space key="form-buttons" wrap>
 						<Button key="close" onClick={handleCancel} disabled={processing}>
-							<T>Close</T>
+							{t('projectCandidatePreviewModal.close', 'Close')}
 						</Button>
 						<Button key="reject" disabled={processing} onClick={handleReject}>
-							<T>Reject</T>
+							{t('projectCandidatePreviewModal.reject', 'Reject')}
 						</Button>
 						<Button key="approve" disabled={processing} type="primary" onClick={handleApprove}>
-							<T>Accept the team</T>
+							{t('projectCandidatePreviewModal.acceptTheTeam', 'Accept the team')}
 						</Button>
 					</Space>,
 				]}
@@ -152,28 +152,22 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 										labelStyle={{ fontWeight: 'bold' }}
 									>
 										{!!candidate?.data.speciality.portfolioUrl && (
-											<Descriptions.Item label={<T>CV/Portfolio</T>}>
+											<Descriptions.Item label={t('projectCandidatePreviewModal.cvPortfolio', 'CV/Portfolio')}>
 												<Link href={candidate?.data.speciality.portfolioUrl} target="_blank">
-													<Button size="small">
-														<T>Go</T>
-													</Button>
+													<Button size="small">{t('projectCandidatePreviewModal.go', 'Go')}</Button>
 												</Link>
 											</Descriptions.Item>
 										)}
-										<Descriptions.Item label={<T>Free time</T>}>
-											<T
-												keyName="fromTo"
-												defaultValue="from {fromDate} to {toDate} hours a week"
-												params={{
-													fromDate: candidate.data.user.profile.timeForWork[0],
-													toDate: candidate.data.user.profile.timeForWork[1],
-												}}
-											/>
+										<Descriptions.Item label={t('projectCandidatePreviewModal.freeTime', 'Free time')}>
+											{t('projectCandidatePreviewModal.fromTo', 'from {fromDate} to {toDate} hours a week', {
+												fromDate: candidate.data.user.profile.timeForWork[0],
+												toDate: candidate.data.user.profile.timeForWork[1],
+											})}
 										</Descriptions.Item>
-										<Descriptions.Item label={<T>Place of residence</T>}>
+										<Descriptions.Item label={t('projectCandidatePreviewModal.placeOfResidence', 'Place of residence')}>
 											{[candidate.data.user.profile.country, candidate.data.user.profile.city].join(', ')}
 										</Descriptions.Item>
-										<Descriptions.Item label={<T>Motivation</T>}>
+										<Descriptions.Item label={t('projectCandidatePreviewModal.motivation', 'Motivation')}>
 											{candidate.data.user.profile.motivation}
 										</Descriptions.Item>
 									</Descriptions>
@@ -236,25 +230,21 @@ const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any
 								className={styles.descriptionBlock}
 							>
 								<Descriptions.Item label={t('I prefer genres')}>
-									{candidate.data.user.profile.preferedGenres ? (
-										candidate.data.user.profile.preferedGenres.map((r) => getGameGenreName(r.id)).join(', ')
-									) : (
-										<T>(not pointed)</T>
-									)}
+									{candidate.data.user.profile.preferedGenres
+										? candidate.data.user.profile.preferedGenres.map((r) => getGameGenreName(r.id)).join(', ')
+										: t('projectCandidatePreviewModal.notPointed', '(not pointed)')}
 								</Descriptions.Item>
 								<Descriptions.Item label={t('I prefer game settings')}>
-									{candidate.data.user.profile.preferedSettings ? (
-										candidate.data.user.profile.preferedSettings.map((r) => getGameSettingName(r.id)).join(', ')
-									) : (
-										<T>(not pointed)</T>
-									)}
+									{candidate.data.user.profile.preferedSettings
+										? candidate.data.user.profile.preferedSettings.map((r) => getGameSettingName(r.id)).join(', ')
+										: t('projectCandidatePreviewModal.notPointed', '(not pointed)')}
 								</Descriptions.Item>
 								<Descriptions.Item label={t('I prefer games of the following complexity')}>
-									{candidate.data.user.profile.preferedDifficulties ? (
-										candidate.data.user.profile.preferedDifficulties.map((r) => getGameDifficultyName(r.id)).join(', ')
-									) : (
-										<T>(not pointed)</T>
-									)}
+									{candidate.data.user.profile.preferedDifficulties
+										? candidate.data.user.profile.preferedDifficulties
+												.map((r) => getGameDifficultyName(r.id))
+												.join(', ')
+										: t('projectCandidatePreviewModal.notPointed', '(not pointed)')}
 								</Descriptions.Item>
 							</Descriptions>
 						</>

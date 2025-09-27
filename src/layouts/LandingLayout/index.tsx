@@ -4,7 +4,7 @@ import { MainHeader } from '@/components/MainHeader'
 import { SwitchLanguage } from '@/components/SwitchLanguage'
 import { landingThemeConfig } from '@/config/theme'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -121,7 +121,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#about" title={t('About us')}>
-						<T>About us</T>
+						{t('landing.menu.aboutUs', 'About us')}
 					</Link>
 				),
 				key: '#about',
@@ -129,7 +129,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#for-authors" title={t('For Authors')}>
-						<T>For Authors</T>
+						{t('landing.menu.forAuthors', 'For Authors')}
 					</Link>
 				),
 				key: '#for-authors',
@@ -137,7 +137,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#for-specialists" title={t('For Specialists')}>
-						<T>For Specialists</T>
+						{t('landing.menu.forSpecialists', 'For Specialists')}
 					</Link>
 				),
 				key: '#for-specialists',
@@ -145,7 +145,7 @@ export const LandingLayout = ({ children }: any) => {
 			{
 				label: (
 					<Link href="#contacts" title={t('Contacts')}>
-						<T>Contacts</T>
+						{t('landing.menu.contacts', 'Contacts')}
 					</Link>
 				),
 				key: '#contacts',
@@ -163,7 +163,7 @@ export const LandingLayout = ({ children }: any) => {
 			return (
 				<Link href="/signin">
 					<Button type="primary" style={{ width: '100%' }}>
-						<T>Log in</T>
+						{t('landing.menu.logIn', 'Log in')}
 					</Button>
 				</Link>
 			)
@@ -173,7 +173,7 @@ export const LandingLayout = ({ children }: any) => {
 			return (
 				<Link href="/hub">
 					<Button type="primary" style={{ width: '100%' }}>
-						<T>Go to app</T>
+						{t('landing.menu.goToApp', 'Go to app')}
 					</Button>
 				</Link>
 			)

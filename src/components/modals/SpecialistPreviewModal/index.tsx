@@ -59,7 +59,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 	}
 
 	const renderSkillTags = (skills: string | null) => {
-		if (!skills) return <T>(not pointed)</T>
+		if (!skills) return t('specialist.skills.notPointed', '(not pointed)')
 		return skills.split(',').map((skill, index) => (
 			<Tag key={index} className={styles.skillTag}>
 				{skill.trim()}
@@ -80,7 +80,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 				footer={[
 					<Space key="form-buttons" wrap>
 						<Button key="close" onClick={handleCancel} disabled={isLoading}>
-							<T>Close</T>
+							{t('specialist.preview.close', 'Close')}
 						</Button>
 					</Space>,
 				]}
@@ -90,7 +90,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 						<Space direction="vertical" style={{ width: '100%' }}>
 							<div className={styles.cardHeader}>
 								<Text type="secondary" className={styles.cardType}>
-									<T>Specialist card</T>
+									{t('specialist.preview.cardType', 'Specialist card')}
 								</Text>
 								<div className={styles.specialityTitle}>
 									<Title level={2} style={{ margin: 0 }}>
@@ -135,7 +135,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 														<TbFileText size={18} style={{ color: token.colorPrimary }} />
 														<Link href={specialist.data.portfolioUrl} target="_blank">
 															<Button type="text" ghost size="small">
-																<T>Summary/portfolio</T>
+																{t('specialist.preview.summaryPortfolio', 'Summary/portfolio')}
 															</Button>
 														</Link>
 													</Space>
@@ -149,7 +149,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 									{(specialist.data.user.profile.tgNickname || specialist.data.user.email) && (
 										<Card
 											className={styles.cardWrapper}
-											title={<T>Contacts</T>}
+											title={t('specialist.preview.contacts', 'Contacts')}
 											bordered={false}
 											style={{ height: '100%' }}
 										>
@@ -157,14 +157,14 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 												{!!specialist.data.user.profile.tgNickname && (
 													<Link target="_blank" href={'https://t.me/' + specialist.data.user.profile.tgNickname}>
 														<Button type="primary" icon={<TbBrandTelegram size={16} />} size="middle">
-															Telegram
+															{t('specialist.preview.telegram', 'Telegram')}
 														</Button>
 													</Link>
 												)}
 												{!!!specialist.data.user.profile.tgNickname && !!specialist.data.user.email && (
 													<Link target="_blank" href={'mailto:' + specialist.data.user.email}>
 														<Button type="primary" icon={<TbMail size={16} />} size="middle">
-															Email
+															{t('specialist.preview.email', 'Email')}
 														</Button>
 													</Link>
 												)}
@@ -175,7 +175,11 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 							</Row>
 
 							{specialist.data.user.profile.about && (
-								<Card className={styles.cardWrapper} title={<T>About me</T>} bordered={false}>
+								<Card
+									className={styles.cardWrapper}
+									title={t('specialist.preview.aboutMe', 'About me')}
+									bordered={false}
+								>
 									<Row>
 										<Col span={24}>
 											<div className={styles.quoteBlock}>
@@ -187,12 +191,16 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 								</Card>
 							)}
 
-							<Card className={styles.cardWrapper} title={<T>Professional info</T>} bordered={false}>
+							<Card
+								className={styles.cardWrapper}
+								title={t('specialist.preview.professionalInfo', 'Professional info')}
+								bordered={false}
+							>
 								<Row gutter={[24, 24]}>
 									<Col xs={24} md={12}>
 										<div>
 											<Text type="secondary" className={styles.fieldLabel}>
-												<T>Specialization</T>
+												{t('specialist.preview.specialization', 'Specialization')}
 											</Text>
 											<Paragraph>{specialist.data.specialization}</Paragraph>
 										</div>
@@ -200,7 +208,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 										{specialist.data.tools && (
 											<div style={{ marginTop: 16 }}>
 												<Text type="secondary" className={styles.fieldLabel}>
-													<T>I use it in work</T>
+													{t('specialist.preview.iUseItInWork', 'I use it in work')}
 												</Text>
 												<Paragraph>{specialist.data.tools}</Paragraph>
 											</div>
@@ -211,7 +219,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 										{specialist.data.jobs && (
 											<div>
 												<Text type="secondary" className={styles.fieldLabel}>
-													<T>Experience</T>
+													{t('specialist.preview.experience', 'Experience')}
 												</Text>
 												<Paragraph>{specialist.data.jobs}</Paragraph>
 											</div>
@@ -220,7 +228,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 										{specialist.data.schools && (
 											<div style={{ marginTop: 16 }}>
 												<Text type="secondary" className={styles.fieldLabel}>
-													<T>Where I received knowledge</T>
+													{t('specialist.preview.whereIReceivedKnowledge', 'Where I received knowledge')}
 												</Text>
 												<Paragraph>{specialist.data.schools}</Paragraph>
 											</div>
@@ -232,7 +240,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 										{specialist.data.skills && (
 											<div style={{ marginTop: 16 }}>
 												<Text type="secondary" className={styles.fieldLabel}>
-													<T>Skills</T>
+													{t('specialist.preview.skills', 'Skills')}
 												</Text>
 												<div style={{ marginTop: 4 }}>{renderSkillTags(specialist.data.skills)}</div>
 											</div>
@@ -244,12 +252,16 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 							{(specialist.data.user.profile.preferredGenres?.length > 0 ||
 								specialist.data.user.profile.preferredSettings?.length > 0 ||
 								specialist.data.user.profile.preferredLevels?.length > 0) && (
-								<Card className={styles.cardWrapper} title={<T>Preferences in games</T>} bordered={false}>
+								<Card
+									className={styles.cardWrapper}
+									title={t('specialist.preview.preferencesInGames', 'Preferences in games')}
+									bordered={false}
+								>
 									<Row gutter={[24, 24]}>
 										{specialist.data.user.profile.preferredGenres?.length > 0 && (
 											<Col xs={24} md={8}>
 												<Text type="secondary" className={styles.fieldLabel}>
-													<T>I prefer genres</T>
+													{t('specialist.preview.iPreferGenres', 'I prefer genres')}
 												</Text>
 												<div style={{ marginTop: 4 }}>
 													{specialist.data.user.profile.preferredGenres.map((r: any, index: number) => (
@@ -264,7 +276,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 										{specialist.data.user.profile.preferredSettings?.length > 0 && (
 											<Col xs={24} md={8}>
 												<Text type="secondary" className={styles.fieldLabel}>
-													<T>I prefer game settings</T>
+													{t('specialist.preview.iPreferGameSettings', 'I prefer game settings')}
 												</Text>
 												<div style={{ marginTop: 4 }}>
 													{specialist.data.user.profile.preferredSettings.map((r: any, index: number) => (
@@ -279,7 +291,10 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 										{specialist.data.user.profile.preferredLevels?.length > 0 && (
 											<Col xs={24} md={8}>
 												<Text type="secondary" className={styles.fieldLabel}>
-													<T>I prefer games of the following complexity</T>
+													{t(
+														'specialist.preview.iPreferGamesOfTheFollowingComplexity',
+														'I prefer games of the following complexity'
+													)}
 												</Text>
 												<div style={{ marginTop: 4 }}>
 													{specialist.data.user.profile.preferredLevels.map((r: any, index: number) => (
@@ -334,7 +349,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 																/>
 																<div style={{ marginTop: 12 }}>
 																	<Text type="secondary" className={styles.fieldLabel}>
-																		<T>Compliance with the project</T>
+																		{t('specialist.preview.complianceWithTheProject', 'Compliance with the project')}
 																	</Text>
 																</div>
 															</div>
@@ -351,7 +366,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 																/>
 																<div style={{ marginTop: 12 }}>
 																	<Text type="secondary" className={styles.fieldLabel}>
-																		<T>Compliance with the author</T>
+																		{t('specialist.preview.complianceWithTheAuthor', 'Compliance with the author')}
 																	</Text>
 																</div>
 															</div>
@@ -368,7 +383,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 																/>
 																<div style={{ marginTop: 12 }}>
 																	<Text type="secondary" className={styles.fieldLabel}>
-																		<T>Compliance with the team</T>
+																		{t('specialist.preview.complianceWithTheTeam', 'Compliance with the team')}
 																	</Text>
 																</div>
 															</div>
@@ -380,7 +395,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 													<div style={{ marginTop: 24 }}>
 														<Divider />
 														<Text type="secondary" className={styles.fieldLabel}>
-															<T>Comment</T>
+															{t('specialist.preview.comment', 'Comment')}
 														</Text>
 														<Paragraph>{record.summary}</Paragraph>
 													</div>

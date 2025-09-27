@@ -84,16 +84,12 @@ const LoginPage: NextPage = () => {
 				<div className="login-box">
 					<div className="login-form">
 						<Space direction="vertical" size={40}>
-							{loginStep < 3 && (
-								<Title>
-									<T>Log in</T>
-								</Title>
-							)}
+							{loginStep < 3 && <Title>{t('signin.title', 'Log in')}</Title>}
 							{loginStep == 1 && (
 								<>
 									<Space direction="vertical" size={24}>
 										<Button type="primary" style={{ width: '100%' }} onClick={() => setLoginStep(2)}>
-											<T>Log in with email</T>
+											{t('signin.email.title', 'Log in with email')}
 										</Button>
 										<Button
 											type="primary"
@@ -107,14 +103,14 @@ const LoginPage: NextPage = () => {
 												)
 											}
 										>
-											<T>Log in with Google</T>
+											{t('signin.google.title', 'Log in with Google')}
 										</Button>
 										<Link href="/registration" className={styles.createAccountLink}>
-											<T>Create new account</T>
+											{t('signin.createAccount.title', 'Create new account')}
 										</Link>
 										<Link href={`/`}>
 											<Button className="btn-default-on-white" style={{ width: '100%' }}>
-												<T>Back to main</T>
+												{t('signin.backToMain.title', 'Back to main')}
 											</Button>
 										</Link>
 									</Space>
@@ -125,15 +121,13 @@ const LoginPage: NextPage = () => {
 								<>
 									<Space direction="vertical" size={24}>
 										<Paragraph>
-											<T keyName="signin.subtitle">
-												We will send a letter to email with a link to log into your account
-											</T>
+											{t('signin.subtitle', 'We will send a letter to email with a link to log into your account')}
 										</Paragraph>
 
 										<Form variant="filled" form={form} layout="vertical">
 											<Form.Item
 												name="email"
-												label={<T>Enter Email</T>}
+												label={t('signin.email.label', 'Enter Email')}
 												rules={[{ type: 'email', required: true, message: 'Please enter Email' }]}
 											>
 												<Input />
@@ -142,10 +136,10 @@ const LoginPage: NextPage = () => {
 
 										<Flex justify="center" wrap="wrap" gap={16}>
 											<Button type="primary" onClick={handleSend} loading={submitting}>
-												<T>Send link to email</T>
+												{t('signin.email.sendLink.title', 'Send link to email')}
 											</Button>
 											<Button type="link" onClick={() => setLoginStep(1)}>
-												<T>Back</T>
+												{t('signin.email.back.title', 'Back')}
 											</Button>
 										</Flex>
 									</Space>
@@ -155,15 +149,16 @@ const LoginPage: NextPage = () => {
 							{loginStep == 3 && (
 								<Space direction="vertical" size={24}>
 									<Paragraph style={{ maxWidth: 400 }}>
-										<T keyName="signin.email.complete" params={{ email }}>
-											We have sent an email to email with an access link. Follow the link and complete the following
-											registration steps.
-										</T>
+										{t(
+											'signin.email.complete',
+											'We have sent an email to {email} with an access link. Follow the link and complete the following registration steps.',
+											{ email }
+										)}
 									</Paragraph>
 
 									<Link href="/">
 										<Button className="btn-default-on-white" style={{ width: '100%' }}>
-											<T>Return to main</T>
+											{t('signin.email.backToMain.title', 'Return to main')}
 										</Button>
 									</Link>
 								</Space>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Card, Result, Spin, Typography } from 'antd'
 import axios from 'axios'
 import Head from 'next/head'
@@ -93,11 +93,11 @@ const InvitePage = () => {
 				<Card style={{ maxWidth: 600, width: '100%' }}>
 					<Result
 						status="error"
-						title={t('Error')}
-						subTitle={error || t('Failed to load invitation')}
+						title={t('page.invite.error', 'Error')}
+						subTitle={error || t('page.invite.failedToLoadInvitation', 'Failed to load invitation')}
 						extra={[
 							<Button key="home" type="primary" onClick={() => router.push('/')}>
-								<T>Go Home</T>
+								{t('page.invite.goHome', 'Go Home')}
 							</Button>,
 						]}
 					/>
@@ -119,11 +119,14 @@ const InvitePage = () => {
 					<Card style={{ maxWidth: 600, width: '100%' }}>
 						<Result
 							status="info"
-							title={t('Invitation Already Accepted')}
-							subTitle={t('This invitation has already been accepted.')}
+							title={t('page.invite.invitationAlreadyAccepted', 'Invitation Already Accepted')}
+							subTitle={t(
+								'page.invite.invitationAlreadyAcceptedSubtitle',
+								'This invitation has already been accepted.'
+							)}
 							extra={[
 								<Button key="home" type="primary" onClick={() => router.push('/')}>
-									<T>Go Home</T>
+									{t('page.invite.goHome', 'Go Home')}
 								</Button>,
 							]}
 						/>
@@ -140,11 +143,11 @@ const InvitePage = () => {
 					<Card style={{ maxWidth: 600, width: '100%' }}>
 						<Result
 							status="warning"
-							title={t('Invitation Declined')}
-							subTitle={t('This invitation has been declined.')}
+							title={t('page.invite.invitationDeclined', 'Invitation Declined')}
+							subTitle={t('page.invite.invitationDeclinedSubtitle', 'This invitation has been declined.')}
 							extra={[
 								<Button key="home" type="primary" onClick={() => router.push('/')}>
-									<T>Go Home</T>
+									{t('page.invite.goHome', 'Go Home')}
 								</Button>,
 							]}
 						/>
@@ -161,11 +164,11 @@ const InvitePage = () => {
 					<Card style={{ maxWidth: 600, width: '100%' }}>
 						<Result
 							status="warning"
-							title={t('Invitation Expired')}
-							subTitle={t('This invitation has expired.')}
+							title={t('page.invite.invitationExpired', 'Invitation Expired')}
+							subTitle={t('page.invite.invitationExpiredSubtitle', 'This invitation has expired.')}
 							extra={[
 								<Button key="home" type="primary" onClick={() => router.push('/')}>
-									<T>Go Home</T>
+									{t('page.invite.goHome', 'Go Home')}
 								</Button>,
 							]}
 						/>
@@ -183,32 +186,28 @@ const InvitePage = () => {
 					style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', padding: '20px' }}
 				>
 					<Card style={{ maxWidth: 600, width: '100%' }}>
-						<Title level={2}>
-							<T>Team Invitation</T>
-						</Title>
+						<Title level={2}>{t('page.invite.teamInvitation', 'Team Invitation')}</Title>
 						<Paragraph>
-							<T
-								keyName="invitationText"
-								defaultValue="You have been invited by {inviterName} to join the team of project {projectName} as a {position}."
-								params={{
+							{t(
+								'page.invite.invitationText',
+								'You have been invited by {inviterName} to join the team of project {projectName} as a {position}.',
+								{
 									inviterName: inviteData.invitedBy?.name || 'Project founder',
 									projectName: inviteData.team?.project?.name || 'Project',
 									position: inviteData.position,
-								}}
-							/>
+								}
+							)}
 						</Paragraph>
 						<Paragraph>
-							<Text strong>
-								<T>Start Date</T>:
-							</Text>{' '}
+							<Text strong>{t('page.invite.startDate', 'Start Date')}:</Text>{' '}
 							{new Date(inviteData.startedAt).toLocaleDateString()}
 						</Paragraph>
 						<div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
 							<Button onClick={handleDecline} loading={isDeclining}>
-								<T>Decline</T>
+								{t('page.invite.decline', 'Decline')}
 							</Button>
 							<Button type="primary" onClick={handleAccept} loading={isAccepting}>
-								<T>Accept Invitation</T>
+								{t('page.invite.acceptInvitation', 'Accept Invitation')}
 							</Button>
 						</div>
 					</Card>

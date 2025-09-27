@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { DatePicker, Form, Input, message, Modal, notification, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -78,7 +78,11 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 			}
 
 			form.resetFields()
-			message.success(reportId ? <T>The report has been changed</T> : <T>A new report has been added</T>)
+			message.success(
+				reportId
+					? t('modal.projectReport.reportChanged', 'The report has been changed')
+					: t('modal.projectReport.reportAdded', 'A new report has been added')
+			)
 			onOk()
 		} catch (error: any) {
 			if (!error.hasOwnProperty('errorFields')) {
@@ -97,12 +101,16 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 	return (
 		<Modal
 			centered
-			title={reportId ? <T>Change the report</T> : <T>Add a report</T>}
+			title={
+				reportId
+					? t('modal.projectReport.changeReport', 'Change the report')
+					: t('modal.projectReport.addReport', 'Add a report')
+			}
 			width={800}
 			destroyOnHidden
 			maskClosable={false}
-			okText={<T>Save</T>}
-			cancelText={<T>Close</T>}
+			okText={t('modal.projectReport.save', 'Save')}
+			cancelText={t('modal.projectReport.close', 'Close')}
 			open={open}
 			onCancel={handleCancel}
 			onOk={() => handleOk()}
@@ -129,7 +137,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 
 					<Form.Item
 						name="publishedAt"
-						label={<T>Report Date</T>}
+						label={t('modal.projectReport.reportDate', 'Report Date')}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
@@ -138,7 +146,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 
 					<Form.Item
 						name="content"
-						label={<T keyName="modal.projectReport.content">What has been made new relative to the past report?</T>}
+						label={t('modal.projectReport.content', 'What has been made new relative to the past report?')}
 						required
 						rules={[
 							{
@@ -146,7 +154,7 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 									const value = editorRef.current?.getMarkdown()
 									if (!value) {
 										notification.error({
-											message: <T>This field is required</T>,
+											message: t('modal.projectReport.fieldRequired', 'This field is required'),
 										})
 									}
 									return value ? Promise.resolve() : Promise.reject()
@@ -162,7 +170,11 @@ const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) 
 						/>
 					</Form.Item>
 
-					<Form.Item name="video" label={<T>Video report</T>} wrapperCol={{ span: 24 }}>
+					<Form.Item
+						name="video"
+						label={t('modal.projectReport.videoReport', 'Video report')}
+						wrapperCol={{ span: 24 }}
+					>
 						<Input placeholder={t('Insert ID video from YouTube')} />
 					</Form.Item>
 				</Form>

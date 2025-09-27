@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -61,7 +61,7 @@ export const ReadyLectures = () => {
 							<small>{lecture.directionId}</small>
 							<br />
 							<small>
-								<T>Date</T>: {_date}
+								{t('components.lectures.readyLectures.date', 'Date')}: {_date}
 							</small>
 						</div>
 					)
@@ -107,7 +107,7 @@ export const ReadyLectures = () => {
 							setShowLectureDetails(true)
 						}}
 					>
-						<T>More</T>
+						{t('components.lectures.readyLectures.more', 'More')}
 					</Button>
 				),
 			},
@@ -120,9 +120,7 @@ export const ReadyLectures = () => {
 			{readyLectures && readyLectures.data?.length > 0 ? (
 				<>
 					<div>
-						<h3>
-							<T>Scheduled lectures</T>
-						</h3>
+						<h3>{t('components.lectures.readyLectures.scheduledLectures', 'Scheduled lectures')}</h3>
 						<Spin spinning={isLoadingReadyLectures}>
 							<Table
 								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px', background: '#c1e994' }}

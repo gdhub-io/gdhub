@@ -65,6 +65,45 @@ export const RoadmapChart = ({
 		updateStepMutation({ id: stepId, plannedAt: date?.toDate() || null })
 	}
 
+	const disableStepDate = (stepId: string, current: Dayjs) => {
+		// Get current step index
+		const currentStepIndex = steps.findIndex((step) => step.id === stepId)
+		if (currentStepIndex === -1) return true
+
+		// Check if date is before workflow creation
+		if (current < dayjs(workflow.createdAt)) {
+			return true
+		}
+
+		// Get future steps (after current step)
+		const futureSteps = steps.slice(currentStepIndex + 1)
+		const futureStepsWithDates = futureSteps.filter((step) => step.plannedAt)
+
+		// If there are future steps with dates, limit to minimum of them
+		if (futureStepsWithDates.length > 0) {
+			const futureDates = futureStepsWithDates.map((step) => dayjs(step.plannedAt!))
+			const minFutureDate = futureDates.reduce((min, date) => (date.isBefore(min) ? date : min))
+			if (current >= minFutureDate) {
+				return true
+			}
+		}
+
+		// Get past steps (before current step)
+		const pastSteps = steps.slice(0, currentStepIndex)
+		const pastStepsWithDates = pastSteps.filter((step) => step.plannedAt)
+
+		// If there are past steps with dates, limit from maximum of them
+		if (pastStepsWithDates.length > 0) {
+			const pastDates = pastStepsWithDates.map((step) => dayjs(step.plannedAt!))
+			const maxPastDate = pastDates.reduce((max, date) => (date.isAfter(max) ? date : max))
+			if (current <= maxPastDate) {
+				return true
+			}
+		}
+
+		return false
+	}
+
 	return (
 		<ConfigProvider theme={{ components: { DatePicker: { inputFontSizeSM: 10 } } }}>
 			<Flex ref={roadmapRef} justify="space-between" align="center" className={styles.roadmapContainer}>
@@ -106,6 +145,7 @@ export const RoadmapChart = ({
 									variant="borderless"
 									placeholder="set date"
 									onChange={(date) => handleDateChange(step.id, date)}
+									disabledDate={(current) => disableStepDate(step.id, current)}
 									classNames={{
 										root: styles.dateInput,
 										popup: { root: styles.dateInputPopup },

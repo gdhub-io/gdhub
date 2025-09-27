@@ -7,7 +7,7 @@ import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { TbMapPin } from '@react-icons/all-files/tb/TbMapPin'
 import { TbQuote } from '@react-icons/all-files/tb/TbQuote'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Card, Col, Modal, Row, Space, Spin, Tag, Typography, theme } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -52,7 +52,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 	}
 
 	const renderSkillTags = (skills: string | null) => {
-		if (!skills) return <T>(not pointed)</T>
+		if (!skills) return t('component.teamMemberCard.notPointed', '(not pointed)')
 		return skills.split(',').map((skill, index) => (
 			<Tag key={index} className={styles.skillTag}>
 				{skill.trim()}
@@ -81,7 +81,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 									<Row>
 										<Col>
 											<Text type="secondary" className={styles.cardType}>
-												<T>Team Member Card</T>
+												{t('component.teamMemberCard.title', 'Team Member Card')}
 											</Text>
 											<div className={styles.specialityTitle}>
 												<Title level={2} style={{ margin: 0 }}>
@@ -109,14 +109,10 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 														<Space>
 															<TbClock size={18} style={{ color: token.colorPrimary }} />
 															<Text>
-																<T
-																	keyName="fromTo"
-																	defaultValue="from {fromDate} to {toDate} hours a week"
-																	params={{
-																		fromDate: member.data.user.profile.timeForWork[0],
-																		toDate: member.data.user.profile.timeForWork[1],
-																	}}
-																/>
+																{t('component.teamMemberCard.fromTo', 'from {fromDate} to {toDate} hours a week', {
+																	fromDate: member.data.user.profile.timeForWork[0],
+																	toDate: member.data.user.profile.timeForWork[1],
+																})}
 															</Text>
 														</Space>
 													</Col>
@@ -126,7 +122,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 																<TbFileText size={18} style={{ color: token.colorPrimary }} />
 																<Link href={member.data.speciality.portfolioUrl} target="_blank">
 																	<Button type="text" ghost size="small">
-																		<T>Summary/portfolio</T>
+																		{t('component.teamMemberCard.summaryPortfolio', 'Summary/portfolio')}
 																	</Button>
 																</Link>
 															</Space>
@@ -170,7 +166,11 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 						</div>
 
 						{member.data.user.profile.motivation && (
-							<Card className={styles.cardWrapper} title={<T>About me</T>} bordered={false}>
+							<Card
+								className={styles.cardWrapper}
+								title={t('component.teamMemberCard.aboutMe', 'About me')}
+								bordered={false}
+							>
 								<Row>
 									<Col span={24}>
 										<div className={styles.quoteBlock}>
@@ -182,12 +182,16 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 							</Card>
 						)}
 
-						<Card className={styles.cardWrapper} title={<T>Professional info</T>} bordered={false}>
+						<Card
+							className={styles.cardWrapper}
+							title={t('component.teamMemberCard.professionalInfo', 'Professional info')}
+							bordered={false}
+						>
 							<Row gutter={[24, 24]}>
 								<Col xs={24} md={12}>
 									<div>
 										<Text type="secondary" className={styles.fieldLabel}>
-											<T>Specialization</T>
+											{t('component.teamMemberCard.specialization', 'Specialization')}
 										</Text>
 										<Paragraph>{member.data.speciality.specialization}</Paragraph>
 									</div>
@@ -195,7 +199,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 									{member.data.speciality.tools && (
 										<div style={{ marginTop: 16 }}>
 											<Text type="secondary" className={styles.fieldLabel}>
-												<T>I use it in work</T>
+												{t('component.teamMemberCard.iUseItInWork', 'I use it in work')}
 											</Text>
 											<Paragraph>{member.data.speciality.tools}</Paragraph>
 										</div>
@@ -206,7 +210,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 									{member.data.speciality.jobs && (
 										<div>
 											<Text type="secondary" className={styles.fieldLabel}>
-												<T>Experience</T>
+												{t('component.teamMemberCard.experience', 'Experience')}
 											</Text>
 											<Paragraph>{member.data.speciality.jobs}</Paragraph>
 										</div>
@@ -215,7 +219,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 									{member.data.speciality.schools && (
 										<div style={{ marginTop: 16 }}>
 											<Text type="secondary" className={styles.fieldLabel}>
-												<T>Where I received knowledge</T>
+												{t('component.teamMemberCard.whereIReceivedKnowledge', 'Where I received knowledge')}
 											</Text>
 											<Paragraph>{member.data.speciality.schools}</Paragraph>
 										</div>
@@ -227,7 +231,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 									{member.data.speciality.skills && (
 										<div style={{ marginTop: 16 }}>
 											<Text type="secondary" className={styles.fieldLabel}>
-												<T>Skills</T>
+												{t('component.teamMemberCard.skills', 'Skills')}
 											</Text>
 											<div style={{ marginTop: 4 }}>{renderSkillTags(member.data.speciality.skills)}</div>
 										</div>

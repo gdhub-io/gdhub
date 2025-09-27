@@ -3,7 +3,7 @@ import heroStatsImage2 from '@/assets/images/landing/hero-stats-member-2.png'
 import heroStatsImage3 from '@/assets/images/landing/hero-stats-member-3.png'
 import heroStatsImage4 from '@/assets/images/landing/hero-stats-member-4.png'
 import heroStatsImage5 from '@/assets/images/landing/hero-stats-member-5.png'
-import { T } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Avatar, Divider, Flex, Grid, Space, Typography } from 'antd'
 import styles from './style.module.scss'
 
@@ -20,6 +20,7 @@ export const HeroStats = ({
 	}
 }) => {
 	const screen = Grid.useBreakpoint()
+	const { t } = useTolgee()
 
 	return (
 		<div className={styles.container}>
@@ -39,9 +40,7 @@ export const HeroStats = ({
 					<Flex style={{ width: '100%' }} gap={24} className={styles.members}>
 						<Flex vertical align="center">
 							<Text strong>{stats?.usersCount}+</Text>
-							<Text>
-								<T>community members</T>
-							</Text>
+							<Text>{t('component.heroStats.communityMembers', 'community members')}</Text>
 						</Flex>
 
 						<Avatar.Group size={screen.md ? 64 : 56}>
@@ -60,23 +59,17 @@ export const HeroStats = ({
 					<Flex className={styles.stats}>
 						<Space direction="vertical" align="center">
 							<Text strong>{stats?.specialitiesCount}+</Text>
-							<Text>
-								<T>qualified specialists</T>
-							</Text>
+							<Text>{t('component.heroStats.qualifiedSpecialists', 'qualified specialists')}</Text>
 						</Space>
 						<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
 						<Space direction="vertical" align="center">
 							<Text strong>{stats?.projectsCount}</Text>
-							<Text>
-								<T>current projects</T>
-							</Text>
+							<Text>{t('component.heroStats.currentProjects', 'current projects')}</Text>
 						</Space>
 						<Divider type="vertical" style={{ height: 52, margin: '0 16px' }} />
 						<Space direction="vertical" align="center">
 							<Text strong>{stats?.vacanciesCount}+</Text>
-							<Text>
-								<T>actual vacancies</T>
-							</Text>
+							<Text>{t('component.heroStats.actualVacancies', 'actual vacancies')}</Text>
 						</Space>
 					</Flex>
 				</Flex>

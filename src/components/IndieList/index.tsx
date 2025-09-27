@@ -1,18 +1,18 @@
-import { T } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Typography } from 'antd'
 import { SeasonProjectsSection } from '../SeasonProjectsSection'
 
 const { Title, Paragraph } = Typography
 
 export const IndieList = () => {
+	const { t } = useTolgee()
+
 	return (
 		<>
 			<Title level={2} style={{ marginTop: 60 }}>
-				<T>Game Projects</T>
+				{t('component.indieList.title', 'Game Projects')}
 			</Title>
-			<Paragraph>
-				<T>Projects developed independently by users.</T>
-			</Paragraph>
+			<Paragraph>{t('component.indieList.description', 'Projects developed independently by users.')}</Paragraph>
 
 			<SeasonProjectsSection seasonSlug="indie" />
 		</>

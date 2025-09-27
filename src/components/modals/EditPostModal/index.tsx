@@ -6,7 +6,7 @@ import { AiOutlineVideoCameraAdd } from '@react-icons/all-files/ai/AiOutlineVide
 import { IoMdClose } from '@react-icons/all-files/io/IoMdClose'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Button, Flex, Form, Input, message, Modal, notification, Popconfirm, Space, Spin, Tooltip } from 'antd'
 import axios from 'axios'
 
@@ -81,12 +81,12 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={<T keyName="modal.edit-devlog-post.title">Edit post</T>}
+			title={t('modal.edit-devlog-post.title', 'Edit post')}
 			width={640}
 			destroyOnHidden
 			maskClosable={false}
-			okText={<T>Save</T>}
-			cancelText={<T>Cancel</T>}
+			okText={t('modal.edit-devlog-post.save', 'Save')}
+			cancelText={t('modal.edit-devlog-post.cancel', 'Cancel')}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -96,18 +96,16 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 					<Popconfirm
 						key={postId}
 						title={t('You definitely want to delete this report?')}
-						okText={<T>Yes</T>}
-						cancelText={<T>No</T>}
+						okText={t('modal.edit-devlog-post.yes', 'Yes')}
+						cancelText={t('modal.edit-devlog-post.no', 'No')}
 						onConfirm={() => handleDeleteReport(postId)}
 					>
 						<Button icon={<TbTrash size={24} />} type="text" danger style={{ lineHeight: 'initial' }} />
 					</Popconfirm>
 					<Space size={4}>
-						<Button onClick={handleCancel}>
-							<T>Cancel</T>
-						</Button>
+						<Button onClick={handleCancel}>{t('modal.edit-devlog-post.cancel', 'Cancel')}</Button>
 						<Button type="primary" onClick={handleOk}>
-							<T>Save</T>
+							{t('modal.edit-devlog-post.save', 'Save')}
 						</Button>
 					</Space>
 				</Flex>
@@ -131,7 +129,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 					<Space direction="vertical" style={{ width: '100%' }}>
 						<Form.Item
 							name="content"
-							label={<T keyName="modal.devlogwall.newpost.label">What&apos;s new in the project?</T>}
+							label={t('modal.devlogwall.newpost.label', 'What&apos;s new in the project?')}
 							required
 							style={{ margin: 0 }}
 							rules={[
@@ -140,7 +138,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 										const value = editorRef.current?.getMarkdown()
 										if (!value) {
 											notification.error({
-												message: <T keyName="modal.devlogwall.newpost.required">This field is required</T>,
+												message: t('modal.devlogwall.newpost.required', 'This field is required'),
 											})
 										}
 										return value ? Promise.resolve() : Promise.reject()
@@ -157,7 +155,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 						</Form.Item>
 
 						{!showAddVideoInput && (
-							<Tooltip title={<T keyName="devlogwall.form.add-video">Add video</T>}>
+							<Tooltip title={t('devlogwall.form.add-video', 'Add video')}>
 								<Button
 									className="gray-text-btn"
 									onClick={() => setShowAddVideoInput(true)}
