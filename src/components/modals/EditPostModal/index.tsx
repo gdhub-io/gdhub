@@ -6,13 +6,13 @@ import { AiOutlineVideoCameraAdd } from '@react-icons/all-files/ai/AiOutlineVide
 import { IoMdClose } from '@react-icons/all-files/io/IoMdClose'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Flex, Form, Input, message, Modal, notification, Popconfirm, Space, Spin, Tooltip } from 'antd'
 import axios from 'axios'
 
 const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false)
 	const editorRef = useRef<MDXEditorMethods | null>()
 	const [content, setContent] = useState('')

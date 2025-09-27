@@ -5,7 +5,7 @@ import { MDXEditorMethods } from '@mdxeditor/editor'
 import { AiOutlineVideoCameraAdd } from '@react-icons/all-files/ai/AiOutlineVideoCameraAdd'
 import { IoMdClose } from '@react-icons/all-files/io/IoMdClose'
 import { useMutation } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Flex, Form, Input, Space, Tooltip, message, notification } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -16,7 +16,7 @@ const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr:
 
 export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [content, setContent] = useState('')
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false)
 	let editorRef = useRef<MDXEditorMethods | null>()
@@ -81,7 +81,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 				<Space direction="vertical" style={{ width: '100%' }}>
 					<Form.Item
 						name="content"
-						label={<T keyName="modal.devlogwall.newpost.label">What&apos;s new in the project?</T>}
+						label={t('modal.devlogwall.newpost.label', 'What&apos;s new in the project?')}
 						required
 						style={{ margin: 0 }}
 						rules={[
@@ -90,7 +90,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 									const value = editorRef.current?.getMarkdown()
 									if (!value) {
 										notification.error({
-											message: <T keyName="modal.devlogwall.newpost.required">This field is required</T>,
+											message: t('modal.devlogwall.newpost.required', 'This field is required'),
 										})
 									}
 									return value ? Promise.resolve() : Promise.reject()
@@ -108,7 +108,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 
 					{!showAddVideoInput && (
 						<Flex justify="space-between">
-							<Tooltip title={<T keyName="devlogwall.form.add-video">Add video</T>}>
+							<Tooltip title={t('devlogwall.form.add-video', 'Add video')}>
 								<Button
 									className="gray-text-btn"
 									onClick={() => setShowAddVideoInput(true)}
@@ -118,7 +118,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 							</Tooltip>
 
 							<Button type="primary" onClick={handleOk} loading={isLoading}>
-								<T keyName="modal.devlogwall.newpost.postBtn.label">Post</T>
+								{t('modal.devlogwall.newpost.postBtn.label', 'Post')}
 							</Button>
 						</Flex>
 					)}
@@ -135,7 +135,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 							</Flex>
 							<Flex justify="end">
 								<Button type="primary" onClick={handleOk} loading={isLoading}>
-									<T keyName="modal.devlogwall.newpost.postBtn.label">Post</T>
+									{t('modal.devlogwall.newpost.postBtn.label', 'Post')}
 								</Button>
 							</Flex>
 						</>

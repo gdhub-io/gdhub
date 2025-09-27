@@ -7,7 +7,7 @@ import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { InstantsearchAdapter } from '@gdhub-io/gdhub-typesense/dist/adapter'
 import { BsFilter } from '@react-icons/all-files/bs/BsFilter'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Badge, Button, Card, Col, Drawer, Grid, Row, Space, Tag, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import { getSession, useSession } from 'next-auth/react'
@@ -29,7 +29,7 @@ const { Paragraph, Text, Title } = Typography
 
 const SpecialistsPage: NextPageWithLayout = ({ usersCount, specialitiesCount, hasApprovedProjects = false }: any) => {
 	const session = useSession()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [openedFilter, setOpenFilter] = useState(false)
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<string | undefined>()
 	const screens = Grid.useBreakpoint()
@@ -196,7 +196,7 @@ function NoResultsBoundary({ children, fallback }: any) {
 
 function NoResults() {
 	const { indexUiState } = useInstantSearch()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<Paragraph type="secondary">
@@ -206,7 +206,7 @@ function NoResults() {
 }
 
 const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<Card className={styles.filterCard}>
@@ -235,7 +235,7 @@ const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
 function SearchMobileFilter({ onClick, resetButtonText }: any) {
 	const { indexUiState } = useInstantSearch()
 	const [count, setCount] = useState(0)
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	useEffect(() => {
 		let _count = 0

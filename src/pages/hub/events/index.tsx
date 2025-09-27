@@ -5,7 +5,7 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, theme } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -14,7 +14,7 @@ import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
 
 const EventsPage: NextPageWithLayout = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const { token } = theme.useToken()
 	const { data: session } = useSession()

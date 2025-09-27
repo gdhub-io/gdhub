@@ -6,7 +6,7 @@ import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { HiOutlineLockClosed } from '@react-icons/all-files/hi/HiOutlineLockClosed'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Flex, Grid, message, Popconfirm, Space, Tag, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -26,7 +26,7 @@ interface Vacancy {
 
 const MyProjectVacancies = () => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const contextProject = useContext(ProjectContext)?.contextProject
 	const [showVacancyModal, setShowVacancyModal] = useState(false)
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>()

@@ -1,10 +1,10 @@
 import MyProjectCandidates from '@/components/MyProjectCandidates'
 import MyProjectVacancies from '@/components/MyProjectVacancies'
 import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 
 export const MyProjectVacanciesPage = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<ProtectedProjectLayout title={t('Project Vacancies')}>

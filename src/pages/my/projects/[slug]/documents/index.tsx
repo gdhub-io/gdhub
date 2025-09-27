@@ -1,9 +1,9 @@
 import MyProjectDocuments from '@/components/MyProjectDocuments'
 import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 
 export const MyProjectVacanciesPage = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<ProtectedProjectLayout

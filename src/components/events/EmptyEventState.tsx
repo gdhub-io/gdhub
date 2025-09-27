@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Typography } from 'antd'
 import Image from 'next/image'
 import styles from './emptyState.module.scss'
@@ -7,7 +7,7 @@ import styles from './emptyState.module.scss'
 const { Title, Paragraph } = Typography
 
 const EmptyEventState: React.FC = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<div className={styles.emptyStateContainer}>

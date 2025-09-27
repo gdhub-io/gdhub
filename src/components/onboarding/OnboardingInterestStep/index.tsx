@@ -5,7 +5,7 @@ import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-ic
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiWarningCircleLight } from '@react-icons/all-files/pi/PiWarningCircleLight'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Col, Flex, Form, Grid, Input, Radio, Row, Segmented, Select, Space, Typography, message } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -23,7 +23,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 	const router = useRouter()
 	const screens = Grid.useBreakpoint()
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 
 	const preSelectedInterest = useMemo(() => {
@@ -79,11 +79,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 		if (!data) return []
 
 		return data.map((i) => ({
-			label: (
-				<Typography.Text ellipsis>
-					<T keyName={i.name} />
-				</Typography.Text>
-			),
+			label: <Typography.Text ellipsis>{t(`onboarding.interests.gameGenres.${i.name}`, i.name)}</Typography.Text>,
 			value: i.id,
 		}))
 	}
@@ -108,22 +104,23 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 				<div className="onboarding-form">
 					<Space direction="vertical" className="onboarding-form-title" style={{ width: '100%' }}>
 						<Flex justify="space-between" align="center" wrap="wrap">
-							<Title level={2}>
-								<T keyName="interests">Interests</T>
-							</Title>
+							<Title level={2}>{t('onboarding.interests.title', 'Interests')}</Title>
 							<Flex align="center" gap={4}>
 								<PiWarningCircleLight size={20} color="#05050573" style={{ height: 20 }} />
 								<Text type="secondary" italic>
-									<T>You can change it or add more ones after</T>
+									{t(
+										'onboarding.interests.youCanChangeItOrAddMoreOnesAfter',
+										'You can change it or add more ones after'
+									)}
 								</Text>
 							</Flex>
 						</Flex>
 
 						<Paragraph italic>
-							<T keyName="onboarding.interests.motivation.description">
-								Information about your motivations and preferences. This information will allow the platform to suggest
-								you the most suitable projects, vacancies or candidates for your project.
-							</T>
+							{t(
+								'onboarding.interests.motivation.description',
+								'Information about your motivations and preferences. This information will allow the platform to suggest you the most suitable projects, vacancies or candidates for your project.'
+							)}
 						</Paragraph>
 					</Space>
 
@@ -152,7 +149,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 																<div className="segmented-option-content">
 																	<InterestAuthorIcon height={56} width={56} />
 																	<Paragraph>
-																		<T keyName="wantToBe.text">I want to be</T> <Text italic>Author</Text>
+																		{t('onboarding.interests.wantToBe.text', 'I want to be')} <Text italic>Author</Text>
 																	</Paragraph>
 																</div>
 																<div className="segmented-option-footer">
@@ -168,7 +165,8 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 																<div className="segmented-option-content">
 																	<InterestSpecialistIcon height={56} width={56} />
 																	<Paragraph>
-																		<T keyName="wantToBe.text">I want to be</T> <Text italic>Specialist</Text>
+																		{t('onboarding.interests.wantToBe.text', 'I want to be')}{' '}
+																		<Text italic>Specialist</Text>
 																	</Paragraph>
 																</div>
 																<div className="segmented-option-footer">
@@ -184,7 +182,7 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 																<div className="segmented-option-content">
 																	<InterestMentorIcon height={56} width={56} />
 																	<Paragraph>
-																		<T keyName="wantToBe.text">I want to be</T> <Text italic>Mentor</Text>
+																		{t('onboarding.interests.wantToBe.text', 'I want to be')} <Text italic>Mentor</Text>
 																	</Paragraph>
 																</div>
 																<div className="segmented-option-footer">
@@ -202,22 +200,16 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 											<Radio.Group>
 												<Space direction="vertical">
 													<Radio value={prismaClient.PrimaryInterest.Author}>
-														<T keyName="wantToBe.text">I want to be</T>{' '}
-														<Text italic>
-															<T keyName="wantToBe.author">Author</T>
-														</Text>
+														{t('onboarding.interests.wantToBe.text', 'I want to be')}{' '}
+														<Text italic>{t('onboarding.interests.wantToBe.author', 'Author')}</Text>
 													</Radio>
 													<Radio value={prismaClient.PrimaryInterest.Specialist}>
-														<T keyName="wantToBe.text">I want to be</T>{' '}
-														<Text italic>
-															<T keyName="wantToBe.specialist">Specialist</T>
-														</Text>
+														{t('onboarding.interests.wantToBe.text', 'I want to be')}{' '}
+														<Text italic>{t('onboarding.interests.wantToBe.specialist', 'Specialist')}</Text>
 													</Radio>
 													<Radio value={prismaClient.PrimaryInterest.Mentor}>
-														<T keyName="wantToBe.text">I want to be</T>{' '}
-														<Text italic>
-															<T keyName="wantToBe.mentor">Mentor</T>
-														</Text>
+														{t('onboarding.interests.wantToBe.text', 'I want to be')}{' '}
+														<Text italic>{t('onboarding.interests.wantToBe.mentor', 'Mentor')}</Text>
 													</Radio>
 												</Space>
 											</Radio.Group>
@@ -295,15 +287,13 @@ export const OnboardingInterestStep = ({ onSave, onPreviousStep = () => {} }: IO
 					size={16}
 					style={screens.lg ? { flexDirection: 'row' } : { flexDirection: 'column-reverse' }}
 				>
-					<Button onClick={onPreviousStep}>
-						<T keyName="back">Back</T>
-					</Button>
+					<Button onClick={onPreviousStep}>{t('onboarding.interests.back', 'Back')}</Button>
 					<Space>
 						{/* <Button type="text" onClick={() => router.push('/hub')}>
-							<T keyName="onboarding.welcome.later">Continue later</T>
+							{t('onboarding.interests.continueLater', 'Continue later')}
 						</Button> */}
 						<Button type="primary" onClick={handleSave} loading={isUpdatingInterests}>
-							<T keyName="saveAndContinue">Save and continue</T>
+							{t('onboarding.interests.saveAndContinue', 'Save and continue')}
 						</Button>
 					</Space>
 				</Space>

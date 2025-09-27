@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Grid, message, Modal, Spin } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -21,7 +21,7 @@ export type LectureDetails = prismaClient.Lecture & {
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const { data: session } = useSession()
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	// const [processing, setProcessing] = useState(true)
 	// const [lecture, setLecture] = useState<any>()
 	const [isReady, setIsReady] = useState(false)

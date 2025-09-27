@@ -7,7 +7,7 @@ import { getPages } from '@/services/notion'
 import { tolgeeService } from '@/services/tolgee'
 import { Render } from '@9gustin/react-notion-render'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Col, Menu, Row, Select, Spin, Grid, theme, Typography, Affix } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -154,7 +154,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 	}, [pageContent?.data])
 
 	return (
-		<ProtectedLayout title={t('page.documentation.title', 'Documentation')}>
+		<ProtectedLayout title={t('hub.docs.title', 'Documentation')}>
 			<div
 				className={styles.container}
 				style={{ fontSize: themeToken.token.fontSize, color: themeToken.token.colorText, marginTop: 16 }}
@@ -188,16 +188,14 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 									<div className="content-header">
 										<Title>{pageProperties?.properties.Name.title[0].plain_text}</Title>
 										<Text type="secondary">
-											<T>Updated</T> {dayjs(pageProperties?.last_edited_time).format('ll')}
+											{t('hub.docs.updated', 'Updated')} {dayjs(pageProperties?.last_edited_time).format('ll')}
 										</Text>
 									</div>
 									<Render blocks={pageContent?.data} classNames useStyles simpleTitles />
 								</section>
 							) : (
 								<section className="main-container">
-									<p>
-										<T>The page does not exist or you do not have access to it</T>
-									</p>
+									<p>{t('hub.docs.pageDoesNotExist', 'The page does not exist or you do not have access to it')}</p>
 								</section>
 							)}
 						</Spin>

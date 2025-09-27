@@ -4,7 +4,7 @@ import { PublicLayout } from '@/layouts/PublicLayout'
 import { prisma } from '@/services/prisma'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Typography, Button, Space, Flex, Image as AntImage, Descriptions, Divider } from 'antd'
 import { Select, Input, Modal, Card as AntCard } from 'antd'
 import axios from 'axios'
@@ -22,7 +22,7 @@ interface ExpertPageProps {
 }
 
 export default function ExpertPage({ expert, seo, isAuthenticated }: ExpertPageProps) {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 	const [modalOpen, setModalOpen] = React.useState(false)
 	const [selectedProject, setSelectedProject] = React.useState<string | undefined>()

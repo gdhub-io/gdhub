@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Flex, List, Space, Typography } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -15,6 +15,8 @@ interface TeamMembersArgs {
 
 const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	const { data: session } = useSession()
+	const { t } = useTranslate()
+
 	const { data: team } = useQuery({
 		queryKey: ['team-members', teamId],
 		queryFn: () =>
@@ -44,9 +46,7 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	return (
 		<>
 			<Space direction="vertical" style={{ marginTop: 60, width: '100%' }}>
-				<Title level={2}>
-					<T>Team</T>
-				</Title>
+				<Title level={2}>{t('team-members.title', 'Team')}</Title>
 
 				{!!session && (
 					<List

@@ -1,6 +1,6 @@
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { UserOutlined } from '@ant-design/icons'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Typography } from 'antd'
 import axios from 'axios'
 import { GetServerSideProps } from 'next'
@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 }
 
 export default function BlogPage({ posts }: PageProps) {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString)

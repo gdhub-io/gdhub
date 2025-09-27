@@ -9,7 +9,7 @@ import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck
 import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
 import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { theme, Dropdown, MenuProps, Space, Button } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -34,7 +34,7 @@ function getTypeIcon(type: prismaClient.$Enums.EventType, args: { size: number; 
 
 const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({ onCreation = () => {} }) => {
 	const { data: session } = useSession()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { token } = theme.useToken()
 	const isAdmin = hasRole(prismaClient.$Enums.UserRole.Admin, { data: session })
 

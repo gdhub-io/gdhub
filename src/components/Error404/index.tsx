@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode } from 'react'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Space, Button, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -17,7 +17,7 @@ export const Error404 = ({
 	theme?: 'dark' | 'light'
 	containerStyle?: CSSProperties
 }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<div className={`${styles.errorPageContainer} ${styles[`theme-` + theme]}`} style={containerStyle}>

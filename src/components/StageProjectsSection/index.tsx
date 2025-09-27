@@ -1,6 +1,6 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Col, Card, Descriptions, Typography, Button, Row, Grid, Space } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -19,7 +19,7 @@ export const StageProjectsSection = ({
 	status = prismaClient.ProjectStatus.Registered,
 }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery({
 		queryKey: ['projects', stageId],

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Result, Spin, Typography } from 'antd'
 import axios from 'axios'
 import Head from 'next/head'
@@ -12,7 +12,7 @@ const { Title, Text, Paragraph } = Typography
 const InvitePage = () => {
 	const router = useRouter()
 	const { token } = router.query
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session, status } = useSession()
 	const [error, setError] = useState<string | null>(null)
 

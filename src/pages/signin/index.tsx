@@ -4,7 +4,7 @@ import LogingBgImage from '@/assets/images/login-bg.jpg'
 import { gtmEventTrigger } from '@/helpers/gtm'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { FaGoogle } from '@react-icons/all-files/fa/FaGoogle'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Space, Typography, Form, Input, message, Flex, Grid } from 'antd'
 import { NextPage } from 'next'
 import Head from 'next/head'
@@ -24,7 +24,7 @@ declare global {
 
 const LoginPage: NextPage = () => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const screens = Grid.useBreakpoint()
 	const [form] = Form.useForm()
 	const [loginStep, setLoginStep] = useState(1)

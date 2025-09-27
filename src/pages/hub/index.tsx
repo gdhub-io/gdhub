@@ -4,7 +4,7 @@ import MyAdviceRequests from '@/components/MyAdviceRequests'
 import MyProjectList from '@/components/MyProjectList'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Alert, Button, Space, Typography } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -16,7 +16,7 @@ const { Title, Text } = Typography
 const HubPage: NextPageWithLayout = () => {
 	const session = useSession()
 	const router = useRouter()
-	const { getLanguage } = useTolgee()
+	const { getLanguage, t } = useTolgee()
 
 	const linkToChat = useMemo(() => {
 		let link = ''
@@ -38,15 +38,11 @@ const HubPage: NextPageWithLayout = () => {
 			<Space className={styles.container} direction="vertical" size={32}>
 				<Space direction="vertical" size={0}>
 					<Title level={2}>
-						<T
-							keyName="user.welcome"
-							defaultValue="Hello, {userName}"
-							params={{ userName: session?.data?.user.name || 'user' }}
-						/>
+						{t('hub.text1', 'I think now is the perfect time to make games.', {
+							userName: session?.data?.user.name || 'user',
+						})}
 					</Title>
-					<Text>
-						<T>I think now is the perfect time to make games.</T>
-					</Text>
+					<Text>{t('hub.text1', 'I think now is the perfect time to make games.')}</Text>
 				</Space>
 
 				{session.status == 'authenticated' && !session.data.user.onboardingDone && (
@@ -55,21 +51,18 @@ const HubPage: NextPageWithLayout = () => {
 						message={
 							<Space direction="vertical">
 								<div>
-									<T keyName="hub.text1.part1">
-										Now you can get acquainted with our platform, but in order to be able to create your own projects or
-										respond to the vacancies of others, you need to complete the registration by filling in the
-										necessary information about yourself.
-									</T>
+									{t(
+										'hub.text1.part1',
+										'Now you can get acquainted with our platform, but in order to be able to create your own projects or respond to the vacancies of others, you need to complete the registration by filling in the necessary information about yourself.'
+									)}
 									<br />
-									<T keyName="hub.text1.part2">And don&apos;t forget to join the community chat using</T>{' '}
+									{t('hub.text1.part2', 'And don&apos;t forget to join the community chat using')}{' '}
 									<Link href={linkToChat} target="_blank">
 										this link.
 									</Link>
 								</div>
 								<Link href="/registration/onboarding">
-									<Button>
-										<T>Complete Registration</T>
-									</Button>
+									<Button>{t('hub.text1.part3', 'Complete Registration')}</Button>
 								</Link>
 							</Space>
 						}

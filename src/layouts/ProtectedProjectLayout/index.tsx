@@ -13,7 +13,7 @@ import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee, useTranslate } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -57,7 +57,7 @@ export const ProtectedProjectLayout = ({
 	seo?: NextSeoProps
 	children: ReactNode
 }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const projectSlug = router.query.slug as string
 	const [contextProject, setContextProject] = useState<ContextProject>()
@@ -264,9 +264,7 @@ export const ProtectedProjectLayout = ({
 									{screens.lg && (
 										<>
 											<Button type="text" size="small">
-												<Link href={`/hub`}>
-													<T>Hub</T>
-												</Link>
+												<Link href={`/hub`}>{t('hub.menu.home', 'Hub')}</Link>
 											</Button>
 											<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
 										</>
@@ -282,7 +280,7 @@ export const ProtectedProjectLayout = ({
 										<>
 											<Link href="https://docs.gdhub.io" target="_blank">
 												<Button type="text" style={{ fontSize: 14 }}>
-													<T>Documentation</T>
+													{t('hub.menu.documentation', 'Documentation')}
 												</Button>
 											</Link>
 											<NotificationsBell />

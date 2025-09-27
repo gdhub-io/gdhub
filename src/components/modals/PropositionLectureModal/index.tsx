@@ -1,6 +1,6 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Col, DatePicker, Form, Input, message, Modal, Row, Select, Spin, TimePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react'
 const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
 	const { data: session } = useSession()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const { data: workDirections } = useQuery({
 		queryKey: ['workDirections'],

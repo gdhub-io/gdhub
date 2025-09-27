@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useState } from 'react'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Carousel, Grid, Typography } from 'antd'
 import dynamic from 'next/dynamic'
 import ReactNiceAvatar from 'react-nice-avatar'
@@ -211,7 +211,7 @@ const feedbackList = [
 ]
 
 export const LandingFeedbackSection = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const screens = Grid.useBreakpoint()
 	const [maxHeight, setMaxHeight] = useState('833px')
 

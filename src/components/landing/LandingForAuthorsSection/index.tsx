@@ -2,7 +2,7 @@ import Star2Icon from '@/assets/images/icons/star-2.svg'
 // import BgImageXS from '@/assets/images/landing/gdhub-talent-pool.png'
 import BgImage from '@/assets/images/landing/gdhub-talent-pool.png'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Grid, Space, Typography } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -14,7 +14,7 @@ const { Title, Text } = Typography
 
 export const LandingForAuthorsSection = () => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const { data: latestSpecialists } = useQuery({
 		queryKey: ['latest-specialists'],

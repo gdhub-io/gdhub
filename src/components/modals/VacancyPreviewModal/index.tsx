@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { T, useTranslate } from '@tolgee/react'
 import { Alert, Button, Col, Form, message, Modal, Row, Space, Spin, Typography } from 'antd'
 import { theme } from 'antd'
 import axios from 'axios'
@@ -17,7 +17,7 @@ const { Text, Title, Paragraph } = Typography
 const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const { token } = theme.useToken()
 	const session: any = useSession()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const [form] = Form.useForm()
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] = useState(false)
@@ -150,7 +150,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				footer={[
 					<Space key="form-buttons" wrap>
 						<Button key="close" onClick={handleCancel} disabled={processing}>
-							<T>Close</T>
+							{t('modal.vacancy.close', 'Close')}
 						</Button>
 						{session?.data && (
 							<Button key="action" type="primary" onClick={functionOkButton} loading={processing}>
@@ -165,7 +165,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 						<Space direction="vertical" style={{ width: '100%' }}>
 							<div className={styles.cardHeader}>
 								<Text type="secondary" className={styles.cardType}>
-									<T>Vacancy card</T>
+									{t('modal.vacancy.vacancyCard', 'Vacancy card')}
 								</Text>
 								<div className={styles.vacancyTitle}>
 									<Title level={2} style={{ margin: 0 }}>

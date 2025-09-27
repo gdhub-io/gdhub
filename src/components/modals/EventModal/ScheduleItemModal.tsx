@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Modal, Form, Input, DatePicker, Select, Avatar, Spin, message, Row, Col } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -21,7 +21,7 @@ interface ScheduleItemModalProps {
 
 const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({ open, onCancel, onSubmit, initialValues, isAdmin }) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 	const [searchSpeakersValue, setSearchSpeakersValue] = React.useState('')
 	const [speakerOptions, setSpeakerOptions] = React.useState<

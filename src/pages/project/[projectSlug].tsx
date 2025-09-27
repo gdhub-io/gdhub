@@ -7,7 +7,7 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Image from 'next/image'
@@ -31,7 +31,7 @@ type ProjectPageParams = {
 }
 
 const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 	const screens = Grid.useBreakpoint()
 	const [showPitchVideo, setShowPitchVideo] = useState(false)

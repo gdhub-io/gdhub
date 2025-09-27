@@ -4,7 +4,7 @@ import { MainHeader } from '@/components/MainHeader'
 import { SwitchLanguage } from '@/components/SwitchLanguage'
 import { landingThemeConfig } from '@/config/theme'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import {
 	Avatar,
 	Button,
@@ -40,7 +40,7 @@ const scrollIntoViewWithOffset = (selector: string, offset: number) => {
 }
 
 export const LandingLayout = ({ children }: any) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const [openMobileMenu, setOpenMobileMenu] = useState(false)
 	const [scrollY, setScrollY] = useState(0)

@@ -3,7 +3,7 @@ import heroStatsImage2 from '@/assets/images/landing/hero-stats-member-2.png'
 import heroStatsImage3 from '@/assets/images/landing/hero-stats-member-3.png'
 import heroStatsImage4 from '@/assets/images/landing/hero-stats-member-4.png'
 import heroStatsImage5 from '@/assets/images/landing/hero-stats-member-5.png'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Divider, Flex, Grid, Space, Typography } from 'antd'
 import styles from './style.module.scss'
 
@@ -20,7 +20,7 @@ export const HeroStats = ({
 	}
 }) => {
 	const screen = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<div className={styles.container}>

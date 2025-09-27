@@ -11,7 +11,7 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Grid, Layout, Menu, Select } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -24,7 +24,7 @@ const ProfilePage: NextPageWithLayout = () => {
 	const [content, setContent] = useState<React.JSX.Element>()
 	const screens = Grid.useBreakpoint()
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const queryClient = useQueryClient()
 	const { data: session } = useSession()
 	const { data: profile } = useQuery({

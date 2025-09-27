@@ -7,7 +7,7 @@ import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { TbMapPin } from '@react-icons/all-files/tb/TbMapPin'
 import { TbQuote } from '@react-icons/all-files/tb/TbQuote'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Col, Modal, Row, Space, Spin, Tag, Typography, theme } from 'antd'
 import axios from 'axios'
 import Image from 'next/image'
@@ -24,7 +24,7 @@ interface TeamMemberCardProps {
 
 const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 	const { token } = theme.useToken()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const {
 		data: member,

@@ -2,7 +2,7 @@ import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
 import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTolgee } from '@tolgee/react'
 import { Alert, Button, Space } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -16,7 +16,7 @@ const CheckHealth = ({ children }: any) => {
 		retry: 0,
 	})
 
-	const { getLanguage } = useTolgee()
+	const { t, getLanguage } = useTolgee()
 
 	if (data?.data === false && isFetched) {
 		return (
@@ -27,21 +27,18 @@ const CheckHealth = ({ children }: any) => {
 							<GdhubLogo style={{ width: '120px', height: '31px' }} />
 						</div>
 						<p>
-							<T keyName="checkhealth.description">
-								This is a game developers hub for industry professionals whose members form teams to develop new games.
-							</T>
+							{t(
+								'checkhealth.description',
+								'This is a game developers hub for industry professionals whose members form teams to develop new games.'
+							)}
 						</p>
-						<Alert
-							type="error"
-							message={<T keyName="checkhealth.error_no_connection">No connection. Try later.</T>}
-							showIcon
-						/>
+						<Alert type="error" message={t('checkhealth.error_no_connection', 'No connection. Try later.')} showIcon />
 						<Link target="_blank" href={getLanguage() == 'ru' ? 'https://t.me/gdhub_io' : 'https://t.me/gdhub_en'}>
 							<Button
 								style={{ marginTop: 32 }}
 								icon={<TbBrandTelegram size={24} style={{ position: 'relative', marginRight: 5 }} />}
 							>
-								Go to chat
+								{t('checkhealth.go_to_chat', 'Go to chat')}
 							</Button>
 						</Link>
 					</Space>

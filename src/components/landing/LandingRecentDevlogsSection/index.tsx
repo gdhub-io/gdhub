@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { getCleanTextContent, getPageCover } from '@/helpers/content'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Card, Col, Grid, Row, Skeleton, Space, Typography } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -23,7 +23,7 @@ const getInitials = (title: string): string => {
 }
 
 export const LandingRecentDevlogsSection = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	// Use real data
 	const { data: recentDevlogs, isLoading } = useQuery({

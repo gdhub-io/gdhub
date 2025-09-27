@@ -5,7 +5,7 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Col, Descriptions, Form, message, Modal, Row, Space, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -15,7 +15,7 @@ import styles from './style.module.scss'
 
 const ProjectCandidatePreviewModal = ({ candidateId, open, onOk, onCancel }: any) => {
 	const queryClient = useQueryClient()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [form] = Form.useForm()
 	const { getGameGenreName } = useGameGenres()
 	const { getGameSettingName } = useGameSettings()

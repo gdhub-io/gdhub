@@ -1,11 +1,11 @@
 import VacanciesList from '@/components/VacanciesList'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import styles from './style.module.scss'
 
 const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<PublicLayout

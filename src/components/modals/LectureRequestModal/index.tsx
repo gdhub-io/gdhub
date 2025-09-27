@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Form, Input, message, Modal, Select, Spin } from 'antd'
 import axios from 'axios'
 
 const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const {
 		data: lecture,
@@ -54,10 +54,10 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 			if (lectureId) {
 				await updateLecture({ id: lectureId, data: formData })
-				message.success(<T key="modal.lectureRequest.lecture-updated-success">Lecture amended</T>)
+				message.success(t('modal.lectureRequest.lectureUpdatedSuccess', 'Lecture amended'))
 			} else {
 				await createLecture(formData)
-				message.success(<T key="modal.lectureRequest.lecture-created-success">Added a new request for a lecture</T>)
+				message.success(t('modal.lectureRequest.lectureCreatedSuccess', 'Added a new request for a lecture'))
 			}
 
 			form.resetFields()
@@ -75,12 +75,16 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={lectureId ? <T>Change the lecture request</T> : <T>Request a new lecture</T>}
+			title={
+				lectureId
+					? t('modal.lectureRequest.changeLectureRequest', 'Change the lecture request')
+					: t('modal.lectureRequest.requestNewLecture', 'Request a new lecture')
+			}
 			width={800}
 			destroyOnHidden
 			maskClosable={false}
-			cancelText={<T>Close</T>}
-			okText={lectureId ? <T>Save</T> : <T>Publish</T>}
+			cancelText={t('modal.lectureRequest.close', 'Close')}
+			okText={lectureId ? t('modal.lectureRequest.save', 'Save') : t('modal.lectureRequest.publish', 'Publish')}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -99,7 +103,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 					requiredMark="optional"
 				>
 					<Form.Item
-						label={<T key="modal.lectureRequest.lecture-name">Lecture theme</T>}
+						label={t('modal.lectureRequest.lectureTheme', 'Lecture theme')}
 						name="name"
 						rules={[{ required: true }]}
 						required
@@ -113,7 +117,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="directionId"
-						label={<T key="modal.lectureRequest.work-direction">What direction does this lecture belong</T>}
+						label={t('modal.lectureRequest.workDirection', 'What direction does this lecture belong')}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
@@ -127,8 +131,8 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 
 					<Form.Item
 						name="wishes"
-						label={<T key="modal.lectureRequest.wishes">Wishes for the content of the lecture</T>}
-						help={<T key="modal.lectureRequest.wishes-help">So you want to know at this lecture?</T>}
+						label={t('modal.lectureRequest.wishes', 'Wishes for the content of the lecture')}
+						help={t('modal.lectureRequest.wishesHelp', 'So you want to know at this lecture?')}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>

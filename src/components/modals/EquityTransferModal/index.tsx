@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Modal, Form, InputNumber, Select, Input, Button, Typography, Divider, Space, Avatar } from 'antd'
 import axios from 'axios'
 import styles from './styles.module.scss'
@@ -23,7 +23,7 @@ interface TransferFormData {
 }
 
 const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMembers }: EquityTransferModalProps) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [form] = Form.useForm<TransferFormData>()
 	const queryClient = useQueryClient()
 	const [currentEquity, setCurrentEquity] = useState<number>(0)

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { DatePicker, Form, Input, message, Modal, notification, Spin } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -13,7 +13,7 @@ const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr:
 
 const ProjectReportModal = ({ projectId, reportId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [content, setContent] = useState('')
 	const editorRef = useRef<MDXEditorMethods | null>()
 

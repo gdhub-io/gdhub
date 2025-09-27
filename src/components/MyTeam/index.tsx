@@ -17,7 +17,7 @@ import { MdOutlineMonetizationOn } from '@react-icons/all-files/md/MdOutlineMone
 import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
 import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import {
 	Button,
 	Grid,
@@ -50,7 +50,7 @@ const getTelegramExpertLink = (specialityId: string) => {
 
 const MyTeam = () => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [modal, contextHolder] = Modal.useModal()
 	const contextProject = useContext(ProjectContext)?.contextProject
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)

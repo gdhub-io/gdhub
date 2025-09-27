@@ -3,7 +3,7 @@ import TelegramIcon from '@/assets/images/icons/telegram.svg'
 import BgImage from '@/assets/images/landing/gdhub-contacts-image.png'
 import { BiLogoLinkedin } from '@react-icons/all-files/bi/BiLogoLinkedin'
 import { BiLogoYoutube } from '@react-icons/all-files/bi/BiLogoYoutube'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Col, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -12,7 +12,7 @@ const { Title, Paragraph, Text } = Typography
 
 export const LandingContactsSection = () => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<div id="contacts" className={styles.section} style={{ backgroundImage: `url(${BgImage.src})` }}>

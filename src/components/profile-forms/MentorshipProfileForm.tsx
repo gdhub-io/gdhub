@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Alert, Button, Card, Form, Input, message, Spin, Switch, Tooltip, Typography } from 'antd'
 import Select from 'antd/es/select'
 import axios from 'axios'
@@ -17,7 +17,7 @@ type MentorshipProfileFormArgs = {
 
 const MentorshipProfileForm = ({ profile, onUpdate = () => {} }: MentorshipProfileFormArgs) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [enabled, setEnabled] = useState(false)
 	const [selectedSpecialityId, setSelectedSpecialityId] = useState<string | null>(null)
 	const { data: session, update: refreshSession } = useSession()
@@ -103,24 +103,23 @@ const MentorshipProfileForm = ({ profile, onUpdate = () => {} }: MentorshipProfi
 
 	const specialityListOptions = specialities?.data.map((r: any) => ({
 		label: (
-			<Typography.Text ellipsis>
-				<T>{r.name}</T>
-			</Typography.Text>
+			<Typography.Text ellipsis>{t(`components.profile-forms.mentorship.card.${r.name}`, r.name)}</Typography.Text>
 		),
 		value: r.id,
 	}))
 
 	return (
 		<Card
-			title={<T keyName="profile-forms.mentorship.card.title">Mentorship</T>}
+			title={t('components.profile-forms.mentorship.card.title', 'Mentorship')}
 			bordered={false}
 			extra={
 				<Tooltip
 					title={
 						<Text>
-							<T keyName="profile-form.mentorship.card.description">
-								Turn on if you want other community members to contact you for advice.
-							</T>
+							{t(
+								'components.profile-forms.mentorship.card.description',
+								'Turn on if you want other community members to contact you for advice.'
+							)}
 						</Text>
 					}
 				>
@@ -130,7 +129,10 @@ const MentorshipProfileForm = ({ profile, onUpdate = () => {} }: MentorshipProfi
 		>
 			<Spin spinning={isSaving}>
 				<Paragraph>
-					<T>Allows you to contribute to game development through advising</T>
+					{t(
+						'components.profile-forms.mentorship.card.description',
+						'Allows you to contribute to game development through advising'
+					)}
 				</Paragraph>
 				{enabled && !!specialities?.data.length && (
 					<Form
@@ -196,7 +198,7 @@ const MentorshipProfileForm = ({ profile, onUpdate = () => {} }: MentorshipProfi
 						</Form.Item>
 
 						<Button type="primary" style={{ marginTop: 32 }} onClick={handleForm} loading={isSaving}>
-							<T>Save</T>
+							{t('components.profile-forms.mentorship.card.save', 'Save')}
 						</Button>
 					</Form>
 				)}

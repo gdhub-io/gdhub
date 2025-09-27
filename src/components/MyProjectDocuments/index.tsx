@@ -4,7 +4,7 @@ import { ProjectContext } from '@/contexts/ProjectContext'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { HiOutlineTrash } from '@react-icons/all-files/hi/HiOutlineTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Button, Flex, message, Popconfirm, Space, Tooltip, Typography } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -33,7 +33,7 @@ const LinkPreviewText = ({ link }: { link: string }) => {
 }
 
 const MyProjectDocuments = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const contextProject = useContext(ProjectContext)?.contextProject
 	const [showDocumentModal, setShowDocumentModal] = useState(false)
 

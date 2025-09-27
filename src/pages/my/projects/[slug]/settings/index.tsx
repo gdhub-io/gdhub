@@ -6,7 +6,7 @@ import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { MDXEditorMethods } from '@mdxeditor/editor'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import {
 	Button,
 	Col,
@@ -33,7 +33,7 @@ const ContentEditor = dynamic(() => import('@/components/ContentEditor'), { ssr:
 const { Text } = Typography
 
 const MyProjectSettingsPage: NextPageWithLayout = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const projectSlug = router.query.slug as string
 	const { token } = theme.useToken()

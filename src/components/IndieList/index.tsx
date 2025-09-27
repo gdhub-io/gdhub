@@ -1,11 +1,11 @@
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Typography } from 'antd'
 import { SeasonProjectsSection } from '../SeasonProjectsSection'
 
 const { Title, Paragraph } = Typography
 
 export const IndieList = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<>

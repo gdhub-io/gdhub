@@ -4,7 +4,7 @@ import InterestMentorIcon from '@/assets/images/icons/interest-mentor-icon.svg'
 import InterestSpecialistIcon from '@/assets/images/icons/interest-specialist-icon.svg'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Form, Grid, Input, message, Radio, Segmented, Select, Space, Spin, Typography } from 'antd'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
@@ -25,7 +25,7 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 	const [form] = Form.useForm()
 	const { update: updateSession } = useSession()
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [processing, setProcessing] = useState(true)
 	const { data: gameGenres } = useQuery({
 		queryKey: ['gameGenres'],

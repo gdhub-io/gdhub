@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { gtmEventTrigger } from '@/helpers/gtm'
 import { useWorkDirections } from '@/hooks/library'
 import { useMutation } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Form, Input, message, Modal, Select, DatePicker } from 'antd'
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -16,7 +16,7 @@ interface InviteMemberModalProps {
 
 const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalProps) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { options: directionsOptions } = useWorkDirections()
 	const [isEmailValid, setIsEmailValid] = useState(true)
 

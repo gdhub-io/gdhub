@@ -3,7 +3,7 @@ import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { getWorkedProjects } from '@/services/prisma/queries'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import styles from './style.module.scss'
@@ -19,7 +19,7 @@ type ProjectIncludeAll = prismaClient.Project & {
 type ProjectsPageParams = { projects: ProjectIncludeAll[] }
 
 const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<PublicLayout

@@ -7,7 +7,7 @@ import PeopleIcon from '@/assets/images/icons/people.svg'
 import StarIcon from '@/assets/images/icons/star.svg'
 import TeamMap from '@/assets/images/landing/team.svg'
 import Icon from '@ant-design/icons'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Col, Grid, Row, Tooltip, Typography } from 'antd'
 import styles from './style.module.scss'
 
@@ -24,7 +24,7 @@ const members: any = {
 }
 
 export const LandingWhoWeAreSection = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const screens = Grid.useBreakpoint()
 	const tooltipMemberRef = useRef<any>()
 	const [member, setMember] = useState()

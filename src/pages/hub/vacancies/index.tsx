@@ -1,13 +1,13 @@
 import VacanciesList from '@/components/VacanciesList'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
 const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<ProtectedLayout

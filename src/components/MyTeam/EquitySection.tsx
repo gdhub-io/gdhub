@@ -3,7 +3,7 @@ import EquityTransferModal from '@/components/modals/EquityTransferModal'
 import { AiOutlineHistory } from '@react-icons/all-files/ai/AiOutlineHistory'
 import { AiOutlineInfoCircle } from '@react-icons/all-files/ai/AiOutlineInfoCircle'
 import { AiOutlineSetting } from '@react-icons/all-files/ai/AiOutlineSetting'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Card, Typography, Button, Space, Modal, Popover, Grid } from 'antd'
 import { useSession } from 'next-auth/react'
 import EquityPlot from './EquityPlot'
@@ -27,7 +27,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 	teamMembers,
 	onManageEquity,
 }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 	const screen = Grid.useBreakpoint()
 	const [transferModalVisible, setTransferModalVisible] = useState<boolean>(false)

@@ -1,5 +1,5 @@
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Card, Col, Descriptions, Grid, Row, Spin, Typography } from 'antd'
 import Image from 'next/image'
 import styles from './style.module.scss'
@@ -12,7 +12,7 @@ export const ProjectIdeasList = ({
 	isLoading: boolean
 }) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	if (!projectIdeas.length) return <p>No project ideas yet.</p>
 

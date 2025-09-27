@@ -3,14 +3,14 @@ import { gtmEventTrigger } from '@/helpers/gtm'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { PiFileDuotone } from '@react-icons/all-files/pi/PiFileDuotone'
 import { useMutation } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Flex, Form, Input, message, Modal, Select, Spin } from 'antd'
 import axios from 'axios'
 
 const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, teamId }: any) => {
 	const [form] = Form.useForm()
 	const selectedDocumentType = Form.useWatch('type', form)
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const {
 		mutateAsync: createDocument,

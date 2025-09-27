@@ -2,7 +2,7 @@ import { useState } from 'react'
 import ProjectReportModal from '@/components/modals/ProjectReportModal'
 import { TbTrash } from '@react-icons/all-files/tb/TbTrash'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Grid, Popconfirm, Space, Table, message } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -14,7 +14,7 @@ interface MyProjectReportsArgs {
 
 const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [showProjectReportModal, setShowProjectReportModal] = useState(false)
 	const [selectedReportId, setSelectedReportId] = useState<string>()
 

@@ -7,7 +7,7 @@ import { TbMail } from '@react-icons/all-files/tb/TbMail'
 import { TbMapPin } from '@react-icons/all-files/tb/TbMapPin'
 import { TbQuote } from '@react-icons/all-files/tb/TbQuote'
 import { useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Card, Col, Divider, Modal, Progress, Row, Space, Spin, Tag, Typography, theme } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -17,7 +17,7 @@ const { Paragraph, Text, Title } = Typography
 
 const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => {
 	const { token } = theme.useToken()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const {
 		data: specialist,
 		refetch: fetchSpecialist,
@@ -118,14 +118,10 @@ const SpecialistPreviewModal = ({ specialistId, open, onOk, onCancel }: any) => 
 												<Space>
 													<TbClock size={18} style={{ color: token.colorPrimary }} />
 													<Text>
-														<T
-															keyName="fromTo"
-															defaultValue="from {fromDate} to {toDate} hours a week"
-															params={{
-																fromDate: specialist.data.user.profile.timeForWork[0],
-																toDate: specialist.data.user.profile.timeForWork[1],
-															}}
-														/>
+														{t('fromTo', 'from {fromDate} to {toDate} hours a week', {
+															fromDate: specialist.data.user.profile.timeForWork[0],
+															toDate: specialist.data.user.profile.timeForWork[1],
+														})}
 													</Text>
 												</Space>
 											</Col>

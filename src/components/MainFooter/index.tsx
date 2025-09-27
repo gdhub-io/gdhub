@@ -1,5 +1,5 @@
 import GdhubLogo from '@/assets/images/gdhub-beta-logo.svg'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Anchor, Col, Divider, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -9,7 +9,7 @@ const { Title, Paragraph } = Typography
 
 export const MainFooter = () => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const writeInternalLink = (internalLink: string) => {
 		return router.pathname == '/' ? internalLink : `/${internalLink}`

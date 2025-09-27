@@ -1,5 +1,5 @@
 import RegistrationBgImage from '@/assets/images/registration-bg.jpg'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Space, Button, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -7,7 +7,7 @@ import styles from './style.module.scss'
 const { Paragraph, Title } = Typography
 
 export const OnboardingError = ({ error }: { error: string }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	return (
 		<div

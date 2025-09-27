@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Result, Spin } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 
 export const SpecialityCreated = () => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { pendingInvitation } = router.query
 	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false)
 
@@ -71,7 +71,7 @@ export const SpecialityCreated = () => {
 			subTitle={t('You have successfully created a new speciality.')}
 			extra={[
 				<Button type="primary" key="specialities" onClick={() => router.push('/profile/specialities')}>
-					<T>View Your Specialities</T>
+					{t('profile.specialityCreated.viewYourSpecialities', 'View Your Specialities')}
 				</Button>,
 			]}
 		/>

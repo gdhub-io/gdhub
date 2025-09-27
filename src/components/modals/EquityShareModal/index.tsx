@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useMutation } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Form, Modal, Button, Slider, Typography, Space, InputNumber, Flex, message } from 'antd'
 import axios from 'axios'
 import styles from './styles.module.scss'
@@ -18,7 +18,7 @@ interface EquityShareModalProps {
 
 const EquityShareModal = ({ projectEquity, open, onOk, onCancel, investors = [] }: EquityShareModalProps) => {
 	const [form] = Form.useForm()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const [equity, setEquity] = useState<prismaClient.ProjectEquity>()
 	const [remainingPercentage, setRemainingPercentage] = useState<number>(0)
 

@@ -8,7 +8,7 @@ import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
 import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
 import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Flex, Typography, Spin, Space, Avatar } from 'antd'
 import axios from 'axios'
 import Link from 'next/link'
@@ -25,7 +25,7 @@ type RequestCardData = prismaClient.AdviceRequest & {
 }
 
 const MyAdviceRequests: React.FC = () => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const { data: session } = useSession()
 	const [showArchive, setShowArchive] = React.useState(false)
 
@@ -124,7 +124,7 @@ const RequestCard: React.FC<{
 	req: RequestCardData
 	type: 'incoming' | 'outgoing'
 }> = ({ req, type }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const isTelegramUser = useMemo(() => Boolean(req.fromUser) === false, [req])
 	const fromUserName = useMemo(() => (req.fromUser ? req.fromUser.profile.name : req.fromTelegramUser?.name), [req])

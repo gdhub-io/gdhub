@@ -11,7 +11,6 @@ import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
 import { TbHeart } from '@react-icons/all-files/tb/TbHeart'
 import { TbHeartOff } from '@react-icons/all-files/tb/TbHeartOff'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
 import { Button, Dropdown, Grid, Popconfirm, Space, Spin, Table, Tooltip, Typography, message } from 'antd'
 import { ItemType } from 'antd/es/menu/interface'
 import { ColumnsType } from 'antd/es/table'
@@ -23,7 +22,7 @@ const { Title } = Typography
 export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => void }) => {
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	// State
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)

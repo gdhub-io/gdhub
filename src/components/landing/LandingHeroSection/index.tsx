@@ -1,7 +1,7 @@
 import heroBgImage from '@/assets/images/landing/gdhub-hero-image.png'
 import StarIcon from '@/assets/images/landing/star.svg'
 import Icon from '@ant-design/icons'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Col, Grid, Row, Space, Typography } from 'antd'
 import Link from 'next/link'
 import styles from './style.module.scss'
@@ -20,7 +20,7 @@ export const LandingHeroSection = ({
 	}
 }) => {
 	const screens = Grid.useBreakpoint()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 
 	const hasEmptyStats =
 		!stats ||

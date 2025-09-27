@@ -2,7 +2,7 @@ import { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { MdBeenhere } from '@react-icons/all-files/md/MdBeenhere'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { ConfigProvider, DatePicker, Flex, message, Typography } from 'antd'
 import axios from 'axios'
 import dayjs, { Dayjs } from 'dayjs'
@@ -18,7 +18,7 @@ export const RoadmapChart = ({
 	workflow: ProjectWorkflowWithSteps
 	editable?: boolean
 }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const queryClient = useQueryClient()
 	const roadmapRef = useRef<HTMLDivElement>(null)
 	const stepRefs = useRef<HTMLDivElement[]>([])

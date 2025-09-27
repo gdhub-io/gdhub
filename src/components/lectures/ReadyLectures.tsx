@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import LectureDetailsModal, { LectureDetails } from '@/components/modals/LectureDetailsModal'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Button, Grid, Spin, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import axios from 'axios'
@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 
 export const ReadyLectures = () => {
 	const router = useRouter()
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const screens = Grid.useBreakpoint()
 	const [selectedLectureId, setSelectedLectureId] = useState<string>()
 	const [showLectureDetails, setShowLectureDetails] = useState(false)

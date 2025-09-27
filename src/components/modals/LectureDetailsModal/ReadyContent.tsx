@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import { TextWithLineBreak } from '@/components/TextWithLineBreak'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useTolgee } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { Avatar, Button, Card, Space } from 'antd'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react'
 import { LectureDetails } from '.'
 
 export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
-	const { t } = useTolgee()
+	const { t } = useTranslate()
 	const router = useRouter()
 	const { data: session } = useSession()
 	const lecturer = useMemo(
