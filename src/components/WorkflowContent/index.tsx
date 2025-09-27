@@ -11,6 +11,7 @@ import axios from 'axios'
 import styles from './style.module.scss'
 import WorkflowStepContent from './WorkflowStepContent'
 import WorkflowTaskCard from './WorkflowTaskCard'
+import { RoadmapChart } from '../RoadmapChart'
 
 const { Title, Text } = Typography
 
@@ -31,7 +32,7 @@ type EquityPromise = {
 	}
 }
 
-type ProjctWorkflowWithSteps = ProjectWorkflow & {
+export type ProjectWorkflowWithSteps = ProjectWorkflow & {
 	steps: (prismaClient.ProjectWorkflowStep & {
 		equityPromises?: EquityPromise[]
 	})[]
@@ -45,7 +46,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const screens = Grid.useBreakpoint()
 	const projectContext = useContext(ProjectContext)?.contextProject
 	const [conditionStatus, setConditionStatus] = useState<any>({ completed: false })
-	const [workflow, setWorkflow] = useState<ProjctWorkflowWithSteps>()
+	const [workflow, setWorkflow] = useState<ProjectWorkflowWithSteps>()
 	const [drawerVisible, setDrawerVisible] = useState(false)
 	const [popoverVisible, setPopoverVisible] = useState(false)
 	const [taskStatuses, setTaskStatuses] = useState<Record<string, boolean>>({})
@@ -86,7 +87,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const { data: workflowResponse, refetch: refetchWorkflowData } = useQuery({
 		queryKey: ['project-workflow', projectId],
 		queryFn: () =>
-			axios.get<ProjctWorkflowWithSteps>('/api/user/project/workflow', {
+			axios.get<ProjectWorkflowWithSteps>('/api/user/project/workflow', {
 				params: { projectId },
 			}),
 		enabled: !!projectId,
@@ -180,17 +181,9 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	return (
 		<div className={styles.container}>
 			<Space direction="vertical" style={{ width: '100%' }}>
-				<Flex justify="space-between" align="center" className={styles.stepHeader}>
-					<div className={styles.stepTitle}>
-						<Text style={{ margin: 0 }}>
-							<T keyName="workflow.current-step">Current step</T>
-						</Text>
-						<Title level={2} className={styles.stepName}>
-							{capitalize(
-								t(`workflow.${workflow.title}.step${currentStepOrder + 1}.name`, workflow.steps[currentStepOrder]?.name)
-							)}
-						</Title>
-					</div>
+				<Flex justify="space-between" align="center" gap={32} className={styles.stepHeader}>
+					<RoadmapChart workflow={workflow} editable={isAuthor} />
+
 					{isAuthor && (
 						<div className={styles.stepTasks}>
 							{currentStepOrder > 0 && (
