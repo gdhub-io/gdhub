@@ -1,0 +1,92 @@
+# llms.txt — guidance for LLM crawlers (community convention)
+# Version: 1.0
+# Updated: 2025-09-21
+
+# Discovery
+Sitemap: /sitemap.xml
+
+# Ownership & contact
+Owner: Dzmitry Drynau
+Contact: support@gdhub.io
+
+# Application
+App-Name: GDHub
+App-Description: Collaborative platform for indie teams to build projects, manage vacancies, run events, publish devlogs, and connect with mentors.
+App-Languages: en, ru
+App-Topics: startups, indie, hiring, mentoring, events, devlog, product, saas
+
+# Pages overview
+Page: / — Home — Overview of the platform, featured projects, events, and blog highlights.
+Page: /projects — Projects directory — filters and navigation to individual project pages.
+Page: /project/{slug} — Project — summary, team, reports, and open vacancies.
+Page: /vacancies — Open positions across teams and projects.
+Page: /events — Events list — upcoming and archived events.
+Page: /event/{slug} — Event — description, schedule, and participation details.
+Page: /blog — Articles and news from the community.
+Page: /blog/{slug} — Blog post — full article content.
+Page: /hub — Community hub — access to projects, members, mentors, and resources.
+Page: /hub/projects — Public projects board with filters.
+Page: /hub/members — Members directory with profiles.
+Page: /hub/mentors — Mentors directory.
+Page: /devlog/{projectReportId} — Public project devlog post.
+Page: /cookie-policy — Cookies usage policy.
+Page: /registration — User registration page.
+
+# Usage policy (non-binding but explicit intent)
+# - Summarization of Allowed pages is permitted with attribution
+# - Long-form wholesale reproduction is not permitted
+# - Model training on Disallowed areas is prohibited
+# - Respect rate limits and crawl delay
+Data-Use: allow-summarization, allow-short-snippets, disallow-training-on-disallowed
+Attribution: required
+Attribution-URL: /
+Content-License: CC BY-NC-ND 4.0
+Commercial-Use: no
+Derived-Works: no
+
+# Rate limits for AI crawlers (please respect)
+Rate-Limit: 10 req/min
+Crawl-Delay: 10
+
+# Allowed human-facing routes (patterns)
+Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /events
+Allow: /event/*
+Allow: /projects
+Allow: /project/*
+Allow: /hub
+Allow: /hub/*
+Allow: /vacancies
+Allow: /devlog/*
+Allow: /cookie-policy
+Allow: /registration
+Allow: /sitemap.xml
+Allow: /robots.txt
+
+# Restricted/sensitive areas and non-user pages
+Disallow: /api/*
+Disallow: /admin/*
+Disallow: /my/*
+Disallow: /profile/*
+Disallow: /live/*
+Disallow: /invite/*
+Disallow: /signin
+Disallow: /_next/*
+
+# Bot identifiers (informational; follow robots.txt for enforcement)
+User-Agent: GPTBot
+User-Agent: ChatGPT-User
+User-Agent: OpenAI-User
+User-Agent: ClaudeBot
+User-Agent: Claude-Web
+User-Agent: Google-Extended
+User-Agent: GoogleOther
+User-Agent: PerplexityBot
+User-Agent: Applebot-Extended
+User-Agent: CCBot
+
+# Source of truth
+Source: Human-authored content under Allowed routes is canonical.
+Data-Freshness: Prefer discovery via Sitemap and respect caching headers.

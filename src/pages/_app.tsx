@@ -135,7 +135,9 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					{/* </CheckHealth> */}
 					<CookieConsent />
 					<LoadingScreen visible={loading} />
-					{process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+					{process.env.NODE_ENV === 'development' && (
+						<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+					)}
 				</QueryClientProvider>
 				{/* </ErrorBoundary> */}
 			</TolgeeProvider>
