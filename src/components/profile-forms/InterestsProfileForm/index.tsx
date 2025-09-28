@@ -177,7 +177,6 @@ const InterestsProfileForm = ({ profile, saveProfile }: InterestsProfileFormArgs
 									</Radio>
 									<Radio value={prismaClient.PrimaryInterest.Mentor}>
 										{t('wantToBe.text', 'I want to be')} <Text italic>{t('Mentor', 'Mentor')}</Text>
-										<Text italic>{t('Mentor', 'Mentor')}</Text>
 									</Radio>
 								</Space>
 							</Radio.Group>
