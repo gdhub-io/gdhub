@@ -3,7 +3,7 @@ import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { MdBeenhere } from '@react-icons/all-files/md/MdBeenhere'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslate } from '@tolgee/react'
-import { ConfigProvider, DatePicker, Flex, message, Typography } from 'antd'
+import { ConfigProvider, DatePicker, Flex, Grid, message, Typography } from 'antd'
 import axios from 'axios'
 import dayjs, { Dayjs } from 'dayjs'
 import styles from './style.module.scss'
@@ -20,10 +20,26 @@ export const RoadmapChart = ({
 }) => {
 	const { t } = useTranslate()
 	const queryClient = useQueryClient()
+	const screens = Grid.useBreakpoint()
 	const roadmapRef = useRef<HTMLDivElement>(null)
 	const stepRefs = useRef<HTMLDivElement[]>([])
 	const [currentProgress, setCurrentProgress] = useState(0)
 	const steps = useMemo(() => workflow.steps.slice(1).slice(0, -1), [workflow.steps])
+
+	const screenSteps = useMemo(() => {
+		if (screens.lg) return steps
+
+		const first = workflow.currentStep.order
+		if (first <= 1) {
+			return steps.slice(0, 3)
+		}
+
+		if (first >= steps.length - 1) {
+			return steps.slice(-3)
+		}
+
+		return steps.slice(first - 2, first + 1)
+	}, [workflow.currentStep, steps, screens])
 
 	const { mutate: updateStepMutation } = useMutation({
 		mutationFn: (data: { id: string; plannedAt: Date | null }) => axios.put('/api/user/project/workflow/step', data),
@@ -55,15 +71,30 @@ export const RoadmapChart = ({
 			stepPosX.push(rect?.left || 0)
 		}
 
-		const currentStepIndex = steps.findIndex((step) => step.id === workflow.currentStep.id)
+		// Find current step index in screenSteps (not all steps)
+		const currentStepIndex = screenSteps.findIndex((step) => step.id === workflow.currentStep.id)
+
+		// If current step is not in screenSteps, don't show progress
+		if (currentStepIndex === -1) {
+			setCurrentProgress(0)
+			return
+		}
+
 		const completedWidth = stepPosX[currentStepIndex] - stepPosX[0]
 		const totalWidth = roadmapRef.current.offsetWidth
 		const progress = totalWidth > 0 ? (completedWidth / totalWidth) * 100 : 0
 
 		setCurrentProgress(progress)
 
-		console.log({ totalWidth, completedWidth, progress, stepPosX, currentStepIndex })
-	}, [workflow.currentStep, steps.length, roadmapRef.current, stepRefs.current])
+		console.log({
+			totalWidth,
+			completedWidth,
+			progress,
+			stepPosX,
+			currentStepIndex,
+			screenStepsLength: screenSteps.length,
+		})
+	}, [workflow.currentStep, screenSteps, roadmapRef.current, stepRefs.current])
 
 	useEffect(() => {
 		calculateProgress()
@@ -75,50 +106,48 @@ export const RoadmapChart = ({
 		return () => {
 			window.removeEventListener('resize', handleResize)
 		}
-	}, [workflow.currentStep, steps.length, roadmapRef.current?.offsetWidth])
+	}, [workflow.currentStep, screenSteps, roadmapRef.current?.offsetWidth, calculateProgress])
 
 	const handleDateChange = (stepId: string, date: Dayjs) => {
 		updateStepMutation({ id: stepId, plannedAt: date?.toDate() || null })
 	}
 
-	const disableStepDate = (stepId: string, current: Dayjs) => {
-		// Get current step index
-		const currentStepIndex = steps.findIndex((step) => step.id === stepId)
-		if (currentStepIndex === -1) return true
+	const disableStepDate = useCallback(
+		(stepId: string, current: Dayjs) => {
+			// Get current step index
+			const currentStepIndex = steps.findIndex((step) => step.id === stepId)
+			if (currentStepIndex === -1) return true
 
-		// Check if date is before workflow creation
-		if (current < dayjs(workflow.createdAt)) {
-			return true
-		}
+			// Get future steps (after current step)
+			const futureSteps = steps.slice(currentStepIndex + 1, steps.length - 1)
+			const futureStepsWithDates = futureSteps.filter((step) => step.plannedAt)
 
-		// Get future steps (after current step)
-		const futureSteps = steps.slice(currentStepIndex + 1)
-		const futureStepsWithDates = futureSteps.filter((step) => step.plannedAt)
-
-		// If there are future steps with dates, limit to minimum of them
-		if (futureStepsWithDates.length > 0) {
-			const futureDates = futureStepsWithDates.map((step) => dayjs(step.plannedAt!))
-			const minFutureDate = futureDates.reduce((min, date) => (date.isBefore(min) ? date : min))
-			if (current >= minFutureDate) {
-				return true
+			// If there are future steps with dates, limit to minimum of them
+			if (futureStepsWithDates.length > 0) {
+				const futureDates = futureStepsWithDates.map((step) => dayjs(step.plannedAt!))
+				const minFutureDate = futureDates.reduce((min, date) => (date.isBefore(min) ? date : min))
+				if (current >= minFutureDate) {
+					return true
+				}
 			}
-		}
 
-		// Get past steps (before current step)
-		const pastSteps = steps.slice(0, currentStepIndex)
-		const pastStepsWithDates = pastSteps.filter((step) => step.plannedAt)
+			// Get past steps (before current step)
+			const pastSteps = steps.slice(0, currentStepIndex)
+			const pastStepsWithDates = pastSteps.filter((step) => step.plannedAt)
 
-		// If there are past steps with dates, limit from maximum of them
-		if (pastStepsWithDates.length > 0) {
-			const pastDates = pastStepsWithDates.map((step) => dayjs(step.plannedAt!))
-			const maxPastDate = pastDates.reduce((max, date) => (date.isAfter(max) ? date : max))
-			if (current <= maxPastDate) {
-				return true
+			// If there are past steps with dates, limit from maximum of them
+			if (pastStepsWithDates.length > 0) {
+				const pastDates = pastStepsWithDates.map((step) => dayjs(step.plannedAt!))
+				const maxPastDate = pastDates.reduce((max, date) => (date.isAfter(max) ? date : max))
+				if (current <= maxPastDate) {
+					return true
+				}
 			}
-		}
 
-		return false
-	}
+			return false
+		},
+		[steps, workflow]
+	)
 
 	return (
 		<ConfigProvider theme={{ components: { DatePicker: { inputFontSizeSM: 10 } } }}>
@@ -132,7 +161,7 @@ export const RoadmapChart = ({
 					</div>
 				</div>
 
-				{steps.map((step, idx) => (
+				{screenSteps.map((step, idx) => (
 					<Flex
 						vertical
 						key={step.id}
@@ -144,20 +173,16 @@ export const RoadmapChart = ({
 						<div className={styles.dateContainer}>
 							{!editable ? (
 								<Text ellipsis className={styles.dateText}>
-									{idx === 0
-										? dayjs(workflow.createdAt).format('ll')
-										: step.plannedAt
-											? dayjs(step.plannedAt).format('ll')
-											: 'unknown date'}
+									{step.plannedAt ? dayjs(step.plannedAt).format('ll') : 'unknown date'}
 								</Text>
 							) : (
 								<DatePicker
-									value={idx === 0 ? dayjs(workflow.createdAt) : step.plannedAt ? dayjs(step.plannedAt) : undefined}
+									value={step.plannedAt ? dayjs(step.plannedAt) : undefined}
 									size="small"
 									placement="topLeft"
 									suffixIcon={null}
 									format="ll"
-									allowClear={{ clearIcon: <AiOutlineClose /> }}
+									allowClear={idx > 0 ? { clearIcon: <AiOutlineClose /> } : false}
 									variant="borderless"
 									placeholder="set date"
 									onChange={(date) => handleDateChange(step.id, date)}
@@ -171,6 +196,7 @@ export const RoadmapChart = ({
 						</div>
 						<Text
 							ellipsis
+							style={{ maxWidth: '90%' }}
 							className={`${styles.stepName} ${step.id === workflow.currentStep.id ? styles.nextStepName : ''}`}
 						>
 							{step.name}

@@ -69,6 +69,20 @@ class ApiUserProjectWorkflowHandler {
 
 	@Put('/step')
 	public async updateStep(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) { id, plannedAt }: UpdateStepDto) {
+		const step = await prisma.projectWorkflowStep.findUnique({
+			where: { id },
+			include: {
+				projectWorkflow: true,
+			},
+		})
+
+		if (step?.order == 1 && plannedAt) {
+			await prisma.projectWorkflow.update({
+				where: { id: step.projectWorkflowId },
+				data: { createdAt: plannedAt },
+			})
+		}
+
 		await prisma.projectWorkflowStep.update({
 			where: { id },
 			data: { plannedAt: plannedAt || null },

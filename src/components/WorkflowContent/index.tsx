@@ -3,6 +3,7 @@ import { ProjectContext } from '@/contexts/ProjectContext'
 import { gtmEventTrigger } from '@/helpers/gtm'
 import { capitalize } from '@/helpers/text'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import { IoMdArrowBack } from '@react-icons/all-files/io/IoMdArrowBack'
 import { IoMdArrowForward } from '@react-icons/all-files/io/IoMdArrowForward'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTranslate } from '@tolgee/react'
@@ -54,6 +55,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 	const { t } = useTranslate()
 	const isAuthor = useMemo(() => projectContext?.isProjectAuthor, [projectContext])
 
+	const currentStepOrder = useMemo(() => workflow?.currentStep?.order || 0, [workflow?.currentStep])
 	// const mockTasks: ExtendedTask[] = useMemo(
 	// 	() => [
 	// 		{
@@ -108,14 +110,14 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 		},
 	})
 
-	const currentStepOrder = useMemo(() => {
-		return workflow?.currentStep?.order || 0
-	}, [workflow])
-
-	const isIntroductionStep = useMemo(() => workflow?.currentStep.order === 0, [workflow?.currentStep.order])
+	const isIntroductionStep = useMemo(() => currentStepOrder === 0, [workflow?.currentStep])
 	const isCompletionStep = useMemo(
-		() => workflow && workflow?.currentStep.order === workflow?.steps.length - 1,
-		[workflow?.currentStep.order, workflow?.steps]
+		() => workflow && currentStepOrder === workflow?.steps.length - 1,
+		[currentStepOrder, workflow?.steps]
+	)
+	const isPreCompletionStep = useMemo(
+		() => workflow && currentStepOrder === workflow?.steps.length - 2,
+		[currentStepOrder, workflow?.steps]
 	)
 	const isRoadmapStep = useMemo(() => !isIntroductionStep && !isCompletionStep, [isIntroductionStep, isCompletionStep])
 
@@ -217,16 +219,29 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 										{conditionStatus.completed == false ? (
 											<Popover content={t('Tasks are not completed')}>
 												<Button disabled={conditionStatus.completed == false}>
-													{t('workflow.next-step', 'Next step')}
+													{isPreCompletionStep
+														? t('workflow.next-step', 'Go to completion step')
+														: t('workflow.finish-step', 'Next step')}
 												</Button>
 											</Popover>
 										) : (
 											<Button onClick={handleNextStep} disabled={isMoving}>
-												{t('workflow.next-step', 'Next step')}
+												{isPreCompletionStep
+													? t('workflow.next-step', 'Go to completion step')
+													: t('workflow.finish-step', 'Next step')}
 											</Button>
 										)}
 									</>
 								</Space>
+							)}
+
+							{isCompletionStep && isAuthor && (
+								<Button onClick={handlePreviousStep} disabled={isMoving} type="text">
+									<Space size={8}>
+										<IoMdArrowBack style={{ display: 'block' }} />
+										{t('workflow.previous-step', 'Return to the previous step')}
+									</Space>
+								</Button>
 							)}
 
 							{!screens.lg && workflow.currentStep?.tasks?.length > 0 && (
