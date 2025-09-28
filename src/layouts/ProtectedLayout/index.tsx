@@ -385,7 +385,7 @@ export const ProtectedLayout = ({
 				{isAdmin && (
 					<>
 						<FloatButton
-							style={{ insetInlineEnd: 64 }}
+							style={{ insetInlineEnd: 22, insetBlockEnd: 90 }}
 							rootClassName={styles.agentDrawerFloatButton}
 							tooltip={t('app.user.menu.aiAssistant', 'Tri Assistant')}
 							icon={<IconGDHubTriangle style={{ width: 60, height: 60 }} />}
