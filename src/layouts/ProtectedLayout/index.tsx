@@ -1,5 +1,7 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
+import IconGDHubTriangle from '@/assets/images/gdhub-triangle.svg'
+import { AIAgentDrawer } from '@/components/AIAgentDrawer'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
@@ -7,7 +9,6 @@ import { useTelegram } from '@/helpers/useTelegram'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
-import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { useTolgee } from '@tolgee/react'
@@ -19,6 +20,7 @@ import {
 	Drawer,
 	Dropdown,
 	Flex,
+	FloatButton,
 	Grid,
 	Layout,
 	Menu,
@@ -68,6 +70,7 @@ export const ProtectedLayout = ({
 	const [isOpenedInTelegram] = useTelegram()
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
+	const [openAgentDrawer, setOpenAgentDrawer] = useState(false)
 
 	const hasAccess = useMemo(() => {
 		if (!session) return false
@@ -75,6 +78,14 @@ export const ProtectedLayout = ({
 
 		return access.some((role) => session.user.roles.includes(role))
 	}, [session, access])
+
+	const isAdmin = useMemo(() => {
+		if (!session) return false
+
+		console.log(session.user.roles)
+
+		return hasRole(prismaClient.UserRole.Admin, { data: session })
+	}, [session])
 
 	const seoSettings: NextSeoProps = {
 		title,
@@ -163,7 +174,7 @@ export const ProtectedLayout = ({
 	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
 		let menu: MenuProps['items'] = []
 
-		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
+		if (isAdmin) {
 			menu.push({
 				label: <Link href="/admin/posts">{t('hub.menu.administration', 'Administration')}</Link>,
 				key: '/admin/posts',
@@ -306,12 +317,7 @@ export const ProtectedLayout = ({
 											</Dropdown>
 										</>
 									) : (
-										<>
-											<NotificationsBell />
-											<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
-												<AiOutlineMenu />
-											</Button>
-										</>
+										<NotificationsBell />
 									)}
 								</Space>
 							</Col>
@@ -374,6 +380,21 @@ export const ProtectedLayout = ({
 						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 					</Drawer>
 				) : null}
+
+				{/* agent drawer */}
+				{isAdmin && (
+					<>
+						<FloatButton
+							style={{ insetInlineEnd: 64 }}
+							rootClassName={styles.agentDrawerFloatButton}
+							tooltip={t('app.user.menu.aiAssistant', 'Tri Assistant')}
+							icon={<IconGDHubTriangle style={{ width: 60, height: 60 }} />}
+							onClick={() => setOpenAgentDrawer(true)}
+						/>
+
+						<AIAgentDrawer open={openAgentDrawer} onClose={() => setOpenAgentDrawer(false)} />
+					</>
+				)}
 			</ConfigProvider>
 		</>
 	)
