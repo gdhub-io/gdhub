@@ -1,0 +1,15 @@
+.container {
+	width: 100%;
+}
+
+.headerRow {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 24px;
+}
+
+@media (max-width: 320px) {
+	.container {
+		margin-top: 0;
+	}
+}

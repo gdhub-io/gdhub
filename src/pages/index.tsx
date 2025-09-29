@@ -2,8 +2,13 @@ import { useEffect, useState } from 'react'
 import { LandingContactsSection } from '@/components/landing/LandingContactsSection'
 import { LandingFeedbackSection } from '@/components/landing/LandingFeedbackSection'
 import { LandingWhoWeAreSection } from '@/components/landing/LandingWhoWeAreSection'
+import { publicThemeConfig } from '@/config/theme'
 import { useTelegram } from '@/helpers/useTelegram'
 import { prisma } from '@/services/prisma'
+import { useTolgee } from '@tolgee/react'
+import { ConfigProvider } from 'antd'
+import enLocale from 'antd/locale/en_US'
+import ruLocale from 'antd/locale/ru_RU'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
@@ -48,6 +53,7 @@ interface LandingPageParams {
 }
 
 const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
+	const { getLanguage } = useTolgee()
 	const router = useRouter()
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram()
 	const [signInProcessing, setSignInProcessing] = useState(false)
@@ -86,17 +92,19 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 			{/* <Head>
 				<title>Game Developers Hub</title>
 			</Head> */}
-			<LandingLayout className={styles.container}>
-				<div className={styles.main}>
-					<LandingHeroSection stats={stats} />
-					<LandingWhoWeAreSection />
-					<LandingForAuthorsSection />
-					<LandingForSpecialistsSection />
-					<LandingRecentDevlogsSection />
-					<LandingFeedbackSection />
-					<LandingContactsSection />
-				</div>
-			</LandingLayout>
+			<ConfigProvider theme={publicThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
+				<LandingLayout className={styles.container}>
+					<div className={styles.main}>
+						<LandingHeroSection stats={stats} />
+						<LandingWhoWeAreSection />
+						<LandingForAuthorsSection />
+						<LandingForSpecialistsSection />
+						<LandingRecentDevlogsSection />
+						<LandingFeedbackSection />
+						<LandingContactsSection />
+					</div>
+				</LandingLayout>
+			</ConfigProvider>
 		</>
 	)
 }

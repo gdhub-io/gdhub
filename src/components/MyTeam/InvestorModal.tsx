@@ -113,6 +113,7 @@ const InvestorModal = ({
 
 	return (
 		<Modal
+			centered
 			open={open}
 			title={teamInvestorId ? t('Edit investor') : t('Add investor')}
 			onOk={handleOk}

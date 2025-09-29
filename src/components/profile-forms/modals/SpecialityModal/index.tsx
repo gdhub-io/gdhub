@@ -209,6 +209,7 @@ const SpecialityModal = ({ speciality, teamInvitation, open, onOk, onCancel }: S
 
 	return (
 		<Modal
+			centered
 			title={renderTitle()}
 			width={800}
 			destroyOnHidden

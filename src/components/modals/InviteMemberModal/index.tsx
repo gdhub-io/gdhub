@@ -69,6 +69,7 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 		<Modal
 			title={t('inviteMemberModal.title', 'Invite Team Member')}
 			open={open}
+			centered
 			onCancel={handleCancel}
 			footer={[
 				<Button key="cancel" onClick={handleCancel}>

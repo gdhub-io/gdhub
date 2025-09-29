@@ -497,10 +497,9 @@
         "part3": "Let's share knowledge, gain wisdom ;)"
       }
     },
-    "text1": {
-      "part1": "Now you can get acquainted with our platform, but in order to be able to create your own projects or respond to the vacancies of others, you need to complete the registration by filling in the necessary information about yourself.",
-      "part2": "And dont forget to join the community chat using"
-    }
+    "text1": "Hello, {userName} \uD83D\uDC4B",
+    "text1.part1": "It's a good day for game development",
+    "text1.part2": "And dont forget to join the community chat using"
   },
   "hyper-casual": "Hyper-casual",
   "in the form of short pitches": "in the form of short pitches",

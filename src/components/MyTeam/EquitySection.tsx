@@ -161,6 +161,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 
 			{/* Модальное окно для истории транзакций */}
 			<Modal
+				centered
 				title={t('Transactions History')}
 				open={transactionsModalVisible}
 				onCancel={() => setTransactionsModalVisible(false)}

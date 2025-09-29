@@ -37,11 +37,12 @@ const HubPage: NextPageWithLayout = () => {
 		<ProtectedLayout>
 			<Space className={styles.container} direction="vertical" size={32}>
 				<Space direction="vertical" size={0}>
-					<Title level={2}>
-						{t('hub.text1', 'I think now is the perfect time to make games.', {
+					<Title level={1}>
+						{t('hub.text1', 'Hello, {userName} 👋', {
 							userName: session?.data?.user.name || 'user',
 						})}
 					</Title>
+					<Text>{t('hub.text1.part1', "It's a good day for game development")}</Text>
 				</Space>
 
 				{session.status == 'authenticated' && !session.data.user.onboardingDone && (

@@ -4,7 +4,7 @@ import { CookieConsent } from '@/components/CookieConsent'
 import LoadingScreen from '@/components/LoadingScreen'
 import { AvailableLocales, defaultLocale } from '@/config/locale'
 import SEOSettings from '@/config/seo'
-import { publicThemeConfig, secondFont } from '@/config/theme'
+import { secondFont } from '@/config/theme'
 import { hasGoogleConsent } from '@/helpers/googleConsent'
 import { GTM_ID } from '@/helpers/gtm'
 import { useAuthErrorHandler } from '@/hooks/useAuthErrorHandler'
@@ -12,9 +12,6 @@ import { tolgeeService } from '@/services/tolgee'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { TolgeeProvider, useTolgeeSSR } from '@tolgee/react'
-import { ConfigProvider } from 'antd'
-import enLocale from 'antd/locale/en_US'
-import ruLocale from 'antd/locale/ru_RU'
 import dayjs from 'dayjs'
 import localeData from 'dayjs/plugin/localeData'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
@@ -124,14 +121,12 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 				{/* <ErrorBoundary> */}
 				<QueryClientProvider client={queryClient}>
 					{/* <CheckHealth> */}
-					<ConfigProvider theme={publicThemeConfig} locale={ssrTolgee.getLanguage() == 'en' ? enLocale : ruLocale}>
-						<SessionProvider session={session}>
-							<AuthErrorHandler />
-							<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
-								{getLayout(<Component {...pageProps} />)}
-							</div>
-						</SessionProvider>
-					</ConfigProvider>
+					<SessionProvider session={session}>
+						<AuthErrorHandler />
+						<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
+							{getLayout(<Component {...pageProps} />)}
+						</div>
+					</SessionProvider>
 					{/* </CheckHealth> */}
 					<CookieConsent />
 					<LoadingScreen visible={loading} />

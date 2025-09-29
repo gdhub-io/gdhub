@@ -20,6 +20,16 @@
 		.ant-btn {
 			margin-left: 16px;
 		}
+
+		.ant-breadcrumb {
+			a.logo:hover {
+				background-color: transparent;
+			}
+
+			ol {
+				flex-wrap: nowrap;
+			}
+		}
 	}
 }
 
