@@ -240,17 +240,13 @@ export const ProtectedLayout = ({
 			key: '/hub/projects',
 			label: <Link href="/hub/projects">{t('hub.menu.projects', 'Projects')}</Link>,
 		},
-		// {
-		// 	key: '/hub/lectures',
-		// 	label: (
-		// 		<Link href="/hub/lectures">
-		// 			<T keyName="app.user.menu.lectures">Lectures</T>
-		// 		</Link>
-		// 	),p
-		// },
 		{
 			key: '/hub/events',
 			label: <Link href="/hub/events">{t('hub.menu.events', 'Events')}</Link>,
+		},
+		{
+			key: '/hub/courses',
+			label: <Link href="/hub/courses">{t('hub.menu.courses', 'Courses')}</Link>,
 		},
 		{
 			key: '/hub/mentors',

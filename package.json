@@ -44,7 +44,7 @@
     "@editorjs/paragraph": "^2.11.7",
     "@editorjs/quote": "^2.7.6",
     "@editorjs/table": "^2.4.5",
-    "@gdhub-io/gdhub-prisma": "1.10.0-beta.22",
+    "@gdhub-io/gdhub-prisma": "1.10.0-beta.23",
     "@gdhub-io/gdhub-typesense": "^1.0.6",
     "@google-analytics/data": "^5.1.0",
     "@hello-pangea/dnd": "^18.0.1",
