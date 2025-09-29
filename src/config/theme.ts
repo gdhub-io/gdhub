@@ -1,7 +1,8 @@
+import { geistFont as appFont } from '@/assets/fonts/geist'
 import { ThemeConfig, theme } from 'antd'
-import { Mulish as AppFont, Lora } from 'next/font/google'
+import { Mulish as LandingFont, Lora } from 'next/font/google'
 
-export const mainFont = AppFont({
+export const mainLandingFont = LandingFont({
 	subsets: ['latin', 'cyrillic'],
 	display: 'swap',
 	adjustFontFallback: false,
@@ -20,7 +21,7 @@ export const landingThemeConfig: ThemeConfig = {
 	algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
 	cssVar: true,
 	token: {
-		fontFamily: mainFont.style.fontFamily,
+		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: 'rgb(241,85,65)',
 		colorInfo: 'rgb(241,85,65)',
 		colorBgBase: '#050505',
@@ -51,6 +52,7 @@ export const landingThemeConfig: ThemeConfig = {
 			colorBorder: '#F15541',
 			paddingContentHorizontal: 64,
 			paddingContentVertical: 16,
+			paddingInline: 8,
 		},
 		Typography: {
 			fontSize: 16,
@@ -72,7 +74,7 @@ export const publicThemeConfig: ThemeConfig = {
 	algorithm: [theme.defaultAlgorithm],
 	cssVar: true,
 	token: {
-		fontFamily: mainFont.style.fontFamily,
+		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: '#f15541',
 		colorInfo: '#f15541',
 		colorSuccess: '#67bf31',
@@ -95,7 +97,7 @@ export const publicThemeConfig: ThemeConfig = {
 	},
 	components: {
 		Button: {
-			fontFamily: mainFont.style.fontFamily,
+			fontFamily: mainLandingFont.style.fontFamily,
 			controlHeight: 52,
 			controlHeightLG: 52,
 			paddingInline: 24,
@@ -121,6 +123,9 @@ export const publicThemeConfig: ThemeConfig = {
 			paddingInlineSM: 8,
 			fontSizeIcon: 18,
 			controlHeight: 52,
+			activeShadow: '0 0 0 4px #00000029',
+			errorActiveShadow: '0 0 0 4px #ff545429',
+			warningActiveShadow: '0 0 0 4px #ffbb5429',
 		},
 		InputNumber: {
 			paddingInline: 16,
@@ -171,7 +176,6 @@ export const publicThemeConfig: ThemeConfig = {
 		Modal: {
 			titleFontSize: 24,
 			titleLineHeight: 2,
-			fontWeightStrong: 700,
 			paddingContentHorizontal: 24,
 			paddingContentVertical: 24,
 		},
@@ -255,22 +259,26 @@ export const publicThemeConfig: ThemeConfig = {
 }
 
 export const appThemeConfig: ThemeConfig = {
-	algorithm: [theme.compactAlgorithm],
-	cssVar: false,
 	token: {
-		fontFamily: mainFont.style.fontFamily,
-		colorPrimary: '#0a0a0a',
-		colorInfo: '#0a0a0a',
+		fontFamily: appFont.style.fontFamily,
+		colorPrimary: '#222222',
 		colorBgBase: '#FFFDFC',
 		colorWhite: '#FFFDFC',
-		fontSize: 16,
-		borderRadius: 8,
+		fontSize: 14,
+		borderRadius: 6,
 		wireframe: false,
 		colorBgElevated: '#FFFDFC',
 		colorBgLayout: '#FFFDFC',
-		colorBorder: '#050505',
+		colorBorder: '#222222',
 		colorLink: '#ff4d4f',
 		colorPrimaryBg: '#d7d7d7',
+		fontWeightStrong: 400,
+		colorBgSpotlight: '#ffffffff',
+		fontSizeHeading1: 24,
+		fontSizeHeading2: 20,
+		fontSizeHeading3: 16,
+		fontSizeHeading4: 14,
+		fontSizeHeading5: 12,
 	},
 	components: {
 		Avatar: {
@@ -286,10 +294,23 @@ export const appThemeConfig: ThemeConfig = {
 			colorBgContainer: 'transparent',
 			paddingContentHorizontal: 16,
 			paddingContentVertical: 8,
-			fontSize: 14,
+			defaultColor: '#0a0a0a',
+			defaultShadow: 'none',
+			primaryShadow: 'none',
+			dangerShadow: 'none',
+		},
+		Input: {
+			controlHeight: 48,
+			fontSizeIcon: 20,
+			activeShadow: '0 0 0 1px #00000057,0px 0px 0px 4px #00000029',
+			errorActiveShadow: '0 0 0 1px #ff545457,0px 0px 0px 4px #ff545429',
+			warningActiveShadow: '0 0 0 1px #ffbb5457,0px 0px 0px 4px #ffbb5429',
+		},
+		Select: {
+			fontSizeIcon: 20,
+			controlHeight: 48,
 		},
 		Typography: {
-			fontSize: 16,
 			colorTextSecondary: 'rgb(5, 5, 5, 0.8)',
 		},
 		Layout: {
@@ -298,35 +319,32 @@ export const appThemeConfig: ThemeConfig = {
 		},
 		Card: {
 			boxShadow: 'unset',
+			colorBgContainer: 'transparent',
 		},
 		Menu: {
 			colorBgContainer: 'transparent',
 			darkItemBg: '#050505',
-			fontSize: 16,
 			itemPaddingInline: 16,
 		},
 		Dropdown: {
-			fontSize: 16,
 			controlItemBgActiveHover: '#d7d7d7',
 		},
 		Spin: {
-			fontSize: 16,
 			controlHeight: 48,
 			controlHeightLG: 52,
 		},
 		Modal: {
 			titleFontSize: 24,
 			titleLineHeight: 2,
-			fontWeightStrong: 700,
 			paddingContentHorizontal: 24,
 			paddingContentVertical: 24,
 			colorBgMask: 'rgba(255, 255, 255, 0.66)',
 			colorBorder: 'rgb(226, 232, 240)',
 			boxShadow: 'rgba(0, 0, 0, 0.4) 0px 30px 90px',
+			algorithm: true,
 		},
 		Checkbox: {
 			controlInteractiveSize: 18,
-			fontSize: 16,
 			paddingContentHorizontal: 8,
 		},
 		Table: {
@@ -338,8 +356,6 @@ export const appThemeConfig: ThemeConfig = {
 			rowHoverBg: 'rgba(241, 85, 65, 0.04)',
 			cellPaddingBlock: 16,
 			cellPaddingInline: 16,
-			cellFontSize: 14,
-			fontWeightStrong: 600,
 			rowSelectedBg: 'rgba(241, 85, 65, 0.08)',
 			rowSelectedHoverBg: 'rgba(241, 85, 65, 0.12)',
 			colorBgContainer: 'transparent',
@@ -347,6 +363,12 @@ export const appThemeConfig: ThemeConfig = {
 			footerColor: 'rgba(5, 5, 5, 0.85)',
 			cellFontSizeSM: 12,
 			borderRadiusLG: 12,
+		},
+		DatePicker: {
+			controlHeight: 48,
+		},
+		Tooltip: {
+			colorTextLightSolid: '#222222',
 		},
 	},
 }

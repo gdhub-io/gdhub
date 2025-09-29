@@ -118,6 +118,7 @@ const EquityShareModal = ({ projectEquity, open, onOk, onCancel, investors = [] 
 
 	return (
 		<Modal
+			centered
 			title={t('Equity Settings')}
 			open={open}
 			maskClosable={false}

@@ -292,6 +292,7 @@ const WorkflowContent = ({ projectId, locale = 'en' }: { projectId: string; loca
 			</Space>
 
 			<Modal
+				centered
 				title={t('workflow.equity-transfer.title', 'Equity Transfer Confirmation')}
 				open={equityTransferModalVisible}
 				onOk={handleEquityTransferConfirm}

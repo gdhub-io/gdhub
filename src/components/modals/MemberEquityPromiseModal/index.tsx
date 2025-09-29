@@ -201,6 +201,7 @@ const MemberEquityPromiseModal = ({
 					: t('modal.memberEquityPromise.create.title', 'New Promise for {memberName}', { memberName })
 			}
 			open={open}
+			centered
 			width={600}
 			onCancel={onCancel}
 			confirmLoading={isCreating || isUpdating}

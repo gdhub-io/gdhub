@@ -120,6 +120,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({ o
 	return (
 		<>
 			<Modal
+				centered
 				open={open}
 				onCancel={onClose}
 				onOk={onClose}

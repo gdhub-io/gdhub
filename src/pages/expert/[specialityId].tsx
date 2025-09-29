@@ -184,7 +184,13 @@ export default function ExpertPage({ expert, seo, isAuthenticated }: ExpertPageP
 				</Button>
 
 				{isActiveRequest && (
-					<Modal title="Consultation request" open={modalOpen} onCancel={() => setModalOpen(false)} footer={null}>
+					<Modal
+						title="Consultation request"
+						centered
+						open={modalOpen}
+						onCancel={() => setModalOpen(false)}
+						footer={null}
+					>
 						{!session ? (
 							<div style={{ padding: 24, textAlign: 'center' }}>
 								<p>

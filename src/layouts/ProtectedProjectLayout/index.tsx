@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-logo-v2b.svg'
+import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
 import { Error404 } from '@/components/Error404'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
@@ -12,10 +12,10 @@ import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
-import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { useTolgee, useTranslate } from '@tolgee/react'
 import {
 	Avatar,
+	Breadcrumb,
 	Button,
 	Col,
 	ConfigProvider,
@@ -154,10 +154,10 @@ export const ProtectedProjectLayout = ({
 				key: 'tg-community',
 				label: (
 					<Link href="https://t.me/gdhub_io" target="_blank" title="Telegram community chat">
-						<Flex justify="space-between" align="center" gap={16}>
+						<Space align="center" size={16}>
 							<Text>Community chat</Text>
 							<GoLinkExternal size={12} color="gray" />
-						</Flex>
+						</Space>
 					</Link>
 				),
 			},
@@ -165,10 +165,10 @@ export const ProtectedProjectLayout = ({
 				key: 'website',
 				label: (
 					<Link href="https://gdhub.io" target="_blank" title="Website">
-						<Flex justify="space-between" align="center" gap={16}>
+						<Space align="center" size={16}>
 							<Text>Website</Text>
 							<GoLinkExternal size={12} color="gray" />
-						</Flex>
+						</Space>
 					</Link>
 				),
 			},
@@ -252,28 +252,32 @@ export const ProtectedProjectLayout = ({
 				`}</style>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
-						<Row wrap={false} align="middle">
+						<Row wrap={false} align="middle" style={{ height: '64px' }}>
 							<Col flex="auto">
-								<Flex align="center" justify="start" gap={8}>
-									<Link href="/hub" className="logo">
-										<GdhubLogo style={{ width: '100px' }} />
-									</Link>
-									<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-									{screens.lg && (
-										<>
-											<Button type="text" size="small">
-												<Link href={`/hub`}>{t('hub.menu.home', 'Hub')}</Link>
-											</Button>
-											<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-										</>
-									)}
-									<Text style={{ verticalAlign: 'middle' }} ellipsis={{ tooltip: true }}>
-										{project?.name || 'Project'}
-									</Text>
-								</Flex>
+								<Breadcrumb
+									items={[
+										{
+											title: (
+												<Link href="/hub" className="logo">
+													<GdhubLogo style={{ width: '100px' }} />
+												</Link>
+											),
+										},
+										{
+											title: screens.md ? <a href="/hub">{t('hub.menu.home', 'Hub')}</a> : null,
+										},
+										{
+											title: (
+												<Text style={{ verticalAlign: 'middle' }} ellipsis={{ tooltip: true }}>
+													{project?.name || 'Project'}
+												</Text>
+											),
+										},
+									]}
+								/>
 							</Col>
 							<Col flex="none">
-								<Space>
+								<Flex>
 									{screens.xl ? (
 										<>
 											<Link href="https://docs.gdhub.io" target="_blank">
@@ -307,12 +311,12 @@ export const ProtectedProjectLayout = ({
 									) : (
 										<>
 											<NotificationsBell />
-											<Button type="text" size="small" onClick={() => setOpenMobileMenu(true)}>
+											<Button type="text" shape="circle" onClick={() => setOpenMobileMenu(true)}>
 												<AiOutlineMenu />
 											</Button>
 										</>
 									)}
-								</Space>
+								</Flex>
 							</Col>
 						</Row>
 
@@ -354,7 +358,7 @@ export const ProtectedProjectLayout = ({
 						onClose={() => setOpenMobileMenu(false)}
 						open={openMobileMenu}
 						extra={
-							<Button onClick={() => setOpenMobileMenu(false)} type="text">
+							<Button shape="circle" onClick={() => setOpenMobileMenu(false)} type="text">
 								<AiOutlineClose />
 							</Button>
 						}

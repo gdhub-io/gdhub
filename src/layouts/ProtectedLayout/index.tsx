@@ -9,11 +9,12 @@ import { useTelegram } from '@/helpers/useTelegram'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
+import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
-import { RxSlash } from '@react-icons/all-files/rx/RxSlash'
 import { useTolgee } from '@tolgee/react'
 import {
 	Avatar,
+	Breadcrumb,
 	Button,
 	Col,
 	ConfigProvider,
@@ -192,10 +193,10 @@ export const ProtectedLayout = ({
 				key: 'tg-community',
 				label: (
 					<Link href={linkToChat} target="_blank" title={t('Community Chat')}>
-						<Flex justify="space-between" align="center" gap={16}>
+						<Space align="center" size={16}>
 							<Text>{t('hub.menu.communityChat', 'Community Chat')}</Text>
 							<GoLinkExternal size={12} color="gray" />
-						</Flex>
+						</Space>
 					</Link>
 				),
 			},
@@ -203,10 +204,10 @@ export const ProtectedLayout = ({
 				key: 'website',
 				label: (
 					<Link href="https://gdhub.io" target="_blank" title="Website">
-						<Flex justify="space-between" align="center" gap={16}>
+						<Space align="center" size={16}>
 							<Text>{t('hub.menu.website', 'Website')}</Text>
 							<GoLinkExternal size={12} color="gray" />
-						</Flex>
+						</Space>
 					</Link>
 				),
 			},
@@ -244,10 +245,10 @@ export const ProtectedLayout = ({
 			key: '/hub/events',
 			label: <Link href="/hub/events">{t('hub.menu.events', 'Events')}</Link>,
 		},
-		{
-			key: '/hub/courses',
-			label: <Link href="/hub/courses">{t('hub.menu.courses', 'Courses')}</Link>,
-		},
+		// {
+		// 	key: '/hub/education',
+		// 	label: <Link href="/hub/education">{t('hub.menu.education', 'Education')}</Link>,
+		// },
 		{
 			key: '/hub/mentors',
 			label: <Link href="/hub/mentors">{t('hub.menu.mentors', 'Mentors')}</Link>,
@@ -269,9 +270,29 @@ export const ProtectedLayout = ({
 			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
-						<Row wrap={false} align="middle">
+						<Row wrap={false} align="middle" style={{ height: '64px' }}>
 							<Col flex="auto">
-								<Flex align="center" justify="start" gap={8}>
+								<Breadcrumb
+									items={[
+										{
+											title: (
+												<Link href="/hub" className="logo">
+													<GdhubLogo style={{ width: '100px' }} />
+												</Link>
+											),
+										},
+
+										{
+											title: (
+												<Space>
+													<Avatar src={session?.user?.image ?? undefined} size={24} />
+													{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
+												</Space>
+											),
+										},
+									]}
+								/>
+								{/* <Flex align="center" justify="start" gap={8}>
 									<Link href="/hub" className="logo">
 										<GdhubLogo style={{ width: '115px' }} />
 									</Link>
@@ -280,7 +301,7 @@ export const ProtectedLayout = ({
 										<Avatar src={session?.user?.image ?? undefined} size={24} />
 										{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
 									</Space>
-								</Flex>
+								</Flex> */}
 							</Col>
 							<Col flex="none">
 								<Space>
@@ -313,7 +334,12 @@ export const ProtectedLayout = ({
 											</Dropdown>
 										</>
 									) : (
-										<NotificationsBell />
+										<>
+											<NotificationsBell />
+											<Button type="default" shape="circle" onClick={() => setOpenMobileMenu(true)}>
+												<AiOutlineMenu />
+											</Button>
+										</>
 									)}
 								</Space>
 							</Col>
@@ -368,7 +394,7 @@ export const ProtectedLayout = ({
 						onClose={() => setOpenMobileMenu(false)}
 						open={openMobileMenu}
 						extra={
-							<Button onClick={() => setOpenMobileMenu(false)} type="text">
+							<Button shape="circle" onClick={() => setOpenMobileMenu(false)} type="text">
 								<AiOutlineClose />
 							</Button>
 						}

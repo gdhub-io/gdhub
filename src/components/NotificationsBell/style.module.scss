@@ -7,16 +7,18 @@
   }
 
   .bellIcon {
-    width: 24px;
-    height: 24px;
-    color: #2d2d2d;
+    width: 18px;
+    height: 18px;
+    color: rgba(0,0,0,0.88);
   }
 
   .popoverTrigger {
     border-radius: 50%;
+    width: 36px;
+    height: 36px;
 
     &:hover {
-      background-color: #efefef;
+      background-color: rgba(0,0,0,0.04);
     }
   }
 

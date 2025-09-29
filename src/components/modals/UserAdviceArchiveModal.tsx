@@ -136,6 +136,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, u
 
 	return (
 		<Modal
+			centered
 			open={open}
 			onCancel={onClose}
 			onOk={onClose}

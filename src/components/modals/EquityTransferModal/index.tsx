@@ -97,7 +97,7 @@ const EquityTransferModal = ({ open, onCancel, projectId, currentUserId, teamMem
 	)
 
 	return (
-		<Modal title={t('Передача доли участнику')} open={open} onCancel={onCancel} footer={null} width={500}>
+		<Modal title={t('Передача доли участнику')} centered open={open} onCancel={onCancel} footer={null} width={500}>
 			<div className={styles.container}>
 				<Space direction="vertical" style={{ width: '100%' }} size="large">
 					<div className={styles.infoBox}>
