@@ -74,6 +74,7 @@ Disallow: /live/*
 Disallow: /invite/*
 Disallow: /signin
 Disallow: /_next/*
+Disallow: /legal-details
 
 # Bot identifiers (informational; follow robots.txt for enforcement)
 User-Agent: GPTBot

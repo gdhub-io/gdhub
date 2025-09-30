@@ -83,7 +83,10 @@ export const MainFooter = () => {
 				<Divider style={{ margin: '16px 0' }} />
 
 				<Paragraph className={styles.copyright}>
-					© 2023-{new Date().getFullYear()} {t('mainFooter.copyright', 'GDHub, All rights reserved.')}
+					© {new Date().getFullYear()} {t('mainFooter.copyright', 'VšĮ Žaidimų Kūrėjų Hubas. All rights reserved.')}{' '}
+					<Link href="/legal-details" style={{ color: '#9f9f9f', fontWeight: 200, fontSize: 13 }}>
+						{t('mainFooter.companyDetails', 'Legal details')}
+					</Link>
 				</Paragraph>
 			</div>
 		</div>
