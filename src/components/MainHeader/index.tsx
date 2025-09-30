@@ -90,18 +90,6 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			{
 				label: (
 					<Link
-						href={writeInternalLink('#about')}
-						title={t('public-menu.about-us', 'About us')}
-						onClick={(e) => scrollToAnchor(e, '#about')}
-					>
-						{t('public-menu.about-us', 'About us')}
-					</Link>
-				),
-				key: '#about',
-			},
-			{
-				label: (
-					<Link
 						href={writeInternalLink('#for-authors')}
 						title={t('public-menu.for-authors', 'For Authors')}
 						onClick={(e) => scrollToAnchor(e, '#for-authors')}
@@ -130,6 +118,14 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					</Link>
 				),
 				key: '/projects',
+			},
+			{
+				label: (
+					<Link href="/jobs" title={t('public-menu.jobs', 'Jobs')}>
+						🔥 {t('public-menu.jobs', 'Jobs')}
+					</Link>
+				),
+				key: '/jobs',
 			},
 			{
 				label: (

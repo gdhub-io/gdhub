@@ -16,8 +16,8 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
 		>
 			<div className={styles.container}>
-				<div className="project-vacancies">
-					<VacanciesList />
+				<div className="project-vacancies" style={{ marginTop: 32 }}>
+					<VacanciesList location="hub" />
 				</div>
 			</div>
 		</ProtectedLayout>

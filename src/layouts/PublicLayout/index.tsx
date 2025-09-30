@@ -298,7 +298,7 @@ export const PublicLayout = ({
 							position: 'relative',
 						}}
 					>
-						{backgroundImage && <div className={styles.headerBlur} />}
+						{/* {backgroundImage && <div className={styles.headerBlur} />} */}
 						<MainHeader />
 						<div className={styles.titleContainer}>
 							<Flex

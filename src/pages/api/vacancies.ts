@@ -10,7 +10,9 @@ class ApiSpecialistHandler {
 			where: { status: 'Published' },
 			orderBy: { publishedAt: 'desc' },
 			include: {
-				team: { select: { project: { select: { id: true, name: true, description: true, slug: true } } } },
+				team: {
+					select: { project: { select: { id: true, name: true, description: true, slug: true, coverImage: true } } },
+				},
 				direction: { select: { id: true, name: true } },
 			},
 		})
