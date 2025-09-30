@@ -1,3 +1,4 @@
+import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import { IsString } from 'class-validator'
 import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
@@ -7,12 +8,12 @@ class ProjectVacancyParams {
 	id: string
 }
 
+@NextAuthGuard('any')
 class ApiProjectVacancyHandler {
 	constructor() {}
 
 	@Get()
 	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { id }: ProjectVacancyParams) {
-		console.log(id)
 		const data = await prisma.teamVacancy.findFirst({
 			where: { id },
 			include: {
@@ -37,7 +38,9 @@ class ApiProjectVacancyHandler {
 			},
 		})
 
-		return data
+		const teamMember = await prisma.teamMember.findFirst({ where: { vacancyId: id, userId: req.user.id } })
+
+		return { ...data, myTeamMemberId: teamMember?.id }
 	}
 }
 

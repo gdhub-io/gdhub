@@ -205,6 +205,21 @@
 			}
 		}
 
+		&.black-btn {
+			height: 36px !important;
+			padding-inline: 16px !important;
+			background-color: #222222 !important;
+			border-color: #fffdfc22 !important;
+			color: #fffdfc !important;
+
+			&:hover,
+			&:active {
+				background-color: #222222 !important;
+				color: #fffdfc !important;
+				border-color: #fffdfc22 !important;
+			}
+		}
+
 		&.gray-btn {
 			background-color: transparent;
 			border-color: #031625;

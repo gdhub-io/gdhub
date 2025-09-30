@@ -4,15 +4,15 @@ import { NextPageWithLayout } from '@/pages/_app'
 import { useTranslate } from '@tolgee/react'
 import styles from './style.module.scss'
 
-const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
+const JobsPage: NextPageWithLayout = ({ projects }: any) => {
 	const { t } = useTranslate()
 
 	return (
 		<PublicLayout
-			title={t('Vacancies')}
-			subTitle="for enterprising specialists in the gaming industry"
+			title={t('Jobs in game industry')}
+			subTitle="Open positions for anyone willing to invest their time in bringing new indie games to life"
 			seo={{ description: t('for enterprising specialists in the gaming industry') }}
-			backgroundImage="https://cdn.sanity.io/images/3ao2jrg0/prod/f652fd9ac43f4b555c990db0265cef66ab5fdaf1-1920x1080.png"
+			backgroundImage="https://cdn.sanity.io/images/3ao2jrg0/prod/e3fd43a88ee86de839cdd75927ca3ee9d4d12789-1920x300.png"
 		>
 			<div className={styles.container}>
 				<div className="project-vacancies">
@@ -23,4 +23,4 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 	)
 }
 
-export default VacanciesPage
+export default JobsPage

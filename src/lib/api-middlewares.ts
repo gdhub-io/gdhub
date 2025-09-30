@@ -13,6 +13,11 @@ export const NextAuthGuard = (
 	createMiddlewareDecorator(async (req: any, res: NextApiResponse, next: NextFunction) => {
 		const session = await getServerSession(req, res, authOptions)
 
+		if (guardName == 'any') {
+			req.user = session?.user || null
+			return next()
+		}
+
 		if (guardName == 'user') {
 			if (!session || !session.user) {
 				throw new UnauthorizedException()
