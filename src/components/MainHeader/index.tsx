@@ -10,7 +10,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 import styles from './style.module.scss'
-import { SwitchLanguage } from '../SwitchLanguage'
 
 export const MainHeader = ({ className }: { className?: string }) => {
 	const { data: session, status: authStatus }: any = useSession()
@@ -214,7 +213,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				{screens.lg && (
 					<Space align="center" className={styles.rightControls}>
 						{actionButton}
-						<SwitchLanguage />
+						{/* <SwitchLanguage /> */}
 					</Space>
 				)}
 				{!screens.lg && (
@@ -233,7 +232,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					title={
 						<Flex justify="end" align="center" gap={16}>
 							{logoutButton}
-							<SwitchLanguage border={true} size="small" />
+							{/* <SwitchLanguage border={true} size="small" /> */}
 						</Flex>
 					}
 					placement="right"

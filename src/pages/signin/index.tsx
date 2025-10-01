@@ -2,6 +2,7 @@ import { useState } from 'react'
 import React from 'react'
 import LogingBgImage from '@/assets/images/login-bg.jpg'
 import { gtmEventTrigger } from '@/helpers/gtm'
+import { EmptyLayout } from '@/layouts/EmptyLayout'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
 import { FaGoogle } from '@react-icons/all-files/fa/FaGoogle'
 import { useTranslate } from '@tolgee/react'
@@ -73,7 +74,7 @@ const LoginPage: NextPage = () => {
 	}
 
 	return (
-		<>
+		<EmptyLayout>
 			<Head>
 				<title>{t('signin', 'Sign in')}</title>
 			</Head>
@@ -167,7 +168,7 @@ const LoginPage: NextPage = () => {
 					</div>
 				</div>
 			</div>
-		</>
+		</EmptyLayout>
 	)
 }
 

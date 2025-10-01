@@ -273,6 +273,7 @@ export const ProtectedLayout = ({
 						<Row wrap={false} align="middle" style={{ height: '64px' }}>
 							<Col flex="auto">
 								<Breadcrumb
+									separator={<span style={{ color: '#00000033' }}>/</span>}
 									items={[
 										{
 											title: (
@@ -292,16 +293,6 @@ export const ProtectedLayout = ({
 										},
 									]}
 								/>
-								{/* <Flex align="center" justify="start" gap={8}>
-									<Link href="/hub" className="logo">
-										<GdhubLogo style={{ width: '115px' }} />
-									</Link>
-									<RxSlash size={24} color="#ededed" style={{ display: 'block' }} />
-									<Space>
-										<Avatar src={session?.user?.image ?? undefined} size={24} />
-										{screens.sm ? <Text className="username">{session?.user?.name}</Text> : null}
-									</Space>
-								</Flex> */}
 							</Col>
 							<Col flex="none">
 								<Space>
@@ -317,7 +308,7 @@ export const ProtectedLayout = ({
 												<Button
 													type="text"
 													shape="circle"
-													style={{ display: 'block', padding: 0, lineHeight: 0, borderRadius: '50%' }}
+													style={{ display: 'block', padding: 0, lineHeight: 0 }}
 													icon={
 														session?.user.image ? (
 															<Avatar
@@ -330,13 +321,13 @@ export const ProtectedLayout = ({
 															/>
 														) : null
 													}
-												></Button>
+												/>
 											</Dropdown>
 										</>
 									) : (
 										<>
 											<NotificationsBell />
-											<Button type="default" shape="circle" onClick={() => setOpenMobileMenu(true)}>
+											<Button type="text" shape="circle" style={{ top: 2 }} onClick={() => setOpenMobileMenu(true)}>
 												<AiOutlineMenu />
 											</Button>
 										</>
@@ -394,7 +385,7 @@ export const ProtectedLayout = ({
 						onClose={() => setOpenMobileMenu(false)}
 						open={openMobileMenu}
 						extra={
-							<Button shape="circle" onClick={() => setOpenMobileMenu(false)} type="text">
+							<Button shape="circle" style={{ top: 2 }} onClick={() => setOpenMobileMenu(false)} type="text">
 								<AiOutlineClose />
 							</Button>
 						}

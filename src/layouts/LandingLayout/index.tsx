@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { MainFooter } from '@/components/MainFooter'
 import { MainHeader } from '@/components/MainHeader'
-import { SwitchLanguage } from '@/components/SwitchLanguage'
 import { landingThemeConfig } from '@/config/theme'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { useTranslate } from '@tolgee/react'
@@ -154,7 +153,7 @@ export const LandingLayout = ({ children }: any) => {
 		[screens, session]
 	)
 
-	const mainButton = useMemo(() => {
+	const mainButtonInDrawer = useMemo(() => {
 		if (authStatus === 'loading') {
 			return <Skeleton.Button active size="large" />
 		}
@@ -207,7 +206,7 @@ export const LandingLayout = ({ children }: any) => {
 									<Text className="username" ellipsis>
 										{session.user?.name}
 									</Text>
-									<SwitchLanguage border={true} size="small" />
+									{/* <SwitchLanguage border={true} size="small" /> */}
 								</Flex>
 							)
 						}
@@ -218,7 +217,7 @@ export const LandingLayout = ({ children }: any) => {
 						<Space direction="vertical" size={32} style={{ width: '100%' }}>
 							<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
 
-							{mainButton}
+							{mainButtonInDrawer}
 						</Space>
 					</Drawer>
 				)}

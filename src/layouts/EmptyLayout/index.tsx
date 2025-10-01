@@ -11,10 +11,7 @@ export const EmptyLayout = ({ children, type = 'light' }: any) => {
 	const { getLanguage } = useTolgee()
 
 	return (
-		<ConfigProvider
-			theme={type == 'light' ? landingThemeConfig : publicThemeConfig}
-			locale={getLanguage() == 'en' ? enLocale : ruLocale}
-		>
+		<ConfigProvider theme={publicThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
 			<Layout className={styles.container}>{children}</Layout>
 		</ConfigProvider>
 	)
