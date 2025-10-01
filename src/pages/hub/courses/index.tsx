@@ -2,6 +2,8 @@ import CoursesList from '@/components/CoursesList'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { useTranslate } from '@tolgee/react'
+import { Button } from 'antd'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import styles from './style.module.scss'
 
@@ -14,6 +16,11 @@ const CoursesPage: NextPageWithLayout = ({ projects }: any) => {
 			title={t('page.courses.title', 'Courses')}
 			subTitle={t('page.courses.subTitle', 'Invest your time in knowledge')}
 			seo={{ openGraph: { type: 'website', url: router.asPath } }}
+			extra={
+				<Link href="/hub/courses/my">
+					<Button type="text">{t('page.courses.myCourses', 'My Courses')}</Button>
+				</Link>
+			}
 		>
 			<div className={styles.container}>
 				<div className="project-vacancies" style={{ marginTop: 32 }}>

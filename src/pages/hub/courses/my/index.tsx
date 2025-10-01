@@ -9,7 +9,6 @@ import { useTranslate } from '@tolgee/react'
 import { Typography, Button } from 'antd'
 import { theme } from 'antd'
 import axios from 'axios'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import styles from './style.module.scss'
@@ -33,7 +32,7 @@ const MyCoursesPage: NextPageWithLayout = () => {
 		isLoading,
 	} = useQuery({
 		queryKey: ['my-courses'],
-		queryFn: () => axios.get('/api/courses/my').then((res) => res.data),
+		queryFn: () => axios.get('/api/user/courses').then((res) => res.data),
 		enabled: !!session?.user,
 	})
 
@@ -41,18 +40,16 @@ const MyCoursesPage: NextPageWithLayout = () => {
 		<ProtectedLayout
 			title={t('courses.myCourses', 'My courses')}
 			subTitle={t('courses.myCoursesDescription', 'Courses where you are an author, student, or instructor')}
-			extra={
-				<Link href="/hub/courses">
-					<Button type="text">{t('courses.backToAllCourses', 'Back to all courses')}</Button>
-				</Link>
-			}
+			extra={<Button>{t('courses.createCourse', 'Create course')}</Button>}
+			showBackButton
+			backButtonUrl="/hub/courses"
 		>
 			<div className={styles.container}>
 				<CourseSection
 					CardComponent={CourseCard}
 					token={token}
 					queryKey={['my-courses']}
-					queryFn={() => axios.get('/api/courses/my').then((res) => res.data)}
+					queryFn={() => axios.get('/api/user/courses').then((res) => res.data)}
 				/>
 
 				{!isSuccess && !isLoading && (
