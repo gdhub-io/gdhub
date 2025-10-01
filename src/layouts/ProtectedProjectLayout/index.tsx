@@ -255,6 +255,7 @@ export const ProtectedProjectLayout = ({
 						<Row wrap={false} align="middle" style={{ height: '64px' }}>
 							<Col flex="auto">
 								<Breadcrumb
+									separator={<span style={{ color: '#00000033' }}>/</span>}
 									items={[
 										{
 											title: (
@@ -264,20 +265,16 @@ export const ProtectedProjectLayout = ({
 											),
 										},
 										{
-											title: screens.md ? <a href="/hub">{t('hub.menu.home', 'Hub')}</a> : null,
+											title: screens.md ? <Link href="/hub">{t('hub.menu.home', 'Hub')}</Link> : null,
 										},
 										{
-											title: (
-												<Text style={{ verticalAlign: 'middle' }} ellipsis={{ tooltip: true }}>
-													{project?.name || 'Project'}
-												</Text>
-											),
+											title: <Text ellipsis={{ tooltip: true }}>{project?.name || 'Project'}</Text>,
 										},
 									]}
 								/>
 							</Col>
 							<Col flex="none">
-								<Flex>
+								<Space>
 									{screens.xl ? (
 										<>
 											<Link href="https://docs.gdhub.io" target="_blank">
@@ -311,12 +308,12 @@ export const ProtectedProjectLayout = ({
 									) : (
 										<>
 											<NotificationsBell />
-											<Button type="text" shape="circle" onClick={() => setOpenMobileMenu(true)}>
+											<Button type="text" shape="circle" style={{ top: 2 }} onClick={() => setOpenMobileMenu(true)}>
 												<AiOutlineMenu />
 											</Button>
 										</>
 									)}
-								</Flex>
+								</Space>
 							</Col>
 						</Row>
 
@@ -358,7 +355,7 @@ export const ProtectedProjectLayout = ({
 						onClose={() => setOpenMobileMenu(false)}
 						open={openMobileMenu}
 						extra={
-							<Button shape="circle" onClick={() => setOpenMobileMenu(false)} type="text">
+							<Button shape="circle" style={{ top: 2 }} onClick={() => setOpenMobileMenu(false)} type="text">
 								<AiOutlineClose />
 							</Button>
 						}
