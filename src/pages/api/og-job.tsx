@@ -220,7 +220,7 @@ export default async function handler(request: NextRequest) {
 								// boxShadow: '0 2px 12px #0002',
 							}}
 						>
-							{terms ? `Equity offered: ${decodeURIComponent(terms)}%` : 'negotiable terms of cooperation'}
+							{Boolean(terms) ? `Equity offered: ${decodeURIComponent(terms)}%` : 'negotiable terms of cooperation'}
 						</span>
 					</div>
 
