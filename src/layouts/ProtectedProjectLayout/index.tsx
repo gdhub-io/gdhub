@@ -67,7 +67,7 @@ export const ProtectedProjectLayout = ({
 	const { changeLanguage, getLanguage } = useTolgee()
 
 	const { project, isFetched } = useCurrentProject()
-	const isProjectAuthor = useMemo(() => project?.authorId === session?.user.id, [project, session])
+	const isProjectAuthor = useMemo(() => project?.authorId === session?.user.id, [project, session?.user])
 
 	useEffect(() => {
 		if (!project) return
@@ -215,9 +215,11 @@ export const ProtectedProjectLayout = ({
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/settings`,
-			disabled: !!isProjectAuthor,
-			label: <Link href={`/my/projects/${projectSlug}/settings`}>{t('app.user.menu.settings', 'Settings')}</Link>,
+			key: `/my/projects/${projectSlug}/settings/general`,
+			disabled: !isProjectAuthor,
+			label: (
+				<Link href={`/my/projects/${projectSlug}/settings/general`}>{t('app.user.menu.settings', 'Settings')}</Link>
+			),
 		},
 		{
 			key: `/project/${projectSlug}`,
