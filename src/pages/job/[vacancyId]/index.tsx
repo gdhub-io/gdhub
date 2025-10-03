@@ -217,17 +217,19 @@ export default function VancancyPage({ vacancy, pageCover, isAuthenticated }: Pa
 					<Spin spinning={false}>
 						{!!vacancy && (
 							<Card
-								actions={[
-									session?.user ? (
-										<Button
-											key="action"
-											type={Boolean(vacancy?.myTeamMemberId) ? 'default' : 'primary'}
-											onClick={functionOkButton}
-										>
-											{statusOkButton()}
-										</Button>
-									) : null,
-								]}
+								actions={
+									session?.user
+										? [
+												<Button
+													key="action"
+													type={Boolean(vacancy?.myTeamMemberId) ? 'default' : 'primary'}
+													onClick={functionOkButton}
+												>
+													{statusOkButton()}
+												</Button>,
+											]
+										: undefined
+								}
 							>
 								<Flex vertical gap={24}>
 									<Row gutter={[24, 24]}>

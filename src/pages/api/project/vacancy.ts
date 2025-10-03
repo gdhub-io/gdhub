@@ -38,7 +38,11 @@ class ApiProjectVacancyHandler {
 			},
 		})
 
-		const teamMember = await prisma.teamMember.findFirst({ where: { vacancyId: id, userId: req.user.id } })
+		let teamMember = null
+
+		if (req?.user?.id) {
+			teamMember = await prisma.teamMember.findFirst({ where: { vacancyId: id, userId: req.user.id } })
+		}
 
 		return { ...data, myTeamMemberId: teamMember?.id }
 	}
