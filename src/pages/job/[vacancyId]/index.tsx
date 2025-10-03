@@ -203,18 +203,15 @@ export default function VancancyPage({ vacancy, pageCover, isAuthenticated }: Pa
 				subTitle={`The open vacancy from ${vacancy.team?.project?.name} project`}
 				backgroundImage={pageCover || undefined}
 				seo={{
-					title: `${vacancy.title} - ${t('page.vacancy.title', 'Jobs')}`,
-					// description: getCleanTextContent(post?.content || ''),
-					openGraph: {
-						images: [
-							{
-								url: pageCover || '',
-								alt: vacancy.title || 'Untitled',
-							},
-						],
-					},
+					title: `${vacancy.title}`,
 				}}
 				styles={{ content: { padding: 0 }, layoutBackground: { padding: 0 } }}
+				ogImageType="job"
+				ogImageParams={{
+					p: vacancy.team?.project?.name,
+					vTerms: vacancy.promisePercentage?.toString() || '',
+					vDate: dayjs(vacancy.finishedAt).format('ll'),
+				}}
 			>
 				<div className={styles.container}>
 					<Spin spinning={false}>
