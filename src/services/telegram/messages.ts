@@ -40,7 +40,7 @@ export const newProjectReportsMessageRu = (
 	reports.map((report) => {
 		message += `\n\n<b>Проект ${report.project.name}</b>\n`
 		message += '<i>Опубликовано: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '<blockquote>' + getCleanTextContent(report.content) + '</blockquote>\n'
+		message += getCleanTextContent(report.content) + '\n'
 		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>\n`
 	})
 
@@ -55,7 +55,7 @@ export const newProjectReportsMessageEn = (
 	reports.map((report) => {
 		message += `\n\n<b>Project ${report.project.name}</b>\n`
 		message += '<i>Published: ' + dayjs(report.publishedAt).format('ll') + '</i>\n\n'
-		message += '<blockquote expandable>' + getCleanTextContent(report.content) + '</blockquote>\n'
+		message += getCleanTextContent(report.content) + '\n'
 		message += `\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>\n`
 	})
 
@@ -86,29 +86,34 @@ export const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
 	let message = '🔥 <b>Новые вакансии на проекты сообщества</b>'
 
 	projectWithVacancies.map((project) => {
-		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
+		const vacancyList = project.team.vacancies.map((v: any) => ({ name: v.title, id: v.id })) as {
+			name: string
+			id: string
+		}[]
 
-		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Проект ${project.name}</a></b>\n\n`
-		message += vacancyNames.map((name: string) => `▶ <b>${name}</b>`).join('\n')
+		message += `\n\n<b>Проект ${project.name}</b>\n\n`
+		message += vacancyList
+			.map(({ name, id }) => `▶ <b><a href="https://gdhub.io/job/${id}">${name}</a></b>`)
+			.join('\n')
 	})
-
-	message +=
-		'\n\n<i>p.s. Откликнуться на вакансию можно на странице проекта. Для этого необходимо кликнуть на его название.</i>'
 
 	return message
 }
 
 export const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
-	let message = '🔥 <b>New vacancies for community projects</b>'
+	let message = '🔥 <b>New vacancies for indie game projects</b>'
 
 	projectWithVacancies.map((project) => {
-		const vacancyNames = project.team.vacancies.map((v: any) => v.title)
+		const vacancyList = project.team.vacancies.map((v: any) => ({ name: v.title, id: v.id })) as {
+			name: string
+			id: string
+		}[]
 
-		message += `\n\n<b><a href="https://gdhub.io/project/${project.slug}">Project ${project.name}</a></b>\n`
-		message += vacancyNames.map((name: string) => `▶ <b>${name}</b>`).join('\n')
+		message += `\n\n<b>Project ${project.name}</b>\n`
+		message += vacancyList
+			.map(({ name, id }) => `▶ <b><a href="https://gdhub.io/job/${id}">${name}</a></b>`)
+			.join('\n')
 	})
-
-	message += '\n\n<i>p.s. You can apply for a vacancy on the project page. To do this, click on its name.</i>'
 
 	return message
 }
