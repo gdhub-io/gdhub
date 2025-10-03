@@ -21,7 +21,6 @@ import {
 	ConfigProvider,
 	Drawer,
 	Dropdown,
-	Flex,
 	FloatButton,
 	Grid,
 	Layout,
@@ -217,7 +216,7 @@ export const ProtectedProjectLayout = ({
 		},
 		{
 			key: `/my/projects/${projectSlug}/settings`,
-			disabled: !isProjectAuthor,
+			disabled: !!isProjectAuthor,
 			label: <Link href={`/my/projects/${projectSlug}/settings`}>{t('app.user.menu.settings', 'Settings')}</Link>,
 		},
 		{

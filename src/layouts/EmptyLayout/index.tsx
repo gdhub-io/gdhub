@@ -1,4 +1,4 @@
-import { publicThemeConfig, landingThemeConfig } from '@/config/theme'
+import { publicThemeConfig } from '@/config/theme'
 import { useTolgee } from '@tolgee/react'
 import { ConfigProvider, Layout } from 'antd'
 import enLocale from 'antd/locale/en_US'
