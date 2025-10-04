@@ -1,3 +1,18 @@
+import { SiEpicgames } from '@react-icons/all-files/si/SiEpicgames'
+import {
+	IconBrandApple,
+	IconBrandDiscord,
+	IconBrandFacebook,
+	IconBrandGooglePlay,
+	IconBrandItch,
+	IconBrandLinkedin,
+	IconBrandReddit,
+	IconBrandSteam,
+	IconBrandTelegram,
+	IconBrandTwitter,
+	IconBrandYoutube,
+} from '@tabler/icons-react'
+
 export const hasImageUrl = (content: string) => {
 	return (
 		(content.includes('http') || content.includes('https')) &&
@@ -35,3 +50,18 @@ export const renderContentWithImageUrl = (content: string) => {
 		</div>
 	)
 }
+
+export const platformOptions = [
+	{ value: 'steam', label: 'Steam', icon: <IconBrandSteam /> },
+	{ value: 'google-play', label: 'Google Play', icon: <IconBrandGooglePlay /> },
+	{ value: 'epic-store', label: 'Epic Store', icon: <SiEpicgames size={20} /> },
+	{ value: 'itch-io', label: 'itch.io', icon: <IconBrandItch /> },
+	{ value: 'app-store', label: 'App Store', icon: <IconBrandApple /> },
+	{ value: 'youtube', label: 'YouTube', icon: <IconBrandYoutube /> },
+	{ value: 'discord', label: 'Discord', icon: <IconBrandDiscord /> },
+	{ value: 'facebook', label: 'Facebook', icon: <IconBrandFacebook /> },
+	{ value: 'linkedin', label: 'LinkedIn', icon: <IconBrandLinkedin /> },
+	{ value: 'twitter', label: 'Twitter/X', icon: <IconBrandTwitter /> },
+	{ value: 'reddit', label: 'Reddit', icon: <IconBrandReddit /> },
+	{ value: 'telegram', label: 'Telegram', icon: <IconBrandTelegram /> },
+]

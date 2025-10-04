@@ -308,7 +308,7 @@ export const appThemeConfig: ThemeConfig = {
 			warningActiveShadow: '0 0 0 1px #ffbb5457,0px 0px 0px 4px #ffbb5429',
 		},
 		Select: {
-			fontSizeIcon: 20,
+			fontSizeIcon: 16,
 			controlHeight: 48,
 		},
 		Typography: {
