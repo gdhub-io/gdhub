@@ -2,13 +2,15 @@ import { useState } from 'react'
 import DevlogPosts from '@/components/DevlogPosts'
 import ProjectVacancies from '@/components/ProjectVacancies'
 import TeamMembers from '@/components/TeamMembers'
+import { platformOptions } from '@/helpers/react-content'
 import { PublicLayout } from '@/layouts/PublicLayout'
 import { NextPageWithLayout } from '@/pages/_app'
 import { prisma } from '@/services/prisma'
+import { ProjectLink } from '@/types/project'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { TbBrandTelegram } from '@react-icons/all-files/tb/TbBrandTelegram'
 import { useTranslate } from '@tolgee/react'
-import { Button, Col, Descriptions, Grid, Row, Space, Typography } from 'antd'
+import { Button, Col, ConfigProvider, Descriptions, Flex, Grid, Row, Space, Tooltip, Typography } from 'antd'
 import { GetServerSidePropsContext } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,7 +22,7 @@ import rehypeRaw from 'rehype-raw'
 import { Options } from 'youtube-player/dist/types'
 import styles from './style.module.scss'
 
-const { Title, Paragraph } = Typography
+const { Title, Paragraph, Text } = Typography
 
 type ProjectPageParams = {
 	project: prismaClient.Project & {
@@ -65,11 +67,62 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({ project, seo }) =>
 
 	const pitchVideoOptions: Options = { playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 } }
 
+	const getPlatformIcon = (type: string) => {
+		const option = platformOptions.find((opt) => opt.value === type)
+		return option?.icon
+	}
+
+	const getPlatformLabel = (type: string) => {
+		const option = platformOptions.find((opt) => opt.value === type)
+		return option?.label
+	}
+
+	const renderProjectLinks = (links: ProjectLink[]) => {
+		const linkElements = links
+			.sort((a, b) => (a.isPrimary ? -1 : 1))
+			.map((link: ProjectLink) => {
+				return link.isPrimary ? (
+					<Button
+						key={link.platform}
+						type={link.isPrimary ? 'default' : 'text'}
+						className={styles.projectLink}
+						href={link.link}
+						target="_blank"
+					>
+						<Flex align="center" gap={8}>
+							{getPlatformIcon(link.platform)}
+							<>Go to {getPlatformLabel(link.platform)}</>
+						</Flex>
+					</Button>
+				) : (
+					<Tooltip title={`Go to ${getPlatformLabel(link.platform)}`}>
+						<Button
+							key={link.platform}
+							type="text"
+							className={styles.projectLink}
+							href={link.link}
+							target="_blank"
+							icon={getPlatformIcon(link.platform)}
+						/>
+					</Tooltip>
+				)
+			})
+
+		return (
+			<ConfigProvider theme={{ components: { Button: { controlHeight: 36, paddingInline: 16 } } }}>
+				<Flex align="center" gap={16} style={{ margin: '16px 0 0' }}>
+					{linkElements}
+				</Flex>
+			</ConfigProvider>
+		)
+	}
+
 	return (
 		<>
 			<PublicLayout
 				title={project?.name}
 				subTitle={t('Author') + ' ' + project.author.name}
+				subLine={renderProjectLinks(project.links as ProjectLink[])}
 				backgroundImage={project.coverImage || undefined}
 				seo={seoParams}
 			>

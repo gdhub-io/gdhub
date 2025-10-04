@@ -37,6 +37,7 @@ interface PublicLayoutProps {
 	title?: ReactNode
 	seo?: DefaultSeoProps
 	subTitle?: string
+	subLine?: ReactNode
 	backgroundImage?: string
 	extra?: ReactNode
 	extraPosition?: 'left' | 'top'
@@ -58,6 +59,7 @@ export const PublicLayout = ({
 	extra,
 	extraPosition = 'left',
 	extraGap = 16,
+	subLine,
 	styles: layoutStyles,
 	ogImageType,
 	ogImageParams,
@@ -310,6 +312,7 @@ export const PublicLayout = ({
 								{!!title && <Title className={extraPosition === 'top' ? styles.titleTop : styles.title}>{title}</Title>}
 							</Flex>
 							{!!subTitle && <div className={styles.subTitle}>{subTitle}</div>}
+							{!!subLine && subLine}
 						</div>
 					</Header>
 					<Content style={layoutStyles?.content}>
