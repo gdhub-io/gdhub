@@ -251,20 +251,20 @@ const EquityPlot: React.FC<EquityPlotProps> = ({ platformShare, mentorFundShare,
 			const firstBarHeight = parseFloat(firstBar.getAttribute('height') || '0')
 
 			// Create a path for rounding the left side of the first element
-			firstBar.setAttribute(
-				'style',
-				`clip-path: path('M6,0 H${firstBarWidth} V${firstBarHeight} H6 Q0,${firstBarHeight} 0,${firstBarHeight - 6} V6 Q0,0 6,0 Z');`
-			)
+			// firstBar.setAttribute(
+			// 	'style',
+			// 	`clip-path: path('M6,0 H${firstBarWidth} V${firstBarHeight} H6 Q0,${firstBarHeight} 0,${firstBarHeight - 6} V6 Q0,0 6,0 Z');`
+			// )
 
 			// Round only the right corners of the last element
 			const lastBarWidth = parseFloat(lastBar.getAttribute('width') || '0')
 			const lastBarHeight = parseFloat(lastBar.getAttribute('height') || '0')
 
 			// Create a path for rounding the right side of the last element
-			lastBar.setAttribute(
-				'style',
-				`clip-path: path('M0,0 H${lastBarWidth - 6} Q${lastBarWidth},0 ${lastBarWidth},6 V${lastBarHeight - 6} Q${lastBarWidth},${lastBarHeight} ${lastBarWidth - 6},${lastBarHeight} H0 V0 Z');`
-			)
+			// lastBar.setAttribute(
+			// 	'style',
+			// 	`clip-path: path('M0,0 H${lastBarWidth - 6} Q${lastBarWidth},0 ${lastBarWidth},6 V${lastBarHeight - 6} Q${lastBarWidth},${lastBarHeight} ${lastBarWidth - 6},${lastBarHeight} H0 V0 Z');`
+			// )
 
 			// Remove borders between elements
 			barElements.forEach((bar, index) => {
