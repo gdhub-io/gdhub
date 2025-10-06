@@ -20,6 +20,9 @@
     "seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
   },
   "dependencies": {
+    "ably": "^2.14.0",
+    "@ably/chat": "^0.14.1",
+    "@ably/chat-react-ui-components": "^0.1.2",
     "@9gustin/react-notion-render": "^3.11.2",
     "@ant-design/colors": "^8.0.0",
     "@ant-design/cssinjs": "^1.24.0",
@@ -44,7 +47,7 @@
     "@editorjs/paragraph": "^2.11.7",
     "@editorjs/quote": "^2.7.6",
     "@editorjs/table": "^2.4.5",
-    "@gdhub-io/gdhub-prisma": "1.10.0-beta.26",
+    "@gdhub-io/gdhub-prisma": "1.10.0-beta.27",
     "@gdhub-io/gdhub-typesense": "^1.0.6",
     "@google-analytics/data": "^5.1.0",
     "@hello-pangea/dnd": "^18.0.1",

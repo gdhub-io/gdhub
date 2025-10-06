@@ -1,0 +1,12 @@
+.container {
+  height: 100%;
+  flex: 1 1 auto;
+  background: transparent;
+
+  :global {
+    div[role="main"] {
+      margin: 0;
+      border-radius: 0;
+    }
+  }
+}

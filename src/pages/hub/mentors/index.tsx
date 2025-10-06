@@ -4,7 +4,7 @@ import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslate } from '@tolgee/react'
-import { Avatar, Card, Col, Form, Row, Select, Spin, Tag, Typography } from 'antd'
+import { Avatar, Card, Col, Form, Row, Select, Spin, Tag, Typography, message } from 'antd'
 import axios from 'axios'
 import styles from './styles.module.scss'
 
@@ -49,9 +49,15 @@ const MentorsPage = () => {
 		return `https://t.me/gdhub_experts_bot/app?startapp=expert_${specialityId}`
 	}
 
-	const handleMentorClick = (mentor: Mentor) => {
-		if (mentor.specialities.length > 0) {
-			window.open(getTelegramExpertLink(mentor.specialities[0].id), '_blank')
+	const handleMentorClick = async (mentor: Mentor) => {
+		try {
+			const res = await axios.post('/api/chat/rooms/direct', { userId: mentor.id })
+			const roomId = res.data?.room?.id
+			if (roomId) {
+				window.dispatchEvent(new CustomEvent('open-chat', { detail: { roomId } }))
+			}
+		} catch (e) {
+			message.error('Failed to create chat room')
 		}
 	}
 

@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useMemo, useState } from 'react'
 import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
 import IconGDHubTriangle from '@/assets/images/gdhub-triangle.svg'
 import { AIAgentDrawer } from '@/components/AIAgentDrawer'
+import { ChatModal } from '@/components/Chat/ChatModal'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
@@ -10,6 +11,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
 import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
+import { AiOutlineMessage } from '@react-icons/all-files/ai/AiOutlineMessage'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
 import { useTolgee } from '@tolgee/react'
 import {
@@ -72,6 +74,17 @@ export const ProtectedLayout = ({
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
 	const [openAgentDrawer, setOpenAgentDrawer] = useState(false)
+	const [openChatModal, setOpenChatModal] = useState(false)
+	const [initialChatRoomId, setInitialChatRoomId] = useState<string | null>(null)
+
+	useEffect(() => {
+		const handler = (e: any) => {
+			setInitialChatRoomId(e?.detail?.roomId || null)
+			setOpenChatModal(true)
+		}
+		window.addEventListener('open-chat', handler)
+		return () => window.removeEventListener('open-chat', handler)
+	}, [])
 
 	const hasAccess = useMemo(() => {
 		if (!session) return false
@@ -303,6 +316,12 @@ export const ProtectedLayout = ({
 													{t('hub.menu.documentation', 'Documentation')}
 												</Button>
 											</Link>
+											<Button
+												type="text"
+												shape="circle"
+												onClick={() => setOpenChatModal(true)}
+												icon={<AiOutlineMessage />}
+											/>
 											<NotificationsBell />
 											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
 												<Button
@@ -327,6 +346,13 @@ export const ProtectedLayout = ({
 									) : (
 										<>
 											<NotificationsBell />
+											<Button
+												type="text"
+												shape="circle"
+												style={{ top: 2 }}
+												onClick={() => setOpenChatModal(true)}
+												icon={<AiOutlineMessage />}
+											/>
 											<Button type="text" shape="circle" style={{ top: 2 }} onClick={() => setOpenMobileMenu(true)}>
 												<AiOutlineMenu />
 											</Button>
@@ -408,6 +434,9 @@ export const ProtectedLayout = ({
 						<AIAgentDrawer open={openAgentDrawer} onClose={() => setOpenAgentDrawer(false)} />
 					</>
 				)}
+
+				{/* chat modal */}
+				<ChatModal open={openChatModal} onClose={() => setOpenChatModal(false)} initialRoomId={initialChatRoomId} />
 			</ConfigProvider>
 		</>
 	)
