@@ -29,6 +29,7 @@ const nextConfig = {
 	transpilePackages: [
 		'@mdxeditor/editor',
 		'@ant-design',
+		'@ant-design/x',
 		'@rc-component/util',
 		'rc-input',
 		'rc-util',
@@ -39,7 +40,8 @@ const nextConfig = {
 		'rc-tree',
 		'rc-table',
 	],
-	webpack: (config) => {
+	webpack: (config) =>
+	{
 		config.module.rules.push({
 			test: /\.svg$/,
 			use: ['@svgr/webpack'],
