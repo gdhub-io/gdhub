@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import { Bubble, BubbleProps } from '@ant-design/x'
+import { Bubble, BubbleProps, Welcome, Prompts } from '@ant-design/x'
 import { BubbleDataType } from '@ant-design/x/es/bubble/BubbleList'
 import { Flex, GetRef } from 'antd'
 import dayjs from 'dayjs'
@@ -22,6 +22,8 @@ export default function ChatMessages() {
 	const { selectedRoomId, chatSession, chatClient, ready } = useChat()
 	const [messages, setMessages] = useState<MatrixEvent[]>([])
 	const [preparedMessages, setPreparedMessages] = useState<BubbleDataType[]>([])
+	const [isJoining, setIsJoining] = useState(false)
+	const [isDeclining, setIsDeclining] = useState(false)
 	// const queryClient = useQueryClient()
 
 	// const { data: messages } = useQuery({
@@ -186,6 +188,51 @@ export default function ChatMessages() {
 			default:
 				return { messageRender: RenderIndex }
 		}
+	}
+
+	const room = selectedRoomId ? chatClient?.getRoom(selectedRoomId) : null
+	const myMembership = room?.getMyMembership()
+
+	if (myMembership === 'invite') {
+		return (
+			<div className={styles.chatMessages} style={{ paddingInline: 16 }}>
+				<Welcome title="Invitation pending" description="You were invited to this chat. Accept to start messaging." />
+				<div style={{ marginTop: 12 }}>
+					<Prompts
+						title="Actions"
+						items={[
+							{ key: 'accept', label: 'Accept invite' },
+							{ key: 'decline', label: 'Decline invite' },
+						]}
+						onItemClick={async ({ data }) => {
+							if (!selectedRoomId || !chatClient) return
+							if (data.key === 'accept') {
+								try {
+									setIsJoining(true)
+									await chatClient.joinRoom(selectedRoomId)
+								} finally {
+									setIsJoining(false)
+								}
+							}
+							if (data.key === 'decline') {
+								try {
+									setIsDeclining(true)
+									await chatClient.leave(selectedRoomId)
+								} finally {
+									setIsDeclining(false)
+								}
+							}
+						}}
+						styles={{
+							item: {
+								cursor: isJoining || isDeclining ? 'not-allowed' : 'pointer',
+								opacity: isJoining || isDeclining ? 0.6 : 1,
+							},
+						}}
+					/>
+				</div>
+			</div>
+		)
 	}
 
 	return (

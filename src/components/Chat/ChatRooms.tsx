@@ -46,15 +46,42 @@ export default function ChatRooms({ onReady }: { onReady: (data: { count: number
 
 		const onMembership = () => setItems(mapRoomsToItems(chatClient.getRooms() || []))
 		const onTimelineReset = () => setItems(mapRoomsToItems(chatClient.getRooms() || []))
+		const onPresenceChange = () => setItems(mapRoomsToItems(chatClient.getRooms() || []))
 
 		chatClient.on(RoomEvent.MyMembership, onMembership)
 		chatClient.on(RoomEvent.TimelineReset as any, onTimelineReset)
+		// presence-related updates
+		chatClient.on('User.presence' as any, onPresenceChange)
+		chatClient.on('User.currentlyActive' as any, onPresenceChange)
+		chatClient.on('User.lastPresenceTs' as any, onPresenceChange)
+
+		// periodic refresh for DM counterparts
+		const presenceInterval = setInterval(async () => {
+			try {
+				const rooms = (chatClient.getRooms() || []).filter((r) => ['join', 'invite'].includes(r.getMyMembership()))
+				for (const r of rooms) {
+					// best-effort: consider DM if only two joined members
+					const isDm = r.getJoinedMemberCount() <= 2
+					if (!isDm) continue
+					const fallbackMember = r.getAvatarFallbackMember()
+					const userId = fallbackMember?.user?.userId
+					if (userId && userId !== chatClient.getUserId()) {
+						await chatClient.getPresence(userId).catch(() => {})
+					}
+				}
+				onPresenceChange()
+			} catch {}
+		}, 60_000)
 
 		onReady({ count: mapRoomsToItems(chatClient.getRooms() || []).length })
 
 		return () => {
 			chatClient.removeListener(RoomEvent.MyMembership, onMembership)
 			chatClient.removeListener(RoomEvent.TimelineReset as any, onTimelineReset)
+			chatClient.removeListener('User.presence' as any, onPresenceChange)
+			chatClient.removeListener('User.currentlyActive' as any, onPresenceChange)
+			chatClient.removeListener('User.lastPresenceTs' as any, onPresenceChange)
+			clearInterval(presenceInterval)
 		}
 	}, [chatClient, ready])
 
