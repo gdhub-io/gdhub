@@ -1,13 +1,15 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createMatrixClient } from '@/lib/matrix-client'
 import { useQuery } from '@tanstack/react-query'
-import { Drawer, Grid, Layout } from 'antd'
+import { Drawer, Flex, Grid, Layout, Typography } from 'antd'
 import axios from 'axios'
-import { ClientEvent, RoomEvent } from 'matrix-js-sdk'
+import { ClientEvent } from 'matrix-js-sdk'
 import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
 import styles from './ChatModal.module.scss'
 import { useChat } from './useChat'
+
+const { Text } = Typography
 
 const ChatTitle = dynamic(() => import('./ChatTitle'), { ssr: false })
 const ChatRooms = dynamic(() => import('./ChatRooms'), { ssr: false })
@@ -18,8 +20,9 @@ type ChatModalProps = { open: boolean; onClose: () => void; initialRoomId?: stri
 
 export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalProps) => {
 	const screens = Grid.useBreakpoint()
+	const [hasRooms, setHasRooms] = useState(false)
 	const { data: session } = useSession()
-	const { chatClient, setChatClient, setReady } = useChat()
+	const { chatClient, setChatClient, setReady, selectedRoomId } = useChat()
 
 	const { data: clientSessionData } = useQuery({
 		queryKey: ['chat-client-session', session?.user.id],
@@ -71,13 +74,28 @@ export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalPro
 		>
 			<Layout>
 				<Layout.Sider theme="light" className={styles.chatRoomsSider}>
-					<ChatRooms />
+					<ChatRooms onReady={(data) => setHasRooms(data.count > 0)} />
 				</Layout.Sider>
 				<Layout.Content>
-					<div className={styles.chatContent}>
-						<ChatMessages />
-						<ChatInput />
-					</div>
+					{!hasRooms && (
+						<Flex
+							justify="center"
+							align="center"
+							style={{ height: '100%', padding: '16px', maxWidth: '400px', margin: '0 auto' }}
+						>
+							<Text type="secondary">
+								You don&apos;t have any rooms yet. Connect to experts or other community members to start a
+								conversation.
+							</Text>
+						</Flex>
+					)}
+
+					{hasRooms && (
+						<div className={styles.chatContent}>
+							<ChatMessages />
+							<ChatInput />
+						</div>
+					)}
 				</Layout.Content>
 			</Layout>
 		</Drawer>

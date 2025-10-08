@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import { Bubble, BubbleProps, Welcome } from '@ant-design/x'
+import { Bubble, BubbleProps } from '@ant-design/x'
 import { BubbleDataType } from '@ant-design/x/es/bubble/BubbleList'
 import { Flex, GetRef } from 'antd'
 import dayjs from 'dayjs'
 import { MatrixEvent, RoomEvent } from 'matrix-js-sdk'
 import styles from './ChatModal.module.scss'
 import { useChat } from './useChat'
+
+const availableMessageTypes = [
+	'm.room.message',
+	'm.room.name',
+	'm.room.topic',
+	'm.room.create',
+	'm.room.redaction',
+	'm.room.member',
+]
 
 export default function ChatMessages() {
 	const listRef = useRef<GetRef<typeof Bubble.List>>(null)
@@ -36,17 +45,12 @@ export default function ChatMessages() {
 			return
 		}
 
-		const initial = room
-			.getLiveTimeline()
-			.getEvents()
-			.filter((e) => e.getType() === 'm.room.message')
-			.slice(-50)
+		const initial = room.getLiveTimeline().getEvents().slice(-50)
 		setMessages(initial)
 
 		const handleTimeline = (event: MatrixEvent, evRoom: any, toStartOfTimeline?: boolean) => {
 			if (toStartOfTimeline) return
 			if (!evRoom || evRoom.roomId !== selectedRoomId) return
-			if (event.getType() !== 'm.room.message') return
 			setMessages((prev) => [...prev, event])
 		}
 
@@ -63,59 +67,121 @@ export default function ChatMessages() {
 		} catch {}
 	}, [preparedMessages])
 
-	// const currentRoom = (rooms || []).find((r) => r.roomId === selectedRoomId)
-
-	// Invitation actions will be wired later when membership state is integrated
+	console.log('[chat] messages', messages)
 
 	useEffect(() => {
 		if (!Array.isArray(messages)) return
 		setPreparedMessages(
-			messages.map((ev) => {
-				const content: any = ev.getContent() || {}
-				const senderId = ev.getSender()
-				const text = content.body || content.formatted_body || JSON.stringify(content)
-				const time = dayjs(ev.getTs()).format('HH:mm')
+			messages
+				.filter((ev) => availableMessageTypes.includes(ev.getType()))
+				.map((ev) => {
+					const type = ev.getType()
+					const senderId = ev.getSender()
+					const time = dayjs(ev.getTs()).format('HH:mm')
+					const key = ev.getId() || `${ev.getTs()}-${Math.random()}`
 
-				const chatUser = chatClient?.getUser(senderId as string)
+					if (type === 'm.room.message') {
+						const content: any = ev.getContent() || {}
+						const text = content.body || content.formatted_body || JSON.stringify(content)
+						const chatUser = chatClient?.getUser(senderId as string)
+						return {
+							key,
+							role: senderId === chatClient?.getUserId() ? 'user' : 'member',
+							content: text,
+							title: chatUser?.displayName,
+							avatarUrl: chatUser?.avatarUrl,
+							time,
+						}
+					}
 
-				return {
-					key: ev.getId() || `${ev.getTs()}-${Math.random()}`,
-					role: senderId === chatClient?.getUserId() ? 'user' : 'member',
-					content: text,
-					title: senderId,
-					avatarUrl: chatUser?.avatarUrl,
-					displayName: chatUser?.displayName,
-					time,
-				}
-			})
+					// Non-message/system event
+					const systemText = buildSystemHeader(ev)
+
+					return {
+						key,
+						role: 'system',
+						content: '',
+						systemText,
+						time,
+					}
+				})
 		)
-	}, [messages, chatSession?.userId])
+	}, [messages, chatClient])
+
+	function buildSystemHeader(ev: MatrixEvent): string {
+		const type = ev.getType()
+		const senderId = ev.getSender()
+		const content: any = ev.getContent() || {}
+		const userDisplay = chatClient?.getUser(senderId || '')?.displayName || 'Unknown'
+		const invitedDisplay = ev?.getContent()?.displayname || 'User'
+
+		switch (type) {
+			case 'm.room.member': {
+				const membership = content?.membership
+				if (membership === 'join') return `${userDisplay} joined the room`
+				if (membership === 'leave') return `${userDisplay} left the room`
+				if (membership === 'invite') return `${invitedDisplay} was invited`
+				if (membership === 'ban') return `${userDisplay} was banned`
+				return `${userDisplay} membership changed`
+			}
+			case 'm.room.name':
+				return `Room name changed to "${content?.name || ''}"`
+			case 'm.room.topic':
+				return `Room topic updated`
+			case 'm.room.create':
+				return `Room created by ${userDisplay}`
+			case 'm.room.redaction':
+				return `An event was redacted`
+			case 'm.room.power_levels':
+				return `Power levels updated`
+			default:
+				return `Event: ${type}`
+		}
+	}
 
 	const renderRoles = (bubbleData: BubbleDataType, index: number) => {
-		const RenderIndex: BubbleProps['messageRender'] = (content) => <Flex>{content}</Flex>
+		// Render message content with line breaks preserved
+		const RenderIndex: BubbleProps['messageRender'] = (content) => (
+			<Flex style={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>{content}</Flex>
+		)
 
 		switch (bubbleData.role) {
 			case 'member':
 				return {
 					placement: 'start' as const,
-					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).displayName}</div>,
+					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).title}</div>,
 					avatar: (bubbleData as any).avatarUrl
 						? { src: (bubbleData as any).avatarUrl }
 						: { icon: <UserOutlined />, style: { background: '#fde3cf' } },
 					typing: { step: 5, interval: 20 },
 					footer: <div style={{ fontSize: 10, color: '#cccccc' }}>{(bubbleData as any).time}</div>,
-
 					messageRender: RenderIndex,
 				}
 			case 'user':
 				return {
 					placement: 'end' as const,
-					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).displayName}</div>,
+					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).title}</div>,
 					avatar: (bubbleData as any).avatarUrl
 						? { src: (bubbleData as any).avatarUrl }
 						: { icon: <UserOutlined />, style: { background: '#aad068' } },
 					footer: <div style={{ fontSize: 10, color: '#cccccc' }}>{(bubbleData as any).time}</div>,
 					messageRender: RenderIndex,
+				}
+			case 'system':
+				return {
+					placement: 'start' as const,
+					header: (
+						<div style={{ fontSize: 12, color: '#9c9a9a', width: '100%', textAlign: 'center' }}>
+							{(bubbleData as any).systemText}
+						</div>
+					),
+					className: styles.systemMessage,
+					messageRender: undefined,
+					footer: (
+						<div style={{ fontSize: 10, color: '#cccccc', textAlign: 'center', width: '100%' }}>
+							{(bubbleData as any).time}
+						</div>
+					),
 				}
 			default:
 				return { messageRender: RenderIndex }
@@ -130,23 +196,5 @@ export default function ChatMessages() {
 			items={preparedMessages}
 			roles={renderRoles}
 		/>
-	)
-
-	return (
-		<>
-			{Array.isArray(messages) && messages.length === 0 ? (
-				<div className={styles.chatMessages} style={{ paddingInline: 16 }}>
-					<Welcome title="No messages yet" description="This chat has no messages yet. You can write the first one." />
-				</div>
-			) : (
-				<Bubble.List
-					ref={listRef}
-					style={{ paddingInline: 16 }}
-					className={styles.chatMessages}
-					items={preparedMessages}
-					roles={renderRoles}
-				/>
-			)}
-		</>
 	)
 }
