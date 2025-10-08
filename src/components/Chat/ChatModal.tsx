@@ -61,6 +61,7 @@ export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalPro
 		<Drawer
 			open={open}
 			className={styles.chatDrawer}
+			classNames={{ wrapper: styles.chatDrawerWrapper }}
 			onClose={onClose}
 			title={<ChatTitle />}
 			width={screens.lg ? 720 : '100%'}

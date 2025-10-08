@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import { Bubble, BubbleProps, Welcome, Prompts } from '@ant-design/x'
+import { Bubble, BubbleProps, Welcome } from '@ant-design/x'
 import { BubbleDataType } from '@ant-design/x/es/bubble/BubbleList'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Flex, GetRef } from 'antd'
-import axios from 'axios'
+import dayjs from 'dayjs'
 import { MatrixEvent, RoomEvent } from 'matrix-js-sdk'
 import styles from './ChatModal.module.scss'
 import { useChat } from './useChat'
@@ -12,9 +11,9 @@ import { useChat } from './useChat'
 export default function ChatMessages() {
 	const listRef = useRef<GetRef<typeof Bubble.List>>(null)
 	const { selectedRoomId, chatSession, chatClient, ready } = useChat()
-	const [messages, setMessages] = useState<MatrixEvent['event'][]>([])
+	const [messages, setMessages] = useState<MatrixEvent[]>([])
 	const [preparedMessages, setPreparedMessages] = useState<BubbleDataType[]>([])
-	const queryClient = useQueryClient()
+	// const queryClient = useQueryClient()
 
 	// const { data: messages } = useQuery({
 	// 	queryKey: ['chat-messages', selectedRoomId],
@@ -29,62 +28,68 @@ export default function ChatMessages() {
 	// })
 
 	useEffect(() => {
-		if (!chatClient || !ready) return
-		chatClient.on(RoomEvent.Timeline, (event) => {
-			setMessages((prev) => [...prev, event.event])
-		})
+		if (!chatClient || !ready || !selectedRoomId) return
 
-		return () => {
-			chatClient.removeListener(RoomEvent.Timeline, (event) => {
-				setMessages((prev) => [...prev, event.event])
-			})
+		const room = chatClient.getRoom(selectedRoomId)
+		if (!room) {
+			setMessages([])
+			return
 		}
-	}, [chatClient, ready])
+
+		const initial = room
+			.getLiveTimeline()
+			.getEvents()
+			.filter((e) => e.getType() === 'm.room.message')
+			.slice(-50)
+		setMessages(initial)
+
+		const handleTimeline = (event: MatrixEvent, evRoom: any, toStartOfTimeline?: boolean) => {
+			if (toStartOfTimeline) return
+			if (!evRoom || evRoom.roomId !== selectedRoomId) return
+			if (event.getType() !== 'm.room.message') return
+			setMessages((prev) => [...prev, event])
+		}
+
+		chatClient.on(RoomEvent.Timeline, handleTimeline)
+		return () => {
+			chatClient.removeListener(RoomEvent.Timeline, handleTimeline)
+		}
+	}, [chatClient, ready, selectedRoomId])
 
 	useEffect(() => {
-		console.log('messages', messages)
-	}, [messages])
+		// Scroll to bottom on new messages
+		try {
+			listRef.current?.scrollTo?.({ offset: Number.MAX_SAFE_INTEGER })
+		} catch {}
+	}, [preparedMessages])
 
 	// const currentRoom = (rooms || []).find((r) => r.roomId === selectedRoomId)
-	const myMembership = 'invite' // currentRoom?.myMembership as string | undefined
 
-	const { mutateAsync: acceptInvite, isPending: isJoining } = useMutation({
-		mutationFn: async () => {
-			if (!selectedRoomId) throw new Error('No room selected')
-			await axios.post(`/api/chat/rooms/${selectedRoomId}/join`)
-		},
-		onSuccess: async () => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: ['chat-rooms', chatSession?.userId] }),
-				queryClient.invalidateQueries({ queryKey: ['chat-messages', selectedRoomId] }),
-			])
-		},
-	})
+	// Invitation actions will be wired later when membership state is integrated
 
-	const { mutateAsync: declineInvite, isPending: isLeaving } = useMutation({
-		mutationFn: async () => {
-			if (!selectedRoomId) throw new Error('No room selected')
-			await axios.post(`/api/chat/rooms/${selectedRoomId}/leave`)
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['chat-rooms', chatSession?.userId] })
-		},
-	})
+	useEffect(() => {
+		if (!Array.isArray(messages)) return
+		setPreparedMessages(
+			messages.map((ev) => {
+				const content: any = ev.getContent() || {}
+				const senderId = ev.getSender()
+				const text = content.body || content.formatted_body || JSON.stringify(content)
+				const time = dayjs(ev.getTs()).format('HH:mm')
 
-	// useEffect(() => {
-	// 	if (messages) {
-	// 		setPreparedMessages(
-	// 			messages.map((message) => ({
-	// 				key: message.eventId,
-	// 				role: message.sender === chatSession?.userId ? 'user' : 'member',
-	// 				content: message.content?.body || message.content?.text || JSON.stringify(message.content),
-	// 				avatarSrc: message.senderAvatarUrl,
-	// 				title: message.senderDisplayName,
-	// 				time: dayjs(message.ts).format('HH:mm'),
-	// 			}))
-	// 		)
-	// 	}
-	// }, [messages, chatSession?.userId])
+				const chatUser = chatClient?.getUser(senderId as string)
+
+				return {
+					key: ev.getId() || `${ev.getTs()}-${Math.random()}`,
+					role: senderId === chatClient?.getUserId() ? 'user' : 'member',
+					content: text,
+					title: senderId,
+					avatarUrl: chatUser?.avatarUrl,
+					displayName: chatUser?.displayName,
+					time,
+				}
+			})
+		)
+	}, [messages, chatSession?.userId])
 
 	const renderRoles = (bubbleData: BubbleDataType, index: number) => {
 		const RenderIndex: BubbleProps['messageRender'] = (content) => <Flex>{content}</Flex>
@@ -93,9 +98,9 @@ export default function ChatMessages() {
 			case 'member':
 				return {
 					placement: 'start' as const,
-					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).title}</div>,
-					avatar: (bubbleData as any).avatarSrc
-						? { src: (bubbleData as any).avatarSrc }
+					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).displayName}</div>,
+					avatar: (bubbleData as any).avatarUrl
+						? { src: (bubbleData as any).avatarUrl }
 						: { icon: <UserOutlined />, style: { background: '#fde3cf' } },
 					typing: { step: 5, interval: 20 },
 					footer: <div style={{ fontSize: 10, color: '#cccccc' }}>{(bubbleData as any).time}</div>,
@@ -105,9 +110,9 @@ export default function ChatMessages() {
 			case 'user':
 				return {
 					placement: 'end' as const,
-					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).title}</div>,
-					avatar: (bubbleData as any).avatarSrc
-						? { src: (bubbleData as any).avatarSrc }
+					header: <div style={{ fontSize: 12, color: '#9c9a9a' }}>{(bubbleData as any).displayName}</div>,
+					avatar: (bubbleData as any).avatarUrl
+						? { src: (bubbleData as any).avatarUrl }
 						: { icon: <UserOutlined />, style: { background: '#aad068' } },
 					footer: <div style={{ fontSize: 10, color: '#cccccc' }}>{(bubbleData as any).time}</div>,
 					messageRender: RenderIndex,
@@ -129,25 +134,7 @@ export default function ChatMessages() {
 
 	return (
 		<>
-			{myMembership === 'invite' ? (
-				<div className={styles.chatMessages} style={{ paddingInline: 16 }}>
-					<Welcome title="Invitation pending" description="You were invited to this chat. Accept to start messaging." />
-					<div style={{ marginTop: 12 }}>
-						<Prompts
-							title="Actions"
-							items={[
-								{ key: 'accept', label: 'Accept invite' },
-								{ key: 'decline', label: 'Decline invite' },
-							]}
-							onItemClick={async ({ data }) => {
-								if (data.key === 'accept') await acceptInvite()
-								if (data.key === 'decline') await declineInvite()
-							}}
-							styles={{ item: { cursor: isJoining || isLeaving ? 'not-allowed' : 'pointer' } }}
-						/>
-					</div>
-				</div>
-			) : Array.isArray(messages) && messages.length === 0 ? (
+			{Array.isArray(messages) && messages.length === 0 ? (
 				<div className={styles.chatMessages} style={{ paddingInline: 16 }}>
 					<Welcome title="No messages yet" description="This chat has no messages yet. You can write the first one." />
 				</div>

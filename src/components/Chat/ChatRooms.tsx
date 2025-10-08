@@ -1,9 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UserOutlined } from '@ant-design/icons'
 import { type Conversation, Conversations } from '@ant-design/x'
-import { useQuery } from '@tanstack/react-query'
-import { Skeleton } from 'antd'
-import axios from 'axios'
 import { useChat } from './useChat'
 
 type SerializableRoom = {
@@ -43,6 +40,10 @@ export default function ChatRooms() {
 			}))
 		)
 	}, [chatClient, ready])
+
+	useEffect(() => {
+		if (!selectedRoomId && items.length) setSelectedRoomId(items[0].key)
+	}, [items, selectedRoomId, setSelectedRoomId])
 
 	// const { data: rooms, isLoading: isLoadingRooms } = useQuery({
 	// 	queryKey: ['chat-rooms', chatSession?.userId],
