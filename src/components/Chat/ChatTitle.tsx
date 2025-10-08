@@ -1,5 +1,5 @@
 import { Typography } from 'antd'
-import { useChat } from './ChatContext'
+import { useChat } from './useChat'
 
 const { Text } = Typography
 

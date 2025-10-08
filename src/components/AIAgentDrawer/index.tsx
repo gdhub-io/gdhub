@@ -38,6 +38,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 			const res = await axios.get('/api/user/ai/assistants', { params: { graphKey: 'assistant@v1' } })
 			return res.data as Array<{ assistant_id: string; name?: string }>
 		},
+		enabled: open,
 		staleTime: 60_000,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,

@@ -5,11 +5,20 @@
 .chatContent {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   height: 100%;
+  padding: 16px;
 }
 
 .chatInput {
   margin: 16px;
   width: unset;
+}
+
+.chatMessages {
+  :global {
+    .ant-bubble-footer {
+      margin-top: 4px;
+    }
+  }
 }

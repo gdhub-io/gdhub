@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
 		async jwt({ token }) {
 			if (!token.email) return
 
-			const user = await prisma.user.findUnique({ where: { email: token.email } })
+			const user = await prisma.user.findUnique({ where: { email: token.email }, include: { profile: true } })
 			const activeSubscription = await prisma.user.activeSubscription(user?.id!)
 
 			return { ...token, ...user, activeSubscription: activeSubscription?.id } as any
