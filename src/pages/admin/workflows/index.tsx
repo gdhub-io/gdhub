@@ -1,25 +1,25 @@
-import { useState } from 'react'
-import { CreateWorkflowModal } from '@/components/admin/CreateWorkflowModal'
-import ModernTable from '@/components/ModernTable'
-import { ProtectedLayout } from '@/layouts/ProtectedLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { GoTrash } from '@react-icons/all-files/go/GoTrash'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Popconfirm, Popover, Row, Space, Typography, Tabs } from 'antd'
-import { ColumnsType } from 'antd/es/table'
-import axios from 'axios'
-import dayjs from 'dayjs'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import styles from './style.module.scss'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { GoTrash } from "@react-icons/all-files/go/GoTrash";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Button, Popconfirm, Popover, Row, Space, Tabs, Typography } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import axios from "axios";
+import dayjs from "dayjs";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { CreateWorkflowModal } from "@/components/admin/CreateWorkflowModal";
+import ModernTable from "@/components/ModernTable";
+import { ProtectedLayout } from "@/layouts/ProtectedLayout";
+import type { NextPageWithLayout } from "@/pages/_app";
+import styles from "./style.module.scss";
 
-const { Title, Text } = Typography
+const { Title, Text } = Typography;
 
 const WorkflowsAdminPage: NextPageWithLayout = () => {
-	const router = useRouter()
-	const [showModal, setShowModal] = useState(false)
-	const [workflowId, setWorkflowId] = useState<string | undefined>(undefined)
+	const router = useRouter();
+	const [showModal, setShowModal] = useState(false);
+	const [workflowId, setWorkflowId] = useState<string | undefined>(undefined);
 
 	// Workflow schemas (templates)
 	const {
@@ -27,10 +27,10 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 		refetch: refetchWorkflows,
 		isFetching: isFetchingWorkflows,
 	} = useQuery({
-		queryKey: ['admin', 'workflows'],
-		queryFn: () => axios.get('/api/admin/workflows'),
+		queryKey: ["admin", "workflows"],
+		queryFn: () => axios.get("/api/admin/workflows"),
 		refetchOnWindowFocus: false,
-	})
+	});
 
 	// Project workflows
 	const {
@@ -38,76 +38,79 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 		refetch: refetchProjectWorkflows,
 		isFetching: isFetchingProjectWorkflows,
 	} = useQuery({
-		queryKey: ['admin', 'project-workflows'],
-		queryFn: () => axios.get('/api/admin/project-workflows'),
+		queryKey: ["admin", "project-workflows"],
+		queryFn: () => axios.get("/api/admin/project-workflows"),
 		refetchOnWindowFocus: false,
-	})
+	});
 
 	const { mutateAsync: deleteWorkflow } = useMutation({
 		mutationFn: ({ id }: { id: string }) => axios.delete(`/api/admin/workflow/${id}`),
 		onSuccess: () => {
-			refetchWorkflows()
+			refetchWorkflows();
 		},
-	})
+	});
 
 	const handleDelete = (recordId: string) => {
-		deleteWorkflow({ id: recordId })
-		setWorkflowId(undefined)
-	}
+		deleteWorkflow({ id: recordId });
+		setWorkflowId(undefined);
+	};
 
 	const handleCreateWorkflow = (id: string) => {
-		setWorkflowId(id)
-		setShowModal(false)
-		router.push(`/admin/workflow/${id}`)
-	}
+		setWorkflowId(id);
+		setShowModal(false);
+		router.push(`/admin/workflow/${id}`);
+	};
 
 	// Columns for workflow schemas (templates)
 	const workflowColumns: ColumnsType<prismaClient.WorkflowSchema> = [
 		{
-			title: 'Title',
-			dataIndex: 'title',
-			key: 'title',
+			title: "Title",
+			dataIndex: "title",
+			key: "title",
 			render: (value, record) => <Link href={`/admin/workflow/${record.id}`}>{value}</Link>,
 		},
 		{
-			title: 'Created at',
-			dataIndex: 'createdAt',
-			key: 'createdAt',
+			title: "Created at",
+			dataIndex: "createdAt",
+			key: "createdAt",
 			render: (value) => (
-				<Popover content={dayjs(value).format('LLL')}>
+				<Popover content={dayjs(value).format("LLL")}>
 					<Text>{dayjs(value).fromNow()}</Text>
 				</Popover>
 			),
 		},
 		{
-			key: 'actions',
-			width: '1%',
+			key: "actions",
+			width: "1%",
 			render(value, record) {
 				return (
 					<Space size="large">
-						<Popconfirm title="Are you sure you want to delete this entry?" onConfirm={() => handleDelete(record.id)}>
+						<Popconfirm
+							title="Are you sure you want to delete this entry?"
+							onConfirm={() => handleDelete(record.id)}
+						>
 							<Button type="text" danger icon={<GoTrash />} />
 						</Popconfirm>
 					</Space>
-				)
+				);
 			},
 		},
-	]
+	];
 
 	// Columns for project workflows
 	const projectWorkflowColumns: ColumnsType<any> = [
 		{
-			title: 'Project',
-			dataIndex: ['project', 'name'],
-			key: 'projectName',
-			width: '20%',
+			title: "Project",
+			dataIndex: ["project", "name"],
+			key: "projectName",
+			width: "20%",
 			render: (value, record) => (
 				<div>
 					<Link href={`/admin/project-workflow/${record.id}`}>
 						<strong>{value}</strong>
 					</Link>
 					<div>
-						<Text type="secondary" style={{ fontSize: '12px' }}>
+						<Text type="secondary" style={{ fontSize: "12px" }}>
 							by {record.project?.author?.name}
 						</Text>
 					</div>
@@ -115,83 +118,88 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 			),
 		},
 		{
-			title: 'Current Stage',
-			key: 'currentStage',
-			width: '15%',
+			title: "Current Stage",
+			key: "currentStage",
+			width: "15%",
 			render: (_, record) => (
 				<div>
-					<div style={{ fontWeight: 'bold', color: '#1890ff' }}>{record.analytics?.currentStepName || 'Не начат'}</div>
-					<Text type="secondary" style={{ fontSize: '12px' }}>
-						Этап {(record.analytics?.currentStepOrder || 0) + 1} из {record.analytics?.totalSteps || 0}
+					<div style={{ fontWeight: "bold", color: "#1890ff" }}>
+						{record.analytics?.currentStepName || "Не начат"}
+					</div>
+					<Text type="secondary" style={{ fontSize: "12px" }}>
+						Этап {(record.analytics?.currentStepOrder || 0) + 1} из{" "}
+						{record.analytics?.totalSteps || 0}
 					</Text>
 				</div>
 			),
 		},
 		{
-			title: 'Tasks Progress',
-			key: 'tasksProgress',
-			width: '15%',
+			title: "Tasks Progress",
+			key: "tasksProgress",
+			width: "15%",
 			render: (_, record) => {
-				const percentage = record.analytics?.completionPercentage || 0
-				const completed = record.analytics?.completedTasks || 0
-				const total = record.analytics?.totalTasks || 0
+				const percentage = record.analytics?.completionPercentage || 0;
+				const completed = record.analytics?.completedTasks || 0;
+				const total = record.analytics?.totalTasks || 0;
 
 				return (
-					<div style={{ textAlign: 'center' }}>
+					<div style={{ textAlign: "center" }}>
 						<div
 							style={{
-								fontSize: '16px',
-								fontWeight: 'bold',
-								color: percentage >= 80 ? '#52c41a' : percentage >= 50 ? '#faad14' : '#ff4d4f',
+								fontSize: "16px",
+								fontWeight: "bold",
+								color: percentage >= 80 ? "#52c41a" : percentage >= 50 ? "#faad14" : "#ff4d4f",
 							}}
 						>
 							{completed}/{total}
 						</div>
-						<Text type="secondary" style={{ fontSize: '12px' }}>
+						<Text type="secondary" style={{ fontSize: "12px" }}>
 							{percentage}% выполнено
 						</Text>
 					</div>
-				)
+				);
 			},
 		},
 		{
-			title: 'Time Active',
-			key: 'timeActive',
-			width: '12%',
+			title: "Time Active",
+			key: "timeActive",
+			width: "12%",
 			render: (_, record) => {
-				const days = record.analytics?.daysInProgress || 0
+				const days = record.analytics?.daysInProgress || 0;
 				return (
-					<div style={{ textAlign: 'center' }}>
-						<div style={{ fontSize: '18px', fontWeight: 'bold', color: '#722ed1' }}>{days}</div>
-						<Text type="secondary" style={{ fontSize: '11px' }}>
-							{days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'}
+					<div style={{ textAlign: "center" }}>
+						<div style={{ fontSize: "18px", fontWeight: "bold", color: "#722ed1" }}>{days}</div>
+						<Text type="secondary" style={{ fontSize: "11px" }}>
+							{days === 1 ? "день" : days < 5 ? "дня" : "дней"}
 						</Text>
 					</div>
-				)
+				);
 			},
 		},
 		{
-			title: 'Workflow',
-			dataIndex: 'title',
-			key: 'workflowTitle',
-			width: '15%',
-			render: (value) => <div style={{ fontSize: '13px' }}>{value || <Text type="secondary">No title</Text>}</div>,
+			title: "Workflow",
+			dataIndex: "title",
+			key: "workflowTitle",
+			width: "15%",
+			render: (value) => (
+				<div style={{ fontSize: "13px" }}>{value || <Text type="secondary">No title</Text>}</div>
+			),
 		},
 		{
-			title: 'Created',
-			dataIndex: 'createdAt',
-			key: 'createdAt',
-			width: '12%',
+			title: "Created",
+			dataIndex: "createdAt",
+			key: "createdAt",
+			width: "12%",
 			render: (value) => (
-				<Popover content={dayjs(value).format('LLLL')}>
-					<div style={{ fontSize: '12px' }}>{dayjs(value).format('DD/MM/YY')}</div>
+				<Popover content={dayjs(value).format("LLLL")}>
+					<div style={{ fontSize: "12px" }}>{dayjs(value).format("DD/MM/YY")}</div>
 				</Popover>
 			),
 		},
 		{
-			title: 'Actions',
-			key: 'actions',
-			width: '8%',
+			title: "Actions",
+			key: "actions",
+			width: "8%",
 			render: (_, record) => (
 				<Link href={`/admin/project-workflow/${record.id}`}>
 					<Button type="primary" size="small">
@@ -200,12 +208,12 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 				</Link>
 			),
 		},
-	]
+	];
 
 	const tabItems = [
 		{
-			key: 'templates',
-			label: 'Шаблоны воркфлоу',
+			key: "templates",
+			label: "Шаблоны воркфлоу",
 			children: (
 				<div>
 					<Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
@@ -214,13 +222,17 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 							Добавить шаблон
 						</Button>
 					</Row>
-					<ModernTable loading={isFetchingWorkflows} dataSource={workflowsResponse?.data} columns={workflowColumns} />
+					<ModernTable
+						loading={isFetchingWorkflows}
+						dataSource={workflowsResponse?.data}
+						columns={workflowColumns}
+					/>
 				</div>
 			),
 		},
 		{
-			key: 'projects',
-			label: 'Проектные воркфлоу',
+			key: "projects",
+			label: "Проектные воркфлоу",
 			children: (
 				<div>
 					<Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
@@ -234,7 +246,7 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 				</div>
 			),
 		},
-	]
+	];
 
 	return (
 		<>
@@ -243,13 +255,17 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 				<Tabs defaultActiveKey="templates" items={tabItems} />
 			</div>
 
-			<CreateWorkflowModal open={showModal} onCancel={() => setShowModal(false)} onOk={handleCreateWorkflow} />
+			<CreateWorkflowModal
+				open={showModal}
+				onCancel={() => setShowModal(false)}
+				onOk={handleCreateWorkflow}
+			/>
 		</>
-	)
-}
+	);
+};
 
 WorkflowsAdminPage.getLayout = (page) => (
 	<ProtectedLayout access={[prismaClient.UserRole.Admin]}>{page}</ProtectedLayout>
-)
+);
 
-export default WorkflowsAdminPage
+export default WorkflowsAdminPage;

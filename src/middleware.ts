@@ -4,39 +4,62 @@ import { withAuth } from 'next-auth/middleware'
 import { env } from './helpers/env'
 
 export default withAuth(
-	async function middleware(req) {
-		const session = req.nextauth.token
+    async function middleware(req) {
+        // detect locale prefix from path (e.g. /en/..., /ru/...)
+        const pathname = req.nextUrl.pathname
+        const firstSegment = pathname.split('/')[1]
+        const supportedLocales = ['en', 'ru'] as const
+        const localePrefix = supportedLocales.includes(firstSegment as typeof supportedLocales[number]) ? `/${firstSegment}` : ''
 
-		if (!session) {
-			return NextResponse.redirect(new URL('/', req.url))
-		}
+        // Redirect unlocalized hub routes to default locale to ensure App Router is used
+        if (!localePrefix && pathname.startsWith('/hub')) {
+            const url = req.nextUrl.clone()
+            url.pathname = `/en${pathname}`
+            return NextResponse.redirect(url)
+        }
 
-		const { onboardingDone, roles } = session
+        const session = req.nextauth.token
 
-		if (!onboardingDone && !req.nextUrl.pathname.startsWith('/registration/onboarding')) {
-			return NextResponse.redirect(new URL('/registration/onboarding', req.url))
-		}
+        if (!session) {
+            return NextResponse.redirect(new URL('/', req.url))
+        }
 
-		if (onboardingDone && req.nextUrl.pathname.startsWith('/registration/onboarding')) {
-			return NextResponse.redirect(new URL('/hub', req.url))
-		}
+        const { onboardingDone, roles } = session
 
-		if (
-			req.nextUrl.pathname.startsWith('/live/room/reports') &&
-			Array.isArray(roles) &&
-			!roles.includes(prismaClient.UserRole.Author) &&
-			!roles.includes(prismaClient.UserRole.Member) &&
-			!roles.includes(prismaClient.UserRole.Admin) &&
-			!roles.includes(prismaClient.UserRole.Mentor)
-		) {
-			return NextResponse.redirect(new URL('/hub', req.url))
-		}
+        // rely on Next.js i18n for locale-prefixed redirects
 
-		// redirects
-		if (req.nextUrl.pathname == '/profile' || req.nextUrl.pathname == '/profile/settings') {
-			return NextResponse.redirect(new URL('/profile/settings/general', req.url))
-		}
-	},
+        if (!onboardingDone && !pathname.startsWith(`${localePrefix}/registration/onboarding`) && !pathname.startsWith('/registration/onboarding')) {
+            const url = req.nextUrl.clone()
+            url.pathname = `${localePrefix || '/en'}/registration/onboarding`
+            return NextResponse.redirect(url)
+        }
+
+        if (onboardingDone && (pathname.startsWith(`${localePrefix}/registration/onboarding`) || pathname.startsWith('/registration/onboarding'))) {
+            const url = req.nextUrl.clone()
+            url.pathname = `${localePrefix || '/en'}/hub`
+            return NextResponse.redirect(url)
+        }
+
+        if (
+            pathname.startsWith('/live/room/reports') &&
+            Array.isArray(roles) &&
+            !roles.includes(prismaClient.UserRole.Author) &&
+            !roles.includes(prismaClient.UserRole.Member) &&
+            !roles.includes(prismaClient.UserRole.Admin) &&
+            !roles.includes(prismaClient.UserRole.Mentor)
+        ) {
+            const url = req.nextUrl.clone()
+            url.pathname = `${localePrefix || '/en'}/hub`
+            return NextResponse.redirect(url)
+        }
+
+        // redirects
+        if (pathname === '/profile' || pathname === '/profile/settings' || pathname === `${localePrefix}/profile` || pathname === `${localePrefix}/profile/settings`) {
+            const url = req.nextUrl.clone()
+            url.pathname = `${localePrefix || '/en'}/profile/settings/general`
+            return NextResponse.redirect(url)
+        }
+    },
 	{
 		secret: env('NEXTAUTH_SECRET'),
 		pages: { signIn: '/signin' },
@@ -53,14 +76,20 @@ export default withAuth(
 )
 
 export const config = {
-	matcher: [
-		'/registration/onboarding',
-		'/hub',
-		'/hub/:path*',
-		'/profile',
-		'/profile/:path*',
-		'/my/:path*',
-		'/live/:path*',
-		'/admin/:path*',
-	],
+    matcher: [
+        // non-localized (legacy Pages)
+        '/registration/onboarding',
+        '/hub',
+        '/hub/:path*',
+        '/profile',
+        '/profile/:path*',
+        '/my/:path*',
+        '/live/:path*',
+        '/admin/:path*',
+        // localized (App Router)
+        '/:locale/hub',
+        '/:locale/hub/:path*',
+        '/:locale/profile',
+        '/:locale/profile/:path*',
+    ],
 }

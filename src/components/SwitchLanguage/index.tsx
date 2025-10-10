@@ -1,38 +1,38 @@
-import { TbWorld } from '@react-icons/all-files/tb/TbWorld'
-import { useTolgee } from '@tolgee/react'
-import { Button, Dropdown, MenuProps, Typography } from 'antd'
-import { useRouter } from 'next/router'
-import styles from './style.module.scss'
+import { TbWorld } from "@react-icons/all-files/tb/TbWorld";
+import { useTolgee } from "@tolgee/react";
+import { Button, Dropdown, type MenuProps, Typography } from "antd";
+import { useRouter } from "next/navigation";
+import styles from "./style.module.scss";
 
-const { Text } = Typography
+const { Text } = Typography;
 
 export const SwitchLanguage = ({
-	type = 'default',
+	type = "default",
 	border = false,
-	size = 'middle',
+	size = "middle",
 }: {
-	type?: 'default' | 'primary'
-	border?: boolean
-	size?: 'small' | 'middle' | 'large'
+	type?: "default" | "primary";
+	border?: boolean;
+	size?: "small" | "middle" | "large";
 }) => {
-	const router = useRouter()
-	const tolgee = useTolgee(['language'])
+	const router = useRouter();
+	const tolgee = useTolgee(["language"]);
 
 	const langMenuItems = [
 		{
-			key: 'en',
+			key: "en",
 			label: <Text>English</Text>,
-			value: 'en',
+			value: "en",
 		},
 		{
-			key: 'ru',
+			key: "ru",
 			label: <Text>Русский</Text>,
 		},
-	]
+	];
 
-	const handleSelectLanguage: MenuProps['onClick'] = ({ key }) => {
-		router.replace(router.pathname, undefined, { locale: key })
-	}
+	const handleSelectLanguage: MenuProps["onClick"] = ({ key }) => {
+		router.replace(router.pathname, undefined, { locale: key });
+	};
 
 	return (
 		<Dropdown
@@ -40,11 +40,11 @@ export const SwitchLanguage = ({
 			overlayClassName={`${styles.overlay} ${border ? styles.withBorder : undefined}`}
 			menu={{ items: langMenuItems, onClick: handleSelectLanguage }}
 			placement="bottomLeft"
-			trigger={['click']}
+			trigger={["click"]}
 		>
 			<Button type="text" size={size} icon={<TbWorld />}>
 				{tolgee.getLanguage()}
 			</Button>
 		</Dropdown>
-	)
-}
+	);
+};

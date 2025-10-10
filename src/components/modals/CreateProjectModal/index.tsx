@@ -1,56 +1,58 @@
-import { useEffect } from 'react'
-import { gtmEventTrigger } from '@/helpers/gtm'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { PiRocketDuotone } from '@react-icons/all-files/pi/PiRocketDuotone'
-import { useMutation } from '@tanstack/react-query'
-import { T, useTolgee } from '@tolgee/react'
-import { Checkbox, Flex, Form, Input, message, Modal, Spin } from 'antd'
-import axios from 'axios'
-import { useRouter } from 'next/router'
-import styles from './style.module.scss'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PiRocketDuotone } from "@react-icons/all-files/pi/PiRocketDuotone";
+import { useMutation } from "@tanstack/react-query";
+import { T, useTolgee } from "@tolgee/react";
+import { Checkbox, Flex, Form, Input, Modal, message, Spin } from "antd";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { gtmEventTrigger } from "@/helpers/gtm";
+import styles from "./style.module.scss";
 
 const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
-	const router = useRouter()
-	const [form] = Form.useForm()
-	const { t, getLanguage } = useTolgee()
+	const router = useRouter();
+	const [form] = Form.useForm();
+	const { t, getLanguage } = useTolgee();
 
 	const {
 		mutateAsync: createProject,
 		error: createProjectError,
 		isPending: isCreateProcessing,
-	} = useMutation({ mutationFn: (data) => axios.post<prismaClient.Project>('/api/user/project', data) })
+	} = useMutation({
+		mutationFn: (data) => axios.post<prismaClient.Project>("/api/user/project", data),
+	});
 
 	useEffect(() => {
-		const error = createProjectError as any
+		const error = createProjectError as any;
 		if (error?.response?.data?.message) {
-			message.error(error.response?.data?.message)
+			message.error(error.response?.data?.message);
 		}
-	}, [createProjectError])
+	}, [createProjectError]);
 
 	const handleOk = async () => {
-		let data: any
+		let data: any;
 
 		try {
-			data = await form.validateFields()
+			data = await form.validateFields();
 		} catch (error: any) {
-			if (!error.hasOwnProperty('errorFields')) {
-				message.error(error.message)
-				return
+			if (!Object.hasOwn(error, "errorFields")) {
+				message.error(error.message);
+				return;
 			}
 		}
 
-		if (!data) return
+		if (!data) return;
 
-		const project = await createProject(data)
-		gtmEventTrigger('project_create', { projectId: project.data.id, name: project.data.name })
+		const project = await createProject(data);
+		gtmEventTrigger("project_create", { projectId: project.data.id, name: project.data.name });
 
-		router.push('/my/projects/' + project.data.slug)
-	}
+		router.push("/my/projects/" + project.data.slug);
+	};
 
 	const handleCancel = () => {
-		form.resetFields()
-		onCancel()
-	}
+		form.resetFields();
+		onCancel();
+	};
 
 	return (
 		<Modal
@@ -58,14 +60,14 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 			title={
 				<Flex align="center" gap={8}>
 					<PiRocketDuotone size={32} />
-					{t('modal.create-project.title', 'Create new game project')}
+					{t("modal.create-project.title", "Create new game project")}
 				</Flex>
 			}
 			width={640}
 			destroyOnHidden
 			maskClosable={false}
-			okText={t('modal.create-project.ok-text', 'Create')}
-			cancelText={t('modal.create-project.cancel-text', 'Cancel')}
+			okText={t("modal.create-project.ok-text", "Create")}
+			cancelText={t("modal.create-project.cancel-text", "Cancel")}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -84,7 +86,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 					initialValues={{ agree: false }}
 				>
 					<Form.Item
-						label={t('modal.create-project.field.name.label', 'Title')}
+						label={t("modal.create-project.field.name.label", "Title")}
 						name="name"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
@@ -94,12 +96,15 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 
 					<Form.Item
 						name="description"
-						label={t('modal.create-project.field.description.label', 'Short Description')}
+						label={t("modal.create-project.field.description.label", "Short Description")}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input.TextArea
 							rows={6}
-							placeholder={t('modal.create-project.field.description.placeholder', 'This project about...')}
+							placeholder={t(
+								"modal.create-project.field.description.placeholder",
+								"This project about...",
+							)}
 						/>
 					</Form.Item>
 
@@ -118,7 +123,9 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 									value
 										? Promise.resolve()
 										: Promise.reject(
-												new Error(t('modal.create-project.field.agree.error', 'Should accept requirements'))
+												new Error(
+													t("modal.create-project.field.agree.error", "Should accept requirements"),
+												),
 											),
 							},
 						]}
@@ -132,9 +139,9 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 										a: (
 											<a
 												href={
-													getLanguage() == 'ru'
-														? 'https://gdhub.notion.site/gdhub-io-157dcc9e9c9d805f8bace76c04d0a36b'
-														: 'https://gdhub.notion.site/Requirements-for-game-projects-published-on-the-gdhub-io-platform-157dcc9e9c9d80c3ab0ae8d12035dc30'
+													getLanguage() == "ru"
+														? "https://gdhub.notion.site/gdhub-io-157dcc9e9c9d805f8bace76c04d0a36b"
+														: "https://gdhub.notion.site/Requirements-for-game-projects-published-on-the-gdhub-io-platform-157dcc9e9c9d80c3ab0ae8d12035dc30"
 												}
 												target="_blank"
 												rel="noreferrer"
@@ -149,7 +156,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 				</Form>
 			</Spin>
 		</Modal>
-	)
-}
+	);
+};
 
-export default CreateProjectModal
+export default CreateProjectModal;

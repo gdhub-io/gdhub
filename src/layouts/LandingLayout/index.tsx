@@ -1,9 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { MainFooter } from '@/components/MainFooter'
-import { MainHeader } from '@/components/MainHeader'
-import { landingThemeConfig } from '@/config/theme'
-import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
-import { useTranslate } from '@tolgee/react'
+import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
+import { useTranslate } from "@tolgee/react";
 import {
 	Avatar,
 	Button,
@@ -13,171 +9,178 @@ import {
 	Grid,
 	Layout,
 	Menu,
-	MenuProps,
+	type MenuProps,
 	Skeleton,
 	Space,
 	Typography,
-} from 'antd'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
-import { NextSeo, NextSeoProps } from 'next-seo'
-import styles from './style.module.scss'
+} from "antd";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { NextSeo, type NextSeoProps } from "next-seo";
+import { useEffect, useMemo, useState } from "react";
+import { MainFooter } from "@/components/MainFooter";
+import { MainHeader } from "@/components/MainHeader";
+import { landingThemeConfig } from "@/config/theme";
+import styles from "./style.module.scss";
 
-const { Header, Footer, Content } = Layout
-const { Text } = Typography
+const { Header, Footer, Content } = Layout;
+const { Text } = Typography;
 
 const scrollIntoViewWithOffset = (selector: string, offset: number) => {
-	const hookEl = document?.querySelector(selector)
+	const hookEl = document?.querySelector(selector);
 
-	if (!hookEl) return
+	if (!hookEl) return;
 
 	window.scrollTo({
-		behavior: 'smooth',
+		behavior: "smooth",
 		top: hookEl.getBoundingClientRect().top - document.body.getBoundingClientRect().top - offset,
-	})
-}
+	});
+};
 
 export const LandingLayout = ({ children }: any) => {
-	const { t } = useTranslate()
-	const router = useRouter()
-	const [openMobileMenu, setOpenMobileMenu] = useState(false)
-	const [scrollY, setScrollY] = useState(0)
-	const screens = Grid.useBreakpoint()
-	const { data: session, status: authStatus }: any = useSession()
+	const { t } = useTranslate();
+	const router = useRouter();
+	const [openMobileMenu, setOpenMobileMenu] = useState(false);
+	const [scrollY, setScrollY] = useState(0);
+	const screens = Grid.useBreakpoint();
+	const { data: session, status: authStatus }: any = useSession();
 
-	console.log('authStatus', authStatus)
+	console.log("authStatus", authStatus);
 
 	const seoSettings: NextSeoProps = {
-		title: t('landing.seo.title', 'Game Developers Hub'),
-		description: t('landing.seo.description', 'Game Developers Hub is a platform for game developers and specialists.'),
+		title: t("landing.seo.title", "Game Developers Hub"),
+		description: t(
+			"landing.seo.description",
+			"Game Developers Hub is a platform for game developers and specialists.",
+		),
 		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		openGraph: {
-			title: t('landing.seo.title', 'Game Developers Hub'),
+			title: t("landing.seo.title", "Game Developers Hub"),
 			description: t(
-				'landing.seo.description',
-				'Game Developers Hub is a platform for game developers and specialists.'
+				"landing.seo.description",
+				"Game Developers Hub is a platform for game developers and specialists.",
 			),
-			type: 'website',
+			type: "website",
 			url: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		},
-	}
+	};
 
 	useEffect(() => {
 		if (document.location.hash) {
 			setTimeout(() => {
-				scrollIntoViewWithOffset(document.location.hash, 100)
-			}, 300)
+				scrollIntoViewWithOffset(document.location.hash, 100);
+			}, 300);
 		}
-	}, [router])
+	}, [router]);
 
 	useEffect(() => {
-		if (!screens.xl) setOpenMobileMenu(false)
-	}, [session, screens])
+		if (!screens.xl) setOpenMobileMenu(false);
+	}, [session, screens]);
 
 	useEffect(() => {
 		const unsetOverflow = () => {
-			if (typeof window !== 'undefined') {
-				const body = document?.querySelector('body')
-				body?.style.setProperty('overflow', 'unset')
+			if (typeof window !== "undefined") {
+				const body = document?.querySelector("body");
+				body?.style.setProperty("overflow", "unset");
 			}
-		}
+		};
 
 		const handleScroll = () => {
-			setScrollY(window.scrollY)
-		}
+			setScrollY(window.scrollY);
+		};
 
-		handleScroll()
-		unsetOverflow()
+		handleScroll();
+		unsetOverflow();
 
-		window.addEventListener('scroll', handleScroll)
+		window.addEventListener("scroll", handleScroll);
 		return () => {
-			unsetOverflow()
-			window.removeEventListener('scroll', handleScroll)
-		}
-	}, [])
+			unsetOverflow();
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
 
 	// hide main scroll on open menu
 	useEffect(() => {
-		const body = document?.querySelector('body')
+		const body = document?.querySelector("body");
 
 		if (openMobileMenu) {
-			body?.style.setProperty('overflow', 'hidden')
+			body?.style.setProperty("overflow", "hidden");
 		}
-	}, [openMobileMenu])
+	}, [openMobileMenu]);
 
 	// show main scroll on open menu
 	const handleOpenMobileMenu = (open: boolean) => {
-		const body = document?.querySelector('body')
+		const body = document?.querySelector("body");
 
 		if (!open) {
-			body?.style.setProperty('overflow', 'unset')
+			body?.style.setProperty("overflow", "unset");
 		}
-	}
+	};
 
-	const headerMenu: MenuProps['items'] = useMemo(
+	const headerMenu: MenuProps["items"] = useMemo(
 		() => [
 			{
 				label: (
-					<Link href="#about" title={t('About us')}>
-						{t('landing.menu.aboutUs', 'About us')}
+					<Link href="#about" title={t("About us")}>
+						{t("landing.menu.aboutUs", "About us")}
 					</Link>
 				),
-				key: '#about',
+				key: "#about",
 			},
 			{
 				label: (
-					<Link href="#for-authors" title={t('For Authors')}>
-						{t('landing.menu.forAuthors', 'For Authors')}
+					<Link href="#for-authors" title={t("For Authors")}>
+						{t("landing.menu.forAuthors", "For Authors")}
 					</Link>
 				),
-				key: '#for-authors',
+				key: "#for-authors",
 			},
 			{
 				label: (
-					<Link href="#for-specialists" title={t('For Specialists')}>
-						{t('landing.menu.forSpecialists', 'For Specialists')}
+					<Link href="#for-specialists" title={t("For Specialists")}>
+						{t("landing.menu.forSpecialists", "For Specialists")}
 					</Link>
 				),
-				key: '#for-specialists',
+				key: "#for-specialists",
 			},
 			{
 				label: (
-					<Link href="#contacts" title={t('Contacts')}>
-						{t('landing.menu.contacts', 'Contacts')}
+					<Link href="#contacts" title={t("Contacts")}>
+						{t("landing.menu.contacts", "Contacts")}
 					</Link>
 				),
-				key: '#contacts',
+				key: "#contacts",
 			},
 		],
-		[screens, session]
-	)
+		[screens, session],
+	);
 
 	const mainButtonInDrawer = useMemo(() => {
-		if (authStatus === 'loading') {
-			return <Skeleton.Button active size="large" />
+		if (authStatus === "loading") {
+			return <Skeleton.Button active size="large" />;
 		}
 
-		if (authStatus === 'unauthenticated') {
+		if (authStatus === "unauthenticated") {
 			return (
 				<Link href="/signin">
-					<Button type="primary" style={{ width: '100%' }}>
-						{t('landing.menu.logIn', 'Log in')}
+					<Button type="primary" style={{ width: "100%" }}>
+						{t("landing.menu.logIn", "Log in")}
 					</Button>
 				</Link>
-			)
+			);
 		}
 
-		if (authStatus === 'authenticated') {
+		if (authStatus === "authenticated") {
 			return (
 				<Link href="/hub">
-					<Button type="primary" style={{ width: '100%' }}>
-						{t('landing.menu.goToApp', 'Go to app')}
+					<Button type="primary" style={{ width: "100%" }}>
+						{t("landing.menu.goToApp", "Go to app")}
 					</Button>
 				</Link>
-			)
+			);
 		}
-	}, [authStatus])
+	}, [authStatus]);
 
 	return (
 		<>
@@ -196,7 +199,7 @@ export const LandingLayout = ({ children }: any) => {
 				{!screens.xl && (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={'100%'}
+						height={"100%"}
 						afterOpenChange={handleOpenMobileMenu}
 						closeIcon={<AiOutlineClose size={24} />}
 						title={
@@ -214,7 +217,7 @@ export const LandingLayout = ({ children }: any) => {
 						onClose={() => setOpenMobileMenu(false)}
 						open={openMobileMenu}
 					>
-						<Space direction="vertical" size={32} style={{ width: '100%' }}>
+						<Space direction="vertical" size={32} style={{ width: "100%" }}>
 							<Menu items={headerMenu} theme="dark" onSelect={() => setOpenMobileMenu(false)} />
 
 							{mainButtonInDrawer}
@@ -223,5 +226,5 @@ export const LandingLayout = ({ children }: any) => {
 				)}
 			</ConfigProvider>
 		</>
-	)
-}
+	);
+};

@@ -1,18 +1,9 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
-import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
-import { Error404 } from '@/components/Error404'
-import { NotificationsBell } from '@/components/NotificationsBell'
-import { appThemeConfig } from '@/config/theme'
-import { ContextProject, ProjectContext } from '@/contexts/ProjectContext'
-import { hasRole } from '@/helpers/user'
-import { useTelegram } from '@/helpers/useTelegram'
-import { useCurrentProject } from '@/hooks/project'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { AiOutlineClose } from '@react-icons/all-files/ai/AiOutlineClose'
-import { AiOutlineMenu } from '@react-icons/all-files/ai/AiOutlineMenu'
-import { GoArrowUp } from '@react-icons/all-files/go/GoArrowUp'
-import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
-import { useTolgee, useTranslate } from '@tolgee/react'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
+import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
+import { GoArrowUp } from "@react-icons/all-files/go/GoArrowUp";
+import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { useTolgee, useTranslate } from "@tolgee/react";
 import {
 	Avatar,
 	Breadcrumb,
@@ -25,25 +16,34 @@ import {
 	Grid,
 	Layout,
 	Menu,
-	MenuProps,
+	type MenuProps,
 	Row,
 	Space,
 	Typography,
-} from 'antd'
-import { ItemType } from 'antd/es/menu/interface'
-import enLocale from 'antd/locale/en_US'
-import ruLocale from 'antd/locale/ru_RU'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { signOut, useSession } from 'next-auth/react'
-import { NextSeo, NextSeoProps } from 'next-seo'
-import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
-import styles from './style.module.scss'
-import { ProtectedLayout } from '../ProtectedLayout'
+} from "antd";
+import type { ItemType } from "antd/es/menu/interface";
+import enLocale from "antd/locale/en_US";
+import ruLocale from "antd/locale/ru_RU";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import { NextSeo, type NextSeoProps } from "next-seo";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
+import ReactNiceAvatar, { genConfig } from "react-nice-avatar";
+import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
+import { Error404 } from "@/components/Error404";
+import { NotificationsBell } from "@/components/NotificationsBell";
+import { appThemeConfig } from "@/config/theme";
+import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
+import { hasRole } from "@/helpers/user";
+import { useTelegram } from "@/helpers/useTelegram";
+import { useCurrentProject } from "@/hooks/project";
+import { ProtectedLayout } from "../ProtectedLayout";
+import styles from "./style.module.scss";
 
-const { Header, Content } = Layout
-const { Title, Text } = Typography
+const { Header, Content } = Layout;
+const { Title, Text } = Typography;
 
 export const ProtectedProjectLayout = ({
 	title,
@@ -51,60 +51,69 @@ export const ProtectedProjectLayout = ({
 	seo,
 	children,
 }: {
-	title?: string
-	description?: string
-	seo?: NextSeoProps
-	children: ReactNode
+	title?: string;
+	description?: string;
+	seo?: NextSeoProps;
+	children: ReactNode;
 }) => {
-	const { t } = useTranslate()
-	const router = useRouter()
-	const projectSlug = router.query.slug as string
-	const [contextProject, setContextProject] = useState<ContextProject>()
-	const [openMobileMenu, setOpenMobileMenu] = useState(false)
-	const [isOpenedInTelegram] = useTelegram()
-	const screens = Grid.useBreakpoint()
-	const { data: session }: any = useSession()
-	const { changeLanguage, getLanguage } = useTolgee()
+	const { t } = useTranslate();
+	const router = useRouter();
+	const projectSlug = router.query.slug as string;
+	const [contextProject, setContextProject] = useState<ContextProject>();
+	const [openMobileMenu, setOpenMobileMenu] = useState(false);
+	const [isOpenedInTelegram] = useTelegram();
+	const screens = Grid.useBreakpoint();
+	const { data: session }: any = useSession();
+	const { changeLanguage, getLanguage } = useTolgee();
 
-	const { project, isFetched } = useCurrentProject()
-	const isProjectAuthor = useMemo(() => project?.authorId === session?.user.id, [project, session?.user])
+	const { project, isFetched } = useCurrentProject();
+	const isProjectAuthor = useMemo(
+		() => project?.authorId === session?.user.id,
+		[project, session?.user],
+	);
 
 	useEffect(() => {
-		if (!project) return
+		if (!project) return;
 
-		setContextProject({ id: project.id, name: project.name, teamId: project.teamId, isProjectAuthor })
-	}, [project, isProjectAuthor])
+		setContextProject({
+			id: project.id,
+			name: project.name,
+			teamId: project.teamId,
+			isProjectAuthor,
+		});
+	}, [project, isProjectAuthor]);
 
 	const seoSettings: NextSeoProps = {
-		title: title || 'Project',
+		title: title || "Project",
 		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		nofollow: true,
 		noindex: true,
 		description,
 		...seo,
-	}
+	};
 
 	useEffect(() => {
-		if (session?.user.lang) changeLanguage(session.user.lang).then((d) => console.log('language is changed'))
-	}, [session?.user.lang])
+		if (session?.user.lang)
+			changeLanguage(session.user.lang).then((d) => console.log("language is changed"));
+	}, [session?.user.lang]);
 
 	useEffect(() => {
-		if (!screens.lg) setOpenMobileMenu(false)
-	}, [session, screens])
+		if (!screens.lg) setOpenMobileMenu(false);
+	}, [session, screens]);
 
 	const avatarConfig = useMemo(() => {
-		if (!session?.user.email) return
+		if (!session?.user.email) return;
 
-		const config = genConfig(session.user.email)
-		config.hairStyle = 'normal'
+		const config = genConfig(session.user.email);
+		config.hairStyle = "normal";
 
-		return config
-	}, [session?.user.email])
+		return config;
+	}, [session?.user.email]);
 
-	const inlineMenuItems: MenuProps['items'] = useMemo(() => {
-		let menu: MenuProps['items'] = [
+	const inlineMenuItems: MenuProps["items"] = useMemo(() => {
+		const menu: MenuProps["items"] = [
 			{
-				style: { display: screens.lg ? 'none' : 'block' },
+				style: { display: screens.lg ? "none" : "block" },
 				label: (
 					<Link href="/hub" title="Dashboard">
 						{screens.lg ? (
@@ -112,45 +121,49 @@ export const ProtectedProjectLayout = ({
 								Dashboard
 							</Button>
 						) : (
-							t('Dashboard')
+							t("Dashboard")
 						)}
 					</Link>
 				),
-				key: '/hub',
+				key: "/hub",
 			},
 
 			{
 				label: (
 					<Link href="https://docs.gdhub.io" target="_blank">
-						{screens.lg ? <Button size="small">Documentation</Button> : <strong>Documentation</strong>}
+						{screens.lg ? (
+							<Button size="small">Documentation</Button>
+						) : (
+							<strong>Documentation</strong>
+						)}
 					</Link>
 				),
-				key: '/hub/docs',
+				key: "/hub/docs",
 			},
-		]
+		];
 
-		return menu
-	}, [screens, session])
+		return menu;
+	}, [screens, session]);
 
-	let dropdownMenuItems: MenuProps['items'] = useMemo(() => {
-		let menu: MenuProps['items'] = []
+	const dropdownMenuItems: MenuProps["items"] = useMemo(() => {
+		let menu: MenuProps["items"] = [];
 
 		if (hasRole(prismaClient.UserRole.Admin, { data: session })) {
 			menu.push({
 				label: <Link href="/admin/seasons">Админка</Link>,
-				key: '/admin/seasons',
-			})
+				key: "/admin/seasons",
+			});
 		}
 
 		menu = [
 			...menu,
 			{
 				label: <Link href="/profile">User Settings</Link>,
-				key: 'profile',
+				key: "profile",
 			},
-			{ type: 'divider' },
+			{ type: "divider" },
 			{
-				key: 'tg-community',
+				key: "tg-community",
 				label: (
 					<Link href="https://t.me/gdhub_io" target="_blank" title="Telegram community chat">
 						<Space align="center" size={16}>
@@ -161,7 +174,7 @@ export const ProtectedProjectLayout = ({
 				),
 			},
 			{
-				key: 'website',
+				key: "website",
 				label: (
 					<Link href="https://gdhub.io" target="_blank" title="Website">
 						<Space align="center" size={16}>
@@ -171,54 +184,72 @@ export const ProtectedProjectLayout = ({
 					</Link>
 				),
 			},
-			{ type: 'divider' },
+			{ type: "divider" },
 			{
-				style: { display: isOpenedInTelegram ? 'none' : 'block' },
-				label: 'Logout',
-				key: 'logout',
+				style: { display: isOpenedInTelegram ? "none" : "block" },
+				label: "Logout",
+				key: "logout",
 				danger: true,
-				onClick: () => signOut({ redirect: true, callbackUrl: '/' }),
+				onClick: () => signOut({ redirect: true, callbackUrl: "/" }),
 			},
-		]
+		];
 
-		return screens.lg ? menu : [...inlineMenuItems, { type: 'divider' }, ...menu]
-	}, [isOpenedInTelegram, screens, session])
+		return screens.lg ? menu : [...inlineMenuItems, { type: "divider" }, ...menu];
+	}, [isOpenedInTelegram, screens, session]);
 
 	const menuItems: (ItemType & { disabled: boolean })[] = [
 		{
 			key: `/my/projects/${projectSlug}`,
 			disabled: false,
-			label: <Link href={`/my/projects/${projectSlug}`}>{t('app.user-project.menu.workflow', 'Workflow')}</Link>,
+			label: (
+				<Link href={`/my/projects/${projectSlug}`}>
+					{t("app.user-project.menu.workflow", "Workflow")}
+				</Link>
+			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/devlog`,
 			disabled: false,
-			label: <Link href={`/my/projects/${projectSlug}/devlog`}>{t('app.user-project.menu.overview', 'Devlog')}</Link>,
+			label: (
+				<Link href={`/my/projects/${projectSlug}/devlog`}>
+					{t("app.user-project.menu.overview", "Devlog")}
+				</Link>
+			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/vacancies`,
 			disabled: !isProjectAuthor,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/vacancies`}>{t('app.user-project.menu.vacancies', 'Vacancies')}</Link>
+				<Link href={`/my/projects/${projectSlug}/vacancies`}>
+					{t("app.user-project.menu.vacancies", "Vacancies")}
+				</Link>
 			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/team`,
 			disabled: false,
-			label: <Link href={`/my/projects/${projectSlug}/team`}>{t('app.user-project.menu.team', 'Team')}</Link>,
+			label: (
+				<Link href={`/my/projects/${projectSlug}/team`}>
+					{t("app.user-project.menu.team", "Team")}
+				</Link>
+			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/documents`,
 			disabled: false,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/documents`}>{t('app.user-project.menu.documents', 'Documents')}</Link>
+				<Link href={`/my/projects/${projectSlug}/documents`}>
+					{t("app.user-project.menu.documents", "Documents")}
+				</Link>
 			),
 		},
 		{
 			key: `/my/projects/${projectSlug}/settings/general`,
 			disabled: !isProjectAuthor,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/settings/general`}>{t('app.user.menu.settings', 'Settings')}</Link>
+				<Link href={`/my/projects/${projectSlug}/settings/general`}>
+					{t("app.user.menu.settings", "Settings")}
+				</Link>
 			),
 		},
 		{
@@ -227,25 +258,30 @@ export const ProtectedProjectLayout = ({
 			className: styles.publicPageMenuItem,
 			label: (
 				<Link href={`/project/${projectSlug}`} target="_blank" rel="noopener noreferrer">
-					{t('Public page', 'Public page')} <GoLinkExternal size={14} />
+					{t("Public page", "Public page")} <GoLinkExternal size={14} />
 				</Link>
 			),
 		},
-	]
+	];
 
 	if (isFetched && !project) {
 		return (
 			<ProtectedLayout>
 				<NextSeo title="Error 404" nofollow noindex />
-				<Error404 callbackUrl={'/hub'} textBackButton="Back to Hub" theme="light" containerStyle={{ height: '50vh' }} />
+				<Error404
+					callbackUrl={"/hub"}
+					textBackButton="Back to Hub"
+					theme="light"
+					containerStyle={{ height: "50vh" }}
+				/>
 			</ProtectedLayout>
-		)
+		);
 	}
 
 	return (
 		<ProjectContext.Provider value={{ contextProject, isLoaded: isFetched, setContextProject }}>
 			<NextSeo {...seoSettings} />
-			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == 'en' ? enLocale : ruLocale}>
+			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == "en" ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
 						--background-color: #fafafa;
@@ -253,23 +289,25 @@ export const ProtectedProjectLayout = ({
 				`}</style>
 				<Layout className={styles.container}>
 					<Header className={styles.header}>
-						<Row wrap={false} align="middle" style={{ height: '64px' }}>
+						<Row wrap={false} align="middle" style={{ height: "64px" }}>
 							<Col flex="auto">
 								<Breadcrumb
-									separator={<span style={{ color: '#00000033' }}>/</span>}
+									separator={<span style={{ color: "#00000033" }}>/</span>}
 									items={[
 										{
 											title: (
 												<Link href="/hub" className="logo">
-													<GdhubLogo style={{ width: '100px' }} />
+													<GdhubLogo style={{ width: "100px" }} />
 												</Link>
 											),
 										},
 										{
-											title: screens.md ? <Link href="/hub">{t('hub.menu.home', 'Hub')}</Link> : null,
+											title: screens.md ? (
+												<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
+											) : null,
 										},
 										{
-											title: <Text ellipsis={{ tooltip: true }}>{project?.name || 'Project'}</Text>,
+											title: <Text ellipsis={{ tooltip: true }}>{project?.name || "Project"}</Text>,
 										},
 									]}
 								/>
@@ -280,27 +318,35 @@ export const ProtectedProjectLayout = ({
 										<>
 											<Link href="https://docs.gdhub.io" target="_blank">
 												<Button type="text" style={{ fontSize: 14 }}>
-													{t('hub.menu.documentation', 'Documentation')}
+													{t("hub.menu.documentation", "Documentation")}
 												</Button>
 											</Link>
 											<NotificationsBell />
-											<Dropdown menu={{ items: dropdownMenuItems }} trigger={['click']}>
+											<Dropdown menu={{ items: dropdownMenuItems }} trigger={["click"]}>
 												<Button
 													type="text"
 													shape="circle"
-													style={{ display: 'block', padding: 0, lineHeight: 0 }}
+													style={{ display: "block", padding: 0, lineHeight: 0 }}
 													icon={
 														session?.user.image ? (
 															<Avatar
 																size={32}
 																src={
 																	session?.user?.image ? (
-																		<Image src={session?.user.image} width={32} height={32} alt="avatar" />
+																		<Image
+																			src={session?.user.image}
+																			width={32}
+																			height={32}
+																			alt="avatar"
+																		/>
 																	) : null
 																}
 															/>
 														) : (
-															<ReactNiceAvatar style={{ width: '32px', height: '32px' }} {...avatarConfig} />
+															<ReactNiceAvatar
+																style={{ width: "32px", height: "32px" }}
+																{...avatarConfig}
+															/>
 														)
 													}
 												></Button>
@@ -309,7 +355,12 @@ export const ProtectedProjectLayout = ({
 									) : (
 										<>
 											<NotificationsBell />
-											<Button type="text" shape="circle" style={{ top: 2 }} onClick={() => setOpenMobileMenu(true)}>
+											<Button
+												type="text"
+												shape="circle"
+												style={{ top: 2 }}
+												onClick={() => setOpenMobileMenu(true)}
+											>
 												<AiOutlineMenu />
 											</Button>
 										</>
@@ -338,7 +389,7 @@ export const ProtectedProjectLayout = ({
 				{!screens.lg && (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={'100%'}
+						height={"100%"}
 						title={
 							<Space>
 								<Avatar
@@ -356,7 +407,12 @@ export const ProtectedProjectLayout = ({
 						onClose={() => setOpenMobileMenu(false)}
 						open={openMobileMenu}
 						extra={
-							<Button shape="circle" style={{ top: 2 }} onClick={() => setOpenMobileMenu(false)} type="text">
+							<Button
+								shape="circle"
+								style={{ top: 2 }}
+								onClick={() => setOpenMobileMenu(false)}
+								type="text"
+							>
 								<AiOutlineClose />
 							</Button>
 						}
@@ -364,8 +420,12 @@ export const ProtectedProjectLayout = ({
 						<Menu items={dropdownMenuItems} onSelect={() => setOpenMobileMenu(false)} />
 					</Drawer>
 				)}
-				<FloatButton.BackTop icon={<GoArrowUp />} rootClassName={styles.backTop} description="Scroll to up" />
+				<FloatButton.BackTop
+					icon={<GoArrowUp />}
+					rootClassName={styles.backTop}
+					description="Scroll to up"
+				/>
 			</ConfigProvider>
 		</ProjectContext.Provider>
-	)
-}
+	);
+};
