@@ -56,9 +56,9 @@ export const LANGGRAPH_PAGES: ReadonlyArray<PageInfo> = [
 		description: 'Members directory with profiles.',
 	},
 	{
-		path: '/hub/mentors',
-		title: 'Hub Mentors',
-		description: 'Mentors directory.',
+		path: '/hub/experts',
+		title: 'Experts',
+		description: 'Experts directory.',
 	},
 	{
 		path: '/devlog/{projectReportId}',

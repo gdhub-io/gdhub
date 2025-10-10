@@ -83,12 +83,12 @@ export async function ensureMatrixUser(localpart: string, displayname?: string, 
 	return { user_id: userId }
 }
 
-export async function getMatrixUserToken(username: string) {
+export async function getMatrixUserToken(platformUserId: string) {
 	const BASE_URL = env('MATRIX_CHAT_BASE_URL')
 	const ADMIN_TOKEN = env('MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN')
 	const DOMAIN = env('MATRIX_CHAT_HOMESERVER_DOMAIN')
 
-	const userId = `@${username}:${DOMAIN}`
+	const userId = `@${platformUserId}:${DOMAIN}`
 
 	const resp = await fetch(`${BASE_URL}/_synapse/admin/v1/users/${encodeURIComponent(userId)}/login`, {
 		method: 'POST',

@@ -3,6 +3,7 @@ import GdhubLogo from '@/assets/images/gdhub-beta-black-logo.svg'
 import IconGDHubTriangle from '@/assets/images/gdhub-triangle.svg'
 import { AIAgentDrawer } from '@/components/AIAgentDrawer'
 import { ChatModal } from '@/components/Chat/ChatModal'
+import { useChat } from '@/components/Chat/useChat'
 import { NotificationsBell } from '@/components/NotificationsBell'
 import { appThemeConfig } from '@/config/theme'
 import { hasRole } from '@/helpers/user'
@@ -74,8 +75,8 @@ export const ProtectedLayout = ({
 	const screens = Grid.useBreakpoint()
 	const { data: session } = useSession()
 	const [openAgentDrawer, setOpenAgentDrawer] = useState(false)
-	const [openChatModal, setOpenChatModal] = useState(false)
 	const [initialChatRoomId, setInitialChatRoomId] = useState<string | null>(null)
+	const { setOpenChatModal, openChatModal } = useChat()
 
 	useEffect(() => {
 		const handler = (e: any) => {
@@ -263,8 +264,8 @@ export const ProtectedLayout = ({
 		// 	label: <Link href="/hub/education">{t('hub.menu.education', 'Education')}</Link>,
 		// },
 		{
-			key: '/hub/mentors',
-			label: <Link href="/hub/mentors">{t('hub.menu.mentors', 'Mentors')}</Link>,
+			key: '/hub/experts',
+			label: <Link href="/hub/experts">{t('hub.menu.experts', 'Experts')}</Link>,
 		},
 		{
 			key: '/profile/settings/general',

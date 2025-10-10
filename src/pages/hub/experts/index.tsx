@@ -1,16 +1,18 @@
 import { useState } from 'react'
+import ExpertRequestModal from '@/components/modals/ExpertRequestModal'
 import { useWorkDirections } from '@/hooks/library'
 import { ProtectedLayout } from '@/layouts/ProtectedLayout'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslate } from '@tolgee/react'
-import { Avatar, Card, Col, Form, Row, Select, Spin, Tag, Typography, message } from 'antd'
+import { Avatar, Button, Card, Col, Form, Row, Select, Spin, Tag, Typography } from 'antd'
 import axios from 'axios'
+import Link from 'next/link'
 import styles from './styles.module.scss'
 
 const { Text, Title } = Typography
 
-type Mentor = {
+type Expert = {
 	id: string
 	name: string
 	image: string | null
@@ -30,14 +32,15 @@ type Mentor = {
 	}>
 }
 
-const MentorsPage = () => {
+const ExpertsPage = () => {
 	const { t } = useTranslate()
 	const [selectedWorkDirection, setSelectedWorkDirection] = useState<string | undefined>(undefined)
+	const [expertRequestModalOpen, setExpertRequestModalOpen] = useState<string | undefined>(undefined)
 	const { options: workDirectionOptions } = useWorkDirections()
 
-	const { data: mentors, isLoading } = useQuery<{ data: Mentor[] }>({
-		queryKey: ['mentors', selectedWorkDirection],
-		queryFn: () => axios.get('/api/mentors', { params: { workDirectionId: selectedWorkDirection } }),
+	const { data: experts, isLoading } = useQuery<{ data: Expert[] }>({
+		queryKey: ['experts', selectedWorkDirection],
+		queryFn: () => axios.get('/api/experts', { params: { workDirectionId: selectedWorkDirection } }),
 		staleTime: Infinity,
 	})
 
@@ -49,38 +52,35 @@ const MentorsPage = () => {
 		return `https://t.me/gdhub_experts_bot/app?startapp=expert_${specialityId}`
 	}
 
-	const handleMentorClick = async (mentor: Mentor) => {
-		try {
-			const res = await axios.post('/api/chat/rooms/direct', { userId: mentor.id })
-			const roomId = res.data?.room?.id
-			if (roomId) {
-				window.dispatchEvent(new CustomEvent('open-chat', { detail: { roomId } }))
-			}
-		} catch (e) {
-			message.error('Failed to create chat room')
-		}
+	const handleExpertClick = async (expert: Expert) => {
+		setExpertRequestModalOpen(expert.id)
 	}
 
 	return (
 		<ProtectedLayout
-			title={t('mentors.page.title', 'Mentors')}
+			title={t('experts.page.title', 'Experts')}
 			subTitle={t(
-				'mentors.page.description',
-				'On this page, you can find mentors who are ready to help with your questions. Click on a mentor card to contact them via Telegram'
+				'experts.page.description',
+				'On this page, you can find experts who are ready to help with your questions. Click on a expert card to contact them via Telegram'
 			)}
 			seo={{
-				title: t('mentors.page.title', 'Mentors'),
+				title: t('experts.page.title', 'Experts'),
 				description: t(
-					'mentors.page.description',
-					'On this page, you can find mentors who are ready to help with your questions.'
+					'experts.page.description',
+					'On this page, you can find experts who are ready to help with your questions.'
 				),
 			}}
+			extra={
+				<Link href="/hub/experts/my-requests">
+					<Button>{t('page.experts.myExperts', 'My requests')}</Button>
+				</Link>
+			}
 		>
 			<div className={styles.filterContainer}>
 				<Form variant="filled">
 					<Select
 						allowClear
-						placeholder={t('mentors.page.filter', 'Filter by specialization')}
+						placeholder={t('experts.page.filter', 'Filter by direction')}
 						options={workDirectionOptions}
 						onChange={handleFilterChange}
 						className={styles.filterSelect}
@@ -90,31 +90,31 @@ const MentorsPage = () => {
 
 			<Spin spinning={isLoading}>
 				<Row gutter={[24, 24]} className={styles.mentorsGrid}>
-					{mentors?.data.map((mentor) => (
-						<Col xs={24} sm={12} md={8} lg={6} key={mentor.id}>
-							<Card className={styles.mentorCard} hoverable onClick={() => handleMentorClick(mentor)}>
+					{experts?.data.map((expert) => (
+						<Col xs={24} sm={12} md={8} lg={6} key={expert.id}>
+							<Card className={styles.mentorCard} hoverable onClick={() => handleExpertClick(expert)}>
 								<div className={styles.mentorCardHeader}>
 									<div className={styles.mentorCardAvatar}>
-										{mentor.image ? (
-											<Avatar size="large" src={mentor.image} shape="square" />
+										{expert.image ? (
+											<Avatar size="large" src={expert.image} shape="square" />
 										) : (
 											<Avatar size="large" shape="square" style={{ background: '#1890ff' }}>
-												{mentor.name?.charAt(0).toUpperCase()}
+												{expert.name?.charAt(0).toUpperCase()}
 											</Avatar>
 										)}
 									</div>
 									<div className={styles.mentorCardInfo}>
 										<Title level={3} className={styles.mentorCardName}>
-											{mentor.name}
+											{expert.name}
 										</Title>
-										{mentor.specialities.length > 0 && (
+										{expert.specialities.length > 0 && (
 											<>
 												<Text type="secondary" className={styles.mentorSpeciality}>
-													{mentor.specialities[0].name}
+													{expert.specialities[0].name}
 												</Text>
 												<div className={styles.mentorTags}>
-													<Tag color="blue">{mentor.specialities[0].direction.name}</Tag>
-													<Tag color="green">{mentor.specialities[0].level}</Tag>
+													<Tag color="blue">{expert.specialities[0].direction.name}</Tag>
+													<Tag color="green">{expert.specialities[0].level}</Tag>
 												</div>
 											</>
 										)}
@@ -123,10 +123,10 @@ const MentorsPage = () => {
 								<div className={styles.mentorCardContent}>
 									<div className={styles.questionsSection}>
 										<Text type="secondary" strong>
-											{t('mentors.page.telegram.questions', 'Ready to answer questions about:')}
+											{t('experts.page.telegram.questions', 'Ready to answer questions about:')}
 										</Text>
 										<ul className={styles.questionsList}>
-											{mentor.specialities.flatMap((s: any) =>
+											{expert.specialities.flatMap((s: any) =>
 												s.openForQuestions.map((q: any, idx: number) => <li key={`${s.id}-${idx}`}>{q}</li>)
 											)}
 										</ul>
@@ -137,14 +137,21 @@ const MentorsPage = () => {
 					))}
 				</Row>
 
-				{mentors?.data.length === 0 && !isLoading && (
+				{experts?.data.length === 0 && !isLoading && (
 					<div className={styles.noResults}>
-						<Text>{t('mentors.page.noResults', 'No mentors found with the selected filter.')}</Text>
+						<Text>{t('experts.page.noResults', 'No experts found with the selected filter.')}</Text>
 					</div>
 				)}
 			</Spin>
+
+			<ExpertRequestModal
+				open={!!expertRequestModalOpen}
+				onCancel={() => setExpertRequestModalOpen(undefined)}
+				onUpdate={() => setExpertRequestModalOpen(undefined)}
+				expertId={expertRequestModalOpen || ''}
+			/>
 		</ProtectedLayout>
 	)
 }
 
-export default MentorsPage
+export default ExpertsPage

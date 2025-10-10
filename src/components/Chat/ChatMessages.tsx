@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import { Bubble, BubbleProps, Welcome, Prompts } from '@ant-design/x'
+import { Bubble, BubbleProps } from '@ant-design/x'
 import { BubbleDataType } from '@ant-design/x/es/bubble/BubbleList'
 import { Flex, GetRef } from 'antd'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { MatrixEvent, RoomEvent } from 'matrix-js-sdk'
 import styles from './ChatModal.module.scss'
+import AdviceRequestInvite from './special-messages/AdviceRequestInvite'
+import DefaultInvite from './special-messages/DefaultInvite'
 import { useChat } from './useChat'
 
 const availableMessageTypes = [
@@ -19,11 +22,10 @@ const availableMessageTypes = [
 
 export default function ChatMessages() {
 	const listRef = useRef<GetRef<typeof Bubble.List>>(null)
-	const { selectedRoomId, chatSession, chatClient, ready } = useChat()
+	const { selectedRoomId, chatClient, ready, userMembership } = useChat()
 	const [messages, setMessages] = useState<MatrixEvent[]>([])
 	const [preparedMessages, setPreparedMessages] = useState<BubbleDataType[]>([])
-	const [isJoining, setIsJoining] = useState(false)
-	const [isDeclining, setIsDeclining] = useState(false)
+
 	// const queryClient = useQueryClient()
 
 	// const { data: messages } = useQuery({
@@ -50,9 +52,12 @@ export default function ChatMessages() {
 		const initial = room.getLiveTimeline().getEvents().slice(-50)
 		setMessages(initial)
 
+		console.log('[chat] initial', initial)
+
 		const handleTimeline = (event: MatrixEvent, evRoom: any, toStartOfTimeline?: boolean) => {
 			if (toStartOfTimeline) return
 			if (!evRoom || evRoom.roomId !== selectedRoomId) return
+
 			setMessages((prev) => [...prev, event])
 		}
 
@@ -75,7 +80,7 @@ export default function ChatMessages() {
 		if (!Array.isArray(messages)) return
 		setPreparedMessages(
 			messages
-				.filter((ev) => availableMessageTypes.includes(ev.getType()))
+				.filter((ev) => availableMessageTypes.includes(ev.getType()) && !ev.isRelation?.('m.replace'))
 				.map((ev) => {
 					const type = ev.getType()
 					const senderId = ev.getSender()
@@ -86,13 +91,17 @@ export default function ChatMessages() {
 						const content: any = ev.getContent() || {}
 						const text = content.body || content.formatted_body || JSON.stringify(content)
 						const chatUser = chatClient?.getUser(senderId as string)
+						const avatarUrl = chatClient?.mxcUrlToHttp(chatUser?.avatarUrl || '')
+						const edited = !!ev.replacingEventId?.()
+						const timeLabel = edited ? `${time} · edited` : time
+
 						return {
 							key,
 							role: senderId === chatClient?.getUserId() ? 'user' : 'member',
 							content: text,
 							title: chatUser?.displayName,
-							avatarUrl: chatUser?.avatarUrl,
-							time,
+							avatarUrl,
+							time: timeLabel,
 						}
 					}
 
@@ -190,49 +199,23 @@ export default function ChatMessages() {
 		}
 	}
 
-	const room = selectedRoomId ? chatClient?.getRoom(selectedRoomId) : null
-	const myMembership = room?.getMyMembership()
+	// membership is managed in the global chat store and updated on RoomEvent.MyMembership
 
-	if (myMembership === 'invite') {
-		return (
-			<div className={styles.chatMessages} style={{ paddingInline: 16 }}>
-				<Welcome title="Invitation pending" description="You were invited to this chat. Accept to start messaging." />
-				<div style={{ marginTop: 12 }}>
-					<Prompts
-						title="Actions"
-						items={[
-							{ key: 'accept', label: 'Accept invite' },
-							{ key: 'decline', label: 'Decline invite' },
-						]}
-						onItemClick={async ({ data }) => {
-							if (!selectedRoomId || !chatClient) return
-							if (data.key === 'accept') {
-								try {
-									setIsJoining(true)
-									await chatClient.joinRoom(selectedRoomId)
-								} finally {
-									setIsJoining(false)
-								}
-							}
-							if (data.key === 'decline') {
-								try {
-									setIsDeclining(true)
-									await chatClient.leave(selectedRoomId)
-								} finally {
-									setIsDeclining(false)
-								}
-							}
-						}}
-						styles={{
-							item: {
-								cursor: isJoining || isDeclining ? 'not-allowed' : 'pointer',
-								opacity: isJoining || isDeclining ? 0.6 : 1,
-							},
-						}}
-					/>
-				</div>
-			</div>
-		)
+	const [specialRootType, specialId] = useMemo(() => {
+		if (!selectedRoomId || !chatClient) return [null, null]
+
+		const room = selectedRoomId ? chatClient?.getRoom(selectedRoomId) : null
+		const alias = room?.getCanonicalAlias()
+		const [localpart] = alias?.split(':') || []
+		const [specialRootType, specialId] = localpart?.split('-') || []
+
+		return [specialRootType, specialId]
+	}, [selectedRoomId, chatClient])
+
+	if (selectedRoomId && userMembership === 'invite') {
+		if (specialRootType === '#advreq' && specialId) return <AdviceRequestInvite adviceRequestId={specialId} />
+
+		return <DefaultInvite />
 	}
 
 	return (

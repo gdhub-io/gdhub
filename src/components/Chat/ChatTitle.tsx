@@ -9,7 +9,14 @@ export default function ChatTitle() {
 	const { selectedRoomId, chatClient, ready } = useChat()
 
 	useEffect(() => {
-		if (!selectedRoomId || !ready) return
+		if (!ready) {
+			setTitle('')
+			return
+		}
+		if (!selectedRoomId) {
+			setTitle('')
+			return
+		}
 
 		const room = chatClient?.getRoom(selectedRoomId)
 
@@ -18,5 +25,5 @@ export default function ChatTitle() {
 		setTitle(room?.name || '')
 	}, [selectedRoomId, ready])
 
-	return ready ? <Text>Chat with {title}</Text> : <Text>Chat</Text>
+	return ready && title ? <Text>Chat with {title}</Text> : <Text>Chat</Text>
 }

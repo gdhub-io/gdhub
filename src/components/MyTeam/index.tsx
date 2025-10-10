@@ -735,11 +735,11 @@ const MyTeam = () => {
 									)
 								) : activeTab === 'advisors' ? (
 									screens.xs ? (
-										<Link href="/hub/mentors" passHref legacyBehavior>
+										<Link href="/hub/experts" passHref legacyBehavior>
 											<Button type="primary" style={{ marginLeft: 8 }} icon={<AiOutlinePlus />} />
 										</Link>
 									) : (
-										<Link href="/hub/mentors" passHref legacyBehavior>
+										<Link href="/hub/experts" passHref legacyBehavior>
 											<Button type="primary" style={{ marginLeft: 8 }} icon={<AiOutlinePlus />}>
 												{t('component.myTeam.findMentors', 'Find mentors')}
 											</Button>
@@ -831,7 +831,7 @@ const MyTeam = () => {
 									{t('Does not have any advisors yet.')}
 									<br />
 									{t('If you need one, you can find experts or mentors on the ')}
-									<Link href="/hub/mentors">Mentors page</Link>
+									<Link href="/hub/experts">Experts page</Link>
 									{t(' and send a consultation request.')}
 								</span>
 							}

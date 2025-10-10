@@ -22,7 +22,7 @@ export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalPro
 	const screens = Grid.useBreakpoint()
 	const [hasRooms, setHasRooms] = useState(false)
 	const { data: session } = useSession()
-	const { chatClient, setChatClient, setReady, selectedRoomId } = useChat()
+	const { chatClient, setChatClient, setReady, userMembership } = useChat()
 
 	const { data: clientSessionData } = useQuery({
 		queryKey: ['chat-client-session', session?.user.id],
@@ -93,7 +93,7 @@ export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalPro
 					{hasRooms && (
 						<div className={styles.chatContent}>
 							<ChatMessages />
-							<ChatInput />
+							{userMembership === 'join' && <ChatInput />}
 						</div>
 					)}
 				</Layout.Content>

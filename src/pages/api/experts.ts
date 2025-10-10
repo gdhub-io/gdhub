@@ -1,13 +1,15 @@
+import { NextAuthGuard } from '@/lib/api-middlewares'
 import { prisma } from '@/services/prisma'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
 import { Get, Query, createHandler } from 'next-api-decorators'
 
+@NextAuthGuard('user')
 class ApiMentorsHandler {
 	constructor() {}
 
 	@Get()
 	public async list(@Query('workDirectionId') workDirectionId?: string) {
-		const mentors = await prisma.user.findMany({
+		const experts = await prisma.user.findMany({
 			where: {
 				telegramId: { not: null },
 				specialities: {
@@ -40,7 +42,7 @@ class ApiMentorsHandler {
 			},
 		})
 
-		return mentors
+		return experts
 	}
 }
 

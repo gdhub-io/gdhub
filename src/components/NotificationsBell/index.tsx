@@ -31,6 +31,7 @@ export const NotificationsBell = () => {
 		<div className={styles.component}>
 			<Suspense fallback={null}>
 				<Inbox
+					// onPrimaryActionClick={(notification) => router.push(notification.prim)}
 					localization={{
 						'inbox.filters.labels.archived': t('novu.inbox.filters.labels.archived', 'Archived'),
 						'inbox.filters.labels.unread': t('novu.inbox.filters.labels.unread', 'Unread'),
@@ -72,8 +73,12 @@ export const NotificationsBell = () => {
 							colorPrimary: token.colorPrimaryText,
 							colorBackground: token.colorBgBase,
 							fontSize: `${token.fontSize}px`,
+							borderRadius: `${token.borderRadius}px`,
 						},
 						elements: {
+							inboxContent: {
+								fontFamily: token.fontFamily,
+							},
 							bellIcon: styles.bellIcon,
 							popoverTrigger: styles.popoverTrigger,
 							notification: styles.notification,

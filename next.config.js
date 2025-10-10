@@ -21,6 +21,7 @@ const nextConfig = {
 			{ protocol: 'https', hostname: 'avatars.githubusercontent.com' },
 			{ protocol: 'https', hostname: 'v3.fal.media' },
 			{ protocol: 'https', hostname: 'placehold.co' },
+			{ protocol: 'https', hostname: 'matrix.gdhub.io' },
 		],
 	},
 	env: {

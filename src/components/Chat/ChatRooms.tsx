@@ -7,7 +7,7 @@ import styles from './ChatModal.module.scss'
 import { useChat } from './useChat'
 
 export default function ChatRooms({ onReady }: { onReady: (data: { count: number }) => void }) {
-	const { selectedRoomId, setSelectedRoomId, chatClient, ready } = useChat()
+	const { selectedRoomId, setSelectedRoomId, setUserMembership, chatClient, ready } = useChat()
 	const [items, setItems] = useState<Conversation[]>([])
 
 	useEffect(() => {
@@ -42,11 +42,33 @@ export default function ChatRooms({ onReady }: { onReady: (data: { count: number
 					}
 				})
 
-		setItems(mapRoomsToItems(chatClient.getRooms() || []))
+		const refreshRooms = () => {
+			const nextItems = mapRoomsToItems(chatClient.getRooms() || [])
+			setItems(nextItems)
+			try {
+				onReady({ count: nextItems.length })
+				const { selectedRoomId, setUserMembership, setSelectedRoomId } = useChat.getState()
+				if (nextItems.length === 0) {
+					// clear selection when no rooms remain
+					setSelectedRoomId('')
+					setUserMembership(null)
+				}
+			} catch {}
+		}
 
-		const onMembership = () => setItems(mapRoomsToItems(chatClient.getRooms() || []))
-		const onTimelineReset = () => setItems(mapRoomsToItems(chatClient.getRooms() || []))
-		const onPresenceChange = () => setItems(mapRoomsToItems(chatClient.getRooms() || []))
+		refreshRooms()
+
+		const onMembership = (room: Room) => {
+			refreshRooms()
+			try {
+				const { setUserMembership, selectedRoomId } = useChat.getState()
+				if (selectedRoomId && room?.roomId === selectedRoomId) {
+					setUserMembership(room.getMyMembership() || null)
+				}
+			} catch {}
+		}
+		const onTimelineReset = () => refreshRooms()
+		const onPresenceChange = () => refreshRooms()
 
 		chatClient.on(RoomEvent.MyMembership, onMembership)
 		chatClient.on(RoomEvent.TimelineReset as any, onTimelineReset)
@@ -86,8 +108,14 @@ export default function ChatRooms({ onReady }: { onReady: (data: { count: number
 	}, [chatClient, ready])
 
 	useEffect(() => {
-		if (!selectedRoomId && items.length) setSelectedRoomId(items[0].key)
-	}, [items, selectedRoomId, setSelectedRoomId])
+		if (items.length === 0) return
+		if (!selectedRoomId) {
+			handleSelectRoom(items[0].key)
+			return
+		}
+		const exists = items.some((i) => i.key === selectedRoomId)
+		if (!exists) handleSelectRoom(items[0].key)
+	}, [items, selectedRoomId])
 
 	const menuConfig: ConversationsProps['menu'] = (conversation) => {
 		const member = chatClient?.getRoom(conversation.value)?.getMember(chatClient?.getUserId() || '')
@@ -121,12 +149,22 @@ export default function ChatRooms({ onReady }: { onReady: (data: { count: number
 		)
 	}
 
+	const handleSelectRoom = (key: string) => {
+		setSelectedRoomId(key)
+
+		const room = chatClient?.getRoom(key)
+
+		if (room) {
+			setUserMembership(room.getMyMembership() || null)
+		}
+	}
+
 	return (
 		<Conversations
 			items={items}
 			menu={menuConfig}
 			activeKey={selectedRoomId || undefined}
-			onActiveChange={setSelectedRoomId}
+			onActiveChange={handleSelectRoom}
 		/>
 	)
 }

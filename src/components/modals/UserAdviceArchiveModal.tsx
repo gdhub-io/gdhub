@@ -1,10 +1,7 @@
 import React from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { FaBan } from '@react-icons/all-files/fa/FaBan'
 import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
-import { MdCancel } from '@react-icons/all-files/md/MdCancel'
-import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
-import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
+import { IconBan, IconCancel, IconCheck, IconClock } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslate } from '@tolgee/react'
 import { Button, Modal, theme, Tooltip } from 'antd'
@@ -54,20 +51,20 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({ open, u
 				let text = ''
 				switch (status) {
 					case 'Approved':
-						icon = <MdCheckCircle style={{ color: '#52c41a', fontSize: 22 }} />
+						icon = <IconCheck style={{ color: '#52c41a', fontSize: 22 }} />
 						text = t('Approved')
 						break
 					case 'Rejected':
-						icon = <MdCancel style={{ color: '#ff4d4f', fontSize: 22 }} />
+						icon = <IconCancel style={{ color: '#ff4d4f', fontSize: 22 }} />
 						text = t('Rejected')
 						break
 					case 'Closed':
-						icon = <FaBan style={{ color: themeToken.colorTextSecondary, fontSize: 16 }} />
+						icon = <IconBan style={{ color: themeToken.colorTextSecondary, fontSize: 16 }} />
 						text = t('Closed')
 						break
 					case 'Created':
 					default:
-						icon = <MdFiberManualRecord style={{ color: '#1890ff', fontSize: 8 }} />
+						icon = <IconClock style={{ color: '#1890ff', fontSize: 8 }} />
 						text = t('Created')
 						break
 				}

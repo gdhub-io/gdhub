@@ -1,20 +1,16 @@
-import React, { useMemo } from 'react'
-import UserAdviceArchiveModal from '@/components/modals/UserAdviceArchiveModal'
+import React, { useMemo, useState } from 'react'
 import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { AiOutlineHistory } from '@react-icons/all-files/ai/AiOutlineHistory'
-import { FaBan } from '@react-icons/all-files/fa/FaBan'
-import { MdCancel } from '@react-icons/all-files/md/MdCancel'
-import { MdCheckCircle } from '@react-icons/all-files/md/MdCheckCircle'
-import { MdFiberManualRecord } from '@react-icons/all-files/md/MdFiberManualRecord'
 import { MdOutlineSupportAgent } from '@react-icons/all-files/md/MdOutlineSupportAgent'
+import { IconBan, IconCancel, IconCheck, IconClock } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslate } from '@tolgee/react'
 import { Button, Flex, Typography, Spin, Space, Avatar } from 'antd'
 import axios from 'axios'
-import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import qs from 'qs'
 import styles from './styles.module.scss'
+import { useChat } from '../Chat/useChat'
+import ExpertRequestModal from '../modals/ExpertRequestModal'
 
 const { Title, Text } = Typography
 
@@ -24,12 +20,13 @@ type RequestCardData = prismaClient.AdviceRequest & {
 	fromTelegramUser?: { name: string; image: string }
 }
 
-const MyAdviceRequests: React.FC = () => {
+const MyAdviceRequests: React.FC<{ showTitle?: boolean }> = ({ showTitle = true }) => {
 	const { t } = useTranslate()
 	const { data: session } = useSession()
-	const [showArchive, setShowArchive] = React.useState(false)
+	const [selectedAdviceRequestId, setSelectedAdviceRequestId] = useState<string | undefined>(undefined)
+	const { setSelectedRoomByAlias, setOpenChatModal } = useChat()
 
-	const { data, isLoading, isFetched } = useQuery({
+	const { data, isLoading, isFetched, refetch } = useQuery({
 		queryKey: ['advice-requests'],
 		queryFn: () =>
 			axios.get('/api/user/advice-requests', {
@@ -44,139 +41,164 @@ const MyAdviceRequests: React.FC = () => {
 	const incoming = useMemo(() => (data ? data.data.filter((r: any) => r.toUser?.id === userId) : []), [data, userId])
 	const outgoing = useMemo(() => (data ? data.data.filter((r: any) => r.fromUser?.id === userId) : []), [data, userId])
 
+	const handleRequestsChange = () => {
+		refetch()
+		setSelectedAdviceRequestId(undefined)
+	}
+
+	const handleOpenRequestChat = async (adviceRequestId: string) => {
+		await setSelectedRoomByAlias(`advreq-${adviceRequestId}`)
+		setOpenChatModal(true)
+		setSelectedAdviceRequestId(undefined)
+	}
+
 	if (!isFetched || (!isLoading && incoming.length === 0 && outgoing.length === 0)) {
 		return null
 	}
 
 	return (
-		<>
-			<div className={styles.adviceRequestsContainer}>
-				<Flex justify="space-between" align="center" wrap>
+		<div className={styles.adviceRequestsContainer}>
+			<Flex justify="space-between" align="center" wrap>
+				{showTitle && (
 					<Space>
 						<MdOutlineSupportAgent size={36} />
 						<Title level={2}>{t('page.hub.advice-requests', 'Advice Requests')}</Title>
 					</Space>
-					<Space>
-						<Button
-							type="text"
-							icon={<AiOutlineHistory />}
-							onClick={() => setShowArchive(true)}
-							aria-label="Archive"
-							title={t('Archive')}
-						/>
-						<Link href="/hub/mentors">
-							<Button type="primary">{t('page.hub.ask-question', 'Ask a question')}</Button>
-						</Link>
-					</Space>
-				</Flex>
-				<Space direction="vertical" size={32} style={{ width: '100%' }}>
-					{incoming.length > 0 && (
-						<div>
-							<Title level={4}>{t('page.hub.incoming-requests', 'Incoming')}</Title>
-							{isLoading ? (
-								<Spin />
-							) : (
-								<div className={styles.requestsList}>
-									{incoming.map((req: any) => (
-										<RequestCard key={req.id} req={req} type="incoming" />
-									))}
-								</div>
-							)}
-						</div>
-					)}
-					{outgoing.length > 0 && (
-						<div>
-							<Title level={4}>{t('page.hub.outgoing-requests', 'Outgoing')}</Title>
-							{isLoading ? (
-								<Spin />
-							) : (
-								<div className={styles.requestsList}>
-									{outgoing.map((req: any) => (
-										<RequestCard key={req.id} req={req} type="outgoing" />
-									))}
-								</div>
-							)}
-						</div>
-					)}
-				</Space>
-			</div>
+				)}
+			</Flex>
+			<Space direction="vertical" size={32} style={{ width: '100%' }}>
+				{incoming.length > 0 && (
+					<div>
+						<Title level={4}>{t('page.hub.incoming-requests', 'Incoming')}</Title>
+						{isLoading ? (
+							<Spin />
+						) : (
+							<div className={styles.requestsList}>
+								{incoming.map((req: any) => (
+									<RequestCard
+										key={req.id}
+										req={req}
+										type="incoming"
+										onReply={handleOpenRequestChat}
+										onView={setSelectedAdviceRequestId}
+									/>
+								))}
+							</div>
+						)}
+					</div>
+				)}
+				{outgoing.length > 0 && (
+					<div>
+						<Title level={4}>{t('page.hub.outgoing-requests', 'Outgoing')}</Title>
+						{isLoading ? (
+							<Spin />
+						) : (
+							<div className={styles.requestsList}>
+								{outgoing.map((req: any) => (
+									<RequestCard
+										key={req.id}
+										req={req}
+										type="outgoing"
+										onView={setSelectedAdviceRequestId}
+										onReply={handleOpenRequestChat}
+									/>
+								))}
+							</div>
+						)}
+					</div>
+				)}
+			</Space>
 
-			<UserAdviceArchiveModal open={showArchive} user={session?.user} onClose={() => setShowArchive(false)} />
-		</>
+			<ExpertRequestModal
+				adviceRequestId={selectedAdviceRequestId}
+				open={!!selectedAdviceRequestId}
+				onCancel={() => setSelectedAdviceRequestId(undefined)}
+				onUpdate={() => handleRequestsChange()}
+			/>
+		</div>
 	)
 }
 
 const getStatusIcon = (status: string) => {
 	switch (status) {
 		case 'Approved':
-			return <MdCheckCircle style={{ color: '#52c41a', fontSize: 16, background: '#fff', borderRadius: '50%' }} />
+			return <IconCheck size={18} style={{ color: '#52c41a', background: '#fff', borderRadius: '50%' }} />
 		case 'Rejected':
-			return <MdCancel style={{ color: '#ff4d4f', fontSize: 16, background: '#fff', borderRadius: '50%' }} />
+			return <IconCancel size={18} style={{ color: '#ff4d4f', background: '#fff', borderRadius: '50%' }} />
 		case 'Closed':
-			return <FaBan style={{ color: '#888', fontSize: 16, background: '#fff', borderRadius: '50%' }} />
+			return <IconBan size={18} style={{ color: '#888', background: '#fff', borderRadius: '50%' }} />
 		case 'Created':
 		default:
-			return <MdFiberManualRecord style={{ color: '#1890ff', fontSize: 12, background: '#fff', borderRadius: '50%' }} />
+			return <IconClock size={18} style={{ color: '#1890ff', background: '#fff', borderRadius: '50%' }} />
 	}
 }
 
 const RequestCard: React.FC<{
 	req: RequestCardData
 	type: 'incoming' | 'outgoing'
-}> = ({ req, type }) => {
+	onView: (adviceRequestId: string) => void
+	onReply: (adviceRequestId: string) => void
+}> = ({ req, type, onView, onReply }) => {
 	const { t } = useTranslate()
-
 	const isTelegramUser = useMemo(() => Boolean(req.fromUser) === false, [req])
 	const fromUserName = useMemo(() => (req.fromUser ? req.fromUser.profile.name : req.fromTelegramUser?.name), [req])
 	const toUserName = useMemo(() => (req.toUser ? req.toUser.profile.name : t('Unknown')), [req])
 
 	return (
-		<div className={styles.requestCard}>
-			<Flex align="center" gap={16}>
-				<div style={{ position: 'relative', display: 'inline-block' }}>
-					<Avatar src={type === 'incoming' ? req.fromUser?.image : req.toUser?.image} />
-					<span
-						style={{
-							position: 'absolute',
-							bottom: -8,
-							right: -2,
-							background: 'transparent',
-							borderRadius: '50%',
-							zIndex: 2,
-						}}
-					>
-						{getStatusIcon(req.status)}
-					</span>
-				</div>
-				<div>
-					<Space>
-						<Text strong>{type === 'incoming' ? 'From ' + fromUserName : 'To ' + toUserName}</Text>
-						{isTelegramUser && <Text type="secondary">({t('Telegram user')})</Text>}
-					</Space>
-					<div>{req.topic}</div>
-					<div style={{ color: '#888' }}>{req.comment}</div>
-				</div>
-				<div style={{ marginLeft: 'auto', color: '#888', display: 'flex', alignItems: 'center', gap: 8 }}>
-					{type === 'incoming' ? (
-						req.status === 'Created' ? (
-							<Link href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${req.id}`} target="_blank">
-								<Button type="primary" size="small">
-									Reply
+		<>
+			<div className={styles.requestCard}>
+				<Flex align="center" gap={16}>
+					<div style={{ position: 'relative', display: 'inline-block' }}>
+						<Avatar src={type === 'incoming' ? req.fromUser?.image : req.toUser?.image} />
+						<span
+							style={{
+								position: 'absolute',
+								bottom: -8,
+								right: -2,
+								background: 'transparent',
+								borderRadius: '50%',
+								zIndex: 2,
+							}}
+						>
+							{getStatusIcon(req.status)}
+						</span>
+					</div>
+					<div>
+						<Space>
+							<Text strong>{type === 'incoming' ? 'From ' + fromUserName : 'To ' + toUserName}</Text>
+							{isTelegramUser && <Text type="secondary">({t('Telegram user')})</Text>}
+						</Space>
+						<div>{req.topic}</div>
+						<div style={{ color: '#888' }}>{req.comment}</div>
+					</div>
+					<div style={{ marginLeft: 'auto', color: '#888', display: 'flex', alignItems: 'center', gap: 8 }}>
+						{type === 'incoming' ? (
+							req.status === 'Created' ? (
+								<>
+									<Button type="primary" size="small" onClick={() => onReply(req.id)}>
+										Accept
+									</Button>
+									<Button type="default" size="small" onClick={() => onReply(req.id)}>
+										Reject
+									</Button>
+									<Button type="default" size="small" onClick={() => onReply(req.id)}>
+										Chat
+									</Button>
+								</>
+							) : (
+								<Button size="small" onClick={() => onView(req.id)}>
+									View
 								</Button>
-							</Link>
+							)
 						) : (
-							<Link href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${req.id}`} target="_blank">
-								<Button size="small">View</Button>
-							</Link>
-						)
-					) : (
-						<Link href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${req.id}`} target="_blank">
-							<Button size="small">View</Button>
-						</Link>
-					)}
-				</div>
-			</Flex>
-		</div>
+							<Button size="small" onClick={() => onView(req.id)}>
+								View
+							</Button>
+						)}
+					</div>
+				</Flex>
+			</div>
+		</>
 	)
 }
 
