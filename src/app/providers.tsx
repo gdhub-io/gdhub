@@ -33,10 +33,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 				<CookieConsent />
 				<LoadingScreen visible={loading} />
 				{process.env.NODE_ENV === "development" && (
-					<ReactQueryDevtools
-						initialIsOpen={false}
-						buttonPosition="bottom-left"
-					/>
+					<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
 				)}
 			</QueryClientProvider>
 			<NextNProgress
