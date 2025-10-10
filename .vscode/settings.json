@@ -1,5 +1,5 @@
 {
-  "eslint.lintTask.enable": true,
+  "eslint.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsserver.maxTsServerMemory": 4096,
   "files.watcherExclude": {
@@ -13,4 +13,8 @@
     "**/node_modules": true,
     "**/*.code-search": true
   },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
+  }
 }
