@@ -6,19 +6,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, List, message, Popconfirm, Space, Spin, Typography } from "antd";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SpecialityModal from "./modals/SpecialityModal";
 
 const { Text } = Typography;
 
 const SpecialitiesProfileForm = ({ profile }: any) => {
 	const router = useRouter();
-	const pendingInvitationId = useMemo(
-		() => router.query.pendingInvitation,
-		[router.query.pendingInvitation],
-	);
+	const pendingInvitationId = useSearchParams()?.get("pendingInvitation");
 	const session = useSession();
 	const queryClient = useQueryClient();
 	const { t } = useTranslate();
@@ -65,16 +62,16 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		},
 	);
 
+	const showModal = useCallback(() => {
+		setSelectedSpeciality(null);
+		setIsModalOpen(true);
+	}, []);
+
 	useEffect(() => {
 		if (!pendingInvitationId) return;
 
 		showModal();
-	}, [pendingInvitationId]);
-
-	const showModal = () => {
-		setSelectedSpeciality(null);
-		setIsModalOpen(true);
-	};
+	}, [pendingInvitationId, showModal]);
 
 	const handleOk = async (options: { invitationCompleted?: boolean } | undefined) => {
 		// close modal
