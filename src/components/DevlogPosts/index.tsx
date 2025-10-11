@@ -12,7 +12,7 @@ import { PageViews } from "@/components/PageViews";
 import { getPageCover } from "@/helpers/content";
 import styles from "./styles.module.scss";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 interface DevlogPost {
 	id: string;
@@ -48,7 +48,6 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 	post,
 	onClick,
 }) => {
-	const { t } = useTranslate();
 	const router = useRouter();
 	const [imageError, setImageError] = useState(false);
 
@@ -72,17 +71,7 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 	const truncateText = (text: string | undefined, maxLength: number) => {
 		if (!text) return "";
 		if (text.length <= maxLength) return text;
-		return text.slice(0, maxLength) + "...";
-	};
-
-	const getInitials = (title: string) => {
-		if (!title) return "";
-		return title
-			.split(" ")
-			.map((word) => word[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
+		return `${text.slice(0, maxLength)}...`;
 	};
 
 	const formatDate = (dateString: string | undefined) => {
@@ -94,7 +83,7 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 				" " +
 				date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 			);
-		} catch (e) {
+		} catch {
 			return "";
 		}
 	};
@@ -111,7 +100,7 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 
 	return (
 		<Link href={`/devlog/${post.id}`}>
-			<div className={styles.postCard} onClick={onClick}>
+			<div role="button" tabIndex={0} className={styles.postCard} onClick={onClick}>
 				<div className={styles.postContent}>
 					<div className={styles.postImage}>
 						{!imageError && pageCover ? (
@@ -144,7 +133,7 @@ const PostCard: React.FC<{ post: DevlogPost; onClick: (e: React.MouseEvent) => v
 							>
 								{post.project?.name}
 							</span>
-							<span role="separator">•</span>
+							<span>•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
 								{formatDate(post.publishedAt)}
@@ -235,8 +224,8 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 					</Title>
 				</Flex>
 				<div className={styles.postsList}>
-					{[...Array(3)].map((_, index) => (
-						<div key={index} className={styles.postWrapper}>
+					{[...Array(3)].map((v) => (
+						<div key={`skeleton-${v}`} className={styles.postWrapper}>
 							<PostSkeleton />
 						</div>
 					))}

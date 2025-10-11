@@ -2,5 +2,13 @@
   "formatter": {
     "enabled": true,
     "lineWidth": 100
+  },
+  "linter": {
+    "rules": {
+      "a11y": {
+        "useKeyWithClickEvents": "off",
+        "useSemanticElements": "off"
+      }
+    }
   }
 }
