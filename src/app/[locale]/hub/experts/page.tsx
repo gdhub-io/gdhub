@@ -60,7 +60,7 @@ export default function ExpertsPage() {
 				"On this page, you can find experts who are ready to help with your questions.",
 			)}
 			extra={
-				<Link href="my-requests">
+				<Link href="/hub/experts/my-requests">
 					<Button>{t("page.experts.myExperts", "My requests")}</Button>
 				</Link>
 			}
