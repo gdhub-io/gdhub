@@ -19,7 +19,7 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
 import countryList from "react-select-country-list";
@@ -33,7 +33,7 @@ interface IOnboardingProfileStep {
 const { Paragraph, Title } = Typography;
 
 export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboardingProfileStep) => {
-	const router = useRouter();
+	const searchParams = useSearchParams();
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { data: session } = useSession();
@@ -69,7 +69,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 		});
 
 		onLoading(data);
-	}, [profileData?.data]);
+	}, [profileData, form, isFetched, onLoading]);
 
 	const { mutateAsync: saveUserProfile, isPending: isSaving } = useMutation({
 		mutationFn: (data: any) => axios.put<any>("/api/auth/registration/onboarding/profile", data),
@@ -89,8 +89,9 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 			const { firstName, lastName, ...data } = await form.validateFields();
 			let preRegistrationData: Record<string, any> | undefined;
 
-			if (router.query.provider) {
-				const preRegistrationCookie = getCookie(`auth.${router.query.provider}.pre-registration`);
+			const provider = searchParams?.get("provider") || undefined;
+			if (provider) {
+				const preRegistrationCookie = getCookie(`auth.${provider}.pre-registration`);
 				preRegistrationData = preRegistrationCookie ? JSON.parse(preRegistrationCookie) : undefined;
 			}
 
@@ -100,8 +101,7 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 				agreeWithTermsAndPrivacy: preRegistrationData?.agreeWithTermsAndPrivacy,
 				needSubscribeToNewsletter: preRegistrationData?.needSubscribeToNewsletter,
 			});
-
-			deleteCookie(`auth.${router.query.provider}.pre-registration`);
+			if (provider) deleteCookie(`auth.${provider}.pre-registration`);
 
 			onSave({ userId: res.data.id });
 		} catch (error: any) {
@@ -129,7 +129,9 @@ export const OnboardingProfileStep = ({ onSave, onLoading = () => {} }: IOnboard
 						requiredMark="optional"
 						autoComplete="off"
 						scrollToFirstError
-						initialValues={{ registrationToken: router.query.token as string }}
+						initialValues={{
+							registrationToken: (searchParams?.get("token") as string) || undefined,
+						}}
 					>
 						<Space direction="vertical" size={16} style={{ width: "100%" }}>
 							<Row gutter={[32, 16]}>

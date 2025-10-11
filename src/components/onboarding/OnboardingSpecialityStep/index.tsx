@@ -22,8 +22,8 @@ import {
 	type UploadProps,
 } from "antd";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 
 interface IOnboardingSpecialityStep {
@@ -37,8 +37,8 @@ export const OnboardingSpecialityStep = ({
 	onSave,
 	onPreviousStep = () => {},
 }: IOnboardingSpecialityStep) => {
-	const router = useRouter();
-	const pendingInvitationId = router.query?.pendingInvitation as string;
+	const searchParams = useSearchParams();
+	const pendingInvitationId = (searchParams?.get("pendingInvitation") as string) || "";
 	const [form] = Form.useForm();
 	const [messageApi, contextHolder] = message.useMessage();
 	const screens = Grid.useBreakpoint();
@@ -99,7 +99,7 @@ export const OnboardingSpecialityStep = ({
 		});
 		const existNameValue = !!form.getFieldValue("name");
 		setShowParseCVButton(existNameValue);
-	}, [specialityResponse]);
+	}, [specialityResponse, form]);
 
 	const { data: pendingInvitation } = useQuery({
 		queryKey: ["team-invite", pendingInvitationId],
@@ -114,7 +114,7 @@ export const OnboardingSpecialityStep = ({
 			workDirectionId: pendingInvitation.data.directionId,
 		});
 		setShowParseCVButton(true);
-	}, [pendingInvitation]);
+	}, [pendingInvitation, form]);
 
 	const { mutateAsync: createSpeciality, isPending: isCreating } = useMutation({
 		mutationFn: ({ data }: any) =>
@@ -151,6 +151,40 @@ export const OnboardingSpecialityStep = ({
 		}
 	};
 
+	const fillForm = useCallback(
+		(data: any) => {
+			const {
+				workAreaId,
+				tools,
+				summary,
+				specialization,
+				skills,
+				experience,
+				education,
+				portfolioLink,
+			} = data;
+
+			form.setFieldsValue({
+				summary,
+				workDirectionId: workAreaId,
+				specialization,
+				skills: skills?.join("\n"),
+				tools: tools?.join("\n"),
+				portfolioUrl: portfolioLink,
+				jobs: experience
+					?.map((job: any) => `${job.from} - ${job.to}, ${job.roleName}, ${job.companyName}`)
+					.join("\n"),
+				schools: education
+					?.map(
+						(school: any) =>
+							`${school.from} - ${school.to}, ${school.speciality}, ${school.degree}, ${school.school}`,
+					)
+					.join("\n"),
+			});
+		},
+		[form],
+	);
+
 	const uploadProps: UploadProps = useMemo(
 		() => ({
 			name: "file",
@@ -161,7 +195,7 @@ export const OnboardingSpecialityStep = ({
 			maxCount: 1,
 			onChange: ({ file }) => {
 				console.log("onChange", file);
-				if (file.status === "done" && (!file.response || file.response.success == false)) {
+				if (file.status === "done" && (!file.response || file.response.success === false)) {
 					setIsParsing(false);
 					messageApi.error(
 						t("uploadcv-error-message", `We couldn't process your file. Enter data manually`),
@@ -169,11 +203,11 @@ export const OnboardingSpecialityStep = ({
 					return;
 				}
 
-				if (file.status == "uploading") {
+				if (file.status === "uploading") {
 					setIsParsing(true);
 				}
 
-				if (file.status == "error") {
+				if (file.status === "error") {
 					messageApi.error(
 						t("uploadcv-error-message", `We couldn't process your file. Enter data manually`),
 					);
@@ -188,39 +222,8 @@ export const OnboardingSpecialityStep = ({
 				}
 			},
 		}),
-		[form, jobPosition],
+		[jobPosition, fillForm, getLanguage, messageApi, t],
 	);
-
-	const fillForm = (data: any) => {
-		const {
-			workAreaId,
-			tools,
-			summary,
-			specialization,
-			skills,
-			experience,
-			education,
-			portfolioLink,
-		} = data;
-
-		form.setFieldsValue({
-			summary,
-			workDirectionId: workAreaId,
-			specialization,
-			skills: skills?.join("\n"),
-			tools: tools?.join("\n"),
-			portfolioUrl: portfolioLink,
-			jobs: experience
-				?.map((job: any) => `${job.from} - ${job.to}, ${job.roleName}, ${job.companyName}`)
-				.join("\n"),
-			schools: education
-				?.map(
-					(school: any) =>
-						`${school.from} - ${school.to}, ${school.speciality}, ${school.degree}, ${school.school}`,
-				)
-				.join("\n"),
-		});
-	};
 
 	const handleJobPositionChange = (value: string) => {
 		setShowParseCVButton(!!value);
@@ -390,14 +393,18 @@ export const OnboardingSpecialityStep = ({
 									</Row>
 								</div>
 
-								<a onClick={(e) => setShowOptionalFields((prev) => !prev)}>
+								<div
+									role="button"
+									tabIndex={0}
+									onClick={() => setShowOptionalFields((prev) => !prev)}
+								>
 									<Space>
 										{showOptionalFields
 											? t("onboarding.speciality.hide-additional-fields", "Hide additional fields")
 											: t("onboarding.speciality.fill-additional-fields", "Fill additional fields")}
 										{showOptionalFields ? <AiOutlineUp /> : <AiOutlineDown />}
 									</Space>
-								</a>
+								</div>
 							</Space>
 						</Form>
 					</div>

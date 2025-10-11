@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Grid, Space, Spin, Typography } from "antd";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import RegistrationBgImage from "@/assets/images/registration-bg.jpg";
 import { gtmEventTrigger } from "@/helpers/gtm";
@@ -14,7 +14,8 @@ export const OnboardingCompleted = () => {
 	const router = useRouter();
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
-	const { pendingInvitation } = router.query;
+	const searchParams = useSearchParams();
+	const pendingInvitation = searchParams?.get("pendingInvitation") || undefined;
 	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false);
 
 	// Проверяем, есть ли ожидающие приглашения
@@ -50,9 +51,9 @@ export const OnboardingCompleted = () => {
 	useEffect(() => {
 		if (pendingInvitation && !isProcessingInvitation) {
 			setIsProcessingInvitation(true);
-			completePendingInvitation(pendingInvitation as string);
+			completePendingInvitation(pendingInvitation);
 		}
-	}, [pendingInvitation]);
+	}, [pendingInvitation, isProcessingInvitation, completePendingInvitation]);
 
 	// Проверяем наличие ожидающих приглашений в профиле пользователя
 	useEffect(() => {
@@ -63,7 +64,7 @@ export const OnboardingCompleted = () => {
 				completePendingInvitation(firstPendingInvitation.invitationId);
 			}
 		}
-	}, [user]);
+	}, [user, completePendingInvitation, isProcessingInvitation]);
 
 	// После проверки, что нет pendingInvitation и не идет загрузка, отправляем событие
 	useEffect(() => {
@@ -98,7 +99,7 @@ export const OnboardingCompleted = () => {
 							{t("onboarding.completed.title", "Your profile was successfully completed!")}
 						</Title>
 						<Button style={{ width: "300px" }} onClick={() => router.push("/hub")}>
-							{t("onboarding.completed.button", "Let&apos;s go")}
+							{t("onboarding.completed.button", "Let's go")}
 						</Button>
 					</Space>
 				</div>

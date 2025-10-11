@@ -1,6 +1,5 @@
 import { T } from "@tolgee/react";
 import { Button, Grid, Space, Typography } from "antd";
-import { useRouter } from "next/navigation";
 import RegistrationBgImage from "@/assets/images/registration-bg.jpg";
 import styles from "./style.module.scss";
 
@@ -8,7 +7,6 @@ const { Paragraph, Title } = Typography;
 
 export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 	const screens = Grid.useBreakpoint();
-	const router = useRouter();
 
 	return (
 		<div

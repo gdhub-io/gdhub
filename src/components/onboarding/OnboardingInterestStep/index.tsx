@@ -18,7 +18,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
 import InterestAuthorIcon from "@/assets/images/icons/interest-author-icon.svg";
@@ -37,14 +37,15 @@ export const OnboardingInterestStep = ({
 	onSave,
 	onPreviousStep = () => {},
 }: IOnboardingInterestStep) => {
-	const router = useRouter();
+	const searchParams = useSearchParams();
 	const screens = Grid.useBreakpoint();
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 
 	const preSelectedInterest = useMemo(() => {
-		switch (router.query.for) {
+		const forParam = searchParams?.get("for") || undefined;
+		switch (forParam) {
 			case "author":
 				return prismaClient.PrimaryInterest.Author;
 			case "specialist":
@@ -54,7 +55,7 @@ export const OnboardingInterestStep = ({
 			default:
 				return undefined;
 		}
-	}, [router.query.for]);
+	}, [searchParams]);
 
 	const { data: profileData } = useQuery({
 		queryKey: ["profile", session?.user.id],
@@ -70,7 +71,7 @@ export const OnboardingInterestStep = ({
 				primaryInterest: preSelectedInterest || profileData.data.primaryInterest,
 			});
 		}
-	}, [profileData?.data]);
+	}, [profileData?.data, form, preSelectedInterest]);
 
 	const { data: gameGenres } = useQuery({
 		queryKey: ["gameGenres"],
