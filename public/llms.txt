@@ -19,7 +19,7 @@ App-Topics: startups, indie, hiring, mentoring, events, devlog, product, saas
 Page: / — Home — Overview of the platform, featured projects, events, and blog highlights.
 Page: /projects — Projects directory — filters and navigation to individual project pages.
 Page: /project/{slug} — Project — summary, team, reports, and open vacancies.
-Page: /vacancies — Open positions across teams and projects.
+Page: /jobs — Open positions across teams and projects.
 Page: /events — Events list — upcoming and archived events.
 Page: /event/{slug} — Event — description, schedule, and participation details.
 Page: /blog — Articles and news from the community.
@@ -58,7 +58,7 @@ Allow: /projects
 Allow: /project/*
 Allow: /hub
 Allow: /hub/*
-Allow: /vacancies
+Allow: /jobs
 Allow: /devlog/*
 Allow: /cookie-policy
 Allow: /registration
