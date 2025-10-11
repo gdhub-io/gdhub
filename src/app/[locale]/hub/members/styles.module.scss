@@ -1,0 +1,316 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h4 {
+    font-size: 18px;
+  }
+
+  .stats {
+    font-size: 14px;
+    color: #a1a1a1;
+    margin-bottom: 24px;
+  }
+
+  .hitItem {
+    margin-top: 16px;
+  }
+
+  .panel {
+    background-color: #fbfbfb;
+  }
+
+  :global {
+    /* Hide bullets for refinement lists */
+    .ais-RefinementList-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .ais-RefinementList-item {
+      list-style: none;
+    }
+
+    /* Pagination styling */
+    .ais-Pagination {
+      margin-left: -2px;
+      margin-right: -2px;
+    }
+    .ais-Pagination-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: -2px;
+      margin-bottom: -2px;
+    }
+    .ais-Pagination-item {
+      display: block;
+      margin: 2px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: all .2s ease-out;
+    }
+    .ais-Pagination-item--disabled {
+      border-color: transparent;
+      color: #919191;
+    }
+    .ais-Pagination-item--disabled:hover {
+      background-color: transparent !important;
+    }
+    .ais-Pagination-item--selected {
+      border-color: #2c2c2c;
+    }
+    .ais-Pagination-item:hover {
+      background-color: #e6e6e6;
+    }
+    .ais-Pagination-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      color: inherit;
+      width: 32px;
+      height: 32px;
+      text-decoration: none;
+      font-size: 12px;
+    }
+    .ais-Hits-list { list-style: none; padding: 0; margin: 0; }
+    .ais-Hits-item { margin-bottom: 16px; }
+    .ais-Highlight-highlighted {
+      background-color: #bdffec;
+      color: inherit;
+    }
+
+    .ais-Breadcrumb-list {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      padding: 0;
+      font-size: 12px;
+    }
+
+    .ais-Breadcrumb-link {
+      margin-right: 4px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .ais-Breadcrumb-separator {
+      color: rgba(132, 138, 184, .6);
+    }
+
+    .ais-SearchBox-form {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 48px;
+      padding: 0 16px;
+      background-color: #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 8px;
+      transition: all 0.2s ease-in-out;
+
+      &:hover,
+      &:focus-within {
+        border-color: #f15541;
+        box-shadow: 0 2px 8px rgba(241, 85, 65, 0.1);
+      }
+    }
+
+    .ais-SearchBox-submit {
+      position: relative;
+      left: 0;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-right: 8px;
+
+      & > svg {
+        width: 16px;
+        height: 16px;
+        stroke: #979797;
+        fill: none;
+      }
+    }
+
+    .ais-SearchBox-input {
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      color: #2c2c2c;
+      font-size: 16px;
+      outline: 0;
+      border: 0;
+
+      &::placeholder {
+        color: #979797;
+      }
+
+      /* hide native browser clear/decoration icons to avoid duplicates */
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration {
+        -webkit-appearance: none;
+        appearance: none;
+        display: none;
+        width: 0;
+        height: 0;
+      }
+      &::-ms-clear,
+      &::-ms-reveal {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+    }
+
+    /* hide loading spinner to keep only magnifier and reset (x) */
+    .ais-SearchBox-loadingIndicator {
+      display: none;
+    }
+
+    .ais-SearchBox-reset {
+      position: relative;
+      right: 0;
+      margin: 0 0 0 8px;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      color: #979797;
+      opacity: 0.6;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .ant-card {
+      height: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e6e6e6;
+      transition: all 0.2s ease-in-out;
+
+      .ant-card-body {
+        padding: 24px;
+      }
+
+      .ant-tag {
+        background: #f5f5f5;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 6px;
+      }
+    }
+
+    .ant-space {
+      width: 100%;
+
+      .ant-btn {
+        display: inline-flex;
+        align-items: center;
+        height: 48px;
+        padding: 0 16px;
+        background-color: white;
+        border: 1px solid #e6e6e6;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #2c2c2c;
+        transition: all 0.2s ease-in-out;
+        margin: 0;
+
+        .anticon {
+          font-size: 16px;
+          margin-right: 8px;
+        }
+
+        .ant-badge {
+          margin-left: 8px;
+
+          .ant-badge-count {
+            background: #f15541;
+            box-shadow: none;
+          }
+        }
+
+        &:hover {
+          border-color: #f15541;
+          color: #f15541;
+        }
+      }
+
+      .ais-ClearRefinements {
+        margin: 0 0 0 8px;
+
+        .ais-ClearRefinements-button {
+          height: 48px;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.filterCard {
+  position: sticky;
+  top: 24px;
+  border-radius: 8px;
+  background: transparent;
+  border: none !important;
+
+  :global {
+    .ant-card {
+      background: transparent;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .ant-card-body {
+      padding: 24px;
+    }
+
+    .ais-RefinementList-item {
+      margin: 8px 0;
+
+      &--selected {
+        .ais-RefinementList-label {
+          color: #f15541;
+        }
+
+        .ais-RefinementList-checkbox {
+          border-color: #f15541;
+          background: #f15541;
+          border-radius: 4px;
+        }
+      }
+
+      .ais-RefinementList-checkbox {
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+    }
+
+    .ais-RefinementList-count {
+      background: rgba(245, 245, 245, 0.8);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    .ant-typography {
+      margin-bottom: 12px;
+    }
+  }
+}
+
