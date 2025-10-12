@@ -26,7 +26,7 @@ import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
@@ -57,13 +57,14 @@ export const ProtectedProjectLayout = ({
 	children: ReactNode;
 }) => {
 	const { t } = useTranslate();
-	const router = useRouter();
-	const projectSlug = router.query.slug as string;
+	const params = useParams();
+	const pathname = usePathname();
+	const projectSlug = params?.slug as string;
 	const [contextProject, setContextProject] = useState<ContextProject>();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [isOpenedInTelegram] = useTelegram();
 	const screens = Grid.useBreakpoint();
-	const { data: session }: any = useSession();
+	const { data: session } = useSession();
 	const { changeLanguage, getLanguage } = useTolgee();
 
 	const { project, isFetched } = useCurrentProject();
@@ -85,7 +86,7 @@ export const ProtectedProjectLayout = ({
 
 	const seoSettings: NextSeoProps = {
 		title: title || "Project",
-		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL || `${pathname}`,
 		nofollow: true,
 		noindex: true,
 		description,
@@ -94,12 +95,12 @@ export const ProtectedProjectLayout = ({
 
 	useEffect(() => {
 		if (session?.user.lang)
-			changeLanguage(session.user.lang).then((d) => console.log("language is changed"));
-	}, [session?.user.lang]);
+			changeLanguage(session.user.lang).then(() => console.log("language is changed"));
+	}, [session?.user.lang, changeLanguage]);
 
 	useEffect(() => {
 		if (!screens.lg) setOpenMobileMenu(false);
-	}, [session, screens]);
+	}, [screens]);
 
 	const avatarConfig = useMemo(() => {
 		if (!session?.user.email) return;
@@ -143,7 +144,7 @@ export const ProtectedProjectLayout = ({
 		];
 
 		return menu;
-	}, [screens, session]);
+	}, [screens, t]);
 
 	const dropdownMenuItems: MenuProps["items"] = useMemo(() => {
 		let menu: MenuProps["items"] = [];
@@ -195,7 +196,7 @@ export const ProtectedProjectLayout = ({
 		];
 
 		return screens.lg ? menu : [...inlineMenuItems, { type: "divider" }, ...menu];
-	}, [isOpenedInTelegram, screens, session]);
+	}, [isOpenedInTelegram, screens, session, inlineMenuItems]);
 
 	const menuItems: (ItemType & { disabled: boolean })[] = [
 		{
@@ -281,7 +282,7 @@ export const ProtectedProjectLayout = ({
 	return (
 		<ProjectContext.Provider value={{ contextProject, isLoaded: isFetched, setContextProject }}>
 			<NextSeo {...seoSettings} />
-			<ConfigProvider theme={appThemeConfig} locale={getLanguage() == "en" ? enLocale : ruLocale}>
+			<ConfigProvider theme={appThemeConfig} locale={getLanguage() === "en" ? enLocale : ruLocale}>
 				<style jsx global>{`
 					:root {
 						--background-color: #fafafa;
@@ -372,7 +373,7 @@ export const ProtectedProjectLayout = ({
 						<Menu
 							items={menuItems.filter((r) => !r.disabled)}
 							mode="horizontal"
-							selectedKeys={[router.asPath]}
+							selectedKeys={pathname ? [pathname] : []}
 							className={styles.appMenu}
 						/>
 					</Header>

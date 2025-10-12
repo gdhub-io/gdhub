@@ -1,3 +1,5 @@
+"use client";
+
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -15,7 +17,7 @@ import {
 	Typography,
 } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { useEffect, useMemo, useState } from "react";
@@ -38,13 +40,13 @@ const scrollIntoViewWithOffset = (selector: string, offset: number) => {
 	});
 };
 
-export const LandingLayout = ({ children }: any) => {
+export const LandingLayout = ({ children }: { children: React.ReactNode }) => {
 	const { t } = useTranslate();
-	const router = useRouter();
+	const pathname = usePathname();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [scrollY, setScrollY] = useState(0);
 	const screens = Grid.useBreakpoint();
-	const { data: session, status: authStatus }: any = useSession();
+	const { data: session, status: authStatus } = useSession();
 
 	console.log("authStatus", authStatus);
 
@@ -54,7 +56,7 @@ export const LandingLayout = ({ children }: any) => {
 			"landing.seo.description",
 			"Game Developers Hub is a platform for game developers and specialists.",
 		),
-		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+		canonical: (process.env.NEXT_PUBLIC_APP_URL || "") + pathname,
 		openGraph: {
 			title: t("landing.seo.title", "Game Developers Hub"),
 			description: t(
@@ -62,7 +64,7 @@ export const LandingLayout = ({ children }: any) => {
 				"Game Developers Hub is a platform for game developers and specialists.",
 			),
 			type: "website",
-			url: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+			url: (process.env.NEXT_PUBLIC_APP_URL || "") + pathname,
 		},
 	};
 
@@ -72,11 +74,11 @@ export const LandingLayout = ({ children }: any) => {
 				scrollIntoViewWithOffset(document.location.hash, 100);
 			}, 300);
 		}
-	}, [router]);
+	}, []);
 
 	useEffect(() => {
 		if (!screens.xl) setOpenMobileMenu(false);
-	}, [session, screens]);
+	}, [screens]);
 
 	useEffect(() => {
 		const unsetOverflow = () => {
@@ -153,7 +155,7 @@ export const LandingLayout = ({ children }: any) => {
 				key: "#contacts",
 			},
 		],
-		[screens, session],
+		[t],
 	);
 
 	const mainButtonInDrawer = useMemo(() => {
@@ -180,7 +182,7 @@ export const LandingLayout = ({ children }: any) => {
 				</Link>
 			);
 		}
-	}, [authStatus]);
+	}, [authStatus, t]);
 
 	return (
 		<>

@@ -172,32 +172,33 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 	const { t } = useTranslate();
 	const limit = 5;
 
-	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-		queryKey: ["devlog-posts", projectId],
-		queryFn: async ({ pageParam = 1 }) => {
-			const response = await axios.get<DevlogPost[]>(
-				`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ""}`,
-			);
+	const { data, isLoading, isFetched, fetchNextPage, hasNextPage, isFetchingNextPage } =
+		useInfiniteQuery({
+			queryKey: ["devlog-posts", projectId],
+			queryFn: async ({ pageParam = 1 }) => {
+				const response = await axios.get<DevlogPost[]>(
+					`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ""}`,
+				);
 
-			// Если это первая страница, возвращаем только первые 5 постов
-			if (pageParam === 1) {
+				// Если это первая страница, возвращаем только первые 5 постов
+				if (pageParam === 1) {
+					return {
+						posts: response.data.slice(0, limit) || [],
+						nextPage: response.data.length > limit ? 2 : undefined,
+					};
+				}
+
+				// Для последующих страниц возвращаем следующие 5 постов
+				const startIndex = (pageParam - 1) * limit;
+				const endIndex = startIndex + limit;
 				return {
-					posts: response.data.slice(0, limit) || [],
-					nextPage: response.data.length > limit ? 2 : undefined,
+					posts: response.data.slice(startIndex, endIndex) || [],
+					nextPage: endIndex < response.data.length ? pageParam + 1 : undefined,
 				};
-			}
-
-			// Для последующих страниц возвращаем следующие 5 постов
-			const startIndex = (pageParam - 1) * limit;
-			const endIndex = startIndex + limit;
-			return {
-				posts: response.data.slice(startIndex, endIndex) || [],
-				nextPage: endIndex < response.data.length ? pageParam + 1 : undefined,
-			};
-		},
-		getNextPageParam: (lastPage) => lastPage.nextPage,
-		initialPageParam: 1,
-	});
+			},
+			getNextPageParam: (lastPage) => lastPage.nextPage,
+			initialPageParam: 1,
+		});
 
 	const posts = data?.pages.flatMap((page) => page.posts || []) || [];
 
@@ -214,27 +215,21 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-	if (isLoading) {
-		return (
-			<div className={styles.devlogPostsContainer}>
-				<Flex justify="space-between" wrap>
-					<Title level={2}>
-						<HistoryOutlined style={{ marginRight: 8 }} />
-						{t("page.hub.activity", "Activity")}
-					</Title>
-				</Flex>
-				<div className={styles.postsList}>
-					{[...Array(3)].map((v) => (
-						<div key={`skeleton-${v}`} className={styles.postWrapper}>
-							<PostSkeleton />
-						</div>
-					))}
-				</div>
-			</div>
-		);
-	}
+	// if (isLoading) {
+	// 	return (
+	// 		<div className={styles.devlogPostsContainer}>
+	// 			<Flex justify="space-between" wrap>
+	// 				<Title level={2}>
+	// 					<HistoryOutlined style={{ marginRight: 8 }} />
+	// 					{t("page.hub.activity", "Activity")}
+	// 				</Title>
+	// 			</Flex>
 
-	if (!posts.length) {
+	// 		</div>
+	// 	);
+	// }
+
+	if (!posts.length && isFetched) {
 		return <div className={styles.empty}>{t("No devlog posts yet")}</div>;
 	}
 
@@ -247,19 +242,31 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 				</Title>
 			</Flex>
 
-			<div className={styles.postsList}>
-				{posts.map((post) => (
-					<div key={post.id} className={styles.postWrapper}>
-						<PostCard post={post} onClick={(e) => e.stopPropagation()} />
-					</div>
-				))}
-			</div>
-
-			{hasNextPage && (
-				<div className={styles.loadMore}>
-					<Spin spinning={isFetchingNextPage} />
+			{isLoading ? (
+				<div className={styles.postsList}>
+					{[...Array(3)].map((_, idx) => (
+						<PostSkeleton key={`skeleton-${idx.toString}`} />
+					))}
 				</div>
-			)}
+			) : posts.length > 0 ? (
+				<>
+					<div className={styles.postsList}>
+						{posts.map((post) => (
+							<div key={post.id} className={styles.postWrapper}>
+								<PostCard post={post} onClick={(e) => e.stopPropagation()} />
+							</div>
+						))}
+					</div>
+
+					{hasNextPage && (
+						<div className={styles.loadMore}>
+							<Spin spinning={isFetchingNextPage} />
+						</div>
+					)}
+				</>
+			) : isFetched ? (
+				<div className={styles.empty}>{t("No devlog posts yet")}</div>
+			) : null}
 		</div>
 	);
 };

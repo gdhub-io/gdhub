@@ -1,11 +1,11 @@
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { DevLogWall } from "@/components/DevLogWall";
 import { ProtectedProjectLayout } from "@/layouts/ProtectedProjectLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const MyProjectPage: NextPageWithLayout = () => {
-	const router = useRouter();
-	const projectSlug = router.query.slug as string;
+	const params = useParams();
+	const projectSlug = params?.slug as string;
 
 	return (
 		<ProtectedProjectLayout>

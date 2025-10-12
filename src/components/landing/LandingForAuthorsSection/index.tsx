@@ -1,52 +1,63 @@
-import Star2Icon from '@/assets/images/icons/star-2.svg'
-// import BgImageXS from '@/assets/images/landing/gdhub-talent-pool.png'
-import BgImage from '@/assets/images/landing/gdhub-talent-pool.png'
-import { useQuery } from '@tanstack/react-query'
-import { useTranslate } from '@tolgee/react'
-import { Button, Card, Grid, Space, Typography } from 'antd'
-import axios from 'axios'
-import Image from 'next/image'
-import Link from 'next/link'
-import ReactNiceAvatar, { genConfig } from 'react-nice-avatar'
-import styles from './style.module.scss'
+"use client";
 
-const { Title, Text } = Typography
+import { useQuery } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
+import { Button, Card, Grid, Space, Typography } from "antd";
+import axios from "axios";
+import Image from "next/image";
+import Link from "next/link";
+import { useId } from "react";
+import ReactNiceAvatar, { genConfig } from "react-nice-avatar";
+import Star2Icon from "@/assets/images/icons/star-2.svg";
+// import BgImageXS from '@/assets/images/landing/gdhub-talent-pool.png'
+import BgImage from "@/assets/images/landing/gdhub-talent-pool.png";
+import styles from "./style.module.scss";
+
+const { Title, Text } = Typography;
 
 export const LandingForAuthorsSection = () => {
-	const screens = Grid.useBreakpoint()
-	const { t } = useTranslate()
+	const screens = Grid.useBreakpoint();
+	const { t } = useTranslate();
 
 	const { data: latestSpecialists } = useQuery({
-		queryKey: ['latest-specialists'],
+		queryKey: ["latest-specialists"],
 		queryFn: () =>
 			axios
 				.get<
-					{ id: string; name: string; level: string; specialization: string; direction: { name: string } }[]
-				>(' /api/specialists/latest'.replace(' ', ''))
+					{
+						id: string;
+						name: string;
+						level: string;
+						specialization: string;
+						direction: { name: string };
+					}[]
+				>(" /api/specialists/latest".replace(" ", ""))
 				.then((r) => r.data),
 		staleTime: 1000 * 60 * 5,
-	})
+	});
 
 	const formatLevel = (level?: string) => {
-		if (!level) return ''
-		const pretty = level.replace(/_/g, ' ').toLowerCase()
-		return pretty.charAt(0).toUpperCase() + pretty.slice(1)
-	}
+		if (!level) return "";
+		const pretty = level.replace(/_/g, " ").toLowerCase();
+		return pretty.charAt(0).toUpperCase() + pretty.slice(1);
+	};
 
-	const visibleCount = screens.lg ? 5 : 3
-	const gridColumns = screens.lg ? 5 : screens.md ? 3 : 1
-	const visibleSpecialists = (latestSpecialists || []).slice(0, visibleCount)
+	const visibleCount = screens.lg ? 5 : 3;
+	const gridColumns = screens.lg ? 5 : screens.md ? 3 : 1;
+	const visibleSpecialists = (latestSpecialists || []).slice(0, visibleCount);
 
 	return (
 		<div>
 			<div
-				id="for-authors"
+				id={useId()}
 				className={styles.section}
 				style={screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined}
 			>
 				<div className={styles.container}>
-					<div className={styles.preTitle}>{t('landing.author.pretitle', 'what are our advantages')}</div>
-					<Title level={2}>{t('landing.author.title', 'FOR AUTHORS')}</Title>
+					<div className={styles.preTitle}>
+						{t("landing.author.pretitle", "what are our advantages")}
+					</div>
+					<Title level={2}>{t("landing.author.title", "FOR AUTHORS")}</Title>
 
 					<div className={styles.content}>
 						<Space direction="vertical" size={screens.lg ? 46 : 24}>
@@ -56,8 +67,8 @@ export const LandingForAuthorsSection = () => {
 								</div>
 								<Text>
 									{t(
-										'landing.author.text1',
-										'Our platform is actively used by more than 250 professionals from various fields - game designers, programmers, artists, animators, etc.'
+										"landing.author.text1",
+										"Our platform is actively used by more than 250 professionals from various fields - game designers, programmers, artists, animators, etc.",
 									)}
 								</Text>
 							</Space>
@@ -65,7 +76,12 @@ export const LandingForAuthorsSection = () => {
 								<div className={styles.star}>
 									<Star2Icon />
 								</div>
-								<Text>{t('landing.author.text2', 'Specialists of your team will develop a video game for free')}</Text>
+								<Text>
+									{t(
+										"landing.author.text2",
+										"Specialists of your team will develop a video game for free",
+									)}
+								</Text>
 							</Space>
 							<Space size={screens.lg ? 32 : 16} align="center">
 								<div className={styles.star}>
@@ -73,8 +89,8 @@ export const LandingForAuthorsSection = () => {
 								</div>
 								<Text>
 									{t(
-										'landing.author.text3',
-										'Each Author can choose the format of work on our portal: as a part of the Gamelab incubation program or work independently at his own pace'
+										"landing.author.text3",
+										"Each Author can choose the format of work on our portal: as a part of the Gamelab incubation program or work independently at his own pace",
 									)}
 								</Text>
 							</Space>
@@ -83,8 +99,8 @@ export const LandingForAuthorsSection = () => {
 								<div className={styles.latestSpecialistsList}>
 									<Title level={3}>
 										{t(
-											'component.landingForAuthorsSection.latestSpecialistsFromTalentPool',
-											'Latest specialists from Talent Pool'
+											"component.landingForAuthorsSection.latestSpecialistsFromTalentPool",
+											"Latest specialists from Talent Pool",
 										)}
 									</Title>
 
@@ -94,13 +110,16 @@ export const LandingForAuthorsSection = () => {
 									>
 										{visibleSpecialists.map((s, idx) => (
 											<Card
-												key={(s as any).id || `${s.name}-${s.direction?.name}-${idx}`}
+												key={(s as any).id || `${s.name}-${s.direction?.name}-${idx.toString()}`}
 												className={styles.specialistCard}
 												hoverable
 											>
 												<div className={styles.specialistCardBody}>
 													<div className={styles.specialistAvatar}>
-														<ReactNiceAvatar style={{ width: 48, height: 48 }} {...genConfig(s.name)} />
+														<ReactNiceAvatar
+															style={{ width: 48, height: 48 }}
+															{...genConfig(s.name)}
+														/>
 													</div>
 													<div className={styles.specialistInfo}>
 														<div className={styles.specialistName}>
@@ -117,13 +136,13 @@ export const LandingForAuthorsSection = () => {
 
 							{screens.xl ? null : (
 								<div className={styles.sectionImageXS}>
-									<Image src={BgImage} alt="" fill style={{ objectFit: 'contain' }} />
+									<Image src={BgImage} alt="" fill style={{ objectFit: "contain" }} />
 								</div>
 							)}
 
 							<Link href="/registration?for=author">
 								<Button className={styles.heroButton} type="primary">
-									{t('component.landingForAuthorsSection.assembleATeam', 'Assemble a team')}
+									{t("component.landingForAuthorsSection.assembleATeam", "Assemble a team")}
 								</Button>
 							</Link>
 						</Space>
@@ -131,5 +150,5 @@ export const LandingForAuthorsSection = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
