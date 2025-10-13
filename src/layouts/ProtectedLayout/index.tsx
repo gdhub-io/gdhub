@@ -9,6 +9,7 @@ import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
+	Badge,
 	Breadcrumb,
 	Button,
 	Col,
@@ -37,6 +38,7 @@ import { type ReactNode, useEffect, useMemo, useState } from "react";
 import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { useChat } from "@/components/Chat/useChat";
+import { ChatButton } from "@/components/ChatButton";
 import { appThemeConfig } from "@/config/theme";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
@@ -368,12 +370,7 @@ export const ProtectedLayout = ({
 													{t("hub.menu.documentation", "Documentation")}
 												</Button>
 											</Link>
-											<Button
-												type="text"
-												shape="circle"
-												onClick={() => setOpenChatModal(true)}
-												icon={<AiOutlineMessage />}
-											/>
+											<ChatButton onClick={() => setOpenChatModal(true)} />
 											<NotificationsBell />
 											<Dropdown
 												menu={{ items: dropdownMenuItems }}
