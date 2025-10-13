@@ -27,7 +27,8 @@ const RenderIndex: BubbleProps["messageRender"] = (content) => (
 
 export default function ChatMessages() {
 	const listRef = useRef<GetRef<typeof Bubble.List>>(null);
-	const { selectedRoomId, chatClient, ready, userMembership } = useChat();
+	const { selectedRoomId, chatClient, ready, userMembership, chatContext } =
+		useChat();
 	const [messages, setMessages] = useState<MatrixEvent[]>([]);
 	const [preparedMessages, setPreparedMessages] = useState<BubbleDataType[]>(
 		[],
@@ -257,8 +258,9 @@ export default function ChatMessages() {
 	}, [selectedRoomId, chatClient]);
 
 	if (selectedRoomId && userMembership === "invite") {
-		if (specialRootType === "#advreq" && specialId)
-			return <AdviceRequestInvite adviceRequestId={specialId} />;
+		if (chatContext?.type === "advice-request" && !chatContext?.isExpert) {
+			return <AdviceRequestInvite />;
+		}
 
 		return <DefaultInvite />;
 	}

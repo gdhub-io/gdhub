@@ -1,13 +1,16 @@
 import { AiOutlineMessage } from "@react-icons/all-files/ai/AiOutlineMessage";
 import { Badge, Button } from "antd";
+import { useChat } from "@/components/Chat/useChat";
 
 export const ChatButton = ({
 	onClick,
 }: {
 	onClick: (open: boolean) => void;
 }) => {
+	const { unreadTotal } = useChat();
+
 	return (
-		<Badge dot color="red" offset={[-10, 26]}>
+		<Badge count={unreadTotal} dot offset={[-10, 14]}>
 			<Button
 				type="text"
 				shape="circle"

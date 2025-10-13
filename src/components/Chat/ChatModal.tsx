@@ -39,13 +39,15 @@ export const ChatModal = ({
 		selectedRoomId,
 		setSelectedRoomId,
 		userMembership,
+		setUserMembership,
+		setUnreadTotal,
 	} = useChat();
 
 	const { data: clientSessionData } = useQuery({
 		queryKey: ["chat-client-session", session?.user.id],
 		queryFn: () =>
 			axios.post("/api/chat/session", undefined).then((res) => res.data),
-		enabled: !!session?.user.id && open,
+		enabled: !!session?.user.id,
 	});
 
 	const { data: clientContextData } = useQuery({
@@ -60,10 +62,10 @@ export const ChatModal = ({
 	});
 
 	useEffect(() => {
-		if (initialRoomId && open) {
+		if (initialRoomId && open && chatClient) {
 			setSelectedRoomId(initialRoomId);
 		}
-	}, [initialRoomId, open]);
+	}, [initialRoomId, open, chatClient]);
 
 	useEffect(() => {
 		if (clientContextData) {
@@ -86,7 +88,26 @@ export const ChatModal = ({
 
 				client.once(ClientEvent.Sync, (state) => {
 					if (state === "PREPARED") {
-						console.log("prepared");
+						const rooms = client.getRooms();
+						const unreadNotificationCount =
+							rooms?.reduce(
+								(acc, room) => acc + room.getUnreadNotificationCount(),
+								0,
+							) || 0;
+
+						const invetedChatRoomsCount = rooms.reduce((acc, room) => {
+							const member = room.getMember(client.getUserId() || "");
+							if (member?.membership === "invite") {
+								return acc + 1;
+							}
+
+							return acc;
+						}, 0);
+
+						setUnreadTotal(unreadNotificationCount + invetedChatRoomsCount);
+
+						console.log("chat prepared");
+
 						setReady(true);
 					} else {
 						console.log("[chat] sync state", state);

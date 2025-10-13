@@ -9,14 +9,17 @@ export type ChatStore = {
 	chatSession: MatrixSession | null;
 	chatClient: sdk.MatrixClient | null;
 	userMembership: string | null;
+	unreadTotal: number;
 	chatContext: {
 		type: string;
 		data: Record<string, any> | null;
+		isExpert?: boolean;
 	} | null;
 	setChatContext: (
 		chatContext: {
 			type: string;
 			data: Record<string, any> | null;
+			isExpert?: boolean;
 		} | null,
 	) => void;
 	setOpenChatModal: (openChatModal: boolean) => void;
@@ -26,6 +29,7 @@ export type ChatStore = {
 	setChatSession: (chatSession: MatrixSession) => void;
 	setChatClient: (chatClient: sdk.MatrixClient | null) => void;
 	setUserMembership: (userMembership: string | null) => void;
+	setUnreadTotal: (unreadTotal: number) => void;
 };
 
 export const useChat = create<ChatStore>((set, get, store) => ({
@@ -35,15 +39,18 @@ export const useChat = create<ChatStore>((set, get, store) => ({
 	chatSession: null,
 	chatClient: null,
 	userMembership: null,
+	unreadTotal: 0,
 	chatContext: null,
 	setChatContext: (
 		chatContext: {
 			type: string;
 			data: Record<string, any> | null;
+			isExpert?: boolean;
 		} | null,
 	) => set({ chatContext }),
 	setChatClient: (chatClient: sdk.MatrixClient | null) => set({ chatClient }),
 	setUserMembership: (userMembership: string | null) => set({ userMembership }),
+	setUnreadTotal: (unreadTotal: number) => set({ unreadTotal }),
 	setReady: (ready: boolean) => set({ ready }),
 	setOpenChatModal: (openChatModal: boolean) => set({ openChatModal }),
 	setSelectedRoomId: (selectedRoomId: string) => set({ selectedRoomId }),

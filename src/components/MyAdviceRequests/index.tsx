@@ -328,7 +328,6 @@ const RequestCard: React.FC<{
 								<Button
 									type="primary"
 									loading={isAccepting}
-									size="small"
 									onClick={() => onAccept(req.id)}
 								>
 									Accept
@@ -336,25 +335,26 @@ const RequestCard: React.FC<{
 								<Button
 									type="default"
 									loading={isRejecting}
-									size="small"
 									onClick={() => onReject(req.id)}
 								>
 									Reject
 								</Button>
 							</>
 						) : req.status === "Approved" ? (
-							<Button size="small" onClick={() => onReply(req.id)}>
-								Chat
-							</Button>
+							<Button onClick={() => onReply(req.id)}>Chat</Button>
 						) : (
-							<Button size="small" onClick={() => onView(req.id)}>
-								View
-							</Button>
+							<Button onClick={() => onView(req.id)}>View</Button>
 						)
 					) : (
-						<Button size="small" onClick={() => onView(req.id)}>
-							View
-						</Button>
+						<Space>
+							{req.status === "Approved" ? (
+								<Button onClick={() => onReply(req.id)}>Chat</Button>
+							) : (
+								<Button type="primary" onClick={() => onView(req.id)}>
+									View
+								</Button>
+							)}
+						</Space>
 					)}
 				</div>
 			</Flex>

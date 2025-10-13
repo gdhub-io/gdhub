@@ -28,7 +28,10 @@ class SendMessageBody {
 @NextAuthGuard("user")
 class ChatRoomsHandler {
 	@Get("/:id")
-	async get(@Param("id") matrixRoomId: string) {
+	async get(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") matrixRoomId: string,
+	) {
 		const adviceRequest = await prisma.adviceRequest.findFirst({
 			where: {
 				matrixRoomId,
@@ -36,6 +39,18 @@ class ChatRoomsHandler {
 			select: {
 				topic: true,
 				comment: true,
+				toUser: {
+					select: {
+						id: true,
+						name: true,
+					},
+				},
+				fromUser: {
+					select: {
+						id: true,
+						name: true,
+					},
+				},
 				project: {
 					select: {
 						id: true,
@@ -47,10 +62,17 @@ class ChatRoomsHandler {
 		});
 
 		if (adviceRequest) {
-			return { type: "advice-request", data: adviceRequest };
+			return {
+				type: "advice-request",
+				data: adviceRequest,
+				isExpert: req.user.id === adviceRequest?.toUser.id,
+			};
 		}
 
-		return { type: "default", data: null };
+		return {
+			type: "default",
+			data: null,
+		};
 	}
 }
 

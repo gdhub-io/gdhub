@@ -74,8 +74,7 @@ export default function ChatRooms({
 			setItems(nextItems);
 			try {
 				onReady({ count: nextItems.length });
-				const { selectedRoomId, setUserMembership, setSelectedRoomId } =
-					useChat.getState();
+				const { setUserMembership, setSelectedRoomId } = useChat.getState();
 				if (nextItems.length === 0) {
 					// clear selection when no rooms remain
 					setSelectedRoomId("");
@@ -149,8 +148,12 @@ export default function ChatRooms({
 			handleSelectRoom(items[0].key);
 			return;
 		}
+
 		const exists = items.some((i) => i.key === selectedRoomId);
 		if (!exists) handleSelectRoom(items[0].key);
+
+		const room = chatClient?.getRoom(selectedRoomId);
+		setUserMembership(room?.getMyMembership() || null);
 	}, [items, selectedRoomId]);
 
 	const menuConfig: ConversationsProps["menu"] = (conversation) => {
