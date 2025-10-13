@@ -1,44 +1,44 @@
-import '@/styles/globals.scss'
-import React, { ReactNode, useEffect, useState } from 'react'
-import { CookieConsent } from '@/components/CookieConsent'
-import LoadingScreen from '@/components/LoadingScreen'
-import { AvailableLocales, defaultLocale } from '@/config/locale'
-import SEOSettings from '@/config/seo'
-import { secondFont } from '@/config/theme'
-import { hasGoogleConsent } from '@/helpers/googleConsent'
-import { GTM_ID } from '@/helpers/gtm'
-import { useAuthErrorHandler } from '@/hooks/useAuthErrorHandler'
-import { tolgeeService } from '@/services/tolgee'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { TolgeeProvider, useTolgeeSSR } from '@tolgee/react'
-import dayjs from 'dayjs'
-import localeData from 'dayjs/plugin/localeData'
-import localizedFormat from 'dayjs/plugin/localizedFormat'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
-import weekday from 'dayjs/plugin/weekday'
-import { NextPage } from 'next'
-import type { AppProps } from 'next/app'
-import { useRouter } from 'next/router'
-import Script from 'next/script'
-import { SessionProvider, signOut } from 'next-auth/react'
-import 'dayjs/locale/en'
-import { DefaultSeo } from 'next-seo'
-import NextNProgress from 'nextjs-progressbar'
+import "@/styles/globals.scss";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { TolgeeProvider, useTolgeeSSR } from "@tolgee/react";
+import dayjs from "dayjs";
+import localeData from "dayjs/plugin/localeData";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import relativeTime from "dayjs/plugin/relativeTime";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import weekday from "dayjs/plugin/weekday";
+import type { NextPage } from "next";
+import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import Script from "next/script";
+import { SessionProvider, signOut } from "next-auth/react";
+import { type ReactNode, useEffect, useId, useState } from "react";
+import { CookieConsent } from "@/components/CookieConsent";
+import LoadingScreen from "@/components/LoadingScreen";
+import { AvailableLocales, defaultLocale } from "@/config/locale";
+import SEOSettings from "@/config/seo";
+import { secondFont } from "@/config/theme";
+import { hasGoogleConsent } from "@/helpers/googleConsent";
+import { GTM_ID } from "@/helpers/gtm";
+import { useAuthErrorHandler } from "@/hooks/useAuthErrorHandler";
+import { tolgeeService } from "@/services/tolgee";
+import "dayjs/locale/en";
+import { DefaultSeo } from "next-seo";
+import NextNProgress from "nextjs-progressbar";
 
-dayjs.extend(localizedFormat)
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.extend(localeData)
-dayjs.extend(relativeTime)
-dayjs.extend(weekday)
-dayjs.locale(defaultLocale)
+dayjs.extend(localizedFormat);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(localeData);
+dayjs.extend(relativeTime);
+dayjs.extend(weekday);
+dayjs.locale(defaultLocale);
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
-	getLayout?: (page: ReactNode) => ReactNode
-}
+	getLayout?: (page: ReactNode) => ReactNode;
+};
 
 // const twentyFourHoursInMs = 1000 * 60 * 60 * 24
 const queryClient = new QueryClient({
@@ -48,63 +48,69 @@ const queryClient = new QueryClient({
 			// staleTime: twentyFourHoursInMs,
 		},
 	},
-})
+});
 
 type AppPropsWithLayout = AppProps<{ session: any }> & {
-	Component: NextPageWithLayout
-}
+	Component: NextPageWithLayout;
+};
 
 export function reportWebVitals(metric: any) {
-	if (process.env.NODE_ENV == 'production') return
+	if (process.env.NODE_ENV == "production") return;
 
-	console.log(metric)
+	console.log(metric);
 }
 
-export default function MyApp({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
-	const router = useRouter()
-	const [loading, setLoading] = useState(true)
-	const [showContent, setShowContent] = useState(false)
-	const getLayout = Component.getLayout || ((page) => <>{page}</>)
-	const ssrTolgee = useTolgeeSSR(tolgeeService, router.locale)
-	const [googleConsent, setGoogleConsent] = useState(false)
+export default function MyApp({
+	Component,
+	pageProps: { session, ...pageProps },
+}: AppPropsWithLayout) {
+	const router = useRouter();
+	const [loading, setLoading] = useState(true);
+	const [showContent, setShowContent] = useState(false);
+	const getLayout = Component.getLayout || ((page) => <>{page}</>);
+	const ssrTolgee = useTolgeeSSR(tolgeeService, router.locale);
+	const [googleConsent, setGoogleConsent] = useState(false);
 
 	const setLoadingOff = () => {
 		setTimeout(() => {
-			setLoading(false)
-			setTimeout(() => setShowContent(true), 150)
-		}, 150)
-	}
+			setLoading(false);
+			setTimeout(() => setShowContent(true), 150);
+		}, 150);
+	};
 
 	useEffect(() => {
-		if (session?.error === 'InvalidGrantError') {
+		if (session?.error === "InvalidGrantError") {
 			signOut().then(() => {
-				router.push('/signin')
-			})
+				router.push("/signin");
+			});
 		}
-	}, [session?.error])
+	}, [session?.error]);
 
 	useEffect(() => {
-		setLoadingOff()
-		setGoogleConsent(hasGoogleConsent())
-		dayjs.locale(ssrTolgee.getLanguage() || AvailableLocales.en)
-	}, [])
+		setLoadingOff();
+		setGoogleConsent(hasGoogleConsent());
+		dayjs.locale(ssrTolgee.getLanguage() || AvailableLocales.en);
+	}, []);
 
 	useEffect(() => {
-		document.body.style.overflow = showContent ? 'unset' : 'hidden'
-	}, [showContent])
+		document.body.style.overflow = showContent ? "unset" : "hidden";
+	}, [showContent]);
 
 	return (
 		<>
-			<DefaultSeo {...SEOSettings[ssrTolgee.getLanguage() as AvailableLocales]} />
+			<DefaultSeo
+				{...SEOSettings[ssrTolgee.getLanguage() as AvailableLocales]}
+			/>
 			<style jsx global>{`
 				:root {
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
 				}
 			`}</style>
-			{process.env.NODE_ENV == 'production' && googleConsent && (
+			{process.env.NODE_ENV === "production" && googleConsent && (
 				<Script
-					id="gtag-base"
+					id={`gtag-base`}
 					strategy="afterInteractive"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 					dangerouslySetInnerHTML={{
 						__html: `
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -123,15 +129,21 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 					{/* <CheckHealth> */}
 					<SessionProvider session={session}>
 						<AuthErrorHandler />
-						<div className="app-container" style={{ opacity: showContent ? 1 : 0 }}>
+						<div
+							className="app-container"
+							style={{ opacity: showContent ? 1 : 0 }}
+						>
 							{getLayout(<Component {...pageProps} />)}
 						</div>
 					</SessionProvider>
 					{/* </CheckHealth> */}
 					<CookieConsent />
 					<LoadingScreen visible={loading} />
-					{process.env.NODE_ENV === 'development' && (
-						<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+					{process.env.NODE_ENV === "development" && (
+						<ReactQueryDevtools
+							initialIsOpen={false}
+							buttonPosition="bottom-left"
+						/>
 					)}
 				</QueryClientProvider>
 				{/* </ErrorBoundary> */}
@@ -144,11 +156,11 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
 				options={{ showSpinner: false }}
 			/>
 		</>
-	)
+	);
 }
 
 // Component to handle authentication errors
 function AuthErrorHandler() {
-	useAuthErrorHandler()
-	return null
+	useAuthErrorHandler();
+	return null;
 }

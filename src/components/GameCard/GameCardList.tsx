@@ -1,8 +1,8 @@
-import React from 'react'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Row, Col, Empty, Spin } from 'antd'
-import styles from './styles.module.scss'
-import GameCard from './index'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Col, Empty, Row, Spin } from "antd";
+import type React from "react";
+import GameCard from "./index";
+import styles from "./styles.module.scss";
 
 /**
  * GameCardList properties
@@ -12,9 +12,11 @@ import GameCard from './index'
  */
 interface GameCardListProps {
 	games: (prismaClient.Project & {
-		workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
-	})[]
-	loading: boolean
+		workflow: prismaClient.ProjectWorkflow & {
+			steps: prismaClient.ProjectWorkflowStep[];
+		};
+	})[];
+	loading: boolean;
 }
 
 /**
@@ -24,15 +26,19 @@ interface GameCardListProps {
  */
 const getWorkflowStage = (game: any): string | undefined => {
 	try {
-		if (game.workflow && game.workflow.steps && game.workflow.steps.length > 0) {
-			return game.workflow.steps[0].name
+		if (
+			game.workflow &&
+			game.workflow.steps &&
+			game.workflow.steps.length > 0
+		) {
+			return game.workflow.steps[0].name;
 		}
-		return undefined
+		return undefined;
 	} catch (error) {
-		console.error('Error getting workflow stage:', error)
-		return undefined
+		console.error("Error getting workflow stage:", error);
+		return undefined;
 	}
-}
+};
 
 /**
  * GameCardList component displays a responsive grid of game cards
@@ -46,11 +52,11 @@ const GameCardList: React.FC<GameCardListProps> = ({ games, loading }) => {
 			<div className={styles.loadingContainer}>
 				<Spin size="large" />
 			</div>
-		)
+		);
 	}
 
 	if (!games || games.length === 0) {
-		return <Empty description="No games found" />
+		return <Empty description="No games found" />;
 	}
 
 	return (
@@ -69,7 +75,7 @@ const GameCardList: React.FC<GameCardListProps> = ({ games, loading }) => {
 				</Col>
 			))}
 		</Row>
-	)
-}
+	);
+};
 
-export default GameCardList
+export default GameCardList;

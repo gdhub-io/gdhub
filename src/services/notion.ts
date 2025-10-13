@@ -1,132 +1,142 @@
-import { AvailableLocales } from '@/config/locale'
-import { Client } from '@notionhq/client'
+import { Client } from "@notionhq/client";
+import { AvailableLocales } from "@/config/locale";
 
 // Initializing a client
 const NotionService = new Client({
 	auth: process.env.NOTION_TOKEN,
-})
+});
 
 type GetPagesParams = {
-	roles: string[]
-	locale?: AvailableLocales
-}
+	roles: string[];
+	locale?: AvailableLocales;
+};
 
-const getDatabase = ({ locale = AvailableLocales.ru }: { locale: AvailableLocales }) => {
-	let notionDatabaseId = process.env.NOTION_DATABASE_DOCS as string
+const getDatabase = ({
+	locale = AvailableLocales.ru,
+}: {
+	locale: AvailableLocales;
+}) => {
+	let notionDatabaseId = process.env.NOTION_DATABASE_DOCS as string;
 
 	switch (locale) {
 		case AvailableLocales.en:
-			notionDatabaseId = process.env.NOTION_DATABASE_DOCS_EN as string
-			break
+			notionDatabaseId = process.env.NOTION_DATABASE_DOCS_EN as string;
+			break;
 		case AvailableLocales.ru:
-			notionDatabaseId = process.env.NOTION_DATABASE_DOCS_RU as string
-			break
+			notionDatabaseId = process.env.NOTION_DATABASE_DOCS_RU as string;
+			break;
 	}
 
-	return notionDatabaseId
-}
+	return notionDatabaseId;
+};
 
-export const getPages = async ({ roles = [], locale = AvailableLocales.ru }: GetPagesParams) => {
+export const getPages = async ({
+	roles = [],
+	locale = AvailableLocales.ru,
+}: GetPagesParams) => {
 	try {
 		const filterParams: any = {
 			and: [
 				{
-					property: 'Published',
+					property: "Published",
 					checkbox: {
 						equals: true,
 					},
 				},
 			],
-		}
+		};
 
 		if (roles.length > 0) {
 			filterParams.and.push({
 				or: [
 					{
-						property: 'Access',
+						property: "Access",
 						multi_select: {
-							contains: 'everyone',
+							contains: "everyone",
 						},
 					},
 					...roles.map((roleName: string) => ({
-						property: 'Access',
+						property: "Access",
 						multi_select: {
 							contains: roleName.toLowerCase(),
 						},
 					})),
 				],
-			})
+			});
 		} else {
 			filterParams.and.push({
-				property: 'Access',
+				property: "Access",
 				multi_select: {
-					contains: 'everyone',
+					contains: "everyone",
 				},
-			})
+			});
 		}
 
 		const pages = await NotionService.databases.query({
 			database_id: getDatabase({ locale }),
-			sorts: [{ property: 'Order', direction: 'ascending' }],
+			sorts: [{ property: "Order", direction: "ascending" }],
 			filter: filterParams,
-		})
+		});
 
-		return pages.results
+		return pages.results;
 	} catch (error) {
 		// console.error(error)
-		return null
+		return null;
 	}
-}
+};
 
 export const getPage = async ({ pageId }: { pageId: string }) => {
 	try {
 		const page = await NotionService.pages.retrieve({
 			page_id: pageId,
-		})
+		});
 
-		return page
+		return page;
 	} catch (error) {
 		// console.error(error)
-		return null
+		return null;
 	}
-}
+};
 
-export const getBlocks = async (pageSlug: string, locale = AvailableLocales.ru) => {
+export const getBlocks = async (
+	pageSlug: string,
+	locale = AvailableLocales.ru,
+) => {
 	try {
 		const response = await NotionService.databases.query({
 			database_id: getDatabase({ locale }),
 			filter: {
 				and: [
 					{
-						property: 'Published',
+						property: "Published",
 						checkbox: {
 							equals: true,
 						},
 					},
 					{
-						property: 'Slug',
+						property: "Slug",
 						rich_text: {
 							equals: pageSlug,
 						},
 					},
 				],
 			},
-		})
+		});
 
 		const blocks = await NotionService.blocks.children.list({
 			block_id: response.results[0].id,
-		})
+		});
 
-		return blocks.results
+		return blocks.results;
 	} catch (error) {
 		// console.error(error)
-		return null
+		return null;
 	}
-}
+};
 
 export const getGamelabStageBlocks = async (
 	stageName: string,
-	lang = process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string
+	lang = process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string,
 ) => {
 	try {
 		const response = await NotionService.databases.query({
@@ -134,28 +144,28 @@ export const getGamelabStageBlocks = async (
 			filter: {
 				and: [
 					{
-						property: 'slug',
+						property: "slug",
 						rich_text: {
 							equals: stageName.toLowerCase(),
 						},
 					},
 					{
-						property: 'lang',
+						property: "lang",
 						select: { equals: lang.toLowerCase() },
 					},
 				],
 			},
-		})
+		});
 
 		const blocks = await NotionService.blocks.children.list({
 			block_id: response.results[0].id,
-		})
+		});
 
-		return blocks.results
+		return blocks.results;
 	} catch (error) {
 		// console.error(error)
-		return null
+		return null;
 	}
-}
+};
 
-export default NotionService
+export default NotionService;

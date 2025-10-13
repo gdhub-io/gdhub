@@ -1,19 +1,28 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { NovuService } from '@/services/novu'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import {
+	createHandler,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { NovuService } from "@/services/novu";
+import { prisma } from "@/services/prisma";
 
 class AcceptInviteDto {
 	@IsString()
-	token: string
+	token: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserTeamAcceptInviteHandler {
 	@Get()
-	public async acceptInvite(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { token }: AcceptInviteDto) {
+	public async acceptInvite(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { token }: AcceptInviteDto,
+	) {
 		try {
 			// Находим приглашение по токену (ID приглашения)
 			const invitation = await prisma.teamInvitation.findUnique({
@@ -26,35 +35,38 @@ class ApiUserTeamAcceptInviteHandler {
 					},
 					invitedBy: { select: { id: true, name: true, email: true } },
 				},
-			})
+			});
 
 			if (!invitation) {
-				throw new Error('Invitation not found')
+				throw new Error("Invitation not found");
 			}
 
 			// Проверяем, не истек ли срок действия приглашения
 			if (invitation.expiresAt && new Date() > invitation.expiresAt) {
-				throw new Error('Invitation has expired')
+				throw new Error("Invitation has expired");
 			}
 
 			// Проверяем, не принято ли уже приглашение
 			if (invitation.status === prismaClient.InvitationStatus.Accepted) {
-				throw new Error('Invitation has already been accepted')
+				throw new Error("Invitation has already been accepted");
 			}
 
 			// Проверяем, что приглашение адресовано текущему пользователю
-			if (invitation.email !== req.user.email && (!invitation.userId || invitation.userId !== req.user.id)) {
-				throw new Error('This invitation is not for you')
+			if (
+				invitation.email !== req.user.email &&
+				(!invitation.userId || invitation.userId !== req.user.id)
+			) {
+				throw new Error("This invitation is not for you");
 			}
 
 			// Проверяем, прошел ли пользователь onboarding
 			const user = await prisma.user.findUnique({
 				where: { id: req.user.id },
 				include: { profile: true, specialities: true },
-			})
+			});
 
 			if (!user) {
-				throw new Error('User not found')
+				throw new Error("User not found");
 			}
 
 			// Обновляем статус приглашения на "ACCEPTED"
@@ -65,17 +77,18 @@ class ApiUserTeamAcceptInviteHandler {
 					acceptedAt: new Date(),
 					user: { connect: { id: req.user.id } },
 				},
-			})
+			});
 
 			// Проверяем, завершил ли пользователь onboarding
-			const hasCompletedOnboarding = user.onboardingDone
+			const hasCompletedOnboarding = user.onboardingDone;
 
 			// Проверяем, есть ли у пользователя хотя бы одна специализация
 			const hasSpeciality =
 				user.specialities &&
 				user.specialities.filter(
-					(speciality: prismaClient.Speciality) => speciality.workDirectionId === invitation.directionId
-				).length > 0
+					(speciality: prismaClient.Speciality) =>
+						speciality.workDirectionId === invitation.directionId,
+				).length > 0;
 
 			// Если пользователь не завершил onboarding или не имеет специализации,
 			// сохраняем информацию о приглашении для последующего добавления в команду
@@ -94,29 +107,31 @@ class ApiUserTeamAcceptInviteHandler {
 							},
 						},
 					},
-				})
+				});
 
 				// Отправляем уведомление пользователю, отправившему приглашение
 				try {
 					await NovuService.send({
-						template: 'invitation-accepted-pending',
+						template: "invitation-accepted-pending",
 						to: {
 							subscriberId: invitation.invitedBy.id,
 							email: invitation.invitedBy.email || undefined,
 						},
 						payload: {
 							invitationId: invitation.id,
-							teamName: invitation.team.name || 'Team',
-							projectName: invitation.team.project?.name || 'Project',
-							projectSlug: invitation.team.project?.slug || '',
+							teamName: invitation.team.name || "Team",
+							projectName: invitation.team.project?.name || "Project",
+							projectSlug: invitation.team.project?.slug || "",
 							position: invitation.position,
-							memberName: req.user.name || 'New member',
+							memberName: req.user.name || "New member",
 							memberEmail: req.user.email,
-							pendingReason: !hasCompletedOnboarding ? 'onboarding' : 'speciality',
+							pendingReason: !hasCompletedOnboarding
+								? "onboarding"
+								: "speciality",
 						},
-					})
+					});
 				} catch (error) {
-					console.error('Failed to send notification to inviter:', error)
+					console.error("Failed to send notification to inviter:", error);
 					// Продолжаем выполнение даже если отправка уведомления не удалась
 				}
 
@@ -124,15 +139,15 @@ class ApiUserTeamAcceptInviteHandler {
 				if (!hasCompletedOnboarding) {
 					return {
 						success: true,
-						message: 'You need to complete onboarding before joining the team',
+						message: "You need to complete onboarding before joining the team",
 						redirect: `/registration/onboarding?pendingInvitation=${invitation.id}`,
-					}
+					};
 				} else {
 					return {
 						success: true,
-						message: 'You need to create a speciality before joining the team',
+						message: "You need to create a speciality before joining the team",
 						redirect: `/profile/settings/specialities?pendingInvitation=${invitation.id}`,
-					}
+					};
 				}
 			}
 
@@ -146,42 +161,42 @@ class ApiUserTeamAcceptInviteHandler {
 					team: { connect: { id: invitation.teamId } },
 					user: { connect: { id: req.user.id } },
 				},
-			})
+			});
 
 			// Отправляем уведомление пользователю, отправившему приглашение
 			try {
 				await NovuService.send({
-					template: 'invitation-accepted',
+					template: "invitation-accepted",
 					to: {
 						subscriberId: invitation.invitedBy.id,
 						email: invitation.invitedBy.email || undefined,
 					},
 					payload: {
 						teamMemberId: teamMember.id,
-						teamName: invitation.team.name || 'Team',
-						projectName: invitation.team.project?.name || 'Project',
-						projectSlug: invitation.team.project?.slug || '',
+						teamName: invitation.team.name || "Team",
+						projectName: invitation.team.project?.name || "Project",
+						projectSlug: invitation.team.project?.slug || "",
 						position: invitation.position,
-						memberName: req.user.name || 'New member',
+						memberName: req.user.name || "New member",
 						memberEmail: req.user.email,
 					},
-				})
+				});
 			} catch (error) {
-				console.error('Failed to send notification to inviter:', error)
+				console.error("Failed to send notification to inviter:", error);
 				// Продолжаем выполнение даже если отправка уведомления не удалась
 			}
 
 			// Перенаправляем пользователя на страницу проекта
 			return {
 				success: true,
-				message: 'You have successfully joined the team',
+				message: "You have successfully joined the team",
 				redirect: `/my/projects/${invitation.team.project?.slug || invitation.team.project?.id}`,
-			}
+			};
 		} catch (error: any) {
-			console.error('[team.accept-invite]', error)
-			throw error
+			console.error("[team.accept-invite]", error);
+			throw error;
 		}
 	}
 }
 
-export default createHandler(ApiUserTeamAcceptInviteHandler)
+export default createHandler(ApiUserTeamAcceptInviteHandler);

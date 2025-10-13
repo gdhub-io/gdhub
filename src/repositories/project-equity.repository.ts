@@ -1,60 +1,60 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { prisma } from "@/services/prisma";
 
 /**
  * Interface for transferring shares between participants
  */
 export interface EquityTransferRequest {
-	fromUserId: string
-	toUserId: string
-	projectId: string
-	percentage: number
-	reason?: string
+	fromUserId: string;
+	toUserId: string;
+	projectId: string;
+	percentage: number;
+	reason?: string;
 }
 
 /**
  * Interface for creating a new equity promise
  */
 export interface EquityPromiseRequest {
-	projectId: string
-	userId: string
-	percentage: number
-	targetStepId?: string
-	description?: string
+	projectId: string;
+	userId: string;
+	percentage: number;
+	targetStepId?: string;
+	description?: string;
 }
 
 /**
  * Interface for creating a member share
  */
 export interface CreateMemberShareRequest {
-	projectId: string
-	memberId: string
-	percentage: number
-	targetStepId: string
-	createdById: string
+	projectId: string;
+	memberId: string;
+	percentage: number;
+	targetStepId: string;
+	createdById: string;
 }
 
 /**
  * Interface for input data to get transaction history
  */
 export interface GetEquityHistoryInput {
-	projectId: string
-	userId?: string
-	page?: number
-	limit?: number
+	projectId: string;
+	userId?: string;
+	page?: number;
+	limit?: number;
 }
 
 /**
  * Interface for output data of transaction history
  */
 export interface GetEquityHistoryOutput {
-	transactions: any[]
+	transactions: any[];
 	pagination: {
-		total: number
-		page: number
-		limit: number
-		totalPages: number
-	}
+		total: number;
+		page: number;
+		limit: number;
+		totalPages: number;
+	};
 }
 
 /**
@@ -83,7 +83,7 @@ export class ProjectEquityRepository {
 						},
 					},
 				},
-			})
+			});
 
 			if (!equity) {
 				// If equity is not defined, create record with default values
@@ -97,30 +97,35 @@ export class ProjectEquityRepository {
 					include: {
 						equityAllocations: true,
 					},
-				})
+				});
 
-				return newEquity
+				return newEquity;
 			}
 
-			return equity
+			return equity;
 		} catch (error: any) {
-			console.error('Error getting project equity:', error)
-			throw new Error(error.message || 'The error occurred while getting the project equity')
+			console.error("Error getting project equity:", error);
+			throw new Error(
+				error.message || "The error occurred while getting the project equity",
+			);
 		}
 	}
 
 	/**
 	 * Update project equity data
 	 */
-	static async updateProjectEquity(projectId: string, data: prismaClient.ProjectEquity) {
+	static async updateProjectEquity(
+		projectId: string,
+		data: prismaClient.ProjectEquity,
+	) {
 		try {
 			// Check if project exists
 			const project = await prisma.project.findUnique({
 				where: { id: projectId },
-			})
+			});
 
 			if (!project) {
-				throw new Error('Project not found')
+				throw new Error("Project not found");
 			}
 
 			// Update main equity data
@@ -140,12 +145,14 @@ export class ProjectEquityRepository {
 				include: {
 					equityAllocations: true,
 				},
-			})
+			});
 
-			return updatedEquity
+			return updatedEquity;
 		} catch (error: any) {
-			console.error('Error updating project equity:', error)
-			throw new Error(error.message || 'The error occurred while updating the project equity')
+			console.error("Error updating project equity:", error);
+			throw new Error(
+				error.message || "The error occurred while updating the project equity",
+			);
 		}
 	}
 
@@ -158,10 +165,10 @@ export class ProjectEquityRepository {
 			const teamMember = await prisma.teamMember.findUnique({
 				where: { id: memberId },
 				include: { user: true },
-			})
+			});
 
 			if (!teamMember) {
-				throw new Error('Team member not found')
+				throw new Error("Team member not found");
 			}
 
 			// Get data about project equity
@@ -170,24 +177,28 @@ export class ProjectEquityRepository {
 				include: {
 					equityAllocations: true,
 				},
-			})
+			});
 
 			if (!equity) {
-				throw new Error('Project equity not found')
+				throw new Error("Project equity not found");
 			}
 
 			// Get member share
 			const memberPromise = equity.equityAllocations.find(
-				(allocation: { teamMemberId?: string | null }) => allocation.teamMemberId === memberId
-			)
+				(allocation: { teamMemberId?: string | null }) =>
+					allocation.teamMemberId === memberId,
+			);
 			const memberShare = equity.equityAllocations.find(
-				(allocation: { teamMemberId?: string | null }) => allocation.teamMemberId === memberId
-			)
+				(allocation: { teamMemberId?: string | null }) =>
+					allocation.teamMemberId === memberId,
+			);
 
-			return memberShare
+			return memberShare;
 		} catch (error: any) {
-			console.error('Error getting member share:', error)
-			throw new Error(error.message || 'The error occurred while getting the member share')
+			console.error("Error getting member share:", error);
+			throw new Error(
+				error.message || "The error occurred while getting the member share",
+			);
 		}
 	}
 
@@ -196,16 +207,17 @@ export class ProjectEquityRepository {
 	 */
 	static async createMemberShare(data: CreateMemberShareRequest) {
 		try {
-			const { projectId, memberId, percentage, targetStepId, createdById } = data
+			const { projectId, memberId, percentage, targetStepId, createdById } =
+				data;
 
 			// Get data about project and member
 			const teamMember = await prisma.teamMember.findUnique({
 				where: { id: memberId },
 				include: { user: true },
-			})
+			});
 
 			if (!teamMember) {
-				throw new Error('Team member not found')
+				throw new Error("Team member not found");
 			}
 
 			// Get data about project equity
@@ -214,10 +226,10 @@ export class ProjectEquityRepository {
 				include: {
 					equityAllocations: true,
 				},
-			})
+			});
 
 			if (!equity) {
-				throw new Error('Project equity not found')
+				throw new Error("Project equity not found");
 			}
 
 			// Check if allocation already exists for this member
@@ -229,11 +241,11 @@ export class ProjectEquityRepository {
 				include: {
 					promises: true,
 				},
-			})
+			});
 
 			// Check if promise already exists for this member
 			if (allocation?.promises.length) {
-				throw new Error('Promise already exists for this member')
+				throw new Error("Promise already exists for this member");
 			}
 
 			// Create empty allocation if it doesn't exist
@@ -248,7 +260,7 @@ export class ProjectEquityRepository {
 					include: {
 						promises: true,
 					},
-				})
+				});
 			}
 
 			// Then create promise if needed
@@ -260,7 +272,7 @@ export class ProjectEquityRepository {
 						targetStepId,
 						createdById,
 					},
-				})
+				});
 			}
 
 			// Create transaction for initial allocation
@@ -269,15 +281,17 @@ export class ProjectEquityRepository {
 					toAllocationId: allocation.id,
 					percentage,
 					transactionType: prismaClient.EquityTransactionType.InitialAllocation,
-					reason: 'Initial equity allocation',
+					reason: "Initial equity allocation",
 					createdById,
 				},
-			})
+			});
 
-			return allocation
+			return allocation;
 		} catch (error: any) {
-			console.error('Error creating member share:', error)
-			throw new Error(error.message || 'The error occurred while creating the member share')
+			console.error("Error creating member share:", error);
+			throw new Error(
+				error.message || "The error occurred while creating the member share",
+			);
 		}
 	}
 
@@ -289,17 +303,17 @@ export class ProjectEquityRepository {
 		memberId: string,
 		percentage: number,
 		vested: boolean,
-		targetStepId?: string
+		targetStepId?: string,
 	) {
 		try {
 			// Get data about project and member
 			const teamMember = await prisma.teamMember.findUnique({
 				where: { id: memberId },
 				include: { user: true },
-			})
+			});
 
 			if (!teamMember) {
-				throw new Error('Team member not found')
+				throw new Error("Team member not found");
 			}
 
 			// Get data about project equity
@@ -308,10 +322,10 @@ export class ProjectEquityRepository {
 				include: {
 					equityAllocations: true,
 				},
-			})
+			});
 
 			if (!equity) {
-				throw new Error('Project equity not found')
+				throw new Error("Project equity not found");
 			}
 
 			// First check if allocation already exists for this member
@@ -320,7 +334,7 @@ export class ProjectEquityRepository {
 					equityId: equity.id,
 					teamMemberId: memberId,
 				},
-			})
+			});
 
 			if (allocation) {
 				// Update existing allocation
@@ -329,7 +343,7 @@ export class ProjectEquityRepository {
 					data: {
 						percentage,
 					},
-				})
+				});
 			} else {
 				// Create new allocation
 				allocation = await prisma.equityAllocation.create({
@@ -339,18 +353,19 @@ export class ProjectEquityRepository {
 						teamMemberId: memberId,
 						percentage,
 					},
-				})
+				});
 
 				// Create transaction for initial allocation
 				await prisma.equityTransaction.create({
 					data: {
 						toAllocationId: allocation.id,
 						percentage,
-						transactionType: prismaClient.EquityTransactionType.InitialAllocation,
-						reason: 'Initial equity allocation',
+						transactionType:
+							prismaClient.EquityTransactionType.InitialAllocation,
+						reason: "Initial equity allocation",
 						createdById: teamMember.userId, // Или можно использовать ID автора проекта
 					},
-				})
+				});
 			}
 
 			// If targetStepId is specified, create or update promise
@@ -361,7 +376,7 @@ export class ProjectEquityRepository {
 						allocationId: allocation.id,
 						targetStepId,
 					},
-				})
+				});
 
 				if (existingPromise) {
 					// Update existing promise
@@ -371,7 +386,7 @@ export class ProjectEquityRepository {
 							percentage,
 							isExecuted: false,
 						},
-					})
+					});
 				} else {
 					// Create new promise
 					await prisma.equityPromise.create({
@@ -382,14 +397,16 @@ export class ProjectEquityRepository {
 							isExecuted: false,
 							createdById: teamMember.userId, // Или можно использовать ID автора проекта
 						},
-					})
+					});
 				}
 			}
 
-			return allocation
+			return allocation;
 		} catch (error: any) {
-			console.error('Error updating member share:', error)
-			throw new Error(error.message || 'The error occurred while updating the member share')
+			console.error("Error updating member share:", error);
+			throw new Error(
+				error.message || "The error occurred while updating the member share",
+			);
 		}
 	}
 
@@ -398,10 +415,10 @@ export class ProjectEquityRepository {
 	 */
 	static async transferShare(data: EquityTransferRequest) {
 		try {
-			const { projectId, fromUserId, toUserId, percentage, reason } = data
+			const { projectId, fromUserId, toUserId, percentage, reason } = data;
 
 			if (fromUserId === toUserId) {
-				throw new Error('Cannot transfer equity to the same user')
+				throw new Error("Cannot transfer equity to the same user");
 			}
 
 			// Get data about project equity
@@ -411,10 +428,10 @@ export class ProjectEquityRepository {
 					equityAllocations: true,
 					project: true,
 				},
-			})
+			});
 
 			if (!equity) {
-				throw new Error('Project equity not found')
+				throw new Error("Project equity not found");
 			}
 
 			// Check if sender has allocation
@@ -423,14 +440,14 @@ export class ProjectEquityRepository {
 					equityId: equity.id,
 					ownerId: fromUserId,
 				},
-			})
+			});
 
 			if (!fromAllocation) {
-				throw new Error('Sender does not have any equity allocation')
+				throw new Error("Sender does not have any equity allocation");
 			}
 
 			if (fromAllocation.percentage < percentage) {
-				throw new Error('Not enough equity to transfer')
+				throw new Error("Not enough equity to transfer");
 			}
 
 			// Find or create allocation for recipient
@@ -439,7 +456,7 @@ export class ProjectEquityRepository {
 					equityId: equity.id,
 					ownerId: toUserId,
 				},
-			})
+			});
 
 			if (!toAllocation) {
 				// Get TeamMember ID for recipient, if he is in the team
@@ -448,7 +465,7 @@ export class ProjectEquityRepository {
 						userId: toUserId,
 						teamId: equity.project.teamId,
 					},
-				})
+				});
 
 				// Create new allocation for recipient
 				toAllocation = await prisma.equityAllocation.create({
@@ -458,7 +475,7 @@ export class ProjectEquityRepository {
 						teamMemberId: teamMember?.id || null,
 						percentage: 0, // Initial share 0, will be updated below
 					},
-				})
+				});
 			}
 
 			// Update sender and recipient shares in one transaction
@@ -481,20 +498,28 @@ export class ProjectEquityRepository {
 						toAllocationId: toAllocation.id,
 						percentage,
 						transactionType: prismaClient.EquityTransactionType.Transfer,
-						reason: reason || 'Equity transfer',
+						reason: reason || "Equity transfer",
 						createdById: fromUserId,
 					},
 				}),
-			])
+			]);
 
 			return {
-				fromUser: { id: fromUserId, newPercentage: fromAllocation.percentage - percentage },
-				toUser: { id: toUserId, newPercentage: toAllocation.percentage + percentage },
+				fromUser: {
+					id: fromUserId,
+					newPercentage: fromAllocation.percentage - percentage,
+				},
+				toUser: {
+					id: toUserId,
+					newPercentage: toAllocation.percentage + percentage,
+				},
 				transferredPercentage: percentage,
-			}
+			};
 		} catch (error: any) {
-			console.error('Error transferring equity:', error)
-			throw new Error(error.message || 'The error occurred while transferring the share')
+			console.error("Error transferring equity:", error);
+			throw new Error(
+				error.message || "The error occurred while transferring the share",
+			);
 		}
 	}
 
@@ -503,19 +528,19 @@ export class ProjectEquityRepository {
 	 */
 	static async getTransactionHistory(data: GetEquityHistoryInput) {
 		try {
-			const { projectId, userId, page = 1, limit = 10 } = data
+			const { projectId, userId, page = 1, limit = 10 } = data;
 
 			// Find record about project equity
 			const equity = await prisma.projectEquity.findUnique({
 				where: { projectId },
-			})
+			});
 
 			if (!equity) {
-				throw new Error('Project equity not found')
+				throw new Error("Project equity not found");
 			}
 
 			// Build query for filtering transactions
-			const where: any = {}
+			const where: any = {};
 
 			if (userId) {
 				// If userId is specified, find his allocation
@@ -525,12 +550,15 @@ export class ProjectEquityRepository {
 						ownerId: userId,
 					},
 					select: { id: true },
-				})
+				});
 
-				const allocationIds = allocations.map((a: { id: string }) => a.id)
+				const allocationIds = allocations.map((a: { id: string }) => a.id);
 
 				// Filter transactions where user was sender or recipient
-				where.OR = [{ fromAllocationId: { in: allocationIds } }, { toAllocationId: { in: allocationIds } }]
+				where.OR = [
+					{ fromAllocationId: { in: allocationIds } },
+					{ toAllocationId: { in: allocationIds } },
+				];
 			} else {
 				// Otherwise get all allocations for this equity
 				const allocations = await prisma.equityAllocation.findMany({
@@ -538,16 +566,19 @@ export class ProjectEquityRepository {
 						equityId: equity.id,
 					},
 					select: { id: true },
-				})
+				});
 
-				const allocationIds = allocations.map((a: { id: string }) => a.id)
+				const allocationIds = allocations.map((a: { id: string }) => a.id);
 
 				// Filter transactions for all allocations of this equity
-				where.OR = [{ fromAllocationId: { in: allocationIds } }, { toAllocationId: { in: allocationIds } }]
+				where.OR = [
+					{ fromAllocationId: { in: allocationIds } },
+					{ toAllocationId: { in: allocationIds } },
+				];
 			}
 
 			// Get total number of transactions for pagination
-			const total = await prisma.equityTransaction.count({ where })
+			const total = await prisma.equityTransaction.count({ where });
 
 			// Get transactions with pagination
 			const transactions = await prisma.equityTransaction.findMany({
@@ -584,10 +615,10 @@ export class ProjectEquityRepository {
 					},
 					promise: true,
 				},
-				orderBy: { createdAt: 'desc' },
+				orderBy: { createdAt: "desc" },
 				skip: (page - 1) * limit,
 				take: limit,
-			})
+			});
 
 			return {
 				transactions,
@@ -597,10 +628,13 @@ export class ProjectEquityRepository {
 					limit,
 					totalPages: Math.ceil(total / limit),
 				},
-			}
+			};
 		} catch (error: any) {
-			console.error('Error getting transaction history:', error)
-			throw new Error(error.message || 'The error occurred while getting the transaction history')
+			console.error("Error getting transaction history:", error);
+			throw new Error(
+				error.message ||
+					"The error occurred while getting the transaction history",
+			);
 		}
 	}
 }

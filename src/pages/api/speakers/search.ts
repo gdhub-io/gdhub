@@ -1,19 +1,19 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsArray, IsOptional, IsString } from 'class-validator'
-import { Get, Query, createHandler, Req } from 'next-api-decorators'
+import { IsArray, IsOptional, IsString } from "class-validator";
+import { createHandler, Get, Query, Req } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class SearchQueryDto {
 	@IsString()
-	query: string
+	query: string;
 
 	@IsOptional()
 	@IsArray()
 	@IsString({ each: true })
-	ids?: string[]
+	ids?: string[];
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiSpeakersSearchHandler {
 	@Get()
 	async search(@Req() req: any, @Query() { query, ids }: SearchQueryDto) {
@@ -23,46 +23,55 @@ class ApiSpeakersSearchHandler {
 
 		// if (!query) return []
 
-		console.log('ids', ids)
+		console.log("ids", ids);
 
-		const q = query.trim()
+		const q = query.trim();
 
 		const specialities = await prisma.speciality.findMany({
 			where: q
 				? {
 						OR: [
-							{ user: { name: { contains: q, mode: 'insensitive' } } },
-							{ user: { profile: { name: { contains: q, mode: 'insensitive' } } } },
-							{ name: { contains: q, mode: 'insensitive' } },
+							{ user: { name: { contains: q, mode: "insensitive" } } },
+							{
+								user: {
+									profile: { name: { contains: q, mode: "insensitive" } },
+								},
+							},
+							{ name: { contains: q, mode: "insensitive" } },
 							{ user: { id: req.user?.id } },
 						],
 					}
 				: {
-						OR: [{ user: { id: req.user?.id } }, { id: ids ? { in: Array.isArray(ids) ? ids : [ids] } : undefined }],
+						OR: [
+							{ user: { id: req.user?.id } },
+							{
+								id: ids ? { in: Array.isArray(ids) ? ids : [ids] } : undefined,
+							},
+						],
 					},
 			include: {
 				user: true,
 				direction: true,
 			},
 			take: 20,
-			orderBy: { updatedAt: 'desc' },
-		})
+			orderBy: { updatedAt: "desc" },
+		});
 
 		return specialities.map(
 			(s: {
-				id: string
-				user: { name?: string | null; image?: string | null }
-				name: string
-				direction: { name: string }
+				id: string;
+				user: { name?: string | null; image?: string | null };
+				name: string;
+				direction: { name: string };
 			}) => ({
 				id: s.id,
-				name: s.user?.name || '',
-				image: s.user?.image || '',
+				name: s.user?.name || "",
+				image: s.user?.image || "",
 				speciality: s.name,
-				direction: s.direction?.name || '',
-			})
-		)
+				direction: s.direction?.name || "",
+			}),
+		);
 	}
 }
 
-export default createHandler(ApiSpeakersSearchHandler)
+export default createHandler(ApiSpeakersSearchHandler);

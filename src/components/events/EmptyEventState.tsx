@@ -1,13 +1,13 @@
-import React from 'react'
-import { useTranslate } from '@tolgee/react'
-import { Typography } from 'antd'
-import Image from 'next/image'
-import styles from './emptyState.module.scss'
+import { useTranslate } from "@tolgee/react";
+import { Typography } from "antd";
+import Image from "next/image";
+import type React from "react";
+import styles from "./emptyState.module.scss";
 
-const { Title, Paragraph } = Typography
+const { Title, Paragraph } = Typography;
 
 const EmptyEventState: React.FC = () => {
-	const { t } = useTranslate()
+	const { t } = useTranslate();
 
 	return (
 		<div className={styles.emptyStateContainer}>
@@ -22,17 +22,17 @@ const EmptyEventState: React.FC = () => {
 			</div>
 
 			<Title level={4} className={styles.title}>
-				{t('page.hub.events.empty.title', 'No events yet')}
+				{t("page.hub.events.empty.title", "No events yet")}
 			</Title>
 
 			<Paragraph className={styles.description}>
 				{t(
-					'page.hub.events.empty.description',
-					'There are currently no events. Stay tuned for upcoming meetups, workshops, and game jams!'
+					"page.hub.events.empty.description",
+					"There are currently no events. Stay tuned for upcoming meetups, workshops, and game jams!",
 				)}
 			</Paragraph>
 		</div>
-	)
-}
+	);
+};
 
-export default EmptyEventState
+export default EmptyEventState;

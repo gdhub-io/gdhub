@@ -1,19 +1,22 @@
-import QueueBrokerLog from '@/decorators/QueueBrokerLog'
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { openAI } from '@/services/openai'
-import { prisma } from '@/services/prisma'
-import { Body, Post, createHandler } from 'next-api-decorators'
+import { Body, createHandler, Post } from "next-api-decorators";
+import QueueBrokerLog from "@/decorators/QueueBrokerLog";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { openAI } from "@/services/openai";
+import { prisma } from "@/services/prisma";
 
-NextAuthGuard('api')
+NextAuthGuard("api");
 class ApiQueueTelegramHandler {
 	constructor() {}
 
 	@Post()
-	@QueueBrokerLog('matching-specialist-and-project')
+	@QueueBrokerLog("matching-specialist-and-project")
 	public async workerProcessor(@Body() job: { name: string; data: any }) {
-		const { specialityId, projectId, specialistText, projectText } = job.data
+		const { specialityId, projectId, specialistText, projectText } = job.data;
 
-		const response = await openAI.matchingSpecAndProj(specialistText, projectText)
+		const response = await openAI.matchingSpecAndProj(
+			specialistText,
+			projectText,
+		);
 
 		await prisma.matchingSpecialistAndProject.upsert({
 			where: { projectAndSpecialist: { specialityId, projectId } },
@@ -24,19 +27,25 @@ class ApiQueueTelegramHandler {
 				projectScore: response.projectScore,
 				teamScore: response.teamScore,
 				summary: response.summary,
-				avgScore: Math.round((response.authorScore + response.projectScore + response.teamScore) / 3),
+				avgScore: Math.round(
+					(response.authorScore + response.projectScore + response.teamScore) /
+						3,
+				),
 			},
 			update: {
 				authorScore: response.authorScore,
 				projectScore: response.projectScore,
 				teamScore: response.teamScore,
 				summary: response.summary,
-				avgScore: Math.round((response.authorScore + response.projectScore + response.teamScore) / 3),
+				avgScore: Math.round(
+					(response.authorScore + response.projectScore + response.teamScore) /
+						3,
+				),
 			},
-		})
+		});
 
-		return { success: true }
+		return { success: true };
 	}
 }
 
-export default createHandler(ApiQueueTelegramHandler)
+export default createHandler(ApiQueueTelegramHandler);

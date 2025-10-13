@@ -1,13 +1,10 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { NovuService } from '@/services/novu'
-import { prisma } from '@/services/prisma'
-import { tolgeeService } from '@/services/tolgee'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
-import dayjs from 'dayjs'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import dayjs from "dayjs";
 import {
 	BadRequestException,
 	Body,
+	createHandler,
 	Delete,
 	Get,
 	Post,
@@ -15,69 +12,75 @@ import {
 	Query,
 	Req,
 	ValidationPipe,
-	createHandler,
-} from 'next-api-decorators'
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { NovuService } from "@/services/novu";
+import { prisma } from "@/services/prisma";
+import { tolgeeService } from "@/services/tolgee";
 
 class IDParamDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
 class UserTeamVacancyCreateDto {
 	@IsString()
-	title: string
+	title: string;
 	@IsString()
-	description: string
+	description: string;
 	@IsString()
-	directionId: string
+	directionId: string;
 	@IsEnum(prismaClient.TeamVacancyStatus)
-	status: prismaClient.TeamVacancyStatus
+	status: prismaClient.TeamVacancyStatus;
 	@IsString()
 	@IsOptional()
-	publishedAt?: string
+	publishedAt?: string;
 	@IsString()
-	finishedAt: string
+	finishedAt: string;
 	@IsString()
-	teamId: string
+	teamId: string;
 	@IsNumber()
 	@IsOptional()
-	promisePercentage?: number
+	promisePercentage?: number;
 	@IsString()
 	@IsOptional()
-	promiseStepId?: string
+	promiseStepId?: string;
 }
 
 class UserTeamVacancyUpdateDto {
 	@IsString()
 	@IsOptional()
-	title?: string
+	title?: string;
 	@IsString()
 	@IsOptional()
-	description?: string
+	description?: string;
 	@IsString()
 	@IsOptional()
-	directionId?: string
+	directionId?: string;
 	@IsEnum(prismaClient.TeamVacancyStatus)
 	@IsOptional()
-	status?: prismaClient.TeamVacancyStatus
+	status?: prismaClient.TeamVacancyStatus;
 	@IsString()
 	@IsOptional()
-	publishedAt?: string
+	publishedAt?: string;
 	@IsString()
 	@IsOptional()
-	finishedAt?: string
+	finishedAt?: string;
 	@IsNumber()
 	@IsOptional()
-	promisePercentage?: number
+	promisePercentage?: number;
 	@IsString()
 	@IsOptional()
-	promiseStepId?: string
+	promiseStepId?: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserTeamVacancyHandler {
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query() { id }: { id: string }) {
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query() { id }: { id: string },
+	) {
 		const data = await prisma.teamVacancy.findFirst({
 			where: { id },
 			include: {
@@ -93,25 +96,29 @@ class ApiUserTeamVacancyHandler {
 								description: true,
 								coverImage: true,
 								videoLink: true,
-								workflow: { select: { steps: { select: { id: true, name: true } } } },
+								workflow: {
+									select: { steps: { select: { id: true, name: true } } },
+								},
 							},
 						},
 					},
 				},
 				_count: { select: { applicants: true } },
 			},
-		})
+		});
 
-		const teamMember = await prisma.teamMember.findFirst({ where: { vacancyId: id, userId: req.user.id } })
+		const teamMember = await prisma.teamMember.findFirst({
+			where: { vacancyId: id, userId: req.user.id },
+		});
 
-		return { ...data, myTeamMemberId: teamMember?.id }
+		return { ...data, myTeamMemberId: teamMember?.id };
 	}
 
 	@Post()
 	public async create(@Body(ValidationPipe) data: UserTeamVacancyCreateDto) {
 		try {
-			const { promisePercentage, promiseStepId, ...vacancyData } = data
-			const hasEquityPromise = promisePercentage && promiseStepId
+			const { promisePercentage, promiseStepId, ...vacancyData } = data;
+			const hasEquityPromise = promisePercentage && promiseStepId;
 
 			const vacancy = await prisma.teamVacancy.create({
 				data: {
@@ -119,18 +126,21 @@ class ApiUserTeamVacancyHandler {
 					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
 					promiseStepId: hasEquityPromise ? promiseStepId : undefined,
 				},
-			})
+			});
 
-			return vacancy
+			return vacancy;
 		} catch (error) {
-			console.error('[project.create]', error)
-			throw error
+			console.error("[project.create]", error);
+			throw error;
 		}
 	}
 
 	@Put()
-	public async update(@Query(ValidationPipe) { id }: IDParamDto, @Body(ValidationPipe) data: UserTeamVacancyUpdateDto) {
-		const { promisePercentage, promiseStepId, ...vacancyData } = data
+	public async update(
+		@Query(ValidationPipe) { id }: IDParamDto,
+		@Body(ValidationPipe) data: UserTeamVacancyUpdateDto,
+	) {
+		const { promisePercentage, promiseStepId, ...vacancyData } = data;
 
 		const vacancy = await prisma.teamVacancy.update({
 			where: { id },
@@ -139,19 +149,25 @@ class ApiUserTeamVacancyHandler {
 				promisePercentage,
 				promiseStepId,
 			},
-		})
+		});
 
-		return vacancy
+		return vacancy;
 	}
 
 	@Delete()
 	public async delete(@Query(ValidationPipe) { id }: IDParamDto) {
-		await prisma.teamVacancy.update({ where: { id }, data: { status: prismaClient.TeamVacancyStatus.Closed } })
+		await prisma.teamVacancy.update({
+			where: { id },
+			data: { status: prismaClient.TeamVacancyStatus.Closed },
+		});
 	}
 
-	@Put('/withdraw')
-	public async withdraw(@Req() req: NextApiRequestWithUser, @Body() { teamMemberId }: { teamMemberId: string }) {
-		const { t } = tolgeeService
+	@Put("/withdraw")
+	public async withdraw(
+		@Req() req: NextApiRequestWithUser,
+		@Body() { teamMemberId }: { teamMemberId: string },
+	) {
+		const { t } = tolgeeService;
 
 		const deletedMember = await prisma.teamMember.delete({
 			where: { id: teamMemberId },
@@ -160,36 +176,39 @@ class ApiUserTeamVacancyHandler {
 				vacancy: true,
 				team: {
 					select: {
-						members: { where: { status: prismaClient.TeamMemberStatus.Founder }, select: { userId: true, user: true } },
+						members: {
+							where: { status: prismaClient.TeamMemberStatus.Founder },
+							select: { userId: true, user: true },
+						},
 					},
 				},
 			},
-		})
+		});
 
-		if (!deletedMember.vacancy) return
+		if (!deletedMember.vacancy) return;
 
 		for (const founderMember of deletedMember.team.members) {
 			try {
 				await NovuService.send({
-					template: 'default-message',
+					template: "default-message",
 					to: {
 						subscriberId: founderMember.userId,
 						email: founderMember.user.email!,
 					},
 					payload: {
-						title: 'Candidate rejected',
+						title: "Candidate rejected",
 						message: `The candidate ${deletedMember.user.name} rejected his candidacy for the position ${deletedMember.vacancy.title}`,
 					},
-				})
+				});
 
-				console.info('New notification was sent to ' + founderMember.userId)
+				console.info("New notification was sent to " + founderMember.userId);
 			} catch (e) {
-				console.error('[NovuService]', e)
+				console.error("[NovuService]", e);
 			}
 		}
 	}
 
-	@Post('/apply')
+	@Post("/apply")
 	public async apply(
 		@Req() req: NextApiRequestWithUser,
 		@Body()
@@ -198,28 +217,39 @@ class ApiUserTeamVacancyHandler {
 			contactType,
 			telegramNickname,
 			vacancyId,
-		}: { specialityId: string; contactType: string[]; telegramNickname?: string; vacancyId: string }
+		}: {
+			specialityId: string;
+			contactType: string[];
+			telegramNickname?: string;
+			vacancyId: string;
+		},
 	) {
-		const { t } = tolgeeService
+		const { t } = tolgeeService;
 
-		if (contactType.includes('telegram') && telegramNickname) {
-			await prisma.profile.update({ where: { userId: req.user.id }, data: { tgNickname: telegramNickname } })
+		if (contactType.includes("telegram") && telegramNickname) {
+			await prisma.profile.update({
+				where: { userId: req.user.id },
+				data: { tgNickname: telegramNickname },
+			});
 		}
 
 		const vacancy = await prisma.teamVacancy.findUnique({
 			where: { id: vacancyId },
 			include: {
-				team: { select: { project: { include: { author: true, equity: true } } } },
+				team: {
+					select: { project: { include: { author: true, equity: true } } },
+				},
 			},
-		})
+		});
 
 		const isTeamMember = await prisma.teamMember.findFirst({
 			where: { userId: req.user.id, teamId: vacancy?.teamId },
-		})
+		});
 
-		if (isTeamMember) throw new BadRequestException('You are already a member of this team')
+		if (isTeamMember)
+			throw new BadRequestException("You are already a member of this team");
 
-		if (!vacancy || !req.user.id) return
+		if (!vacancy || !req.user.id) return;
 
 		const candidate = await prisma.teamMember.create({
 			data: {
@@ -232,73 +262,82 @@ class ApiUserTeamVacancyHandler {
 				allowedContacts: contactType,
 			},
 			include: { user: true },
-		})
+		});
 
 		try {
 			await NovuService.send({
-				template: 'default-message',
+				template: "default-message",
 				to: {
 					subscriberId: vacancy.team!.project?.authorId!,
 					email: vacancy.team!.project?.author.email!,
 				},
 				payload: {
-					title: 'New job response',
+					title: "New job response",
 					message: `for vacancy "${vacancy.title}" from ${candidate.user.name}`,
-					redirectUrl: process.env.NEXT_PUBLIC_APP_URL + '/my/projects/' + vacancy.team!.project?.id,
+					redirectUrl:
+						process.env.NEXT_PUBLIC_APP_URL +
+						"/my/projects/" +
+						vacancy.team!.project?.id,
 				},
-			})
+			});
 
-			console.info('New notification was sent to ' + vacancy.team!.project?.authorId)
+			console.info(
+				"New notification was sent to " + vacancy.team!.project?.authorId,
+			);
 		} catch (e) {
-			console.error('[NovuService]', e)
+			console.error("[NovuService]", e);
 		}
 	}
 
-	@Put('/candidate/reject')
+	@Put("/candidate/reject")
 	public async rejectCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
-		const { t } = tolgeeService
+		const { t } = tolgeeService;
 		const rejectedCandidate = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
 			data: { status: prismaClient.TeamMemberStatus.Rejected },
 			select: { user: true, vacancy: true, team: true },
-		})
+		});
 
 		try {
 			await NovuService.send({
-				template: 'default-message',
+				template: "default-message",
 				to: {
 					subscriberId: rejectedCandidate.user.id,
 					email: rejectedCandidate.user.email!,
 				},
 				payload: {
-					title: 'Candidate rejected',
+					title: "Candidate rejected",
 					message: `Your candidacy for a position on the team ${rejectedCandidate.team.name} has been rejected ${rejectedCandidate.vacancy?.title}`,
 				},
-			})
+			});
 
-			console.info('New notification was sent to ' + rejectedCandidate.user.id)
+			console.info("New notification was sent to " + rejectedCandidate.user.id);
 		} catch (e) {
-			console.error('[NovuService]', e)
+			console.error("[NovuService]", e);
 		}
 	}
 
-	@Put('/candidate/hire')
+	@Put("/candidate/hire")
 	public async hireCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
-		const { t } = tolgeeService
+		const { t } = tolgeeService;
 		const member = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
-			data: { status: prismaClient.TeamMemberStatus.Hired, startedAt: dayjs().toISOString() },
+			data: {
+				status: prismaClient.TeamMemberStatus.Hired,
+				startedAt: dayjs().toISOString(),
+			},
 			select: { id: true, user: true, team: true, vacancy: true },
-		})
+		});
 
 		// If vacancy has a promise, create an equity allocation for the member
-		const hasEquityPromise = member.vacancy?.promisePercentage && member.vacancy?.promiseStepId
+		const hasEquityPromise =
+			member.vacancy?.promisePercentage && member.vacancy?.promiseStepId;
 
 		if (hasEquityPromise) {
 			const team = await prisma.team.findUnique({
 				where: { id: member.team.id },
 				include: { project: { include: { equity: true } } },
-			})
+			});
 
 			if (team) {
 				await prisma.equityAllocation.upsert({
@@ -331,32 +370,32 @@ class ApiUserTeamVacancyHandler {
 							},
 						},
 					},
-				})
+				});
 			}
 		}
 
 		try {
 			await NovuService.send({
-				template: 'default-message',
+				template: "default-message",
 				to: {
 					subscriberId: member.user.id,
 					email: member.user.email!,
 				},
 				payload: {
-					title: 'Accepted into the team',
+					title: "Accepted into the team",
 					message: `You have been accepted into the team ${member.team.name}`,
 				},
-			})
+			});
 
-			console.info('New notification was sent to ' + member.user.id)
+			console.info("New notification was sent to " + member.user.id);
 		} catch (e) {
-			console.error('[NovuService]', e)
+			console.error("[NovuService]", e);
 		}
 	}
 
-	@Put('/candidate/fire')
+	@Put("/candidate/fire")
 	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
-		const { t } = tolgeeService
+		const { t } = tolgeeService;
 		const firedMember = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Hired },
 			data: {
@@ -364,33 +403,35 @@ class ApiUserTeamVacancyHandler {
 				finishedAt: dayjs().toISOString(),
 			},
 			select: { user: true, team: true },
-		})
+		});
 
 		// Delete all equity allocations for the fired member
-		await prisma.equityPromise.deleteMany({ where: { allocation: { teamMemberId: id } } })
+		await prisma.equityPromise.deleteMany({
+			where: { allocation: { teamMemberId: id } },
+		});
 		await prisma.equityAllocation.updateMany({
 			where: { teamMemberId: id },
 			data: { teamMemberId: { set: null } },
-		})
+		});
 
 		try {
 			await NovuService.send({
-				template: 'default-message',
+				template: "default-message",
 				to: {
 					subscriberId: firedMember.user.id,
 					email: firedMember.user.email!,
 				},
 				payload: {
-					title: 'Candidate fired',
+					title: "Candidate fired",
 					message: `You have been kicked off the team ${firedMember.team.name}`,
 				},
-			})
+			});
 
-			console.info('New notification was sent to ' + firedMember.user.id)
+			console.info("New notification was sent to " + firedMember.user.id);
 		} catch (e) {
-			console.error('[NovuService]', e)
+			console.error("[NovuService]", e);
 		}
 	}
 }
 
-export default createHandler(ApiUserTeamVacancyHandler)
+export default createHandler(ApiUserTeamVacancyHandler);

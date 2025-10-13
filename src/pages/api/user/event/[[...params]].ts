@@ -1,11 +1,18 @@
-import { randomUUID } from 'crypto'
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Type, Transform } from 'class-transformer'
-import { IsArray, IsBoolean, IsDate, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Transform, Type } from "class-transformer";
+import {
+	IsArray,
+	IsBoolean,
+	IsDate,
+	IsEnum,
+	IsOptional,
+	IsString,
+	ValidateNested,
+} from "class-validator";
+import { randomUUID } from "crypto";
 import {
 	Body,
+	createHandler,
 	Delete,
 	Get,
 	NotFoundException,
@@ -15,151 +22,164 @@ import {
 	Query,
 	Req,
 	ValidationPipe,
-	createHandler,
-} from 'next-api-decorators'
-import slugify from 'slugify'
+} from "next-api-decorators";
+import slugify from "slugify";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class IDParamDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
 class UserEventScheduleItemDto {
 	@IsString()
 	@IsOptional()
-	id?: string
+	id?: string;
 
 	@IsString()
 	@IsOptional()
-	title?: string
+	title?: string;
 
 	@IsString()
 	@IsOptional()
-	description?: string
+	description?: string;
 
 	@IsString()
 	@IsOptional()
-	url?: string
+	url?: string;
 
 	@IsDate()
 	@IsOptional()
-	startDate?: Date
+	startDate?: Date;
 
 	@IsDate()
 	@IsOptional()
-	endDate?: Date
+	endDate?: Date;
 
 	@IsArray()
 	@IsString({ each: true })
-	@Transform(({ value }) => (Array.isArray(value) ? value.map((v) => (typeof v === 'string' ? v : v?.id)) : value))
-	speakers: string[]
+	@Transform(({ value }) =>
+		Array.isArray(value)
+			? value.map((v) => (typeof v === "string" ? v : v?.id))
+			: value,
+	)
+	speakers: string[];
 
 	@IsString()
-	directionId: string
+	directionId: string;
 
 	@IsString()
 	@IsOptional()
-	format: prismaClient.$Enums.EventFormat
+	format: prismaClient.$Enums.EventFormat;
 
 	@IsString()
 	@IsOptional()
-	language: prismaClient.$Enums.Language
+	language: prismaClient.$Enums.Language;
 }
 
 class UserEventCreateDto {
 	@IsString()
-	title: string
+	title: string;
 
 	@IsString()
 	@IsOptional()
-	slug?: string
+	slug?: string;
 
 	@IsString()
 	@IsOptional()
-	shortDescription?: string
+	shortDescription?: string;
 
 	@IsString()
-	description: string
-
-	@IsString()
-	@IsOptional()
-	url?: string
+	description: string;
 
 	@IsString()
 	@IsOptional()
-	image?: string
+	url?: string;
+
+	@IsString()
+	@IsOptional()
+	image?: string;
 
 	@IsString()
 	@IsEnum(prismaClient.EventType)
-	type: prismaClient.EventType
+	type: prismaClient.EventType;
 
 	@IsBoolean()
 	@IsOptional()
-	isFree?: boolean
+	isFree?: boolean;
 
 	@IsArray()
 	@ValidateNested({ each: true })
 	@IsOptional()
 	@Type(() => UserEventScheduleItemDto)
-	schedule?: UserEventScheduleItemDto[]
+	schedule?: UserEventScheduleItemDto[];
 }
 
 class UserEventUpdateDto {
 	@IsString()
-	title: string
+	title: string;
 
 	@IsString()
 	@IsOptional()
-	slug?: string
+	slug?: string;
 
 	@IsString()
-	description: string
-
-	@IsString()
-	@IsOptional()
-	shortDescription?: string
+	description: string;
 
 	@IsString()
 	@IsOptional()
-	url?: string
+	shortDescription?: string;
 
 	@IsString()
 	@IsOptional()
-	image?: string
+	url?: string;
+
+	@IsString()
+	@IsOptional()
+	image?: string;
 
 	@IsBoolean()
 	@IsOptional()
-	isFree?: boolean
+	isFree?: boolean;
 
 	@IsArray()
 	@IsOptional()
 	@ValidateNested({ each: true })
 	@Type(() => UserEventScheduleItemDto)
-	schedule?: UserEventScheduleItemDto[]
+	schedule?: UserEventScheduleItemDto[];
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserEventEndpointHandler {
-	@Get('/count')
+	@Get("/count")
 	public async count(@Req() req: NextApiRequestWithUser) {
 		const userCount = await prisma.event.count({
 			where: {
 				createdById: req.user.id,
 			},
-		})
+		});
 
 		const totalPublishedCount = await prisma.event.count({
 			where: {
-				status: { in: [prismaClient.$Enums.EventStatus.Published, prismaClient.$Enums.EventStatus.Archived] },
+				status: {
+					in: [
+						prismaClient.$Enums.EventStatus.Published,
+						prismaClient.$Enums.EventStatus.Archived,
+					],
+				},
 			},
-		})
+		});
 
-		return { userCount, totalPublishedCount }
+		return { userCount, totalPublishedCount };
 	}
 
-	@Get('/:id')
-	public async get(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
-		const isAdmin = req.user.role === prismaClient.UserRole.Admin
+	@Get("/:id")
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
 
 		return await prisma.event.findUnique({
 			where: {
@@ -188,11 +208,14 @@ class ApiUserEventEndpointHandler {
 					},
 				},
 			},
-		})
+		});
 	}
 
 	@Post()
-	public async create(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: UserEventCreateDto) {
+	public async create(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) data: UserEventCreateDto,
+	) {
 		const event = await prisma.event.create({
 			data: {
 				type: data.type,
@@ -202,9 +225,13 @@ class ApiUserEventEndpointHandler {
 				url: data.url,
 				image: data.image,
 				createdById: req.user.id,
-				slug: data.slug || slugify(data.title, { lower: true, strict: true }) + '-' + randomUUID().slice(-6),
+				slug:
+					data.slug ||
+					slugify(data.title, { lower: true, strict: true }) +
+						"-" +
+						randomUUID().slice(-6),
 			},
-		})
+		});
 
 		for (const item of data.schedule ?? []) {
 			await prisma.eventScheduleItem.create({
@@ -227,15 +254,18 @@ class ApiUserEventEndpointHandler {
 								}
 							: undefined,
 				},
-			})
+			});
 		}
 
-		return event
+		return event;
 	}
 
-	@Put('/:id')
-	public async update(@Param('id') id: string, @Body(ValidationPipe) data: UserEventUpdateDto) {
-		const { schedule, ...itemData } = data
+	@Put("/:id")
+	public async update(
+		@Param("id") id: string,
+		@Body(ValidationPipe) data: UserEventUpdateDto,
+	) {
+		const { schedule, ...itemData } = data;
 
 		const event = await prisma.event.update({
 			where: {
@@ -245,15 +275,17 @@ class ApiUserEventEndpointHandler {
 			include: {
 				schedule: true,
 			},
-		})
+		});
 
 		//find and remove items for removing
-		const removedItems = event.schedule.filter((i: { id: string }) => !schedule?.some((item) => item.id === i.id))
+		const removedItems = event.schedule.filter(
+			(i: { id: string }) => !schedule?.some((item) => item.id === i.id),
+		);
 
 		if (removedItems.length > 0) {
 			await prisma.eventScheduleItem.deleteMany({
 				where: { id: { in: removedItems.map((i: { id: string }) => i.id) } },
-			})
+			});
 		}
 
 		// update or create items
@@ -268,7 +300,8 @@ class ApiUserEventEndpointHandler {
 						url: item.url,
 						format: item.format,
 						language: item.language,
-						startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
+						startDate:
+							item.startDate?.toISOString() ?? new Date().toISOString(),
 						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
 						speakers: item.speakers?.length
 							? {
@@ -278,7 +311,7 @@ class ApiUserEventEndpointHandler {
 								}
 							: undefined,
 					},
-				})
+				});
 			} else {
 				await prisma.eventScheduleItem.create({
 					data: {
@@ -287,7 +320,8 @@ class ApiUserEventEndpointHandler {
 						description: item.description,
 						url: item.url,
 						directionId: item.directionId,
-						startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
+						startDate:
+							item.startDate?.toISOString() ?? new Date().toISOString(),
 						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
 						speakers: item.speakers?.length
 							? {
@@ -297,59 +331,76 @@ class ApiUserEventEndpointHandler {
 								}
 							: undefined,
 					},
-				})
+				});
 			}
 		}
 
-		return event
+		return event;
 	}
 
-	@Put('/:id/publish')
-	public async publish(@Param('id') id: string) {
+	@Put("/:id/publish")
+	public async publish(@Param("id") id: string) {
 		await prisma.event.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Published, publishedAt: new Date().toISOString() },
-		})
+			data: {
+				status: prismaClient.$Enums.EventStatus.Published,
+				publishedAt: new Date().toISOString(),
+			},
+		});
 	}
 
-	@Put('/:id/unpublish')
-	public async unpublish(@Param('id') id: string) {
+	@Put("/:id/unpublish")
+	public async unpublish(@Param("id") id: string) {
 		await prisma.event.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Draft, publishedAt: null },
-		})
+			data: {
+				status: prismaClient.$Enums.EventStatus.Draft,
+				publishedAt: null,
+			},
+		});
 	}
 
-	@Put('/:id/close')
-	public async close(@Param('id') id: string) {
+	@Put("/:id/close")
+	public async close(@Param("id") id: string) {
 		await prisma.event.update({
 			where: { id },
 			data: { status: prismaClient.$Enums.EventStatus.Closed },
-		})
+		});
 	}
 
-	@Put('/:id/restore')
-	public async restore(@Param('id') id: string) {
+	@Put("/:id/restore")
+	public async restore(@Param("id") id: string) {
 		await prisma.event.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Draft, publishedAt: null },
-		})
+			data: {
+				status: prismaClient.$Enums.EventStatus.Draft,
+				publishedAt: null,
+			},
+		});
 	}
 
-	@Put('/:id/generate-slug')
-	public async generateSlug(@Param('id') id: string) {
-		const event = await prisma.event.findUnique({ where: { id }, select: { title: true } })
+	@Put("/:id/generate-slug")
+	public async generateSlug(@Param("id") id: string) {
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { title: true },
+		});
 
 		if (!event) {
-			throw new NotFoundException('Event not found')
+			throw new NotFoundException("Event not found");
 		}
 
 		const updatedEvent = await prisma.event.update({
 			where: { id },
-			data: { slug: slugify(event.title, { lower: true, strict: true }) + '-' + randomUUID().slice(-6) },
-		})
+			data: {
+				slug:
+					slugify(event.title, { lower: true, strict: true }) +
+					"-" +
+					randomUUID().slice(-6),
+			},
+		});
 
-		return { slug: updatedEvent.slug }
+		return { slug: updatedEvent.slug };
 	}
 
 	@Delete()
@@ -358,10 +409,10 @@ class ApiUserEventEndpointHandler {
 			where: {
 				id,
 			},
-		})
+		});
 
-		return { success: true }
+		return { success: true };
 	}
 }
 
-export default createHandler(ApiUserEventEndpointHandler)
+export default createHandler(ApiUserEventEndpointHandler);

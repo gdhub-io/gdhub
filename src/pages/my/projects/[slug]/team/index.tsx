@@ -1,24 +1,29 @@
-import { useContext } from 'react'
-import MyTeam from '@/components/MyTeam'
-import UserTeam from '@/components/UserTeam'
-import { ProjectContext } from '@/contexts/ProjectContext'
-import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
-import { useTranslate } from '@tolgee/react'
+import { useTranslate } from "@tolgee/react";
+import { useContext } from "react";
+import MyTeam from "@/components/MyTeam";
+import UserTeam from "@/components/UserTeam";
+import { ProjectContext } from "@/contexts/ProjectContext";
+import { ProtectedProjectLayout } from "@/layouts/ProtectedProjectLayout";
 
 const RenderTeam = () => {
-	const contextProject = useContext(ProjectContext)
+	const contextProject = useContext(ProjectContext);
 
-	return contextProject?.contextProject?.isProjectAuthor && contextProject?.isLoaded ? <MyTeam /> : <UserTeam />
-}
+	return contextProject?.contextProject?.isProjectAuthor &&
+		contextProject?.isLoaded ? (
+		<MyTeam />
+	) : (
+		<UserTeam />
+	);
+};
 
 export const MyProjectTeamPage = () => {
-	const { t } = useTranslate()
+	const { t } = useTranslate();
 
 	return (
-		<ProtectedProjectLayout title={t('Project Team')}>
+		<ProtectedProjectLayout title={t("Project Team")}>
 			<RenderTeam />
 		</ProtectedProjectLayout>
-	)
-}
+	);
+};
 
-export default MyProjectTeamPage
+export default MyProjectTeamPage;

@@ -1,54 +1,69 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Prisma } from '@prisma/client'
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-import { Body, Delete, Get, Param, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Prisma } from "@prisma/client";
+import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import {
+	Body,
+	createHandler,
+	Delete,
+	Get,
+	Param,
+	Post,
+	Put,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class CreateWorkflowDto {
 	@IsString()
 	@IsNotEmpty()
-	name: string
+	name: string;
 
 	@IsString()
 	@IsNotEmpty()
-	title: string
+	title: string;
 
 	@IsString()
 	@IsOptional()
-	description?: string
+	description?: string;
 
 	@IsArray()
 	@IsOptional()
-	steps?: Prisma.InputJsonValue[]
+	steps?: Prisma.InputJsonValue[];
 }
 
 class UpdateWorkflowDto {
 	@IsString()
 	@IsOptional()
-	name?: string
+	name?: string;
 
 	@IsString()
 	@IsOptional()
-	title?: string
+	title?: string;
 
 	@IsString()
 	@IsOptional()
-	description?: string
+	description?: string;
 
 	@IsArray()
 	@IsOptional()
-	steps?: Prisma.InputJsonValue[]
+	steps?: Prisma.InputJsonValue[];
 }
 
-@NextAuthGuard('user', [prismaClient.UserRole.Admin])
+@NextAuthGuard("user", [prismaClient.UserRole.Admin])
 class ApiWorkflowsAdminHandler {
 	constructor() {}
 
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { name, title, description, steps }: CreateWorkflowDto
+		@Body(ValidationPipe) {
+			name,
+			title,
+			description,
+			steps,
+		}: CreateWorkflowDto,
 	) {
 		const workflow = await prisma.workflowSchema.create({
 			data: {
@@ -57,25 +72,33 @@ class ApiWorkflowsAdminHandler {
 				description: description || undefined,
 				steps: (steps ?? []) as Prisma.InputJsonValue[],
 			},
-		})
+		});
 
-		return { id: workflow.id }
+		return { id: workflow.id };
 	}
 
-	@Get('/:id')
-	public async get(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
+	@Get("/:id")
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
 		const workflow = await prisma.workflowSchema.findUnique({
 			where: { id },
-		})
+		});
 
-		return workflow
+		return workflow;
 	}
 
-	@Put('/:id')
+	@Put("/:id")
 	public async update(
 		@Req() req: NextApiRequestWithUser,
-		@Param('id') id: string,
-		@Body(ValidationPipe) { name, title, description, steps }: UpdateWorkflowDto
+		@Param("id") id: string,
+		@Body(ValidationPipe) {
+			name,
+			title,
+			description,
+			steps,
+		}: UpdateWorkflowDto,
 	) {
 		const workflow = await prisma.workflowSchema.update({
 			where: { id },
@@ -85,17 +108,20 @@ class ApiWorkflowsAdminHandler {
 				description: description || undefined,
 				steps: steps as Prisma.InputJsonValue[] | undefined,
 			},
-		})
+		});
 
-		return workflow
+		return workflow;
 	}
 
-	@Delete('/:id')
-	public async delete(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
-		await prisma.workflowSchema.delete({ where: { id } })
+	@Delete("/:id")
+	public async delete(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		await prisma.workflowSchema.delete({ where: { id } });
 
-		return { success: true }
+		return { success: true };
 	}
 }
 
-export default createHandler(ApiWorkflowsAdminHandler)
+export default createHandler(ApiWorkflowsAdminHandler);

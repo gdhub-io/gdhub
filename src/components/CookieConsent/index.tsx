@@ -1,40 +1,41 @@
-import { MouseEvent, useEffect, useState } from 'react'
-import { GTM_ID } from '@/helpers/gtm'
-import { T } from '@tolgee/react'
-import { Button, Checkbox, Flex, Grid, Space, Typography } from 'antd'
-import Cookies from 'js-cookie'
-import Link from 'next/link'
-import styles from './style.module.scss'
+import { T } from "@tolgee/react";
+import { Button, Checkbox, Flex, Grid, Space, Typography } from "antd";
+import Cookies from "js-cookie";
+import Link from "next/link";
+import { type MouseEvent, useEffect, useState } from "react";
+import { GTM_ID } from "@/helpers/gtm";
+import styles from "./style.module.scss";
 
-const { Text, Title } = Typography
+const { Text, Title } = Typography;
 
-const USER_CONSENT_COOKIE_KEY = 'cookie_consent_is_true'
-const GOOGLE_CONSENT_COOKIE_KEY = 'google_consent_is_true'
-const USER_CONSENT_COOKIE_EXPIRE_DATE = 365
+const USER_CONSENT_COOKIE_KEY = "cookie_consent_is_true";
+const GOOGLE_CONSENT_COOKIE_KEY = "google_consent_is_true";
+const USER_CONSENT_COOKIE_EXPIRE_DATE = 365;
 
 export const CookieConsent = () => {
-	const screens = Grid.useBreakpoint()
-	const [cookieConsentIsTrue, setCookieConsentIsTrue] = useState(true)
-	const [showDetails, setShowDetails] = useState(false)
-	const [googleConsent, setGoogleConsent] = useState(true)
+	const screens = Grid.useBreakpoint();
+	const [cookieConsentIsTrue, setCookieConsentIsTrue] = useState(true);
+	const [showDetails, setShowDetails] = useState(false);
+	const [googleConsent, setGoogleConsent] = useState(true);
 
 	useEffect(() => {
-		const consentIsTrue = Cookies.get(USER_CONSENT_COOKIE_KEY) === 'true'
-		setCookieConsentIsTrue(consentIsTrue)
+		const consentIsTrue = Cookies.get(USER_CONSENT_COOKIE_KEY) === "true";
+		setCookieConsentIsTrue(consentIsTrue);
 
 		if (!Cookies.get(GOOGLE_CONSENT_COOKIE_KEY)) {
-			setGoogleConsent(true)
+			setGoogleConsent(true);
 		} else {
-			const googleConsentIsTrue = Cookies.get(GOOGLE_CONSENT_COOKIE_KEY) === 'true'
-			setGoogleConsent(googleConsentIsTrue || false)
+			const googleConsentIsTrue =
+				Cookies.get(GOOGLE_CONSENT_COOKIE_KEY) === "true";
+			setGoogleConsent(googleConsentIsTrue || false);
 		}
-	}, [])
+	}, []);
 
 	useEffect(() => {
 		// Update GTM iframe in noscript container
-		if (typeof document !== 'undefined' && typeof window !== 'undefined') {
-			const container = document.getElementById('gtm-noscript-container')
-			if (container && googleConsent && process.env.NODE_ENV === 'production') {
+		if (typeof document !== "undefined" && typeof window !== "undefined") {
+			const container = document.getElementById("gtm-noscript-container");
+			if (container && googleConsent && process.env.NODE_ENV === "production") {
 				container.innerHTML = `
 					<iframe
 						src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}"
@@ -42,46 +43,46 @@ export const CookieConsent = () => {
 						width="0"
 						style="display:none;visibility:hidden"
 					></iframe>
-				`
+				`;
 			} else if (container) {
-				container.innerHTML = ''
+				container.innerHTML = "";
 			}
 		}
-	}, [googleConsent])
+	}, [googleConsent]);
 
 	const onClick = (e: MouseEvent<any>) => {
-		e.preventDefault()
+		e.preventDefault();
 
 		if (!cookieConsentIsTrue) {
-			Cookies.set(USER_CONSENT_COOKIE_KEY, 'true', {
+			Cookies.set(USER_CONSENT_COOKIE_KEY, "true", {
 				expires: USER_CONSENT_COOKIE_EXPIRE_DATE,
-			})
-			setCookieConsentIsTrue(true)
+			});
+			setCookieConsentIsTrue(true);
 
-			Cookies.set(GOOGLE_CONSENT_COOKIE_KEY, googleConsent ? 'true' : 'false', {
+			Cookies.set(GOOGLE_CONSENT_COOKIE_KEY, googleConsent ? "true" : "false", {
 				expires: USER_CONSENT_COOKIE_EXPIRE_DATE,
-			})
-			setGoogleConsent(googleConsent)
+			});
+			setGoogleConsent(googleConsent);
 
 			// Reload the page if Google consent has changed and was given
 			// This allows the Google Tag Manager script to load
-			if (googleConsent && typeof window !== 'undefined') {
-				window.location.reload()
+			if (googleConsent && typeof window !== "undefined") {
+				window.location.reload();
 			}
 		}
-	}
+	};
 
 	const toggleDetails = (e: MouseEvent<any>) => {
-		e.preventDefault()
-		setShowDetails(!showDetails)
-	}
+		e.preventDefault();
+		setShowDetails(!showDetails);
+	};
 
 	const handleGoogleConsentChange = (e: any) => {
-		setGoogleConsent(e.target.checked)
-	}
+		setGoogleConsent(e.target.checked);
+	};
 
 	if (cookieConsentIsTrue) {
-		return null
+		return null;
 	}
 
 	return (
@@ -90,8 +91,9 @@ export const CookieConsent = () => {
 				<Flex gap={32} align="center" vertical={screens.lg ? false : true}>
 					<Text>
 						<T keyName="popup.cookie.text">
-							This website uses cookies to improve the user experience. By using our website you agree to the use of all
-							cookies in accordance with our Cookie policy.
+							This website uses cookies to improve the user experience. By using
+							our website you agree to the use of all cookies in accordance with
+							our Cookie policy.
 						</T>
 					</Text>
 
@@ -115,11 +117,14 @@ export const CookieConsent = () => {
 						<Title level={5}>
 							<T keyName="popup.cookie.preferences">Cookie Preferences</T>
 						</Title>
-						<Checkbox checked={googleConsent} onChange={handleGoogleConsentChange}>
+						<Checkbox
+							checked={googleConsent}
+							onChange={handleGoogleConsentChange}
+						>
 							<Text>
 								<T keyName="popup.cookie.google">
-									Google services (Google Tag Manager) - Allow us to analyze website traffic and usage to improve your
-									experience
+									Google services (Google Tag Manager) - Allow us to analyze
+									website traffic and usage to improve your experience
 								</T>
 							</Text>
 						</Checkbox>
@@ -127,5 +132,5 @@ export const CookieConsent = () => {
 				)}
 			</Flex>
 		</div>
-	)
-}
+	);
+};

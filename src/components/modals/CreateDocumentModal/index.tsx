@@ -1,77 +1,88 @@
-import { useEffect } from 'react'
-import { gtmEventTrigger } from '@/helpers/gtm'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { PiFileDuotone } from '@react-icons/all-files/pi/PiFileDuotone'
-import { useMutation } from '@tanstack/react-query'
-import { useTranslate } from '@tolgee/react'
-import { Flex, Form, Input, message, Modal, Select, Spin } from 'antd'
-import axios from 'axios'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PiFileDuotone } from "@react-icons/all-files/pi/PiFileDuotone";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
+import { Flex, Form, Input, Modal, message, Select, Spin } from "antd";
+import axios from "axios";
+import { useEffect } from "react";
+import { gtmEventTrigger } from "@/helpers/gtm";
 
-const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, teamId }: any) => {
-	const [form] = Form.useForm()
-	const selectedDocumentType = Form.useWatch('type', form)
-	const { t } = useTranslate()
+const CreateDocumentModal = ({
+	open,
+	onCreate = () => {},
+	onCancel = () => {},
+	teamId,
+}: any) => {
+	const [form] = Form.useForm();
+	const selectedDocumentType = Form.useWatch("type", form);
+	const { t } = useTranslate();
 
 	const {
 		mutateAsync: createDocument,
 		error: createDocumentError,
 		isPending: isCreateProcessing,
-	} = useMutation({ mutationFn: (data) => axios.post<prismaClient.Project>('/api/user/project/documents', data) })
+	} = useMutation({
+		mutationFn: (data) =>
+			axios.post<prismaClient.Project>("/api/user/project/documents", data),
+	});
 
 	useEffect(() => {
-		const error = createDocumentError as any
+		const error = createDocumentError as any;
 		if (error?.response?.data?.message) {
-			message.error(error.response?.data?.message)
+			message.error(error.response?.data?.message);
 		}
-	}, [createDocumentError])
+	}, [createDocumentError]);
 
 	const handleOk = async () => {
-		let data: any
+		let data: any;
 
 		try {
-			data = await form.validateFields()
+			data = await form.validateFields();
 		} catch (error: any) {
-			if (!error.hasOwnProperty('errorFields')) {
-				message.error(error.message)
-				return
+			if (!Object.hasOwn(error, "errorFields")) {
+				message.error(error.message);
+				return;
 			}
 		}
 
-		if (!data) return
+		if (!data) return;
 
-		const document = await createDocument({ ...data, teamId })
-		gtmEventTrigger('document_create', { projectId: document.data.id, name: document.data.name })
+		const document = await createDocument({ ...data, teamId });
+		gtmEventTrigger("document_create", {
+			projectId: document.data.id,
+			name: document.data.name,
+		});
 
-		form.resetFields()
+		form.resetFields();
 
-		onCreate()
-	}
+		onCreate();
+	};
 
 	const handleCancel = () => {
-		form.resetFields()
-		onCancel()
-	}
+		form.resetFields();
+		onCancel();
+	};
 
 	const renderDocumentType = (type: string) => {
 		switch (type) {
 			case prismaClient.TeamDocumentType.Concept:
-				return 'Concept Document'
+				return "Concept Document";
 			case prismaClient.TeamDocumentType.GDD:
-				return 'Game Design Document'
+				return "Game Design Document";
 			case prismaClient.TeamDocumentType.NDA:
-				return 'NDA'
+				return "NDA";
 			default:
-				return 'Other'
+				return "Other";
 		}
-	}
+	};
 
 	useEffect(() => {
-		if (selectedDocumentType === 'other') {
-			form.setFieldsValue({ name: '' })
+		if (selectedDocumentType === "other") {
+			form.setFieldsValue({ name: "" });
 		} else {
-			form.setFieldsValue({ name: renderDocumentType(selectedDocumentType) })
+			form.setFieldsValue({ name: renderDocumentType(selectedDocumentType) });
 		}
-	}, [selectedDocumentType])
+	}, [selectedDocumentType]);
 
 	return (
 		<Modal
@@ -79,13 +90,13 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 			title={
 				<Flex align="center" gap={8}>
 					<PiFileDuotone size={32} />
-					{t('modal.create-document.title', 'Add new team document')}
+					{t("modal.create-document.title", "Add new team document")}
 				</Flex>
 			}
 			width={640}
 			maskClosable={false}
-			okText={t('modal.create-document.ok-text', 'Add')}
-			cancelText={t('modal.create-document.cancel-text', 'Cancel')}
+			okText={t("modal.create-document.ok-text", "Add")}
+			cancelText={t("modal.create-document.cancel-text", "Cancel")}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -104,55 +115,78 @@ const CreateDocumentModal = ({ open, onCreate = () => {}, onCancel = () => {}, t
 					initialValues={{ agree: false }}
 				>
 					<Form.Item
-						label={t('modal.create-document.field.type.label', 'Type')}
+						label={t("modal.create-document.field.type.label", "Type")}
 						name="type"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
 						<Select
-							placeholder={t('modal.create-document.field.type.placeholder', 'Select document type')}
+							placeholder={t(
+								"modal.create-document.field.type.placeholder",
+								"Select document type",
+							)}
 							options={[
 								// { label: 'Concept Document', value: prismaClient.TeamDocumentType.Concept },
-								{ label: 'Game Design Document', value: prismaClient.TeamDocumentType.GDD },
+								{
+									label: "Game Design Document",
+									value: prismaClient.TeamDocumentType.GDD,
+								},
 								// { label: 'NDA', value: prismaClient.TeamDocumentType.NDA },
-								{ label: 'Other', value: prismaClient.TeamDocumentType.Other },
+								{ label: "Other", value: prismaClient.TeamDocumentType.Other },
 							]}
 						/>
 					</Form.Item>
 					<Form.Item
-						label={t('modal.create-document.field.name.label', 'Title')}
+						label={t("modal.create-document.field.name.label", "Title")}
 						name="name"
-						rules={[{ required: selectedDocumentType === 'other' }]}
+						rules={[{ required: selectedDocumentType === "other" }]}
 						wrapperCol={{ span: 24 }}
-						hidden={selectedDocumentType != 'other'}
+						hidden={selectedDocumentType != "other"}
 					>
-						<Input placeholder={t('modal.create-document.field.name.placeholder', 'Document title')} />
+						<Input
+							placeholder={t(
+								"modal.create-document.field.name.placeholder",
+								"Document title",
+							)}
+						/>
 					</Form.Item>
 
 					<Form.Item
-						label={t('modal.create-document.field.link.label', 'Link to document')}
+						label={t(
+							"modal.create-document.field.link.label",
+							"Link to document",
+						)}
 						name="link"
-						rules={[{ required: true, type: 'url' }]}
+						rules={[{ required: true, type: "url" }]}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input
-							placeholder={t('modal.create-document.field.link.placeholder', 'https://example.com/document.pdf')}
+							placeholder={t(
+								"modal.create-document.field.link.placeholder",
+								"https://example.com/document.pdf",
+							)}
 						/>
 					</Form.Item>
 					<Form.Item
 						name="description"
-						label={t('modal.create-document.field.description.label', 'Short Description')}
+						label={t(
+							"modal.create-document.field.description.label",
+							"Short Description",
+						)}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input.TextArea
 							rows={3}
-							placeholder={t('modal.create-document.field.description.placeholder', 'This document is about...')}
+							placeholder={t(
+								"modal.create-document.field.description.placeholder",
+								"This document is about...",
+							)}
 						/>
 					</Form.Item>
 				</Form>
 			</Spin>
 		</Modal>
-	)
-}
+	);
+};
 
-export default CreateDocumentModal
+export default CreateDocumentModal;

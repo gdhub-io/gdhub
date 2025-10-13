@@ -1,76 +1,84 @@
-import { useState } from 'react'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { GoLinkExternal } from '@react-icons/all-files/go/GoLinkExternal'
-import { GoTrash } from '@react-icons/all-files/go/GoTrash'
-import { useQuery } from '@tanstack/react-query'
-import { useMutation } from '@tanstack/react-query'
-import { T } from '@tolgee/react'
-import { Typography, Button, Grid, List, Space, Popconfirm, Badge } from 'antd'
-import axios from 'axios'
-import Link from 'next/link'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { GoTrash } from "@react-icons/all-files/go/GoTrash";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { T } from "@tolgee/react";
+import { Badge, Button, Grid, List, Popconfirm, Space, Typography } from "antd";
+import axios from "axios";
+import Link from "next/link";
+import { useState } from "react";
 
 type ProjectsSectionArgs = {
-	seasonId: string
-	status: prismaClient.ProjectStatus
-}
+	seasonId: string;
+	status: prismaClient.ProjectStatus;
+};
 
-const { Title } = Typography
+const { Title } = Typography;
 
-export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs) => {
-	const screens = Grid.useBreakpoint()
-	const [showUserProjectModal, setShowUserProjectModal] = useState(false)
-	const [selectedProject, setSelectedProject] = useState<string>()
+export const UserSeasonProjectsList = ({
+	seasonId,
+	status,
+}: ProjectsSectionArgs) => {
+	const screens = Grid.useBreakpoint();
+	const [showUserProjectModal, setShowUserProjectModal] = useState(false);
+	const [selectedProject, setSelectedProject] = useState<string>();
 
 	const {
 		data: projects,
 		isFetching: isLoadingUserSeasonProjects,
 		refetch: refreshUserProjects,
 	} = useQuery({
-		queryKey: ['user-season-projects', seasonId],
-		queryFn: () => axios.get<prismaClient.Project[]>('/api/user/projects', { params: { seasonId, status } }),
+		queryKey: ["user-season-projects", seasonId],
+		queryFn: () =>
+			axios.get<prismaClient.Project[]>("/api/user/projects", {
+				params: { seasonId, status },
+			}),
 		refetchInterval: Infinity,
 		refetchOnWindowFocus: false,
-	})
+	});
 
 	const { mutateAsync: deleteProject } = useMutation({
-		mutationFn: ({ id }: { id: string }) => axios.delete<prismaClient.Project>('/api/user/project', { params: { id } }),
-	})
+		mutationFn: ({ id }: { id: string }) =>
+			axios.delete<prismaClient.Project>("/api/user/project", {
+				params: { id },
+			}),
+	});
 
 	const handleEditUserProject = (userProjectId: string) => {
-		setSelectedProject(userProjectId)
-		setShowUserProjectModal(true)
-	}
+		setSelectedProject(userProjectId);
+		setShowUserProjectModal(true);
+	};
 
 	const handleCloseModal = () => {
-		setSelectedProject(undefined)
-		setShowUserProjectModal(false)
-	}
+		setSelectedProject(undefined);
+		setShowUserProjectModal(false);
+	};
 
 	const handleSaveUserProject = async () => {
-		handleCloseModal()
-		refreshUserProjects()
-	}
+		handleCloseModal();
+		refreshUserProjects();
+	};
 
 	const handleDeleteIdea = async (projectId: string) => {
-		await deleteProject({ id: projectId })
-		await refreshUserProjects()
-	}
+		await deleteProject({ id: projectId });
+		await refreshUserProjects();
+	};
 
 	if (!projects?.data.length) {
 		return (
 			<p>
 				<T keyName="no-user-projects" />
 			</p>
-		)
+		);
 	}
 
 	return (
-		<Space style={{ width: '100%', marginTop: 32 }} direction="vertical">
+		<Space style={{ width: "100%", marginTop: 32 }} direction="vertical">
 			<Title level={5}>
 				<T keyName="userProjectList" />
 			</Title>
 			<List
-				itemLayout={screens.xs ? 'vertical' : 'horizontal'}
+				itemLayout={screens.xs ? "vertical" : "horizontal"}
 				loading={isLoadingUserSeasonProjects}
 				size="small"
 				bordered
@@ -81,14 +89,22 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 							title={
 								<>
 									{userProject.name}
-									<div style={{ opacity: 0.5, fontSize: '11px' }}>{userProject.genre}</div>
+									<div style={{ opacity: 0.5, fontSize: "11px" }}>
+										{userProject.genre}
+									</div>
 								</>
 							}
 							description={
 								<>
-									<Typography.Paragraph ellipsis>{userProject.description}</Typography.Paragraph>
+									<Typography.Paragraph ellipsis>
+										{userProject.description}
+									</Typography.Paragraph>
 									{!screens.md && !!userProject.conceptLink && (
-										<Link href={userProject.conceptLink} target="_blank" style={{ marginRight: '40px' }}>
+										<Link
+											href={userProject.conceptLink}
+											target="_blank"
+											style={{ marginRight: "40px" }}
+										>
 											<T keyName="concept-link" />
 										</Link>
 									)}
@@ -97,8 +113,15 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 						/>
 						<Space>
 							{screens.md && !!userProject.conceptLink && (
-								<Badge count={<GoLinkExternal size={12} color="#afafaf" />} offset={[-32, 4]}>
-									<Link href={userProject.conceptLink} target="_blank" style={{ marginRight: '40px' }}>
+								<Badge
+									count={<GoLinkExternal size={12} color="#afafaf" />}
+									offset={[-32, 4]}
+								>
+									<Link
+										href={userProject.conceptLink}
+										target="_blank"
+										style={{ marginRight: "40px" }}
+									>
 										<T keyName="concept-link" />
 									</Link>
 								</Badge>
@@ -119,5 +142,5 @@ export const UserSeasonProjectsList = ({ seasonId, status }: ProjectsSectionArgs
 				)}
 			/>
 		</Space>
-	)
-}
+	);
+};

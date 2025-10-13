@@ -7,4 +7,4 @@ export const brevoTemplates = {
 		registration: 2,
 		signin: 1,
 	},
-}
+};

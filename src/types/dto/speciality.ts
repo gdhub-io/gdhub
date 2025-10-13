@@ -1,80 +1,86 @@
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Type } from 'class-transformer'
-import { IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Type } from "class-transformer";
+import {
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+	ValidateNested,
+} from "class-validator";
 
 export class WorkDirectionDto {
 	@IsString()
-	id?: string
+	id?: string;
 	@IsString()
-	name: string
+	name: string;
 }
 
 export class SpecialityDto {
 	@IsString()
 	@IsOptional()
-	id?: string
+	id?: string;
 
 	@IsString()
 	@IsOptional()
-	teamInvitationId?: string
+	teamInvitationId?: string;
 
 	@IsString()
 	@IsOptional()
-	name: string
+	name: string;
 
 	@IsString()
 	@IsOptional()
-	specialization: string
+	specialization: string;
 
 	@IsEnum(prismaClient.SkillLevel)
 	@IsOptional()
-	level: prismaClient.SkillLevel
+	level: prismaClient.SkillLevel;
 
 	@IsString()
 	@IsOptional()
-	portfolioUrl?: string
+	portfolioUrl?: string;
 
 	@IsString()
 	@IsOptional()
-	workDirectionId: string
+	workDirectionId: string;
 
 	@IsString()
 	@IsOptional()
-	userId: string
+	userId: string;
 
 	@IsString()
 	@IsString({ each: true })
 	@IsOptional()
-	skills?: string
+	skills?: string;
 
 	@IsOptional()
-	tools?: string
-
-	@IsString()
-	@IsOptional()
-	jobs?: string
+	tools?: string;
 
 	@IsString()
 	@IsOptional()
-	schools?: string
+	jobs?: string;
+
+	@IsString()
+	@IsOptional()
+	schools?: string;
 }
 
 export class CreateSpecialityDto {
 	@Type(() => SpecialityDto)
 	@ValidateNested()
 	@IsNotEmpty()
-	data: SpecialityDto
+	data: SpecialityDto;
 }
 
 export class UpdateSpecialityDto {
 	@IsString()
-	id: string
+	id: string;
 
 	@Type(() => SpecialityDto)
-	data: SpecialityDto
+	data: SpecialityDto;
 }
 
 export class DeleteSpecialityDto {
 	@IsString()
-	id: string
+	id: string;
 }

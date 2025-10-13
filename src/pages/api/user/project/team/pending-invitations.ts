@@ -1,18 +1,20 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class TeamPendingInvitationsDto {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserTeamPendingInvitationsHandler {
 	@Get()
-	public async getPendingInvitations(@Query(ValidationPipe) { teamId }: TeamPendingInvitationsDto) {
+	public async getPendingInvitations(
+		@Query(ValidationPipe) { teamId }: TeamPendingInvitationsDto,
+	) {
 		// Получаем все приглашения команды со статусом Pending
 		const pendingInvitations = await prisma.teamInvitation.findMany({
 			where: {
@@ -20,12 +22,12 @@ class ApiUserTeamPendingInvitationsHandler {
 				status: prismaClient.InvitationStatus.Pending,
 			},
 			orderBy: {
-				createdAt: 'desc',
+				createdAt: "desc",
 			},
-		})
+		});
 
-		return pendingInvitations
+		return pendingInvitations;
 	}
 }
 
-export default createHandler(ApiUserTeamPendingInvitationsHandler)
+export default createHandler(ApiUserTeamPendingInvitationsHandler);

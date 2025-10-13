@@ -1,15 +1,15 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class ParamIdDto {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiTeamAdvisorHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { teamId }: ParamIdDto) {
@@ -22,7 +22,7 @@ class ApiTeamAdvisorHandler {
 					},
 				},
 			},
-		})
+		});
 
 		const teamAdvisors = await prisma.user.findMany({
 			where: {
@@ -54,10 +54,10 @@ class ApiTeamAdvisorHandler {
 					},
 				},
 			},
-		})
+		});
 
-		return teamAdvisors
+		return teamAdvisors;
 	}
 }
 
-export default createHandler(ApiTeamAdvisorHandler)
+export default createHandler(ApiTeamAdvisorHandler);

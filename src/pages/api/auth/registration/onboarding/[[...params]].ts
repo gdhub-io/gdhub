@@ -1,38 +1,65 @@
-import { getServerLocale } from '@/helpers/format'
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { brevoApi } from '@/services/brevo'
-import { prisma } from '@/services/prisma'
-import { UpdateProfileDto } from '@/types/dto/profile'
-import { CreateSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { BadRequestException, Body, Get, Post, Put, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	BadRequestException,
+	Body,
+	createHandler,
+	Get,
+	Post,
+	Put,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { getServerLocale } from "@/helpers/format";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { brevoApi } from "@/services/brevo";
+import { prisma } from "@/services/prisma";
+import type { UpdateProfileDto } from "@/types/dto/profile";
+import type {
+	CreateSpecialityDto,
+	UpdateSpecialityDto,
+} from "@/types/dto/speciality";
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiRegistrationHandler {
-	@Get('/profile')
+	@Get("/profile")
 	public async getOnboardingProfile(@Req() req: NextApiRequestWithUser) {
 		return await prisma.profile.findFirst({
 			where: { user: { id: req.user.id } },
 			include: { user: { select: { id: true, agreements: true } } },
-		})
+		});
 	}
 
-	@Put('/profile')
-	public async saveOnboardingProfile(@Req() req: NextApiRequestWithUser, @Body() body: Record<string, any>) {
+	@Put("/profile")
+	public async saveOnboardingProfile(
+		@Req() req: NextApiRequestWithUser,
+		@Body() body: Record<string, any>,
+	) {
 		try {
-			const locale = getServerLocale(req)
-			const { name, yearOfBirth, country, city, confirmUserData, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
-				body
+			const locale = getServerLocale(req);
+			const {
+				name,
+				yearOfBirth,
+				country,
+				city,
+				confirmUserData,
+				agreeWithTermsAndPrivacy,
+				needSubscribeToNewsletter,
+			} = body;
 
-			const user = await prisma.user.findUnique({ where: { id: req.user.id }, include: { profile: true } })
+			const user = await prisma.user.findUnique({
+				where: { id: req.user.id },
+				include: { profile: true },
+			});
 
-			if (!user) throw new BadRequestException('The user is not exist')
+			if (!user) throw new BadRequestException("The user is not exist");
 
-			const agreements: any = user?.agreements || {}
+			const agreements: any = user?.agreements || {};
 
-			agreements.confirmUserData = confirmUserData
-			if (agreeWithTermsAndPrivacy) agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy
-			if (needSubscribeToNewsletter) agreements.needSubscribeToNewsletter = needSubscribeToNewsletter
+			agreements.confirmUserData = confirmUserData;
+			if (agreeWithTermsAndPrivacy)
+				agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy;
+			if (needSubscribeToNewsletter)
+				agreements.needSubscribeToNewsletter = needSubscribeToNewsletter;
 
 			if (user?.profile) {
 				await prisma.profile.update({
@@ -44,7 +71,7 @@ class ApiRegistrationHandler {
 						country,
 						user: { update: { agreements, lang: locale } },
 					},
-				})
+				});
 			} else {
 				await prisma.profile.create({
 					data: {
@@ -54,32 +81,35 @@ class ApiRegistrationHandler {
 						country,
 						user: { connect: { id: user.id } },
 					},
-				})
+				});
 			}
 
-			await prisma.user.update({ where: { id: user.id }, data: { agreements } })
+			await prisma.user.update({
+				where: { id: user.id },
+				data: { agreements },
+			});
 		} catch (error) {
-			console.error('saveOnboardingProfile: error', error)
-			throw new BadRequestException('Failed to save onboarding profile')
+			console.error("saveOnboardingProfile: error", error);
+			throw new BadRequestException("Failed to save onboarding profile");
 		}
 	}
 
-	@Get('/speciality')
+	@Get("/speciality")
 	public async getOnboardingSpeciality(@Req() req: NextApiRequestWithUser) {
 		const speciality = await prisma.speciality.findFirst({
 			where: { userId: req.user.id },
 			include: { direction: true },
-		})
+		});
 
-		return speciality
+		return speciality;
 	}
 
-	@Post('/speciality')
+	@Post("/speciality")
 	public async createFirstSpeciality(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) body: CreateSpecialityDto
+		@Body(ValidationPipe) body: CreateSpecialityDto,
 	) {
-		const { data } = body
+		const { data } = body;
 
 		const speciality = await prisma.speciality.create({
 			data: {
@@ -87,25 +117,25 @@ class ApiRegistrationHandler {
 				userId: req.user.id,
 			} as any,
 			include: { direction: true },
-		})
+		});
 
 		await prisma.user.update({
 			where: { id: req?.user.id },
-			data: { roles: { push: 'Member' } },
-		})
+			data: { roles: { push: "Member" } },
+		});
 
-		return speciality
+		return speciality;
 	}
 
-	@Put('/speciality')
+	@Put("/speciality")
 	public async updateFirstSpeciality(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) body: UpdateSpecialityDto
+		@Body(ValidationPipe) body: UpdateSpecialityDto,
 	) {
 		const {
 			id,
 			data: { workDirectionId, tools, ...otherData },
-		} = body
+		} = body;
 
 		await prisma.speciality.update({
 			where: { id, userId: req.user.id },
@@ -114,10 +144,10 @@ class ApiRegistrationHandler {
 				direction: { connect: { id: workDirectionId } },
 			} as any,
 			include: { direction: true },
-		})
+		});
 	}
 
-	@Get('/interest')
+	@Get("/interest")
 	public async getInterests(@Req() req: NextApiRequestWithUser) {
 		return await prisma.profile.findFirst({
 			where: { userId: req.user.id },
@@ -128,26 +158,34 @@ class ApiRegistrationHandler {
 				preferredLevels: true,
 				preferredSettings: true,
 			},
-		})
+		});
 	}
 
-	@Put('/interest')
-	public async updateInterests(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: UpdateProfileDto) {
-		const { preferredGenres, preferredLevels, preferredSettings, primaryInterest } = body
-		let role: prismaClient.UserRole = prismaClient.UserRole.Guest
+	@Put("/interest")
+	public async updateInterests(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) body: UpdateProfileDto,
+	) {
+		const {
+			preferredGenres,
+			preferredLevels,
+			preferredSettings,
+			primaryInterest,
+		} = body;
+		let role: prismaClient.UserRole = prismaClient.UserRole.Guest;
 
 		switch (primaryInterest) {
 			case prismaClient.PrimaryInterest.Specialist: {
-				role = prismaClient.UserRole.Member
-				break
+				role = prismaClient.UserRole.Member;
+				break;
 			}
 			case prismaClient.PrimaryInterest.Author: {
-				role = prismaClient.UserRole.Author
-				break
+				role = prismaClient.UserRole.Author;
+				break;
 			}
 			case prismaClient.PrimaryInterest.Mentor: {
-				role = prismaClient.UserRole.Mentor
-				break
+				role = prismaClient.UserRole.Mentor;
+				break;
 			}
 		}
 
@@ -159,19 +197,25 @@ class ApiRegistrationHandler {
 							set: preferredGenres?.map((v: string) => ({ id: v })),
 						}
 					: undefined,
-				preferredLevels: preferredLevels ? { set: preferredLevels?.map((v: string) => ({ id: v })) } : undefined,
-				preferredSettings: preferredSettings ? { set: preferredSettings?.map((v: string) => ({ id: v })) } : undefined,
+				preferredLevels: preferredLevels
+					? { set: preferredLevels?.map((v: string) => ({ id: v })) }
+					: undefined,
+				preferredSettings: preferredSettings
+					? { set: preferredSettings?.map((v: string) => ({ id: v })) }
+					: undefined,
 				primaryInterest,
 				user: {
 					update: {
-						roles: { set: [prismaClient.UserRole.Member, prismaClient.UserRole.Author] },
+						roles: {
+							set: [prismaClient.UserRole.Member, prismaClient.UserRole.Author],
+						},
 					},
 				},
 			} as any,
-		})
+		});
 	}
 
-	@Get('/resources')
+	@Get("/resources")
 	public async getResources(@Req() req: NextApiRequestWithUser) {
 		return await prisma.profile.findFirst({
 			where: { userId: req.user.id },
@@ -181,25 +225,35 @@ class ApiRegistrationHandler {
 				otherResources: true,
 				isActive: true,
 			},
-		})
+		});
 	}
 
-	@Put('/resources')
-	public async updateResources(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: UpdateProfileDto) {
-		const { timeForWork, otherResources, isActive } = body
+	@Put("/resources")
+	public async updateResources(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) body: UpdateProfileDto,
+	) {
+		const { timeForWork, otherResources, isActive } = body;
 
 		const profile = await prisma.profile.update({
 			where: { userId: req.user.id },
-			data: { timeForWork, otherResources, isActive, user: { update: { onboardingDone: true } } },
+			data: {
+				timeForWork,
+				otherResources,
+				isActive,
+				user: { update: { onboardingDone: true } },
+			},
 			select: {
 				primaryInterest: true,
 				name: true,
-				user: { select: { agreements: true, name: true, email: true, lang: true } },
+				user: {
+					select: { agreements: true, name: true, email: true, lang: true },
+				},
 			},
-		})
+		});
 
 		try {
-			const agreements = profile.user.agreements as Record<string, boolean>
+			const agreements = profile.user.agreements as Record<string, boolean>;
 
 			const newSubscriber = await brevoApi.contacts.createContact({
 				email: profile.user.email as string,
@@ -208,16 +262,17 @@ class ApiRegistrationHandler {
 					MAIN_LOCALE: profile.user.lang,
 					MAIN_INTEREST: profile.primaryInterest,
 					FIRSTNAME: profile.name || profile.user.name,
-					HAS_SUBSCRIBE_TO_NEWSLETTER: agreements?.needSubscribeToNewsletter || false,
+					HAS_SUBSCRIBE_TO_NEWSLETTER:
+						agreements?.needSubscribeToNewsletter || false,
 				},
-			})
+			});
 
-			const response = await newSubscriber.json()
-			console.log('[brevo: newSubscriber: response]', response)
+			const response = await newSubscriber.json();
+			console.log("[brevo: newSubscriber: response]", response);
 		} catch (error) {
-			console.error('[brevo: newSubscriber: error]', error)
+			console.error("[brevo: newSubscriber: error]", error);
 		}
 	}
 }
 
-export default createHandler(ApiRegistrationHandler)
+export default createHandler(ApiRegistrationHandler);

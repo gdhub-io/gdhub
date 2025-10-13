@@ -1,13 +1,16 @@
-import { prisma } from '@/services/prisma'
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "@/services/prisma";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	if (req.method !== 'GET') {
-		return res.status(405).json({ message: 'Method not allowed' })
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse,
+) {
+	if (req.method !== "GET") {
+		return res.status(405).json({ message: "Method not allowed" });
 	}
 
 	try {
-		const { projectId } = req.query
+		const { projectId } = req.query;
 
 		const reports = await prisma.projectReport.findMany({
 			where: projectId
@@ -16,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					}
 				: undefined,
 			orderBy: {
-				publishedAt: 'desc',
+				publishedAt: "desc",
 			},
 			include: {
 				project: {
@@ -33,11 +36,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					},
 				},
 			},
-		})
+		});
 
-		return res.status(200).json(reports)
+		return res.status(200).json(reports);
 	} catch (error) {
-		console.error('Error fetching project reports:', error)
-		return res.status(500).json({ message: 'Internal server error' })
+		console.error("Error fetching project reports:", error);
+		return res.status(500).json({ message: "Internal server error" });
 	}
 }

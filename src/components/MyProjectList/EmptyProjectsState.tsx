@@ -1,17 +1,19 @@
-import React from 'react'
-import { useTranslate } from '@tolgee/react'
-import { Typography } from 'antd'
-import Image from 'next/image'
-import styles from './emptyState.module.scss'
+import { useTranslate } from "@tolgee/react";
+import { Typography } from "antd";
+import Image from "next/image";
+import type React from "react";
+import styles from "./emptyState.module.scss";
 
-const { Title, Paragraph } = Typography
+const { Title, Paragraph } = Typography;
 
 interface EmptyProjectsStateProps {
-	onCreateProject: () => void
+	onCreateProject: () => void;
 }
 
-const EmptyProjectsState: React.FC<EmptyProjectsStateProps> = ({ onCreateProject }) => {
-	const { t } = useTranslate()
+const EmptyProjectsState: React.FC<EmptyProjectsStateProps> = ({
+	onCreateProject,
+}) => {
+	const { t } = useTranslate();
 
 	return (
 		<div className={styles.emptyStateContainer}>
@@ -26,17 +28,20 @@ const EmptyProjectsState: React.FC<EmptyProjectsStateProps> = ({ onCreateProject
 			</div>
 
 			<Title level={4} className={styles.title}>
-				{t('page.hub.user-projects.empty.title', 'Start Your Game Development Journey')}
+				{t(
+					"page.hub.user-projects.empty.title",
+					"Start Your Game Development Journey",
+				)}
 			</Title>
 
 			<Paragraph className={styles.description}>
 				{t(
-					'page.hub.user-projects.empty.description',
-					"You haven't created or joined any projects yet. Begin your game development journey by creating your own project or joining an existing team."
+					"page.hub.user-projects.empty.description",
+					"You haven't created or joined any projects yet. Begin your game development journey by creating your own project or joining an existing team.",
 				)}
 			</Paragraph>
 		</div>
-	)
-}
+	);
+};
 
-export default EmptyProjectsState
+export default EmptyProjectsState;

@@ -1,16 +1,21 @@
-import { SearchEngineService } from '@gdhub-io/gdhub-typesense'
-import { SearchParams } from '@gdhub-io/gdhub-typesense/dist/types'
+import type { SearchEngineService } from "@gdhub-io/gdhub-typesense";
+import type { SearchParams } from "@gdhub-io/gdhub-typesense/dist/types";
 
-export async function search(searchClient: SearchEngineService, searchParams: SearchParams) {
+export async function search(
+	searchClient: SearchEngineService,
+	searchParams: SearchParams,
+) {
 	try {
 		const response = await searchClient.client
-			.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+			.collections(
+				process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string,
+			)
 			.documents()
-			.search(searchParams)
+			.search(searchParams);
 
-		return response
+		return response;
 	} catch (error: any) {
-		console.log(error.importResults())
-		console.info('Finish with Error')
+		console.log(error.importResults());
+		console.info("Finish with Error");
 	}
 }

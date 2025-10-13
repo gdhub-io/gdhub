@@ -1,21 +1,21 @@
-import MyProjectDocuments from '@/components/MyProjectDocuments'
-import { ProtectedProjectLayout } from '@/layouts/ProtectedProjectLayout'
-import { useTranslate } from '@tolgee/react'
+import { useTranslate } from "@tolgee/react";
+import MyProjectDocuments from "@/components/MyProjectDocuments";
+import { ProtectedProjectLayout } from "@/layouts/ProtectedProjectLayout";
 
 export const MyProjectVacanciesPage = () => {
-	const { t } = useTranslate()
+	const { t } = useTranslate();
 
 	return (
 		<ProtectedProjectLayout
-			title={t('project.documents.title', 'Documents')}
+			title={t("project.documents.title", "Documents")}
 			description={t(
-				'project.documents.description',
-				'Links to project-specific documents accessible to you and your team'
+				"project.documents.description",
+				"Links to project-specific documents accessible to you and your team",
 			)}
 		>
 			<MyProjectDocuments />
 		</ProtectedProjectLayout>
-	)
-}
+	);
+};
 
-export default MyProjectVacanciesPage
+export default MyProjectVacanciesPage;

@@ -1,14 +1,14 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { prisma } from "@/services/prisma";
 
 function QueueCronLog(jobName: string) {
-	return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-		const originalMethod = descriptor.value
+	return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+		const originalMethod = descriptor.value;
 
 		descriptor.value = async function (...args: any[]) {
 			try {
 				// Execute the original method
-				const result = await originalMethod.apply(this, args)
+				const result = await originalMethod.apply(this, args);
 
 				await prisma.queueJobLog.create({
 					data: {
@@ -17,9 +17,9 @@ function QueueCronLog(jobName: string) {
 						type: prismaClient.QueueJobType.Cron,
 						data: result || null,
 					},
-				})
+				});
 
-				return result
+				return result;
 			} catch (e: any) {
 				await prisma.queueJobLog.create({
 					data: {
@@ -28,12 +28,12 @@ function QueueCronLog(jobName: string) {
 						type: prismaClient.QueueJobType.Cron,
 						log: (e as Error).message,
 					},
-				})
+				});
 
-				return
+				return;
 			}
-		}
-	}
+		};
+	};
 }
 
-export default QueueCronLog
+export default QueueCronLog;

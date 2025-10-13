@@ -1,65 +1,75 @@
-import { useCallback, useState } from 'react'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useQuery } from '@tanstack/react-query'
-import { useTranslate } from '@tolgee/react'
-import { Avatar, Space, Table, Tag, Typography, theme } from 'antd'
-import { ColumnsType } from 'antd/es/table'
-import axios from 'axios'
-import SpecialistPreviewModal from '../modals/SpecialistPreviewModal'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { useQuery } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
+import { Avatar, Space, Table, Tag, Typography, theme } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import axios from "axios";
+import { useCallback, useState } from "react";
+import SpecialistPreviewModal from "../modals/SpecialistPreviewModal";
 
 interface MyProjectAIReccomendCandidatesArgs {
-	projectId: string
+	projectId: string;
 }
 
-const { Text } = Typography
+const { Text } = Typography;
 
-const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandidatesArgs) => {
-	const { token } = theme.useToken()
-	const { t } = useTranslate()
-	const [selectedSpecialistId, setSelectedSpecialistId] = useState<string | undefined>()
+const MyProjectAIReccomendCandidates = ({
+	projectId,
+}: MyProjectAIReccomendCandidatesArgs) => {
+	const { token } = theme.useToken();
+	const { t } = useTranslate();
+	const [selectedSpecialistId, setSelectedSpecialistId] = useState<
+		string | undefined
+	>();
 
 	const {
 		data: aiCandidates,
 		refetch: refetchAICandidates,
 		isFetching: isLoadingAICandidates,
 	} = useQuery({
-		queryKey: ['AICandidates', projectId],
+		queryKey: ["AICandidates", projectId],
 		queryFn: () =>
 			axios.get<
 				(prismaClient.MatchingSpecialistAndProject & {
-					specialist: prismaClient.Speciality & { user: prismaClient.User }
+					specialist: prismaClient.Speciality & { user: prismaClient.User };
 				})[]
-			>('/api/user/project/ai-candidates', {
+			>("/api/user/project/ai-candidates", {
 				params: { projectId },
 			}),
 		enabled: !!projectId,
-	})
+	});
 
 	const calculateMatcingColor = useCallback((percent: number) => {
 		if (percent >= 60 && percent < 80) {
-			return token.colorWarning
+			return token.colorWarning;
 		}
 
 		if (percent >= 80) {
-			return token.colorSuccess
+			return token.colorSuccess;
 		}
 
-		return token.colorError
-	}, [])
+		return token.colorError;
+	}, []);
 
 	const columns: ColumnsType<any> = [
 		{
-			title: t('AI Candidate'),
-			dataIndex: 'specialityId',
-			key: 'specialityId',
+			title: t("AI Candidate"),
+			dataIndex: "specialityId",
+			key: "specialityId",
 			render: (value, record) => (
 				<>
 					<div
-						style={{ cursor: 'pointer', fontWeight: 'bold' }}
+						role="button"
+						tabIndex={0}
+						style={{ cursor: "pointer", fontWeight: "bold" }}
 						onClick={() => handleShowAICandidate(record.specialityId)}
 					>
 						<Space>
-							<Avatar shape="square" size={32} src={record.specialist.user.image || null} />
+							<Avatar
+								shape="square"
+								size={32}
+								src={record.specialist.user.image || null}
+							/>
 							{record.specialist.user?.name}
 						</Space>
 					</div>
@@ -70,59 +80,62 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 			),
 		},
 		{
-			title: t('Project Compliance'),
-			dataIndex: 'projectScore',
-			responsive: ['md'],
-			key: 'projectScore',
-			align: 'center',
+			title: t("Project Compliance"),
+			dataIndex: "projectScore",
+			responsive: ["md"],
+			key: "projectScore",
+			align: "center",
 			render: (value) => {
 				return (
 					<Text strong style={{ color: calculateMatcingColor(value) }}>
 						{value}%
 					</Text>
-				)
+				);
 			},
 		},
 		{
-			title: t('Team Compliance'),
-			dataIndex: 'teamScore',
-			responsive: ['md'],
-			key: 'teamScore',
-			align: 'center',
+			title: t("Team Compliance"),
+			dataIndex: "teamScore",
+			responsive: ["md"],
+			key: "teamScore",
+			align: "center",
 			render: (value) => {
 				return (
 					<Text strong style={{ color: calculateMatcingColor(value) }}>
 						{value}%
 					</Text>
-				)
+				);
 			},
 		},
 		{
-			title: t('Author Compliance'),
-			dataIndex: 'authorScore',
-			responsive: ['md'],
-			key: 'authorScore',
-			align: 'center',
+			title: t("Author Compliance"),
+			dataIndex: "authorScore",
+			responsive: ["md"],
+			key: "authorScore",
+			align: "center",
 			render: (value) => {
 				return (
 					<Text strong style={{ color: calculateMatcingColor(value) }}>
 						{value}%
 					</Text>
-				)
+				);
 			},
 		},
 		{
-			title: t('Avg. Score'),
-			dataIndex: 'avgScore',
-			responsive: ['md'],
-			key: 'avgScore',
-			align: 'center',
+			title: t("Avg. Score"),
+			dataIndex: "avgScore",
+			responsive: ["md"],
+			key: "avgScore",
+			align: "center",
 			render: (value) => {
 				return (
-					<Tag style={{ padding: '8px 12px' }} color={calculateMatcingColor(value)}>
+					<Tag
+						style={{ padding: "8px 12px" }}
+						color={calculateMatcingColor(value)}
+					>
 						{value}%
 					</Tag>
-				)
+				);
 			},
 		},
 		// {
@@ -136,14 +149,14 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 		// 	key: 'actions',
 		// 	responsive: ['md'],
 		// },
-	]
+	];
 
 	const handleShowAICandidate = (id: string) => {
-		setSelectedSpecialistId(id)
-	}
+		setSelectedSpecialistId(id);
+	};
 
 	if (!aiCandidates?.data) {
-		return null
+		return null;
 	}
 
 	return (
@@ -151,20 +164,28 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 			<Space align="center" style={{ marginTop: 60 }}>
 				<h3 style={{ margin: 0 }}>
 					{t(
-						'components.my-project-ai-reccomend-candidates.aiReccomendationSpecialists',
-						'AI Reccomendation Specialists'
+						"components.my-project-ai-reccomend-candidates.aiReccomendationSpecialists",
+						"AI Reccomendation Specialists",
 					)}
 				</h3>
 				<Tag color="gray">{aiCandidates?.data.length || 0}</Tag>
 			</Space>
 
-			{!!aiCandidates?.data.length ? (
+			{aiCandidates?.data.length ? (
 				<>
 					<Table
 						loading={isLoadingAICandidates}
-						style={{ border: '1px solid #aaa', overflow: 'hidden', borderRadius: 16, marginTop: 16 }}
+						style={{
+							border: "1px solid #aaa",
+							overflow: "hidden",
+							borderRadius: 16,
+							marginTop: 16,
+						}}
 						columns={columns}
-						dataSource={aiCandidates?.data?.map((m: any) => ({ ...m, key: m.id }))}
+						dataSource={aiCandidates?.data?.map((m: any) => ({
+							...m,
+							key: m.id,
+						}))}
 						pagination={false}
 					/>
 
@@ -175,15 +196,15 @@ const MyProjectAIReccomendCandidates = ({ projectId }: MyProjectAIReccomendCandi
 					/>
 				</>
 			) : (
-				<p style={{ marginTop: 12, color: 'gray' }}>
+				<p style={{ marginTop: 12, color: "gray" }}>
 					{t(
-						'components.my-project-ai-reccomend-candidates.noAiRecommendations',
-						'There are currently no AI recommendations for specialists.'
+						"components.my-project-ai-reccomend-candidates.noAiRecommendations",
+						"There are currently no AI recommendations for specialists.",
 					)}
 				</p>
 			)}
 		</>
-	)
-}
+	);
+};
 
-export default MyProjectAIReccomendCandidates
+export default MyProjectAIReccomendCandidates;

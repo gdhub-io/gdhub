@@ -1,6 +1,12 @@
 // import { GTM_ID } from '@/helpers/gtm'
-import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs'
-import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document'
+import { createCache, extractStyle, StyleProvider } from "@ant-design/cssinjs";
+import Document, {
+	type DocumentContext,
+	Head,
+	Html,
+	Main,
+	NextScript,
+} from "next/document";
 
 // export default class CustomDocument extends Document {
 // 	render() {
@@ -34,11 +40,16 @@ const MyDocument = () => (
 			<link rel="icon" href="/favicon.svg" />
 			{/* the 2 links provided by Google fonts */}
 			<link rel="preconnect" href="https://fonts.googleapis.com" />
-			<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+			<link
+				rel="preconnect"
+				href="https://fonts.gstatic.com"
+				crossOrigin="anonymous"
+			/>
 		</Head>
 		<body>
-			{process.env.NODE_ENV == 'production' && (
+			{process.env.NODE_ENV == "production" && (
 				<noscript
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 					dangerouslySetInnerHTML={{
 						__html: `
 						<!-- Google Tag Manager iframe will be loaded only if user has given consent to cookies -->
@@ -52,11 +63,11 @@ const MyDocument = () => (
 			<NextScript />
 		</body>
 	</Html>
-)
+);
 
 MyDocument.getInitialProps = async (ctx: DocumentContext) => {
-	const cache = createCache()
-	const originalRenderPage = ctx.renderPage
+	const cache = createCache();
+	const originalRenderPage = ctx.renderPage;
 
 	// Run the React rendering logic synchronously
 	ctx.renderPage = () =>
@@ -69,21 +80,22 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
 			),
 			// Useful for wrapping in a per-page basis
 			// enhanceComponent: (Component) => Component,
-		})
+		});
 
 	// Run the parent `getInitialProps`, it now includes the custom `renderPage`
-	const initialProps = await Document.getInitialProps(ctx)
-	const style = extractStyle(cache, true)
+	const initialProps = await Document.getInitialProps(ctx);
+	const style = extractStyle(cache, true);
 
 	return {
 		...initialProps,
 		styles: (
 			<>
 				{initialProps.styles}
+				{/** biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
 				<style dangerouslySetInnerHTML={{ __html: style }} />
 			</>
 		),
-	}
-}
+	};
+};
 
-export default MyDocument
+export default MyDocument;

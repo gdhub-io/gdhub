@@ -1,10 +1,18 @@
-import { promises as fs } from 'fs'
-import { env } from '@/helpers/env'
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import SanityService from '@/services/sanity'
-import { IsString } from 'class-validator'
-import { IncomingForm } from 'formidable'
-import { Delete, PayloadTooLargeException, Post, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import { IncomingForm } from "formidable";
+import { promises as fs } from "fs";
+import {
+	createHandler,
+	Delete,
+	PayloadTooLargeException,
+	Post,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { env } from "@/helpers/env";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import SanityService from "@/services/sanity";
 
 /**
  * @swagger
@@ -28,7 +36,7 @@ import { Delete, PayloadTooLargeException, Post, Query, Req, ValidationPipe, cre
 
 class DeleteImageDto {
 	@IsString()
-	fileUrl: string
+	fileUrl: string;
 }
 
 /* Don't miss that! */
@@ -36,9 +44,9 @@ export const config = {
 	api: {
 		bodyParser: false,
 	},
-}
+};
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUploadFileHandler {
 	/**
 	 * @swagger
@@ -71,30 +79,35 @@ class ApiUploadFileHandler {
 	 */
 	@Post()
 	public async upload(@Req() req: NextApiRequestWithUser) {
-		const fData = await new Promise<{ fields: any; files: any }>((resolve, reject) => {
-			const form = new IncomingForm({
-				multiples: false,
-			})
+		const fData = await new Promise<{ fields: any; files: any }>(
+			(resolve, reject) => {
+				const form = new IncomingForm({
+					multiples: false,
+				});
 
-			form.parse(req, (err, fields, files) => {
-				if (err) return reject(err)
-				resolve({ fields, files })
-			})
-		})
+				form.parse(req, (err, fields, files) => {
+					if (err) return reject(err);
+					resolve({ fields, files });
+				});
+			},
+		);
 
-		const file = fData.files.file
-		const data = await fs.readFile(file.filepath)
+		const file = fData.files.file;
+		const data = await fs.readFile(file.filepath);
 
-		if (file.size > 1024 * 1024 * env('NEXT_PUBLIC_UPLOAD_FILE_FOR_REPORT_MAX_SIZE', 5))
-			throw new PayloadTooLargeException()
+		if (
+			file.size >
+			1024 * 1024 * env("NEXT_PUBLIC_UPLOAD_FILE_FOR_REPORT_MAX_SIZE", 5)
+		)
+			throw new PayloadTooLargeException();
 
 		const response = await SanityService.uploadImage(
 			fData.fields?.filename || file.newFilename,
 			data,
-			fData.fields?.tag
-		)
+			fData.fields?.tag,
+		);
 
-		return response
+		return response;
 	}
 
 	/**
@@ -114,9 +127,12 @@ class ApiUploadFileHandler {
 	 *         description: Image was deleted. No content
 	 */
 	@Delete()
-	public async delete(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { fileUrl }: DeleteImageDto) {
-		await SanityService.removeFile(fileUrl)
+	public async delete(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { fileUrl }: DeleteImageDto,
+	) {
+		await SanityService.removeFile(fileUrl);
 	}
 }
 
-export default createHandler(ApiUploadFileHandler)
+export default createHandler(ApiUploadFileHandler);

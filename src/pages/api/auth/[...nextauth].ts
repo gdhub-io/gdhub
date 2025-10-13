@@ -1,133 +1,156 @@
-import { brevoTemplates } from '@/config/brevo-templates'
-import { env } from '@/helpers/env'
-import { brevoApi } from '@/services/brevo'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth'
-import EmailProvider from 'next-auth/providers/email'
-import GoogleProvider from 'next-auth/providers/google'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import NextAuth, { type NextAuthOptions, type TokenSet } from "next-auth";
+import EmailProvider from "next-auth/providers/email";
+import GoogleProvider from "next-auth/providers/google";
+import { brevoTemplates } from "@/config/brevo-templates";
+import { env } from "@/helpers/env";
+import { brevoApi } from "@/services/brevo";
+import { prisma } from "@/services/prisma";
 
 export const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(prisma as unknown as prismaClient.PrismaClient),
-	secret: env('NEXTAUTH_SECRET'),
-	session: { strategy: 'jwt' },
+	secret: env("NEXTAUTH_SECRET"),
+	session: { strategy: "jwt" },
 	pages: {
-		signIn: '/signin',
+		signIn: "/signin",
 	},
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
-			authorization: { params: { access_type: 'offline', prompt: 'consent' } },
+			authorization: { params: { access_type: "offline", prompt: "consent" } },
 			allowDangerousEmailAccountLinking: true,
 			httpOptions: { timeout: 10000 },
 		}),
 		EmailProvider({
 			from: process.env.EMAIL_FROM as string,
 			server: process.env.EMAIL_SERVER as string,
-			async sendVerificationRequest({ identifier: email, url, provider }, ...other) {
+			async sendVerificationRequest(
+				{ identifier: email, url, provider },
+				...other
+			) {
 				try {
-					console.log('sendVerificationRequest', email, url, provider, other)
-					const userExist = await prisma.user.findUnique({ where: { email } })
-					let sendResult: any
+					console.log("sendVerificationRequest", email, url, provider, other);
+					const userExist = await prisma.user.findUnique({ where: { email } });
+					let sendResult: any;
 
 					if (userExist) {
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							to: [{ email }],
-							templateId: brevoTemplates[userExist.lang as keyof typeof brevoTemplates].signin,
+							templateId:
+								brevoTemplates[userExist.lang as keyof typeof brevoTemplates]
+									.signin,
 							params: {
 								link: url,
 							},
-						})
+						});
 					} else {
-						const defaultLang = env('NEXT_PUBLIC_APP_DEFAULT_LOCALE') as prismaClient.Language
-						const params = new URL(url).searchParams
-						const callbackUrl = params.get('callbackUrl') || ''
-						const callback = new URL(callbackUrl).searchParams
-						const locale = (callback.get('locale') as prismaClient.Language) || defaultLang
+						const defaultLang = env(
+							"NEXT_PUBLIC_APP_DEFAULT_LOCALE",
+						) as prismaClient.Language;
+						const params = new URL(url).searchParams;
+						const callbackUrl = params.get("callbackUrl") || "";
+						const callback = new URL(callbackUrl).searchParams;
+						const locale =
+							(callback.get("locale") as prismaClient.Language) || defaultLang;
 
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							to: [{ email }],
-							templateId: brevoTemplates[locale as keyof typeof brevoTemplates].registration,
+							templateId:
+								brevoTemplates[locale as keyof typeof brevoTemplates]
+									.registration,
 							params: {
 								link: url,
 							},
-						})
+						});
 					}
 
-					if (sendResult.error) throw Error(sendResult.error.message)
+					if (sendResult.error) throw Error(sendResult.error.message);
 
-					console.log('sendVerificationRequest was sent')
+					console.log("sendVerificationRequest was sent");
 				} catch (error: any) {
-					console.error('', error)
+					console.error("", error);
 				}
 			},
 		}),
 	],
 	callbacks: {
 		async jwt({ token }) {
-			if (!token.email) return
+			if (!token.email) return;
 
-			const user = await prisma.user.findUnique({ where: { email: token.email } })
-			const activeSubscription = await prisma.user.activeSubscription(user?.id!)
+			const user = await prisma.user.findUnique({
+				where: { email: token.email },
+				include: { profile: true },
+			});
 
-			return { ...token, ...user, activeSubscription: activeSubscription?.id } as any
+			if (!user) return;
+
+			const activeSubscription = await prisma.user.activeSubscription(user.id);
+
+			return {
+				...token,
+				...user,
+				activeSubscription: activeSubscription?.id,
+			} as any;
 		},
-		async session({ session, token, user, newSession }) {
-			if (!token) return { ...session, error: 'InvalidGrantError' }
+		async session({ session, token }) {
+			if (!token) return { ...session, error: "InvalidGrantError" };
 
-			session.user = token as any
+			session.user = token as any;
 
 			const [google] = await prisma.account.findMany({
-				where: { userId: token.id, provider: 'google' },
-			})
+				where: { userId: token.id, provider: "google" },
+			});
 
 			if (google?.expires_at && google.expires_at * 1000 < Date.now()) {
 				// If the access token has expired, try to refresh it
 				try {
 					// https://accounts.google.com/.well-known/openid-configuration
 					// We need the `token_endpoint`.
-					const response = await fetch('https://oauth2.googleapis.com/token', {
-						headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					const response = await fetch("https://oauth2.googleapis.com/token", {
+						headers: { "Content-Type": "application/x-www-form-urlencoded" },
 						body: new URLSearchParams({
 							client_id: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
 							client_secret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
-							grant_type: 'refresh_token',
+							grant_type: "refresh_token",
 							refresh_token: google.refresh_token as string,
 						}),
-						method: 'POST',
-					})
+						method: "POST",
+					});
 
-					const tokens: TokenSet & { expires_in: number } = await response.json()
+					const tokens: TokenSet & { expires_in: number } =
+						await response.json();
 
 					if (!response.ok) {
-						console.error('Token refresh response not OK:', tokens)
+						console.error("Token refresh response not OK:", tokens);
 
 						// Delete the account if the refresh token is expired or revoked
 						await prisma.account.delete({
 							where: {
 								provider_providerAccountId: {
-									provider: 'google',
+									provider: "google",
 									providerAccountId: google.providerAccountId,
 								},
 							},
-						})
+						});
 
 						// Check for invalid_grant error specifically
-						if (tokens.error === 'invalid_grant') {
-							console.error('Invalid grant error - refresh token is expired or revoked')
-							session.error = 'InvalidGrantError'
+						if (tokens.error === "invalid_grant") {
+							console.error(
+								"Invalid grant error - refresh token is expired or revoked",
+							);
+							session.error = "InvalidGrantError";
 
 							// Clear session and redirect to signin
 							return {
 								...session,
-								error: 'InvalidGrantError',
-								redirect: '/signin',
-							}
+								error: "InvalidGrantError",
+								redirect: "/signin",
+							};
 						}
 
-						throw tokens
+						throw tokens;
 					}
 
 					await prisma.account.update({
@@ -138,29 +161,31 @@ export const authOptions: NextAuthOptions = {
 						},
 						where: {
 							provider_providerAccountId: {
-								provider: 'google',
+								provider: "google",
 								providerAccountId: google.providerAccountId,
 							},
 						},
-					})
+					});
 				} catch (error) {
-					console.error('Error refreshing access token', error)
+					console.error("Error refreshing access token", error);
 
 					// Check if it's an invalid_grant error
-					const errorObj = error as any
-					if (errorObj?.error === 'invalid_grant') {
-						console.error('Invalid grant error - refresh token is expired or revoked')
-						session.error = 'InvalidGrantError'
+					const errorObj = error as any;
+					if (errorObj?.error === "invalid_grant") {
+						console.error(
+							"Invalid grant error - refresh token is expired or revoked",
+						);
+						session.error = "InvalidGrantError";
 					} else {
 						// For other errors
-						session.error = 'RefreshAccessTokenError'
+						session.error = "RefreshAccessTokenError";
 					}
 				}
 			}
 
-			return session
+			return session;
 		},
 	},
-}
+};
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);

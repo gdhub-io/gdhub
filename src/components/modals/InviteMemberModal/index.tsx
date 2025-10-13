@@ -1,82 +1,102 @@
-import { useState } from 'react'
-import { gtmEventTrigger } from '@/helpers/gtm'
-import { useWorkDirections } from '@/hooks/library'
-import { useMutation } from '@tanstack/react-query'
-import { useTranslate } from '@tolgee/react'
-import { Button, Form, Input, message, Modal, Select, DatePicker } from 'antd'
-import axios from 'axios'
-import dayjs from 'dayjs'
+import { useMutation } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
+import { Button, DatePicker, Form, Input, Modal, message, Select } from "antd";
+import axios from "axios";
+import dayjs from "dayjs";
+import { useState } from "react";
+import { gtmEventTrigger } from "@/helpers/gtm";
+import { useWorkDirections } from "@/hooks/library";
 
 interface InviteMemberModalProps {
-	teamId: string
-	open: boolean
-	onOk: () => void
-	onCancel: () => void
+	teamId: string;
+	open: boolean;
+	onOk: () => void;
+	onCancel: () => void;
 }
 
-const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalProps) => {
-	const [form] = Form.useForm()
-	const { t } = useTranslate()
-	const { options: directionsOptions } = useWorkDirections()
-	const [isEmailValid, setIsEmailValid] = useState(true)
+const InviteMemberModal = ({
+	teamId,
+	open,
+	onOk,
+	onCancel,
+}: InviteMemberModalProps) => {
+	const [form] = Form.useForm();
+	const { t } = useTranslate();
+	const { options: directionsOptions } = useWorkDirections();
+	const [isEmailValid, setIsEmailValid] = useState(true);
 
 	const { mutateAsync: inviteMember, isPending: isInviting } = useMutation({
-		mutationFn: (data: Record<string, any>) => axios.post<any>('/api/user/project/team/invite', data),
+		mutationFn: (data: Record<string, any>) =>
+			axios.post<any>("/api/user/project/team/invite", data),
 		onSuccess: () => {
-			message.success(t('Invitation sent successfully'))
-			form.resetFields()
-			onOk()
+			message.success(t("Invitation sent successfully"));
+			form.resetFields();
+			onOk();
 		},
 		onError: (error: any) => {
-			console.error(error)
-			message.error(error.response?.data?.message || error.message || t('Failed to send invitation'))
+			console.error(error);
+			message.error(
+				error.response?.data?.message ||
+					error.message ||
+					t("Failed to send invitation"),
+			);
 		},
-	})
+	});
 
 	const handleOk = async () => {
 		try {
-			const formData = await form.validateFields()
+			const formData = await form.validateFields();
 
 			await inviteMember({
 				teamId,
 				email: formData.email,
 				position: formData.position,
 				directionId: formData.directionId,
-				startedAt: formData.startedAt ? formData.startedAt.toISOString() : new Date().toISOString(),
-			})
-			gtmEventTrigger('team_invite', {
+				startedAt: formData.startedAt
+					? formData.startedAt.toISOString()
+					: new Date().toISOString(),
+			});
+			gtmEventTrigger("team_invite", {
 				teamId,
 				position: formData.position,
-				direction: directionsOptions?.find((direction) => direction.value === formData.directionId)?.label,
-			})
+				direction: directionsOptions?.find(
+					(direction) => direction.value === formData.directionId,
+				)?.label,
+			});
 		} catch (error) {
-			console.error('Validation failed:', error)
+			console.error("Validation failed:", error);
 		}
-	}
+	};
 
 	const handleCancel = () => {
-		form.resetFields()
-		onCancel()
-	}
+		form.resetFields();
+		onCancel();
+	};
 
 	const validateEmail = (email: string) => {
-		const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-		setIsEmailValid(isValid)
-		return isValid
-	}
+		const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+		setIsEmailValid(isValid);
+		return isValid;
+	};
 
 	return (
 		<Modal
-			title={t('inviteMemberModal.title', 'Invite Team Member')}
+			title={t("inviteMemberModal.title", "Invite Team Member")}
 			open={open}
 			centered
 			onCancel={handleCancel}
 			footer={[
 				<Button key="cancel" onClick={handleCancel}>
-					{t('inviteMemberModal.cancel', 'Cancel')}
+					{t("inviteMemberModal.cancel", "Cancel")}
 				</Button>,
-				<Button key="submit" type="primary" loading={isInviting} onClick={handleOk} disabled={!isEmailValid}>
-					{t('inviteMemberModal.sendInvitation', 'Send Invitation')}
+				<Button
+					key="submit"
+					type="primary"
+					loading={isInviting}
+					onClick={handleOk}
+					disabled={!isEmailValid}
+				>
+					{t("inviteMemberModal.sendInvitation", "Send Invitation")}
 				</Button>,
 			]}
 		>
@@ -84,48 +104,64 @@ const InviteMemberModal = ({ teamId, open, onOk, onCancel }: InviteMemberModalPr
 				form={form}
 				layout="vertical"
 				variant="filled"
-				initialValues={{ position: '', email: '', directionId: undefined, startedAt: dayjs() }}
+				initialValues={{
+					position: "",
+					email: "",
+					directionId: undefined,
+					startedAt: dayjs(),
+				}}
 			>
 				<Form.Item
 					name="email"
-					label={t('inviteMemberModal.email', 'Email')}
+					label={t("inviteMemberModal.email", "Email")}
 					rules={[
-						{ required: true, message: t('Please enter email') },
+						{ required: true, message: t("Please enter email") },
 						{
 							validator: (_, value) =>
-								validateEmail(value) ? Promise.resolve() : Promise.reject(new Error(t('Please enter a valid email'))),
+								validateEmail(value)
+									? Promise.resolve()
+									: Promise.reject(new Error(t("Please enter a valid email"))),
 						},
 					]}
 				>
-					<Input placeholder={t('Enter email address')} />
+					<Input placeholder={t("Enter email address")} />
 				</Form.Item>
 
 				<Form.Item
 					name="position"
-					label={t('inviteMemberModal.position', 'Position')}
-					rules={[{ required: true, message: t('Please enter position') }]}
+					label={t("inviteMemberModal.position", "Position")}
+					rules={[{ required: true, message: t("Please enter position") }]}
 				>
-					<Input placeholder={t('Enter position')} />
+					<Input placeholder={t("Enter position")} />
 				</Form.Item>
 
 				<Form.Item
 					name="directionId"
-					label={t('inviteMemberModal.workDirection', 'Work Direction')}
-					rules={[{ required: true, message: t('Please select work direction') }]}
+					label={t("inviteMemberModal.workDirection", "Work Direction")}
+					rules={[
+						{ required: true, message: t("Please select work direction") },
+					]}
 				>
-					<Select placeholder={t('Select work direction')} options={directionsOptions} />
+					<Select
+						placeholder={t("Select work direction")}
+						options={directionsOptions}
+					/>
 				</Form.Item>
 
 				<Form.Item
 					name="startedAt"
-					label={t('inviteMemberModal.startDate', 'Start Date')}
-					rules={[{ required: true, message: t('Please select start date') }]}
+					label={t("inviteMemberModal.startDate", "Start Date")}
+					rules={[{ required: true, message: t("Please select start date") }]}
 				>
-					<DatePicker format="DD.MM.YYYY" placeholder={t('Select start date')} style={{ width: '100%' }} />
+					<DatePicker
+						format="DD.MM.YYYY"
+						placeholder={t("Select start date")}
+						style={{ width: "100%" }}
+					/>
 				</Form.Item>
 			</Form>
 		</Modal>
-	)
-}
+	);
+};
 
-export default InviteMemberModal
+export default InviteMemberModal;

@@ -1,13 +1,13 @@
-import { prisma } from '@/services/prisma'
-import { Get, createHandler } from 'next-api-decorators'
+import { createHandler, Get } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class ApiDictWorkDirectionsHandler {
 	constructor() {}
 
 	@Get()
 	public async get() {
-		return await prisma.workDirection.findMany()
+		return await prisma.workDirection.findMany();
 	}
 }
 
-export default createHandler(ApiDictWorkDirectionsHandler)
+export default createHandler(ApiDictWorkDirectionsHandler);

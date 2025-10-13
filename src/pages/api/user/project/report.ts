@@ -1,45 +1,55 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsOptional, IsString } from 'class-validator'
-import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsOptional, IsString } from "class-validator";
+import {
+	Body,
+	createHandler,
+	Delete,
+	Get,
+	Post,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class CreateProjectReportDto {
 	@IsString()
-	content: string
+	content: string;
 
 	@IsString()
 	@IsOptional()
-	video?: string
+	video?: string;
 
 	@IsString()
-	publishedAt: string
+	publishedAt: string;
 
 	@IsString()
-	projectId: string
+	projectId: string;
 }
 
 class UpdateProjectReportDto {
 	@IsString()
-	id: string
+	id: string;
 
 	@IsString()
-	content: string
-
-	@IsString()
-	@IsOptional()
-	video?: string
+	content: string;
 
 	@IsString()
 	@IsOptional()
-	publishedAt: string
+	video?: string;
+
+	@IsString()
+	@IsOptional()
+	publishedAt: string;
 }
 
 class ParamIdDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiProjectReportHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { id }: ParamIdDto) {
@@ -63,38 +73,48 @@ class ApiProjectReportHandler {
 					},
 				},
 			},
-		})
+		});
 
-		return report
+		return report;
 	}
 
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { content, video, publishedAt, projectId }: CreateProjectReportDto
+		@Body(ValidationPipe) {
+			content,
+			video,
+			publishedAt,
+			projectId,
+		}: CreateProjectReportDto,
 	) {
 		await prisma.projectReport.create({
 			data: { content, publishedAt, video, authorId: req.user.id!, projectId },
-		})
+		});
 	}
 
 	@Put()
 	public async update(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { id, content, video, publishedAt }: UpdateProjectReportDto
+		@Body(ValidationPipe) {
+			id,
+			content,
+			video,
+			publishedAt,
+		}: UpdateProjectReportDto,
 	) {
 		await prisma.projectReport.update({
 			where: { id },
 			data: { content, publishedAt, video },
-		})
+		});
 	}
 
 	@Delete()
 	public async delete(@Query(ValidationPipe) { id }: ParamIdDto) {
 		await prisma.projectReport.delete({
 			where: { id },
-		})
+		});
 	}
 }
 
-export default createHandler(ApiProjectReportHandler)
+export default createHandler(ApiProjectReportHandler);

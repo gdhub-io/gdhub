@@ -1,20 +1,23 @@
-import { GdhubDatabaseClient, GdhubDatabaseService } from '@gdhub-io/gdhub-prisma'
+import {
+	type GdhubDatabaseClient,
+	GdhubDatabaseService,
+} from "@gdhub-io/gdhub-prisma";
 
 declare global {
 	// eslint-disable-next-line no-var
-	var cachedPrisma: GdhubDatabaseClient
+	var cachedPrisma: GdhubDatabaseClient;
 }
 
-let prisma: GdhubDatabaseClient
+let prisma: GdhubDatabaseClient;
 
-if (process.env.NODE_ENV === 'production') {
-	prisma = GdhubDatabaseService.init().client
+if (process.env.NODE_ENV === "production") {
+	prisma = GdhubDatabaseService.init().client;
 } else {
 	if (!global.cachedPrisma) {
-		global.cachedPrisma = GdhubDatabaseService.init().client
+		global.cachedPrisma = GdhubDatabaseService.init().client;
 	}
 
-	prisma = global.cachedPrisma
+	prisma = global.cachedPrisma;
 }
 
-export { prisma }
+export { prisma };
