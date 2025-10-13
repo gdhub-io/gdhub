@@ -2,7 +2,7 @@ import { env } from "@/helpers/env";
 
 export async function ensureMatrixUser(
 	localpart: string,
-	email: string,
+	email?: string,
 	displayname?: string,
 	avatarUrl?: string,
 ) {
