@@ -2,11 +2,10 @@
 
 import { AiOutlineHistory } from "@react-icons/all-files/ai/AiOutlineHistory";
 import { useTranslate } from "@tolgee/react";
-import { Button, Typography, theme } from "antd";
+import { Button } from "antd";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import type { NextPageWithLayout } from "@/pages/_app";
 import styles from "./style.module.scss";
 
@@ -23,13 +22,9 @@ const UserAdviceArchiveModal = dynamic(
 	{ ssr: false },
 );
 
-const { Text } = Typography;
-
 const MyExpertRequestsPage: NextPageWithLayout = () => {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
-	const { token } = theme.useToken();
-	const router = useRouter();
 	const [showArchive, setShowArchive] = useState(false);
 
 	return (

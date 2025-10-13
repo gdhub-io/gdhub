@@ -9,6 +9,16 @@ export type ChatStore = {
 	chatSession: MatrixSession | null;
 	chatClient: sdk.MatrixClient | null;
 	userMembership: string | null;
+	chatContext: {
+		type: string;
+		data: Record<string, any> | null;
+	} | null;
+	setChatContext: (
+		chatContext: {
+			type: string;
+			data: Record<string, any> | null;
+		} | null,
+	) => void;
 	setOpenChatModal: (openChatModal: boolean) => void;
 	setReady: (ready: boolean) => void;
 	setSelectedRoomId: (selectedRoomId: string) => void;
@@ -25,6 +35,13 @@ export const useChat = create<ChatStore>((set, get, store) => ({
 	chatSession: null,
 	chatClient: null,
 	userMembership: null,
+	chatContext: null,
+	setChatContext: (
+		chatContext: {
+			type: string;
+			data: Record<string, any> | null;
+		} | null,
+	) => set({ chatContext }),
 	setChatClient: (chatClient: sdk.MatrixClient | null) => set({ chatClient }),
 	setUserMembership: (userMembership: string | null) => set({ userMembership }),
 	setReady: (ready: boolean) => set({ ready }),

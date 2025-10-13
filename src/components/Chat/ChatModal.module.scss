@@ -54,3 +54,15 @@
   display: block !important;
   width: 100% !important;
 }
+
+.chatTopicContainer {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  background-color: #fbf5fd;
+  padding: 16px;
+  border-bottom: 1px solid #f1f0ef;
+}
+
+@import './styles/md.scss'; // screen < 991px

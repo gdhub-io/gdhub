@@ -36,6 +36,7 @@ class MatrixProvisionHandler {
 
 		const existingMatrixUser = await ensureMatrixUser(
 			user.id,
+			user.email!,
 			displayName,
 			avatarUrl,
 		);

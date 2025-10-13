@@ -104,19 +104,14 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 			key: "topic",
 		},
 		{
-			title: t("Comment/Feedback"),
-			key: "commentFeedback",
+			title: t("Comment"),
+			key: "comment",
 			render: (_: any, record: prismaClient.AdviceRequest) => (
 				<>
 					<span style={{ color: themeToken.colorTextSecondary }}>
 						{t("Comment")}:
 					</span>{" "}
 					{record.comment || "-"}
-					<br />
-					<span style={{ color: themeToken.colorTextSecondary }}>
-						{t("Feedback")}:
-					</span>{" "}
-					{record.feedback || "-"}
 				</>
 			),
 		},
@@ -134,18 +129,13 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 				date ? dayjs(date).format("DD.MM.YYYY HH:mm") : "-",
 		},
 		{
-			title: t("Actions"),
 			key: "actions",
-			render: (_: any, record: prismaClient.AdviceRequest) => (
-				<Link
-					href={`https://t.me/gdhub_experts_bot/app?startapp=areq_${record.id}`}
-				>
+			render: (_: any, record: prismaClient.AdviceRequest) =>
+				record.matrixRoomId ? (
 					<Button type="text" size="small">
-						{t("Go to request")}
-						<GoLinkExternal />
+						{t("Open the chat")}
 					</Button>
-				</Link>
-			),
+				) : null,
 		},
 	];
 

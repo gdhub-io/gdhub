@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { createMatrixClient } from "@/lib/matrix-client";
 import styles from "./ChatModal.module.scss";
+import ChatTopic from "./ChatTopic";
 import { useChat } from "./useChat";
 
 const { Text } = Typography;
@@ -30,7 +31,15 @@ export const ChatModal = ({
 	const screens = Grid.useBreakpoint();
 	const [hasRooms, setHasRooms] = useState(false);
 	const { data: session } = useSession();
-	const { chatClient, setChatClient, setReady, userMembership } = useChat();
+	const {
+		chatClient,
+		setChatClient,
+		setReady,
+		setChatContext,
+		selectedRoomId,
+		setSelectedRoomId,
+		userMembership,
+	} = useChat();
 
 	const { data: clientSessionData } = useQuery({
 		queryKey: ["chat-client-session", session?.user.id],
@@ -38,6 +47,29 @@ export const ChatModal = ({
 			axios.post("/api/chat/session", undefined).then((res) => res.data),
 		enabled: !!session?.user.id && open,
 	});
+
+	const { data: clientContextData } = useQuery({
+		queryKey: ["chat-client-context", session?.user.id, selectedRoomId],
+		queryFn: () =>
+			axios
+				.get<{ type: string; data: Record<string, any> | null }>(
+					`/api/chat/rooms/${selectedRoomId}`,
+				)
+				.then((res) => res.data),
+		enabled: !!session?.user.id && open && !!selectedRoomId,
+	});
+
+	useEffect(() => {
+		if (initialRoomId && open) {
+			setSelectedRoomId(initialRoomId);
+		}
+	}, [initialRoomId, open]);
+
+	useEffect(() => {
+		if (clientContextData) {
+			setChatContext(clientContextData);
+		}
+	}, [clientContextData]);
 
 	// start chat for client session
 	useEffect(() => {
@@ -52,7 +84,7 @@ export const ChatModal = ({
 
 				setChatClient(client);
 
-				client.once(ClientEvent.Sync, (state, prevState, res) => {
+				client.once(ClientEvent.Sync, (state) => {
 					if (state === "PREPARED") {
 						console.log("prepared");
 						setReady(true);
@@ -85,10 +117,16 @@ export const ChatModal = ({
 			}}
 		>
 			<Layout>
-				<Layout.Sider theme="light" className={styles.chatRoomsSider}>
+				<Layout.Sider
+					breakpoint="lg"
+					collapsedWidth="110"
+					theme="light"
+					className={styles.chatRoomsSider}
+				>
 					<ChatRooms onReady={(data) => setHasRooms(data.count > 0)} />
 				</Layout.Sider>
-				<Layout.Content>
+				<Layout.Content style={{ position: "relative" }}>
+					<ChatTopic />
 					{!hasRooms && (
 						<Flex
 							justify="center"

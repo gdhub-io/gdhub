@@ -2,6 +2,7 @@ import { env } from "@/helpers/env";
 
 export async function ensureMatrixUser(
 	localpart: string,
+	email: string,
 	displayname?: string,
 	avatarUrl?: string,
 ) {
@@ -59,6 +60,7 @@ export async function ensureMatrixUser(
 	const createBody: Record<string, unknown> = {
 		password,
 		displayname,
+		email,
 		avatar_url: avatarUrl,
 		admin: false,
 		deactivated: false,

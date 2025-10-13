@@ -71,7 +71,7 @@ class ApiAdviceRequestsHandler {
 						profile: { select: { name: true } },
 					},
 				},
-				project: { select: { id: true, name: true } },
+				project: { select: { id: true, name: true, coverImage: true } },
 				fromTelegramUser: true,
 				createdAt: true,
 				finishedAt: true,

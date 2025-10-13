@@ -1,6 +1,6 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { MsgType } from "matrix-js-sdk";
+import { EventType } from "matrix-js-sdk";
 import {
 	Body,
 	createHandler,
@@ -11,7 +11,6 @@ import {
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
-import { env } from "@/helpers/env";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { MatrixService } from "@/services/matrix";
 import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix-admin";
@@ -47,7 +46,7 @@ class ApiAdviceRequestHandler {
 			comment,
 		}: AdviceRequestDto,
 	) {
-		const adviceRequest = await prisma.adviceRequest.create({
+		await prisma.adviceRequest.create({
 			data: { topic, projectId, toUserId, fromUserId: req.user.id, comment },
 			include: {
 				fromUser: true,
@@ -99,18 +98,23 @@ class ApiAdviceRequestHandler {
 			},
 		});
 
-		if (!adviceRequest || adviceRequest.toUser.id !== req.user.id) {
+		if (
+			!adviceRequest ||
+			adviceRequest.toUser.id !== req.user.id ||
+			!adviceRequest.fromUser
+		) {
 			throw new Error("Advice request not found or you are not the expert");
 		}
 
-		await prisma.adviceRequest.update({
-			where: { id },
-			data: { status: prismaClient.AdviceRequestStatus.Approved },
-		});
-
 		// ensure that the expert has a matrix session
-		const userMatrixUser = await ensureMatrixUser(adviceRequest.fromUser!.id);
-		const expertMatrixUser = await ensureMatrixUser(adviceRequest.toUser?.id);
+		const userMatrixUser = await ensureMatrixUser(
+			adviceRequest.fromUser.id,
+			adviceRequest.fromUser.email!,
+		);
+		const expertMatrixUser = await ensureMatrixUser(
+			adviceRequest.toUser.id,
+			adviceRequest.toUser.email!,
+		);
 		const expertSession = await getMatrixUserToken(adviceRequest.toUser?.id);
 
 		// create a chat between the user and the expert
@@ -122,22 +126,45 @@ class ApiAdviceRequestHandler {
 		// create a chat and invite the user
 		const adviceRequestRoom = await expertMatrixClient.createRoom({
 			room_alias_name: `advreq-${adviceRequest.id}`,
-			name: `Advice Request to ${adviceRequest.toUser.name}`,
+			name: `${adviceRequest.project?.name}`,
 			topic: adviceRequest.topic || undefined,
 			is_direct: true,
 			invite: [userMatrixUser.user_id],
 		});
 
-		// send special message (cooment from advice request)
-		await expertMatrixClient.sendMessage(adviceRequestRoom.room_id, {
-			body: `Hello <b>${req.user.name}</b>! You have sent an advice request on ${adviceRequest.topic} topic. \nProject: ${adviceRequest.project?.name}\nComment:\n<blockquote>${adviceRequest.comment || "(no comment)"}</blockquote>\nLet's discuss it in the chat.`,
-			msgtype: MsgType.Text,
-			format: "org.matrix.custom.html",
+		if (adviceRequest.project?.coverImage) {
+			const coverImageFile = await fetch(
+				adviceRequest.project?.coverImage,
+			).then((res) => res.blob());
+
+			const roomAvatar = await expertMatrixClient.uploadContent(
+				coverImageFile,
+				{
+					type: "image/png",
+					name: `room-${adviceRequest.id}-avatar.png`,
+				},
+			);
+
+			await expertMatrixClient.sendStateEvent(
+				adviceRequestRoom.room_id,
+				EventType.RoomAvatar,
+				{
+					url: roomAvatar.content_uri || undefined,
+				},
+			);
+		}
+
+		await prisma.adviceRequest.update({
+			where: { id },
+			data: {
+				status: prismaClient.AdviceRequestStatus.Approved,
+				matrixRoomId: adviceRequestRoom.room_id,
+			},
 		});
 	}
 
-	@Put("/:id/decline")
-	public async decline(
+	@Put("/:id/reject")
+	public async reject(
 		@Param("id") id: string,
 		@Req() req: NextApiRequestWithUser,
 	) {
@@ -154,7 +181,10 @@ class ApiAdviceRequestHandler {
 
 		await prisma.adviceRequest.update({
 			where: { id },
-			data: { status: prismaClient.AdviceRequestStatus.Rejected },
+			data: {
+				status: prismaClient.AdviceRequestStatus.Rejected,
+				finishedAt: new Date(),
+			},
 		});
 	}
 }
