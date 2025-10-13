@@ -1,14 +1,20 @@
-import { env } from '@/helpers/env'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import dayjs from 'dayjs'
-import { type NextApiRequest } from 'next'
-import { Post, Body, Req, createHandler, BadRequestException } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import dayjs from "dayjs";
+import type { NextApiRequest } from "next";
+import {
+	BadRequestException,
+	Body,
+	createHandler,
+	Post,
+	Req,
+} from "next-api-decorators";
+import { env } from "@/helpers/env";
+import { prisma } from "@/services/prisma";
 
 class ParamSlugDto {
 	@IsString()
-	id?: string
+	id?: string;
 }
 
 class ApiGumroadPingServiceHandler {
@@ -44,41 +50,47 @@ class ApiGumroadPingServiceHandler {
 			disputed,
 			dispute_won,
 			url_params,
-		} = data
+		} = data;
 
-		if (seller_id !== env('GUMROAD_SELLER_ID')) throw new BadRequestException('The seller is unknown')
+		if (seller_id !== env("GUMROAD_SELLER_ID"))
+			throw new BadRequestException("The seller is unknown");
 
-		const userId = url_params?.uId
-		const startDate = dayjs(sale_timestamp)
-		const endDate = dayjs(sale_timestamp).add(1, 'month')
+		const userId = url_params?.uId;
+		const startDate = dayjs(sale_timestamp);
+		const endDate = dayjs(sale_timestamp).add(1, "month");
 
-		let user = await prisma.user.findFirst({ where: { OR: [{ id: userId }, { email }] } })
+		let user = await prisma.user.findFirst({
+			where: { OR: [{ id: userId }, { email }] },
+		});
 
 		if (!user) {
-			user = await prisma.user.create({ data: { email } })
+			user = await prisma.user.create({ data: { email } });
 		}
 
-		if (refunded == 'false') {
+		if (refunded == "false") {
 			await prisma.subscription.create({
 				data: {
 					plan: { connect: { providerPlanName: permalink } },
 					user: { connect: { id: user.id } },
-					status: 'Active',
+					status: "Active",
 					startDate: startDate.toDate(),
 					endDate: endDate.toDate(),
 					providerId: subscription_id,
 				},
-			})
+			});
 		} else {
 			await prisma.subscription.update({
 				where: { providerId: subscription_id },
-				data: { status: prismaClient.SubscriptionStatus.Canceled, endDate: dayjs().toDate() },
-			})
+				data: {
+					status: prismaClient.SubscriptionStatus.Canceled,
+					endDate: dayjs().toDate(),
+				},
+			});
 		}
 
 		// console.log('data', data)
-		return { success: true }
+		return { success: true };
 	}
 }
 
-export default createHandler(ApiGumroadPingServiceHandler)
+export default createHandler(ApiGumroadPingServiceHandler);

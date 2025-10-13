@@ -1,14 +1,14 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class ParamIdDto {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiTeamInvestorHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { teamId }: ParamIdDto) {
@@ -32,12 +32,12 @@ class ApiTeamInvestorHandler {
 				},
 			},
 			orderBy: {
-				purchasedAt: 'desc',
+				purchasedAt: "desc",
 			},
-		})
+		});
 
-		return teamInvestors
+		return teamInvestors;
 	}
 }
 
-export default createHandler(ApiTeamInvestorHandler)
+export default createHandler(ApiTeamInvestorHandler);

@@ -1,8 +1,8 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { Get, Req, createHandler } from 'next-api-decorators'
+import { createHandler, Get, Req } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserEventsHandler {
 	constructor() {}
 
@@ -19,11 +19,11 @@ class ApiUserEventsHandler {
 					},
 				},
 			},
-			orderBy: { createdAt: 'asc' },
-		})
+			orderBy: { createdAt: "asc" },
+		});
 
-		return events
+		return events;
 	}
 }
 
-export default createHandler(ApiUserEventsHandler)
+export default createHandler(ApiUserEventsHandler);

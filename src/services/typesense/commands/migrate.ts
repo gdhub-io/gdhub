@@ -1,38 +1,43 @@
-import { prisma } from '@/services/prisma'
-import { SearchEngineService } from '@gdhub-io/gdhub-typesense'
-import { specialistsSchema } from '@gdhub-io/gdhub-typesense/dist/schemes/specialists'
-import dayjs from 'dayjs'
+import type { SearchEngineService } from "@gdhub-io/gdhub-typesense";
+import { specialistsSchema } from "@gdhub-io/gdhub-typesense/dist/schemes/specialists";
+import dayjs from "dayjs";
+import { prisma } from "@/services/prisma";
 
 export async function migrate(searchClient: SearchEngineService) {
 	try {
 		const existSpecialists = await searchClient.existScheme(
-			process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string
-		)
+			process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string,
+		);
 
 		if (!existSpecialists) {
 			await searchClient.migrateScheme({
 				...specialistsSchema,
 				name: process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string,
-			})
-			console.info('Specialists sheme added')
+			});
+			console.info("Specialists sheme added");
 		}
-		console.info('Start')
+		console.info("Start");
 
 		const specialists = await prisma.speciality.findMany({
-			orderBy: { id: 'asc' },
+			orderBy: { id: "asc" },
 			include: { direction: true, user: { include: { profile: true } } },
-		})
+		});
 
 		try {
 			const documents = specialists.map(
 				(s: {
-					id: string
+					id: string;
 					user: {
-						profile: { isActive: boolean; timeForWork: number[]; country?: string | null; city?: string | null } | null
-					}
-					direction: { name: string }
+						profile: {
+							isActive: boolean;
+							timeForWork: number[];
+							country?: string | null;
+							city?: string | null;
+						} | null;
+					};
+					direction: { name: string };
 				}) => {
-					const { user, ...otherData } = s
+					const { user, ...otherData } = s;
 
 					return prepareData({
 						...otherData,
@@ -43,63 +48,71 @@ export async function migrate(searchClient: SearchEngineService) {
 						direction: s.direction.name,
 						country: user.profile?.country,
 						city: user.profile?.city,
-					})
-				}
-			) as any[]
+					});
+				},
+			) as any[];
 			await searchClient.client
-				.collections(process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string)
+				.collections(
+					process.env.NEXT_PUBLIC_TYPESENSE_SPECIALISTS_SCHEMA as string,
+				)
 				.documents()
-				.import(documents)
+				.import(documents);
 
-			console.info('Added')
+			console.info("Added");
 		} catch (error: any) {
-			console.info(error)
+			console.info(error);
 		}
 
-		console.info('Finish')
+		console.info("Finish");
 	} catch (error: any) {
-		console.info('Finish with Error')
+		console.info("Finish with Error");
 	}
 }
 
 export const prepareData = (record: Record<string, any>) => {
-	for (let property in record) {
-		let value: string | string[] | number | undefined = record[property]
+	for (const property in record) {
+		let value: string | string[] | number | undefined = record[property];
 
 		if (Array.isArray(value) && value[0] == null) {
-			value = undefined
+			value = undefined;
 		}
 
 		if (Array.isArray(value) && value.length == 1) {
-			value = value[0]
+			value = value[0];
 		}
 
-		if (typeof value == 'string' && (property == 'skills' || property == 'jobs' || property == 'schools')) {
-			value = value.split('\n')
+		if (
+			typeof value == "string" &&
+			(property == "skills" || property == "jobs" || property == "schools")
+		) {
+			value = value.split("\n");
 
-			if (value[value.length - 1] == '') {
-				value.pop()
+			if (value[value.length - 1] == "") {
+				value.pop();
 			}
 		}
 
-		if (typeof value == 'string' && property == 'tools') {
-			value = value.split(',')
+		if (typeof value == "string" && property == "tools") {
+			value = value.split(",");
 
-			if (value[value.length - 1] == '') {
-				value.pop()
+			if (value[value.length - 1] == "") {
+				value.pop();
 			}
 		}
 
-		if (property == 'direction' && !value) {
-			value = 'Other'
+		if (property == "direction" && !value) {
+			value = "Other";
 		}
 
-		if (value instanceof Date && (property == 'createdAt' || property == 'updatedAt')) {
-			value = dayjs(value).unix()
+		if (
+			value instanceof Date &&
+			(property == "createdAt" || property == "updatedAt")
+		) {
+			value = dayjs(value).unix();
 		}
 
-		record[property] = value
+		record[property] = value;
 	}
 
-	return record
-}
+	return record;
+};

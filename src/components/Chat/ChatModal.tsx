@@ -1,64 +1,76 @@
-import { useEffect, useState } from 'react'
-import { createMatrixClient } from '@/lib/matrix-client'
-import { useQuery } from '@tanstack/react-query'
-import { Drawer, Flex, Grid, Layout, Typography } from 'antd'
-import axios from 'axios'
-import { ClientEvent } from 'matrix-js-sdk'
-import dynamic from 'next/dynamic'
-import { useSession } from 'next-auth/react'
-import styles from './ChatModal.module.scss'
-import { useChat } from './useChat'
+import { useQuery } from "@tanstack/react-query";
+import { Drawer, Flex, Grid, Layout, Typography } from "antd";
+import axios from "axios";
+import { ClientEvent } from "matrix-js-sdk";
+import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { createMatrixClient } from "@/lib/matrix-client";
+import styles from "./ChatModal.module.scss";
+import { useChat } from "./useChat";
 
-const { Text } = Typography
+const { Text } = Typography;
 
-const ChatTitle = dynamic(() => import('./ChatTitle'), { ssr: false })
-const ChatRooms = dynamic(() => import('./ChatRooms'), { ssr: false })
-const ChatMessages = dynamic(() => import('./ChatMessages'), { ssr: false })
-const ChatInput = dynamic(() => import('./ChatInput'), { ssr: false })
+const ChatTitle = dynamic(() => import("./ChatTitle"), { ssr: false });
+const ChatRooms = dynamic(() => import("./ChatRooms"), { ssr: false });
+const ChatMessages = dynamic(() => import("./ChatMessages"), { ssr: false });
+const ChatInput = dynamic(() => import("./ChatInput"), { ssr: false });
 
-type ChatModalProps = { open: boolean; onClose: () => void; initialRoomId?: string | null }
+type ChatModalProps = {
+	open: boolean;
+	onClose: () => void;
+	initialRoomId?: string | null;
+};
 
-export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalProps) => {
-	const screens = Grid.useBreakpoint()
-	const [hasRooms, setHasRooms] = useState(false)
-	const { data: session } = useSession()
-	const { chatClient, setChatClient, setReady, userMembership } = useChat()
+export const ChatModal = ({
+	open = false,
+	onClose,
+	initialRoomId,
+}: ChatModalProps) => {
+	const screens = Grid.useBreakpoint();
+	const [hasRooms, setHasRooms] = useState(false);
+	const { data: session } = useSession();
+	const { chatClient, setChatClient, setReady, userMembership } = useChat();
 
 	const { data: clientSessionData } = useQuery({
-		queryKey: ['chat-client-session', session?.user.id],
-		queryFn: () => axios.post('/api/chat/session', undefined).then((res) => res.data),
+		queryKey: ["chat-client-session", session?.user.id],
+		queryFn: () =>
+			axios.post("/api/chat/session", undefined).then((res) => res.data),
 		enabled: !!session?.user.id && open,
-	})
+	});
 
 	// start chat for client session
 	useEffect(() => {
-		if (!clientSessionData?.token) return
+		if (!clientSessionData?.token) return;
 
-		createMatrixClient({ accessToken: clientSessionData.token, userId: clientSessionData.userId })
+		createMatrixClient({
+			accessToken: clientSessionData.token,
+			userId: clientSessionData.userId,
+		})
 			.then((client) => {
-				client.startClient()
+				client.startClient();
 
-				setChatClient(client)
+				setChatClient(client);
 
-				client.once(ClientEvent.Sync, function (state, prevState, res) {
-					if (state === 'PREPARED') {
-						console.log('prepared')
-						setReady(true)
+				client.once(ClientEvent.Sync, (state, prevState, res) => {
+					if (state === "PREPARED") {
+						console.log("prepared");
+						setReady(true);
 					} else {
-						console.log('[chat] sync state', state)
+						console.log("[chat] sync state", state);
 					}
-				})
+				});
 			})
 			.catch((error) => {
-				console.error(error)
-			})
+				console.error(error);
+			});
 
 		return () => {
-			chatClient?.stopClient()
-			setChatClient(null)
-			setReady(false)
-		}
-	}, [clientSessionData?.token])
+			chatClient?.stopClient();
+			setChatClient(null);
+			setReady(false);
+		};
+	}, [clientSessionData?.token]);
 
 	return (
 		<Drawer
@@ -67,9 +79,9 @@ export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalPro
 			classNames={{ wrapper: styles.chatDrawerWrapper }}
 			onClose={onClose}
 			title={<ChatTitle />}
-			width={screens.lg ? 720 : '100%'}
+			width={screens.lg ? 720 : "100%"}
 			styles={{
-				body: { padding: 0, display: 'flex', flexDirection: 'column' },
+				body: { padding: 0, display: "flex", flexDirection: "column" },
 			}}
 		>
 			<Layout>
@@ -81,11 +93,16 @@ export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalPro
 						<Flex
 							justify="center"
 							align="center"
-							style={{ height: '100%', padding: '16px', maxWidth: '400px', margin: '0 auto' }}
+							style={{
+								height: "100%",
+								padding: "16px",
+								maxWidth: "400px",
+								margin: "0 auto",
+							}}
 						>
 							<Text type="secondary">
-								You don&apos;t have any rooms yet. Connect to experts or other community members to start a
-								conversation.
+								You don&apos;t have any rooms yet. Connect to experts or other
+								community members to start a conversation.
 							</Text>
 						</Flex>
 					)}
@@ -93,11 +110,11 @@ export const ChatModal = ({ open = false, onClose, initialRoomId }: ChatModalPro
 					{hasRooms && (
 						<div className={styles.chatContent}>
 							<ChatMessages />
-							{userMembership === 'join' && <ChatInput />}
+							{userMembership === "join" && <ChatInput />}
 						</div>
 					)}
 				</Layout.Content>
 			</Layout>
 		</Drawer>
-	)
-}
+	);
+};

@@ -1,8 +1,12 @@
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
-import { prisma } from '@/services/prisma'
-import { NextApiRequest, NextApiResponse } from 'next'
-import { createMiddlewareDecorator, ForbiddenException, NextFunction } from 'next-api-decorators'
-import { getServerSession } from 'next-auth'
+import type { NextApiRequest, NextApiResponse } from "next";
+import {
+	createMiddlewareDecorator,
+	ForbiddenException,
+	type NextFunction,
+} from "next-api-decorators";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { prisma } from "@/services/prisma";
 
 /**
  * Use this decorator on your API route handler class to ensure that:
@@ -13,30 +17,32 @@ import { getServerSession } from 'next-auth'
  * Throws ForbiddenException if the user is not a member of the team or the team does not exist.
  */
 export const ApiProjectTeamGuard = () =>
-	createMiddlewareDecorator(async (req: NextApiRequest, res: NextApiResponse, next: NextFunction) => {
-		const session = await getServerSession(req, res, authOptions)
+	createMiddlewareDecorator(
+		async (req: NextApiRequest, res: NextApiResponse, next: NextFunction) => {
+			const session = await getServerSession(req, res, authOptions);
 
-		const userId = session?.user?.id
-		const teamId = req.query.teamId || req.body.teamId
+			const userId = session?.user?.id;
+			const teamId = req.query.teamId || req.body.teamId;
 
-		if (!userId || !teamId) {
-			throw new ForbiddenException()
-		}
+			if (!userId || !teamId) {
+				throw new ForbiddenException();
+			}
 
-		const team = await prisma.team.findFirst({
-			where: {
-				id: teamId,
-				members: {
-					some: {
-						userId,
+			const team = await prisma.team.findFirst({
+				where: {
+					id: teamId,
+					members: {
+						some: {
+							userId,
+						},
 					},
 				},
-			},
-		})
+			});
 
-		if (!team) {
-			throw new ForbiddenException()
-		}
+			if (!team) {
+				throw new ForbiddenException();
+			}
 
-		next()
-	})()
+			next();
+		},
+	)();

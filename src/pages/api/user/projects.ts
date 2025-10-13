@@ -1,22 +1,31 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
-import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+import {
+	createHandler,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class UserSeasonProjectsDto {
 	@IsString()
 	@IsOptional()
-	seasonId?: string
+	seasonId?: string;
 	@IsEnum(prismaClient.ProjectStatus)
 	@IsOptional()
-	status?: prismaClient.ProjectStatus
+	status?: prismaClient.ProjectStatus;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUsewrSeasonProjectsHandler {
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { status }: UserSeasonProjectsDto) {
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { status }: UserSeasonProjectsDto,
+	) {
 		const projects = await prisma.project.findMany({
 			where: {
 				OR: [
@@ -48,10 +57,10 @@ class ApiUsewrSeasonProjectsHandler {
 					},
 				},
 			},
-		})
+		});
 
-		return projects
+		return projects;
 	}
 }
 
-export default createHandler(ApiUsewrSeasonProjectsHandler)
+export default createHandler(ApiUsewrSeasonProjectsHandler);

@@ -1,23 +1,23 @@
-import React from 'react'
-import { Card, Typography, Tag, Avatar, Tooltip } from 'antd'
-import Image from 'next/image'
-import Link from 'next/link'
-import DefaultCover from './DefaultCover'
-import styles from './styles.module.scss'
+import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
+import Image from "next/image";
+import Link from "next/link";
+import type React from "react";
+import DefaultCover from "./DefaultCover";
+import styles from "./styles.module.scss";
 
-const { Title, Text } = Typography
+const { Title, Text } = Typography;
 
 interface GameCardProps {
-	id: string
-	title: string
-	genre?: string
-	platform?: string
-	coverImage?: string
-	slug: string
-	workflowStage?: string
-	authorName?: string
-	authorAvatar?: string
-	isUserProject?: boolean
+	id: string;
+	title: string;
+	genre?: string;
+	platform?: string;
+	coverImage?: string;
+	slug: string;
+	workflowStage?: string;
+	authorName?: string;
+	authorAvatar?: string;
+	isUserProject?: boolean;
 }
 
 const GameCard: React.FC<GameCardProps> = ({
@@ -33,7 +33,10 @@ const GameCard: React.FC<GameCardProps> = ({
 	isUserProject,
 }) => {
 	return (
-		<Link href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`} className={styles.gameCardLink}>
+		<Link
+			href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`}
+			className={styles.gameCardLink}
+		>
 			<Card className={styles.gameCard} styles={{ body: { padding: 0 } }}>
 				<div className={styles.gameCardContent}>
 					<div className={styles.gameCardImageContainer}>
@@ -60,9 +63,15 @@ const GameCard: React.FC<GameCardProps> = ({
 						<div className={styles.gameCardAuthor}>
 							<Tooltip title={`Author: ${authorName}`}>
 								{authorAvatar ? (
-									<Avatar src={authorAvatar} alt={authorName} className={styles.authorAvatar} />
+									<Avatar
+										src={authorAvatar}
+										alt={authorName}
+										className={styles.authorAvatar}
+									/>
 								) : (
-									<Avatar className={styles.authorAvatar}>{authorName.charAt(0).toUpperCase()}</Avatar>
+									<Avatar className={styles.authorAvatar}>
+										{authorName.charAt(0).toUpperCase()}
+									</Avatar>
 								)}
 							</Tooltip>
 						</div>
@@ -74,14 +83,18 @@ const GameCard: React.FC<GameCardProps> = ({
 						</Title>
 						<div className={styles.gameCardMeta}>
 							{genre && <Tag className={styles.gameCardGenre}>{genre}</Tag>}
-							{platform && <Tag className={styles.gameCardPlatform}>{platform}</Tag>}
-							{isUserProject && <Tag className={styles.gameCardUserProject}>User Project</Tag>}
+							{platform && (
+								<Tag className={styles.gameCardPlatform}>{platform}</Tag>
+							)}
+							{isUserProject && (
+								<Tag className={styles.gameCardUserProject}>User Project</Tag>
+							)}
 						</div>
 					</div>
 				</div>
 			</Card>
 		</Link>
-	)
-}
+	);
+};
 
-export default GameCard
+export default GameCard;

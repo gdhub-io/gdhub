@@ -1,20 +1,25 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { createHandler, Get, Param } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { createHandler, Get, Param } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiExpertHandler {
 	constructor() {}
 
-	@Get('/:id')
-	public async get(@Param('id') id: string) {
+	@Get("/:id")
+	public async get(@Param("id") id: string) {
 		const expert = await prisma.user.findFirst({
 			where: {
 				id,
 				specialities: {
 					some: {
-						level: { in: [prismaClient.SkillLevel.Experienced, prismaClient.SkillLevel.Expert] },
+						level: {
+							in: [
+								prismaClient.SkillLevel.Experienced,
+								prismaClient.SkillLevel.Expert,
+							],
+						},
 						openForQuestions: { isEmpty: false },
 					},
 				},
@@ -32,7 +37,14 @@ class ApiExpertHandler {
 						team: {
 							select: {
 								project: {
-									select: { id: true, name: true, slug: true, coverImage: true, genre: true, platform: true },
+									select: {
+										id: true,
+										name: true,
+										slug: true,
+										coverImage: true,
+										genre: true,
+										platform: true,
+									},
 								},
 							},
 						},
@@ -40,7 +52,12 @@ class ApiExpertHandler {
 				},
 				specialities: {
 					where: {
-						level: { in: [prismaClient.SkillLevel.Experienced, prismaClient.SkillLevel.Expert] },
+						level: {
+							in: [
+								prismaClient.SkillLevel.Experienced,
+								prismaClient.SkillLevel.Expert,
+							],
+						},
 						openForQuestions: { isEmpty: false },
 					},
 					select: {
@@ -55,10 +72,10 @@ class ApiExpertHandler {
 					},
 				},
 			},
-		})
+		});
 
-		return expert
+		return expert;
 	}
 }
 
-export default createHandler(ApiExpertHandler)
+export default createHandler(ApiExpertHandler);

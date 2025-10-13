@@ -1,31 +1,31 @@
-import React, { useState, useMemo } from 'react'
-import { formatEventPeriod } from '@/helpers/format'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'
-import { FaMicroscope } from '@react-icons/all-files/fa/FaMicroscope'
-import { FaRegCalendarCheck } from '@react-icons/all-files/fa/FaRegCalendarCheck'
-import { FaUsers } from '@react-icons/all-files/fa/FaUsers'
-import { GiGamepad } from '@react-icons/all-files/gi/GiGamepad'
-import { useTolgee } from '@tolgee/react'
-import { Card, Tag } from 'antd'
-import Image from 'next/image'
-import Link from 'next/link'
-import styles from './style.module.scss'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
+import { FaMicroscope } from "@react-icons/all-files/fa/FaMicroscope";
+import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
+import { FaUsers } from "@react-icons/all-files/fa/FaUsers";
+import { GiGamepad } from "@react-icons/all-files/gi/GiGamepad";
+import { useTolgee } from "@tolgee/react";
+import { Card, Tag } from "antd";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useMemo, useState } from "react";
+import { formatEventPeriod } from "@/helpers/format";
+import styles from "./style.module.scss";
 
 function getTypeIcon(type: prismaClient.EventType) {
 	switch (type) {
 		case prismaClient.$Enums.EventType.Meetup:
-			return <FaUsers size={28} />
+			return <FaUsers size={28} />;
 		case prismaClient.$Enums.EventType.GameJam:
-			return <GiGamepad size={28} />
+			return <GiGamepad size={28} />;
 		case prismaClient.$Enums.EventType.Workshop:
-			return <FaChalkboardTeacher size={28} />
+			return <FaChalkboardTeacher size={28} />;
 		case prismaClient.$Enums.EventType.GameLab:
-			return <FaMicroscope size={28} />
+			return <FaMicroscope size={28} />;
 		case prismaClient.$Enums.EventType.Conference:
-			return <FaRegCalendarCheck size={28} />
+			return <FaRegCalendarCheck size={28} />;
 		default:
-			return null
+			return null;
 	}
 }
 
@@ -33,19 +33,19 @@ export const EventCard = ({
 	event,
 	token,
 }: {
-	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] }
-	token: any
+	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+	token: any;
 }) => {
-	const { t, getLanguage } = useTolgee()
-	const now = useMemo(() => new Date(), [])
-	const [hovered, setHovered] = useState(false)
+	const { t, getLanguage } = useTolgee();
+	const now = useMemo(() => new Date(), []);
+	const [hovered, setHovered] = useState(false);
 	const typeLabels: Record<prismaClient.$Enums.EventType, string> = {
-		[prismaClient.$Enums.EventType.Meetup]: 'Meetup',
-		[prismaClient.$Enums.EventType.GameJam]: 'Gamejam',
-		[prismaClient.$Enums.EventType.Workshop]: 'Workshop',
-		[prismaClient.$Enums.EventType.GameLab]: 'Gamelab',
-		[prismaClient.$Enums.EventType.Conference]: 'Conference',
-	}
+		[prismaClient.$Enums.EventType.Meetup]: "Meetup",
+		[prismaClient.$Enums.EventType.GameJam]: "Gamejam",
+		[prismaClient.$Enums.EventType.Workshop]: "Workshop",
+		[prismaClient.$Enums.EventType.GameLab]: "Gamelab",
+		[prismaClient.$Enums.EventType.Conference]: "Conference",
+	};
 
 	return (
 		<Link href={`/event/${event.slug}`} target="_blank">
@@ -54,16 +54,16 @@ export const EventCard = ({
 				onMouseLeave={() => setHovered(false)}
 				style={{
 					borderRadius: 16,
-					overflow: 'hidden',
+					overflow: "hidden",
 					boxShadow: hovered ? token.boxShadowSecondary : token.boxShadow,
 					background: token.colorBgContainer,
-					display: 'flex',
-					flexDirection: 'column',
-					width: '100%',
-					aspectRatio: '1/1.1',
-					margin: '0 auto',
-					cursor: 'pointer',
-					transition: 'box-shadow 0.2s',
+					display: "flex",
+					flexDirection: "column",
+					width: "100%",
+					aspectRatio: "1/1.1",
+					margin: "0 auto",
+					cursor: "pointer",
+					transition: "box-shadow 0.2s",
 					border: undefined,
 				}}
 				styles={{
@@ -74,38 +74,55 @@ export const EventCard = ({
 				}}
 				cover={
 					event.image ? (
-						<div style={{ position: 'relative', width: '100%', aspectRatio: '1/1.1', overflow: 'hidden' }}>
+						<div
+							style={{
+								position: "relative",
+								width: "100%",
+								aspectRatio: "1/1.1",
+								overflow: "hidden",
+							}}
+						>
 							<Image
 								src={event.image}
 								alt={event.title}
 								fill
-								style={{ objectFit: 'cover', aspectRatio: '1/1.1' }}
+								style={{ objectFit: "cover", aspectRatio: "1/1.1" }}
 								sizes="(max-width: 600px) 100vw, 33vw"
 							/>
 							<div className={styles.eventCardContent}>
-								<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-									<span className={styles.eventTypeIcon}>{getTypeIcon(event.type)}</span>
-									<span className={styles.eventType}>{typeLabels[event.type]}</span>
+								<div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+									<span className={styles.eventTypeIcon}>
+										{getTypeIcon(event.type)}
+									</span>
+									<span className={styles.eventType}>
+										{typeLabels[event.type]}
+									</span>
 								</div>
 								<div className={styles.eventTitle}>{event.title}</div>
-								{event.shortDescription ? <div className={styles.eventDesc}>{event.shortDescription}</div> : null}
+								{event.shortDescription ? (
+									<div className={styles.eventDesc}>
+										{event.shortDescription}
+									</div>
+								) : null}
 								<div
 									style={{
 										fontWeight: 600,
-										color: hovered ? token.colorError : token.colorTextSecondary,
+										color: hovered
+											? token.colorError
+											: token.colorTextSecondary,
 										fontSize: 15,
 										marginTop: 8,
-										transition: 'color 0.2s, opacity 0.2s',
+										transition: "color 0.2s, opacity 0.2s",
 										opacity: hovered ? 1 : 0,
 									}}
 								>
-									{t('event.readMore', 'Click to read more')}
+									{t("event.readMore", "Click to read more")}
 								</div>
 							</div>
 							{Boolean(event.schedule?.length) && (
 								<Tag
 									style={{
-										position: 'absolute',
+										position: "absolute",
 										top: 16,
 										right: 16,
 										zIndex: 3,
@@ -118,7 +135,7 @@ export const EventCard = ({
 										event.schedule[0].startDate,
 										event.schedule[event.schedule.length - 1].endDate,
 										getLanguage(),
-										'day'
+										"day",
 									)}
 								</Tag>
 							)}
@@ -139,5 +156,5 @@ export const EventCard = ({
 				}
 			/>
 		</Link>
-	)
-}
+	);
+};

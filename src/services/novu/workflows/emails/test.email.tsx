@@ -1,8 +1,8 @@
-import * as React from 'react'
-import { Body, Container, Head, Html, render } from '@react-email/components'
+import { Body, Container, Head, Html, render } from "@react-email/components";
+import * as React from "react";
 
 interface TestEmailProps {
-	name: string
+	name: string;
 }
 
 export const TestEmailTemplate = ({ name }: TestEmailProps) => {
@@ -10,14 +10,16 @@ export const TestEmailTemplate = ({ name }: TestEmailProps) => {
 		<Html>
 			<Head />
 			<Body>
-				<Container>Hello {name} welcome to your first React E-mail template!</Container>
+				<Container>
+					Hello {name} welcome to your first React E-mail template!
+				</Container>
 			</Body>
 		</Html>
-	)
-}
+	);
+};
 
-export default TestEmailTemplate
+export default TestEmailTemplate;
 
 export function renderEmail(name: string) {
-	return render(<TestEmailTemplate name={name} />)
+	return render(<TestEmailTemplate name={name} />);
 }

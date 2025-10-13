@@ -1,34 +1,40 @@
-'use client'
+"use client";
 
-import { Suspense, useState } from 'react'
-import { useTranslate } from '@tolgee/react'
-import { Button, Card, Carousel, Grid, Typography } from 'antd'
-import dynamic from 'next/dynamic'
-import ReactNiceAvatar from 'react-nice-avatar'
-import { MasonryProps, ResponsiveMasonryProps } from 'react-responsive-masonry'
-import styles from './style.module.scss'
+import { useTranslate } from "@tolgee/react";
+import { Button, Card, Carousel, Grid, Typography } from "antd";
+import dynamic from "next/dynamic";
+import { Suspense, useId, useState } from "react";
+import ReactNiceAvatar from "react-nice-avatar";
+import type {
+	MasonryProps,
+	ResponsiveMasonryProps,
+} from "react-responsive-masonry";
+import styles from "./style.module.scss";
 
-const { Title } = Typography
+const { Title } = Typography;
 
 const MasonryComponent = dynamic<MasonryProps>(
-	() => import('react-responsive-masonry').then((mod) => mod.default as any),
+	() => import("react-responsive-masonry").then((mod) => mod.default as any),
 	{
 		ssr: false,
-	}
-)
+	},
+);
 
 const ResponsiveMasonryComponent = dynamic<ResponsiveMasonryProps>(
-	() => import('react-responsive-masonry').then((mod) => mod.ResponsiveMasonry as any),
-	{ ssr: false }
-)
+	() =>
+		import("react-responsive-masonry").then(
+			(mod) => mod.ResponsiveMasonry as any,
+		),
+	{ ssr: false },
+);
 
 const feedbackList = [
 	{
-		name: 'Vyacheslav',
-		position: 'Game designer',
+		name: "Vyacheslav",
+		position: "Game designer",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="man"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -44,11 +50,11 @@ const feedbackList = [
 		a CEO. I wish new participants good luck and patience.`,
 	},
 	{
-		name: 'Caroline',
-		position: 'Lead level designer',
+		name: "Caroline",
+		position: "Lead level designer",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="woman"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -64,11 +70,11 @@ const feedbackList = [
 		functionality, a good starting visual, music and even a full-fledged trailer.`,
 	},
 	{
-		name: 'Nick',
-		position: 'Game designer',
+		name: "Nick",
+		position: "Game designer",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="man"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -83,11 +89,11 @@ const feedbackList = [
 		together with the 3D artist :)`,
 	},
 	{
-		name: 'Anna',
-		position: '2D artist',
+		name: "Anna",
+		position: "2D artist",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="woman"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -101,11 +107,11 @@ const feedbackList = [
 		and interest in the project as our team.`,
 	},
 	{
-		name: 'Eugene',
-		position: 'Game designer',
+		name: "Eugene",
+		position: "Game designer",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="man"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -118,11 +124,11 @@ const feedbackList = [
 		text: `Thank you so much for this experience. I was able to experience a lot of things live.`,
 	},
 	{
-		name: 'Dmitry',
-		position: 'Game designer',
+		name: "Dmitry",
+		position: "Game designer",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="man"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -135,11 +141,11 @@ const feedbackList = [
 		text: `Team - 🔥🔥🔥. Thank you for the opportunity to work with you!)`,
 	},
 	{
-		name: 'Elena',
-		position: '2D artist',
+		name: "Elena",
+		position: "2D artist",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="woman"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -153,11 +159,11 @@ const feedbackList = [
 		despite all obstacles)`,
 	},
 	{
-		name: 'Sergey',
-		position: 'Game designer',
+		name: "Sergey",
+		position: "Game designer",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="man"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -174,11 +180,11 @@ const feedbackList = [
 		player.`,
 	},
 	{
-		name: 'Alex',
-		position: 'Project manager',
+		name: "Alex",
+		position: "Project manager",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="man"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -192,11 +198,11 @@ const feedbackList = [
 		you can try to start the next game from scratch and taking into account the experience gained.`,
 	},
 	{
-		name: 'Michael',
-		position: 'Unity developer',
+		name: "Michael",
+		position: "Unity developer",
 		avatar: (
 			<ReactNiceAvatar
-				style={{ width: '64px', height: '64px' }}
+				style={{ width: "64px", height: "64px" }}
 				sex="man"
 				eyeStyle="circle"
 				faceColor="#F9C9B6"
@@ -208,43 +214,71 @@ const feedbackList = [
 		),
 		text: `All is cool! Let&apos;s move on ;)`,
 	},
-]
+];
 
 export const LandingFeedbackSection = () => {
-	const { t } = useTranslate()
-	const screens = Grid.useBreakpoint()
-	const [maxHeight, setMaxHeight] = useState('833px')
+	const { t } = useTranslate();
+	const screens = Grid.useBreakpoint();
+	const [maxHeight, setMaxHeight] = useState("833px");
 
 	return (
-		<div id="reviews" className={styles.section} style={{ maxHeight: maxHeight }}>
+		<div
+			id={`reviews-${useId()}`}
+			className={styles.section}
+			style={{ maxHeight: maxHeight }}
+		>
 			<div className={styles.container}>
-				<div className={styles.preTitle}>{t('landing.feedback.pretitle', 'Testimonials')}</div>
-				<Title level={2}>{t('landing.feedback.title', 'What our users say')}</Title>
+				<div className={styles.preTitle}>
+					{t("landing.feedback.pretitle", "Testimonials")}
+				</div>
+				<Title level={2}>
+					{t("landing.feedback.title", "What our users say")}
+				</Title>
 				<div className={styles.subTitle}>
-					{t('landing.feedback.subtitle', 'We are happy to work long-term with our users!')}
+					{t(
+						"landing.feedback.subtitle",
+						"We are happy to work long-term with our users!",
+					)}
 				</div>
 				<div className={styles.content}>
 					{screens.lg && (
 						<>
 							<Suspense>
-								<ResponsiveMasonryComponent columnsCountBreakPoints={{ 350: 1, 750: 2, 1200: 3, 1440: 4 }}>
+								<ResponsiveMasonryComponent
+									columnsCountBreakPoints={{ 350: 1, 750: 2, 1200: 3, 1440: 4 }}
+								>
 									<MasonryComponent gutter="16px">
 										{feedbackList.map((feedback, index) => (
-											<Card rootClassName={styles.feedbackCard} key={'feedback-card-' + index}>
+											<Card
+												rootClassName={styles.feedbackCard}
+												key={`feedback-card-${index.toString()}`}
+											>
 												<Card.Meta
 													avatar={feedback.avatar}
-													title={t(`landing.feedback.title` + index, feedback.name)}
-													description={t(`landing.feedback.description` + index, feedback.position)}
+													title={t(
+														`landing.feedback.title${index.toString()}`,
+														feedback.name,
+													)}
+													description={t(
+														`landing.feedback.description${index.toString()}`,
+														feedback.position,
+													)}
 												/>
-												{t(`landing.feedback.text` + index, feedback.text)}
+												{t(
+													`landing.feedback.text${index.toString()}`,
+													feedback.text,
+												)}
 											</Card>
 										))}
 									</MasonryComponent>
 								</ResponsiveMasonryComponent>
 							</Suspense>
-							{maxHeight != 'none' ? (
-								<Button className={styles.readMoreBtn} onClick={() => setMaxHeight('none')}>
-									{t('component.landingFeedbackSection.readMore', 'Read more')}
+							{maxHeight !== "none" ? (
+								<Button
+									className={styles.readMoreBtn}
+									onClick={() => setMaxHeight("none")}
+								>
+									{t("component.landingFeedbackSection.readMore", "Read more")}
 								</Button>
 							) : null}
 						</>
@@ -260,14 +294,26 @@ export const LandingFeedbackSection = () => {
 								dots={{ className: styles.feedbackDot }}
 							>
 								{feedbackList.map((feedback, index) => (
-									<div className={styles.feedbackSlideContainer} key={'feedback-card-' + index}>
+									<div
+										className={styles.feedbackSlideContainer}
+										key={`feedback-card-${index.toString()}`}
+									>
 										<Card className={styles.feedbackSlide}>
 											<Card.Meta
 												avatar={feedback.avatar}
-												title={t(`landing.feedback.title` + index, feedback.name)}
-												description={t(`landing.feedback.description` + index, feedback.position)}
+												title={t(
+													`landing.feedback.title${index.toString()}`,
+													feedback.name,
+												)}
+												description={t(
+													`landing.feedback.description${index.toString()}`,
+													feedback.position,
+												)}
 											/>
-											{t(`landing.feedback.text` + index, feedback.text)}
+											{t(
+												`landing.feedback.text${index.toString()}`,
+												feedback.text,
+											)}
 										</Card>
 									</div>
 								))}
@@ -277,5 +323,5 @@ export const LandingFeedbackSection = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};

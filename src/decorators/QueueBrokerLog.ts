@@ -1,14 +1,14 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { prisma } from "@/services/prisma";
 
 function QueueBrokerLog(jobName: string) {
-	return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-		const originalMethod = descriptor.value
+	return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+		const originalMethod = descriptor.value;
 
 		descriptor.value = async function (...args: any[]) {
 			try {
 				// Execute the original method
-				const result = await originalMethod.apply(this, args)
+				const result = await originalMethod.apply(this, args);
 
 				await prisma.queueJobLog.create({
 					data: {
@@ -16,9 +16,9 @@ function QueueBrokerLog(jobName: string) {
 						status: prismaClient.QueueJobStatus.Completed,
 						type: prismaClient.QueueJobType.Broker,
 					},
-				})
+				});
 
-				return result
+				return result;
 			} catch (e: any) {
 				await prisma.queueJobLog.create({
 					data: {
@@ -27,12 +27,12 @@ function QueueBrokerLog(jobName: string) {
 						type: prismaClient.QueueJobType.Broker,
 						log: (e as Error).message,
 					},
-				})
+				});
 
-				return null
+				return null;
 			}
-		}
-	}
+		};
+	};
 }
 
-export default QueueBrokerLog
+export default QueueBrokerLog;

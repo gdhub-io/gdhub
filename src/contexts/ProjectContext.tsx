@@ -1,17 +1,17 @@
-import { Dispatch, SetStateAction, createContext } from 'react'
+import { createContext, type Dispatch, type SetStateAction } from "react";
 
 export type ContextProject = {
-	id: string
-	name: string
-	teamId: string
-	isProjectAuthor: boolean
-}
+	id: string;
+	name: string;
+	teamId: string;
+	isProjectAuthor: boolean;
+};
 
 export const ProjectContext = createContext<
 	| {
-			contextProject?: ContextProject
-			isLoaded: boolean
-			setContextProject: Dispatch<SetStateAction<ContextProject | undefined>>
+			contextProject?: ContextProject;
+			isLoaded: boolean;
+			setContextProject: Dispatch<SetStateAction<ContextProject | undefined>>;
 	  }
 	| undefined
->(undefined)
+>(undefined);

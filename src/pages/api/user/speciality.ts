@@ -1,26 +1,46 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { CreateSpecialityDto, DeleteSpecialityDto, UpdateSpecialityDto } from '@/types/dto/speciality'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Body, Delete, Get, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	Body,
+	createHandler,
+	Delete,
+	Get,
+	Post,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
+import type {
+	CreateSpecialityDto,
+	DeleteSpecialityDto,
+	UpdateSpecialityDto,
+} from "@/types/dto/speciality";
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiSpecialityHandler {
 	constructor() {}
 
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query('id') id: string) {
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query("id") id: string,
+	) {
 		const speciality = await prisma.speciality.findFirst({
 			where: { userId: req.user.id, id },
 			include: { direction: true },
-		})
+		});
 
-		return speciality
+		return speciality;
 	}
 
 	@Post()
-	public async create(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) body: CreateSpecialityDto) {
-		const { data } = body
+	public async create(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) body: CreateSpecialityDto,
+	) {
+		const { data } = body;
 
 		const speciality = await prisma.speciality.create({
 			data: {
@@ -29,34 +49,38 @@ class ApiSpecialityHandler {
 				tools: data.tools,
 			} as any,
 			include: { direction: true },
-		})
+		});
 
 		if (data.teamInvitationId) {
 			const teamInvitation = await prisma.teamInvitation.findUnique({
 				where: { id: data.teamInvitationId },
-			})
+			});
 
 			if (teamInvitation) {
 				await prisma.teamInvitation.update({
 					where: { id: data.teamInvitationId },
 					data: { status: prismaClient.InvitationStatus.Accepted },
-				})
+				});
 			}
 		}
 
-		const specialitiesCount = await prisma.speciality.count({ where: { userId: req.user.id } })
+		const specialitiesCount = await prisma.speciality.count({
+			where: { userId: req.user.id },
+		});
 
 		// set role Member
 		if (specialitiesCount == 1) {
 			const userNotMember = await prisma.user.findFirst({
-				where: { AND: [{ id: req.user.id }, { NOT: { roles: { has: 'Member' } } }] },
-			})
+				where: {
+					AND: [{ id: req.user.id }, { NOT: { roles: { has: "Member" } } }],
+				},
+			});
 
 			if (userNotMember) {
 				await prisma.user.update({
 					where: { id: userNotMember.id },
-					data: { roles: { push: 'Member' } },
-				})
+					data: { roles: { push: "Member" } },
+				});
 			}
 		}
 	}
@@ -64,12 +88,12 @@ class ApiSpecialityHandler {
 	@Put()
 	public async updateFirstSpeciality(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) body: UpdateSpecialityDto
+		@Body(ValidationPipe) body: UpdateSpecialityDto,
 	) {
 		const {
 			id,
 			data: { workDirectionId, ...otherData },
-		} = body
+		} = body;
 
 		const speciality = await prisma.speciality.update({
 			where: { id },
@@ -78,15 +102,18 @@ class ApiSpecialityHandler {
 				direction: { connect: { id: workDirectionId } },
 			} as any,
 			include: { direction: true },
-		})
+		});
 	}
 
 	@Delete()
-	public async delete(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) params: DeleteSpecialityDto) {
-		const { id } = params
+	public async delete(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) params: DeleteSpecialityDto,
+	) {
+		const { id } = params;
 
-		await prisma.speciality.delete({ where: { id } })
+		await prisma.speciality.delete({ where: { id } });
 	}
 }
 
-export default createHandler(ApiSpecialityHandler)
+export default createHandler(ApiSpecialityHandler);

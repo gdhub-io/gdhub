@@ -1,41 +1,55 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { NovuService } from '@/services/novu'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsEmail, IsString, IsOptional, IsDateString } from 'class-validator'
-import { Body, Param, Get, Post, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsDateString, IsEmail, IsOptional, IsString } from "class-validator";
+import {
+	Body,
+	createHandler,
+	Get,
+	Param,
+	Post,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { NovuService } from "@/services/novu";
+import { prisma } from "@/services/prisma";
 
 class InviteMemberDto {
 	@IsString()
-	teamId: string
+	teamId: string;
 
 	@IsEmail()
-	email: string
+	email: string;
 
 	@IsString()
-	position: string
+	position: string;
 
 	@IsString()
-	directionId: string
+	directionId: string;
 
 	@IsDateString()
 	@IsOptional()
-	startedAt?: string
+	startedAt?: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserTeamInviteHandler {
-	@Get('/:id')
-	public async getInvitation(@Req() req: NextApiRequestWithUser, @Param('id') id: string) {
+	@Get("/:id")
+	public async getInvitation(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
 		const invitation = await prisma.teamInvitation.findUnique({
 			where: { id },
-		})
+		});
 
-		return invitation
+		return invitation;
 	}
 
 	@Post()
-	public async invite(@Req() req: NextApiRequestWithUser, @Body(ValidationPipe) data: InviteMemberDto) {
+	public async invite(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) data: InviteMemberDto,
+	) {
 		try {
 			// Проверяем, существует ли команда
 			const team = await prisma.team.findUnique({
@@ -43,10 +57,10 @@ class ApiUserTeamInviteHandler {
 				include: {
 					project: { select: { id: true, name: true, slug: true } },
 				},
-			})
+			});
 
 			if (!team) {
-				throw new Error('Team not found')
+				throw new Error("Team not found");
 			}
 
 			// Проверяем, является ли текущий пользователь основателем команды
@@ -56,16 +70,16 @@ class ApiUserTeamInviteHandler {
 					userId: req.user.id,
 					status: prismaClient.TeamMemberStatus.Founder,
 				},
-			})
+			});
 
 			if (!isFounder) {
-				throw new Error('Only team founder can invite members')
+				throw new Error("Only team founder can invite members");
 			}
 
 			// Проверяем, существует ли пользователь с указанным email
-			let user = await prisma.user.findUnique({
+			const user = await prisma.user.findUnique({
 				where: { email: data.email },
-			})
+			});
 
 			// Если пользователь не найден, создаем запись приглашения
 			if (!user) {
@@ -81,33 +95,33 @@ class ApiUserTeamInviteHandler {
 						status: prismaClient.InvitationStatus.Pending,
 						expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Приглашение действительно 7 дней
 					},
-				})
+				});
 
 				// Отправляем email с приглашением через Novu
 				try {
 					await NovuService.send({
-						template: 'team-invitation',
+						template: "team-invitation",
 						to: {
 							subscriberId: data.email,
 							email: data.email,
 						},
 						payload: {
 							invitationId: invitation.id,
-							teamName: team.name || 'Team',
-							projectName: team.project?.name || 'Project',
-							projectSlug: team.project?.slug || '',
+							teamName: team.name || "Team",
+							projectName: team.project?.name || "Project",
+							projectSlug: team.project?.slug || "",
 							position: data.position,
 							startedAt: data.startedAt || new Date().toISOString(),
-							inviterName: req.user.name || 'Project founder',
+							inviterName: req.user.name || "Project founder",
 							acceptUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invite/${invitation.id}`,
 						},
-					})
+					});
 				} catch (error) {
-					console.error('Failed to send invitation email:', error)
+					console.error("Failed to send invitation email:", error);
 					// Продолжаем выполнение даже если отправка письма не удалась
 				}
 
-				return { success: true, message: 'Invitation sent' }
+				return { success: true, message: "Invitation sent" };
 			}
 
 			// Проверяем, не является ли пользователь уже членом команды
@@ -116,13 +130,16 @@ class ApiUserTeamInviteHandler {
 					teamId: data.teamId,
 					userId: user.id,
 					status: {
-						in: [prismaClient.TeamMemberStatus.Hired, prismaClient.TeamMemberStatus.Founder],
+						in: [
+							prismaClient.TeamMemberStatus.Hired,
+							prismaClient.TeamMemberStatus.Founder,
+						],
 					},
 				},
-			})
+			});
 
 			if (existingMember) {
-				throw new Error('User is already a member of this team')
+				throw new Error("User is already a member of this team");
 			}
 
 			// Create an invitation record for existing user
@@ -138,38 +155,38 @@ class ApiUserTeamInviteHandler {
 					status: prismaClient.InvitationStatus.Pending,
 					expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Приглашение действительно 7 дней
 				},
-			})
+			});
 
 			// Отправляем уведомление пользователю через Novu
 			try {
 				await NovuService.send({
-					template: 'team-invitation',
+					template: "team-invitation",
 					to: {
 						subscriberId: user.id,
 						email: user.email!,
 					},
 					payload: {
 						invitationId: invitation.id,
-						teamName: team.name || 'Team',
-						projectName: team.project?.name || 'Project',
-						projectSlug: team.project?.slug || '',
+						teamName: team.name || "Team",
+						projectName: team.project?.name || "Project",
+						projectSlug: team.project?.slug || "",
 						position: data.position,
 						startedAt: data.startedAt || new Date().toISOString(),
-						inviterName: req.user.name || 'Project founder',
+						inviterName: req.user.name || "Project founder",
 						acceptUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invite/${invitation.id}`,
 					},
-				})
+				});
 			} catch (error) {
-				console.error('Failed to send invitation email:', error)
+				console.error("Failed to send invitation email:", error);
 				// Продолжаем выполнение даже если отправка письма не удалась
 			}
 
-			return { success: true, message: 'Invitation sent to existing user' }
+			return { success: true, message: "Invitation sent to existing user" };
 		} catch (error: any) {
-			console.error('[team.invite]', error)
-			throw error
+			console.error("[team.invite]", error);
+			throw error;
 		}
 	}
 }
 
-export default createHandler(ApiUserTeamInviteHandler)
+export default createHandler(ApiUserTeamInviteHandler);

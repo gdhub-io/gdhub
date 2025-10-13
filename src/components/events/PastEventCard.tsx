@@ -1,56 +1,70 @@
-import React from 'react'
-import { formatEventPeriod } from '@/helpers/format'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useTolgee } from '@tolgee/react'
-import { Card } from 'antd'
-import Image from 'next/image'
-import styles from './PastEventCard.module.css'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { useTolgee } from "@tolgee/react";
+import { Card } from "antd";
+import Image from "next/image";
+import React from "react";
+import { formatEventPeriod } from "@/helpers/format";
+import styles from "./PastEventCard.module.css";
 
 export const PastEventCard = ({
 	event,
 	token,
 }: {
-	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] }
-	token: any
+	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+	token: any;
 }) => {
-	const { getLanguage } = useTolgee()
+	const { getLanguage } = useTolgee();
 
 	return (
 		<Card
-			className={styles['past-event-card']}
+			className={styles["past-event-card"]}
 			cover={
-				<div style={{ width: '100%', aspectRatio: '1/1.1', overflow: 'hidden', position: 'relative' }}>
+				<div
+					style={{
+						width: "100%",
+						aspectRatio: "1/1.1",
+						overflow: "hidden",
+						position: "relative",
+					}}
+				>
 					<Image
-						src={event.image || ''}
+						src={event.image || ""}
 						alt={event.title}
 						fill
-						style={{ width: '100%', height: '100%', objectFit: 'cover', aspectRatio: '1/1.1', filter: 'grayscale(1)' }}
+						style={{
+							width: "100%",
+							height: "100%",
+							objectFit: "cover",
+							aspectRatio: "1/1.1",
+							filter: "grayscale(1)",
+						}}
 						sizes="(max-width: 600px) 100vw, 33vw"
 					/>
 					<div
-						className={styles['event-details']}
+						className={styles["event-details"]}
 						style={{
-							position: 'absolute',
+							position: "absolute",
 							bottom: 0,
 							left: 0,
-							width: '100%',
+							width: "100%",
 							padding: 16,
-							background: 'linear-gradient(0deg, rgba(30,30,30,0.85) 80%, rgba(30,30,30,0.1) 100%, rgba(0,0,0,0) 100%)',
-							color: '#fff',
+							background:
+								"linear-gradient(0deg, rgba(30,30,30,0.85) 80%, rgba(30,30,30,0.1) 100%, rgba(0,0,0,0) 100%)",
+							color: "#fff",
 							zIndex: 2,
-							display: 'flex',
-							flexDirection: 'column',
+							display: "flex",
+							flexDirection: "column",
 							gap: 8,
 						}}
 					>
-						<div className={styles['event-title']}>{event.title}</div>
+						<div className={styles["event-title"]}>{event.title}</div>
 						{event.schedule?.length && (
-							<div className={styles['event-dates']}>
+							<div className={styles["event-dates"]}>
 								{formatEventPeriod(
 									event.schedule[0].startDate,
 									event.schedule[event.schedule.length - 1].endDate,
 									getLanguage(),
-									'day'
+									"day",
 								)}
 							</div>
 						)}
@@ -59,12 +73,12 @@ export const PastEventCard = ({
 			}
 			style={{
 				borderRadius: 12,
-				overflow: 'hidden',
+				overflow: "hidden",
 				boxShadow: token.boxShadow,
 				background: token.colorBgContainer,
-				width: '100%',
-				aspectRatio: '1/1.1',
-				margin: '0 auto',
+				width: "100%",
+				aspectRatio: "1/1.1",
+				margin: "0 auto",
 			}}
 			styles={{
 				body: {
@@ -73,5 +87,5 @@ export const PastEventCard = ({
 				},
 			}}
 		/>
-	)
-}
+	);
+};

@@ -1,5 +1,5 @@
-import { prisma } from '@/services/prisma'
-import { Get, createHandler } from 'next-api-decorators'
+import { createHandler, Get } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class ApiLatestSpecialistsHandler {
 	constructor() {}
@@ -9,7 +9,7 @@ class ApiLatestSpecialistsHandler {
 		const specialities = await prisma.speciality.findMany({
 			where: {
 				user: { profile: { isActive: true } },
-				specialization: { not: '' },
+				specialization: { not: "" },
 			},
 			select: {
 				name: true,
@@ -17,15 +17,18 @@ class ApiLatestSpecialistsHandler {
 				specialization: true,
 				direction: { select: { name: true } },
 			},
-			orderBy: { updatedAt: 'desc' },
+			orderBy: { updatedAt: "desc" },
 			take: 5,
-		})
+		});
 
 		return specialities.map((s: any) => ({
 			...s,
-			specialization: s.specialization.length > 100 ? s.specialization.slice(0, 100) + '...' : s.specialization,
-		}))
+			specialization:
+				s.specialization.length > 100
+					? s.specialization.slice(0, 100) + "..."
+					: s.specialization,
+		}));
 	}
 }
 
-export default createHandler(ApiLatestSpecialistsHandler)
+export default createHandler(ApiLatestSpecialistsHandler);

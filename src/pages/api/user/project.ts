@@ -1,11 +1,10 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator'
-import dayjs from 'dayjs'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsBoolean, IsEnum, IsOptional, IsString } from "class-validator";
+import dayjs from "dayjs";
 import {
 	BadRequestException,
 	Body,
+	createHandler,
 	Delete,
 	Get,
 	Post,
@@ -13,117 +12,127 @@ import {
 	Query,
 	Req,
 	ValidationPipe,
-	createHandler,
-} from 'next-api-decorators'
-import { slugify } from 'voca'
+} from "next-api-decorators";
+import { slugify } from "voca";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class CreateProjectDto {
 	@IsString()
-	name: string
+	name: string;
 
 	@IsBoolean()
-	agree: boolean
+	agree: boolean;
 
 	@IsString()
 	@IsOptional()
-	description?: string
+	description?: string;
 }
 
 class UpdateProjectDto {
 	@IsString()
 	@IsOptional()
-	name?: string
+	name?: string;
 
 	@IsString({ each: true })
 	@IsOptional()
-	coreMechanics?: string[]
+	coreMechanics?: string[];
 
 	@IsString()
 	@IsOptional()
-	description?: string
+	description?: string;
 
 	@IsString()
 	@IsOptional()
-	coverImage?: string
+	coverImage?: string;
 
 	@IsString()
 	@IsOptional()
-	genre?: string
+	genre?: string;
 
 	@IsString()
 	@IsOptional()
-	setting?: string
+	setting?: string;
 
 	@IsString()
 	@IsOptional()
-	platform?: string
+	platform?: string;
 
 	@IsString()
 	@IsOptional()
-	visualStyle?: string
+	visualStyle?: string;
 
 	@IsString()
 	@IsOptional()
-	audition?: string
+	audition?: string;
 
 	@IsString()
 	@IsOptional()
-	videoLink?: string
+	videoLink?: string;
 
 	@IsString()
 	@IsOptional()
-	pitchdeckLink?: string
+	pitchdeckLink?: string;
 
 	@IsString()
 	@IsOptional()
-	gddLink?: string
+	gddLink?: string;
 
 	@IsString()
 	@IsOptional()
-	conceptLink?: string
+	conceptLink?: string;
 
 	@IsString()
 	@IsOptional()
-	authorId?: string
+	authorId?: string;
 
 	@IsEnum(prismaClient.ProjectStatus)
 	@IsOptional()
-	status?: prismaClient.ProjectStatus
+	status?: prismaClient.ProjectStatus;
 
 	@IsString()
 	@IsOptional()
-	stageId?: string
+	stageId?: string;
 }
 
 class GetProjectDto {
 	@IsString()
-	slug: string
+	slug: string;
 }
 
 class QueryIdParam {
 	@IsString()
-	id: string
+	id: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiProjectHandler {
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { slug }: GetProjectDto) {
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { slug }: GetProjectDto,
+	) {
 		const project = await prisma.project.findUnique({
-			where: { slug, OR: [{ authorId: req.user.id }, { team: { members: { some: { userId: req.user.id } } } }] },
+			where: {
+				slug,
+				OR: [
+					{ authorId: req.user.id },
+					{ team: { members: { some: { userId: req.user.id } } } },
+				],
+			},
 			include: { workflow: { include: { steps: true } } },
-		})
+		});
 
-		return project
+		return project;
 	}
 
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { name, description, agree }: CreateProjectDto
+		@Body(ValidationPipe) { name, description, agree }: CreateProjectDto,
 	) {
-		if (!req.user.id) throw Error('Unknown user')
-		if (!agree) throw Error('Should accept requirements')
+		if (!req.user.id) throw Error("Unknown user");
+		if (!agree) throw Error("Should accept requirements");
 
 		const user = await prisma.user.findUnique({
 			where: { id: req.user.id },
@@ -131,24 +140,34 @@ class ApiProjectHandler {
 				specialities: true,
 				memberInTeams: {
 					where: { status: prismaClient.TeamMemberStatus.Founder },
-					include: { team: { include: { project: { select: { id: true, name: true, slug: true } } } } },
+					include: {
+						team: {
+							include: {
+								project: { select: { id: true, name: true, slug: true } },
+							},
+						},
+					},
 				},
 			},
-		})
+		});
 
-		if (!user) throw Error('User not found')
+		if (!user) throw Error("User not found");
 
 		const existingProjectTeam = user?.memberInTeams.find(
-			(member: { status: prismaClient.TeamMemberStatus; team: { project: { slug: string } | null } }) =>
-				member.status == prismaClient.TeamMemberStatus.Founder && member.team.project?.slug == slugify(name)
-		)
+			(member: {
+				status: prismaClient.TeamMemberStatus;
+				team: { project: { slug: string } | null };
+			}) =>
+				member.status == prismaClient.TeamMemberStatus.Founder &&
+				member.team.project?.slug == slugify(name),
+		);
 
 		const existingProject = await prisma.project.findUnique({
 			where: { slug: slugify(name) },
-		})
+		});
 
 		if (existingProject) {
-			throw new BadRequestException('Project with this name already exists')
+			throw new BadRequestException("Project with this name already exists");
 		}
 
 		const project = await prisma.project.create({
@@ -166,7 +185,7 @@ class ApiProjectHandler {
 								name: `${slugify(name)}'s Team`,
 								members: {
 									create: {
-										position: 'Founder',
+										position: "Founder",
 										specialityId: user?.specialities[0].id!,
 										startedAt: dayjs().toISOString(),
 										status: prismaClient.TeamMemberStatus.Founder,
@@ -177,16 +196,24 @@ class ApiProjectHandler {
 						},
 				reports: {
 					create: {
-						content: 'Registration of the project on the service',
+						content: "Registration of the project on the service",
 						publishedAt: dayjs().toISOString(),
 						authorId: req.user.id,
 					},
 				},
 			},
 			include: {
-				author: { select: { name: true, image: true, id: true, roles: true, profile: { select: { id: true } } } },
+				author: {
+					select: {
+						name: true,
+						image: true,
+						id: true,
+						roles: true,
+						profile: { select: { id: true } },
+					},
+				},
 			},
-		})
+		});
 
 		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
 			await prisma.user.update({
@@ -194,17 +221,17 @@ class ApiProjectHandler {
 				data: {
 					roles: [...project.author.roles, prismaClient.UserRole.Author],
 				},
-			})
+			});
 		}
 
-		return project
+		return project;
 	}
 
 	@Put()
 	public async update(
 		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { id }: QueryIdParam,
-		@Body(ValidationPipe) { authorId, ...data }: UpdateProjectDto
+		@Body(ValidationPipe) { authorId, ...data }: UpdateProjectDto,
 	) {
 		const project = await prisma.project.update({
 			where: { id },
@@ -213,9 +240,17 @@ class ApiProjectHandler {
 				author: authorId ? { connect: { id: authorId } } : undefined,
 			},
 			include: {
-				author: { select: { name: true, image: true, id: true, roles: true, profile: { select: { id: true } } } },
+				author: {
+					select: {
+						name: true,
+						image: true,
+						id: true,
+						roles: true,
+						profile: { select: { id: true } },
+					},
+				},
 			},
-		})
+		});
 
 		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
 			await prisma.user.update({
@@ -223,16 +258,19 @@ class ApiProjectHandler {
 				data: {
 					roles: [...project.author.roles, prismaClient.UserRole.Author],
 				},
-			})
+			});
 		}
 
-		return project
+		return project;
 	}
 
 	@Delete()
-	public async delete(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { id }: QueryIdParam) {
-		await prisma.project.delete({ where: { id, authorId: req.user.id } })
+	public async delete(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { id }: QueryIdParam,
+	) {
+		await prisma.project.delete({ where: { id, authorId: req.user.id } });
 	}
 }
 
-export default createHandler(ApiProjectHandler)
+export default createHandler(ApiProjectHandler);

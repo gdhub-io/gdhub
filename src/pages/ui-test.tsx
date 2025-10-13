@@ -1,5 +1,5 @@
-import { AiOutlineGoogle } from '@react-icons/all-files/ai/AiOutlineGoogle'
-import { Button, Space } from 'antd'
+import { AiOutlineGoogle } from "@react-icons/all-files/ai/AiOutlineGoogle";
+import { Button, Space } from "antd";
 
 const UITestPage = () => {
 	return (
@@ -23,7 +23,7 @@ const UITestPage = () => {
 				</Button>
 			</Space>
 		</div>
-	)
-}
+	);
+};
 
-export default UITestPage
+export default UITestPage;

@@ -1,25 +1,34 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { createHandler, Get, Query, Req, ValidationPipe } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import {
+	createHandler,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class UserProjectLinksDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserProjectLinksHandler {
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { id }: UserProjectLinksDto) {
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { id }: UserProjectLinksDto,
+	) {
 		const data = await prisma.project.findUnique({
 			where: { id },
 			select: { id: true, links: true },
-		})
+		});
 
-		console.log('Database links data:', data?.links)
-		return data?.links || []
+		console.log("Database links data:", data?.links);
+		return data?.links || [];
 	}
 }
 
-export default createHandler(ApiUserProjectLinksHandler)
+export default createHandler(ApiUserProjectLinksHandler);

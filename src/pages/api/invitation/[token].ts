@@ -1,17 +1,19 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class InvitationTokenDto {
 	@IsString()
-	token: string
+	token: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiInvitationHandler {
 	@Get()
-	public async getInvitation(@Query(ValidationPipe) { token }: InvitationTokenDto) {
+	public async getInvitation(
+		@Query(ValidationPipe) { token }: InvitationTokenDto,
+	) {
 		try {
 			const invitation = await prisma.teamInvitation.findUnique({
 				where: { id: token },
@@ -25,23 +27,23 @@ class ApiInvitationHandler {
 					},
 					invitedBy: { select: { id: true, name: true, email: true } },
 				},
-			})
+			});
 
 			if (!invitation) {
-				throw new Error('Invitation not found')
+				throw new Error("Invitation not found");
 			}
 
 			// Проверяем, не истек ли срок действия приглашения
 			if (invitation.expiresAt && new Date() > invitation.expiresAt) {
-				throw new Error('Invitation has expired')
+				throw new Error("Invitation has expired");
 			}
 
-			return invitation
+			return invitation;
 		} catch (error: any) {
-			console.error('[invitation.get]', error)
-			throw error
+			console.error("[invitation.get]", error);
+			throw error;
 		}
 	}
 }
 
-export default createHandler(ApiInvitationHandler)
+export default createHandler(ApiInvitationHandler);

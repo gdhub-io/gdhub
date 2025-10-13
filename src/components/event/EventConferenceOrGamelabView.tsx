@@ -1,34 +1,38 @@
-import React from 'react'
-import { formatEventPeriod } from '@/helpers/format'
-import { useTolgee } from '@tolgee/react'
-import { Button, Typography, Divider, Avatar, Flex, Grid, theme } from 'antd'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useSession } from 'next-auth/react'
-import ReactMarkdown from 'react-markdown'
-import rehypeRaw from 'rehype-raw'
-import remarkGfm from 'remark-gfm'
-import styles from './EventConferenceOrGamelabView.module.scss'
+import { useTolgee } from "@tolgee/react";
+import { Avatar, Button, Divider, Flex, Grid, Typography, theme } from "antd";
+import Image from "next/image";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+import { formatEventPeriod } from "@/helpers/format";
+import styles from "./EventConferenceOrGamelabView.module.scss";
 
-const { Title, Paragraph, Text } = Typography
+const { Title, Paragraph, Text } = Typography;
 
-const MAX_VISIBLE_SPEAKERS = 3
+const MAX_VISIBLE_SPEAKERS = 3;
 
-const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) => {
-	const { t, getLanguage } = useTolgee()
-	const screens = Grid.useBreakpoint()
-	const { data: session } = useSession()
-	const { token } = theme.useToken()
+const EventConferenceOrGamelabView = ({
+	event,
+	workDirections,
+	schedule,
+}: any) => {
+	const { t, getLanguage } = useTolgee();
+	const screens = Grid.useBreakpoint();
+	const { data: session } = useSession();
+	const { token } = theme.useToken();
 
 	return (
-		<div className={styles.contentContainer} style={{ position: 'relative' }}>
+		<div className={styles.contentContainer} style={{ position: "relative" }}>
 			{/* Картинка мероприятия по центру, перекрывает header */}
 			{event.image && (
 				<div
 					style={{
-						position: 'relative',
-						display: 'flex',
-						justifyContent: 'center',
+						position: "relative",
+						display: "flex",
+						justifyContent: "center",
 						marginTop: -120,
 						marginBottom: 32,
 						zIndex: 2,
@@ -36,41 +40,55 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 				>
 					<div
 						style={{
-							position: 'relative',
-							width: screens.xs ? '90vw' : '100%',
-							maxWidth: '100%',
-							aspectRatio: '16/9',
-							boxShadow: '0 4px 32px #0002',
+							position: "relative",
+							width: screens.xs ? "90vw" : "100%",
+							maxWidth: "100%",
+							aspectRatio: "16/9",
+							boxShadow: "0 4px 32px #0002",
 							borderRadius: 18,
-							overflow: 'hidden',
+							overflow: "hidden",
 						}}
 					>
-						<Image src={event.image} alt={event.title} fill style={{ objectFit: 'cover' }} />
+						<Image
+							src={event.image}
+							alt={event.title}
+							fill
+							style={{ objectFit: "cover" }}
+						/>
 					</div>
 				</div>
 			)}
 
 			{/* Название и краткое описание */}
-			<div style={{ textAlign: 'center', marginBottom: 16 }}>
+			<div style={{ textAlign: "center", marginBottom: 16 }}>
 				<Title level={1} style={{ marginBottom: 8 }}>
 					{event.title}
 				</Title>
-				{event.shortDescription && <Text style={{ fontSize: 16, color: '#666' }}>{event.shortDescription}</Text>}
+				{event.shortDescription && (
+					<Text style={{ fontSize: 16, color: "#666" }}>
+						{event.shortDescription}
+					</Text>
+				)}
 
-				<Flex justify="center" align="middle" gap={32} style={{ margin: '24px 0 0 0' }}>
+				<Flex
+					justify="center"
+					align="middle"
+					gap={32}
+					style={{ margin: "24px 0 0 0" }}
+				>
 					<Flex vertical align="center" gap={0}>
 						<Text type="secondary" style={{ fontSize: 16 }}>
-							{t('event.dates', 'Dates')}
+							{t("event.dates", "Dates")}
 						</Text>
 						<Text strong style={{ fontSize: 18 }}>
 							{schedule.length > 0
 								? formatEventPeriod(
 										schedule[0].startDate,
 										schedule[schedule.length - 1].endDate,
-										getLanguage() || 'en',
-										'day'
+										getLanguage() || "en",
+										"day",
 									)
-								: '-'}
+								: "-"}
 						</Text>
 					</Flex>
 				</Flex>
@@ -78,29 +96,37 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 
 			<div className={styles.contentContainer}>
 				<div style={{ marginBottom: 32 }}>
-					<Title level={2}>{t('event.about', 'About')}</Title>
+					<Title level={2}>{t("event.about", "About")}</Title>
 					<div className={styles.description}>
-						<ReactMarkdown rehypePlugins={[rehypeRaw as any]} remarkPlugins={[remarkGfm]} skipHtml={false}>
-							{event.description || ''}
+						<ReactMarkdown
+							rehypePlugins={[rehypeRaw as any]}
+							remarkPlugins={[remarkGfm]}
+							skipHtml={false}
+						>
+							{event.description || ""}
 						</ReactMarkdown>
 					</div>
 				</div>
 
-				<Title level={2}>{t('event.schedule', 'Schedule')}</Title>
+				<Title level={2}>{t("event.schedule", "Schedule")}</Title>
 				<div
 					style={{
 						marginBottom: 32,
 					}}
 				>
 					{schedule.map((item: any, idx: number) => {
-						const visibleSpeakers = (item.speakers || []).slice(0, MAX_VISIBLE_SPEAKERS)
-						const extraCount = (item.speakers?.length || 0) - MAX_VISIBLE_SPEAKERS
+						const visibleSpeakers = (item.speakers || []).slice(
+							0,
+							MAX_VISIBLE_SPEAKERS,
+						);
+						const extraCount =
+							(item.speakers?.length || 0) - MAX_VISIBLE_SPEAKERS;
 
 						return (
 							<div
 								key={item.id || idx}
 								style={{
-									background: '#fdfdfd',
+									background: "#fdfdfd",
 									paddingInline: 16,
 									borderRadius: 8,
 									paddingBlock: 16,
@@ -109,8 +135,20 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 							>
 								{/* Линия 1: дата и title */}
 								<Flex align="center" gap={16} style={{ marginBottom: 4 }}>
-									<span style={{ fontWeight: 600, fontSize: 15, color: '#222', whiteSpace: 'nowrap' }}>
-										{formatEventPeriod(item.startDate, item.endDate, getLanguage() || 'en', 'daytime')}
+									<span
+										style={{
+											fontWeight: 600,
+											fontSize: 15,
+											color: "#222",
+											whiteSpace: "nowrap",
+										}}
+									>
+										{formatEventPeriod(
+											item.startDate,
+											item.endDate,
+											getLanguage() || "en",
+											"daytime",
+										)}
 									</span>
 
 									{!!item.title && (
@@ -121,7 +159,7 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 												style={{
 													fontWeight: 600,
 													fontSize: 15,
-													color: '#222',
+													color: "#222",
 												}}
 											>
 												{item.title}
@@ -133,72 +171,115 @@ const EventConferenceOrGamelabView = ({ event, workDirections, schedule }: any) 
 								{/* Линия 2: описание */}
 								{item.description && (
 									<div className={styles.scheduleDescription}>
-										<ReactMarkdown rehypePlugins={[rehypeRaw as any]} remarkPlugins={[remarkGfm]} skipHtml={false}>
-											{item.description || ''}
+										<ReactMarkdown
+											rehypePlugins={[rehypeRaw as any]}
+											remarkPlugins={[remarkGfm]}
+											skipHtml={false}
+										>
+											{item.description || ""}
 										</ReactMarkdown>
 									</div>
 								)}
 
 								{/* Линия 3: спикеры */}
 								{item.speakers?.length > 0 && (
-									<Flex gap={24} style={{ marginTop: 16, flexWrap: 'wrap' }}>
+									<Flex gap={24} style={{ marginTop: 16, flexWrap: "wrap" }}>
 										{visibleSpeakers.map((sp: any, i: number) => {
-											const speakerName = sp?.user?.profile?.name || sp?.user?.name || ''
-											const speakerAvatar = sp?.user?.image || ''
-											const speakerSpeciality = sp?.name || ''
-											const speakerSummary = sp?.summary || ''
+											const speakerName =
+												sp?.user?.profile?.name || sp?.user?.name || "";
+											const speakerAvatar = sp?.user?.image || "";
+											const speakerSpeciality = sp?.name || "";
+											const speakerSummary = sp?.summary || "";
 											return (
-												<Flex key={sp.id || i} align="center" gap={12} style={{ minWidth: 220 }}>
+												<Flex
+													key={sp.id || i}
+													align="center"
+													gap={12}
+													style={{ minWidth: 220 }}
+												>
 													<Avatar
 														size={64}
 														src={speakerAvatar}
-														style={{ minWidth: 64, background: '#eee', color: '#222', fontSize: 18 }}
+														style={{
+															minWidth: 64,
+															background: "#eee",
+															color: "#222",
+															fontSize: 18,
+														}}
 													>
-														{!speakerAvatar && speakerName ? speakerName[0] : null}
+														{!speakerAvatar && speakerName
+															? speakerName[0]
+															: null}
 													</Avatar>
 													<Flex vertical gap={0} style={{ minWidth: 0 }}>
-														<span style={{ fontWeight: 600, fontSize: 15 }}>{speakerName}</span>
+														<span style={{ fontWeight: 600, fontSize: 15 }}>
+															{speakerName}
+														</span>
 														{speakerSpeciality && (
-															<span style={{ fontSize: 13, color: token.colorTextSecondary, fontWeight: 500 }}>
+															<span
+																style={{
+																	fontSize: 13,
+																	color: token.colorTextSecondary,
+																	fontWeight: 500,
+																}}
+															>
 																{speakerSpeciality}
 															</span>
 														)}
-														{speakerSummary && <span style={{ fontSize: 13, color: '#888' }}>{speakerSummary}</span>}
+														{speakerSummary && (
+															<span style={{ fontSize: 13, color: "#888" }}>
+																{speakerSummary}
+															</span>
+														)}
 													</Flex>
 												</Flex>
-											)
+											);
 										})}
 										{extraCount > 0 && (
-											<span style={{ marginLeft: 8, color: '#888', fontSize: 13 }}>+{extraCount}</span>
+											<span
+												style={{ marginLeft: 8, color: "#888", fontSize: 13 }}
+											>
+												+{extraCount}
+											</span>
 										)}
 									</Flex>
 								)}
 							</div>
-						)
+						);
 					})}
 				</div>
 			</div>
 
 			{/* Кнопка регистрации внизу страницы */}
 			{event.url && (
-				<div style={{ maxWidth: 420, margin: '40px auto 0', textAlign: 'center' }}>
+				<div
+					style={{ maxWidth: 420, margin: "40px auto 0", textAlign: "center" }}
+				>
 					{session ? (
 						<Link href={event.url} target="_blank">
-							<Button type="primary" size="large" style={{ width: '100%', maxWidth: 420 }}>
-								{t('event.register', 'Register')}
+							<Button
+								type="primary"
+								size="large"
+								style={{ width: "100%", maxWidth: 420 }}
+							>
+								{t("event.register", "Register")}
 							</Button>
 						</Link>
 					) : (
 						<Link href="/registration">
-							<Button type="primary" size="large" style={{ width: '100%', maxWidth: 420 }}>
-								{t('event.loginOrRegister', 'Login / Register')}
+							<Button
+								type="primary"
+								size="large"
+								style={{ width: "100%", maxWidth: 420 }}
+							>
+								{t("event.loginOrRegister", "Login / Register")}
 							</Button>
 						</Link>
 					)}
 				</div>
 			)}
 		</div>
-	)
-}
+	);
+};
 
-export default EventConferenceOrGamelabView
+export default EventConferenceOrGamelabView;

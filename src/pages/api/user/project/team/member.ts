@@ -1,14 +1,14 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class ParamIdDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiTeamMemberHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { id }: ParamIdDto) {
@@ -37,14 +37,14 @@ class ApiTeamMemberHandler {
 				},
 				speciality: true,
 			},
-		})
+		});
 
 		if (!teamMember) {
-			throw new Error('Team member not found')
+			throw new Error("Team member not found");
 		}
 
-		return teamMember
+		return teamMember;
 	}
 }
 
-export default createHandler(ApiTeamMemberHandler)
+export default createHandler(ApiTeamMemberHandler);

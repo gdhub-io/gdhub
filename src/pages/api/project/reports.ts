@@ -1,20 +1,22 @@
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class ApiProjecReportsParams {
 	@IsString()
-	projectId: string
+	projectId: string;
 }
 
 class ApiProjecReportsHandler {
 	constructor() {}
 
 	@Get()
-	public async list(@Query(ValidationPipe) { projectId }: ApiProjecReportsParams) {
+	public async list(
+		@Query(ValidationPipe) { projectId }: ApiProjecReportsParams,
+	) {
 		const reports = await prisma.projectReport.findMany({
 			where: { projectId },
-			orderBy: { publishedAt: 'desc' },
+			orderBy: { publishedAt: "desc" },
 			take: 5,
 			include: {
 				author: {
@@ -37,10 +39,10 @@ class ApiProjecReportsHandler {
 					},
 				},
 			},
-		})
+		});
 
-		return reports
+		return reports;
 	}
 }
 
-export default createHandler(ApiProjecReportsHandler)
+export default createHandler(ApiProjecReportsHandler);

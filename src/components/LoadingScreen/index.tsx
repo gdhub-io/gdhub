@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react'
-import styles from './style.module.scss'
+import { useEffect, useState } from "react";
+import styles from "./style.module.scss";
 
 const LoadingScreen = ({ visible }: any) => {
-	const [enabled, setEnabled] = useState(true)
+	const [enabled, setEnabled] = useState(true);
 
 	useEffect(() => {
-		setEnabled(visible)
-	}, [visible])
+		setEnabled(visible);
+	}, [visible]);
 
 	return (
-		<div className={styles.pageLoader} style={{ opacity: enabled ? 1 : 0, zIndex: enabled ? 9999 : -1 }}>
+		<div
+			className={styles.pageLoader}
+			style={{ opacity: enabled ? 1 : 0, zIndex: enabled ? 9999 : -1 }}
+		>
 			<div className="loader">
 				<div className="loader-style panelLoad">
 					<div className="cube-face cube-face-front">G</div>
@@ -21,7 +24,7 @@ const LoadingScreen = ({ visible }: any) => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default LoadingScreen
+export default LoadingScreen;

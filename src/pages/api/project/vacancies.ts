@@ -1,10 +1,10 @@
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class ProjectVacancyParams {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
 class ApiProjectVacancyHandler {
@@ -13,13 +13,16 @@ class ApiProjectVacancyHandler {
 	@Get()
 	public async list(@Query(ValidationPipe) { teamId }: ProjectVacancyParams) {
 		const vacancies = await prisma.teamVacancy.findMany({
-			where: { status: 'Published', teamId },
-			include: { direction: { select: { name: true } }, team: { select: { project: { select: { name: true } } } } },
-			orderBy: { publishedAt: 'desc' },
-		})
+			where: { status: "Published", teamId },
+			include: {
+				direction: { select: { name: true } },
+				team: { select: { project: { select: { name: true } } } },
+			},
+			orderBy: { publishedAt: "desc" },
+		});
 
-		return vacancies
+		return vacancies;
 	}
 }
 
-export default createHandler(ApiProjectVacancyHandler)
+export default createHandler(ApiProjectVacancyHandler);

@@ -1,16 +1,19 @@
-import { prisma } from '@/services/prisma'
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "@/services/prisma";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	if (req.method !== 'GET') {
-		return res.status(405).json({ message: 'Method not allowed' })
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse,
+) {
+	if (req.method !== "GET") {
+		return res.status(405).json({ message: "Method not allowed" });
 	}
 
 	try {
-		const { projectReportId } = req.query
+		const { projectReportId } = req.query;
 
 		if (!projectReportId) {
-			return res.status(400).json({ message: 'Project report ID is required' })
+			return res.status(400).json({ message: "Project report ID is required" });
 		}
 
 		const report = await prisma.projectReport.findUnique({
@@ -31,10 +34,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 					},
 				},
 			},
-		})
+		});
 
 		if (!report) {
-			return res.status(404).json({ message: 'Project report not found' })
+			return res.status(404).json({ message: "Project report not found" });
 		}
 
 		// Transform the data to match the expected format in the frontend
@@ -58,11 +61,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 						coverImage: report.project.coverImage,
 					}
 				: undefined,
-		}
+		};
 
-		return res.status(200).json(post)
+		return res.status(200).json(post);
 	} catch (error) {
-		console.error('Error fetching project report:', error)
-		return res.status(500).json({ message: 'Internal server error' })
+		console.error("Error fetching project report:", error);
+		return res.status(500).json({ message: "Internal server error" });
 	}
 }

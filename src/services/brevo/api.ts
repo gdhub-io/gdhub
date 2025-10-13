@@ -16,43 +16,43 @@ export type GetAccount = GetExtendedClient & {
 		 * Displays the plan type of the user
 		 * @example "subscription"
 		 */
-		type: 'payAsYouGo' | 'free' | 'subscription' | 'sms' | 'reseller'
+		type: "payAsYouGo" | "free" | "subscription" | "sms" | "reseller";
 		/**
 		 * This is the type of the credit, "Send Limit" is one of the possible types of credit of a user. "Send Limit" implies the total number of emails you can send to the subscribers in your account.
 		 * @example "sendLimit"
 		 */
-		creditsType: 'sendLimit'
+		creditsType: "sendLimit";
 		/**
 		 * Remaining credits of the user
 		 * @format float
 		 * @example 8755
 		 */
-		credits: number
+		credits: number;
 		/**
 		 * Date of the period from which the plan will start (only available for "subscription" and "reseller" plan type)
 		 * @format date
 		 * @example "2016-12-31T00:00:00.000Z"
 		 */
-		startDate?: string
+		startDate?: string;
 		/**
 		 * Date of the period from which the plan will end (only available for "subscription" and "reseller" plan type)
 		 * @format date
 		 * @example "2017-01-31T00:00:00.000Z"
 		 */
-		endDate?: string
+		endDate?: string;
 		/**
 		 * Only in case of reseller account. It implies the total number of child accounts you can add to your account.
 		 * @example 10
 		 */
-		userLimit?: number
-	}[]
+		userLimit?: number;
+	}[];
 	/** Information about your transactional email account */
 	relay: {
 		/**
 		 * Status of your transactional email Account (true=Enabled, false=Disabled)
 		 * @example true
 		 */
-		enabled: boolean
+		enabled: boolean;
 		/** Data regarding the transactional email account */
 		data: {
 			/**
@@ -60,32 +60,32 @@ export type GetAccount = GetExtendedClient & {
 			 * @format email
 			 * @example "john.smith@example.com"
 			 */
-			userName: string
+			userName: string;
 			/**
 			 * URL of the SMTP Relay
 			 * @example "relay.domain.com"
 			 */
-			relay: string
+			relay: string;
 			/**
 			 * Port used for SMTP Relay
 			 * @example 125
 			 */
-			port: number
-		}
-	}
+			port: number;
+		};
+	};
 	marketingAutomation?: {
 		/**
 		 * Marketing Automation Tracker ID
 		 * @example "iso05aopqych87ysy0jymf"
 		 */
-		key?: string
+		key?: string;
 		/**
 		 * Status of Marketing Automation Plateform activation for your account (true=enabled, false=disabled)
 		 * @example false
 		 */
-		enabled: boolean
-	}
-}
+		enabled: boolean;
+	};
+};
 
 export interface GetAccountActivity {
 	/** Get user activity logs */
@@ -94,28 +94,28 @@ export interface GetAccountActivity {
 		 * Type of activity in the account.
 		 * @example "login-success"
 		 */
-		action: string
+		action: string;
 		/**
 		 * Time of the activity.
 		 * @example "2023-03-27T16:30:00Z"
 		 */
-		date: string
+		date: string;
 		/**
 		 * Email address of the user who performed activity in the account.
 		 * @example "test@mycompany.com"
 		 */
-		user_email: string
+		user_email: string;
 		/**
 		 * IP address of the user who performed activity in the account.
 		 * @example "192.158.1.38"
 		 */
-		user_ip: string
+		user_ip: string;
 		/**
 		 * Browser details of the user who performed the activity.
 		 * @example "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us)"
 		 */
-		user_agent: string
-	}[]
+		user_agent: string;
+	}[];
 }
 
 export interface GetInvitedUsersList {
@@ -125,36 +125,36 @@ export interface GetInvitedUsersList {
 		 * Email address of the user.
 		 * @example "pendingInvitedUser@company.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Flag for indicating is user owner of the organization.
 		 * @example true
 		 */
-		is_owner: string
+		is_owner: string;
 		/**
 		 * Status of the invited user.
 		 * @example "active"
 		 */
-		status: string
+		status: string;
 		/** Feature accessiblity given to the user. */
 		feature_access: {
 			/**
 			 * Marketing features accessiblity.
 			 * @example "custom"
 			 */
-			marketing?: string
+			marketing?: string;
 			/**
 			 * Conversations features accessiblity.
 			 * @example "none"
 			 */
-			conversations?: string
+			conversations?: string;
 			/**
 			 * CRM features accessiblity.
 			 * @example "full"
 			 */
-			crm?: string
-		}
-	}[]
+			crm?: string;
+		};
+	}[];
 }
 
 /** Check user permission */
@@ -163,18 +163,18 @@ export interface GetUserPermission {
 	 * Email address of the user.
 	 * @example "invitedUser@company.com"
 	 */
-	email: string
+	email: string;
 	/**
 	 * Status of the invited user.
 	 * @example "active"
 	 */
-	status: string
+	status: string;
 	/** Granular feature permissions given to the user. */
 	privileges: {
 		/** @example "Email campaign" */
-		feature: string
-		permissions: string[]
-	}[]
+		feature: string;
+		permissions: string[];
+	}[];
 }
 
 /** Revoke user permission */
@@ -183,7 +183,7 @@ export interface PutRevokeUserPermission {
 	 * Email address of the user.
 	 * @example "invitedUser@company.com"
 	 */
-	email: string
+	email: string;
 }
 
 export interface PutRevokeUserPermissionResponse {
@@ -191,9 +191,9 @@ export interface PutRevokeUserPermissionResponse {
 	 * Status of the API operation.
 	 * @example "OK"
 	 */
-	status: string
+	status: string;
 	/** Credit note */
-	credit_notes?: string[]
+	credit_notes?: string[];
 }
 
 /** Revoke user permission */
@@ -202,7 +202,7 @@ export interface Putresendcancelinvitation {
 	 * Email address of the user.
 	 * @example "invitedUser@company.com"
 	 */
-	email: string
+	email: string;
 }
 
 export interface PutresendcancelinvitationResponse {
@@ -210,9 +210,9 @@ export interface PutresendcancelinvitationResponse {
 	 * Status of the API operation.
 	 * @example "OK"
 	 */
-	status: string
+	status: string;
 	/** Credit note */
-	credit_notes?: string[]
+	credit_notes?: string[];
 }
 
 export interface Inviteuser {
@@ -221,52 +221,52 @@ export interface Inviteuser {
 	 * @format email
 	 * @example "inviteuser@example.com"
 	 */
-	email: string
+	email: string;
 	/**
 	 * All access to the features
 	 * @example true
 	 */
-	all_features_access: true | false
+	all_features_access: true | false;
 	privileges: {
 		/**
 		 * Feature name
 		 * @example "email_campaigns"
 		 */
 		feature?:
-			| 'email_campaigns'
-			| 'sms_campaigns'
-			| 'contacts'
-			| 'templates'
-			| 'workflows'
-			| 'facebook_ads'
-			| 'landing_pages'
-			| 'transactional_emails'
-			| 'api_keys'
-			| 'user_management'
-			| 'sales_platform'
-			| 'phone'
-			| 'conversations'
+			| "email_campaigns"
+			| "sms_campaigns"
+			| "contacts"
+			| "templates"
+			| "workflows"
+			| "facebook_ads"
+			| "landing_pages"
+			| "transactional_emails"
+			| "api_keys"
+			| "user_management"
+			| "sales_platform"
+			| "phone"
+			| "conversations";
 		/** Permissions for a given feature */
 		permissions?: (
-			| 'create_edit_delete'
-			| 'send_schedule_suspend'
-			| 'view'
-			| 'import'
-			| 'export'
-			| 'list_and_attributes'
-			| 'forms'
-			| 'activate_deactivate'
-			| 'activate_deactivate_pause'
-			| 'settings'
-			| 'schedule_pause'
-			| 'all'
-			| 'logs'
-			| 'access'
-			| 'assign'
-			| 'configure'
-			| 'none'
-		)[]
-	}[]
+			| "create_edit_delete"
+			| "send_schedule_suspend"
+			| "view"
+			| "import"
+			| "export"
+			| "list_and_attributes"
+			| "forms"
+			| "activate_deactivate"
+			| "activate_deactivate_pause"
+			| "settings"
+			| "schedule_pause"
+			| "all"
+			| "logs"
+			| "access"
+			| "assign"
+			| "configure"
+			| "none"
+		)[];
+	}[];
 }
 
 export interface InviteuserResponse {
@@ -274,9 +274,9 @@ export interface InviteuserResponse {
 	 * Status of the API operation.
 	 * @example "OK"
 	 */
-	status: string
+	status: string;
 	/** Invoice id */
-	invoice_id?: string
+	invoice_id?: string;
 }
 
 export interface UpdateUserResponse {
@@ -284,11 +284,11 @@ export interface UpdateUserResponse {
 	 * Status of the API operation.
 	 * @example "OK"
 	 */
-	status: string
+	status: string;
 	/** Credit note */
-	credit_notes?: string[]
+	credit_notes?: string[];
 	/** Invoice id */
-	invoice_id?: string
+	invoice_id?: string;
 }
 
 export interface GetChildrenList {
@@ -299,14 +299,14 @@ export interface GetChildrenList {
 		 * @format int64
 		 * @example 187588
 		 */
-		id?: number
-	})[]
+		id?: number;
+	})[];
 	/**
 	 * Number of child accounts
 	 * @format int64
 	 * @example 24
 	 */
-	count?: number
+	count?: number;
 }
 
 export type GetChildInfo = GetClient & {
@@ -317,14 +317,14 @@ export type GetChildInfo = GetClient & {
 		 * @format int64
 		 * @example 98555
 		 */
-		emailCredits?: number
+		emailCredits?: number;
 		/**
 		 * SMS credits available for your child
 		 * @format int64
 		 * @example 87556
 		 */
-		smsCredits?: number
-	}
+		smsCredits?: number;
+	};
 	/** Statistics about your child account activity */
 	statistics?: {
 		/**
@@ -332,28 +332,28 @@ export type GetChildInfo = GetClient & {
 		 * @format int64
 		 * @example 7654
 		 */
-		previousMonthTotalSent?: number
+		previousMonthTotalSent?: number;
 		/**
 		 * Overall emails sent for current month
 		 * @format int64
 		 * @example 4566
 		 */
-		currentMonthTotalSent?: number
+		currentMonthTotalSent?: number;
 		/**
 		 * Overall emails sent for since the account exists
 		 * @format int64
 		 * @example 987554
 		 */
-		totalSent?: number
-	}
+		totalSent?: number;
+	};
 	/**
 	 * The encrypted password of child account
 	 * @format password
 	 * @example "abC01De2fGHI3jkL"
 	 */
-	password: string
+	password: string;
 	/** IP(s) associated to a child account user */
-	ips?: string[]
+	ips?: string[];
 	/** API Keys associated to child account */
 	apiKeys?: {
 		v2: {
@@ -361,44 +361,44 @@ export type GetChildInfo = GetClient & {
 			 * Name of the key for version 2
 			 * @example "N˚2"
 			 */
-			name: string
+			name: string;
 			/**
 			 * API Key for version 2
 			 * @example "nOpxxxxxy7z"
 			 */
-			key: string
-		}[]
+			key: string;
+		}[];
 		v3?: {
 			/**
 			 * Name of the key for version 3
 			 * @example "N˚3"
 			 */
-			name: string
+			name: string;
 			/**
 			 * API Key for version 3
 			 * @example "xkeysib-21881axxxxxcc92e04-mIrexxxx7z"
 			 */
-			key: string
-		}[]
-	}
-}
+			key: string;
+		}[];
+	};
+};
 
 export interface GetChildAccountCreationStatus {
 	/**
 	 * Status of child account creation whether it is successfully created (exists) or not.
 	 * @example true
 	 */
-	childAccountCreated: boolean
+	childAccountCreated: boolean;
 }
 
-export type GetChildDomains = GetChildDomain[]
+export type GetChildDomains = GetChildDomain[];
 
 export interface GetSsoToken {
 	/**
 	 * Session token, it will remain valid for 15 days.
 	 * @example "ede520dxxxxxxxxxxxx76d631fba2"
 	 */
-	token: string
+	token: string;
 }
 
 export interface CreateApiKeyResponse {
@@ -406,12 +406,12 @@ export interface CreateApiKeyResponse {
 	 * Status of the API operation.
 	 * @example "success"
 	 */
-	status: string
+	status: string;
 	/**
 	 * API key
 	 * @example "xkeysib-21881axxxxxcc92e04-mIrexxxx7z"
 	 */
-	key: string
+	key: string;
 }
 
 export interface GetChildDomain {
@@ -419,12 +419,12 @@ export interface GetChildDomain {
 	 * Sender domain
 	 * @example "mycustomdomain.com"
 	 */
-	domain?: string
+	domain?: string;
 	/**
 	 * indicates whether a domain is verified or not
 	 * @example true
 	 */
-	active?: boolean
+	active?: boolean;
 }
 
 export interface GetClient {
@@ -433,22 +433,22 @@ export interface GetClient {
 	 * @format email
 	 * @example "john.smith@example.com"
 	 */
-	email: string
+	email: string;
 	/**
 	 * First Name
 	 * @example "John"
 	 */
-	firstName: string
+	firstName: string;
 	/**
 	 * Last Name
 	 * @example "Smith"
 	 */
-	lastName: string
+	lastName: string;
 	/**
 	 * Name of the company
 	 * @example "MyCompany"
 	 */
-	companyName: string
+	companyName: string;
 }
 
 export type GetExtendedClient = GetClient & {
@@ -458,24 +458,24 @@ export type GetExtendedClient = GetClient & {
 		 * Street information
 		 * @example "47 Harbour Street"
 		 */
-		street: string
+		street: string;
 		/**
 		 * City information
 		 * @example "New-York"
 		 */
-		city: string
+		city: string;
 		/**
 		 * Zip Code information
 		 * @example "9867"
 		 */
-		zipCode: string
+		zipCode: string;
 		/**
 		 * Country information
 		 * @example "United States of America"
 		 */
-		country: string
-	}
-}
+		country: string;
+	};
+};
 
 export interface GetSendersList {
 	/** List of the senders available in your account */
@@ -485,42 +485,42 @@ export interface GetSendersList {
 		 * @format int64
 		 * @example 0
 		 */
-		id: number
+		id: number;
 		/**
 		 * From Name associated to the sender
 		 * @example "Marketing"
 		 */
-		name: string
+		name: string;
 		/**
 		 * From Email associated to the sender
 		 * @example "marketing@mycompany.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Status of sender (true=activated, false=deactivated)
 		 * @example false
 		 */
-		active: boolean
+		active: boolean;
 		/** List of dedicated IP(s) available in the account. This data is displayed only for dedicated IPs */
 		ips?: {
 			/**
 			 * Dedicated IP available in your account
 			 * @example "123.98.689.7"
 			 */
-			ip: string
+			ip: string;
 			/**
 			 * Domain of the IP
 			 * @example "mycompany.com"
 			 */
-			domain: string
+			domain: string;
 			/**
 			 * Weight of the IP for this sender
 			 * @format int64
 			 * @example 50
 			 */
-			weight: number
-		}[]
-	}[]
+			weight: number;
+		}[];
+	}[];
 }
 
 export interface GetDomainsList {
@@ -531,28 +531,28 @@ export interface GetDomainsList {
 		 * @format int64
 		 * @example 1
 		 */
-		id: number
+		id: number;
 		/**
 		 * Domain name
 		 * @example "mycompany.com"
 		 */
-		domain_name: string
+		domain_name: string;
 		/**
 		 * Status of domain authentication (true=authenticated, false=non authenticated)
 		 * @example true
 		 */
-		authenticated: boolean
+		authenticated: boolean;
 		/**
 		 * Status of domain verification (true=verified, false=non verified)
 		 * @example false
 		 */
-		verified: boolean
+		verified: boolean;
 		/**
 		 * Dedicated IP associated with domain
 		 * @example "123.98.689.7"
 		 */
-		ip?: string
-	}[]
+		ip?: string;
+	}[];
 }
 
 export interface CreateChild {
@@ -561,33 +561,33 @@ export interface CreateChild {
 	 * @format email
 	 * @example "josh.cruise@example.com"
 	 */
-	email: string
+	email: string;
 	/**
 	 * First name to use to create the child account
 	 * @example "Josh"
 	 */
-	firstName: string
+	firstName: string;
 	/**
 	 * Last name to use to create the child account
 	 * @example "Cruise"
 	 */
-	lastName: string
+	lastName: string;
 	/**
 	 * Company name to use to create the child account
 	 * @example "Your Company"
 	 */
-	companyName: string
+	companyName: string;
 	/**
 	 * Password for the child account to login
 	 * @format password
 	 * @example "Pa55w0rd65"
 	 */
-	password: string
+	password: string;
 	/**
 	 * Language of the child account
 	 * @example "en"
 	 */
-	language?: 'fr' | 'es' | 'pt' | 'it' | 'de' | 'en'
+	language?: "fr" | "es" | "pt" | "it" | "de" | "en";
 }
 
 export interface CreateSender {
@@ -595,25 +595,25 @@ export interface CreateSender {
 	 * From Name to use for the sender
 	 * @example "Newsletter"
 	 */
-	name: string
+	name: string;
 	/**
 	 * From email to use for the sender. A verification email will be sent to this address.
 	 * @format email
 	 * @example "newsletter@mycompany.com"
 	 */
-	email: string
+	email: string;
 	/** **Mandatory in case of dedicated IP**. IPs to associate to the sender */
 	ips?: {
 		/**
 		 * Dedicated IP available in your account
 		 * @example "123.98.689.7"
 		 */
-		ip: string
+		ip: string;
 		/**
 		 * Domain of the IP
 		 * @example "mycompany.com"
 		 */
-		domain: string
+		domain: string;
 		/**
 		 * Weight to apply to the IP. Sum of all IP weights must be 100. Should be passed for either ALL or NONE of the IPs. If it's not passed, the sending will be equally balanced on all IPs.
 		 * @format int64
@@ -621,8 +621,8 @@ export interface CreateSender {
 		 * @max 100
 		 * @example 50
 		 */
-		weight?: number
-	}[]
+		weight?: number;
+	}[];
 }
 
 export interface UpdateSender {
@@ -630,25 +630,25 @@ export interface UpdateSender {
 	 * From Name to update the sender
 	 * @example "Newsletter"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * From Email to update the sender
 	 * @format email
 	 * @example "newsletter@mycompany.com"
 	 */
-	email?: string
+	email?: string;
 	/** **Only in case of dedicated IP**. IPs to associate to the sender. If passed, will replace all the existing IPs. */
 	ips?: {
 		/**
 		 * Dedicated IP available in your account
 		 * @example "123.98.689.7"
 		 */
-		ip: string
+		ip: string;
 		/**
 		 * Domain of the IP
 		 * @example "mycompany.com"
 		 */
-		domain: string
+		domain: string;
 		/**
 		 * Weight to apply to the IP. Sum of all IP weights must be 100. Should be passed for either ALL or NONE of the IPs. If it's not passed, the sending will be equally balanced on all IPs.
 		 * @format int64
@@ -656,8 +656,8 @@ export interface UpdateSender {
 		 * @max 100
 		 * @example 50
 		 */
-		weight?: number
-	}[]
+		weight?: number;
+	}[];
 }
 
 export interface Otp {
@@ -665,7 +665,7 @@ export interface Otp {
 	 * 6 digit OTP received on email
 	 * @example 123456
 	 */
-	otp: number
+	otp: number;
 }
 
 export interface CreateDomain {
@@ -673,7 +673,7 @@ export interface CreateDomain {
 	 * Domain name
 	 * @example "mycompany.com"
 	 */
-	name: string
+	name: string;
 }
 
 export interface UpdateChild {
@@ -682,28 +682,28 @@ export interface UpdateChild {
 	 * @format email
 	 * @example "josh.cruise@example.com"
 	 */
-	email?: string
+	email?: string;
 	/**
 	 * New First name to use to update the child account
 	 * @example "Josh"
 	 */
-	firstName?: string
+	firstName?: string;
 	/**
 	 * New Last name to use to update the child account
 	 * @example "Cruise"
 	 */
-	lastName?: string
+	lastName?: string;
 	/**
 	 * New Company name to use to update the child account
 	 * @example "Your Company"
 	 */
-	companyName?: string
+	companyName?: string;
 	/**
 	 * New password for the child account to login
 	 * @format password
 	 * @example "Pa55w0rd65"
 	 */
-	password?: string
+	password?: string;
 }
 
 export interface UpdateChildAccountStatus {
@@ -711,22 +711,22 @@ export interface UpdateChildAccountStatus {
 	 * Status of Transactional Email Platform activation for your account (true=enabled, false=disabled)
 	 * @example false
 	 */
-	transactionalEmail?: boolean
+	transactionalEmail?: boolean;
 	/**
 	 * Status of Transactional SMS Platform activation for your account (true=enabled, false=disabled)
 	 * @example false
 	 */
-	transactionalSms?: boolean
+	transactionalSms?: boolean;
 	/**
 	 * Status of Marketing Automation Platform activation for your account (true=enabled, false=disabled)
 	 * @example true
 	 */
-	marketingAutomation?: boolean
+	marketingAutomation?: boolean;
 	/**
 	 * Status of SMS Campaign Platform activation for your account (true=enabled, false=disabled)
 	 * @example true
 	 */
-	smsCampaign?: boolean
+	smsCampaign?: boolean;
 }
 
 export interface ErrorModel {
@@ -735,27 +735,27 @@ export interface ErrorModel {
 	 * @example "method_not_allowed"
 	 */
 	code:
-		| 'invalid_parameter'
-		| 'missing_parameter'
-		| 'out_of_range'
-		| 'campaign_processing'
-		| 'campaign_sent'
-		| 'document_not_found'
-		| 'reseller_permission_denied'
-		| 'not_enough_credits'
-		| 'permission_denied'
-		| 'duplicate_parameter'
-		| 'duplicate_request'
-		| 'method_not_allowed'
-		| 'unauthorized'
-		| 'account_under_validation'
-		| 'not_acceptable'
-		| 'bad_request'
+		| "invalid_parameter"
+		| "missing_parameter"
+		| "out_of_range"
+		| "campaign_processing"
+		| "campaign_sent"
+		| "document_not_found"
+		| "reseller_permission_denied"
+		| "not_enough_credits"
+		| "permission_denied"
+		| "duplicate_parameter"
+		| "duplicate_request"
+		| "method_not_allowed"
+		| "unauthorized"
+		| "account_under_validation"
+		| "not_acceptable"
+		| "bad_request";
 	/**
 	 * Readable message associated to the failure
 	 * @example "POST Method is not allowed on this path"
 	 */
-	message: string
+	message: string;
 }
 
 export interface RemainingCreditModel {
@@ -766,28 +766,28 @@ export interface RemainingCreditModel {
 		 * @format double
 		 * @example 500
 		 */
-		sms: number
+		sms: number;
 		/**
 		 * Email Credits remaining for child account
 		 * @format double
 		 * @example 2000
 		 */
-		email: number
-	}
+		email: number;
+	};
 	reseller: {
 		/**
 		 * SMS Credits remaining for reseller account
 		 * @format double
 		 * @example 12900
 		 */
-		sms: number
+		sms: number;
 		/**
 		 * Email Credits remaining for reseller account
 		 * @format double
 		 * @example 2000000
 		 */
-		email: number
-	}
+		email: number;
+	};
 }
 
 export interface AddCredits {
@@ -796,13 +796,13 @@ export interface AddCredits {
 	 * @format int64
 	 * @example 450
 	 */
-	sms?: number
+	sms?: number;
 	/**
 	 * **Required if sms credits are empty.** Email credits to be added to the child account
 	 * @format int64
 	 * @example 1200
 	 */
-	email?: number
+	email?: number;
 }
 
 export interface RemoveCredits {
@@ -811,13 +811,13 @@ export interface RemoveCredits {
 	 * @format int64
 	 * @example 300
 	 */
-	sms?: number
+	sms?: number;
 	/**
 	 * **Required if sms credits are empty.** Email credits to be removed from the child account
 	 * @format int64
 	 * @example 500
 	 */
-	email?: number
+	email?: number;
 }
 
 export interface AddChildDomain {
@@ -825,7 +825,7 @@ export interface AddChildDomain {
 	 * Sender domain to add for a specific child account
 	 * @example "mychilddomain.com"
 	 */
-	domain?: string
+	domain?: string;
 }
 
 export interface UpdateChildDomain {
@@ -833,18 +833,18 @@ export interface UpdateChildDomain {
 	 * Value for the sender domain that will replace the existing domain
 	 * @example "myupdateddomain.com"
 	 */
-	domain?: string
+	domain?: string;
 }
 
 export interface GetProcesses {
 	/** List of processes available on your account */
-	processes?: GetProcess[]
+	processes?: GetProcess[];
 	/**
 	 * Number of processes available on your account
 	 * @format int64
 	 * @example 5
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface GetProcess {
@@ -853,65 +853,65 @@ export interface GetProcess {
 	 * @format int64
 	 * @example 145
 	 */
-	id: number
+	id: number;
 	/**
 	 * Status of the process
 	 * @example "queued"
 	 */
-	status: 'queued' | 'in_process' | 'completed'
+	status: "queued" | "in_process" | "completed";
 	/**
 	 * Process name
 	 * @example "IMPORTUSER"
 	 */
-	name: string
+	name: string;
 	/**
 	 * URL on which send export the of contacts once the process is completed
 	 * @example "http://requestb.in/16ua3aj1"
 	 */
-	export_url?: string
+	export_url?: string;
 }
 
 export interface GetEmailCampaigns {
 	campaigns?: (GetExtendedCampaignOverview & {
-		recipients: GetCampaignRecipients
-		statistics: GetExtendedCampaignStats
+		recipients: GetCampaignRecipients;
+		statistics: GetExtendedCampaignStats;
 		/**
 		 * Link to share the campaign on social medias
 		 * @format url
 		 * @example "http://dhh.brevo.com/fhsgccc.html?t=9865448900"
 		 */
-		shareLink?: string
-	})[]
+		shareLink?: string;
+	})[];
 	/**
 	 * Number of Email campaigns retrieved
 	 * @format int64
 	 * @example 24
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface GetSmsCampaigns {
 	campaigns?: (GetSmsCampaignOverview & {
-		recipients: GetCampaignRecipients
-		statistics: GetSmsCampaignStats
-	})[]
+		recipients: GetCampaignRecipients;
+		statistics: GetSmsCampaignStats;
+	})[];
 	/**
 	 * Number of SMS campaigns retrieved
 	 * @format int64
 	 * @example 12
 	 */
-	count?: number
+	count?: number;
 }
 
 export type GetSmsCampaign = GetSmsCampaignOverview & {
-	recipients: GetCampaignRecipients
-	statistics: GetSmsCampaignStats
-}
+	recipients: GetCampaignRecipients;
+	statistics: GetSmsCampaignStats;
+};
 
 export type GetEmailCampaign = GetExtendedCampaignOverview & {
-	recipients: GetCampaignRecipients
-	statistics: GetExtendedCampaignStats
-}
+	recipients: GetCampaignRecipients;
+	statistics: GetExtendedCampaignStats;
+};
 
 export interface GetCampaignOverview {
 	/**
@@ -919,72 +919,72 @@ export interface GetCampaignOverview {
 	 * @format int64
 	 * @example 12
 	 */
-	id: number
+	id: number;
 	/**
 	 * Name of the campaign
 	 * @example "EN - Sales Summer 2017"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Subject of the campaign. Only available if `abTesting` flag of the campaign is `false`
 	 * @example "20% OFF for 2017 Summer Sales"
 	 */
-	subject?: string
+	subject?: string;
 	/**
 	 * Preview text or preheader of the email campaign
 	 * @example "Thanks for your order!"
 	 */
-	previewText?: string
+	previewText?: string;
 	/**
 	 * Type of campaign
 	 * @example "classic"
 	 */
-	type: 'classic' | 'trigger'
+	type: "classic" | "trigger";
 	/**
 	 * Status of the campaign
 	 * @example "sent"
 	 */
-	status: 'draft' | 'sent' | 'archive' | 'queued' | 'suspended' | 'in_process'
+	status: "draft" | "sent" | "archive" | "queued" | "suspended" | "in_process";
 	/**
 	 * UTC date-time on which campaign is scheduled (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-06-01T12:30:00.000Z"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Status of A/B Test for the campaign. abTesting = false means it is disabled, & abTesting = true means it is enabled.
 	 * @example true
 	 */
-	abTesting?: boolean
+	abTesting?: boolean;
 	/**
 	 * Subject A of the ab-test campaign. Only available if `abTesting` flag of the campaign is `true`
 	 * @example "Discover the New Collection!"
 	 */
-	subjectA?: string
+	subjectA?: string;
 	/**
 	 * Subject B of the ab-test campaign. Only available if `abTesting` flag of the campaign is `true`
 	 * @example "Want to discover the New Collection?"
 	 */
-	subjectB?: string
+	subjectB?: string;
 	/**
 	 * The size of your ab-test groups. Only available if `abTesting` flag of the campaign is `true`
 	 * @example 25
 	 */
-	splitRule?: number
+	splitRule?: number;
 	/**
 	 * Criteria for the winning version. Only available if `abTesting` flag of the campaign is `true`
 	 * @example "open"
 	 */
-	winnerCriteria?: string
+	winnerCriteria?: string;
 	/**
 	 * The duration of the test in hours at the end of which the winning version will be sent. Only available if `abTesting` flag of the campaign is `true`
 	 * @example 50
 	 */
-	winnerDelay?: number
+	winnerDelay?: number;
 	/**
 	 * It is true if you have chosen to send your campaign at best time, otherwise it is false
 	 * @example true
 	 */
-	sendAtBestTime?: boolean
+	sendAtBestTime?: boolean;
 }
 
 export type GetExtendedCampaignOverview = GetCampaignOverview & {
@@ -992,147 +992,147 @@ export type GetExtendedCampaignOverview = GetCampaignOverview & {
 	 * Retrieved the status of test email sending. (true=Test email has been sent  false=Test email has not been sent)
 	 * @example true
 	 */
-	testSent: boolean
+	testSent: boolean;
 	/**
 	 * Header of the campaign
 	 * @example "[DEFAULT_HEADER]"
 	 */
-	header: string
+	header: string;
 	/**
 	 * Footer of the campaign
 	 * @example "[DEFAULT_FOOTER]"
 	 */
-	footer: string
+	footer: string;
 	sender: {
 		/**
 		 * Sender name of the campaign
 		 * @example "Marketing"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Sender email of the campaign
 		 * @format email
 		 * @example "marketing@mycompany.com"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * Sender id of the campaign
 		 * @format int64
 		 * @example 43
 		 */
-		id?: number
-	}
+		id?: number;
+	};
 	/**
 	 * Email defined as the "Reply to" of the campaign
 	 * @format email
 	 * @example "replyto@domain.com"
 	 */
-	replyTo: string
+	replyTo: string;
 	/**
 	 * Customisation of the "to" field of the campaign
 	 * @example "{FNAME} {LNAME}"
 	 */
-	toField?: string
+	toField?: string;
 	/**
 	 * HTML content of the campaign
 	 * @example "This is my HTML Content"
 	 */
-	htmlContent: string
+	htmlContent: string;
 	/**
 	 * Link to share the campaign on social medias
 	 * @format url
 	 * @example "http://dhh.brevo.com/fhsgccc.html?t=9865448900"
 	 */
-	shareLink?: string
+	shareLink?: string;
 	/**
 	 * Tag of the campaign
 	 * @example "Newsletter"
 	 */
-	tag?: string
+	tag?: string;
 	/**
 	 * Creation UTC date-time of the campaign (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-01T12:30:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * UTC date-time of last modification of the campaign (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-01T12:30:00.000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 	/**
 	 * Status of inline image. inlineImageActivation = false means image can’t be embedded, & inlineImageActivation = true means image can be embedded, in the email.
 	 * @example true
 	 */
-	inlineImageActivation?: boolean
+	inlineImageActivation?: boolean;
 	/**
 	 * Status of mirror links in campaign. mirrorActive = false means mirror links are deactivated, & mirrorActive = true means mirror links are activated, in the campaign
 	 * @example true
 	 */
-	mirrorActive?: boolean
+	mirrorActive?: boolean;
 	/**
 	 * FOR TRIGGER ONLY ! Type of trigger campaign.recurring = false means contact can receive the same Trigger campaign only once, & recurring = true means contact can receive the same Trigger campaign several times
 	 * @example true
 	 */
-	recurring?: boolean
+	recurring?: boolean;
 	/**
 	 * Sent UTC date-time of the campaign (YYYY-MM-DDTHH:mm:ss.SSSZ). Only available if 'status' of the campaign is 'sent'
 	 * @example "2018-12-01T16:30:00.000Z"
 	 */
-	sentDate?: string
+	sentDate?: string;
 	/**
 	 * Total number of non-delivered campaigns for a particular campaign id.
 	 * @format int64
 	 * @example 5
 	 */
-	returnBounce?: number
-}
+	returnBounce?: number;
+};
 
 export interface GetCampaignRecipients {
-	lists: number[]
-	exclusionLists: number[]
+	lists: number[];
+	exclusionLists: number[];
 }
 
 export interface GetExtendedCampaignStats {
 	/** Overall statistics of the campaign */
-	globalStats: GetCampaignStats
+	globalStats: GetCampaignStats;
 	/** List-wise statistics of the campaign. */
-	campaignStats: GetCampaignStats[]
+	campaignStats: GetCampaignStats[];
 	/**
 	 * Number of clicks on mirror link
 	 * @format int64
 	 * @example 120
 	 */
-	mirrorClick: number
+	mirrorClick: number;
 	/**
 	 * Number of remaning emails to send
 	 * @format int64
 	 * @example 1000
 	 */
-	remaining: number
+	remaining: number;
 	/**
 	 * Statistics about the number of clicks for the links
 	 * @example {"example.abc.com":7,"example.domain.com":10}
 	 */
-	linksStats: object
-	statsByDomain: GetStatsByDomain
-	statsByDevice: GetStatsByDevice
-	statsByBrowser: GetStatsByBrowser
+	linksStats: object;
+	statsByDomain: GetStatsByDomain;
+	statsByDevice: GetStatsByDevice;
+	statsByBrowser: GetStatsByBrowser;
 }
 
-export type GetStatsByDomain = Record<string, GetCampaignStats>
+export type GetStatsByDomain = Record<string, GetCampaignStats>;
 
 export interface GetStatsByDevice {
 	/** Statistics of the campaign on the basis of desktop devices */
-	desktop?: Record<string, GetDeviceBrowserStats>
+	desktop?: Record<string, GetDeviceBrowserStats>;
 	/** Statistics of the campaign on the basis of mobile devices */
-	mobile?: Record<string, GetDeviceBrowserStats>
+	mobile?: Record<string, GetDeviceBrowserStats>;
 	/** Statistics of the campaign on the basis of tablet devices */
-	tablet?: Record<string, GetDeviceBrowserStats>
+	tablet?: Record<string, GetDeviceBrowserStats>;
 	/** Statistics of the campaign on the basis of unknown devices */
-	unknown?: Record<string, GetDeviceBrowserStats>
+	unknown?: Record<string, GetDeviceBrowserStats>;
 }
 
-export type GetStatsByBrowser = Record<string, GetDeviceBrowserStats>
+export type GetStatsByBrowser = Record<string, GetDeviceBrowserStats>;
 
 export interface AddContactToListByEmails {
 	/**
@@ -1140,7 +1140,7 @@ export interface AddContactToListByEmails {
 	 * @maxItems 150
 	 * @minItems 1
 	 */
-	emails?: string[]
+	emails?: string[];
 }
 
 export interface AddContactToListByIDs {
@@ -1149,7 +1149,7 @@ export interface AddContactToListByIDs {
 	 * @maxItems 150
 	 * @minItems 1
 	 */
-	ids?: number[]
+	ids?: number[];
 }
 
 export interface RemoveContactFromListByEmails {
@@ -1158,7 +1158,7 @@ export interface RemoveContactFromListByEmails {
 	 * @maxItems 150
 	 * @minItems 1
 	 */
-	emails?: string[]
+	emails?: string[];
 }
 
 export interface RemoveContactFromListByIDs {
@@ -1167,7 +1167,7 @@ export interface RemoveContactFromListByIDs {
 	 * @maxItems 150
 	 * @minItems 1
 	 */
-	ids?: number[]
+	ids?: number[];
 }
 
 export interface RemoveContactFromListByAll {
@@ -1175,7 +1175,7 @@ export interface RemoveContactFromListByAll {
 	 * **Required if 'emails' and 'ids' are empty.** Remove all existing contacts from a list. A process will be created in this scenario. You can fetch the process details to know about the progress
 	 * @example true
 	 */
-	all?: boolean
+	all?: boolean;
 }
 
 export interface GetSmsCampaignOverview {
@@ -1184,42 +1184,42 @@ export interface GetSmsCampaignOverview {
 	 * @format int64
 	 * @example 2
 	 */
-	id: number
+	id: number;
 	/**
 	 * Name of the SMS Campaign
 	 * @example "PROMO CODE"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Status of the SMS Campaign
 	 * @example "draft"
 	 */
-	status: 'draft' | 'sent' | 'archive' | 'queued' | 'suspended' | 'inProcess'
+	status: "draft" | "sent" | "archive" | "queued" | "suspended" | "inProcess";
 	/**
 	 * Content of the SMS Campaign
 	 * @example "Visit our Store and get some discount !"
 	 */
-	content: string
+	content: string;
 	/**
 	 * UTC date-time on which SMS campaign is scheduled. Should be in YYYY-MM-DDTHH:mm:ss.SSSZ format
 	 * @example "2017-06-01T12:30:00.000Z"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Sender of the SMS Campaign
 	 * @example "MyCompany"
 	 */
-	sender: string
+	sender: string;
 	/**
 	 * Creation UTC date-time of the SMS campaign (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-06-01T12:30:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * UTC date-time of last modification of the SMS campaign (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-01T12:30:00.000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 }
 
 export interface GetWhatsappCampaignOverview {
@@ -1228,52 +1228,60 @@ export interface GetWhatsappCampaignOverview {
 	 * @format int64
 	 * @example 1672035851100690
 	 */
-	id: number
+	id: number;
 	/**
 	 * Name of the WhatsApp Campaign
 	 * @example "Test Campaign"
 	 */
-	campaignName: string
+	campaignName: string;
 	/**
 	 * Status of the WhatsApp Campaign
 	 * @example "draft"
 	 */
-	campaignStatus: 'draft' | 'scheduled' | 'pending' | 'approved' | 'running' | 'suspended' | 'rejected' | 'sent'
+	campaignStatus:
+		| "draft"
+		| "scheduled"
+		| "pending"
+		| "approved"
+		| "running"
+		| "suspended"
+		| "rejected"
+		| "sent";
 	/**
 	 * UTC date-time on which WhatsApp campaign is scheduled. Should be in YYYY-MM-DDTHH:mm:ss.SSSZ format
 	 * @example "2017-06-01T12:30:00.000Z"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Sender of the WhatsApp Campaign
 	 * @example 9368207029
 	 */
-	senderNumber: string
-	stats?: WhatsappCampStats
-	template: WhatsappCampTemplate
+	senderNumber: string;
+	stats?: WhatsappCampStats;
+	template: WhatsappCampTemplate;
 	/**
 	 * Creation UTC date-time of the WhatsApp campaign (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-06-01T12:30:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * UTC date-time of last modification of the WhatsApp campaign (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-01T12:30:00.000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 }
 
 export interface WhatsappCampStats {
 	/** @example 3 */
-	sent: number
+	sent: number;
 	/** @example 3 */
-	delivered: number
+	delivered: number;
 	/** @example 2 */
-	read: number
+	read: number;
 	/** @example 0 */
-	unsubscribe: number
+	unsubscribe: number;
 	/** @example 4 */
-	notSent: number
+	notSent: number;
 }
 
 export interface WhatsappCampTemplate {
@@ -1281,55 +1289,55 @@ export interface WhatsappCampTemplate {
 	 * name of the template
 	 * @example "wta107"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * description of the template
 	 * @example "Marketing"
 	 */
-	category?: string
+	category?: string;
 	/**
 	 * language of the template
 	 * @example "en_GB"
 	 */
-	language?: string
+	language?: string;
 	/** @example false */
-	contains_button?: boolean
+	contains_button?: boolean;
 	/** @example true */
-	display_header?: boolean
+	display_header?: boolean;
 	/**
 	 * type of header
 	 * @example "text"
 	 */
-	header_type?: string
+	header_type?: string;
 	/** array of component item objects */
-	components?: ComponentItems[]
+	components?: ComponentItems[];
 	/** array of variables item object */
-	header_variables?: VariablesItems[]
+	header_variables?: VariablesItems[];
 	/** array of variables item variables */
-	body_variables?: VariablesItems[]
+	body_variables?: VariablesItems[];
 	/** @example "QUICK_REPLIES" */
-	button_type?: string
+	button_type?: string;
 	/** @example true */
-	hide_footer?: boolean
+	hide_footer?: boolean;
 }
 
 export interface ComponentItems {
 	/** @example "BODY" */
-	type?: string
+	type?: string;
 	/** @example "Life is a long lesson in humility" */
-	text?: string
+	text?: string;
 }
 
 export interface VariablesItems {
 	/** @example "FIRSTNAME" */
-	name?: string
+	name?: string;
 	/** @example "INVALID_HEADER" */
-	default?: string
+	default?: string;
 	/** @example "text" */
-	datatype?: string
+	datatype?: string;
 }
 
-export type BodyVariablesItems = object
+export type BodyVariablesItems = object;
 
 export interface GetWhatsappTemplates {
 	templates?: {
@@ -1338,49 +1346,49 @@ export interface GetWhatsappTemplates {
 		 * @format int64
 		 * @example 235
 		 */
-		id: number
+		id: number;
 		/**
 		 * Name of the WhatsApp template
 		 * @example "Test template"
 		 */
-		name: string
+		name: string;
 		/**
 		 * Status of the WhatsApp template
 		 * @example "approved"
 		 */
-		status: string
+		status: string;
 		/**
 		 * Language in which template exists
 		 * @example "en"
 		 */
-		language: string
+		language: string;
 		/**
 		 * category of the template
 		 * @example "MARKETING"
 		 */
-		category: string
+		category: string;
 		/**
 		 * Error reason in the template creation
 		 * @example "NONE"
 		 */
-		errorReason?: string
+		errorReason?: string;
 		/**
 		 * Creation UTC date-time of the WhatsApp template (YYYY-MM-DDTHH:mm:ss.SSSZ)
 		 * @example "2017-06-01T12:30:00.000Z"
 		 */
-		createdAt: string
+		createdAt: string;
 		/**
 		 * UTC date-time of last modification of the WhatsApp template (YYYY-MM-DDTHH:mm:ss.SSSZ)
 		 * @example "2017-05-01T12:30:00.000Z"
 		 */
-		modifiedAt: string
-	}[]
+		modifiedAt: string;
+	}[];
 	/**
 	 * Number of WhatsApp templates retrieved
 	 * @format int64
 	 * @example 24
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface GetWhatsappCampaigns {
@@ -1390,59 +1398,67 @@ export interface GetWhatsappCampaigns {
 		 * @format int64
 		 * @example 1672035851100690
 		 */
-		id: number
+		id: number;
 		/**
 		 * Name of the WhatsApp Campaign
 		 * @example "Test Campaign"
 		 */
-		campaignName: string
+		campaignName: string;
 		/**
 		 * Id of the WhatsApp template
 		 * @example 637660278078655
 		 */
-		templateId: string
+		templateId: string;
 		/**
 		 * Status of the WhatsApp Campaign
 		 * @example "draft"
 		 */
-		campaignStatus: 'draft' | 'scheduled' | 'pending' | 'approved' | 'running' | 'suspended' | 'rejected' | 'sent'
+		campaignStatus:
+			| "draft"
+			| "scheduled"
+			| "pending"
+			| "approved"
+			| "running"
+			| "suspended"
+			| "rejected"
+			| "sent";
 		/**
 		 * UTC date-time on which WhatsApp campaign is scheduled. Should be in YYYY-MM-DDTHH:mm:ss.SSSZ format
 		 * @example "2017-06-01T12:30:00.000Z"
 		 */
-		scheduledAt: string
+		scheduledAt: string;
 		/** Error Reason associated with the WhatsApp campaign sending */
-		errorReason?: string
+		errorReason?: string;
 		/**
 		 * Count of invalidated contacts
 		 * @format int64
 		 * @example 0
 		 */
-		invalidatedContacts?: number
+		invalidatedContacts?: number;
 		/**
 		 * Read percentage of the the WhatsApp campaign created
 		 * @format float
 		 * @example 28.57
 		 */
-		readPercentage?: number
-		stats?: WhatsappCampStats
+		readPercentage?: number;
+		stats?: WhatsappCampStats;
 		/**
 		 * Creation UTC date-time of the WhatsApp template (YYYY-MM-DDTHH:mm:ss.SSSZ)
 		 * @example "2017-06-01T12:30:00.000Z"
 		 */
-		createdAt: string
+		createdAt: string;
 		/**
 		 * UTC date-time of last modification of the WhatsApp template (YYYY-MM-DDTHH:mm:ss.SSSZ)
 		 * @example "2017-05-01T12:30:00.000Z"
 		 */
-		modifiedAt: string
-	}[]
+		modifiedAt: string;
+	}[];
 	/**
 	 * Number of WhatsApp campaigns retrieved
 	 * @format int64
 	 * @example 40
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface CreateWhatsAppCampaign {
@@ -1450,26 +1466,26 @@ export interface CreateWhatsAppCampaign {
 	 * Name of the WhatsApp campaign creation
 	 * @example "Test Campaign"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Id of the WhatsApp template in **approved** state
 	 * @example 19
 	 */
-	templateId: number
+	templateId: number;
 	/**
 	 * Sending UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.For example: **2017-06-01T12:30:00+02:00**
 	 * @example "2017-06-01T10:30:00.000Z"
 	 */
-	scheduledAt: string
+	scheduledAt: string;
 	/** Segment ids and List ids to include/exclude from campaign */
 	recipients: {
 		/** List ids to exclude from the campaign */
-		excludedListIds?: number[]
+		excludedListIds?: number[];
 		/** **Mandatory if scheduledAt is not empty**. List Ids to send the campaign to */
-		listIds?: number[]
+		listIds?: number[];
 		/** **Mandatory if listIds are not used**. Segment ids to send the campaign to. */
-		segments?: number[]
-	}
+		segments?: number[];
+	};
 }
 
 export interface GetWhatsAppConfig {
@@ -1477,32 +1493,32 @@ export interface GetWhatsAppConfig {
 	 * Id of the WhatsApp business account
 	 * @example 105569359072383
 	 */
-	whatsappBusinessAccountId?: string
+	whatsappBusinessAccountId?: string;
 	/**
 	 * Sending limit Information of the WhatsApp API account
 	 * @example "TIER_1K"
 	 */
-	sendingLimit?: string
+	sendingLimit?: string;
 	/**
 	 * Quality status of phone number associated with WhatsApp account. There are three quality ratings. example - **High (GREEN) , Medium (YELLOW) and Low(RED)**
 	 * @example "GREEN"
 	 */
-	phoneNumberQuality?: 'GREEN' | 'YELLOW' | 'RED'
+	phoneNumberQuality?: "GREEN" | "YELLOW" | "RED";
 	/**
 	 * Status information related to WhatsApp API account
 	 * @example "APPROVED"
 	 */
-	whatsappBusinessAccountStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
+	whatsappBusinessAccountStatus?: "APPROVED" | "PENDING" | "REJECTED";
 	/**
 	 * Verification status information of the Business account
 	 * @example "verified"
 	 */
-	businessStatus?: string
+	businessStatus?: string;
 	/**
 	 * Status of the name associated with WhatsApp Phone number
 	 * @example "APPROVED"
 	 */
-	phoneNumberNameStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
+	phoneNumberNameStatus?: "APPROVED" | "PENDING" | "REJECTED";
 }
 
 export interface CreateWhatsAppTemplate {
@@ -1510,36 +1526,36 @@ export interface CreateWhatsAppTemplate {
 	 * Name of the template
 	 * @example "Test template"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Language of the template. For Example :
 	 * **en** for English
 	 * @example "en"
 	 */
-	language: string
+	language: string;
 	/**
 	 * Category of the template
 	 * @example "MARKETING"
 	 */
-	category: 'MARKETING' | 'TRANSACTIONAL'
+	category: "MARKETING" | "TRANSACTIONAL";
 	/**
 	 * Absolute url of the media file **(no local file)** for the header. **Use this field in you want to add media in Template header and headerText is empty**.
 	 * Allowed extensions for media files are:
 	 * #### jpeg | png | mp4 | pdf
 	 * @example "https://attachment.domain.com"
 	 */
-	mediaUrl?: string
+	mediaUrl?: string;
 	/**
 	 * Body of the template. **Maximum allowed characters are 1024**
 	 * @example "making it look like readable English"
 	 */
-	bodyText: string
+	bodyText: string;
 	/**
 	 * Text content of the header in the template. **Maximum allowed characters are 45**
 	 * **Use this field to add text content in template header and if mediaUrl is empty**
 	 * @example "Test WhatsApp campaign"
 	 */
-	headerText?: string
+	headerText?: string;
 }
 
 export interface UpdateWhatsAppCampaign {
@@ -1547,28 +1563,28 @@ export interface UpdateWhatsAppCampaign {
 	 * Name of the campaign
 	 * @example "Test WhatsApp"
 	 */
-	campaignName?: string
+	campaignName?: string;
 	/**
 	 * Status of the campaign
 	 * @default "scheduled"
 	 * @example "scheduled"
 	 */
-	campaignStatus?: 'scheduled' | 'suspended'
+	campaignStatus?: "scheduled" | "suspended";
 	/**
 	 * Reschedule the sending UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of campaign. **Prefer to pass your timezone in date-time format for accurate result.For example: **2017-06-01T12:30:00+02:00**
 	 * Use this field to update the scheduledAt of any existing draft or scheduled WhatsApp campaign.
 	 * @example "2017-06-01T10:30:00.000Z"
 	 */
-	rescheduleFor?: string
+	rescheduleFor?: string;
 	/** Segment ids and List ids to include/exclude from campaign */
 	recipients?: {
 		/** List ids to exclude from the campaign */
-		excludedListIds?: number[]
+		excludedListIds?: number[];
 		/** **Mandatory if scheduledAt is not empty**. List Ids to send the campaign to */
-		listIds?: number[]
+		listIds?: number[];
 		/** **Mandatory if listIds are not used**. Segment ids to send the campaign to. */
-		segments?: number[]
-	}
+		segments?: number[];
+	};
 }
 
 export interface CreateModel {
@@ -1577,7 +1593,7 @@ export interface CreateModel {
 	 * @format int64
 	 * @example 5
 	 */
-	id: number
+	id: number;
 }
 
 export interface CreateUpdateContactModel {
@@ -1586,14 +1602,14 @@ export interface CreateUpdateContactModel {
 	 * @format int64
 	 * @example 122
 	 */
-	id?: number
+	id?: number;
 }
 
 export interface UpdateBatchContactsModel {
 	/** @example "1,2" */
-	successIds?: number[]
+	successIds?: number[];
 	/** @example "3,4" */
-	failureIds?: number[]
+	failureIds?: number[];
 }
 
 export interface CreateSenderModel {
@@ -1602,17 +1618,17 @@ export interface CreateSenderModel {
 	 * @format int64
 	 * @example 5
 	 */
-	id: number
+	id: number;
 	/**
 	 * Status of SPF configuration for the sender (true = SPF not well configured, false = SPF well configured)
 	 * @example true
 	 */
-	spfError?: boolean
+	spfError?: boolean;
 	/**
 	 * Status of DKIM configuration for the sender (true = DKIM not well configured, false = DKIM well configured)
 	 * @example false
 	 */
-	dkimError?: boolean
+	dkimError?: boolean;
 }
 
 export interface CreateDomainModel {
@@ -1621,31 +1637,31 @@ export interface CreateDomainModel {
 	 * @format int64
 	 * @example 5
 	 */
-	id: number
+	id: number;
 	/**
 	 * Domain
 	 * @example true
 	 */
-	domain_name?: string
+	domain_name?: string;
 	/**
 	 * Success message
 	 * @example "Domain added successfully. To authenticate it, add following DNS records"
 	 */
-	message?: string
+	message?: string;
 	dns_records?: {
 		dkim_record?: {
-			type?: string
-			value?: string
-			host_name?: string
-			status?: boolean
-		}
+			type?: string;
+			value?: string;
+			host_name?: string;
+			status?: boolean;
+		};
 		brevo_code?: {
-			type?: string
-			value?: string
-			host_name?: string
-			status?: boolean
-		}
-	}
+			type?: string;
+			value?: string;
+			host_name?: string;
+			status?: boolean;
+		};
+	};
 }
 
 export interface AuthenticateDomainModel {
@@ -1653,12 +1669,12 @@ export interface AuthenticateDomainModel {
 	 * Domain
 	 * @example "myexample.com"
 	 */
-	domain_name: string
+	domain_name: string;
 	/**
 	 * Success message
 	 * @example "Domain has been authenticated successfully."
 	 */
-	message: string
+	message: string;
 }
 
 export interface GetDomainConfigurationModel {
@@ -1666,31 +1682,31 @@ export interface GetDomainConfigurationModel {
 	 * Domain
 	 * @example "myexample.com"
 	 */
-	domain: string
+	domain: string;
 	/**
 	 * Status of domain verification (true=verified, false=non verified)
 	 * @example true
 	 */
-	verified: boolean
+	verified: boolean;
 	/**
 	 * Status of domain authentication (true=authenticated, false=non authenticated)
 	 * @example false
 	 */
-	authenticated: boolean
+	authenticated: boolean;
 	dns_records: {
 		dkim_record?: {
-			type?: string
-			value?: string
-			host_name?: string
-			status?: boolean
-		}
+			type?: string;
+			value?: string;
+			host_name?: string;
+			status?: boolean;
+		};
 		brevo_code?: {
-			type?: string
-			value?: string
-			host_name?: string
-			status?: boolean
-		}
-	}
+			type?: string;
+			value?: string;
+			host_name?: string;
+			status?: boolean;
+		};
+	};
 }
 
 export interface CreateSmtpEmail {
@@ -1698,8 +1714,8 @@ export interface CreateSmtpEmail {
 	 * Message ID of the transactional email sent
 	 * @example "<201798300811.5787683@relay.domain.com>"
 	 */
-	messageId?: string
-	messageIds?: string[]
+	messageId?: string;
+	messageIds?: string[];
 }
 
 export interface UploadImageModel {
@@ -1707,7 +1723,7 @@ export interface UploadImageModel {
 	 * URL of the image uploaded
 	 * @example "https://img.mailinblue.com/100000/images/rnb/original/62casdase8wewq9df1c2f27c.jpeg"
 	 */
-	url?: string
+	url?: string;
 }
 
 export interface ScheduleSmtpEmail {
@@ -1715,13 +1731,13 @@ export interface ScheduleSmtpEmail {
 	 * Message ID of the transactional email scheduled
 	 * @example "<201798300811.5787683@relay.domain.com>"
 	 */
-	messageId?: string
-	messageIds?: string[]
+	messageId?: string;
+	messageIds?: string[];
 	/**
 	 * Batch ID of the batch transactional email scheduled
 	 * @example "5c6cfa04-eed9-42c2-8b5c-6d470d978e9d"
 	 */
-	batchId?: string
+	batchId?: string;
 }
 
 export interface CreateReseller {
@@ -1729,41 +1745,41 @@ export interface CreateReseller {
 	 * AuthKey of Reseller child created
 	 * @example "xkeysib-21881axxxxxcc92e04-mIrexxxx7z"
 	 */
-	authKey: string
+	authKey: string;
 	/**
 	 * Id of Reseller child created
 	 * @format int64
 	 * @example 1234567
 	 */
-	id?: number
+	id?: number;
 }
 
 export interface SendSms {
 	/** @example "ab1cde2fgh3i4jklmno" */
-	reference: string
+	reference: string;
 	/**
 	 * @format int64
 	 * @example 1511882900176220
 	 */
-	messageId: number
+	messageId: number;
 	/**
 	 * Count of SMS's to send multiple text messages
 	 * @format int64
 	 * @example 2
 	 */
-	smsCount?: number
+	smsCount?: number;
 	/**
 	 * SMS credits used per text message
 	 * @format float
 	 * @example 0.7
 	 */
-	usedCredits?: number
+	usedCredits?: number;
 	/**
 	 * Remaining SMS credits of the user
 	 * @format float
 	 * @example 82.85
 	 */
-	remainingCredits?: number
+	remainingCredits?: number;
 }
 
 export interface CreatedProcessId {
@@ -1772,7 +1788,7 @@ export interface CreatedProcessId {
 	 * @format int64
 	 * @example 78
 	 */
-	processId: number
+	processId: number;
 }
 
 export interface CreateUpdateFolder {
@@ -1780,7 +1796,7 @@ export interface CreateUpdateFolder {
 	 * Name of the folder
 	 * @example "Wordpress Contacts"
 	 */
-	name?: string
+	name?: string;
 }
 
 export interface PostSendFailed {
@@ -1788,15 +1804,15 @@ export interface PostSendFailed {
 	 * Response code
 	 * @example "invalid_parameter"
 	 */
-	code: string
+	code: string;
 	/**
 	 * Response message
 	 * @example "The email could not be sent to all recipients"
 	 */
-	message: string
-	unexistingEmails?: string[]
-	withoutListEmails?: string[]
-	blackListedEmails?: string[]
+	message: string;
+	unexistingEmails?: string[];
+	withoutListEmails?: string[];
+	blackListedEmails?: string[];
 }
 
 export interface PostSendSmsTestFailed {
@@ -1804,33 +1820,33 @@ export interface PostSendSmsTestFailed {
 	 * Response code
 	 * @example "invalid_parameter"
 	 */
-	code: string
+	code: string;
 	/**
 	 * Response message
 	 * @example "The SMS could not be sent to all recipients"
 	 */
-	message: string
-	unexistingSms?: string[]
-	withoutListSms?: string[]
+	message: string;
+	unexistingSms?: string[];
+	withoutListSms?: string[];
 }
 
 export interface PostContactInfo {
 	contacts: {
-		success?: string[] | number[]
-		failure?: string[] | number[]
+		success?: string[] | number[];
+		failure?: string[] | number[];
 		/**
 		 * Displays the count of total number of contacts removed from list when user opts for "all" option.
 		 * @format int64
 		 * @example 27
 		 */
-		total?: number
+		total?: number;
 		/**
 		 * Id of the process created to remove contacts from list when user opts for "all" option.
 		 * @format int64
 		 * @example 78
 		 */
-		processId?: number
-	}
+		processId?: number;
+	};
 }
 
 export interface GetAggregatedReport {
@@ -1838,79 +1854,79 @@ export interface GetAggregatedReport {
 	 * Time frame of the report
 	 * @example "2016-09-08|2017-04-06"
 	 */
-	range?: string
+	range?: string;
 	/**
 	 * Number of requests for the timeframe
 	 * @format int64
 	 * @example 263
 	 */
-	requests?: number
+	requests?: number;
 	/**
 	 * Number of delivered emails for the timeframe
 	 * @format int64
 	 * @example 249
 	 */
-	delivered?: number
+	delivered?: number;
 	/**
 	 * Number of hardbounces for the timeframe
 	 * @format int64
 	 * @example 1
 	 */
-	hardBounces?: number
+	hardBounces?: number;
 	/**
 	 * Number of softbounces for the timeframe
 	 * @format int64
 	 * @example 4
 	 */
-	softBounces?: number
+	softBounces?: number;
 	/**
 	 * Number of clicks for the timeframe
 	 * @format int64
 	 * @example 12
 	 */
-	clicks?: number
+	clicks?: number;
 	/**
 	 * Number of unique clicks for the timeframe
 	 * @format int64
 	 * @example 8
 	 */
-	uniqueClicks?: number
+	uniqueClicks?: number;
 	/**
 	 * Number of openings for the timeframe
 	 * @format int64
 	 * @example 47
 	 */
-	opens?: number
+	opens?: number;
 	/**
 	 * Number of unique openings for the timeframe
 	 * @format int64
 	 * @example 37
 	 */
-	uniqueOpens?: number
+	uniqueOpens?: number;
 	/**
 	 * Number of complaint (spam report) for the timeframe
 	 * @format int64
 	 * @example 0
 	 */
-	spamReports?: number
+	spamReports?: number;
 	/**
 	 * Number of blocked contact emails for the timeframe
 	 * @format int64
 	 * @example 2
 	 */
-	blocked?: number
+	blocked?: number;
 	/**
 	 * Number of invalid emails for the timeframe
 	 * @format int64
 	 * @example 0
 	 */
-	invalid?: number
+	invalid?: number;
 	/**
 	 * Number of unsubscribed emails for the timeframe
 	 * @format int64
 	 * @example 0
 	 */
-	unsubscribed?: number
+	unsubscribed?: number;
 }
 
 export interface GetTransacBlockedContacts {
@@ -1919,20 +1935,20 @@ export interface GetTransacBlockedContacts {
 	 * @format int64
 	 * @example 1
 	 */
-	count?: number
+	count?: number;
 	contacts?: {
 		/**
 		 * Email address of the blocked or unsubscribed contact
 		 * @format email
 		 * @example "john.smith@example.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Sender email address of the blocked or unsubscribed contact
 		 * @format email
 		 * @example "john.smith@example.com"
 		 */
-		senderEmail: string
+		senderEmail: string;
 		/**
 		 * Reason for blocking / unsubscribing
 		 * @example "Admin blocked"
@@ -1943,24 +1959,24 @@ export interface GetTransacBlockedContacts {
 			 * @example "AdminBlocked"
 			 */
 			code?:
-				| 'unsubscribedViaMA'
-				| 'unsubscribedViaEmail'
-				| 'adminBlocked'
-				| 'unsubscribedViaApi'
-				| 'hardBounce'
-				| 'contactFlaggedAsSpam'
+				| "unsubscribedViaMA"
+				| "unsubscribedViaEmail"
+				| "adminBlocked"
+				| "unsubscribedViaApi"
+				| "hardBounce"
+				| "contactFlaggedAsSpam";
 			/**
 			 * Reason for blocking / unsubscribing (This string is not safe for comparison)
 			 * @example "Admin blocked"
 			 */
-			message?: string
-		}
+			message?: string;
+		};
 		/**
 		 * Date when the contact was blocked or unsubscribed on
 		 * @example "2017-05-01T12:30:00.000Z"
 		 */
-		blockedAt: string
-	}[]
+		blockedAt: string;
+	}[];
 }
 
 export interface GetReports {
@@ -1970,80 +1986,80 @@ export interface GetReports {
 		 * @format date
 		 * @example "2017-04-06T00:00:00.000Z"
 		 */
-		date: string
+		date: string;
 		/**
 		 * Number of requests for the date
 		 * @format int64
 		 * @example 65
 		 */
-		requests: number
+		requests: number;
 		/**
 		 * Number of delivered emails for the date
 		 * @format int64
 		 * @example 63
 		 */
-		delivered: number
+		delivered: number;
 		/**
 		 * Number of hardbounces for the date
 		 * @format int64
 		 * @example 1
 		 */
-		hardBounces: number
+		hardBounces: number;
 		/**
 		 * Number of softbounces for the date
 		 * @format int64
 		 * @example 1
 		 */
-		softBounces: number
+		softBounces: number;
 		/**
 		 * Number of clicks for the date
 		 * @format int64
 		 * @example 6
 		 */
-		clicks: number
+		clicks: number;
 		/**
 		 * Number of unique clicks for the date
 		 * @format int64
 		 * @example 5
 		 */
-		uniqueClicks: number
+		uniqueClicks: number;
 		/**
 		 * Number of openings for the date
 		 * @format int64
 		 * @example 58
 		 */
-		opens: number
+		opens: number;
 		/**
 		 * Number of unique openings for the date
 		 * @format int64
 		 * @example 52
 		 */
-		uniqueOpens: number
+		uniqueOpens: number;
 		/**
 		 * Number of complaints (spam reports) for the date
 		 * @format int64
 		 * @example 0
 		 */
-		spamReports: number
+		spamReports: number;
 		/**
 		 * Number of blocked emails for the date
 		 * @format int64
 		 * @example 0
 		 */
-		blocked: number
+		blocked: number;
 		/**
 		 * Number of invalid emails for the date
 		 * @format int64
 		 * @example 0
 		 */
-		invalid: number
+		invalid: number;
 		/**
 		 * Number of unsubscribed emails for the date
 		 * @format int64
 		 * @example 0
 		 */
-		unsubscribed: number
-	}[]
+		unsubscribed: number;
+	}[];
 }
 
 export interface GetEmailEventReport {
@@ -2053,74 +2069,74 @@ export interface GetEmailEventReport {
 		 * @format email
 		 * @example "john.smith@example.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * UTC date-time on which the event has been generated
 		 * @example "2017-03-12T12:30:00.000Z"
 		 */
-		date: string
+		date: string;
 		/**
 		 * Subject of the event
 		 * @example "Sib client test"
 		 */
-		subject?: string
+		subject?: string;
 		/**
 		 * Message ID which generated the event
 		 * @example "<201798300811.5787683@relay.domain.com>"
 		 */
-		messageId: string
+		messageId: string;
 		/**
 		 * Event which occurred
 		 * @example "delivered"
 		 */
 		event:
-			| 'bounces'
-			| 'hardBounces'
-			| 'softBounces'
-			| 'delivered'
-			| 'spam'
-			| 'requests'
-			| 'opened'
-			| 'clicks'
-			| 'invalid'
-			| 'deferred'
-			| 'blocked'
-			| 'unsubscribed'
-			| 'error'
-			| 'loadedByProxy'
+			| "bounces"
+			| "hardBounces"
+			| "softBounces"
+			| "delivered"
+			| "spam"
+			| "requests"
+			| "opened"
+			| "clicks"
+			| "invalid"
+			| "deferred"
+			| "blocked"
+			| "unsubscribed"
+			| "error"
+			| "loadedByProxy";
 		/**
 		 * Reason of bounce (only available if the event is hardbounce or softbounce)
 		 * @example "Error connection timeout"
 		 */
-		reason?: string
+		reason?: string;
 		/**
 		 * Tag of the email which generated the event
 		 * @example "OrderConfirmation"
 		 */
-		tag?: string
+		tag?: string;
 		/**
 		 * IP from which the user has opened the email or clicked on the link (only available if the event is opened or clicks)
 		 * @example "165.87.3.15"
 		 */
-		ip?: string
+		ip?: string;
 		/**
 		 * The link which is sent to the user (only available if the event is requests or opened or clicks)
 		 * @example "https://www.someexamplelink.com"
 		 */
-		link?: string
+		link?: string;
 		/**
 		 * Sender email from which the emails are sent
 		 * @format email
 		 * @example "john@example.com"
 		 */
-		from?: string
+		from?: string;
 		/**
 		 * ID of the template (only available if the email is template based)
 		 * @format int64
 		 * @example 4
 		 */
-		templateId?: number
-	}[]
+		templateId?: number;
+	}[];
 }
 
 export interface GetSmsEventReport {
@@ -2129,44 +2145,44 @@ export interface GetSmsEventReport {
 		 * Phone number which has generated the event
 		 * @example "00189001094"
 		 */
-		phoneNumber?: string
+		phoneNumber?: string;
 		/**
 		 * UTC date-time on which the event has been generated
 		 * @example "2017-03-12T12:30:00.000Z"
 		 */
-		date?: string
+		date?: string;
 		/**
 		 * Message ID which generated the event
 		 * @example "1472640582425378"
 		 */
-		messageId?: string
+		messageId?: string;
 		/**
 		 * Event which occurred
 		 * @example "accepted"
 		 */
 		event?:
-			| 'bounces'
-			| 'hardBounces'
-			| 'softBounces'
-			| 'delivered'
-			| 'sent'
-			| 'accepted'
-			| 'unsubscription'
-			| 'replies'
-			| 'blocked'
-			| 'rejected'
+			| "bounces"
+			| "hardBounces"
+			| "softBounces"
+			| "delivered"
+			| "sent"
+			| "accepted"
+			| "unsubscription"
+			| "replies"
+			| "blocked"
+			| "rejected";
 		/**
 		 * Reason of bounce (only available if the event is hardbounce or softbounce)
 		 * @example "Message is undeliverable due to an incorrect / invalid / blacklisted / permanently barred MSISDN for this operator"
 		 */
-		reason?: string
-		reply?: string
+		reason?: string;
+		reply?: string;
 		/**
 		 * Tag of the SMS which generated the event
 		 * @example "CabWaiting"
 		 */
-		tag?: string
-	}[]
+		tag?: string;
+	}[];
 }
 
 export interface GetSmtpTemplateOverview {
@@ -2175,81 +2191,81 @@ export interface GetSmtpTemplateOverview {
 	 * @format int64
 	 * @example 4
 	 */
-	id: number
+	id: number;
 	/**
 	 * Name of the template
 	 * @example "Order Confirmation - EN"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Subject of the template
 	 * @example "Thanks for your order !"
 	 */
-	subject: string
+	subject: string;
 	/**
 	 * Status of template (true=active, false=inactive)
 	 * @example true
 	 */
-	isActive: boolean
+	isActive: boolean;
 	/**
 	 * Status of test sending for the template (true=test email has been sent, false=test email has not been sent)
 	 * @example true
 	 */
-	testSent: boolean
+	testSent: boolean;
 	sender: {
 		/**
 		 * From email for the template
 		 * @example "Mary form MyShop"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * From email for the template
 		 * @format email
 		 * @example "contact@myshop.fr"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * Sender id of the template
 		 * @example "43"
 		 */
-		id?: string
-	}
+		id?: string;
+	};
 	/**
 	 * Email defined as the "Reply to" for the template
 	 * @format email
 	 * @example "replyto@domain.com"
 	 */
-	replyTo: string
+	replyTo: string;
 	/**
 	 * Customisation of the "to" field for the template
 	 * @example "{FIRSTNAME} {LASTNAME}"
 	 */
-	toField: string
+	toField: string;
 	/**
 	 * Tag of the template
 	 * @example "sports"
 	 */
-	tag: string
+	tag: string;
 	/**
 	 * HTML content of the template
 	 * @example "Your order n°xxxxx has been confirmed. Thanks for your purchase."
 	 */
-	htmlContent: string
+	htmlContent: string;
 	/**
 	 * Creation UTC date-time of the template (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-01T12:30:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Last modification UTC date-time of the template (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 	/**
 	 * It is true if template is a valid Double opt-in (DOI) template, otherwise it is false. This field will be available only in case of single template detail call.
 	 * @example false
 	 */
-	doiTemplate?: boolean
+	doiTemplate?: boolean;
 }
 
 export interface GetSmtpTemplates {
@@ -2258,8 +2274,8 @@ export interface GetSmtpTemplates {
 	 * @format int64
 	 * @example 1
 	 */
-	count?: number
-	templates?: GetSmtpTemplateOverview[]
+	count?: number;
+	templates?: GetSmtpTemplateOverview[];
 }
 
 export interface GetWebhook {
@@ -2268,38 +2284,38 @@ export interface GetWebhook {
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	url: string
+	url: string;
 	/**
 	 * ID of the webhook
 	 * @format int64
 	 * @example 654
 	 */
-	id: number
+	id: number;
 	/**
 	 * Description of the webhook
 	 * @example "Webhook triggered on campaign openings"
 	 */
-	description: string
-	events: string[]
+	description: string;
+	events: string[];
 	/**
 	 * Type of webhook (marketing or transactional)
 	 * @example "marketing"
 	 */
-	type: 'marketing' | 'transactional'
+	type: "marketing" | "transactional";
 	/**
 	 * Creation UTC date-time of the webhook (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2016-12-01T12:50:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Last modification UTC date-time of the webhook (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T13:15:00.000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 }
 
 export interface GetWebhooks {
-	webhooks: GetWebhook[]
+	webhooks: GetWebhook[];
 }
 
 export interface GetContactDetails {
@@ -2308,40 +2324,40 @@ export interface GetContactDetails {
 	 * @format email
 	 * @example "john.smith@example.com"
 	 */
-	email: string
+	email: string;
 	/**
 	 * ID of the contact for which you requested the details
 	 * @format int64
 	 * @example 32
 	 */
-	id: number
+	id: number;
 	/**
 	 * Blacklist status for email campaigns (true=blacklisted, false=not blacklisted)
 	 * @example false
 	 */
-	emailBlacklisted: boolean
+	emailBlacklisted: boolean;
 	/**
 	 * Blacklist status for SMS campaigns (true=blacklisted, false=not blacklisted)
 	 * @example true
 	 */
-	smsBlacklisted: boolean
+	smsBlacklisted: boolean;
 	/**
 	 * Creation UTC date-time of the contact (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Last modification UTC date-time of the contact (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	modifiedAt: string
-	listIds: number[]
-	listUnsubscribed?: number[]
+	modifiedAt: string;
+	listIds: number[];
+	listUnsubscribed?: number[];
 	/**
 	 * Set of attributes of the contact
 	 * @example {"name":"Joe","email":"joe@example.com"}
 	 */
-	attributes: object
+	attributes: object;
 }
 
 export type GetExtendedContactDetails = GetContactDetails & {
@@ -2354,13 +2370,13 @@ export type GetExtendedContactDetails = GetContactDetails & {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
-		}[]
+			eventTime: string;
+		}[];
 		/** Listing of the hardbounes generated by the contact */
 		hardBounces?: {
 			/**
@@ -2368,13 +2384,13 @@ export type GetExtendedContactDetails = GetContactDetails & {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
-		}[]
+			eventTime: string;
+		}[];
 		/** Listing of the softbounes generated by the contact */
 		softBounces?: {
 			/**
@@ -2382,13 +2398,13 @@ export type GetExtendedContactDetails = GetContactDetails & {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
-		}[]
+			eventTime: string;
+		}[];
 		/** Listing of the complaints generated by the contact */
 		complaints?: {
 			/**
@@ -2396,13 +2412,13 @@ export type GetExtendedContactDetails = GetContactDetails & {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
-		}[]
+			eventTime: string;
+		}[];
 		/** Listing of the unsubscription for the contact */
 		unsubscriptions?: {
 			/** Contact unsubscribe via unsubscription link in a campaign */
@@ -2412,32 +2428,32 @@ export type GetExtendedContactDetails = GetContactDetails & {
 				 * @format int64
 				 * @example 3
 				 */
-				campaignId: number
+				campaignId: number;
 				/**
 				 * UTC date-time of the event
 				 * @example "2017-03-12T20:15:13.000Z"
 				 */
-				eventTime: string
+				eventTime: string;
 				/**
 				 * IP from which the user has unsubscribed
 				 * @example "165.87.3.15"
 				 */
-				ip?: string
-			}[]
+				ip?: string;
+			}[];
 			/** Contact has been unsubscribed from the administrator */
 			adminUnsubscription: {
 				/**
 				 * UTC date-time of the event
 				 * @example "2017-03-12T20:15:13.000Z"
 				 */
-				eventTime: string
+				eventTime: string;
 				/**
 				 * IP from which the user has been unsubscribed
 				 * @example "165.87.3.15"
 				 */
-				ip?: string
-			}[]
-		}
+				ip?: string;
+			}[];
+		};
 		/** Listing of the openings generated by the contact */
 		opened?: {
 			/**
@@ -2445,24 +2461,24 @@ export type GetExtendedContactDetails = GetContactDetails & {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/**
 			 * Number of openings for the campaign
 			 * @format int64
 			 * @example 1
 			 */
-			count: number
+			count: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
+			eventTime: string;
 			/**
 			 * IP from which the user has opened the email
 			 * @example "165.87.3.15"
 			 */
-			ip: string
-		}[]
+			ip: string;
+		}[];
 		/** Listing of the clicks generated by the contact */
 		clicked?: {
 			/**
@@ -2470,7 +2486,7 @@ export type GetExtendedContactDetails = GetContactDetails & {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/** Listing of the clicked links for the campaign */
 			links: {
 				/**
@@ -2478,26 +2494,26 @@ export type GetExtendedContactDetails = GetContactDetails & {
 				 * @format int64
 				 * @example 1
 				 */
-				count: number
+				count: number;
 				/**
 				 * UTC date-time of the event
 				 * @example "2017-03-12T20:15:13.000Z"
 				 */
-				eventTime: string
+				eventTime: string;
 				/**
 				 * IP from which the user has clicked on the link
 				 * @example "165.87.3.15"
 				 */
-				ip: string
+				ip: string;
 				/**
 				 * URL of the clicked link
 				 * @example "www.myshop.com"
 				 */
-				url: string
-			}[]
-		}[]
+				url: string;
+			}[];
+		}[];
 		/** Listing of the transactional attributes for the contact */
-		transacAttributes?: object[]
+		transacAttributes?: object[];
 		/** Listing of the delivered campaign for the contact */
 		delivered?: {
 			/**
@@ -2505,15 +2521,15 @@ export type GetExtendedContactDetails = GetContactDetails & {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
-		}[]
-	}
-}
+			eventTime: string;
+		}[];
+	};
+};
 
 /** Campaign Statistics for the contact */
 export interface GetContactCampaignStats {
@@ -2523,52 +2539,52 @@ export interface GetContactCampaignStats {
 		 * @format int64
 		 * @example 3
 		 */
-		campaignId: number
+		campaignId: number;
 		/**
 		 * UTC date-time of the event
 		 * @example "2017-03-12T20:15:13.000Z"
 		 */
-		eventTime: string
-	}[]
+		eventTime: string;
+	}[];
 	hardBounces?: {
 		/**
 		 * ID of the campaign which generated the event
 		 * @format int64
 		 * @example 3
 		 */
-		campaignId: number
+		campaignId: number;
 		/**
 		 * UTC date-time of the event
 		 * @example "2017-03-12T20:15:13.000Z"
 		 */
-		eventTime: string
-	}[]
+		eventTime: string;
+	}[];
 	softBounces?: {
 		/**
 		 * ID of the campaign which generated the event
 		 * @format int64
 		 * @example 3
 		 */
-		campaignId: number
+		campaignId: number;
 		/**
 		 * UTC date-time of the event
 		 * @example "2017-03-12T20:15:13.000Z"
 		 */
-		eventTime: string
-	}[]
+		eventTime: string;
+	}[];
 	complaints?: {
 		/**
 		 * ID of the campaign which generated the event
 		 * @format int64
 		 * @example 3
 		 */
-		campaignId: number
+		campaignId: number;
 		/**
 		 * UTC date-time of the event
 		 * @example "2017-03-12T20:15:13.000Z"
 		 */
-		eventTime: string
-	}[]
+		eventTime: string;
+	}[];
 	unsubscriptions?: {
 		/** Contact has unsubscribed via the unsubscription link in the email */
 		userUnsubscription: {
@@ -2577,130 +2593,130 @@ export interface GetContactCampaignStats {
 			 * @format int64
 			 * @example 3
 			 */
-			campaignId: number
+			campaignId: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
+			eventTime: string;
 			/**
 			 * IP from which the user has unsubscribed
 			 * @example "165.87.3.15"
 			 */
-			ip?: string
-		}[]
+			ip?: string;
+		}[];
 		/** Contact has been unsubscribed from the administrator */
 		adminUnsubscription: {
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
+			eventTime: string;
 			/**
 			 * IP from which the user has been unsubscribed
 			 * @example "165.87.3.15"
 			 */
-			ip?: string
-		}[]
-	}
+			ip?: string;
+		}[];
+	};
 	opened?: {
 		/**
 		 * ID of the campaign which generated the event
 		 * @format int64
 		 * @example 3
 		 */
-		campaignId: number
+		campaignId: number;
 		/**
 		 * Number of openings of the campaign
 		 * @format int64
 		 * @example 3
 		 */
-		count: number
+		count: number;
 		/**
 		 * UTC date-time of the event
 		 * @example "2017-03-12T20:15:13.000Z"
 		 */
-		eventTime: string
+		eventTime: string;
 		/**
 		 * IP from which the user has opened the campaign
 		 * @example "165.87.3.15"
 		 */
-		ip: string
-	}[]
+		ip: string;
+	}[];
 	clicked?: {
 		/**
 		 * ID of the campaign which generated the event
 		 * @format int64
 		 * @example 3
 		 */
-		campaignId: number
+		campaignId: number;
 		links: {
 			/**
 			 * Number of clicks on this link for the campaign
 			 * @format int64
 			 * @example 1
 			 */
-			count: number
+			count: number;
 			/**
 			 * UTC date-time of the event
 			 * @example "2017-03-12T20:15:13.000Z"
 			 */
-			eventTime: string
+			eventTime: string;
 			/**
 			 * IP from which the user has clicked on the link
 			 * @example "165.87.3.15"
 			 */
-			ip: string
+			ip: string;
 			/**
 			 * URL of the clicked link
 			 * @example "www.myshop.com"
 			 */
-			url: string
-		}[]
-	}[]
+			url: string;
+		}[];
+	}[];
 	transacAttributes?: {
 		/**
 		 * Date of the order
 		 * @format date
 		 * @example "2017-03-12T00:00:00.000Z"
 		 */
-		orderDate: string
+		orderDate: string;
 		/**
 		 * Price of the order
 		 * @format float
 		 * @example 24.99
 		 */
-		orderPrice: number
+		orderPrice: number;
 		/**
 		 * ID of the order
 		 * @format int64
 		 * @example 248
 		 */
-		orderId: number
-	}[]
+		orderId: number;
+	}[];
 	delivered?: {
 		/**
 		 * ID of the campaign which generated the event
 		 * @format int64
 		 * @example 3
 		 */
-		campaignId: number
+		campaignId: number;
 		/**
 		 * UTC date-time of the event
 		 * @example "2017-03-12T20:15:13.000Z"
 		 */
-		eventTime: string
-	}[]
+		eventTime: string;
+	}[];
 }
 
 export interface GetContacts {
-	contacts: GetContactDetails[]
+	contacts: GetContactDetails[];
 	/**
 	 * Number of contacts
 	 * @format int64
 	 * @example 17655
 	 */
-	count: number
+	count: number;
 }
 
 export interface GetAttributes {
@@ -2710,17 +2726,17 @@ export interface GetAttributes {
 		 * Name of the attribute
 		 * @example "LASTNAME"
 		 */
-		name: string
+		name: string;
 		/**
 		 * Category of the attribute
 		 * @example "category"
 		 */
-		category: 'normal' | 'transactional' | 'category' | 'calculated' | 'global'
+		category: "normal" | "transactional" | "category" | "calculated" | "global";
 		/**
 		 * Type of the attribute
 		 * @example "text"
 		 */
-		type?: 'text' | 'date' | 'float' | 'id' | 'boolean'
+		type?: "text" | "date" | "float" | "id" | "boolean";
 		/** Parameter only available for "category" type attributes. */
 		enumeration?: {
 			/**
@@ -2728,29 +2744,29 @@ export interface GetAttributes {
 			 * @format int64
 			 * @example 1
 			 */
-			value: number
+			value: number;
 			/**
 			 * Label of the "category" type attribute
 			 * @example "Women"
 			 */
-			label: string
-		}[]
+			label: string;
+		}[];
 		/**
 		 * Calculated value formula
 		 * @example "COUNT[ORDER_ID,ORDER_DATE,==,NOW(-1)]"
 		 */
-		calculatedValue?: string
-	}[]
+		calculatedValue?: string;
+	}[];
 }
 
 export interface GetFolders {
-	folders?: GetFolder[]
+	folders?: GetFolder[];
 	/**
 	 * Number of folders available in your account
 	 * @format int64
 	 * @example 10
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface GetFolder {
@@ -2759,40 +2775,40 @@ export interface GetFolder {
 	 * @format int64
 	 * @example 2
 	 */
-	id: number
+	id: number;
 	/**
 	 * Name of the folder
 	 * @example "Magento Customers"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Number of blacklisted contacts in the folder
 	 * @format int64
 	 * @example 32
 	 */
-	totalBlacklisted: number
+	totalBlacklisted: number;
 	/**
 	 * Number of contacts in the folder
 	 * @format int64
 	 * @example 19777
 	 */
-	totalSubscribers: number
+	totalSubscribers: number;
 	/**
 	 * Number of unique contacts in the folder
 	 * @format int64
 	 * @example 16222
 	 */
-	uniqueSubscribers: number
+	uniqueSubscribers: number;
 }
 
 export interface GetFolderLists {
-	lists?: GetList[]
+	lists?: GetList[];
 	/**
 	 * Number of lists in the folder
 	 * @format int64
 	 * @example 6
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface GetLists {
@@ -2803,14 +2819,14 @@ export interface GetLists {
 		 * @format int64
 		 * @example 2
 		 */
-		folderId: number
-	})[]
+		folderId: number;
+	})[];
 	/**
 	 * Number of lists in your account
 	 * @format int64
 	 * @example 150
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface GetSegments {
@@ -2821,30 +2837,30 @@ export interface GetSegments {
 		 * @format int64
 		 * @example 23
 		 */
-		id?: number
+		id?: number;
 		/**
 		 * Name of the Segment
 		 * @example "My Segment"
 		 */
-		segmentName?: string
+		segmentName?: string;
 		/**
 		 * Name of the Segment Category
 		 * @format string
 		 * @example "New Category"
 		 */
-		categoryName?: string
+		categoryName?: string;
 		/**
 		 * Updation UTC date-time of the segment (YYYY-MM-DDTHH:mm:ss.SSSZ)
 		 * @example "2017-03-13T17:05:09Z"
 		 */
-		updatedAt?: string
-	}
+		updatedAt?: string;
+	};
 	/**
 	 * Number of Segments in your account
 	 * @format int64
 	 * @example 10
 	 */
-	count?: number
+	count?: number;
 }
 
 export interface GetList {
@@ -2853,30 +2869,30 @@ export interface GetList {
 	 * @format int64
 	 * @example 23
 	 */
-	id: number
+	id: number;
 	/**
 	 * Name of the list
 	 * @example "Magento Customers - EN"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Number of blacklisted contacts in the list
 	 * @format int64
 	 * @example 13
 	 */
-	totalBlacklisted: number
+	totalBlacklisted: number;
 	/**
 	 * Number of contacts in the list
 	 * @format int64
 	 * @example 1776
 	 */
-	totalSubscribers: number
+	totalSubscribers: number;
 	/**
 	 * Number of unique contacts in the list
 	 * @format int64
 	 * @example 1789
 	 */
-	uniqueSubscribers: number
+	uniqueSubscribers: number;
 }
 
 export type GetExtendedList = GetList & {
@@ -2885,27 +2901,27 @@ export type GetExtendedList = GetList & {
 	 * @format int64
 	 * @example 2
 	 */
-	folderId: number
+	folderId: number;
 	/**
 	 * Creation UTC date-time of the list (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-03-13T17:05:09.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	campaignStats?: {
 		/**
 		 * ID of the campaign
 		 * @format int64
 		 * @example 143
 		 */
-		campaignId: number
-		stats: GetCampaignStats
-	}[]
+		campaignId: number;
+		stats: GetCampaignStats;
+	}[];
 	/**
 	 * Status telling if the list is dynamic or not (true=dynamic, false=not dynamic)
 	 * @example false
 	 */
-	dynamicList?: boolean
-}
+	dynamicList?: boolean;
+};
 
 export interface GetSmsCampaignStats {
 	/**
@@ -2913,43 +2929,43 @@ export interface GetSmsCampaignStats {
 	 * @format int64
 	 * @example 2987
 	 */
-	delivered: number
+	delivered: number;
 	/**
 	 * Number of sent SMS
 	 * @format int64
 	 * @example 3000
 	 */
-	sent: number
+	sent: number;
 	/**
 	 * Number of processing SMS
 	 * @format int64
 	 * @example 0
 	 */
-	processing: number
+	processing: number;
 	/**
 	 * Number of softbounced SMS
 	 * @format int64
 	 * @example 3
 	 */
-	softBounces: number
+	softBounces: number;
 	/**
 	 * Number of hardbounced SMS
 	 * @format int64
 	 * @example 1
 	 */
-	hardBounces: number
+	hardBounces: number;
 	/**
 	 * Number of unsubscription SMS
 	 * @format int64
 	 * @example 3
 	 */
-	unsubscriptions: number
+	unsubscriptions: number;
 	/**
 	 * Number of replies to the SMS
 	 * @format int64
 	 * @example 2
 	 */
-	answered: number
+	answered: number;
 }
 
 export interface GetDeviceBrowserStats {
@@ -2958,25 +2974,25 @@ export interface GetDeviceBrowserStats {
 	 * @format int64
 	 * @example 2665
 	 */
-	clickers: number
+	clickers: number;
 	/**
 	 * Number of unique clicks for the campaign using the particular browser
 	 * @format int64
 	 * @example 2300
 	 */
-	uniqueClicks: number
+	uniqueClicks: number;
 	/**
 	 * Number of openings for the campaign using the particular browser
 	 * @format int64
 	 * @example 8999
 	 */
-	viewed: number
+	viewed: number;
 	/**
 	 * Number of unique openings for the campaign using the particular browser
 	 * @format int64
 	 * @example 7779
 	 */
-	uniqueViews: number
+	uniqueViews: number;
 }
 
 export interface GetCampaignStats {
@@ -2985,97 +3001,97 @@ export interface GetCampaignStats {
 	 * @format int64
 	 * @example 2
 	 */
-	listId?: number
+	listId?: number;
 	/**
 	 * Number of unique clicks for the campaign
 	 * @format int64
 	 * @example 2300
 	 */
-	uniqueClicks: number
+	uniqueClicks: number;
 	/**
 	 * Number of total clicks for the campaign
 	 * @format int64
 	 * @example 2665
 	 */
-	clickers: number
+	clickers: number;
 	/**
 	 * Number of complaints (Spam reports) for the campaign
 	 * @format int64
 	 * @example 1
 	 */
-	complaints: number
+	complaints: number;
 	/**
 	 * Number of delivered emails for the campaign
 	 * @format int64
 	 * @example 19765
 	 */
-	delivered: number
+	delivered: number;
 	/**
 	 * Number of sent emails for the campaign
 	 * @format int64
 	 * @example 19887
 	 */
-	sent: number
+	sent: number;
 	/**
 	 * Number of softbounce for the campaign
 	 * @format int64
 	 * @example 100
 	 */
-	softBounces: number
+	softBounces: number;
 	/**
 	 * Number of harbounce for the campaign
 	 * @format int64
 	 * @example 87
 	 */
-	hardBounces: number
+	hardBounces: number;
 	/**
 	 * Number of unique openings for the campaign
 	 * @format int64
 	 * @example 7779
 	 */
-	uniqueViews: number
+	uniqueViews: number;
 	/**
 	 * Recipients without any privacy protection option enabled in their email client
 	 * @format int64
 	 * @example 5661
 	 */
-	trackableViews: number
+	trackableViews: number;
 	/**
 	 * Rate of recipients without any privacy protection option enabled in their email client
 	 * @format float
 	 * @example 23.45
 	 */
-	trackableViewsRate?: number
+	trackableViewsRate?: number;
 	/**
 	 * Rate of recipients without any privacy protection option enabled in their email client, applied to all delivered emails
 	 * @format int64
 	 * @example 560
 	 */
-	estimatedViews?: number
+	estimatedViews?: number;
 	/**
 	 * Number of unsubscription for the campaign
 	 * @format int64
 	 * @example 2
 	 */
-	unsubscriptions: number
+	unsubscriptions: number;
 	/**
 	 * Number of openings for the campaign
 	 * @format int64
 	 * @example 8999
 	 */
-	viewed: number
+	viewed: number;
 	/**
 	 * Number of deferred emails for the campaign
 	 * @format int64
 	 * @example 30
 	 */
-	deferred?: number
+	deferred?: number;
 	/**
 	 * Total number of non-delivered campaigns for a particular campaign id.
 	 * @format int64
 	 * @example 5
 	 */
-	returnBounce?: number
+	returnBounce?: number;
 }
 
 export interface UpdateSmtpTemplate {
@@ -3083,7 +3099,7 @@ export interface UpdateSmtpTemplate {
 	 * Tag of the template
 	 * @example "OrderConfirmation"
 	 */
-	tag?: string
+	tag?: string;
 	/**
 	 * Sender details including id or email and name (_optional_). Only one of either Sender's email or Sender's ID shall be passed in one request at a time. For example:
 	 * **{"name":"xyz", "email":"example@abc.com"}**
@@ -3094,65 +3110,65 @@ export interface UpdateSmtpTemplate {
 		 * Name of the sender
 		 * @example "Mary from MyShop"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Email of the sender
 		 * @format email
 		 * @example "contact@myshop.com"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * Select the sender for the template on the basis of sender id.
 		 * _In order to select a sender with specific pool of IP’s, dedicated ip users shall pass id (instead of email)_.
 		 * @format int64
 		 * @example 3
 		 */
-		id?: number
-	}
+		id?: number;
+	};
 	/**
 	 * Name of the template
 	 * @example "Order Confirmation - EN"
 	 */
-	templateName?: string
+	templateName?: string;
 	/**
 	 * **Required if htmlUrl is empty**. If the template is designed using Drag & Drop editor via HTML content, then the design page will not have Drag & Drop editor access for that template. Body of the message (HTML must have more than 10 characters)
 	 * @example "The order n°xxxxx has been confirmed. Thanks for your purchase"
 	 */
-	htmlContent?: string
+	htmlContent?: string;
 	/**
 	 * **Required if htmlContent is empty**. URL to the body of the email (HTML)
 	 * @format url
 	 * @example "https://html.domain.com"
 	 */
-	htmlUrl?: string
+	htmlUrl?: string;
 	/**
 	 * Subject of the email
 	 * @example "Thanks for your purchase !"
 	 */
-	subject?: string
+	subject?: string;
 	/**
 	 * Email on which campaign recipients will be able to reply to
 	 * @format email
 	 * @example "support@myshop.com"
 	 */
-	replyTo?: string
+	replyTo?: string;
 	/**
 	 * To personalize the **To** Field. If you want to include the first name and last name of your recipient, add **{FNAME} {LNAME}**. These contact attributes must already exist in your Brevo account. If input parameter **params** used please use **{{contact.FNAME}} {{contact.LNAME}}** for personalization
 	 * @example "{FNAME} {LNAME}"
 	 */
-	toField?: string
+	toField?: string;
 	/**
 	 * Absolute url of the attachment (**no local file**). Extensions allowed:
 	 * #### xlsx, xls, ods, docx, docm, doc, csv, pdf, txt, gif, jpg, jpeg, png, tif, tiff, rtf, bmp, cgm, css, shtml, html, htm, zip, xml, ppt, pptx, tar, ez, ics, mobi, msg, pub and eps
 	 * @format url
 	 * @example "https://attachment.domain.com"
 	 */
-	attachmentUrl?: string
+	attachmentUrl?: string;
 	/**
 	 * Status of the template. isActive = false means template is inactive, isActive = true means template is active
 	 * @example true
 	 */
-	isActive?: boolean
+	isActive?: boolean;
 }
 
 /**
@@ -3161,7 +3177,15 @@ export interface UpdateSmtpTemplate {
  */
 export interface UpdateCampaignStatus {
 	/** Note:- **replicateTemplate** status will be available **only for template type campaigns.** */
-	status?: 'suspended' | 'archive' | 'darchive' | 'sent' | 'queued' | 'replicate' | 'replicateTemplate' | 'draft'
+	status?:
+		| "suspended"
+		| "archive"
+		| "darchive"
+		| "sent"
+		| "queued"
+		| "replicate"
+		| "replicateTemplate"
+		| "draft";
 }
 
 export interface CreateSmtpTemplate {
@@ -3169,7 +3193,7 @@ export interface CreateSmtpTemplate {
 	 * Tag of the template
 	 * @example "OrderConfirmation"
 	 */
-	tag?: string
+	tag?: string;
 	/**
 	 * Sender details including id or email and name (_optional_). Only one of either Sender's email or Sender's ID shall be passed in one request at a time. For example:
 	 * **{"name":"xyz", "email":"example@abc.com"}**
@@ -3180,65 +3204,65 @@ export interface CreateSmtpTemplate {
 		 * Name of the sender. **If not passed, will be set to default**
 		 * @example "Mary from MyShop"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Email of the sender
 		 * @format email
 		 * @example "contact@myshop.com"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * Select the sender for the template on the basis of sender id.
 		 * _In order to select a sender with specific pool of IP’s, dedicated ip users shall pass id (instead of email)_.
 		 * @format int64
 		 * @example 3
 		 */
-		id?: number
-	}
+		id?: number;
+	};
 	/**
 	 * Name of the template
 	 * @example "Order Confirmation - EN"
 	 */
-	templateName: string
+	templateName: string;
 	/**
 	 * Body of the message (HTML version). The field must have more than 10 characters. **REQUIRED if htmlUrl is empty**
 	 * @example "The order n°xxxxx has been confirmed. Thanks for your purchase"
 	 */
-	htmlContent?: string
+	htmlContent?: string;
 	/**
 	 * Url which contents the body of the email message. REQUIRED if htmlContent is empty
 	 * @format url
 	 * @example "https://html.domain.com"
 	 */
-	htmlUrl?: string
+	htmlUrl?: string;
 	/**
 	 * Subject of the template
 	 * @example "Thanks for your purchase !"
 	 */
-	subject: string
+	subject: string;
 	/**
 	 * Email on which campaign recipients will be able to reply to
 	 * @format email
 	 * @example "support@myshop.com"
 	 */
-	replyTo?: string
+	replyTo?: string;
 	/**
 	 * To personalize the **To** Field. If you want to include the first name and last name of your recipient, add **{FNAME} {LNAME}**. These contact attributes must already exist in your Brevo account. If input parameter **params** used please use **{{contact.FNAME}} {{contact.LNAME}}** for personalization
 	 * @example "{FNAME} {LNAME}"
 	 */
-	toField?: string
+	toField?: string;
 	/**
 	 * Absolute url of the attachment (**no local file**). Extension allowed:
 	 * #### xlsx, xls, ods, docx, docm, doc, csv, pdf, txt, gif, jpg, jpeg, png, tif, tiff, rtf, bmp, cgm, css, shtml, html, htm, zip, xml, ppt, pptx, tar, ez, ics, mobi, msg, pub and eps'
 	 * @format url
 	 * @example "https://attachment.domain.com"
 	 */
-	attachmentUrl?: string
+	attachmentUrl?: string;
 	/**
 	 * Status of template. isActive = true means template is active and isActive = false means template is inactive
 	 * @example true
 	 */
-	isActive?: boolean
+	isActive?: boolean;
 }
 
 export interface CreateEmailCampaign {
@@ -3246,7 +3270,7 @@ export interface CreateEmailCampaign {
 	 * Tag of the campaign
 	 * @example "Newsletter"
 	 */
-	tag?: string
+	tag?: string;
 	/**
 	 * Sender details including id or email and name (_optional_). Only one of either Sender's email or Sender's ID shall be passed in one request at a time. For example:
 	 * **{"name":"xyz", "email":"example@abc.com"}**
@@ -3257,83 +3281,83 @@ export interface CreateEmailCampaign {
 		 * Sender Name
 		 * @example "Mary from MyShop"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Sender email
 		 * @format email
 		 * @example "newsletter@myshop.com"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * Select the sender for the campaign on the basis of sender id.
 		 * _In order to select a sender with specific pool of IP’s, dedicated ip users shall pass id (instead of email)_.
 		 * @format int64
 		 * @example 3
 		 */
-		id?: number
-	}
+		id?: number;
+	};
 	/**
 	 * Name of the campaign
 	 * @example "Newsletter - May 2017"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Mandatory if htmlUrl and templateId are empty. Body of the message (HTML).
 	 * @example "<!DOCTYPE html> <html> <body> <h1>Confirm you email</h1> <p>Please confirm your email address by clicking on the link below</p> </body> </html>"
 	 */
-	htmlContent?: string
+	htmlContent?: string;
 	/**
 	 * **Mandatory if htmlContent and templateId are empty**. Url to the message (HTML). For example:
 	 * **https://html.domain.com**
 	 * @format url
 	 * @example "https://html.domain.com"
 	 */
-	htmlUrl?: string
+	htmlUrl?: string;
 	/**
 	 * **Mandatory if htmlContent and htmlUrl are empty**. Id of the transactional
 	 * email template with status _active_. Used to copy only its content fetched
 	 * from htmlContent/htmlUrl to an email campaign for RSS feature.
 	 * @format int64
 	 */
-	templateId?: number
+	templateId?: number;
 	/**
 	 * Sending UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result**.
 	 * If sendAtBestTime is set to true, your campaign will be sent according to the date passed (ignoring the time part). For example:
 	 * **2017-06-01T12:30:00+02:00**
 	 * @example "2017-06-01T10:30:00.000Z"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Subject of the campaign. **Mandatory if abTesting is false**.
 	 * Ignored if abTesting is true.
 	 * @example "Discover the New Collection !"
 	 */
-	subject?: string
+	subject?: string;
 	/**
 	 * Preview text or preheader of the email campaign
 	 * @example "Thanks for your order!"
 	 */
-	previewText?: string
+	previewText?: string;
 	/**
 	 * Email on which the campaign recipients will be able to reply to
 	 * @format email
 	 * @example "support@myshop.com"
 	 */
-	replyTo?: string
+	replyTo?: string;
 	/**
 	 * To personalize the **To** Field. If you want to include the first name and last name of your recipient, add **{FNAME} {LNAME}**. These contact attributes must already exist in your Brevo account. If input parameter **params** used please use **{{contact.FNAME}} {{contact.LNAME}}** for personalization
 	 * @example "{FNAME} {LNAME}"
 	 */
-	toField?: string
+	toField?: string;
 	/** Segment ids and List ids to include/exclude from campaign */
 	recipients?: {
 		/** List ids to exclude from the campaign */
-		exclusionListIds?: number[]
+		exclusionListIds?: number[];
 		/** **Mandatory if scheduledAt is not empty**. List Ids to send the campaign to */
-		listIds?: number[]
+		listIds?: number[];
 		/** **Mandatory if listIds are not used**. Segment ids to send the campaign to. */
-		segmentIds?: number[]
-	}
+		segmentIds?: number[];
+	};
 	/**
 	 * Absolute url of the attachment (no local file).
 	 * Extension allowed:
@@ -3341,7 +3365,7 @@ export interface CreateEmailCampaign {
 	 * @format url
 	 * @example "https://attachment.domain.com"
 	 */
-	attachmentUrl?: string
+	attachmentUrl?: string;
 	/**
 	 * Use true to embedded the images in your email. Final size of
 	 * the email should be less than **4MB**. Campaigns with embedded images can
@@ -3349,38 +3373,38 @@ export interface CreateEmailCampaign {
 	 * @default false
 	 * @example true
 	 */
-	inlineImageActivation?: boolean
+	inlineImageActivation?: boolean;
 	/**
 	 * Use true to enable the mirror link
 	 * @example true
 	 */
-	mirrorActive?: boolean
+	mirrorActive?: boolean;
 	/**
 	 * Footer of the email campaign
 	 * @example "[DEFAULT_FOOTER]"
 	 */
-	footer?: string
+	footer?: string;
 	/**
 	 * Header of the email campaign
 	 * @example "[DEFAULT_HEADER]"
 	 */
-	header?: string
+	header?: string;
 	/**
 	 * Customize the utm_campaign value. If this field is empty, the campaign name will be used. Only alphanumeric characters and spaces are allowed
 	 * @example "NL_05_2017"
 	 */
-	utmCampaign?: string
+	utmCampaign?: string;
 	/**
 	 * Pass the set of attributes to customize the type classic campaign. For example: **{"FNAME":"Joe", "LNAME":"Doe"}**. Only available if **type** is **classic**. It's considered only if campaign is in _New Template Language format_. The New Template Language is dependent on the values of **subject, htmlContent/htmlUrl, sender.name & toField**
 	 * @example {"FNAME":"Joe","LNAME":"Doe"}
 	 */
-	params?: Record<string, any>
+	params?: Record<string, any>;
 	/**
 	 * Set this to true if you want to send your campaign at best time.
 	 * @default false
 	 * @example true
 	 */
-	sendAtBestTime?: boolean
+	sendAtBestTime?: boolean;
 	/**
 	 * Status of A/B Test. abTesting = false means it is disabled & abTesting = true means it is enabled. **subjectA, subjectB, splitRule, winnerCriteria & winnerDelay** will be considered when abTesting is set to true.
 	 * subjectA & subjectB are mandatory together & subject if passed is ignored. **Can be set to true only if sendAtBestTime is false**.
@@ -3388,19 +3412,19 @@ export interface CreateEmailCampaign {
 	 * @default false
 	 * @example true
 	 */
-	abTesting?: boolean
+	abTesting?: boolean;
 	/**
 	 * Subject A of the campaign. **Mandatory if abTesting = true**.
 	 * subjectA & subjectB should have unique value
 	 * @example "Discover the New Collection!"
 	 */
-	subjectA?: string
+	subjectA?: string;
 	/**
 	 * Subject B of the campaign. **Mandatory if abTesting = true**.
 	 * subjectA & subjectB should have unique value
 	 * @example "Want to discover the New Collection?"
 	 */
-	subjectB?: string
+	subjectB?: string;
 	/**
 	 * Add the size of your test groups. **Mandatory if abTesting = true & 'recipients' is passed**. We'll send version A and B to a random sample of recipients, and then the winning version to everyone else
 	 * @format int64
@@ -3408,12 +3432,12 @@ export interface CreateEmailCampaign {
 	 * @max 50
 	 * @example 50
 	 */
-	splitRule?: number
+	splitRule?: number;
 	/**
 	 * Choose the metrics that will determinate the winning version. **Mandatory if _splitRule_ >= 1 and < 50**. If splitRule = 50, `winnerCriteria` is ignored if passed
 	 * @example "open"
 	 */
-	winnerCriteria?: 'open' | 'click'
+	winnerCriteria?: "open" | "click";
 	/**
 	 * Choose the duration of the test in hours. Maximum is 7 days, pass 24*7 = 168 hours. The winning version will be sent at the end of the test. **Mandatory if _splitRule_ >= 1 and < 50**. If splitRule = 50, `winnerDelay` is ignored if passed
 	 * @format int64
@@ -3421,19 +3445,19 @@ export interface CreateEmailCampaign {
 	 * @max 168
 	 * @example 50
 	 */
-	winnerDelay?: number
+	winnerDelay?: number;
 	/**
 	 * **Available for dedicated ip clients**. Set this to true if you wish to warm up your ip.
 	 * @default false
 	 * @example true
 	 */
-	ipWarmupEnable?: boolean
+	ipWarmupEnable?: boolean;
 	/**
 	 * **Mandatory if ipWarmupEnable is set to true**. Set an initial quota greater than 1 for warming up your ip. We recommend you set a value of 3000.
 	 * @format int64
 	 * @example 3000
 	 */
-	initialQuota?: number
+	initialQuota?: number;
 	/**
 	 * **Mandatory if ipWarmupEnable is set to true**. Set a percentage increase rate for warming up your ip. We recommend you set the increase rate to 30% per day. If you want to send the same number of emails every day, set the daily increase value to 0%.
 	 * @format int64
@@ -3441,17 +3465,17 @@ export interface CreateEmailCampaign {
 	 * @max 100
 	 * @example 70
 	 */
-	increaseRate?: number
+	increaseRate?: number;
 	/**
 	 * Enter an unsubscription page id. The page id is a 24 digit alphanumeric id that can be found in the URL when editing the page. If not entered, then the default unsubscription page will be used.
 	 * @example "62cbb7fabbe85021021aac52"
 	 */
-	unsubscriptionPageId?: string
+	unsubscriptionPageId?: string;
 	/**
 	 * **Mandatory if templateId is used containing the {{ update_profile }} tag**. Enter an update profile form id. The form id is a 24 digit alphanumeric id that can be found in the URL when editing the form. If not entered, then the default update profile form will be used.
 	 * @example "6313436b9ad40e23b371d095"
 	 */
-	updateFormId?: string
+	updateFormId?: string;
 }
 
 export interface UpdateEmailCampaign {
@@ -3459,7 +3483,7 @@ export interface UpdateEmailCampaign {
 	 * Tag of the campaign
 	 * @example "Newsletter"
 	 */
-	tag?: string
+	tag?: string;
 	/**
 	 * Sender details including id or email and name (optional). Only one of either Sender's email or Sender's ID shall be passed in one request at a time. For example:
 	 * **{"name":"xyz", "email":"example@abc.com"}**
@@ -3470,36 +3494,36 @@ export interface UpdateEmailCampaign {
 		 * Sender Name from which the campaign emails are sent
 		 * @example "Mary from MyShop"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Sender email from which the campaign emails are sent
 		 * @format email
 		 * @example "newsletter@myshop.com"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * Select the sender for the campaign on the basis of sender id. **In order to select a sender with specific pool of IP’s, dedicated ip users shall pass id (instead of email)**.
 		 * @format int64
 		 * @example 3
 		 */
-		id?: number
-	}
+		id?: number;
+	};
 	/**
 	 * Name of the campaign
 	 * @example "Newsletter - May 2017"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * Body of the message (HTML version). If the campaign is designed using Drag & Drop editor via HTML content, then the design page will not have Drag & Drop editor access for that campaign. **REQUIRED if htmlUrl is empty**
 	 * @example "<!DOCTYPE html> <html> <body> <h1>Confirm you email</h1> <p>Please confirm your email address by clicking on the link below</p> </body> </html>"
 	 */
-	htmlContent?: string
+	htmlContent?: string;
 	/**
 	 * Url which contents the body of the email message. **REQUIRED if htmlContent is empty**
 	 * @format url
 	 * @example "https://html.domain.com"
 	 */
-	htmlUrl?: string
+	htmlUrl?: string;
 	/**
 	 * UTC date-time on which the campaign has to run (YYYY-MM-DDTHH:mm:ss.SSSZ).
 	 * **Prefer to pass your timezone in date-time format for accurate result.**
@@ -3507,23 +3531,23 @@ export interface UpdateEmailCampaign {
 	 * to the date passed (ignoring the time part).
 	 * @example "2017-06-01T10:30:00.000Z"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Subject of the campaign
 	 * @example "Discover the New Collection !"
 	 */
-	subject?: string
+	subject?: string;
 	/**
 	 * Preview text or preheader of the email campaign
 	 * @example "Thanks for your order!"
 	 */
-	previewText?: string
+	previewText?: string;
 	/**
 	 * Email on which campaign recipients will be able to reply to
 	 * @format email
 	 * @example "support@myshop.com"
 	 */
-	replyTo?: string
+	replyTo?: string;
 	/**
 	 * To personalize the **To** Field. If you want to include the first
 	 * name and last name of your recipient, add **{FNAME} {LNAME}**. These contact
@@ -3531,16 +3555,16 @@ export interface UpdateEmailCampaign {
 	 * **params** used please use **{{contact.FNAME}} {{contact.LNAME}}** for personalization
 	 * @example "{FNAME} {LNAME}"
 	 */
-	toField?: string
+	toField?: string;
 	/** Segment ids and List ids to include/exclude from campaign */
 	recipients?: {
 		/** List ids which have to be excluded from a campaign */
-		exclusionListIds?: number[]
+		exclusionListIds?: number[];
 		/** Lists Ids to send the campaign to. **Campaign should only be updated with listIds if listIds were used to create it. REQUIRED if already not present in campaign and scheduledAt is not empty** */
-		listIds?: number[]
+		listIds?: number[];
 		/** **Mandatory if listIds are not used. Campaign should only be updated with segmentIds if segmentIds were used to create it.** Segment ids to send the campaign to. */
-		segmentIds?: number[]
-	}
+		segmentIds?: number[];
+	};
 	/**
 	 * Absolute url of the attachment (no local file).
 	 * Extension allowed:
@@ -3548,51 +3572,51 @@ export interface UpdateEmailCampaign {
 	 * @format url
 	 * @example "https://attachment.domain.com"
 	 */
-	attachmentUrl?: string
+	attachmentUrl?: string;
 	/**
 	 * Status of inline image. inlineImageActivation = false means image can’t be embedded, & inlineImageActivation = true means image can be embedded, in the email.
 	 * You cannot send a campaign of more than **4MB** with images embedded in the email. Campaigns with the images embedded in the email _must be sent to less than 5000 contacts_.
 	 * @default false
 	 * @example true
 	 */
-	inlineImageActivation?: boolean
+	inlineImageActivation?: boolean;
 	/**
 	 * Status of mirror links in campaign. mirrorActive = false means mirror links are deactivated, & mirrorActive = true means mirror links are activated, in the campaign
 	 * @example true
 	 */
-	mirrorActive?: boolean
+	mirrorActive?: boolean;
 	/**
 	 * **FOR TRIGGER ONLY !** Type of trigger campaign.recurring = false means contact can receive the same Trigger campaign only once, & recurring = true means contact can receive the same Trigger campaign several times
 	 * @default false
 	 * @example false
 	 */
-	recurring?: boolean
+	recurring?: boolean;
 	/**
 	 * Footer of the email campaign
 	 * @example "[DEFAULT_FOOTER]"
 	 */
-	footer?: string
+	footer?: string;
 	/**
 	 * Header of the email campaign
 	 * @example "[DEFAULT_HEADER]"
 	 */
-	header?: string
+	header?: string;
 	/**
 	 * Customize the utm_campaign value. If this field is empty, the campaign name will be used. Only alphanumeric characters and spaces are allowed
 	 * @example "NL_05_2017"
 	 */
-	utmCampaign?: string
+	utmCampaign?: string;
 	/**
 	 * Pass the set of attributes to customize the type classic campaign. For example: **{"FNAME":"Joe", "LNAME":"Doe"}**. Only available if **type** is **classic**. It's considered only if campaign is in _New Template Language format_. The New Template Language is dependent on the values of **subject, htmlContent/htmlUrl, sender.name & toField**
 	 * @example {"FNAME":"Joe","LNAME":"Doe"}
 	 */
-	params?: Record<string, any>
+	params?: Record<string, any>;
 	/**
 	 * Set this to true if you want to send your campaign at best time.
 	 * Note:- **if true, warmup ip will be disabled.**
 	 * @example true
 	 */
-	sendAtBestTime?: boolean
+	sendAtBestTime?: boolean;
 	/**
 	 * Status of A/B Test. abTesting = false means it is disabled & abTesting = true means it is enabled. **subjectA, subjectB, splitRule, winnerCriteria & winnerDelay** will be considered when abTesting is set to true.
 	 * subjectA & subjectB are mandatory together & subject if passed is ignored. **Can be set to true only if sendAtBestTime is false**.
@@ -3600,19 +3624,19 @@ export interface UpdateEmailCampaign {
 	 * @default false
 	 * @example true
 	 */
-	abTesting?: boolean
+	abTesting?: boolean;
 	/**
 	 * Subject A of the campaign. **Mandatory if abTesting = true**.
 	 * subjectA & subjectB should have unique value
 	 * @example "Discover the New Collection!"
 	 */
-	subjectA?: string
+	subjectA?: string;
 	/**
 	 * Subject B of the campaign. **Mandatory if abTesting = true**.
 	 * subjectA & subjectB should have unique value
 	 * @example "Want to discover the New Collection?"
 	 */
-	subjectB?: string
+	subjectB?: string;
 	/**
 	 * Add the size of your test groups. **Mandatory if abTesting = true & 'recipients' is passed**. We'll send version A and B to a random sample of recipients, and then the winning version to everyone else
 	 * @format int64
@@ -3620,12 +3644,12 @@ export interface UpdateEmailCampaign {
 	 * @max 50
 	 * @example 50
 	 */
-	splitRule?: number
+	splitRule?: number;
 	/**
 	 * Choose the metrics that will determinate the winning version. **Mandatory if _splitRule_ >= 1 and < 50**. If splitRule = 50, `winnerCriteria` is ignored if passed
 	 * @example "open"
 	 */
-	winnerCriteria?: 'open' | 'click'
+	winnerCriteria?: "open" | "click";
 	/**
 	 * Choose the duration of the test in hours. Maximum is 7 days, pass 24*7 = 168 hours. The winning version will be sent at the end of the test. **Mandatory if _splitRule_ >= 1 and < 50**. If splitRule = 50, `winnerDelay` is ignored if passed
 	 * @format int64
@@ -3633,19 +3657,19 @@ export interface UpdateEmailCampaign {
 	 * @max 168
 	 * @example 50
 	 */
-	winnerDelay?: number
+	winnerDelay?: number;
 	/**
 	 * **Available for dedicated ip clients**. Set this to true if you wish to warm up your ip.
 	 * @default false
 	 * @example true
 	 */
-	ipWarmupEnable?: boolean
+	ipWarmupEnable?: boolean;
 	/**
 	 * Set an initial quota greater than 1 for warming up your ip. We recommend you set a value of 3000.
 	 * @format int64
 	 * @example 3000
 	 */
-	initialQuota?: number
+	initialQuota?: number;
 	/**
 	 * Set a percentage increase rate for warming up your ip. We recommend you set the increase rate to 30% per day. If you want to send the same number of emails every day, set the daily increase value to 0%.
 	 * @format int64
@@ -3653,17 +3677,17 @@ export interface UpdateEmailCampaign {
 	 * @max 100
 	 * @example 70
 	 */
-	increaseRate?: number
+	increaseRate?: number;
 	/**
 	 * Enter an unsubscription page id. The page id is a 24 digit alphanumeric id that can be found in the URL when editing the page.
 	 * @example "62cbb7fabbe85021021aac52"
 	 */
-	unsubscriptionPageId?: string
+	unsubscriptionPageId?: string;
 	/**
 	 * **Mandatory if templateId is used containing the {{ update_profile }} tag**. Enter an update profile form id. The form id is a 24 digit alphanumeric id that can be found in the URL when editing the form.
 	 * @example "6313436b9ad40e23b371d095"
 	 */
-	updateFormId?: string
+	updateFormId?: string;
 }
 
 export interface GetSharedTemplateUrl {
@@ -3672,7 +3696,7 @@ export interface GetSharedTemplateUrl {
 	 * @format url
 	 * @example "https://my.brevo.com/pt2YU7R5W_guXlowgumy_VX4pFsKu._zd0Gjj96x1_GMmzc1Qps5ZIpj6nx-"
 	 */
-	sharedUrl: string
+	sharedUrl: string;
 }
 
 export interface AbTestCampaignResult {
@@ -3680,52 +3704,52 @@ export interface AbTestCampaignResult {
 	 * Winning Campaign Info. pending = Campaign has been picked for sending and winning version is yet to be decided, tie = A tie happened between both the versions, notAvailable = Campaign has not yet been picked for sending.
 	 * @example "A"
 	 */
-	winningVersion?: 'notAvailable' | 'pending' | 'tie' | 'A' | 'B'
+	winningVersion?: "notAvailable" | "pending" | "tie" | "A" | "B";
 	/**
 	 * Criteria choosen for winning version (Open/Click)
 	 * @example "Open"
 	 */
-	winningCriteria?: 'Open' | 'Click'
+	winningCriteria?: "Open" | "Click";
 	/**
 	 * Subject Line of current winning version
 	 * @example "Subject Line A"
 	 */
-	winningSubjectLine?: string
+	winningSubjectLine?: string;
 	/**
 	 * Open rate for current winning version
 	 * @example "70%"
 	 */
-	openRate?: string
+	openRate?: string;
 	/**
 	 * Click rate for current winning version
 	 * @example "70%"
 	 */
-	clickRate?: string
+	clickRate?: string;
 	/**
 	 * Open/Click rate for the winner version
 	 * @example "70%"
 	 */
-	winningVersionRate?: string
+	winningVersionRate?: string;
 	statistics?: {
 		/** Percentage of a particular event for both versions */
-		openers: AbTestVersionStats
+		openers: AbTestVersionStats;
 		/** Percentage of a particular event for both versions */
-		clicks: AbTestVersionStats
+		clicks: AbTestVersionStats;
 		/** Percentage of a particular event for both versions */
-		unsubscribed: AbTestVersionStats
+		unsubscribed: AbTestVersionStats;
 		/** Percentage of a particular event for both versions */
-		hardBounces: AbTestVersionStats
+		hardBounces: AbTestVersionStats;
 		/** Percentage of a particular event for both versions */
-		softBounces: AbTestVersionStats
+		softBounces: AbTestVersionStats;
 		/** Percentage of a particular event for both versions */
-		complaints: AbTestVersionStats
-	}
+		complaints: AbTestVersionStats;
+	};
 	clickedLinks?: {
 		/** Information on clicked links for a particular version */
-		'Version A': AbTestVersionClicks
+		"Version A": AbTestVersionClicks;
 		/** Information on clicked links for a particular version */
-		'Version B': AbTestVersionClicks
-	}
+		"Version B": AbTestVersionClicks;
+	};
 }
 
 export interface EmailExportRecipients {
@@ -3734,20 +3758,20 @@ export interface EmailExportRecipients {
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	notifyURL?: string
+	notifyURL?: string;
 	/**
 	 * Type of recipients to export for a campaign
 	 * @example "openers"
 	 */
 	recipientsType:
-		| 'all'
-		| 'nonClickers'
-		| 'nonOpeners'
-		| 'clickers'
-		| 'openers'
-		| 'softBounces'
-		| 'hardBounces'
-		| 'unsubscribed'
+		| "all"
+		| "nonClickers"
+		| "nonOpeners"
+		| "clickers"
+		| "openers"
+		| "softBounces"
+		| "hardBounces"
+		| "unsubscribed";
 }
 
 export interface RequestSmsRecipientExport {
@@ -3756,12 +3780,18 @@ export interface RequestSmsRecipientExport {
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	notifyURL?: string
+	notifyURL?: string;
 	/**
 	 * Filter the recipients based on how they interacted with the campaign
 	 * @example "answered"
 	 */
-	recipientsType: 'all' | 'delivered' | 'answered' | 'softBounces' | 'hardBounces' | 'unsubscribed'
+	recipientsType:
+		| "all"
+		| "delivered"
+		| "answered"
+		| "softBounces"
+		| "hardBounces"
+		| "unsubscribed";
 }
 
 export interface SendReport {
@@ -3770,17 +3800,17 @@ export interface SendReport {
 	 * @default "fr"
 	 * @example "en"
 	 */
-	language?: 'fr' | 'es' | 'pt' | 'it' | 'de' | 'en'
+	language?: "fr" | "es" | "pt" | "it" | "de" | "en";
 	/** Custom attributes for the report email. */
 	email: {
 		/** Email addresses of the recipients */
-		to: string[]
+		to: string[];
 		/**
 		 * Custom text message to be presented in the report email.
 		 * @example "Please find attached the report of our last email campaign."
 		 */
-		body: string
-	}
+		body: string;
+	};
 }
 
 export interface UploadImageToGallery {
@@ -3790,12 +3820,12 @@ export interface UploadImageToGallery {
 	 * #### jpeg, jpg, png, bmp, gif.
 	 * @example "https://somedomain.com/image1.jpg"
 	 */
-	imageUrl: string
+	imageUrl: string;
 	/**
 	 * Name of the image.
 	 * @example "nature.jpg"
 	 */
-	name?: string
+	name?: string;
 }
 
 export interface SendSmtpEmail {
@@ -3809,20 +3839,20 @@ export interface SendSmtpEmail {
 		 * description: Name of the sender from which the emails will be sent. **Maximum allowed characters are 70**. Applicable only when email is passed.
 		 * @example "Mary from MyShop"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Email of the sender from which the emails will be sent. Mandatory if sender id is not passed.
 		 * @format email
 		 * @example "no-reply@myshop.com"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * Id of the sender from which the emails will be sent. In order to select a sender with specific pool of IP’s, dedicated ip users shall pass id (instead of email). Mandatory if email is not passed.
 		 * @format int64
 		 * @example 2
 		 */
-		id?: number
-	}
+		id?: number;
+	};
 	/**
 	 * **Mandatory if messageVersions are not passed, ignored if messageVersions are passed**
 	 * List of email addresses and names (_optional_) of the recipients. For example,
@@ -3834,13 +3864,13 @@ export interface SendSmtpEmail {
 		 * @format email
 		 * @example "jimmy98@example.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Name of the recipient. **Maximum allowed characters are 70**.
 		 * @example "Jimmy"
 		 */
-		name?: string
-	}[]
+		name?: string;
+	}[];
 	/** List of email addresses and names (_optional_) of the recipients in bcc */
 	bcc?: {
 		/**
@@ -3848,13 +3878,13 @@ export interface SendSmtpEmail {
 		 * @format email
 		 * @example "helen9766@example.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Name of the recipient in bcc. **Maximum allowed characters are 70**.
 		 * @example "Helen"
 		 */
-		name?: string
-	}[]
+		name?: string;
+	}[];
 	/** List of email addresses and names (_optional_) of the recipients in cc */
 	cc?: {
 		/**
@@ -3862,28 +3892,28 @@ export interface SendSmtpEmail {
 		 * @format email
 		 * @example "ann6533@example.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Name of the recipient in cc. **Maximum allowed characters are 70**.
 		 * @example "Ann"
 		 */
-		name?: string
-	}[]
+		name?: string;
+	}[];
 	/**
 	 * HTML body of the message. **Mandatory if 'templateId' is not passed, ignored if 'templateId' is passed**
 	 * @example "<!DOCTYPE html> <html> <body> <h1>Confirm you email</h1> <p>Please confirm your email address by clicking on the link below</p> </body> </html>"
 	 */
-	htmlContent?: string
+	htmlContent?: string;
 	/**
 	 * Plain Text body of the message. **Ignored if 'templateId' is passed**
 	 * @example "Please confirm your email address by clicking on the link https://text.domain.com"
 	 */
-	textContent?: string
+	textContent?: string;
 	/**
 	 * Subject of the message. **Mandatory if 'templateId' is not passed**
 	 * @example "Login Email confirmation"
 	 */
-	subject?: string
+	subject?: string;
 	/**
 	 * Email (**required**), along with name (_optional_), on which transactional mail recipients will be able to reply back. For example,
 	 * **{"email":"ann6533@example.com", "name":"Ann"}**
@@ -3894,13 +3924,13 @@ export interface SendSmtpEmail {
 		 * @format email
 		 * @example "ann6533@example.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Name in reply to. **Maximum allowed characters are 70**.
 		 * @example "Ann"
 		 */
-		name?: string
-	}
+		name?: string;
+	};
 	/**
 	 * Pass the _absolute URL_ (**no local file**) or the _base64 content_ of the attachment along with the attachment name. **Mandatory if attachment content is passed**. For example,
 	 * **[{"url":"https://attachment.domain.com/myAttachmentFromUrl.jpg", "name":"myAttachmentFromUrl.jpg"}, {"content":"base64 example content", "name":"myAttachmentFromBase64.jpg"}]**.
@@ -3914,37 +3944,37 @@ export interface SendSmtpEmail {
 		 * @format url
 		 * @example "https://attachment.domain.com/myAttachmentFromUrl.jpg"
 		 */
-		url?: string
+		url?: string;
 		/**
 		 * Base64 encoded chunk data of the attachment generated on the fly
 		 * @format byte
 		 * @pattern ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
 		 * @example "b3JkZXIucGRm"
 		 */
-		content?: string
+		content?: string;
 		/**
 		 * **Required if content is passed**. Name of the attachment
 		 * @example "myAttachment.png"
 		 */
-		name?: string
-	}[]
+		name?: string;
+	}[];
 	/**
 	 * Pass the set of custom headers (_not the standard headers_) that shall be sent along the mail headers in the original email. **'sender.ip'** header can be set (**only for dedicated ip users**) to mention the IP to be used for sending transactional emails. Headers are allowed in `This-Case-Only` (i.e. words separated by hyphen with first letter of each word in capital letter), they will be converted to such case styling if not in this format in the request payload. For example,
 	 * **{"sender.ip":"1.2.3.4", "X-Mailin-custom":"some_custom_header", "idempotencyKey":"abc-123"}**.
 	 * @example {"sender.ip":"1.2.3.4","X-Mailin-custom":"some_custom_header","idempotencyKey":"abc-123"}
 	 */
-	headers?: Record<string, any>
+	headers?: Record<string, any>;
 	/**
 	 * Id of the template.
 	 * @format int64
 	 * @example 2
 	 */
-	templateId?: number
+	templateId?: number;
 	/**
 	 * Pass the set of attributes to customize the template. For example, **{"FNAME":"Joe", "LNAME":"Doe"}**. It's **considered only if template is in New Template Language format**.
 	 * @example {"FNAME":"Joe","LNAME":"Doe"}
 	 */
-	params?: Record<string, any>
+	params?: Record<string, any>;
 	/**
 	 * You can customize and send out multiple versions of a mail. **templateId** can be customized only if global parameter contains templateId. **htmlContent and textContent** can be customized only if any of the two, htmlContent or textContent, is present in global parameters. Some global parameters such as **to(mandatory), bcc, cc, replyTo, subject** can also be customized specific to each version.
 	 * Total number of recipients in one API request must not exceed 2000. However, you can still pass upto 99 recipients maximum in one message version.
@@ -3962,18 +3992,18 @@ export interface SendSmtpEmail {
 			 * @format email
 			 * @example "jimmy98@example.com"
 			 */
-			email: string
+			email: string;
 			/**
 			 * Name of the recipient. **Maximum allowed characters are 70**.
 			 * @example "Jimmy"
 			 */
-			name?: string
-		}[]
+			name?: string;
+		}[];
 		/**
 		 * Pass the set of attributes to customize the template. For example, **{"FNAME":"Joe", "LNAME":"Doe"}**. It's **considered only if template is in New Template Language format**.
 		 * @example {"FNAME":"Joe","LNAME":"Doe"}
 		 */
-		params?: Record<string, any>
+		params?: Record<string, any>;
 		/** List of email addresses and names (_optional_) of the recipients in bcc */
 		bcc?: {
 			/**
@@ -3981,13 +4011,13 @@ export interface SendSmtpEmail {
 			 * @format email
 			 * @example "helen9766@example.com"
 			 */
-			email: string
+			email: string;
 			/**
 			 * Name of the recipient in bcc. **Maximum allowed characters are 70**.
 			 * @example "Helen"
 			 */
-			name?: string
-		}[]
+			name?: string;
+		}[];
 		/** List of email addresses and names (_optional_) of the recipients in cc */
 		cc?: {
 			/**
@@ -3995,13 +4025,13 @@ export interface SendSmtpEmail {
 			 * @format email
 			 * @example "ann6533@example.com"
 			 */
-			email: string
+			email: string;
 			/**
 			 * Name of the recipient in cc. **Maximum allowed characters are 70**.
 			 * @example "Ann"
 			 */
-			name?: string
-		}[]
+			name?: string;
+		}[];
 		/**
 		 * Email (**required**), along with name (_optional_), on which transactional mail recipients will be able to reply back. For example,
 		 * **{"email":"ann6533@example.com", "name":"Ann"}**
@@ -4012,32 +4042,32 @@ export interface SendSmtpEmail {
 			 * @format email
 			 * @example "ann6533@example.com"
 			 */
-			email: string
+			email: string;
 			/**
 			 * Name in reply to. **Maximum allowed characters are 70**.
 			 * @example "Ann"
 			 */
-			name?: string
-		}
+			name?: string;
+		};
 		/**
 		 * Custom subject specific to message version
 		 * @example "Login Email confirmation"
 		 */
-		subject?: string
-	}[]
+		subject?: string;
+	}[];
 	/** Tag your emails to find them more easily */
-	tags?: string[]
+	tags?: string[];
 	/**
 	 * UTC date-time on which the email has to schedule (YYYY-MM-DDTHH:mm:ss.SSSZ). Prefer to pass your timezone in date-time format for scheduling. There can be an expected delay of +5 minutes in scheduled email delivery. **Please note this feature is currently a public beta**.
 	 * @format date-time
 	 * @example "2022-04-05T12:30:00+02:00"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Valid UUIDv4 batch id to identify the scheduled batches transactional email. If not passed we will create a valid UUIDv4 batch id at our end.
 	 * @example "5c6cfa04-eed9-42c2-8b5c-6d470d978e9d"
 	 */
-	batchId?: string
+	batchId?: string;
 }
 
 export interface DeleteHardbounces {
@@ -4045,18 +4075,18 @@ export interface DeleteHardbounces {
 	 * Starting date (YYYY-MM-DD) of the time period for deletion. The hardbounces occurred after this date will be deleted. Must be less than or equal to the endDate
 	 * @example "2016-12-31T00:00:00.000Z"
 	 */
-	startDate?: string
+	startDate?: string;
 	/**
 	 * Ending date (YYYY-MM-DD) of the time period for deletion. The hardbounces until this date will be deleted. Must be greater than or equal to the startDate
 	 * @example "2017-01-31T00:00:00.000Z"
 	 */
-	endDate?: string
+	endDate?: string;
 	/**
 	 * Target a specific email address
 	 * @format email
 	 * @example "alex76@example.com"
 	 */
-	contactEmail?: string
+	contactEmail?: string;
 }
 
 export interface BlockDomain {
@@ -4064,7 +4094,7 @@ export interface BlockDomain {
 	 * name of the domain to be blocked
 	 * @example "example.com"
 	 */
-	domain: string
+	domain: string;
 }
 
 export interface CreateWebhook {
@@ -4073,12 +4103,12 @@ export interface CreateWebhook {
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	url: string
+	url: string;
 	/**
 	 * Description of the webhook
 	 * @example "Webhook triggered on unsubscription"
 	 */
-	description?: string
+	description?: string;
 	/**
 	 * - Events triggering the webhook. Possible values for **Transactional** type webhook:
 	 * #### `sent` OR `request`, `delivered`, `hardBounce`, `softBounce`, `blocked`, `spam`, `invalid`, `deferred`, `click`, `opened`, `uniqueOpened` and `unsubscribed`
@@ -4088,35 +4118,35 @@ export interface CreateWebhook {
 	 * #### `inboundEmailProcessed`
 	 */
 	events: (
-		| 'sent'
-		| 'hardBounce'
-		| 'softBounce'
-		| 'blocked'
-		| 'spam'
-		| 'delivered'
-		| 'request'
-		| 'click'
-		| 'invalid'
-		| 'deferred'
-		| 'opened'
-		| 'uniqueOpened'
-		| 'unsubscribed'
-		| 'listAddition'
-		| 'contactUpdated'
-		| 'contactDeleted'
-		| 'inboundEmailProcessed'
-	)[]
+		| "sent"
+		| "hardBounce"
+		| "softBounce"
+		| "blocked"
+		| "spam"
+		| "delivered"
+		| "request"
+		| "click"
+		| "invalid"
+		| "deferred"
+		| "opened"
+		| "uniqueOpened"
+		| "unsubscribed"
+		| "listAddition"
+		| "contactUpdated"
+		| "contactDeleted"
+		| "inboundEmailProcessed"
+	)[];
 	/**
 	 * Type of the webhook
 	 * @default "transactional"
 	 * @example "marketing"
 	 */
-	type?: 'transactional' | 'marketing' | 'inbound'
+	type?: "transactional" | "marketing" | "inbound";
 	/**
 	 * Inbound domain of webhook, required in case of event type `inbound`
 	 * @example "example.com"
 	 */
-	domain?: string
+	domain?: string;
 }
 
 export interface UpdateWebhook {
@@ -4125,12 +4155,12 @@ export interface UpdateWebhook {
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * Description of the webhook
 	 * @example "Webhook triggered on contact hardbounce"
 	 */
-	description?: string
+	description?: string;
 	/**
 	 * - Events triggering the webhook. Possible values for **Transactional** type webhook:
 	 * #### `sent` OR `request`, `delivered`, `hardBounce`, `softBounce`, `blocked`, `spam`, `invalid`, `deferred`, `click`, `opened`, `uniqueOpened` and `unsubscribed`
@@ -4140,29 +4170,29 @@ export interface UpdateWebhook {
 	 * #### `inboundEmailProcessed`
 	 */
 	events?: (
-		| 'sent'
-		| 'hardBounce'
-		| 'softBounce'
-		| 'blocked'
-		| 'spam'
-		| 'delivered'
-		| 'request'
-		| 'click'
-		| 'invalid'
-		| 'deferred'
-		| 'opened'
-		| 'uniqueOpened'
-		| 'unsubscribed'
-		| 'listAddition'
-		| 'contactUpdated'
-		| 'contactDeleted'
-		| 'inboundEmailProcessed'
-	)[]
+		| "sent"
+		| "hardBounce"
+		| "softBounce"
+		| "blocked"
+		| "spam"
+		| "delivered"
+		| "request"
+		| "click"
+		| "invalid"
+		| "deferred"
+		| "opened"
+		| "uniqueOpened"
+		| "unsubscribed"
+		| "listAddition"
+		| "contactUpdated"
+		| "contactDeleted"
+		| "inboundEmailProcessed"
+	)[];
 	/**
 	 * Inbound domain of webhook, used in case of event type `inbound`
 	 * @example "example.com"
 	 */
-	domain?: string
+	domain?: string;
 }
 
 export interface CreateDoiContact {
@@ -4171,28 +4201,28 @@ export interface CreateDoiContact {
 	 * @format email
 	 * @example "elly@example.com"
 	 */
-	email: string
+	email: string;
 	/**
 	 * Pass the set of attributes and their values. **These attributes must be present in your Brevo account**. For eg. **{'FNAME':'Elly', 'LNAME':'Roger'}**
 	 * @example {"FNAME":"Elly","LNAME":"Roger"}
 	 */
-	attributes?: Record<string, any>
+	attributes?: Record<string, any>;
 	/** Lists under user account where contact should be added */
-	includeListIds: number[]
+	includeListIds: number[];
 	/** Lists under user account where contact should not be added */
-	excludeListIds?: number[]
+	excludeListIds?: number[];
 	/**
 	 * Id of the Double opt-in (DOI) template
 	 * @format int64
 	 * @example 2
 	 */
-	templateId: number
+	templateId: number;
 	/**
 	 * URL of the web page that user will be redirected to after clicking on the double opt in URL. When editing your DOI template you can reference this URL by using the tag **{{ params.DOIurl }}**.
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	redirectionUrl: string
+	redirectionUrl: string;
 }
 
 export interface CreateContact {
@@ -4202,38 +4232,38 @@ export interface CreateContact {
 	 * @format email
 	 * @example "elly@example.com"
 	 */
-	email?: string
+	email?: string;
 	/**
 	 * Pass your own Id to create a contact.
 	 * @example "externalId"
 	 */
-	ext_id?: string
+	ext_id?: string;
 	/**
 	 * Pass the set of attributes and their values. The attribute's parameter should be passed in capital letter while creating a contact. **These attributes must be present in your Brevo account**. For eg:
 	 * **{"FNAME":"Elly", "LNAME":"Roger"}**
 	 * @example {"FNAME":"Elly","LNAME":"Roger"}
 	 */
-	attributes?: Record<string, any>
+	attributes?: Record<string, any>;
 	/**
 	 * Set this field to blacklist the contact for emails (emailBlacklisted = true)
 	 * @example false
 	 */
-	emailBlacklisted?: boolean
+	emailBlacklisted?: boolean;
 	/**
 	 * Set this field to blacklist the contact for SMS (smsBlacklisted = true)
 	 * @example false
 	 */
-	smsBlacklisted?: boolean
+	smsBlacklisted?: boolean;
 	/** Ids of the lists to add the contact to */
-	listIds?: number[]
+	listIds?: number[];
 	/**
 	 * Facilitate to update the existing contact in the same request (updateEnabled = true)
 	 * @default false
 	 * @example false
 	 */
-	updateEnabled?: boolean
+	updateEnabled?: boolean;
 	/** transactional email forbidden sender for contact. Use only for email Contact ( only available if updateEnabled = true ) */
-	smtpBlacklistSender?: string[]
+	smtpBlacklistSender?: string[];
 }
 
 export interface UpdateContact {
@@ -4242,28 +4272,28 @@ export interface UpdateContact {
 	 * The attribute's parameter should be passed in capital letter while updating a contact. Keep in mind transactional attributes can be updated the same way as normal attributes. Mobile Number in **SMS** field should be passed with proper country code. For example: **{"SMS":"+91xxxxxxxxxx"} or {"SMS":"0091xxxxxxxxxx"}**
 	 * @example {"EMAIL":"newemail@domain.com","FNAME":"Ellie","LNAME":"Roger"}
 	 */
-	attributes?: Record<string, any>
+	attributes?: Record<string, any>;
 	/**
 	 * Pass your own Id to update ext_id of a contact.
 	 * @example "updateExternalId"
 	 */
-	ext_id?: string
+	ext_id?: string;
 	/**
 	 * Set/unset this field to blacklist/allow the contact for emails (emailBlacklisted = true)
 	 * @example false
 	 */
-	emailBlacklisted?: boolean
+	emailBlacklisted?: boolean;
 	/**
 	 * Set/unset this field to blacklist/allow the contact for SMS (smsBlacklisted = true)
 	 * @example true
 	 */
-	smsBlacklisted?: boolean
+	smsBlacklisted?: boolean;
 	/** Ids of the lists to add the contact to */
-	listIds?: number[]
+	listIds?: number[];
 	/** Ids of the lists to remove the contact from */
-	unlinkListIds?: number[]
+	unlinkListIds?: number[];
 	/** transactional email forbidden sender for contact. Use only for email Contact */
-	smtpBlacklistSender?: string[]
+	smtpBlacklistSender?: string[];
 }
 
 export interface UpdateBatchContacts {
@@ -4274,46 +4304,46 @@ export interface UpdateBatchContacts {
 		 * @format email
 		 * @example "elly@example.com"
 		 */
-		email?: string
+		email?: string;
 		/**
 		 * id of the user to be updated (For each operation only pass one of the supported contact identifiers. Email, id or sms)
 		 * @format int64
 		 * @example 31
 		 */
-		id?: number
+		id?: number;
 		/**
 		 * SMS of the user to be updated (For each operation only pass one of the supported contact identifiers. Email, id or sms)
 		 * @example "+91xxxxxxxxxx"
 		 */
-		sms?: string
+		sms?: string;
 		/**
 		 * Pass your own Id to update ext_id of a contact.
 		 * @example "UpdateExternalId"
 		 */
-		ext_id?: string
+		ext_id?: string;
 		/**
 		 * Pass the set of attributes to be updated. **These attributes must be present in your account**. To update existing email address of a contact with the new one please pass EMAIL in attribtes. For example, **{ "EMAIL":"newemail@domain.com", "FNAME":"Ellie", "LNAME":"Roger"}**.
 		 * Keep in mind transactional attributes can be updated the same way as normal attributes. Mobile Number in **SMS** field should be passed with proper country code. For example: **{"SMS":"+91xxxxxxxxxx"} or {"SMS":"0091xxxxxxxxxx"}**
 		 * @example {"EMAIL":"newemail@domain.com","FNAME":"Ellie","LNAME":"Roger"}
 		 */
-		attributes?: Record<string, any>
+		attributes?: Record<string, any>;
 		/**
 		 * Set/unset this field to blacklist/allow the contact for emails (emailBlacklisted = true)
 		 * @example false
 		 */
-		emailBlacklisted?: boolean
+		emailBlacklisted?: boolean;
 		/**
 		 * Set/unset this field to blacklist/allow the contact for SMS (smsBlacklisted = true)
 		 * @example true
 		 */
-		smsBlacklisted?: boolean
+		smsBlacklisted?: boolean;
 		/** Ids of the lists to add the contact to */
-		listIds?: number[]
+		listIds?: number[];
 		/** Ids of the lists to remove the contact from */
-		unlinkListIds?: number[]
+		unlinkListIds?: number[];
 		/** transactional email forbidden sender for contact. Use only for email Contact */
-		smtpBlacklistSender?: string[]
-	}[]
+		smtpBlacklistSender?: string[];
+	}[];
 }
 
 export interface CreateAttribute {
@@ -4321,12 +4351,12 @@ export interface CreateAttribute {
 	 * Value of the attribute. **Use only if the attribute's category is 'calculated' or 'global'**
 	 * @example "COUNT[BLACKLISTED,BLACKLISTED,<,NOW()]"
 	 */
-	value?: string
+	value?: string;
 	/**
 	 * Type of the attribute. **Use only if the attribute's category is 'calculated' or 'global'**
 	 * @example true
 	 */
-	isRecurring?: boolean
+	isRecurring?: boolean;
 	/**
 	 * List of values and labels that the attribute can take. **Use only if the attribute's category is "category"**. For example:
 	 * **[{"value":1, "label":"male"}, {"value":2, "label":"female"}]**
@@ -4336,13 +4366,13 @@ export interface CreateAttribute {
 		 * Id of the value
 		 * @example 1
 		 */
-		value: number
+		value: number;
 		/**
 		 * Label of the value
 		 * @example "Women"
 		 */
-		label: string
-	}[]
+		label: string;
+	}[];
 	/**
 	 * Type of the attribute. **Use only if the attribute's category is 'normal', 'category' or 'transactional'**
 	 * Type **boolean** is only available if the category is **normal** attribute
@@ -4350,7 +4380,7 @@ export interface CreateAttribute {
 	 * Type **category** is only available if the category is **category** attribute
 	 * @example "text"
 	 */
-	type?: 'text' | 'date' | 'float' | 'boolean' | 'id' | 'category'
+	type?: "text" | "date" | "float" | "boolean" | "id" | "category";
 }
 
 export interface UpdateAttribute {
@@ -4358,7 +4388,7 @@ export interface UpdateAttribute {
 	 * Value of the attribute to update. **Use only if the attribute's category is 'calculated' or 'global'**
 	 * @example "COUNT[BLACKLISTED,BLACKLISTED,<,NOW()]"
 	 */
-	value?: string
+	value?: string;
 	/**
 	 * List of the values and labels that the attribute can take. **Use only if the attribute's category is "category"**. For example,
 	 * **[{"value":1, "label":"male"}, {"value":2, "label":"female"}]**
@@ -4368,13 +4398,13 @@ export interface UpdateAttribute {
 		 * Id of the value
 		 * @example 1
 		 */
-		value: number
+		value: number;
 		/**
 		 * Label of the value
 		 * @example "Men"
 		 */
-		label: string
-	}[]
+		label: string;
+	}[];
 }
 
 export interface CreateList {
@@ -4382,13 +4412,13 @@ export interface CreateList {
 	 * Name of the list
 	 * @example "Magento Customer - ES"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Id of the parent folder in which this list is to be created
 	 * @format int64
 	 * @example 2
 	 */
-	folderId: number
+	folderId: number;
 }
 
 export interface UpdateList {
@@ -4396,13 +4426,13 @@ export interface UpdateList {
 	 * Name of the list. Either of the two parameters (name, folderId) can be updated at a time.
 	 * @example "Magento Customer - ES"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * Id of the folder in which the list is to be moved. Either of the two parameters (name, folderId) can be updated at a time.
 	 * @format int64
 	 * @example 2
 	 */
-	folderId?: number
+	folderId?: number;
 }
 
 export interface RequestContactExport {
@@ -4410,7 +4440,7 @@ export interface RequestContactExport {
 	 * List of all the attributes that you want to export. **These attributes must be present in your contact database.** For example:
 	 * **['fname', 'lname', 'email']**
 	 */
-	exportAttributes?: string[]
+	exportAttributes?: string[];
 	/** Set the filter for the contacts to be exported. */
 	customContactFilter: {
 		/**
@@ -4419,7 +4449,11 @@ export interface RequestContactExport {
 		 * * **subscribed & unsubscribed** - Fetch the list of subscribed / unsubscribed (blacklisted via any means) contacts for a particular list.
 		 * * **unsubscribedPerList** - Fetch the list of contacts that are unsubscribed from a particular list only.
 		 */
-		actionForContacts?: 'allContacts' | 'subscribed' | 'unsubscribed' | 'unsubscribedPerList'
+		actionForContacts?:
+			| "allContacts"
+			| "subscribed"
+			| "unsubscribed"
+			| "unsubscribedPerList";
 		/**
 		 * **Mandatory if neither actionForContacts nor actionForSmsCampaigns is passed.** This will export the contacts on the basis of provided action applied on email campaigns.
 		 * * **openers & nonOpeners** - emailCampaignId is mandatory. Fetch the list of readers / non-readers for a particular email campaign.
@@ -4428,45 +4462,45 @@ export interface RequestContactExport {
 		 * * **hardBounces & softBounces** - emailCampaignId is optional. Fetch the list of hard bounces / soft bounces for a particular / all email campaign(s).
 		 */
 		actionForEmailCampaigns?:
-			| 'openers'
-			| 'nonOpeners'
-			| 'clickers'
-			| 'nonClickers'
-			| 'unsubscribed'
-			| 'hardBounces'
-			| 'softBounces'
+			| "openers"
+			| "nonOpeners"
+			| "clickers"
+			| "nonClickers"
+			| "unsubscribed"
+			| "hardBounces"
+			| "softBounces";
 		/**
 		 * **Mandatory if neither actionForContacts nor actionForEmailCampaigns is passed.** This will export the contacts on the basis of provided action applied on sms campaigns.
 		 * * **unsubscribed** - Fetch the list of all unsubscribed (blacklisted via any means) contacts for all / particular sms campaigns.
 		 * * **hardBounces & softBounces** - Fetch the list of hard bounces / soft bounces for all / particular sms campaigns.
 		 */
-		actionForSmsCampaigns?: 'hardBounces' | 'softBounces' | 'unsubscribed'
+		actionForSmsCampaigns?: "hardBounces" | "softBounces" | "unsubscribed";
 		/**
 		 * **Mandatory if actionForContacts is passed, ignored otherwise.** Id of the list for which the corresponding action shall be applied in the filter.
 		 * @format int64
 		 * @example 2
 		 */
-		listId?: number
+		listId?: number;
 		/**
 		 * Considered only if **actionForEmailCampaigns** is passed, ignored otherwise. **Mandatory if action is one of the following - openers, nonOpeners, clickers, nonClickers, unsubscribed.**
 		 * The id of the email campaign for which the corresponding action shall be applied in the filter.
 		 * @format int64
 		 * @example 12
 		 */
-		emailCampaignId?: number
+		emailCampaignId?: number;
 		/**
 		 * Considered only if **actionForSmsCampaigns** is passed, ignored otherwise. The id of sms campaign for which the corresponding action shall be applied in the filter.
 		 * @format int64
 		 * @example 12
 		 */
-		smsCampaignId?: number
-	}
+		smsCampaignId?: number;
+	};
 	/**
 	 * Webhook that will be called once the export process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	notifyUrl?: string
+	notifyUrl?: string;
 }
 
 export interface RequestContactImport {
@@ -4476,72 +4510,72 @@ export interface RequestContactImport {
 	 * @format url
 	 * @example "https://importfile.domain.com"
 	 */
-	fileUrl?: string
+	fileUrl?: string;
 	/**
 	 * **Mandatory if fileUrl and jsonBody is not defined.** CSV content to be imported. Use semicolon to separate multiple attributes. **Maximum allowed file body size is 10MB** . However we recommend a safe limit of around 8 MB to avoid the issues caused due to increase of file body size while parsing. Please use fileUrl instead to import bigger files.
 	 * @example "NAME;SURNAME;EMAIL
 	 * Smith;John;john.smith@example.com
 	 * Roger;Ellie;ellie36@example.com"
 	 */
-	fileBody?: string
+	fileBody?: string;
 	/** **Mandatory if fileUrl and fileBody is not defined.** JSON content to be imported. **Maximum allowed json body size is 10MB** . However we recommend a safe limit of around 8 MB to avoid the issues caused due to increase of json body size while parsing. Please use fileUrl instead to import bigger files. */
 	jsonBody?: {
-		email?: string
+		email?: string;
 		/** List of attributes to be imported */
-		attributes?: Record<string, any>
-	}[]
+		attributes?: Record<string, any>;
+	}[];
 	/** **Mandatory if newList is not defined.** Ids of the lists in which the contacts shall be imported. For example, **[2, 4, 7]**. */
-	listIds?: number[]
+	listIds?: number[];
 	/**
 	 * URL that will be called once the import process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	notifyUrl?: string
+	notifyUrl?: string;
 	/** To create a new list and import the contacts into it, pass the listName and an optional folderId. */
 	newList?: {
 		/**
 		 * List with listName will be created first and users will be imported in it. **Mandatory if listIds is empty**.
 		 * @example "ContactImport - 2017-05"
 		 */
-		listName?: string
+		listName?: string;
 		/**
 		 * Id of the folder where this new list shall be created. **Mandatory if listName is not empty**
 		 * @format int64
 		 * @example 2
 		 */
-		folderId?: number
-	}
+		folderId?: number;
+	};
 	/**
 	 * To blacklist all the contacts for email
 	 * @default false
 	 * @example false
 	 */
-	emailBlacklist?: boolean
+	emailBlacklist?: boolean;
 	/**
 	 * To disable email notification
 	 * @default false
 	 * @example false
 	 */
-	disableNotification?: boolean
+	disableNotification?: boolean;
 	/**
 	 * To blacklist all the contacts for sms
 	 * @default false
 	 * @example false
 	 */
-	smsBlacklist?: boolean
+	smsBlacklist?: boolean;
 	/**
 	 * To facilitate the choice to update the existing contacts
 	 * @default true
 	 * @example true
 	 */
-	updateExistingContacts?: boolean
+	updateExistingContacts?: boolean;
 	/**
 	 * To facilitate the choice to erase any attribute of the existing contacts with empty value. emptyContactsAttributes = true means the empty fields in your import will erase any attribute that currently contain data in Brevo, & emptyContactsAttributes = false means the empty fields will not affect your existing data ( **only available if `updateExistingContacts` set to true **)
 	 * @default false
 	 * @example true
 	 */
-	emptyContactsAttributes?: boolean
+	emptyContactsAttributes?: boolean;
 }
 
 export interface CreateSmsCampaign {
@@ -4549,45 +4583,45 @@ export interface CreateSmsCampaign {
 	 * Name of the campaign
 	 * @example "Spring Promo Code"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Name of the sender. **The number of characters is limited to 11 for alphanumeric characters and 15 for numeric characters**
 	 * @maxLength 15
 	 * @example "MyShop"
 	 */
-	sender: string
+	sender: string;
 	/**
 	 * Content of the message. The **maximum characters used per SMS is 160**, if used more than that, it will be counted as more than one SMS
 	 * @example "Get a discount by visiting our NY store and saying : Happy Spring!"
 	 */
-	content: string
+	content: string;
 	recipients?: {
 		/** Lists Ids to send the campaign to. **REQUIRED if scheduledAt is not empty** */
-		listIds: number[]
+		listIds: number[];
 		/** List ids which have to be excluded from a campaign */
-		exclusionListIds?: number[]
-	}
+		exclusionListIds?: number[];
+	};
 	/**
 	 * UTC date-time on which the campaign has to run (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.**
 	 * @example "2017-05-05T10:30:00.000Z"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Format of the message. It indicates whether the content should be treated as unicode or not.
 	 * @default false
 	 * @example true
 	 */
-	unicodeEnabled?: boolean
+	unicodeEnabled?: boolean;
 	/**
 	 * A recognizable prefix will ensure your audience knows who you are. Recommended by U.S. carriers. This will be added as your Brand Name before the message content. **Prefer verifying maximum length of 160 characters including this prefix in message content to avoid multiple sending of same sms.**
 	 * @example "MyCompany"
 	 */
-	organisationPrefix?: string
+	organisationPrefix?: string;
 	/**
 	 * Instructions to unsubscribe from future communications. Recommended by U.S. carriers. Must include **STOP** keyword. This will be added as instructions after the end of message content. **Prefer verifying maximum length of 160 characters including this instructions in message content to avoid multiple sending of same sms.**
 	 * @example "send Stop if you want to unsubscribe."
 	 */
-	unsubscribeInstruction?: string
+	unsubscribeInstruction?: string;
 }
 
 export interface UpdateSmsCampaign {
@@ -4595,45 +4629,45 @@ export interface UpdateSmsCampaign {
 	 * Name of the campaign
 	 * @example "Spring Promo Code"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * Name of the sender. **The number of characters is limited to 11 for alphanumeric characters and 15 for numeric characters**
 	 * @maxLength 15
 	 * @example "MyShop"
 	 */
-	sender?: string
+	sender?: string;
 	/**
 	 * Content of the message. The **maximum characters used per SMS is 160**, if used more than that, it will be counted as more than one SMS
 	 * @example "Get a discount by visiting our NY store and saying : Happy Spring!"
 	 */
-	content?: string
+	content?: string;
 	recipients?: {
 		/** Lists Ids to send the campaign to. **REQUIRED if scheduledAt is not empty** */
-		listIds: number[]
+		listIds: number[];
 		/** List ids which have to be excluded from a campaign */
-		exclusionListIds?: number[]
-	}
+		exclusionListIds?: number[];
+	};
 	/**
 	 * UTC date-time on which the campaign has to run (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.**
 	 * @example "2017-05-05T10:30:00.000Z"
 	 */
-	scheduledAt?: string
+	scheduledAt?: string;
 	/**
 	 * Format of the message. It indicates whether the content should be treated as unicode or not.
 	 * @default false
 	 * @example true
 	 */
-	unicodeEnabled?: boolean
+	unicodeEnabled?: boolean;
 	/**
 	 * A recognizable prefix will ensure your audience knows who you are. Recommended by U.S. carriers. This will be added as your Brand Name before the message content. **Prefer verifying maximum length of 160 characters including this prefix in message content to avoid multiple sending of same sms.**
 	 * @example "MyCompany"
 	 */
-	organisationPrefix?: string
+	organisationPrefix?: string;
 	/**
 	 * Instructions to unsubscribe from future communications. Recommended by U.S. carriers. Must include **STOP** keyword. This will be added as instructions after the end of message content. **Prefer verifying maximum length of 160 characters including this instructions in message content to avoid multiple sending of same sms.**
 	 * @example "send Stop if you want to unsubscribe."
 	 */
-	unsubscribeInstruction?: string
+	unsubscribeInstruction?: string;
 }
 
 export interface SendTransacSms {
@@ -4642,45 +4676,45 @@ export interface SendTransacSms {
 	 * @maxLength 15
 	 * @example "MyShop"
 	 */
-	sender: string
+	sender: string;
 	/**
 	 * Mobile number to send SMS with the country code
 	 * @example "33689965433"
 	 */
-	recipient: string
+	recipient: string;
 	/**
 	 * Content of the message. If more than **160 characters** long, will be sent as multiple text messages
 	 * @example "Enter this code:CCJJG8 to validate your account"
 	 */
-	content: string
+	content: string;
 	/**
 	 * Type of the SMS. Marketing SMS messages are those sent typically with marketing content. Transactional SMS messages are sent to individuals and are triggered in response to some action, such as a sign-up, purchase, etc.
 	 * @default "transactional"
 	 * @example "marketing"
 	 */
-	type?: 'transactional' | 'marketing'
+	type?: "transactional" | "marketing";
 	/**
 	 * Tag of the message
 	 * @example "accountValidation"
 	 */
-	tag?: string
+	tag?: string;
 	/**
 	 * Webhook to call for each event triggered by the message (delivered etc.)
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	webUrl?: string
+	webUrl?: string;
 	/**
 	 * Format of the message. It indicates whether the content should be treated as unicode or not.
 	 * @default false
 	 * @example true
 	 */
-	unicodeEnabled?: boolean
+	unicodeEnabled?: boolean;
 	/**
 	 * A recognizable prefix will ensure your audience knows who you are. Recommended by U.S. carriers. This will be added as your Brand Name before the message content. **Prefer verifying maximum length of 160 characters including this prefix in message content to avoid multiple sending of same sms.**
 	 * @example "MyCompany"
 	 */
-	organisationPrefix?: string
+	organisationPrefix?: string;
 }
 
 export interface SendTestEmail {
@@ -4688,7 +4722,7 @@ export interface SendTestEmail {
 	 * List of the email addresses of the recipients whom you wish to send the test mail.
 	 * _If left empty, the test mail will be sent to your entire test list. You can not send more than 50 test emails per day_.
 	 */
-	emailTo?: string[]
+	emailTo?: string[];
 }
 
 export interface SendTestSms {
@@ -4696,7 +4730,7 @@ export interface SendTestSms {
 	 * Mobile number of the recipient with the country code. This number **must belong to one of your contacts in Brevo account and must not be blacklisted**
 	 * @example "33689965433"
 	 */
-	phoneNumber?: string
+	phoneNumber?: string;
 }
 
 export interface GetTransacAggregatedSmsReport {
@@ -4704,61 +4738,61 @@ export interface GetTransacAggregatedSmsReport {
 	 * Time frame of the report
 	 * @example "2016-09-08|2017-04-06"
 	 */
-	range?: string
+	range?: string;
 	/**
 	 * Number of requests for the timeframe
 	 * @format int64
 	 * @example 263
 	 */
-	requests?: number
+	requests?: number;
 	/**
 	 * Number of delivered SMS for the timeframe
 	 * @format int64
 	 * @example 249
 	 */
-	delivered?: number
+	delivered?: number;
 	/**
 	 * Number of hardbounces for the timeframe
 	 * @format int64
 	 * @example 1
 	 */
-	hardBounces?: number
+	hardBounces?: number;
 	/**
 	 * Number of softbounces for the timeframe
 	 * @format int64
 	 * @example 4
 	 */
-	softBounces?: number
+	softBounces?: number;
 	/**
 	 * Number of blocked contact for the timeframe
 	 * @format int64
 	 * @example 2
 	 */
-	blocked?: number
+	blocked?: number;
 	/**
 	 * Number of unsubscription for the timeframe
 	 * @format int64
 	 * @example 6
 	 */
-	unsubscribed?: number
+	unsubscribed?: number;
 	/**
 	 * Number of answered SMS for the timeframe
 	 * @format int64
 	 * @example 12
 	 */
-	replied?: number
+	replied?: number;
 	/**
 	 * Number of accepted for the timeframe
 	 * @format int64
 	 * @example 252
 	 */
-	accepted?: number
+	accepted?: number;
 	/**
 	 * Number of rejected for the timeframe
 	 * @format int64
 	 * @example 8
 	 */
-	rejected?: number
+	rejected?: number;
 }
 
 export interface GetTransacSmsReport {
@@ -4768,62 +4802,62 @@ export interface GetTransacSmsReport {
 		 * @format date
 		 * @example "2017-03-17T00:00:00.000Z"
 		 */
-		date?: string
+		date?: string;
 		/**
 		 * Number of requests for the date
 		 * @format int64
 		 * @example 87
 		 */
-		requests?: number
+		requests?: number;
 		/**
 		 * Number of delivered SMS for the date
 		 * @format int64
 		 * @example 85
 		 */
-		delivered?: number
+		delivered?: number;
 		/**
 		 * Number of hardbounces for the date
 		 * @format int64
 		 * @example 1
 		 */
-		hardBounces?: number
+		hardBounces?: number;
 		/**
 		 * Number of softbounces for the date
 		 * @format int64
 		 * @example 1
 		 */
-		softBounces?: number
+		softBounces?: number;
 		/**
 		 * Number of blocked contact for the date
 		 * @format int64
 		 * @example 0
 		 */
-		blocked?: number
+		blocked?: number;
 		/**
 		 * Number of unsubscription for the date
 		 * @format int64
 		 * @example 1
 		 */
-		unsubscribed?: number
+		unsubscribed?: number;
 		/**
 		 * Number of answered SMS for the date
 		 * @format int64
 		 * @example 2
 		 */
-		replied?: number
+		replied?: number;
 		/**
 		 * Number of accepted for the date
 		 * @format int64
 		 * @example 85
 		 */
-		accepted?: number
+		accepted?: number;
 		/**
 		 * Number of rejected for the date
 		 * @format int64
 		 * @example 1
 		 */
-		rejected?: number
-	}[]
+		rejected?: number;
+	}[];
 }
 
 export interface GetIp {
@@ -4832,32 +4866,32 @@ export interface GetIp {
 	 * @format int64
 	 * @example 3
 	 */
-	id: number
+	id: number;
 	/**
 	 * Dedicated IP
 	 * @example "123.65.8.22"
 	 */
-	ip: string
+	ip: string;
 	/**
 	 * Status of the IP (true=active, false=inactive)
 	 * @example true
 	 */
-	active: boolean
+	active: boolean;
 	/**
 	 * Domain associated to the IP
 	 * @example "mailing.myshop.com"
 	 */
-	domain: string
+	domain: string;
 }
 
 export interface GetIpsFromSender {
 	/** Dedicated IP(s) linked to a sender */
-	ips: GetIpFromSender[]
+	ips: GetIpFromSender[];
 }
 
 export interface GetIps {
 	/** Dedicated IP(s) available on your account */
-	ips: GetIp[]
+	ips: GetIp[];
 }
 
 export interface GetIpFromSender {
@@ -4866,23 +4900,23 @@ export interface GetIpFromSender {
 	 * @format int64
 	 * @example 3
 	 */
-	id: number
+	id: number;
 	/**
 	 * Dedicated IP
 	 * @example "123.65.8.22"
 	 */
-	ip: string
+	ip: string;
 	/**
 	 * Domain associated to the IP
 	 * @example "mailing.myshop.dom"
 	 */
-	domain: string
+	domain: string;
 	/**
 	 * Weight of the IP
 	 * @format int64
 	 * @example 75
 	 */
-	weight: number
+	weight: number;
 }
 
 export interface ManageIp {
@@ -4890,7 +4924,7 @@ export interface ManageIp {
 	 * Dedicated ID
 	 * @example "123.65.8.22"
 	 */
-	ip?: string
+	ip?: string;
 }
 
 export interface GetTransacEmailContent {
@@ -4899,47 +4933,47 @@ export interface GetTransacEmailContent {
 	 * @format email
 	 * @example "abc@example.com"
 	 */
-	email: string
+	email: string;
 	/**
 	 * Subject of the sent email
 	 * @example "Summer Camp"
 	 */
-	subject: string
+	subject: string;
 	/**
 	 * Id of the template
 	 * @format int64
 	 * @example 2
 	 */
-	templateId?: number
+	templateId?: number;
 	/**
 	 * Date on which transactional email was sent
 	 * @example "2017-03-12T12:30:00.000Z"
 	 */
-	date: string
+	date: string;
 	/** Series of events which occurred on the transactional email */
 	events: {
 		/**
 		 * Name of the event that occurred on the sent email
 		 * @example "delivered"
 		 */
-		name: string
+		name: string;
 		/**
 		 * Time at which the event occurred
 		 * @example "2017-03-12T12:30:00.000Z"
 		 */
-		time: string
-	}[]
+		time: string;
+	}[];
 	/**
 	 * Actual content of the transactional email that has been sent
 	 * @example "<!DOCTYPE html> <html> <body> <h1>Greetings from the team</h1> <p>This is the actual html content sent</p> </body> </html>"
 	 */
-	body: string
+	body: string;
 	/**
 	 * Count of the attachments that were sent in the email
 	 * @format int64
 	 * @example 2
 	 */
-	attachmentCount: number
+	attachmentCount: number;
 }
 
 export interface GetTransacEmailsList {
@@ -4948,54 +4982,54 @@ export interface GetTransacEmailsList {
 	 * @format int64
 	 * @example 5
 	 */
-	count?: number
+	count?: number;
 	transactionalEmails?: {
 		/**
 		 * Email address to which transactional email has been sent
 		 * @format email
 		 * @example "john.smith@example.com"
 		 */
-		email: string
+		email: string;
 		/**
 		 * Subject of the sent email
 		 * @example "Summer Camp"
 		 */
-		subject: string
+		subject: string;
 		/**
 		 * Id of the template
 		 * @format int64
 		 * @example 2
 		 */
-		templateId?: number
+		templateId?: number;
 		/**
 		 * Message Id of the sent email
 		 * @example "<201798300811.5700093@relay.domain.com>"
 		 */
-		messageId: string
+		messageId: string;
 		/**
 		 * Unique id of the email sent to a particular contact
 		 * @example "5a78c-209ok98262910-s99a341"
 		 */
-		uuid: string
+		uuid: string;
 		/**
 		 * Date on which transactional email was sent
 		 * @example "2017-03-12T12:30:00.000Z"
 		 */
-		date: string
+		date: string;
 		/**
 		 * Email address of the sender from which the email was sent
 		 * @format email
 		 * @example "diana.doe@example.com"
 		 */
-		from?: string
+		from?: string;
 		/** Tags used for your email */
-		tags?: string[]
-	}[]
+		tags?: string[];
+	}[];
 }
 
 export interface GetBlockedDomains {
 	/** List of all blocked domains */
-	domains: string[]
+	domains: string[];
 }
 
 /** Percentage of a particular event for both versions */
@@ -5004,12 +5038,12 @@ export interface AbTestVersionStats {
 	 * percentage of an event for version A
 	 * @example "50%"
 	 */
-	'Version A': string
+	"Version A": string;
 	/**
 	 * percentage of an event for version B
 	 * @example "50%"
 	 */
-	'Version B': string
+	"Version B": string;
 }
 
 /** Information on clicked links for a particular version */
@@ -5018,19 +5052,19 @@ export type AbTestVersionClicks = {
 	 * URL of the link
 	 * @example "https://facbook.com/versionA"
 	 */
-	link: string
+	link: string;
 	/**
 	 * Number of times a link is clicked
 	 * @format int64
 	 * @example 3
 	 */
-	clicksCount: number
+	clicksCount: number;
 	/**
 	 * Percentage of clicks of link with respect to total clicks
 	 * @example "40%"
 	 */
-	clickRate: string
-}[]
+	clickRate: string;
+}[];
 
 export interface GetInboundEmailEvents {
 	events?: {
@@ -5038,23 +5072,23 @@ export interface GetInboundEmailEvents {
 		 * UUID that can be used to fetch additional data
 		 * @format uuid
 		 */
-		uuid: string
+		uuid: string;
 		/**
 		 * Date when email was received on SMTP relay
 		 * @format date-time
 		 */
-		date: string
+		date: string;
 		/**
 		 * Sender’s email address
 		 * @format email
 		 */
-		sender: string
+		sender: string;
 		/**
 		 * Recipient’s email address
 		 * @format email
 		 */
-		recipient: string
-	}[]
+		recipient: string;
+	}[];
 }
 
 export interface GetInboundEmailEventsByUuid {
@@ -5063,66 +5097,66 @@ export interface GetInboundEmailEventsByUuid {
 	 * @format date-time
 	 * @example "2019-05-25T11:53:26Z"
 	 */
-	receivedAt?: string
+	receivedAt?: string;
 	/**
 	 * Date when email was delivered successfully to client’s webhook
 	 * @format date-time
 	 */
-	deliveredAt?: string | null
+	deliveredAt?: string | null;
 	/**
 	 * Recipient’s email address
 	 * @format email
 	 */
-	recipient?: string
+	recipient?: string;
 	/**
 	 * Sender’s email address
 	 * @format email
 	 */
-	sender?: string
+	sender?: string;
 	/** Value of the Message-ID header. This will be present only after the processing is done. */
-	messageId?: string
+	messageId?: string;
 	/** Value of the Subject header. This will be present only after the processing is done.  */
-	subject?: string
+	subject?: string;
 	/** List of attachments of the email. This will be present only after the processing is done. */
 	attachments?: {
 		/** filename specified in the Content-Disposition header of the attachment */
-		name?: string
+		name?: string;
 		/** value of the Content-Type header of the attachment */
-		contentType?: string
+		contentType?: string;
 		/** value of the Content-ID header of the attachment. */
-		contentId?: string
+		contentId?: string;
 		/** size of the attachment in bytes */
-		contentLength?: number
-	}[]
+		contentLength?: number;
+	}[];
 	/** List of events/logs that describe the lifecycle of the email on SIB platform */
 	logs?: {
 		/**
 		 * Date of the event
 		 * @format date-time
 		 */
-		date?: string
+		date?: string;
 		/** Type of the event */
-		type?: 'received' | 'processed' | 'webhookFailed' | 'webhookDelivered'
-	}[]
+		type?: "received" | "processed" | "webhookFailed" | "webhookDelivered";
+	}[];
 }
 
 export interface GetScheduledEmailByBatchId {
 	/** Total number of batches */
-	count?: number
+	count?: number;
 	batches?: {
 		/**
 		 * Datetime for which the batch was scheduled
 		 * @format date-time
 		 */
-		scheduledAt: string
+		scheduledAt: string;
 		/**
 		 * Datetime on which the batch was scheduled
 		 * @format date-time
 		 */
-		createdAt: string
+		createdAt: string;
 		/** Current status of the scheduled batch */
-		status: 'inProgress' | 'queued' | 'processed' | 'error'
-	}[]
+		status: "inProgress" | "queued" | "processed" | "error";
+	}[];
 }
 
 export interface GetScheduledEmailByMessageId {
@@ -5130,47 +5164,47 @@ export interface GetScheduledEmailByMessageId {
 	 * Datetime for which the email was scheduled
 	 * @format date-time
 	 */
-	scheduledAt: string
+	scheduledAt: string;
 	/**
 	 * Datetime on which the email was scheduled
 	 * @format date-time
 	 */
-	createdAt: string
+	createdAt: string;
 	/** Current status of the scheduled email */
-	status: 'inProgress' | 'queued' | 'processed' | 'error'
+	status: "inProgress" | "queued" | "processed" | "error";
 }
 
 export interface SubAccountsResponse {
 	/** Total number of subaccounts */
-	count?: number
+	count?: number;
 	subAccounts?: {
 		/**
 		 * id of the sub-account
 		 * @format int64
 		 */
-		id: number
+		id: number;
 		/** Name of the sub-account company */
-		companyName: string
+		companyName: string;
 		/** Whether the sub-account is active or not */
-		active: boolean
+		active: boolean;
 		/**
 		 * Timestamp when the sub-account was created
 		 * @format int64
 		 */
-		createdAt: number
-	}[]
+		createdAt: number;
+	}[];
 }
 
 /** @example {"companyName":"Test Sub-account","email":"test-sub@example.com","timezone":"Europe/Paris","language":"en"} */
 export interface CreateSubAccount {
 	/** Set the name of the sub-account company */
-	companyName: string
+	companyName: string;
 	/** Email address for the organization */
-	email: string
+	email: string;
 	/** Set the language of the sub-account */
-	language?: 'en' | 'fr' | 'it' | 'es' | 'pt' | 'de'
+	language?: "en" | "fr" | "it" | "es" | "pt" | "de";
 	/** Set the timezone of the sub-account */
-	timezone?: string
+	timezone?: string;
 }
 
 export interface CreateSubAccountResponse {
@@ -5179,97 +5213,97 @@ export interface CreateSubAccountResponse {
 	 * @format int64
 	 * @example 5
 	 */
-	id: number
+	id: number;
 }
 
 export interface MasterDetailsResponse {
 	/** Email id of master account */
-	email?: string
+	email?: string;
 	/** Company name of master account organization */
-	companyName?: string
+	companyName?: string;
 	/**
 	 * Unique identifier of the master account organization
 	 * @format int64
 	 */
-	id?: number
+	id?: number;
 	/** Currency code of the master account organization */
-	currencyCode?: string
+	currencyCode?: string;
 	/** Timezone of the master account organization */
-	timezone?: string
+	timezone?: string;
 	/** Billing details of the master account organization */
 	billingInfo?: {
 		/** Billing email id of master account */
-		email?: string
+		email?: string;
 		/** Company name of master account */
-		companyName?: string
+		companyName?: string;
 		/** Billing name of master account holder */
 		name?: {
 			/** First name for billing */
-			givenName?: string
+			givenName?: string;
 			/** Last name for billing */
-			familyName?: string
-		}
+			familyName?: string;
+		};
 		/** Billing address of master account */
 		address?: {
 			/** Street address */
-			streetAddress?: string
+			streetAddress?: string;
 			/** Locality */
-			locality?: string
+			locality?: string;
 			/** Postal code */
-			postalCode?: string
+			postalCode?: string;
 			/** State code */
-			stateCode?: string
+			stateCode?: string;
 			/** Country code */
-			countryCode?: string
-		}
-	}
+			countryCode?: string;
+		};
+	};
 	/** Plan details */
 	planInfo?: {
 		/** Plan currency */
-		currencyCode?: string
+		currencyCode?: string;
 		/**
 		 * Timestamp of next billing date
 		 * @format int64
 		 */
-		nextBillingAt?: number
+		nextBillingAt?: number;
 		/** Plan amount */
-		price?: number
+		price?: number;
 		/** Plan period type */
-		planPeriod?: 'month' | 'year'
+		planPeriod?: "month" | "year";
 		/** Number of sub-accounts */
-		subAccounts?: number
+		subAccounts?: number;
 		/** List of provided features in the plan */
 		features?: {
 			/** Name of the feature */
-			name?: string
+			name?: string;
 			/** Unit value of the feature */
-			unitValue?: string
+			unitValue?: string;
 			/**
 			 * Quantity provided in the plan
 			 * @format int64
 			 */
-			quantity?: number
+			quantity?: number;
 			/**
 			 * Quantity consumed by master
 			 * @format int64
 			 */
-			used?: number
+			used?: number;
 			/**
 			 * Quantity remaining in the plan
 			 * @format int64
 			 */
-			remaining?: number
-		}[]
-	}
+			remaining?: number;
+		}[];
+	};
 }
 
 export interface SubAccountDetailsResponse {
 	/** Name of the sub-account user */
-	name?: string
+	name?: string;
 	/** Email id of the sub-account organization */
-	email?: string
+	email?: string;
 	/** Sub-account company name */
-	companyName?: string
+	companyName?: string;
 	/** Sub-account plan details */
 	planInfo?: {
 		/** Credits quota and remaining credits on the sub-account */
@@ -5278,21 +5312,21 @@ export interface SubAccountDetailsResponse {
 			 * SMS credits remaining on the sub-account
 			 * @format int64
 			 */
-			sms?: number
+			sms?: number;
 			/** Email credits remaining on the sub-account */
 			emails?: {
 				/**
 				 * Quantity of email messaging limits provided
 				 * @format int64
 				 */
-				quantity?: number
+				quantity?: number;
 				/**
 				 * Available email messaging limits for use
 				 * @format int64
 				 */
-				remaining?: number
-			}
-		}
+				remaining?: number;
+			};
+		};
 		/** Features available on the sub-account */
 		features?: {
 			/** Inbox details */
@@ -5301,43 +5335,43 @@ export interface SubAccountDetailsResponse {
 				 * Quantity of inbox provided
 				 * @format int64
 				 */
-				quantity?: number
+				quantity?: number;
 				/**
 				 * Available inboxes for use
 				 * @format int64
 				 */
-				remaining?: number
-			}
+				remaining?: number;
+			};
 			/** Landing page details */
 			landingPage?: {
 				/**
 				 * Quantity of landing pages provided
 				 * @format int64
 				 */
-				quantity?: number
+				quantity?: number;
 				/**
 				 * Available landing pages for use
 				 * @format int64
 				 */
-				remaining?: number
-			}
+				remaining?: number;
+			};
 			/** Multi-account details */
 			users?: {
 				/**
 				 * Quantity of multi-account's provided
 				 * @format int64
 				 */
-				quantity?: number
+				quantity?: number;
 				/**
 				 * Available multi-accounts for use
 				 * @format int64
 				 */
-				remaining?: number
-			}
-		}
+				remaining?: number;
+			};
+		};
 		/** type of the plan */
-		planType?: string
-	}
+		planType?: string;
+	};
 }
 
 /**
@@ -5351,26 +5385,26 @@ export interface SubAccountUpdatePlanRequest {
 		 * Number of email credits
 		 * @format int64
 		 */
-		email?: number
-	}
+		email?: number;
+	};
 	/** Features details to update */
 	features?: {
 		/**
 		 * Number of multi-users
 		 * @format int64
 		 */
-		users?: number
+		users?: number;
 		/**
 		 * Number of landing pages
 		 * @format int64
 		 */
-		landingPage?: number
+		landingPage?: number;
 		/**
 		 * Number of inboxes
 		 * @format int64
 		 */
-		inbox?: number
-	}
+		inbox?: number;
+	};
 }
 
 /**
@@ -5379,31 +5413,31 @@ export interface SubAccountUpdatePlanRequest {
  */
 export interface SubAccountAppsToggleRequest {
 	/** Set this field to enable or disable Inbox on the sub-account */
-	inbox?: boolean
+	inbox?: boolean;
 	/** Set this field to enable or disable Whatsapp campaigns on the sub-account */
-	whatsapp?: boolean
+	whatsapp?: boolean;
 	/** Set this field to enable or disable Automation on the sub-account */
-	automation?: boolean
+	automation?: boolean;
 	/** Set this field to enable or disable Email Campaigns on the sub-account */
-	'email-campaigns'?: boolean
+	"email-campaigns"?: boolean;
 	/** Set this field to enable or disable SMS Marketing on the sub-account */
-	'sms-campaigns'?: boolean
+	"sms-campaigns"?: boolean;
 	/** Set this field to enable or disable Landing pages on the sub-account */
-	'landing-pages'?: boolean
+	"landing-pages"?: boolean;
 	/** Set this field to enable or disable Transactional Email on the sub-account */
-	'transactional-emails'?: boolean
+	"transactional-emails"?: boolean;
 	/** Set this field to enable or disable Transactional SMS on the sub-account */
-	'transactional-sms'?: boolean
+	"transactional-sms"?: boolean;
 	/** Set this field to enable or disable Facebook ads on the sub-account */
-	'facebook-ads'?: boolean
+	"facebook-ads"?: boolean;
 	/** Set this field to enable or disable Web Push on the sub-account */
-	'web-push'?: boolean
+	"web-push"?: boolean;
 	/** Set this field to enable or disable Meetings on the sub-account */
-	meetings?: boolean
+	meetings?: boolean;
 	/** Set this field to enable or disable Conversations on the sub-account */
-	conversations?: boolean
+	conversations?: boolean;
 	/** Set this field to enable or disable Sales CRM on the sub-account */
-	crm?: boolean
+	crm?: boolean;
 }
 
 /** Task types details */
@@ -5412,12 +5446,12 @@ export interface TaskTypes {
 	 * Id of task type
 	 * @example "61a88a2eb7a574180261234"
 	 */
-	id?: string
+	id?: string;
 	/**
 	 * Title of task type
 	 * @example "Email"
 	 */
-	title?: string
+	title?: string;
 }
 
 /** Task Details */
@@ -5426,32 +5460,32 @@ export interface Task {
 	 * Unique task id
 	 * @example "61a5cd07ca1347c82306ad06"
 	 */
-	id?: string
+	id?: string;
 	/**
 	 * Id for type of task e.g Call / Email / Meeting etc.
 	 * @example "61a5cd07ca1347c82306ad09"
 	 */
-	taskTypeId: string
+	taskTypeId: string;
 	/**
 	 * Name of task
 	 * @example "Task: Connect with client"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Contact ids for contacts linked to this task
 	 * @example [1,2,3]
 	 */
-	contactsIds?: number[]
+	contactsIds?: number[];
 	/**
 	 * Deal ids for deals a task is linked to
 	 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 	 */
-	dealsIds?: string[]
+	dealsIds?: string[];
 	/**
 	 * Companies ids for companies a task is linked to
 	 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 	 */
-	companiesIds?: string[]
+	companiesIds?: string[];
 }
 
 /** Task reminder date/time for a task */
@@ -5460,18 +5494,18 @@ export interface TaskReminder {
 	 * Value of time unit before reminder is to be sent
 	 * @example 10
 	 */
-	value: number
+	value: number;
 	/** Unit of time before reminder is to be sent */
-	unit: 'minutes' | 'hours' | 'weeks' | 'days'
+	unit: "minutes" | "hours" | "weeks" | "days";
 	/**
 	 * Type of task reminder e.g email, push
 	 * @example ["email"]
 	 */
-	types: ('email' | 'push')[]
+	types: ("email" | "push")[];
 }
 
 /** List of files */
-export type FileList = FileData[]
+export type FileList = FileData[];
 
 /** Downloadable file link */
 export interface FileDownloadableLink {
@@ -5479,7 +5513,7 @@ export interface FileDownloadableLink {
 	 * A unique link to download the requested file.
 	 * @example "https://storage.googleapis.com/brevo-app-crm.......-sample.pdf"
 	 */
-	fileUrl?: string
+	fileUrl?: string;
 }
 
 /** File data that is uploaded */
@@ -5488,40 +5522,40 @@ export interface FileData {
 	 * Name of uploaded file
 	 * @example "example.png"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * Account id of user which created the file
 	 * @example "61a5ce58y5d4795761045991"
 	 */
-	authorId?: string
+	authorId?: string;
 	/**
 	 * Contact id of contact on which file is uploaded
 	 * @format int64
 	 * @example 1
 	 */
-	contactId?: number
+	contactId?: number;
 	/**
 	 * Deal id linked to a file
 	 * @example "61a5ce58c5d4795761045991"
 	 */
-	dealId?: string
+	dealId?: string;
 	/**
 	 * Company id linked to a file
 	 * @example "61a5ce58c5d4795761045991"
 	 */
-	companyId?: string
+	companyId?: string;
 	/**
 	 * Size of file in bytes
 	 * @format int64
 	 * @example 10
 	 */
-	size?: number
+	size?: number;
 	/**
 	 * File created date/time
 	 * @format date-time
 	 * @example "2017-05-01T17:05:03.000Z"
 	 */
-	createdAt?: string
+	createdAt?: string;
 }
 
 /** Note data to be saved */
@@ -5532,22 +5566,22 @@ export interface NoteData {
 	 * @maxLength 3000
 	 * @example "In communication with client for resolution of queries."
 	 */
-	text: string
+	text: string;
 	/**
 	 * Contact Ids linked to a note
 	 * @example [247,1,2]
 	 */
-	contactIds?: number[]
+	contactIds?: number[];
 	/**
 	 * Deal Ids linked to a note
 	 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991"]
 	 */
-	dealIds?: string[]
+	dealIds?: string[];
 	/**
 	 * Company Ids linked to a note
 	 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991"]
 	 */
-	companyIds?: string[]
+	companyIds?: string[];
 }
 
 /** Note Details */
@@ -5556,41 +5590,41 @@ export interface Note {
 	 * Unique note Id
 	 * @example "61a5cd07ca1347c82306ad09"
 	 */
-	id?: string
+	id?: string;
 	/**
 	 * Text content of a note
 	 * @minLength 1
 	 * @maxLength 3000
 	 * @example "In communication with client for resolution of queries."
 	 */
-	text: string
+	text: string;
 	/**
 	 * Contact ids linked to a note
 	 * @example [247,1,2]
 	 */
-	contactIds?: number[]
+	contactIds?: number[];
 	/**
 	 * Deal ids linked to a note
 	 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991"]
 	 */
-	dealIds?: string[]
+	dealIds?: string[];
 	/**
 	 * Account details of user which created the note
 	 * @example {"id":"61a5ce58y5d4795761045991","email":"johndoe@example.com","locale":"en_GB","timezone":"Asia/Kolkata","name":{"fullName":"John Doe"}}
 	 */
-	authorId?: object
+	authorId?: object;
 	/**
 	 * Note created date/time
 	 * @format date-time
 	 * @example "2017-05-01T17:05:03.000Z"
 	 */
-	createdAt?: string
+	createdAt?: string;
 	/**
 	 * Note updated date/time
 	 * @format date-time
 	 * @example "2017-05-01T17:05:03.000Z"
 	 */
-	updatedAt?: string
+	updatedAt?: string;
 }
 
 /** Updated Note ID */
@@ -5599,20 +5633,20 @@ export interface NoteId {
 	 * Unique note Id
 	 * @example "61a5cd07ca1347c82306ad09"
 	 */
-	id?: string
+	id?: string;
 }
 
 /** List of notes */
-export type NoteList = Note[]
+export type NoteList = Note[];
 
 /** List of tasks */
 export interface TaskList {
 	/** List of tasks */
-	items?: Task[]
+	items?: Task[];
 }
 
 /** List of pipeline */
-export type Pipelines = Pipeline[]
+export type Pipelines = Pipeline[];
 
 /** List of stages */
 export interface PipelineStage {
@@ -5620,12 +5654,12 @@ export interface PipelineStage {
 	 * Stage id
 	 * @example "9e577ff7-8e42-4ab3-be26-2b5e01b42518"
 	 */
-	id?: string
+	id?: string;
 	/**
 	 * Stage name
 	 * @example "New"
 	 */
-	name?: string
+	name?: string;
 }
 
 /** List of stages */
@@ -5634,33 +5668,33 @@ export interface Pipeline {
 	 * Pipeline name
 	 * @example "Sales Pipeline"
 	 */
-	pipeline_name?: string
+	pipeline_name?: string;
 	/**
 	 * Pipeline id
 	 * @example "5ea675e3da0dd085acaea610"
 	 */
-	pipeline?: string
+	pipeline?: string;
 	/** List of stages */
-	stages?: PipelineStage[]
+	stages?: PipelineStage[];
 }
 
 /** List of deal attributes */
 export type DealAttributes = {
 	/** @example "deal_name" */
-	internalName?: string
+	internalName?: string;
 	/** @example "Deal Name" */
-	label?: string
+	label?: string;
 	/** @example "text" */
-	attributeTypeName?: string
-	attributeOptions?: object[]
+	attributeTypeName?: string;
+	attributeOptions?: object[];
 	/** @example true */
-	isRequired?: boolean
-}[]
+	isRequired?: boolean;
+}[];
 
 /** List of Deals */
 export interface DealsList {
 	/** List of deals */
-	items?: Deal[]
+	items?: Deal[];
 }
 
 /** Deal Details */
@@ -5669,28 +5703,28 @@ export interface Deal {
 	 * Unique deal id
 	 * @example "629475917295261d9b1f4403"
 	 */
-	id?: string
+	id?: string;
 	/**
 	 * Deal attributes with values
 	 * @example {"deal_name":"testname","deal_owner":"6093d2425a9b436e9519d034","amount":12,"pipeline":"6093d296ad1e9c5cf2140a58","deal_stage":"9e577ff7-8e42-4ab3-be26-2b5e01b42518","stage_updated_at":"2022-05-30T07:42:05.671Z","created_at":"2022-05-30T07:42:05.671Z","number_of_contacts":1,"last_updated_date":"2022-06-06T08:38:36.761Z","last_activity_date":"2022-06-06T08:38:36.000Z","next_activity_date":null,"number_of_activities":0}
 	 */
-	attributes?: object
+	attributes?: object;
 	/**
 	 * Contact ids for contacts linked to this deal
 	 * @example [1,2,3]
 	 */
-	linkedContactsIds?: number[]
+	linkedContactsIds?: number[];
 	/**
 	 * Companies ids for companies linked to this deal
 	 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 	 */
-	linkedCompaniesIds?: string[]
+	linkedCompaniesIds?: string[];
 }
 
 /** List of companies */
 export interface CompaniesList {
 	/** List of compaies */
-	items?: Company[]
+	items?: Company[];
 }
 
 /** Company Details */
@@ -5699,38 +5733,38 @@ export interface Company {
 	 * Unique comoany id
 	 * @example "629475917295261d9b1f4403"
 	 */
-	id?: string
+	id?: string;
 	/**
 	 * Company attributes with values
 	 * @example {"created_at":"2022-01-13T19:04:24.376+05:30","domain":"xyz","last_updated_at":"2022-04-01T18:47:48.283+05:30","name":"text","number_of_contacts":0,"owner":"62260474111b1101704a9d85","owner_assign_date":"2022-04-01T18:21:13.379+05:30","phone_number":8171844192,"revenue":10}
 	 */
-	attributes?: object
+	attributes?: object;
 	/**
 	 * Contact ids for contacts linked to this company
 	 * @format in64
 	 * @example [1,2,3]
 	 */
-	linkedContactsIds?: number[]
+	linkedContactsIds?: number[];
 	/**
 	 * Deals ids for companies linked to this company
 	 * @format objectID
 	 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 	 */
-	linkedDealsIds?: string[]
+	linkedDealsIds?: string[];
 }
 
 /** List of company attributes */
 export type CompanyAttributes = {
 	/** @example "name" */
-	internalName?: string
+	internalName?: string;
 	/** @example "Company Name" */
-	label?: string
+	label?: string;
 	/** @example "text" */
-	attributeTypeName?: string
-	attributeOptions?: object[]
+	attributeTypeName?: string;
+	attributeOptions?: object[];
 	/** @example true */
-	isRequired?: boolean
-}[]
+	isRequired?: boolean;
+}[];
 
 /** a Conversations message */
 export interface ConversationsMessage {
@@ -5738,73 +5772,73 @@ export interface ConversationsMessage {
 	 * Message ID. It can be used for further manipulations with the message.
 	 * @example "eYBEm3gq3zc5ayE2g"
 	 */
-	id?: string
+	id?: string;
 	/**
 	 * `"agent"` for agents’ messages, `"visitor"` for visitors’ messages.
 	 * @example "agent"
 	 */
-	type?: 'agent' | 'visitor'
+	type?: "agent" | "visitor";
 	/**
 	 * Message text or name of the attached file
 	 * @example "Good morning! How can I help you?"
 	 */
-	text?: string
+	text?: string;
 	/**
 	 * visitor’s ID
 	 * @example "kZMvWhf8npAu3H6qd57w2Hv6nh6rnxvg"
 	 */
-	visitorId?: string
+	visitorId?: string;
 	/**
 	 * ID of the agent on whose behalf the message was sent (only in messages sent by an agent).
 	 * @example "d9nKoegKSjmCtyK78"
 	 */
-	agentId?: string
+	agentId?: string;
 	/**
 	 * Agent’s name as displayed to the visitor. Only in the messages sent by an agent.
 	 * @example "Liz"
 	 */
-	agentName?: string
+	agentName?: string;
 	/**
 	 * Timestamp in milliseconds.
 	 * @format int64
 	 * @min 0
 	 * @example 1470222622433
 	 */
-	createdAt?: number
+	createdAt?: number;
 	/**
 	 * `true` for pushed messages
 	 * @example true
 	 */
-	isPushed?: boolean
+	isPushed?: boolean;
 	/**
 	 * In two-way integrations, messages sent via REST API can be marked with receivedFrom property and then filtered out when received in a webhook to avoid infinite loop.
 	 * @example "SuperAwesomeHelpdesk"
 	 */
-	receivedFrom?: string
+	receivedFrom?: string;
 	file?: {
 		/**
 		 * Name of the file
 		 * @example "conversations.png"
 		 */
-		filename?: string
+		filename?: string;
 		/**
 		 * Size in bytes
 		 * @format int64
 		 * @min 0
 		 * @example 15538
 		 */
-		size?: number
+		size?: number;
 		/**
 		 * Whether the file is an image
 		 * @example true
 		 */
-		isImage?: boolean
+		isImage?: boolean;
 		/**
 		 * URL of the file
 		 * @format url
 		 * @example "https://ucarecdn.com/cee5c10c-8302-45c1-b1fb-43860ca941a9/"
 		 */
-		url?: string
+		url?: string;
 		/** image info is passed in case the file is an image */
 		imageInfo?: {
 			/**
@@ -5813,22 +5847,22 @@ export interface ConversationsMessage {
 			 * @min 0
 			 * @example 1129
 			 */
-			width?: number
+			width?: number;
 			/**
 			 * height of the image
 			 * @format int64
 			 * @min 0
 			 * @example 525
 			 */
-			height?: number
+			height?: number;
 			/**
 			 * URL of the preview
 			 * @format url
 			 * @example "https://ucarecdn.com/03cd56cd-1de9-4f65-996d-08afdf27fa1b/-/preview/800x800/-/quality/lighter/"
 			 */
-			previewUrl?: string
-		}
-	}
+			previewUrl?: string;
+		};
+	};
 }
 
 export interface Order {
@@ -5836,107 +5870,107 @@ export interface Order {
 	 * Unique ID of the order.
 	 * @example "14"
 	 */
-	id: string
+	id: string;
 	/**
 	 * Event occurrence UTC date-time (YYYY-MM-DDTHH:mm:ssZ), when order is actually created.
 	 * @example "2021-07-29T20:59:23.383Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Event updated UTC date-time (YYYY-MM-DDTHH:mm:ssZ), when the status of the order is actually changed/updated.
 	 * @example "2021-07-30T10:59:23.383Z"
 	 */
-	updatedAt: string
+	updatedAt: string;
 	/**
 	 * State of the order.
 	 * @example "completed"
 	 */
-	status: string
+	status: string;
 	/**
 	 * Total amount of the order, including all shipping expenses, tax and the price of items.
 	 * @example 308.42
 	 */
-	amount: number
+	amount: number;
 	products: {
 		/**
 		 * ID of the product.
 		 * @example "P1"
 		 */
-		productId: string
+		productId: string;
 		/**
 		 * How many pieces of the product the visitor has added to the cart.
 		 * @example 10
 		 */
-		quantity: number
+		quantity: number;
 		/**
 		 * Product ID of the red color shirts.
 		 * @example "P100"
 		 */
-		variantId?: string
+		variantId?: string;
 		/**
 		 * The price of a unit of product
 		 * @example 99.99
 		 */
-		price: number
-	}[]
+		price: number;
+	}[];
 	/**
 	 * Email of the contact, Mandatory if "phone" field is not passed in "billing" parameter.
 	 * @example "example@brevo.com"
 	 */
-	email?: string
+	email?: string;
 	/** Billing details of an order. */
 	billing?: {
 		/**
 		 * Full billing address.
 		 * @example "15 Somewhere Road, Brynmenyn"
 		 */
-		address?: string
+		address?: string;
 		/**
 		 * Exact city of the address.
 		 * @example "Basel"
 		 */
-		city?: string
+		city?: string;
 		/**
 		 * Billing country 2-letter ISO code.
 		 * @example "CA"
 		 */
-		countryCode?: string
+		countryCode?: string;
 		/**
 		 * Phone number to contact for further details about the order, Mandatory if "email" field is not passed.
 		 * @example "01559 032133"
 		 */
-		phone?: string
+		phone?: string;
 		/**
 		 * Postcode for delivery and billing.
 		 * @example "4052"
 		 */
-		postCode?: string
+		postCode?: string;
 		/**
 		 * How the visitor will pay for the item(s), e.g. paypal, check, etc.
 		 * @example "PayPal"
 		 */
-		paymentMethod?: string
+		paymentMethod?: string;
 		/**
 		 * Exact region (state/province) for delivery and billing.
 		 * @example "Northwestern Switzerland"
 		 */
-		region?: string
-	}
+		region?: string;
+	};
 	/**
 	 * Coupons applied to the order. Stored case insensitive.
 	 * @example ["EASTER15OFF"]
 	 */
-	coupons?: string[]
+	coupons?: string[];
 }
 
 export interface OrderBatch {
 	/** array of order objects */
-	orders: Order[]
+	orders: Order[];
 	/**
 	 * Notify Url provided by client to get the status of batch request
 	 * @example "https://en.wikipedia.org/wiki/Webhook"
 	 */
-	notifyUrl?: string
+	notifyUrl?: string;
 }
 
 export interface CreatedBatchId {
@@ -5944,17 +5978,17 @@ export interface CreatedBatchId {
 	 * Batch ID of the request
 	 * @example "1"
 	 */
-	batchId: number
+	batchId: number;
 }
 
 export interface GetCategories {
-	categories: GetCategoryDetails[]
+	categories: GetCategoryDetails[];
 	/**
 	 * Number of categories
 	 * @format int64
 	 * @example 17655
 	 */
-	count: number
+	count: number;
 }
 
 export interface GetCategoryDetails {
@@ -5963,35 +5997,35 @@ export interface GetCategoryDetails {
 	 * @format string
 	 * @example "C11"
 	 */
-	id: string
+	id: string;
 	/**
 	 * Name of the category for which you requested the details
 	 * @format string
 	 * @example "Electronics"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Creation UTC date-time of the category (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Last modification UTC date-time of the category (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 	/**
 	 * URL to the category
 	 * @format string
 	 * @example "http://mydomain.com/category/clothing"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * category deleted from the shop's database
 	 * @format string
 	 * @example true
 	 */
-	isDeleted?: boolean
+	isDeleted?: boolean;
 }
 
 export interface CreateUpdateCategory {
@@ -6000,28 +6034,28 @@ export interface CreateUpdateCategory {
 	 * @format email
 	 * @example "CAT123"
 	 */
-	id: string
+	id: string;
 	/**
 	 * **Mandatory in case of creation**. Name of the Category, as displayed in the shop
 	 * @example "Electronics"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * URL to the category
 	 * @example "http://mydomain.com/category/electronics"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * Facilitate to update the existing category in the same request (updateEnabled = true)
 	 * @default false
 	 * @example false
 	 */
-	updateEnabled?: boolean
+	updateEnabled?: boolean;
 	/**
 	 * UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the category deleted from the shop's database
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	deletedAt?: string
+	deletedAt?: string;
 }
 
 export interface CreateUpdateCategories {
@@ -6030,29 +6064,29 @@ export interface CreateUpdateCategories {
 	 * @format email
 	 * @example "CAT123"
 	 */
-	id: string
+	id: string;
 	/**
 	 * **Mandatory in case of creation**. Name of the Category, as displayed in the shop
 	 * @example "Electronics"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * URL to the category
 	 * @example "http://mydomain.com/category/electronics"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the category deleted from the shop's database
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	deletedAt?: string
+	deletedAt?: string;
 }
 
 export interface CreateUpdateBatchCategory {
 	/** array of categories objects */
-	categories: CreateUpdateCategories[]
+	categories: CreateUpdateCategories[];
 	/** Facilitate to update the existing categories in the same request (updateEnabled = true) */
-	updateEnabled?: boolean
+	updateEnabled?: boolean;
 }
 
 export interface CreateCategoryModel {
@@ -6061,7 +6095,7 @@ export interface CreateCategoryModel {
 	 * @format int64
 	 * @example 122
 	 */
-	id?: number
+	id?: number;
 }
 
 export interface CreateUpdateBatchCategoryModel {
@@ -6070,23 +6104,23 @@ export interface CreateUpdateBatchCategoryModel {
 	 * @format int64
 	 * @example 7
 	 */
-	createdCount?: number
+	createdCount?: number;
 	/**
 	 * Number of the existing categories updated
 	 * @format int64
 	 * @example 5
 	 */
-	updatedCount?: number
+	updatedCount?: number;
 }
 
 export interface GetProducts {
-	products: GetProductDetails[]
+	products: GetProductDetails[];
 	/**
 	 * Number of products
 	 * @format int64
 	 * @example 17655
 	 */
-	count: number
+	count: number;
 }
 
 export interface GetProductDetails {
@@ -6095,77 +6129,77 @@ export interface GetProductDetails {
 	 * @format string
 	 * @example "P11"
 	 */
-	id: string
+	id: string;
 	/**
 	 * Name of the product for which you requested the details
 	 * @format string
 	 * @example "Iphone 11"
 	 */
-	name: string
+	name: string;
 	/**
 	 * Creation UTC date-time of the product (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Last modification UTC date-time of the product (YYYY-MM-DDTHH:mm:ss.SSSZ)
 	 * @example "2017-05-12T12:30:00.000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 	/**
 	 * URL to the product
 	 * @format string
 	 * @example "http://mydomain.com/product/electronics/product1"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * Absolute URL to the cover image of the product
 	 * @format string
 	 * @example "http://mydomain.com/product-absoulte-url/img.jpeg"
 	 */
-	imageUrl?: string
+	imageUrl?: string;
 	/**
 	 * Product identifier from the shop
 	 * @format string
 	 */
-	sku?: string
+	sku?: string;
 	/**
 	 * Price of the product
 	 * @format float
 	 */
-	price?: number
+	price?: number;
 	/** Category ID-s of the product */
-	categories?: string[]
+	categories?: string[];
 	/**
 	 * Parent product id of the product
 	 * @format string
 	 */
-	parentId?: string
+	parentId?: string;
 	/**
 	 * S3 url of original image
 	 * @format string
 	 */
-	s3Original?: string
+	s3Original?: string;
 	/**
 	 * S3 thumbnail url of original image in 120x120 dimension for analytics section
 	 * @format string
 	 */
-	s3ThumbAnalytics: string
+	s3ThumbAnalytics: string;
 	/**
 	 * S3 thumbnail url of original image in 600x400 dimension for editor section
 	 * @format string
 	 */
-	s3ThumbEditor: string
+	s3ThumbEditor: string;
 	/**
 	 * Meta data of product such as description, vendor, producer, stock level, etc.
 	 * @example {"description":"Shoes for sports","brand":"addidas"}
 	 */
-	metaInfo?: object
+	metaInfo?: object;
 	/**
 	 * product deleted from the shop's database
 	 * @example true
 	 */
-	isDeleted?: boolean
+	isDeleted?: boolean;
 }
 
 export interface CreateUpdateProduct {
@@ -6174,62 +6208,62 @@ export interface CreateUpdateProduct {
 	 * @format string
 	 * @example "P11"
 	 */
-	id: string
+	id: string;
 	/**
 	 * Mandatory in case of creation**. Name of the product for which you requested the details
 	 * @format string
 	 * @example "Iphone 11"
 	 */
-	name: string
+	name: string;
 	/**
 	 * URL to the product
 	 * @format string
 	 * @example "http://mydomain.com/product/electronics/product1"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * Absolute URL to the cover image of the product
 	 * @format string
 	 * @example "http://mydomain.com/product-absoulte-url/img.jpeg"
 	 */
-	imageUrl?: string
+	imageUrl?: string;
 	/**
 	 * Product identifier from the shop
 	 * @format string
 	 */
-	sku?: string
+	sku?: string;
 	/**
 	 * Price of the product
 	 * @format float
 	 */
-	price?: number
+	price?: number;
 	/** Category ID-s of the product */
-	categories?: string[]
+	categories?: string[];
 	/**
 	 * Parent product id of the product
 	 * @format string
 	 */
-	parentId?: string
+	parentId?: string;
 	/**
 	 * Meta data of product such as description, vendor, producer, stock level. The size of cumulative metaInfo shall not exceed **1000 KB**. Maximum length of metaInfo object can be 10.
 	 * @example {"description":"Shoes for sports","brand":"addidas"}
 	 */
-	metaInfo?: Record<string, string | number>
+	metaInfo?: Record<string, string | number>;
 	/**
 	 * Facilitate to update the existing category in the same request (updateEnabled = true)
 	 * @default false
 	 * @example false
 	 */
-	updateEnabled?: boolean
+	updateEnabled?: boolean;
 	/** UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the product deleted from the shop's database */
-	deletedAt?: string
+	deletedAt?: string;
 }
 
 export interface CreateUpdateBatchProducts {
 	/** array of products objects */
-	products: CreateUpdateProducts[]
+	products: CreateUpdateProducts[];
 	/** Facilitate to update the existing categories in the same request (updateEnabled = true) */
-	updateEnabled?: boolean
+	updateEnabled?: boolean;
 }
 
 export interface CreateUpdateProducts {
@@ -6238,49 +6272,49 @@ export interface CreateUpdateProducts {
 	 * @format string
 	 * @example "P11"
 	 */
-	id: string
+	id: string;
 	/**
 	 * Mandatory in case of creation**. Name of the product for which you requested the details
 	 * @format string
 	 * @example "Iphone 11"
 	 */
-	name: string
+	name: string;
 	/**
 	 * URL to the product
 	 * @format string
 	 * @example "http://mydomain.com/product/electronics/product1"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * Absolute URL to the cover image of the product
 	 * @format string
 	 * @example "http://mydomain.com/product-absoulte-url/img.jpeg"
 	 */
-	imageUrl?: string
+	imageUrl?: string;
 	/**
 	 * Product identifier from the shop
 	 * @format string
 	 */
-	sku?: string
+	sku?: string;
 	/**
 	 * Price of the product
 	 * @format float
 	 */
-	price?: number
+	price?: number;
 	/** Category ID-s of the product */
-	categories?: string[]
+	categories?: string[];
 	/**
 	 * Parent product id of the product
 	 * @format string
 	 */
-	parentId?: string
+	parentId?: string;
 	/**
 	 * Meta data of product such as description, vendor, producer, stock level. The size of cumulative metaInfo shall not exceed **1000 KB**. Maximum length of metaInfo object can be 10.
 	 * @example {"description":"Shoes for sports","brand":"addidas"}
 	 */
-	metaInfo?: Record<string, string | number>
+	metaInfo?: Record<string, string | number>;
 	/** UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the product deleted from the shop's database */
-	deletedAt?: string
+	deletedAt?: string;
 }
 
 export interface CreateProductModel {
@@ -6289,7 +6323,7 @@ export interface CreateProductModel {
 	 * @format int64
 	 * @example 122
 	 */
-	id?: number
+	id?: number;
 }
 
 export interface CreateUpdateBatchProductsModel {
@@ -6298,13 +6332,13 @@ export interface CreateUpdateBatchProductsModel {
 	 * @format int64
 	 * @example 7
 	 */
-	createdCount?: number
+	createdCount?: number;
 	/**
 	 * Number of the existing products updated
 	 * @format int64
 	 * @example 5
 	 */
-	updatedCount?: number
+	updatedCount?: number;
 }
 
 export interface GetCouponCollection {
@@ -6313,36 +6347,36 @@ export interface GetCouponCollection {
 	 * @format uuidv4
 	 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 	 */
-	id: string
+	id: string;
 	/**
 	 * The name of the collection
 	 * @format uuidv4
 	 * @example "SummerPromotions"
 	 */
-	name: string
+	name: string;
 	/**
 	 * The default coupon of the collection
 	 * @example "10 OFF"
 	 */
-	defaultCoupon: string
+	defaultCoupon: string;
 	/**
 	 * Datetime on which the collection was created
 	 * @format date-time
 	 * @example "2023-01-06T05:03:47.053Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Total coupons in the collection
 	 * @format int64
 	 * @example 10000
 	 */
-	totalCoupons: number
+	totalCoupons: number;
 	/**
 	 * Not sent coupons in the collection
 	 * @format int64
 	 * @example 5000
 	 */
-	remainingCoupons: number
+	remainingCoupons: number;
 }
 
 export interface SendWhatsappMessageTemplate {
@@ -6350,15 +6384,15 @@ export interface SendWhatsappMessageTemplate {
 	 * ID of the template to send
 	 * @example 123
 	 */
-	templateId: number
+	templateId: number;
 	/**
 	 * WhatsApp Number with country code. Example, 85264318721
 	 * @format mobile
 	 * @example 919876543210
 	 */
-	senderNumber: string
+	senderNumber: string;
 	/** List of phone numbers of the contacts */
-	contactNumbers: string[]
+	contactNumbers: string[];
 }
 
 export interface SendWhatsappMessageText {
@@ -6367,14 +6401,14 @@ export interface SendWhatsappMessageText {
 	 * @format mobile
 	 * @example 919876543210
 	 */
-	senderNumber: string
+	senderNumber: string;
 	/**
 	 * Text to be sent as message body (will be overridden if templateId is passed in the same request)
 	 * @example "Hi! There i am a message"
 	 */
-	text: string
+	text: string;
 	/** List of phone numbers of the contacts */
-	contactNumbers: string[]
+	contactNumbers: string[];
 }
 
 export interface GetWhatsappEventReport {
@@ -6384,45 +6418,52 @@ export interface GetWhatsappEventReport {
 		 * @format mobile
 		 * @example 919876543210
 		 */
-		contactNumber: string
+		contactNumber: string;
 		/**
 		 * UTC date-time on which the event has been generated
 		 * @example "2017-03-12T12:30:00.000Z"
 		 */
-		date: string
+		date: string;
 		/**
 		 * Message ID which generated the event
 		 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 		 */
-		messageId: string
+		messageId: string;
 		/**
 		 * Event which occurred
 		 * @example "delivered"
 		 */
-		event: 'sent' | 'delivered' | 'read' | 'error' | 'unsubscribe' | 'reply' | 'soft-bounce'
+		event:
+			| "sent"
+			| "delivered"
+			| "read"
+			| "error"
+			| "unsubscribe"
+			| "reply"
+			| "soft-bounce";
 		/**
 		 * Reason for the event (will be there in case of `error` and `soft-bounce` events)
 		 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 		 */
-		reason?: string
+		reason?: string;
 		/**
 		 * Text of the reply (will be there only in case of `reply` event with text)
 		 * @example "Hi! I am a reply"
 		 */
-		body?: string
+		body?: string;
 		/**
 		 * Url of the media reply (will be there only in case of `reply` event with media)
 		 * @format url
 		 * @example "https://example.com/media.png"
 		 */
-		mediaUrl?: string
+		mediaUrl?: string;
 		/**
 		 * WhatsApp Number with country code. Example, 85264318721
 		 * @format mobile
 		 * @example 919876543210
 		 */
-		senderNumber: string
-	}[]
+		senderNumber: string;
+	}[];
 }
 
 export interface GetExternalFeedByUUID {
@@ -6431,48 +6472,48 @@ export interface GetExternalFeedByUUID {
 	 * @format uuidv4
 	 * @example "54377442-20a2-4c20-b761-d636c72de7b7"
 	 */
-	id: string
+	id: string;
 	/**
 	 * Name of the feed
 	 * @example "New feed"
 	 */
-	name: string
+	name: string;
 	/**
 	 * URL of the feed
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	url: string
+	url: string;
 	/** Auth type of the feed: * `basic` * `token` * `noAuth` */
-	authType: 'basic' | 'token' | 'noAuth'
+	authType: "basic" | "token" | "noAuth";
 	/**
 	 * Username for authType `basic`
 	 * @example "user"
 	 */
-	username?: string
+	username?: string;
 	/**
 	 * Password for authType `basic`
 	 * @example "password"
 	 */
-	password?: string
+	password?: string;
 	/**
 	 * Token for authType `token`
 	 * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 	 */
-	token?: string
+	token?: string;
 	/** Custom headers for the feed */
 	headers: {
 		/**
 		 * Name of the header
 		 * @example "userId"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Value of the header
 		 * @example "user12345"
 		 */
-		value?: string
-	}[]
+		value?: string;
+	}[];
 	/**
 	 * Maximum number of retries on the feed url
 	 * @min 0
@@ -6480,77 +6521,77 @@ export interface GetExternalFeedByUUID {
 	 * @default 5
 	 * @example 5
 	 */
-	maxRetries: number
+	maxRetries: number;
 	/**
 	 * Toggle caching of feed url response
 	 * @example true
 	 */
-	cache: boolean
+	cache: boolean;
 	/**
 	 * Datetime on which the feed was created
 	 * @format date-time
 	 * @example "2022-10-06T05:03:47.053000000Z"
 	 */
-	createdAt: string
+	createdAt: string;
 	/**
 	 * Datetime on which the feed was modified
 	 * @format date-time
 	 * @example "2022-10-06T05:03:47.053000000Z"
 	 */
-	modifiedAt: string
+	modifiedAt: string;
 }
 
 export interface GetAllExternalFeeds {
 	/** Total number of batches */
-	count?: number
+	count?: number;
 	feeds?: {
 		/**
 		 * ID of the feed
 		 * @format uuidv4
 		 * @example "54377442-20a2-4c20-b761-d636c72de7b7"
 		 */
-		id: string
+		id: string;
 		/**
 		 * Name of the feed
 		 * @example "New feed"
 		 */
-		name: string
+		name: string;
 		/**
 		 * URL of the feed
 		 * @format url
 		 * @example "http://requestb.in/173lyyx1"
 		 */
-		url: string
+		url: string;
 		/** Auth type of the feed: * `basic` * `token` * `noAuth` */
-		authType: 'basic' | 'token' | 'noAuth'
+		authType: "basic" | "token" | "noAuth";
 		/**
 		 * Username for authType `basic`
 		 * @example "user"
 		 */
-		username?: string
+		username?: string;
 		/**
 		 * Password for authType `basic`
 		 * @example "password"
 		 */
-		password?: string
+		password?: string;
 		/**
 		 * Token for authType `token`
 		 * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 		 */
-		token?: string
+		token?: string;
 		/** Custom headers for the feed */
 		headers: {
 			/**
 			 * Name of the header
 			 * @example "userId"
 			 */
-			name?: string
+			name?: string;
 			/**
 			 * Value of the header
 			 * @example "user12345"
 			 */
-			value?: string
-		}[]
+			value?: string;
+		}[];
 		/**
 		 * Maximum number of retries on the feed url
 		 * @min 0
@@ -6558,25 +6599,25 @@ export interface GetAllExternalFeeds {
 		 * @default 5
 		 * @example 5
 		 */
-		maxRetries: number
+		maxRetries: number;
 		/**
 		 * Toggle caching of feed url response
 		 * @example true
 		 */
-		cache: boolean
+		cache: boolean;
 		/**
 		 * Datetime on which the feed was created
 		 * @format date-time
 		 * @example "2022-10-06T05:03:47.053000000Z"
 		 */
-		createdAt: string
+		createdAt: string;
 		/**
 		 * Datetime on which the feed was modified
 		 * @format date-time
 		 * @example "2022-10-06T05:03:47.053000000Z"
 		 */
-		modifiedAt: string
-	}[]
+		modifiedAt: string;
+	}[];
 }
 
 export interface CreateExternalFeed {
@@ -6584,13 +6625,13 @@ export interface CreateExternalFeed {
 	 * Name of the feed
 	 * @example "New feed"
 	 */
-	name: string
+	name: string;
 	/**
 	 * URL of the feed
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	url: string
+	url: string;
 	/**
 	 * Auth type of the feed:
 	 *  * `basic`
@@ -6598,22 +6639,22 @@ export interface CreateExternalFeed {
 	 *  * `noAuth`
 	 * @default "noAuth"
 	 */
-	authType?: 'basic' | 'token' | 'noAuth'
+	authType?: "basic" | "token" | "noAuth";
 	/**
 	 * Username for authType `basic`
 	 * @example "user"
 	 */
-	username?: string
+	username?: string;
 	/**
 	 * Password for authType `basic`
 	 * @example "password"
 	 */
-	password?: string
+	password?: string;
 	/**
 	 * Token for authType `token`
 	 * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 	 */
-	token?: string
+	token?: string;
 	/**
 	 * Custom headers for the feed
 	 * @example [{"name":"header1","value":"value1"},{"name":"header2","value":"value2"}]
@@ -6623,13 +6664,13 @@ export interface CreateExternalFeed {
 		 * Name of the header
 		 * @example "userId"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Value of the header
 		 * @example "user12345"
 		 */
-		value?: string
-	}[]
+		value?: string;
+	}[];
 	/**
 	 * Maximum number of retries on the feed url
 	 * @min 0
@@ -6637,13 +6678,13 @@ export interface CreateExternalFeed {
 	 * @default 5
 	 * @example 5
 	 */
-	maxRetries?: number
+	maxRetries?: number;
 	/**
 	 * Toggle caching of feed url response
 	 * @default false
 	 * @example true
 	 */
-	cache?: boolean
+	cache?: boolean;
 }
 
 export interface UpdateExternalFeed {
@@ -6651,35 +6692,35 @@ export interface UpdateExternalFeed {
 	 * Name of the feed
 	 * @example "New feed"
 	 */
-	name?: string
+	name?: string;
 	/**
 	 * URL of the feed
 	 * @format url
 	 * @example "http://requestb.in/173lyyx1"
 	 */
-	url?: string
+	url?: string;
 	/**
 	 * Auth type of the feed:
 	 *  * `basic`
 	 *  * `token`
 	 *  * `noAuth`
 	 */
-	authType?: 'basic' | 'token' | 'noAuth'
+	authType?: "basic" | "token" | "noAuth";
 	/**
 	 * Username for authType `basic`
 	 * @example "user"
 	 */
-	username?: string
+	username?: string;
 	/**
 	 * Password for authType `basic`
 	 * @example "password"
 	 */
-	password?: string
+	password?: string;
 	/**
 	 * Token for authType `token`
 	 * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 	 */
-	token?: string
+	token?: string;
 	/**
 	 * Custom headers for the feed
 	 * @example [{"name":"header1","value":"value1"},{"name":"header2","value":"value2"}]
@@ -6689,13 +6730,13 @@ export interface UpdateExternalFeed {
 		 * Name of the header
 		 * @example "userId"
 		 */
-		name?: string
+		name?: string;
 		/**
 		 * Value of the header
 		 * @example "user12345"
 		 */
-		value?: string
-	}[]
+		value?: string;
+	}[];
 	/**
 	 * Maximum number of retries on the feed url
 	 * @min 0
@@ -6703,13 +6744,13 @@ export interface UpdateExternalFeed {
 	 * @default 5
 	 * @example 5
 	 */
-	maxRetries?: number
+	maxRetries?: number;
 	/**
 	 * Toggle caching of feed url response
 	 * @default false
 	 * @example true
 	 */
-	cache?: boolean
+	cache?: boolean;
 }
 
 export interface ExportWebhooksHistory {
@@ -6717,186 +6758,206 @@ export interface ExportWebhooksHistory {
 	 * Number of days in the past including today (positive integer). _Not compatible with 'startDate' and 'endDate'_
 	 * @example 7
 	 */
-	days?: number
+	days?: number;
 	/**
 	 * Mandatory if endDate is used. Starting date of the history (YYYY-MM-DD). Must be lower than equal to endDate
 	 * @example "2023-02-13T00:00:00.000Z"
 	 */
-	startDate?: string
+	startDate?: string;
 	/**
 	 * Mandatory if startDate is used. Ending date of the report (YYYY-MM-DD). Must be greater than equal to startDate
 	 * @example "2023-02-17T00:00:00.000Z"
 	 */
-	endDate?: string
+	endDate?: string;
 	/**
 	 * Sorting order of records (asc or desc)
 	 * @example "desc"
 	 */
-	sort?: string
+	sort?: string;
 	/**
 	 * Filter the history based on webhook type
 	 * @example "transactional"
 	 */
-	type: 'transactional' | 'marketing'
+	type: "transactional" | "marketing";
 	/**
 	 * Filter the history for a specific event type
 	 * @example "request"
 	 */
 	event:
-		| 'invalid_parameter'
-		| 'missing_parameter'
-		| 'hardBounce'
-		| 'softBounce'
-		| 'delivered'
-		| 'spam'
-		| 'request'
-		| 'opened'
-		| 'click'
-		| 'invalid'
-		| 'deferred'
-		| 'blocked'
-		| 'unsubscribed'
-		| 'error'
-		| 'uniqueOpened'
-		| 'loadedByProxy'
-		| 'allEvents'
+		| "invalid_parameter"
+		| "missing_parameter"
+		| "hardBounce"
+		| "softBounce"
+		| "delivered"
+		| "spam"
+		| "request"
+		| "opened"
+		| "click"
+		| "invalid"
+		| "deferred"
+		| "blocked"
+		| "unsubscribed"
+		| "error"
+		| "uniqueOpened"
+		| "loadedByProxy"
+		| "allEvents";
 	/**
 	 * Webhook URL to receive CSV file link
 	 * @example "https://brevo.com"
 	 */
-	notifyURL: string
+	notifyURL: string;
 	/**
 	 * Filter the history for a specific webhook id
 	 * @example 2345
 	 */
-	webhookId?: number
+	webhookId?: number;
 	/**
 	 * Filter the history for a specific email
 	 * @example "example@brevo.com"
 	 */
-	email?: string
+	email?: string;
 	/**
 	 * Filter the history for a specific message id. Applicable only for transactional webhooks.
 	 * @example "<23befbae-1505-47a8-bd27-e30ef739f32c@fr.sib>"
 	 */
-	messageId?: number
+	messageId?: number;
 }
 
-export type QueryParamsType = Record<string | number, any>
-export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>
+export type QueryParamsType = Record<string | number, any>;
+export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
-export interface FullRequestParams extends Omit<RequestInit, 'body'> {
+export interface FullRequestParams extends Omit<RequestInit, "body"> {
 	/** set parameter to `true` for call `securityWorker` for this request */
-	secure?: boolean
+	secure?: boolean;
 	/** request path */
-	path: string
+	path: string;
 	/** content type of request body */
-	type?: ContentType
+	type?: ContentType;
 	/** query params */
-	query?: QueryParamsType
+	query?: QueryParamsType;
 	/** format of response (i.e. response.json() -> format: "json") */
-	format?: ResponseFormat
+	format?: ResponseFormat;
 	/** request body */
-	body?: unknown
+	body?: unknown;
 	/** base url */
-	baseUrl?: string
+	baseUrl?: string;
 	/** request cancellation token */
-	cancelToken?: CancelToken
+	cancelToken?: CancelToken;
 }
 
-export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>
+export type RequestParams = Omit<
+	FullRequestParams,
+	"body" | "method" | "query" | "path"
+>;
 
 export interface ApiConfig<SecurityDataType = unknown> {
-	baseUrl?: string
-	baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>
-	securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void
-	customFetch?: typeof fetch
+	baseUrl?: string;
+	baseApiParams?: Omit<RequestParams, "baseUrl" | "cancelToken" | "signal">;
+	securityWorker?: (
+		securityData: SecurityDataType | null,
+	) => Promise<RequestParams | void> | RequestParams | void;
+	customFetch?: typeof fetch;
 }
 
-export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
-	data: D
-	error: E
+export interface HttpResponse<D, E = unknown> extends Response {
+	data: D;
+	error: E;
 }
 
-type CancelToken = Symbol | string | number
+type CancelToken = symbol | string | number;
 
 export enum ContentType {
-	Json = 'application/json',
-	FormData = 'multipart/form-data',
-	UrlEncoded = 'application/x-www-form-urlencoded',
-	Text = 'text/plain',
+	Json = "application/json",
+	FormData = "multipart/form-data",
+	UrlEncoded = "application/x-www-form-urlencoded",
+	Text = "text/plain",
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-	public baseUrl: string = 'https://api.brevo.com/v3'
-	private securityData: SecurityDataType | null = null
-	private securityWorker?: ApiConfig<SecurityDataType>['securityWorker']
-	private abortControllers = new Map<CancelToken, AbortController>()
-	private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams)
+	public baseUrl: string = "https://api.brevo.com/v3";
+	private securityData: SecurityDataType | null = null;
+	private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
+	private abortControllers = new Map<CancelToken, AbortController>();
+	private customFetch = (...fetchParams: Parameters<typeof fetch>) =>
+		fetch(...fetchParams);
 
 	private baseApiParams: RequestParams = {
-		credentials: 'same-origin',
+		credentials: "same-origin",
 		headers: {},
-		redirect: 'follow',
-		referrerPolicy: 'no-referrer',
-	}
+		redirect: "follow",
+		referrerPolicy: "no-referrer",
+	};
 
 	constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
-		Object.assign(this, apiConfig)
+		Object.assign(this, apiConfig);
 	}
 
 	public setSecurityData = (data: SecurityDataType | null) => {
-		this.securityData = data
-	}
+		this.securityData = data;
+	};
 
 	protected encodeQueryParam(key: string, value: any) {
-		const encodedKey = encodeURIComponent(key)
-		return `${encodedKey}=${encodeURIComponent(typeof value === 'number' ? value : `${value}`)}`
+		const encodedKey = encodeURIComponent(key);
+		return `${encodedKey}=${encodeURIComponent(typeof value === "number" ? value : `${value}`)}`;
 	}
 
 	protected addQueryParam(query: QueryParamsType, key: string) {
-		return this.encodeQueryParam(key, query[key])
+		return this.encodeQueryParam(key, query[key]);
 	}
 
 	protected addArrayQueryParam(query: QueryParamsType, key: string) {
-		const value = query[key]
-		return value.map((v: any) => this.encodeQueryParam(key, v)).join('&')
+		const value = query[key];
+		return value.map((v: any) => this.encodeQueryParam(key, v)).join("&");
 	}
 
 	protected toQueryString(rawQuery?: QueryParamsType): string {
-		const query = rawQuery || {}
-		const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key])
+		const query = rawQuery || {};
+		const keys = Object.keys(query).filter(
+			(key) => "undefined" !== typeof query[key],
+		);
 		return keys
-			.map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
-			.join('&')
+			.map((key) =>
+				Array.isArray(query[key])
+					? this.addArrayQueryParam(query, key)
+					: this.addQueryParam(query, key),
+			)
+			.join("&");
 	}
 
 	protected addQueryParams(rawQuery?: QueryParamsType): string {
-		const queryString = this.toQueryString(rawQuery)
-		return queryString ? `?${queryString}` : ''
+		const queryString = this.toQueryString(rawQuery);
+		return queryString ? `?${queryString}` : "";
 	}
 
 	private contentFormatters: Record<ContentType, (input: any) => any> = {
 		[ContentType.Json]: (input: any) =>
-			input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input,
-		[ContentType.Text]: (input: any) => (input !== null && typeof input !== 'string' ? JSON.stringify(input) : input),
+			input !== null && (typeof input === "object" || typeof input === "string")
+				? JSON.stringify(input)
+				: input,
+		[ContentType.Text]: (input: any) =>
+			input !== null && typeof input !== "string"
+				? JSON.stringify(input)
+				: input,
 		[ContentType.FormData]: (input: any) =>
 			Object.keys(input || {}).reduce((formData, key) => {
-				const property = input[key]
+				const property = input[key];
 				formData.append(
 					key,
 					property instanceof Blob
 						? property
-						: typeof property === 'object' && property !== null
-						? JSON.stringify(property)
-						: `${property}`
-				)
-				return formData
+						: typeof property === "object" && property !== null
+							? JSON.stringify(property)
+							: `${property}`,
+				);
+				return formData;
 			}, new FormData()),
 		[ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
-	}
+	};
 
-	protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
+	protected mergeRequestParams(
+		params1: RequestParams,
+		params2?: RequestParams,
+	): RequestParams {
 		return {
 			...this.baseApiParams,
 			...params1,
@@ -6906,31 +6967,33 @@ export class HttpClient<SecurityDataType = unknown> {
 				...(params1.headers || {}),
 				...((params2 && params2.headers) || {}),
 			},
-		}
+		};
 	}
 
-	protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
+	protected createAbortSignal = (
+		cancelToken: CancelToken,
+	): AbortSignal | undefined => {
 		if (this.abortControllers.has(cancelToken)) {
-			const abortController = this.abortControllers.get(cancelToken)
+			const abortController = this.abortControllers.get(cancelToken);
 			if (abortController) {
-				return abortController.signal
+				return abortController.signal;
 			}
-			return void 0
+			return void 0;
 		}
 
-		const abortController = new AbortController()
-		this.abortControllers.set(cancelToken, abortController)
-		return abortController.signal
-	}
+		const abortController = new AbortController();
+		this.abortControllers.set(cancelToken, abortController);
+		return abortController.signal;
+	};
 
 	public abortRequest = (cancelToken: CancelToken) => {
-		const abortController = this.abortControllers.get(cancelToken)
+		const abortController = this.abortControllers.get(cancelToken);
 
 		if (abortController) {
-			abortController.abort()
-			this.abortControllers.delete(cancelToken)
+			abortController.abort();
+			this.abortControllers.delete(cancelToken);
 		}
-	}
+	};
 
 	public request = async <T = any, E = any>({
 		body,
@@ -6944,52 +7007,63 @@ export class HttpClient<SecurityDataType = unknown> {
 		...params
 	}: FullRequestParams): Promise<HttpResponse<T, E>> => {
 		const secureParams =
-			((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) &&
+			((typeof secure === "boolean" ? secure : this.baseApiParams.secure) &&
 				this.securityWorker &&
 				(await this.securityWorker(this.securityData))) ||
-			{}
-		const requestParams = this.mergeRequestParams(params, secureParams)
-		const queryString = query && this.toQueryString(query)
-		const payloadFormatter = this.contentFormatters[type || ContentType.Json]
-		const responseFormat = format || requestParams.format
+			{};
+		const requestParams = this.mergeRequestParams(params, secureParams);
+		const queryString = query && this.toQueryString(query);
+		const payloadFormatter = this.contentFormatters[type || ContentType.Json];
+		const responseFormat = format || requestParams.format;
 
-		return this.customFetch(`${baseUrl || this.baseUrl || ''}${path}${queryString ? `?${queryString}` : ''}`, {
-			...requestParams,
-			headers: {
-				...(requestParams.headers || {}),
-				...(type && type !== ContentType.FormData ? { 'Content-Type': type } : {}),
+		return this.customFetch(
+			`${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
+			{
+				...requestParams,
+				headers: {
+					...(requestParams.headers || {}),
+					...(type && type !== ContentType.FormData
+						? { "Content-Type": type }
+						: {}),
+				},
+				signal:
+					(cancelToken
+						? this.createAbortSignal(cancelToken)
+						: requestParams.signal) || null,
+				body:
+					typeof body === "undefined" || body === null
+						? null
+						: payloadFormatter(body),
 			},
-			signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
-			body: typeof body === 'undefined' || body === null ? null : payloadFormatter(body),
-		}).then(async (response) => {
-			const r = response as HttpResponse<T, E>
-			r.data = null as unknown as T
-			r.error = null as unknown as E
+		).then(async (response) => {
+			const r = response as HttpResponse<T, E>;
+			r.data = null as unknown as T;
+			r.error = null as unknown as E;
 
 			const data = !responseFormat
 				? r
 				: await response[responseFormat]()
 						.then((data) => {
 							if (r.ok) {
-								r.data = data
+								r.data = data;
 							} else {
-								r.error = data
+								r.error = data;
 							}
-							return r
+							return r;
 						})
 						.catch((e) => {
-							r.error = e
-							return r
-						})
+							r.error = e;
+							return r;
+						});
 
 			if (cancelToken) {
-				this.abortControllers.delete(cancelToken)
+				this.abortControllers.delete(cancelToken);
 			}
 
-			if (!response.ok) throw data
-			return data
-		})
-	}
+			if (!response.ok) throw data;
+			return data;
+		});
+	};
 }
 
 /**
@@ -7022,7 +7096,7 @@ export class HttpClient<SecurityDataType = unknown> {
  *   | 405  | Error. Method not allowed  |
  *   | 406  | Error. Not Acceptable  |
  */
-export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+export class Api<SecurityDataType> extends HttpClient<SecurityDataType> {
 	emailCampaigns = {
 		/**
 		 * No description
@@ -7036,21 +7110,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getEmailCampaigns: (
 			query?: {
 				/** Filter on the type of the campaigns */
-				type?: 'classic' | 'trigger'
+				type?: "classic" | "trigger";
 				/** Filter on the status of the campaign */
-				status?: 'suspended' | 'archive' | 'sent' | 'queued' | 'draft' | 'inProcess'
+				status?:
+					| "suspended"
+					| "archive"
+					| "sent"
+					| "queued"
+					| "draft"
+					| "inProcess";
 				/** Filter on the type of statistics required. Example **globalStats** value will only fetch globalStats info of the campaign in returned response. */
-				statistics?: 'globalStats' | 'linksStats' | 'statsByDomain'
+				statistics?: "globalStats" | "linksStats" | "statsByDomain";
 				/**
 				 * **Mandatory if endDate is used**. Starting (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the sent email campaigns.
 				 * **Prefer to pass your timezone in date-time format for accurate result** ( only available if either 'status' not passed and if passed is set to 'sent' )
 				 */
-				startDate?: string
+				startDate?: string;
 				/**
 				 * **Mandatory if startDate is used**. Ending (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the sent email campaigns.
 				 * **Prefer to pass your timezone in date-time format for accurate result** ( only available if either 'status' not passed and if passed is set to 'sent' )
 				 */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of documents per page
 				 * @format int64
@@ -7058,29 +7138,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/** Use this flag to exclude htmlContent from the response body. If set to **true**, htmlContent field will be returned as empty string in the response body */
-				excludeHtmlContent?: true | false
+				excludeHtmlContent?: true | false;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetEmailCampaigns, ErrorModel>({
 				path: `/emailCampaigns`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7093,10 +7173,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/emailCampaigns
 		 * @secure
 		 */
-		createEmailCampaign: (data: CreateEmailCampaign, params: RequestParams = {}) =>
+		createEmailCampaign: (
+			data: CreateEmailCampaign,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/emailCampaigns`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7116,16 +7199,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 			campaignId: number,
 			query?: {
 				/** Filter on the type of statistics required. Example **globalStats** value will only fetch globalStats info of the campaign in returned response. */
-				statistics?: 'globalStats' | 'linksStats' | 'statsByDomain' | 'statsByDevice' | 'statsByBrowser'
+				statistics?:
+					| "globalStats"
+					| "linksStats"
+					| "statsByDomain"
+					| "statsByDevice"
+					| "statsByBrowser";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetEmailCampaign, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7138,10 +7226,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/emailCampaigns/{campaignId}
 		 * @secure
 		 */
-		updateEmailCampaign: (campaignId: number, data: UpdateEmailCampaign, params: RequestParams = {}) =>
+		updateEmailCampaign: (
+			campaignId: number,
+			data: UpdateEmailCampaign,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7160,7 +7252,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteEmailCampaign: (campaignId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -7177,7 +7269,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		sendEmailCampaignNow: (campaignId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}/sendNow`,
-				method: 'POST',
+				method: "POST",
 				secure: true,
 				...params,
 			}),
@@ -7191,10 +7283,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/emailCampaigns/{campaignId}/sendTest
 		 * @secure
 		 */
-		sendTestEmail: (campaignId: number, data: SendTestEmail, params: RequestParams = {}) =>
+		sendTestEmail: (
+			campaignId: number,
+			data: SendTestEmail,
+			params: RequestParams = {},
+		) =>
 			this.request<void, PostSendFailed>({
 				path: `/emailCampaigns/${campaignId}/sendTest`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7210,10 +7306,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/emailCampaigns/{campaignId}/status
 		 * @secure
 		 */
-		updateCampaignStatus: (campaignId: number, data: UpdateCampaignStatus, params: RequestParams = {}) =>
+		updateCampaignStatus: (
+			campaignId: number,
+			data: UpdateCampaignStatus,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}/status`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7229,10 +7329,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/emailCampaigns/{campaignId}/sendReport
 		 * @secure
 		 */
-		sendReport: (campaignId: number, data: SendReport, params: RequestParams = {}) =>
+		sendReport: (
+			campaignId: number,
+			data: SendReport,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}/sendReport`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7251,9 +7355,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getAbTestCampaignResult: (campaignId: number, params: RequestParams = {}) =>
 			this.request<AbTestCampaignResult, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}/abTestCampaignResult`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7269,9 +7373,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getSharedTemplateUrl: (campaignId: number, params: RequestParams = {}) =>
 			this.request<GetSharedTemplateUrl, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}/sharedUrl`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7284,10 +7388,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/emailCampaigns/{campaignId}/exportRecipients
 		 * @secure
 		 */
-		emailExportRecipients: (campaignId: number, data?: EmailExportRecipients, params: RequestParams = {}) =>
+		emailExportRecipients: (
+			campaignId: number,
+			data?: EmailExportRecipients,
+			params: RequestParams = {},
+		) =>
 			this.request<CreatedProcessId, ErrorModel>({
 				path: `/emailCampaigns/${campaignId}/exportRecipients`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7303,17 +7411,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/emailCampaigns/images
 		 * @secure
 		 */
-		uploadImageToGallery: (data: UploadImageToGallery, params: RequestParams = {}) =>
+		uploadImageToGallery: (
+			data: UploadImageToGallery,
+			params: RequestParams = {},
+		) =>
 			this.request<UploadImageModel, ErrorModel>({
 				path: `/emailCampaigns/images`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	smtp = {
 		/**
 		 * No description
@@ -7327,11 +7438,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		sendTransacEmail: (data: SendSmtpEmail, params: RequestParams = {}) =>
 			this.request<CreateSmtpEmail, ErrorModel>({
 				path: `/smtp/email`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7347,23 +7458,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getTransacEmailsList: (
 			query?: {
 				/** **Mandatory if templateId and messageId are not passed in query filters.** Email address to which transactional email has been sent. */
-				email?: string
+				email?: string;
 				/**
 				 * **Mandatory if email and messageId are not passed in query filters.** Id of the template that was used to compose transactional email.
 				 * @format int64
 				 */
-				templateId?: number
+				templateId?: number;
 				/** **Mandatory if templateId and email are not passed in query filters.** Message ID of the transactional email sent. */
-				messageId?: string
+				messageId?: string;
 				/** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) from which you want to fetch the list. **Maximum time period that can be selected is one month**. */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) till which you want to fetch the list. **Maximum time period that can be selected is one month.** */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/**
 				 * Number of documents returned per page
 				 * @format int64
@@ -7371,22 +7482,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 1000
 				 * @default 500
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetTransacEmailsList, ErrorModel>({
 				path: `/smtp/emails`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7402,9 +7513,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getTransacEmailContent: (uuid: string, params: RequestParams = {}) =>
 			this.request<GetTransacEmailContent, any>({
 				path: `/smtp/emails/${uuid}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7420,7 +7531,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteSmtp: (messageId: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/log/${messageId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -7437,7 +7548,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getSmtpTemplates: (
 			query?: {
 				/** Filter on the status of the template. Active = true, inactive = false */
-				templateStatus?: boolean
+				templateStatus?: boolean;
 				/**
 				 * Number of documents returned per page
 				 * @format int64
@@ -7445,27 +7556,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 1000
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetSmtpTemplates, ErrorModel>({
 				path: `/smtp/templates`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7478,10 +7589,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/smtp/templates
 		 * @secure
 		 */
-		createSmtpTemplate: (data: CreateSmtpTemplate, params: RequestParams = {}) =>
+		createSmtpTemplate: (
+			data: CreateSmtpTemplate,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/smtp/templates`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7500,9 +7614,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getSmtpTemplate: (templateId: number, params: RequestParams = {}) =>
 			this.request<GetSmtpTemplateOverview, ErrorModel>({
 				path: `/smtp/templates/${templateId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7515,10 +7629,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/smtp/templates/{templateId}
 		 * @secure
 		 */
-		updateSmtpTemplate: (templateId: number, data: UpdateSmtpTemplate, params: RequestParams = {}) =>
+		updateSmtpTemplate: (
+			templateId: number,
+			data: UpdateSmtpTemplate,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/templates/${templateId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7537,7 +7655,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteSmtpTemplate: (templateId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/templates/${templateId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -7551,10 +7669,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/smtp/templates/{templateId}/sendTest
 		 * @secure
 		 */
-		sendTestTemplate: (templateId: number, data: SendTestEmail, params: RequestParams = {}) =>
+		sendTestTemplate: (
+			templateId: number,
+			data: SendTestEmail,
+			params: RequestParams = {},
+		) =>
 			this.request<void, PostSendFailed | ErrorModel>({
 				path: `/smtp/templates/${templateId}/sendTest`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7573,25 +7695,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getAggregatedSmtpReport: (
 			query?: {
 				/** **Mandatory if endDate is used.** Starting date of the report (YYYY-MM-DD). Must be lower than equal to endDate */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date of the report (YYYY-MM-DD). Must be greater than equal to startDate */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of days in the past including today (positive integer). _Not compatible with 'startDate' and 'endDate'_
 				 * @format int64
 				 */
-				days?: number
+				days?: number;
 				/** Tag of the emails */
-				tag?: string
+				tag?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetAggregatedReport, ErrorModel>({
 				path: `/smtp/statistics/aggregatedReport`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7613,38 +7735,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 30
 				 * @default 10
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document on the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/** **Mandatory if endDate is used.** Starting date of the report (YYYY-MM-DD) */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date of the report (YYYY-MM-DD) */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of days in the past including today (positive integer). _Not compatible with 'startDate' and 'endDate'_
 				 * @format int64
 				 */
-				days?: number
+				days?: number;
 				/** Tag of the emails */
-				tag?: string
+				tag?: string;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetReports, ErrorModel>({
 				path: `/smtp/statistics/reports`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7666,66 +7788,66 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 5000
 				 * @default 2500
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Beginning point in the list to retrieve from.
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/** **Mandatory if endDate is used.** Starting date of the report (YYYY-MM-DD). Must be lower than equal to endDate */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date of the report (YYYY-MM-DD). Must be greater than equal to startDate */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of days in the past including today (positive integer). _Not compatible with 'startDate' and 'endDate'_
 				 * @format int64
 				 */
-				days?: number
+				days?: number;
 				/**
 				 * Filter the report for a specific email addresses
 				 * @format email
 				 */
-				email?: string
+				email?: string;
 				/** Filter the report for a specific event type */
 				event?:
-					| 'bounces'
-					| 'hardBounces'
-					| 'softBounces'
-					| 'delivered'
-					| 'spam'
-					| 'requests'
-					| 'opened'
-					| 'clicks'
-					| 'invalid'
-					| 'deferred'
-					| 'blocked'
-					| 'unsubscribed'
-					| 'error'
-					| 'loadedByProxy'
+					| "bounces"
+					| "hardBounces"
+					| "softBounces"
+					| "delivered"
+					| "spam"
+					| "requests"
+					| "opened"
+					| "clicks"
+					| "invalid"
+					| "deferred"
+					| "blocked"
+					| "unsubscribed"
+					| "error"
+					| "loadedByProxy";
 				/** Filter the report for tags (serialized and urlencoded array) */
-				tags?: string
+				tags?: string;
 				/** Filter on a specific message id */
-				messageId?: string
+				messageId?: string;
 				/**
 				 * Filter on a specific template id
 				 * @format int64
 				 */
-				templateId?: number
+				templateId?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetEmailEventReport, ErrorModel>({
 				path: `/smtp/statistics/events`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7741,7 +7863,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		blockedContactsDelete: (email: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/blockedContacts/${email}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -7758,9 +7880,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getTransacBlockedContacts: (
 			query?: {
 				/** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) from which you want to fetch the blocked or unsubscribed contacts */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) till which you want to fetch the blocked or unsubscribed contacts */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of documents returned per page
 				 * @format int64
@@ -7768,29 +7890,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document on the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/** Comma separated list of emails of the senders from which contacts are blocked or unsubscribed */
-				senders?: string[]
+				senders?: string[];
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetTransacBlockedContacts, ErrorModel>({
 				path: `/smtp/blockedContacts`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7806,9 +7928,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getBlockedDomains: (params: RequestParams = {}) =>
 			this.request<GetBlockedDomains, any>({
 				path: `/smtp/blockedDomains`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7824,7 +7946,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		blockNewDomain: (data: BlockDomain, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/blockedDomains`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7843,7 +7965,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteBlockedDomain: (domain: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/blockedDomains/${domain}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -7860,7 +7982,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteHardbounces: (data?: DeleteHardbounces, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/deleteHardbounces`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -7884,20 +8006,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @format date
 				 * @example "2022-02-02"
 				 */
-				startDate?: string
+				startDate?: string;
 				/**
 				 * Mandatory if `startDate` is used. Ending date (YYYY-MM-DD) till which you want to fetch the list. Maximum time period that can be selected is one month.
 				 * @format date
 				 * @example "2022-03-02"
 				 */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed. Not valid when identifier is `messageId`.
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/** Filter the records by `status` of the scheduled email batch or message. Not valid when identifier is `messageId`. */
-				status?: 'processed' | 'inProgress' | 'queued'
+				status?: "processed" | "inProgress" | "queued";
 				/**
 				 * Number of documents returned per page. Not valid when identifier is `messageId`.
 				 * @format int64
@@ -7906,23 +8028,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @default 100
 				 * @example 100
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document on the page.  Not valid when identifier is `messageId`.
 				 * @format int64
 				 * @default 0
 				 * @example 0
 				 */
-				offset?: number
+				offset?: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
-			this.request<GetScheduledEmailByBatchId | GetScheduledEmailByMessageId, ErrorModel>({
+			this.request<
+				GetScheduledEmailByBatchId | GetScheduledEmailByMessageId,
+				ErrorModel
+			>({
 				path: `/smtp/emailStatus/${identifier}`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -7935,14 +8060,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request DELETE:/smtp/email/{identifier}
 		 * @secure
 		 */
-		deleteScheduledEmailById: (identifier: string, params: RequestParams = {}) =>
+		deleteScheduledEmailById: (
+			identifier: string,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/smtp/email/${identifier}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
-	}
+	};
 	contacts = {
 		/**
 		 * No description
@@ -7962,31 +8090,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 1000
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/** Filter (urlencoded) the contacts modified after a given UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.** */
-				modifiedSince?: string
+				modifiedSince?: string;
 				/** Filter (urlencoded) the contacts created after a given UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.** */
-				createdSince?: string
+				createdSince?: string;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetContacts, ErrorModel>({
 				path: `/contacts`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8002,11 +8130,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createContact: (data: CreateContact, params: RequestParams = {}) =>
 			this.request<CreateUpdateContactModel, ErrorModel>({
 				path: `/contacts`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8022,7 +8150,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createDoiContact: (data: CreateDoiContact, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/doubleOptinConfirmation`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8042,18 +8170,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 			identifier: string | number,
 			query?: {
 				/** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be lower than equal to endDate */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be greater than equal to startDate. */
-				endDate?: string
+				endDate?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetExtendedContactDetails, ErrorModel>({
 				path: `/contacts/${identifier}`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8069,7 +8197,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteContact: (identifier: string | number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/${identifier}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -8083,10 +8211,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/contacts/{identifier}
 		 * @secure
 		 */
-		updateContact: (identifier: string | number, data: UpdateContact, params: RequestParams = {}) =>
+		updateContact: (
+			identifier: string | number,
+			data: UpdateContact,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/${identifier}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8102,10 +8234,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/contacts/batch
 		 * @secure
 		 */
-		updateBatchContacts: (data: UpdateBatchContacts, params: RequestParams = {}) =>
+		updateBatchContacts: (
+			data: UpdateBatchContacts,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/batch`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8125,18 +8260,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 			identifier: string | number,
 			query?: {
 				/** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be lower than equal to endDate */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be greater than equal to startDate. Maximum difference between startDate and endDate should not be greater than 90 days */
-				endDate?: string
+				endDate?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetContactCampaignStats, ErrorModel>({
 				path: `/contacts/${identifier}/campaignStats`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8152,9 +8287,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getAttributes: (params: RequestParams = {}) =>
 			this.request<GetAttributes, any>({
 				path: `/contacts/attributes`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8168,14 +8303,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @secure
 		 */
 		updateAttribute: (
-			attributeCategory: 'category' | 'calculated' | 'global',
+			attributeCategory: "category" | "calculated" | "global",
 			attributeName: string,
 			data: UpdateAttribute,
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/attributes/${attributeCategory}/${attributeName}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8192,14 +8327,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @secure
 		 */
 		createAttribute: (
-			attributeCategory: 'normal' | 'transactional' | 'category' | 'calculated' | 'global',
+			attributeCategory:
+				| "normal"
+				| "transactional"
+				| "category"
+				| "calculated"
+				| "global",
 			attributeName: string,
 			data: CreateAttribute,
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/attributes/${attributeCategory}/${attributeName}`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8216,13 +8356,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @secure
 		 */
 		deleteAttribute: (
-			attributeCategory: 'normal' | 'transactional' | 'category' | 'calculated' | 'global',
+			attributeCategory:
+				| "normal"
+				| "transactional"
+				| "category"
+				| "calculated"
+				| "global",
 			attributeName: string,
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/attributes/${attributeCategory}/${attributeName}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -8245,27 +8390,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 50
 				 * @default 10
 				 */
-				limit: number
+				limit: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset: number
+				offset: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetFolders, ErrorModel>({
 				path: `/contacts/folders`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8281,7 +8426,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createFolder: (data: CreateUpdateFolder, params: RequestParams = {}) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/contacts/folders`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8300,9 +8445,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getFolder: (folderId: number, params: RequestParams = {}) =>
 			this.request<GetFolder, ErrorModel>({
 				path: `/contacts/folders/${folderId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8315,10 +8460,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/contacts/folders/{folderId}
 		 * @secure
 		 */
-		updateFolder: (folderId: number, data: CreateUpdateFolder, params: RequestParams = {}) =>
+		updateFolder: (
+			folderId: number,
+			data: CreateUpdateFolder,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/folders/${folderId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8337,7 +8486,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteFolder: (folderId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/folders/${folderId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -8361,27 +8510,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 50
 				 * @default 10
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetFolderLists, ErrorModel>({
 				path: `/contacts/folders/${folderId}/lists`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8403,27 +8552,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 50
 				 * @default 10
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetLists, ErrorModel>({
 				path: `/contacts/lists`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8439,7 +8588,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createList: (data: CreateList, params: RequestParams = {}) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/contacts/lists`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8458,9 +8607,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getList: (listId: number, params: RequestParams = {}) =>
 			this.request<GetExtendedList, ErrorModel>({
 				path: `/contacts/lists/${listId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8473,10 +8622,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/contacts/lists/{listId}
 		 * @secure
 		 */
-		updateList: (listId: number, data: UpdateList, params: RequestParams = {}) =>
+		updateList: (
+			listId: number,
+			data: UpdateList,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/lists/${listId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8495,7 +8648,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteList: (listId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/contacts/lists/${listId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -8518,27 +8671,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 50
 				 * @default 10
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetSegments, ErrorModel>({
 				path: `/contacts/segments`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8555,7 +8708,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 			listId: number,
 			query?: {
 				/** Filter (urlencoded) the contacts modified after a given UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.** */
-				modifiedSince?: string
+				modifiedSince?: string;
 				/**
 				 * Number of documents per page
 				 * @format int64
@@ -8563,27 +8716,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 500
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetContacts, ErrorModel>({
 				path: `/contacts/lists/${listId}/contacts`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8599,15 +8752,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		addContactToList: (
 			listId: number,
 			data: AddContactToListByEmails | AddContactToListByIDs,
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<PostContactInfo, ErrorModel>({
 				path: `/contacts/lists/${listId}/contacts/add`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8622,16 +8775,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 */
 		removeContactFromList: (
 			listId: number,
-			data: RemoveContactFromListByEmails | RemoveContactFromListByIDs | RemoveContactFromListByAll,
-			params: RequestParams = {}
+			data:
+				| RemoveContactFromListByEmails
+				| RemoveContactFromListByIDs
+				| RemoveContactFromListByAll,
+			params: RequestParams = {},
 		) =>
 			this.request<PostContactInfo, ErrorModel>({
 				path: `/contacts/lists/${listId}/contacts/remove`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8644,10 +8800,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/contacts/export
 		 * @secure
 		 */
-		requestContactExport: (data: RequestContactExport, params: RequestParams = {}) =>
+		requestContactExport: (
+			data: RequestContactExport,
+			params: RequestParams = {},
+		) =>
 			this.request<CreatedProcessId, ErrorModel>({
 				path: `/contacts/export`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8666,13 +8825,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		importContacts: (data: RequestContactImport, params: RequestParams = {}) =>
 			this.request<CreatedProcessId, ErrorModel>({
 				path: `/contacts/import`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
 				...params,
 			}),
-	}
+	};
 	smsCampaigns = {
 		/**
 		 * No description
@@ -8686,11 +8845,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getSmsCampaigns: (
 			query?: {
 				/** Status of campaign. */
-				status?: 'suspended' | 'archive' | 'sent' | 'queued' | 'draft' | 'inProcess'
+				status?:
+					| "suspended"
+					| "archive"
+					| "sent"
+					| "queued"
+					| "draft"
+					| "inProcess";
 				/** **Mandatory if endDate is used.** Starting (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the sent sms campaigns. **Prefer to pass your timezone in date-time format for accurate result** ( only available if either 'status' not passed and if passed is set to 'sent' ) */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the sent sms campaigns. **Prefer to pass your timezone in date-time format for accurate result** ( only available if either 'status' not passed and if passed is set to 'sent' ) */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number limitation for the result returned
 				 * @format int64
@@ -8698,27 +8863,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 1000
 				 * @default 500
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Beginning point in the list to retrieve from.
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetSmsCampaigns, ErrorModel>({
 				path: `/smsCampaigns`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8734,7 +8899,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createSmsCampaign: (data: CreateSmsCampaign, params: RequestParams = {}) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/smsCampaigns`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8753,9 +8918,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getSmsCampaign: (campaignId: number, params: RequestParams = {}) =>
 			this.request<GetSmsCampaign, ErrorModel>({
 				path: `/smsCampaigns/${campaignId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8768,10 +8933,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/smsCampaigns/{campaignId}
 		 * @secure
 		 */
-		updateSmsCampaign: (campaignId: number, data: UpdateSmsCampaign, params: RequestParams = {}) =>
+		updateSmsCampaign: (
+			campaignId: number,
+			data: UpdateSmsCampaign,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/smsCampaigns/${campaignId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8790,7 +8959,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteSmsCampaign: (campaignId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smsCampaigns/${campaignId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -8807,7 +8976,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		sendSmsCampaignNow: (campaignId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/smsCampaigns/${campaignId}/sendNow`,
-				method: 'POST',
+				method: "POST",
 				secure: true,
 				...params,
 			}),
@@ -8821,10 +8990,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/smsCampaigns/{campaignId}/status
 		 * @secure
 		 */
-		updateSmsCampaignStatus: (campaignId: number, data: UpdateCampaignStatus, params: RequestParams = {}) =>
+		updateSmsCampaignStatus: (
+			campaignId: number,
+			data: UpdateCampaignStatus,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/smsCampaigns/${campaignId}/status`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8840,10 +9013,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/smsCampaigns/{campaignId}/sendTest
 		 * @secure
 		 */
-		sendTestSms: (campaignId: number, data: SendTestSms, params: RequestParams = {}) =>
+		sendTestSms: (
+			campaignId: number,
+			data: SendTestSms,
+			params: RequestParams = {},
+		) =>
 			this.request<void, PostSendSmsTestFailed | ErrorModel>({
 				path: `/smsCampaigns/${campaignId}/sendTest`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8859,10 +9036,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/smsCampaigns/{campaignId}/exportRecipients
 		 * @secure
 		 */
-		requestSmsRecipientExport: (campaignId: number, data?: RequestSmsRecipientExport, params: RequestParams = {}) =>
+		requestSmsRecipientExport: (
+			campaignId: number,
+			data?: RequestSmsRecipientExport,
+			params: RequestParams = {},
+		) =>
 			this.request<CreatedProcessId, ErrorModel>({
 				path: `/smsCampaigns/${campaignId}/exportRecipients`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -8878,16 +9059,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/smsCampaigns/{campaignId}/sendReport
 		 * @secure
 		 */
-		sendSmsReport: (campaignId: number, data: SendReport, params: RequestParams = {}) =>
+		sendSmsReport: (
+			campaignId: number,
+			data: SendReport,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/smsCampaigns/${campaignId}/sendReport`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
 				...params,
 			}),
-	}
+	};
 	transactionalSms = {
 		/**
 		 * No description
@@ -8901,11 +9086,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		sendTransacSms: (data: SendTransacSms, params: RequestParams = {}) =>
 			this.request<SendSms, ErrorModel>({
 				path: `/transactionalSMS/sms`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8921,25 +9106,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getTransacAggregatedSmsReport: (
 			query?: {
 				/** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) of the report */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) of the report */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of days in the past including today (positive integer). **Not compatible with startDate and endDate**
 				 * @format int64
 				 */
-				days?: number
+				days?: number;
 				/** Filter on a tag */
-				tag?: string
+				tag?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetTransacAggregatedSmsReport, ErrorModel>({
 				path: `/transactionalSMS/statistics/aggregatedReport`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -8955,30 +9140,30 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getTransacSmsReport: (
 			query?: {
 				/** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) of the report */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) of the report */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of days in the past including today (positive integer). **Not compatible with 'startDate' and 'endDate'**
 				 * @format int64
 				 */
-				days?: number
+				days?: number;
 				/** Filter on a tag */
-				tag?: string
+				tag?: string;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetTransacSmsReport, ErrorModel>({
 				path: `/transactionalSMS/statistics/reports`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9000,55 +9185,55 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) of the report */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) of the report */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Number of days in the past including today (positive integer). **Not compatible with 'startDate' and 'endDate'**
 				 * @format int64
 				 */
-				days?: number
+				days?: number;
 				/** Filter the report for a specific phone number */
-				phoneNumber?: string
+				phoneNumber?: string;
 				/** Filter the report for specific events */
 				event?:
-					| 'bounces'
-					| 'hardBounces'
-					| 'softBounces'
-					| 'delivered'
-					| 'sent'
-					| 'accepted'
-					| 'unsubscription'
-					| 'replies'
-					| 'blocked'
-					| 'rejected'
+					| "bounces"
+					| "hardBounces"
+					| "softBounces"
+					| "delivered"
+					| "sent"
+					| "accepted"
+					| "unsubscription"
+					| "replies"
+					| "blocked"
+					| "rejected";
 				/** Filter the report for specific tags passed as a serialized urlencoded array */
-				tags?: string
+				tags?: string;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetSmsEventReport, ErrorModel>({
 				path: `/transactionalSMS/statistics/events`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	whatsappCampaigns = {
 		/**
 		 * No description
@@ -9062,9 +9247,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getWhatsAppCampaign: (campaignId: number, params: RequestParams = {}) =>
 			this.request<GetWhatsappCampaignOverview, ErrorModel>({
 				path: `/whatsappCampaigns/${campaignId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9080,7 +9265,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteWhatsAppCampaign: (campaignId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/whatsappCampaigns/${campaignId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -9094,10 +9279,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/whatsappCampaigns/{campaignId}
 		 * @secure
 		 */
-		updateWhatsAppCampaign: (campaignId: number, data: UpdateWhatsAppCampaign, params: RequestParams = {}) =>
+		updateWhatsAppCampaign: (
+			campaignId: number,
+			data: UpdateWhatsAppCampaign,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/whatsappCampaigns/${campaignId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9119,12 +9308,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * **Mandatory if endDate is used**. Starting (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the templates created.
 				 * **Prefer to pass your timezone in date-time format for accurate result**
 				 */
-				startDate?: string
+				startDate?: string;
 				/**
 				 * **Mandatory if startDate is used**. Ending (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the templates created.
 				 * **Prefer to pass your timezone in date-time format for accurate result**
 				 */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of documents per page
 				 * @format int64
@@ -9132,27 +9321,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record modification. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetWhatsappTemplates, ErrorModel>({
 				path: `/whatsappCampaigns/template-list`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9165,10 +9354,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/whatsappCampaigns
 		 * @secure
 		 */
-		createWhatsAppCampaign: (data: CreateWhatsAppCampaign, params: RequestParams = {}) =>
+		createWhatsAppCampaign: (
+			data: CreateWhatsAppCampaign,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/whatsappCampaigns`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9190,12 +9382,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * **Mandatory if endDate is used**. Starting (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the WhatsApp campaigns created.
 				 * **Prefer to pass your timezone in date-time format for accurate result**
 				 */
-				startDate?: string
+				startDate?: string;
 				/**
 				 * **Mandatory if startDate is used**. Ending (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the WhatsApp campaigns created.
 				 * **Prefer to pass your timezone in date-time format for accurate result**
 				 */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of documents per page
 				 * @format int64
@@ -9203,27 +9395,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record modification. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetWhatsappCampaigns, ErrorModel>({
 				path: `/whatsappCampaigns`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9236,10 +9428,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/whatsappCampaigns/template
 		 * @secure
 		 */
-		createWhatsAppTemplate: (data: CreateWhatsAppTemplate, params: RequestParams = {}) =>
+		createWhatsAppTemplate: (
+			data: CreateWhatsAppTemplate,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/whatsappCampaigns/template`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9255,10 +9450,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/whatsappCampaigns/template/approval/{templateId}
 		 * @secure
 		 */
-		sendWhatsAppTemplateApproval: (templateId: number, params: RequestParams = {}) =>
+		sendWhatsAppTemplateApproval: (
+			templateId: number,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/whatsappCampaigns/template/approval/${templateId}`,
-				method: 'POST',
+				method: "POST",
 				secure: true,
 				...params,
 			}),
@@ -9275,12 +9473,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getWhatsAppConfig: (params: RequestParams = {}) =>
 			this.request<GetWhatsAppConfig, ErrorModel>({
 				path: `/whatsappCampaigns/config`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	senders = {
 		/**
 		 * No description
@@ -9294,18 +9492,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getSenders: (
 			query?: {
 				/** Filter your senders for a specific ip. **Available for dedicated IP usage only** */
-				ip?: string
+				ip?: string;
 				/** Filter your senders for a specific domain */
-				domain?: string
+				domain?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetSendersList, ErrorModel>({
 				path: `/senders`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9321,11 +9519,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createSender: (data?: CreateSender, params: RequestParams = {}) =>
 			this.request<CreateSenderModel, ErrorModel>({
 				path: `/senders`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9338,10 +9536,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/senders/{senderId}
 		 * @secure
 		 */
-		updateSender: (senderId: number, data?: UpdateSender, params: RequestParams = {}) =>
+		updateSender: (
+			senderId: number,
+			data?: UpdateSender,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/senders/${senderId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9360,7 +9562,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteSender: (senderId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/senders/${senderId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -9374,10 +9576,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/senders/{senderId}/validate
 		 * @secure
 		 */
-		validateSenderByOtp: (senderId: number, data?: Otp, params: RequestParams = {}) =>
+		validateSenderByOtp: (
+			senderId: number,
+			data?: Otp,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/senders/${senderId}/validate`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9396,9 +9602,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getIpsFromSender: (senderId: number, params: RequestParams = {}) =>
 			this.request<GetIpsFromSender, ErrorModel>({
 				path: `/senders/${senderId}/ips`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9414,9 +9620,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getIps: (params: RequestParams = {}) =>
 			this.request<GetIps, any>({
 				path: `/senders/ips`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9432,9 +9638,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getDomains: (params: RequestParams = {}) =>
 			this.request<GetDomainsList, ErrorModel>({
 				path: `/senders/domains`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9450,11 +9656,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createDomain: (data?: CreateDomain, params: RequestParams = {}) =>
 			this.request<CreateDomainModel, ErrorModel>({
 				path: `/senders/domains`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9470,7 +9676,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteDomain: (domainName: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/senders/domains/${domainName}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -9487,9 +9693,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getDomainConfiguration: (domainName: string, params: RequestParams = {}) =>
 			this.request<GetDomainConfigurationModel, ErrorModel>({
 				path: `/senders/domains/${domainName}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9505,12 +9711,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		authenticateDomain: (domainName: string, params: RequestParams = {}) =>
 			this.request<AuthenticateDomainModel, ErrorModel>({
 				path: `/senders/domains/${domainName}/authenticate`,
-				method: 'PUT',
+				method: "PUT",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	webhooks = {
 		/**
 		 * No description
@@ -9527,21 +9733,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Filter on webhook type
 				 * @default "transactional"
 				 */
-				type?: 'marketing' | 'transactional' | 'inbound'
+				type?: "marketing" | "transactional" | "inbound";
 				/**
 				 * Sort the results in the ascending/descending order of webhook creation
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetWebhooks, ErrorModel>({
 				path: `/webhooks`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9557,7 +9763,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createWebhook: (data: CreateWebhook, params: RequestParams = {}) =>
 			this.request<CreateModel, ErrorModel>({
 				path: `/webhooks`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9576,9 +9782,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getWebhook: (webhookId: number, params: RequestParams = {}) =>
 			this.request<GetWebhook, ErrorModel>({
 				path: `/webhooks/${webhookId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9591,10 +9797,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/webhooks/{webhookId}
 		 * @secure
 		 */
-		updateWebhook: (webhookId: number, data: UpdateWebhook, params: RequestParams = {}) =>
+		updateWebhook: (
+			webhookId: number,
+			data: UpdateWebhook,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/webhooks/${webhookId}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9613,7 +9823,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteWebhook: (webhookId: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/webhooks/${webhookId}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -9627,17 +9837,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/webhooks/export
 		 * @secure
 		 */
-		exportWebhooksHistory: (data: ExportWebhooksHistory, params: RequestParams = {}) =>
+		exportWebhooksHistory: (
+			data: ExportWebhooksHistory,
+			params: RequestParams = {},
+		) =>
 			this.request<CreatedProcessId, ErrorModel>({
 				path: `/webhooks/export`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	reseller = {
 		/**
 		 * No description
@@ -9657,22 +9870,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 20
 				 * @default 10
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetChildrenList, ErrorModel>({
 				path: `/reseller/children`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9688,11 +9901,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createResellerChild: (data?: CreateChild, params: RequestParams = {}) =>
 			this.request<CreateReseller, ErrorModel>({
 				path: `/reseller/children`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9708,9 +9921,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getChildInfo: (childIdentifier: string, params: RequestParams = {}) =>
 			this.request<GetChildInfo, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9723,10 +9936,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/reseller/children/{childIdentifier}
 		 * @secure
 		 */
-		updateResellerChild: (childIdentifier: string, data: UpdateChild, params: RequestParams = {}) =>
+		updateResellerChild: (
+			childIdentifier: string,
+			data: UpdateChild,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9742,10 +9959,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request DELETE:/reseller/children/{childIdentifier}
 		 * @secure
 		 */
-		deleteResellerChild: (childIdentifier: string, params: RequestParams = {}) =>
+		deleteResellerChild: (
+			childIdentifier: string,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -9759,10 +9979,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/reseller/children/{childIdentifier}/accountStatus
 		 * @secure
 		 */
-		updateChildAccountStatus: (childIdentifier: string, data: UpdateChildAccountStatus, params: RequestParams = {}) =>
+		updateChildAccountStatus: (
+			childIdentifier: string,
+			data: UpdateChildAccountStatus,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/accountStatus`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9778,12 +10002,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request GET:/reseller/children/{childIdentifier}/accountCreationStatus
 		 * @secure
 		 */
-		getChildAccountCreationStatus: (childIdentifier: string, params: RequestParams = {}) =>
+		getChildAccountCreationStatus: (
+			childIdentifier: string,
+			params: RequestParams = {},
+		) =>
 			this.request<GetChildAccountCreationStatus, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/accountCreationStatus`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9796,10 +10023,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/reseller/children/{childIdentifier}/ips/associate
 		 * @secure
 		 */
-		associateIpToChild: (childIdentifier: string, data: ManageIp, params: RequestParams = {}) =>
+		associateIpToChild: (
+			childIdentifier: string,
+			data: ManageIp,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/ips/associate`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9815,10 +10046,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/reseller/children/{childIdentifier}/ips/dissociate
 		 * @secure
 		 */
-		dissociateIpFromChild: (childIdentifier: string, data: ManageIp, params: RequestParams = {}) =>
+		dissociateIpFromChild: (
+			childIdentifier: string,
+			data: ManageIp,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/ips/dissociate`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9834,14 +10069,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/reseller/children/{childIdentifier}/credits/add
 		 * @secure
 		 */
-		addCredits: (childIdentifier: string, data: AddCredits, params: RequestParams = {}) =>
+		addCredits: (
+			childIdentifier: string,
+			data: AddCredits,
+			params: RequestParams = {},
+		) =>
 			this.request<RemainingCreditModel, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/credits/add`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9854,14 +10093,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/reseller/children/{childIdentifier}/credits/remove
 		 * @secure
 		 */
-		removeCredits: (childIdentifier: string, data: RemoveCredits, params: RequestParams = {}) =>
+		removeCredits: (
+			childIdentifier: string,
+			data: RemoveCredits,
+			params: RequestParams = {},
+		) =>
 			this.request<RemainingCreditModel, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/credits/remove`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9877,9 +10120,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getChildDomains: (childIdentifier: string, params: RequestParams = {}) =>
 			this.request<GetChildDomains, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/domains`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -9892,10 +10135,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/reseller/children/{childIdentifier}/domains
 		 * @secure
 		 */
-		createChildDomain: (childIdentifier: string, data: AddChildDomain, params: RequestParams = {}) =>
+		createChildDomain: (
+			childIdentifier: string,
+			data: AddChildDomain,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/domains`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9915,11 +10162,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 			childIdentifier: string,
 			domainName: string,
 			data: UpdateChildDomain,
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/domains/${domainName}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -9935,10 +10182,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request DELETE:/reseller/children/{childIdentifier}/domains/{domainName}
 		 * @secure
 		 */
-		deleteChildDomain: (childIdentifier: string, domainName: string, params: RequestParams = {}) =>
+		deleteChildDomain: (
+			childIdentifier: string,
+			domainName: string,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/domains/${domainName}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -9955,12 +10206,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getSsoToken: (childIdentifier: string, params: RequestParams = {}) =>
 			this.request<GetSsoToken, ErrorModel>({
 				path: `/reseller/children/${childIdentifier}/auth`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	account = {
 		/**
 		 * No description
@@ -9974,12 +10225,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getAccount: (params: RequestParams = {}) =>
 			this.request<GetAccount, any>({
 				path: `/account`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	organization = {
 		/**
 		 * No description
@@ -9993,9 +10244,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getAccountActivity: (
 			query?: {
 				/** Mandatory if endDate is used. Enter start date in UTC date (YYYY-MM-DD) format to filter the activity in your account. Maximum time period that can be selected is one month. Additionally, you can retrieve activity logs from the past 12 months from the date of your search. */
-				startDate?: string
+				startDate?: string;
 				/** Mandatory if startDate is used. Enter end date in UTC date (YYYY-MM-DD) format to filter the activity in your account. Maximum time period that can be selected is one month. */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of documents per page
 				 * @format int64
@@ -10003,22 +10254,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 10
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page.
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetAccountActivity, ErrorModel>({
 				path: `/organization/activities`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10034,9 +10285,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getInvitedUsersList: (params: RequestParams = {}) =>
 			this.request<GetInvitedUsersList, ErrorModel>({
 				path: `/organization/invited/users`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10052,9 +10303,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getUserPermission: (email: string, params: RequestParams = {}) =>
 			this.request<GetUserPermission, ErrorModel>({
 				path: `/organization/user/${email}/permissions`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10070,9 +10321,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		putRevokeUserPermission: (email: string, params: RequestParams = {}) =>
 			this.request<PutRevokeUserPermissionResponse, ErrorModel>({
 				path: `/organization/user/invitation/revoke/${email}`,
-				method: 'PUT',
+				method: "PUT",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10085,12 +10336,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/organization/user/invitation/{action}/{email}
 		 * @secure
 		 */
-		putresendcancelinvitation: (action: 'resend' | 'cancel', email: string, params: RequestParams = {}) =>
+		putresendcancelinvitation: (
+			action: "resend" | "cancel",
+			email: string,
+			params: RequestParams = {},
+		) =>
 			this.request<PutresendcancelinvitationResponse, ErrorModel>({
 				path: `/organization/user/invitation/${action}/${email}`,
-				method: 'PUT',
+				method: "PUT",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10106,11 +10361,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		inviteuser: (data: Inviteuser, params: RequestParams = {}) =>
 			this.request<InviteuserResponse, ErrorModel>({
 				path: `/organization/user/invitation/send`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10126,14 +10381,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		editUserPermission: (data: Inviteuser, params: RequestParams = {}) =>
 			this.request<UpdateUserResponse, ErrorModel>({
 				path: `/organization/user/update/permissions`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	processes = {
 		/**
 		 * No description
@@ -10153,27 +10408,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 50
 				 * @default 10
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Beginning point in the list to retrieve from.
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetProcesses, ErrorModel>({
 				path: `/processes`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10189,12 +10444,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getProcess: (processId: number, params: RequestParams = {}) =>
 			this.request<GetProcess, ErrorModel>({
 				path: `/processes/${processId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	inbound = {
 		/**
 		 * @description This endpoint will show the list of all the events for the received emails.
@@ -10208,17 +10463,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getInboundEmailEvents: (
 			query?: {
 				/** Email address of the sender. */
-				sender?: string
+				sender?: string;
 				/**
 				 * Mandatory if endDate is used. Starting date (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.SSSZ) from which you want to fetch the list. Maximum time period that can be selected is one month.
 				 * @format datetime
 				 */
-				startDate?: string
+				startDate?: string;
 				/**
 				 * Mandatory if startDate is used. Ending date (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.SSSZ) till which you want to fetch the list. Maximum time period that can be selected is one month.
 				 * @format datetime
 				 */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of documents returned per page
 				 * @format int64
@@ -10226,27 +10481,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 500
 				 * @default 100
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document on the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetInboundEmailEvents, ErrorModel>({
 				path: `/inbound/events`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10262,9 +10517,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getInboundEmailEventsByUuid: (uuid: string, params: RequestParams = {}) =>
 			this.request<GetInboundEmailEventsByUuid, ErrorModel>({
 				path: `/inbound/events/${uuid}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10277,14 +10532,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request GET:/inbound/attachments/{downloadToken}
 		 * @secure
 		 */
-		getInboundEmailAttachment: (downloadToken: string, params: RequestParams = {}) =>
+		getInboundEmailAttachment: (
+			downloadToken: string,
+			params: RequestParams = {},
+		) =>
 			this.request<File, ErrorModel>({
 				path: `/inbound/attachments/${downloadToken}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
 				...params,
 			}),
-	}
+	};
 	corporate = {
 		/**
 		 * @description This endpoint will provide the list all the sub-accounts of the master account.
@@ -10298,18 +10556,18 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		subAccountList: (
 			query: {
 				/** Index of the first sub-account in the page */
-				offset: number
+				offset: number;
 				/** Number of sub-accounts to be displayed on each page */
-				limit: number
+				limit: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<SubAccountsResponse, ErrorModel>({
 				path: `/corporate/subAccount`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10325,11 +10583,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		subAccountCreate: (data: CreateSubAccount, params: RequestParams = {}) =>
 			this.request<CreateSubAccountResponse, ErrorModel>({
 				path: `/corporate/subAccount`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10345,9 +10603,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		subAccountDetail: (id: number, params: RequestParams = {}) =>
 			this.request<SubAccountDetailsResponse, ErrorModel>({
 				path: `/corporate/subAccount/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10363,7 +10621,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		subAccountDelete: (id: number, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/corporate/subAccount/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -10377,10 +10635,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/corporate/subAccount/{id}/plan
 		 * @secure
 		 */
-		subAccountPlanUpdate: (id: number, data: SubAccountUpdatePlanRequest, params: RequestParams = {}) =>
+		subAccountPlanUpdate: (
+			id: number,
+			data: SubAccountUpdatePlanRequest,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/corporate/subAccount/${id}/plan`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -10403,12 +10665,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @format int64
 				 * @example 3232323
 				 */
-				id: number
+				id: number;
 				/**
 				 * User email of sub-account organization
 				 * @example "vipin+subaccount@brevo.com"
 				 */
-				email?: string
+				email?: string;
 				/**
 				 * **Set target after login success**
 				 * * **automation** - Redirect to Automation after login
@@ -10422,29 +10684,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @example "contacts"
 				 */
 				target?:
-					| 'automation'
-					| 'email_campaign'
-					| 'contacts'
-					| 'landing_pages'
-					| 'email_transactional'
-					| 'senders'
-					| 'sms_campaign'
-					| 'sms_transactional'
+					| "automation"
+					| "email_campaign"
+					| "contacts"
+					| "landing_pages"
+					| "email_transactional"
+					| "senders"
+					| "sms_campaign"
+					| "sms_transactional";
 				/**
 				 * Set the full target URL after login success. The user will land directly on this target URL after login
 				 * @example "https://app.brevo.com/senders/domain/list"
 				 */
-				url?: string
+				url?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetSsoToken, ErrorModel>({
 				path: `/corporate/subAccount/ssoToken`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10460,9 +10722,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		masterAccountList: (params: RequestParams = {}) =>
 			this.request<MasterDetailsResponse, ErrorModel>({
 				path: `/corporate/masterAccount`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10482,22 +10744,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @format int64
 				 * @example 3232323
 				 */
-				id: number
+				id: number;
 				/**
 				 * Name of the API key
 				 * @example "My Api Key"
 				 */
-				name: string
+				name: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<CreateApiKeyResponse, ErrorModel>({
 				path: `/corporate/subAccount/key`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10510,16 +10772,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/corporate/subAccount/{id}/applications/toggle
 		 * @secure
 		 */
-		subAccountApplicationsToggleUpdate: (id: number, data: SubAccountAppsToggleRequest, params: RequestParams = {}) =>
+		subAccountApplicationsToggleUpdate: (
+			id: number,
+			data: SubAccountAppsToggleRequest,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/corporate/subAccount/${id}/applications/toggle`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
 				...params,
 			}),
-	}
+	};
 	companies = {
 		/**
 		 * No description
@@ -10533,40 +10799,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		companiesList: (
 			query?: {
 				/** Filter by attrbutes. If you have filter for owner on your side please send it as {"attributes.owner":"6299dcf3874a14eacbc65c46"} */
-				filters?: string
+				filters?: string;
 				/**
 				 * Filter by linked contacts ids
 				 * @format int64
 				 */
-				linkedContactsIds?: number
+				linkedContactsIds?: number;
 				/**
 				 * Filter by linked Deals ids
 				 * @format objectID
 				 */
-				linkedDealsIds?: string
+				linkedDealsIds?: string;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 */
-				page?: number
+				page?: number;
 				/**
 				 * Number of documents per page
 				 * @format int64
 				 */
-				limit?: number
+				limit?: number;
 				/** Sort the results in the ascending/descending order. Default order is **descending** by creation if `sort` is not passed */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/** The field used to sort field names. */
-				sortBy?: string
+				sortBy?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<CompaniesList, ErrorModel>({
 				path: `/companies`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10585,20 +10851,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Name of company
 				 * @example "company"
 				 */
-				name: string
+				name: string;
 				/**
 				 * Attributes for company creation
 				 * @example {"domain":"https://example.com","industry":"Fabric","owner":"60e68d60582a3b006f524197"}
 				 */
-				attributes?: object
+				attributes?: object;
 				/**
 				 * Country code if phone_number is passed in attributes.
 				 * @format int64
 				 * @example 91
 				 */
-				countryCode?: number
+				countryCode?: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<
 				{
@@ -10606,16 +10872,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 					 * Unique company id
 					 * @example "61a5cd07ca1347c82306ad06"
 					 */
-					id: string
+					id: string;
 				},
 				ErrorModel
 			>({
 				path: `/companies`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10631,9 +10897,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		companiesDetail: (id: string, params: RequestParams = {}) =>
 			this.request<Company, ErrorModel>({
 				path: `/companies/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10649,7 +10915,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		companiesDelete: (id: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/companies/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -10670,28 +10936,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Name of company
 				 * @example "company"
 				 */
-				name?: string
+				name?: string;
 				/**
 				 * Attributes for company update
 				 * @example {"category":"label_2","domain":"xyz","date":"2022-05-04T00:00:00+05:30","industry":"flipkart","number_of_contacts":1,"number_of_employees":100,"owner":"5b1a17d914b73d35a76ca0c7","phone_number":"81718441912","revenue":10000.34222}
 				 */
-				attributes?: object
+				attributes?: object;
 				/**
 				 * Country code if phone_number is passed in attributes.
 				 * @format int64
 				 * @example 91
 				 */
-				countryCode?: number
+				countryCode?: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<Company, ErrorModel>({
 				path: `/companies/${id}`,
-				method: 'PATCH',
+				method: "PATCH",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10707,9 +10973,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		attributesList: (params: RequestParams = {}) =>
 			this.request<CompanyAttributes, any>({
 				path: `/companies/attributes`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10729,34 +10995,34 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Contact ids for contacts to be linked with company
 				 * @example [1,2,3]
 				 */
-				linkContactIds?: number[]
+				linkContactIds?: number[];
 				/**
 				 * Contact ids for contacts to be unlinked from company
 				 * @example [4,5,6]
 				 */
-				unlinkContactIds?: number[]
+				unlinkContactIds?: number[];
 				/**
 				 * Deal ids for deals to be linked with company
 				 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 				 */
-				linkDealsIds?: string[]
+				linkDealsIds?: string[];
 				/**
 				 * Deal ids for deals to be unlinked from company
 				 * @example ["61a5ce58c5d4795761045994","61a5ce58c5d479576104595","61a5ce58c5d4795761045996"]
 				 */
-				unlinkDealsIds?: string[]
+				unlinkDealsIds?: string[];
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/companies/link-unlink/${id}`,
-				method: 'PATCH',
+				method: "PATCH",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
 				...params,
 			}),
-	}
+	};
 	crm = {
 		/**
 		 * @description This endpoint is deprecated. Prefer /crm/pipeline/details/{pipelineID} instead.
@@ -10771,9 +11037,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		pipelineDetailsList: (params: RequestParams = {}) =>
 			this.request<Pipeline, any>({
 				path: `/crm/pipeline/details`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10789,9 +11055,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		pipelineDetailsDetail: (pipelineId: string, params: RequestParams = {}) =>
 			this.request<Pipelines, ErrorModel>({
 				path: `/crm/pipeline/details/${pipelineId}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10807,9 +11073,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		pipelineDetailsAllList: (params: RequestParams = {}) =>
 			this.request<Pipelines, ErrorModel>({
 				path: `/crm/pipeline/details/all`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10825,9 +11091,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		attributesDealsList: (params: RequestParams = {}) =>
 			this.request<DealAttributes, any>({
 				path: `/crm/attributes/deals`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10843,32 +11109,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		dealsList: (
 			query?: {
 				/** Filter by attributes. If you have filter for owner on your side please send it as `filters[attributes.deal_owner]`. */
-				filtersAttributesDealName?: string
+				filtersAttributesDealName?: string;
 				/** Filter by linked companies ids */
-				'filters[linkedCompaniesIds]'?: string
+				"filters[linkedCompaniesIds]"?: string;
 				/** Filter by linked companies ids */
-				'filters[linkedContactsIds]'?: string
+				"filters[linkedContactsIds]"?: string;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Number of documents per page
 				 * @format int64
 				 */
-				limit?: number
+				limit?: number;
 				/** Sort the results in the ascending/descending order. Default order is **descending** by creation if `sort` is not passed */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<DealsList, ErrorModel>({
 				path: `/crm/deals`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10887,7 +11153,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Name of deal
 				 * @example "Deal: Connect with company"
 				 */
-				name: string
+				name: string;
 				/**
 				 * Attributes for deal creation
 				 *
@@ -10896,9 +11162,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Pipeline and deal_stage are ids you can fetch using this endpoint `/crm/pipeline/details/{pipelineID}`
 				 * @example {"deal_owner":"6093d2425a9b436e9519d034","amount":12}
 				 */
-				attributes?: object
+				attributes?: object;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<
 				{
@@ -10906,16 +11172,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 					 * Unique deal id
 					 * @example "61a5cd07ca1347c82306ad06"
 					 */
-					id: string
+					id: string;
 				},
 				void
 			>({
 				path: `/crm/deals`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10931,9 +11197,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		dealsDetail: (id: string, params: RequestParams = {}) =>
 			this.request<Deal, ErrorModel>({
 				path: `/crm/deals/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -10949,7 +11215,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		dealsDelete: (id: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/deals/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -10970,7 +11236,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Name of deal
 				 * @example "Deal: Connect with client"
 				 */
-				name?: string
+				name?: string;
 				/**
 				 * Attributes for deal update
 				 *
@@ -10979,13 +11245,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Pipeline and deal_stage are ids you can fetch using this endpoint `/crm/pipeline/details/{pipelineID}`
 				 * @example {"deal_owner":"6093d2425a9b436e9519d034","amount":12}
 				 */
-				attributes?: object
+				attributes?: object;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/deals/${id}`,
-				method: 'PATCH',
+				method: "PATCH",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -11008,28 +11274,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Contact ids for contacts to be linked with deal
 				 * @example [1,2,3]
 				 */
-				linkContactIds?: number[]
+				linkContactIds?: number[];
 				/**
 				 * Contact ids for contacts to be unlinked from deal
 				 * @example [4,5,6]
 				 */
-				unlinkContactIds?: number[]
+				unlinkContactIds?: number[];
 				/**
 				 * Company ids to be linked with deal
 				 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 				 */
-				linkCompanyIds?: string[]
+				linkCompanyIds?: string[];
 				/**
 				 * Company ids to be unlinked from deal
 				 * @example ["61a5ce58c5d4795761045994","61a5ce58c5d479576104595","61a5ce58c5d4795761045996"]
 				 */
-				unlinkCompanyIds?: string[]
+				unlinkCompanyIds?: string[];
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/deals/link-unlink/${id}`,
-				method: 'PATCH',
+				method: "PATCH",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -11048,9 +11314,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		tasktypesList: (params: RequestParams = {}) =>
 			this.request<TaskTypes, any>({
 				path: `/crm/tasktypes`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11066,50 +11332,50 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		tasksList: (
 			query?: {
 				/** Filter by task type (ID) */
-				'filter[type]'?: string
+				"filter[type]"?: string;
 				/** Filter by task status */
-				'filter[status]'?: 'done' | 'undone'
+				"filter[status]"?: "done" | "undone";
 				/** Filter by date */
-				'filter[date]'?: 'overdue' | 'today' | 'tomorrow' | 'week' | 'range'
+				"filter[date]"?: "overdue" | "today" | "tomorrow" | "week" | "range";
 				/** Filter by assignTo id */
-				'filter[assignTo]'?: string
+				"filter[assignTo]"?: string;
 				/** Filter by contact ids */
-				'filter[contacts]'?: string
+				"filter[contacts]"?: string;
 				/** Filter by deals ids */
-				'filter[deals]'?: string
+				"filter[deals]"?: string;
 				/** Filter by companies ids */
-				'filter[companies]'?: string
+				"filter[companies]"?: string;
 				/** dateFrom to date range filter type (timestamp in milliseconds) */
-				dateFrom?: number
+				dateFrom?: number;
 				/** dateTo to date range filter type (timestamp in milliseconds) */
-				dateTo?: number
+				dateTo?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Number of documents per page
 				 * @format int64
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/** Sort the results in the ascending/descending order. Default order is **descending** by creation if `sort` is not passed */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/**
 				 * The field used to sort field names.
 				 * @example "name"
 				 */
-				sortBy?: string
+				sortBy?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<TaskList, ErrorModel>({
 				path: `/crm/tasks`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11128,59 +11394,59 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Name of task
 				 * @example "Task: Connect with client"
 				 */
-				name: string
+				name: string;
 				/**
 				 * Duration of task in milliseconds [1 minute = 60000 ms]
 				 * @format int64
 				 * @min 0
 				 * @example 600000
 				 */
-				duration?: number
+				duration?: number;
 				/**
 				 * Id for type of task e.g Call / Email / Meeting etc.
 				 * @example "61a5cd07ca1347c82306ad09"
 				 */
-				taskTypeId: string
+				taskTypeId: string;
 				/**
 				 * Task due date and time
 				 * @format date-time
 				 * @example "2021-11-01T17:44:54.668Z"
 				 */
-				date: string
+				date: string;
 				/**
 				 * Notes added to a task
 				 * @example "In communication with client for resolution of queries."
 				 */
-				notes?: string
+				notes?: string;
 				/**
 				 * Task marked as done
 				 * @example false
 				 */
-				done?: boolean
+				done?: boolean;
 				/**
 				 * User id to whom task is assigned
 				 * @example "5faab4b7f195bb3c4c31e62a"
 				 */
-				assignToId?: string
+				assignToId?: string;
 				/**
 				 * Contact ids for contacts linked to this task
 				 * @example [1,2,3]
 				 */
-				contactsIds?: number[]
+				contactsIds?: number[];
 				/**
 				 * Deal ids for deals a task is linked to
 				 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 				 */
-				dealsIds?: string[]
+				dealsIds?: string[];
 				/**
 				 * Companies ids for companies a task is linked to
 				 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 				 */
-				companiesIds?: string[]
+				companiesIds?: string[];
 				/** Task reminder date/time for a task */
-				reminder?: TaskReminder
+				reminder?: TaskReminder;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<
 				{
@@ -11188,16 +11454,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 					 * Unique task id
 					 * @example "61a5cd07ca1347c82306ad06"
 					 */
-					id: string
+					id: string;
 				},
 				void
 			>({
 				path: `/crm/tasks`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11213,9 +11479,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		tasksDetail: (id: string, params: RequestParams = {}) =>
 			this.request<Task, ErrorModel>({
 				path: `/crm/tasks/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11231,7 +11497,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		tasksDelete: (id: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/tasks/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -11252,62 +11518,62 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Name of task
 				 * @example "Task: Connect with client"
 				 */
-				name?: string
+				name?: string;
 				/**
 				 * Duration of task in milliseconds [1 minute = 60000 ms]
 				 * @format int64
 				 * @example 600000
 				 */
-				duration?: number
+				duration?: number;
 				/**
 				 * Id for type of task e.g Call / Email / Meeting etc.
 				 * @example "61a5cd07ca1347c82306ad09"
 				 */
-				taskTypeId?: string
+				taskTypeId?: string;
 				/**
 				 * Task date/time
 				 * @format date-time
 				 * @example "2021-11-01T17:44:54.668Z"
 				 */
-				date?: string
+				date?: string;
 				/**
 				 * Notes added to a task
 				 * @example "In communication with client for resolution of queries."
 				 */
-				notes?: string
+				notes?: string;
 				/**
 				 * Task marked as done
 				 * @example false
 				 */
-				done?: boolean
+				done?: boolean;
 				/**
 				 * User id to whom task is assigned
 				 * @example "5faab4b7f195bb3c4c31e62a"
 				 */
-				assignToId?: string
+				assignToId?: string;
 				/**
 				 * Contact ids for contacts linked to this task
 				 * @example [1,2,3]
 				 */
-				contactsIds?: number[]
+				contactsIds?: number[];
 				/**
 				 * Deal ids for deals a task is linked to
 				 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 				 */
-				dealsIds?: string[]
+				dealsIds?: string[];
 				/**
 				 * Companies ids for companies a task is linked to
 				 * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
 				 */
-				companiesIds?: string[]
+				companiesIds?: string[];
 				/** Task reminder date/time for a task */
-				reminder?: TaskReminder
+				reminder?: TaskReminder;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/tasks/${id}`,
-				method: 'PATCH',
+				method: "PATCH",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -11326,35 +11592,35 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		notesList: (
 			query?: {
 				/** Filter by note entity type */
-				entity?: 'companies' | 'deals' | 'contacts'
+				entity?: "companies" | "deals" | "contacts";
 				/** Filter by note entity IDs */
-				entityIds?: string
+				entityIds?: string;
 				/** dateFrom to date range filter type (timestamp in milliseconds) */
-				dateFrom?: number
+				dateFrom?: number;
 				/** dateTo to date range filter type (timestamp in milliseconds) */
-				dateTo?: number
+				dateTo?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Number of documents per page
 				 * @format int64
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/** Sort the results in the ascending/descending order. Default order is **descending** by creation if `sort` is not passed */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<NoteList, ErrorModel>({
 				path: `/crm/notes`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11370,11 +11636,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		notesCreate: (data: NoteData, params: RequestParams = {}) =>
 			this.request<NoteId, ErrorModel>({
 				path: `/crm/notes`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11390,9 +11656,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		notesDetail: (id: string, params: RequestParams = {}) =>
 			this.request<Note, ErrorModel>({
 				path: `/crm/notes/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11405,10 +11671,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PATCH:/crm/notes/{id}
 		 * @secure
 		 */
-		notesPartialUpdate: (id: string, data: NoteData, params: RequestParams = {}) =>
+		notesPartialUpdate: (
+			id: string,
+			data: NoteData,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/notes/${id}`,
-				method: 'PATCH',
+				method: "PATCH",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -11427,7 +11697,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		notesDelete: (id: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/notes/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -11444,35 +11714,35 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		filesList: (
 			query?: {
 				/** Filter by file entity type */
-				entity?: 'companies' | 'deals' | 'contacts'
+				entity?: "companies" | "deals" | "contacts";
 				/** Filter by file entity IDs */
-				entityIds?: string
+				entityIds?: string;
 				/** dateFrom to date range filter type (timestamp in milliseconds) */
-				dateFrom?: number
+				dateFrom?: number;
 				/** dateTo to date range filter type (timestamp in milliseconds) */
-				dateTo?: number
+				dateTo?: number;
 				/**
 				 * Index of the first document of the page
 				 * @format int64
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Number of documents per page
 				 * @format int64
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/** Sort the results in the ascending/descending order. Default order is **descending** by creation if `sort` is not passed */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<FileList, ErrorModel>({
 				path: `/crm/files`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11491,21 +11761,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * File data to create a file.
 				 * @format binary
 				 */
-				file: File
-				dealId?: string
+				file: File;
+				dealId?: string;
 				/** @format int64 */
-				contactId?: number
-				companyId?: string
+				contactId?: number;
+				companyId?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<FileData, ErrorModel>({
 				path: `/crm/files`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.FormData,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11521,9 +11791,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		filesDetail: (id: string, params: RequestParams = {}) =>
 			this.request<FileDownloadableLink, ErrorModel>({
 				path: `/crm/files/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11539,7 +11809,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		filesDelete: (id: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/crm/files/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -11556,12 +11826,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		filesDataDetail: (id: string, params: RequestParams = {}) =>
 			this.request<FileData, ErrorModel>({
 				path: `/crm/files/${id}/data`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	conversations = {
 		/**
 		 * No description
@@ -11575,27 +11845,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		messagesCreate: (
 			data: {
 				/** visitor’s ID received <a href="https://developers.brevo.com/docs/conversations-webhooks">from a webhook</a> or generated by you to <a href="https://developers.brevo.com/docs/customize-the-widget#identifying-existing-users">bind existing user account to Conversations</a> */
-				visitorId: any
+				visitorId: any;
 				/** message text */
-				text: any
+				text: any;
 				/** agent ID. It can be found on agent’s page or received <a href="https://developers.brevo.com/docs/conversations-webhooks">from a webhook</a>. Alternatively, you can use `agentEmail` + `agentName` + `receivedFrom` instead (all 3 fields required). */
-				agentId?: any
+				agentId?: any;
 				/** mark your messages to distinguish messages created by you from the others. */
-				receivedFrom?: any
+				receivedFrom?: any;
 				/** agent email. When sending messages from a standalone system, it’s hard to maintain a 1-to-1 relationship between the users of both systems. In this case, an agent can be specified by their email address. */
-				agentEmail?: any
+				agentEmail?: any;
 				/** agent name */
-				agentName?: any
+				agentName?: any;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<ConversationsMessage, ErrorModel>({
 				path: `/conversations/messages`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11611,9 +11881,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		messagesDetail: (id: string, params: RequestParams = {}) =>
 			this.request<ConversationsMessage, ErrorModel>({
 				path: `/conversations/messages/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11630,17 +11900,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 			id: string,
 			data: {
 				/** edited message text */
-				text: string
+				text: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<ConversationsMessage, ErrorModel>({
 				path: `/conversations/messages/${id}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11656,7 +11926,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		messagesDelete: (id: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/conversations/messages/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -11673,23 +11943,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		pushedMessagesCreate: (
 			data: {
 				/** visitor’s ID received <a href="https://developers.brevo.com/docs/conversations-webhooks">from a webhook</a> or generated by you to <a href="https://developers.brevo.com/docs/customize-the-widget#identifying-existing-users">bind existing user account to Conversations</a> */
-				visitorId: any
+				visitorId: any;
 				/** message text */
-				text: any
+				text: any;
 				/** agent ID. It can be found on agent’s page or received <a href="https://developers.brevo.com/docs/conversations-webhooks">from a webhook</a>. */
-				agentId?: any
+				agentId?: any;
 				/** group ID. It can be found on group’s page. */
-				groupId?: any
+				groupId?: any;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<ConversationsMessage, ErrorModel>({
 				path: `/conversations/pushedMessages`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11705,9 +11975,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		pushedMessagesDetail: (id: string, params: RequestParams = {}) =>
 			this.request<ConversationsMessage, ErrorModel>({
 				path: `/conversations/pushedMessages/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11724,17 +11994,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 			id: string,
 			data: {
 				/** edited message text */
-				text: string
+				text: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<ConversationsMessage, ErrorModel>({
 				path: `/conversations/pushedMessages/${id}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11750,7 +12020,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		pushedMessagesDelete: (id: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/conversations/pushedMessages/${id}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
@@ -11767,25 +12037,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		agentOnlinePingCreate: (
 			data: {
 				/** agent ID. It can be found on agent’s page or received <a href="https://developers.brevo.com/docs/conversations-webhooks">from a webhook</a>. Alternatively, you can use `agentEmail` + `agentName` + `receivedFrom` instead (all 3 fields required). */
-				agentId?: any
+				agentId?: any;
 				/** mark your messages to distinguish messages created by you from the others. */
-				receivedFrom?: any
+				receivedFrom?: any;
 				/** agent email. When sending online pings from a standalone system, it’s hard to maintain a 1-to-1 relationship between the users of both systems. In this case, an agent can be specified by their email address. If there’s no agent with the specified email address in your Brevo organization, a dummy agent will be created automatically. */
-				agentEmail?: any
+				agentEmail?: any;
 				/** agent name */
-				agentName?: any
+				agentName?: any;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/conversations/agentOnlinePing`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
 				...params,
 			}),
-	}
+	};
 	ecommerce = {
 		/**
 		 * @description Getting access to Brevo eCommerce.
@@ -11799,11 +12069,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		activateCreate: (params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/ecommerce/activate`,
-				method: 'POST',
+				method: "POST",
 				secure: true,
 				...params,
 			}),
-	}
+	};
 	orders = {
 		/**
 		 * @description Manages the transactional status of the order
@@ -11817,7 +12087,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createOrder: (data: Order, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/orders/status`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -11836,13 +12106,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		createBatchOrder: (data: OrderBatch, params: RequestParams = {}) =>
 			this.request<CreatedBatchId, ErrorModel>({
 				path: `/orders/status/batch`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
 				...params,
 			}),
-	}
+	};
 	categories = {
 		/**
 		 * No description
@@ -11861,31 +12131,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/** Filter by category ids */
-				ids?: string[]
+				ids?: string[];
 				/** Filter by category name */
-				name?: string
+				name?: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetCategories, ErrorModel>({
 				path: `/categories`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11898,14 +12168,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/categories
 		 * @secure
 		 */
-		createUpdateCategory: (data: CreateUpdateCategory, params: RequestParams = {}) =>
+		createUpdateCategory: (
+			data: CreateUpdateCategory,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateCategoryModel, ErrorModel>({
 				path: `/categories`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11921,9 +12194,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getCategoryInfo: (id: string, params: RequestParams = {}) =>
 			this.request<GetCategoryDetails, ErrorModel>({
 				path: `/categories/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -11936,17 +12209,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/categories/batch
 		 * @secure
 		 */
-		createUpdateBatchCategory: (data: CreateUpdateBatchCategory, params: RequestParams = {}) =>
+		createUpdateBatchCategory: (
+			data: CreateUpdateBatchCategory,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateUpdateBatchCategoryModel, ErrorModel>({
 				path: `/categories/batch`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	products = {
 		/**
 		 * No description
@@ -11965,45 +12241,45 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 1000
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document in the page
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/** Filter by product ids */
-				ids?: string[]
+				ids?: string[];
 				/** Filter by product name, minimum 3 characters should be present for search */
-				name?: string
+				name?: string;
 				/** Price filter for products less than and equals to particular amount */
-				'price[lte]'?: number
+				"price[lte]"?: number;
 				/** Price filter for products greater than and equals to particular amount */
-				'price[gte]'?: number
+				"price[gte]"?: number;
 				/** Price filter for products less than particular amount */
-				'price[lt]'?: number
+				"price[lt]"?: number;
 				/** Price filter for products greater than particular amount */
-				'price[gt]'?: number
+				"price[gt]"?: number;
 				/** Price filter for products equals to particular amount */
-				'price[eq]'?: number
+				"price[eq]"?: number;
 				/** Price filter for products not equals to particular amount */
-				'price[ne]'?: number
+				"price[ne]"?: number;
 				/** Filter by product categories */
-				categories?: string[]
+				categories?: string[];
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetProducts, ErrorModel>({
 				path: `/products`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12016,14 +12292,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/products
 		 * @secure
 		 */
-		createUpdateProduct: (data: CreateUpdateProduct, params: RequestParams = {}) =>
+		createUpdateProduct: (
+			data: CreateUpdateProduct,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateProductModel, ErrorModel>({
 				path: `/products`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12039,9 +12318,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getProductInfo: (id: string, params: RequestParams = {}) =>
 			this.request<GetProductDetails, ErrorModel>({
 				path: `/products/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12054,17 +12333,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/products/batch
 		 * @secure
 		 */
-		createUpdateBatchProducts: (data: CreateUpdateBatchProducts, params: RequestParams = {}) =>
+		createUpdateBatchProducts: (
+			data: CreateUpdateBatchProducts,
+			params: RequestParams = {},
+		) =>
 			this.request<CreateUpdateBatchProductsModel, ErrorModel>({
 				path: `/products/batch`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	couponCollections = {
 		/**
 		 * No description
@@ -12084,28 +12366,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 100
 				 * @default 50
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document on the page
 				 * @format int64
 				 * @min 0
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/**
 				 * Sort the results by creation time in ascending/descending order
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetCouponCollection, ErrorModel>({
 				path: `/couponCollections`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12124,14 +12406,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Name of the collection with no white spaces between words
 				 * @example "SummerPromotions"
 				 */
-				name: string
+				name: string;
 				/**
 				 * A default coupon to be used in case there are no coupons left
 				 * @example "10 OFF"
 				 */
-				defaultCoupon: string
+				defaultCoupon: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<
 				{
@@ -12140,16 +12422,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 					 * @format uuidv4
 					 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 					 */
-					id: string
+					id: string;
 				},
 				ErrorModel
 			>({
 				path: `/couponCollections`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12165,9 +12447,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getCouponCollection: (id: string, params: RequestParams = {}) =>
 			this.request<GetCouponCollection, ErrorModel>({
 				path: `/couponCollections/${id}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12187,9 +12469,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * A default coupon to be used in case there are no coupons left
 				 * @example "10 OFF"
 				 */
-				defaultCoupon: string
+				defaultCoupon: string;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<
 				{
@@ -12198,30 +12480,30 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 					 * @format uuidv4
 					 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 					 */
-					id: string
+					id: string;
 					/**
 					 * The name of the collection
 					 * @format uuidv4
 					 * @example "SummerPromotions"
 					 */
-					name: string
+					name: string;
 					/**
 					 * The default coupon of the collection
 					 * @example "10 OFF"
 					 */
-					defaultCoupon: string
+					defaultCoupon: string;
 				},
 				ErrorModel
 			>({
 				path: `/couponCollections/${id}`,
-				method: 'PATCH',
+				method: "PATCH",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	coupons = {
 		/**
 		 * No description
@@ -12239,25 +12521,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @format uuidv4
 				 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 				 */
-				collectionId: string
+				collectionId: string;
 				/**
 				 * @maxItems 1000
 				 * @minItems 1
 				 * @uniqueItems true
 				 */
-				coupons: string[]
+				coupons: string[];
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<void, ErrorModel>({
 				path: `/coupons`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
 				...params,
 			}),
-	}
+	};
 	whatsapp = {
 		/**
 		 * @description This endpoint is used to send a WhatsApp message. <br/>(**The first message you send using the API must contain a Template ID. You must create a template on WhatsApp on the Brevo platform to fetch the Template ID.**)
@@ -12268,7 +12550,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/whatsapp/sendMessage
 		 * @secure
 		 */
-		sendWhatsappMessage: (data: SendWhatsappMessageTemplate | SendWhatsappMessageText, params: RequestParams = {}) =>
+		sendWhatsappMessage: (
+			data: SendWhatsappMessageTemplate | SendWhatsappMessageText,
+			params: RequestParams = {},
+		) =>
 			this.request<
 				{
 					/**
@@ -12276,16 +12561,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 					 * @format uuidv4
 					 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 					 */
-					messageId: string
+					messageId: string;
 				},
 				ErrorModel
 			>({
 				path: `/whatsapp/sendMessage`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12307,46 +12592,53 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @max 5000
 				 * @default 2500
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Beginning point in the list to retrieve from
 				 * @format int64
 				 * @default 0
 				 */
-				offset?: number
+				offset?: number;
 				/** **Mandatory if endDate is used.** Starting date of the report (YYYY-MM-DD). Must be lower than equal to endDate */
-				startDate?: string
+				startDate?: string;
 				/** **Mandatory if startDate is used.** Ending date of the report (YYYY-MM-DD). Must be greater than equal to startDate */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Number of days in the past including today (positive integer). _Not compatible with 'startDate' and 'endDate'_
 				 * @format int64
 				 */
-				days?: number
+				days?: number;
 				/**
 				 * Filter results for specific contact (WhatsApp Number with country code. Example, 85264318721)
 				 * @format mobile
 				 */
-				contactNumber?: string
+				contactNumber?: string;
 				/** Filter the report for a specific event type */
-				event?: 'sent' | 'delivered' | 'read' | 'error' | 'unsubscribe' | 'reply' | 'soft-bounce'
+				event?:
+					| "sent"
+					| "delivered"
+					| "read"
+					| "error"
+					| "unsubscribe"
+					| "reply"
+					| "soft-bounce";
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetWhatsappEventReport, ErrorModel>({
 				path: `/whatsapp/statistics/events`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
-	}
+	};
 	feeds = {
 		/**
 		 * @description This endpoint can fetch all created external feeds.
@@ -12363,26 +12655,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * Can be used to filter records by search keyword on feed name
 				 * @example "search"
 				 */
-				search?: string
+				search?: string;
 				/**
 				 * Mandatory if `endDate` is used. Starting date (YYYY-MM-DD) from which you want to fetch the list. Can be maximum 30 days older than current date.
 				 * @format date
 				 * @example "2022-09-04"
 				 */
-				startDate?: string
+				startDate?: string;
 				/**
 				 * Mandatory if `startDate` is used. Ending date (YYYY-MM-DD) till which you want to fetch the list. Maximum time period that can be selected is one month.
 				 * @format date
 				 * @example "2022-10-01"
 				 */
-				endDate?: string
+				endDate?: string;
 				/**
 				 * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed.
 				 * @default "desc"
 				 */
-				sort?: 'asc' | 'desc'
+				sort?: "asc" | "desc";
 				/** Filter the records by `authType` of the feed. */
-				authType?: 'basic' | 'token' | 'noAuth'
+				authType?: "basic" | "token" | "noAuth";
 				/**
 				 * Number of documents returned per page.
 				 * @format int64
@@ -12391,23 +12683,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 				 * @default 50
 				 * @example 100
 				 */
-				limit?: number
+				limit?: number;
 				/**
 				 * Index of the first document on the page.
 				 * @format int64
 				 * @default 0
 				 * @example 0
 				 */
-				offset?: number
+				offset?: number;
 			},
-			params: RequestParams = {}
+			params: RequestParams = {},
 		) =>
 			this.request<GetAllExternalFeeds, ErrorModel>({
 				path: `/feeds`,
-				method: 'GET',
+				method: "GET",
 				query: query,
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12420,7 +12712,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request POST:/feeds
 		 * @secure
 		 */
-		createExternalFeed: (data: CreateExternalFeed, params: RequestParams = {}) =>
+		createExternalFeed: (
+			data: CreateExternalFeed,
+			params: RequestParams = {},
+		) =>
 			this.request<
 				{
 					/**
@@ -12428,16 +12723,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 					 * @format uuidv4
 					 * @example "23befbae-1505-47a8-bd27-e30ef739f32c"
 					 */
-					id: string
+					id: string;
 				},
 				ErrorModel
 			>({
 				path: `/feeds`,
-				method: 'POST',
+				method: "POST",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12453,9 +12748,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		getExternalFeedByUuid: (uuid: string, params: RequestParams = {}) =>
 			this.request<GetExternalFeedByUUID, ErrorModel>({
 				path: `/feeds/${uuid}`,
-				method: 'GET',
+				method: "GET",
 				secure: true,
-				format: 'json',
+				format: "json",
 				...params,
 			}),
 
@@ -12468,10 +12763,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		 * @request PUT:/feeds/{uuid}
 		 * @secure
 		 */
-		updateExternalFeed: (uuid: string, data: UpdateExternalFeed, params: RequestParams = {}) =>
+		updateExternalFeed: (
+			uuid: string,
+			data: UpdateExternalFeed,
+			params: RequestParams = {},
+		) =>
 			this.request<void, ErrorModel>({
 				path: `/feeds/${uuid}`,
-				method: 'PUT',
+				method: "PUT",
 				body: data,
 				secure: true,
 				type: ContentType.Json,
@@ -12490,9 +12789,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 		deleteExternalFeed: (uuid: string, params: RequestParams = {}) =>
 			this.request<void, ErrorModel>({
 				path: `/feeds/${uuid}`,
-				method: 'DELETE',
+				method: "DELETE",
 				secure: true,
 				...params,
 			}),
-	}
+	};
 }

@@ -1,20 +1,22 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { BadRequestException, Get, createHandler } from 'next-api-decorators'
+import { BadRequestException, createHandler, Get } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiProjectsHandler {
 	constructor() {}
 
 	@Get()
 	public async list() {
 		try {
-			return await prisma.project.getProjectsOrderedByActivity({ order: 'desc' })
+			return await prisma.project.getProjectsOrderedByActivity({
+				order: "desc",
+			});
 		} catch (error) {
-			console.error('[projects: list: error]', error)
-			throw new BadRequestException('Failed to get projects')
+			console.error("[projects: list: error]", error);
+			throw new BadRequestException("Failed to get projects");
 		}
 	}
 }
 
-export default createHandler(ApiProjectsHandler)
+export default createHandler(ApiProjectsHandler);

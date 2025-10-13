@@ -1,19 +1,19 @@
 export interface DevlogPost {
-	id: string
-	content: string
-	publishedAt: string
-	authorId: string
-	projectId: string
-	video?: string
-	pageCover?: string
+	id: string;
+	content: string;
+	publishedAt: string;
+	authorId: string;
+	projectId: string;
+	video?: string;
+	pageCover?: string;
 	author?: {
-		name: string
-		image?: string
-	}
+		name: string;
+		image?: string;
+	};
 	project?: {
-		name: string
-		slug: string
-		description?: string
-		coverImage?: string
-	}
+		name: string;
+		slug: string;
+		description?: string;
+		coverImage?: string;
+	};
 }

@@ -1,11 +1,11 @@
-import React from 'react'
-import { Table, TableProps } from 'antd'
-import classNames from 'classnames'
-import styles from './ModernTable.module.scss'
+import { Table, type TableProps } from "antd";
+import classNames from "classnames";
+import React from "react";
+import styles from "./ModernTable.module.scss";
 
 interface ModernTableProps<T> extends TableProps<T> {
-	showHeader?: boolean
-	className?: string
+	showHeader?: boolean;
+	className?: string;
 }
 
 export function ModernTable<T extends object>({
@@ -15,22 +15,28 @@ export function ModernTable<T extends object>({
 	...props
 }: ModernTableProps<T>) {
 	return (
-		<div className={classNames(styles.modernTableContainer, !showHeader && styles.tableNoHeader, className)}>
+		<div
+			className={classNames(
+				styles.modernTableContainer,
+				!showHeader && styles.tableNoHeader,
+				className,
+			)}
+		>
 			<div className={styles.modernTableWrapper}>
 				<Table<T>
 					{...props}
 					showHeader={showHeader}
-					scroll={{ x: 'max-content' }}
+					scroll={{ x: "max-content" }}
 					rowClassName={(record, index) => {
-						const baseClassName = 'table-row'
-						return typeof rowClassName === 'function'
+						const baseClassName = "table-row";
+						return typeof rowClassName === "function"
 							? `${baseClassName} ${rowClassName(record, index, 0)}`
-							: baseClassName
+							: baseClassName;
 					}}
 				/>
 			</div>
 		</div>
-	)
+	);
 }
 
-export default ModernTable
+export default ModernTable;

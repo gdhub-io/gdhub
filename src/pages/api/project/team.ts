@@ -1,11 +1,11 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { Get, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import { createHandler, Get, Query, ValidationPipe } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class UserTeamDto {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
 class ApiUserTeamHandler {
@@ -15,14 +15,21 @@ class ApiUserTeamHandler {
 			where: { id: teamId },
 			include: {
 				members: {
-					where: { status: { in: [prismaClient.TeamMemberStatus.Hired, prismaClient.TeamMemberStatus.Founder] } },
+					where: {
+						status: {
+							in: [
+								prismaClient.TeamMemberStatus.Hired,
+								prismaClient.TeamMemberStatus.Founder,
+							],
+						},
+					},
 					include: { user: { select: { name: true, image: true } } },
 				},
 			},
-		})
+		});
 
-		return team
+		return team;
 	}
 }
 
-export default createHandler(ApiUserTeamHandler)
+export default createHandler(ApiUserTeamHandler);

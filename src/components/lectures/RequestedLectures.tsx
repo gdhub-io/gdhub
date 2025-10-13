@@ -1,126 +1,159 @@
-import { useMemo, useState } from 'react'
-import LectureDetailsModal from '@/components/modals/LectureDetailsModal'
-import LectureRequestModal from '@/components/modals/LectureRequestModal'
-import PropositionLectureModal from '@/components/modals/PropositionLectureModal'
-import SetLecturerModal from '@/components/modals/SetLecturerModal'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { FaChalkboardTeacher } from '@react-icons/all-files/fa/FaChalkboardTeacher'
-import { HiOutlineTrash } from '@react-icons/all-files/hi/HiOutlineTrash'
-import { HiOutlineX } from '@react-icons/all-files/hi/HiOutlineX'
-import { TbDotsVertical } from '@react-icons/all-files/tb/TbDotsVertical'
-import { TbHeart } from '@react-icons/all-files/tb/TbHeart'
-import { TbHeartOff } from '@react-icons/all-files/tb/TbHeartOff'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTranslate } from '@tolgee/react'
-import { Button, Dropdown, Grid, Popconfirm, Space, Spin, Table, Tooltip, Typography, message } from 'antd'
-import { ItemType } from 'antd/es/menu/interface'
-import { ColumnsType } from 'antd/es/table'
-import axios from 'axios'
-import { useSession } from 'next-auth/react'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
+import { HiOutlineTrash } from "@react-icons/all-files/hi/HiOutlineTrash";
+import { HiOutlineX } from "@react-icons/all-files/hi/HiOutlineX";
+import { TbDotsVertical } from "@react-icons/all-files/tb/TbDotsVertical";
+import { TbHeart } from "@react-icons/all-files/tb/TbHeart";
+import { TbHeartOff } from "@react-icons/all-files/tb/TbHeartOff";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
+import {
+	Button,
+	Dropdown,
+	Grid,
+	message,
+	Popconfirm,
+	Space,
+	Spin,
+	Table,
+	Tooltip,
+	Typography,
+} from "antd";
+import type { ItemType } from "antd/es/menu/interface";
+import type { ColumnsType } from "antd/es/table";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useMemo, useState } from "react";
+import LectureDetailsModal from "@/components/modals/LectureDetailsModal";
+import LectureRequestModal from "@/components/modals/LectureRequestModal";
+import PropositionLectureModal from "@/components/modals/PropositionLectureModal";
+import SetLecturerModal from "@/components/modals/SetLecturerModal";
 
-const { Title } = Typography
+const { Title } = Typography;
 
-export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => void }) => {
-	const screens = Grid.useBreakpoint()
-	const { data: session } = useSession()
-	const { t } = useTranslate()
+export const RequestedLectures = ({
+	onChange = () => {},
+}: {
+	onChange?: () => void;
+}) => {
+	const screens = Grid.useBreakpoint();
+	const { data: session } = useSession();
+	const { t } = useTranslate();
 	// State
-	const [selectedLectureId, setSelectedLectureId] = useState<string>()
-	const [showLectureDetails, setShowLectureDetails] = useState(false)
-	const [showSetLecturerModal, setShowSetLecturerModal] = useState(false)
-	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false)
-	const [showPropositionLectureModal, setShowPropositionLectureModal] = useState(false)
+	const [selectedLectureId, setSelectedLectureId] = useState<string>();
+	const [showLectureDetails, setShowLectureDetails] = useState(false);
+	const [showSetLecturerModal, setShowSetLecturerModal] = useState(false);
+	const [showLectureRequestModal, setShowLectureRequestModal] = useState(false);
+	const [showPropositionLectureModal, setShowPropositionLectureModal] =
+		useState(false);
 	// Queries & mutations
 	const { mutateAsync: createListener } = useMutation({
-		mutationFn: (params: { lectureId: string }) => axios.post('/api/user/lecture/listener', undefined, { params }),
+		mutationFn: (params: { lectureId: string }) =>
+			axios.post("/api/user/lecture/listener", undefined, { params }),
 		onSuccess: () => {
-			updateList()
+			updateList();
 		},
-	})
+	});
 	const { mutateAsync: deleteListener } = useMutation({
-		mutationFn: (params: { lectureId: string }) => axios.delete('/api/user/lecture/listener', { params }),
+		mutationFn: (params: { lectureId: string }) =>
+			axios.delete("/api/user/lecture/listener", { params }),
 		onSuccess: () => {
-			updateList()
+			updateList();
 		},
-	})
+	});
 
 	const { mutateAsync: deleteLecture } = useMutation({
-		mutationFn: ({ id }: { id: string }) => axios.delete('/api/user/lecture', { params: { id } }),
+		mutationFn: ({ id }: { id: string }) =>
+			axios.delete("/api/user/lecture", { params: { id } }),
 		onSuccess: () => {
-			updateList()
+			updateList();
 		},
-	})
+	});
 
 	const { mutateAsync: deleteLecturerRequest } = useMutation({
 		mutationFn: ({ id, lectureId }: { id: string; lectureId: string }) =>
 			axios.delete(`/api/user/lecture/${lectureId}/lecturer/${id}`),
 		onSuccess: () => {
-			updateList()
+			updateList();
 		},
-	})
+	});
 
 	const { data: workDirections } = useQuery({
-		queryKey: ['workDirections'],
-		queryFn: () => axios.get<prismaClient.WorkDirection[]>('/api/dictionary/work-directions'),
+		queryKey: ["workDirections"],
+		queryFn: () =>
+			axios.get<prismaClient.WorkDirection[]>(
+				"/api/dictionary/work-directions",
+			),
 
 		staleTime: Infinity,
-	})
+	});
 
 	const mobileMenu: ItemType[] = useMemo(
 		() => [
 			{
-				label: t('change', 'Change'),
-				key: 'edit',
+				label: t("change", "Change"),
+				key: "edit",
 			},
 			{
-				label: t('delete', 'Delete'),
-				key: 'delete',
+				label: t("delete", "Delete"),
+				key: "delete",
 			},
 		],
-		[]
-	)
+		[],
+	);
 
 	const {
 		data: requestedLectures,
 		refetch: updateList,
 		isLoading,
 	} = useQuery({
-		queryKey: ['lectures', 'requested'],
+		queryKey: ["lectures", "requested"],
 		queryFn: () =>
 			axios.get<
 				(prismaClient.Lecture & {
-					listeners: prismaClient.LectureListener[]
-					direction: prismaClient.WorkDirection
-					lecturerRequests: (prismaClient.LecturerRequest & { user: prismaClient.User })[]
-					isRelevant: boolean
-					isAuthor: boolean
+					listeners: prismaClient.LectureListener[];
+					direction: prismaClient.WorkDirection;
+					lecturerRequests: (prismaClient.LecturerRequest & {
+						user: prismaClient.User;
+					})[];
+					isRelevant: boolean;
+					isAuthor: boolean;
 				})[]
-			>('/api/lectures', {
-				params: { stage: [prismaClient.LectureStage.Requested, prismaClient.LectureStage.Actualized].join(',') },
+			>("/api/lectures", {
+				params: {
+					stage: [
+						prismaClient.LectureStage.Requested,
+						prismaClient.LectureStage.Actualized,
+					].join(","),
+				},
 			}),
-	})
+	});
 
 	const columns: ColumnsType<
 		prismaClient.Lecture & {
-			listeners: prismaClient.LectureListener[]
-			direction: prismaClient.WorkDirection
-			lecturerRequests: (prismaClient.LecturerRequest & { user: prismaClient.User })[]
-			isRelevant: boolean
-			isAuthor: boolean
+			listeners: prismaClient.LectureListener[];
+			direction: prismaClient.WorkDirection;
+			lecturerRequests: (prismaClient.LecturerRequest & {
+				user: prismaClient.User;
+			})[];
+			isRelevant: boolean;
+			isAuthor: boolean;
 		}
 	> = [
 		{
-			title: t('lecture.topic', 'Lecture Topic'),
-			dataIndex: 'name',
-			key: 'name',
-			width: screens.lg ? 'auto' : '100%',
+			title: t("lecture.topic", "Lecture Topic"),
+			dataIndex: "name",
+			key: "name",
+			width: screens.lg ? "auto" : "100%",
 			render: (text, lecture) =>
 				screens.md ? (
 					<div
-						style={{ cursor: 'pointer' }}
+						role="button"
+						tabIndex={0}
+						style={{ cursor: "pointer" }}
 						onClick={() => {
-							setSelectedLectureId(lecture.id)
-							setShowLectureDetails(true)
+							setSelectedLectureId(lecture.id);
+							setShowLectureDetails(true);
 						}}
 					>
 						<strong>{text}</strong>
@@ -129,10 +162,12 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					</div>
 				) : (
 					<div
-						style={{ cursor: 'pointer' }}
+						role="button"
+						tabIndex={0}
+						style={{ cursor: "pointer" }}
 						onClick={() => {
-							setSelectedLectureId(lecture.id)
-							setShowLectureDetails(true)
+							setSelectedLectureId(lecture.id);
+							setShowLectureDetails(true);
 						}}
 					>
 						<strong>{text}</strong>
@@ -142,26 +177,30 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				),
 		},
 		{
-			title: t('workDirection', 'Work Direction'),
-			dataIndex: 'directionId',
-			key: 'directionId',
-			responsive: ['md'],
+			title: t("workDirection", "Work Direction"),
+			dataIndex: "directionId",
+			key: "directionId",
+			responsive: ["md"],
 			render(value) {
-				const direction = workDirections?.data.find((direction) => direction.id == value)
-				return direction?.name || 'unknown'
+				const direction = workDirections?.data.find(
+					(direction) => direction.id == value,
+				);
+				return direction?.name || "unknown";
 			},
 		},
 		{
-			title: screens.lg ? t('lecturer', 'Lecturer') : null,
-			responsive: ['md'],
-			key: 'Lecturer Name',
+			title: screens.lg ? t("lecturer", "Lecturer") : null,
+			responsive: ["md"],
+			key: "Lecturer Name",
 			render: (data: any, lecture) => {
-				const applicatnsCount = lecture.listeners?.length || 0
-				const speaker = lecture.lecturerRequests?.find((l) => l.isSpeaker)
-				const myLecturerRequest = lecture.lecturerRequests.find((r) => r.userId == session?.user.id)
+				const applicatnsCount = lecture.listeners?.length || 0;
+				const speaker = lecture.lecturerRequests?.find((l) => l.isSpeaker);
+				const myLecturerRequest = lecture.lecturerRequests.find(
+					(r) => r.userId == session?.user.id,
+				);
 
 				if (speaker) {
-					return speaker.user.name
+					return speaker.user.name;
 				} else {
 					return applicatnsCount >= 1 ? (
 						<>
@@ -170,20 +209,27 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 									<Button
 										type="primary"
 										onClick={(e) => {
-											e.preventDefault()
-											handleSetLecturer(lecture?.id)
+											e.preventDefault();
+											handleSetLecturer(lecture?.id);
 										}}
 									>
 										<Space align="center">
-											<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} />{' '}
-											{t('lecture.myProposal', 'My Proposal')}
+											<FaChalkboardTeacher
+												style={{ position: "relative", top: "2px" }}
+											/>{" "}
+											{t("lecture.myProposal", "My Proposal")}
 										</Space>
 									</Button>
 									<Popconfirm
-										title={t('lecture.areYouSure', 'Are you sure?')}
-										okText={t('lecture.yes', 'Yes')}
-										cancelText={t('lecture.no', 'No')}
-										onConfirm={() => handleDeleteLecturerRequest(lecture.id, myLecturerRequest.id)}
+										title={t("lecture.areYouSure", "Are you sure?")}
+										okText={t("lecture.yes", "Yes")}
+										cancelText={t("lecture.no", "No")}
+										onConfirm={() =>
+											handleDeleteLecturerRequest(
+												lecture.id,
+												myLecturerRequest.id,
+											)
+										}
 									>
 										<Tooltip title={t("Don't want to be a lecturer")}>
 											<Button type="text" icon={<HiOutlineX />} />
@@ -191,68 +237,90 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 									</Popconfirm>
 								</Space>
 							) : (
-								<Button type="primary" onClick={() => handleSetLecturer(lecture?.id)}>
+								<Button
+									type="primary"
+									onClick={() => handleSetLecturer(lecture?.id)}
+								>
 									<Space align="center">
-										<FaChalkboardTeacher style={{ position: 'relative', top: '2px' }} />{' '}
-										{t('lecture.becomeALecturer', 'Become a Lecturer')}
+										<FaChalkboardTeacher
+											style={{ position: "relative", top: "2px" }}
+										/>{" "}
+										{t("lecture.becomeALecturer", "Become a Lecturer")}
 									</Space>
 								</Button>
 							)}
 						</>
 					) : (
-						<small>{t('lecture.notYet', 'Not yet, we are waiting for more people to come')}</small>
-					)
+						<small>
+							{t(
+								"lecture.notYet",
+								"Not yet, we are waiting for more people to come",
+							)}
+						</small>
+					);
 				}
 			},
 		},
 		{
 			title: null,
-			key: 'join-to-lecture',
+			key: "join-to-lecture",
 			render: (_, lecture) => (
 				<Space direction="vertical">
 					{lecture.isRelevant ? (
 						<Space align="center">
-							{t('lecture.relevant', 'Relevant')}
-							<Tooltip title={t('No longer relevant')}>
+							{t("lecture.relevant", "Relevant")}
+							<Tooltip title={t("No longer relevant")}>
 								<Button
 									type="text"
 									onClick={() => handleSetRelevantForMe(lecture.id, false)}
-									icon={<TbHeartOff style={{ position: 'relative', top: '2px' }} />}
+									icon={
+										<TbHeartOff style={{ position: "relative", top: "2px" }} />
+									}
 								/>
 							</Tooltip>
 						</Space>
 					) : (
-						<Button type="primary" onClick={() => handleSetRelevantForMe(lecture.id, true)}>
+						<Button
+							type="primary"
+							onClick={() => handleSetRelevantForMe(lecture.id, true)}
+						>
 							<Space align="center">
-								<TbHeart style={{ position: 'relative', top: '2px' }} /> {t('lecture.wantToAttend', 'Want to attend')}
+								<TbHeart style={{ position: "relative", top: "2px" }} />{" "}
+								{t("lecture.wantToAttend", "Want to attend")}
 							</Space>
 						</Button>
 					)}
 					{lecture.listeners.length >= 3 && (
 						<small>
-							{t('lecture.relevantFor', 'relevant for')} {lecture.listeners.length}{' '}
-							{t('lecture.participants', 'participants')}
+							{t("lecture.relevantFor", "relevant for")}{" "}
+							{lecture.listeners.length}{" "}
+							{t("lecture.participants", "participants")}
 						</small>
 					)}
 				</Space>
 			),
 		},
 		{
-			key: 'actions',
+			key: "actions",
 			render: (_, lecture) =>
 				!screens.md ? (
-					<Dropdown menu={{ items: mobileMenu }} trigger={['click']}>
-						<TbDotsVertical size={16} style={{ position: 'relative', top: 2 }} />
+					<Dropdown menu={{ items: mobileMenu }} trigger={["click"]}>
+						<TbDotsVertical
+							size={16}
+							style={{ position: "relative", top: 2 }}
+						/>
 					</Dropdown>
 				) : lecture.requestedById === session?.user?.id &&
-				  (lecture.stage === prismaClient.LectureStage.Requested ||
+					(lecture.stage === prismaClient.LectureStage.Requested ||
 						lecture.stage === prismaClient.LectureStage.Proposed) ? (
 					<Space wrap={screens.md ? false : true}>
-						<Button onClick={() => handleEditLectureRequest(lecture.id)}>{t('lecture.change', 'Change')}</Button>
+						<Button onClick={() => handleEditLectureRequest(lecture.id)}>
+							{t("lecture.change", "Change")}
+						</Button>
 						<Popconfirm
-							title={t('Are you sure you want to delete it?')}
-							okText={t('lecture.yes', 'Yes')}
-							cancelText={t('lecture.no', 'No')}
+							title={t("Are you sure you want to delete it?")}
+							okText={t("lecture.yes", "Yes")}
+							cancelText={t("lecture.no", "No")}
 							onConfirm={() => handleDeleteLectureRequest(lecture.id)}
 						>
 							<Button type="text" danger>
@@ -262,75 +330,81 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 					</Space>
 				) : null,
 		},
-	]
+	];
 
 	const handleSetLecturer = async (lectureId: string) => {
-		setSelectedLectureId(lectureId)
-		setShowSetLecturerModal(true)
-	}
+		setSelectedLectureId(lectureId);
+		setShowSetLecturerModal(true);
+	};
 
 	const handleEditLectureRequest = (lectureId: string) => {
-		setSelectedLectureId(lectureId)
-		setShowLectureRequestModal(true)
-	}
+		setSelectedLectureId(lectureId);
+		setShowLectureRequestModal(true);
+	};
 
 	const handleDeleteLectureRequest = async (lectureId: string) => {
 		try {
-			await deleteLecture({ id: lectureId })
+			await deleteLecture({ id: lectureId });
 
-			message.success(t('Request for lecture has been deleted'))
+			message.success(t("Request for lecture has been deleted"));
 		} catch (error: any) {
-			message.error('Error')
+			message.error("Error");
 		}
-	}
+	};
 
-	const handleDeleteLecturerRequest = async (lectureId: string, currentLecturerRequestId: string) => {
+	const handleDeleteLecturerRequest = async (
+		lectureId: string,
+		currentLecturerRequestId: string,
+	) => {
 		try {
-			await deleteLecturerRequest({ id: currentLecturerRequestId, lectureId })
+			await deleteLecturerRequest({ id: currentLecturerRequestId, lectureId });
 
-			message.success(t('Request for lecture has been deleted'))
+			message.success(t("Request for lecture has been deleted"));
 		} catch (error: any) {
-			message.error(t('Error'))
+			message.error(t("Error"));
 		}
-	}
+	};
 
-	const handleSetRelevantForMe = async (lectureId: string, isRelevant: boolean) => {
+	const handleSetRelevantForMe = async (
+		lectureId: string,
+		isRelevant: boolean,
+	) => {
 		try {
 			if (isRelevant) {
-				await createListener({ lectureId })
+				await createListener({ lectureId });
 			} else {
-				await deleteListener({ lectureId })
+				await deleteListener({ lectureId });
 			}
 
-			await updateList()
+			await updateList();
 			if (isRelevant) {
-				message.success(t('Your vote has been counted'))
+				message.success(t("Your vote has been counted"));
 			} else {
-				message.success(t('You have canceled your vote'))
+				message.success(t("You have canceled your vote"));
 			}
 		} catch (error: any) {
-			message.error(t('Error'))
+			message.error(t("Error"));
 		}
-	}
+	};
 
 	const handleSaveLectureRequest = async () => {
-		setShowLectureRequestModal(false)
-		setSelectedLectureId(undefined)
-		await updateList()
-	}
+		setShowLectureRequestModal(false);
+		setSelectedLectureId(undefined);
+		await updateList();
+	};
 
 	const handleSaveSetLecturer = async () => {
-		setShowSetLecturerModal(false)
-		setSelectedLectureId(undefined)
-		await updateList()
-		onChange()
-	}
+		setShowSetLecturerModal(false);
+		setSelectedLectureId(undefined);
+		await updateList();
+		onChange();
+	};
 
 	return (
 		<>
 			<Space wrap>
 				<Button type="primary" onClick={() => setShowLectureRequestModal(true)}>
-					{t('lecture.requestANewLecture', 'Request a new lecture')}
+					{t("lecture.requestANewLecture", "Request a new lecture")}
 				</Button>
 				{/* <Button onClick={() => setShowPropositionLectureModal(true)}>{t('lecture.offerToGiveALecture', 'Offer to give a lecture')}</Button>*/}
 			</Space>
@@ -338,16 +412,26 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 			{requestedLectures?.data?.length ? (
 				<>
 					<div style={{ marginTop: 32 }}>
-						<Title level={4}>{t('lecture.requestsForLectures', 'Requests for lectures')}</Title>
+						<Title level={4}>
+							{t("lecture.requestsForLectures", "Requests for lectures")}
+						</Title>
 						{t(
-							'lecture.markLecturesThatYouWouldBeInterestedInAttending',
-							'Mark lectures that you would be interested in attending.'
+							"lecture.markLecturesThatYouWouldBeInterestedInAttending",
+							"Mark lectures that you would be interested in attending.",
 						)}
 						<Spin spinning={isLoading}>
 							<Table
-								style={{ border: '1px solid #aaa', borderRadius: '16px', padding: '8px', marginTop: 16 }}
+								style={{
+									border: "1px solid #aaa",
+									borderRadius: "16px",
+									padding: "8px",
+									marginTop: 16,
+								}}
 								columns={columns}
-								dataSource={requestedLectures.data.map((l: any) => ({ ...l, key: l.id }))}
+								dataSource={requestedLectures.data.map((l: any) => ({
+									...l,
+									key: l.id,
+								}))}
 								pagination={false}
 							/>
 						</Spin>
@@ -358,8 +442,8 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 						open={showSetLecturerModal}
 						onOk={handleSaveSetLecturer}
 						onCancel={() => {
-							setShowSetLecturerModal(false)
-							setSelectedLectureId(undefined)
+							setShowSetLecturerModal(false);
+							setSelectedLectureId(undefined);
 						}}
 					/>
 
@@ -367,12 +451,12 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 						lectureId={selectedLectureId}
 						open={showLectureDetails}
 						onOk={() => {
-							setShowLectureDetails(false)
-							setSelectedLectureId(undefined)
+							setShowLectureDetails(false);
+							setSelectedLectureId(undefined);
 						}}
 						onCancel={() => {
-							setShowLectureDetails(false)
-							setSelectedLectureId(undefined)
+							setShowLectureDetails(false);
+							setSelectedLectureId(undefined);
 						}}
 					/>
 				</>
@@ -383,8 +467,8 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				open={showLectureRequestModal}
 				onOk={handleSaveLectureRequest}
 				onCancel={() => {
-					setShowLectureRequestModal(false)
-					setSelectedLectureId(undefined)
+					setShowLectureRequestModal(false);
+					setSelectedLectureId(undefined);
 				}}
 			/>
 
@@ -395,5 +479,5 @@ export const RequestedLectures = ({ onChange = () => {} }: { onChange?: () => vo
 				onCancel={() => setShowPropositionLectureModal(false)}
 			/>
 		</>
-	)
-}
+	);
+};

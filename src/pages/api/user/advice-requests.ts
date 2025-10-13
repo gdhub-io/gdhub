@@ -1,40 +1,53 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Transform } from 'class-transformer'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
-import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Transform } from "class-transformer";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+import {
+	createHandler,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class AdviceRequestQueryParams {
 	@IsString()
 	@IsOptional()
-	teamId: string
+	teamId: string;
 
 	@IsString()
 	@IsOptional()
-	projectId: string
+	projectId: string;
 
 	@IsString()
 	@IsOptional()
-	advisorId: string
+	advisorId: string;
 
 	@IsEnum(prismaClient.AdviceRequestStatus, { each: true })
 	@IsOptional()
-	@Transform(({ value }) => (Array.isArray(value) ? value : value ? [value] : undefined))
-	status: prismaClient.AdviceRequestStatus[]
+	@Transform(({ value }) =>
+		Array.isArray(value) ? value : value ? [value] : undefined,
+	)
+	status: prismaClient.AdviceRequestStatus[];
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiAdviceRequestsHandler {
 	constructor() {}
 
 	@Get()
 	public async list(
 		@Req() req: NextApiRequestWithUser,
-		@Query(ValidationPipe) { teamId, projectId, advisorId, status }: AdviceRequestQueryParams
+		@Query(ValidationPipe) {
+			teamId,
+			projectId,
+			advisorId,
+			status,
+		}: AdviceRequestQueryParams,
 	) {
-		let needUserRequests = !teamId && !projectId && !advisorId
-		let userId = needUserRequests ? req.user.id : undefined
+		const needUserRequests = !teamId && !projectId && !advisorId;
+		const userId = needUserRequests ? req.user.id : undefined;
 
 		const adviceRequests = await prisma.adviceRequest.findMany({
 			where: {
@@ -44,8 +57,20 @@ class ApiAdviceRequestsHandler {
 				OR: userId ? [{ fromUserId: userId }, { toUserId: userId }] : undefined,
 			},
 			select: {
-				fromUser: { select: { id: true, image: true, profile: { select: { name: true } } } },
-				toUser: { select: { id: true, image: true, profile: { select: { name: true } } } },
+				fromUser: {
+					select: {
+						id: true,
+						image: true,
+						profile: { select: { name: true } },
+					},
+				},
+				toUser: {
+					select: {
+						id: true,
+						image: true,
+						profile: { select: { name: true } },
+					},
+				},
 				project: { select: { id: true, name: true } },
 				fromTelegramUser: true,
 				createdAt: true,
@@ -56,11 +81,11 @@ class ApiAdviceRequestsHandler {
 				feedback: true,
 				topic: true,
 			},
-			orderBy: { createdAt: 'desc' },
-		})
+			orderBy: { createdAt: "desc" },
+		});
 
-		return adviceRequests
+		return adviceRequests;
 	}
 }
 
-export default createHandler(ApiAdviceRequestsHandler)
+export default createHandler(ApiAdviceRequestsHandler);

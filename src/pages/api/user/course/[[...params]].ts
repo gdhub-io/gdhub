@@ -1,30 +1,43 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { Delete, Param, Put, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import {
+	createHandler,
+	Delete,
+	Param,
+	Put,
+	Query,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class IDParamDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserEventEndpointHandler {
-	@Put('/:id/publish')
-	public async publish(@Param('id') id: string) {
+	@Put("/:id/publish")
+	public async publish(@Param("id") id: string) {
 		await prisma.course.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.CourseStatus.Published, publishedAt: new Date().toISOString() },
-		})
+			data: {
+				status: prismaClient.$Enums.CourseStatus.Published,
+				publishedAt: new Date().toISOString(),
+			},
+		});
 	}
 
-	@Put('/:id/unpublish')
-	public async unpublish(@Param('id') id: string) {
+	@Put("/:id/unpublish")
+	public async unpublish(@Param("id") id: string) {
 		await prisma.course.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.CourseStatus.Draft, publishedAt: null },
-		})
+			data: {
+				status: prismaClient.$Enums.CourseStatus.Draft,
+				publishedAt: null,
+			},
+		});
 	}
 
 	@Delete()
@@ -33,10 +46,10 @@ class ApiUserEventEndpointHandler {
 			where: {
 				id,
 			},
-		})
+		});
 
-		return { success: true }
+		return { success: true };
 	}
 }
 
-export default createHandler(ApiUserEventEndpointHandler)
+export default createHandler(ApiUserEventEndpointHandler);

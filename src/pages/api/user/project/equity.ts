@@ -1,34 +1,43 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator'
-import type { NextApiRequest } from 'next'
-import { Body, createHandler, Get, Query, Req } from 'next-api-decorators'
-import { Put, ValidationPipe } from 'next-api-decorators'
+import { IsNotEmpty, IsNumber, IsString, Min } from "class-validator";
+import type { NextApiRequest } from "next";
+import {
+	Body,
+	createHandler,
+	Get,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class ProjectEquityDto {
 	@IsString()
 	@IsNotEmpty()
-	id: string
+	id: string;
 
 	@IsNumber()
 	@Min(2)
-	mentorFundShare: number
+	mentorFundShare: number;
 
 	@IsNumber()
 	@Min(0)
-	investmentReserve: number
+	investmentReserve: number;
 }
 
 class ProjectEquityQueryDto {
 	@IsString()
 	@IsNotEmpty()
-	projectId: string
+	projectId: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiProjectEquityHandler {
 	@Get()
-	public async get(@Query(ValidationPipe) { projectId }: ProjectEquityQueryDto) {
+	public async get(
+		@Query(ValidationPipe) { projectId }: ProjectEquityQueryDto,
+	) {
 		const projectEquity = await prisma.projectEquity.findUnique({
 			where: { projectId },
 			include: {
@@ -37,15 +46,15 @@ class ApiProjectEquityHandler {
 						promises: {
 							where: { isExecuted: false },
 							take: 1,
-							orderBy: { createdAt: 'desc' },
+							orderBy: { createdAt: "desc" },
 						},
 					},
 				},
 			},
-		})
+		});
 
 		if (!projectEquity) {
-			throw new Error('Project not found')
+			throw new Error("Project not found");
 		}
 
 		// If equity is not set, return default values
@@ -54,15 +63,18 @@ class ApiProjectEquityHandler {
 				platformShare: 3,
 				mentorFundShare: 7,
 				investmentReserve: 40,
-			}
+			};
 		}
 
-		return projectEquity
+		return projectEquity;
 	}
 
 	@Put()
-	public async save(@Body(ValidationPipe) equityData: ProjectEquityDto, @Req() req: NextApiRequest) {
-		const { id, mentorFundShare, investmentReserve } = equityData
+	public async save(
+		@Body(ValidationPipe) equityData: ProjectEquityDto,
+		@Req() req: NextApiRequest,
+	) {
+		const { id, mentorFundShare, investmentReserve } = equityData;
 
 		// Check if project equity exists
 		const projectEquity = await prisma.projectEquity.findUnique({
@@ -70,39 +82,39 @@ class ApiProjectEquityHandler {
 			include: {
 				project: true,
 			},
-		})
+		});
 
 		if (!projectEquity) {
-			throw new Error('Project equity not found')
+			throw new Error("Project equity not found");
 		}
 
 		// Get user from decorated request
 		// NextAuthGuard already checked authentication
-		const userId = (req as any).user?.id
+		const userId = (req as any).user?.id;
 
 		if (!userId) {
-			throw new Error('Unauthorized')
+			throw new Error("Unauthorized");
 		}
 
 		// Check if current user is project author
 		if (projectEquity.project.authorId !== userId) {
-			throw new Error('You are not authorized to modify this project equity')
+			throw new Error("You are not authorized to modify this project equity");
 		}
 
 		// Check if allocation is correct
-		const totalAllocation = mentorFundShare + investmentReserve
+		const totalAllocation = mentorFundShare + investmentReserve;
 
 		if (totalAllocation > 100) {
-			throw new Error('Total allocation exceeds 100%')
+			throw new Error("Total allocation exceeds 100%");
 		}
 
 		const updatedEquity = await prisma.projectEquity.update({
 			where: { id },
 			data: { mentorFundShare, investmentReserve },
-		})
+		});
 
-		return updatedEquity
+		return updatedEquity;
 	}
 }
 
-export default createHandler(ApiProjectEquityHandler)
+export default createHandler(ApiProjectEquityHandler);

@@ -1,19 +1,28 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import {
+	createHandler,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class ProjectVacancyParams {
 	@IsString()
-	id: string
+	id: string;
 }
 
-@NextAuthGuard('any')
+@NextAuthGuard("any")
 class ApiProjectVacancyHandler {
 	constructor() {}
 
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { id }: ProjectVacancyParams) {
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { id }: ProjectVacancyParams,
+	) {
 		const data = await prisma.teamVacancy.findFirst({
 			where: { id },
 			include: {
@@ -29,23 +38,27 @@ class ApiProjectVacancyHandler {
 								description: true,
 								coverImage: true,
 								videoLink: true,
-								workflow: { select: { steps: { select: { id: true, name: true } } } },
+								workflow: {
+									select: { steps: { select: { id: true, name: true } } },
+								},
 							},
 						},
 					},
 				},
 				_count: { select: { applicants: true } },
 			},
-		})
+		});
 
-		let teamMember = null
+		let teamMember = null;
 
 		if (req?.user?.id) {
-			teamMember = await prisma.teamMember.findFirst({ where: { vacancyId: id, userId: req.user.id } })
+			teamMember = await prisma.teamMember.findFirst({
+				where: { vacancyId: id, userId: req.user.id },
+			});
 		}
 
-		return { ...data, myTeamMemberId: teamMember?.id }
+		return { ...data, myTeamMemberId: teamMember?.id };
 	}
 }
 
-export default createHandler(ApiProjectVacancyHandler)
+export default createHandler(ApiProjectVacancyHandler);

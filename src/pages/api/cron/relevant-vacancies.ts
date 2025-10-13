@@ -1,7 +1,7 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import dayjs from 'dayjs'
-import { createHandler, Get } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import dayjs from "dayjs";
+import { createHandler, Get } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 // @NextAuthGuard('vercel_cron')
 class CronRelevantVacanciesHandler {
@@ -11,24 +11,26 @@ class CronRelevantVacanciesHandler {
 			where: {
 				status: prismaClient.TeamVacancyStatus.Published,
 				finishedAt: {
-					lt: dayjs().endOf('day').toDate(),
+					lt: dayjs().endOf("day").toDate(),
 				},
 			},
-		})
+		});
 
 		if (notRelevantVacancies.length === 0) {
-			return
+			return;
 		}
 
 		const updatedVacancies = await prisma.teamVacancy.updateMany({
 			where: {
-				id: { in: notRelevantVacancies.map((vacancy: { id: string }) => vacancy.id) },
+				id: {
+					in: notRelevantVacancies.map((vacancy: { id: string }) => vacancy.id),
+				},
 			},
 			data: { status: prismaClient.TeamVacancyStatus.Closed },
-		})
+		});
 
-		console.log(`${updatedVacancies.count} vacancies archived`)
+		console.log(`${updatedVacancies.count} vacancies archived`);
 	}
 }
 
-export default createHandler(CronRelevantVacanciesHandler)
+export default createHandler(CronRelevantVacanciesHandler);

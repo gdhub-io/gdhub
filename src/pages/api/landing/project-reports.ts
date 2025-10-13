@@ -1,5 +1,5 @@
-import { prisma } from '@/services/prisma'
-import { createHandler, Get } from 'next-api-decorators'
+import { createHandler, Get } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class ApiDevlogsRecentHandler {
 	constructor() {}
@@ -9,11 +9,11 @@ class ApiDevlogsRecentHandler {
 		const recentDevlogs = await prisma.projectReport.findMany({
 			take: 6,
 			orderBy: {
-				publishedAt: 'desc',
+				publishedAt: "desc",
 			},
 			where: {
 				project: {
-					status: 'Approved',
+					status: "Approved",
 				},
 			},
 			include: {
@@ -32,10 +32,10 @@ class ApiDevlogsRecentHandler {
 					},
 				},
 			},
-		})
+		});
 
-		return recentDevlogs
+		return recentDevlogs;
 	}
 }
 
-export default createHandler(ApiDevlogsRecentHandler)
+export default createHandler(ApiDevlogsRecentHandler);
