@@ -1,6 +1,6 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { Get, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { createHandler, Get } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class ApiLatestProjectsHandler {
 	constructor() {}
@@ -22,12 +22,12 @@ class ApiLatestProjectsHandler {
 				platform: true,
 				updatedAt: true,
 			},
-			orderBy: { updatedAt: 'desc' },
+			orderBy: { updatedAt: "desc" },
 			take: 5,
-		})
+		});
 
-		return projects
+		return projects;
 	}
 }
 
-export default createHandler(ApiLatestProjectsHandler)
+export default createHandler(ApiLatestProjectsHandler);

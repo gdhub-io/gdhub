@@ -1,32 +1,34 @@
-import QueueCronLog from '@/decorators/QueueCronLog'
-import { formatNestedJson } from '@/helpers/format'
-import { matchingQueue } from '@/queues/matching.queue'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsNumber, IsOptional, IsString } from 'class-validator'
-import dayjs from 'dayjs'
-import { Body, Post, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsNumber, IsOptional, IsString } from "class-validator";
+import dayjs from "dayjs";
+import { Body, createHandler, Post } from "next-api-decorators";
+import QueueCronLog from "@/decorators/QueueCronLog";
+import { formatNestedJson } from "@/helpers/format";
+import { matchingQueue } from "@/queues/matching.queue";
+import { prisma } from "@/services/prisma";
 
 class CronMatchingHandlerDto {
 	@IsString()
 	@IsOptional()
-	projectId?: string
+	projectId?: string;
 
 	@IsString()
 	@IsOptional()
-	specialityId?: string
+	specialityId?: string;
 
 	@IsNumber()
 	@IsOptional()
-	take?: number
+	take?: number;
 }
 
 // @NextAuthGuard('public_api')
 class CronMatchingHandler {
 	@Post()
-	@QueueCronLog('matching-specialist-vs-project')
-	public async handler(@Body() { projectId, specialityId, take }: CronMatchingHandlerDto) {
-		const lastUpdatedAt = dayjs().subtract(7, 'days').toDate()
+	@QueueCronLog("matching-specialist-vs-project")
+	public async handler(
+		@Body() { projectId, specialityId, take }: CronMatchingHandlerDto,
+	) {
+		const lastUpdatedAt = dayjs().subtract(7, "days").toDate();
 
 		const projects = await prisma.project.findMany({
 			where: {
@@ -75,11 +77,15 @@ class CronMatchingHandler {
 						},
 					},
 				},
-				reports: { select: { content: true, publishedAt: true }, take: 100, orderBy: { publishedAt: 'desc' } },
+				reports: {
+					select: { content: true, publishedAt: true },
+					take: 100,
+					orderBy: { publishedAt: "desc" },
+				},
 				team: {
 					select: {
 						vacancies: {
-							where: { status: 'Published' },
+							where: { status: "Published" },
 							select: {
 								title: true,
 								direction: { select: { name: true } },
@@ -129,7 +135,7 @@ class CronMatchingHandler {
 				},
 			},
 			take: !specialityId ? 1 : undefined,
-		})
+		});
 
 		const specialists = await prisma.speciality.findMany({
 			where: {
@@ -169,40 +175,44 @@ class CronMatchingHandler {
 					},
 				},
 			},
-			orderBy: { updatedAt: 'desc' },
+			orderBy: { updatedAt: "desc" },
 			take,
-		})
+		});
 
-		let matchingCount = 0
+		let matchingCount = 0;
 
 		for (const specialist of specialists) {
 			for (const project of projects) {
-				const existMatching = await prisma.matchingSpecialistAndProject.findUnique({
-					where: {
-						projectAndSpecialist: { projectId: project.id, specialityId: specialist.id },
-						updatedAt: { gt: lastUpdatedAt },
-					},
-				})
+				const existMatching =
+					await prisma.matchingSpecialistAndProject.findUnique({
+						where: {
+							projectAndSpecialist: {
+								projectId: project.id,
+								specialityId: specialist.id,
+							},
+							updatedAt: { gt: lastUpdatedAt },
+						},
+					});
 
-				if (existMatching) continue
+				if (existMatching) continue;
 
-				matchingCount++
+				matchingCount++;
 
-				const specialistText = formatNestedJson(specialist)
-				const projectText = formatNestedJson(project)
+				const specialistText = formatNestedJson(specialist);
+				const projectText = formatNestedJson(project);
 
-				await matchingQueue.add('matching-spec-and-proj', {
-					app: 'main',
+				await matchingQueue.add("matching-spec-and-proj", {
+					app: "main",
 					specialityId: specialist.id,
 					projectId: project.id,
 					specialistText,
 					projectText,
-				})
+				});
 			}
 		}
 
-		console.log(`Matching specialists in queue: ${matchingCount}`)
+		console.log(`Matching specialists in queue: ${matchingCount}`);
 	}
 }
 
-export default createHandler(CronMatchingHandler)
+export default createHandler(CronMatchingHandler);

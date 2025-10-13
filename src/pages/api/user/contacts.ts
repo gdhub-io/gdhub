@@ -1,8 +1,8 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { Get, Req, createHandler } from 'next-api-decorators'
+import { createHandler, Get, Req } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserContactsHandler {
 	constructor() {}
 
@@ -11,13 +11,13 @@ class ApiUserContactsHandler {
 		const profile = await prisma.profile.findFirst({
 			where: { userId: req.user.id },
 			select: { tgNickname: true, user: { select: { email: true } } },
-		})
+		});
 
 		return {
 			email: profile?.user.email,
 			telegram: profile?.tgNickname,
-		}
+		};
 	}
 }
 
-export default createHandler(ApiUserContactsHandler)
+export default createHandler(ApiUserContactsHandler);

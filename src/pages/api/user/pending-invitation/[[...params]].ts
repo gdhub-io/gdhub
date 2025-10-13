@@ -1,26 +1,28 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { Get, Param, Req, createHandler } from 'next-api-decorators'
+import { createHandler, Get, Param, Req } from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserPendingInvitationHandler {
 	constructor() {}
 
-	@Get('/:teamInvitationId')
+	@Get("/:teamInvitationId")
 	public async pendingInvitation(
 		@Req() req: NextApiRequestWithUser,
-		@Param('teamInvitationId') teamInvitationId: string
+		@Param("teamInvitationId") teamInvitationId: string,
 	) {
 		const user = await prisma.user.findUnique({
 			where: { id: req.user.id },
-		})
+		});
 
-		const pendingInvitation = user?.pendingTeamInvitations.find((r: any) => r.invitationId == teamInvitationId)
+		const pendingInvitation = user?.pendingTeamInvitations.find(
+			(r: any) => r.invitationId == teamInvitationId,
+		);
 
-		console.log(pendingInvitation)
+		console.log(pendingInvitation);
 
-		return pendingInvitation
+		return pendingInvitation;
 	}
 }
 
-export default createHandler(ApiUserPendingInvitationHandler)
+export default createHandler(ApiUserPendingInvitationHandler);

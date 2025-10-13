@@ -1,120 +1,143 @@
-import { env } from '@/helpers/env'
-import { isValidJSON } from '@/helpers/format'
-import { stripIndents } from 'common-tags'
-import { OpenAI as OpenAIAPI } from 'openai'
-import { prisma } from '../prisma'
+import { stripIndents } from "common-tags";
+import { OpenAI as OpenAIAPI } from "openai";
+import { env } from "@/helpers/env";
+import { isValidJSON } from "@/helpers/format";
+import { prisma } from "../prisma";
 
 class OpenAI {
-	private static instance: OpenAI
-	openai: OpenAIAPI
+	private static instance: OpenAI;
+	openai: OpenAIAPI;
 
 	private constructor() {
-		this.openai = new OpenAIAPI({ apiKey: env('OPENAI_API_KEY') })
+		this.openai = new OpenAIAPI({ apiKey: env("OPENAI_API_KEY") });
 	}
 
 	static getInstance() {
 		if (!OpenAI.instance) {
-			OpenAI.instance = new OpenAI()
+			OpenAI.instance = new OpenAI();
 		}
 
-		return OpenAI.instance
+		return OpenAI.instance;
 	}
 
 	async createEmbedding(document: string) {
 		try {
-			const clearContent = document.replace(/\n/g, ' ')
-			const moderation = await this.moderationInput(clearContent)
+			const clearContent = document.replace(/\n/g, " ");
+			const moderation = await this.moderationInput(clearContent);
 
-			if (moderation) throw Error('There are flagged content')
+			if (moderation) throw Error("There are flagged content");
 
 			const embeddingResponse = await this.openai.embeddings.create({
-				model: 'text-embedding-ada-002',
+				model: "text-embedding-ada-002",
 				input: clearContent,
-			})
+			});
 
-			const [{ embedding }] = embeddingResponse.data
+			const [{ embedding }] = embeddingResponse.data;
 
-			return embedding
+			return embedding;
 		} catch (error) {
-			throw error
+			throw error;
 		}
 	}
 
 	async moderationInput(input: string) {
 		try {
-			const moderationResponse = await this.openai.moderations.create({ input })
+			const moderationResponse = await this.openai.moderations.create({
+				input,
+			});
 
-			const [results] = moderationResponse.results
+			const [results] = moderationResponse.results;
 
 			if (results.flagged) {
-				return { error: 'Flagged content', flagged: true, categories: results.categories }
+				return {
+					error: "Flagged content",
+					flagged: true,
+					categories: results.categories,
+				};
 			}
 
-			return
+			return;
 		} catch (error) {
-			throw error
+			throw error;
 		}
 	}
 
-	async parseCV(text: string, jobPosition: string, options?: { locale: string }) {
-		const workDirections = await prisma.workDirection.findMany({ select: { id: true, name: true } })
+	async parseCV(
+		text: string,
+		jobPosition: string,
+		options?: { locale: string },
+	) {
+		const workDirections = await prisma.workDirection.findMany({
+			select: { id: true, name: true },
+		});
 
 		const schema = {
-			type: 'object',
+			type: "object",
 			properties: {
-				summary: { type: 'string' },
-				specialization: { type: 'string' },
+				summary: { type: "string" },
+				specialization: { type: "string" },
 				workAreaId: {
-					type: 'string',
+					type: "string",
 					enum: workDirections.map((wd: { id: string }) => wd.id),
-					default: workDirections.find((wd: { name: string }) => wd.name == 'other')?.id,
+					default: workDirections.find(
+						(wd: { name: string }) => wd.name == "other",
+					)?.id,
 				},
-				skills: { type: 'array', items: { type: 'string' } },
+				skills: { type: "array", items: { type: "string" } },
 				experience: {
-					type: 'array',
+					type: "array",
 					items: {
-						type: 'object',
+						type: "object",
 						properties: {
-							roleName: { type: 'string' },
-							companyName: { type: 'string', description: 'company name' },
-							location: { type: ['string', 'null'] },
-							from: { type: 'string', description: 'employment date in ISO8601 format' },
-							to: { type: ['string', 'null'], description: 'date of dismissal in ISO8601 format or null' },
-							description: { type: 'string' },
+							roleName: { type: "string" },
+							companyName: { type: "string", description: "company name" },
+							location: { type: ["string", "null"] },
+							from: {
+								type: "string",
+								description: "employment date in ISO8601 format",
+							},
+							to: {
+								type: ["string", "null"],
+								description: "date of dismissal in ISO8601 format or null",
+							},
+							description: { type: "string" },
 						},
 					},
 				},
 				education: {
-					type: 'array',
+					type: "array",
 					items: {
-						type: 'object',
+						type: "object",
 						properties: {
-							speciality: { type: ['string', 'null'] },
-							degree: { type: ['string', 'null'] },
-							school: { type: 'string' },
-							location: { type: ['string', 'null'] },
-							from: { type: 'string', description: 'receipt date in ISO8601' },
-							to: { type: ['string', 'null'], description: 'graduation date in ISO8601 or null' },
-							description: { type: 'string' },
+							speciality: { type: ["string", "null"] },
+							degree: { type: ["string", "null"] },
+							school: { type: "string" },
+							location: { type: ["string", "null"] },
+							from: { type: "string", description: "receipt date in ISO8601" },
+							to: {
+								type: ["string", "null"],
+								description: "graduation date in ISO8601 or null",
+							},
+							description: { type: "string" },
 						},
 					},
 				},
-				portfolioLink: { type: 'string' },
-				tools: { type: 'array', items: { type: 'string' } },
+				portfolioLink: { type: "string" },
+				tools: { type: "array", items: { type: "string" } },
 			},
-		}
+		};
 
 		const prompt: OpenAIAPI.Chat.Completions.ChatCompletionMessageParam[] = [
 			{
-				role: 'system',
+				role: "system",
 				content: stripIndents`
 				You are a specialist who shares information about your resume/CV. A text of your resume demarcated by triple quotation marks.
         Find information only about a specified role "${jobPosition}".
-        Strongly use "${options?.locale || 'en'}" language for an answer.
+        Strongly use "${options?.locale || "en"}" language for an answer.
 				`,
 			},
 			{
-				role: 'user',
+				role: "user",
 				content: stripIndents`
 				Parse this resume to json given the following steps:
 				2. Find a summery of the resume.
@@ -133,73 +156,77 @@ class OpenAI {
 				"""${text}"""
 				`,
 			},
-		]
+		];
 
-		console.debug(`[parseCV][prompt]`, JSON.stringify(prompt))
+		console.debug(`[parseCV][prompt]`, JSON.stringify(prompt));
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: process.env.OPENAI_API_MODEL || 'gpt-4o-mini',
-				functions: [{ name: 'parse_resume', parameters: schema }],
-				function_call: { name: 'parse_resume' },
+				model: process.env.OPENAI_API_MODEL || "gpt-4o-mini",
+				functions: [{ name: "parse_resume", parameters: schema }],
+				function_call: { name: "parse_resume" },
 				messages: prompt,
 				temperature: 0.25,
-			})
+			});
 
 			const {
 				choices: [{ message }],
-			} = completionResponse
+			} = completionResponse;
 
-			console.debug(`[parseCV][result]`, message?.function_call?.arguments)
+			console.debug(`[parseCV][result]`, message?.function_call?.arguments);
 
 			return isValidJSON(message?.function_call?.arguments)
 				? JSON.parse(message?.function_call?.arguments as string)
-				: undefined
+				: undefined;
 		} catch (error: any) {
-			console.error(error.message)
-			throw error
+			console.error(error.message);
+			throw error;
 		}
 	}
 
 	async matchingSpecAndProj(specialistText: string, projectText: string) {
 		const schema = {
-			type: 'object',
+			type: "object",
 			properties: {
 				projectScore: {
-					type: 'number',
-					description: 'percentage between 0 and 100 of specialist compliance with the project',
+					type: "number",
+					description:
+						"percentage between 0 and 100 of specialist compliance with the project",
 					minimum: 0,
 					maximum: 100,
 				},
 				authorScore: {
-					type: 'number',
-					description: 'percentage between 0 and 100 of specialist compliance with the author of the project',
+					type: "number",
+					description:
+						"percentage between 0 and 100 of specialist compliance with the author of the project",
 					minimum: 0,
 					maximum: 100,
 				},
 				teamScore: {
-					type: 'number',
-					description: 'percentage between 0 and 100 of specialist compliance with the team of the project',
+					type: "number",
+					description:
+						"percentage between 0 and 100 of specialist compliance with the team of the project",
 					minimum: 0,
 					maximum: 100,
 				},
 				summary: {
-					type: 'string',
-					description: 'Comparison result. How is this specialist suitable or not suitable for this project and why',
+					type: "string",
+					description:
+						"Comparison result. How is this specialist suitable or not suitable for this project and why",
 				},
 			},
-		}
+		};
 
 		const prompt: OpenAIAPI.Chat.Completions.ChatCompletionMessageParam[] = [
 			{
-				role: 'system',
+				role: "system",
 				content: stripIndents`
 				You are an experienced recruiter for game development teams and know how to select the composition of teams well, with minimal risks of conflicts within them. 
 				Possess all modern skills in the field of Human Resources.
 				`,
 			},
 			{
-				role: 'user',
+				role: "user",
 				content: stripIndents`
 				You need to determine whether the presented specialist is suitable to work in a team on an indie game project, as well as to promote, management and sell it on the market.
 				1. Determine the percentage of specialist compliance with the project.
@@ -216,35 +243,35 @@ class OpenAI {
 				"""${projectText}"""
 				`,
 			},
-		]
+		];
 
 		// console.debug(`[matchingSpecAndProj][prompt]`, JSON.stringify(prompt))
 
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
-				model: process.env.OPENAI_API_MODEL || 'gpt-4o-mini',
-				functions: [{ name: 'parse_resume', parameters: schema }],
-				function_call: { name: 'parse_resume' },
+				model: process.env.OPENAI_API_MODEL || "gpt-4o-mini",
+				functions: [{ name: "parse_resume", parameters: schema }],
+				function_call: { name: "parse_resume" },
 				messages: prompt,
 				temperature: 0.25,
-			})
+			});
 
 			const {
 				choices: [{ message }],
-			} = completionResponse
+			} = completionResponse;
 
 			// console.debug(`[matchingSpecAndProj][result]`, message?.function_call?.arguments)
 
 			return isValidJSON(message?.function_call?.arguments)
 				? JSON.parse(message?.function_call?.arguments as string)
-				: undefined
+				: undefined;
 		} catch (error: any) {
-			console.error(error.message)
-			throw error
+			console.error(error.message);
+			throw error;
 		}
 	}
 }
 
-const globalForOpenAI = globalThis as unknown as { openAI: OpenAI | undefined }
+const globalForOpenAI = globalThis as unknown as { openAI: OpenAI | undefined };
 
-export const openAI = globalForOpenAI.openAI ?? OpenAI.getInstance()
+export const openAI = globalForOpenAI.openAI ?? OpenAI.getInstance();

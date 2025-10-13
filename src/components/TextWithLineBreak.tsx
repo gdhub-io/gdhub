@@ -1,11 +1,16 @@
-import parse from 'html-react-parser'
-import { LinkItUrl } from 'react-linkify-it'
+import parse from "html-react-parser";
+import { LinkItUrl } from "react-linkify-it";
 
 export const TextWithLineBreak = ({ text }: { text?: string | null }) => {
-	if (!text) return null
+	if (!text) return null;
 
-	const parseText = (t: string) => t.replace(/\n/g, '<br />')
-	const textToPparagraphs = (t: string) => t.split('\n\n').map((str, key) => <p key={key}>{parse(parseText(str))}</p>)
+	const parseText = (t: string) => t.replace(/\n/g, "<br />");
+	const textToPparagraphs = (t: string) =>
+		t
+			.split("\n\n")
+			.map((str, key) => (
+				<p key={`paragraph-${key.toString()}`}>{parse(parseText(str))}</p>
+			));
 
-	return <LinkItUrl>{textToPparagraphs(text)}</LinkItUrl>
-}
+	return <LinkItUrl>{textToPparagraphs(text)}</LinkItUrl>;
+};

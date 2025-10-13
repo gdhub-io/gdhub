@@ -1,37 +1,54 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import {
+	createHandler,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class UserTeamCandidatesDto {
 	@IsString()
-	projectId: string
+	projectId: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiTeamAICandidatesHandler {
 	@Get()
-	public async get(@Req() req: NextApiRequestWithUser, @Query(ValidationPipe) { projectId }: UserTeamCandidatesDto) {
-		if (!req.user.id) return
+	public async get(
+		@Req() req: NextApiRequestWithUser,
+		@Query(ValidationPipe) { projectId }: UserTeamCandidatesDto,
+	) {
+		if (!req.user.id) return;
 
-		const isAdmin = req.user.roles?.includes(prismaClient.UserRole.Admin)
-		const hasActiveSubscription = await prisma.user.activeSubscription(req.user.id)
+		const isAdmin = req.user.roles?.includes(prismaClient.UserRole.Admin);
+		const hasActiveSubscription = await prisma.user.activeSubscription(
+			req.user.id,
+		);
 
-		if (!hasActiveSubscription && !isAdmin) return
+		if (!hasActiveSubscription && !isAdmin) return;
 
 		const specialists = await prisma.matchingSpecialistAndProject.findMany({
 			where: {
 				projectId,
 				avgScore: { gte: 75 },
-				specialist: { user: { memberInTeams: { none: {} }, profile: { isActive: true } } },
+				specialist: {
+					user: { memberInTeams: { none: {} }, profile: { isActive: true } },
+				},
 			},
-			include: { specialist: { include: { user: { select: { id: true, name: true, image: true } } } } },
-			orderBy: { avgScore: 'desc' },
-		})
+			include: {
+				specialist: {
+					include: { user: { select: { id: true, name: true, image: true } } },
+				},
+			},
+			orderBy: { avgScore: "desc" },
+		});
 
-		return specialists
+		return specialists;
 	}
 }
 
-export default createHandler(ApiTeamAICandidatesHandler)
+export default createHandler(ApiTeamAICandidatesHandler);

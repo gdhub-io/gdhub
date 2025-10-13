@@ -1,7 +1,9 @@
-import { prisma } from '.'
+import { prisma } from ".";
 
 export const getWorkedProjects = async () => {
-	const projects = await prisma.project.getProjectsOrderedByActivity({ order: 'desc' })
+	const projects = await prisma.project.getProjectsOrderedByActivity({
+		order: "desc",
+	});
 
-	return projects
-}
+	return projects;
+};

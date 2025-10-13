@@ -1,71 +1,84 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { ApiProjectTeamGuard } from '@/lib/api-project-guard'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsEnum, IsOptional, IsString } from 'class-validator'
-import { Body, Delete, Get, Param, Post, Put, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+import {
+	Body,
+	createHandler,
+	Delete,
+	Get,
+	Param,
+	Post,
+	Put,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { ApiProjectTeamGuard } from "@/lib/api-project-guard";
+import { prisma } from "@/services/prisma";
 
 class GetListTeamDocumentParams {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
 class GetTeamDocumentParams {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
 class DeleteTeamDocumentParams {
 	@IsString()
-	teamId: string
+	teamId: string;
 }
 
 class CreateTeamDocumentParams {
 	@IsString()
-	teamId: string
+	teamId: string;
 
 	@IsEnum(prismaClient.TeamDocumentType)
-	type: prismaClient.TeamDocumentType
+	type: prismaClient.TeamDocumentType;
 
 	@IsString()
-	name: string
+	name: string;
 
 	@IsString()
 	@IsOptional()
-	description?: string
+	description?: string;
 
 	@IsString()
-	link: string
+	link: string;
 }
 
 class UpdateTeamDocumentParams {
 	@IsEnum(prismaClient.TeamDocumentType)
 	@IsOptional()
-	type: prismaClient.TeamDocumentType
+	type: prismaClient.TeamDocumentType;
 
 	@IsString()
 	@IsOptional()
-	name: string
+	name: string;
 
 	@IsString()
 	@IsOptional()
-	description: string
+	description: string;
 
 	@IsString()
 	@IsOptional()
-	link: string
+	link: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 @ApiProjectTeamGuard()
 class ApiTeamDocumentHandler {
 	constructor() {}
 
 	@Get()
-	public async list(@Query(ValidationPipe) { teamId }: GetListTeamDocumentParams) {
+	public async list(
+		@Query(ValidationPipe) { teamId }: GetListTeamDocumentParams,
+	) {
 		const documents = await prisma.teamDocument.findMany({
 			where: { teamId },
-			orderBy: { updatedAt: 'desc' },
+			orderBy: { updatedAt: "desc" },
 			include: {
 				createdByUser: {
 					select: {
@@ -74,24 +87,33 @@ class ApiTeamDocumentHandler {
 					},
 				},
 			},
-		})
+		});
 
-		return documents
+		return documents;
 	}
 
-	@Get('/:documentId')
-	public async get(@Param('documentId') documentId: string, @Query(ValidationPipe) { teamId }: GetTeamDocumentParams) {
+	@Get("/:documentId")
+	public async get(
+		@Param("documentId") documentId: string,
+		@Query(ValidationPipe) { teamId }: GetTeamDocumentParams,
+	) {
 		const document = await prisma.teamDocument.findUnique({
 			where: { teamId, id: documentId },
-		})
+		});
 
-		return document
+		return document;
 	}
 
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { teamId, type, name, description, link }: CreateTeamDocumentParams
+		@Body(ValidationPipe) {
+			teamId,
+			type,
+			name,
+			description,
+			link,
+		}: CreateTeamDocumentParams,
 	) {
 		const document = await prisma.teamDocument.create({
 			data: {
@@ -102,35 +124,40 @@ class ApiTeamDocumentHandler {
 				team: { connect: { id: teamId } },
 				createdByUser: { connect: { id: req.user?.id } },
 			},
-		})
+		});
 
-		return document
+		return document;
 	}
 
-	@Put('/:documentId')
+	@Put("/:documentId")
 	public async update(
-		@Param('documentId') documentId: string,
-		@Body(ValidationPipe) { type, name, description, link }: UpdateTeamDocumentParams
+		@Param("documentId") documentId: string,
+		@Body(ValidationPipe) {
+			type,
+			name,
+			description,
+			link,
+		}: UpdateTeamDocumentParams,
 	) {
 		const updatedDocument = await prisma.teamDocument.update({
 			where: { id: documentId },
 			data: { type, name, description, link },
-		})
+		});
 
-		return updatedDocument
+		return updatedDocument;
 	}
 
-	@Delete('/:documentId')
+	@Delete("/:documentId")
 	public async delete(
-		@Param('documentId') documentId: string,
-		@Query(ValidationPipe) { teamId }: DeleteTeamDocumentParams
+		@Param("documentId") documentId: string,
+		@Query(ValidationPipe) { teamId }: DeleteTeamDocumentParams,
 	) {
 		await prisma.teamDocument.delete({
 			where: { id: documentId, teamId },
-		})
+		});
 
-		return { success: true }
+		return { success: true };
 	}
 }
 
-export default createHandler(ApiTeamDocumentHandler)
+export default createHandler(ApiTeamDocumentHandler);

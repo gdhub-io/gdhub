@@ -1,12 +1,11 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { createHandler, Get } from 'next-api-decorators'
-import { Query } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import { createHandler, Get, Query } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 class ParamSlugDto {
 	@IsString()
-	slug: string
+	slug: string;
 }
 
 export class ApiCourseHandler {
@@ -17,14 +16,14 @@ export class ApiCourseHandler {
 				slug,
 				status: prismaClient.CourseStatus.Published,
 			},
-		})
+		});
 
 		if (!course) {
-			throw new Error('Course not found')
+			throw new Error("Course not found");
 		}
 
-		return course
+		return course;
 	}
 }
 
-export default createHandler(ApiCourseHandler)
+export default createHandler(ApiCourseHandler);

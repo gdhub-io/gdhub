@@ -1,15 +1,15 @@
-import { redisConnect } from '@/services/redis'
-import { Queue } from 'bullmq'
+import { Queue } from "bullmq";
+import { redisConnect } from "@/services/redis";
 
-export const matchingQueue = new Queue('matching', {
+export const matchingQueue = new Queue("matching", {
 	connection: redisConnect(),
 	defaultJobOptions: {
 		attempts: 2,
 		backoff: {
-			type: 'exponential',
+			type: "exponential",
 			delay: 5000,
 		},
 	},
-})
+});
 
-export default matchingQueue
+export default matchingQueue;

@@ -1,150 +1,156 @@
-import { AvailableLocales } from '@/config/locale'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	IsBoolean,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+} from "class-validator";
+import { AvailableLocales } from "@/config/locale";
 
 export class CreateProfileDto {
 	@IsString()
 	@IsOptional()
-	name: string
+	name: string;
 
 	@IsNumber()
-	yearOfBirth: number
+	yearOfBirth: number;
 
 	@IsString()
 	@IsOptional()
-	tgNickname?: string | null
+	tgNickname?: string | null;
 
 	@IsString()
 	@IsOptional()
-	portfolioLink?: string | null
+	portfolioLink?: string | null;
 
 	@IsString()
 	@IsOptional()
-	country: string
+	country: string;
 
 	@IsString()
 	@IsOptional()
-	city?: string | null
+	city?: string | null;
 
 	@IsNumber({}, { each: true })
 	@IsOptional()
-	timeForWork?: number[]
+	timeForWork?: number[];
 
 	@IsString({ each: true })
 	@IsOptional()
-	preferredGenres?: string[]
+	preferredGenres?: string[];
 
 	@IsString({ each: true })
 	@IsOptional()
-	preferredLevels?: string[]
+	preferredLevels?: string[];
 
 	@IsString({ each: true })
 	@IsOptional()
-	preferredSettings?: string[]
+	preferredSettings?: string[];
 
 	@IsBoolean()
 	@IsOptional()
-	confirmUserData?: boolean
+	confirmUserData?: boolean;
 
 	@IsBoolean()
 	@IsOptional()
-	onboardingDone?: boolean
+	onboardingDone?: boolean;
 }
 
 export class UpdateProfileDto {
 	@IsString()
 	@IsOptional()
-	name?: string
+	name?: string;
 
 	@IsString()
 	@IsOptional()
-	tgNickname?: string | null
+	tgNickname?: string | null;
 
 	@IsString()
 	@IsOptional()
-	portfolioLink?: string | null
+	portfolioLink?: string | null;
 
 	@IsString()
 	@IsOptional()
-	country?: string | null
+	country?: string | null;
 
 	@IsString()
 	@IsOptional()
-	city?: string | null
+	city?: string | null;
 
 	@IsString()
 	@IsOptional()
-	createdAt?: Date
+	createdAt?: Date;
 
 	@IsString()
 	@IsOptional()
-	updatedAt?: Date
+	updatedAt?: Date;
 
 	@IsNumber({}, { each: true })
 	@IsOptional()
-	timeForWork?: number[]
+	timeForWork?: number[];
 
 	@IsString()
 	@IsOptional()
-	otherResources: string
+	otherResources: string;
 
 	@IsBoolean()
 	@IsOptional()
-	isActive: boolean
+	isActive: boolean;
 
 	@IsEnum(prismaClient.PrimaryInterest)
 	@IsOptional()
-	primaryInterest: prismaClient.PrimaryInterest
+	primaryInterest: prismaClient.PrimaryInterest;
 
 	@IsString({ each: true })
 	@IsOptional()
-	preferredGenres?: string[]
+	preferredGenres?: string[];
 
 	@IsString({ each: true })
 	@IsOptional()
-	preferredLevels?: string[]
+	preferredLevels?: string[];
 
 	@IsString({ each: true })
 	@IsOptional()
-	preferredSettings?: string[]
+	preferredSettings?: string[];
 
 	@IsBoolean()
 	@IsOptional()
-	agreeWithTermsAndPrivacy: boolean
+	agreeWithTermsAndPrivacy: boolean;
 
 	@IsBoolean()
 	@IsOptional()
-	needSubscribeToNewsletter: boolean
+	needSubscribeToNewsletter: boolean;
 
 	@IsBoolean()
 	@IsOptional()
-	confirmUserData?: boolean
+	confirmUserData?: boolean;
 
 	@IsBoolean()
 	@IsOptional()
-	onboardingDone?: boolean
+	onboardingDone?: boolean;
 
 	@IsEnum(AvailableLocales)
 	@IsOptional()
-	lang?: AvailableLocales
+	lang?: AvailableLocales;
 }
 
 export class SwitchMentorshipDto {
 	@IsBoolean()
-	enabled: boolean
+	enabled: boolean;
 }
 
 export class UpdateMentorshipSettingDto {
 	@IsString()
-	specialityId: string
+	specialityId: string;
 
 	@IsString({ each: true })
-	openForQuestions: string[]
+	openForQuestions: string[];
 
 	@IsOptional()
-	timeForMentoring?: string
+	timeForMentoring?: string;
 }
 
 export function isSwitchMentorshipType(data: any) {
-	return data.enabled !== undefined
+	return data.enabled !== undefined;
 }

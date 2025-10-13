@@ -1,41 +1,47 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { NovuService } from '@/services/novu'
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { IsString } from 'class-validator'
-import { Get, Query, Req, ValidationPipe, createHandler } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IsString } from "class-validator";
+import {
+	createHandler,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { NovuService } from "@/services/novu";
+import { prisma } from "@/services/prisma";
 
 class CompletePendingInvitationDto {
 	@IsString()
-	invitationId: string
+	invitationId: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserTeamCompletePendingInvitationHandler {
 	@Get()
 	public async completePendingInvitation(
 		@Req() req: NextApiRequestWithUser,
-		@Query(ValidationPipe) { invitationId }: CompletePendingInvitationDto
+		@Query(ValidationPipe) { invitationId }: CompletePendingInvitationDto,
 	) {
 		try {
 			// Получаем информацию о пользователе
 			const user = await prisma.user.findUnique({
 				where: { id: req.user.id },
 				include: { specialities: true },
-			})
+			});
 
 			if (!user) {
-				throw new Error('User not found')
+				throw new Error("User not found");
 			}
 
 			// Проверяем, завершил ли пользователь onboarding
 			if (!user.onboardingDone) {
-				throw new Error('You need to complete onboarding first')
+				throw new Error("You need to complete onboarding first");
 			}
 
 			// Проверяем, есть ли у пользователя хотя бы одна специализация
 			if (!user.specialities || user.specialities.length === 0) {
-				throw new Error('You need to create a speciality first')
+				throw new Error("You need to create a speciality first");
 			}
 
 			// Получаем информацию о приглашении
@@ -49,36 +55,40 @@ class ApiUserTeamCompletePendingInvitationHandler {
 					},
 					invitedBy: { select: { id: true, name: true, email: true } },
 				},
-			})
+			});
 
 			if (!invitation) {
-				throw new Error('Invitation not found')
+				throw new Error("Invitation not found");
 			}
 
 			// Проверяем, что приглашение адресовано текущему пользователю
-			if (invitation.email !== req.user.email && (!invitation.userId || invitation.userId !== req.user.id)) {
-				throw new Error('This invitation is not for you')
+			if (
+				invitation.email !== req.user.email &&
+				(!invitation.userId || invitation.userId !== req.user.id)
+			) {
+				throw new Error("This invitation is not for you");
 			}
 
 			// Проверяем, что приглашение принято
 			if (invitation.status !== prismaClient.InvitationStatus.Accepted) {
-				throw new Error('Invitation has not been accepted')
+				throw new Error("Invitation has not been accepted");
 			}
 			// Находим информацию о приглашении в pendingTeamInvitations пользователя
 			const pendingInvitation = user.pendingTeamInvitations?.find(
-				(inv: any) => inv.invitationId === invitationId
-			) as Record<string, any>
+				(inv: any) => inv.invitationId === invitationId,
+			) as Record<string, any>;
 
 			if (!pendingInvitation) {
-				throw new Error('Pending invitation not found')
+				throw new Error("Pending invitation not found");
 			}
 
 			const neededSpeciality = user?.specialities.find(
-				(s: { workDirectionId: string }) => s.workDirectionId === pendingInvitation.directionId
-			)
+				(s: { workDirectionId: string }) =>
+					s.workDirectionId === pendingInvitation.directionId,
+			);
 
 			if (!neededSpeciality) {
-				throw new Error('Speciality not found')
+				throw new Error("Speciality not found");
 			}
 
 			// Добавляем пользователя в команду
@@ -93,54 +103,55 @@ class ApiUserTeamCompletePendingInvitationHandler {
 					team: { connect: { id: pendingInvitation.teamId } },
 					user: { connect: { id: req.user.id } },
 				},
-			})
+			});
 
 			// Удаляем информацию о приглашении из pendingTeamInvitations пользователя
 			const updatedPendingInvitations = user.pendingTeamInvitations.filter(
-				(inv: any) => inv.invitationId !== invitationId
-			)
+				(inv: any) => inv.invitationId !== invitationId,
+			);
 
 			await prisma.user.update({
 				where: { id: req.user.id },
 				data: {
-					pendingTeamInvitations: updatedPendingInvitations as prismaClient.Prisma.InputJsonValue[],
+					pendingTeamInvitations:
+						updatedPendingInvitations as prismaClient.Prisma.InputJsonValue[],
 				},
-			})
+			});
 
 			// Отправляем уведомление пользователю, отправившему приглашение
 			try {
 				await NovuService.send({
-					template: 'invitation-completed',
+					template: "invitation-completed",
 					to: {
 						subscriberId: invitation.invitedBy.id,
 						email: invitation.invitedBy.email || undefined,
 					},
 					payload: {
 						teamMemberId: teamMember.id,
-						teamName: invitation.team.name || 'Team',
-						projectName: invitation.team.project?.name || 'Project',
-						projectSlug: invitation.team.project?.slug || '',
+						teamName: invitation.team.name || "Team",
+						projectName: invitation.team.project?.name || "Project",
+						projectSlug: invitation.team.project?.slug || "",
 						position: pendingInvitation.position,
-						memberName: req.user.name || 'New member',
+						memberName: req.user.name || "New member",
 						memberEmail: req.user.email,
 					},
-				})
+				});
 			} catch (error) {
-				console.error('Failed to send notification to inviter:', error)
+				console.error("Failed to send notification to inviter:", error);
 				// Продолжаем выполнение даже если отправка уведомления не удалась
 			}
 
 			// Перенаправляем пользователя на страницу проекта
 			return {
 				success: true,
-				message: 'You have successfully joined the team',
+				message: "You have successfully joined the team",
 				redirect: `/my/projects/${invitation.team.project?.slug || invitation.team.project?.id}`,
-			}
+			};
 		} catch (error: any) {
-			console.error('[team.complete-pending-invitation]', error)
-			throw error
+			console.error("[team.complete-pending-invitation]", error);
+			throw error;
 		}
 	}
 }
 
-export default createHandler(ApiUserTeamCompletePendingInvitationHandler)
+export default createHandler(ApiUserTeamCompletePendingInvitationHandler);

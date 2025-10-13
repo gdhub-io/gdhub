@@ -1,23 +1,32 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { IsString } from 'class-validator'
-import { Body, Delete, Get, Post, Put, Query, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import {
+	Body,
+	createHandler,
+	Delete,
+	Get,
+	Post,
+	Put,
+	Query,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
 
 class IDParamDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
 class TemplateCreateDto {
 	@IsString()
-	name: string
+	name: string;
 }
 
 class TemplateUpdateDto {
 	@IsString()
-	name: string
+	name: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiTemplateEndpointHandler {
 	@Get()
 	public async get(@Query(ValidationPipe) { id }: IDParamDto) {
@@ -30,7 +39,10 @@ class ApiTemplateEndpointHandler {
 	}
 
 	@Put()
-	public async update(@Query(ValidationPipe) { id }: IDParamDto, @Body(ValidationPipe) data: TemplateUpdateDto) {
+	public async update(
+		@Query(ValidationPipe) { id }: IDParamDto,
+		@Body(ValidationPipe) data: TemplateUpdateDto,
+	) {
 		//update
 	}
 
@@ -40,4 +52,4 @@ class ApiTemplateEndpointHandler {
 	}
 }
 
-export default createHandler(ApiTemplateEndpointHandler)
+export default createHandler(ApiTemplateEndpointHandler);

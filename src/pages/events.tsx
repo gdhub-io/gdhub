@@ -1,73 +1,87 @@
-import React from 'react'
-import eventBackgroundImage from '@/assets/images/public-events-header-bg.jpg'
-import { EventCard, PastEventCard, EventSection, BannerEventSlider, EmptyEventState } from '@/components/events'
-import SectionSkeleton from '@/components/events/SectionSkeleton'
-import { PublicLayout } from '@/layouts/PublicLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import styles from '@/pages/hub/events/style.module.scss'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useQuery } from '@tanstack/react-query'
-import { useTranslate } from '@tolgee/react'
-import { theme } from 'antd'
-import axios from 'axios'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { useQuery } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
+import { theme } from "antd";
+import axios from "axios";
+import React from "react";
+import eventBackgroundImage from "@/assets/images/public-events-header-bg.jpg";
+import {
+	BannerEventSlider,
+	EmptyEventState,
+	EventCard,
+	EventSection,
+	PastEventCard,
+} from "@/components/events";
+import SectionSkeleton from "@/components/events/SectionSkeleton";
+import { PublicLayout } from "@/layouts/PublicLayout";
+import type { NextPageWithLayout } from "@/pages/_app";
+import styles from "@/pages/hub/events/style.module.scss";
 
 const EventsPage: NextPageWithLayout = () => {
-	const { t } = useTranslate()
-	const { token } = theme.useToken()
+	const { t } = useTranslate();
+	const { token } = theme.useToken();
 
 	const { data: eventCount, isFetched: isCountFetched } = useQuery({
-		queryKey: ['events-count'],
-		queryFn: () => axios.get('/api/events-count').then((res) => res.data),
+		queryKey: ["events-count"],
+		queryFn: () => axios.get("/api/events-count").then((res) => res.data),
 		enabled: true,
-	})
+	});
 
 	const [loadingSections, setLoadingSections] = React.useState({
 		knowledge: true,
 		experiments: true,
 		past: true,
-	})
+	});
 
-	const handleLoadingChange = React.useCallback((key: keyof typeof loadingSections, isLoading: boolean) => {
-		setLoadingSections((prev) => ({ ...prev, [key]: isLoading }))
-	}, [])
+	const handleLoadingChange = React.useCallback(
+		(key: keyof typeof loadingSections, isLoading: boolean) => {
+			setLoadingSections((prev) => ({ ...prev, [key]: isLoading }));
+		},
+		[],
+	);
 
 	return (
 		<PublicLayout
-			title={t('page.events.title', 'Events')}
+			title={t("page.events.title", "Events")}
 			backgroundImage={eventBackgroundImage.src}
-			seo={{ openGraph: { type: 'website', url: '/events' } }}
+			seo={{ openGraph: { type: "website", url: "/events" } }}
 		>
 			<div className={styles.container}>
 				{isCountFetched && eventCount?.count ? (
 					<>
 						<BannerEventSlider />
 
-						{(loadingSections.knowledge || loadingSections.experiments || loadingSections.past) && (
+						{(loadingSections.knowledge ||
+							loadingSections.experiments ||
+							loadingSections.past) && (
 							<>
 								{loadingSections.knowledge && (
 									<SectionSkeleton
-										title={t('page.events.newKnowledge', 'New Knowledge')}
+										title={t("page.events.newKnowledge", "New Knowledge")}
 										description={t(
-											'page.events.newKnowledgeDescription',
-											'Meetups and workshops for sharing experience, learning, and networking.'
+											"page.events.newKnowledgeDescription",
+											"Meetups and workshops for sharing experience, learning, and networking.",
 										)}
 									/>
 								)}
 								{loadingSections.experiments && (
 									<SectionSkeleton
-										title={t('page.events.gameJamsAndExperiments', 'Experience & Experiments')}
+										title={t(
+											"page.events.gameJamsAndExperiments",
+											"Experience & Experiments",
+										)}
 										description={t(
-											'page.events.gameJamsAndExperimentsDescription',
-											'Game jams for practice, experiments, and new connections.'
+											"page.events.gameJamsAndExperimentsDescription",
+											"Game jams for practice, experiments, and new connections.",
 										)}
 									/>
 								)}
 								{loadingSections.past && (
 									<SectionSkeleton
-										title={t('page.events.pastEvents', 'Some Past Events')}
+										title={t("page.events.pastEvents", "Some Past Events")}
 										description={t(
-											'page.events.pastEventsDescription',
-											"Here are some of the platform's completed events."
+											"page.events.pastEventsDescription",
+											"Here are some of the platform's completed events.",
 										)}
 									/>
 								)}
@@ -75,32 +89,48 @@ const EventsPage: NextPageWithLayout = () => {
 						)}
 
 						<EventSection
-							title={t('page.events.newKnowledge', 'New Knowledge')}
+							title={t("page.events.newKnowledge", "New Knowledge")}
 							description={t(
-								'page.events.newKnowledgeDescription',
-								'Meetups and workshops for sharing experience, learning, and networking.'
+								"page.events.newKnowledgeDescription",
+								"Meetups and workshops for sharing experience, learning, and networking.",
 							)}
-							eventTypes={[prismaClient.$Enums.EventType.Meetup, prismaClient.$Enums.EventType.Workshop]}
-							timeStatus={['ongoing', 'upcoming']}
+							eventTypes={[
+								prismaClient.$Enums.EventType.Meetup,
+								prismaClient.$Enums.EventType.Workshop,
+							]}
+							timeStatus={["ongoing", "upcoming"]}
 							CardComponent={EventCard}
 							token={token}
-							onLoadingChange={(isLoading) => handleLoadingChange('knowledge', isLoading)}
+							onLoadingChange={(isLoading) =>
+								handleLoadingChange("knowledge", isLoading)
+							}
 						/>
 						<EventSection
-							title={t('page.events.gameJamsAndExperiments', 'Experience & Experiments')}
-							description={t(
-								'page.events.gameJamsAndExperimentsDescription',
-								'Game jams for practice, experiments, and new connections.'
+							title={t(
+								"page.events.gameJamsAndExperiments",
+								"Experience & Experiments",
 							)}
-							eventTypes={[prismaClient.$Enums.EventType.GameJam, prismaClient.$Enums.EventType.GameLab]}
-							timeStatus={['ongoing', 'upcoming']}
+							description={t(
+								"page.events.gameJamsAndExperimentsDescription",
+								"Game jams for practice, experiments, and new connections.",
+							)}
+							eventTypes={[
+								prismaClient.$Enums.EventType.GameJam,
+								prismaClient.$Enums.EventType.GameLab,
+							]}
+							timeStatus={["ongoing", "upcoming"]}
 							CardComponent={EventCard}
 							token={token}
-							onLoadingChange={(isLoading) => handleLoadingChange('experiments', isLoading)}
+							onLoadingChange={(isLoading) =>
+								handleLoadingChange("experiments", isLoading)
+							}
 						/>
 						<EventSection
-							title={t('page.events.pastEvents', 'Some Past Events')}
-							description={t('page.events.pastEventsDescription', "Here are some of the platform's completed events.")}
+							title={t("page.events.pastEvents", "Some Past Events")}
+							description={t(
+								"page.events.pastEventsDescription",
+								"Here are some of the platform's completed events.",
+							)}
 							eventTypes={[
 								prismaClient.$Enums.EventType.Meetup,
 								prismaClient.$Enums.EventType.Workshop,
@@ -108,11 +138,13 @@ const EventsPage: NextPageWithLayout = () => {
 								prismaClient.$Enums.EventType.GameLab,
 								prismaClient.$Enums.EventType.Conference,
 							]}
-							timeStatus={['past']}
+							timeStatus={["past"]}
 							CardComponent={PastEventCard}
 							token={token}
 							colSpan={{ xs: 24, sm: 12, md: 8, lg: 6, xl: 4 }}
-							onLoadingChange={(isLoading) => handleLoadingChange('past', isLoading)}
+							onLoadingChange={(isLoading) =>
+								handleLoadingChange("past", isLoading)
+							}
 						/>
 					</>
 				) : isCountFetched ? (
@@ -120,7 +152,7 @@ const EventsPage: NextPageWithLayout = () => {
 				) : null}
 			</div>
 		</PublicLayout>
-	)
-}
+	);
+};
 
-export default EventsPage
+export default EventsPage;

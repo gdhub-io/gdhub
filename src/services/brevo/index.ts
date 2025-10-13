@@ -1,27 +1,29 @@
-import { Api } from './api'
+import { Api } from "./api";
 
 declare global {
 	// eslint-disable-next-line no-var
-	var cachedBrevoApi: any
+	var cachedBrevoApi: any;
 }
 
-let brevoApi: Api<any>
+let brevoApi: Api<any>;
 
 function createBrevoClient() {
 	return new Api({
-		baseUrl: 'https://api.brevo.com/v3',
-		baseApiParams: { headers: { 'api-key': process.env.BREVO_API_KEY as string } },
-	})
+		baseUrl: "https://api.brevo.com/v3",
+		baseApiParams: {
+			headers: { "api-key": process.env.BREVO_API_KEY as string },
+		},
+	});
 }
 
-if (process.env.NODE_ENV === 'production') {
-	brevoApi = createBrevoClient()
+if (process.env.NODE_ENV === "production") {
+	brevoApi = createBrevoClient();
 } else {
 	if (!global.cachedBrevoApi) {
-		global.cachedBrevoApi = createBrevoClient()
+		global.cachedBrevoApi = createBrevoClient();
 	}
 
-	brevoApi = global.cachedBrevoApi
+	brevoApi = global.cachedBrevoApi;
 }
 
-export { brevoApi }
+export { brevoApi };

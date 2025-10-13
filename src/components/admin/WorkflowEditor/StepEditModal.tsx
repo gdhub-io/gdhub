@@ -1,47 +1,53 @@
-import React from 'react'
-import { Modal, Form, Input, Button, Row, Col, Space } from 'antd'
+import { Button, Col, Form, Input, Modal, Row, Space } from "antd";
+import React from "react";
 
-const { TextArea } = Input
+const { TextArea } = Input;
 
 interface StepEditModalProps {
-	visible: boolean
-	onClose: () => void
-	onSave: (step: any) => void
-	step: any
-	isNew: boolean
+	visible: boolean;
+	onClose: () => void;
+	onSave: (step: any) => void;
+	step: any;
+	isNew: boolean;
 }
 
-export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, onSave, step, isNew }) => {
-	const [form] = Form.useForm()
+export const StepEditModal: React.FC<StepEditModalProps> = ({
+	visible,
+	onClose,
+	onSave,
+	step,
+	isNew,
+}) => {
+	const [form] = Form.useForm();
 
 	React.useEffect(() => {
 		if (visible) {
 			form.setFieldsValue({
-				title: step?.title || '',
-				name: step?.name || '',
-				description: step?.description || '',
-			})
+				title: step?.title || "",
+				name: step?.name || "",
+				description: step?.description || "",
+			});
 		}
-	}, [visible, step, form])
+	}, [visible, step, form]);
 
 	const handleSave = async () => {
 		try {
-			const values = await form.validateFields()
-			onSave(values)
-			onClose()
+			const values = await form.validateFields();
+			onSave(values);
+			onClose();
 		} catch (error) {
-			console.error('Validation failed:', error)
+			console.error("Validation failed:", error);
 		}
-	}
+	};
 
 	const handleClose = () => {
-		form.resetFields()
-		onClose()
-	}
+		form.resetFields();
+		onClose();
+	};
 
 	return (
 		<Modal
-			title={isNew ? 'Новый этап' : 'Редактировать этап'}
+			title={isNew ? "Новый этап" : "Редактировать этап"}
 			open={visible}
 			onCancel={handleClose}
 			width={800}
@@ -52,15 +58,24 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 				<Space>
 					<Button onClick={handleClose}>Отмена</Button>
 					<Button type="primary" onClick={handleSave}>
-						{isNew ? 'Создать' : 'Сохранить'}
+						{isNew ? "Создать" : "Сохранить"}
 					</Button>
 				</Space>
 			}
 		>
-			<Form form={form} layout="vertical" variant="filled" requiredMark="optional">
+			<Form
+				form={form}
+				layout="vertical"
+				variant="filled"
+				requiredMark="optional"
+			>
 				<Row gutter={[16, 16]}>
 					<Col xs={24} lg={12}>
-						<Form.Item name="title" label="Название этапа" rules={[{ required: true, message: 'Введите название' }]}>
+						<Form.Item
+							name="title"
+							label="Название этапа"
+							rules={[{ required: true, message: "Введите название" }]}
+						>
 							<Input placeholder="Название этапа" />
 						</Form.Item>
 					</Col>
@@ -69,10 +84,10 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 							name="name"
 							label="Идентификатор этапа"
 							rules={[
-								{ required: true, message: 'Введите идентификатор' },
+								{ required: true, message: "Введите идентификатор" },
 								{
 									pattern: /^[a-z0-9-]+$/,
-									message: 'Только маленькие латинские буквы, цифры и дефисы',
+									message: "Только маленькие латинские буквы, цифры и дефисы",
 								},
 							]}
 						>
@@ -87,7 +102,7 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({ visible, onClose, 
 				</Row>
 			</Form>
 		</Modal>
-	)
-}
+	);
+};
 
-export default StepEditModal
+export default StepEditModal;

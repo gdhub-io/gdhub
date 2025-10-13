@@ -1,24 +1,31 @@
-import { NextAuthGuard } from '@/lib/api-middlewares'
-import { prisma } from '@/services/prisma'
-import { IsString } from 'class-validator'
-import { Get, Query, Req, Delete, ValidationPipe, createHandler } from 'next-api-decorators'
+import { IsString } from "class-validator";
+import {
+	createHandler,
+	Delete,
+	Get,
+	Query,
+	Req,
+	ValidationPipe,
+} from "next-api-decorators";
+import { NextAuthGuard } from "@/lib/api-middlewares";
+import { prisma } from "@/services/prisma";
 
 class InvitationDto {
 	@IsString()
-	teamInvitationId: string
+	teamInvitationId: string;
 }
 
 class CancelInvitationDto {
 	@IsString()
-	id: string
+	id: string;
 }
 
-@NextAuthGuard('user')
+@NextAuthGuard("user")
 class ApiUserTeamInvitationHandler {
 	@Get()
 	public async getInvitation(
 		@Req() req: NextApiRequestWithUser,
-		@Query(ValidationPipe) { teamInvitationId }: InvitationDto
+		@Query(ValidationPipe) { teamInvitationId }: InvitationDto,
 	) {
 		const invitation = await prisma.teamInvitation.findUnique({
 			where: { id: teamInvitationId },
@@ -30,15 +37,15 @@ class ApiUserTeamInvitationHandler {
 				},
 				invitedBy: { select: { id: true, name: true, email: true } },
 			},
-		})
+		});
 
-		return invitation
+		return invitation;
 	}
 
 	@Delete()
 	public async cancelInvitation(
 		@Req() req: NextApiRequestWithUser,
-		@Query(ValidationPipe) { id }: CancelInvitationDto
+		@Query(ValidationPipe) { id }: CancelInvitationDto,
 	) {
 		// Находим приглашение
 		const invitation = await prisma.teamInvitation.findUnique({
@@ -54,27 +61,29 @@ class ApiUserTeamInvitationHandler {
 					},
 				},
 			},
-		})
+		});
 
 		if (!invitation) {
-			throw new Error('Invitation not found')
+			throw new Error("Invitation not found");
 		}
 
 		// Проверяем, что пользователь имеет право отменить приглашение
 		// (должен быть основателем команды)
-		const isTeamMember = invitation.team.members.some((member: { userId: string }) => member.userId === req.user.id)
+		const isTeamMember = invitation.team.members.some(
+			(member: { userId: string }) => member.userId === req.user.id,
+		);
 
 		if (!isTeamMember) {
-			throw new Error('You do not have permission to cancel this invitation')
+			throw new Error("You do not have permission to cancel this invitation");
 		}
 
 		// Удаляем приглашение
 		await prisma.teamInvitation.delete({
 			where: { id },
-		})
+		});
 
-		return { success: true }
+		return { success: true };
 	}
 }
 
-export default createHandler(ApiUserTeamInvitationHandler)
+export default createHandler(ApiUserTeamInvitationHandler);

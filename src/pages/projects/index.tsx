@@ -1,42 +1,55 @@
-import GameCardList from '@/components/GameCard/GameCardList'
-import { PublicLayout } from '@/layouts/PublicLayout'
-import { NextPageWithLayout } from '@/pages/_app'
-import { getWorkedProjects } from '@/services/prisma/queries'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useTranslate } from '@tolgee/react'
-import { Typography } from 'antd'
-import { GetServerSidePropsContext } from 'next'
-import styles from './style.module.scss'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { useTranslate } from "@tolgee/react";
+import { Typography } from "antd";
+import type { GetServerSidePropsContext } from "next";
+import GameCardList from "@/components/GameCard/GameCardList";
+import { PublicLayout } from "@/layouts/PublicLayout";
+import type { NextPageWithLayout } from "@/pages/_app";
+import { getWorkedProjects } from "@/services/prisma/queries";
+import styles from "./style.module.scss";
 
-const { Paragraph } = Typography
+const { Paragraph } = Typography;
 
 type ProjectIncludeAll = prismaClient.Project & {
-	author: prismaClient.User
-	workflow: prismaClient.ProjectWorkflow & { steps: prismaClient.ProjectWorkflowStep[] }
-	lastPostAt: Date
-	firstPostAt: Date
-}
-type ProjectsPageParams = { projects: ProjectIncludeAll[] }
+	author: prismaClient.User;
+	workflow: prismaClient.ProjectWorkflow & {
+		steps: prismaClient.ProjectWorkflowStep[];
+	};
+	lastPostAt: Date;
+	firstPostAt: Date;
+};
+type ProjectsPageParams = { projects: ProjectIncludeAll[] };
 
 const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({ projects }) => {
-	const { t } = useTranslate()
+	const { t } = useTranslate();
 
 	return (
 		<PublicLayout
-			title={t('page.projects.title', 'Video Games')}
-			subTitle={t('page.projects.subtitle', 'Projects developed independently by users and teams')}
-			seo={{ description: t('Indie games that are developed by platform users and teams') }}
+			title={t("page.projects.title", "Video Games")}
+			subTitle={t(
+				"page.projects.subtitle",
+				"Projects developed independently by users and teams",
+			)}
+			seo={{
+				description: t(
+					"Indie games that are developed by platform users and teams",
+				),
+			}}
 		>
 			<div className={styles.container}>
-				{!projects.length && <Paragraph type="secondary">There are no projects available to view</Paragraph>}
+				{!projects.length && (
+					<Paragraph type="secondary">
+						There are no projects available to view
+					</Paragraph>
+				)}
 				<GameCardList games={projects} loading={false} />
 			</div>
 		</PublicLayout>
-	)
-}
+	);
+};
 
 export const getStaticProps = async (context: GetServerSidePropsContext) => {
-	const projects = await getWorkedProjects()
+	const projects = await getWorkedProjects();
 
 	return {
 		props: {
@@ -60,17 +73,19 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 							updatedAt: p.workflow.updatedAt?.toISOString() || null,
 							currentStep: p.workflow.currentStepId || null,
 							steps:
-								p.workflow.steps?.map((step: prismaClient.ProjectWorkflowStep) => ({
-									...step,
-									createdAt: step.createdAt?.toISOString() || null,
-									updatedAt: step.updatedAt?.toISOString() || null,
-								})) || [],
+								p.workflow.steps?.map(
+									(step: prismaClient.ProjectWorkflowStep) => ({
+										...step,
+										createdAt: step.createdAt?.toISOString() || null,
+										updatedAt: step.updatedAt?.toISOString() || null,
+									}),
+								) || [],
 						}
 					: null,
 			})),
 		},
 		revalidate: 60,
-	}
-}
+	};
+};
 
-export default ProjectsPage
+export default ProjectsPage;

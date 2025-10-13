@@ -1,50 +1,64 @@
-import React from 'react'
-import { AiOutlineCheck } from '@react-icons/all-files/ai/AiOutlineCheck'
-import styles from './style.module.scss'
+import { AiOutlineCheck } from "@react-icons/all-files/ai/AiOutlineCheck";
+import type React from "react";
+import styles from "./style.module.scss";
 
 export type TaskCardProps = {
-	id: string
-	label: string
-	stage?: string
-	required: boolean
-	completed: boolean
-	onStatusChange: (taskId: string, checked: boolean) => void
-}
+	id: string;
+	label: string;
+	stage?: string;
+	required: boolean;
+	completed: boolean;
+	onStatusChange: (taskId: string, checked: boolean) => void;
+};
 
 const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 	id,
 	label,
-	stage = 'Co-Working',
+	stage = "Co-Working",
 	required,
 	completed,
 	onStatusChange,
 }) => {
-	const isCompleted = completed
-	const isRequired = required
+	const isCompleted = completed;
+	const isRequired = required;
 
 	return (
 		<div className={styles.taskItem}>
 			<div className={styles.taskTitleRow}>
 				<div
-					className={`${styles.taskCheckbox} ${isCompleted ? styles.completed : ''}`}
+					role="button"
+					tabIndex={0}
+					className={`${styles.taskCheckbox} ${isCompleted ? styles.completed : ""}`}
 					onClick={() => onStatusChange(id, !isCompleted)}
 				>
 					{isCompleted && <AiOutlineCheck size={14} />}
 				</div>
-				<div className={`${styles.taskTitle} ${isCompleted ? styles.completed : ''}`}>{label}</div>
+				<div
+					role="button"
+					tabIndex={0}
+					className={`${styles.taskTitle} ${isCompleted ? styles.completed : ""}`}
+				>
+					{label}
+				</div>
 			</div>
 			<div className={styles.taskInfoGrid}>
 				<div className={styles.taskInfoItem}>
 					<div className={styles.taskInfoLabel}>Implementation Stage</div>
 					<div className={styles.taskInfoValue}>
-						<div className={`${styles.stageTag} ${isRequired ? styles.required : styles.optional}`}>{stage}</div>
+						<div
+							className={`${styles.stageTag} ${isRequired ? styles.required : styles.optional}`}
+						>
+							{stage}
+						</div>
 					</div>
 				</div>
 
 				<div className={styles.taskInfoItem}>
 					<div className={styles.taskInfoLabel}>Status</div>
 					<div className={styles.taskInfoValue}>
-						<div className={`${styles.statusTag} ${isCompleted ? styles.completed : styles.inProgress}`}>
+						<div
+							className={`${styles.statusTag} ${isCompleted ? styles.completed : styles.inProgress}`}
+						>
 							{isCompleted ? (
 								<>
 									<AiOutlineCheck size={14} />
@@ -68,7 +82,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default WorkflowTaskCard
+export default WorkflowTaskCard;

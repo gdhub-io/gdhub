@@ -1,28 +1,31 @@
-import { Fragment, useMemo } from 'react'
-import { TextWithLineBreak } from '@/components/TextWithLineBreak'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { useTranslate } from '@tolgee/react'
-import { Alert, Avatar, Card } from 'antd'
-import dayjs from 'dayjs'
-import YouTube from 'react-youtube'
-import styles from './style.module.scss'
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { useTranslate } from "@tolgee/react";
+import { Alert, Avatar, Card } from "antd";
+import dayjs from "dayjs";
+import { Fragment, useMemo } from "react";
+import YouTube from "react-youtube";
+import { TextWithLineBreak } from "@/components/TextWithLineBreak";
+import styles from "./style.module.scss";
 
 export const HeldContent = ({
 	lecture,
 }: {
 	lecture: prismaClient.Lecture & {
 		lecturerRequests: (prismaClient.LecturerRequest & {
-			user: prismaClient.User & { specialities: prismaClient.Speciality[] }
-		})[]
-	}
+			user: prismaClient.User & { specialities: prismaClient.Speciality[] };
+		})[];
+	};
 }) => {
-	const { t } = useTranslate()
-	const lecturer = useMemo(() => lecture.lecturerRequests?.find((r) => r.isSpeaker == true), [lecture])
+	const { t } = useTranslate();
+	const lecturer = useMemo(
+		() => lecture.lecturerRequests?.find((r) => r.isSpeaker == true),
+		[lecture],
+	);
 
 	const lectureAvatar = () => {
-		const image = lecturer?.user.image
-		return image ? <Avatar shape="square" size={64} src={image} /> : null
-	}
+		const image = lecturer?.user.image;
+		return image ? <Avatar shape="square" size={64} src={image} /> : null;
+	};
 
 	return (
 		<>
@@ -35,22 +38,31 @@ export const HeldContent = ({
 			) : (
 				<Alert
 					type="warning"
-					message={t('modal.lecturedetails.noVideoYet', 'No video yet')}
+					message={t("modal.lecturedetails.noVideoYet", "No video yet")}
 					style={{ marginBottom: 16 }}
 				/>
 			)}
 			<h2>{lecture.name}</h2>
 			<div className="lecture-date">
-				{t('modal.lecturedetails.passed', 'Passed')}: {!!lecture?.date ? dayjs(lecture.date).format('lll') : null}
+				{t("modal.lecturedetails.passed", "Passed")}:{" "}
+				{lecture?.date ? dayjs(lecture.date).format("lll") : null}
 			</div>
-			<div style={{ marginTop: 16 }}>{t('modal.lecturedetails.contentsOfTheLecture', 'Contents of the lecture')}:</div>
+			<div style={{ marginTop: 16 }}>
+				{t(
+					"modal.lecturedetails.contentsOfTheLecture",
+					"Contents of the lecture",
+				)}
+				:
+			</div>
 			<div className="lecture-description">
 				<TextWithLineBreak text={lecturer?.curriculum} />
 			</div>
 
 			{!!lecturer && (
 				<>
-					<div style={{ marginTop: 16 }}>{t('modal.lecturedetails.lecturer', 'Lecturer')}:</div>
+					<div style={{ marginTop: 16 }}>
+						{t("modal.lecturedetails.lecturer", "Lecturer")}:
+					</div>
 					<Card style={{ marginTop: 8 }}>
 						<Card.Meta
 							avatar={lectureAvatar()}
@@ -64,7 +76,10 @@ export const HeldContent = ({
 													<br />
 												</Fragment>
 											))
-										: t('modal.lecturedetails.communityMember', 'Community Member')}
+										: t(
+												"modal.lecturedetails.communityMember",
+												"Community Member",
+											)}
 								</>
 							}
 						/>
@@ -72,5 +87,5 @@ export const HeldContent = ({
 				</>
 			)}
 		</>
-	)
-}
+	);
+};

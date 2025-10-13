@@ -1,26 +1,30 @@
-import { T } from '@tolgee/react'
-import Button from 'antd/es/button'
-import Card from 'antd/es/card'
-import Typography from 'antd/es/typography'
-import styles from './style.module.scss'
+import { T } from "@tolgee/react";
+import Button from "antd/es/button";
+import Card from "antd/es/card";
+import Typography from "antd/es/typography";
+import styles from "./style.module.scss";
 
 interface DevLogPostArgs {
-	editable?: boolean
+	editable?: boolean;
 	data: {
-		id: string
-		label?: JSX.Element | string
-		children: JSX.Element | string
-		dot?: JSX.Element | string
-	}
-	onUpdate?: (postId: string) => Promise<void> | void
+		id: string;
+		label?: JSX.Element | string;
+		children: JSX.Element | string;
+		dot?: JSX.Element | string;
+	};
+	onUpdate?: (postId: string) => Promise<void> | void;
 }
 
-const { Text } = Typography
+const { Text } = Typography;
 
-export const DevLogPost = ({ data, editable = false, onUpdate = () => {} }: DevLogPostArgs) => {
+export const DevLogPost = ({
+	data,
+	editable = false,
+	onUpdate = () => {},
+}: DevLogPostArgs) => {
 	return (
 		<Card
-			style={{ width: '100%' }}
+			style={{ width: "100%" }}
 			styles={{ title: { fontSize: 16 } }}
 			className={styles.postCard}
 			title={<Text type="secondary">{data.label}</Text>}
@@ -34,5 +38,5 @@ export const DevLogPost = ({ data, editable = false, onUpdate = () => {} }: DevL
 		>
 			{data.children}
 		</Card>
-	)
-}
+	);
+};

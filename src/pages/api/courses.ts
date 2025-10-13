@@ -1,6 +1,6 @@
-import { prisma } from '@/services/prisma'
-import prismaClient from '@gdhub-io/gdhub-prisma/dist/client'
-import { createHandler, Get } from 'next-api-decorators'
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { createHandler, Get } from "next-api-decorators";
+import { prisma } from "@/services/prisma";
 
 export class ApiCoursesHandler {
 	@Get()
@@ -8,7 +8,9 @@ export class ApiCoursesHandler {
 		return await prisma.course.findMany({
 			where: {
 				status: prismaClient.CourseStatus.Published,
-				groups: { some: { status: prismaClient.CourseGroupStatus.Recruitment } },
+				groups: {
+					some: { status: prismaClient.CourseGroupStatus.Recruitment },
+				},
 			},
 			include: {
 				direction: { select: { name: true } },
@@ -17,12 +19,12 @@ export class ApiCoursesHandler {
 					where: { status: prismaClient.CourseGroupStatus.Recruitment },
 					select: {
 						curriculum: { select: { price: true } },
-						schedule: { select: { date: true }, orderBy: { date: 'asc' } },
+						schedule: { select: { date: true }, orderBy: { date: "asc" } },
 					},
 				},
 			},
-		})
+		});
 	}
 }
 
-export default createHandler(ApiCoursesHandler)
+export default createHandler(ApiCoursesHandler);
