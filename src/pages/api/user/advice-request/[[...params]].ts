@@ -14,6 +14,7 @@ import {
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { MatrixService } from "@/services/matrix";
 import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix-admin";
+import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
 class AdviceRequestDto {
@@ -46,7 +47,7 @@ class ApiAdviceRequestHandler {
 			comment,
 		}: AdviceRequestDto,
 	) {
-		await prisma.adviceRequest.create({
+		const adviceRequest = await prisma.adviceRequest.create({
 			data: { topic, projectId, toUserId, fromUserId: req.user.id, comment },
 			include: {
 				fromUser: true,
@@ -54,6 +55,25 @@ class ApiAdviceRequestHandler {
 				project: true,
 			},
 		});
+
+		// send a notification to the expert
+		try {
+			await NovuService.send({
+				template: "default-message",
+				to: {
+					subscriberId: adviceRequest.toUserId,
+					email: adviceRequest.toUser?.email || undefined,
+				},
+				payload: {
+					title: "You have a new advice request",
+					message: `You have a new advice request from ${adviceRequest.project?.name}. Please answer it as soon as possible.`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrlType: "internal",
+				},
+			});
+		} catch (error) {
+			console.error("[NovuService]", error);
+		}
 	}
 
 	@Get("/:id")
@@ -72,13 +92,36 @@ class ApiAdviceRequestHandler {
 
 	@Put("/:id/cancel")
 	public async cancel(@Param("id") id: string) {
-		await prisma.adviceRequest.update({
+		const adviceRequest = await prisma.adviceRequest.update({
 			where: { id },
 			data: {
 				status: prismaClient.AdviceRequestStatus.Closed,
 				finishedAt: new Date(),
 			},
+			include: {
+				toUser: true,
+				project: true,
+			},
 		});
+
+		// send a notification to the expert
+		try {
+			await NovuService.send({
+				template: "default-message",
+				to: {
+					subscriberId: adviceRequest.toUserId,
+					email: adviceRequest.toUser?.email || undefined,
+				},
+				payload: {
+					title: "Advice request canceled",
+					message: `Advice request from ${adviceRequest.project?.name} was canceled.`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrlType: "internal",
+				},
+			});
+		} catch (error) {
+			console.error("[NovuService]", error);
+		}
 	}
 
 	@Put("/:id/accept")
@@ -154,13 +197,37 @@ class ApiAdviceRequestHandler {
 			);
 		}
 
-		await prisma.adviceRequest.update({
+		const updatedAdviceRequest = await prisma.adviceRequest.update({
 			where: { id },
 			data: {
 				status: prismaClient.AdviceRequestStatus.Approved,
 				matrixRoomId: adviceRequestRoom.room_id,
 			},
+			include: {
+				fromUser: true,
+				toUser: true,
+				project: true,
+			},
 		});
+
+		// send a notification to the user
+		try {
+			await NovuService.send({
+				template: "default-message",
+				to: {
+					subscriberId: updatedAdviceRequest.fromUserId!,
+					email: adviceRequest.fromUser?.email || undefined,
+				},
+				payload: {
+					title: "Advice request accepted",
+					message: `Advice request to ${updatedAdviceRequest.toUser?.name} was accepted. Start a chat with the expert to discuss the details.`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrlType: "internal",
+				},
+			});
+		} catch (error) {
+			console.error("[NovuService]", error);
+		}
 	}
 
 	@Put("/:id/reject")
@@ -179,13 +246,36 @@ class ApiAdviceRequestHandler {
 			throw new Error("Advice request not found or you are not the expert");
 		}
 
-		await prisma.adviceRequest.update({
+		const updatedAdviceRequest = await prisma.adviceRequest.update({
 			where: { id },
 			data: {
 				status: prismaClient.AdviceRequestStatus.Rejected,
 				finishedAt: new Date(),
 			},
+			include: {
+				fromUser: true,
+				toUser: true,
+			},
 		});
+
+		// send a notification to the user
+		try {
+			await NovuService.send({
+				template: "default-message",
+				to: {
+					subscriberId: updatedAdviceRequest.fromUserId!,
+					email: updatedAdviceRequest.fromUser?.email || undefined,
+				},
+				payload: {
+					title: "Advice request rejected",
+					message: `Advice request to ${updatedAdviceRequest.toUser?.name} was rejected.`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrlType: "internal",
+				},
+			});
+		} catch (error) {
+			console.error("[NovuService]", error);
+		}
 	}
 }
 

@@ -6,6 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { brevoTemplates } from "@/config/brevo-templates";
 import { env } from "@/helpers/env";
 import { brevoApi } from "@/services/brevo";
+import { ensureMatrixUser } from "@/services/matrix-admin";
 import { prisma } from "@/services/prisma";
 
 export const authOptions: NextAuthOptions = {
@@ -86,6 +87,17 @@ export const authOptions: NextAuthOptions = {
 
 			if (!user) return;
 
+			// ensure that the user has a matrix user id
+			if (!user.matrixUserId) {
+				await ensureMatrixUser(
+					user.id,
+					user.email || token.email || undefined,
+					user.profile?.name || user.name || token.name || undefined,
+					user.image || token.picture || undefined,
+				);
+			}
+
+			// get the active subscription
 			const activeSubscription = await prisma.user.activeSubscription(user.id);
 
 			return {
