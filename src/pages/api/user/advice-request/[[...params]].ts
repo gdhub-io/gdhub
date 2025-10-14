@@ -67,7 +67,7 @@ class ApiAdviceRequestHandler {
 				payload: {
 					title: "You have a new advice request",
 					message: `You have a new advice request from ${adviceRequest.project?.name}. Please answer it as soon as possible.`,
-					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
 					redirectUrlType: "internal",
 				},
 			});
@@ -115,7 +115,7 @@ class ApiAdviceRequestHandler {
 				payload: {
 					title: "Advice request canceled",
 					message: `Advice request from ${adviceRequest.project?.name} was canceled.`,
-					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
 					redirectUrlType: "internal",
 				},
 			});
@@ -221,7 +221,7 @@ class ApiAdviceRequestHandler {
 				payload: {
 					title: "Advice request accepted",
 					message: `Advice request to ${updatedAdviceRequest.toUser?.name} was accepted. Start a chat with the expert to discuss the details.`,
-					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
 					redirectUrlType: "internal",
 				},
 			});
@@ -269,7 +269,7 @@ class ApiAdviceRequestHandler {
 				payload: {
 					title: "Advice request rejected",
 					message: `Advice request to ${updatedAdviceRequest.toUser?.name} was rejected.`,
-					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/experts/my-requests`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
 					redirectUrlType: "internal",
 				},
 			});
