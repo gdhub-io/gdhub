@@ -258,7 +258,7 @@ export default function ChatMessages() {
 	}, [selectedRoomId, chatClient]);
 
 	if (selectedRoomId && userMembership === "invite") {
-		if (chatContext?.type === "advice-request" && !chatContext?.isExpert) {
+		if (chatContext?.type === "advice-request") {
 			return <AdviceRequestInvite />;
 		}
 
