@@ -5,7 +5,6 @@ import { ClientEvent } from "matrix-js-sdk";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import NoRoomsImage from "@/assets/images/no-rooms.svg";
 import { createMatrixClient } from "@/lib/matrix-client";
 import styles from "./ChatModal.module.scss";
 import ChatTopic from "./ChatTopic";
@@ -40,14 +39,13 @@ export const ChatModal = ({
 		selectedRoomId,
 		setSelectedRoomId,
 		userMembership,
-		setUnreadTotal,
 	} = useChat();
 
 	const { data: clientSessionData } = useQuery({
 		queryKey: ["chat-client-session", session?.user.id],
 		queryFn: () =>
 			axios.post("/api/chat/session", undefined).then((res) => res.data),
-		enabled: !!session?.user.id,
+		enabled: !!session?.user.id && open,
 	});
 
 	const { data: clientContextData } = useQuery({
@@ -62,10 +60,10 @@ export const ChatModal = ({
 	});
 
 	useEffect(() => {
-		if (initialRoomId && open && chatClient) {
+		if (initialRoomId && open) {
 			setSelectedRoomId(initialRoomId);
 		}
-	}, [initialRoomId, open, chatClient]);
+	}, [initialRoomId, open]);
 
 	useEffect(() => {
 		if (clientContextData) {
@@ -88,26 +86,7 @@ export const ChatModal = ({
 
 				client.once(ClientEvent.Sync, (state) => {
 					if (state === "PREPARED") {
-						const rooms = client.getRooms();
-						const unreadNotificationCount =
-							rooms?.reduce(
-								(acc, room) => acc + room.getUnreadNotificationCount(),
-								0,
-							) || 0;
-
-						const invetedChatRoomsCount = rooms.reduce((acc, room) => {
-							const member = room.getMember(client.getUserId() || "");
-							if (member?.membership === "invite") {
-								return acc + 1;
-							}
-
-							return acc;
-						}, 0);
-
-						setUnreadTotal(unreadNotificationCount + invetedChatRoomsCount);
-
-						console.log("chat prepared");
-
+						console.log("prepared");
 						setReady(true);
 					} else {
 						console.log("[chat] sync state", state);
@@ -139,10 +118,8 @@ export const ChatModal = ({
 		>
 			<Layout>
 				<Layout.Sider
-					collapsed={!hasRooms ? true : undefined}
-					trigger={null}
 					breakpoint="lg"
-					collapsedWidth={hasRooms ? "110" : 0}
+					collapsedWidth="110"
 					theme="light"
 					className={styles.chatRoomsSider}
 				>
@@ -152,8 +129,6 @@ export const ChatModal = ({
 					<ChatTopic />
 					{!hasRooms && (
 						<Flex
-							vertical
-							gap={32}
 							justify="center"
 							align="center"
 							style={{
@@ -163,7 +138,6 @@ export const ChatModal = ({
 								margin: "0 auto",
 							}}
 						>
-							<NoRoomsImage width={200} height={200} />
 							<Text type="secondary">
 								You don&apos;t have any rooms yet. Connect to experts or other
 								community members to start a conversation.

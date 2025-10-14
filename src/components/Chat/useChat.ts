@@ -13,13 +13,11 @@ export type ChatStore = {
 	chatContext: {
 		type: string;
 		data: Record<string, any> | null;
-		isExpert?: boolean;
 	} | null;
 	setChatContext: (
 		chatContext: {
 			type: string;
 			data: Record<string, any> | null;
-			isExpert?: boolean;
 		} | null,
 	) => void;
 	setOpenChatModal: (openChatModal: boolean) => void;
@@ -45,7 +43,6 @@ export const useChat = create<ChatStore>((set, get, store) => ({
 		chatContext: {
 			type: string;
 			data: Record<string, any> | null;
-			isExpert?: boolean;
 		} | null,
 	) => set({ chatContext }),
 	setChatClient: (chatClient: sdk.MatrixClient | null) => set({ chatClient }),

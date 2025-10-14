@@ -4,12 +4,12 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
-import { AiOutlineMessage } from "@react-icons/all-files/ai/AiOutlineMessage";
+// removed unused AiOutlineMessage import
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
-	Badge,
 	Breadcrumb,
 	Button,
 	Col,
@@ -28,6 +28,12 @@ import {
 } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
+import axios from "axios";
+import {
+	type MatrixClient,
+	NotificationCountType,
+	type Room,
+} from "matrix-js-sdk";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,6 +48,7 @@ import { ChatButton } from "@/components/ChatButton";
 import { appThemeConfig } from "@/config/theme";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
+import { createMatrixClient } from "@/lib/matrix-client";
 import styles from "./style.module.scss";
 
 const NotificationsBell = dynamic(
@@ -94,7 +101,95 @@ export const ProtectedLayout = ({
 	const [initialChatRoomId, setInitialChatRoomId] = useState<string | null>(
 		null,
 	);
-	const { setOpenChatModal, openChatModal } = useChat();
+	const {
+		setOpenChatModal,
+		openChatModal,
+		chatClient,
+		setChatClient,
+		setReady,
+		setUnreadTotal,
+	} = useChat();
+
+	// Start Matrix client in background for unread counters
+	const { data: chatSessionData } = useQuery({
+		queryKey: ["chat-client-session", session?.user.id],
+		queryFn: () =>
+			axios.post("/api/chat/session", undefined).then((r) => r.data),
+		enabled: !!session?.user.id,
+	});
+
+	useEffect(() => {
+		let cleanup = () => {};
+		if (!chatSessionData?.token) return;
+		if (chatClient) return; // already started
+
+		createMatrixClient({
+			accessToken: chatSessionData.token,
+			userId: chatSessionData.userId,
+		})
+			.then((client) => {
+				client.startClient();
+				setChatClient(client);
+
+				const handleSync = (state: string) => {
+					if (state === "PREPARED") {
+						setReady(true);
+						// initial compute
+						tryComputeUnreadTotal(client);
+					}
+				};
+
+				client.once("sync" as any, handleSync);
+
+				// cleanup closure
+				cleanup = () => {
+					client.removeListener("sync" as any, handleSync);
+					client.stopClient();
+					setChatClient(null);
+					setReady(false);
+				};
+			})
+			.catch(() => {});
+
+		return () => cleanup();
+	}, [chatSessionData?.token, chatClient]);
+
+	useEffect(() => {
+		if (!chatClient) return;
+
+		const recompute = () => tryComputeUnreadTotal(chatClient);
+
+		chatClient.on("Room.receipt" as any, recompute);
+		chatClient.on("Room.timeline" as any, recompute);
+		chatClient.on("Room.myMembership" as any, recompute);
+
+		// also periodic safety net
+		const interval = setInterval(recompute, 60_000);
+
+		// initial
+		recompute();
+
+		return () => {
+			chatClient.removeListener("Room.receipt" as any, recompute);
+			chatClient.removeListener("Room.timeline" as any, recompute);
+			chatClient.removeListener("Room.myMembership" as any, recompute);
+			clearInterval(interval);
+		};
+	}, [chatClient]);
+
+	function tryComputeUnreadTotal(client: MatrixClient) {
+		try {
+			const rooms = (client.getRooms() || []).filter((r: Room) =>
+				["join", "invite"].includes(r.getMyMembership()),
+			);
+			const total = rooms.reduce((acc: number, r: Room) => {
+				const count =
+					r.getUnreadNotificationCount?.(NotificationCountType.Total) || 0;
+				return acc + (Number.isFinite(count) ? count : 0);
+			}, 0);
+			setUnreadTotal(total);
+		} catch {}
+	}
 
 	useEffect(() => {
 		const handler = (e: any) => {
@@ -407,13 +502,7 @@ export const ProtectedLayout = ({
 									) : (
 										<>
 											<NotificationsBell />
-											<Button
-												type="text"
-												shape="circle"
-												style={{ top: 2 }}
-												onClick={() => setOpenChatModal(true)}
-												icon={<AiOutlineMessage />}
-											/>
+											<ChatButton onClick={() => setOpenChatModal(true)} />
 											<Button
 												type="text"
 												shape="circle"
