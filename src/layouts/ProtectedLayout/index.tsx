@@ -55,9 +55,14 @@ import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { useChat } from "@/components/Chat/useChat";
 import { ChatButton } from "@/components/ChatButton";
 import { appThemeConfig } from "@/config/theme";
+import { getDeviceDisplayName } from "@/helpers/device";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
+import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
+import { useMatrixPushRegistration } from "@/hooks/useMatrixPushRegistration";
+import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
 import { createMatrixClient } from "@/lib/matrix-client";
+import type { MatrixChatSessionResponse } from "@/types/chat";
 import styles from "./style.module.scss";
 
 const NotificationsBell = dynamic(
@@ -108,6 +113,7 @@ export const ProtectedLayout = ({
 	const [isOpenedInTelegram] = useTelegram();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
+	const matrixDeviceId = useMatrixDeviceId();
 	const [openAgentDrawer, setOpenAgentDrawer] = useState(false);
 	const [initialChatRoomId, setInitialChatRoomId] = useState<string | null>(
 		null,
@@ -123,11 +129,24 @@ export const ProtectedLayout = ({
 	} = useChat();
 
 	// Start Matrix client in background for unread counters
-	const { data: chatSessionData } = useQuery({
+	const { data: chatSessionData } = useQuery<MatrixChatSessionResponse>({
 		queryKey: ["chat-client-session", session?.user.id],
 		queryFn: () =>
-			axios.post("/api/chat/session", undefined).then((r) => r.data),
-		enabled: !!session?.user.id,
+			axios
+				.post<MatrixChatSessionResponse>("/api/chat/session", {
+					deviceId: matrixDeviceId,
+				})
+				.then((r) => r.data),
+		enabled: !!session?.user.id && !!matrixDeviceId,
+	});
+
+	const { subscription: pushSubscription } = useWebPushSubscription();
+
+	useMatrixPushRegistration({
+		session: chatSessionData,
+		subscription: pushSubscription,
+		lang: session?.user.lang ?? getLanguage(),
+		deviceDisplayName: getDeviceDisplayName(),
 	});
 
 	const tryComputeUnreadTotal = useCallback(
@@ -166,6 +185,7 @@ export const ProtectedLayout = ({
 		createMatrixClient({
 			accessToken: chatSessionData.token,
 			userId: chatSessionData.userId,
+			deviceId: chatSessionData.deviceId ?? undefined,
 		})
 			.then((client) => {
 				if (!active) {
@@ -192,6 +212,7 @@ export const ProtectedLayout = ({
 			setReady(false);
 		};
 	}, [
+		chatSessionData?.deviceId,
 		chatSessionData?.token,
 		setChatClient,
 		chatSessionData?.userId,

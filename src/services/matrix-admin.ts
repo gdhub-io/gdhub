@@ -101,12 +101,22 @@ export async function ensureMatrixUser(
 	return { user_id: userId };
 }
 
-export async function getMatrixUserToken(platformUserId: string) {
+export type MatrixUserToken = {
+	accessToken: string;
+	deviceId?: string;
+	userId?: string;
+};
+
+export async function getMatrixUserToken(
+	platformUserId: string,
+	deviceId?: string,
+): Promise<MatrixUserToken> {
 	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
 	const ADMIN_TOKEN = env("MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN");
 	const DOMAIN = env("MATRIX_CHAT_HOMESERVER_DOMAIN");
 
 	const userId = `@${platformUserId}:${DOMAIN}`;
+	const desiredDeviceId = deviceId || `web_${platformUserId}`;
 
 	const resp = await fetch(
 		`${BASE_URL}/_synapse/admin/v1/users/${encodeURIComponent(userId)}/login`,
@@ -116,6 +126,10 @@ export async function getMatrixUserToken(platformUserId: string) {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${ADMIN_TOKEN}`,
 			},
+			body: JSON.stringify({
+				device_id: desiredDeviceId,
+				initial_device_display_name: "GDHub Web",
+			}),
 		},
 	);
 
@@ -124,7 +138,17 @@ export async function getMatrixUserToken(platformUserId: string) {
 		throw new Error(`Failed to get matrix token: ${resp.status} ${text}`);
 	}
 
-	const data = (await resp.json()) as { access_token: string };
+	const data = (await resp.json()) as {
+		access_token: string;
+		device_id?: string;
+		user_id?: string;
+	};
 
-	return { accessToken: data.access_token };
+	console.log("matrix token data", data);
+
+	return {
+		accessToken: data.access_token,
+		deviceId: data.device_id || desiredDeviceId,
+		userId: data.user_id,
+	};
 }
