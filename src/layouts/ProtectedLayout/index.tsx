@@ -58,6 +58,7 @@ import { appThemeConfig } from "@/config/theme";
 import { getDeviceDisplayName } from "@/helpers/device";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
+import { useChatDrawerQuery } from "@/hooks/useChatDrawerQuery";
 import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
 import { useMatrixPushRegistration } from "@/hooks/useMatrixPushRegistration";
@@ -127,6 +128,12 @@ export const ProtectedLayout = ({
 		setReady,
 		setUnreadTotal,
 	} = useChat();
+
+	useChatDrawerQuery({
+		chatClient,
+		setOpenChatModal,
+		onResolveRoomId: setInitialChatRoomId,
+	});
 
 	// Start Matrix client in background for unread counters
 	const { data: chatSessionData } = useQuery<MatrixChatSessionResponse>({

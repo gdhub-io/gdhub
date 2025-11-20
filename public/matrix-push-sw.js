@@ -6,12 +6,24 @@ self.addEventListener("push", (event) => {
 		payload = { body: event.data?.text() };
 	}
 
-	const title = payload.title || "GDHub Chat";
+	const title = payload.title || payload.notification?.title || "GDHub Chat";
+	const roomId = payload.notification?.room_id || payload.data?.room_id;
+	const defaultChatUrl = roomId
+		? `/hub?chat=1&roomId=${encodeURIComponent(roomId)}`
+		: "/hub?chat=1";
+
 	const options = {
-		body: payload.body || "You have a new message",
+		body:
+			payload.body ||
+			payload.notification?.body ||
+			"You have a new message",
 		icon: payload.icon || "/favicon.png",
 		badge: payload.badge || "/favicon.png",
-		data: payload.data || {},
+		data: {
+			...(payload.data || {}),
+			url: payload.data?.url || defaultChatUrl,
+			roomId,
+		},
 	};
 
 	event.waitUntil(self.registration.showNotification(title, options));
