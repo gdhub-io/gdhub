@@ -1,11 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Drawer, Flex, Grid, Layout, Typography } from "antd";
+import { Drawer, Flex, Grid, Layout, Spin, Typography } from "antd";
 import axios from "axios";
-import { ClientEvent } from "matrix-js-sdk";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { createMatrixClient } from "@/lib/matrix-client";
 import styles from "./ChatModal.module.scss";
 import ChatTopic from "./ChatTopic";
 import { useChat } from "./useChat";
@@ -29,30 +27,22 @@ export const ChatModal = ({
 	initialRoomId,
 }: ChatModalProps) => {
 	const screens = Grid.useBreakpoint();
-	const [hasRooms, setHasRooms] = useState(false);
+	const [hasRooms, setHasRooms] = useState<boolean | null>(null);
 	const { data: session } = useSession();
 	const {
-		chatClient,
-		setChatClient,
-		setReady,
 		setChatContext,
 		selectedRoomId,
 		setSelectedRoomId,
 		userMembership,
+		chatContext,
+		ready,
 	} = useChat();
-
-	const { data: clientSessionData } = useQuery({
-		queryKey: ["chat-client-session", session?.user.id],
-		queryFn: () =>
-			axios.post("/api/chat/session", undefined).then((res) => res.data),
-		enabled: !!session?.user.id && open,
-	});
 
 	const { data: clientContextData } = useQuery({
 		queryKey: ["chat-client-context", session?.user.id, selectedRoomId],
 		queryFn: () =>
 			axios
-				.get<{ type: string; data: Record<string, any> | null }>(
+				.get<{ type: string; data: Record<string, unknown> | null }>(
 					`/api/chat/rooms/${selectedRoomId}`,
 				)
 				.then((res) => res.data),
@@ -63,46 +53,29 @@ export const ChatModal = ({
 		if (initialRoomId && open) {
 			setSelectedRoomId(initialRoomId);
 		}
-	}, [initialRoomId, open]);
+	}, [initialRoomId, open, setSelectedRoomId]);
+
+	useEffect(() => {
+		if (!open) {
+			setHasRooms(null);
+		}
+	}, [open]);
 
 	useEffect(() => {
 		if (clientContextData) {
 			setChatContext(clientContextData);
 		}
-	}, [clientContextData]);
+	}, [clientContextData, setChatContext]);
 
-	// start chat for client session
-	useEffect(() => {
-		if (!clientSessionData?.token) return;
+	const isChatArchived =
+		chatContext?.type === "advice-request" &&
+		(
+			(chatContext.data as { status?: string } | null)?.status || ""
+		).toLowerCase() === "closed";
 
-		createMatrixClient({
-			accessToken: clientSessionData.token,
-			userId: clientSessionData.userId,
-		})
-			.then((client) => {
-				client.startClient();
-
-				setChatClient(client);
-
-				client.once(ClientEvent.Sync, (state) => {
-					if (state === "PREPARED") {
-						console.log("prepared");
-						setReady(true);
-					} else {
-						console.log("[chat] sync state", state);
-					}
-				});
-			})
-			.catch((error) => {
-				console.error(error);
-			});
-
-		return () => {
-			chatClient?.stopClient();
-			setChatClient(null);
-			setReady(false);
-		};
-	}, [clientSessionData?.token]);
+	const showLoader = !ready || hasRooms === null;
+	const showEmptyState = ready && hasRooms === false;
+	const showChat = ready && hasRooms;
 
 	return (
 		<Drawer
@@ -127,7 +100,21 @@ export const ChatModal = ({
 				</Layout.Sider>
 				<Layout.Content style={{ position: "relative" }}>
 					<ChatTopic />
-					{!hasRooms && (
+					{showLoader && (
+						<Flex
+							justify="center"
+							align="center"
+							style={{
+								height: "100%",
+								padding: "16px",
+								maxWidth: "400px",
+								margin: "0 auto",
+							}}
+						>
+							<Spin tip="Loading chats..." />
+						</Flex>
+					)}
+					{showEmptyState && (
 						<Flex
 							justify="center"
 							align="center"
@@ -145,10 +132,10 @@ export const ChatModal = ({
 						</Flex>
 					)}
 
-					{hasRooms && (
+					{showChat && (
 						<div className={styles.chatContent}>
 							<ChatMessages />
-							{userMembership === "join" && <ChatInput />}
+							{userMembership === "join" && !isChatArchived && <ChatInput />}
 						</div>
 					)}
 				</Layout.Content>
