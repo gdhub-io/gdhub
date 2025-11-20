@@ -1,13 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Drawer, Flex, Grid, Layout, Spin, Typography } from "antd";
 import axios from "axios";
-import { ClientEvent, type MatrixClient } from "matrix-js-sdk";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
-import { createMatrixClient } from "@/lib/matrix-client";
-import type { MatrixChatSessionResponse } from "@/types/chat";
 import styles from "./ChatModal.module.scss";
 import ChatTopic from "./ChatTopic";
 import { useChat } from "./useChat";
@@ -31,29 +27,16 @@ export const ChatModal = ({
 	initialRoomId,
 }: ChatModalProps) => {
 	const screens = Grid.useBreakpoint();
-	const matrixDeviceId = useMatrixDeviceId();
 	const [hasRooms, setHasRooms] = useState<boolean | null>(null);
 	const { data: session } = useSession();
 	const {
-		setChatClient,
-		setReady,
 		setChatContext,
 		selectedRoomId,
 		setSelectedRoomId,
 		userMembership,
+		chatContext,
 		ready,
 	} = useChat();
-
-	const { data: clientSessionData } = useQuery<MatrixChatSessionResponse>({
-		queryKey: ["chat-client-session", session?.user.id],
-		queryFn: () =>
-			axios
-				.post<MatrixChatSessionResponse>("/api/chat/session", {
-					deviceId: matrixDeviceId,
-				})
-				.then((res) => res.data),
-		enabled: !!session?.user.id && open && !!matrixDeviceId,
-	});
 
 	const { data: clientContextData } = useQuery({
 		queryKey: ["chat-client-context", session?.user.id, selectedRoomId],
@@ -84,57 +67,11 @@ export const ChatModal = ({
 		}
 	}, [clientContextData, setChatContext]);
 
-	// start chat for client session
-	useEffect(() => {
-		if (!clientSessionData?.token || !clientSessionData.userId) return;
-
-		let isMounted = true;
-		let createdClient: MatrixClient | null = null;
-
-		createMatrixClient({
-			accessToken: clientSessionData.token,
-			userId: clientSessionData.userId,
-			deviceId: clientSessionData.deviceId ?? undefined,
-		})
-			.then((client) => {
-				if (!isMounted) {
-					client.stopClient();
-					return;
-				}
-
-				createdClient = client;
-				client.startClient();
-
-				setChatClient(client);
-
-				client.once(ClientEvent.Sync, (state) => {
-					if (state === "PREPARED") {
-						console.log("prepared");
-						setReady(true);
-					} else {
-						console.log("[chat] sync state", state);
-					}
-				});
-			})
-			.catch((error) => {
-				console.error(error);
-			});
-
-		return () => {
-			isMounted = false;
-			if (createdClient) {
-				createdClient.stopClient();
-			}
-			setChatClient(null);
-			setReady(false);
-		};
-	}, [
-		clientSessionData?.deviceId,
-		clientSessionData?.token,
-		clientSessionData?.userId,
-		setChatClient,
-		setReady,
-	]);
+	const isChatArchived =
+		chatContext?.type === "advice-request" &&
+		(
+			(chatContext.data as { status?: string } | null)?.status || ""
+		).toLowerCase() === "closed";
 
 	const showLoader = !ready || hasRooms === null;
 	const showEmptyState = ready && hasRooms === false;
@@ -198,7 +135,7 @@ export const ChatModal = ({
 					{showChat && (
 						<div className={styles.chatContent}>
 							<ChatMessages />
-							{userMembership === "join" && <ChatInput />}
+							{userMembership === "join" && !isChatArchived && <ChatInput />}
 						</div>
 					)}
 				</Layout.Content>
