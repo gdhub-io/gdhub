@@ -57,8 +57,15 @@ export default function ChatMessages() {
 	const listRef = useRef<GetRef<typeof Bubble.List>>(null);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const shouldStickToBottomRef = useRef(true);
-	const { selectedRoomId, chatClient, ready, userMembership, chatContext } =
-		useChat();
+	const lastMarkedEventIdRef = useRef<string | null>(null);
+	const {
+		selectedRoomId,
+		chatClient,
+		ready,
+		userMembership,
+		chatContext,
+		openChatModal,
+	} = useChat();
 	const [messages, setMessages] = useState<MatrixEvent[]>([]);
 	const [preparedMessages, setPreparedMessages] = useState<MessageBubble[]>([]);
 	const [isPaginating, setIsPaginating] = useState(false);
@@ -392,6 +399,40 @@ export default function ChatMessages() {
 		},
 		[canPaginateBackwards, isPaginating, paginateBackwards],
 	);
+
+	const markRoomAsRead = useCallback(() => {
+		if (!chatClient || !selectedRoomId || !openChatModal) return;
+		const room = chatClient.getRoom(selectedRoomId);
+		if (!room) return;
+		const events = room.getLiveTimeline().getEvents();
+		if (!events?.length) return;
+		const lastEvent = [...events]
+			.slice()
+			.reverse()
+			.find((event) => !!event.getId());
+		const lastEventId = lastEvent?.getId();
+		if (!lastEvent || !lastEventId) return;
+		if (lastMarkedEventIdRef.current === lastEventId) return;
+
+		lastMarkedEventIdRef.current = lastEventId;
+
+		Promise.allSettled([
+			chatClient.sendReadReceipt(lastEvent),
+			chatClient.setRoomReadMarkers(selectedRoomId, lastEventId, lastEvent),
+		]).catch(() => {});
+	}, [chatClient, openChatModal, selectedRoomId]);
+
+	useEffect(() => {
+		lastMarkedEventIdRef.current = null;
+		if (!selectedRoomId || !openChatModal) return;
+		markRoomAsRead();
+	}, [markRoomAsRead, openChatModal, selectedRoomId]);
+
+	useEffect(() => {
+		if (!selectedRoomId || !openChatModal) return;
+		if (!preparedMessages.length) return;
+		markRoomAsRead();
+	}, [markRoomAsRead, openChatModal, preparedMessages, selectedRoomId]);
 
 	if (selectedRoomId && userMembership === "invite") {
 		if (chatContext?.type === "advice-request") {
