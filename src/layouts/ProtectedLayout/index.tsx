@@ -58,9 +58,9 @@ import { appThemeConfig } from "@/config/theme";
 import { getDeviceDisplayName } from "@/helpers/device";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
+import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
 import { useMatrixPushRegistration } from "@/hooks/useMatrixPushRegistration";
-import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
 import { createMatrixClient } from "@/lib/matrix-client";
 import type { MatrixChatSessionResponse } from "@/types/chat";
 import styles from "./style.module.scss";
@@ -140,11 +140,11 @@ export const ProtectedLayout = ({
 		enabled: !!session?.user.id && !!matrixDeviceId,
 	});
 
-	const { subscription: pushSubscription } = useWebPushSubscription();
+	const { token: firebasePushToken } = useFirebaseMessagingToken();
 
 	useMatrixPushRegistration({
 		session: chatSessionData,
-		subscription: pushSubscription,
+		pushKey: firebasePushToken,
 		lang: session?.user.lang ?? getLanguage(),
 		deviceDisplayName: getDeviceDisplayName(),
 	});

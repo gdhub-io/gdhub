@@ -7,6 +7,7 @@ import type { MatrixChatSessionResponse } from "@/types/chat";
 type UseMatrixPushRegistrationArgs = {
 	session?: MatrixChatSessionResponse | null;
 	subscription?: PushSubscriptionJSON | null;
+	pushKey?: string | null;
 	lang?: string | null;
 	deviceDisplayName?: string;
 };
@@ -14,6 +15,7 @@ type UseMatrixPushRegistrationArgs = {
 export function useMatrixPushRegistration({
 	session,
 	subscription,
+	pushKey: explicitPushKey,
 	lang,
 	deviceDisplayName,
 }: UseMatrixPushRegistrationArgs) {
@@ -22,7 +24,7 @@ export function useMatrixPushRegistration({
 	useEffect(() => {
 		const accessToken = session?.token;
 		const deviceId = session?.deviceId;
-		const pushKey = subscription?.endpoint;
+		const pushKey = explicitPushKey || subscription?.endpoint;
 
 		if (!accessToken || !deviceId || !pushKey) {
 			return;
@@ -58,6 +60,7 @@ export function useMatrixPushRegistration({
 	}, [
 		deviceDisplayName,
 		lang,
+		explicitPushKey,
 		session?.deviceId,
 		session?.token,
 		subscription,

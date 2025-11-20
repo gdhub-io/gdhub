@@ -27,7 +27,14 @@ export async function registerMatrixPusher({
 		throw new Error("Matrix push configuration is incomplete");
 	}
 
+	const subscriptionEndpoint = subscription?.endpoint;
+	const subscriptionP256dh = subscription?.keys?.p256dh;
+	const subscriptionAuth = subscription?.keys?.auth;
+
 	const payload = {
+		// For WebPush pushers, Synapse/Sygnal expect endpoint, p256dh and auth
+		// to be provided explicitly. We keep pushKey (endpoint) for Matrix,
+		// but also flatten subscription details into data.
 		pushkey: pushKey,
 		kind,
 		app_id: appId,
@@ -43,7 +50,9 @@ export async function registerMatrixPusher({
 		data: {
 			url: gatewayUrl,
 			format,
-			subscription: subscription || undefined,
+			endpoint: subscriptionEndpoint,
+			p256dh: subscriptionP256dh,
+			auth: subscriptionAuth,
 		},
 	};
 
