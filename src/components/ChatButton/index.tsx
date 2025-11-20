@@ -8,9 +8,14 @@ export const ChatButton = ({
 	onClick: (open: boolean) => void;
 }) => {
 	const { unreadTotal } = useChat();
-
 	return (
-		<Badge count={unreadTotal} dot offset={[-10, 14]}>
+		<Badge
+			count={unreadTotal}
+			overflowCount={99}
+			size="small"
+			color="red"
+			offset={[-6, 22]}
+		>
 			<Button
 				type="text"
 				shape="circle"
