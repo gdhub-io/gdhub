@@ -144,8 +144,6 @@ export async function getMatrixUserToken(
 		user_id?: string;
 	};
 
-	console.log("matrix token data", data);
-
 	return {
 		accessToken: data.access_token,
 		deviceId: data.device_id || desiredDeviceId,
