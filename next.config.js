@@ -17,6 +17,7 @@ const nextConfig = {
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "images.unsplash.com" },
+			{ protocol: "https", hostname: "img.youtube.com" },
 			{ protocol: "https", hostname: "lh3.googleusercontent.com" },
 			{ protocol: "https", hostname: "s3.us-west-2.amazonaws.com" },
 			{ protocol: "https", hostname: "cdn.sanity.io" },

@@ -1775,7 +1775,7 @@
   dependencies:
     "@editorjs/helpers" "^1.0.1"
 
-"@editorjs/editorjs@^2.29.1", "@editorjs/editorjs@^2.30.8":
+"@editorjs/editorjs@^2.29.1", "@editorjs/editorjs@^2.31.0":
   version "2.31.0"
   resolved "https://registry.yarnpkg.com/@editorjs/editorjs/-/editorjs-2.31.0.tgz#fd580f030c50b7278c0c12caf0c48fd4611c2c03"
   integrity sha512-CBcIZXtPlg0dSlC5clO9OfTCmcxelj723jd4d67teFlaFJobjjxU1PmMxFJdhaRep5+nqdD0jr+fdJBqEDqt1g==
@@ -1818,9 +1818,9 @@
     "@codexteam/icons" "^0.0.4"
 
 "@editorjs/list@^2.0.8":
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/@editorjs/list/-/list-2.0.8.tgz#7a6628963f7ed306ab6f1968fa4b1899dce0f9a8"
-  integrity sha512-/EJNvpeJYa1YDtYa85ug9R3sbDyI5ZlMHQ2bIh5S9iPa19qXe45jk6kgcew+jMNQq3j4NS4Q6YeeFbU1QkNMWw==
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/@editorjs/list/-/list-2.0.9.tgz#472c37e1584d4285cafa2fe93dd13c664b9514dd"
+  integrity sha512-rUTgDSt5wygD3Dp24bNyp6vvye/Xf4UWju0ZuvWeP13Z4cu2z1Jb5JFSTEhCou72XUGuf4xVhtsd8cm/bwUS1g==
   dependencies:
     "@codexteam/icons" "^0.3.2"
 
@@ -2133,10 +2133,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.10.tgz#a2a1e3812d14525f725d011a73eceb41fef5bc1c"
   integrity sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==
 
-"@gdhub-io/gdhub-prisma@1.10.0-beta.29":
-  version "1.10.0-beta.29"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.10.0-beta.29/6707ae32b5197f361003421478b8c6dae9766d7d#6707ae32b5197f361003421478b8c6dae9766d7d"
-  integrity sha512-+J+iPhq/tqK2GHG9VeTwfQaI9rOcCOGoWYO5vK7PtTgpQzlw2rly1thCL6VPSD9P4Or8Y/xsprNiljw8XHjvlA==
+"@gdhub-io/gdhub-prisma@1.10.0-beta.30":
+  version "1.10.0-beta.30"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/1.10.0-beta.30/e945e418572562466e760ede6dfd5829b51480f9#e945e418572562466e760ede6dfd5829b51480f9"
+  integrity sha512-/6xOGdwLvAyYfOn23TrlXbzVo1ObDpJcnzid0fWnYlpCwbiNfQ5vzWW7kKXaAwV/HQ+qxdX9I2uX/O9aM28wRg==
   dependencies:
     "@faker-js/faker" "^9.2.0"
     "@gdhub-io/gdhub-typesense" "^1.0.6"
@@ -2189,6 +2189,11 @@
     long "^5.0.0"
     protobufjs "^7.5.3"
     yargs "^17.7.2"
+
+"@hannal/editorjs-video-plugin@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@hannal/editorjs-video-plugin/-/editorjs-video-plugin-0.0.2.tgz#59f9c57f21f29a7077e9b68da6a160e34d2bccb9"
+  integrity sha512-x4N7vtpGGdqjT2dChMBvuUfdToJMdhS6YghyPHF3vtmiZsXz+kZ5ymeL8Es2zDD7iLlViciECdueYd94FxtxJQ==
 
 "@hello-pangea/dnd@^18.0.1":
   version "18.0.1"

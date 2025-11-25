@@ -5,9 +5,11 @@ import {
 	ClockCircleOutlined,
 	LockOutlined,
 } from "@ant-design/icons";
+import { videoParser } from "@hannal/editorjs-video-plugin";
 import { useTranslate } from "@tolgee/react";
 import { Image as AntImage, Button, Card, Flex, Space, Typography } from "antd";
 import axios from "axios";
+import Blocks from "editorjs-blocks-react-renderer";
 import type { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -17,7 +19,12 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import { PageViews } from "@/components/PageViews";
-import { getCleanTextContent, getPageCover } from "@/helpers/content";
+import {
+	getCleanTextContent,
+	getEditorjsPageCover,
+	getEditorjsShortContent,
+	getPageCover,
+} from "@/helpers/content";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import styles from "./styles.module.scss";
 
@@ -29,6 +36,7 @@ interface Post {
 	id: string;
 	title: string;
 	content: string;
+	contentEditor?: any;
 	coverImage?: string;
 	createdAt: string;
 	viewsCount: number;
@@ -69,24 +77,24 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 		const { data: post } = await axios.get(
 			`${baseUrl}/api/devlog/${projectReportId}`,
 		);
-		const contentLength = post.content.length;
 
 		// Обрезаем контент для неавторизованных пользователей
 		if (!session) {
-			const truncatedContent =
-				post.content.length > 1000
-					? post.content.slice(0, 1000) + "..."
-					: post.content;
-			post.content = truncatedContent;
+			if (post.contentEditor) {
+				post.contentEditor = getEditorjsShortContent(post.contentEditor, 1000);
+				post.pageCover = getEditorjsPageCover(post.contentEditor);
+			} else {
+				post.content = getCleanTextContent(post.content, 1000);
+				post.pageCover = getPageCover(post);
+			}
 		}
 
-		// Определяем pageCover
-		post.pageCover = getPageCover(post);
+		console.log(post);
 
 		return {
 			props: {
 				post,
-				contentLength,
+				contentLength: post.content.length,
 				isAuthenticated: !!session,
 			},
 		};
@@ -173,132 +181,143 @@ export default function ProjectReport({
 		return date.toISOString().split("T")[0].split("-").reverse().join("/");
 	};
 
+	const prepareEditorjsData = (data: any) => {
+		return data.blocks.map((block: any) => {
+			if (block.type === "video") {
+				return videoParser?.video(block.data);
+			}
+			return block;
+		});
+	};
+
 	if (!post) {
 		return null;
 	}
 
 	return (
-		<>
-			<PublicLayout
-				title={
-					<div className={styles.titleContainer}>
-						<Link href={`/project/${post.project?.slug}`}>
-							<Button
-								type="text"
-								size="small"
-								className={styles.projectTitle}
-								onMouseEnter={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "16px";
-										arrow.style.marginRight = "8px";
-										arrow.style.opacity = "1";
-									}
-									button.style.paddingLeft = "8px";
-									button.style.paddingRight = "8px";
-								}}
-								onMouseLeave={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "0";
-										arrow.style.marginRight = "0";
-										arrow.style.opacity = "0";
-									}
-									button.style.paddingLeft = "0";
-									button.style.paddingRight = "0";
-								}}
-							>
-								<Space size={0}>
-									<ArrowLeftOutlined
-										className="arrow"
-										style={{
-											width: 0,
-											marginRight: 0,
-											opacity: 0,
-											transition: "all 0.3s ease",
-											overflow: "hidden",
-											color: "#ff4d4f",
-										}}
-									/>
-									<span style={{ color: "#ff4d4f" }}>
-										{post.project?.name ||
-											t("page.devlog.untitledProject", "Game Project")}
-									</span>
-								</Space>
-							</Button>
-						</Link>
-						<Title className={styles.title}>
-							{t("page.devlog.title", "Project reports")}
-						</Title>
-					</div>
-				}
-				subTitle={
-					getCleanTextContent(post?.project?.description || "", 100) ||
-					undefined
-				}
-				backgroundImage={post.pageCover || undefined}
-				seo={{
-					title: `${post.project?.name || "Untitled Project"} - ${t("page.devlog.title", "Project reports")}`,
-					description: getCleanTextContent(post?.content || ""),
-					openGraph: {
-						images: [
-							{
-								url: post.pageCover || "",
-								alt: post?.project?.name || "Untitled",
-							},
-						],
-					},
-				}}
-				styles={{ content: { padding: 0 }, layoutBackground: { padding: 0 } }}
-			>
-				<div className={styles.container}>
-					<Card>
-						<Flex
-							justify="space-between"
-							align="center"
-							style={{ marginBottom: 24 }}
+		<PublicLayout
+			title={
+				<div className={styles.titleContainer}>
+					<Link href={`/project/${post.project?.slug}`}>
+						<Button
+							type="text"
+							size="small"
+							className={styles.projectTitle}
+							onMouseEnter={(e) => {
+								const button = e.currentTarget;
+								const arrow = button.querySelector(".arrow") as HTMLElement;
+								if (arrow) {
+									arrow.style.width = "16px";
+									arrow.style.marginRight = "8px";
+									arrow.style.opacity = "1";
+								}
+								button.style.paddingLeft = "8px";
+								button.style.paddingRight = "8px";
+							}}
+							onMouseLeave={(e) => {
+								const button = e.currentTarget;
+								const arrow = button.querySelector(".arrow") as HTMLElement;
+								if (arrow) {
+									arrow.style.width = "0";
+									arrow.style.marginRight = "0";
+									arrow.style.opacity = "0";
+								}
+								button.style.paddingLeft = "0";
+								button.style.paddingRight = "0";
+							}}
 						>
-							<Flex align="center" gap={8}>
-								{post?.author?.image && (
-									<AntImage
-										src={post.author.image}
-										alt={post.author.name}
-										width={32}
-										height={32}
-										style={{ borderRadius: "50%" }}
-										preview={false}
-									/>
-								)}
-								<Text strong>{post?.author?.name || "Аноним"}</Text>
-							</Flex>
-							<Flex align="center" gap={16}>
-								<Flex align="center" gap={8}>
-									<ClockCircleOutlined style={{ fontSize: "12px" }} />
-									<Text type="secondary" style={{ fontSize: "12px" }}>
-										{post?.createdAt ? formatDate(post.createdAt) : ""}
-									</Text>
-								</Flex>
-								<PageViews
-									path={`/devlog/${post?.id}`}
-									containerStyle={{ fontSize: "12px" }}
-									startDate={post?.createdAt}
+							<Space size={0}>
+								<ArrowLeftOutlined
+									className="arrow"
+									style={{
+										width: 0,
+										marginRight: 0,
+										opacity: 0,
+										transition: "all 0.3s ease",
+										overflow: "hidden",
+										color: "#ff4d4f",
+									}}
 								/>
-							</Flex>
-						</Flex>
-
-						<div className={styles.content} style={{ position: "relative" }}>
-							{post.video && (
-								<div className={styles.video}>
-									<ReactPlayer
-										url={post.video}
-										width="100%"
-										height="100%"
-										controls
-									/>
-								</div>
+								<span style={{ color: "#ff4d4f" }}>
+									{post.project?.name ||
+										t("page.devlog.untitledProject", "Game Project")}
+								</span>
+							</Space>
+						</Button>
+					</Link>
+					<Title className={styles.title}>
+						{t("page.devlog.title", "Project reports")}
+					</Title>
+				</div>
+			}
+			subTitle={
+				getCleanTextContent(post?.project?.description || "", 100) || undefined
+			}
+			backgroundImage={post.pageCover || undefined}
+			seo={{
+				title: `${post.project?.name || "Untitled Project"} - ${t("page.devlog.title", "Project reports")}`,
+				description: getCleanTextContent(post?.content || ""),
+				openGraph: {
+					images: [
+						{
+							url: post.pageCover || "",
+							alt: post?.project?.name || "Untitled",
+						},
+					],
+				},
+			}}
+			styles={{ content: { padding: 0 }, layoutBackground: { padding: 0 } }}
+		>
+			<div className={styles.container}>
+				<Card>
+					<Flex
+						justify="space-between"
+						align="center"
+						style={{ marginBottom: 24 }}
+					>
+						<Flex align="center" gap={8}>
+							{post?.author?.image && (
+								<AntImage
+									src={post.author.image}
+									alt={post.author.name}
+									width={32}
+									height={32}
+									style={{ borderRadius: "50%" }}
+									preview={false}
+								/>
 							)}
+							<Text strong>{post?.author?.name || "Аноним"}</Text>
+						</Flex>
+						<Flex align="center" gap={16}>
+							<Flex align="center" gap={8}>
+								<ClockCircleOutlined style={{ fontSize: "12px" }} />
+								<Text type="secondary" style={{ fontSize: "12px" }}>
+									{post?.createdAt ? formatDate(post.createdAt) : ""}
+								</Text>
+							</Flex>
+							<PageViews
+								path={`/devlog/${post?.id}`}
+								containerStyle={{ fontSize: "12px" }}
+								startDate={post?.createdAt}
+							/>
+						</Flex>
+					</Flex>
+
+					<div className={styles.content} style={{ position: "relative" }}>
+						{post.video && (
+							<div className={styles.video}>
+								<ReactPlayer
+									url={post.video}
+									width="100%"
+									height="100%"
+									controls
+								/>
+							</div>
+						)}
+
+						{post.contentEditor ? (
+							<Blocks data={prepareEditorjsData(post.contentEditor)} />
+						) : (
 							<ReactMarkdown
 								rehypePlugins={[
 									[rehypeRaw as any],
@@ -385,59 +404,59 @@ export default function ProjectReport({
 							>
 								{post?.content || ""}
 							</ReactMarkdown>
-							{!isAuthenticated && contentLength > post?.content?.length && (
-								<div
+						)}
+						{!isAuthenticated && contentLength > post?.content?.length && (
+							<div
+								style={{
+									position: "absolute",
+									bottom: 0,
+									left: 0,
+									right: 0,
+									height: "300px",
+									background:
+										"linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 1) 100%)",
+									pointerEvents: "none",
+								}}
+							>
+								<Card
 									style={{
 										position: "absolute",
 										bottom: 0,
 										left: 0,
 										right: 0,
-										height: "300px",
-										background:
-											"linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 1) 100%)",
-										pointerEvents: "none",
+										background: "transparent",
+										border: "none",
+										pointerEvents: "auto",
 									}}
 								>
-									<Card
-										style={{
-											position: "absolute",
-											bottom: 0,
-											left: 0,
-											right: 0,
-											background: "transparent",
-											border: "none",
-											pointerEvents: "auto",
-										}}
-									>
-										<Flex align="center" justify="space-between">
-											<Flex align="center" gap={8}>
-												<LockOutlined style={{ fontSize: "18px" }} />
-												<Text
-													strong
-													style={{
-														fontSize: "16px",
-														color: "rgba(0, 0, 0, 0.85)",
-													}}
-												>
-													{t(
-														"page.devlog.contentLocked",
-														"Full text is available to authorized users",
-													)}
-												</Text>
-											</Flex>
-											<Link href="/signin">
-												<Button type="primary">
-													{t("page.devlog.signIn", "Sign in")}
-												</Button>
-											</Link>
+									<Flex align="center" justify="space-between">
+										<Flex align="center" gap={8}>
+											<LockOutlined style={{ fontSize: "18px" }} />
+											<Text
+												strong
+												style={{
+													fontSize: "16px",
+													color: "rgba(0, 0, 0, 0.85)",
+												}}
+											>
+												{t(
+													"page.devlog.contentLocked",
+													"Full text is available to authorized users",
+												)}
+											</Text>
 										</Flex>
-									</Card>
-								</div>
-							)}
-						</div>
-					</Card>
-				</div>
-			</PublicLayout>
-		</>
+										<Link href="/signin">
+											<Button type="primary">
+												{t("page.devlog.signIn", "Sign in")}
+											</Button>
+										</Link>
+									</Flex>
+								</Card>
+							</div>
+						)}
+					</div>
+				</Card>
+			</div>
+		</PublicLayout>
 	);
 }
