@@ -442,6 +442,54 @@ class ApiUserEventEndpointHandler {
 			},
 		});
 	}
+
+	@Put("/:id/schedule/:scheduleItemId")
+	public async updateScheduleItem(
+		@Param("id") id: string,
+		@Param("scheduleItemId") scheduleItemId: string,
+		@Body(ValidationPipe) data: UserEventScheduleItemDto,
+	) {
+		await prisma.eventScheduleItem.update({
+			where: {
+				id: scheduleItemId,
+				eventId: id,
+			},
+			data: {
+				title: data.title,
+				description: data.description,
+				url: data.url,
+				directionId: data.directionId,
+				format: data.format,
+				language: data.language,
+				startDate: data.startDate?.toISOString() ?? new Date().toISOString(),
+				endDate: data.endDate?.toISOString() ?? new Date().toISOString(),
+				speakers: data.speakers?.length
+					? {
+							set: data.speakers.map((speakerId) => ({
+								id: speakerId,
+							})),
+						}
+					: { set: [] },
+			},
+		});
+
+		return { success: true };
+	}
+
+	@Delete("/:id/schedule/:scheduleItemId")
+	public async deleteScheduleItem(
+		@Param("id") id: string,
+		@Param("scheduleItemId") scheduleItemId: string,
+	) {
+		await prisma.eventScheduleItem.delete({
+			where: {
+				id: scheduleItemId,
+				eventId: id,
+			},
+		});
+
+		return { success: true };
+	}
 }
 
 export default createHandler(ApiUserEventEndpointHandler);

@@ -82,26 +82,62 @@ export const EventScheduleContent = () => {
 		}
 	}, [event?.data?.schedule]);
 
-	const handleScheduleUpdate = (item: ScheduleItemFormValues) => {
-		const updated = [...schedule];
-		const idx = updated.findIndex((i) => i.id === item.id);
+	const { mutateAsync: updateScheduleItem } = useMutation({
+		mutationFn: (item: ScheduleItemFormValues) => {
+			// Convert speakers to array of IDs
+			const speakersIds = item.speakers?.length
+				? item.speakers.map((speaker) =>
+						typeof speaker === "string" ? speaker : speaker.id,
+					)
+				: [];
 
-		if (idx !== -1) {
-			updated[idx] = item;
-			setSchedule(updated);
-		}
-	};
-
-	const { mutateAsync: createScheduleItem } = useMutation({
-		mutationFn: (item: ScheduleItemFormValues) =>
-			axios.post(`/api/user/event/${eventId}/schedule`, item),
+			return axios.put(`/api/user/event/${eventId}/schedule/${item.id}`, {
+				...item,
+				speakers: speakersIds,
+			});
+		},
 		onSuccess: () => {
 			refetchEvent();
 		},
 	});
 
+	const { mutateAsync: createScheduleItem } = useMutation({
+		mutationFn: (item: ScheduleItemFormValues) => {
+			// Convert speakers to array of IDs
+			const speakersIds = item.speakers?.length
+				? item.speakers.map((speaker) =>
+						typeof speaker === "string" ? speaker : speaker.id,
+					)
+				: [];
+
+			return axios.post(`/api/user/event/${eventId}/schedule`, {
+				...item,
+				speakers: speakersIds,
+			});
+		},
+		onSuccess: () => {
+			refetchEvent();
+		},
+	});
+
+	const { mutateAsync: deleteScheduleItem } = useMutation({
+		mutationFn: (scheduleItemId: string) =>
+			axios.delete(`/api/user/event/${eventId}/schedule/${scheduleItemId}`),
+		onSuccess: () => {
+			refetchEvent();
+		},
+	});
+
+	const handleScheduleUpdate = async (item: ScheduleItemFormValues) => {
+		await updateScheduleItem(item);
+	};
+
 	const handleScheduleCreate = (item: ScheduleItemFormValues) => {
 		createScheduleItem(item);
+	};
+
+	const handleScheduleDelete = async (scheduleItemId: string) => {
+		await deleteScheduleItem(scheduleItemId);
 	};
 
 	const handleAddScheduleItem = () => {
@@ -130,6 +166,7 @@ export const EventScheduleContent = () => {
 				schedule={schedule}
 				onScheduleUpdate={handleScheduleUpdate}
 				onScheduleCreate={handleScheduleCreate}
+				onScheduleDelete={handleScheduleDelete}
 				isAdmin={isAdmin}
 			/>
 		</ProtectedEventLayout>

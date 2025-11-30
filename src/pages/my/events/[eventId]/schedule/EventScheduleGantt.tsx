@@ -6,8 +6,10 @@ import {
 	type IGanttColumn,
 	Willow,
 } from "@svar-ui/react-gantt";
-import type { IMenuOption } from "@svar-ui/react-menu";
+import type { ICellProps } from "@svar-ui/react-grid";
+import type { IMenuOption, IMenuOptionClick } from "@svar-ui/react-menu";
 import "@svar-ui/react-gantt/all.css";
+import { Avatar } from "antd";
 import dayjs from "dayjs";
 import {
 	forwardRef,
@@ -38,6 +40,7 @@ interface EventScheduleGanttProps {
 	onTaskClick?: (id: string) => void;
 	onScheduleUpdate?: (item: ScheduleItemFormValues) => void;
 	onScheduleCreate?: (item: ScheduleItemFormValues) => void;
+	onScheduleDelete?: (id: string) => void | Promise<void>;
 	isAdmin: boolean;
 }
 
@@ -50,7 +53,14 @@ export const EventScheduleGantt = forwardRef<
 	EventScheduleGanttProps
 >(
 	(
-		{ schedule, onTaskClick, onScheduleUpdate, onScheduleCreate, isAdmin },
+		{
+			schedule,
+			onTaskClick,
+			onScheduleUpdate,
+			onScheduleCreate,
+			onScheduleDelete,
+			isAdmin,
+		},
 		ref,
 	) => {
 		const [ganttApi, setGanttApi] = useState<IApi | undefined>(undefined);
@@ -86,6 +96,7 @@ export const EventScheduleGantt = forwardRef<
 					progress: 0,
 					type: "task" as const,
 					lazy: false,
+					speakers: item.speakers,
 				};
 			});
 		}, [schedule]);
@@ -134,9 +145,8 @@ export const EventScheduleGantt = forwardRef<
 				{
 					id: "text",
 					header: "Item",
-					// width: 200,
+					width: 300,
 					sort: false,
-					flexgrow: 2,
 				},
 				{
 					id: "start",
@@ -144,24 +154,53 @@ export const EventScheduleGantt = forwardRef<
 					width: 180,
 					sort: false,
 					align: "center",
-					cell: (params: any) => {
-						console.log("params", params);
-
-						return (
-							<div>
-								{formatEventPeriod(
-									params.row.start,
-									params.row.end,
-									"en",
-									"daytime",
-								)}
-							</div>
-						);
+					cell: (params: ICellProps) => {
+						const row = params.row as { start?: Date; end?: Date };
+						const start = row.start;
+						const end = row.end;
+						if (!start || !end) return null;
+						return <div>{formatEventPeriod(start, end, "en", "daytime")}</div>;
 					},
 				},
 				{
+					id: "speakers",
+					header: "Speakers",
+					width: 150,
+					sort: false,
+					align: "center",
+					cell: (params: ICellProps) => {
+						console.log("params", params);
+						const row = params.row as {
+							speakers?: {
+								name: string;
+								id: string;
+								image?: string;
+							}[];
+						};
+						return (
+							<Avatar.Group
+								max={{
+									count: 3,
+									style: { color: "#f56a00", backgroundColor: "#fde3cf" },
+								}}
+							>
+								{row.speakers?.map((speaker) => (
+									<Avatar
+										key={speaker.id}
+										style={{ backgroundColor: "#1677ff" }}
+										src={speaker.image}
+									>
+										{speaker.image ? null : speaker.name?.charAt(0)}
+									</Avatar>
+								))}
+							</Avatar.Group>
+						);
+					},
+					// flexgrow: 1,
+				},
+				{
 					id: "duration",
-					header: "Time, hours",
+					header: "Hours",
 					width: 100,
 					sort: false,
 					align: "center",
@@ -170,26 +209,58 @@ export const EventScheduleGantt = forwardRef<
 			[],
 		);
 
-		const options: IMenuOption[] = [
-			{
-				id: "edit-task",
-				text: "Edit",
-				icon: "wxi-edit",
-				handler: (e: any) => {
-					e.event?.stopPropagation();
-					console.log("edit task");
-				},
+		// Get schedule item from context (task id from Gantt)
+		const getScheduleItemFromContext = useCallback(
+			(context: unknown) => {
+				if (!context) return null;
+
+				// Try to get task ID from context
+				const contextObj = context as {
+					id?: number;
+					taskId?: number;
+					row?: { id?: number };
+				};
+				const taskId = contextObj.id || contextObj.taskId || contextObj.row?.id;
+
+				if (!taskId || typeof taskId !== "number") return null;
+
+				// Find schedule item by index (task.id - 1)
+				const scheduleItem = schedule[taskId - 1];
+				return scheduleItem;
 			},
-			{
-				id: "delete-task",
-				text: "Delete",
-				icon: "wxi-delete",
-				handler: (e) => {
-					e.event?.stopPropagation();
-					console.log("delete task");
+			[schedule],
+		);
+
+		const options: IMenuOption[] = useMemo(
+			() => [
+				{
+					id: "edit-task",
+					text: "Edit",
+					icon: "wxi-edit",
+					handler: (e: IMenuOptionClick) => {
+						e.event?.stopPropagation();
+						const scheduleItem = getScheduleItemFromContext(e.context);
+						if (scheduleItem?.id) {
+							setEditingScheduleItemId(scheduleItem.id);
+							setScheduleItemModalOpen(true);
+						}
+					},
 				},
-			},
-		];
+				{
+					id: "delete-task",
+					text: "Delete",
+					icon: "wxi-delete",
+					handler: async (e: IMenuOptionClick) => {
+						e.event?.stopPropagation();
+						const scheduleItem = getScheduleItemFromContext(e.context);
+						if (scheduleItem?.id && onScheduleDelete) {
+							await onScheduleDelete(scheduleItem.id);
+						}
+					},
+				},
+			],
+			[getScheduleItemFromContext, onScheduleDelete],
+		);
 
 		function isDayOff(date: Date) {
 			const d = date.getDay();
