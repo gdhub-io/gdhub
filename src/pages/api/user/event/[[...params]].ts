@@ -415,6 +415,33 @@ class ApiUserEventEndpointHandler {
 
 		return { success: true };
 	}
+
+	@Post("/:id/schedule")
+	public async createScheduleItem(
+		@Param("id") id: string,
+		@Body(ValidationPipe) data: UserEventScheduleItemDto,
+	) {
+		await prisma.eventScheduleItem.create({
+			data: {
+				eventId: id,
+				title: data.title,
+				description: data.description,
+				url: data.url,
+				directionId: data.directionId,
+				format: data.format,
+				language: data.language,
+				startDate: data.startDate?.toISOString() ?? new Date().toISOString(),
+				endDate: data.endDate?.toISOString() ?? new Date().toISOString(),
+				speakers: data.speakers?.length
+					? {
+							connect: data.speakers.map((speaker) => ({
+								id: speaker,
+							})),
+						}
+					: undefined,
+			},
+		});
+	}
 }
 
 export default createHandler(ApiUserEventEndpointHandler);

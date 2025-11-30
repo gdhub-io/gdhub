@@ -52,12 +52,17 @@ export const ProtectedEventLayout = ({
 	seo,
 	children,
 	actions,
+	customStyles,
 }: {
 	title?: string;
 	description?: string;
 	seo?: NextSeoProps;
 	children: ReactNode;
 	actions?: ReactNode;
+	customStyles?: {
+		contentContainer?: React.CSSProperties;
+		content?: React.CSSProperties;
+	};
 }) => {
 	const { t } = useTranslate();
 	const router = useRouter();
@@ -295,6 +300,7 @@ export const ProtectedEventLayout = ({
 				<style jsx global>{`
 					:root {
 						--background-color: #fafafa;
+						--wx-font-family: ${appThemeConfig?.token?.fontFamily}, sans-serif !important;
 					}
 				`}</style>
 				<Layout className={styles.container}>
@@ -314,6 +320,13 @@ export const ProtectedEventLayout = ({
 										{
 											title: screens.md ? (
 												<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
+											) : null,
+										},
+										{
+											title: screens.md ? (
+												<Link href="/hub/events/my">
+													{t("hub.menu.my-events", "My events")}
+												</Link>
 											) : null,
 										},
 										{
@@ -397,8 +410,11 @@ export const ProtectedEventLayout = ({
 							className={styles.appMenu}
 						/>
 					</Header>
-					<Content className={styles.contentContainer}>
-						<div className={styles.content}>
+					<Content
+						className={styles.contentContainer}
+						style={customStyles?.contentContainer}
+					>
+						<div className={styles.content} style={customStyles?.content}>
 							<Flex
 								justify="space-between"
 								align="center"
