@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { Transform, Type } from "class-transformer";
 import {
@@ -9,7 +10,6 @@ import {
 	IsString,
 	ValidateNested,
 } from "class-validator";
-import { randomUUID } from "crypto";
 import {
 	Body,
 	createHandler,
@@ -118,14 +118,16 @@ class UserEventCreateDto {
 
 class UserEventUpdateDto {
 	@IsString()
-	title: string;
+	@IsOptional()
+	title?: string;
 
 	@IsString()
 	@IsOptional()
 	slug?: string;
 
 	@IsString()
-	description: string;
+	@IsOptional()
+	description?: string;
 
 	@IsString()
 	@IsOptional()
@@ -403,8 +405,8 @@ class ApiUserEventEndpointHandler {
 		return { slug: updatedEvent.slug };
 	}
 
-	@Delete()
-	public async delete(@Query(ValidationPipe) { id }: IDParamDto) {
+	@Delete("/:id")
+	public async delete(@Param("id") id: string) {
 		await prisma.event.delete({
 			where: {
 				id,
