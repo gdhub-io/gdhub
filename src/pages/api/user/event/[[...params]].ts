@@ -6,6 +6,7 @@ import {
 	IsBoolean,
 	IsDate,
 	IsEnum,
+	IsObject,
 	IsOptional,
 	IsString,
 	ValidateNested,
@@ -145,6 +146,10 @@ class UserEventUpdateDto {
 	@IsBoolean()
 	@IsOptional()
 	isFree?: boolean;
+
+	@IsObject()
+	@IsOptional()
+	content?: any;
 }
 
 @NextAuthGuard("user")

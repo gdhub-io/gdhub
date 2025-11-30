@@ -261,11 +261,11 @@ export const ProtectedEventLayout = ({
 			),
 		},
 		{
-			key: `/my/events/${eventId}/Content`,
+			key: `/my/events/${eventId}/content`,
 			disabled: false,
 			label: (
-				<Link href={`/my/events/${eventId}/Content`}>
-					{t("app.user-event.menu.Content", "Content")}
+				<Link href={`/my/events/${eventId}/content`}>
+					{t("app.user-event.menu.content", "Content")}
 				</Link>
 			),
 		},
