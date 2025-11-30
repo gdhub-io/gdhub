@@ -155,10 +155,6 @@ export const EventContentContent = () => {
 					{t("event.modal.content.save", "Save")}
 				</Button>
 			}
-			customStyles={{
-				contentContainer: { height: "auto", minHeight: "400px" },
-				content: { height: "auto" },
-			}}
 		>
 			<div className={styles.editorContainer}>
 				<div
