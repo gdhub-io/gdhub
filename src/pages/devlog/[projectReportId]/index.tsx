@@ -81,8 +81,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 		// Обрезаем контент для неавторизованных пользователей
 		if (!session) {
 			if (post.contentEditor) {
-				post.contentEditor = getEditorjsShortContent(post.contentEditor, 1000);
+				// Save page cover before modifying contentEditor
 				post.pageCover = getEditorjsPageCover(post.contentEditor);
+				// Convert EditorJS content to plain text for unauthorized users
+				const shortText = getEditorjsShortContent(post.contentEditor, 1000);
+				post.content = shortText;
+				// Remove contentEditor so ReactMarkdown is used instead
+				delete post.contentEditor;
 			} else {
 				post.content = getCleanTextContent(post.content, 1000);
 				post.pageCover = getPageCover(post);
@@ -182,12 +187,23 @@ export default function ProjectReport({
 	};
 
 	const prepareEditorjsData = (data: any) => {
-		return data.blocks.map((block: any) => {
-			if (block.type === "video") {
-				return videoParser?.video(block.data);
+		if (!data || !data.blocks || !Array.isArray(data.blocks)) {
+			return { time: Date.now(), blocks: [], version: "2.31.0" };
+		}
+
+		const processedBlocks = data.blocks.map((block: any) => {
+			if (block && block.type === "video" && block.data) {
+				const videoBlock = videoParser?.video(block.data);
+				return videoBlock || block;
 			}
 			return block;
 		});
+
+		return {
+			time: data.time || Date.now(),
+			blocks: processedBlocks,
+			version: data.version || "2.31.0",
+		};
 	};
 
 	if (!post) {
