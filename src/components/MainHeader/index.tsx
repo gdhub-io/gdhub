@@ -31,14 +31,34 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	// hide mobile menu on resize window
 	useEffect(() => {
 		if (!screens.xl) setOpenMobileMenu(false);
-	}, [session, screens]);
+	}, [screens]);
 
 	// Set active menu item when page loads and when hash changes
 	useEffect(() => {
-		if (document.location.hash) {
-			setActiveMenuKey(document.location.hash);
-		}
-	}, [router.asPath]);
+		const handleHashChange = () => {
+			if (window.location.hash) {
+				setActiveMenuKey(window.location.hash);
+				// Scroll to anchor after navigation
+				if (router.pathname === "/") {
+					setTimeout(() => {
+						const element = document.querySelector(window.location.hash);
+						if (element) {
+							const offset = 100;
+							window.scrollTo({
+								behavior: "smooth",
+								top:
+									element.getBoundingClientRect().top + window.scrollY - offset,
+							});
+						}
+					}, 100);
+				}
+			}
+		};
+
+		handleHashChange();
+		window.addEventListener("hashchange", handleHashChange);
+		return () => window.removeEventListener("hashchange", handleHashChange);
+	}, [router.pathname]);
 
 	// hide main scroll on open menu
 	useEffect(() => {
@@ -65,7 +85,10 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		// On non-home pages, navigate programmatically to "/#anchor" to avoid Menu swallowing link clicks
 		if (!isHomePage) {
 			e.preventDefault();
-			router.push(`/${selector}`);
+			router.push({
+				pathname: "/",
+				hash: selector.slice(1),
+			});
 			if (openMobileMenu) setOpenMobileMenu(false);
 			return;
 		}

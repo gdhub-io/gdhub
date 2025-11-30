@@ -1,6 +1,7 @@
 import { useTolgee } from "@tolgee/react";
 import { Avatar, Button, Divider, Flex, Grid, Typography, theme } from "antd";
 import dayjs from "dayjs";
+import Blocks from "editorjs-blocks-react-renderer";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -26,11 +27,17 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 			{/* Левая колонка: инфо */}
 			<div style={{ flex: 1 }}>
 				<Title level={2}>{t("event.about", "About")}</Title>
-				<Paragraph style={{ fontSize: 18 }}>
-					<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
-						{event.description || ""}
-					</ReactMarkdown>
-				</Paragraph>
+				{event.content ? (
+					<div className={styles.content}>
+						<Blocks data={JSON.parse(event.content)} />
+					</div>
+				) : (
+					<Paragraph style={{ fontSize: 18 }}>
+						<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
+							{event.description || ""}
+						</ReactMarkdown>
+					</Paragraph>
+				)}
 
 				<Divider />
 

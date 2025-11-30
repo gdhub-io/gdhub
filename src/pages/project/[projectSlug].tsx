@@ -161,106 +161,100 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 	};
 
 	return (
-		<>
-			<PublicLayout
-				title={project?.name}
-				subTitle={t("Author") + " " + project.author.name}
-				subLine={renderProjectLinks(project.links as ProjectLink[])}
-				backgroundImage={project.coverImage || undefined}
-				seo={seoParams}
-			>
-				{/* <NextSeo {...seoParams} /> */}
+		<PublicLayout
+			title={project?.name}
+			subTitle={`${t("Author")} ${project.author.name}`}
+			subLine={renderProjectLinks(project.links as ProjectLink[])}
+			backgroundImage={project.coverImage || undefined}
+			seo={seoParams}
+		>
+			{/* <NextSeo {...seoParams} /> */}
 
-				<div className={styles.container}>
-					<Row gutter={[32, 16]}>
-						<Col
-							xs={{ span: 24, order: 1 }}
-							md={{ span: 12, order: 0 }}
-							lg={{ span: 16, order: 0 }}
-						>
-							<Space direction="vertical" size={64} style={{ width: "100%" }}>
-								<div className="project-description">
-									<Title level={2}>
-										{t("page.project.aboutGame", "About Game")}
-									</Title>
-									<Paragraph>
-										<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
-											{project.description || ""}
-										</ReactMarkdown>
+			<div className={styles.container}>
+				<Row gutter={[32, 16]}>
+					<Col
+						xs={{ span: 24, order: 1 }}
+						md={{ span: 12, order: 0 }}
+						lg={{ span: 16, order: 0 }}
+					>
+						<Space direction="vertical" size={64} style={{ width: "100%" }}>
+							<div className="project-description">
+								<Title level={2}>
+									{t("page.project.aboutGame", "About Game")}
+								</Title>
+								<Paragraph>
+									<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
+										{project.description || ""}
+									</ReactMarkdown>
+								</Paragraph>
+								{!!project.workflow?.currentStep && (
+									<Paragraph type="secondary">
+										{t("page.project.developmentStage", "Development stage")}:{" "}
+										{project.workflow.currentStep.name}
 									</Paragraph>
-									{!!project.workflow?.currentStep && (
-										<Paragraph type="secondary">
-											{t("page.project.developmentStage", "Development stage")}:{" "}
-											{project.workflow.currentStep.name}
-										</Paragraph>
-									)}
-								</div>
-
-								{!screens.md && generalData}
-
-								<ProjectVacancies teamId={project.teamId} />
-
-								<DevlogPosts projectId={project.id} />
-							</Space>
-						</Col>
-						<Col
-							xs={{ span: 24, order: 0 }}
-							md={{ span: 12, order: 1 }}
-							lg={{ span: 8, order: 1 }}
-						>
-							{!showPitchVideo && (
-								<>
-									{!!project.coverImage && (
-										<div className={styles.cover}>
-											{project.videoLink && (
-												<div className={styles.coverButtonContainer}>
-													<Button onClick={handleCoverClick} type="primary">
-														{t(
-															"page.project.viewThePresentation",
-															"View the presentation",
-														)}
-													</Button>
-												</div>
-											)}
-											<Image src={project.coverImage} alt="cover" fill />
-										</div>
-									)}
-								</>
-							)}
-							{showPitchVideo && project.videoLink && (
-								<YouTube
-									className={styles.videoCover}
-									videoId={project.videoLink}
-									opts={pitchVideoOptions}
-									onEnd={() => setShowPitchVideo(false)}
-								/>
-							)}
-							{screens.md && generalData}
-							{session && project.author.profile.tgNickname ? (
-								<Link
-									href={`https://t.me/${project.author.profile.tgNickname}`}
-									target="_blank"
-									style={{ display: "block", width: "fit-content" }}
-								>
-									<Button
-										shape="round"
-										type="dashed"
-										className={styles.writeToAuthorButton}
-									>
-										<TbBrandTelegram size={16} />{" "}
-										{t("page.project.contactTheAuthor", "Contact the author")}
-									</Button>
-								</Link>
-							) : null}
-
-							<div className="project-team">
-								<TeamMembers teamId={project.teamId} />
+								)}
 							</div>
-						</Col>
-					</Row>
-				</div>
-			</PublicLayout>
-		</>
+
+							{!screens.md && generalData}
+
+							<ProjectVacancies teamId={project.teamId} />
+
+							<DevlogPosts projectId={project.id} />
+						</Space>
+					</Col>
+					<Col
+						xs={{ span: 24, order: 0 }}
+						md={{ span: 12, order: 1 }}
+						lg={{ span: 8, order: 1 }}
+					>
+						{!showPitchVideo && !!project.coverImage && (
+							<div className={styles.cover}>
+								{project.videoLink && (
+									<div className={styles.coverButtonContainer}>
+										<Button onClick={handleCoverClick} type="primary">
+											{t(
+												"page.project.viewThePresentation",
+												"View the presentation",
+											)}
+										</Button>
+									</div>
+								)}
+								<Image src={project.coverImage} alt="cover" fill />
+							</div>
+						)}
+						{showPitchVideo && project.videoLink && (
+							<YouTube
+								className={styles.videoCover}
+								videoId={project.videoLink}
+								opts={pitchVideoOptions}
+								onEnd={() => setShowPitchVideo(false)}
+							/>
+						)}
+						{screens.md && generalData}
+						{session && project.author.profile.tgNickname ? (
+							<Link
+								href={`https://t.me/${project.author.profile.tgNickname}`}
+								target="_blank"
+								style={{ display: "block", width: "fit-content" }}
+							>
+								<Button
+									shape="round"
+									type="dashed"
+									className={styles.writeToAuthorButton}
+								>
+									<TbBrandTelegram size={16} />{" "}
+									{t("page.project.contactTheAuthor", "Contact the author")}
+								</Button>
+							</Link>
+						) : null}
+
+						<div className="project-team">
+							<TeamMembers teamId={project.teamId} />
+						</div>
+					</Col>
+				</Row>
+			</div>
+		</PublicLayout>
 	);
 };
 

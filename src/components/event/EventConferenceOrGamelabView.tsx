@@ -1,5 +1,6 @@
 import { useTolgee } from "@tolgee/react";
 import { Avatar, Button, Divider, Flex, Grid, Typography, theme } from "antd";
+import Blocks from "editorjs-blocks-react-renderer";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -97,15 +98,21 @@ const EventConferenceOrGamelabView = ({
 			<div className={styles.contentContainer}>
 				<div style={{ marginBottom: 32 }}>
 					<Title level={2}>{t("event.about", "About")}</Title>
-					<div className={styles.description}>
-						<ReactMarkdown
-							rehypePlugins={[rehypeRaw as any]}
-							remarkPlugins={[remarkGfm]}
-							skipHtml={false}
-						>
-							{event.description || ""}
-						</ReactMarkdown>
-					</div>
+					{event.content ? (
+						<div className={styles.content}>
+							<Blocks data={JSON.parse(event.content)} />
+						</div>
+					) : (
+						<div className={styles.description}>
+							<ReactMarkdown
+								rehypePlugins={[rehypeRaw as any]}
+								remarkPlugins={[remarkGfm]}
+								skipHtml={false}
+							>
+								{event.description || ""}
+							</ReactMarkdown>
+						</div>
+					)}
 				</div>
 
 				<Title level={2}>{t("event.schedule", "Schedule")}</Title>

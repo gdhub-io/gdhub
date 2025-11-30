@@ -1,3 +1,5 @@
+import type { OutputData } from "@editorjs/editorjs";
+
 export const getCleanTextContent = (
 	content: string,
 	maxLength: number = 200,
@@ -81,10 +83,27 @@ export const getPageCover = (post: {
 	return result;
 };
 
-export const getEditorjsPageCover = (content: any) => {
+export const getEditorjsPageCover = (content: OutputData) => {
 	const firstImage = content?.blocks?.find(
 		(block: any) => block.type === "image",
 	);
 
 	return firstImage?.data?.file?.url || null;
+};
+
+export const getEditorjsShortContent = (
+	content: OutputData,
+	maxLength: number = 200,
+) => {
+	const blocks = content.blocks || [];
+
+	const text = `${blocks
+		.filter(
+			(block: OutputData["blocks"][number]) =>
+				block.type !== "image" && Boolean(block.data?.text),
+		)
+		.map((block: OutputData["blocks"][number]) => block.data?.text)
+		.join(" ")}`;
+
+	return text.length > maxLength ? `${text}...` : text;
 };

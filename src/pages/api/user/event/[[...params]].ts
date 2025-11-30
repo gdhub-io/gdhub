@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { Transform, Type } from "class-transformer";
 import {
@@ -5,11 +6,11 @@ import {
 	IsBoolean,
 	IsDate,
 	IsEnum,
+	IsObject,
 	IsOptional,
 	IsString,
 	ValidateNested,
 } from "class-validator";
-import { randomUUID } from "crypto";
 import {
 	Body,
 	createHandler,
@@ -24,6 +25,7 @@ import {
 	ValidationPipe,
 } from "next-api-decorators";
 import slugify from "slugify";
+import { AvailableLocales } from "@/config/locale";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
 
@@ -118,14 +120,16 @@ class UserEventCreateDto {
 
 class UserEventUpdateDto {
 	@IsString()
-	title: string;
+	@IsOptional()
+	title?: string;
 
 	@IsString()
 	@IsOptional()
 	slug?: string;
 
 	@IsString()
-	description: string;
+	@IsOptional()
+	description?: string;
 
 	@IsString()
 	@IsOptional()
@@ -143,11 +147,9 @@ class UserEventUpdateDto {
 	@IsOptional()
 	isFree?: boolean;
 
-	@IsArray()
+	@IsObject()
 	@IsOptional()
-	@ValidateNested({ each: true })
-	@Type(() => UserEventScheduleItemDto)
-	schedule?: UserEventScheduleItemDto[];
+	content?: any;
 }
 
 @NextAuthGuard("user")
@@ -265,75 +267,15 @@ class ApiUserEventEndpointHandler {
 		@Param("id") id: string,
 		@Body(ValidationPipe) data: UserEventUpdateDto,
 	) {
-		const { schedule, ...itemData } = data;
-
 		const event = await prisma.event.update({
 			where: {
 				id,
 			},
-			data: itemData,
+			data: data,
 			include: {
 				schedule: true,
 			},
 		});
-
-		//find and remove items for removing
-		const removedItems = event.schedule.filter(
-			(i: { id: string }) => !schedule?.some((item) => item.id === i.id),
-		);
-
-		if (removedItems.length > 0) {
-			await prisma.eventScheduleItem.deleteMany({
-				where: { id: { in: removedItems.map((i: { id: string }) => i.id) } },
-			});
-		}
-
-		// update or create items
-		for (const item of data.schedule ?? []) {
-			if (item.id) {
-				await prisma.eventScheduleItem.update({
-					where: { id: item.id },
-					data: {
-						title: item.title,
-						description: item.description,
-						directionId: item.directionId,
-						url: item.url,
-						format: item.format,
-						language: item.language,
-						startDate:
-							item.startDate?.toISOString() ?? new Date().toISOString(),
-						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: item.speakers?.length
-							? {
-									set: item.speakers.map((userId) => ({
-										id: userId,
-									})),
-								}
-							: undefined,
-					},
-				});
-			} else {
-				await prisma.eventScheduleItem.create({
-					data: {
-						eventId: event.id,
-						title: item.title,
-						description: item.description,
-						url: item.url,
-						directionId: item.directionId,
-						startDate:
-							item.startDate?.toISOString() ?? new Date().toISOString(),
-						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: item.speakers?.length
-							? {
-									connect: item.speakers.map((speaker) => ({
-										id: speaker,
-									})),
-								}
-							: undefined,
-					},
-				});
-			}
-		}
 
 		return event;
 	}
@@ -360,11 +302,11 @@ class ApiUserEventEndpointHandler {
 		});
 	}
 
-	@Put("/:id/close")
-	public async close(@Param("id") id: string) {
+	@Put("/:id/archive")
+	public async archive(@Param("id") id: string) {
 		await prisma.event.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Closed },
+			data: { status: prismaClient.$Enums.EventStatus.Archived },
 		});
 	}
 
@@ -403,11 +345,86 @@ class ApiUserEventEndpointHandler {
 		return { slug: updatedEvent.slug };
 	}
 
-	@Delete()
-	public async delete(@Query(ValidationPipe) { id }: IDParamDto) {
+	@Delete("/:id")
+	public async delete(@Param("id") id: string) {
 		await prisma.event.delete({
 			where: {
 				id,
+			},
+		});
+
+		return { success: true };
+	}
+
+	@Post("/:id/schedule")
+	public async createScheduleItem(
+		@Param("id") id: string,
+		@Body(ValidationPipe) data: UserEventScheduleItemDto,
+	) {
+		await prisma.eventScheduleItem.create({
+			data: {
+				eventId: id,
+				title: data.title,
+				description: data.description,
+				url: data.url,
+				directionId: data.directionId,
+				format: data.format,
+				language: data.language,
+				startDate: data.startDate?.toISOString() ?? new Date().toISOString(),
+				endDate: data.endDate?.toISOString() ?? new Date().toISOString(),
+				speakers: data.speakers?.length
+					? {
+							connect: data.speakers.map((speaker) => ({
+								id: speaker,
+							})),
+						}
+					: undefined,
+			},
+		});
+	}
+
+	@Put("/:id/schedule/:scheduleItemId")
+	public async updateScheduleItem(
+		@Param("id") id: string,
+		@Param("scheduleItemId") scheduleItemId: string,
+		@Body(ValidationPipe) data: UserEventScheduleItemDto,
+	) {
+		await prisma.eventScheduleItem.update({
+			where: {
+				id: scheduleItemId,
+				eventId: id,
+			},
+			data: {
+				title: data.title,
+				description: data.description,
+				url: data.url,
+				directionId: data.directionId,
+				format: data.format,
+				language: data.language,
+				startDate: data.startDate?.toISOString() ?? new Date().toISOString(),
+				endDate: data.endDate?.toISOString() ?? new Date().toISOString(),
+				speakers: data.speakers?.length
+					? {
+							set: data.speakers.map((speakerId) => ({
+								id: speakerId,
+							})),
+						}
+					: { set: [] },
+			},
+		});
+
+		return { success: true };
+	}
+
+	@Delete("/:id/schedule/:scheduleItemId")
+	public async deleteScheduleItem(
+		@Param("id") id: string,
+		@Param("scheduleItemId") scheduleItemId: string,
+	) {
+		await prisma.eventScheduleItem.delete({
+			where: {
+				id: scheduleItemId,
+				eventId: id,
 			},
 		});
 

@@ -1,4 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { Prisma } from "@prisma/client";
+import { IsObject, IsOptional, IsString } from "class-validator";
+import dayjs from "dayjs";
 import {
 	Body,
 	createHandler,
@@ -17,12 +19,17 @@ class CreateProjectReportDto {
 	@IsString()
 	content: string;
 
+	@IsObject()
+	@IsOptional()
+	contentEditor?: Prisma.JsonValue;
+
 	@IsString()
 	@IsOptional()
 	video?: string;
 
 	@IsString()
-	publishedAt: string;
+	@IsOptional()
+	publishedAt?: string;
 
 	@IsString()
 	projectId: string;
@@ -35,13 +42,17 @@ class UpdateProjectReportDto {
 	@IsString()
 	content: string;
 
+	@IsObject()
+	@IsOptional()
+	contentEditor?: Prisma.JsonValue;
+
 	@IsString()
 	@IsOptional()
 	video?: string;
 
 	@IsString()
 	@IsOptional()
-	publishedAt: string;
+	publishedAt?: string;
 }
 
 class ParamIdDto {
@@ -83,29 +94,42 @@ class ApiProjectReportHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Body(ValidationPipe) {
 			content,
+			contentEditor,
 			video,
 			publishedAt,
 			projectId,
 		}: CreateProjectReportDto,
 	) {
 		await prisma.projectReport.create({
-			data: { content, publishedAt, video, authorId: req.user.id!, projectId },
+			data: {
+				content,
+				contentEditor: contentEditor || Prisma.JsonNull,
+				publishedAt: publishedAt || dayjs().toISOString(),
+				video,
+				authorId: req.user.id,
+				projectId,
+			},
 		});
 	}
 
 	@Put()
 	public async update(
-		@Req() req: NextApiRequestWithUser,
 		@Body(ValidationPipe) {
 			id,
 			content,
+			contentEditor,
 			video,
 			publishedAt,
 		}: UpdateProjectReportDto,
 	) {
 		await prisma.projectReport.update({
 			where: { id },
-			data: { content, publishedAt, video },
+			data: {
+				content,
+				contentEditor: contentEditor || Prisma.JsonNull,
+				publishedAt,
+				video,
+			},
 		});
 	}
 

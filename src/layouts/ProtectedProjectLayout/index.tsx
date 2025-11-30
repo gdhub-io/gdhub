@@ -12,6 +12,7 @@ import {
 	ConfigProvider,
 	Drawer,
 	Dropdown,
+	Flex,
 	FloatButton,
 	Grid,
 	Layout,
@@ -50,11 +51,13 @@ export const ProtectedProjectLayout = ({
 	description,
 	seo,
 	children,
+	actions,
 }: {
 	title?: string;
 	description?: string;
 	seo?: NextSeoProps;
 	children: ReactNode;
+	actions?: ReactNode;
 }) => {
 	const { t } = useTranslate();
 	const router = useRouter();
@@ -406,10 +409,22 @@ export const ProtectedProjectLayout = ({
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							<Space direction="vertical" size={0} style={{ marginBottom: 24 }}>
-								{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
-								{!!description && <Text type="secondary">{description}</Text>}
-							</Space>
+							<Flex
+								justify="space-between"
+								align="center"
+								style={{ marginBottom: 24 }}
+							>
+								<Space
+									direction="vertical"
+									size={0}
+									style={{ marginBottom: 24 }}
+								>
+									{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+									{!!description && <Text type="secondary">{description}</Text>}
+								</Space>
+								{actions}
+							</Flex>
+
 							{children}
 						</div>
 					</Content>

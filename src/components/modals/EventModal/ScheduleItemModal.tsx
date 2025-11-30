@@ -142,10 +142,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				url: values.url,
 				startDate: dayjs(values.dates[0]).toISOString(),
 				endDate: dayjs(values.dates[1]).toISOString(),
-				speakers:
-					speakersData?.data?.filter((speaker: any) =>
-						values.speakers?.includes(speaker.id),
-					) || [],
+				speakers: values.speakers || [],
 				directionId: values.directionId,
 				format: values.format,
 				language: values.language,

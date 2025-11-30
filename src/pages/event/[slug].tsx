@@ -211,6 +211,7 @@ export const getServerSideProps = async (
 				createdAt: event.createdAt?.toISOString(),
 				updatedAt: event.updatedAt?.toISOString(),
 				publishedAt: event.publishedAt ? event.publishedAt.toISOString() : null,
+				content: event.content ? JSON.stringify(event.content) : null,
 				schedule:
 					event.schedule?.map((item: any) => ({
 						...item,

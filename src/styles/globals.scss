@@ -95,7 +95,8 @@
 	// 	padding: 0 10px;
 	// }
 
-	.ant-select-disabled .ant-select-selector, .ant-input-disabled {
+	.ant-select-disabled .ant-select-selector,
+	.ant-input-disabled {
 		border-color: transparent !important;
 	}
 
