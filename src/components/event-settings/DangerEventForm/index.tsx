@@ -28,12 +28,16 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 		refetchInterval: false,
 	});
 
-	const { mutateAsync: updateEventStatus, isPending: isUpdatingEventStatus } =
+	const { mutateAsync: archiveEvent, isPending: isArchivingEvent } =
 		useMutation({
-			mutationFn: (status: prismaClient.EventStatus) =>
-				axios
-					.put(`/api/user/event/${eventId}`, { status })
-					.then((res) => res.data),
+			mutationFn: () =>
+				axios.put(`/api/user/event/${eventId}/archive`).then((res) => res.data),
+		});
+
+	const { mutateAsync: restoreEvent, isPending: isRestoringEvent } =
+		useMutation({
+			mutationFn: () =>
+				axios.put(`/api/user/event/${eventId}/restore`).then((res) => res.data),
 		});
 
 	const { mutateAsync: deleteEvent, isPending: isDeletingEvent } = useMutation({
@@ -50,7 +54,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 				"Are you sure you want to archive this event?",
 			),
 			onOk: async () => {
-				await updateEventStatus(prismaClient.$Enums.EventStatus.Archived);
+				await archiveEvent();
 				messageApi.success(
 					t(
 						"event.settings.danger.archive.success",
@@ -98,7 +102,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 				"Are you sure you want to restore this event?",
 			),
 			onOk: async () => {
-				await updateEventStatus(prismaClient.$Enums.EventStatus.Draft);
+				await restoreEvent();
 				messageApi.success(
 					t(
 						"event.settings.danger.restore.success",
@@ -118,14 +122,19 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 			{modalContextHolder}
 			{messageContextHolder}
 			<Spin
-				spinning={isFetchingEvent || isUpdatingEventStatus || isDeletingEvent}
+				spinning={
+					isFetchingEvent ||
+					isArchivingEvent ||
+					isRestoringEvent ||
+					isDeletingEvent
+				}
 			>
 				{event?.data?.status !== prismaClient.$Enums.EventStatus.Archived ? (
 					<Card
 						extra={
 							<Button
 								type="primary"
-								loading={isUpdatingEventStatus}
+								loading={isArchivingEvent}
 								onClick={handleConfirmArchive}
 							>
 								{t("event.settings.danger.archive", "Archive")}
@@ -151,7 +160,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 						extra={
 							<Button
 								type="primary"
-								loading={isUpdatingEventStatus}
+								loading={isRestoringEvent}
 								onClick={handleConfirmRestore}
 							>
 								{t("event.settings.danger.restore", "Restore")}

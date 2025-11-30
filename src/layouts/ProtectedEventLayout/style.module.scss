@@ -168,7 +168,12 @@
 		}
 	}
 
-	&:hover {
+	&:hover,
+	&:active,
+	&:focus {
+		background-color: transparent !important;
+		cursor: default !important;
+
 		:global {
 			.ant-menu-title-content a {
 				color: #ff7875 !important;

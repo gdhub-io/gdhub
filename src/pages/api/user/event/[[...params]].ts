@@ -24,6 +24,7 @@ import {
 	ValidationPipe,
 } from "next-api-decorators";
 import slugify from "slugify";
+import { AvailableLocales } from "@/config/locale";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
 
@@ -144,12 +145,6 @@ class UserEventUpdateDto {
 	@IsBoolean()
 	@IsOptional()
 	isFree?: boolean;
-
-	@IsArray()
-	@IsOptional()
-	@ValidateNested({ each: true })
-	@Type(() => UserEventScheduleItemDto)
-	schedule?: UserEventScheduleItemDto[];
 }
 
 @NextAuthGuard("user")
@@ -267,75 +262,15 @@ class ApiUserEventEndpointHandler {
 		@Param("id") id: string,
 		@Body(ValidationPipe) data: UserEventUpdateDto,
 	) {
-		const { schedule, ...itemData } = data;
-
 		const event = await prisma.event.update({
 			where: {
 				id,
 			},
-			data: itemData,
+			data: data,
 			include: {
 				schedule: true,
 			},
 		});
-
-		//find and remove items for removing
-		const removedItems = event.schedule.filter(
-			(i: { id: string }) => !schedule?.some((item) => item.id === i.id),
-		);
-
-		if (removedItems.length > 0) {
-			await prisma.eventScheduleItem.deleteMany({
-				where: { id: { in: removedItems.map((i: { id: string }) => i.id) } },
-			});
-		}
-
-		// update or create items
-		for (const item of data.schedule ?? []) {
-			if (item.id) {
-				await prisma.eventScheduleItem.update({
-					where: { id: item.id },
-					data: {
-						title: item.title,
-						description: item.description,
-						directionId: item.directionId,
-						url: item.url,
-						format: item.format,
-						language: item.language,
-						startDate:
-							item.startDate?.toISOString() ?? new Date().toISOString(),
-						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: item.speakers?.length
-							? {
-									set: item.speakers.map((userId) => ({
-										id: userId,
-									})),
-								}
-							: undefined,
-					},
-				});
-			} else {
-				await prisma.eventScheduleItem.create({
-					data: {
-						eventId: event.id,
-						title: item.title,
-						description: item.description,
-						url: item.url,
-						directionId: item.directionId,
-						startDate:
-							item.startDate?.toISOString() ?? new Date().toISOString(),
-						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: item.speakers?.length
-							? {
-									connect: item.speakers.map((speaker) => ({
-										id: speaker,
-									})),
-								}
-							: undefined,
-					},
-				});
-			}
-		}
 
 		return event;
 	}
@@ -362,11 +297,11 @@ class ApiUserEventEndpointHandler {
 		});
 	}
 
-	@Put("/:id/close")
-	public async close(@Param("id") id: string) {
+	@Put("/:id/archive")
+	public async archive(@Param("id") id: string) {
 		await prisma.event.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Closed },
+			data: { status: prismaClient.$Enums.EventStatus.Archived },
 		});
 	}
 

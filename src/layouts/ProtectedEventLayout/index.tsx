@@ -3,6 +3,7 @@ import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
 import { GoArrowUp } from "@react-icons/all-files/go/GoArrowUp";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import {
 	Avatar,
@@ -18,6 +19,7 @@ import {
 	Layout,
 	Menu,
 	type MenuProps,
+	message,
 	Row,
 	Space,
 	Typography,
@@ -25,6 +27,8 @@ import {
 import type { ItemType } from "antd/es/menu/interface";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
+import axios from "axios";
+import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -66,7 +70,9 @@ export const ProtectedEventLayout = ({
 }) => {
 	const { t } = useTranslate();
 	const router = useRouter();
+	const queryClient = useQueryClient();
 	const eventId = router.query.eventId as string;
+	const [messageApi, messageContextHolder] = message.useMessage();
 	const [contextEvent, setContextEvent] = useState<ContextEvent>();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [isOpenedInTelegram] = useTelegram();
@@ -91,12 +97,44 @@ export const ProtectedEventLayout = ({
 	}, [event, isEventAuthor]);
 
 	const seoSettings: NextSeoProps = {
-		title: title || "Project",
+		title: title || "Event",
 		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
 		nofollow: true,
 		noindex: true,
 		description,
 		...seo,
+	};
+
+	const { mutateAsync: publishEvent, isPending: isPublishingEvent } =
+		useMutation({
+			mutationFn: (id: string) => axios.put(`/api/user/event/${id}/publish`),
+			onSuccess: () => {
+				messageApi.success(t("event.publish.success", "Event published"));
+				queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+			},
+			onError: () => {
+				message.error(t("event.publish.error", "Error publishing event"));
+			},
+		});
+
+	const { mutateAsync: unpublishEvent, isPending: isUnpublishingEvent } =
+		useMutation({
+			mutationFn: (id: string) => axios.put(`/api/user/event/${id}/unpublish`),
+			onSuccess: () => {
+				messageApi.success(t("event.unpublish.success", "Event unpublished"));
+				queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+			},
+			onError: () => {
+				message.error(t("event.unpublish.error", "Error unpublishing event"));
+			},
+		});
+
+	const handleEventPublish = async (id: string) => {
+		await publishEvent(id);
+	};
+
+	const handleEventUnpublish = async (id: string) => {
+		await unpublishEvent(id);
 	};
 
 	useEffect(() => {
@@ -214,10 +252,10 @@ export const ProtectedEventLayout = ({
 
 	const menuItems: (ItemType & { disabled: boolean })[] = [
 		{
-			key: `/my/events/${eventId}`,
+			key: `/my/events/${eventId}/schedule`,
 			disabled: false,
 			label: (
-				<Link href={`/my/events/${eventId}`}>
+				<Link href={`/my/events/${eventId}/schedule`}>
 					{t("app.user-event.menu.schedule", "Schedule")}
 				</Link>
 			),
@@ -263,13 +301,49 @@ export const ProtectedEventLayout = ({
 			disabled: false,
 			className: styles.publicPageMenuItem,
 			label: (
-				<Link
-					href={`/event/${event?.slug}`}
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					{t("Public page", "Public page")} <GoLinkExternal size={14} />
-				</Link>
+				<>
+					<Space>
+						{event?.status === prismaClient.$Enums.EventStatus.Draft && (
+							<Space>
+								<Text type="secondary">The event is not published yet</Text>
+								<Button
+									type="primary"
+									size="small"
+									onClick={() => handleEventPublish(eventId)}
+									loading={isPublishingEvent}
+								>
+									{t("event.button.publish", "Publish")}
+								</Button>
+							</Space>
+						)}
+						{event?.status === prismaClient.$Enums.EventStatus.Published && (
+							<Space>
+								<Text type="secondary">
+									The event is published at{" "}
+									{dayjs(event?.publishedAt).format("lll")}
+								</Text>
+								<Button
+									type="default"
+									size="small"
+									onClick={() => handleEventUnpublish(eventId)}
+									loading={isUnpublishingEvent}
+								>
+									{t("event.button.unpublish", "Unpublish")}
+								</Button>
+							</Space>
+						)}
+
+						<Button
+							type="text"
+							size="small"
+							href={`/event/${event?.slug}`}
+							target="_blank"
+						>
+							{t("event.button.publicPage", "Go to page")}
+							<GoLinkExternal size={12} color="gray" />
+						</Button>
+					</Space>
+				</>
 			),
 		},
 	];
@@ -292,6 +366,7 @@ export const ProtectedEventLayout = ({
 		<EventContext.Provider
 			value={{ contextEvent, isLoaded: isFetched, setContextEvent }}
 		>
+			{messageContextHolder}
 			<NextSeo {...seoSettings} />
 			<ConfigProvider
 				theme={appThemeConfig}

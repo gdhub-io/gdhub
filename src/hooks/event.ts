@@ -15,7 +15,7 @@ export const useCurrentEvent = () => {
 		isLoading,
 		isFetched,
 	} = useQuery({
-		queryKey: ["event-data", eventId, session?.user.id],
+		queryKey: ["event", eventId],
 		queryFn: () => axios.get<prismaClient.Event>(`/api/user/event/${eventId}`),
 		enabled: !!eventId,
 		refetchOnWindowFocus: false,

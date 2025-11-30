@@ -11,7 +11,6 @@ import {
 	Popover,
 	Row,
 	Spin,
-	Switch,
 	Upload,
 	type UploadProps,
 } from "antd";
@@ -30,7 +29,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	const { t } = useTranslate();
 	const [form] = Form.useForm();
 	const [cover, setCover] = useState<string | null>();
-	const [imageProcessing, setImageProcessing] = useState(false);
+	const [coverProcessing, setCoverProcessing] = useState(false);
 
 	const { data: event, isFetching } = useQuery({
 		queryKey: ["event", eventId],
@@ -73,7 +72,6 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 		if (event) {
 			form.setFieldsValue({
 				...event.data,
-				status: event.data.status === prismaClient.EventStatus.Published,
 			});
 		}
 	}, [event, form]);
@@ -83,9 +81,6 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 			const formData = await form.validateFields();
 			await updateEvent({
 				...formData,
-				status: formData.status
-					? prismaClient.EventStatus.Published
-					: prismaClient.EventStatus.Draft,
 				image: cover ? cover : null,
 			});
 
@@ -147,7 +142,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 		onChange: async (info) => {
 			const { status } = info.file;
 
-			setImageProcessing(true);
+			setCoverProcessing(true);
 
 			if (status === "done" && info.file.originFileObj) {
 				const uploadedFileData = await uploadImage(info.file.originFileObj);
@@ -160,23 +155,24 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 				message.error(`${info.file.name} file upload failed.`);
 			}
 
-			setImageProcessing(false);
+			setCoverProcessing(false);
 		},
 		onDrop: async (e) => {
-			setImageProcessing(true);
+			setCoverProcessing(true);
 
 			const uploadedFileData = await uploadImage(e.dataTransfer.files[0]);
 			setCover(uploadedFileData.url);
-			setImageProcessing(false);
+			form.setFieldValue("image", uploadedFileData.url);
+			setCoverProcessing(false);
 		},
 	};
 
 	const handleCoverDelete = async () => {
 		if (!cover) return;
 
-		setImageProcessing(true);
+		setCoverProcessing(true);
 		await removeImage(cover);
-		setImageProcessing(false);
+		setCoverProcessing(false);
 
 		form.setFieldValue("image", undefined);
 		setCover(undefined);
@@ -194,7 +190,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 				<Row gutter={16}>
 					{isBigEvent ? (
 						<Col span={24} style={{ marginBottom: 24 }}>
-							{!event?.data?.image ? (
+							{!cover ? (
 								<Form.Item
 									label={t("event.modal.image", "Image")}
 									name="image"
@@ -224,12 +220,12 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 									</ImgCrop>
 								</Form.Item>
 							) : (
-								<Spin spinning={imageProcessing}>
+								<Spin spinning={coverProcessing}>
 									<div
 										className={styles.cover}
 										style={{ aspectRatio: "16 / 9" }}
 									>
-										<Image src={`${event?.data?.image}?w=1200`} fill alt="" />
+										<Image src={cover + "?w=1200"} fill alt="" />
 										<Popover
 											content={t(
 												"event.modal.image.deletePopover",
@@ -251,7 +247,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 					) : null}
 					<Col span={isBigEvent ? 24 : 8}>
 						{!isBigEvent &&
-							(!event?.data?.image ? (
+							(!cover ? (
 								<Form.Item
 									label={t("event.modal.image", "Image")}
 									name="image"
@@ -277,12 +273,12 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 									</ImgCrop>
 								</Form.Item>
 							) : (
-								<Spin spinning={imageProcessing}>
+								<Spin spinning={coverProcessing}>
 									<div
 										className={styles.cover}
 										style={{ aspectRatio: "4 / 5" }}
 									>
-										<Image src={`${event?.data?.image}?w=750`} fill alt="" />
+										<Image src={cover + "?w=750"} fill alt="" />
 										<Popover
 											content={t(
 												"event.modal.image.deletePopover",
@@ -338,27 +334,13 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 						<Form.Item
 							label={t("event.modal.link", "Registration Link")}
 							name="url"
+							help={t(
+								"event.modal.link.help",
+								"The link to the external event registration page. Leave blank if you want use internal registration.",
+							)}
 						>
 							<Input
 								placeholder={t("event.modal.link.placeholder", "https://")}
-							/>
-						</Form.Item>
-
-						{/* Is published */}
-						<Form.Item
-							name="status"
-							label={t("event.modal.status", "Status")}
-							valuePropName="checked"
-							rules={[
-								{
-									required: true,
-								},
-							]}
-						>
-							<Switch
-								size="default"
-								checkedChildren={t("event.modal.status.published", "Published")}
-								unCheckedChildren={t("event.modal.status.draft", "Draft")}
 							/>
 						</Form.Item>
 					</Col>
