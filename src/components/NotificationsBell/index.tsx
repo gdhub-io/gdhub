@@ -1,13 +1,14 @@
 "use client";
 
 import { Inbox } from "@novu/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { theme } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import styles from "./style.module.scss";
 
 export const NotificationsBell = () => {
@@ -16,6 +17,13 @@ export const NotificationsBell = () => {
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
 
+	const {
+		token: fcmToken,
+		isSupported: isFcmSupported,
+		permissionState,
+		ready: isFcmReady,
+	} = useFirebaseMessagingToken();
+
 	const { data: signature } = useQuery({
 		queryKey: ["novu-signature", session?.user.id],
 		queryFn: () =>
@@ -23,6 +31,31 @@ export const NotificationsBell = () => {
 		enabled: !!session?.user.id,
 		refetchOnWindowFocus: false,
 	});
+
+	const { mutate: registerFcmToken } = useMutation({
+		mutationKey: ["novu-fcm-token", session?.user.id],
+		mutationFn: (token: string) =>
+			axios.post("/api/services/novu/fcm-token", {
+				token,
+			}),
+	});
+
+	useEffect(() => {
+		if (!session?.user.id) return;
+		if (!isFcmReady) return;
+		if (!isFcmSupported) return;
+		if (permissionState !== "granted") return;
+		if (!fcmToken) return;
+
+		registerFcmToken(fcmToken);
+	}, [
+		fcmToken,
+		isFcmReady,
+		isFcmSupported,
+		permissionState,
+		registerFcmToken,
+		session?.user?.id,
+	]);
 
 	if (!session || !signature?.data.signature) {
 		return null;

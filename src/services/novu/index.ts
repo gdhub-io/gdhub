@@ -18,18 +18,33 @@ export class NovuService {
 		return novuClient;
 	}
 
-	static async send({ to, payload, template }: NovuSendArgs) {
-		try {
-			await novuClient.trigger({
-				workflowId: template,
-				to: {
-					subscriberId: to.subscriberId,
-					email: to.email,
+	static async updateFcmDeviceTokens(args: {
+		subscriberId: string;
+		deviceTokens: string[];
+		integrationIdentifier?: string;
+	}) {
+		const { subscriberId, deviceTokens, integrationIdentifier } = args;
+
+		await novuClient.subscribers.credentials.update(
+			{
+				providerId: "fcm",
+				...(integrationIdentifier ? { integrationIdentifier } : {}),
+				credentials: {
+					deviceTokens,
 				},
-				payload: { app: "main", ...payload },
-			});
-		} catch (error) {
-			throw error;
-		}
+			},
+			subscriberId,
+		);
+	}
+
+	static async send({ to, payload, template }: NovuSendArgs) {
+		await novuClient.trigger({
+			workflowId: template,
+			to: {
+				subscriberId: to.subscriberId,
+				email: to.email,
+			},
+			payload: { app: "main", ...payload },
+		});
 	}
 }
