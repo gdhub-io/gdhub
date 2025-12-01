@@ -30,7 +30,6 @@ class ApiQueueTelegramHandler {
 	async newProjectReports() {
 		return await this.telegramBot.sendNewProjectReports({
 			inLastDays: 1,
-			locale: AvailableLocales.ru,
 		});
 	}
 
@@ -38,7 +37,6 @@ class ApiQueueTelegramHandler {
 	async newSpecialities() {
 		return await this.telegramBot.sendNewSpecialities({
 			inLastDays: 1,
-			locale: AvailableLocales.ru,
 		});
 	}
 
@@ -46,7 +44,6 @@ class ApiQueueTelegramHandler {
 	async newVacancies() {
 		return await this.telegramBot.sendNewVacancies({
 			inLastDays: 1,
-			locale: AvailableLocales.ru,
 		});
 	}
 }

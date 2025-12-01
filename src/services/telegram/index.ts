@@ -8,7 +8,6 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { parseInline } from "marked";
 import fetch from "node-fetch";
-import { AvailableLocales } from "@/config/locale";
 import { env } from "@/helpers/env";
 import DiscordService from "../discord";
 import { prisma } from "../prisma";
@@ -24,8 +23,8 @@ import {
 export default class TelegramService {
 	private apiUrl: string;
 
-	private constructor({ botToken }: any) {
-		this.apiUrl = `https://api.telegram.org/bot${botToken}${process.env.NODE_ENV == "development" ? "/test" : ""}`;
+	private constructor({ botToken }: { botToken: string }) {
+		this.apiUrl = `https://api.telegram.org/bot${botToken}${process.env.NODE_ENV === "development" ? "/test" : ""}`;
 	}
 
 	static init(botToken?: string) {
@@ -42,7 +41,7 @@ export default class TelegramService {
 				return { ok: false };
 			}
 
-			return { ok: res.status == 200 };
+			return { ok: res.status === 200 };
 		} catch (error: any) {
 			console.error(error);
 			return { ok: false };
@@ -123,13 +122,7 @@ export default class TelegramService {
 		}
 	}
 
-	async sendNewProjectReports({
-		inLastDays = 1,
-		locale = AvailableLocales.ru,
-	}: {
-		inLastDays?: number;
-		locale?: AvailableLocales;
-	}) {
+	async sendNewProjectReports({ inLastDays = 1 }: { inLastDays?: number }) {
 		const lastLog = await prisma.queueJobLog.findFirst({
 			where: {
 				name: "new-project-reports",
@@ -160,28 +153,28 @@ export default class TelegramService {
 					},
 				},
 			},
-			include: { project: { select: { name: true, slug: true } } },
+			include: {
+				author: { select: { lang: true } },
+				project: { select: { name: true, slug: true } },
+			},
 		});
 
-		if (reports.length == 0) return { sent: 0 };
+		if (reports.length === 0) return { sent: 0 };
 
-		let message = "";
+		const ruReports = newProjectReportsMessageRu(
+			reports.filter((report) => report.author.lang === "ru"),
+		);
 
-		switch (locale) {
-			case "ru":
-				message = newProjectReportsMessageRu(reports);
-				break;
-			case "en":
-				message = newProjectReportsMessageEn(reports);
-				break;
-		}
+		const enReports = newProjectReportsMessageEn(
+			reports.filter((report) => report.author.lang === "en"),
+		);
 
 		// Send to RU chat
 		try {
 			await this.sendMessage({
 				chatId: env<number>("TELEGRAM_CHAT_ID"),
 				topicId: env<number>("TELEGRAM_TOPIC_REPORTS"),
-				message,
+				message: `${ruReports}\n\n${enReports}`,
 			});
 		} catch (error) {
 			console.error(
@@ -219,13 +212,7 @@ export default class TelegramService {
 		return { sent: reports.length };
 	}
 
-	async sendNewSpecialities({
-		inLastDays = 1,
-		locale = AvailableLocales.ru,
-	}: {
-		inLastDays?: number;
-		locale?: AvailableLocales;
-	}) {
+	async sendNewSpecialities({ inLastDays = 1 }: { inLastDays?: number }) {
 		const lastLog = await prisma.queueJobLog.findFirst({
 			where: {
 				name: "new-specialities",
@@ -250,41 +237,23 @@ export default class TelegramService {
 
 		if (specialities.length == 0) return { sent: 0 };
 
-		let message = "";
-
-		switch (locale) {
-			case "ru":
-				message = newSpecialitiesMessageRu(specialities);
-				break;
-			case "en":
-				message = newSpecialitiesMessageEn(specialities);
-				break;
-		}
+		const ruSpecialities = newSpecialitiesMessageRu(
+			specialities.filter((s) => s.user.lang === "ru"),
+		);
+		const enSpecialities = newSpecialitiesMessageEn(
+			specialities.filter((s) => s.user.lang === "en"),
+		);
 
 		// Send to RU chat
 		try {
 			await this.sendMessage({
 				chatId: env<number>("TELEGRAM_CHAT_ID"),
 				topicId: env<number>("TELEGRAM_TOPIC_NEWS"),
-				message,
+				message: `${ruSpecialities}\n\n${enSpecialities}`,
 			});
 		} catch (error) {
 			console.error(
 				"Error sending message to RU Telegram chat (new specialities)",
-				error,
-			);
-		}
-
-		// Send to EN chat
-		try {
-			await this.sendMessage({
-				chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
-				topicId: env<number>("TELEGRAM_EN_TOPIC_NEWS"),
-				message: newSpecialitiesMessageEn(specialities),
-			});
-		} catch (error) {
-			console.error(
-				"Error sending message to EN Telegram chat (new specialities)",
 				error,
 			);
 		}
@@ -304,13 +273,7 @@ export default class TelegramService {
 		return { sent: specialities.length };
 	}
 
-	async sendNewVacancies({
-		inLastDays = 1,
-		locale = AvailableLocales.ru,
-	}: {
-		inLastDays?: number;
-		locale?: AvailableLocales;
-	}) {
+	async sendNewVacancies({ inLastDays = 1 }: { inLastDays?: number }) {
 		const lastLog = await prisma.queueJobLog.findFirst({
 			where: {
 				name: "new-vacancies",
@@ -340,6 +303,9 @@ export default class TelegramService {
 			},
 			include: {
 				team: {
+					include: {
+						project: { include: { author: { select: { lang: true } } } },
+					},
 					select: { _count: { select: { vacancies: true } }, vacancies: true },
 				},
 			},
@@ -351,41 +317,23 @@ export default class TelegramService {
 
 		if (projectWithVacancies.length == 0) return { sent: 0 };
 
-		let message = "";
-
-		switch (locale) {
-			case "ru":
-				message = newVacanciesMessageRu(projectWithVacancies);
-				break;
-			case "en":
-				message = newVacanciesMessageEn(projectWithVacancies);
-				break;
-		}
+		const ruVacancies = newVacanciesMessageRu(
+			projectWithVacancies.filter((v) => v.team.project?.author?.lang === "ru"),
+		);
+		const enVacancies = newVacanciesMessageEn(
+			projectWithVacancies.filter((v) => v.team.project?.author?.lang === "en"),
+		);
 
 		// Send to RU chat
 		try {
 			await this.sendMessage({
 				chatId: env<number>("TELEGRAM_CHAT_ID"),
 				topicId: env<number>("TELEGRAM_TOPIC_VACANCIES"),
-				message,
+				message: `${ruVacancies}\n\n${enVacancies}`,
 			});
 		} catch (error) {
 			console.error(
 				"Error sending message to RU Telegram chat (new vacancies)",
-				error,
-			);
-		}
-
-		// Send to EN chat
-		try {
-			await this.sendMessage({
-				chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
-				topicId: env<number>("TELEGRAM_EN_TOPIC_VACANCIES"),
-				message: newVacanciesMessageEn(projectWithVacancies),
-			});
-		} catch (error) {
-			console.error(
-				"Error sending message to EN Telegram chat (new vacancies)",
 				error,
 			);
 		}
