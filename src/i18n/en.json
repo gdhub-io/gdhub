@@ -394,7 +394,8 @@
 		"confirm": "I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions."
 	},
 	"event": {
-		"about": "About",
+		"about": "About the event",
+		"bookNow": "Book Now Free",
 		"dates": "Dates",
 		"format": "Format",
 		"modal": {
@@ -426,9 +427,10 @@
 			"title.label": "Title",
 			"title.placeholder": "Event title"
 		},
+		"open": "Open",
 		"readMore": "Click to read more",
 		"register": "Register",
-		"schedule": "Schedule",
+		"schedule": "Event Schedule",
 		"schedule.dates": "Start/End Dates (local time)",
 		"schedule.description": "Description",
 		"schedule.description.placeholder": "Item description",
