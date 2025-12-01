@@ -38,7 +38,6 @@ const ProjectSettingsPage: NextPageWithLayout = () => {
 	];
 
 	const renderContent = useCallback(() => {
-		console.log("selectedKey", selectedKey);
 		switch (selectedKey[0]) {
 			case "links":
 				return <LinksProjectForm projectSlug={projectSlug} />;

@@ -38,7 +38,6 @@ const EventSettingsPage: NextPageWithLayout = () => {
 	];
 
 	const renderContent = useCallback(() => {
-		console.log("selectedKey", selectedKey);
 		switch (selectedKey[0]) {
 			case "danger":
 				return <DangerEventForm eventId={eventId} />;
