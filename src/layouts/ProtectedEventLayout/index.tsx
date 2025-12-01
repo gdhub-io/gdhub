@@ -278,15 +278,15 @@ export const ProtectedEventLayout = ({
 				</Link>
 			),
 		},
-		{
-			key: `/my/events/${eventId}/live-room`,
-			disabled: false,
-			label: (
-				<Link href={`/my/events/${eventId}/live-room`}>
-					{t("app.user-event.menu.live-room", "Live room")}
-				</Link>
-			),
-		},
+		// {
+		// 	key: `/my/events/${eventId}/live-room`,
+		// 	disabled: false,
+		// 	label: (
+		// 		<Link href={`/my/events/${eventId}/live-room`}>
+		// 			{t("app.user-event.menu.live-room", "Live room")}
+		// 		</Link>
+		// 	),
+		// },
 		{
 			key: `/my/events/${eventId}/settings/general`,
 			disabled: !isEventAuthor,

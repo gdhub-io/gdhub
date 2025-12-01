@@ -1,7 +1,19 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
 import { videoParser } from "@hannal/editorjs-video-plugin";
+import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
-import { Avatar, Button, Divider, Flex, Grid, Typography, theme } from "antd";
+import {
+	Avatar,
+	Button,
+	Divider,
+	Flex,
+	Grid,
+	Modal,
+	message,
+	Typography,
+	theme,
+} from "antd";
+import axios from "axios";
 import dayjs from "dayjs";
 import Blocks from "editorjs-blocks-react-renderer";
 import Image from "next/image";
@@ -23,6 +35,36 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
+
+	const { mutateAsync: registerToEvent, isPending: isRegistering } =
+		useMutation({
+			mutationFn: async () => {
+				await axios.post(`/api/user/event/${event.id}/register`);
+			},
+			onSuccess: () => {
+				Modal.success({
+					title: t("event.register.success.title", "Registration successful"),
+					content: t(
+						"event.register.success.description",
+						"You have been successfully registered for the event.",
+					),
+				});
+			},
+			onError: () => {
+				message.error(
+					t(
+						"event.register.error",
+						"Failed to register for the event. Please try again later.",
+					),
+				);
+			},
+		});
+
+	const isRegistrationAvailable =
+		!schedule?.length ||
+		dayjs().isBefore(
+			dayjs(schedule[0]?.endDate || event.schedule?.[0]?.endDate),
+		);
 
 	return (
 		<Flex gap={48} align="flex-start" className={styles.contentContainer}>
@@ -195,12 +237,12 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 					})}
 				</div>
 
-				{!!event.url &&
-					dayjs().isBefore(dayjs(event.schedule[0]?.startDate)) && (
-						<div
-							style={{ maxWidth: 420, margin: "40px 0 0", textAlign: "center" }}
-						>
-							{session ? (
+				{isRegistrationAvailable && (
+					<div
+						style={{ maxWidth: 420, margin: "40px 0 0", textAlign: "center" }}
+					>
+						{session?.user?.onboardingDone ? (
+							event.url ? (
 								<Link
 									href={event.url}
 									target="_blank"
@@ -222,18 +264,29 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 									</Button>
 								</Link>
 							) : (
-								<Link href="/registration">
-									<Button
-										type="primary"
-										size="large"
-										style={{ width: "100%", maxWidth: 420 }}
-									>
-										{t("event.loginOrRegister", "Login / Register")}
-									</Button>
-								</Link>
-							)}
-						</div>
-					)}
+								<Button
+									type="primary"
+									size="large"
+									style={{ width: "100%", maxWidth: 420 }}
+									loading={isRegistering}
+									onClick={() => registerToEvent()}
+								>
+									{t("event.register", "Register")}
+								</Button>
+							)
+						) : (
+							<Link href="/registration">
+								<Button
+									type="primary"
+									size="large"
+									style={{ width: "100%", maxWidth: 420 }}
+								>
+									{t("event.loginOrRegister", "Login / Register")}
+								</Button>
+							</Link>
+						)}
+					</div>
+				)}
 			</div>
 			{/* Правая колонка: картинка */}
 			{event.image && screens.md && (

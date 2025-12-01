@@ -1,17 +1,28 @@
+import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
-import { Avatar, Button, Divider, Flex, Grid, Typography, theme } from "antd";
+import {
+	Avatar,
+	Button,
+	Divider,
+	Flex,
+	Grid,
+	Modal,
+	message,
+	Typography,
+	theme,
+} from "antd";
+import axios from "axios";
 import Blocks from "editorjs-blocks-react-renderer";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import React from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./EventConferenceOrGamelabView.module.scss";
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text } = Typography;
 
 const MAX_VISIBLE_SPEAKERS = 3;
 
@@ -24,6 +35,30 @@ const EventConferenceOrGamelabView = ({
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
+
+	const { mutateAsync: registerToEvent, isPending: isRegistering } =
+		useMutation({
+			mutationFn: async () => {
+				await axios.post(`/api/user/event/${event.id}/register`);
+			},
+			onSuccess: () => {
+				Modal.success({
+					title: t("event.register.success.title", "Registration successful"),
+					content: t(
+						"event.register.success.description",
+						"You have been successfully registered for the event.",
+					),
+				});
+			},
+			onError: () => {
+				message.error(
+					t(
+						"event.register.error",
+						"Failed to register for the event. Please try again later.",
+					),
+				);
+			},
+		});
 
 	return (
 		<div className={styles.contentContainer} style={{ position: "relative" }}>
@@ -258,11 +293,11 @@ const EventConferenceOrGamelabView = ({
 			</div>
 
 			{/* Кнопка регистрации внизу страницы */}
-			{event.url && (
-				<div
-					style={{ maxWidth: 420, margin: "40px auto 0", textAlign: "center" }}
-				>
-					{session ? (
+			<div
+				style={{ maxWidth: 420, margin: "40px auto 0", textAlign: "center" }}
+			>
+				{session?.user?.onboardingDone ? (
+					event.url ? (
 						<Link href={event.url} target="_blank">
 							<Button
 								type="primary"
@@ -273,18 +308,28 @@ const EventConferenceOrGamelabView = ({
 							</Button>
 						</Link>
 					) : (
-						<Link href="/registration">
-							<Button
-								type="primary"
-								size="large"
-								style={{ width: "100%", maxWidth: 420 }}
-							>
-								{t("event.loginOrRegister", "Login / Register")}
-							</Button>
-						</Link>
-					)}
-				</div>
-			)}
+						<Button
+							type="primary"
+							size="large"
+							style={{ width: "100%", maxWidth: 420 }}
+							loading={isRegistering}
+							onClick={() => registerToEvent()}
+						>
+							{t("event.register", "Register")}
+						</Button>
+					)
+				) : (
+					<Link href="/registration">
+						<Button
+							type="primary"
+							size="large"
+							style={{ width: "100%", maxWidth: 420 }}
+						>
+							{t("event.loginOrRegister", "Login / Register")}
+						</Button>
+					</Link>
+				)}
+			</div>
 		</div>
 	);
 };

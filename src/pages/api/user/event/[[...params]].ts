@@ -18,6 +18,7 @@ import {
 	Body,
 	createHandler,
 	Delete,
+	ForbiddenException,
 	Get,
 	NotFoundException,
 	Param,
@@ -28,6 +29,7 @@ import {
 } from "next-api-decorators";
 import slugify from "slugify";
 import { NextAuthGuard } from "@/lib/api-middlewares";
+import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
 class UserEventScheduleItemDto {
@@ -158,6 +160,15 @@ class UserEventUpdateDto {
 	@IsObject()
 	@IsOptional()
 	content?: Record<string, any>;
+}
+
+class EventMembersMessageDto {
+	@IsArray()
+	@IsString({ each: true })
+	memberIds: string[];
+
+	@IsString()
+	message: string;
 }
 
 @NextAuthGuard("user")
@@ -340,6 +351,210 @@ class ApiUserEventEndpointHandler {
 				publishedAt: null,
 			},
 		});
+	}
+
+	@Get("/:id/members")
+	public async getMembers(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to view members");
+		}
+
+		const members = await prisma.eventMember.findMany({
+			where: { eventId: id },
+			include: {
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+						profile: { select: { name: true } },
+					},
+				},
+			},
+			orderBy: { createdAt: "asc" },
+		});
+
+		return members;
+	}
+
+	@Post("/:id/register")
+	public async register(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const event = await prisma.event.findUnique({
+			where: { id },
+			include: {
+				createdBy: {
+					select: {
+						id: true,
+						email: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (event.status !== prismaClient.$Enums.EventStatus.Published) {
+			throw new BadRequestException("Event is not open for registration");
+		}
+
+		const existingMember = await prisma.eventMember.findFirst({
+			where: {
+				eventId: id,
+				userId: req.user.id as string,
+				status: {
+					in: [
+						prismaClient.$Enums.EventMemberStatus.Pending,
+						prismaClient.$Enums.EventMemberStatus.Approved,
+					],
+				},
+			},
+		});
+
+		if (existingMember) {
+			return { success: true, alreadyRegistered: true };
+		}
+
+		const member = await prisma.eventMember.create({
+			data: {
+				eventId: id,
+				userId: req.user.id as string,
+				status: prismaClient.$Enums.EventMemberStatus.Approved,
+			},
+		});
+
+		// Notify participant
+		try {
+			if (req.user.id) {
+				await NovuService.send({
+					to: {
+						subscriberId: req.user.id as string,
+						email: req.user.email,
+					},
+					template: "event-member-registered",
+					payload: {
+						eventId: event.id,
+						eventTitle: event.title,
+						memberId: req.user.id,
+						memberName: req.user.name,
+					},
+				});
+			}
+		} catch (error) {
+			console.error("Failed to send Novu notification to member", error);
+		}
+
+		// Notify event creator
+		try {
+			if (event.createdById) {
+				await NovuService.send({
+					to: {
+						subscriberId: event.createdById,
+						email: event.createdBy.email ?? undefined,
+					},
+					template: "event-owner-new-member",
+					payload: {
+						eventId: event.id,
+						eventTitle: event.title,
+						memberId: req.user.id,
+						memberName: req.user.name,
+					},
+				});
+			}
+		} catch (error) {
+			console.error("Failed to send Novu notification to event owner", error);
+		}
+
+		return { success: true, member };
+	}
+
+	@Post("/:id/members/message")
+	public async sendMessageToMembers(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Body(ValidationPipe) body: EventMembersMessageDto,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			include: {
+				createdBy: {
+					select: {
+						id: true,
+						email: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to send messages");
+		}
+
+		const members = await prisma.eventMember.findMany({
+			where: {
+				eventId: id,
+				id: { in: body.memberIds },
+			},
+			include: {
+				user: {
+					select: {
+						id: true,
+						email: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		await Promise.all(
+			members.map((member) =>
+				NovuService.send({
+					to: {
+						subscriberId: member.user.id,
+						email: member.user.email ?? undefined,
+					},
+					template: "event-member-message",
+					payload: {
+						eventId: event.id,
+						eventTitle: event.title,
+						message: body.message,
+						memberId: member.user.id,
+						memberName: member.user.name,
+						senderId: req.user.id,
+						senderName: req.user.name,
+					},
+				}),
+			),
+		);
+
+		return { success: true, sent: members.length };
 	}
 
 	@Put("/:id/generate-slug")
