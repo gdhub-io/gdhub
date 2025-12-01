@@ -129,12 +129,12 @@ export function formatEventPeriod(
 
 	if (sameDay) {
 		// Jan 16, 2025 10:00-12:00
-		return `${dStart.format(dateFormat)}${showYear ? ", " + dStart.format(yearFormat) : ""} ${dStart.format(timeFormat)}-${dEnd.format(timeFormat)}`.trim();
+		return `${dStart.format(dateFormat)}${showYear ? ", " + dStart.format(yearFormat) : ", "} ${dStart.format(timeFormat)}-${dEnd.format(timeFormat)}`.trim();
 	} else if (sameYear) {
 		// Jan 16 10:00 - Jan 17 12:00, 2025
 		return `${dStart.format(`${dateFormat} ${timeFormat}`)} - ${dEnd.format(`${dateFormat} ${timeFormat}`)}${showYear ? ", " + dStart.format(yearFormat) : ""}`;
 	} else {
 		// Jan 16, 2025 10:00 - Jan 17, 2026 12:00
-		return `${dStart.format(`${dateFormat}${showYear ? ", " + yearFormat : ""} ${timeFormat}`)} - ${dEnd.format(`${dateFormat}, ${dEnd.year() !== nowYear ? yearFormat + " " : ""}${timeFormat}`)}`;
+		return `${dStart.format(`${dateFormat}${showYear ? ", " + yearFormat : ","} ${timeFormat}`)} - ${dEnd.format(`${dateFormat}, ${dEnd.year() !== nowYear ? yearFormat + " " : ", "}${timeFormat}`)}`;
 	}
 }
