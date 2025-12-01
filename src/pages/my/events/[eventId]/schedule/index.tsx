@@ -7,13 +7,13 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import type { ScheduleItemFormValues } from "@/components/modals/EventModal";
-import { hasRole } from "@/helpers/user";
-import { ProtectedEventLayout } from "@/layouts/ProtectedEventLayout";
 import {
 	EventScheduleGantt,
 	type EventScheduleGanttRef,
-} from "./EventScheduleGantt";
+} from "@/components/event/EventScheduleGantt";
+import type { ScheduleItemFormValues } from "@/components/modals/EventModal";
+import { hasRole } from "@/helpers/user";
+import { ProtectedEventLayout } from "@/layouts/ProtectedEventLayout";
 
 interface EventScheduleItem {
 	id: string;
