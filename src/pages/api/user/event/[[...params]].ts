@@ -544,6 +544,7 @@ class ApiUserEventEndpointHandler {
 					payload: {
 						eventId: event.id,
 						eventTitle: event.title,
+						eventUrl: `${process.env.NEXT_PUBLIC_APP_URL}/event/${event.slug}`,
 						message: body.message,
 						memberId: member.user.id,
 						memberName: member.user.name,
