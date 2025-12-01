@@ -182,7 +182,6 @@ const SpecialityModal = ({
 	const levelOptions: DefaultOptionType[] = useMemo(
 		() =>
 			skillLevelsList.map((item: any, indx: number) => {
-				console.log(item);
 				return {
 					value: item.value,
 					label:

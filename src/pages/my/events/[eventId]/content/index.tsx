@@ -140,11 +140,8 @@ export const EventContentContent = () => {
 
 	return (
 		<ProtectedEventLayout
-			title={t("Event Content")}
-			description={t(
-				"event.modal.content.hint",
-				"You can add content to the event.",
-			)}
+			title={t("event.content.title", "Event description")}
+			description={t("event.content.hint", "Describe the event in detail.")}
 			actions={
 				<Button
 					icon={<IconDeviceFloppy />}
@@ -152,7 +149,7 @@ export const EventContentContent = () => {
 					loading={isSaving}
 					type="primary"
 				>
-					{t("event.modal.content.save", "Save")}
+					{t("event.content.saveButton", "Save")}
 				</Button>
 			}
 		>
@@ -162,7 +159,6 @@ export const EventContentContent = () => {
 					style={{
 						backgroundColor: token.colorBgBase,
 						borderRadius: token.borderRadius,
-						boxShadow: token.boxShadow,
 					}}
 				>
 					<div id={editorHolderId} ref={editorHolderRef} />

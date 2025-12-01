@@ -6,6 +6,7 @@ import {
 	Button,
 	Col,
 	Form,
+	Grid,
 	Input,
 	message,
 	Popover,
@@ -28,6 +29,7 @@ type GeneralProjectFormArgs = {
 const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	const { t } = useTranslate();
 	const [form] = Form.useForm();
+	const screens = Grid.useBreakpoint();
 	const [cover, setCover] = useState<string | null>();
 	const [coverProcessing, setCoverProcessing] = useState(false);
 
@@ -187,7 +189,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 				initialValues={{ ...event?.data }}
 				requiredMark="optional"
 			>
-				<Row gutter={16}>
+				<Row gutter={[16, 16]}>
 					{isBigEvent ? (
 						<Col span={24} style={{ marginBottom: 24 }}>
 							{!cover ? (
@@ -245,7 +247,8 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 							)}
 						</Col>
 					) : null}
-					<Col span={isBigEvent ? 24 : 8}>
+
+					<Col span={isBigEvent || !screens.md ? 24 : 8}>
 						{!isBigEvent &&
 							(!cover ? (
 								<Form.Item
@@ -297,7 +300,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 								</Spin>
 							))}
 					</Col>
-					<Col span={isBigEvent ? 24 : 16}>
+					<Col span={isBigEvent || !screens.md ? 24 : 16}>
 						<Form.Item
 							label={t("event.modal.title.label", "Title")}
 							name="title"

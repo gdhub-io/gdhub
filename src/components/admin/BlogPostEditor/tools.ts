@@ -12,6 +12,7 @@ import Marker from "@editorjs/marker";
 import Paragraph from "@editorjs/paragraph";
 import Quote from "@editorjs/quote";
 import Table from "@editorjs/table";
+import { Video } from "@hannal/editorjs-video-plugin";
 import axios from "axios";
 
 class CustomImageTool extends Image {
@@ -66,6 +67,9 @@ export const tools: {
 	table: {
 		class: Table as unknown as ToolConstructable,
 		inlineToolbar: true,
+	},
+	video: {
+		class: Video,
 	},
 	image: {
 		class: CustomImageTool,

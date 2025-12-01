@@ -50,8 +50,6 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 	// on open modal, set initial values and refetch speakers
 	useEffect(() => {
 		if (open) {
-			console.log("ScheduleItemModal", "input", initialValues);
-
 			if (initialValues) {
 				form.setFieldsValue({
 					...initialValues,
@@ -132,8 +130,6 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 	const handleOk = async () => {
 		try {
 			const values = await form.validateFields();
-
-			console.log(console.log("ScheduleItemModal", "input", initialValues));
 
 			const data = {
 				id: initialValues?.id || null,

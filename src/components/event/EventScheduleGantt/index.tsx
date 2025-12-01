@@ -9,7 +9,8 @@ import {
 import type { ICellProps } from "@svar-ui/react-grid";
 import type { IMenuOption, IMenuOptionClick } from "@svar-ui/react-menu";
 import "@svar-ui/react-gantt/all.css";
-import { Avatar } from "antd";
+import { IconDotsVertical } from "@tabler/icons-react";
+import { Avatar, Button, Dropdown } from "antd";
 import dayjs from "dayjs";
 import {
 	forwardRef,
@@ -145,7 +146,7 @@ export const EventScheduleGantt = forwardRef<
 				{
 					id: "text",
 					header: "Item",
-					width: 300,
+					width: 250,
 					sort: false,
 				},
 				{
@@ -169,7 +170,6 @@ export const EventScheduleGantt = forwardRef<
 					sort: false,
 					align: "center",
 					cell: (params: ICellProps) => {
-						console.log("params", params);
 						const row = params.row as {
 							speakers?: {
 								name: string;
@@ -201,9 +201,39 @@ export const EventScheduleGantt = forwardRef<
 				{
 					id: "duration",
 					header: "Hours",
-					width: 100,
+					width: 80,
 					sort: false,
 					align: "center",
+				},
+				{
+					id: "actions",
+					header: "",
+					width: 50,
+					sort: false,
+					align: "center",
+					cell: (params: ICellProps) => {
+						const row = params.row as { id?: string };
+						return (
+							<Dropdown
+								trigger={["click"]}
+								menu={{
+									items: [
+										{
+											key: "edit",
+											label: "Edit",
+										},
+										{
+											key: "delete",
+											label: "Delete",
+											danger: true,
+										},
+									],
+								}}
+							>
+								<Button icon={<IconDotsVertical size={16} />} type="text" />
+							</Dropdown>
+						);
+					},
 				},
 			],
 			[],

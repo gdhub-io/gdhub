@@ -20,11 +20,6 @@ export default function ChatTitle() {
 
 		const room = chatClient?.getRoom(selectedRoomId);
 
-		console.log(
-			"getAvatarUrl",
-			room?.getAvatarUrl(chatClient?.baseUrl || "", 24, 24, "crop"),
-		);
-
 		setTitle(room?.name || "");
 	}, [selectedRoomId, ready, chatClient?.baseUrl, chatClient?.getRoom]);
 

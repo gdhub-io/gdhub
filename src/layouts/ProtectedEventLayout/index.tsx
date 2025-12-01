@@ -140,7 +140,7 @@ export const ProtectedEventLayout = ({
 	useEffect(() => {
 		if (session?.user.lang)
 			changeLanguage(session.user.lang).then((d) =>
-				console.log("language is changed"),
+				console.info("language is changed"),
 			);
 	}, [session?.user.lang]);
 
@@ -302,9 +302,9 @@ export const ProtectedEventLayout = ({
 			className: styles.publicPageMenuItem,
 			label: (
 				<>
-					<Space>
+					<Space wrap={true}>
 						{event?.status === prismaClient.$Enums.EventStatus.Draft && (
-							<Space>
+							<Space wrap={true}>
 								<Text type="secondary">The event is not published yet</Text>
 								<Button
 									type="primary"
@@ -317,7 +317,7 @@ export const ProtectedEventLayout = ({
 							</Space>
 						)}
 						{event?.status === prismaClient.$Enums.EventStatus.Published && (
-							<Space>
+							<Space wrap={true}>
 								<Text type="secondary">
 									The event is published at{" "}
 									{dayjs(event?.publishedAt).format("lll")}
@@ -394,11 +394,6 @@ export const ProtectedEventLayout = ({
 										},
 										{
 											title: screens.md ? (
-												<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
-											) : null,
-										},
-										{
-											title: screens.md ? (
 												<Link href="/hub/events/my">
 													{t("hub.menu.my-events", "My events")}
 												</Link>
@@ -406,9 +401,11 @@ export const ProtectedEventLayout = ({
 										},
 										{
 											title: (
-												<Text ellipsis={{ tooltip: true }}>
-													{event?.title || "Event"}
-												</Text>
+												<div style={{ display: "grid" }}>
+													<Text ellipsis={{ tooltip: true }}>
+														{event?.title || "Event"}
+													</Text>
+												</div>
 											),
 										},
 									]}
@@ -494,6 +491,7 @@ export const ProtectedEventLayout = ({
 								justify="space-between"
 								align="center"
 								style={{ marginBottom: 24 }}
+								wrap={true}
 							>
 								<Space
 									direction="vertical"

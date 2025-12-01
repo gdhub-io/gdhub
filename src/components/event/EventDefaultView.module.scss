@@ -11,10 +11,14 @@
 
   @media (max-width: 600px) {
     padding: 8px;
+
     h2 {
       font-size: 15px;
     }
-    p, .ant-typography, .ant-typography p {
+
+    p,
+    .ant-typography,
+    .ant-typography p {
       font-size: 15px !important;
     }
   }
@@ -169,6 +173,15 @@
         th {
           background: rgba(0, 0, 0, 0.02);
           font-weight: 600;
+        }
+      }
+
+      .editorjs-video-block {
+        border-radius: 16px;
+        overflow: hidden;
+
+        iframe {
+          border: none !important;
         }
       }
     }

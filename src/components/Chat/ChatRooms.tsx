@@ -29,13 +29,6 @@ export default function ChatRooms({
 			return;
 		}
 
-		console.log(
-			"[chat] rooms",
-			chatClient
-				.getRooms()
-				.map((r) => ({ myMembership: r.getMyMembership(), ...r })),
-		);
-
 		const mapRoomsToItems = (rooms: Room[]): Conversation[] =>
 			rooms
 				.filter((r) => ["join", "invite"].includes(r.getMyMembership()))

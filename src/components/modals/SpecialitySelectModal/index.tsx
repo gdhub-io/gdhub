@@ -80,7 +80,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 
 			setProcessing(false);
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			setProcessing(false);
 		}
 	};

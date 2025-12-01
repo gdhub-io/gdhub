@@ -57,10 +57,6 @@ const ConnectProfileForm = ({
 		message.success("Your Telegram account is disconnected");
 	};
 
-	useEffect(() => {
-		console.log("session", session);
-	}, [session]);
-
 	return (
 		<Card
 			title={t(

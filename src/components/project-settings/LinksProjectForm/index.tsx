@@ -35,30 +35,22 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const ctx = useContext(ProjectContext);
 	const [links, setLinks] = useState<ProjectLink[]>([]);
 
-	// Debug: log links state changes
-	useEffect(() => {
-		console.log("links state updated:", links);
-	}, [links]);
-
 	const { data: projectLinks, isLoading: isLoadingProjectLinks } = useQuery({
 		queryKey: ["project-links", ctx?.contextProject?.id],
 		enabled: !!ctx?.contextProject?.id,
 		refetchOnWindowFocus: false,
 		queryFn: () => {
-			console.log("Fetching links for project ID:", ctx?.contextProject?.id);
 			return axios
 				.get<ProjectLink[]>(`/api/user/project/links`, {
 					params: { id: ctx?.contextProject?.id },
 				})
 				.then((res) => {
-					console.log("API response:", res.data);
 					return res.data;
 				});
 		},
 	});
 
 	useEffect(() => {
-		console.log("projectLinks received:", projectLinks);
 		if (projectLinks && Array.isArray(projectLinks)) {
 			// Transform the data to match the expected format
 			const transformedLinks = projectLinks.map((link: any) => ({
@@ -66,7 +58,6 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 				link: link.link || "",
 				isPrimary: link.isPrimary || false,
 			}));
-			console.log("transformedLinks:", transformedLinks);
 			setLinks(transformedLinks);
 
 			// Set form values

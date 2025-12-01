@@ -220,7 +220,6 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 					try {
 						const content: OutputData | undefined =
 							await editorInstance.current?.save();
-						console.log("Содержимое редактора:", content);
 
 						// Update document title from first header block
 						if (content && content.blocks && content.blocks.length > 0) {

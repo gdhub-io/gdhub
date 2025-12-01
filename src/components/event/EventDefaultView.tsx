@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
+import { videoParser } from "@hannal/editorjs-video-plugin";
 import { useTolgee } from "@tolgee/react";
 import { Avatar, Button, Divider, Flex, Grid, Typography, theme } from "antd";
 import dayjs from "dayjs";
@@ -29,7 +31,19 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 				<Title level={2}>{t("event.about", "About")}</Title>
 				{event.content ? (
 					<div className={styles.content}>
-						<Blocks data={JSON.parse(event.content)} />
+						<Blocks
+							data={JSON.parse(event.content)}
+							renderers={{
+								video: ({ data }) => (
+									<div
+										className={`editorjs-video-block`}
+										dangerouslySetInnerHTML={{
+											__html: videoParser?.video({ data }) || "",
+										}}
+									/>
+								),
+							}}
+						/>
 					</div>
 				) : (
 					<Paragraph style={{ fontSize: 18 }}>
@@ -54,8 +68,6 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 						);
 						const extraCount =
 							(item.speakers?.length || 0) - MAX_VISIBLE_SPEAKERS;
-
-						console.log(item.speakers);
 
 						return (
 							<div

@@ -5,13 +5,16 @@ import {
 	IsArray,
 	IsBoolean,
 	IsDate,
+	IsDateString,
 	IsEnum,
 	IsObject,
 	IsOptional,
 	IsString,
 	ValidateNested,
 } from "class-validator";
+import dayjs from "dayjs";
 import {
+	BadRequestException,
 	Body,
 	createHandler,
 	Delete,
@@ -20,19 +23,12 @@ import {
 	Param,
 	Post,
 	Put,
-	Query,
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
 import slugify from "slugify";
-import { AvailableLocales } from "@/config/locale";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
-
-class IDParamDto {
-	@IsString()
-	id: string;
-}
 
 class UserEventScheduleItemDto {
 	@IsString()
@@ -51,13 +47,13 @@ class UserEventScheduleItemDto {
 	@IsOptional()
 	url?: string;
 
-	@IsDate()
+	@IsDateString()
 	@IsOptional()
-	startDate?: Date;
+	startDate?: string;
 
-	@IsDate()
+	@IsDateString()
 	@IsOptional()
-	endDate?: Date;
+	endDate?: string;
 
 	@IsArray()
 	@IsString({ each: true })
@@ -92,8 +88,20 @@ class UserEventCreateDto {
 	@IsOptional()
 	shortDescription?: string;
 
+	@IsDate()
+	startDate: Date;
+
+	@IsDate()
+	endDate: Date;
+
 	@IsString()
-	description: string;
+	directionId: string;
+
+	@IsEnum(prismaClient.$Enums.Language)
+	language: prismaClient.$Enums.Language;
+
+	@IsEnum(prismaClient.$Enums.EventFormat)
+	format: prismaClient.$Enums.EventFormat;
 
 	@IsString()
 	@IsOptional()
@@ -149,7 +157,7 @@ class UserEventUpdateDto {
 
 	@IsObject()
 	@IsOptional()
-	content?: any;
+	content?: Record<string, any>;
 }
 
 @NextAuthGuard("user")
@@ -223,7 +231,7 @@ class ApiUserEventEndpointHandler {
 				type: data.type,
 				title: data.title,
 				shortDescription: data.shortDescription,
-				description: data.description,
+				description: "", //use content instead
 				url: data.url,
 				image: data.image,
 				createdById: req.user.id,
@@ -235,29 +243,42 @@ class ApiUserEventEndpointHandler {
 			},
 		});
 
-		for (const item of data.schedule ?? []) {
+		if (data.startDate && data.endDate) {
 			await prisma.eventScheduleItem.create({
 				data: {
 					eventId: event.id,
-					title: item.title,
-					description: item.description,
-					url: item.url,
-					directionId: item.directionId,
-					format: item.format,
-					language: item.language,
-					startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
-					endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-					speakers:
-						item.speakers?.length > 0
-							? {
-									connect: item.speakers.map((speaker) => ({
-										id: speaker,
-									})),
-								}
-							: undefined,
+					startDate: dayjs(data.startDate).toISOString(),
+					endDate: dayjs(data.endDate).toISOString(),
+					directionId: data.directionId,
+					language: data.language,
+					format: data.format,
 				},
 			});
 		}
+
+		// for (const item of data.schedule ?? []) {
+		// 	await prisma.eventScheduleItem.create({
+		// 		data: {
+		// 			eventId: event.id,
+		// 			title: item.title,
+		// 			description: item.description,
+		// 			url: item.url,
+		// 			directionId: item.directionId,
+		// 			format: item.format,
+		// 			language: item.language,
+		// 			startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
+		// 			endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
+		// 			speakers:
+		// 				item.speakers?.length > 0
+		// 					? {
+		// 							connect: item.speakers.map((speaker) => ({
+		// 								id: speaker,
+		// 							})),
+		// 						}
+		// 					: undefined,
+		// 		},
+		// 	});
+		// }
 
 		return event;
 	}
@@ -361,6 +382,10 @@ class ApiUserEventEndpointHandler {
 		@Param("id") id: string,
 		@Body(ValidationPipe) data: UserEventScheduleItemDto,
 	) {
+		if (!data.startDate || !data.endDate) {
+			throw new BadRequestException("Start and end date are required");
+		}
+
 		await prisma.eventScheduleItem.create({
 			data: {
 				eventId: id,
@@ -370,8 +395,8 @@ class ApiUserEventEndpointHandler {
 				directionId: data.directionId,
 				format: data.format,
 				language: data.language,
-				startDate: data.startDate?.toISOString() ?? new Date().toISOString(),
-				endDate: data.endDate?.toISOString() ?? new Date().toISOString(),
+				startDate: data.startDate,
+				endDate: data.endDate,
 				speakers: data.speakers?.length
 					? {
 							connect: data.speakers.map((speaker) => ({
@@ -401,8 +426,8 @@ class ApiUserEventEndpointHandler {
 				directionId: data.directionId,
 				format: data.format,
 				language: data.language,
-				startDate: data.startDate?.toISOString() ?? new Date().toISOString(),
-				endDate: data.endDate?.toISOString() ?? new Date().toISOString(),
+				startDate: data.startDate,
+				endDate: data.endDate,
 				speakers: data.speakers?.length
 					? {
 							set: data.speakers.map((speakerId) => ({

@@ -81,9 +81,9 @@ describe("POST /api/user/project", () => {
 			console.error("Error stack:", error.stack);
 		}
 
-		console.log("Response status:", res._getStatusCode());
-		console.log("Response body:", res._getData());
-		console.log("Response headers:", res._getHeaders());
+		console.info("Response status:", res._getStatusCode());
+		console.info("Response body:", res._getData());
+		console.info("Response headers:", res._getHeaders());
 
 		expect(res._getStatusCode()).toBe(200);
 		expect(prisma.project.create).toHaveBeenCalled();

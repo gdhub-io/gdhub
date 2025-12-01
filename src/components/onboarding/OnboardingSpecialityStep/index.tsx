@@ -142,8 +142,6 @@ export const OnboardingSpecialityStep = ({
 		try {
 			const data = await form.validateFields();
 
-			console.log("formSpeciality", form.getFieldsValue());
-
 			if (data.id) {
 				await updateSpeciality({ id: data.id, data });
 			} else {
@@ -167,7 +165,6 @@ export const OnboardingSpecialityStep = ({
 			data: { jobPosition, locale: getLanguage() },
 			maxCount: 1,
 			onChange: ({ file }) => {
-				console.log("onChange", file);
 				if (
 					file.status === "done" &&
 					(!file.response || file.response.success == false)
@@ -198,7 +195,6 @@ export const OnboardingSpecialityStep = ({
 				}
 
 				if (file.status === "done") {
-					console.log("fillForm", file);
 					fillForm(file.response);
 					setIsParsing(false);
 				}
