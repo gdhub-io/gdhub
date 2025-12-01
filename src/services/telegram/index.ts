@@ -42,11 +42,9 @@ export default class TelegramService {
 				return { ok: false };
 			}
 
-			console.log(res);
-
 			return { ok: res.status == 200 };
 		} catch (error: any) {
-			console.log(error);
+			console.error(error);
 			return { ok: false };
 		}
 	}
@@ -81,9 +79,9 @@ export default class TelegramService {
 
 			if (!res.data) throw new Error("Telegram sendMessage response is wrong");
 
-			console.log("Message successfully send.");
+			console.info("Message successfully send.");
 		} catch (error: any) {
-			console.log(error);
+			console.error(error);
 		}
 	}
 
@@ -119,9 +117,9 @@ export default class TelegramService {
 
 			if (!res.ok) throw new Error("Telegram sendMessage response is wrong");
 
-			console.log("Message successfully send.");
+			console.info("Message successfully send.");
 		} catch (error: any) {
-			console.log(error);
+			console.error(error);
 		}
 	}
 

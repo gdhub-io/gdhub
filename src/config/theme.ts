@@ -371,5 +371,8 @@ export const appThemeConfig: ThemeConfig = {
 		Tooltip: {
 			colorTextLightSolid: "#222222",
 		},
+		Switch: {
+			lineHeight: 2,
+		},
 	},
 };

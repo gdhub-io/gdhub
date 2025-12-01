@@ -7,7 +7,6 @@ export const getBase64File = (file: any) =>
 	});
 
 export const normUploadFile = (e: any) => {
-	console.log("normUploadFile", e);
 	if (Array.isArray(e)) {
 		return e;
 	}

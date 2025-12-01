@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player/lazy";
 import rehypeRaw from "rehype-raw";
+import DevlogPosts from "../DevlogPosts";
 import EditPostModal from "../modals/EditPostModal";
 import { DevLogPost } from "./DevLogPost";
 import { EmptyDevLog } from "./EmptyDevLog";
@@ -107,7 +108,8 @@ export const DevLogWall = ({ slug }: { slug: string }) => {
 			<Spin spinning={isLoading}>
 				<Row gutter={[32, 16]} justify="center" className={styles.wall}>
 					<Col xs={24} sm={20} md={18} lg={16}>
-						<List
+						<DevlogPosts projectId={project?.data?.id} />
+						{/* <List
 							header={
 								<PostForm
 									projectId={project?.data.id}
@@ -128,7 +130,7 @@ export const DevLogWall = ({ slug }: { slug: string }) => {
 							locale={{
 								emptyText: <EmptyDevLog projectName={project?.data?.name} />,
 							}}
-						/>
+						/> */}
 					</Col>
 				</Row>
 			</Spin>

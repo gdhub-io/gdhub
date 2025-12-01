@@ -49,8 +49,6 @@ export const LandingLayout = ({ children }: any) => {
 	const screens = Grid.useBreakpoint();
 	const { data: session, status: authStatus }: any = useSession();
 
-	console.log("authStatus", authStatus);
-
 	const seoSettings: NextSeoProps = {
 		title: t("landing.seo.title", "Game Developers Hub"),
 		description: t(

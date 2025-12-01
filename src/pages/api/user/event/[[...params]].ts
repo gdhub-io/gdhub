@@ -1,36 +1,36 @@
+import { randomUUID } from "node:crypto";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { Transform, Type } from "class-transformer";
 import {
 	IsArray,
 	IsBoolean,
 	IsDate,
+	IsDateString,
 	IsEnum,
+	IsObject,
 	IsOptional,
 	IsString,
 	ValidateNested,
 } from "class-validator";
-import { randomUUID } from "crypto";
+import dayjs from "dayjs";
 import {
+	BadRequestException,
 	Body,
 	createHandler,
 	Delete,
+	ForbiddenException,
 	Get,
 	NotFoundException,
 	Param,
 	Post,
 	Put,
-	Query,
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
 import slugify from "slugify";
 import { NextAuthGuard } from "@/lib/api-middlewares";
+import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
-
-class IDParamDto {
-	@IsString()
-	id: string;
-}
 
 class UserEventScheduleItemDto {
 	@IsString()
@@ -49,13 +49,13 @@ class UserEventScheduleItemDto {
 	@IsOptional()
 	url?: string;
 
-	@IsDate()
+	@IsDateString()
 	@IsOptional()
-	startDate?: Date;
+	startDate?: string;
 
-	@IsDate()
+	@IsDateString()
 	@IsOptional()
-	endDate?: Date;
+	endDate?: string;
 
 	@IsArray()
 	@IsString({ each: true })
@@ -90,8 +90,20 @@ class UserEventCreateDto {
 	@IsOptional()
 	shortDescription?: string;
 
+	@IsDate()
+	startDate: Date;
+
+	@IsDate()
+	endDate: Date;
+
 	@IsString()
-	description: string;
+	directionId: string;
+
+	@IsEnum(prismaClient.$Enums.Language)
+	language: prismaClient.$Enums.Language;
+
+	@IsEnum(prismaClient.$Enums.EventFormat)
+	format: prismaClient.$Enums.EventFormat;
 
 	@IsString()
 	@IsOptional()
@@ -118,14 +130,16 @@ class UserEventCreateDto {
 
 class UserEventUpdateDto {
 	@IsString()
-	title: string;
+	@IsOptional()
+	title?: string;
 
 	@IsString()
 	@IsOptional()
 	slug?: string;
 
 	@IsString()
-	description: string;
+	@IsOptional()
+	description?: string;
 
 	@IsString()
 	@IsOptional()
@@ -143,11 +157,18 @@ class UserEventUpdateDto {
 	@IsOptional()
 	isFree?: boolean;
 
-	@IsArray()
+	@IsObject()
 	@IsOptional()
-	@ValidateNested({ each: true })
-	@Type(() => UserEventScheduleItemDto)
-	schedule?: UserEventScheduleItemDto[];
+	content?: Record<string, any>;
+}
+
+class EventMembersMessageDto {
+	@IsArray()
+	@IsString({ each: true })
+	memberIds: string[];
+
+	@IsString()
+	message: string;
 }
 
 @NextAuthGuard("user")
@@ -221,7 +242,7 @@ class ApiUserEventEndpointHandler {
 				type: data.type,
 				title: data.title,
 				shortDescription: data.shortDescription,
-				description: data.description,
+				description: "", //use content instead
 				url: data.url,
 				image: data.image,
 				createdById: req.user.id,
@@ -233,29 +254,42 @@ class ApiUserEventEndpointHandler {
 			},
 		});
 
-		for (const item of data.schedule ?? []) {
+		if (data.startDate && data.endDate) {
 			await prisma.eventScheduleItem.create({
 				data: {
 					eventId: event.id,
-					title: item.title,
-					description: item.description,
-					url: item.url,
-					directionId: item.directionId,
-					format: item.format,
-					language: item.language,
-					startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
-					endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-					speakers:
-						item.speakers?.length > 0
-							? {
-									connect: item.speakers.map((speaker) => ({
-										id: speaker,
-									})),
-								}
-							: undefined,
+					startDate: dayjs(data.startDate).toISOString(),
+					endDate: dayjs(data.endDate).toISOString(),
+					directionId: data.directionId,
+					language: data.language,
+					format: data.format,
 				},
 			});
 		}
+
+		// for (const item of data.schedule ?? []) {
+		// 	await prisma.eventScheduleItem.create({
+		// 		data: {
+		// 			eventId: event.id,
+		// 			title: item.title,
+		// 			description: item.description,
+		// 			url: item.url,
+		// 			directionId: item.directionId,
+		// 			format: item.format,
+		// 			language: item.language,
+		// 			startDate: item.startDate?.toISOString() ?? new Date().toISOString(),
+		// 			endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
+		// 			speakers:
+		// 				item.speakers?.length > 0
+		// 					? {
+		// 							connect: item.speakers.map((speaker) => ({
+		// 								id: speaker,
+		// 							})),
+		// 						}
+		// 					: undefined,
+		// 		},
+		// 	});
+		// }
 
 		return event;
 	}
@@ -265,75 +299,15 @@ class ApiUserEventEndpointHandler {
 		@Param("id") id: string,
 		@Body(ValidationPipe) data: UserEventUpdateDto,
 	) {
-		const { schedule, ...itemData } = data;
-
 		const event = await prisma.event.update({
 			where: {
 				id,
 			},
-			data: itemData,
+			data: data,
 			include: {
 				schedule: true,
 			},
 		});
-
-		//find and remove items for removing
-		const removedItems = event.schedule.filter(
-			(i: { id: string }) => !schedule?.some((item) => item.id === i.id),
-		);
-
-		if (removedItems.length > 0) {
-			await prisma.eventScheduleItem.deleteMany({
-				where: { id: { in: removedItems.map((i: { id: string }) => i.id) } },
-			});
-		}
-
-		// update or create items
-		for (const item of data.schedule ?? []) {
-			if (item.id) {
-				await prisma.eventScheduleItem.update({
-					where: { id: item.id },
-					data: {
-						title: item.title,
-						description: item.description,
-						directionId: item.directionId,
-						url: item.url,
-						format: item.format,
-						language: item.language,
-						startDate:
-							item.startDate?.toISOString() ?? new Date().toISOString(),
-						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: item.speakers?.length
-							? {
-									set: item.speakers.map((userId) => ({
-										id: userId,
-									})),
-								}
-							: undefined,
-					},
-				});
-			} else {
-				await prisma.eventScheduleItem.create({
-					data: {
-						eventId: event.id,
-						title: item.title,
-						description: item.description,
-						url: item.url,
-						directionId: item.directionId,
-						startDate:
-							item.startDate?.toISOString() ?? new Date().toISOString(),
-						endDate: item.endDate?.toISOString() ?? new Date().toISOString(),
-						speakers: item.speakers?.length
-							? {
-									connect: item.speakers.map((speaker) => ({
-										id: speaker,
-									})),
-								}
-							: undefined,
-					},
-				});
-			}
-		}
 
 		return event;
 	}
@@ -360,11 +334,11 @@ class ApiUserEventEndpointHandler {
 		});
 	}
 
-	@Put("/:id/close")
-	public async close(@Param("id") id: string) {
+	@Put("/:id/archive")
+	public async archive(@Param("id") id: string) {
 		await prisma.event.update({
 			where: { id },
-			data: { status: prismaClient.$Enums.EventStatus.Closed },
+			data: { status: prismaClient.$Enums.EventStatus.Archived },
 		});
 	}
 
@@ -377,6 +351,211 @@ class ApiUserEventEndpointHandler {
 				publishedAt: null,
 			},
 		});
+	}
+
+	@Get("/:id/members")
+	public async getMembers(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to view members");
+		}
+
+		const members = await prisma.eventMember.findMany({
+			where: { eventId: id },
+			include: {
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+						profile: { select: { name: true } },
+					},
+				},
+			},
+			orderBy: { createdAt: "asc" },
+		});
+
+		return members;
+	}
+
+	@Post("/:id/register")
+	public async register(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const event = await prisma.event.findUnique({
+			where: { id },
+			include: {
+				createdBy: {
+					select: {
+						id: true,
+						email: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (event.status !== prismaClient.$Enums.EventStatus.Published) {
+			throw new BadRequestException("Event is not open for registration");
+		}
+
+		const existingMember = await prisma.eventMember.findFirst({
+			where: {
+				eventId: id,
+				userId: req.user.id as string,
+				status: {
+					in: [
+						prismaClient.$Enums.EventMemberStatus.Pending,
+						prismaClient.$Enums.EventMemberStatus.Approved,
+					],
+				},
+			},
+		});
+
+		if (existingMember) {
+			return { success: true, alreadyRegistered: true };
+		}
+
+		const member = await prisma.eventMember.create({
+			data: {
+				eventId: id,
+				userId: req.user.id as string,
+				status: prismaClient.$Enums.EventMemberStatus.Approved,
+			},
+		});
+
+		// Notify participant
+		try {
+			if (req.user.id) {
+				await NovuService.send({
+					to: {
+						subscriberId: req.user.id as string,
+						email: req.user.email,
+					},
+					template: "event-member-registered",
+					payload: {
+						eventId: event.id,
+						eventTitle: event.title,
+						memberId: req.user.id,
+						memberName: req.user.name,
+					},
+				});
+			}
+		} catch (error) {
+			console.error("Failed to send Novu notification to member", error);
+		}
+
+		// Notify event creator
+		try {
+			if (event.createdById) {
+				await NovuService.send({
+					to: {
+						subscriberId: event.createdById,
+						email: event.createdBy.email ?? undefined,
+					},
+					template: "event-owner-new-member",
+					payload: {
+						eventId: event.id,
+						eventTitle: event.title,
+						memberId: req.user.id,
+						memberName: req.user.name,
+					},
+				});
+			}
+		} catch (error) {
+			console.error("Failed to send Novu notification to event owner", error);
+		}
+
+		return { success: true, member };
+	}
+
+	@Post("/:id/members/message")
+	public async sendMessageToMembers(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Body(ValidationPipe) body: EventMembersMessageDto,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			include: {
+				createdBy: {
+					select: {
+						id: true,
+						email: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to send messages");
+		}
+
+		const members = await prisma.eventMember.findMany({
+			where: {
+				eventId: id,
+				id: { in: body.memberIds },
+			},
+			include: {
+				user: {
+					select: {
+						id: true,
+						email: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		await Promise.all(
+			members.map((member) =>
+				NovuService.send({
+					to: {
+						subscriberId: member.user.id,
+						email: member.user.email ?? undefined,
+					},
+					template: "event-member-message",
+					payload: {
+						eventId: event.id,
+						eventTitle: event.title,
+						eventUrl: `${process.env.NEXT_PUBLIC_APP_URL}/event/${event.slug}`,
+						message: body.message,
+						memberId: member.user.id,
+						memberName: member.user.name,
+						senderId: req.user.id,
+						senderName: req.user.name,
+					},
+				}),
+			),
+		);
+
+		return { success: true, sent: members.length };
 	}
 
 	@Put("/:id/generate-slug")
@@ -403,11 +582,90 @@ class ApiUserEventEndpointHandler {
 		return { slug: updatedEvent.slug };
 	}
 
-	@Delete()
-	public async delete(@Query(ValidationPipe) { id }: IDParamDto) {
+	@Delete("/:id")
+	public async delete(@Param("id") id: string) {
 		await prisma.event.delete({
 			where: {
 				id,
+			},
+		});
+
+		return { success: true };
+	}
+
+	@Post("/:id/schedule")
+	public async createScheduleItem(
+		@Param("id") id: string,
+		@Body(ValidationPipe) data: UserEventScheduleItemDto,
+	) {
+		if (!data.startDate || !data.endDate) {
+			throw new BadRequestException("Start and end date are required");
+		}
+
+		await prisma.eventScheduleItem.create({
+			data: {
+				eventId: id,
+				title: data.title,
+				description: data.description,
+				url: data.url,
+				directionId: data.directionId,
+				format: data.format,
+				language: data.language,
+				startDate: data.startDate,
+				endDate: data.endDate,
+				speakers: data.speakers?.length
+					? {
+							connect: data.speakers.map((speaker) => ({
+								id: speaker,
+							})),
+						}
+					: undefined,
+			},
+		});
+	}
+
+	@Put("/:id/schedule/:scheduleItemId")
+	public async updateScheduleItem(
+		@Param("id") id: string,
+		@Param("scheduleItemId") scheduleItemId: string,
+		@Body(ValidationPipe) data: UserEventScheduleItemDto,
+	) {
+		await prisma.eventScheduleItem.update({
+			where: {
+				id: scheduleItemId,
+				eventId: id,
+			},
+			data: {
+				title: data.title,
+				description: data.description,
+				url: data.url,
+				directionId: data.directionId,
+				format: data.format,
+				language: data.language,
+				startDate: data.startDate,
+				endDate: data.endDate,
+				speakers: data.speakers?.length
+					? {
+							set: data.speakers.map((speakerId) => ({
+								id: speakerId,
+							})),
+						}
+					: { set: [] },
+			},
+		});
+
+		return { success: true };
+	}
+
+	@Delete("/:id/schedule/:scheduleItemId")
+	public async deleteScheduleItem(
+		@Param("id") id: string,
+		@Param("scheduleItemId") scheduleItemId: string,
+	) {
+		await prisma.eventScheduleItem.delete({
+			where: {
+				id: scheduleItemId,
+				eventId: id,
 			},
 		});
 

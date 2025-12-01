@@ -1,7 +1,8 @@
-const fs = require("fs");
-const https = require("https");
+const fs = require("node:fs");
+const https = require("node:https");
 const decompress = require("decompress");
 const { config } = require("dotenv");
+const { execSync } = require("node:child_process");
 
 config();
 
@@ -24,6 +25,17 @@ async function main() {
 						"Unzipped files",
 						files.map((f) => f.path),
 					);
+
+					// Format JSON files after import
+					try {
+						execSync(
+							`npx biome format --write ${__dirname}/src/i18n/en.json ${__dirname}/src/i18n/ru.json`,
+							{ stdio: "inherit" },
+						);
+						console.log("Translation files formatted");
+					} catch (error) {
+						console.warn("Failed to format translation files:", error.message);
+					}
 
 					fs.rm(path, (error) => {
 						if (error) {

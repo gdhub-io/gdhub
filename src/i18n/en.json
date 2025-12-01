@@ -413,7 +413,7 @@
 				"add": "Add event image",
 				"hint": "Click or drag image here. JPG, PNG. 4:5 recommended."
 			},
-			"link": "Link",
+			"link": "Registration Link",
 			"location": "Location",
 			"schedule": "Schedule",
 			"schedule.add": "Add Item",

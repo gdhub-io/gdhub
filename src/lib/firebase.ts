@@ -1,4 +1,5 @@
 import { type FirebaseApp, getApps, initializeApp } from "@firebase/app";
+import { getAnalytics } from "firebase/analytics";
 
 type FirebaseClientConfig = {
 	apiKey: string;
@@ -44,5 +45,7 @@ export function getFirebaseApp(): FirebaseApp {
 	}
 
 	firebaseApp = initializeApp(createFirebaseConfig());
+	getAnalytics(firebaseApp);
+
 	return firebaseApp;
 }

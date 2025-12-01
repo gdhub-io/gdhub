@@ -45,8 +45,9 @@ export const LandingForAuthorsSection = () => {
 
 	return (
 		<div>
+			{/** biome-ignore lint/correctness/useUniqueElementIds: <explanation> */}
 			<div
-				id={`for-authors-${Math.random().toString(36).substring(2, 15)}`}
+				id="for-authors"
 				className={styles.section}
 				style={
 					screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined

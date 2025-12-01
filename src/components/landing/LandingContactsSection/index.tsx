@@ -3,7 +3,6 @@ import { BiLogoYoutube } from "@react-icons/all-files/bi/BiLogoYoutube";
 import { useTranslate } from "@tolgee/react";
 import { Col, Grid, Row, Space, Typography } from "antd";
 import Link from "next/link";
-import { useId } from "react";
 import EmailIcon from "@/assets/images/icons/email.svg";
 import TelegramIcon from "@/assets/images/icons/telegram.svg";
 import BgImage from "@/assets/images/landing/gdhub-contacts-image.png";
@@ -16,8 +15,9 @@ export const LandingContactsSection = () => {
 	const { t } = useTranslate();
 
 	return (
+		// biome-ignore lint/correctness/useUniqueElementIds: <explanation>
 		<div
-			id={`contacts-${useId()}`}
+			id="contacts"
 			className={styles.section}
 			style={{ backgroundImage: `url(${BgImage.src})` }}
 		>

@@ -203,7 +203,7 @@ const MyTeam = () => {
 
 						message.success(t("The employee is dismissed"));
 					} catch (error: any) {
-						console.log(error);
+						console.error(error);
 
 						message.error(error.message);
 					}
@@ -219,7 +219,7 @@ const MyTeam = () => {
 			await cancelInvitation({ id: invitationId });
 			message.success(t("Invitation canceled"));
 		} catch (error: any) {
-			console.log(error);
+			console.error(error);
 			message.error(error.message);
 		}
 	};
@@ -264,8 +264,6 @@ const MyTeam = () => {
 		const memberPromises = projectEquity.data.equityAllocations
 			.filter((allocation: any) => allocation.teamMemberId === memberId)
 			.flatMap((allocation: any) => allocation.promises);
-
-		console.log(memberId, memberPromises);
 
 		return memberPromises.reduce(
 			(acc: number, promise: any) => acc + promise.percentage,

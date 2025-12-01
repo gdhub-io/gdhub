@@ -301,7 +301,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 				}
 
 				buttons.push(
-					<Button type="primary" onClick={() => handleEdit(record.id)}>
+					<Button type="primary" href={`/my/events/${record.id}`}>
 						{t("event.edit", "Edit")}
 					</Button>,
 				);

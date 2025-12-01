@@ -36,9 +36,9 @@ export const LandingForSpecialistsSection = () => {
 	const visibleProjects = (latestProjects || []).slice(0, 4);
 
 	return (
-		<div>
+		// biome-ignore lint/correctness/useUniqueElementIds: <explanation>
+		<div id="for-specialists">
 			<div
-				id={`for-specialists-${Math.random().toString(36).substring(2, 15)}`}
 				className={styles.section}
 				style={
 					screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined

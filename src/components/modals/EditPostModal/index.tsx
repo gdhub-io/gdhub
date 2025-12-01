@@ -65,7 +65,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 
 			onUpdate();
 		} catch (error: any) {
-			console.log("error", error);
+			console.error("error", error);
 			if (!Object.hasOwn(error, "errorFields")) {
 				message.error(error.message);
 			} else {

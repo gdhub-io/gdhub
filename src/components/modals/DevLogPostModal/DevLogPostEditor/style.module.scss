@@ -1,0 +1,33 @@
+.postContainer {
+  width: 100%;
+  margin: 0 auto;
+  min-height: 300px;
+  background-color: var(--ant-color-bg-base);
+  border-radius: var(--ant-border-radius);
+  // padding: 24px;
+  box-shadow: var(--ant-box-shadow);
+  // border: 1px solid var(--ant-color-border);
+  box-sizing: border-box;
+  height: auto;
+
+  :global {
+    .codex-editor__redactor {
+      font-size: 16px !important;
+      min-height: 300px;
+      line-height: 1.6;
+    }
+
+    .ce-block__content,
+    .ce-toolbar__content {
+      max-width: 90% !important;
+    }
+
+    .ce-block {
+      margin-bottom: 8px;
+    }
+
+    .ce-paragraph {
+      margin-bottom: 8px;
+    }
+  }
+}

@@ -115,7 +115,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			setShowSpecialitySelectModal(false);
 			setTimeout(onCancel, 600);
 		} catch (error: any) {
-			console.log(error);
+			console.error(error);
 			message.error(error.response?.data.message || error.message);
 		}
 	};
@@ -129,7 +129,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			);
 			onCancel();
 		} catch (error: any) {
-			console.log(error);
+			console.error(error);
 			message.error(error.response?.data.message || error.message);
 		}
 	};

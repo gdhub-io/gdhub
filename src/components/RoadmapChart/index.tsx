@@ -112,15 +112,6 @@ export const RoadmapChart = ({
 		const progress = totalWidth > 0 ? (completedWidth / totalWidth) * 100 : 0;
 
 		setCurrentProgress(progress);
-
-		console.log({
-			totalWidth,
-			completedWidth,
-			progress,
-			stepPosX,
-			currentStepIndex,
-			screenStepsLength: screenSteps.length,
-		});
 	}, [workflow.currentStep, screenSteps, roadmapRef.current, stepRefs.current]);
 
 	useEffect(() => {

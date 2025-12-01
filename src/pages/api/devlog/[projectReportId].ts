@@ -44,6 +44,7 @@ export default async function handler(
 		const post = {
 			id: report.id,
 			content: report.content,
+			contentEditor: report.contentEditor,
 			coverImage: report.project?.coverImage,
 			createdAt: report.publishedAt,
 			video: report.video,

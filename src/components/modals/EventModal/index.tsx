@@ -1,42 +1,35 @@
-import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
 import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Col,
-	Divider,
+	DatePicker,
 	type DraggerProps,
-	Dropdown,
 	Form,
 	Input,
-	Menu,
 	Modal,
 	message,
 	Popover,
 	Row,
+	Select,
 	Space,
 	Spin,
-	Typography,
 	Upload,
 } from "antd";
 import ImgCrop from "antd-img-crop";
 import axios from "axios";
-import _ from "lodash";
+import dayjs from "dayjs";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import ModernTable from "@/components/ModernTable";
-import { formatEventPeriod } from "@/helpers/format";
 import { hasRole } from "@/helpers/user";
-import ScheduleItemModal from "./ScheduleItemModal";
 import styles from "./style.module.scss";
 
-const { Text } = Typography;
+const { RangePicker } = DatePicker;
 
 interface EventModalProps {
 	open: boolean;
@@ -50,7 +43,6 @@ interface EventModalProps {
 export type ScheduleItemFormValues = {
 	id: string | null;
 	title?: string;
-	description?: string;
 	url?: string;
 	startDate: string;
 	endDate: string;
@@ -69,15 +61,10 @@ const EventModal: React.FC<EventModalProps> = ({
 	eventId,
 }) => {
 	const [form] = Form.useForm();
-	const { t, getLanguage } = useTolgee();
-	const [schedule, setSchedule] = useState<ScheduleItemFormValues[]>(
-		initialValues?.schedule || [],
-	);
-	const [scheduleHasChanges, setScheduleHasChanges] = useState(false);
+	const { t } = useTolgee();
 	const [imageUrl, setImageUrl] = useState<string | undefined>(
 		initialValues?.image,
 	);
-	const [scheduleItemModalOpen, setScheduleItemModalOpen] = useState(false);
 	const { data: session } = useSession();
 	const isAdmin = hasRole(prismaClient.UserRole.Admin, { data: session });
 	const isBigEvent =
@@ -85,14 +72,19 @@ const EventModal: React.FC<EventModalProps> = ({
 		eventType === prismaClient.$Enums.EventType.Conference;
 	const [imageProcessing, setImageProcessing] = useState(false);
 	const [fileList, setFileList] = useState<any[]>([]);
-	const [editingScheduleItemId, setEditingScheduleItemId] = useState<
-		string | null
-	>(null);
 
-	const { data: eventData, isLoading: isEventLoading } = useQuery({
+	const { data: eventData } = useQuery({
 		queryKey: ["event", eventId],
 		queryFn: () => axios.get(`/api/user/event/${eventId}`),
 		enabled: !!eventId,
+	});
+
+	const { data: workDirections } = useQuery({
+		queryKey: ["work-directions"],
+		queryFn: () =>
+			axios
+				.get<prismaClient.WorkDirection[]>("/api/dictionary/work-directions")
+				.then((res) => res.data),
 	});
 
 	useEffect(() => {
@@ -101,32 +93,9 @@ const EventModal: React.FC<EventModalProps> = ({
 			form.setFieldsValue({
 				title: eventData.data.title,
 				shortDescription: eventData.data.shortDescription,
-				description: eventData.data.description,
 				link: eventData.data.link,
 				image: eventData.data.image,
 			});
-
-			setSchedule(
-				eventData.data.schedule?.map((item: any) => ({
-					id: item.id,
-					title: item.title,
-					description: item.description,
-					link: item.link,
-					startDate: item.startDate,
-					endDate: item.endDate,
-					directionId: item.directionId,
-					format: item.format,
-					language: item.language,
-					speakers: item.speakers?.length
-						? item.speakers.map((speciality: any) => ({
-								id: speciality.id,
-								name: speciality.user?.profile?.name,
-								speciality: speciality.name,
-								image: speciality.user?.image,
-							}))
-						: [],
-				})),
-			);
 
 			if (eventData.data.image) {
 				setImageUrl(eventData.data.image);
@@ -140,19 +109,11 @@ const EventModal: React.FC<EventModalProps> = ({
 				]);
 			}
 		}
-	}, [eventData?.data]);
-
-	const { data: workDirections } = useQuery({
-		queryKey: ["workDirections"],
-		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
-		staleTime: Infinity,
-	});
+	}, [eventData?.data, form]);
 
 	const { mutateAsync: createEvent, isPending: isEventCreating } = useMutation({
-		mutationFn: (values: any) => axios.post("/api/user/event", values),
+		mutationFn: (values: any) =>
+			axios.post("/api/user/event", values).then((res) => res.data),
 		onSuccess: () => {
 			onSubmit();
 		},
@@ -233,59 +194,6 @@ const EventModal: React.FC<EventModalProps> = ({
 		setImageProcessing(false);
 	};
 
-	// Добавить новый item расписания
-	const handleAddScheduleItem = () => {
-		setEditingScheduleItemId(null);
-		setScheduleItemModalOpen(true);
-	};
-
-	const handleScheduleItemModalCancel = () => {
-		setScheduleItemModalOpen(false);
-		setEditingScheduleItemId(null);
-	};
-
-	const handleScheduleItemModalSubmit = (item: ScheduleItemFormValues) => {
-		if (editingScheduleItemId !== null) {
-			updateScheduleItem(editingScheduleItemId, item);
-		} else {
-			addNewScheduleItem(item);
-		}
-
-		setScheduleHasChanges(true);
-		setScheduleItemModalOpen(false);
-		setEditingScheduleItemId(null);
-	};
-
-	// Удалить item расписания
-	const removeScheduleItem = (id: string) => {
-		setSchedule(schedule.filter((i) => i.id !== id));
-		setScheduleHasChanges(true);
-	};
-
-	// Обновить поле расписания
-	const updateScheduleItem = (id: string, item: ScheduleItemFormValues) => {
-		const updated = [...schedule];
-		const idx = updated.findIndex((i) => i.id === id);
-
-		if (idx !== -1) {
-			updated[idx] = item;
-		}
-
-		setSchedule(updated);
-	};
-
-	const addNewScheduleItem = (item: ScheduleItemFormValues) => {
-		setSchedule((prev) => {
-			if (!eventId) {
-				// Для новых событий id = индекс (строкой)
-				return [...prev, { ...item, id: String(prev.length) }];
-			}
-			return [...prev, item];
-		});
-
-		setScheduleHasChanges(true);
-	};
-
 	// Сохранить событие
 	const handleOk = async () => {
 		try {
@@ -302,14 +210,8 @@ const EventModal: React.FC<EventModalProps> = ({
 					data: {
 						...values,
 						image: imageUrl,
-						schedule: scheduleHasChanges
-							? schedule.map((item) => ({
-									...item,
-									speakers: item.speakers?.length
-										? item.speakers.map((s) => s.id)
-										: [],
-								}))
-							: undefined,
+						startDate: dayjs(values.dates[0]).toISOString(),
+						endDate: dayjs(values.dates[1]).toISOString(),
 					},
 				});
 			} else {
@@ -317,19 +219,14 @@ const EventModal: React.FC<EventModalProps> = ({
 					...values,
 					image: imageUrl,
 					type: eventType,
-					schedule: schedule.map((item) => ({
-						...item,
-						speakers: item.speakers?.length
-							? item.speakers.map((s) => s.id)
-							: [],
-					})),
+					startDate: dayjs(values.dates[0]).toISOString(),
+					endDate: dayjs(values.dates[1]).toISOString(),
 				});
 
 				message.success(t("event.modal.success", "Event created successfully"));
 			}
 
 			form.resetFields();
-			setSchedule([]);
 			setImageUrl(undefined);
 		} catch (err) {
 			console.error(err);
@@ -339,15 +236,9 @@ const EventModal: React.FC<EventModalProps> = ({
 
 	const handleCancel = () => {
 		form.resetFields();
-		setSchedule([]);
 		setImageUrl(undefined);
 		setFileList([]);
 		onCancel();
-	};
-
-	const handleEditScheduleItem = (id: string) => {
-		setEditingScheduleItemId(id);
-		setScheduleItemModalOpen(true);
 	};
 
 	const eventLabel = (eventType: prismaClient.$Enums.EventType) => {
@@ -405,7 +296,11 @@ const EventModal: React.FC<EventModalProps> = ({
 				form={form}
 				variant="filled"
 				layout="vertical"
-				initialValues={{ ...initialValues }}
+				initialValues={{
+					...initialValues,
+					format: prismaClient.$Enums.EventFormat.Online,
+					language: session?.user?.lang || prismaClient.$Enums.Language.en,
+				}}
 				requiredMark="optional"
 			>
 				<Row gutter={16}>
@@ -446,7 +341,7 @@ const EventModal: React.FC<EventModalProps> = ({
 										className={styles.cover}
 										style={{ aspectRatio: "16 / 9" }}
 									>
-										<Image src={imageUrl + "?w=1200"} fill alt="" />
+										<Image src={`${imageUrl}?w=1200`} fill alt="" />
 										<Popover
 											content={t(
 												"event.modal.image.deletePopover",
@@ -499,7 +394,7 @@ const EventModal: React.FC<EventModalProps> = ({
 										className={styles.cover}
 										style={{ aspectRatio: "4 / 5" }}
 									>
-										<Image src={imageUrl + "?w=750"} fill alt="" />
+										<Image src={`${imageUrl}?w=750`} fill alt="" />
 										<Popover
 											content={t(
 												"event.modal.image.deletePopover",
@@ -551,30 +446,135 @@ const EventModal: React.FC<EventModalProps> = ({
 								)}
 							/>
 						</Form.Item>
+
 						<Form.Item
-							label={t("event.modal.description.label", "Description")}
-							name="description"
+							label={t("event.schedule.dates", "Dates (local time)")}
+							name="dates"
+							rules={[
+								{
+									required: true,
+									message: t("event.schedule.dates.required", "Dates required"),
+								},
+							]}
+						>
+							<RangePicker
+								style={{ width: "100%" }}
+								showTime={{ format: "HH:mm", minuteStep: 5 }}
+								format="YYYY-MM-DD HH:mm"
+								id={{
+									start: "startDate",
+									end: "endDate",
+								}}
+								disabledTime={(date) => {
+									if (!date || isAdmin) return {};
+
+									const now = dayjs();
+
+									if (date.isSame(now, "day")) {
+										const currentHour = now.hour();
+										const currentMinute = now.minute();
+										return {
+											disabledHours: () =>
+												Array.from({ length: 24 }, (_, i) => i).filter(
+													(h) => h < currentHour,
+												),
+											disabledMinutes: () =>
+												date.hour() === currentHour
+													? Array.from({ length: 60 }, (_, i) => i).filter(
+															(m) => m < currentMinute,
+														)
+													: [],
+											disabledSeconds: () => [],
+										};
+									}
+
+									return {
+										disabledHours: () => [],
+										disabledMinutes: () => [],
+										disabledSeconds: () => [],
+									};
+								}}
+								disabledDate={(current) =>
+									current && !isAdmin && current < dayjs().startOf("day")
+								}
+							/>
+						</Form.Item>
+
+						<Form.Item
+							label={t("event.modal.direction", "Direction")}
+							name="directionId"
 							rules={[
 								{
 									required: true,
 									message: t(
-										"event.modal.description.required",
-										"Description is required",
+										"event.modal.direction.required",
+										"Direction required",
 									),
 								},
 							]}
 						>
-							<Input.TextArea
-								rows={5}
-								maxLength={20000}
-								showCount
-								autoSize={{ minRows: 5, maxRows: 10 }}
+							<Select
 								placeholder={t(
-									"event.modal.description.placeholder",
-									"Event description",
+									"event.modal.direction.placeholder",
+									"Select direction",
 								)}
+								options={workDirections?.map((direction) => ({
+									label: direction.name,
+									value: direction.id,
+								}))}
 							/>
 						</Form.Item>
+
+						<Row gutter={16}>
+							<Col span={12}>
+								<Form.Item
+									label={t("event.modal.format", "Format")}
+									name="format"
+									rules={[
+										{
+											required: true,
+											message: t(
+												"event.modal.format.required",
+												"Format required",
+											),
+										},
+									]}
+								>
+									<Select
+										options={Object.values(prismaClient.$Enums.EventFormat).map(
+											(format) => ({
+												label: format,
+												value: format,
+											}),
+										)}
+									/>
+								</Form.Item>
+							</Col>
+							<Col span={12}>
+								<Form.Item
+									label={t("event.modal.language", "Language")}
+									name="language"
+									rules={[
+										{
+											required: true,
+											message: t(
+												"event.modal.language.required",
+												"Language required",
+											),
+										},
+									]}
+								>
+									<Select
+										options={Object.values(prismaClient.$Enums.Language).map(
+											(language) => ({
+												label: language.toUpperCase(),
+												value: language,
+											}),
+										)}
+									/>
+								</Form.Item>
+							</Col>
+						</Row>
 
 						<Form.Item label={t("event.modal.link", "Link")} name="url">
 							<Input
@@ -583,151 +583,7 @@ const EventModal: React.FC<EventModalProps> = ({
 						</Form.Item>
 					</Col>
 				</Row>
-				<Divider orientation="left" style={{ marginTop: 16 }}>
-					{t("event.modal.schedule", "Schedule")}
-				</Divider>
-				<Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
-					{t(
-						"event.modal.schedule.hint",
-						"You can add one or multiple schedule items to the event. Each item can have multiple speakers.",
-					)}
-				</Typography.Paragraph>
-				{schedule.length > 0 && (
-					<ModernTable
-						size="small"
-						dataSource={_.orderBy(schedule, ["start"], "asc")}
-						pagination={false}
-						rowKey="id"
-						columns={[
-							{
-								key: "index",
-								render: (_, __, idx: number) => {
-									return idx + 1;
-								},
-							},
-							{
-								title: t("event.modal.schedule.speakers", "Speakers"),
-								dataIndex: "speakers",
-								key: "speakers",
-								render: (speakers) => {
-									const speakersArr = Array.isArray(speakers)
-										? speakers
-										: speakers
-											? [speakers]
-											: [];
-									return (
-										<Space direction="vertical">
-											{speakersArr.map((speaker) => {
-												return (
-													<span
-														key={speaker.id}
-														style={{
-															display: "inline-flex",
-															alignItems: "center",
-														}}
-													>
-														{speaker.image ? (
-															<Avatar
-																size={36}
-																src={speaker.image}
-																style={{ marginRight: 8 }}
-															/>
-														) : (
-															<Avatar size={36} style={{ marginRight: 8 }}>
-																{speaker.name.charAt(0).toUpperCase()}
-															</Avatar>
-														)}
-														<Space direction="vertical" size={0}>
-															<Text>{speaker.name}</Text>
-															<Text type="secondary" style={{ fontSize: 12 }}>
-																{speaker.speciality}
-															</Text>
-														</Space>
-													</span>
-												);
-											})}
-										</Space>
-									);
-								},
-							},
-							{
-								title: t("event.modal.schedule.title", "Title"),
-								dataIndex: "title",
-								key: "title",
-								render: (title: string, record: any) => {
-									return <Text>{title || "-"}</Text>;
-								},
-							},
-							{
-								title: t("event.modal.schedule.period", "Date"),
-								dataIndex: "start",
-								key: "period",
-								render: (_, record: any) => {
-									const startDate = record.startDate;
-									const endDate = record.endDate;
-
-									return (
-										<Text>
-											{formatEventPeriod(startDate, endDate, getLanguage())}
-										</Text>
-									);
-								},
-							},
-							{
-								title: "",
-								key: "actions",
-								width: 48,
-								render: (_: any, record: any, idx: number) => {
-									const menu = (
-										<Menu>
-											<Menu.Item
-												key="edit"
-												onClick={() => handleEditScheduleItem(record.id)}
-											>
-												{t("Edit", "Edit")}
-											</Menu.Item>
-											<Menu.Item
-												key="delete"
-												onClick={() => removeScheduleItem(record.id)}
-												danger
-											>
-												{t("Delete", "Delete")}
-											</Menu.Item>
-										</Menu>
-									);
-									return (
-										<Dropdown overlay={menu} trigger={["click"]}>
-											<Button type="text" icon={<MoreOutlined />} />
-										</Dropdown>
-									);
-								},
-							},
-						]}
-						style={{ marginBottom: 16 }}
-					/>
-				)}
-				<Button
-					block
-					icon={<PlusOutlined />}
-					onClick={handleAddScheduleItem}
-					type="text"
-					className={styles.addItemButton}
-				>
-					{t("event.modal.schedule.add", "Add item")}
-				</Button>
 			</Form>
-
-			<ScheduleItemModal
-				open={scheduleItemModalOpen}
-				onCancel={handleScheduleItemModalCancel}
-				onSubmit={handleScheduleItemModalSubmit}
-				initialValues={
-					editingScheduleItemId
-						? schedule.find((i) => i.id === editingScheduleItemId)
-						: undefined
-				}
-				isAdmin={isAdmin}
-			/>
 		</Modal>
 	);
 };
