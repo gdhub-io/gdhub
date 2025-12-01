@@ -12,11 +12,13 @@ import {
 	Alert,
 	Button,
 	Dropdown,
+	Flex,
 	Grid,
 	Image,
 	type MenuProps,
 	Modal,
 	message,
+	Select,
 	Space,
 	Tag,
 	Typography,
@@ -29,7 +31,7 @@ import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useCallback } from "react";
 import { formatEventPeriod } from "@/helpers/format";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -41,6 +43,13 @@ const CreateEventButton = dynamic(
 );
 const EventModal = dynamic(
 	() => import("@/components/modals/EventModal").then((m) => m.default),
+	{ ssr: false },
+);
+const CreateLocaleVersionModal = dynamic(
+	() =>
+		import("@/components/modals/CreateLocaleVersionModal").then(
+			(m) => m.default,
+		),
 	{ ssr: false },
 );
 const PageViews = dynamic(
@@ -72,13 +81,51 @@ function getTypeIcon(type: string, size = 20) {
 	}
 }
 
+// Transform flat array of events into tree structure
+function buildEventTree(events: any[]): any[] {
+	if (!events || events.length === 0) {
+		return [];
+	}
+
+	const eventMap = new Map<string, any>();
+	const rootEvents: any[] = [];
+
+	// First pass: create map and add key to each event
+	events.forEach((event) => {
+		eventMap.set(event.id, { ...event, key: event.id });
+	});
+
+	// Second pass: build tree structure
+	events.forEach((event) => {
+		const eventWithKey = eventMap.get(event.id);
+		if (event.parentId && eventMap.has(event.parentId)) {
+			const parent = eventMap.get(event.parentId);
+			if (!parent.children) {
+				parent.children = [];
+			}
+			parent.children.push(eventWithKey);
+		} else {
+			rootEvents.push(eventWithKey);
+		}
+	});
+
+	return rootEvents;
+}
+
 const MyEventsPage: NextPageWithLayout = () => {
 	const { t, getLanguage } = useTolgee();
 	const router = useRouter();
+	const [modal, modalContextHolder] = Modal.useModal();
 	const { token } = theme.useToken();
 	const screens = Grid.useBreakpoint();
 	const [editModalOpen, setEditModalOpen] = React.useState(false);
 	const [editingEvent, setEditingEvent] = React.useState<any | null>(null);
+	const [localeModalOpen, setLocaleModalOpen] = React.useState(false);
+	const [localeModalEventId, setLocaleModalEventId] = React.useState<
+		string | null
+	>(null);
+	const [localeModalEventLang, setLocaleModalEventLang] =
+		React.useState<prismaClient.$Enums.Language | null>(null);
 
 	// Получение событий пользователя
 	const {
@@ -92,8 +139,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 
 	// Мутация для удаления события
 	const { mutateAsync: deleteEvent } = useMutation({
-		mutationFn: (id: string) =>
-			axios.delete("/api/user/event", { params: { id } }),
+		mutationFn: (id: string) => axios.delete(`/api/user/event/${id}`),
 		onSuccess: () => {
 			message.success(t("event.delete.success", "Event deleted"));
 			refetchMyEvents();
@@ -191,6 +237,18 @@ const MyEventsPage: NextPageWithLayout = () => {
 
 	const columns: ColumnsType<any> = [
 		{
+			title: t("event.title", "Title"),
+			dataIndex: "title",
+			key: "title",
+			render: (value: string, record: any) => (
+				<Flex align="center" gap={8}>
+					{getTypeIcon(record.type)}
+					<Text strong>{value}</Text>
+				</Flex>
+			),
+			width: 300,
+		},
+		{
 			title: t("event.cover", "Cover"),
 			dataIndex: "image",
 			key: "image",
@@ -200,22 +258,21 @@ const MyEventsPage: NextPageWithLayout = () => {
 			width: 100,
 		},
 		{
-			title: t("event.title", "Title"),
-			dataIndex: "title",
-			key: "title",
-			render: (value: string, record: any) => (
-				<Space>
-					{getTypeIcon(record.type)}
-					<Text strong>{value}</Text>
-				</Space>
-			),
-			width: 200,
-		},
-		{
 			title: t("event.type", "Type"),
 			dataIndex: "type",
 			key: "type",
 			render: (value: string) => <Text>{value}</Text>,
+			responsive: ["md" as Breakpoint],
+		},
+		{
+			title: t("event.lang", "Lang"),
+			dataIndex: "lang",
+			key: "lang",
+			render: (value: prismaClient.$Enums.Language) => (
+				<Tag bordered={false} color="blue">
+					{value}
+				</Tag>
+			),
 			responsive: ["md" as Breakpoint],
 		},
 		{
@@ -267,17 +324,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 				switch (status) {
 					case prismaClient.$Enums.EventStatus.Draft:
 						buttons.push(
-							<Space>
-								<Tag color="default">{t("event.status.draft", "Draft")}</Tag>
-								<Button
-									type="primary"
-									onClick={() => handleEventPublish(record.id)}
-									disabled={record.schedule.length === 0}
-									loading={isPublishingEvent}
-								>
-									{t("event.publish", "Publish")}
-								</Button>
-							</Space>,
+							<Tag color="default">{t("event.status.draft", "Draft")}</Tag>,
 						);
 						break;
 					case prismaClient.$Enums.EventStatus.Published:
@@ -302,7 +349,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 
 				buttons.push(
 					<Button type="primary" href={`/my/events/${record.id}`}>
-						{t("event.edit", "Edit")}
+						{t("event.manage", "Manage")}
 					</Button>,
 				);
 
@@ -362,6 +409,15 @@ const MyEventsPage: NextPageWithLayout = () => {
 								cancelText: t("event.generateSlug.cancel", "Cancel"),
 							}),
 					},
+					{
+						key: "new-locale-version",
+						label: t("event.newLocale", "New Locale version"),
+						onClick: () => {
+							setLocaleModalEventId(record.id);
+							setLocaleModalEventLang(record.lang);
+							setLocaleModalOpen(true);
+						},
+					},
 				];
 
 				const endOfMenu: MenuProps["items"] = [
@@ -374,7 +430,8 @@ const MyEventsPage: NextPageWithLayout = () => {
 						label: t("event.delete", "Delete"),
 						danger: true,
 						onClick: () =>
-							Modal.confirm({
+							modal.confirm({
+								centered: true,
 								title: t(
 									"event.delete.confirm",
 									"Are you sure you want to delete this event?",
@@ -422,6 +479,19 @@ const MyEventsPage: NextPageWithLayout = () => {
 		},
 	];
 
+	const handleLocaleModalCancel = () => {
+		setLocaleModalOpen(false);
+		setLocaleModalEventId(null);
+		setLocaleModalEventLang(null);
+	};
+
+	const handleLocaleModalSuccess = () => {
+		refetchMyEvents();
+		setLocaleModalOpen(false);
+		setLocaleModalEventId(null);
+		setLocaleModalEventLang(null);
+	};
+
 	return (
 		<ProtectedLayout
 			title={t("page.myEvents.title", "My Events")}
@@ -433,10 +503,13 @@ const MyEventsPage: NextPageWithLayout = () => {
 			<div className={styles.container}>
 				<ModernTable
 					columns={columns}
-					dataSource={data?.map((e: any) => ({ ...e, key: e.id }))}
+					dataSource={data ? buildEventTree(data) : []}
 					loading={isLoading}
 					showHeader
 					pagination={false}
+					indentSize={30}
+					childrenColumnName="children"
+					defaultExpandAllRows
 				/>
 				<EventModal
 					open={editModalOpen}
@@ -446,7 +519,15 @@ const MyEventsPage: NextPageWithLayout = () => {
 					onCancel={handleEditModalCancel}
 					onSubmit={handleEditModalSubmit}
 				/>
+				<CreateLocaleVersionModal
+					open={localeModalOpen}
+					eventId={localeModalEventId}
+					currentLang={localeModalEventLang}
+					onCancel={handleLocaleModalCancel}
+					onSuccess={handleLocaleModalSuccess}
+				/>
 			</div>
+			{modalContextHolder}
 		</ProtectedLayout>
 	);
 };

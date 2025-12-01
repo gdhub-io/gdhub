@@ -9,8 +9,9 @@ import {
 import type { ICellProps } from "@svar-ui/react-grid";
 import type { IMenuOption, IMenuOptionClick } from "@svar-ui/react-menu";
 import "@svar-ui/react-gantt/all.css";
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { IconDotsVertical } from "@tabler/icons-react";
-import { Avatar, Button, Dropdown } from "antd";
+import { Avatar, Button, Dropdown, Space, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import {
 	forwardRef,
@@ -24,6 +25,8 @@ import ScheduleItemModal from "@/components/modals/EventModal/ScheduleItemModal"
 import { appThemeConfig } from "@/config/theme";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./EventScheduleGantt.module.scss";
+
+const { Text } = Typography;
 
 interface GanttTask {
 	id: number;
@@ -98,6 +101,7 @@ export const EventScheduleGantt = forwardRef<
 					type: "task" as const,
 					lazy: false,
 					speakers: item.speakers,
+					lang: item.language,
 				};
 			});
 		}, [schedule]);
@@ -148,6 +152,20 @@ export const EventScheduleGantt = forwardRef<
 					header: "Item",
 					width: 250,
 					sort: false,
+					cell: (params: ICellProps) => {
+						const row = params.row as {
+							lang?: prismaClient.$Enums.Language;
+							text?: string;
+						};
+						return (
+							<Space size={0}>
+								<Tag bordered={false} color="blue">
+									{row.lang}
+								</Tag>{" "}
+								<Text style={{ fontWeight: 400 }}>{row.text}</Text>
+							</Space>
+						);
+					},
 				},
 				{
 					id: "start",

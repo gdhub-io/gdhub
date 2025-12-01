@@ -1,5 +1,17 @@
 .container {
 	width: 100%;
+
+	:global(.ant-table-tbody > tr > td) {
+		vertical-align: middle;
+	}
+
+	:global(.ant-table-row-expand-icon-cell) {
+		vertical-align: middle;
+	}
+
+	:global(.ant-table-row-expand-icon) {
+		vertical-align: middle;
+	}
 }
 
 @media (max-width: 320px) {

@@ -336,7 +336,7 @@ export const ProtectedEventLayout = ({
 						<Button
 							type="text"
 							size="small"
-							href={`/event/${event?.slug}`}
+							href={`${event?.lang ? `/${event?.lang}` : ""}/event/${event?.slug}`}
 							target="_blank"
 						>
 							{t("event.button.publicPage", "Go to page")}
