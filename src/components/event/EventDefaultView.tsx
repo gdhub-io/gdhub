@@ -1,5 +1,8 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
+
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { videoParser } from "@hannal/editorjs-video-plugin";
+import { IconExternalLink, IconMeteor } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
@@ -30,11 +33,22 @@ const { Title, Paragraph, Text } = Typography;
 
 const MAX_VISIBLE_SPEAKERS = 3;
 
-const EventDefaultView = ({ event, workDirections, schedule }: any) => {
+const EventDefaultView = ({
+	event,
+	workDirections,
+	schedule,
+}: {
+	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+	workDirections: prismaClient.WorkDirection[];
+	schedule: (prismaClient.EventScheduleItem & {
+		speakers: prismaClient.User[];
+	})[];
+}) => {
 	const { t, getLanguage } = useTolgee();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
+	const [modal, modalContextHolder] = Modal.useModal();
 
 	const { mutateAsync: registerToEvent, isPending: isRegistering } =
 		useMutation({
@@ -42,7 +56,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 				await axios.post(`/api/user/event/${event.id}/register`);
 			},
 			onSuccess: () => {
-				Modal.success({
+				modal.success({
 					title: t("event.register.success.title", "Registration successful"),
 					content: t(
 						"event.register.success.description",
@@ -74,7 +88,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 				{event.content ? (
 					<div className={styles.content}>
 						<Blocks
-							data={JSON.parse(event.content)}
+							data={JSON.parse(event.content as string)}
 							renderers={{
 								video: ({ data }) => (
 									<div
@@ -95,9 +109,9 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 					</Paragraph>
 				)}
 
-				<Divider />
-
-				<Title level={2}>{t("event.schedule", "Schedule")}</Title>
+				<Title level={2} style={{ marginTop: 32 }}>
+					{t("event.schedule", "Event Schedule")}
+				</Title>
 				<div
 					style={{
 						marginBottom: 32,
@@ -122,116 +136,145 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 									marginBottom: 16,
 								}}
 							>
-								{/* Линия 1: дата и title */}
-								<Flex align="center" gap={16} style={{ marginBottom: 4 }}>
-									<span
-										style={{
-											fontWeight: 600,
-											fontSize: 15,
-											color: "#222",
-											whiteSpace: "nowrap",
-										}}
-									>
-										{formatEventPeriod(
-											item.startDate,
-											item.endDate,
-											getLanguage() || "en",
-											"daytime",
-										)}
-									</span>
-
-									{!!item.title && (
-										<>
-											<Divider type="vertical" style={{ height: 24 }} />
+								<Flex align="center" gap={32} justify="space-between">
+									<IconMeteor size={36} />
+									{/* Линия 1: дата и title */}
+									<Flex vertical gap={0} style={{ flex: 1 }}>
+										<Flex
+											align="center"
+											justify="space-between"
+											gap={16}
+											style={{ marginBottom: 4, flex: 1 }}
+											wrap
+										>
+											<span
+												style={{
+													fontWeight: 600,
+													fontSize: 18,
+													color: "#222",
+												}}
+											>
+												{item.title ||
+													t("event.schedule.item.title", "Untitled")}
+											</span>
 
 											<span
 												style={{
 													fontWeight: 600,
 													fontSize: 15,
 													color: "#222",
+													whiteSpace: "nowrap",
 												}}
 											>
-												{item.title}
+												{formatEventPeriod(
+													item.startDate,
+													item.endDate,
+													getLanguage() || "en",
+													"daytime",
+												)}
 											</span>
-										</>
-									)}
-								</Flex>
+										</Flex>
 
-								{/* Линия 2: описание */}
-								{item.description && (
-									<Text
-										type="secondary"
-										style={{ fontSize: 15, margin: "4px 0 10px 0" }}
-									>
-										<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
-											{item.description || ""}
-										</ReactMarkdown>
-									</Text>
-								)}
+										{/* Линия 2: описание */}
+										{item.description && (
+											<Text type="secondary" className={styles.itemDescription}>
+												<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
+													{item.description || ""}
+												</ReactMarkdown>
+											</Text>
+										)}
 
-								{/* Линия 3: спикеры */}
-								{item.speakers?.length > 0 && (
-									<Flex gap={24} style={{ marginTop: 16, flexWrap: "wrap" }}>
-										{visibleSpeakers.map((sp: any, i: number) => {
-											const speakerName =
-												sp?.user?.profile?.name || sp?.user?.name || "";
-											const speakerAvatar = sp?.user?.image || "";
-											const speakerSpeciality = sp?.name || "";
-											const speakerSummary = sp?.summary || "";
-											return (
-												<Flex
-													key={sp.id || i}
-													align="center"
-													gap={12}
-													style={{ minWidth: 220 }}
-												>
-													<Avatar
-														size={64}
-														src={speakerAvatar}
-														style={{
-															minWidth: 64,
-															background: "#eee",
-															color: "#222",
-															fontSize: 18,
-														}}
-													>
-														{!speakerAvatar && speakerName
-															? speakerName[0]
-															: null}
-													</Avatar>
-													<Flex vertical gap={0} style={{ minWidth: 0 }}>
-														<span style={{ fontWeight: 600, fontSize: 15 }}>
-															{speakerName}
-														</span>
-														{speakerSpeciality && (
-															<span
+										{/* Линия 3: спикеры */}
+										{item.speakers?.length > 0 && (
+											<Flex
+												gap={24}
+												style={{ marginTop: 16, flexWrap: "wrap" }}
+											>
+												{visibleSpeakers.map((sp: any, i: number) => {
+													const speakerName =
+														sp?.user?.profile?.name || sp?.user?.name || "";
+													const speakerAvatar = sp?.user?.image || "";
+													const speakerSpeciality = sp?.name || "";
+													const speakerSummary = sp?.summary || "";
+													return (
+														<Flex
+															key={sp.id || i}
+															align="center"
+															gap={12}
+															style={{ minWidth: 220 }}
+														>
+															<Avatar
+																size={64}
+																src={speakerAvatar}
 																style={{
-																	fontSize: 13,
-																	color: token.colorTextSecondary,
-																	fontWeight: 500,
+																	minWidth: 64,
+																	background: "#eee",
+																	color: "#222",
+																	fontSize: 18,
 																}}
 															>
-																{speakerSpeciality}
-															</span>
-														)}
-														{speakerSummary && (
-															<span style={{ fontSize: 13, color: "#888" }}>
-																{speakerSummary}
-															</span>
-														)}
-													</Flex>
-												</Flex>
-											);
-										})}
-										{extraCount > 0 && (
-											<span
-												style={{ marginLeft: 8, color: "#888", fontSize: 13 }}
-											>
-												+{extraCount}
-											</span>
+																{!speakerAvatar && speakerName
+																	? speakerName[0]
+																	: null}
+															</Avatar>
+															<Flex vertical gap={0} style={{ minWidth: 0 }}>
+																<span style={{ fontWeight: 600, fontSize: 15 }}>
+																	{speakerName}
+																</span>
+																{speakerSpeciality && (
+																	<span
+																		style={{
+																			fontSize: 13,
+																			color: token.colorTextSecondary,
+																			fontWeight: 500,
+																		}}
+																	>
+																		{speakerSpeciality}
+																	</span>
+																)}
+																{speakerSummary && (
+																	<span style={{ fontSize: 13, color: "#888" }}>
+																		{speakerSummary}
+																	</span>
+																)}
+															</Flex>
+														</Flex>
+													);
+												})}
+												{extraCount > 0 && (
+													<span
+														style={{
+															marginLeft: 8,
+															color: "#888",
+															fontSize: 13,
+														}}
+													>
+														+{extraCount}
+													</span>
+												)}
+											</Flex>
+										)}
+
+										{!!item.url && (
+											<div>
+												<Button
+													href={item.url}
+													target="_blank"
+													className="black-btn"
+													icon={
+														<IconExternalLink
+															size={18}
+															style={{ opacity: 0.5 }}
+														/>
+													}
+													iconPosition="end"
+												>
+													{t("event.open", "Open")}
+												</Button>
+											</div>
 										)}
 									</Flex>
-								)}
+								</Flex>
 							</div>
 						);
 					})}
@@ -271,7 +314,7 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 									loading={isRegistering}
 									onClick={() => registerToEvent()}
 								>
-									{t("event.register", "Register")}
+									{t("event.bookNow", `Book Now ${event.isFree ? "Free" : ""}`)}
 								</Button>
 							)
 						) : (
@@ -318,6 +361,8 @@ const EventDefaultView = ({ event, workDirections, schedule }: any) => {
 					</div>
 				</div>
 			)}
+
+			{modalContextHolder}
 		</Flex>
 	);
 };

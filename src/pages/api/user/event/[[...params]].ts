@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Prisma } from "@prisma/client";
 import { Transform, Type } from "class-transformer";
 import {
 	IsArray,
@@ -100,7 +101,7 @@ class UserEventCreateDto {
 	directionId: string;
 
 	@IsEnum(prismaClient.$Enums.Language)
-	language: prismaClient.$Enums.Language;
+	lang: prismaClient.$Enums.Language;
 
 	@IsEnum(prismaClient.$Enums.EventFormat)
 	format: prismaClient.$Enums.EventFormat;
@@ -137,6 +138,10 @@ class UserEventUpdateDto {
 	@IsOptional()
 	slug?: string;
 
+	@IsEnum(prismaClient.$Enums.Language)
+	@IsOptional()
+	lang?: prismaClient.$Enums.Language;
+
 	@IsString()
 	@IsOptional()
 	description?: string;
@@ -160,6 +165,11 @@ class UserEventUpdateDto {
 	@IsObject()
 	@IsOptional()
 	content?: Record<string, any>;
+}
+
+class DuplicateEventDto {
+	@IsEnum(prismaClient.$Enums.Language)
+	lang: prismaClient.$Enums.Language;
 }
 
 class EventMembersMessageDto {
@@ -209,6 +219,14 @@ class ApiUserEventEndpointHandler {
 			},
 			include: {
 				schedule: {
+					orderBy: [
+						{
+							startDate: "asc",
+						},
+						{
+							endDate: "asc",
+						},
+					],
 					include: {
 						speakers: {
 							select: {
@@ -245,6 +263,7 @@ class ApiUserEventEndpointHandler {
 				description: "", //use content instead
 				url: data.url,
 				image: data.image,
+				lang: data.lang,
 				createdById: req.user.id,
 				slug:
 					data.slug ||
@@ -261,7 +280,7 @@ class ApiUserEventEndpointHandler {
 					startDate: dayjs(data.startDate).toISOString(),
 					endDate: dayjs(data.endDate).toISOString(),
 					directionId: data.directionId,
-					language: data.language,
+					language: data.lang,
 					format: data.format,
 				},
 			});
@@ -310,6 +329,80 @@ class ApiUserEventEndpointHandler {
 		});
 
 		return event;
+	}
+
+	@Post("/:id/duplicate")
+	public async duplicate(
+		@Param("id") id: string,
+		@Body(ValidationPipe) { lang }: DuplicateEventDto,
+	) {
+		const event = await prisma.event.findUnique({
+			where: { id },
+			include: {
+				schedule: {
+					include: {
+						speakers: {
+							select: {
+								id: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		const {
+			id: _,
+			lang: _lang,
+			schedule,
+			createdAt: _createdAt,
+			publishedAt: _publishedAt,
+			updatedAt: _updatedAt,
+			...data
+		} = event;
+
+		const duplicateEvent = await prisma.event.create({
+			data: {
+				...data,
+				status: prismaClient.$Enums.EventStatus.Draft,
+				publishedAt: null,
+				content: data.content === null ? Prisma.JsonNull : data.content,
+				parentId: event.id,
+				lang,
+			},
+		});
+
+		if (schedule && schedule.length > 0) {
+			for (const item of schedule) {
+				const {
+					id: _id,
+					eventId: _eventId,
+					speakers: _speakers,
+					...scheduleItemData
+				} = item;
+
+				await prisma.eventScheduleItem.create({
+					data: {
+						eventId: duplicateEvent.id,
+						...scheduleItemData,
+						speakers:
+							item.speakers && item.speakers.length > 0
+								? {
+										connect: item.speakers.map((speaker) => ({
+											id: speaker.id,
+										})),
+									}
+								: undefined,
+					},
+				});
+			}
+		}
+
+		return duplicateEvent;
 	}
 
 	@Put("/:id/publish")

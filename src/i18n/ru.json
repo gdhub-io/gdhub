@@ -395,6 +395,7 @@
 	},
 	"event": {
 		"about": "О мероприятии",
+		"bookNow": "Зарегистрироваться на мероприятие",
 		"dates": "Дата",
 		"format": "Формат",
 		"modal": {
@@ -426,9 +427,10 @@
 			"title.label": "Заголовок",
 			"title.placeholder": "Заголовок события"
 		},
+		"open": "Перейти",
 		"readMore": "Кликни, чтобы узнать больше",
 		"register": "Регистрация",
-		"schedule": "Расписание",
+		"schedule": "Расписание мероприятия",
 		"schedule.dates": "Время начала и окончания (местное время)",
 		"schedule.description": "Описание",
 		"schedule.description.placeholder": "Описание элемента",

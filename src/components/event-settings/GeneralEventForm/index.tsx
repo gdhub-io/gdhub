@@ -11,6 +11,7 @@ import {
 	message,
 	Popover,
 	Row,
+	Select,
 	Spin,
 	Upload,
 	type UploadProps,
@@ -330,6 +331,29 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 								placeholder={t(
 									"event.modal.shortDescription.placeholder",
 									"Event short description",
+								)}
+							/>
+						</Form.Item>
+
+						<Form.Item
+							label={t("event.modal.language", "Language")}
+							name="lang"
+							rules={[
+								{
+									required: true,
+									message: t(
+										"event.modal.language.required",
+										"Language is required",
+									),
+								},
+							]}
+						>
+							<Select
+								options={Object.values(prismaClient.$Enums.Language).map(
+									(lang) => ({
+										label: lang,
+										value: lang,
+									}),
 								)}
 							/>
 						</Form.Item>

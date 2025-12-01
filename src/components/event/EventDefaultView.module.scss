@@ -27,6 +27,8 @@
     font-size: 16px;
     white-space: pre-line;
 
+   
+
     ul {
       padding-left: 20px !important;
       display: flex;
@@ -44,6 +46,12 @@
           margin-right: 10px;
         }
       }
+    }
+  }
+
+  .itemDescription {
+    p:first-child {
+      margin-top: 0 !important;
     }
   }
 
