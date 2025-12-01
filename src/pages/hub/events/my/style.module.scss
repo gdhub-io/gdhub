@@ -1,16 +1,107 @@
 .container {
 	width: 100%;
 
-	:global(.ant-table-tbody > tr > td) {
-		vertical-align: middle;
+	:global(.ant-card) {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		transition: all 0.2s ease;
 	}
 
-	:global(.ant-table-row-expand-icon-cell) {
-		vertical-align: middle;
+	:global(.ant-card-body) {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
 	}
 
-	:global(.ant-table-row-expand-icon) {
-		vertical-align: middle;
+	:global(.ant-card-meta) {
+		flex: 1;
+	}
+
+	:global(.ant-card-cover) {
+		img {
+			width: 100%;
+			height: 200px;
+			object-fit: cover;
+		}
+	}
+
+	:global(.ant-card-actions) {
+		border-top: 1px solid #f0f0f0;
+
+		li {
+			margin: 0;
+		}
+
+		button {
+			border: none;
+			background: transparent;
+			box-shadow: none;
+			padding: 8px;
+
+			&:hover {
+				background: rgba(0, 0, 0, 0.04);
+			}
+
+			&:disabled {
+				opacity: 0.3;
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	.hoveredCard {
+		border: 1px solid #bcbcbc !important;
+		// box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3) !important;
+		// transform: translateY(-2px);
+		z-index: 10;
+		position: relative;
+	}
+
+	.relatedCard {
+		border: 1px solid #bcbcbc !important;
+		// box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2) !important;
+		opacity: 0.95;
+		position: relative;
+	}
+
+	.parentLabel {
+		&::before {
+			content: attr(data-parent-label);
+			position: absolute;
+			top: 0px;
+			left: 12px;
+			background: #1890ff;
+			color: #fff;
+			padding: 2px 8px;
+			font-size: 11px;
+			font-weight: 500;
+			border-radius: 0 0 4px 4px;
+			z-index: 11;
+			line-height: 1.4;
+			letter-spacing: 0.3px;
+			white-space: nowrap;
+		}
+	}
+
+	.childLabel {
+		&::before {
+			content: attr(data-child-label);
+			position: absolute;
+			top: 0px;
+			left: 12px;
+			background: #52c41a;
+			color: #fff;
+			padding: 2px 8px;
+			font-size: 11px;
+			font-weight: 500;
+			border-radius: 0 0 4px 4px;
+			z-index: 11;
+			line-height: 1.4;
+			letter-spacing: 0.3px;
+			white-space: nowrap;
+		}
 	}
 }
 

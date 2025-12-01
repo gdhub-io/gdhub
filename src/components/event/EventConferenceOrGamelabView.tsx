@@ -1,3 +1,5 @@
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IconExternalLink } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
@@ -30,11 +32,18 @@ const EventConferenceOrGamelabView = ({
 	event,
 	workDirections,
 	schedule,
-}: any) => {
+}: {
+	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+	workDirections: prismaClient.WorkDirection[];
+	schedule: (prismaClient.EventScheduleItem & {
+		speakers: prismaClient.User[];
+	})[];
+}) => {
 	const { t, getLanguage } = useTolgee();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
+	const [modal, modalContextHolder] = Modal.useModal();
 
 	const { mutateAsync: registerToEvent, isPending: isRegistering } =
 		useMutation({
@@ -42,7 +51,7 @@ const EventConferenceOrGamelabView = ({
 				await axios.post(`/api/user/event/${event.id}/register`);
 			},
 			onSuccess: () => {
-				Modal.success({
+				modal.success({
 					title: t("event.register.success.title", "Registration successful"),
 					content: t(
 						"event.register.success.description",
@@ -135,7 +144,7 @@ const EventConferenceOrGamelabView = ({
 					<Title level={2}>{t("event.about", "About")}</Title>
 					{event.content ? (
 						<div className={styles.content}>
-							<Blocks data={JSON.parse(event.content)} />
+							<Blocks data={JSON.parse(event.content as string)} />
 						</div>
 					) : (
 						<div className={styles.description}>
@@ -156,7 +165,7 @@ const EventConferenceOrGamelabView = ({
 						marginBottom: 32,
 					}}
 				>
-					{schedule.map((item: any, idx: number) => {
+					{schedule.map((item, idx: number) => {
 						const visibleSpeakers = (item.speakers || []).slice(
 							0,
 							MAX_VISIBLE_SPEAKERS,
@@ -176,7 +185,13 @@ const EventConferenceOrGamelabView = ({
 								}}
 							>
 								{/* Линия 1: дата и title */}
-								<Flex align="center" gap={16} style={{ marginBottom: 4 }}>
+								<Flex
+									align="center"
+									justify="space-between"
+									wrap
+									gap={16}
+									style={{ marginBottom: 4 }}
+								>
 									<span
 										style={{
 											fontWeight: 600,
@@ -207,6 +222,20 @@ const EventConferenceOrGamelabView = ({
 												{item.title}
 											</span>
 										</>
+									)}
+
+									{!!item.url && (
+										<Button
+											href={item.url}
+											target="_blank"
+											className="black-btn"
+											icon={
+												<IconExternalLink size={18} style={{ opacity: 0.5 }} />
+											}
+											iconPosition="end"
+										>
+											{t("event.open", "Open")}
+										</Button>
 									)}
 								</Flex>
 
@@ -330,6 +359,8 @@ const EventConferenceOrGamelabView = ({
 					</Link>
 				)}
 			</div>
+
+			{modalContextHolder}
 		</div>
 	);
 };
