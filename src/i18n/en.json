@@ -349,6 +349,11 @@
 	},
 	"community members": "community members",
 	"communityMember": "Community Member",
+	"component": {
+		"landingGameCreationSection": {
+			"joinTheProgram": "Go to Game Creation Program"
+		}
+	},
 	"concept-link": "Link to the concept",
 	"concept-list": "Concept list",
 	"confirmUserData": "I confirm the accuracy of the information entered",
@@ -556,6 +561,11 @@
 			"title6": "Elena",
 			"title7": "Sergey",
 			"title8": "Alex"
+		},
+		"gameCreation": {
+			"pretitle": "Bachelor’s program in Game Creation at EHU",
+			"subtitle": "Together with Europian Humanities University we designed a bachelor’s program for future game creators with a focus on authorship, art and real projects during the studies that grants a European-standard bachelor diploma.",
+			"title": "Build your future in the video game industry"
 		},
 		"specialist": {
 			"pretitle": "what are our advantages",
