@@ -341,7 +341,7 @@ const EventConferenceOrGamelabView = ({
 								size="large"
 								style={{ width: "100%", maxWidth: 420 }}
 							>
-								{t("event.register", "Register")}
+								{t("event.bookNow", `Book Now ${event.isFree ? "Free" : ""}`)}
 							</Button>
 						</Link>
 					) : (
@@ -352,7 +352,7 @@ const EventConferenceOrGamelabView = ({
 							loading={isRegistering}
 							onClick={() => registerToEvent()}
 						>
-							{t("event.register", "Register")}
+							{t("event.bookNow", `Book Now ${event.isFree ? "Free" : ""}`)}
 						</Button>
 					)
 				) : (

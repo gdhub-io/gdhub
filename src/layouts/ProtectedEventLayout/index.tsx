@@ -316,22 +316,6 @@ export const ProtectedEventLayout = ({
 								</Button>
 							</Space>
 						)}
-						{event?.status === prismaClient.$Enums.EventStatus.Published && (
-							<Space wrap={true}>
-								<Text type="secondary">
-									The event is published at{" "}
-									{dayjs(event?.publishedAt).format("lll")}
-								</Text>
-								<Button
-									type="default"
-									size="small"
-									onClick={() => handleEventUnpublish(eventId)}
-									loading={isUnpublishingEvent}
-								>
-									{t("event.button.unpublish", "Unpublish")}
-								</Button>
-							</Space>
-						)}
 
 						<Button
 							type="text"
@@ -342,6 +326,23 @@ export const ProtectedEventLayout = ({
 							{t("event.button.publicPage", "Go to page")}
 							<GoLinkExternal size={12} color="gray" />
 						</Button>
+
+						{event?.status === prismaClient.$Enums.EventStatus.Published && (
+							<Space wrap={true}>
+								{/* <Text type="secondary">
+									The event is published at{" "}
+									{dayjs(event?.publishedAt).format("lll")}
+								</Text> */}
+								<Button
+									type="default"
+									size="small"
+									onClick={() => handleEventUnpublish(eventId)}
+									loading={isUnpublishingEvent}
+								>
+									{t("event.button.unpublish", "Unpublish")}
+								</Button>
+							</Space>
+						)}
 					</Space>
 				</>
 			),
