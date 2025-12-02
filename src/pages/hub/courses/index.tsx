@@ -30,7 +30,7 @@ const CoursesPage: NextPageWithLayout = ({ projects }: any) => {
 			}
 		>
 			<div className={styles.container}>
-				<div className="project-vacancies" style={{ marginTop: 32 }}>
+				<div className="courses-list" style={{ marginTop: 32 }}>
 					<CoursesList location="hub" />
 				</div>
 			</div>

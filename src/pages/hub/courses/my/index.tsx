@@ -1,24 +1,28 @@
 "use client";
 
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Typography, theme } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { useState } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 import styles from "./style.module.scss";
 
-const CourseCard = dynamic(
+const CourseCardBase = dynamic(
 	() => import("@/components/courses/CourseCard").then((m) => m.CourseCard),
 	{ ssr: false },
 );
 const CourseSection = dynamic(
 	() =>
 		import("@/components/courses/CourseSection").then((m) => m.CourseSection),
+	{ ssr: false },
+);
+const CreateCourseModal = dynamic(
+	() => import("@/components/modals/CreateCourseModal").then((m) => m.default),
 	{ ssr: false },
 );
 
@@ -33,35 +37,60 @@ const MyCoursesPage: NextPageWithLayout = () => {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
-	const router = useRouter();
 
+	const [openCreateCourseModal, setOpenCreateCourseModal] = useState(false);
 	const {
-		data: myCourses,
+		data: courses,
 		isSuccess,
 		isLoading,
+		refetch: refetchCourses,
 	} = useQuery({
 		queryKey: ["my-courses"],
-		queryFn: () => axios.get("/api/user/courses").then((res) => res.data),
+		queryFn: () =>
+			axios
+				.get<{
+					author: prismaClient.Course[];
+					student: prismaClient.Course[];
+					instructor: prismaClient.Course[];
+				}>("/api/user/courses")
+				.then((res) => res.data),
 		enabled: !!session?.user,
 	});
+
+	const CourseCardWithActions = React.useCallback(
+		({
+			course,
+			token: cardToken,
+		}: {
+			course: prismaClient.Course;
+			token: ReturnType<typeof theme.useToken>["token"];
+		}) => (
+			<CourseCardBase
+				course={course}
+				token={cardToken}
+				showActions={true}
+				onRefetch={refetchCourses}
+			/>
+		),
+		[refetchCourses],
+	);
 
 	return (
 		<ProtectedLayout
 			title={t("courses.myCourses", "My courses")}
-			subTitle={t(
-				"courses.myCoursesDescription",
-				"Courses where you are an author, student, or instructor",
-			)}
-			extra={<Button>{t("courses.createCourse", "Create course")}</Button>}
+			extra={
+				<Button onClick={() => setOpenCreateCourseModal(true)}>
+					{t("courses.createCourse", "Create course")}
+				</Button>
+			}
 			showBackButton
 			backButtonUrl="/hub/courses"
 		>
 			<div className={styles.container}>
 				<CourseSection
-					CardComponent={CourseCard}
+					CardComponent={CourseCardWithActions}
 					token={token}
-					queryKey={["my-courses"]}
-					queryFn={() => axios.get("/api/user/courses").then((res) => res.data)}
+					records={courses?.author ?? []}
 				/>
 
 				{!isSuccess && !isLoading && (
@@ -73,6 +102,15 @@ const MyCoursesPage: NextPageWithLayout = () => {
 					</Paragraph>
 				)}
 			</div>
+
+			<CreateCourseModal
+				open={openCreateCourseModal}
+				onCancel={() => setOpenCreateCourseModal(false)}
+				onCreate={() => {
+					refetchCourses();
+					setOpenCreateCourseModal(false);
+				}}
+			/>
 		</ProtectedLayout>
 	);
 };
