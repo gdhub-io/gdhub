@@ -223,9 +223,6 @@ class ApiUserEventEndpointHandler {
 						{
 							startDate: "asc",
 						},
-						{
-							endDate: "asc",
-						},
 					],
 					include: {
 						speakers: {

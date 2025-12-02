@@ -185,7 +185,7 @@ export const getServerSideProps = async (
 
 	const event = await prisma.event.findFirst({
 		where: { slug, lang: locale },
-		include: { schedule: true },
+		include: { schedule: { orderBy: { startDate: "asc" } } },
 	});
 
 	if (!event) {
