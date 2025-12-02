@@ -48,7 +48,7 @@ export type ScheduleItemFormValues = {
 	endDate: string;
 	speakers: { name: string; speciality: string; id: string }[];
 	format?: prismaClient.$Enums.EventFormat;
-	language?: prismaClient.$Enums.Language;
+	lang?: prismaClient.$Enums.Language;
 	directionId: string;
 };
 
@@ -299,7 +299,7 @@ const EventModal: React.FC<EventModalProps> = ({
 				initialValues={{
 					...initialValues,
 					format: prismaClient.$Enums.EventFormat.Online,
-					language: session?.user?.lang || prismaClient.$Enums.Language.en,
+					lang: session?.user?.lang || prismaClient.$Enums.Language.en,
 				}}
 				requiredMark="optional"
 			>
@@ -553,7 +553,7 @@ const EventModal: React.FC<EventModalProps> = ({
 							<Col span={12}>
 								<Form.Item
 									label={t("event.modal.language", "Language")}
-									name="language"
+									name="lang"
 									rules={[
 										{
 											required: true,
@@ -566,9 +566,9 @@ const EventModal: React.FC<EventModalProps> = ({
 								>
 									<Select
 										options={Object.values(prismaClient.$Enums.Language).map(
-											(language) => ({
-												label: language.toUpperCase(),
-												value: language,
+											(lang) => ({
+												label: lang.toUpperCase(),
+												value: lang,
 											}),
 										)}
 									/>
