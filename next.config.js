@@ -11,7 +11,7 @@ const nextConfig = {
 		ignoreDuringBuilds: true,
 	},
 	experimental: {
-		// serverComponentsExternalPackages: ['bullmq'],
+		// serverComponentsExternalPackages: ['@svar-ui/react-gantt'],
 		// instrumentationHook: true,
 	},
 	images: {
@@ -45,7 +45,8 @@ const nextConfig = {
 		"rc-tree",
 		"rc-table",
 	],
-	webpack: (config) => {
+	webpack: (config) =>
+	{
 		config.module.rules.push({
 			test: /\.svg$/,
 			use: ["@svgr/webpack"],
@@ -57,6 +58,13 @@ const nextConfig = {
 			type: "memory",
 			cacheUnaffected: true,
 		};
+
+		// 👉 add ignore warning for autoprefixer for external css
+    config.ignoreWarnings = config.ignoreWarnings || [];
+    config.ignoreWarnings.push({
+      module: /@svar-ui\/react-gantt\/dist-full\/index\.css/,
+      message: /end value has mixed support, consider using flex-end instead/,
+    });
 
 		return config;
 	},
