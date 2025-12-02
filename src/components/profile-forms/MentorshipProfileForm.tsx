@@ -1,10 +1,12 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { FiTrash2 } from "@react-icons/all-files/fi/FiTrash2";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Alert,
 	Button,
 	Card,
+	Flex,
 	Form,
 	Input,
 	message,
@@ -17,7 +19,7 @@ import Select from "antd/es/select";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import styles from "./MentorshipProfileForm.module.scss";
+import { DynamicRowList } from "@/components/shared/DynamicRowList";
 
 const { Paragraph, Text } = Typography;
 
@@ -37,6 +39,9 @@ const MentorshipProfileForm = ({
 		string | null
 	>(null);
 	const { data: session, update: refreshSession } = useSession();
+	const maxQuestions = 5;
+	const openForQuestions =
+		Form.useWatch<string[]>("openForQuestions", form) ?? [];
 
 	const { mutateAsync: switchMentorship, isPending: isSwitching } = useMutation(
 		{
@@ -137,18 +142,14 @@ const MentorshipProfileForm = ({
 	};
 
 	const specialityListOptions = specialities?.data.map((r: any) => ({
-		label: (
-			<Typography.Text ellipsis>
-				{t(`components.profile-forms.mentorship.card.${r.name}`, r.name)}
-			</Typography.Text>
-		),
+		label: t(`components.profile-forms.mentorship.card.${r.name}`, r.name),
 		value: r.id,
 	}));
 
 	return (
 		<Card
 			title={t("components.profile-forms.mentorship.card.title", "Mentorship")}
-			bordered={false}
+			variant="borderless"
 			extra={
 				<Tooltip
 					title={
@@ -206,23 +207,61 @@ const MentorshipProfileForm = ({
 							/>
 						</Form.Item>
 
-						<Form.Item
-							label={t(
-								"profile-forms.mentorship.field.openForQuestions.label",
-								"A list of questions that can be addressed to you",
-							)}
-							name="openForQuestions"
-							rules={[{ required: true }]}
-						>
-							<Select
-								className={styles.questionSelect}
-								mode="tags"
-								maxCount={5}
-								style={{ width: "100%" }}
-								placeholder={t("Start typing and press Enter")}
-								loading={isSpecialityFetching}
-							/>
-						</Form.Item>
+						{(() => {
+							return (
+								<Form.Item
+									label={
+										<Flex justify="space-between" align="center" gap={8}>
+											<span>
+												{t(
+													"profile-forms.mentorship.field.openForQuestions.label",
+													"A list of questions that can be addressed to you",
+												)}
+											</span>
+											<Text type="secondary">
+												({openForQuestions.length}/{maxQuestions})
+											</Text>
+										</Flex>
+									}
+									name="openForQuestions"
+									rules={[{ required: true }]}
+								>
+									<DynamicRowList<string>
+										maxItems={maxQuestions}
+										addPlaceholder={t(
+											"profile-forms.mentorship.field.openForQuestions.addPlaceholder",
+											"Add question",
+										)}
+										renderRow={({ value, onChange, remove }) => (
+											<Flex gap={8} align="center" style={{ width: "100%" }}>
+												<Input
+													value={value}
+													style={{ width: "100%" }}
+													placeholder={t(
+														"profile-forms.mentorship.field.openForQuestions.placeholder",
+														"Question",
+													)}
+													onChange={(event) => onChange(event.target.value)}
+													onPressEnter={(event) => {
+														event.preventDefault();
+													}}
+												/>
+												<Button
+													type="text"
+													danger
+													aria-label={t(
+														"profile-forms.mentorship.field.openForQuestions.remove",
+														"Remove question",
+													)}
+													icon={<FiTrash2 />}
+													onClick={remove}
+												/>
+											</Flex>
+										)}
+									/>
+								</Form.Item>
+							);
+						})()}
 
 						<Form.Item
 							label={t(

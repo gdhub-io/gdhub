@@ -1,6 +1,6 @@
 import { BiLogoLinkedin } from "@react-icons/all-files/bi/BiLogoLinkedin";
 import { BiLogoYoutube } from "@react-icons/all-files/bi/BiLogoYoutube";
-import { useTranslate } from "@tolgee/react";
+import { useTolgee, useTranslate } from "@tolgee/react";
 import { Col, Grid, Row, Space, Typography } from "antd";
 import Link from "next/link";
 import EmailIcon from "@/assets/images/icons/email.svg";
@@ -13,6 +13,7 @@ const { Title, Text } = Typography;
 export const LandingContactsSection = () => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
+	const { getLanguage } = useTolgee();
 
 	return (
 		// biome-ignore lint/correctness/useUniqueElementIds: <explanation>
@@ -51,7 +52,14 @@ export const LandingContactsSection = () => {
 									</Link>
 								</div>
 								<div className={styles.contactItem}>
-									<Link href="https://t.me/gdhub_io" target="_blank">
+									<Link
+										href={
+											getLanguage() === "en"
+												? "https://t.me/gdhub_en"
+												: "https://t.me/gdhub_io"
+										}
+										target="_blank"
+									>
 										<Space direction="vertical" size={32}>
 											<div className={styles.contactIcon}>
 												<TelegramIcon />

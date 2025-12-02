@@ -1,8 +1,5 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Form, Row, Select, Spin, Typography } from "antd";
-import axios from "axios";
+import { Button, Form, Row, Select } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
@@ -22,8 +19,6 @@ const ExpertList = dynamic(
 	{ ssr: false },
 );
 
-const { Text, Title } = Typography;
-
 const ExpertsPage = () => {
 	const { t } = useTranslate();
 	const [selectedWorkDirection, setSelectedWorkDirection] = useState<
@@ -36,10 +31,6 @@ const ExpertsPage = () => {
 
 	const handleFilterChange = (value: string) => {
 		setSelectedWorkDirection(value || undefined);
-	};
-
-	const getTelegramExpertLink = (specialityId: string) => {
-		return `https://t.me/gdhub_experts_bot/app?startapp=expert_${specialityId}`;
 	};
 
 	const handleExpertClick = async (expertId: string) => {
