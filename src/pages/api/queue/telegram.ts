@@ -1,6 +1,5 @@
 import type { Job } from "bullmq";
 import { Body, createHandler, Post } from "next-api-decorators";
-import { AvailableLocales } from "@/config/locale";
 import QueueBrokerLog from "@/decorators/QueueBrokerLog";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import TelegramService from "@/services/telegram";
@@ -10,16 +9,16 @@ class ApiQueueTelegramHandler {
 	constructor(private readonly telegramBot = TelegramService.init()) {}
 
 	@Post()
-	public async workerProcessor(@Body() job: Job<any, any, string>) {
-		if (job.name == "new-project-reports") {
+	public async workerProcessor(@Body() job: Job<unknown, unknown, string>) {
+		if (job.name === "new-project-reports") {
 			await this.newProjectReports();
 		}
 
-		if (job.name == "new-specialities") {
+		if (job.name === "new-specialities") {
 			await this.newSpecialities();
 		}
 
-		if (job.name == "new-vacancies") {
+		if (job.name === "new-vacancies") {
 			await this.newVacancies();
 		}
 
