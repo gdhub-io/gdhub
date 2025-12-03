@@ -154,13 +154,13 @@ export const EventScheduleGantt = forwardRef<
 					sort: false,
 					cell: (params: ICellProps) => {
 						const row = params.row as {
-							lang?: prismaClient.$Enums.Language;
+							language?: prismaClient.$Enums.Language;
 							text?: string;
 						};
 						return (
 							<Space size={0}>
 								<Tag bordered={false} color="blue">
-									{row.lang}
+									{row.language}
 								</Tag>{" "}
 								<Text style={{ fontWeight: 400 }}>{row.text}</Text>
 							</Space>
