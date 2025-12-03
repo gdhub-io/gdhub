@@ -139,6 +139,7 @@ export const BannerEventSlider = () => {
 					],
 					withDates: true,
 					status: [prismaClient.$Enums.EventStatus.Published],
+					lang: getLanguage(),
 				},
 				paramsSerializer: (params) =>
 					qs.stringify(params, { arrayFormat: "repeat" }),
