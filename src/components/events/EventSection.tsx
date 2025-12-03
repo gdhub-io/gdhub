@@ -1,5 +1,6 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
+import { useTolgee } from "@tolgee/react";
 import { Col, Row } from "antd";
 import axios from "axios";
 import qs from "qs";
@@ -32,7 +33,7 @@ export const EventSection = ({
 	onLoaded = () => {},
 	onLoadingChange,
 }: EventSectionProps) => {
-	const now = new Date();
+	const { getLanguage } = useTolgee();
 
 	const {
 		data: events = [],
@@ -49,6 +50,7 @@ export const EventSection = ({
 								type: eventTypes,
 								timeStatus,
 								withDates: true,
+								lang: getLanguage(),
 							},
 							paramsSerializer: (params) =>
 								qs.stringify(params, { arrayFormat: "repeat" }),

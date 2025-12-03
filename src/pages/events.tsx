@@ -1,6 +1,6 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslate } from "@tolgee/react";
+import { useTolgee, useTranslate } from "@tolgee/react";
 import { theme } from "antd";
 import axios from "axios";
 import React from "react";
@@ -19,11 +19,15 @@ import styles from "@/pages/hub/events/style.module.scss";
 
 const EventsPage: NextPageWithLayout = () => {
 	const { t } = useTranslate();
+	const { getLanguage } = useTolgee();
 	const { token } = theme.useToken();
 
 	const { data: eventCount, isFetched: isCountFetched } = useQuery({
 		queryKey: ["events-count"],
-		queryFn: () => axios.get("/api/events-count").then((res) => res.data),
+		queryFn: () =>
+			axios
+				.get("/api/events-count", { params: { lang: getLanguage() } })
+				.then((res) => res.data),
 		enabled: true,
 	});
 
