@@ -11,7 +11,6 @@ class ApiMentorsHandler {
 	public async list(@Query("workDirectionId") workDirectionId?: string) {
 		const experts = await prisma.user.findMany({
 			where: {
-				telegramId: { not: null },
 				specialities: {
 					some: {
 						level: {
