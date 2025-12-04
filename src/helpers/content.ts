@@ -95,7 +95,7 @@ export const getEditorjsShortContent = (
 	content: OutputData,
 	maxLength: number = 200,
 ) => {
-	const blocks = content.blocks || [];
+	const blocks = content?.blocks || [];
 
 	const text = `${blocks
 		.filter(
