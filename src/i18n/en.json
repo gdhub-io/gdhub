@@ -463,6 +463,21 @@
 	},
 	"experience": "Experience",
 	"experience.plachehloder": "For example: \n2015-2020, GameBook LLC, Unity developer \n2020-present, Lukomorye LLC, Sound designer\nI only have experience doing academic work",
+	"expert-card": {
+		"details-button": "Details"
+	},
+	"experts": {
+		"page": {
+			"description": "On this page, you can find experts who are ready to help with your questions. Click on a expert card to contact them",
+			"filter": {
+				"language": {
+					"en": "English speaking experts",
+					"ru": "Russian speaking experts"
+				}
+			},
+			"title": "Experts"
+		}
+	},
 	"fairy": "Fairy",
 	"fantasy": "Fantasy",
 	"fighting": "Fighting",
@@ -848,6 +863,9 @@
 			"pastEvents": "Some Past Events",
 			"pastEventsDescription": "Here are some of the platform's completed events.",
 			"title": "Events"
+		},
+		"experts": {
+			"myExperts": "My requests"
 		},
 		"hab": {
 			"projects": {

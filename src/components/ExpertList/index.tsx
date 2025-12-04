@@ -32,17 +32,22 @@ const ExpertList = ({
 	filter,
 	onClick,
 }: {
-	filter?: { workDirectionId?: string };
+	filter?: { workDirectionId?: string; lang?: prismaClient.Language };
 	onClick?: (expertId: string) => void;
 }) => {
 	const { t } = useTranslate();
 
+	console.log("filter", filter);
+
 	const { data: experts, isLoading } = useQuery<Expert[]>({
-		queryKey: ["experts", filter?.workDirectionId],
+		queryKey: ["experts", JSON.stringify(filter)],
 		queryFn: () =>
 			axios
 				.get("/api/experts", {
-					params: { workDirectionId: filter?.workDirectionId },
+					params: {
+						workDirectionId: filter?.workDirectionId,
+						lang: filter?.lang,
+					},
 				})
 				.then((res) => res.data),
 		staleTime: Infinity,
