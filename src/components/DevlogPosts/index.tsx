@@ -1,4 +1,6 @@
 import { ClockCircleOutlined, HistoryOutlined } from "@ant-design/icons";
+import type { OutputData } from "@editorjs/editorjs";
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Skeleton, Spin, Typography } from "antd";
@@ -7,26 +9,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageViews } from "@/components/PageViews";
-import { getPageCover } from "@/helpers/content";
+import {
+	getEditorjsPageCover,
+	getEditorjsShortContent,
+	getPageCover,
+} from "@/helpers/content";
 import styles from "./styles.module.scss";
 
-const { Title, Text } = Typography;
-
-interface DevlogPost {
-	id: string;
-	projectId: string;
-	content: string;
-	coverImage?: string;
-	publishedAt: string;
-	video: string | null;
-	project?: {
-		name: string;
-		coverImage: string;
-		slug: string;
-	};
-}
+const { Title } = Typography;
 
 interface DevlogPostsProps {
 	projectId?: string;
@@ -45,7 +37,7 @@ const DefaultCover = ({ title }: { title: string }) => {
 };
 
 const PostCard: React.FC<{
-	post: DevlogPost;
+	post: prismaClient.ProjectReport & { project: prismaClient.Project };
 	onClick: (e: React.MouseEvent) => void;
 }> = ({ post, onClick }) => {
 	const { t } = useTranslate();
@@ -103,11 +95,30 @@ const PostCard: React.FC<{
 		return html.replace(/<[^>]*>/g, "");
 	};
 
-	const pageCover = getPageCover({
-		content: post.content,
-		video: post.video,
-		project: post.project,
-	});
+	const getPreviewText = () => {
+		return post.contentEditor
+			? getEditorjsShortContent(
+					post.contentEditor as unknown as OutputData,
+					300,
+				)
+			: post.content;
+	};
+
+	const pageCoverFromContent = useMemo(
+		() =>
+			getPageCover({
+				content: post.content,
+				video: post.video,
+				project: post.project,
+			}),
+		[post],
+	);
+
+	const pageCoverFromEditorjs = useMemo(() => {
+		return post.contentEditor
+			? getEditorjsPageCover(post.contentEditor as unknown as OutputData)
+			: null;
+	}, [post.contentEditor]);
 
 	return (
 		<Link href={`/devlog/${post.id}`}>
@@ -119,9 +130,9 @@ const PostCard: React.FC<{
 			>
 				<div className={styles.postContent}>
 					<div className={styles.postImage}>
-						{!imageError && pageCover ? (
+						{pageCoverFromEditorjs || pageCoverFromContent ? (
 							<Image
-								src={pageCover}
+								src={pageCoverFromEditorjs || pageCoverFromContent || ""}
 								alt={post.project?.name || ""}
 								width={240}
 								height={240}
@@ -133,9 +144,7 @@ const PostCard: React.FC<{
 						)}
 					</div>
 					<div className={styles.textContent}>
-						<p className={styles.postExcerpt}>
-							{truncateText(cleanMarkdown(stripHtml(post.content)), 300)}
-						</p>
+						<p className={styles.postExcerpt}>{getPreviewText()}</p>
 						<div className={styles.postMeta}>
 							<span
 								role="link"
@@ -152,11 +161,11 @@ const PostCard: React.FC<{
 							<span>•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
-								{formatDate(post.publishedAt)}
+								{formatDate(post.publishedAt.toString())}
 							</span>
 							<PageViews
 								path={`/devlog/${post.id}`}
-								startDate={post.publishedAt}
+								startDate={post.publishedAt.toString()}
 							/>
 						</div>
 					</div>
@@ -202,7 +211,7 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 		useInfiniteQuery({
 			queryKey: ["devlog-posts", projectId],
 			queryFn: async ({ pageParam = 1 }) => {
-				const response = await axios.get<DevlogPost[]>(
+				const response = await axios.get<prismaClient.ProjectReport[]>(
 					`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ""}`,
 				);
 
@@ -283,7 +292,14 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 			<div className={styles.postsList}>
 				{posts.map((post) => (
 					<div key={`post-${post.id}`} className={styles.postWrapper}>
-						<PostCard post={post} onClick={(e) => e.stopPropagation()} />
+						<PostCard
+							post={
+								post as prismaClient.ProjectReport & {
+									project: prismaClient.Project;
+								}
+							}
+							onClick={(e) => e.stopPropagation()}
+						/>
 					</div>
 				))}
 			</div>

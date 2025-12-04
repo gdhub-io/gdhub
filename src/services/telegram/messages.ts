@@ -1,9 +1,11 @@
+import type { OutputData } from "@editorjs/editorjs";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import weekday from "dayjs/plugin/weekday";
+import { getEditorjsShortContent } from "@/helpers/content";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(localeData);
@@ -40,9 +42,15 @@ export const newProjectReportsMessageRu = (
 	let message = "<b>Новое на проектах сообщества</b>";
 
 	reports.forEach((report) => {
+		const content = report.contentEditor
+			? getEditorjsShortContent(
+					report.contentEditor as unknown as OutputData,
+					150,
+				)
+			: getCleanTextContent(report.content);
+
 		message += `\n\n<b>Проект ${report.project.name}</b>\n`;
-		message += `<i>Опубликовано: ${dayjs(report.publishedAt).format("ll")}</i>\n\n`;
-		message += `${getCleanTextContent(report.content)}\n`;
+		message += `${content}\n`;
 		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>\n`;
 	});
 
@@ -57,9 +65,15 @@ export const newProjectReportsMessageEn = (
 	let message = "<b>New on games projects</b>";
 
 	reports.forEach((report) => {
+		const content = report.contentEditor
+			? getEditorjsShortContent(
+					report.contentEditor as unknown as OutputData,
+					150,
+				)
+			: getCleanTextContent(report.content);
+
 		message += `\n\n<b>Project ${report.project.name}</b>\n`;
-		message += `<i>Published: ${dayjs(report.publishedAt).format("ll")}</i>\n\n`;
-		message += `${getCleanTextContent(report.content)}\n`;
+		message += `${content}\n`;
 		message += `\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>\n`;
 	});
 
