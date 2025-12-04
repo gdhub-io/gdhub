@@ -1,14 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
 
+import type { OutputData } from "@editorjs/editorjs";
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Card, Col, Grid, Row, Skeleton, Space, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import Image from "next/image";
 import Link from "next/link";
-import { getCleanTextContent, getPageCover } from "@/helpers/content";
+import {
+	getCleanTextContent,
+	getEditorjsPageCover,
+	getEditorjsShortContent,
+	getPageCover,
+} from "@/helpers/content";
 import styles from "./style.module.scss";
-import type { DevlogPost } from "./types";
 
 const { Title, Text, Paragraph } = Typography;
 const { useBreakpoint } = Grid;
@@ -66,57 +73,82 @@ export const LandingRecentDevlogsSection = () => {
 						</Row>
 					) : (
 						<Row gutter={[24, 24]}>
-							{recentDevlogs?.data?.map((devlog: DevlogPost) => {
-								const pageCover = getPageCover({
-									content: devlog.content,
-									video: devlog.video,
-									project: devlog.project,
-								});
-								const initials = getInitials(devlog.project?.name || "");
+							{recentDevlogs?.data?.map(
+								(
+									devlog: prismaClient.ProjectReport & {
+										project: prismaClient.Project;
+									},
+								) => {
+									const pageCoverFromContent = getPageCover({
+										content: devlog.content,
+										video: devlog.video,
+										project: devlog.project,
+									});
 
-								return (
-									<Col key={devlog.id} xs={24} sm={12} md={8}>
-										<Link href={`/devlog/${devlog.id}`}>
-											<Card className={styles.devlogCard}>
-												{pageCover ? (
-													<div className={styles.cardImage}>
-														<img
-															src={pageCover}
-															alt={devlog.project?.name}
-															className={styles.image}
-														/>
-													</div>
-												) : (
-													<div className={styles.defaultCover}>
-														<div className={styles.defaultCoverContent}>
-															<span className={styles.defaultCoverInitials}>
-																{initials}
-															</span>
+									const pageCoverFromEditorjs = devlog.contentEditor
+										? getEditorjsPageCover(
+												devlog.contentEditor as unknown as OutputData,
+											)
+										: null;
+
+									const initials = getInitials(devlog.project?.name || "");
+
+									return (
+										<Col key={devlog.id} xs={24} sm={12} md={8}>
+											<Link href={`/devlog/${devlog.id}`}>
+												<Card className={styles.devlogCard}>
+													{pageCoverFromEditorjs || pageCoverFromContent ? (
+														<div className={styles.cardImage}>
+															<Image
+																src={
+																	pageCoverFromEditorjs ||
+																	pageCoverFromContent ||
+																	""
+																}
+																alt={devlog.project?.name || ""}
+																width={240}
+																height={240}
+																unoptimized
+																className={styles.image}
+															/>
 														</div>
+													) : (
+														<div className={styles.defaultCover}>
+															<div className={styles.defaultCoverContent}>
+																<span className={styles.defaultCoverInitials}>
+																	{initials}
+																</span>
+															</div>
+														</div>
+													)}
+													<div className={styles.cardHeader}>
+														<Space
+															direction="vertical"
+															size={4}
+															className={styles.projectInfo}
+														>
+															<Text strong>{devlog.project?.name}</Text>
+															<Text type="secondary">
+																{dayjs(devlog.publishedAt).format(
+																	"MMMM D, YYYY",
+																)}
+															</Text>
+														</Space>
 													</div>
-												)}
-												<div className={styles.cardHeader}>
-													<Space
-														direction="vertical"
-														size={4}
-														className={styles.projectInfo}
-													>
-														<Text strong>{devlog.project?.name}</Text>
-														<Text type="secondary">
-															{dayjs(devlog.publishedAt).format("MMMM D, YYYY")}
+													<div className={styles.cardContent}>
+														<Text>
+															{getEditorjsShortContent(
+																devlog.contentEditor as unknown as OutputData,
+																150,
+															)}
 														</Text>
-													</Space>
-												</div>
-												<div className={styles.cardContent}>
-													<Text>
-														{getCleanTextContent(devlog.content, 100)}
-													</Text>
-												</div>
-											</Card>
-										</Link>
-									</Col>
-								);
-							})}
+													</div>
+												</Card>
+											</Link>
+										</Col>
+									);
+								},
+							)}
 						</Row>
 					)}
 				</div>
