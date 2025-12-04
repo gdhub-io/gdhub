@@ -92,7 +92,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 
 					return (
 						<Image
-							src={coverSrc}
+							src={coverSrc || ""}
 							alt="Cover"
 							width={80}
 							height={45}
