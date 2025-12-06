@@ -9,7 +9,6 @@ import dayjs from "dayjs";
 import { parseInline } from "marked";
 import fetch from "node-fetch";
 import { env } from "@/helpers/env";
-import DiscordService from "../discord";
 import { prisma } from "../prisma";
 import {
 	newProjectReportsMessageEn,
@@ -42,7 +41,7 @@ export default class TelegramService {
 			}
 
 			return { ok: res.status === 200 };
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error(error);
 			return { ok: false };
 		}
@@ -57,21 +56,18 @@ export default class TelegramService {
 		chatId: number;
 		topicId?: number;
 		message: string;
-		options?: Record<string, any>;
+		options?: Record<string, unknown>;
 	}) {
 		const text = await parseInline(message);
 
-		const body: Record<string, any> = {
+		const body = {
 			chat_id: chatId,
 			message_thread_id: topicId || undefined,
 			parse_mode: "HTML",
-			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS == "1",
+			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS === "1",
 			text: text.replace(/<img[^>]*>/g, ""), //1-4096 characters
+			reply_markup: options || undefined,
 		};
-
-		if (options) {
-			body.reply_markup = options;
-		}
 
 		try {
 			const res = await axios.post(`${this.apiUrl}/sendMessage`, body);
@@ -79,7 +75,7 @@ export default class TelegramService {
 			if (!res.data) throw new Error("Telegram sendMessage response is wrong");
 
 			console.info("Message successfully send.");
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error(error);
 		}
 	}
@@ -101,7 +97,7 @@ export default class TelegramService {
 			photo: url,
 			caption: message, //0-1024 characters
 			parse_mode: "HTML",
-			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS == "1",
+			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS === "1",
 		});
 
 		try {
@@ -117,7 +113,7 @@ export default class TelegramService {
 			if (!res.ok) throw new Error("Telegram sendMessage response is wrong");
 
 			console.info("Message successfully send.");
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error(error);
 		}
 	}
@@ -161,21 +157,19 @@ export default class TelegramService {
 
 		if (reports.length === 0) return { sent: 0 };
 
-		const ruReports = newProjectReportsMessageRu(
-			reports.filter((report) => report.author.lang === "ru"),
-		);
-
-		const enReports = newProjectReportsMessageEn(
-			reports.filter((report) => report.author.lang === "en"),
-		);
-
 		// Send to RU chat
 		try {
-			await this.sendMessage({
-				chatId: env<number>("TELEGRAM_CHAT_ID"),
-				topicId: env<number>("TELEGRAM_TOPIC_REPORTS"),
-				message: `${ruReports}\n\n${enReports}`,
-			});
+			const ruReports = newProjectReportsMessageRu(
+				reports.filter((report) => report.author.lang === "ru"),
+			);
+
+			if (ruReports.length > 0) {
+				await this.sendMessage({
+					chatId: env<number>("TELEGRAM_CHAT_ID"),
+					topicId: env<number>("TELEGRAM_TOPIC_REPORTS"),
+					message: `${ruReports}`,
+				});
+			}
 		} catch (error) {
 			console.error(
 				"Error sending message to RU Telegram chat (new project reports)",
@@ -185,11 +179,17 @@ export default class TelegramService {
 
 		// Send to EN chat
 		try {
-			await this.sendMessage({
-				chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
-				topicId: env<number>("TELEGRAM_EN_TOPIC_REPORTS"),
-				message: newProjectReportsMessageEn(reports),
-			});
+			const enReports = newProjectReportsMessageEn(
+				reports.filter((report) => report.author.lang === "en"),
+			);
+
+			if (enReports.length > 0) {
+				await this.sendMessage({
+					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
+					topicId: env<number>("TELEGRAM_EN_TOPIC_REPORTS"),
+					message: `${enReports}`,
+				});
+			}
 		} catch (error) {
 			console.error(
 				"Error sending message to EN Telegram chat (new project reports)",
@@ -198,16 +198,16 @@ export default class TelegramService {
 		}
 
 		// Send to Discord
-		try {
-			await DiscordService.init().sendProjectNewsMessage(
-				newProjectReportsMessageEn(reports),
-			);
-		} catch (error) {
-			console.error(
-				"Error sending message to Discord (new project reports)",
-				error,
-			);
-		}
+		// try {
+		// 	await DiscordService.init().sendProjectNewsMessage(
+		// 		newProjectReportsMessageEn(reports),
+		// 	);
+		// } catch (error) {
+		// 	console.error(
+		// 		"Error sending message to Discord (new project reports)",
+		// 		error,
+		// 	);
+		// }
 
 		return { sent: reports.length };
 	}
@@ -235,22 +235,21 @@ export default class TelegramService {
 			include: { user: { include: { profile: true } } },
 		});
 
-		if (specialities.length == 0) return { sent: 0 };
-
-		const ruSpecialities = newSpecialitiesMessageRu(
-			specialities.filter((s) => s.user.lang === "ru"),
-		);
-		const enSpecialities = newSpecialitiesMessageEn(
-			specialities.filter((s) => s.user.lang === "en"),
-		);
+		if (specialities.length === 0) return { sent: 0 };
 
 		// Send to RU chat
 		try {
-			await this.sendMessage({
-				chatId: env<number>("TELEGRAM_CHAT_ID"),
-				topicId: env<number>("TELEGRAM_TOPIC_NEWS"),
-				message: `${ruSpecialities}\n\n${enSpecialities}`,
-			});
+			const ruSpecialities = newSpecialitiesMessageRu(
+				specialities.filter((s) => s.user.lang === "ru"),
+			);
+
+			if (ruSpecialities.length > 0) {
+				await this.sendMessage({
+					chatId: env<number>("TELEGRAM_CHAT_ID"),
+					topicId: env<number>("TELEGRAM_TOPIC_NEWS"),
+					message: `${ruSpecialities}`,
+				});
+			}
 		} catch (error) {
 			console.error(
 				"Error sending message to RU Telegram chat (new specialities)",
@@ -258,17 +257,37 @@ export default class TelegramService {
 			);
 		}
 
-		// Send to Discord
+		// Send to EN chat
 		try {
-			await DiscordService.init().sendPlatformNewsMessage(
-				newSpecialitiesMessageEn(specialities),
+			const enSpecialities = newSpecialitiesMessageEn(
+				specialities.filter((s) => s.user.lang === "en"),
 			);
+
+			if (enSpecialities.length > 0) {
+				await this.sendMessage({
+					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
+					topicId: env<number>("TELEGRAM_EN_TOPIC_NEWS"),
+					message: `${enSpecialities}`,
+				});
+			}
 		} catch (error) {
 			console.error(
-				"Error sending message to Discord (new specialities)",
+				"Error sending message to EN Telegram chat (new specialities)",
 				error,
 			);
 		}
+
+		// Send to Discord
+		// try {
+		// 	await DiscordService.init().sendPlatformNewsMessage(
+		// 		newSpecialitiesMessageEn(specialities),
+		// 	);
+		// } catch (error) {
+		// 	console.error(
+		// 		"Error sending message to Discord (new specialities)",
+		// 		error,
+		// 	);
+		// }
 
 		return { sent: specialities.length };
 	}
@@ -312,25 +331,48 @@ export default class TelegramService {
 		});
 
 		projectWithVacancies = projectWithVacancies.filter(
-			(r: any) => r.team.vacancies.length > 0,
+			(r) => r.team.vacancies.length > 0,
 		);
 
-		if (projectWithVacancies.length == 0) return { sent: 0 };
-
-		const ruVacancies = newVacanciesMessageRu(
-			projectWithVacancies.filter((v) => v.team.project?.author?.lang === "ru"),
-		);
-		const enVacancies = newVacanciesMessageEn(
-			projectWithVacancies.filter((v) => v.team.project?.author?.lang === "en"),
-		);
+		if (projectWithVacancies.length === 0) return { sent: 0 };
 
 		// Send to RU chat
 		try {
-			await this.sendMessage({
-				chatId: env<number>("TELEGRAM_CHAT_ID"),
-				topicId: env<number>("TELEGRAM_TOPIC_VACANCIES"),
-				message: `${ruVacancies}\n\n${enVacancies}`,
-			});
+			const ruVacancies = newVacanciesMessageRu(
+				projectWithVacancies.filter(
+					(v) => v.team.project?.author?.lang === "ru",
+				),
+			);
+
+			if (ruVacancies.length > 0) {
+				await this.sendMessage({
+					chatId: env<number>("TELEGRAM_CHAT_ID"),
+					topicId: env<number>("TELEGRAM_TOPIC_VACANCIES"),
+					message: `${ruVacancies}`,
+				});
+			}
+		} catch (error) {
+			console.error(
+				"Error sending message to RU Telegram chat (new vacancies)",
+				error,
+			);
+		}
+
+		// Send to EN chat
+		try {
+			const enVacancies = newVacanciesMessageEn(
+				projectWithVacancies.filter(
+					(v) => v.team.project?.author?.lang === "en",
+				),
+			);
+
+			if (enVacancies.length > 0) {
+				await this.sendMessage({
+					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
+					topicId: env<number>("TELEGRAM_EN_TOPIC_VACANCIES"),
+					message: `${enVacancies}`,
+				});
+			}
 		} catch (error) {
 			console.error(
 				"Error sending message to RU Telegram chat (new vacancies)",
@@ -339,13 +381,13 @@ export default class TelegramService {
 		}
 
 		// Send to Discord
-		try {
-			await DiscordService.init().sendProjectNewsMessage(
-				newVacanciesMessageEn(projectWithVacancies),
-			);
-		} catch (error) {
-			console.error("Error sending message to Discord (new vacancies)", error);
-		}
+		// try {
+		// 	await DiscordService.init().sendProjectNewsMessage(
+		// 		newVacanciesMessageEn(projectWithVacancies),
+		// 	);
+		// } catch (error) {
+		// 	console.error("Error sending message to Discord (new vacancies)", error);
+		// }
 
 		return { sent: projectWithVacancies.length };
 	}

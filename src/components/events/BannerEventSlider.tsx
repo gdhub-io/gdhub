@@ -139,6 +139,7 @@ export const BannerEventSlider = () => {
 					],
 					withDates: true,
 					status: [prismaClient.$Enums.EventStatus.Published],
+					lang: getLanguage(),
 				},
 				paramsSerializer: (params) =>
 					qs.stringify(params, { arrayFormat: "repeat" }),
@@ -245,7 +246,7 @@ export const BannerEventSlider = () => {
 								</div>
 							</div>
 							<Link
-								href={`/event/${events.data[active].slug}`}
+								href={`/${events.data[active].lang ? `${events.data[active].lang}/` : ""}event/${events.data[active].slug}`}
 								target="_blank"
 								style={{ marginTop: "auto" }}
 							>

@@ -29,6 +29,10 @@ class GetEventsDto {
 	@IsOptional()
 	@Transform(({ value }) => (Array.isArray(value) ? value : [value]))
 	timeStatus?: EventTimeStatus[];
+
+	@IsEnum(prismaClient.Language)
+	@IsOptional()
+	lang?: prismaClient.Language;
 }
 
 @NextAuthGuard("user")
@@ -37,13 +41,13 @@ class ApiEventsEndpointHandler {
 	public async get(
 		@Query(ValidationPipe)
 		{
-			type,
 			status,
 			timeStatus = [
 				EventTimeStatus.Upcoming,
 				EventTimeStatus.Ongoing,
 				EventTimeStatus.Past,
 			],
+			lang,
 		}: GetEventsDto,
 	) {
 		const timeWhere: prismaClient.Prisma.EventScheduleItemWhereInput = {
@@ -89,6 +93,7 @@ class ApiEventsEndpointHandler {
 
 		const eventCount = await prisma.event.count({
 			where: {
+				lang: lang ? { equals: lang } : undefined,
 				status: status
 					? { in: status }
 					: {

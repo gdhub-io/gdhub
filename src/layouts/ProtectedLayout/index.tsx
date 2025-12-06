@@ -585,13 +585,7 @@ export const ProtectedLayout = ({
 					</Header>
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
-							<Flex
-								align="center"
-								justify="space-between"
-								gap={16}
-								style={{ marginBottom: 24 }}
-								wrap={true}
-							>
+							<Flex align="center" justify="space-between" gap={16} wrap={true}>
 								<Space>
 									{showBackButton &&
 										(backButtonUrl ? (
@@ -621,7 +615,7 @@ export const ProtectedLayout = ({
 								<div style={{ marginLeft: 52 }}>{subTitle}</div>
 							)}
 
-							{children}
+							<div style={{ marginTop: 24 }}>{children}</div>
 						</div>
 					</Content>
 					{/* <Footer></Footer> */}

@@ -15,6 +15,7 @@ function QueueBrokerLog(jobName: string) {
 						name: jobName,
 						status: prismaClient.QueueJobStatus.Completed,
 						type: prismaClient.QueueJobType.Broker,
+						data: result && typeof result === "object" ? result : null,
 					},
 				});
 

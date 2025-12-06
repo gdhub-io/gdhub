@@ -187,11 +187,11 @@ export default function ProjectReport({
 	};
 
 	const prepareEditorjsData = (data: any) => {
-		if (!data || !data.blocks || !Array.isArray(data.blocks)) {
+		if (!data || !data?.blocks || !Array.isArray(data?.blocks)) {
 			return { time: Date.now(), blocks: [], version: "2.31.0" };
 		}
 
-		const processedBlocks = data.blocks.map((block: any) => {
+		const processedBlocks = data?.blocks?.map((block: any) => {
 			if (block && block.type === "video" && block.data) {
 				const videoBlock = videoParser?.video(block.data);
 				return videoBlock || block;

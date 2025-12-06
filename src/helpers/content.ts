@@ -88,14 +88,14 @@ export const getEditorjsPageCover = (content: OutputData) => {
 		(block: any) => block.type === "image",
 	);
 
-	return firstImage?.data?.file?.url || null;
+	return firstImage?.data?.file?.url as string | null;
 };
 
 export const getEditorjsShortContent = (
 	content: OutputData,
 	maxLength: number = 200,
 ) => {
-	const blocks = content.blocks || [];
+	const blocks = content?.blocks || [];
 
 	const text = `${blocks
 		.filter(
@@ -103,7 +103,7 @@ export const getEditorjsShortContent = (
 				block.type !== "image" && Boolean(block.data?.text),
 		)
 		.map((block: OutputData["blocks"][number]) => block.data?.text)
-		.join(" ")}`;
+		.join(". ")}`;
 
-	return text.length > maxLength ? `${text}...` : text;
+	return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
