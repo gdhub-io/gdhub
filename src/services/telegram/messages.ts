@@ -50,7 +50,7 @@ export const newProjectReportsMessageRu = (
 			: getCleanTextContent(report.content);
 
 		message += `\n\n<b>Проект ${report.project.name}</b>\n`;
-		message += `${content}\n`;
+		message += `${content}`;
 		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>\n`;
 	});
 
@@ -73,8 +73,8 @@ export const newProjectReportsMessageEn = (
 			: getCleanTextContent(report.content);
 
 		message += `\n\n<b>Project ${report.project.name}</b>\n`;
-		message += `${content}\n`;
-		message += `\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>\n`;
+		message += `${content}`;
+		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>\n`;
 	});
 
 	return message;
