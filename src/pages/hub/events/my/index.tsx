@@ -500,6 +500,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 														<PageViews
 															path={`/event/${event.slug}`}
 															startDate={event.publishedAt}
+															minViews={0}
 														/>
 													)}
 												</Space>
