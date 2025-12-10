@@ -99,7 +99,7 @@
 		"matrix-js-sdk": "^38.3.0",
 		"multer": "^1.4.5-lts.1",
 		"natural-cron": "^1.0.1",
-		"next": "^14.2.30",
+		"next": "14.2.33",
 		"next-api-decorators": "^2.0.2",
 		"next-auth": "^4.24.8",
 		"next-csrf": "^0.2.1",
