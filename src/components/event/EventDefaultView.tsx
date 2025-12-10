@@ -6,13 +6,14 @@ import { IconExternalLink, IconMeteor } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
+	Alert,
 	Avatar,
 	Button,
-	Divider,
 	Flex,
 	Grid,
 	Modal,
 	message,
+	Space,
 	Typography,
 	theme,
 } from "antd";
@@ -22,7 +23,6 @@ import Blocks from "editorjs-blocks-react-renderer";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import React from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { formatEventPeriod } from "@/helpers/format";
@@ -318,15 +318,26 @@ const EventDefaultView = ({
 								</Button>
 							)
 						) : (
-							<Link href="/registration">
-								<Button
-									type="primary"
-									size="large"
-									style={{ width: "100%", maxWidth: 420 }}
-								>
-									{t("event.loginOrRegister", "Login / Register")}
-								</Button>
-							</Link>
+							<Alert
+								type="info"
+								description={
+									<Space direction="vertical" size={16}>
+										<Text>
+											{t(
+												"event.loginOrRegister",
+												"For registration on the event, please signin or register on the platform first",
+											)}
+										</Text>
+										<Button type="link" href="/registration">
+											{t("event.loginOrRegister", "Signin or Register")}
+										</Button>
+									</Space>
+								}
+								message={t(
+									"event.loginOrRegister",
+									"You are not registered on the platform",
+								)}
+							/>
 						)}
 					</div>
 				)}
