@@ -157,17 +157,18 @@ export default class TelegramService {
 
 		if (reports.length === 0) return { sent: 0 };
 
+		const ruReports = reports.filter((report) => report.author.lang === "ru");
+		const enReports = reports.filter((report) => report.author.lang === "en");
+
 		// Send to RU chat
 		try {
-			const ruReports = newProjectReportsMessageRu(
-				reports.filter((report) => report.author.lang === "ru"),
-			);
-
 			if (ruReports.length > 0) {
+				const ruReportsMessage = newProjectReportsMessageRu(ruReports);
+
 				await this.sendMessage({
 					chatId: env<number>("TELEGRAM_CHAT_ID"),
 					topicId: env<number>("TELEGRAM_TOPIC_REPORTS"),
-					message: `${ruReports}`,
+					message: `${ruReportsMessage}`,
 				});
 			}
 		} catch (error) {
@@ -179,15 +180,13 @@ export default class TelegramService {
 
 		// Send to EN chat
 		try {
-			const enReports = newProjectReportsMessageEn(
-				reports.filter((report) => report.author.lang === "en"),
-			);
-
 			if (enReports.length > 0) {
+				const enReportsMessage = newProjectReportsMessageEn(enReports);
+
 				await this.sendMessage({
 					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
 					topicId: env<number>("TELEGRAM_EN_TOPIC_REPORTS"),
-					message: `${enReports}`,
+					message: `${enReportsMessage}`,
 				});
 			}
 		} catch (error) {
@@ -237,17 +236,18 @@ export default class TelegramService {
 
 		if (specialities.length === 0) return { sent: 0 };
 
+		const ruSpecialities = specialities.filter((s) => s.user.lang === "ru");
+		const enSpecialities = specialities.filter((s) => s.user.lang === "en");
+
 		// Send to RU chat
 		try {
-			const ruSpecialities = newSpecialitiesMessageRu(
-				specialities.filter((s) => s.user.lang === "ru"),
-			);
-
 			if (ruSpecialities.length > 0) {
+				const ruSpecialitiesMessage = newSpecialitiesMessageRu(ruSpecialities);
+
 				await this.sendMessage({
 					chatId: env<number>("TELEGRAM_CHAT_ID"),
 					topicId: env<number>("TELEGRAM_TOPIC_NEWS"),
-					message: `${ruSpecialities}`,
+					message: `${ruSpecialitiesMessage}`,
 				});
 			}
 		} catch (error) {
@@ -259,15 +259,13 @@ export default class TelegramService {
 
 		// Send to EN chat
 		try {
-			const enSpecialities = newSpecialitiesMessageEn(
-				specialities.filter((s) => s.user.lang === "en"),
-			);
-
 			if (enSpecialities.length > 0) {
+				const enSpecialitiesMessage = newSpecialitiesMessageEn(enSpecialities);
+
 				await this.sendMessage({
 					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
 					topicId: env<number>("TELEGRAM_EN_TOPIC_NEWS"),
-					message: `${enSpecialities}`,
+					message: `${enSpecialitiesMessage}`,
 				});
 			}
 		} catch (error) {
@@ -323,9 +321,10 @@ export default class TelegramService {
 			include: {
 				team: {
 					include: {
+						_count: { select: { vacancies: true } },
+						vacancies: true,
 						project: { include: { author: { select: { lang: true } } } },
 					},
-					select: { _count: { select: { vacancies: true } }, vacancies: true },
 				},
 			},
 		});
@@ -336,19 +335,22 @@ export default class TelegramService {
 
 		if (projectWithVacancies.length === 0) return { sent: 0 };
 
+		const ruVacancies = projectWithVacancies.filter(
+			(v) => v.team.project?.author?.lang === "ru",
+		);
+		const enVacancies = projectWithVacancies.filter(
+			(v) => v.team.project?.author?.lang === "en",
+		);
+
 		// Send to RU chat
 		try {
-			const ruVacancies = newVacanciesMessageRu(
-				projectWithVacancies.filter(
-					(v) => v.team.project?.author?.lang === "ru",
-				),
-			);
-
 			if (ruVacancies.length > 0) {
+				const ruVacanciesMessage = newVacanciesMessageRu(ruVacancies);
+
 				await this.sendMessage({
 					chatId: env<number>("TELEGRAM_CHAT_ID"),
 					topicId: env<number>("TELEGRAM_TOPIC_VACANCIES"),
-					message: `${ruVacancies}`,
+					message: `${ruVacanciesMessage}`,
 				});
 			}
 		} catch (error) {
@@ -360,17 +362,13 @@ export default class TelegramService {
 
 		// Send to EN chat
 		try {
-			const enVacancies = newVacanciesMessageEn(
-				projectWithVacancies.filter(
-					(v) => v.team.project?.author?.lang === "en",
-				),
-			);
-
 			if (enVacancies.length > 0) {
+				const enVacanciesMessage = newVacanciesMessageEn(enVacancies);
+
 				await this.sendMessage({
 					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
 					topicId: env<number>("TELEGRAM_EN_TOPIC_VACANCIES"),
-					message: `${enVacancies}`,
+					message: `${enVacanciesMessage}`,
 				});
 			}
 		} catch (error) {

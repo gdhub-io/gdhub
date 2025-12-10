@@ -3,13 +3,14 @@ import { IconExternalLink, IconMeteor } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
+	Alert,
 	Avatar,
 	Button,
-	Divider,
 	Flex,
 	Grid,
 	Modal,
 	message,
+	Space,
 	Typography,
 	theme,
 } from "antd";
@@ -348,7 +349,7 @@ const EventConferenceOrGamelabView = ({
 						<Button
 							type="primary"
 							size="large"
-							style={{ width: "100%", maxWidth: 420 }}
+							style={{ width: "100%", maxWidth: 620 }}
 							loading={isRegistering}
 							onClick={() => registerToEvent()}
 						>
@@ -356,15 +357,26 @@ const EventConferenceOrGamelabView = ({
 						</Button>
 					)
 				) : (
-					<Link href="/registration">
-						<Button
-							type="primary"
-							size="large"
-							style={{ width: "100%", maxWidth: 420 }}
-						>
-							{t("event.loginOrRegister", "Login / Register")}
-						</Button>
-					</Link>
+					<Alert
+						type="info"
+						description={
+							<Space direction="vertical" size={16}>
+								<Text>
+									{t(
+										"event.loginOrRegister",
+										"For registration on the event, please signin or register on the platform first",
+									)}
+								</Text>
+								<Button type="link" href="/registration">
+									{t("event.loginOrRegister", "Signin or Register")}
+								</Button>
+							</Space>
+						}
+						message={t(
+							"event.loginOrRegister",
+							"You are not registered on the platform",
+						)}
+					/>
 				)}
 			</div>
 
