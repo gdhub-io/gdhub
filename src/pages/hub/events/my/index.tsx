@@ -498,7 +498,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 													)}
 													{event.slug && event.publishedAt && (
 														<PageViews
-															path={`/event/${event.slug}`}
+															path={`${event.lang ? `/${event.lang}` : ""}/event/${event.slug}`}
 															startDate={event.publishedAt}
 															minViews={0}
 														/>
