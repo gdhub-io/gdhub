@@ -60,57 +60,6 @@ interface PageProps {
 	isAuthenticated: boolean;
 }
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context,
-) => {
-	const projectReportId = context.params?.projectReportId as string;
-	const session = await getSession(context);
-
-	if (!projectReportId) {
-		return {
-			notFound: true,
-		};
-	}
-
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const { data: post } = await axios.get(
-			`${baseUrl}/api/devlog/${projectReportId}`,
-		);
-
-		// Обрезаем контент для неавторизованных пользователей
-		if (!session) {
-			if (post.contentEditor) {
-				// Save page cover before modifying contentEditor
-				post.pageCover = getEditorjsPageCover(post.contentEditor);
-				// Convert EditorJS content to plain text for unauthorized users
-				const shortText = getEditorjsShortContent(post.contentEditor, 1000);
-				post.content = shortText;
-				// Remove contentEditor so ReactMarkdown is used instead
-				delete post.contentEditor;
-			} else {
-				post.content = getCleanTextContent(post.content, 1000);
-				post.pageCover = getPageCover(post);
-			}
-		}
-
-		console.log(post);
-
-		return {
-			props: {
-				post,
-				contentLength: post.content.length,
-				isAuthenticated: !!session,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching post:", error);
-		return {
-			notFound: true,
-		};
-	}
-};
-
 const MarkdownImage = ({
 	src,
 	alt,
@@ -191,26 +140,14 @@ export default function ProjectReport({
 			return { time: Date.now(), blocks: [], version: "2.31.0" };
 		}
 
-		const processedBlocks = data?.blocks?.map((block: any) => {
-			if (block && block.type === "video" && block.data) {
-				try {
-					// Check if block.data has required structure
-					if (block.data && typeof block.data === "object") {
-						const videoBlock = videoParser?.video({ data: block.data });
-						return videoBlock || block;
-					}
-				} catch (error) {
-					console.error("Error parsing video block:", error);
-					// Return original block if parsing fails
-					return block;
-				}
-			}
-			return block;
+		// Filter out invalid blocks
+		const validBlocks = data.blocks.filter((block: any) => {
+			return block && block.type && block.data !== undefined;
 		});
 
 		return {
 			time: data.time || Date.now(),
-			blocks: processedBlocks,
+			blocks: validBlocks,
 			version: data.version || "2.31.0",
 		};
 	};
@@ -341,7 +278,32 @@ export default function ProjectReport({
 						)}
 
 						{post.contentEditor ? (
-							<Blocks data={prepareEditorjsData(post.contentEditor)} />
+							<Blocks
+								data={prepareEditorjsData(post.contentEditor)}
+								renderers={{
+									video: ({ data }) => {
+										if (!data) {
+											return <div className="editorjs-video-block" />;
+										}
+										try {
+											const videoHtml = videoParser?.video({ data });
+											if (!videoHtml) {
+												return <div className="editorjs-video-block" />;
+											}
+											return (
+												<div
+													className="editorjs-video-block"
+													// biome-ignore lint/security/noDangerouslySetInnerHtml: videoParser returns sanitized HTML
+													dangerouslySetInnerHTML={{ __html: videoHtml }}
+												/>
+											);
+										} catch (error) {
+											console.error("Error rendering video block:", error);
+											return <div className="editorjs-video-block" />;
+										}
+									},
+								}}
+							/>
 						) : (
 							<ReactMarkdown
 								rehypePlugins={[
@@ -485,3 +447,56 @@ export default function ProjectReport({
 		</PublicLayout>
 	);
 }
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async (
+	context,
+) => {
+	const projectReportId = context.params?.projectReportId as string;
+	const session = await getSession(context);
+
+	if (!projectReportId) {
+		return {
+			notFound: true,
+		};
+	}
+
+	try {
+		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+		const { data: post } = await axios.get(
+			`${baseUrl}/api/devlog/${projectReportId}`,
+		);
+
+		// Обрезаем контент для неавторизованных пользователей
+		if (!session) {
+			if (post.contentEditor) {
+				// Save page cover before modifying contentEditor
+				post.pageCover = getEditorjsPageCover(post.contentEditor);
+				// Convert EditorJS content to plain text for unauthorized users
+				const shortText = getEditorjsShortContent(post.contentEditor, 1000);
+				post.content = shortText;
+				// Remove contentEditor so ReactMarkdown is used instead
+				delete post.contentEditor;
+			} else {
+				post.content = getCleanTextContent(post.content, 1000);
+				post.pageCover = getPageCover(post);
+			}
+		}
+
+		console.log(post);
+
+		return {
+			props: {
+				post,
+				contentLength: post.contentEditor
+					? getEditorjsShortContent(post.contentEditor, 1000).length
+					: post.content.length,
+				isAuthenticated: !!session,
+			},
+		};
+	} catch (error) {
+		console.error("Error fetching post:", error);
+		return {
+			notFound: true,
+		};
+	}
+};
