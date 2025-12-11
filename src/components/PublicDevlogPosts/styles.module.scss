@@ -107,11 +107,11 @@
 
 @media screen and (max-width: 576px) {
   .postMeta {
-    flex-direction: column;
+    // flex-direction: column;
     align-items: flex-start;
     gap: 8px;
 
-    span[role="separator"] {
+    .dotSeparator {
       display: none;
     }
   }
