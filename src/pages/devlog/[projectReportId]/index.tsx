@@ -193,8 +193,17 @@ export default function ProjectReport({
 
 		const processedBlocks = data?.blocks?.map((block: any) => {
 			if (block && block.type === "video" && block.data) {
-				const videoBlock = videoParser?.video(block.data);
-				return videoBlock || block;
+				try {
+					// Check if block.data has required structure
+					if (block.data && typeof block.data === "object") {
+						const videoBlock = videoParser?.video({ data: block.data });
+						return videoBlock || block;
+					}
+				} catch (error) {
+					console.error("Error parsing video block:", error);
+					// Return original block if parsing fails
+					return block;
+				}
 			}
 			return block;
 		});
