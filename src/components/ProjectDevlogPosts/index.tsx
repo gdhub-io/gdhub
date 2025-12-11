@@ -165,7 +165,7 @@ const PostCard: React.FC<{
 							<span role="link" tabIndex={0} onClick={handleProjectClick}>
 								{post.project?.name}
 							</span>
-							<span>•</span>
+							<span className={styles.dot}>•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
 								{formatDate(post.publishedAt)}
@@ -201,7 +201,7 @@ const PostSkeleton = () => {
 					/>
 					<div className={styles.postMeta}>
 						<Skeleton.Input active style={{ width: "30%", height: 16 }} />
-						<span>•</span>
+						<span className={styles.dot}>•</span>
 						<Skeleton.Input active style={{ width: "20%", height: 16 }} />
 					</div>
 				</div>
