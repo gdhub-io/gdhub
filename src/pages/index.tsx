@@ -166,21 +166,26 @@ export async function getStaticProps({ locale }: GetStaticPropsContext) {
 			where: { status: "Published" },
 		});
 
-		const timeForWork: { lang: string; avg_min: number; avg_max: number }[] =
+		const timeForWork: { lang: string; sum_min: number; sum_max: number }[] =
 			await prisma.$queryRaw`
-			SELECT COUNT(*)::integer as count, u.lang, AVG(p."timeForWork"[1])::integer as avg_min, AVG(p."timeForWork"[2])::integer as avg_max FROM "Profile" p
+			SELECT 
+				COUNT(p.*)::integer as count, 
+				u.lang, 
+				SUM(p."timeForWork"[1])::integer as sum_min, 
+				SUM(p."timeForWork"[2])::integer as sum_max 
+			FROM "Profile" p
 			LEFT JOIN "User" u ON u.id = p."userId"
 			WHERE p."timeForWork" IS NOT NULL AND u."onboardingDone" = TRUE
-			GROUP BY u.lang
+			GROUP BY u."lang"
 		`;
 
-		const avgRate = 15;
+		const avgRate = 15; // for levels: 11, 13, 15, 17, 19
 		const timeForWorkData = timeForWork.find((t) => t.lang === locale);
 		stats.investmentAmount = timeForWorkData
-			? timeForWorkData.avg_max * avgRate * 4 * 12
+			? timeForWorkData.sum_max * avgRate * 4 * 12
 			: 0;
 
-		console.log(locale, timeForWork);
+		// console.log(locale, timeForWork);
 	} catch (error) {
 		console.error(error);
 	}
