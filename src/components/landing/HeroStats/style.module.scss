@@ -10,11 +10,18 @@
 .component {
   .members {
     justify-content: space-around;
+    align-items: center;
     text-align: center;
 
     :global {
+      span.ant-typography {
+        font-size: 14px;
+        color: #ffffff80;
+      }
+
       span.ant-typography>strong {
-        font-size: 24px;
+        color: #ffffff;
+        font-size: 48px;
       }
 
       span.ant-avatar {
@@ -26,13 +33,17 @@
   .stats {
     text-align: center;
 
+
     :global {
       span.ant-typography {
         word-wrap: normal;
         text-wrap: wrap;
+        font-size: 14px;
+        color: #ffffff80;
       }
 
       span.ant-typography>strong {
+        color: #ffffff;
         font-size: 48px;
       }
     }

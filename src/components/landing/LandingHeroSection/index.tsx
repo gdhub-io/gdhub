@@ -17,6 +17,7 @@ export const LandingHeroSection = ({
 		specialitiesCount: number | null;
 		projectsCount: number | null;
 		vacanciesCount: number | null;
+		investmentAmount: number;
 	};
 }) => {
 	const screens = Grid.useBreakpoint();
@@ -75,7 +76,7 @@ export const LandingHeroSection = ({
 										<Text>
 											{t(
 												"landing.hero.text2",
-												"We help game industry professionals find an interesting role for themselves in new projects.",
+												"We help game industry professionals find an interesting role for investing their time in developing new video games.",
 											)}
 										</Text>
 									</Space>

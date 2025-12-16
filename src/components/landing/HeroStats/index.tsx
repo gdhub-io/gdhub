@@ -5,6 +5,7 @@ import heroStatsImage2 from "@/assets/images/landing/hero-stats-member-2.png";
 import heroStatsImage3 from "@/assets/images/landing/hero-stats-member-3.png";
 import heroStatsImage4 from "@/assets/images/landing/hero-stats-member-4.png";
 import heroStatsImage5 from "@/assets/images/landing/hero-stats-member-5.png";
+import { formatDollar } from "@/helpers/format";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -17,6 +18,7 @@ export const HeroStats = ({
 		specialitiesCount: number | null;
 		projectsCount: number | null;
 		vacanciesCount: number | null;
+		investmentAmount: number;
 	};
 }) => {
 	const screen = Grid.useBreakpoint();
@@ -39,9 +41,9 @@ export const HeroStats = ({
 				<Flex vertical style={{ position: "relative" }}>
 					<Flex style={{ width: "100%" }} gap={24} className={styles.members}>
 						<Flex vertical align="center">
-							<Text strong>{stats?.usersCount}+</Text>
+							<Text strong>{stats?.specialitiesCount}+</Text>
 							<Text>
-								{t("component.heroStats.communityMembers", "community members")}
+								{t("component.heroStats.communityMembers", "members")}
 							</Text>
 						</Flex>
 
@@ -57,26 +59,26 @@ export const HeroStats = ({
 							)}
 						</Avatar.Group>
 					</Flex>
-					<Divider style={{ margin: "24px 0" }} className="divider" />
+					<Divider style={{ margin: "24px 0 0" }} className="divider" />
 					<Flex className={styles.stats}>
-						<Space direction="vertical" align="center">
-							<Text strong>{stats?.specialitiesCount}+</Text>
+						<Space direction="vertical" align="center" size={0}>
+							<Text strong>{formatDollar(stats?.investmentAmount || 0)}</Text>
 							<Text>
 								{t(
 									"component.heroStats.qualifiedSpecialists",
-									"qualified specialists",
+									"ready to invest up to in the form of their time",
 								)}
 							</Text>
 						</Space>
 						<Divider type="vertical" style={{ height: 52, margin: "0 16px" }} />
-						<Space direction="vertical" align="center">
+						<Space direction="vertical" align="center" size={0}>
 							<Text strong>{stats?.projectsCount}</Text>
 							<Text>
 								{t("component.heroStats.currentProjects", "current projects")}
 							</Text>
 						</Space>
 						<Divider type="vertical" style={{ height: 52, margin: "0 16px" }} />
-						<Space direction="vertical" align="center">
+						<Space direction="vertical" align="center" size={0}>
 							<Text strong>{stats?.vacanciesCount}+</Text>
 							<Text>
 								{t("component.heroStats.actualVacancies", "actual vacancies")}
