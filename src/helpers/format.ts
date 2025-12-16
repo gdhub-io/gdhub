@@ -138,3 +138,16 @@ export function formatEventPeriod(
 		return `${dStart.format(`${dateFormat}${showYear ? ", " + yearFormat : ","} ${timeFormat}`)} - ${dEnd.format(`${dateFormat}, ${dEnd.year() !== nowYear ? yearFormat + " " : ", "}${timeFormat}`)}`;
 	}
 }
+
+export function formatDollar(amount: number) {
+	const formatter = new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+		notation: "compact",
+		compactDisplay: "short",
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	}).format(amount);
+
+	return formatter;
+}

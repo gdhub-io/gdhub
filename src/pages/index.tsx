@@ -2,6 +2,7 @@ import { useTolgee } from "@tolgee/react";
 import { ConfigProvider } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
+import { type GetStaticPropsContext, NextApiRequest } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
@@ -71,6 +72,7 @@ interface LandingPageParams {
 		specialitiesCount: number | null;
 		projectsCount: number | null;
 		vacanciesCount: number | null;
+		investmentAmount: number;
 	};
 }
 
@@ -139,7 +141,7 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 	);
 };
 
-export async function getStaticProps() {
+export async function getStaticProps({ locale }: GetStaticPropsContext) {
 	const isHealthy = await prisma.$isHealthy();
 
 	if (!isHealthy) {
@@ -151,6 +153,7 @@ export async function getStaticProps() {
 		specialitiesCount: null,
 		projectsCount: null,
 		vacanciesCount: null,
+		investmentAmount: 0,
 	};
 
 	try {
@@ -162,6 +165,22 @@ export async function getStaticProps() {
 		stats.vacanciesCount = await prisma.teamVacancy.count({
 			where: { status: "Published" },
 		});
+
+		const timeForWork: { lang: string; avg_min: number; avg_max: number }[] =
+			await prisma.$queryRaw`
+			SELECT COUNT(*)::integer as count, u.lang, AVG(p."timeForWork"[1])::integer as avg_min, AVG(p."timeForWork"[2])::integer as avg_max FROM "Profile" p
+			LEFT JOIN "User" u ON u.id = p."userId"
+			WHERE p."timeForWork" IS NOT NULL AND u."onboardingDone" = TRUE
+			GROUP BY u.lang
+		`;
+
+		const avgRate = 15;
+		const timeForWorkData = timeForWork.find((t) => t.lang === locale);
+		stats.investmentAmount = timeForWorkData
+			? timeForWorkData.avg_max * avgRate * 4 * 12
+			: 0;
+
+		console.log(locale, timeForWork);
 	} catch (error) {
 		console.error(error);
 	}
