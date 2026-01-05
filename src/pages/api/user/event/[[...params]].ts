@@ -543,7 +543,7 @@ class ApiUserEventEndpointHandler {
 					},
 					template: "event-member-registered",
 					payload: {
-						eventId: event.id,
+						eventLink: `${process.env.NEXT_PUBLIC_APP_URL}/event/${event.slug}`,
 						eventTitle: event.title,
 						memberId: req.user.id,
 						memberName: req.user.name,
