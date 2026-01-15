@@ -138,10 +138,12 @@ export const ProtectedEventLayout = ({
 	};
 
 	useEffect(() => {
-		if (session?.user.lang)
+		if (session?.user.lang && getLanguage() !== session.user.lang) {
 			changeLanguage(session.user.lang).then((d) =>
 				console.info("language is changed"),
 			);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [session?.user.lang]);
 
 	useEffect(() => {

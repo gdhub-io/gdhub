@@ -83,12 +83,59 @@ export const getPageCover = (post: {
 	return result;
 };
 
+/**
+ * Extracts YouTube video ID from URL
+ */
+const extractYouTubeVideoId = (url: string): string | null => {
+	const youtubeRegex =
+		/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
+	const match = url.match(youtubeRegex);
+	return match ? match[1] : null;
+};
+
+/**
+ * Gets YouTube thumbnail URL from video ID
+ */
+const getYouTubeThumbnail = (videoId: string): string => {
+	return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+};
+
 export const getEditorjsPageCover = (content: OutputData) => {
-	const firstImage = content?.blocks?.find(
-		(block: any) => block.type === "image",
+	if (!content?.blocks || !Array.isArray(content.blocks)) {
+		return null;
+	}
+
+	// Find first block that is either image or embed
+	const firstMediaBlock = content.blocks.find(
+		(block: OutputData["blocks"][number]) =>
+			block.type === "image" || block.type === "embed",
 	);
 
-	return firstImage?.data?.file?.url as string | null;
+	if (!firstMediaBlock) {
+		return null;
+	}
+
+	// If it's an image, return the image URL
+	if (firstMediaBlock.type === "image") {
+		return (firstMediaBlock.data?.file?.url as string) || null;
+	}
+
+	// If it's an embed block, check if it's YouTube and get thumbnail
+	if (firstMediaBlock.type === "embed") {
+		const embedData = firstMediaBlock.data;
+		const service = embedData?.service;
+		const source = embedData?.source || embedData?.embed;
+
+		// Only process YouTube embeds
+		if (service === "youtube" && source) {
+			const videoId = extractYouTubeVideoId(source);
+			if (videoId) {
+				return getYouTubeThumbnail(videoId);
+			}
+		}
+	}
+
+	return null;
 };
 
 export const getEditorjsShortContent = (

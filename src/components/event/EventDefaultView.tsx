@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
 
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { videoParser } from "@hannal/editorjs-video-plugin";
 import { IconExternalLink, IconMeteor } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
@@ -87,19 +86,7 @@ const EventDefaultView = ({
 				<Title level={2}>{t("event.about", "About")}</Title>
 				{event.content ? (
 					<div className={styles.content}>
-						<Blocks
-							data={JSON.parse(event.content as string)}
-							renderers={{
-								video: ({ data }) => (
-									<div
-										className={`editorjs-video-block`}
-										dangerouslySetInnerHTML={{
-											__html: videoParser?.video({ data }) || "",
-										}}
-									/>
-								),
-							}}
-						/>
+						<Blocks data={JSON.parse(event.content as string)} />
 					</div>
 				) : (
 					<Paragraph style={{ fontSize: 18 }}>

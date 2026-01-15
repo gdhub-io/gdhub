@@ -144,5 +144,31 @@
         font-weight: 600;
       }
     }
+
+    iframe {
+      width: 100% !important;
+      max-width: 690px;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      display: block;
+      margin: 16px auto;
+      border-radius: 8px;
+    }
+
+    .embed-block-service-youtube,
+    .embed-block-service-vimeo,
+    .embed-block-service-coub,
+    .embed-block-service-codepen,
+    .embed-block-service-instagram,
+    .embed-block-service-twitter,
+    .embed-block-service-facebook {
+      width: 100% !important;
+      max-width: 690px;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      display: block;
+      margin: 16px auto;
+      border-radius: 8px;
+    }
   }
 }
