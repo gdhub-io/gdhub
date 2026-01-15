@@ -14,7 +14,7 @@ import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import Script from "next/script";
 import { SessionProvider, signOut } from "next-auth/react";
-import { type ReactNode, useEffect, useId, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { CookieConsent } from "@/components/CookieConsent";
 import LoadingScreen from "@/components/LoadingScreen";
 import { AvailableLocales, defaultLocale } from "@/config/locale";
@@ -27,6 +27,7 @@ import { tolgeeService } from "@/services/tolgee";
 import "dayjs/locale/en";
 import { DefaultSeo } from "next-seo";
 import NextNProgress from "nextjs-progressbar";
+import { trackRender } from "@/helpers/renderMonitor";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(utc);
@@ -41,14 +42,6 @@ export type NextPageWithLayout<P = {}> = NextPage<P> & {
 };
 
 // const twentyFourHoursInMs = 1000 * 60 * 60 * 24
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			// refetchInterval: false,
-			// staleTime: twentyFourHoursInMs,
-		},
-	},
-});
 
 type AppPropsWithLayout = AppProps<{ session: any }> & {
 	Component: NextPageWithLayout;
@@ -67,16 +60,75 @@ export default function MyApp({
 	const router = useRouter();
 	const [loading, setLoading] = useState(true);
 	const [showContent, setShowContent] = useState(false);
-	const getLayout = Component.getLayout || ((page) => <>{page}</>);
 	const ssrTolgee = useTolgeeSSR(tolgeeService, router.locale);
 	const [googleConsent, setGoogleConsent] = useState(false);
 
-	const setLoadingOff = () => {
-		setTimeout(() => {
-			setLoading(false);
-			setTimeout(() => setShowContent(true), 150);
-		}, 150);
-	};
+	// Memoize getLayout to prevent unnecessary re-renders
+	const getLayout = useMemo(
+		() => Component.getLayout || ((page: ReactNode) => <>{page}</>),
+		[Component.getLayout],
+	);
+
+	// Memoize language to prevent DefaultSeo re-renders
+	const currentLanguage = useMemo(
+		() => ssrTolgee.getLanguage() as AvailableLocales,
+		[ssrTolgee],
+	);
+
+	// Create QueryClient inside component to prevent hot reload issues
+	const queryClient = useMemo(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						// refetchInterval: false,
+						// staleTime: twentyFourHoursInMs,
+					},
+				},
+			}),
+		[],
+	);
+
+	// Track renders in development mode
+	useEffect(() => {
+		if (process.env.NODE_ENV === "development") {
+			trackRender("MyApp", {
+				path: router.asPath,
+				loading,
+				showContent,
+				hasSession: !!session,
+			});
+		}
+		// Track on every render to catch all re-renders
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	});
+
+	// Track router events to detect full page reloads vs client-side navigation
+	useEffect(() => {
+		if (process.env.NODE_ENV !== "development") return;
+
+		const handleRouteChangeStart = (url: string) => {
+			console.log(`🔄 [Router] Route change start: ${url}`);
+		};
+
+		const handleRouteChangeComplete = (url: string) => {
+			console.log(`✅ [Router] Route change complete: ${url}`);
+		};
+
+		const handleRouteChangeError = (err: Error, url: string) => {
+			console.error(`❌ [Router] Route change error: ${url}`, err);
+		};
+
+		router.events.on("routeChangeStart", handleRouteChangeStart);
+		router.events.on("routeChangeComplete", handleRouteChangeComplete);
+		router.events.on("routeChangeError", handleRouteChangeError);
+
+		return () => {
+			router.events.off("routeChangeStart", handleRouteChangeStart);
+			router.events.off("routeChangeComplete", handleRouteChangeComplete);
+			router.events.off("routeChangeError", handleRouteChangeError);
+		};
+	}, [router]);
 
 	useEffect(() => {
 		if (session?.error === "InvalidGrantError") {
@@ -84,12 +136,15 @@ export default function MyApp({
 				router.push("/signin");
 			});
 		}
-	}, [session?.error]);
+	}, [session?.error, router]);
 
+	// Initialize app state
 	useEffect(() => {
-		setLoadingOff();
 		setGoogleConsent(hasGoogleConsent());
-		dayjs.locale(ssrTolgee.getLanguage() || AvailableLocales.en);
+		dayjs.locale(currentLanguage || AvailableLocales.en);
+		setLoading(false);
+		setShowContent(true);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -98,9 +153,7 @@ export default function MyApp({
 
 	return (
 		<>
-			<DefaultSeo
-				{...SEOSettings[ssrTolgee.getLanguage() as AvailableLocales]}
-			/>
+			<DefaultSeo {...SEOSettings[currentLanguage]} />
 			<style jsx global>{`
 				:root {
 					--second-font-family: ${secondFont.style.fontFamily}, sans-serif;
@@ -110,7 +163,7 @@ export default function MyApp({
 				<Script
 					id={`gtag-base`}
 					strategy="afterInteractive"
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: GTM script injection
 					dangerouslySetInnerHTML={{
 						__html: `
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

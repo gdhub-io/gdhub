@@ -275,14 +275,17 @@ export const ProtectedLayout = ({
 		return hasRole(prismaClient.UserRole.Admin, { data: session });
 	}, [session]);
 
-	const seoSettings: NextSeoProps = {
-		title,
-		description: subTitle,
-		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
-		nofollow: true,
-		noindex: true,
-		...seo,
-	};
+	const seoSettings: NextSeoProps = useMemo(
+		() => ({
+			title,
+			description: subTitle,
+			canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+			nofollow: true,
+			noindex: true,
+			...seo,
+		}),
+		[title, subTitle, router.asPath, seo],
+	);
 
 	useEffect(() => {
 		const unsetOverflow = () => {
@@ -296,11 +299,13 @@ export const ProtectedLayout = ({
 	}, []);
 
 	useEffect(() => {
-		if (session?.user.lang)
+		if (session?.user.lang && getLanguage() !== session.user.lang) {
 			changeLanguage(session.user.lang).then(() =>
 				console.info("language is changed"),
 			);
-	}, [session?.user.lang, changeLanguage]);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [session?.user.lang]);
 
 	useEffect(() => {
 		if (!screens.lg) setOpenMobileMenu(false);
