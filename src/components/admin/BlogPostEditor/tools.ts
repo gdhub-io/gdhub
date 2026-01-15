@@ -2,6 +2,7 @@
 import CheckList from "@editorjs/checklist";
 import Delimiter from "@editorjs/delimiter";
 import type { ToolConstructable, ToolSettings } from "@editorjs/editorjs";
+import Embed from "@editorjs/embed";
 import Header from "@editorjs/header";
 import Image from "@editorjs/image";
 // @ts-expect-error - no types
@@ -12,7 +13,6 @@ import Marker from "@editorjs/marker";
 import Paragraph from "@editorjs/paragraph";
 import Quote from "@editorjs/quote";
 import Table from "@editorjs/table";
-import { Video } from "@hannal/editorjs-video-plugin";
 import axios from "axios";
 
 class CustomImageTool extends Image {
@@ -68,8 +68,9 @@ export const tools: {
 		class: Table as unknown as ToolConstructable,
 		inlineToolbar: true,
 	},
-	video: {
-		class: Video,
+	embed: {
+		class: Embed as unknown as ToolConstructable,
+		inlineToolbar: true,
 	},
 	image: {
 		class: CustomImageTool,

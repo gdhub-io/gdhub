@@ -5,7 +5,6 @@ import {
 	ClockCircleOutlined,
 	LockOutlined,
 } from "@ant-design/icons";
-import { videoParser } from "@hannal/editorjs-video-plugin";
 import { useTranslate } from "@tolgee/react";
 import { Image as AntImage, Button, Card, Flex, Space, Typography } from "antd";
 import axios from "axios";
@@ -278,32 +277,7 @@ export default function ProjectReport({
 						)}
 
 						{post.contentEditor ? (
-							<Blocks
-								data={prepareEditorjsData(post.contentEditor)}
-								renderers={{
-									video: ({ data }) => {
-										if (!data) {
-											return <div className="editorjs-video-block" />;
-										}
-										try {
-											const videoHtml = videoParser?.video({ data });
-											if (!videoHtml) {
-												return <div className="editorjs-video-block" />;
-											}
-											return (
-												<div
-													className="editorjs-video-block"
-													// biome-ignore lint/security/noDangerouslySetInnerHtml: videoParser returns sanitized HTML
-													dangerouslySetInnerHTML={{ __html: videoHtml }}
-												/>
-											);
-										} catch (error) {
-											console.error("Error rendering video block:", error);
-											return <div className="editorjs-video-block" />;
-										}
-									},
-								}}
-							/>
+							<Blocks data={prepareEditorjsData(post.contentEditor)} />
 						) : (
 							<ReactMarkdown
 								rehypePlugins={[
@@ -466,23 +440,23 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 			`${baseUrl}/api/devlog/${projectReportId}`,
 		);
 
+		// Save page cover
+		if (post.contentEditor) {
+			post.pageCover = getEditorjsPageCover(post.contentEditor);
+		} else {
+			post.pageCover = getPageCover(post);
+		}
+
 		// Обрезаем контент для неавторизованных пользователей
 		if (!session) {
 			if (post.contentEditor) {
-				// Save page cover before modifying contentEditor
-				post.pageCover = getEditorjsPageCover(post.contentEditor);
-				// Convert EditorJS content to plain text for unauthorized users
-				const shortText = getEditorjsShortContent(post.contentEditor, 1000);
-				post.content = shortText;
+				post.content = getEditorjsShortContent(post.contentEditor, 1000);
 				// Remove contentEditor so ReactMarkdown is used instead
 				delete post.contentEditor;
 			} else {
 				post.content = getCleanTextContent(post.content, 1000);
-				post.pageCover = getPageCover(post);
 			}
 		}
-
-		console.log(post);
 
 		return {
 			props: {

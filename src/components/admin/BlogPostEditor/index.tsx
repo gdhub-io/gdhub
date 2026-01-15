@@ -255,7 +255,9 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 	const destroyEditor = useCallback(() => {
 		if (editorInstance.current) {
 			try {
-				editorInstance.current.destroy();
+				if (typeof editorInstance.current.destroy === "function") {
+					editorInstance.current.destroy();
+				}
 				editorInstance.current = null;
 				editorInitialized.current = false;
 				if (editorHolderRef.current) editorHolderRef.current.innerHTML = "";
