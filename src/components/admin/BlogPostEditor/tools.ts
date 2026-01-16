@@ -47,6 +47,9 @@ export const tools: {
 	linkTool: {
 		class: LinkTool,
 		inlineToolbar: true,
+		config: {
+			endpoint: `/api/internal/link-parse`, // Your backend endpoint for url data fetching,
+		},
 	},
 	quote: {
 		class: Quote,

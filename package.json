@@ -106,6 +106,7 @@
 		"nextjs-progressbar": "^0.0.16",
 		"node-fetch": "^3.2.10",
 		"nodemailer": "^6.9.15",
+		"open-graph-scraper": "^6.11.0",
 		"openai": "^4.89.1",
 		"path-to-regexp": "^6.2.1",
 		"pdf-parse": "^1.1.1",

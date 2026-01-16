@@ -8,6 +8,7 @@ import Link from "next/link";
 import React from "react";
 import { PageViews } from "@/components/PageViews";
 import { getEditorjsPageCover } from "@/helpers/content";
+import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import styles from "./style.module.scss";
 
@@ -190,7 +191,12 @@ export default function BlogPost({ post }: PageProps) {
 					</Flex>
 
 					<div className={styles.content}>
-						{post.content && <Blocks data={JSON.parse(post.content)} />}
+						{post.content && (
+							<Blocks
+								data={JSON.parse(post.content)}
+								renderers={editorjsRenderers}
+							/>
+						)}
 					</div>
 				</Card>
 			</div>

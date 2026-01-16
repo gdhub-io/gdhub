@@ -22,6 +22,7 @@ import { useSession } from "next-auth/react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./EventConferenceOrGamelabView.module.scss";
 
@@ -145,7 +146,10 @@ const EventConferenceOrGamelabView = ({
 					<Title level={2}>{t("event.about", "About")}</Title>
 					{event.content ? (
 						<div className={styles.content}>
-							<Blocks data={JSON.parse(event.content as string)} />
+							<Blocks
+								data={JSON.parse(event.content as string)}
+								renderers={editorjsRenderers}
+							/>
 						</div>
 					) : (
 						<div className={styles.description}>
