@@ -24,6 +24,7 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import styles from "./styles.module.scss";
 
@@ -277,7 +278,10 @@ export default function ProjectReport({
 						)}
 
 						{post.contentEditor ? (
-							<Blocks data={prepareEditorjsData(post.contentEditor)} />
+							<Blocks
+								data={prepareEditorjsData(post.contentEditor)}
+								renderers={editorjsRenderers}
+							/>
 						) : (
 							<ReactMarkdown
 								rehypePlugins={[
