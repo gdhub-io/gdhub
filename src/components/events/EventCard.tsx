@@ -48,7 +48,7 @@ export const EventCard = ({
 	};
 
 	return (
-		<Link href={`/event/${event.slug}`} target="_blank">
+		<Link href={`/event/${event.lang}/${event.slug}`} target="_blank">
 			<Card
 				onMouseEnter={() => setHovered(true)}
 				onMouseLeave={() => setHovered(false)}
