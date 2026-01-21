@@ -8,6 +8,7 @@ import { type CSSProperties, useCallback } from "react";
 interface PageViewsProps {
 	path?: string;
 	locale?: string;
+	isUnique?: boolean;
 	containerStyle?: CSSProperties;
 	iconStyle?: CSSProperties;
 	textStyle?: CSSProperties;
@@ -18,6 +19,7 @@ interface PageViewsProps {
 export const PageViews = ({
 	path,
 	locale,
+	isUnique = true,
 	startDate,
 	containerStyle,
 	iconStyle = { fontSize: "12px" },
@@ -38,11 +40,14 @@ export const PageViews = ({
 				let pageviews = 0;
 
 				const currentPath = router.asPath;
-				const globalResponse = await axios.get(
-					`/api/analytics/pageviews?path=${path || currentPath}&startDate=${startDate}`,
-				);
 
-				pageviews = parseInt(globalResponse?.data?.pageviews || "0", 10);
+				if (isUnique) {
+					const globalResponse = await axios.get(
+						`/api/analytics/pageviews?path=${path || currentPath}&startDate=${startDate}`,
+					);
+
+					pageviews = parseInt(globalResponse?.data?.pageviews || "0", 10);
+				}
 
 				if (locale) {
 					const localeResponse = await axios.get(
