@@ -101,7 +101,7 @@ export const EventScheduleGantt = forwardRef<
 					type: "task" as const,
 					lazy: false,
 					speakers: item.speakers,
-					lang: item.lang,
+					lang: item.language,
 				};
 			});
 		}, [schedule]);
