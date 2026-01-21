@@ -66,12 +66,6 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	});
 
 	useEffect(() => {
-		if (eventId) {
-			setCover(undefined);
-		}
-	}, [eventId]);
-
-	useEffect(() => {
 		if (event) {
 			form.setFieldsValue({
 				...event.data,
@@ -348,14 +342,18 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 								},
 							]}
 						>
-							<Select
-								options={Object.values(prismaClient.$Enums.Language).map(
-									(lang) => ({
-										label: lang,
-										value: lang,
-									}),
-								)}
-							/>
+							{
+								<Select
+									options={[
+										...Object.values(prismaClient.$Enums.Language).map(
+											(lang) => ({
+												label: lang,
+												value: lang,
+											}),
+										),
+									]}
+								/>
+							}
 						</Form.Item>
 
 						<Form.Item

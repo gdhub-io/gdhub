@@ -48,7 +48,7 @@ export type ScheduleItemFormValues = {
 	endDate: string;
 	speakers: { name: string; speciality: string; id: string }[];
 	format?: prismaClient.$Enums.EventFormat;
-	lang?: prismaClient.$Enums.Language;
+	language?: prismaClient.$Enums.Language;
 	directionId: string;
 };
 

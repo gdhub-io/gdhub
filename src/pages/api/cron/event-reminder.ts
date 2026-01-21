@@ -10,13 +10,16 @@ class CronEventReminderHandler {
 	@QueueCronLog("event-reminder")
 	public async handler() {
 		// set closed for old events
+		const now = new Date();
 		const archivedEvents = await prisma.event.updateMany({
 			where: {
 				status: prismaClient.EventStatus.Published,
 				schedule: {
-					some: {
+					// Equivalent to: MAX(endDate) < now (i.e. the last schedule item is already finished)
+					some: {},
+					every: {
 						endDate: {
-							lt: new Date(),
+							lt: now,
 						},
 					},
 				},
