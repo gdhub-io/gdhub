@@ -20,8 +20,8 @@ export const gtmEventTrigger = (event: string, data: Record<string, any>) => {
 	if (typeof window !== "undefined" && Array.isArray(window.dataLayer)) {
 		window.dataLayer.push({
 			event,
+			[event]: data,
 			timestamp: new Date().toISOString(),
-			...data,
 		});
 	}
 };
