@@ -1,4 +1,5 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Markdown } from "@react-email/components";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { T, useTranslate } from "@tolgee/react";
 import {
@@ -212,7 +213,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 											</Title>
 										</div>
 
-										{vacancy.data.team.project.description && (
+										{!!vacancy.data.team.project.description && (
 											<div>
 												<Text type="secondary" className={styles.fieldLabel}>
 													{t(
@@ -277,7 +278,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 										)}
 									</Text>
 									<Title level={4} style={{ margin: "8px 0" }}>
-										{vacancy.data.description}
+										<Markdown>{vacancy.data.description}</Markdown>
 									</Title>
 								</div>
 								<div className={styles.vacancyDeadline}>

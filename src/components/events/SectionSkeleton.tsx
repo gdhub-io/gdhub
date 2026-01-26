@@ -18,7 +18,7 @@ const SectionSkeleton: React.FC<SectionSkeletonProps> = ({
 			/>
 		)}
 		<div style={{ display: "flex", gap: 24 }}>
-			{[1, 2, 3].map((i) => (
+			{[1].map((i) => (
 				<div
 					key={i}
 					style={{
