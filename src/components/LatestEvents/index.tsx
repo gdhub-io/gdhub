@@ -134,13 +134,13 @@ export default function LatestEvents() {
 				{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
 					<Link
 						key={e.id}
-						href={`/event/${e.lang}/${e.slug}`}
+						href={`${e.lang ? `/${e.lang}` : ""}/event/${e.slug}`}
 						target="_blank"
 						className={styles.item}
 					>
 						<div className={styles.itemLeft}>
 							<Avatar
-								src={(e as any).image ?? undefined}
+								src={e.image ?? undefined}
 								size={40}
 								className={styles.avatar}
 							>
