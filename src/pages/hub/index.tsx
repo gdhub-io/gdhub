@@ -1,5 +1,15 @@
 import { useTolgee } from "@tolgee/react";
-import { Alert, Button, Col, Flex, Grid, Row, Space, Typography } from "antd";
+import {
+	Alert,
+	Button,
+	Col,
+	Divider,
+	Flex,
+	Grid,
+	Row,
+	Space,
+	Typography,
+} from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -24,6 +34,17 @@ const MyProjectList = dynamic(() => import("@/components/MyProjectList"), {
 });
 
 const NewMembers = dynamic(() => import("@/components/NewMembers"), {
+	ssr: false,
+});
+
+const HotTeamVacancies = dynamic(
+	() => import("@/components/HotTeamVacancies"),
+	{
+		ssr: false,
+	},
+);
+
+const LatestEvents = dynamic(() => import("@/components/LatestEvents/index"), {
 	ssr: false,
 });
 
@@ -109,7 +130,11 @@ const HubPage: NextPageWithLayout = () => {
 				{screens.md && (
 					<Col xs={24} md={8} lg={8}>
 						<div className={styles.sidebar}>
-							{/* Sidebar content will be added here */}
+							<Flex vertical gap={16}>
+								<HotTeamVacancies />
+								<Divider style={{ margin: 0 }} />
+								<LatestEvents />
+							</Flex>
 						</div>
 					</Col>
 				)}
