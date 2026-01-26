@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import Blocks from "editorjs-blocks-react-renderer";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -46,6 +47,7 @@ const EventDefaultView = ({
 }) => {
 	const { t, getLanguage } = useTolgee();
 	const screens = Grid.useBreakpoint();
+	const router = useRouter();
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
 	const [modal, modalContextHolder] = Modal.useModal();
@@ -56,6 +58,13 @@ const EventDefaultView = ({
 				await axios.post(`/api/user/event/${event.id}/register`);
 			},
 			onSuccess: () => {
+				gtmEventTrigger("event-register-click", {
+					event_category: event.type,
+					event_label: event.title,
+					event_url: event.url,
+					page_url: window.location.href,
+				});
+
 				modal.success({
 					title: t("event.register.success.title", "Registration successful"),
 					content: t(
@@ -275,7 +284,7 @@ const EventDefaultView = ({
 					<div
 						style={{ maxWidth: 420, margin: "40px 0 0", textAlign: "center" }}
 					>
-						{session?.user?.onboardingDone ? (
+						{session?.user ? (
 							event.url ? (
 								<Link
 									href={event.url}
@@ -284,7 +293,7 @@ const EventDefaultView = ({
 										gtmEventTrigger("event-register-click", {
 											event_category: event.type,
 											event_label: event.title,
-											value: event.url,
+											event_url: event.url,
 											page_url: window.location.href,
 										});
 									}}

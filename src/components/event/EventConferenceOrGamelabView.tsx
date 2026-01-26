@@ -24,6 +24,7 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { formatEventPeriod } from "@/helpers/format";
+import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./EventConferenceOrGamelabView.module.scss";
 
 const { Title, Text } = Typography;
@@ -53,6 +54,13 @@ const EventConferenceOrGamelabView = ({
 				await axios.post(`/api/user/event/${event.id}/register`);
 			},
 			onSuccess: () => {
+				gtmEventTrigger("event-register-click", {
+					event_category: event.type,
+					event_label: event.title,
+					event_url: event.url,
+					page_url: window.location.href,
+				});
+
 				modal.success({
 					title: t("event.register.success.title", "Registration successful"),
 					content: t(
@@ -338,9 +346,20 @@ const EventConferenceOrGamelabView = ({
 			<div
 				style={{ maxWidth: 420, margin: "40px auto 0", textAlign: "center" }}
 			>
-				{session?.user?.onboardingDone ? (
+				{session?.user ? (
 					event.url ? (
-						<Link href={event.url} target="_blank">
+						<Link
+							href={event.url}
+							target="_blank"
+							onClick={() => {
+								gtmEventTrigger("event-register-click", {
+									event_category: event.type,
+									event_label: event.title,
+									event_url: event.url,
+									page_url: window.location.href,
+								});
+							}}
+						>
 							<Button
 								type="primary"
 								size="large"
