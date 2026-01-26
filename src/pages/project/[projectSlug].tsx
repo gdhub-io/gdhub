@@ -1,6 +1,6 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
-import { IconQrcode } from "@tabler/icons-react";
+import { IconDownload, IconQrcode } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -185,6 +185,26 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 		);
 	};
 
+	// for modal qr code
+	function doDownload(url: string, fileName: string) {
+		const a = document.createElement("a");
+		a.download = fileName;
+		a.href = url;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
+
+	const downloadCanvasQRCode = () => {
+		const canvas = document
+			.getElementById("project-qr-code")
+			?.querySelector<HTMLCanvasElement>("canvas");
+		if (canvas) {
+			const url = canvas.toDataURL();
+			doDownload(url, "project-qr-code.png");
+		}
+	};
+
 	return (
 		<PublicLayout
 			title={project?.name}
@@ -299,7 +319,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 				<Text type="secondary" style={{ textAlign: "center", fontSize: 21 }}>
 					{t(
 						"page.project.scanToShare",
-						"Scan to share {projectName}",
+						"Scan to share {projectName} on gdhub.io",
 						{ projectName: project.name },
 					)}
 				</Text>
@@ -310,14 +330,25 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 					gap={16}
 					style={{ padding: "24px 0" }}
 				>
-					<QRCode
-						type="svg"
-						value={getCurrentPageUrl()}
-						size={312}
-						icon={GDHubLogoImg.src}
-						iconSize={64}
-					/>
+					{/** biome-ignore lint/correctness/useUniqueElementIds: <need for download> */}
+					<div id="project-qr-code">
+						<QRCode
+							type="canvas"
+							value={getCurrentPageUrl()}
+							size={312}
+							icon={GDHubLogoImg.src}
+							iconSize={64}
+						/>
+					</div>
 				</Flex>
+
+				<Button
+					type="text"
+					onClick={downloadCanvasQRCode}
+					icon={<IconDownload size={16} />}
+				>
+					{t("page.project.downloadAsImage", "Download as image")}
+				</Button>
 			</Modal>
 		</PublicLayout>
 	);
