@@ -1,6 +1,7 @@
 import { ClockCircleOutlined, HistoryOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IconNews } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Skeleton, Spin, Typography } from "antd";
@@ -259,7 +260,7 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 				<Flex justify="space-between" wrap>
 					<Title level={2}>
 						<HistoryOutlined style={{ marginRight: 8 }} />
-						{t("page.hub.activity", "Activity")}
+						{t("page.hub.project-updates", "Project updates")}
 					</Title>
 				</Flex>
 				<div className={styles.postsList}>
@@ -282,10 +283,10 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 
 	return (
 		<div className={styles.devlogPostsContainer}>
-			<Flex justify="space-between" wrap>
+			<Flex align="center" gap={8} style={{ marginBottom: 24 }}>
+				<IconNews size={24} />
 				<Title level={2}>
-					<HistoryOutlined style={{ marginRight: 8 }} />
-					{t("page.hub.activity", "Activity")}
+					{t("page.hub.project-updates", "Project updates")}
 				</Title>
 			</Flex>
 
