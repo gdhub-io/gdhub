@@ -2,8 +2,6 @@ import { createHandler, Get } from "next-api-decorators";
 import { prisma } from "@/services/prisma";
 
 class ApiSpecialistHandler {
-	constructor() {}
-
 	@Get()
 	public async list() {
 		const vacancies = await prisma.teamVacancy.findMany({

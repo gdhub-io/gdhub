@@ -1,5 +1,15 @@
 import { useTolgee } from "@tolgee/react";
-import { Alert, Button, Space, Typography } from "antd";
+import {
+	Alert,
+	Button,
+	Col,
+	Divider,
+	Flex,
+	Grid,
+	Row,
+	Space,
+	Typography,
+} from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -23,12 +33,28 @@ const MyProjectList = dynamic(() => import("@/components/MyProjectList"), {
 	ssr: false,
 });
 
+const NewMembers = dynamic(() => import("@/components/NewMembers"), {
+	ssr: false,
+});
+
+const HotTeamVacancies = dynamic(
+	() => import("@/components/HotTeamVacancies"),
+	{
+		ssr: false,
+	},
+);
+
+const LatestEvents = dynamic(() => import("@/components/LatestEvents/index"), {
+	ssr: false,
+});
+
 const { Title, Text } = Typography;
 
 const HubPage: NextPageWithLayout = () => {
 	const session = useSession();
 	const router = useRouter();
 	const { getLanguage, t } = useTolgee();
+	const screens = Grid.useBreakpoint();
 
 	const linkToChat = useMemo(() => {
 		let link = "";
@@ -47,56 +73,72 @@ const HubPage: NextPageWithLayout = () => {
 
 	return (
 		<ProtectedLayout>
-			<Space className={styles.container} direction="vertical" size={32}>
-				<Space direction="vertical" size={0}>
-					<Title level={1}>
-						{t("hub.text1", "Hello, {userName} 👋", {
-							userName: session?.data?.user.name || "user",
-						})}
-					</Title>
-					<Text>
-						{t("hub.text1.part1", "It's a good day for game development")}
-					</Text>
-				</Space>
+			<Row gutter={[24, 24]} className={styles.container}>
+				<Col xs={24} md={16} lg={16}>
+					<Flex vertical gap={32}>
+						<Flex vertical gap={0}>
+							<Title level={1}>
+								{t("hub.text1", "Hello, {userName} 👋", {
+									userName: session?.data?.user.name || "user",
+								})}
+							</Title>
+							<Text>
+								{t("hub.text1.part1", "It's a good day for game development")}
+							</Text>
+						</Flex>
 
-				{session.status == "authenticated" &&
-					!session.data.user.onboardingDone && (
-						<Alert
-							type="warning"
-							message={
-								<Space direction="vertical">
-									<div>
-										{t(
-											"hub.text1.part1",
-											"Now you can get acquainted with our platform, but in order to be able to create your own projects or respond to the vacancies of others, you need to complete the registration by filling in the necessary information about yourself.",
-										)}
-										<br />
-										{t(
-											"hub.text1.part2",
-											"And don&apos;t forget to join the community chat using",
-										)}{" "}
-										<Link href={linkToChat} target="_blank">
-											this link.
-										</Link>
-									</div>
-									<Link href="/registration/onboarding">
-										<Button>
-											{t("hub.text1.part3", "Complete Registration")}
-										</Button>
-									</Link>
-								</Space>
-							}
-						/>
-					)}
-				{session.status == "authenticated" &&
-					!!session.data.user.onboardingDone && (
-						<>
-							<MyProjectList />
-							<MyAdviceRequests />
-							<DevlogPosts />
-						</>
-					)}
-			</Space>
+						{session.status == "authenticated" &&
+							!session.data.user.onboardingDone && (
+								<Alert
+									type="warning"
+									message={
+										<Space direction="vertical">
+											<div>
+												{t(
+													"hub.text1.part1",
+													"Now you can get acquainted with our platform, but in order to be able to create your own projects or respond to the vacancies of others, you need to complete the registration by filling in the necessary information about yourself.",
+												)}
+												<br />
+												{t(
+													"hub.text1.part2",
+													"And don&apos;t forget to join the community chat using",
+												)}{" "}
+												<Link href={linkToChat} target="_blank">
+													this link.
+												</Link>
+											</div>
+											<Link href="/registration/onboarding">
+												<Button>
+													{t("hub.text1.part3", "Complete Registration")}
+												</Button>
+											</Link>
+										</Space>
+									}
+								/>
+							)}
+						{session.status == "authenticated" &&
+							!!session.data.user.onboardingDone && (
+								<Flex vertical gap={32}>
+									<MyProjectList />
+									<NewMembers />
+									<MyAdviceRequests />
+									<DevlogPosts />
+								</Flex>
+							)}
+					</Flex>
+				</Col>
+				{screens.md && (
+					<Col xs={24} md={8} lg={8}>
+						<div className={styles.sidebar}>
+							<Flex vertical gap={16}>
+								<HotTeamVacancies />
+								<Divider style={{ margin: 0 }} />
+								<LatestEvents />
+							</Flex>
+						</div>
+					</Col>
+				)}
+			</Row>
 		</ProtectedLayout>
 	);
 };
