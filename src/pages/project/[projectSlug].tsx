@@ -1,5 +1,6 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
+import { IconQrcode } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -8,6 +9,8 @@ import {
 	Descriptions,
 	Flex,
 	Grid,
+	Modal,
+	QRCode,
 	Row,
 	Space,
 	Tooltip,
@@ -16,6 +19,7 @@ import {
 import type { GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import type { NextSeoProps } from "next-seo";
 import { useState } from "react";
@@ -23,6 +27,7 @@ import ReactMarkdown from "react-markdown";
 import YouTube from "react-youtube";
 import rehypeRaw from "rehype-raw";
 import type { Options } from "youtube-player/dist/types";
+import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import DevlogPosts from "@/components/DevlogPosts";
 import ProjectVacancies from "@/components/ProjectVacancies";
 import TeamMembers from "@/components/TeamMembers";
@@ -53,8 +58,10 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 }) => {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
+	const router = useRouter();
 	const screens = Grid.useBreakpoint();
 	const [showPitchVideo, setShowPitchVideo] = useState(false);
+	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
 	const seoParams: NextSeoProps = {
 		title: seo?.title,
@@ -68,6 +75,14 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 	};
 
 	const handleCoverClick = () => setShowPitchVideo(true);
+
+	const getCurrentPageUrl = () => {
+		if (typeof window !== "undefined") {
+			return window.location.href;
+		}
+		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+		return `${baseUrl}${router.asPath}`;
+	};
 
 	if (!project) return null;
 
@@ -155,6 +170,16 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 			>
 				<Flex align="center" gap={16} style={{ margin: "16px 0 0" }}>
 					{linkElements}
+
+					<Tooltip key={`tooltip-qr-code`} title={`QR Code`}>
+						<Button
+							key={`qr-code`}
+							type="text"
+							className={styles.projectLink}
+							icon={<IconQrcode />}
+							onClick={() => setIsQrModalOpen(true)}
+						/>
+					</Tooltip>
 				</Flex>
 			</ConfigProvider>
 		);
@@ -254,6 +279,46 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 					</Col>
 				</Row>
 			</div>
+
+			<Modal
+				title={t("page.project.qrCode", "Scan QR Code")}
+				width={400}
+				styles={{
+					header: {
+						textAlign: "center",
+					},
+					body: {
+						textAlign: "center",
+					},
+				}}
+				open={isQrModalOpen}
+				onCancel={() => setIsQrModalOpen(false)}
+				footer={null}
+				centered
+			>
+				<Text type="secondary" style={{ textAlign: "center", fontSize: 21 }}>
+					{t(
+						"page.project.scanToShare",
+						"Scan to share {projectName}",
+						{ projectName: project.name },
+					)}
+				</Text>
+				<Flex
+					justify="center"
+					align="center"
+					vertical
+					gap={16}
+					style={{ padding: "24px 0" }}
+				>
+					<QRCode
+						type="svg"
+						value={getCurrentPageUrl()}
+						size={312}
+						icon={GDHubLogoImg.src}
+						iconSize={64}
+					/>
+				</Flex>
+			</Modal>
 		</PublicLayout>
 	);
 };
