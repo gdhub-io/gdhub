@@ -221,11 +221,11 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 														"Project description",
 													)}
 												</Text>
-												<Paragraph style={{ margin: "8px 0" }}>
-													{vacancy.data.team.project.description.slice(0, 1000)}
-													{vacancy.data.team.project.description.length >
-														1000 && "..."}
-												</Paragraph>
+												<Markdown>
+													{vacancy.data.team.project.description.length > 512
+														? `${vacancy.data.team.project.description.slice(0, 512)}...(more on the project page)`
+														: vacancy.data.team.project.description}
+												</Markdown>
 											</div>
 										)}
 									</Space>
