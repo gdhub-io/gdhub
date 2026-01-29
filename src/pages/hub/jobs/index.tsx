@@ -18,7 +18,7 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 
 	return (
 		<ProtectedLayout
-			title={t("page.vacancies.title", "Vacancies")}
+			title={t("page.vacancies.title", "Jobs")}
 			subTitle={t(
 				"page.vacancies.subTitle",
 				"Invest your time in the success of new game projects",

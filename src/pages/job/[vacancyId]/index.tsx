@@ -179,253 +179,257 @@ export default function VancancyPage({
 	};
 
 	return (
-		<>
-			<PublicLayout
-				title={
-					<div className={styles.titleContainer}>
-						<Link href={`/jobs`}>
-							<Button
-								type="text"
-								size="small"
-								className={styles.projectTitle}
-								onMouseEnter={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "16px";
-										arrow.style.marginRight = "8px";
-										arrow.style.opacity = "1";
-									}
-									button.style.paddingLeft = "8px";
-									button.style.paddingRight = "8px";
-								}}
-								onMouseLeave={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "0";
-										arrow.style.marginRight = "0";
-										arrow.style.opacity = "0";
-									}
-									button.style.paddingLeft = "0";
-									button.style.paddingRight = "0";
-								}}
-							>
-								<Space size={0}>
-									<ArrowLeftOutlined
-										className="arrow"
-										style={{
-											width: 0,
-											marginRight: 0,
-											opacity: 0,
-											transition: "all 0.3s ease",
-											overflow: "hidden",
-											color: "#ff4d4f",
-										}}
-									/>
-									<span style={{ color: "#ff4d4f" }}>
-										{t("page.vacancy.title", "Jobs")}
-									</span>
-								</Space>
-							</Button>
-						</Link>
-						<Title className={styles.title}>
-							{t("page.vacancy.title", vacancy.title)}
-						</Title>
-					</div>
-				}
-				subTitle={`The open vacancy from ${vacancy.team?.project?.name} project`}
-				backgroundImage={pageCover || undefined}
-				seo={{
-					title: `${vacancy.title}`,
-				}}
-				styles={{ content: { padding: 0 }, layoutBackground: { padding: 0 } }}
-				ogImageType="job"
-				ogImageParams={{
-					p: vacancy.team?.project?.name,
-					vTerms: vacancy.promisePercentage?.toString() || "",
-					vDate: dayjs(vacancy.finishedAt).format("ll"),
-				}}
-			>
-				<div className={styles.container}>
-					<Spin spinning={false}>
-						{!!vacancy && (
-							<Card
-								actions={
-									session?.user
-										? [
-												<Button
-													key="action"
-													type={vacancy?.myTeamMemberId ? "default" : "primary"}
-													onClick={functionOkButton}
-												>
-													{statusOkButton()}
-												</Button>,
-											]
-										: undefined
+		<PublicLayout
+			title={
+				<div className={styles.titleContainer}>
+					<Link href={`/jobs`}>
+						<Button
+							type="text"
+							size="small"
+							className={styles.projectTitle}
+							onMouseEnter={(e) => {
+								const button = e.currentTarget;
+								const arrow = button.querySelector(".arrow") as HTMLElement;
+								if (arrow) {
+									arrow.style.width = "16px";
+									arrow.style.marginRight = "8px";
+									arrow.style.opacity = "1";
 								}
-							>
-								<Flex vertical gap={24}>
-									<Row gutter={[24, 24]}>
-										<Col xs={24} md={14}>
-											<Space direction="vertical" style={{ width: "100%" }}>
+								button.style.paddingLeft = "8px";
+								button.style.paddingRight = "8px";
+							}}
+							onMouseLeave={(e) => {
+								const button = e.currentTarget;
+								const arrow = button.querySelector(".arrow") as HTMLElement;
+								if (arrow) {
+									arrow.style.width = "0";
+									arrow.style.marginRight = "0";
+									arrow.style.opacity = "0";
+								}
+								button.style.paddingLeft = "0";
+								button.style.paddingRight = "0";
+							}}
+						>
+							<Space size={0}>
+								<ArrowLeftOutlined
+									className="arrow"
+									style={{
+										width: 0,
+										marginRight: 0,
+										opacity: 0,
+										transition: "all 0.3s ease",
+										overflow: "hidden",
+										color: "#ff4d4f",
+									}}
+								/>
+								<span style={{ color: "#ff4d4f" }}>
+									{t("page.vacancy.title", "Jobs")}
+								</span>
+							</Space>
+						</Button>
+					</Link>
+					<Title className={styles.title}>
+						{t("page.vacancy.title", vacancy.title)}
+					</Title>
+				</div>
+			}
+			subTitle={`The open position from ${vacancy.team?.project?.name} project`}
+			backgroundImage={pageCover || undefined}
+			seo={{
+				title: `${vacancy.title}`,
+			}}
+			styles={{ content: { padding: 0 }, layoutBackground: { padding: 0 } }}
+			ogImageType="job"
+			ogImageParams={{
+				p: vacancy.team?.project?.name,
+				vTerms: vacancy.promisePercentage?.toString() || "",
+				vDate: dayjs(vacancy.finishedAt).format("ll"),
+			}}
+		>
+			<div className={styles.container}>
+				<Spin spinning={false}>
+					{!!vacancy && (
+						<Card
+							actions={
+								session?.user
+									? [
+											<Button
+												key="action"
+												type={vacancy?.myTeamMemberId ? "default" : "primary"}
+												onClick={functionOkButton}
+											>
+												{statusOkButton()}
+											</Button>,
+										]
+									: undefined
+							}
+						>
+							<Flex vertical gap={24}>
+								<Row gutter={[24, 24]}>
+									<Col xs={24} md={14}>
+										<Space direction="vertical" style={{ width: "100%" }}>
+											<div>
+												<Text className={styles.fieldLabel}>
+													{t("page.vacancy.section.project", "Project")}
+												</Text>
+												<Title level={4} style={{ margin: "8px 0" }}>
+													{vacancy.team?.project?.name}
+												</Title>
+											</div>
+
+											{vacancy.team?.project?.description && (
 												<div>
 													<Text className={styles.fieldLabel}>
-														{t("page.vacancy.section.project", "Project")}
+														{t(
+															"page.vacancy.section.projectDescription",
+															"Project description",
+														)}
 													</Text>
-													<Title level={4} style={{ margin: "8px 0" }}>
-														{vacancy.team?.project?.name}
-													</Title>
+													<Paragraph style={{ margin: "8px 0" }}>
+														{vacancy.team.project.description.slice(0, 200)}
+														{vacancy.team.project.description.length > 200 &&
+															"..."}
+													</Paragraph>
 												</div>
+											)}
+										</Space>
+									</Col>
 
-												{vacancy.team?.project?.description && (
-													<div>
-														<Text className={styles.fieldLabel}>
-															{t(
-																"page.vacancy.section.projectDescription",
-																"Project description",
-															)}
-														</Text>
-														<Paragraph style={{ margin: "8px 0" }}>
-															{vacancy.team.project.description.slice(0, 200)}
-															{vacancy.team.project.description.length > 200 &&
-																"..."}
-														</Paragraph>
+									<Col xs={24} md={10}>
+										{!showPitchVideo && vacancy.team?.project?.coverImage && (
+											<div className={styles.projectCover}>
+												{vacancy.team?.project?.videoLink && (
+													<div className={styles.coverButtonContainer}>
+														<Button
+															onClick={handleCoverClick}
+															type="primary"
+															size="small"
+														>
+															{t("page.vacancy.section.watch", "Watch")}
+														</Button>
 													</div>
 												)}
-											</Space>
-										</Col>
-
-										<Col xs={24} md={10}>
-											{!showPitchVideo && vacancy.team?.project?.coverImage && (
-												<div className={styles.projectCover}>
-													{vacancy.team?.project?.videoLink && (
-														<div className={styles.coverButtonContainer}>
-															<Button
-																onClick={handleCoverClick}
-																type="primary"
-																size="small"
-															>
-																{t("page.vacancy.section.watch", "Watch")}
-															</Button>
-														</div>
-													)}
-													<Image
-														src={vacancy.team?.project?.coverImage}
-														alt="Project cover"
-														fill
-														style={{ objectFit: "cover" }}
-													/>
-												</div>
-											)}
-											{showPitchVideo && vacancy.team.project.videoLink && (
-												<div className={styles.videoContainer}>
-													<iframe
-														src={`https://www.youtube.com/embed/${vacancy.team.project.videoLink}?autoplay=1`}
-														title="Project video"
-														width="100%"
-														height="200"
-														style={{ border: "none", borderRadius: "8px" }}
-														onEnded={() => setShowPitchVideo(false)}
-													/>
-												</div>
-											)}
-										</Col>
-									</Row>
-
-									{/* Vacancy Description */}
-									<Space direction="vertical" style={{ width: "100%" }}>
-										<div>
-											<Text className={styles.fieldLabel}>
-												{t(
-													"page.vacancy.section.vacancyDescription",
-													"Vacancy description",
-												)}
-											</Text>
-											<Title level={4} style={{ margin: "8px 0" }}>
-												<Markdown>{vacancy.description}</Markdown>
-											</Title>
-										</div>
-									</Space>
-
-									{/* Finished At */}
-									<Space>
-										<Text>
-											{t(
-												"page.vacancy.section.theVacancyIsAcuteBefore",
-												"The vacancy is relevant to",
-											)}
-											:
-										</Text>
-										<Text strong>{dayjs(vacancy.finishedAt).format("LL")}</Text>
-									</Space>
-
-									{/* Equity Promise */}
-									{!!vacancy.promisePercentage &&
-										!!vacancy.promiseStep?.name && (
-											<Flex vertical gap={8}>
-												<Text className={styles.fieldLabel}>
-													{t(
-														"page.vacancy.section.termsOfCooperation",
-														"Terms of cooperation",
-													)}
-												</Text>
-
-												<Alert
-													type="success"
-													message={`${t("page.vacancy.equityPromise", "Equity Promise")}: ${vacancy.promisePercentage}% ${t(
-														"page.vacancy.section.equityPromiseDescription",
-														"of project equity will be allocated upon reaching the required workflow step {step}",
-														{ step: vacancy.promiseStep.name },
-													)}`}
+												<Image
+													src={vacancy.team?.project?.coverImage}
+													alt="Project cover"
+													fill
+													style={{ objectFit: "cover" }}
 												/>
-											</Flex>
+											</div>
 										)}
-
-									{/* Status Alerts */}
-									{vacancy.myTeamMemberId ? (
-										<Alert
-											type="warning"
-											message={t(
-												"page.vacancy.applied",
-												"You have already responded to this vacancy",
-											)}
-										/>
-									) : null}
-
-									{!session?.user && (
-										<Alert
-											type="error"
-											message={
-												<T
-													keyName="page.vacancy.notAuth"
-													defaultValue="Only registered users can respond to this vacancy. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>."
-													params={{
-														"register-link": (chunks: React.ReactNode) => (
-															<a href="/registration">{chunks}</a>
-														),
-														"signin-link": (chunks: React.ReactNode) => (
-															<a href="/signin">{chunks}</a>
-														),
-													}}
+										{showPitchVideo && vacancy.team.project.videoLink && (
+											<div className={styles.videoContainer}>
+												<iframe
+													src={`https://www.youtube.com/embed/${vacancy.team.project.videoLink}?autoplay=1`}
+													title="Project video"
+													width="100%"
+													height="200"
+													style={{ border: "none", borderRadius: "8px" }}
+													onEnded={() => setShowPitchVideo(false)}
 												/>
-											}
-										/>
-									)}
-								</Flex>
-							</Card>
-						)}
-					</Spin>
-				</div>
+											</div>
+										)}
+									</Col>
+								</Row>
 
-				{Boolean(session) && (
-					<SpecialitySelectModal
-						open={showSpecialitySelectModal}
-						onOk={handleSpecialitySelect}
-						onCancel={() => setShowSpecialitySelectModal(false)}
-					/>
-				)}
-			</PublicLayout>
-		</>
+								{/* Vacancy Description */}
+								<Space direction="vertical" style={{ width: "100%" }}>
+									<div>
+										<Text className={styles.fieldLabel}>
+											{t(
+												"page.vacancy.section.vacancyDescription",
+												"Vacancy description",
+											)}
+										</Text>
+										<Title level={4} style={{ margin: "8px 0" }}>
+											<Markdown>{vacancy.description}</Markdown>
+										</Title>
+									</div>
+								</Space>
+
+								{/* Finished At */}
+								<Space>
+									<Text>
+										{t(
+											"page.vacancy.section.theVacancyIsAcuteBefore",
+											"The position is relevant to",
+										)}
+										:
+									</Text>
+									<Text strong>{dayjs(vacancy.finishedAt).format("LL")}</Text>
+								</Space>
+
+								{/* Equity Promise */}
+								{!!vacancy.promisePercentage && !!vacancy.promiseStep?.name && (
+									<Flex vertical gap={8}>
+										<Text className={styles.fieldLabel}>
+											{t(
+												"page.vacancy.section.termsOfCooperation",
+												"Terms of cooperation",
+											)}
+										</Text>
+
+										<Alert
+											type="success"
+											message={`${t("page.vacancy.equityPromise", "Equity Promise")}: ${vacancy.promisePercentage}% ${t(
+												"page.vacancy.section.equityPromiseDescription",
+												"of project equity will be allocated upon reaching the required workflow step {step}",
+												{ step: vacancy.promiseStep.name },
+											)}`}
+										/>
+									</Flex>
+								)}
+
+								{/* Status Alerts */}
+								{vacancy.myTeamMemberId ? (
+									<Alert
+										type="warning"
+										message={t(
+											"page.vacancy.applied",
+											"You have already responded to this position",
+										)}
+									/>
+								) : null}
+
+								{session?.user && (
+									<Alert
+										type="error"
+										message={
+											<T
+												keyName="page.vacancy.notAuth"
+												defaultValue={t(
+													"page.vacancy.notAuth",
+													"Only registered users can respond to this position. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>.",
+													{
+														"register-link": "<a href='/registration'>",
+														"signin-link": "<a href='/signin'>",
+													},
+												)}
+												params={{
+													"register-link": (chunks: React.ReactNode) => (
+														<a href="/registration">{chunks}</a>
+													),
+													"signin-link": (chunks: React.ReactNode) => (
+														<a href="/signin">{chunks}</a>
+													),
+												}}
+											/>
+										}
+									/>
+								)}
+							</Flex>
+						</Card>
+					)}
+				</Spin>
+			</div>
+
+			{Boolean(session) && (
+				<SpecialitySelectModal
+					open={showSpecialitySelectModal}
+					onOk={handleSpecialitySelect}
+					onCancel={() => setShowSpecialitySelectModal(false)}
+				/>
+			)}
+		</PublicLayout>
 	);
 }

@@ -1,10 +1,9 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
 import { TbClock } from "@react-icons/all-files/tb/TbClock";
 import { TbFileText } from "@react-icons/all-files/tb/TbFileText";
-import { TbMail } from "@react-icons/all-files/tb/TbMail";
 import { TbMapPin } from "@react-icons/all-files/tb/TbMapPin";
 import { TbQuote } from "@react-icons/all-files/tb/TbQuote";
+import { IconCopy } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -12,6 +11,7 @@ import {
 	Card,
 	Col,
 	Divider,
+	Flex,
 	Modal,
 	Progress,
 	Row,
@@ -111,7 +111,7 @@ const SpecialistPreviewModal = ({
 					<Space direction="vertical" style={{ width: "100%" }}>
 						<div className={styles.cardHeader}>
 							<Text type="secondary" className={styles.cardType}>
-								{t("specialist.preview.cardType", "Specialist card")}
+								{t("specialist.preview.cardType", "Talent card")}
 							</Text>
 							<div className={styles.specialityTitle}>
 								<Title level={2} style={{ margin: 0 }}>
@@ -125,7 +125,7 @@ const SpecialistPreviewModal = ({
 
 						<Row gutter={[24, 24]}>
 							<Col xs={24} md={16}>
-								<Card className={styles.cardWrapper} bordered={false}>
+								<Card className={styles.cardWrapper} variant="borderless">
 									<Row gutter={[24, 16]} className={styles.profileInfo}>
 										{!!specialist.data.user.profile.country && (
 											<Col xs={24} sm={12}>
@@ -194,43 +194,50 @@ const SpecialistPreviewModal = ({
 									<Card
 										className={styles.cardWrapper}
 										title={t("specialist.preview.contacts", "Contacts")}
-										bordered={false}
+										variant="borderless"
 										style={{ height: "100%" }}
 									>
-										<div className={styles.contactButtons}>
+										<Flex vertical className={styles.contactButtons}>
 											{!!specialist.data.user.profile.tgNickname && (
-												<Link
-													target="_blank"
-													href={
-														"https://t.me/" +
-														specialist.data.user.profile.tgNickname
-													}
-												>
-													<Button
-														type="primary"
-														icon={<TbBrandTelegram size={16} />}
-														size="middle"
-													>
+												<Space direction="vertical" size={0}>
+													<Text type="secondary">
 														{t("specialist.preview.telegram", "Telegram")}
-													</Button>
-												</Link>
+													</Text>
+
+													<Text
+														copyable={{
+															icon: (
+																<IconCopy
+																	size={16}
+																	style={{ position: "relative", top: 2 }}
+																/>
+															),
+															text:
+																"https://t.me/" +
+																specialist.data.user.profile.tgNickname,
+														}}
+													>
+														{`t.me/${specialist.data.user.profile.tgNickname}`}
+													</Text>
+												</Space>
 											)}
 											{!specialist.data.user.profile.tgNickname &&
 												!!specialist.data.user.email && (
-													<Link
-														target="_blank"
-														href={"mailto:" + specialist.data.user.email}
-													>
-														<Button
-															type="primary"
-															icon={<TbMail size={16} />}
-															size="middle"
-														>
+													<Space direction="vertical" size={0}>
+														<Text type="secondary">
 															{t("specialist.preview.email", "Email")}
-														</Button>
-													</Link>
+														</Text>
+														<Text
+															copyable={{
+																icon: <IconCopy size={16} />,
+																text: specialist.data.user.email,
+															}}
+														>
+															{specialist.data.user.email}
+														</Text>
+													</Space>
 												)}
-										</div>
+										</Flex>
 									</Card>
 								)}
 							</Col>

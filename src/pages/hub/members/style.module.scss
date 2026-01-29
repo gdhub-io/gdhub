@@ -20,6 +20,16 @@
     background-color: #fbfbfb;
   }
 
+  .memberCard {
+    border: 1px solid #d1d1d1 !important;
+    border-radius: 12px !important;
+    transition: box-shadow 0.2s;
+  }
+
+  .memberCard:hover {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 8px 6px rgba(0, 0, 0, 0.04) !important;
+  }
+
   :global {
     // .ais-Hits {
     //   &-list {
@@ -642,7 +652,7 @@
       transition: all 0.2s ease-in-out;
 
       &:hover {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        box-shadow: none;
         // border: 1px solid #f15541;
       }
     }

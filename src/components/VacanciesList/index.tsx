@@ -114,7 +114,7 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 				<p>
 					{t(
 						"vacancies.list.noOpenVacancies",
-						"There are no open vacancies at the moment",
+						"There are no open positions at the moment",
 					)}
 				</p>
 			)}
