@@ -289,13 +289,15 @@ export default function VancancyPage({
 															"Project description",
 														)}
 													</Text>
-													<Paragraph
+
+													{/* <Paragraph
 														style={{ margin: "8px 0", whiteSpace: "pre-wrap" }}
-													>
-														{vacancy.team.project.description.slice(0, 1000)}
-														{vacancy.team.project.description.length > 1000 &&
-															"..."}
-													</Paragraph>
+													> */}
+													<Markdown>
+														{vacancy.team.project.description.length > 512
+															? `${vacancy.team.project.description.slice(0, 512)}...(more on the project page)`
+															: vacancy.team.project.description}
+													</Markdown>
 												</div>
 											)}
 										</Space>
