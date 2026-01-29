@@ -285,7 +285,9 @@ export default function VancancyPage({
 															"Project description",
 														)}
 													</Text>
-													<Paragraph style={{ margin: "8px 0" }}>
+													<Paragraph
+														style={{ margin: "8px 0", whiteSpace: "pre-wrap" }}
+													>
 														{vacancy.team.project.description.slice(0, 200)}
 														{vacancy.team.project.description.length > 200 &&
 															"..."}
@@ -332,18 +334,19 @@ export default function VancancyPage({
 									</Col>
 								</Row>
 
-								{/* Vacancy Description */}
+								{/* Position Description */}
 								<Space direction="vertical" style={{ width: "100%" }}>
 									<div>
 										<Text className={styles.fieldLabel}>
 											{t(
 												"page.vacancy.section.vacancyDescription",
-												"Vacancy description",
+												"Position description",
 											)}
 										</Text>
-										<Title level={4} style={{ margin: "8px 0" }}>
-											<Markdown>{vacancy.description}</Markdown>
-										</Title>
+
+										<div style={{ whiteSpace: "pre-wrap" }}>
+											{vacancy.description}
+										</div>
 									</div>
 								</Space>
 
@@ -391,7 +394,7 @@ export default function VancancyPage({
 									/>
 								) : null}
 
-								{session?.user && (
+								{!session?.user && (
 									<Alert
 										type="error"
 										message={
@@ -400,10 +403,6 @@ export default function VancancyPage({
 												defaultValue={t(
 													"page.vacancy.notAuth",
 													"Only registered users can respond to this position. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>.",
-													{
-														"register-link": "<a href='/registration'>",
-														"signin-link": "<a href='/signin'>",
-													},
 												)}
 												params={{
 													"register-link": (chunks: React.ReactNode) => (

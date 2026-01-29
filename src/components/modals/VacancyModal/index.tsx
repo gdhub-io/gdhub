@@ -287,7 +287,7 @@ const VacancyModal = ({
 
 					<Form.Item
 						name="description"
-						label={t("Vacancy description")}
+						label={t("modal.vacancy.description", "Position description")}
 						tooltip={t(
 							"modal.vacancy.descriptionHelp",
 							"Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",

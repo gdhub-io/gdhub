@@ -268,7 +268,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 								</Col>
 							</Row>
 
-							{/* Vacancy Description */}
+							{/* Position Description */}
 							<Space direction="vertical" style={{ width: "100%" }}>
 								<div>
 									<Text type="secondary" className={styles.fieldLabel}>
@@ -322,7 +322,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 									message={
 										<T
 											keyName="modal.vacancy.notAuth"
-											defaultValue="Only registered users can respond to this vacancy. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>."
+											defaultValue="Only registered users can respond to this position. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>."
 											params={{
 												"register-link": (chunks: React.ReactNode) => (
 													<a href="/registration">{chunks}</a>
