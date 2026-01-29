@@ -273,7 +273,11 @@ export default function VancancyPage({
 													{t("page.vacancy.section.project", "Project")}
 												</Text>
 												<Title level={4} style={{ margin: "8px 0" }}>
-													{vacancy.team?.project?.name}
+													<Link
+														href={`/project/${vacancy.team?.project?.slug}`}
+													>
+														{vacancy.team?.project?.name}
+													</Link>
 												</Title>
 											</div>
 
@@ -288,8 +292,8 @@ export default function VancancyPage({
 													<Paragraph
 														style={{ margin: "8px 0", whiteSpace: "pre-wrap" }}
 													>
-														{vacancy.team.project.description.slice(0, 200)}
-														{vacancy.team.project.description.length > 200 &&
+														{vacancy.team.project.description.slice(0, 1000)}
+														{vacancy.team.project.description.length > 1000 &&
 															"..."}
 													</Paragraph>
 												</div>

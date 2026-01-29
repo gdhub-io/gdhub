@@ -222,9 +222,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 													)}
 												</Text>
 												<Paragraph style={{ margin: "8px 0" }}>
-													{vacancy.data.team.project.description.slice(0, 200)}
-													{vacancy.data.team.project.description.length > 200 &&
-														"..."}
+													{vacancy.data.team.project.description.slice(0, 1000)}
+													{vacancy.data.team.project.description.length >
+														1000 && "..."}
 												</Paragraph>
 											</div>
 										)}
