@@ -30,6 +30,7 @@ import {
 	Stats,
 	useInstantSearch,
 } from "react-instantsearch";
+import { getRelevantText } from "@/helpers/text";
 import { hasRole } from "@/helpers/user";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -68,15 +69,19 @@ const SpecialistsPage: NextPageWithLayout = ({
 
 	// biome-ignore lint/correctness/noNestedComponentDefinitions: <explanation>
 	const Hit = ({ hit }: any) => {
+		const specialization = getRelevantText(hit?.specialization);
+
 		return (
 			<Card
+				className={styles.memberCard}
 				hoverable
 				onClick={() => setSelectedSpecialistId(hit.id)}
 				style={{ cursor: "pointer", position: "relative" }}
 			>
 				<Card.Meta
+					style={{ padding: 0 }}
 					title={
-						<Title level={4}>
+						<Title level={4} style={{ margin: 0 }}>
 							<Highlight attribute="name" hit={hit} />
 						</Title>
 					}
@@ -86,7 +91,7 @@ const SpecialistsPage: NextPageWithLayout = ({
 							size={16}
 							style={{ width: "100%", marginTop: 8 }}
 						>
-							{!!hit.specialization && (
+							{!!specialization && (
 								<div style={{ marginTop: 4 }}>
 									<Highlight attribute="specialization" hit={hit} />
 								</div>

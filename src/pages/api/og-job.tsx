@@ -26,7 +26,7 @@ export default async function handler(request: NextRequest) {
 				: decodeURIComponent(title)
 			: "Title";
 
-		const subTitle = searchParams.get("st") || `The open vacancy`;
+		const subTitle = searchParams.get("st") || `The open position`;
 
 		const fontData = await fetch(
 			new URL("../../assets/fonts/geist/Geist-Regular.ttf", import.meta.url),

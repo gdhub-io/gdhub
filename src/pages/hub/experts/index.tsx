@@ -40,14 +40,14 @@ const ExpertsPage = () => {
 		setExpertRequestModalOpen(expertId);
 	};
 
-	useEffect(() => {
-		const currentLang = getLanguage();
-		form.setFieldsValue({ lang: currentLang });
-		setFilter((prev) => ({
-			...prev,
-			lang: currentLang as prismaClient.Language,
-		}));
-	}, [getLanguage, form]);
+	// useEffect(() => {
+	// 	const currentLang = getLanguage();
+	// 	form.setFieldsValue({ lang: currentLang });
+	// 	setFilter((prev) => ({
+	// 		...prev,
+	// 		lang: currentLang as prismaClient.Language,
+	// 	}));
+	// }, [getLanguage, form]);
 
 	return (
 		<ProtectedLayout
@@ -81,7 +81,7 @@ const ExpertsPage = () => {
 					<Form
 						variant="filled"
 						form={form}
-						initialValues={{ lang: getLanguage() }}
+						// initialValues={{ lang: getLanguage() }}
 						onValuesChange={(_changedValues, allValues) => {
 							setFilter({
 								workDirectionId: allValues.workDirectionId,

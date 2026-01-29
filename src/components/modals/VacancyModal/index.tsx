@@ -147,8 +147,8 @@ const VacancyModal = ({
 			setShowPromiseFields(false);
 			message.success(
 				vacancyId
-					? t("The vacancy is changed")
-					: t("A new vacancy has been added"),
+					? t("The position is changed")
+					: t("A new open position has been added"),
 			);
 			onOk();
 		} catch (error: any) {
@@ -188,7 +188,7 @@ const VacancyModal = ({
 		<Modal
 			centered
 			className={styles.modal}
-			title={vacancyId ? t("Change the vacancy") : t("Create a new vacancy")}
+			title={vacancyId ? t("Change the position") : t("Create a new position")}
 			width={800}
 			destroyOnHidden
 			maskClosable={false}

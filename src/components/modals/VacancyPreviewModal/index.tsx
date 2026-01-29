@@ -190,7 +190,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 						<Space direction="vertical" style={{ width: "100%" }}>
 							<div className={styles.cardHeader}>
 								<Text type="secondary" className={styles.cardType}>
-									{t("modal.vacancy.vacancyCard", "Vacancy card")}
+									{t("modal.vacancy.vacancyCard", "Position card")}
 								</Text>
 								<div className={styles.vacancyTitle}>
 									<Title level={2} style={{ margin: 0 }}>
@@ -274,18 +274,18 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 									<Text type="secondary" className={styles.fieldLabel}>
 										{t(
 											"modal.section.vacancyDescription",
-											"Vacancy description",
+											"Position description",
 										)}
 									</Text>
-									<Title level={4} style={{ margin: "8px 0" }}>
-										<Markdown>{vacancy.data.description}</Markdown>
-									</Title>
+									<div className={styles.vacancyDescription}>
+										{vacancy.data.description}
+									</div>
 								</div>
 								<div className={styles.vacancyDeadline}>
 									<Text type="secondary">
 										{t(
 											"modal.section.theVacancyIsAcuteBefore",
-											"The vacancy is acute before",
+											"The position is acute before",
 										)}
 										: {dayjs(vacancy.data.finishedAt).format("LL")}
 									</Text>
@@ -311,7 +311,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 									type="success"
 									message={t(
 										"modal.vacancy.applied",
-										"You have already responded to this vacancy",
+										"You have already responded to this position",
 									)}
 								/>
 							) : null}

@@ -172,7 +172,7 @@ class ApiUserTeamVacancyHandler {
 		const deletedMember = await prisma.teamMember.delete({
 			where: { id: teamMemberId },
 			select: {
-				user: true,
+				user: { include: { profile: true } },
 				vacancy: true,
 				team: {
 					select: {
@@ -197,7 +197,7 @@ class ApiUserTeamVacancyHandler {
 					},
 					payload: {
 						title: "Candidate rejected",
-						message: `The candidate ${deletedMember.user.name} rejected his candidacy for the position ${deletedMember.vacancy.title}`,
+						message: `The candidate ${deletedMember.user.profile?.name || deletedMember.user.name} rejected his candidacy for the position ${deletedMember.vacancy.title}`,
 					},
 				});
 
@@ -261,7 +261,7 @@ class ApiUserTeamVacancyHandler {
 				specialityId,
 				allowedContacts: contactType,
 			},
-			include: { user: true },
+			include: { user: { include: { profile: true } } },
 		});
 
 		try {
@@ -273,7 +273,7 @@ class ApiUserTeamVacancyHandler {
 				},
 				payload: {
 					title: "New job response",
-					message: `for vacancy "${vacancy.title}" from ${candidate.user.name}`,
+					message: `New job response for position "${vacancy.title}" from ${candidate.user.profile?.name || candidate.user.name}`,
 					redirectUrl:
 						process.env.NEXT_PUBLIC_APP_URL +
 						"/my/projects/" +
@@ -282,7 +282,7 @@ class ApiUserTeamVacancyHandler {
 			});
 
 			console.info(
-				"New notification was sent to " + vacancy.team!.project?.authorId,
+				`New notification was sent to ${vacancy.team!.project?.authorId}`,
 			);
 		} catch (e) {
 			console.error("[NovuService]", e);
@@ -311,7 +311,7 @@ class ApiUserTeamVacancyHandler {
 				},
 			});
 
-			console.info("New notification was sent to " + rejectedCandidate.user.id);
+			console.info(`New notification was sent to ${rejectedCandidate.user.id}`);
 		} catch (e) {
 			console.error("[NovuService]", e);
 		}
@@ -387,7 +387,7 @@ class ApiUserTeamVacancyHandler {
 				},
 			});
 
-			console.info("New notification was sent to " + member.user.id);
+			console.info(`New notification was sent to ${member.user.id}`);
 		} catch (e) {
 			console.error("[NovuService]", e);
 		}
@@ -427,7 +427,7 @@ class ApiUserTeamVacancyHandler {
 				},
 			});
 
-			console.info("New notification was sent to " + firedMember.user.id);
+			console.info(`New notification was sent to ${firedMember.user.id}`);
 		} catch (e) {
 			console.error("[NovuService]", e);
 		}
