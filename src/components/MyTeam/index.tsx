@@ -1063,6 +1063,7 @@ const MyTeam = () => {
 						onOk={handleInviteSuccess}
 						onCancel={handleCloseInviteModal}
 						teamId={contextProject?.teamId || ""}
+						projectName={contextProject?.name || ""}
 					/>
 					<EquityShareModal
 						open={isEquityModalOpen}

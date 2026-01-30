@@ -28,6 +28,7 @@ import type React from "react";
 import { useState } from "react";
 import Markdown from "react-markdown";
 import SpecialitySelectModal from "@/components/modals/SpecialitySelectModal";
+import { gtmEventTrigger } from "@/helpers/gtm";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import styles from "./styles.module.scss";
 
@@ -100,6 +101,13 @@ export default function VancancyPage({
 	const { mutateAsync: withdrawApply } = useMutation({
 		mutationFn: (data: { teamMemberId: string }) =>
 			axios.put<void>("/api/user/project/vacancy/withdraw", data),
+		onSuccess: () => {
+			gtmEventTrigger("job", {
+				action: "withdraw",
+				vacancyName: vacancy.title,
+				projectName: vacancy.team?.project?.name,
+			});
+		},
 	});
 
 	const { mutateAsync: vacancyApply } = useMutation({
@@ -109,6 +117,13 @@ export default function VancancyPage({
 			telegramNickname?: string;
 			vacancyId: string;
 		}) => axios.post<void>("/api/user/project/vacancy/apply", data),
+		onSuccess: () => {
+			gtmEventTrigger("job", {
+				action: "apply",
+				vacancyName: vacancy.title,
+				projectName: vacancy.team?.project?.name,
+			});
+		},
 	});
 
 	const handleCoverClick = () => setShowPitchVideo(true);

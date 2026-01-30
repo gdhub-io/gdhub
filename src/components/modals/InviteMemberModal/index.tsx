@@ -9,6 +9,7 @@ import { useWorkDirections } from "@/hooks/library";
 
 interface InviteMemberModalProps {
 	teamId: string;
+	projectName: string;
 	open: boolean;
 	onOk: () => void;
 	onCancel: () => void;
@@ -16,6 +17,7 @@ interface InviteMemberModalProps {
 
 const InviteMemberModal = ({
 	teamId,
+	projectName,
 	open,
 	onOk,
 	onCancel,
@@ -31,6 +33,7 @@ const InviteMemberModal = ({
 		onSuccess: () => {
 			message.success(t("Invitation sent successfully"));
 			form.resetFields();
+
 			onOk();
 		},
 		onError: (error: any) => {
@@ -56,12 +59,11 @@ const InviteMemberModal = ({
 					? formData.startedAt.toISOString()
 					: new Date().toISOString(),
 			});
-			gtmEventTrigger("team_invite", {
-				teamId,
-				position: formData.position,
-				direction: directionsOptions?.find(
-					(direction) => direction.value === formData.directionId,
-				)?.label,
+
+			gtmEventTrigger("job", {
+				action: "invite",
+				vacancyName: formData.position,
+				projectName: projectName,
 			});
 		} catch (error) {
 			console.error("Validation failed:", error);
