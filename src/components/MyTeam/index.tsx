@@ -37,6 +37,7 @@ import InviteMemberModal from "@/components/modals/InviteMemberModal";
 import MemberEquityPromiseModal from "@/components/modals/MemberEquityPromiseModal";
 import TeamMemberCard from "@/components/TeamMemberCard";
 import { ProjectContext } from "@/contexts/ProjectContext";
+import { gtmEventTrigger } from "@/helpers/gtm";
 import EquitySection from "./EquitySection";
 import InvestorModal from "./InvestorModal";
 import ProjectAdviceArchiveModal from "./ProjectAdviceArchiveModal";
@@ -184,7 +185,7 @@ const MyTeam = () => {
 	});
 
 	const handleFired = useCallback(
-		async (teamMemberId: string) => {
+		async (teamMember: prismaClient.TeamMember) => {
 			modal.confirm({
 				title: t("Are you sure you want to fire this member?"),
 				destroyOnClose: true,
@@ -198,8 +199,13 @@ const MyTeam = () => {
 				),
 				async onOk() {
 					try {
-						await fireMember({ id: teamMemberId });
-						fetchMyTeam();
+						await fireMember({ id: teamMember.id });
+
+						gtmEventTrigger("job", {
+							action: "fire",
+							vacancyName: teamMember.position,
+							projectName: contextProject?.name,
+						});
 
 						message.success(t("The employee is dismissed"));
 					} catch (error: any) {
@@ -525,7 +531,7 @@ const MyTeam = () => {
 							member.status === prismaClient.TeamMemberStatus.Founder ||
 							member.status === (prismaClient.TeamMemberStatus.Fired as any),
 						danger: true,
-						onClick: () => handleFired(member.id),
+						onClick: () => handleFired(member),
 					},
 				];
 

@@ -277,7 +277,7 @@ class ApiUserTeamVacancyHandler {
 					redirectUrl:
 						process.env.NEXT_PUBLIC_APP_URL +
 						"/my/projects/" +
-						vacancy.team!.project?.id,
+						vacancy.team!.project?.slug,
 				},
 			});
 
