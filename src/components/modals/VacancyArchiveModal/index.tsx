@@ -79,7 +79,7 @@ const VacancyArchiveModal = ({
 			centered
 			title={t(
 				"modal.vacancyArchive.title",
-				"Archive of vacancies from the {projectName} project",
+				"Archive of open positions from the {projectName} project",
 				{ projectName },
 			)}
 			width={800}
@@ -98,7 +98,7 @@ const VacancyArchiveModal = ({
 				<p>
 					{t(
 						"modal.vacancyArchive.selectVacancy",
-						"Select the vacancy you want to restore",
+						"Select the open position you want to restore",
 					)}
 				</p>
 				<List

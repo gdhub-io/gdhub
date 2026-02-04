@@ -1,6 +1,7 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
 import { TbMail } from "@react-icons/all-files/tb/TbMail";
+import { IconCopy } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -13,6 +14,7 @@ import {
 	Row,
 	Space,
 	Spin,
+	Typography,
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -26,6 +28,8 @@ import {
 	useGameSettings,
 } from "@/hooks/library";
 import styles from "./style.module.scss";
+
+const { Text } = Typography;
 
 const ProjectCandidatePreviewModal = ({
 	candidateId,
@@ -269,44 +273,50 @@ const ProjectCandidatePreviewModal = ({
 											/>
 										</div>
 									)}
-									{!!candidate.data?.allowedContacts.includes("email") && (
-										<Link
-											target="_blank"
-											href={"mailto:" + candidate.data.user.email}
-										>
-											<Button
-												icon={
-													<TbMail
-														size={16}
-														style={{ position: "relative", marginRight: 5 }}
-													/>
-												}
-											>
-												Email
-											</Button>
-										</Link>
-									)}
+									{!!candidate.data?.allowedContacts.includes("email") &&
+										!!candidate.data.user.email && (
+											<Space direction="vertical" size={0}>
+												<Text type="secondary">
+													{t("projectCandidatePreviewModal.email", "Email")}
+												</Text>
+												<Text
+													copyable={{
+														icon: <IconCopy size={16} />,
+														text: candidate.data.user.email,
+													}}
+												>
+													{candidate.data.user.email}
+												</Text>
+											</Space>
+										)}
 
-									{!!candidate.data?.allowedContacts.includes("telegram") && (
-										<Link
-											target="_blank"
-											href={
-												"https://t.me/" +
-												candidate.data?.user.profile.tgNickname
-											}
-										>
-											<Button
-												icon={
-													<TbBrandTelegram
-														size={16}
-														style={{ position: "relative", marginRight: 5 }}
-													/>
-												}
-											>
-												Telegram
-											</Button>
-										</Link>
-									)}
+									{!!candidate.data?.allowedContacts.includes("telegram") &&
+										!!candidate.data?.user.profile.tgNickname && (
+											<Space direction="vertical" size={0}>
+												<Text type="secondary">
+													{t(
+														"projectCandidatePreviewModal.telegram",
+														"Telegram",
+													)}
+												</Text>
+
+												<Text
+													copyable={{
+														icon: (
+															<IconCopy
+																size={16}
+																style={{ position: "relative", top: 2 }}
+															/>
+														),
+														text:
+															"https://t.me/" +
+															candidate.data?.user.profile.tgNickname,
+													}}
+												>
+													{`t.me/${candidate.data?.user.profile.tgNickname}`}
+												</Text>
+											</Space>
+										)}
 								</Space>
 							</Col>
 						</Row>

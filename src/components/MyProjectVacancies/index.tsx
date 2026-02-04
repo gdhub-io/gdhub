@@ -15,6 +15,7 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
+import Link from "next/link";
 import { useContext, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
@@ -99,10 +100,20 @@ const MyProjectVacancies = () => {
 			responsive: ["md"],
 			render: (value) =>
 				value ? (
-					<Text className={tableStyles.tableMemberDates}>
-						{t("to") + " " + dayjs(value).format("LLL")}
-					</Text>
+					<Text
+						className={tableStyles.tableMemberDates}
+					>{`${t("to")} ${dayjs(value).format("LLL")}`}</Text>
 				) : null,
+		},
+		{
+			key: "links",
+			dataIndex: "id",
+			responsive: ["md"],
+			render: (value, record) => (
+				<Link href={`/job/${value}`} target="_blank" rel="noopener noreferrer">
+					{t("MyProjectVacancies.link", "Go to the page")}
+				</Link>
+			),
 		},
 		{
 			key: "actions",
@@ -115,7 +126,7 @@ const MyProjectVacancies = () => {
 						</Button>
 					)}
 					<Popconfirm
-						title={t("You definitely want to close the vacancy?")}
+						title={t("You definitely want to close the open position?")}
 						okText={t("MyProjectVacancies.yes", "Yes")}
 						cancelText={t("MyProjectVacancies.no", "No")}
 						onConfirm={() => handleCloseVacancy(record.id)}
@@ -141,7 +152,7 @@ const MyProjectVacancies = () => {
 		fetchMyProjectVacancies();
 
 		message.success(
-			t("MyProjectVacancies.theVacancyIsClosed", "The vacancy is closed"),
+			t("MyProjectVacancies.theVacancyIsClosed", "The open position is closed"),
 		);
 	};
 
@@ -163,7 +174,7 @@ const MyProjectVacancies = () => {
 		<>
 			<Flex justify="space-between" align="center">
 				<Button onClick={() => setShowVacancyModal(true)}>
-					{t("MyProjectVacancies.addTheVacancy", "Add the vacancy")}
+					{t("MyProjectVacancies.addTheVacancy", "Add open position")}
 				</Button>
 
 				<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
@@ -186,7 +197,7 @@ const MyProjectVacancies = () => {
 				<p style={{ marginTop: 12, color: "gray" }}>
 					{t(
 						"MyProjectVacancies.thereAreNoOpenVacanciesAtTheMoment",
-						"There are no open vacancies at the moment",
+						"There are no open positions at the moment",
 					)}
 				</p>
 			)}
