@@ -70,7 +70,7 @@ const MyProjectCandidates = () => {
 			),
 		},
 		{
-			title: t("Job vacancy"),
+			title: t("Open position"),
 			dataIndex: "vacancyId",
 			responsive: ["md"],
 			key: "vacancyId",
@@ -107,7 +107,7 @@ const MyProjectCandidates = () => {
 				<h3 style={{ margin: 0 }}>
 					{t(
 						"components.my-project-candidates.responsesOnVacancies",
-						"Responses on vacancies",
+						"Responses on open positions",
 					)}
 				</h3>
 				<Tag color="gray">{candidates?.data.length || 0}</Tag>

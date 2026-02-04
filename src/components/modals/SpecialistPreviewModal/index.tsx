@@ -198,31 +198,31 @@ const SpecialistPreviewModal = ({
 										style={{ height: "100%" }}
 									>
 										<Flex vertical className={styles.contactButtons}>
-											{!!specialist.data.user.profile.tgNickname && (
-												<Space direction="vertical" size={0}>
-													<Text type="secondary">
-														{t("specialist.preview.telegram", "Telegram")}
-													</Text>
+											<Space direction="vertical" size={8}>
+												{!!specialist.data.user.profile.tgNickname && (
+													<Space direction="vertical" size={0}>
+														<Text type="secondary">
+															{t("specialist.preview.telegram", "Telegram")}
+														</Text>
 
-													<Text
-														copyable={{
-															icon: (
-																<IconCopy
-																	size={16}
-																	style={{ position: "relative", top: 2 }}
-																/>
-															),
-															text:
-																"https://t.me/" +
-																specialist.data.user.profile.tgNickname,
-														}}
-													>
-														{`t.me/${specialist.data.user.profile.tgNickname}`}
-													</Text>
-												</Space>
-											)}
-											{!specialist.data.user.profile.tgNickname &&
-												!!specialist.data.user.email && (
+														<Text
+															copyable={{
+																icon: (
+																	<IconCopy
+																		size={16}
+																		style={{ position: "relative", top: 2 }}
+																	/>
+																),
+																text:
+																	"https://t.me/" +
+																	specialist.data.user.profile.tgNickname,
+															}}
+														>
+															{`t.me/${specialist.data.user.profile.tgNickname}`}
+														</Text>
+													</Space>
+												)}
+												{!!specialist.data.user.email && (
 													<Space direction="vertical" size={0}>
 														<Text type="secondary">
 															{t("specialist.preview.email", "Email")}
@@ -237,6 +237,7 @@ const SpecialistPreviewModal = ({
 														</Text>
 													</Space>
 												)}
+											</Space>
 										</Flex>
 									</Card>
 								)}

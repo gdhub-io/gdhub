@@ -242,7 +242,7 @@ const VacancyModal = ({
 					<Row gutter={[16, 16]}>
 						<Col flex={1}>
 							<Form.Item
-								label={t("The name of the vacancy")}
+								label={t("The name of the open position")}
 								name="title"
 								rules={[{ required: true }]}
 								required
@@ -273,7 +273,7 @@ const VacancyModal = ({
 
 					<Form.Item
 						name="directionId"
-						label={t("What direction does this vacancy belong")}
+						label={t("What direction does this open position belong")}
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 						required
@@ -287,10 +287,10 @@ const VacancyModal = ({
 
 					<Form.Item
 						name="description"
-						label={t("modal.vacancy.description", "Position description")}
+						label={t("modal.vacancy.description", "Open position description")}
 						tooltip={t(
 							"modal.vacancy.descriptionHelp",
-							"Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",
+							"Describe the requirements/wishes for the candidate, describe the kind of job he has to do",
 						)}
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
@@ -299,7 +299,7 @@ const VacancyModal = ({
 							rows={6}
 							placeholder={t(
 								"modal.vacancy.descriptionPlaceholder",
-								`For example: I am looking for a concept designer from the environment that has experience at PC Projects, works in a realistic style.`,
+								`For example: I am looking for a concept designer from the environment that has experience at PC projects, works in a realistic style.`,
 							)}
 						/>
 					</Form.Item>

@@ -234,7 +234,7 @@ export const ProtectedProjectLayout = ({
 			disabled: !isProjectAuthor,
 			label: (
 				<Link href={`/my/projects/${projectSlug}/vacancies`}>
-					{t("app.user-project.menu.vacancies", "Vacancies")}
+					{t("app.user-project.menu.vacancies", "Open positions")}
 				</Link>
 			),
 		},
