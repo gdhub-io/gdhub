@@ -198,7 +198,7 @@ const SpecialistPreviewModal = ({
 										style={{ height: "100%" }}
 									>
 										<Flex vertical className={styles.contactButtons}>
-											<Space direction="vertical" size={8}>
+											<Space direction="vertical" align="start" size={8}>
 												{!!specialist.data.user.profile.tgNickname && (
 													<Space direction="vertical" size={0}>
 														<Text type="secondary">

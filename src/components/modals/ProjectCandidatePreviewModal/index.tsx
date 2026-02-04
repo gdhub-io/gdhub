@@ -292,7 +292,7 @@ const ProjectCandidatePreviewModal = ({
 
 									{!!candidate.data?.allowedContacts.includes("telegram") &&
 										!!candidate.data?.user.profile.tgNickname && (
-											<Space direction="vertical" size={0}>
+											<Space direction="vertical" align="start" size={0}>
 												<Text type="secondary">
 													{t(
 														"projectCandidatePreviewModal.telegram",
