@@ -2,6 +2,7 @@
 
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { IconTool } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -111,11 +112,24 @@ const ProfilePage: NextPageWithLayout = () => {
 		<ProtectedLayout
 			title={t("profile.page.title", "My profile")}
 			extra={
-				<Link href="/profile/settings/general">
-					<Button type="primary">
-						{t("profile.page.actions.settings", "Settings")}
-					</Button>
-				</Link>
+				<Space>
+					<Tag
+						color="orange"
+						icon={
+							<IconTool
+								size={16}
+								style={{ position: "relative", top: 3, marginRight: 4 }}
+							/>
+						}
+					>
+						This page is in development
+					</Tag>
+					<Link href="/profile/settings/general">
+						<Button type="primary">
+							{t("profile.page.actions.settings", "Settings")}
+						</Button>
+					</Link>
+				</Space>
 			}
 		>
 			<Row gutter={[24, 24]} align="stretch">
