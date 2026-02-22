@@ -2,6 +2,7 @@ import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import dayjs from "dayjs";
 
 export const SC_RI_WEIGHT = 100;
+export const PCS_SCALE = 100;
 
 const ENTRY_STAGE_COEFS: Record<string, number> = {
 	ideation: 1.5,
@@ -65,6 +66,9 @@ export const getEntryStageCoef = (
 
 export const getOutcomeCoef = (status: prismaClient.ProjectStatus) =>
 	OUTCOME_COEFS[status] ?? 1;
+
+export const smoothPcs = (pcs: number) =>
+	Math.log10(1 + Math.max(0, pcs)) * PCS_SCALE;
 
 export const getActiveDays = ({
 	startedAt,

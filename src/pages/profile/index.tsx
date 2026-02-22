@@ -40,6 +40,7 @@ type SkillCapitalResponse = {
 			name: string;
 			status: prismaClient.ProjectStatus;
 			currentStepName?: string | null;
+			roles: string[];
 			pcs: number;
 		}[];
 		history: {
@@ -47,6 +48,7 @@ type SkillCapitalResponse = {
 			name: string;
 			status: prismaClient.ProjectStatus;
 			currentStepName?: string | null;
+			roles: string[];
 			pcs: number;
 		}[];
 	};
@@ -314,6 +316,22 @@ const ProfilePage: NextPageWithLayout = () => {
 																{project.currentStepName}
 															</Text>
 														)}
+														{project.roles?.length ? (
+															<Space size={4} wrap>
+																{project.roles.map((role) => (
+																	<Tag key={`${project.id}-${role}`}>
+																		{role}
+																	</Tag>
+																))}
+															</Space>
+														) : (
+															<Tag>
+																{t(
+																	"profile.page.skillCapital.role",
+																	"Participant",
+																)}
+															</Tag>
+														)}
 													</Space>
 													<Tag color={statusColorMap[project.status]}>
 														{project.status}
@@ -345,6 +363,20 @@ const ProfilePage: NextPageWithLayout = () => {
 														<Text type="secondary">
 															{project.currentStepName}
 														</Text>
+													)}
+													{project.roles?.length ? (
+														<Space size={4} wrap>
+															{project.roles.map((role) => (
+																<Tag key={`${project.id}-${role}`}>{role}</Tag>
+															))}
+														</Space>
+													) : (
+														<Tag>
+															{t(
+																"profile.page.skillCapital.role",
+																"Participant",
+															)}
+														</Tag>
 													)}
 												</Space>
 												<Tag color={statusColorMap[project.status]}>
