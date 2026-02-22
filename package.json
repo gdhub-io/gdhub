@@ -9,6 +9,7 @@
 		"export": "next export",
 		"start": "next start",
 		"lint": "biome check --diagnostic-level=error ./src",
+		"type-check": "tsc --noEmit",
 		"prepare": "husky install",
 		"refresh-translations": "node import-translations.js",
 		"db:generate": "gdhub-prisma generate --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
