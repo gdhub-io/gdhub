@@ -4,8 +4,8 @@
 	},
 	"(not pointed)": "(not pointed)",
 	"3% is fixed for the platform": "3% is fixed for the platform",
+	"A new open position has been added": "A new vacancy has been added",
 	"A new report has been added": "A new report has been added",
-	"A new vacancy has been added": "A new vacancy has been added",
 	"A portion should be reserved for future investments": "A portion should be reserved for future investments",
 	"About Game": "About Game",
 	"About us": "About us",
@@ -172,6 +172,7 @@
 	"Novice": "Novice",
 	"On the page of the project": "On the page of the project",
 	"Our Core Values": "Our Core Values",
+	"Pending Invitations": "Pending Invitations",
 	"Platform": "Platform",
 	"Player": "Player",
 	"Position": "Position",
@@ -350,6 +351,9 @@
 	"community members": "community members",
 	"communityMember": "Community Member",
 	"component": {
+		"heroStats": {
+			"qualifiedSpecialists": "ready to invest up to in the form of their time"
+		},
 		"landingGameCreationSection": {
 			"joinTheProgram": "Go to Game Creation Program"
 		}
@@ -419,6 +423,8 @@
 				"add": "Add event image",
 				"hint": "Click or drag image here. JPG, PNG. 4:5 recommended."
 			},
+			"language": "Language",
+			"language.any": "Any",
 			"link": "Registration Link",
 			"location": "Location",
 			"schedule": "Schedule",
@@ -518,6 +524,9 @@
 				"part2": "And for those who want to share their experience with others, here you will find the opportunity to do so. Follow topics that interest other participants and offer yourself as a lecturer.",
 				"part3": "Let's share knowledge, gain wisdom ;)"
 			}
+		},
+		"menu": {
+			"talentPool": "Talent Pool"
 		},
 		"text1": "Hello, {userName} \uD83D\uDC4B",
 		"text1.part1": "It's a good day for game development",
@@ -622,6 +631,9 @@
 				}
 			}
 		},
+		"expert": {
+			"sendRequest": "Send request"
+		},
 		"lectureRequest": {
 			"lecture-created-success": "Added a new request for a lecture",
 			"lecture-name": "Lecture theme",
@@ -705,6 +717,11 @@
 				}
 			}
 		},
+		"section": {
+			"project": "Project",
+			"theVacancyIsAcuteBefore": "The position is acute before",
+			"vacancyDescription": "Position description"
+		},
 		"speciality-select": {
 			"choose-text": "Choose your specialty that corresponds to the selected vacancy",
 			"contact-text": "How to contact the author of the project with you?",
@@ -770,9 +787,11 @@
 			"apply": "Respond",
 			"applySuccess": "Your response is sent",
 			"cancelMyResponse": "Cancel my response",
+			"close": "Close",
 			"descriptionHelp": "Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",
 			"notAuth": "Only registered users can respond to this vacancy. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>.",
 			"titleSession": "Open Role",
+			"vacancyCard": "Position Card",
 			"withdrawSuccess": "Your response is withdrawn"
 		}
 	},
@@ -890,13 +909,22 @@
 			"title": "My Events"
 		},
 		"project": {
+			"downloadAsImage": "Download as image",
 			"members": {
 				"table-title": "Members"
 			}
 		},
 		"vacancies": {
 			"subTitle": "Current project roles and collaboration offers available to join",
-			"title": "Vacancies"
+			"title": "Open positions"
+		},
+		"vacancy": {
+			"equityPromise": "Equity Promise",
+			"section": {
+				"equityPromiseDescription": "will be allocated upon completion of the necessary stage of the work process",
+				"termsOfCooperation": "Terms of cooperation",
+				"theVacancyIsAcuteBefore": "The position is relevant to"
+			}
 		}
 	},
 	"participants": "participants",
@@ -1006,6 +1034,27 @@
 		}
 	},
 	"profile": {
+		"page": {
+			"bio": {
+				"title": "Bio"
+			},
+			"skillCapital": {
+				"activeProjects": "Active Projects",
+				"help": {
+					"pcs": "Project Commitment Score based on time, entry stage, and project outcome.",
+					"ri": "Retention index: released projects vs started projects.",
+					"sc": "Total Skill Capital from your project participation.",
+					"sds": "Stage depth: how many project stages you touched."
+				},
+				"history": "Project History",
+				"history.empty": "No project history",
+				"note": "Metrics are calculated from your project activity and will evolve.",
+				"pcs": "PCS"
+			},
+			"specialities": {
+				"title": "Specialities"
+			}
+		},
 		"settings": {
 			"menu": {
 				"connections": "Connections",
@@ -1067,6 +1116,11 @@
 	"skillList.plachehloder": "For example:\ndraw concepts of cartoon characters\ndevelop dialogue systems",
 	"specialisation": "Specialization",
 	"specialisation.plachehloder": "I specialize in...",
+	"specialist": {
+		"preview": {
+			"cardType": "Talent Card"
+		}
+	},
 	"specialityLevel": "Level",
 	"specialityName": "Specialty Name",
 	"specialityName.plachehloder": "Example: Unity developer",

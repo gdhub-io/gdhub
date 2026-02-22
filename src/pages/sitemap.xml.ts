@@ -58,7 +58,8 @@ export async function getServerSideProps({ res }: GetServerSidePropsContext) {
 			status: {
 				in: [
 					prismaClient.ProjectStatus.Approved,
-					prismaClient.ProjectStatus.Done,
+					prismaClient.ProjectStatus.Dormant,
+					prismaClient.ProjectStatus.Released,
 				],
 			},
 			team: { vacancies: { some: {} } },

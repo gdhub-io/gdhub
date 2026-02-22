@@ -386,12 +386,16 @@ export const ProtectedLayout = ({
 		menu = [
 			...menu,
 			{
+				label: <Link href="/profile">{t("hub.menu.profile", "Profile")}</Link>,
+				key: "profile",
+			},
+			{
 				label: (
-					<Link href="/profile">
-						{t("hub.menu.userSettings", "User Settings")}
+					<Link href="/profile/settings/general">
+						{t("hub.menu.settings", "Settings")}
 					</Link>
 				),
-				key: "profile",
+				key: "profile-settings",
 			},
 			{ type: "divider" },
 			{
@@ -472,7 +476,11 @@ export const ProtectedLayout = ({
 		},
 		{
 			key: "/profile/settings/general",
-			label: <Link href="/profile">{t("hub.menu.settings", "Settings")}</Link>,
+			label: (
+				<Link href="/profile/settings/general">
+					{t("hub.menu.settings", "Settings")}
+				</Link>
+			),
 		},
 	];
 

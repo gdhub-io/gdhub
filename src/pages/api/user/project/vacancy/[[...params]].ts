@@ -97,7 +97,12 @@ class ApiUserTeamVacancyHandler {
 								coverImage: true,
 								videoLink: true,
 								workflow: {
-									select: { steps: { select: { id: true, name: true } } },
+									select: {
+										currentStepId: true,
+										steps: {
+											select: { id: true, name: true },
+										},
+									},
 								},
 							},
 						},
@@ -237,7 +242,19 @@ class ApiUserTeamVacancyHandler {
 			where: { id: vacancyId },
 			include: {
 				team: {
-					select: { project: { include: { author: true, equity: true } } },
+					select: {
+						project: {
+							include: {
+								author: true,
+								equity: true,
+								workflow: {
+									select: {
+										currentStepId: true,
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		});
@@ -254,6 +271,8 @@ class ApiUserTeamVacancyHandler {
 		const candidate = await prisma.teamMember.create({
 			data: {
 				userId: req.user.id,
+				startedAt: dayjs().toISOString(),
+				enteredProjectStepId: vacancy.team.project?.workflow?.currentStepId,
 				vacancyId,
 				teamId: vacancy.teamId,
 				position: vacancy.title,
@@ -320,11 +339,32 @@ class ApiUserTeamVacancyHandler {
 	@Put("/candidate/hire")
 	public async hireCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
 		const { t } = tolgeeService;
+
+		const vacancy = await prisma.teamVacancy.findUnique({
+			where: { id },
+			include: {
+				team: {
+					select: {
+						project: {
+							include: {
+								workflow: {
+									select: {
+										currentStepId: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+
 		const member = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
 			data: {
 				status: prismaClient.TeamMemberStatus.Hired,
 				startedAt: dayjs().toISOString(),
+				enteredProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
 			},
 			select: { id: true, user: true, team: true, vacancy: true },
 		});
@@ -396,11 +436,32 @@ class ApiUserTeamVacancyHandler {
 	@Put("/candidate/fire")
 	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
 		const { t } = tolgeeService;
+
+		const vacancy = await prisma.teamVacancy.findUnique({
+			where: { id },
+			include: {
+				team: {
+					select: {
+						project: {
+							include: {
+								workflow: {
+									select: {
+										currentStepId: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+
 		const firedMember = await prisma.teamMember.update({
 			where: { id, status: prismaClient.TeamMemberStatus.Hired },
 			data: {
 				status: prismaClient.TeamMemberStatus.Fired,
 				finishedAt: dayjs().toISOString(),
+				leftProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
 			},
 			select: { user: true, team: true },
 		});
