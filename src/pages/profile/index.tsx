@@ -102,6 +102,8 @@ const ProfilePage: NextPageWithLayout = () => {
 	const tgNickname = profile?.tgNickname
 		? profile.tgNickname.replace("@", "")
 		: null;
+	const roles = session?.user?.roles || [];
+	const primaryInterest = profile?.primaryInterest;
 
 	return (
 		<ProtectedLayout
@@ -129,6 +131,12 @@ const ProfilePage: NextPageWithLayout = () => {
 									{profile?.name || session?.user?.name}
 								</Title>
 								<Text type="secondary">{session?.user?.email}</Text>
+								<Space size={6} wrap style={{ marginTop: 8 }}>
+									{primaryInterest ? <Tag>{primaryInterest}</Tag> : null}
+									{roles.map((role) => (
+										<Tag key={role}>{role}</Tag>
+									))}
+								</Space>
 							</div>
 						</Space>
 						<Descriptions
@@ -183,81 +191,94 @@ const ProfilePage: NextPageWithLayout = () => {
 							)}
 						</Text>
 						<Row gutter={[24, 24]} style={{ marginTop: 16 }}>
-							<Col xs={24} sm={12} md={6}>
-								<Statistic
-									title={
-										<Space size={6}>
-											{t("profile.page.skillCapital.sc", "SC")}
-											<Tooltip
-												title={t(
-													"profile.page.skillCapital.help.sc",
-													"Total Skill Capital from your project participation.",
-												)}
-											>
-												<QuestionCircleOutlined />
-											</Tooltip>
-										</Space>
-									}
-									value={skillCapital?.sc ?? 0}
-								/>
+							<Col xs={24} md={8}>
+								<Card
+									bordered={false}
+									style={{
+										background:
+											"linear-gradient(135deg, #f0f5ff 0%, #ffffff 100%)",
+									}}
+								>
+									<Statistic
+										title={
+											<Space size={6}>
+												{t("profile.page.skillCapital.sc", "SC")}
+												<Tooltip
+													title={t(
+														"profile.page.skillCapital.help.sc",
+														"Total Skill Capital from your project participation.",
+													)}
+												>
+													<QuestionCircleOutlined />
+												</Tooltip>
+											</Space>
+										}
+										value={skillCapital?.sc ?? 0}
+										valueStyle={{ fontSize: 32 }}
+									/>
+								</Card>
 							</Col>
-							<Col xs={24} sm={12} md={6}>
-								<Statistic
-									title={
-										<Space size={6}>
-											{t("profile.page.skillCapital.pcs", "PCS")}
-											<Tooltip
-												title={t(
-													"profile.page.skillCapital.help.pcs",
-													"Project Commitment Score based on time, entry stage, and project outcome.",
-												)}
-											>
-												<QuestionCircleOutlined />
-											</Tooltip>
-										</Space>
-									}
-									value={skillCapital?.pcsTotal ?? 0}
-								/>
-							</Col>
-							<Col xs={24} sm={12} md={6}>
-								<Statistic
-									title={
-										<Space size={6}>
-											{t("profile.page.skillCapital.ri", "RI")}
-											<Tooltip
-												title={t(
-													"profile.page.skillCapital.help.ri",
-													"Retention index: released projects vs started projects.",
-												)}
-											>
-												<QuestionCircleOutlined />
-											</Tooltip>
-										</Space>
-									}
-									value={skillCapital?.ri ?? 0}
-								/>
-							</Col>
-							<Col xs={24} sm={12} md={6}>
-								<Statistic
-									title={
-										<Space size={6}>
-											{t("profile.page.skillCapital.sds", "SDS")}
-											<Tooltip
-												title={t(
-													"profile.page.skillCapital.help.sds",
-													"Stage depth: how many project stages you touched.",
-												)}
-											>
-												<QuestionCircleOutlined />
-											</Tooltip>
-										</Space>
-									}
-									value={
-										skillCapital
-											? `${skillCapital.sds.value}/${skillCapital.sds.total}`
-											: "0/0"
-									}
-								/>
+							<Col xs={24} md={16}>
+								<Row gutter={[16, 16]}>
+									<Col xs={24} sm={12} md={12}>
+										<Statistic
+											title={
+												<Space size={6}>
+													{t("profile.page.skillCapital.pcs", "PCS")}
+													<Tooltip
+														title={t(
+															"profile.page.skillCapital.help.pcs",
+															"Project Commitment Score based on time, entry stage, and project outcome.",
+														)}
+													>
+														<QuestionCircleOutlined />
+													</Tooltip>
+												</Space>
+											}
+											value={skillCapital?.pcsTotal ?? 0}
+										/>
+									</Col>
+									<Col xs={24} sm={12} md={12}>
+										<Statistic
+											title={
+												<Space size={6}>
+													{t("profile.page.skillCapital.ri", "RI")}
+													<Tooltip
+														title={t(
+															"profile.page.skillCapital.help.ri",
+															"Retention index: released projects vs started projects.",
+														)}
+													>
+														<QuestionCircleOutlined />
+													</Tooltip>
+												</Space>
+											}
+											value={skillCapital?.ri ?? 0}
+										/>
+									</Col>
+									<Col xs={24} sm={12} md={12}>
+										<Statistic
+											title={
+												<Space size={6}>
+													{t("profile.page.skillCapital.sds", "SDS")}
+													<Tooltip
+														title={t(
+															"profile.page.skillCapital.help.sds",
+															"Stage depth: how many project stages you touched.",
+														)}
+													>
+														<QuestionCircleOutlined />
+													</Tooltip>
+												</Space>
+											}
+											value={
+												skillCapital
+													? `${skillCapital.sds.value}/${skillCapital.sds.total}`
+													: "0/0"
+											}
+										/>
+									</Col>
+								</Row>
 							</Col>
 						</Row>
 					</Card>
@@ -274,6 +295,7 @@ const ProfilePage: NextPageWithLayout = () => {
 									)}
 								</Title>
 								<List
+									grid={{ gutter: 16, xs: 1, sm: 2, md: 2 }}
 									dataSource={skillCapital?.projects.active || []}
 									locale={{
 										emptyText: t(
@@ -283,19 +305,21 @@ const ProfilePage: NextPageWithLayout = () => {
 									}}
 									renderItem={(project) => (
 										<List.Item>
-											<Flex justify="space-between" style={{ width: "100%" }}>
-												<Space direction="vertical" size={2}>
-													<Text strong>{project.name}</Text>
-													{project.currentStepName && (
-														<Text type="secondary">
-															{project.currentStepName}
-														</Text>
-													)}
-												</Space>
-												<Tag color={statusColorMap[project.status]}>
-													{project.status}
-												</Tag>
-											</Flex>
+											<Card size="small">
+												<Flex justify="space-between" align="center">
+													<Space direction="vertical" size={2}>
+														<Text strong>{project.name}</Text>
+														{project.currentStepName && (
+															<Text type="secondary">
+																{project.currentStepName}
+															</Text>
+														)}
+													</Space>
+													<Tag color={statusColorMap[project.status]}>
+														{project.status}
+													</Tag>
+												</Flex>
+											</Card>
 										</List.Item>
 									)}
 								/>
