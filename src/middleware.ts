@@ -41,10 +41,7 @@ export default withAuth(
 		}
 
 		// redirects
-		if (
-			req.nextUrl.pathname === "/profile" ||
-			req.nextUrl.pathname === "/profile/settings"
-		) {
+		if (req.nextUrl.pathname === "/profile/settings") {
 			return NextResponse.redirect(
 				new URL("/profile/settings/general", req.url),
 			);
