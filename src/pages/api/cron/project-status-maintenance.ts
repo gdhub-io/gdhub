@@ -299,7 +299,7 @@ class CronProjectStatusMaintenanceHandler {
 			}
 
 			if (project.status === prismaClient.ProjectStatus.Dormant) {
-				const dormantSince = project.dormantAt ?? project.statusChangedAt;
+				const dormantSince = project.dormantAt;
 				if (!dormantSince) continue;
 
 				const archiveAt = dayjs(dormantSince)
