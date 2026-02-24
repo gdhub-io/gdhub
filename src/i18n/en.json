@@ -1041,15 +1041,18 @@
 			"skillCapital": {
 				"activeProjects": "Active Projects",
 				"help": {
-					"pcs": "Project Commitment Score based on time, entry stage, and project outcome.",
-					"ri": "Retention index: released projects vs started projects.",
-					"sc": "Total Skill Capital from your project participation.",
-					"sds": "Stage depth: how many project stages you touched."
+					"ec": "Execution Capital from your work as a team member.",
+					"lc": "Leadership Capital from projects where you are the author.",
+					"mc": "Mentorship Capital from completed advisory sessions.",
+					"sc": "Total of Leadership, Execution, and Mentorship capital."
 				},
 				"history": "Project History",
 				"history.empty": "No project history",
 				"note": "Metrics are calculated from your project activity and will evolve.",
-				"pcs": "PCS"
+				"ec": "Execution",
+				"lc": "Leadership",
+				"mc": "Mentorship",
+				"sc": "Skill Capital"
 			},
 			"specialities": {
 				"title": "Specialities"

@@ -1,445 +1,203 @@
-# Skill Capital (MVP) — логика и формулы для GDHub.io
+# Skill Capital v1 — 3 трека + Total
 
-> Документ описывает минимальную (MVP) версию Skill Capital: метрики, формулы, статусы проектов, правила начисления/заморозки, и ожидаемое поведение системы.
+> Цель: зафиксировать единую модель Skill Capital для ролей в экосистеме: автор, участник команды (core), эдвайзор, инвестор (зарезервировано).
 
-## 0. Цели MVP
+## 1. Роли и принципы
 
-1. **Сделать вклад видимым** (не «оценка скилла», а фиксация участия).
-2. **Создать мотивацию доводить до конца** (ценность завершения и ответственности).
-3. **Убрать фарм на мёртвых проектах** (начисление только по активным проектам + авто-статусы).
-4. Дать основу для будущих механизмов: доверие (peer review), доли, инвестиции, рейтинги.
+### Роли
+- Автор (`author`): инициирует и ведет проект, отвечает за стратегию и исход.
+- Участник команды (`core`): выполняет продуктовую/техническую работу в проекте.
+- Эдвайзор (`advisor`): консультирует по запросам, вклад измеряется в сессиях.
+- Инвестор (`investor`): роль зарезервирована для будущих версий модели.
 
-MVP **не требует** интеграций с таск‑трекерами и анализа задач. Источник истины — **факт участия в проекте + состояние проекта**.
+### Главные принципы
+- Вклад каждой роли считается отдельно.
+- Роли не смешиваются в одной метрике.
+- Система поощряет завершение, а не «вечную активность».
+- Должны быть антифрод-ограничения.
 
----
+## 2. Структура Skill Capital
 
-## 1. Термины и сущности
-
-### 1.1 Сущности
-
-* **User|Speciality** — участник платформы.
-* **Team|Project|ProjectWorkflow** — проект/игра.
-* **TeamMember** — факт участия пользователя в проекте.
-
-  * `startedAt` — дата входа
-  * `finishedAt` — дата выхода (опционально)
-  * `position` — роль (опционально, не влияет на MVP)
-  * `startedProjectStep` — стадия проекта на момент входа (фиксируется)
-  * `finishedProjectStep` - стадия проекта на момент выхода (фиксируется)
-* **ProjectActivity** — события активности (минимально):
-
-  * `lastActivityAt` — дата последней активности (вычисляемое поле)
-  * источники активности в MVP: чек‑ин лидера / смена стадии / update пост.
-
-### 1.2 Стадии проекта (Stage)
-
-Рекомендуемый минимальный набор:
-
-1. Introduction (приветствие автора проекта, не является частью разработки)
-2. Ideation (IDEATION)
-3. Concepting (IDEATION)
-4. Prototyping (PROTOTYPE)
-5. Preparing a demo version (DEMO / VERTICAL SLICE)
-6. Taking and analyzing metrics (METRICS)
-7. Preparing a release version (RELEASE)
-8. Support
-9. Project Completion
-
-Стадия проекта **меняется**, но для TeamMember фиксируется также `enteredProjectStep`.
-
-### 1.3 Статусы проекта (Project Status)
-
-* `Registered` - проект создан, но еще не одборен для старта. начисления не идут.
-* `Rejected` - проект отклонен платформой, начисления не идут.
-* `Approved` — проект жив, начисления идут.
-* `Dormant` — проект спит, начисления заморожены.
-* `Archived` — проект закрыт/умер (начисления не идут, применяется понижающий коэффициент итогов).
-* `Released` — проект завершён релизом.
-* `KilledWithDignity` — «закрыт достойно» (осознанное закрытие с выводами/артефактами).
-
----
-
-## 2. Главные метрики MVP
-
-В MVP используются 3–5 метрик. Минимально обязательные — **PCS**, **RI**, **SDS**, и агрегат **SC**.
-
-### 2.1 PCS — Project Commitment Score (вклад по времени с коэффициентами)
-
-PCS считается **на уровне участия** (`TeamMember`).
-
-#### 2.1.1 Базовая формула
-
-```
-PCS(p) = ActiveDays(p) × EntryStageCoef(p) × OutcomeCoef(ProjectStatus)
+```text
+SC_total = LC_total + EC_total + MC_total
+SC_total_future = LC_total + EC_total + MC_total + IC_total
 ```
 
 Где:
+- `LC_total` — Leadership Capital (автор).
+- `EC_total` — Execution Capital (core).
+- `MC_total` — Mentorship Capital (эдвайзор).
+- `IC_total` — Investor Capital (зарезервировано, не участвует в v1).
 
-* `ActiveDays(p)` — число дней участия
-* `EntryStageCoef(p)` — коэффициент за ранний вход
-* `OutcomeCoef(status)` — коэффициент исхода проекта
+Правило v1:
+- `IC_total` хранится как архитектурный placeholder.
+- `SC_total` в расчетах и UI v1 не включает `IC_total`.
 
-#### 2.1.2 ActiveDays(p)
+## 3. Leadership Capital (LC)
 
-**Важное правило:** дни считаются **только в статусе APPROVED**.
+Считается только по проектам, где пользователь является автором.
 
-Определение:
-
-* Пусть `startedAt` — начало участия.
-* Пусть `finishedAt` — конец участия, если нет — берём `now`.
-* Пусть `ActiveIntervals` — пересечение интервала участия с интервалами, когда проект имел статус `APPROVED`.
-
-Тогда:
-
-```
-ActiveDays(p) = Sum( durationInDays(interval) ) over ActiveIntervals
-```
-
-MVP‑упрощение (если не храним историю статусов):
-
-* Если проект сейчас `APPROVED` → `ActiveDays = daysBetween(startedAt, finishedAtOrNow)`
-* Если проект сейчас `DORMANT/ARCHIVED/...` → `ActiveDays = daysBetween(startedAt, min(finishedAtOrNow, dormantAt))`
-
-Рекомендуется хранить `statusChangedAt` (дата последней смены статуса) и `dormantAt` при переходе в DORMANT.
-
-#### 2.1.3 EntryStageCoef
-
-Коэффициент раннего входа стимулирует приходить раньше:
-
-| enteredStage   | coef |
-| -------------- | ---: |
-| IDEATION       |  1.5 |
-| PROTOTYPE      |  1.2 |
-| VERTICAL_SLICE |  1.1 |
-| MVP            |  1.0 |
-| RELEASE        |  0.8 |
-
-#### 2.1.4 OutcomeCoef (коэффициент исхода)
-
-| projectStatus (итоговый)                 | coef |
-| ---------------------------------------- | ---: |
-| RELEASED                                 |  1.3 |
-| KILLED_WITH_DIGNITY                      |  1.0 |
-| ARCHIVED                                 |  0.6 |
-| DORMANT (если считать на текущий момент) |  0.8 |
-| ACTIVE                                   |  1.0 |
-
-Смысл:
-
-* релиз усиливает итог,
-* «закрыт достойно» не штрафуем,
-* «умер сам» — штрафуем,
-* Dormant — промежуточное состояние (можно не применять, если PCS считаем только по активным дням).
-
----
-
-### 2.2 RI — Retention Index (устойчивость)
-
-RI измеряет склонность доводить проекты до завершения.
-
-Базовая формула:
-
-```
-RI(u) = Completed(u) / Started(u)
+```text
+LC(project) = ActiveDays
+              * EntryStageCoef
+              * LeadershipRoleCoef
+              * OutcomeCoef
 ```
 
-Где:
+Константы:
+- `LeadershipRoleCoef = 1.3`
 
-* `Started(u)` — количество проектов, где у пользователя есть TeamMember.
-* `Completed(u)` — количество проектов со статусом `RELEASED`.
+`OutcomeCoef`:
+- `RELEASED = 1.5`
+- `KILLED_WITH_DIGNITY = 1.1`
+- `ARCHIVED = 0.6`
+- `DORMANT = 0.8`
+- `ACTIVE/APPROVED = 1.0`
 
-#### 2.2.1 Важное правило: «Закрыл честно — не штрафуем»
-
-Чтобы не наказывать за осознанное закрытие:
-
-* Проекты со статусом `KilledWithDignity` **не ухудшают RI**.
-
-Практически:
-
-Вариант A (рекомендуемый): исключить их из знаменателя.
-
-```
-RI(u) = Completed(u) / (Started(u) - KilledWithDignity(u))
+Бонус завершения:
+```text
+RI_author = Released_as_author / (Started_as_author - KilledWithDignity_as_author)
+LeadershipFinishBonus = RI_author * 100
+LC_total = Σ LC(project) + LeadershipFinishBonus
 ```
 
-Вариант B: считать как “нейтральные завершения” (в отдельной метрике), но в RI — только релизы.
+## 4. Execution Capital (EC)
 
-> MVP: используем Вариант A.
+Считается по проектам, где пользователь является участником команды (не автор).
 
-Также:
-
-* `ARCHIVED` **входит** в Started и ухудшает RI (это «умер сам»).
-
----
-
-### 2.3 SDS — Stage Depth Score (глубина стадий)
-
-Показывает, через сколько стадий разработки пользователь реально проходил.
-
-Определение:
-
-```
-SDS(u) = countDistinct( stageTouched )
+```text
+EC(project) = ActiveDays
+              * EntryStageCoef
+              * CoreRoleCoef
+              * OutcomeCoef
 ```
 
-Где `stageTouched` — стадии проектов, в которых пользователь участвовал.
+Константы:
+- `CoreRoleCoef = 1.0`
+- `OutcomeCoef` — такой же, как в LC.
 
-MVP‑вариант:
+Бонус глубины:
+```text
+StageDepthScore = distinctStagesTouched / MaxStages
+StageDepthBonus = StageDepthScore * 50
+EC_total = Σ EC(project) + StageDepthBonus
+```
 
-* брать `startedProjectStep` каждого участия и/или текущую стадию проекта.
+## 5. Mentorship Capital (MC)
 
-Рекомендуемый вариант:
+Считается по проектам, где пользователь является эдвайзором.
 
-* фиксировать `maxProjectStepDuringTeamMember` (максимальная стадия проекта за период участия) — можно вычислять при смене стадии.
-
-UI‑представление:
-
-* `4/5` (из 5 стадий)
-
----
-
-### 2.4 (Опционально) Trust Score (TTV)
-
-Если нужно 4–5 метрик, добавляется peer review.
-
-После завершения стадии или релиза участники ставят 1–5 по критериям:
-
-* reliability / ответственность
-* teamwork / коммуникация
-* quality / профессионализм
+Базовая единица:
+- `1 accepted+completed request = 1 session = 30 минут = 0.5 часа`
+- `4 часа = 1 эквивалентный активный день`
+- Значит `1 session = 0.125 days`
 
 Формула:
-
-```
-Trust(u) = average(allVotesReceived)
-```
-
-MVP‑правило защиты:
-
-* голосовать могут только участники с `ActiveDays >= N` (например 7 дней)
-* учитываются только голоса в проектах, где голосующий тоже участвовал
-
----
-
-### 2.5 SC — Skill Capital Total (агрегат)
-
-SC — итоговая цифра, отображаемая в профиле.
-
-MVP‑формула (без Trust):
-
-```
-SC(u) = round( PCS_total(u) + RI(u) × 100 )
-
-PCS_total(u) = Σ PCS(p) for all TeamMembers p of user u
+```text
+AdvisorDaysEquivalent = AcceptedCompletedSessions * 0.125
+MC(project) = AdvisorDaysEquivalent
+              * AdvisorRoleCoef
+              * OutcomeCoef_advisor
 ```
 
-Если добавлен Trust:
+Константы:
+- `AdvisorRoleCoef = 0.5`
+- `OutcomeCoef_advisor = 1.2`, если проект `RELEASED`
+- `OutcomeCoef_advisor = 1.0` для остальных статусов
 
-```
-SC(u) = round( PCS_total(u) + RI(u) × 100 + Trust(u) × 50 )
-```
-
-Коэффициенты (100, 50) — параметры конфигурации.
-
----
-
-## 3. Правила «мёртвых проектов» и активности
-
-Проблема: множество проектов создаются, пробуются и забрасываются. Нужно убрать «вечные мёртвые проекты».
-
-### 3.1 Project Activity State (PAS)
-
-Проект автоматически меняет статус по тайм‑аутам активности.
-
-#### 3.1.1 События, которые считаются активностью (MVP)
-
-Любое из:
-
-* `ProjectUpdate` (пост/обновление)
-* `StageChanged`
-* `LeaderCheckIn` (кнопка «мы живы»)
-
-При событии:
-
-* `project.lastActivityAt = now`
-
-#### 3.1.2 Автопереход в Dormant
-
-Порог: `DORMANT_AFTER_DAYS` (например 90).
-
-Если:
-
-```
-now - lastActivityAt >= DORMANT_AFTER_DAYS
+Итог:
+```text
+MC_total = Σ MC(project)
 ```
 
-то:
+## 6. Единые определения для расчетов
 
-* `project.status = DORMANT`
-* `project.dormantAt = now` (фиксируем)
-* начисления PCS **останавливаются** (ActiveDays не растёт).
+### ActiveDays
+- Считаются только периоды, когда проект был в активном статусе (`APPROVED/ACTIVE`).
+- В `DORMANT`, `ARCHIVED`, `REJECTED`, `REGISTERED` новые дни не начисляются.
 
-#### 3.1.3 «Требует решения» (soft gate)
+### EntryStageCoef
+Рекомендуемая шкала v1:
+- `IDEATION = 1.5`
+- `PROTOTYPE = 1.2`
+- `VERTICAL_SLICE/DEMO = 1.1`
+- `MVP = 1.0`
+- `RELEASE = 0.8`
 
-После перехода в DORMANT запускается окно принятия решения:
+## 7. Антифрод и ограничения
 
-* `DECISION_WINDOW_DAYS` (например 14)
+Для эдвайзоров учитывать только:
+- запросы со статусом `Accepted` и `Completed`;
+- с подтверждением от автора (минимум 1 подтверждение);
+- не более `4` сессий в неделю на одного эдвайзора в рамках одного проекта (cap v1).
 
-Команда/лидер должны выбрать:
+Для всех ролей:
+- исключать дубликаты событий;
+- не считать активность в отклоненных/незапущенных проектах.
 
-1. Continue (вернуть APPROVED + обновить план/стадию)
-2. Kill with dignity
-3. Archive
+## 8. Отображение в UI
 
-Если решение не принято в окно в течение 14 дней:
+Показывать 4 значения:
+- `Leadership Capital`
+- `Execution Capital`
+- `Mentorship Capital`
+- `Total Skill Capital`
 
-* `project.status = ARCHIVED`
+Не показывать в v1:
+- `Investor Capital` (роль и формулы зарезервированы для следующих версий).
 
-> MVP: достаточно 1) Continue, 2) Kill with dignity, 3) Archive.
+Пример блока:
 
----
-
-## 4. Исходы проекта и влияние на метрики
-
-### 4.1 RELEASED
-
-* OutcomeCoef = 1.3
-* RI улучшается (Completed +1)
-
-### 4.2 KILLED_WITH_DIGNITY
-
-* OutcomeCoef = 1.0
-* RI **не ухудшается** (исключается из знаменателя или нейтрально)
-* Требования «достойного закрытия» (минимум):
-
-  * короткое summary (что пытались сделать)
-  * список причин закрытия
-  * ссылки на артефакты (репо/билд/скриншоты/концепт)
-
-### 4.3 ARCHIVED
-
-* OutcomeCoef = 0.6
-* RI ухудшается (Started увеличился, Completed нет)
-
-### 4.4 DORMANT
-
-* начисления PCS остановлены
-* проект не считается завершённым
-
----
-
-## 5. UI/UX ожидания (чтобы логика работала)
-
-### 5.1 Профиль пользователя должен показывать
-
-* `Skill Capital (SC)` — главная цифра
-* `PCS_total` и/или `Project Commitment`
-* `RI`
-* `SDS (Stage Depth)`
-* (опционально) `Trust`
-* список `Active Projects` (учитывать что чаще их может не быть или быть от 1 до 2-3)
-* `Project History` с тегами статусов
-
-### 5.2 Проект должен показывать
-
-* текущий статус (APPROVED/DORMANT/...)
-* «последняя активность» и таймер до Dormant
-* кнопку `Leader check-in`
-* если DORMANT: экран «выберите судьбу проекта»
-
----
-
-## 6. Параметры конфигурации (для быстрого тюнинга)
-
-Рекомендуется вынести в конфиг:
-
-* `DORMANT_AFTER_DAYS` (например 60)
-* `DECISION_WINDOW_DAYS` (например 14)
-* `ENTRY_STAGE_COEFS` (таблица)
-* `OUTCOME_COEFS` (таблица)
-* `SC_RI_WEIGHT` (например 100)
-* `SC_TRUST_WEIGHT` (например 50)
-* `MIN_DAYS_TO_VOTE` (например 7)
-
----
-
-## 7. Минимальные данные, которые нужно хранить (MVP)
-
-### User (есть в БД и prisma schema)
-
-* id, имя, аватар
-
-### Project (есть в БД и prisma schema)
-
-* id, title
-* `status`
-* `currentProjectStep`
-* `createdAt`
-* `lastActivityAt`
-* `dormantAt` (nullable)
-
-### TeamMember (есть в БД и prisma schema)
-
-* userId, tamId - > projectId
-* `joinedAt`, `leftAt` (nullable)
-* `startedProjectStep`
-
-(Опционально для точности):
-
-* `statusHistory` (список смен статуса) или хотя бы `dormantAt`
-
----
-
-## 8. Примеры расчёта
-
-### Пример 1: ранний вход + релиз
-
-* enteredStage = IDEATION (1.5)
-* ActiveDays = 40
-* status = RELEASED (1.3)
-
-```
-PCS = 40 × 1.5 × 1.3 = 78
+```text
+Leadership Capital    420
+Execution Capital     310
+Mentorship Capital     88
+---------------------------
+Total Skill Capital   818
 ```
 
-### Пример 2: проект умер сам
+Важно:
+- не сравнивать напрямую абсолютные значения `LC` и `MC` как «кто лучше»;
+- в следующих версиях добавить percentile/rank внутри роли.
 
-* enteredStage = PROTOTYPE (1.2)
-* ActiveDays = 20 (после Dormant не растёт)
-* status = ARCHIVED (0.6)
+## 9. Что нужно сделать в разработке (Scope v1)
 
-```
-PCS = 20 × 1.2 × 0.6 = 14.4
-```
+1. Зафиксировать роли в расчете: `author`, `core`, `advisor`.
+2. Подготовить источники данных:
+- активные дни участия;
+- стадия входа в проект;
+- итоговый статус проекта;
+- число `accepted+completed` advisory-запросов.
+3. Реализовать вычислитель `LC`, включая `RI_author` и `LeadershipFinishBonus`.
+4. Реализовать вычислитель `EC`, включая `StageDepthBonus`.
+5. Реализовать вычислитель `MC` с переводом сессий в эквивалент дней.
+6. Добавить антифрод-правила для advisory-сессий (confirmation + weekly cap).
+7. Заложить в модель зарезервированный трек `investor` без активной формулы:
+- подготовить типы/DTO/контракты для `IC_total`;
+- в v1 возвращать `IC_total = 0` или `null` (единое решение в API).
+8. Собрать агрегатор:
+- `LC_total`, `EC_total`, `MC_total`, `SC_total`.
+9. Обновить API профиля/рейтинга, чтобы отдавать все 4 значения + breakdown.
+10. Обновить UI профиля: три шкалы + total (без Investor Capital).
+11. Добавить тесты:
+- unit на формулы;
+- edge-cases (нулевые знаменатели в RI, dormant/archived);
+- cap по сессиям эдвайзора.
 
-### Пример 3: RI с “killed with dignity”
+## 10. Investor Capital (Reserved, vNext)
 
-* Started = 5
-* Released = 2
-* KilledWithDignity = 1
+Статус:
+- формула и коэффициенты не утверждены;
+- в v1 не отображается и не влияет на `SC_total`.
 
-```
-RI = 2 / (5 - 1) = 0.5
-```
+Техническое правило на сейчас:
+- сохранить расширяемость контрактов (`IC_total` в доменной модели/DTO);
+- не включать `IC_total` в ранжирование и публичные метрики v1.
 
----
+## 11. Open Questions перед реализацией
 
-## 9. Что сознательно НЕ входит в MVP
-
-* Автоматический анализ задач и подтверждение «что именно делал человек»
-* Привязка к оплатам/долям
-* Сложные анти‑фрод механики
-* Сравнение ролей (artist vs programmer) по разным весам
-
-Эти элементы добавляются позже поверх устойчивой базы: участие + статус проекта + прозрачные коэффициенты.
-
----
-
-## 10. Критерии успеха MVP
-
-MVP считается успешным, если через 1–2 месяца:
-
-* увеличилась доля проектов, которые получают осознанный исход (Released/KilledWithDignity)
-* уменьшилось число «вечных» заброшенных проектов
-* выросла регулярность активности (check‑ins / updates)
-* участники начали использовать Skill Capital как «социальный капитал» (в заявках, при вступлении в команды)
+1. Какие точные статусы проекта являются «активными» в коде (`APPROVED` vs `ACTIVE`)?
+2. Нужно ли исключать автора из `EC` на его собственном проекте (рекомендуется: да)?
+3. Где хранится подтверждение advisory-сессии автором и есть ли миграция?
+4. Нужна ли версия `SC_v1` в БД/API для последующей смены формул без поломки истории?
+5. Для `IC_total` в API v1 лучше `0` или `null`?
