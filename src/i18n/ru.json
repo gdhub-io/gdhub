@@ -1042,15 +1042,18 @@
 			"skillCapital": {
 				"activeProjects": "Активные проекты",
 				"help": {
-					"pcs": "Оценка вовлечённости на основе времени и этапах участия в проектах",
-					"ri": "Индекс удержания: релизнутые проекты к начатым",
-					"sc": "Итоговый Skill Capital на основе вашего участия в проектах",
-					"sds": "Глубина стадий: сколько этапов проекта вы прошли"
+					"ec": "Execution Capital за ваш вклад как участника команды.",
+					"lc": "Leadership Capital по проектам, где вы автор.",
+					"mc": "Mentorship Capital по завершенным консультационным сессиям.",
+					"sc": "Сумма Leadership, Execution и Mentorship Capital."
 				},
 				"history": "История проектов",
 				"history.empty": "Нет истории проектов",
 				"note": "Метрики рассчитываются на основе вашей активности в проектах.",
-				"pcs": "PCS"
+				"ec": "Execution",
+				"lc": "Leadership",
+				"mc": "Mentorship",
+				"sc": "Skill Capital"
 			},
 			"specialities": {
 				"title": "Специальности"
