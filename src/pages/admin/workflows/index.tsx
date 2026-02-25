@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { CreateWorkflowModal } from "@/components/admin/CreateWorkflowModal";
 import ModernTable from "@/components/ModernTable";
-import { ProtectedLayout } from "@/layouts/ProtectedLayout";
+import { AdminLayout } from "@/layouts/AdminLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 import styles from "./style.module.scss";
 
@@ -296,10 +296,6 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 	);
 };
 
-WorkflowsAdminPage.getLayout = (page) => (
-	<ProtectedLayout access={[prismaClient.UserRole.Admin]}>
-		{page}
-	</ProtectedLayout>
-);
+WorkflowsAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
 
 export default WorkflowsAdminPage;

@@ -1,7 +1,6 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ProtectedLayout } from "@/layouts/ProtectedLayout";
+import { AdminLayout } from "@/layouts/AdminLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const BlogPostEditor = dynamic(
@@ -18,10 +17,6 @@ const BlogPostEditorAdminPage: NextPageWithLayout = () => {
 	return <BlogPostEditor id={postId} />;
 };
 
-BlogPostEditorAdminPage.getLayout = (page) => (
-	<ProtectedLayout access={[prismaClient.UserRole.Admin]}>
-		{page}
-	</ProtectedLayout>
-);
+BlogPostEditorAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
 
 export default BlogPostEditorAdminPage;

@@ -93,6 +93,8 @@ interface ProtectedLayoutProps {
 	projectName?: string;
 	extra?: ReactNode;
 	access?: prismaClient.UserRole[];
+	topMenuItems?: MenuProps["items"];
+	topMenuSelectedKeys?: string[];
 }
 
 const { Header, Content } = Layout;
@@ -107,6 +109,8 @@ export const ProtectedLayout = ({
 	backButtonUrl,
 	extra,
 	access = [],
+	topMenuItems,
+	topMenuSelectedKeys,
 }: ProtectedLayoutProps) => {
 	const router = useRouter();
 	const { t, getLanguage, changeLanguage } = useTolgee();
@@ -375,11 +379,11 @@ export const ProtectedLayout = ({
 		if (isAdmin) {
 			menu.push({
 				label: (
-					<Link href="/admin/posts">
+					<Link href="/admin/users">
 						{t("hub.menu.administration", "Administration")}
 					</Link>
 				),
-				key: "/admin/posts",
+				key: "/admin/users",
 			});
 		}
 
@@ -483,6 +487,9 @@ export const ProtectedLayout = ({
 			),
 		},
 	];
+
+	const resolvedTopMenuItems = topMenuItems || menuItems;
+	const resolvedTopMenuSelectedKeys = topMenuSelectedKeys || [router.pathname];
 
 	return (
 		<>
@@ -590,9 +597,9 @@ export const ProtectedLayout = ({
 							</Col>
 						</Row>
 						<Menu
-							items={menuItems}
+							items={resolvedTopMenuItems}
 							mode="horizontal"
-							selectedKeys={[router.pathname]}
+							selectedKeys={resolvedTopMenuSelectedKeys}
 							className={styles.appMenu}
 						/>
 					</Header>

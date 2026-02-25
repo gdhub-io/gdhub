@@ -351,6 +351,10 @@ export const appThemeConfig: ThemeConfig = {
 		Table: {
 			headerBg: "transparent",
 			headerColor: "rgba(5, 5, 5, 0.85)",
+			headerSortActiveBg: "rgba(241, 85, 65, 0.10)",
+			headerSortHoverBg: "rgba(241, 85, 65, 0.14)",
+			bodySortBg: "rgba(241, 85, 65, 0.04)",
+			fixedHeaderSortActiveBg: "rgba(241, 85, 65, 0.10)",
 			headerSplitColor: "transparent",
 			borderColor: "rgba(5, 5, 5, 0.12)",
 			headerBorderRadius: 8,
