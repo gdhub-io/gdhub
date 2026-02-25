@@ -7,7 +7,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
-import { ProtectedLayout } from "@/layouts/ProtectedLayout";
+import { AdminLayout } from "@/layouts/AdminLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 import styles from "./style.module.scss";
 
@@ -227,10 +227,6 @@ const UsersAdminPage: NextPageWithLayout = () => {
 	);
 };
 
-UsersAdminPage.getLayout = (page) => (
-	<ProtectedLayout access={[prismaClient.UserRole.Admin]}>
-		{page}
-	</ProtectedLayout>
-);
+UsersAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
 
 export default UsersAdminPage;

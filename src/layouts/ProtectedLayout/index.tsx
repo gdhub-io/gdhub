@@ -93,6 +93,8 @@ interface ProtectedLayoutProps {
 	projectName?: string;
 	extra?: ReactNode;
 	access?: prismaClient.UserRole[];
+	topMenuItems?: MenuProps["items"];
+	topMenuSelectedKeys?: string[];
 }
 
 const { Header, Content } = Layout;
@@ -107,6 +109,8 @@ export const ProtectedLayout = ({
 	backButtonUrl,
 	extra,
 	access = [],
+	topMenuItems,
+	topMenuSelectedKeys,
 }: ProtectedLayoutProps) => {
 	const router = useRouter();
 	const { t, getLanguage, changeLanguage } = useTolgee();
@@ -484,6 +488,9 @@ export const ProtectedLayout = ({
 		},
 	];
 
+	const resolvedTopMenuItems = topMenuItems || menuItems;
+	const resolvedTopMenuSelectedKeys = topMenuSelectedKeys || [router.pathname];
+
 	return (
 		<>
 			<NextSeo {...seoSettings} />
@@ -590,9 +597,9 @@ export const ProtectedLayout = ({
 							</Col>
 						</Row>
 						<Menu
-							items={menuItems}
+							items={resolvedTopMenuItems}
 							mode="horizontal"
-							selectedKeys={[router.pathname]}
+							selectedKeys={resolvedTopMenuSelectedKeys}
 							className={styles.appMenu}
 						/>
 					</Header>

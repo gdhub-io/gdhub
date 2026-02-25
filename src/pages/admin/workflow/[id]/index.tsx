@@ -1,7 +1,6 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useRouter } from "next/router";
 import { WorkflowEditor } from "@/components/admin/WorkflowEditor";
-import { ProtectedLayout } from "@/layouts/ProtectedLayout";
+import { AdminLayout } from "@/layouts/AdminLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const WorkflowEditorAdminPage: NextPageWithLayout = () => {
@@ -11,10 +10,6 @@ const WorkflowEditorAdminPage: NextPageWithLayout = () => {
 	return <WorkflowEditor id={workflowId} />;
 };
 
-WorkflowEditorAdminPage.getLayout = (page) => (
-	<ProtectedLayout access={[prismaClient.UserRole.Admin]}>
-		{page}
-	</ProtectedLayout>
-);
+WorkflowEditorAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
 
 export default WorkflowEditorAdminPage;
