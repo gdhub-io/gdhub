@@ -375,11 +375,11 @@ export const ProtectedLayout = ({
 		if (isAdmin) {
 			menu.push({
 				label: (
-					<Link href="/admin/posts">
+					<Link href="/admin/users">
 						{t("hub.menu.administration", "Administration")}
 					</Link>
 				),
-				key: "/admin/posts",
+				key: "/admin/users",
 			});
 		}
 
