@@ -40,6 +40,36 @@ export default async function handler(
 			return res.status(404).json({ message: "Project report not found" });
 		}
 
+		const previousReport = await prisma.projectReport.findFirst({
+			where: {
+				projectId: report.projectId,
+				publishedAt: {
+					lt: report.publishedAt,
+				},
+			},
+			orderBy: {
+				publishedAt: "desc",
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		const nextReport = await prisma.projectReport.findFirst({
+			where: {
+				projectId: report.projectId,
+				publishedAt: {
+					gt: report.publishedAt,
+				},
+			},
+			orderBy: {
+				publishedAt: "asc",
+			},
+			select: {
+				id: true,
+			},
+		});
+
 		// Transform the data to match the expected format in the frontend
 		const post = {
 			id: report.id,
@@ -62,6 +92,16 @@ export default async function handler(
 						coverImage: report.project.coverImage,
 					}
 				: undefined,
+			previousPost: previousReport
+				? {
+						id: previousReport.id,
+					}
+				: null,
+			nextPost: nextReport
+				? {
+						id: nextReport.id,
+					}
+				: null,
 		};
 
 		return res.status(200).json(post);

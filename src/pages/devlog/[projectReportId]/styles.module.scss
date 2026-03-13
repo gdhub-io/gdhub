@@ -20,6 +20,12 @@
   }
 }
 
+.postNavigation {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 .pageHeader {
   :global(.ant-page-header) {
     @media (max-width: 576px) {
