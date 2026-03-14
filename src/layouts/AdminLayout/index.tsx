@@ -16,6 +16,7 @@ const resolveSelectedMenuKey = (pathname: string) => {
 	if (pathname.startsWith("/admin/project-workflow/"))
 		return "/admin/workflows";
 	if (pathname.startsWith("/admin/audit-logs")) return "/admin/audit-logs";
+	if (pathname.startsWith("/admin/devlog-posts")) return "/admin/devlog-posts";
 	if (pathname.startsWith("/admin/posts")) return "/admin/posts";
 	if (pathname.startsWith("/admin/workflows")) return "/admin/workflows";
 	return "/admin/users";
@@ -33,6 +34,10 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
 			{
 				key: "/admin/posts",
 				label: <Link href="/admin/posts">Posts</Link>,
+			},
+			{
+				key: "/admin/devlog-posts",
+				label: <Link href="/admin/devlog-posts">DevLog Posts</Link>,
 			},
 			{
 				key: "/admin/workflows",

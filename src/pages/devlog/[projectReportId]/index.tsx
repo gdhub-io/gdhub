@@ -2,12 +2,14 @@
 
 import {
 	ArrowLeftOutlined,
+	ArrowRightOutlined,
 	ClockCircleOutlined,
 	LockOutlined,
 } from "@ant-design/icons";
 import { useTranslate } from "@tolgee/react";
 import { Image as AntImage, Button, Card, Flex, Space, Typography } from "antd";
 import axios from "axios";
+
 import Blocks from "editorjs-blocks-react-renderer";
 import type { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
@@ -52,6 +54,12 @@ interface Post {
 		coverImage?: string;
 	};
 	pageCover?: string;
+	previousPost?: {
+		id: string;
+	} | null;
+	nextPost?: {
+		id: string;
+	} | null;
 }
 
 interface PageProps {
@@ -421,6 +429,37 @@ export default function ProjectReport({
 						)}
 					</div>
 				</Card>
+				{(post.previousPost || post.nextPost) && (
+					<Flex
+						justify="space-between"
+						align="center"
+						wrap="wrap"
+						gap={12}
+						className={styles.postNavigation}
+					>
+						{post.previousPost ? (
+							<Button
+								type="link"
+								href={`/devlog/${post.previousPost.id}`}
+								icon={<ArrowLeftOutlined />}
+							>
+								{t("page.devlog.previousPost", "Previous post")}
+							</Button>
+						) : (
+							<span />
+						)}
+						{post.nextPost && (
+							<Button
+								type="link"
+								href={`/devlog/${post.nextPost.id}`}
+								iconPosition="end"
+								icon={<ArrowRightOutlined />}
+							>
+								{t("page.devlog.nextPost", "Next post")}
+							</Button>
+						)}
+					</Flex>
+				)}
 			</div>
 		</PublicLayout>
 	);
