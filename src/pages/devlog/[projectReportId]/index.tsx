@@ -1,24 +1,37 @@
 /* eslint-disable @next/next/no-img-element */
 
+import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
 import {
 	ArrowLeftOutlined,
 	ArrowRightOutlined,
 	ClockCircleOutlined,
 	LockOutlined,
 } from "@ant-design/icons";
+import type { OutputBlockData, OutputData } from "@editorjs/editorjs";
 import { useTranslate } from "@tolgee/react";
-import { Image as AntImage, Button, Card, Flex, Space, Typography } from "antd";
+import {
+	Image as AntImage,
+	Button,
+	Card,
+	Divider,
+	Flex,
+	Space,
+	Tooltip,
+	Typography,
+} from "antd";
 import axios from "axios";
 
 import Blocks from "editorjs-blocks-react-renderer";
 import type { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { getSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import { getSession, useSession } from "next-auth/react";
+import type { ComponentProps } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import { PageViews } from "@/components/PageViews";
 import {
 	getCleanTextContent,
@@ -31,16 +44,35 @@ import { PublicLayout } from "@/layouts/PublicLayout";
 import styles from "./styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const { Text, Title } = Typography;
+
+interface EditorJsBlock {
+	type: OutputBlockData["type"];
+	data: OutputBlockData["data"];
+}
+
+interface EditorJsData {
+	time?: OutputData["time"];
+	blocks?: EditorJsBlock[];
+	version?: OutputData["version"];
+}
+
+interface PreparedEditorJsData {
+	time: number;
+	blocks: OutputBlockData[];
+	version: string;
+}
 
 interface Post {
 	id: string;
 	title: string;
 	content: string;
-	contentEditor?: any;
+	contentEditor?: EditorJsData;
 	coverImage?: string;
 	createdAt: string;
+	applauseCount: number;
 	viewsCount: number;
 	video?: string;
 	author: {
@@ -68,11 +100,32 @@ interface PageProps {
 	isAuthenticated: boolean;
 }
 
+const ApplauseIcon = ({
+	active = false,
+	playToken = 0,
+	size = 24,
+}: {
+	active?: boolean;
+	playToken?: number;
+	size?: number;
+}) => {
+	return (
+		<span className={styles.applauseIcon} style={{ width: size, height: size }}>
+			<Lottie
+				key={`${active ? "active" : "default"}-${playToken}`}
+				animationData={applauseDefaultAnimation}
+				autoplay={active && playToken > 0}
+				loop={false}
+				className={styles.applauseIconAnimation}
+			/>
+		</span>
+	);
+};
+
 const MarkdownImage = ({
 	src,
 	alt,
 	width,
-	height,
 	isInline,
 }: {
 	src: string;
@@ -96,6 +149,7 @@ const MarkdownImage = ({
 	if (!isClient) {
 		return (
 			<span style={containerStyle}>
+				{/* biome-ignore lint/performance/noImgElement: avoid hydration mismatch before AntImage mounts on the client */}
 				<img
 					src={src}
 					alt={alt}
@@ -137,20 +191,62 @@ export default function ProjectReport({
 	isAuthenticated,
 }: PageProps) {
 	const { t } = useTranslate();
+	const { status: authStatus } = useSession();
+	const [applauseCount, setApplauseCount] = useState(post.applauseCount || 0);
+	const [hasApplauded, setHasApplauded] = useState(false);
+	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
+	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
+
+	const isUserAuthenticated =
+		authStatus === "authenticated" ||
+		(authStatus === "loading" && isAuthenticated);
+
+	useEffect(() => {
+		setApplauseCount(post.applauseCount || 0);
+	}, [post.applauseCount]);
+
+	useEffect(() => {
+		if (!isUserAuthenticated) {
+			setHasApplauded(false);
+			return;
+		}
+
+		let isMounted = true;
+
+		axios
+			.get(`/api/devlog/${post.id}/applause`)
+			.then(({ data }) => {
+				if (!isMounted) {
+					return;
+				}
+
+				setApplauseCount(data.count || 0);
+				setHasApplauded(!!data.hasApplauded);
+			})
+			.catch((error) => {
+				console.error("Error fetching applause state:", error);
+			});
+
+		return () => {
+			isMounted = false;
+		};
+	}, [isUserAuthenticated, post.id]);
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
 		return date.toISOString().split("T")[0].split("-").reverse().join("/");
 	};
 
-	const prepareEditorjsData = (data: any) => {
-		if (!data || !data?.blocks || !Array.isArray(data?.blocks)) {
+	const prepareEditorjsData = (
+		data: EditorJsData | undefined,
+	): PreparedEditorJsData => {
+		if (!data?.blocks || !Array.isArray(data.blocks)) {
 			return { time: Date.now(), blocks: [], version: "2.31.0" };
 		}
 
 		// Filter out invalid blocks
-		const validBlocks = data.blocks.filter((block: any) => {
-			return block && block.type && block.data !== undefined;
+		const validBlocks = data.blocks.filter((block) => {
+			return !!block?.type && block.data !== undefined;
 		});
 
 		return {
@@ -163,6 +259,118 @@ export default function ProjectReport({
 	if (!post) {
 		return null;
 	}
+
+	const handleApplauseToggle = async () => {
+		if (!isUserAuthenticated || isApplauseLoading) {
+			return;
+		}
+
+		const nextHasApplauded = !hasApplauded;
+		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
+
+		setIsApplauseLoading(true);
+		setHasApplauded(nextHasApplauded);
+		setApplauseCount(nextCount);
+		if (nextHasApplauded) {
+			setApplauseAnimationToken((value) => value + 1);
+		}
+
+		try {
+			const { data } = await axios.request({
+				url: `/api/devlog/${post.id}/applause`,
+				method: nextHasApplauded ? "POST" : "DELETE",
+			});
+
+			setHasApplauded(!!data.hasApplauded);
+			setApplauseCount(data.count || 0);
+		} catch (error) {
+			console.error("Error toggling applause:", error);
+			setHasApplauded(hasApplauded);
+			setApplauseCount(applauseCount);
+		} finally {
+			setIsApplauseLoading(false);
+		}
+	};
+
+	const applauseButton = (
+		<HappyProvider>
+			<Button
+				type="text"
+				shape="round"
+				size="small"
+				className={`${styles.applauseButton} ${
+					hasApplauded ? styles.applauseButtonActive : ""
+				}`}
+				icon={
+					<ApplauseIcon
+						active={hasApplauded}
+						playToken={applauseAnimationToken}
+						size={22}
+					/>
+				}
+				onClick={handleApplauseToggle}
+				disabled={!isUserAuthenticated}
+			>
+				{applauseCount > 0 ? applauseCount : null}
+			</Button>
+		</HappyProvider>
+	);
+
+	const applauseBanner = (
+		<Tooltip
+			title={
+				isUserAuthenticated
+					? t("page.devlog.applauseTooltip", "Оцени работу команды")
+					: t(
+							"page.devlog.applauseAuthTooltip",
+							"Only authorized users can leave applause",
+						)
+			}
+		>
+			<span className={styles.applauseBannerWrapper}>
+				<HappyProvider>
+					<Button
+						type="text"
+						size="middle"
+						shape="round"
+						className={`${styles.applauseBanner} ${
+							hasApplauded ? styles.applauseBannerActive : ""
+						}`}
+						icon={
+							<ApplauseIcon
+								active={hasApplauded}
+								playToken={applauseAnimationToken}
+								size={40}
+							/>
+						}
+						onClick={handleApplauseToggle}
+						disabled={!isUserAuthenticated}
+					>
+						{applauseCount > 0 ? (
+							<span className={styles.applauseBannerCount}>
+								{applauseCount}
+							</span>
+						) : null}
+					</Button>
+				</HappyProvider>
+			</span>
+		</Tooltip>
+	);
+
+	const markdownRehypePlugins = [
+		rehypeRaw,
+		[
+			rehypeSanitize,
+			{
+				tagNames: ["img", "u", "strong", "em", "a", "p", "br", "div", "span"],
+				attributes: {
+					img: ["src", "alt", "width", "height", "style"],
+					a: ["href", "target", "rel"],
+					"*": ["style", "className"],
+				},
+			},
+		],
+	] as unknown as ComponentProps<typeof ReactMarkdown>["rehypePlugins"];
 
 	return (
 		<PublicLayout
@@ -259,6 +467,20 @@ export default function ProjectReport({
 							<Text strong>{post?.author?.name || "Аноним"}</Text>
 						</Flex>
 						<Flex align="center" gap={16}>
+							<Tooltip
+								title={
+									isUserAuthenticated
+										? undefined
+										: t(
+												"page.devlog.applauseAuthTooltip",
+												"Only authorized users can leave applause",
+											)
+								}
+							>
+								<span className={styles.applauseTooltipWrapper}>
+									{applauseButton}
+								</span>
+							</Tooltip>
 							<Flex align="center" gap={8}>
 								<ClockCircleOutlined style={{ fontSize: "12px" }} />
 								<Text type="secondary" style={{ fontSize: "12px" }}>
@@ -292,30 +514,7 @@ export default function ProjectReport({
 							/>
 						) : (
 							<ReactMarkdown
-								rehypePlugins={[
-									[rehypeRaw as any],
-									[
-										rehypeSanitize as any,
-										{
-											tagNames: [
-												"img",
-												"u",
-												"strong",
-												"em",
-												"a",
-												"p",
-												"br",
-												"div",
-												"span",
-											],
-											attributes: {
-												img: ["src", "alt", "width", "height", "style"],
-												a: ["href", "target", "rel"],
-												"*": ["style", "className"],
-											},
-										},
-									],
-								]}
+								rehypePlugins={markdownRehypePlugins}
 								components={{
 									img: ({ node, ...props }) => {
 										// Проверяем, есть ли пробелы до и после тега img
@@ -429,37 +628,43 @@ export default function ProjectReport({
 						)}
 					</div>
 				</Card>
-				{(post.previousPost || post.nextPost) && (
-					<Flex
-						justify="space-between"
-						align="center"
-						wrap="wrap"
-						gap={12}
-						className={styles.postNavigation}
+				<div className={styles.postNavigation}>
+					<Divider
+						orientation="center"
+						className={styles.postNavigationDivider}
 					>
-						{post.previousPost ? (
-							<Button
-								type="link"
-								href={`/devlog/${post.previousPost.id}`}
-								icon={<ArrowLeftOutlined />}
-							>
-								{t("page.devlog.previousPost", "Previous post")}
-							</Button>
-						) : (
-							<span />
-						)}
-						{post.nextPost && (
-							<Button
-								type="link"
-								href={`/devlog/${post.nextPost.id}`}
-								iconPosition="end"
-								icon={<ArrowRightOutlined />}
-							>
-								{t("page.devlog.nextPost", "Next post")}
-							</Button>
-						)}
+						{applauseBanner}
+					</Divider>
+					<Flex justify="space-between" align="center" gap={12}>
+						<div className={styles.postNavigationSide}>
+							{post.previousPost ? (
+								<Button
+									type="link"
+									href={`/devlog/${post.previousPost.id}`}
+									icon={<ArrowLeftOutlined />}
+								>
+									{t("page.devlog.previousPost", "Previous post")}
+								</Button>
+							) : (
+								<span />
+							)}
+						</div>
+						<div className={styles.postNavigationSide}>
+							{post.nextPost ? (
+								<Button
+									type="link"
+									href={`/devlog/${post.nextPost.id}`}
+									iconPosition="end"
+									icon={<ArrowRightOutlined />}
+								>
+									{t("page.devlog.nextPost", "Next post")}
+								</Button>
+							) : (
+								<span />
+							)}
+						</div>
 					</Flex>
-				)}
+				</div>
 			</div>
 		</PublicLayout>
 	);

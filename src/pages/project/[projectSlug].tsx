@@ -1,3 +1,4 @@
+import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
 import { IconDownload, IconQrcode } from "@tabler/icons-react";
@@ -16,18 +17,22 @@ import {
 	Tooltip,
 	Typography,
 } from "antd";
-import type { GetServerSidePropsContext } from "next";
+import axios from "axios";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import type { NextSeoProps } from "next-seo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import YouTube from "react-youtube";
 import rehypeRaw from "rehype-raw";
+import type { Pluggable } from "unified";
 import type { Options } from "youtube-player/dist/types";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
+import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import DevlogPosts from "@/components/DevlogPosts";
 import ProjectVacancies from "@/components/ProjectVacancies";
 import TeamMembers from "@/components/TeamMembers";
@@ -39,42 +44,94 @@ import type { ProjectLink } from "@/types/project";
 import styles from "./style.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 type ProjectPageParams = {
-	project: prismaClient.Project & {
-		author: prismaClient.User & {
-			profile: { tgNickname: prismaClient.Profile["tgNickname"] };
+	project: Omit<
+		prismaClient.Project,
+		"createdAt" | "updatedAt" | "startedAt" | "finishedAt"
+	> & {
+		createdAt: string;
+		updatedAt: string;
+		startedAt: string | null;
+		finishedAt: string | null;
+		author: {
+			name: prismaClient.User["name"];
+			profile: { tgNickname: prismaClient.Profile["tgNickname"] } | null;
 		};
-		workflow: prismaClient.ProjectWorkflow & {
-			currentStep: prismaClient.ProjectWorkflowStep;
-		};
+		workflow: {
+			currentStep: { name: prismaClient.ProjectWorkflowStep["name"] } | null;
+		} | null;
 	};
-	seo?: { title: string; description?: string; image?: string };
+	projectApplauseCount: number;
+	isAuthenticated: boolean;
+	seo?: { title?: string | null; description?: string | null; image?: string };
 };
 
 const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 	project,
+	projectApplauseCount,
+	isAuthenticated,
 	seo,
 }) => {
 	const { t } = useTranslate();
-	const { data: session } = useSession();
+	const { data: session, status: authStatus } = useSession();
 	const router = useRouter();
 	const screens = Grid.useBreakpoint();
 	const [showPitchVideo, setShowPitchVideo] = useState(false);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+	const [applauseCount, setApplauseCount] = useState(projectApplauseCount || 0);
+	const [hasApplauded, setHasApplauded] = useState(false);
+	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
+	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
+
+	const isUserAuthenticated =
+		authStatus === "authenticated" ||
+		(authStatus === "loading" && isAuthenticated);
 
 	const seoParams: NextSeoProps = {
-		title: seo?.title,
-		description: seo?.description,
+		title: seo?.title ?? undefined,
+		description: seo?.description ?? undefined,
 		openGraph: {
 			description: seo?.description as string,
 			images: seo?.image
-				? [{ url: seo.image as string, alt: project?.name + " cover image" }]
+				? [{ url: seo.image as string, alt: `${project?.name} cover image` }]
 				: undefined,
 		},
 	};
 
 	const handleCoverClick = () => setShowPitchVideo(true);
+
+	useEffect(() => {
+		setApplauseCount(projectApplauseCount || 0);
+	}, [projectApplauseCount]);
+
+	useEffect(() => {
+		if (!isUserAuthenticated) {
+			setHasApplauded(false);
+			return;
+		}
+
+		let isMounted = true;
+
+		axios
+			.get(`/api/project/${project.id}/applause`)
+			.then(({ data }) => {
+				if (!isMounted) {
+					return;
+				}
+
+				setApplauseCount(data.count || 0);
+				setHasApplauded(!!data.hasApplauded);
+			})
+			.catch((error) => {
+				console.error("Error fetching project applause state:", error);
+			});
+
+		return () => {
+			isMounted = false;
+		};
+	}, [isUserAuthenticated, project.id]);
 
 	const getCurrentPageUrl = () => {
 		if (typeof window !== "undefined") {
@@ -128,9 +185,86 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 		return option?.label;
 	};
 
+	const markdownRehypePlugins = [rehypeRaw] as Pluggable[];
+
+	const handleApplauseToggle = async () => {
+		if (!isUserAuthenticated || isApplauseLoading) {
+			return;
+		}
+
+		const nextHasApplauded = !hasApplauded;
+		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
+
+		setIsApplauseLoading(true);
+		setHasApplauded(nextHasApplauded);
+		setApplauseCount(nextCount);
+
+		if (nextHasApplauded) {
+			setApplauseAnimationToken((value) => value + 1);
+		}
+
+		try {
+			const { data } = await axios.request({
+				url: `/api/project/${project.id}/applause`,
+				method: nextHasApplauded ? "POST" : "DELETE",
+			});
+
+			setHasApplauded(!!data.hasApplauded);
+			setApplauseCount(data.count || 0);
+		} catch (error) {
+			console.error("Error toggling project applause:", error);
+			setHasApplauded(hasApplauded);
+			setApplauseCount(applauseCount);
+		} finally {
+			setIsApplauseLoading(false);
+		}
+	};
+
+	const applauseButton = (
+		<Tooltip
+			title={
+				isUserAuthenticated
+					? t("page.devlog.applauseTooltip", "Оцени работу команды")
+					: t(
+							"page.devlog.applauseAuthTooltip",
+							"Only authorized users can leave applause",
+						)
+			}
+		>
+			<span className={styles.projectApplauseWrapper}>
+				<HappyProvider>
+					<Button
+						type="text"
+						className={`${styles.projectApplauseButton} ${
+							hasApplauded ? styles.projectApplauseButtonActive : ""
+						}`}
+						icon={
+							<span
+								className={styles.projectApplauseIcon}
+								style={{ width: 33, height: 33 }}
+							>
+								<Lottie
+									key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
+									animationData={applauseDefaultAnimation}
+									autoplay={hasApplauded && applauseAnimationToken > 0}
+									loop={false}
+									className={styles.projectApplauseIconAnimation}
+								/>
+							</span>
+						}
+						onClick={handleApplauseToggle}
+						disabled={!isUserAuthenticated}
+					>
+						{applauseCount > 0 ? applauseCount : null}
+					</Button>
+				</HappyProvider>
+			</span>
+		</Tooltip>
+	);
+
 	const renderProjectLinks = (links: ProjectLink[]) => {
 		const linkElements = links
-			.sort((a, b) => (a.isPrimary ? -1 : 1))
+			.sort((a, _b) => (a.isPrimary ? -1 : 1))
 			.map((link: ProjectLink) => {
 				return link.isPrimary ? (
 					<Button
@@ -180,6 +314,8 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 							onClick={() => setIsQrModalOpen(true)}
 						/>
 					</Tooltip>
+
+					{applauseButton}
 				</Flex>
 			</ConfigProvider>
 		);
@@ -228,7 +364,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 									{t("page.project.aboutGame", "About Game")}
 								</Title>
 								<Paragraph>
-									<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
+									<ReactMarkdown rehypePlugins={markdownRehypePlugins}>
 										{project.description || ""}
 									</ReactMarkdown>
 								</Paragraph>
@@ -276,7 +412,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 							/>
 						)}
 						{screens.md && generalData}
-						{session && project.author.profile.tgNickname ? (
+						{session && project.author.profile?.tgNickname ? (
 							<Link
 								href={`https://t.me/${project.author.profile.tgNickname}`}
 								target="_blank"
@@ -354,10 +490,16 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 	);
 };
 
-export const getServerSideProps = async (
+export const getServerSideProps: GetServerSideProps<ProjectPageParams> = async (
 	context: GetServerSidePropsContext,
 ) => {
-	const { projectSlug }: any = context.params;
+	const projectSlug = context.params?.projectSlug;
+
+	if (typeof projectSlug !== "string") {
+		return {
+			notFound: true,
+		};
+	}
 
 	const project = await prisma.project.findFirst({
 		where: {
@@ -378,13 +520,18 @@ export const getServerSideProps = async (
 		};
 	}
 
+	const [applauseSummary, session] = await Promise.all([
+		prisma.project.getApplauseSummary({ projectId: project.id }),
+		getSession(context),
+	]);
+
 	return {
 		props: {
 			project: {
 				...project,
 				createdAt: project.createdAt.toISOString(),
 				updatedAt: project.updatedAt.toISOString(),
-				startedAt: project.startedAt?.toISOString(),
+				startedAt: project.startedAt ? project.startedAt.toISOString() : null,
 				finishedAt: project.finishedAt
 					? project.finishedAt.toISOString()
 					: null,
@@ -395,6 +542,8 @@ export const getServerSideProps = async (
 						}
 					: null,
 			},
+			projectApplauseCount: applauseSummary.total,
+			isAuthenticated: !!session?.user,
 			seo: {
 				title: project.name || null,
 				description: project.description?.slice(0, 160) || null,

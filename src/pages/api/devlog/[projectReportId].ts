@@ -40,6 +40,10 @@ export default async function handler(
 			return res.status(404).json({ message: "Project report not found" });
 		}
 
+		const applauseCount = await prisma.projectReport.getApplauseCount({
+			projectReportId: report.id,
+		});
+
 		const previousReport = await prisma.projectReport.findFirst({
 			where: {
 				projectId: report.projectId,
@@ -77,6 +81,7 @@ export default async function handler(
 			contentEditor: report.contentEditor,
 			coverImage: report.project?.coverImage,
 			createdAt: report.publishedAt,
+			applauseCount,
 			video: report.video,
 			author: report.author
 				? {
