@@ -5,5 +5,12 @@ export const getWorkedProjects = async () => {
 		order: "desc",
 	});
 
-	return projects;
+	return await Promise.all(
+		projects.map(async (project) => ({
+			...project,
+			applauseCount: await prisma.project.getApplauseCount({
+				projectId: project.id,
+			}),
+		})),
+	);
 };

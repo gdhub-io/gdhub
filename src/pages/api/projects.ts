@@ -9,9 +9,18 @@ class ApiProjectsHandler {
 	@Get()
 	public async list() {
 		try {
-			return await prisma.project.getProjectsOrderedByActivity({
+			const projects = await prisma.project.getProjectsOrderedByActivity({
 				order: "desc",
 			});
+
+			return await Promise.all(
+				projects.map(async (project) => ({
+					...project,
+					applauseCount: await prisma.project.getApplauseCount({
+						projectId: project.id,
+					}),
+				})),
+			);
 		} catch (error) {
 			console.error("[projects: list: error]", error);
 			throw new BadRequestException("Failed to get projects");

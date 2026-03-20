@@ -15,6 +15,7 @@ interface GameCardListProps {
 		workflow: prismaClient.ProjectWorkflow & {
 			steps: prismaClient.ProjectWorkflowStep[];
 		};
+		applauseCount?: number;
 	})[];
 	loading: boolean;
 }
@@ -71,6 +72,7 @@ const GameCardList: React.FC<GameCardListProps> = ({ games, loading }) => {
 						coverImage={game.coverImage || undefined}
 						slug={game.slug}
 						workflowStage={getWorkflowStage(game)}
+						applauseCount={game.applauseCount}
 					/>
 				</Col>
 			))}
