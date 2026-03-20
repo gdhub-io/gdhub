@@ -1,11 +1,14 @@
 import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
+import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import DefaultCover from "./DefaultCover";
 import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface GameCardProps {
 	id: string;
@@ -18,6 +21,7 @@ interface GameCardProps {
 	authorName?: string;
 	authorAvatar?: string;
 	isUserProject?: boolean;
+	applauseCount?: number;
 }
 
 const GameCard: React.FC<GameCardProps> = ({
@@ -31,6 +35,7 @@ const GameCard: React.FC<GameCardProps> = ({
 	authorName,
 	authorAvatar,
 	isUserProject,
+	applauseCount,
 }) => {
 	return (
 		<Link
@@ -53,9 +58,29 @@ const GameCard: React.FC<GameCardProps> = ({
 						)}
 					</div>
 
-					{workflowStage && (
-						<div className={styles.gameCardWorkflowStage}>
-							<Tag className={styles.workflowStageTag}>{workflowStage}</Tag>
+					{(workflowStage || applauseCount) && (
+						<div className={styles.gameCardTopRight}>
+							{workflowStage && (
+								<div className={styles.gameCardWorkflowStage}>
+									<Tag className={styles.workflowStageTag}>{workflowStage}</Tag>
+								</div>
+							)}
+							{applauseCount ? (
+								<div className={styles.gameCardApplause}>
+									<span
+										className={styles.gameCardApplauseIcon}
+										style={{ width: 22, height: 22 }}
+									>
+										<Lottie
+											animationData={applauseDefaultAnimation}
+											autoplay={false}
+											loop={false}
+											className={styles.gameCardApplauseIconAnimation}
+										/>
+									</span>
+									<span>{applauseCount}</span>
+								</div>
+							) : null}
 						</div>
 					)}
 

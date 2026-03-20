@@ -38,7 +38,16 @@ export default async function handler(
 			},
 		});
 
-		return res.status(200).json(reports);
+		const reportsWithApplause = await Promise.all(
+			reports.map(async (report) => ({
+				...report,
+				applauseCount: await prisma.projectReport.getApplauseCount({
+					projectReportId: report.id,
+				}),
+			})),
+		);
+
+		return res.status(200).json(reportsWithApplause);
 	} catch (error) {
 		console.error("Error fetching project reports:", error);
 		return res.status(500).json({ message: "Internal server error" });

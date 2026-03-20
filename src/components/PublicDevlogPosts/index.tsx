@@ -3,16 +3,20 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Skeleton, Typography } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type React from "react";
 import { useMemo, useState } from "react";
+import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import { PageViews } from "@/components/PageViews";
 import { getPageCover } from "@/helpers/content";
 import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface DevlogPost {
 	id: string;
@@ -20,6 +24,7 @@ interface DevlogPost {
 	content: string;
 	coverImage?: string;
 	publishedAt: string;
+	applauseCount?: number;
 	video: string | null;
 	project?: {
 		name: string;
@@ -67,20 +72,6 @@ const PostCard: React.FC<{
 		if (!text) return "";
 		if (text.length <= maxLength) return text;
 		return text.slice(0, maxLength) + "...";
-	};
-
-	const formatDate = (dateString: string | undefined) => {
-		if (!dateString) return "";
-		try {
-			const date = new Date(dateString);
-			return (
-				date.toLocaleDateString() +
-				" " +
-				date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-			);
-		} catch (e) {
-			return "";
-		}
 	};
 
 	const stripHtml = (html: string) => {
@@ -135,11 +126,26 @@ const PostCard: React.FC<{
 							>
 								{post.project?.name}
 							</span>
-							<span className={styles.dot}>•</span>
 							<span>
 								<ClockCircleOutlined style={{ marginRight: 4 }} />
-								{formatDate(post.publishedAt)}
+								{dayjs(post.publishedAt).fromNow()}
 							</span>
+							{post.applauseCount ? (
+								<span className={styles.applauseCount}>
+									<span
+										className={styles.applauseIcon}
+										style={{ width: 18, height: 18 }}
+									>
+										<Lottie
+											animationData={applauseDefaultAnimation}
+											autoplay={false}
+											loop={false}
+											className={styles.applauseIconAnimation}
+										/>
+									</span>
+									{post.applauseCount}
+								</span>
+							) : null}
 							<PageViews
 								path={`/devlog/${post.id}`}
 								startDate={post.publishedAt}

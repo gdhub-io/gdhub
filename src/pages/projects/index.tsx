@@ -17,6 +17,7 @@ type ProjectIncludeAll = prismaClient.Project & {
 	};
 	lastPostAt: Date;
 	firstPostAt: Date;
+	applauseCount?: number;
 };
 type ProjectsPageParams = { projects: ProjectIncludeAll[] };
 
