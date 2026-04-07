@@ -3,6 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import handler from "../src/pages/api/user/project";
 import { prisma } from "../src/services/prisma";
 
+vi.mock("@/lib/api-middlewares", () => ({
+	NextAuthGuard: () => () => {},
+}));
+
 vi.mock("@gdhub-io/gdhub-prisma/dist/client", () => ({
 	default: {
 		TeamMemberStatus: {
@@ -21,21 +25,27 @@ vi.mock("../src/services/prisma", () => ({
 	prisma: {
 		user: { findUnique: vi.fn(), update: vi.fn() },
 		project: { findUnique: vi.fn(), create: vi.fn() },
+		projectEquity: { upsert: vi.fn() },
 	},
 }));
 
-vi.mock("next-auth/next", () => ({
-	getServerSession: vi.fn().mockImplementation((req, res, authOptions) => {
-		return Promise.resolve({
-			user: {
-				id: "user1",
-				email: "test@example.com",
-				name: "Test User",
-				roles: ["Author"],
-			},
-		});
-	}),
-}));
+vi.mock("next-auth", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("next-auth")>();
+
+	return {
+		...actual,
+		getServerSession: vi.fn().mockImplementation((req, res, authOptions) => {
+			return Promise.resolve({
+				user: {
+					id: "user1",
+					email: "test@example.com",
+					name: "Test User",
+					roles: ["Author"],
+				},
+			});
+		}),
+	};
+});
 
 describe("POST /api/user/project", () => {
 	beforeEach(() => {
@@ -58,7 +68,15 @@ describe("POST /api/user/project", () => {
 		const { req, res } = createMocks({
 			method: "POST",
 			url: "/api/user/project",
-			body: { name: "Test Project", description: "Test Description", agree: true },
+			body: {
+				name: "Test Project",
+				description: "Test Description",
+				acceptRequirements: true,
+				useCoDevelopmentAgreement: true,
+				authorAgreementAccepted: true,
+				mentorFundShare: 7,
+				investmentReserve: 40,
+			},
 			user: {
 				id: "user1",
 				email: "test@example.com",
@@ -87,5 +105,6 @@ describe("POST /api/user/project", () => {
 
 		expect(res._getStatusCode()).toBe(200);
 		expect(prisma.project.create).toHaveBeenCalled();
+		expect(prisma.projectEquity.upsert).toHaveBeenCalled();
 	});
 });

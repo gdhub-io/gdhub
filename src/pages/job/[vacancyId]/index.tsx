@@ -8,6 +8,7 @@ import {
 	Alert,
 	Button,
 	Card,
+	Checkbox,
 	Col,
 	Flex,
 	message,
@@ -19,7 +20,6 @@ import {
 import axios from "axios";
 import dayjs from "dayjs";
 import type { GetServerSideProps } from "next";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import router from "next/router";
@@ -27,31 +27,45 @@ import { getSession, useSession } from "next-auth/react";
 import type React from "react";
 import { useState } from "react";
 import Markdown from "react-markdown";
+import ProjectLegalPreviewModal from "@/components/legal/ProjectLegalPreviewModal";
 import SpecialitySelectModal from "@/components/modals/SpecialitySelectModal";
+import {
+	DEFAULT_DAMAGE_COMPENSATION_AMOUNT,
+	DEFAULT_DAMAGE_COMPENSATION_CURRENCY,
+	DEFAULT_MENTOR_FUND_SHARE,
+	PLATFORM_SHARE_PERCENT,
+} from "@/config/legal";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import styles from "./styles.module.scss";
 
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
-
-const { Text, Title, Paragraph } = Typography;
+const { Text, Title } = Typography;
 
 interface PageProps {
 	vacancy: prismaClient.TeamVacancy & {
-		team: { project: prismaClient.Project };
+		team: {
+			project: prismaClient.Project & {
+				agree?: boolean;
+				usesCoDevelopmentAgreement?: boolean;
+				equity?: {
+					platformShare?: number;
+					mentorFundShare?: number;
+					investmentReserve?: number;
+				} | null;
+			};
+		};
 		promisePercentage: number;
 		promiseStep: prismaClient.ProjectWorkflowStep;
 		myTeamMemberId: string;
 	};
 	pageCover: string;
-	isAuthenticated: boolean;
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context,
 ) => {
 	const vacancyId = context.params?.vacancyId as string;
-	const session = await getSession(context);
+	await getSession(context);
 
 	if (!vacancyId) {
 		return {
@@ -75,8 +89,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 			props: {
 				vacancy,
 				pageCover: vacancy.team?.project?.coverImage || null,
-				isAuthenticated: !!session,
-				isTeamMember: !!vacancy.myTeamMemberId,
 			},
 		};
 	} catch (error) {
@@ -87,16 +99,18 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	}
 };
 
-export default function VancancyPage({
-	vacancy,
-	pageCover,
-	isAuthenticated,
-}: PageProps) {
+export default function VancancyPage({ vacancy, pageCover }: PageProps) {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 	const [showPitchVideo, setShowPitchVideo] = useState(false);
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] =
 		useState(false);
+	const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);
+	const [showAgreementPreview, setShowAgreementPreview] = useState(false);
+	const usesCoDevelopmentAgreement = Boolean(
+		vacancy.team?.project?.usesCoDevelopmentAgreement ??
+			vacancy.team?.project?.agree,
+	);
 
 	const { mutateAsync: withdrawApply } = useMutation({
 		mutationFn: (data: { teamMemberId: string }) =>
@@ -272,6 +286,11 @@ export default function VancancyPage({
 												key="action"
 												type={vacancy?.myTeamMemberId ? "default" : "primary"}
 												onClick={functionOkButton}
+												disabled={
+													!vacancy?.myTeamMemberId &&
+													usesCoDevelopmentAgreement &&
+													!acceptedLegalTerms
+												}
 											>
 												{statusOkButton()}
 											</Button>,
@@ -404,6 +423,44 @@ export default function VancancyPage({
 									</Flex>
 								)}
 
+								{!vacancy.myTeamMemberId && usesCoDevelopmentAgreement ? (
+									<Alert
+										type="info"
+										message={t(
+											"page.vacancy.legalTitle",
+											"Co-development agreement",
+										)}
+										description={
+											<Flex vertical gap={8}>
+												<Text>
+													{t(
+														"page.vacancy.legalDescription",
+														"Before responding, confirm that you have reviewed the co-development agreement that governs team participation, shares, mentor fund, and platform share.",
+													)}
+												</Text>
+												<Button
+													type="link"
+													style={{ paddingInline: 0, width: "fit-content" }}
+													onClick={() => setShowAgreementPreview(true)}
+												>
+													{t("page.vacancy.openAgreement", "Preview agreement")}
+												</Button>
+												<Checkbox
+													checked={acceptedLegalTerms}
+													onChange={(event) =>
+														setAcceptedLegalTerms(event.target.checked)
+													}
+												>
+													{t(
+														"page.vacancy.legalConfirm",
+														"I have read and agree to the co-development agreement.",
+													)}
+												</Checkbox>
+											</Flex>
+										}
+									/>
+								) : null}
+
 								{/* Status Alerts */}
 								{vacancy.myTeamMemberId ? (
 									<Alert
@@ -450,6 +507,30 @@ export default function VancancyPage({
 					onCancel={() => setShowSpecialitySelectModal(false)}
 				/>
 			)}
+			<ProjectLegalPreviewModal
+				open={showAgreementPreview}
+				onClose={() => setShowAgreementPreview(false)}
+				showProjectAppendix
+				appendixInput={{
+					projectName: vacancy.team?.project?.name || "Project",
+					projectId: vacancy.team?.project?.id,
+					projectSlug: vacancy.team?.project?.slug,
+					platformShare:
+						vacancy.team?.project?.equity?.platformShare ??
+						PLATFORM_SHARE_PERCENT,
+					mentorFundShare:
+						vacancy.team?.project?.equity?.mentorFundShare ??
+						DEFAULT_MENTOR_FUND_SHARE,
+					damageCompensationEnabled:
+						vacancy.team?.project?.damageCompensationEnabled ?? true,
+					damageCompensationAmount:
+						vacancy.team?.project?.damageCompensationAmount ??
+						DEFAULT_DAMAGE_COMPENSATION_AMOUNT,
+					damageCompensationCurrency:
+						vacancy.team?.project?.damageCompensationCurrency ??
+						DEFAULT_DAMAGE_COMPENSATION_CURRENCY,
+				}}
+			/>
 		</PublicLayout>
 	);
 }

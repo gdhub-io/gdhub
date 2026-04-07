@@ -35,9 +35,21 @@ class ApiProjectVacancyHandler {
 								id: true,
 								name: true,
 								slug: true,
+								agree: true,
+								usesCoDevelopmentAgreement: true,
+								damageCompensationEnabled: true,
+								damageCompensationAmount: true,
+								damageCompensationCurrency: true,
 								description: true,
 								coverImage: true,
 								videoLink: true,
+								equity: {
+									select: {
+										platformShare: true,
+										mentorFundShare: true,
+										investmentReserve: true,
+									},
+								},
 								workflow: {
 									select: { steps: { select: { id: true, name: true } } },
 								},

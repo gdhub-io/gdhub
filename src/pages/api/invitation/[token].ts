@@ -22,7 +22,25 @@ class ApiInvitationHandler {
 						select: {
 							id: true,
 							name: true,
-							project: { select: { id: true, name: true, slug: true } },
+							project: {
+								select: {
+									id: true,
+									name: true,
+									slug: true,
+									agree: true,
+									usesCoDevelopmentAgreement: true,
+									damageCompensationEnabled: true,
+									damageCompensationAmount: true,
+									damageCompensationCurrency: true,
+									equity: {
+										select: {
+											platformShare: true,
+											mentorFundShare: true,
+											investmentReserve: true,
+										},
+									},
+								},
+							},
 						},
 					},
 					invitedBy: { select: { id: true, name: true, email: true } },

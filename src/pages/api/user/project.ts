@@ -1,5 +1,12 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { IsBoolean, IsEnum, IsOptional, IsString } from "class-validator";
+import {
+	IsBoolean,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	IsString,
+	Min,
+} from "class-validator";
 import dayjs from "dayjs";
 import {
 	BadRequestException,
@@ -14,6 +21,14 @@ import {
 	ValidationPipe,
 } from "next-api-decorators";
 import { slugify } from "voca";
+import {
+	DEFAULT_DAMAGE_COMPENSATION_AMOUNT,
+	DEFAULT_DAMAGE_COMPENSATION_CURRENCY,
+	DEFAULT_INVESTMENT_RESERVE,
+	DEFAULT_MENTOR_FUND_SHARE,
+	MIN_MENTOR_FUND_SHARE,
+	PLATFORM_SHARE_PERCENT,
+} from "@/config/legal";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
 
@@ -22,11 +37,38 @@ class CreateProjectDto {
 	name: string;
 
 	@IsBoolean()
-	agree: boolean;
+	acceptRequirements: boolean;
+
+	@IsBoolean()
+	@IsOptional()
+	useCoDevelopmentAgreement?: boolean;
+
+	@IsBoolean()
+	@IsOptional()
+	authorAgreementAccepted?: boolean;
 
 	@IsString()
 	@IsOptional()
 	description?: string;
+
+	@IsNumber()
+	@Min(MIN_MENTOR_FUND_SHARE)
+	@IsOptional()
+	mentorFundShare?: number;
+
+	@IsNumber()
+	@Min(0)
+	@IsOptional()
+	investmentReserve?: number;
+
+	@IsBoolean()
+	@IsOptional()
+	damageCompensationEnabled?: boolean;
+
+	@IsNumber()
+	@Min(1)
+	@IsOptional()
+	damageCompensationAmount?: number;
 }
 
 class UpdateProjectDto {
@@ -129,10 +171,54 @@ class ApiProjectHandler {
 	@Post()
 	public async create(
 		@Req() req: NextApiRequestWithUser,
-		@Body(ValidationPipe) { name, description, agree }: CreateProjectDto,
+		@Body(ValidationPipe)
+		{
+			name,
+			description,
+			acceptRequirements,
+			useCoDevelopmentAgreement,
+			authorAgreementAccepted,
+			mentorFundShare,
+			investmentReserve,
+			damageCompensationEnabled,
+			damageCompensationAmount,
+		}: CreateProjectDto,
 	) {
 		if (!req.user.id) throw Error("Unknown user");
-		if (!agree) throw Error("Should accept requirements");
+		if (!acceptRequirements) throw Error("Should accept project requirements");
+
+		if (useCoDevelopmentAgreement && !authorAgreementAccepted) {
+			throw new BadRequestException(
+				"The author should accept the co-development agreement",
+			);
+		}
+
+		const initialMentorFundShare = mentorFundShare ?? DEFAULT_MENTOR_FUND_SHARE;
+		const initialInvestmentReserve =
+			investmentReserve ?? DEFAULT_INVESTMENT_RESERVE;
+		const initialDamageCompensationEnabled = Boolean(damageCompensationEnabled);
+		const initialDamageCompensationAmount =
+			damageCompensationAmount ?? DEFAULT_DAMAGE_COMPENSATION_AMOUNT;
+
+		if (
+			useCoDevelopmentAgreement &&
+			initialMentorFundShare + initialInvestmentReserve >
+				100 - PLATFORM_SHARE_PERCENT
+		) {
+			throw new BadRequestException(
+				"Mentor fund and investment reserve exceed available project share",
+			);
+		}
+
+		if (
+			useCoDevelopmentAgreement &&
+			initialDamageCompensationEnabled &&
+			initialDamageCompensationAmount <= 0
+		) {
+			throw new BadRequestException(
+				"Damage compensation amount should be greater than 0",
+			);
+		}
 
 		const user = await prisma.user.findUnique({
 			where: { id: req.user.id },
@@ -152,14 +238,19 @@ class ApiProjectHandler {
 		});
 
 		if (!user) throw Error("User not found");
+		if (!user.specialities.length) {
+			throw new BadRequestException(
+				"User should have at least one speciality before creating a project",
+			);
+		}
 
 		const existingProjectTeam = user?.memberInTeams.find(
 			(member: {
 				status: prismaClient.TeamMemberStatus;
 				team: { project: { slug: string } | null };
 			}) =>
-				member.status == prismaClient.TeamMemberStatus.Founder &&
-				member.team.project?.slug == slugify(name),
+				member.status === prismaClient.TeamMemberStatus.Founder &&
+				member.team.project?.slug === slugify(name),
 		);
 
 		const existingProject = await prisma.project.findUnique({
@@ -173,7 +264,20 @@ class ApiProjectHandler {
 		const project = await prisma.project.create({
 			data: {
 				name,
-				agree,
+				agree: Boolean(acceptRequirements),
+				platformRequirementsAccepted: Boolean(acceptRequirements),
+				usesCoDevelopmentAgreement: Boolean(useCoDevelopmentAgreement),
+				damageCompensationEnabled: Boolean(
+					useCoDevelopmentAgreement && initialDamageCompensationEnabled,
+				),
+				damageCompensationAmount:
+					useCoDevelopmentAgreement && initialDamageCompensationEnabled
+						? initialDamageCompensationAmount
+						: null,
+				damageCompensationCurrency:
+					useCoDevelopmentAgreement && initialDamageCompensationEnabled
+						? DEFAULT_DAMAGE_COMPENSATION_CURRENCY
+						: null,
 				slug: slugify(name),
 				description,
 				author: { connect: { id: req.user.id } },
@@ -186,7 +290,7 @@ class ApiProjectHandler {
 								members: {
 									create: {
 										position: "Founder",
-										specialityId: user?.specialities[0].id!,
+										specialityId: user.specialities[0].id,
 										startedAt: dayjs().toISOString(),
 										status: prismaClient.TeamMemberStatus.Founder,
 										userId: req.user.id,
@@ -220,6 +324,23 @@ class ApiProjectHandler {
 				where: { id: req.user.id },
 				data: {
 					roles: [...project.author.roles, prismaClient.UserRole.Author],
+				},
+			});
+		}
+
+		if (useCoDevelopmentAgreement) {
+			await prisma.projectEquity.upsert({
+				where: { projectId: project.id },
+				update: {
+					platformShare: PLATFORM_SHARE_PERCENT,
+					mentorFundShare: initialMentorFundShare,
+					investmentReserve: initialInvestmentReserve,
+				},
+				create: {
+					projectId: project.id,
+					platformShare: PLATFORM_SHARE_PERCENT,
+					mentorFundShare: initialMentorFundShare,
+					investmentReserve: initialInvestmentReserve,
 				},
 			});
 		}

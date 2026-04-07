@@ -2,6 +2,7 @@ import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
+	Alert,
 	Button,
 	Flex,
 	Form,
@@ -13,16 +14,29 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import ProjectLegalPreviewModal from "@/components/legal/ProjectLegalPreviewModal";
+import { MIN_MENTOR_FUND_SHARE, PLATFORM_SHARE_PERCENT } from "@/config/legal";
 import styles from "./styles.module.scss";
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
+
+type EquityPromiseLike = {
+	percentage: number;
+};
+
+type EquityAllocationLike = {
+	percentage: number;
+	promises?: EquityPromiseLike[];
+};
 
 interface EquityShareModalProps {
 	open: boolean;
 	onOk: () => void;
 	onCancel: () => void;
-	projectEquity?: prismaClient.ProjectEquity & { equityAllocations: any[] };
+	projectEquity?: prismaClient.ProjectEquity & {
+		equityAllocations: EquityAllocationLike[];
+	};
 	investors?: { share: number }[];
 }
 
@@ -36,7 +50,8 @@ const EquityShareModal = ({
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [equity, setEquity] = useState<prismaClient.ProjectEquity>();
-	const [remainingPercentage, setRemainingPercentage] = useState<number>(0);
+	const [showAgreementPreview, setShowAgreementPreview] = useState(false);
+	const remainingPercentage = 0;
 
 	// Calculate minimum investment reserve as sum of sold shares
 	const minInvestmentReserve = investors.reduce(
@@ -47,11 +62,12 @@ const EquityShareModal = ({
 	// Calculate allocated shares (team, promises)
 	const teamTotal =
 		projectEquity?.equityAllocations?.reduce(
-			(sum: number, share: any) =>
+			(sum: number, share: EquityAllocationLike) =>
 				sum +
 				(share.percentage || 0) +
 				(share.promises?.reduce(
-					(acc: number, promise: any) => acc + (promise.percentage || 0),
+					(acc: number, promise: EquityPromiseLike) =>
+						acc + (promise.percentage || 0),
 					0,
 				) || 0),
 			0,
@@ -88,6 +104,15 @@ const EquityShareModal = ({
 		setEquity(projectEquity);
 	}, [projectEquity]);
 
+	const shouldNotifyAgreementUpdate = useMemo(() => {
+		if (!equity || !projectEquity) return false;
+
+		return (
+			equity.mentorFundShare !== projectEquity.mentorFundShare ||
+			equity.investmentReserve !== projectEquity.investmentReserve
+		);
+	}, [equity, projectEquity]);
+
 	// Mutation for saving equity distribution
 	const { mutateAsync: saveEquity, isPending: isSaving } = useMutation({
 		mutationFn: (data: Partial<prismaClient.ProjectEquity>) =>
@@ -99,8 +124,10 @@ const EquityShareModal = ({
 
 	// Handler for changing mentor fund share
 	const handleMentorFundChange = (value: number | null) => {
-		// Minimum 2%
-		const newValue = Math.max(2, value || 2);
+		const newValue = Math.max(
+			MIN_MENTOR_FUND_SHARE,
+			value || MIN_MENTOR_FUND_SHARE,
+		);
 		setEquity((prev) => {
 			if (!prev) return prev;
 			return {
@@ -134,7 +161,7 @@ const EquityShareModal = ({
 				mentorFundShare: equity.mentorFundShare,
 				investmentReserve: equity.investmentReserve,
 			});
-		} catch (error: any) {
+		} catch (error) {
 			console.error(error);
 		}
 	};
@@ -180,6 +207,18 @@ const EquityShareModal = ({
 					</ul>
 				</div>
 
+				<Alert
+					type="info"
+					message={t(
+						"project.equity.legalAlert",
+						"Changing the mentor fund or investment reserve affects the agreement appendix for the project.",
+					)}
+					description={t(
+						"project.equity.legalAlertDescription",
+						"The agreement appendix should be regenerated automatically. The author only needs to confirm that the project legal terms will be updated.",
+					)}
+				/>
+
 				{/* Settings for equity distribution */}
 				<Form form={form} variant="filled" layout="vertical">
 					{/* Mentor fund share (minimum 2%) */}
@@ -190,18 +229,18 @@ const EquityShareModal = ({
 						<Flex align="center" gap={16}>
 							<div className={styles.sliderContainer}>
 								<Slider
-									min={2}
+									min={MIN_MENTOR_FUND_SHARE}
 									max={maxMentorFundShare}
-									defaultValue={2}
-									value={equity?.mentorFundShare ?? 2}
+									defaultValue={MIN_MENTOR_FUND_SHARE}
+									value={equity?.mentorFundShare ?? MIN_MENTOR_FUND_SHARE}
 									onChange={handleMentorFundChange}
 									marks={mentorMarks}
 								/>
 							</div>
 							<InputNumber
-								min={2}
+								min={MIN_MENTOR_FUND_SHARE}
 								max={maxMentorFundShare}
-								value={equity?.mentorFundShare ?? 2}
+								value={equity?.mentorFundShare ?? MIN_MENTOR_FUND_SHARE}
 								onChange={handleMentorFundChange}
 								addonAfter="%"
 								style={{ width: "110px" }}
@@ -232,7 +271,39 @@ const EquityShareModal = ({
 						</Flex>
 					</Form.Item>
 				</Form>
+
+				{shouldNotifyAgreementUpdate ? (
+					<Alert
+						type="warning"
+						action={
+							<Button
+								size="small"
+								onClick={() => setShowAgreementPreview(true)}
+							>
+								{t("Preview agreement")}
+							</Button>
+						}
+						message={t(
+							"project.equity.appendixWillBeUpdated",
+							"An additional agreement appendix should be created for this change.",
+						)}
+						description={t(
+							"project.equity.appendixWillBeUpdatedDescription",
+							"Update the agreement appendix and legal event record for this change.",
+						)}
+					/>
+				) : null}
 			</Space>
+			<ProjectLegalPreviewModal
+				open={showAgreementPreview}
+				onClose={() => setShowAgreementPreview(false)}
+				showProjectAppendix
+				appendixInput={{
+					projectName: "Project",
+					platformShare: projectEquity?.platformShare ?? PLATFORM_SHARE_PERCENT,
+					mentorFundShare: equity?.mentorFundShare,
+				}}
+			/>
 		</Modal>
 	);
 };

@@ -1,11 +1,18 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Card, Result, Spin, Typography } from "antd";
-import axios from "axios";
+import { Alert, Button, Card, Checkbox, Result, Spin, Typography } from "antd";
+import axios, { type AxiosError } from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import ProjectLegalPreviewModal from "@/components/legal/ProjectLegalPreviewModal";
+import {
+	DEFAULT_DAMAGE_COMPENSATION_AMOUNT,
+	DEFAULT_DAMAGE_COMPENSATION_CURRENCY,
+	DEFAULT_MENTOR_FUND_SHARE,
+	PLATFORM_SHARE_PERCENT,
+} from "@/config/legal";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -15,6 +22,8 @@ const InvitePage = () => {
 	const { t } = useTranslate();
 	const { data: session, status } = useSession();
 	const [error, setError] = useState<string | null>(null);
+	const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);
+	const [showAgreementPreview, setShowAgreementPreview] = useState(false);
 
 	// Получаем информацию о приглашении
 	const {
@@ -43,7 +52,7 @@ const InvitePage = () => {
 				router.push(response.data.redirect);
 			}
 		},
-		onError: (err: any) => {
+		onError: (err: AxiosError<{ message?: string }>) => {
 			setError(err.response?.data?.message || "Failed to accept invitation");
 		},
 	});
@@ -55,7 +64,7 @@ const InvitePage = () => {
 		onSuccess: () => {
 			router.push("/");
 		},
-		onError: (err: any) => {
+		onError: (err: AxiosError<{ message?: string }>) => {
 			setError(err.response?.data?.message || "Failed to decline invitation");
 		},
 	});
@@ -134,6 +143,10 @@ const InvitePage = () => {
 	// Если пользователь авторизован и приглашение загружено
 	if (session && invitation?.data) {
 		const inviteData = invitation.data;
+		const usesCoDevelopmentAgreement = Boolean(
+			inviteData.team?.project?.usesCoDevelopmentAgreement ??
+				inviteData.team?.project?.agree,
+		);
 
 		// Проверяем статус приглашения
 		if (inviteData.status === "Accepted") {
@@ -274,6 +287,45 @@ const InvitePage = () => {
 							<Text strong>{t("page.invite.startDate", "Start Date")}:</Text>{" "}
 							{new Date(inviteData.startedAt).toLocaleDateString()}
 						</Paragraph>
+						{usesCoDevelopmentAgreement ? (
+							<Alert
+								type="info"
+								showIcon
+								message={t(
+									"page.invite.legalTitle",
+									"Legal confirmation required",
+								)}
+								description={
+									<>
+										<Paragraph style={{ marginBottom: 8 }}>
+											{t(
+												"page.invite.legalDescription",
+												"By accepting this invitation you join the project under the co-development agreement used by the platform.",
+											)}
+										</Paragraph>
+										<Button
+											type="link"
+											style={{ paddingInline: 0 }}
+											onClick={() => setShowAgreementPreview(true)}
+										>
+											{t("page.invite.openAgreement", "Preview agreement")}
+										</Button>
+										<Checkbox
+											checked={acceptedLegalTerms}
+											onChange={(event) =>
+												setAcceptedLegalTerms(event.target.checked)
+											}
+										>
+											{t(
+												"page.invite.legalConfirm",
+												"I have read and agree to the co-development agreement.",
+											)}
+										</Checkbox>
+									</>
+								}
+								style={{ marginTop: 16 }}
+							/>
+						) : null}
 						<div
 							style={{
 								marginTop: 24,
@@ -288,10 +340,35 @@ const InvitePage = () => {
 								type="primary"
 								onClick={handleAccept}
 								loading={isAccepting}
+								disabled={usesCoDevelopmentAgreement && !acceptedLegalTerms}
 							>
 								{t("page.invite.acceptInvitation", "Accept Invitation")}
 							</Button>
 						</div>
+						<ProjectLegalPreviewModal
+							open={showAgreementPreview}
+							onClose={() => setShowAgreementPreview(false)}
+							showProjectAppendix
+							appendixInput={{
+								projectName: inviteData.team?.project?.name || "Project",
+								projectId: inviteData.team?.project?.id,
+								projectSlug: inviteData.team?.project?.slug,
+								platformShare:
+									inviteData.team?.project?.equity?.platformShare ??
+									PLATFORM_SHARE_PERCENT,
+								mentorFundShare:
+									inviteData.team?.project?.equity?.mentorFundShare ??
+									DEFAULT_MENTOR_FUND_SHARE,
+								damageCompensationEnabled:
+									inviteData.team?.project?.damageCompensationEnabled ?? true,
+								damageCompensationAmount:
+									inviteData.team?.project?.damageCompensationAmount ??
+									DEFAULT_DAMAGE_COMPENSATION_AMOUNT,
+								damageCompensationCurrency:
+									inviteData.team?.project?.damageCompensationCurrency ??
+									DEFAULT_DAMAGE_COMPENSATION_CURRENCY,
+							}}
+						/>
 					</Card>
 				</div>
 			</>
