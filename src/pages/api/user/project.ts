@@ -29,6 +29,7 @@ import {
 	MIN_MENTOR_FUND_SHARE,
 	PLATFORM_SHARE_PERCENT,
 } from "@/config/legal";
+import { persistProjectLegalSnapshot } from "@/helpers/legal/projectLegalPersistence";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
 
@@ -341,6 +342,35 @@ class ApiProjectHandler {
 					platformShare: PLATFORM_SHARE_PERCENT,
 					mentorFundShare: initialMentorFundShare,
 					investmentReserve: initialInvestmentReserve,
+				},
+			});
+
+			await persistProjectLegalSnapshot({
+				projectId: project.id,
+				projectName: project.name,
+				projectSlug: project.slug,
+				authorName: project.author.name,
+				agreementDate: project.createdAt,
+				mentorFundShare: initialMentorFundShare,
+				platformShare: PLATFORM_SHARE_PERCENT,
+				damageCompensationEnabled:
+					useCoDevelopmentAgreement && initialDamageCompensationEnabled,
+				damageCompensationAmount:
+					useCoDevelopmentAgreement && initialDamageCompensationEnabled
+						? initialDamageCompensationAmount
+						: null,
+				damageCompensationCurrency:
+					useCoDevelopmentAgreement && initialDamageCompensationEnabled
+						? DEFAULT_DAMAGE_COMPENSATION_CURRENCY
+						: null,
+				createdById: req.user.id,
+				eventType: prismaClient.ProjectLegalEventType.ProjectCreated,
+				payload: {
+					mentorFundShare: initialMentorFundShare,
+					platformShare: PLATFORM_SHARE_PERCENT,
+					damageCompensationEnabled: Boolean(
+						useCoDevelopmentAgreement && initialDamageCompensationEnabled,
+					),
 				},
 			});
 		}
