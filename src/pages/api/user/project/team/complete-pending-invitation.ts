@@ -7,6 +7,7 @@ import {
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
+import { createProjectLegalEvent } from "@/helpers/legal/projectLegalPersistence";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -104,6 +105,21 @@ class ApiUserTeamCompletePendingInvitationHandler {
 					user: { connect: { id: req.user.id } },
 				},
 			});
+
+			if (invitation.team.project?.id) {
+				await createProjectLegalEvent({
+					projectId: invitation.team.project.id,
+					actorUserId: req.user.id,
+					subjectUserId: req.user.id,
+					subjectTeamMemberId: teamMember.id,
+					type: "MemberJoined",
+					effectiveAt: teamMember.startedAt,
+					payload: {
+						joinMethod: "pending-team-invitation",
+						position: pendingInvitation.position,
+					},
+				});
+			}
 
 			// Удаляем информацию о приглашении из pendingTeamInvitations пользователя
 			const updatedPendingInvitations = user.pendingTeamInvitations.filter(

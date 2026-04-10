@@ -75,6 +75,21 @@ type PersistProjectLegalSnapshotInput = {
 	payload?: Record<string, unknown>;
 };
 
+type CreateProjectLegalEventInput = {
+	projectId: string;
+	actorUserId?: string | null;
+	subjectUserId?: string | null;
+	subjectTeamMemberId?: string | null;
+	type:
+		| "AgreementAccepted"
+		| "MemberJoined"
+		| "MentorJoined"
+		| "MemberExcluded"
+		| "MemberLeft";
+	payload?: Record<string, unknown>;
+	effectiveAt?: Date | string | null;
+};
+
 export const persistProjectLegalSnapshot = async (
 	input: PersistProjectLegalSnapshotInput,
 ) => {
@@ -151,5 +166,35 @@ export const persistProjectLegalSnapshot = async (
 		});
 
 		return snapshot;
+	});
+};
+
+export const createProjectLegalEvent = async (
+	input: CreateProjectLegalEventInput,
+) => {
+	const project = await prisma.project.findUnique({
+		where: { id: input.projectId },
+		select: {
+			id: true,
+			usesCoDevelopmentAgreement: true,
+			activeLegalSnapshotId: true,
+		},
+	});
+
+	if (!project?.usesCoDevelopmentAgreement) {
+		return null;
+	}
+
+	return prisma.projectLegalEvent.create({
+		data: {
+			projectId: input.projectId,
+			snapshotId: project.activeLegalSnapshotId || undefined,
+			actorUserId: input.actorUserId || undefined,
+			subjectUserId: input.subjectUserId || undefined,
+			subjectTeamMemberId: input.subjectTeamMemberId || undefined,
+			type: input.type,
+			payload: input.payload,
+			effectiveAt: input.effectiveAt ? new Date(input.effectiveAt) : undefined,
+		},
 	});
 };

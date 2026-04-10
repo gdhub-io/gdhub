@@ -13,6 +13,7 @@ import {
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
+import { createProjectLegalEvent } from "@/helpers/legal/projectLegalPersistence";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -337,7 +338,10 @@ class ApiUserTeamVacancyHandler {
 	}
 
 	@Put("/candidate/hire")
-	public async hireCandidate(@Body(ValidationPipe) { id }: IDParamDto) {
+	public async hireCandidate(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) { id }: IDParamDto,
+	) {
 		const { t } = tolgeeService;
 
 		const vacancy = await prisma.teamVacancy.findUnique({
@@ -366,8 +370,40 @@ class ApiUserTeamVacancyHandler {
 				startedAt: dayjs().toISOString(),
 				enteredProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
 			},
-			select: { id: true, user: true, team: true, vacancy: true },
+			select: {
+				id: true,
+				startedAt: true,
+				user: true,
+				team: {
+					select: {
+						id: true,
+						name: true,
+						project: {
+							select: {
+								id: true,
+							},
+						},
+					},
+				},
+				vacancy: true,
+			},
 		});
+
+		if (member.team.project?.id) {
+			await createProjectLegalEvent({
+				projectId: member.team.project.id,
+				actorUserId: req.user.id,
+				subjectUserId: member.user.id,
+				subjectTeamMemberId: member.id,
+				type: "MemberJoined",
+				effectiveAt: member.startedAt,
+				payload: {
+					joinMethod: "vacancy-hire",
+					position: member.vacancy?.title || null,
+					vacancyId: member.vacancy?.id || null,
+				},
+			});
+		}
 
 		// If vacancy has a promise, create an equity allocation for the member
 		const hasEquityPromise =
@@ -434,7 +470,10 @@ class ApiUserTeamVacancyHandler {
 	}
 
 	@Put("/candidate/fire")
-	public async fireMember(@Body(ValidationPipe) { id }: IDParamDto) {
+	public async fireMember(
+		@Req() req: NextApiRequestWithUser,
+		@Body(ValidationPipe) { id }: IDParamDto,
+	) {
 		const { t } = tolgeeService;
 
 		const vacancy = await prisma.teamVacancy.findUnique({
@@ -463,8 +502,36 @@ class ApiUserTeamVacancyHandler {
 				finishedAt: dayjs().toISOString(),
 				leftProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
 			},
-			select: { user: true, team: true },
+			select: {
+				id: true,
+				finishedAt: true,
+				user: true,
+				team: {
+					select: {
+						name: true,
+						project: {
+							select: {
+								id: true,
+							},
+						},
+					},
+				},
+			},
 		});
+
+		if (firedMember.team.project?.id) {
+			await createProjectLegalEvent({
+				projectId: firedMember.team.project.id,
+				actorUserId: req.user.id,
+				subjectUserId: firedMember.user.id,
+				subjectTeamMemberId: firedMember.id,
+				type: "MemberExcluded",
+				effectiveAt: firedMember.finishedAt,
+				payload: {
+					leaveMethod: "vacancy-fire",
+				},
+			});
+		}
 
 		// Delete all equity allocations for the fired member
 		await prisma.equityPromise.deleteMany({
