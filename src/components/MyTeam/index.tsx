@@ -397,7 +397,7 @@ const MyTeam = () => {
 			responsive: ["md"],
 			render: (value, member) => {
 				return member.status === prismaClient.TeamMemberStatus.Founder ? (
-					<Space>
+					<Space align="center">
 						<Text>{value}</Text>
 						<Tag color="gold">founder</Tag>
 					</Space>

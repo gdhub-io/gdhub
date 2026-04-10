@@ -193,11 +193,7 @@ const EquityShareModal = ({
 				</Button>,
 			]}
 		>
-			<Space
-				direction="vertical"
-				style={{ width: "100%", paddingInline: 8 }}
-				size="large"
-			>
+			<Flex vertical>
 				<div className={styles.equityRules}>
 					<Title level={5}>{t("Equity Distribution Rules")}</Title>
 					<ul>
@@ -206,18 +202,6 @@ const EquityShareModal = ({
 						<li>{t("A portion should be reserved for future investments")}</li>
 					</ul>
 				</div>
-
-				<Alert
-					type="info"
-					message={t(
-						"project.equity.legalAlert",
-						"Changing the mentor fund or investment reserve affects the agreement appendix for the project.",
-					)}
-					description={t(
-						"project.equity.legalAlertDescription",
-						"The agreement appendix should be regenerated automatically. The author only needs to confirm that the project legal terms will be updated.",
-					)}
-				/>
 
 				{/* Settings for equity distribution */}
 				<Form form={form} variant="filled" layout="vertical">
@@ -283,17 +267,18 @@ const EquityShareModal = ({
 								{t("Preview agreement")}
 							</Button>
 						}
-						message={t(
+						description={t(
 							"project.equity.appendixWillBeUpdated",
 							"An additional agreement appendix should be created for this change.",
 						)}
-						description={t(
-							"project.equity.appendixWillBeUpdatedDescription",
-							"Update the agreement appendix and legal event record for this change.",
-						)}
+						// description={t(
+						// 	"project.equity.appendixWillBeUpdatedDescription",
+						// 	"Update the agreement appendix and legal event record for this change.",
+						// )}
 					/>
 				) : null}
-			</Space>
+			</Flex>
+
 			<ProjectLegalPreviewModal
 				open={showAgreementPreview}
 				onClose={() => setShowAgreementPreview(false)}

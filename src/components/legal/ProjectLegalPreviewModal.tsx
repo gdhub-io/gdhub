@@ -28,7 +28,7 @@ const ProjectLegalPreviewModal = ({
 			footer={null}
 			width={LEGAL_PREVIEW_MODAL_WIDTH}
 			destroyOnHidden
-			title={title || t("Co-development agreement")}
+			title={title || t("Co-development agreement preview")}
 		>
 			{open ? (
 				<ProjectLegalContent

@@ -2,7 +2,16 @@ import { AiOutlineHistory } from "@react-icons/all-files/ai/AiOutlineHistory";
 import { AiOutlineInfoCircle } from "@react-icons/all-files/ai/AiOutlineInfoCircle";
 import { AiOutlineSetting } from "@react-icons/all-files/ai/AiOutlineSetting";
 import { useTranslate } from "@tolgee/react";
-import { Button, Card, Grid, Modal, Popover, Space, Typography } from "antd";
+import {
+	Button,
+	Card,
+	Flex,
+	Grid,
+	Modal,
+	Popover,
+	Space,
+	Typography,
+} from "antd";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import EquityTransferModal from "@/components/modals/EquityTransferModal";
@@ -81,7 +90,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 
 	return (
 		<Card className={styles.equityCard}>
-			<Space direction="vertical" style={{ width: "100%" }} size="middle">
+			<Flex vertical>
 				<div className={styles.titleContainer}>
 					<Space align="center">
 						<Typography.Text strong>
@@ -185,7 +194,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 						}
 					/>
 				</div>
-			</Space>
+			</Flex>
 
 			{/* Модальное окно для передачи доли */}
 			<EquityTransferModal

@@ -16,11 +16,23 @@ import { marked } from "marked";
 import { useMemo } from "react";
 import type { ProjectLegalSnapshotInput } from "@/helpers/legal/projectLegalSnapshot";
 import {
+	buildProjectLegalAgreementMarkdown,
 	buildProjectLegalSnapshotMarkdown,
 	getProjectLegalTerms,
 } from "@/helpers/legal/projectLegalSnapshot";
 
 const { Paragraph, Text, Title } = Typography;
+
+type ProjectWorkflowStepPreview = {
+	id: string;
+	order: number;
+	name: string;
+};
+
+type ProjectWorkflowPreview = {
+	currentStep: ProjectWorkflowStepPreview | null;
+	steps: ProjectWorkflowStepPreview[];
+};
 
 type ProjectLegalContentProps = {
 	title?: string;
@@ -42,27 +54,86 @@ const ProjectLegalContent = ({
 			axios.get<{ markdown: string }>("/api/legal/co-development-agreement"),
 		refetchOnWindowFocus: false,
 	});
+	const { data: workflowData, isLoading: isWorkflowLoading } = useQuery({
+		queryKey: ["legal", "project-workflow-preview", appendixInput?.projectId],
+		queryFn: () =>
+			axios.get<ProjectWorkflowPreview>("/api/user/project/workflow", {
+				params: { projectId: appendixInput?.projectId },
+			}),
+		enabled: !!appendixInput?.projectId,
+		refetchOnWindowFocus: false,
+	});
 
 	const agreementMarkdown = data?.data.markdown || "";
+	const workflowSteps = useMemo(() => {
+		if (appendixInput?.workflowSteps?.length) {
+			return appendixInput.workflowSteps;
+		}
+
+		if (!workflowData?.data?.steps?.length) {
+			return undefined;
+		}
+
+		return workflowData.data.steps.map((step) => ({
+			name: step.name,
+			order: step.order,
+			isCurrent: workflowData.data.currentStep?.id === step.id,
+		}));
+	}, [appendixInput?.workflowSteps, workflowData?.data]);
+	const effectiveAppendixInput = useMemo(() => {
+		if (!appendixInput) {
+			return undefined;
+		}
+
+		const derivedProjectPageUrl =
+			appendixInput.projectPageUrl ||
+			appendixInput.sharesPageUrl ||
+			(typeof window !== "undefined" && appendixInput.projectSlug
+				? `${window.location.origin}/my/projects/${appendixInput.projectSlug}/team`
+				: undefined);
+
+		return {
+			...appendixInput,
+			projectPageUrl: derivedProjectPageUrl,
+			sharesPageUrl: derivedProjectPageUrl,
+			workflowSteps,
+		};
+	}, [appendixInput, workflowSteps]);
 	const terms = useMemo(
-		() => (appendixInput ? getProjectLegalTerms(appendixInput) : []),
-		[appendixInput],
+		() =>
+			effectiveAppendixInput
+				? getProjectLegalTerms(effectiveAppendixInput)
+				: [],
+		[effectiveAppendixInput],
 	);
 	const snapshotMarkdown = useMemo(() => {
-		if (!agreementMarkdown || !appendixInput) {
+		if (!agreementMarkdown || !effectiveAppendixInput) {
 			return agreementMarkdown;
 		}
 
-		return buildProjectLegalSnapshotMarkdown(agreementMarkdown, appendixInput);
-	}, [agreementMarkdown, appendixInput]);
+		return buildProjectLegalSnapshotMarkdown(
+			agreementMarkdown,
+			effectiveAppendixInput,
+		);
+	}, [agreementMarkdown, effectiveAppendixInput]);
+	const effectiveAgreementMarkdown = useMemo(() => {
+		if (!agreementMarkdown || !effectiveAppendixInput) {
+			return agreementMarkdown;
+		}
+
+		return buildProjectLegalAgreementMarkdown(
+			agreementMarkdown,
+			effectiveAppendixInput,
+		);
+	}, [agreementMarkdown, effectiveAppendixInput]);
 	const agreementHtml = useMemo(
 		() =>
-			marked.parse(agreementMarkdown, {
+			marked.parse(effectiveAgreementMarkdown, {
 				async: false,
 				breaks: true,
 				gfm: true,
 			}) as string,
-		[agreementMarkdown],
+		[effectiveAgreementMarkdown],
 	);
 
 	const handleDownload = () => {
@@ -82,7 +153,7 @@ const ProjectLegalContent = ({
 	};
 
 	return (
-		<Spin spinning={isLoading}>
+		<Spin spinning={isLoading || isWorkflowLoading}>
 			<Flex vertical gap={16}>
 				{title ? <Title level={4}>{title}</Title> : null}
 
@@ -137,7 +208,7 @@ const ProjectLegalContent = ({
 					<Paragraph type="secondary">
 						{t(
 							"project.legal.documentDescription",
-							"The current platform agreement template is shown below. Project-specific legal parameters are displayed separately in the appendix card.",
+							"The current platform agreement template is shown below. Project-specific parameters are inserted directly into the agreement and duplicated in the appendix card.",
 						)}
 					</Paragraph>
 					<div style={{ overflowX: "auto" }}>{parse(agreementHtml)}</div>
