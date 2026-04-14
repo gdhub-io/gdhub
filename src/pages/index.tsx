@@ -37,13 +37,6 @@ const LandingForAuthorsSection = dynamic(
 		),
 	{ ssr: false },
 );
-const LandingGameCreationSection = dynamic(
-	() =>
-		import("@/components/landing/LandingGameCreationSection").then(
-			(m) => m.LandingGameCreationSection,
-		),
-	{ ssr: false },
-);
 const LandingForSpecialistsSection = dynamic(
 	() =>
 		import("@/components/landing/LandingForSpecialistsSection").then(
@@ -129,7 +122,6 @@ const LandingPage: NextPageWithLayout<LandingPageParams> = ({ stats }) => {
 						<LandingHeroSection stats={stats} />
 						<LandingWhoWeAreSection />
 						<LandingForAuthorsSection />
-						<LandingGameCreationSection />
 						<LandingForSpecialistsSection />
 						<LandingRecentDevlogsSection />
 						<LandingFeedbackSection />
