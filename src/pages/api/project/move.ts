@@ -7,6 +7,7 @@ import {
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
+import { createProjectLegalEvent } from "@/helpers/legal/projectLegalPersistence";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
 
@@ -117,6 +118,23 @@ class ApiProjectMoveHandler {
 								toAllocation: { connect: { id: promise.allocation.id } },
 								promise: { connect: { id: promise.id } },
 								createdBy: { connect: { id: req.user.id } },
+							},
+						});
+
+						await createProjectLegalEvent({
+							projectId,
+							actorUserId: req.user.id,
+							subjectUserId: promise.allocation.owner.id,
+							subjectTeamMemberId: promise.allocation.teamMemberId || undefined,
+							type: "ShareChanged",
+							effectiveAt: new Date(),
+							payload: {
+								action: "promise_vested",
+								promiseId: promise.id,
+								percentage: promise.percentage,
+								stepId: currentStep.id,
+								stepName: currentStep.name,
+								allocationId: promise.allocation.id,
 							},
 						});
 					}

@@ -15,6 +15,7 @@ import {
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
+import { createProjectLegalEvent } from "@/helpers/legal/projectLegalPersistence";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { ProjectEquityRepository } from "@/repositories/project-equity.repository";
 import { prisma } from "@/services/prisma";
@@ -140,6 +141,32 @@ class ApiMemberShareHandler {
 			throw new Error("Total share exceeds 100%");
 		}
 
+		const createdPromise = await prisma.equityPromise.findFirst({
+			where: {
+				allocation: {
+					teamMemberId: memberId,
+					equity: { projectId },
+				},
+				targetStepId,
+				percentage,
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		await createProjectLegalEvent({
+			projectId,
+			actorUserId: req.user.id,
+			subjectTeamMemberId: memberId,
+			type: "ShareChanged",
+			payload: {
+				action: "promise_created",
+				promiseId: createdPromise?.id || null,
+				percentage,
+				targetStepId,
+				vestedImmediately: vested,
+			},
+		});
+
 		return { ...memberShare, percentage };
 	}
 
@@ -150,15 +177,94 @@ class ApiMemberShareHandler {
 	) {
 		const { promiseId, percentage, targetStepId } = data;
 
-		return await prisma.equityPromise.update({
+		const currentPromise = await prisma.equityPromise.findUnique({
+			where: { id: promiseId },
+			include: {
+				allocation: {
+					select: {
+						teamMemberId: true,
+						equity: {
+							select: {
+								projectId: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		const updatedPromise = await prisma.equityPromise.update({
 			where: { id: promiseId },
 			data: { percentage, targetStepId },
 		});
+
+		if (currentPromise?.allocation.equity.projectId) {
+			await createProjectLegalEvent({
+				projectId: currentPromise.allocation.equity.projectId,
+				actorUserId: req.user.id,
+				subjectTeamMemberId:
+					currentPromise.allocation.teamMemberId || undefined,
+				type: "ShareChanged",
+				payload: {
+					action: "promise_updated",
+					promiseId,
+					from: {
+						percentage: currentPromise.percentage,
+						targetStepId: currentPromise.targetStepId,
+					},
+					to: {
+						percentage,
+						targetStepId: targetStepId || null,
+					},
+				},
+			});
+		}
+
+		return updatedPromise;
 	}
 
 	@Delete()
-	public async deleteMemberShare(@Query("promiseId") promiseId: string) {
-		return await prisma.equityPromise.delete({ where: { id: promiseId } });
+	public async deleteMemberShare(
+		@Req() req: NextApiRequestWithUser,
+		@Query("promiseId") promiseId: string,
+	) {
+		const currentPromise = await prisma.equityPromise.findUnique({
+			where: { id: promiseId },
+			include: {
+				allocation: {
+					select: {
+						teamMemberId: true,
+						equity: {
+							select: {
+								projectId: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		const deletedPromise = await prisma.equityPromise.delete({
+			where: { id: promiseId },
+		});
+
+		if (currentPromise?.allocation.equity.projectId) {
+			await createProjectLegalEvent({
+				projectId: currentPromise.allocation.equity.projectId,
+				actorUserId: req.user.id,
+				subjectTeamMemberId:
+					currentPromise.allocation.teamMemberId || undefined,
+				type: "ShareChanged",
+				payload: {
+					action: "promise_deleted",
+					promiseId,
+					percentage: currentPromise.percentage,
+					targetStepId: currentPromise.targetStepId,
+				},
+			});
+		}
+
+		return deletedPromise;
 	}
 }
 

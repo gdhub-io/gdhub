@@ -84,6 +84,7 @@ type CreateProjectLegalEventInput = {
 		| "AgreementAccepted"
 		| "MemberJoined"
 		| "MentorJoined"
+		| "ShareChanged"
 		| "MemberExcluded"
 		| "MemberLeft";
 	payload?: Record<string, unknown>;
