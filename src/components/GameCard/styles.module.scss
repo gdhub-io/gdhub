@@ -40,6 +40,12 @@
   display: flex;
 }
 
+.gameCardTopBadges {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .gameCardAuthor {
   position: absolute;
   top: 12px;
@@ -90,6 +96,19 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   font-size: 12px;
   font-weight: 500;
+}
+
+.openPositionsBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: rgba(24, 144, 255, 0.22);
+  color: white;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .gameCardApplauseIcon {
@@ -244,7 +263,6 @@
 }
 
 .gameCardList {
-  margin-top: 24px;
   margin-bottom: 24px;
 }
 
@@ -253,4 +271,4 @@
   justify-content: center;
   align-items: center;
   min-height: 300px;
-} 
+}

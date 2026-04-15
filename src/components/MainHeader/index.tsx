@@ -155,8 +155,8 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
-					<Link href="/jobs" title={t("public-menu.jobs", "Jobs")}>
-						🔥 {t("public-menu.jobs", "Jobs")}
+					<Link href="/jobs" title={t("public-menu.jobs", "Open positions")}>
+						🔥 {t("public-menu.jobs", "Open positions")}
 					</Link>
 				),
 				key: "/jobs",

@@ -9,8 +9,8 @@ const JobsPage: NextPageWithLayout = ({ projects }: any) => {
 
 	return (
 		<PublicLayout
-			title={t("Jobs in game industry")}
-			subTitle="Open positions for anyone willing to invest their time in bringing new indie games to life"
+			title={t("Open positions")}
+			subTitle="for anyone willing to invest their time in bringing new indie games to life"
 			seo={{
 				description: t("for enterprising specialists in the gaming industry"),
 			}}
