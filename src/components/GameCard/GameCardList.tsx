@@ -1,5 +1,5 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { Col, Empty, Row, Spin } from "antd";
+import { Col, Empty, Row, Skeleton } from "antd";
 import type React from "react";
 import GameCard from "./index";
 import styles from "./styles.module.scss";
@@ -20,6 +20,17 @@ interface GameCardListProps {
 	loading: boolean;
 }
 
+const GAME_CARD_SKELETON_KEYS = [
+	"game-skeleton-1",
+	"game-skeleton-2",
+	"game-skeleton-3",
+	"game-skeleton-4",
+	"game-skeleton-5",
+	"game-skeleton-6",
+	"game-skeleton-7",
+	"game-skeleton-8",
+] as const;
+
 /**
  * GameCardList component displays a responsive grid of game cards
  *
@@ -29,9 +40,22 @@ interface GameCardListProps {
 const GameCardList: React.FC<GameCardListProps> = ({ games, loading }) => {
 	if (loading) {
 		return (
-			<div className={styles.loadingContainer}>
-				<Spin size="large" />
-			</div>
+			<Row gutter={[24, 24]} className={styles.gameCardList}>
+				{GAME_CARD_SKELETON_KEYS.map((key) => (
+					<Col key={key} xs={24} sm={12} md={8} lg={6} xl={6}>
+						<div className={styles.gameCardSkeleton}>
+							<Skeleton.Image active className={styles.gameCardSkeletonCover} />
+							<div className={styles.gameCardSkeletonContent}>
+								<Skeleton
+									active
+									title={{ width: "70%" }}
+									paragraph={{ rows: 2, width: ["50%", "35%"] }}
+								/>
+							</div>
+						</div>
+					</Col>
+				))}
+			</Row>
 		);
 	}
 

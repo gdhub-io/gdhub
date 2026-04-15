@@ -1,4 +1,5 @@
-import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
+import { IconPacman } from "@tabler/icons-react";
+import { Avatar, Card, Space, Tag, Tooltip, Typography } from "antd";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -68,7 +69,9 @@ const GameCard: React.FC<GameCardProps> = ({
 							)}
 							<div className={styles.gameCardTopBadges}>
 								{hasOpenPositions ? (
-									<div className={styles.openPositionsBadge}>Hiring</div>
+									<div className={styles.openPositionsBadge}>
+										<IconPacman size={18} /> <span>Hiring</span>
+									</div>
 								) : null}
 								{applauseCount ? (
 									<div className={styles.gameCardApplause}>
