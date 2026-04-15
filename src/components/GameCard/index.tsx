@@ -7,7 +7,7 @@ import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.js
 import DefaultCover from "./DefaultCover";
 import styles from "./styles.module.scss";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface GameCardProps {
@@ -22,10 +22,10 @@ interface GameCardProps {
 	authorAvatar?: string;
 	isUserProject?: boolean;
 	applauseCount?: number;
+	hasOpenPositions?: boolean;
 }
 
 const GameCard: React.FC<GameCardProps> = ({
-	id,
 	title,
 	genre,
 	platform,
@@ -36,6 +36,7 @@ const GameCard: React.FC<GameCardProps> = ({
 	authorAvatar,
 	isUserProject,
 	applauseCount,
+	hasOpenPositions,
 }) => {
 	return (
 		<Link
@@ -58,29 +59,34 @@ const GameCard: React.FC<GameCardProps> = ({
 						)}
 					</div>
 
-					{(workflowStage || applauseCount) && (
+					{(workflowStage || hasOpenPositions || applauseCount) && (
 						<div className={styles.gameCardTopRight}>
 							{workflowStage && (
 								<div className={styles.gameCardWorkflowStage}>
 									<Tag className={styles.workflowStageTag}>{workflowStage}</Tag>
 								</div>
 							)}
-							{applauseCount ? (
-								<div className={styles.gameCardApplause}>
-									<span
-										className={styles.gameCardApplauseIcon}
-										style={{ width: 22, height: 22 }}
-									>
-										<Lottie
-											animationData={applauseDefaultAnimation}
-											autoplay={false}
-											loop={false}
-											className={styles.gameCardApplauseIconAnimation}
-										/>
-									</span>
-									<span>{applauseCount}</span>
-								</div>
-							) : null}
+							<div className={styles.gameCardTopBadges}>
+								{hasOpenPositions ? (
+									<div className={styles.openPositionsBadge}>Hiring</div>
+								) : null}
+								{applauseCount ? (
+									<div className={styles.gameCardApplause}>
+										<span
+											className={styles.gameCardApplauseIcon}
+											style={{ width: 22, height: 22 }}
+										>
+											<Lottie
+												animationData={applauseDefaultAnimation}
+												autoplay={false}
+												loop={false}
+												className={styles.gameCardApplauseIconAnimation}
+											/>
+										</span>
+										<span>{applauseCount}</span>
+									</div>
+								) : null}
+							</div>
 						</div>
 					)}
 

@@ -4,6 +4,11 @@ import type React from "react";
 import GameCard from "./index";
 import styles from "./styles.module.scss";
 
+type GameListItem = prismaClient.Project & {
+	applauseCount?: number;
+	hasOpenPositions?: boolean;
+};
+
 /**
  * GameCardList properties
  * @typedef {Object} GameCardListProps
@@ -11,35 +16,9 @@ import styles from "./styles.module.scss";
  * @property {boolean} loading - Whether the data is loading
  */
 interface GameCardListProps {
-	games: (prismaClient.Project & {
-		workflow: prismaClient.ProjectWorkflow & {
-			steps: prismaClient.ProjectWorkflowStep[];
-		};
-		applauseCount?: number;
-	})[];
+	games: GameListItem[];
 	loading: boolean;
 }
-
-/**
- * Gets the current workflow stage name
- * @param {any} game - Game data
- * @returns {string|undefined} Workflow stage name
- */
-const getWorkflowStage = (game: any): string | undefined => {
-	try {
-		if (
-			game.workflow &&
-			game.workflow.steps &&
-			game.workflow.steps.length > 0
-		) {
-			return game.workflow.steps[0].name;
-		}
-		return undefined;
-	} catch (error) {
-		console.error("Error getting workflow stage:", error);
-		return undefined;
-	}
-};
 
 /**
  * GameCardList component displays a responsive grid of game cards
@@ -71,8 +50,8 @@ const GameCardList: React.FC<GameCardListProps> = ({ games, loading }) => {
 						platform={game.platform || undefined}
 						coverImage={game.coverImage || undefined}
 						slug={game.slug}
-						workflowStage={getWorkflowStage(game)}
 						applauseCount={game.applauseCount}
+						hasOpenPositions={game.hasOpenPositions}
 					/>
 				</Col>
 			))}
