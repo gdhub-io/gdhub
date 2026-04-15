@@ -5,8 +5,9 @@ import {
 	IconBrandGooglePlay,
 	IconBrandItch,
 	IconBrandSteam,
+	IconPacman,
 } from "@tabler/icons-react";
-import { Col, Row, Tag, Typography } from "antd";
+import { Col, Row, Skeleton, Tag, Typography } from "antd";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,7 +51,13 @@ export type GameOnStoreCardListItem = {
 
 type GameOnStoreCardListProps = {
 	projects?: GameOnStoreCardListItem[];
+	loading?: boolean;
 };
+
+const STORE_CARD_SKELETON_KEYS = [
+	"store-skeleton-1",
+	"store-skeleton-2",
+] as const;
 
 const STORE_META: Record<
 	StorePlatform,
@@ -94,7 +101,38 @@ const getGenres = (genre?: string | null) =>
 		.filter(Boolean)
 		.slice(0, 3) || [];
 
-const GameOnStoreCardList = ({ projects = [] }: GameOnStoreCardListProps) => {
+const GameOnStoreCardList = ({
+	projects = [],
+	loading = false,
+}: GameOnStoreCardListProps) => {
+	if (loading) {
+		return (
+			<Row gutter={[16, 16]}>
+				{STORE_CARD_SKELETON_KEYS.map((key) => (
+					<Col key={key} xs={24} md={12}>
+						<article className={styles.card}>
+							<div className={styles.storeSkeletonCover}>
+								<Skeleton.Image active className={styles.storeSkeletonImage} />
+							</div>
+
+							<div className={styles.storeSkeletonInfo}>
+								<Skeleton
+									active
+									title={{ width: "55%" }}
+									paragraph={{ rows: 3, width: ["80%", "65%", "45%"] }}
+								/>
+								<div className={styles.storeSkeletonBadges}>
+									<Skeleton.Button active size="small" />
+									<Skeleton.Button active size="small" />
+								</div>
+							</div>
+						</article>
+					</Col>
+				))}
+			</Row>
+		);
+	}
+
 	if (!projects.length) {
 		return null;
 	}
@@ -129,7 +167,9 @@ const GameOnStoreCardList = ({ projects = [] }: GameOnStoreCardListProps) => {
 							{project.hasOpenPositions || project.applauseCount ? (
 								<div className={styles.gameCardTopRight}>
 									{project.hasOpenPositions ? (
-										<div className={styles.openPositionsBadge}>Hiring</div>
+										<div className={styles.openPositionsBadge}>
+											<IconPacman size={18} /> <span>Hiring</span>
+										</div>
 									) : null}
 									<div className={styles.gameCardApplause}>
 										<span

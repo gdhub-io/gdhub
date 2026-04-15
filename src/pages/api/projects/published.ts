@@ -27,7 +27,6 @@ class ApiPublishedProjectsHandler {
 		try {
 			const projects = await prisma.project.getProjectsOrderedByActivity({
 				order: "desc",
-				take: 4,
 				where: {
 					workflow: {
 						is: {
@@ -132,7 +131,9 @@ class ApiPublishedProjectsHandler {
 						},
 					};
 				}),
-			).then((items) => items.filter((project) => project !== null));
+			).then((items) =>
+				items.filter((project) => project !== null).slice(0, 4),
+			);
 		} catch (error) {
 			console.error("[projects: published: list: error]", error);
 			throw new BadRequestException("Failed to get published projects");

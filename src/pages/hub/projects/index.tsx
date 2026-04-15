@@ -6,12 +6,15 @@ import { ConfigProvider, Flex, Select, Typography } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import GameOnStoreCardList from "@/components/GameOnStoreCardList";
-import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 import styles from "./style.module.scss";
 
+const ProtectedLayout = dynamic(
+	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),
+	{ ssr: false },
+);
 const GameCardList = dynamic(
 	() => import("@/components/GameCard/GameCardList"),
 	{ ssr: false },
@@ -26,44 +29,59 @@ const { Paragraph } = Typography;
  */
 const ProjectsPage: NextPageWithLayout = () => {
 	const { t } = useTranslate();
-	const { data: session } = useSession();
+	const { status } = useSession();
 	const [selectedStage, setSelectedStage] = useState<string>();
+
+	const isAuthenticated = status === "authenticated";
+	const isSessionLoading = status === "loading";
 
 	const {
 		data: projects,
 		isSuccess,
 		isLoading,
 	} = useQuery({
-		queryKey: ["projects", selectedStage],
-		queryFn: () =>
-			axios.get("/api/projects", {
-				params: selectedStage ? { stage: selectedStage } : undefined,
-			}),
-		enabled: !!session?.user,
+		queryKey: ["projects"],
+		queryFn: () => axios.get("/api/projects"),
+		enabled: isAuthenticated,
 	});
 
 	const { data: projectStages } = useQuery({
 		queryKey: ["projects", "stages"],
 		queryFn: () => axios.get("/api/projects/stages"),
-		enabled: !!session?.user,
+		enabled: isAuthenticated,
 	});
 
-	const { data: publishedProjects } = useQuery({
-		queryKey: ["projects", "published"],
-		queryFn: () => axios.get("/api/projects/published"),
-		enabled: !!session?.user,
-	});
+	const { data: publishedProjects, isLoading: isPublishedProjectsLoading } =
+		useQuery({
+			queryKey: ["projects", "published"],
+			queryFn: () => axios.get("/api/projects/published"),
+			enabled: isAuthenticated,
+		});
+
+	const filteredProjects = useMemo(() => {
+		const items = projects?.data || [];
+
+		if (!selectedStage) {
+			return items;
+		}
+
+		return items.filter(
+			(project: {
+				workflow?: { currentStep?: { name?: string } | null } | null;
+			}) => project.workflow?.currentStep?.name === selectedStage,
+		);
+	}, [projects?.data, selectedStage]);
 
 	return (
 		<ProtectedLayout
-			title={t("page.hab.projects.title", "Indie Game Projects")}
+			title={t("page.hub.projects.title", "Indie Game Projects")}
 			subTitle={t(
-				"page.hab.projects.subtitle",
+				"page.hub.projects.subtitle",
 				"Projects developed independently by users",
 			)}
 		>
 			<div className={styles.container}>
-				{!isSuccess && !isLoading && (
+				{!isSessionLoading && !isLoading && !isSuccess && (
 					<Paragraph type="secondary">
 						There are no projects available to view
 					</Paragraph>
@@ -76,7 +94,10 @@ const ProjectsPage: NextPageWithLayout = () => {
 						</Typography.Title>
 					</div>
 
-					<GameOnStoreCardList projects={publishedProjects?.data || []} />
+					<GameOnStoreCardList
+						projects={publishedProjects?.data || []}
+						loading={isSessionLoading || isPublishedProjectsLoading}
+					/>
 				</div>
 
 				<div className={styles.projectsSection}>
@@ -113,7 +134,10 @@ const ProjectsPage: NextPageWithLayout = () => {
 						</ConfigProvider>
 					</Flex>
 
-					<GameCardList games={projects?.data || []} loading={isLoading} />
+					<GameCardList
+						games={filteredProjects}
+						loading={isSessionLoading || isLoading}
+					/>
 				</div>
 			</div>
 		</ProtectedLayout>
