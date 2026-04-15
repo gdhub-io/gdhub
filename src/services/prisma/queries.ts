@@ -1,14 +1,57 @@
 import type { ProjectLink } from "@/types/project";
 import { prisma } from ".";
 
-const MINIMUM_STAGE_NAME = "Preparing a demo version";
-const ALLOWED_STORE_PLATFORMS = new Set([
+export const MINIMUM_STORE_STAGE_NAME = "Preparing a demo version";
+export const ALLOWED_STORE_PLATFORMS = new Set([
 	"steam",
 	"itch-io",
 	"epic-store",
 	"google-play",
 	"app-store",
 ]);
+
+type StoreWorkflow = {
+	currentStep: {
+		id: string;
+		name: string;
+		order: number;
+	} | null;
+	steps: {
+		id: string;
+		name: string;
+		order: number;
+	}[];
+};
+
+export const getStoreLinks = (links: unknown): ProjectLink[] => {
+	const projectLinks = Array.isArray(links) ? (links as ProjectLink[]) : [];
+
+	return projectLinks.filter(
+		(link) =>
+			ALLOWED_STORE_PLATFORMS.has(link.platform) && Boolean(link.link?.trim()),
+	);
+};
+
+export const isProjectAvailableOnStores = ({
+	links,
+	workflow,
+}: {
+	links: unknown;
+	workflow?: StoreWorkflow | null;
+}) => {
+	const storeLinks = getStoreLinks(links);
+	const minimumStep = workflow?.steps.find(
+		(step) => step.name === MINIMUM_STORE_STAGE_NAME,
+	);
+
+	if (!storeLinks.length || !workflow?.currentStep || !minimumStep) {
+		return false;
+	}
+
+	const currentStep = workflow.currentStep;
+
+	return currentStep.order >= minimumStep.order;
+};
 
 export const getWorkedProjects = async () => {
 	const projects = await prisma.project.getProjectsOrderedByActivity({
@@ -44,6 +87,20 @@ export const getWorkedProjects = async () => {
 export const getPublishedStoreProjects = async () => {
 	const projects = await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
+		where: {
+			workflow: {
+				is: {
+					currentStep: {
+						isNot: null,
+					},
+					steps: {
+						some: {
+							name: MINIMUM_STORE_STAGE_NAME,
+						},
+					},
+				},
+			},
+		},
 	});
 
 	const projectIds = projects.map((project) => project.id);
@@ -98,23 +155,16 @@ export const getPublishedStoreProjects = async () => {
 
 	return await Promise.all(
 		projects.map(async (project) => {
-			const links = Array.isArray(project.links)
-				? (project.links as ProjectLink[])
-				: [];
-			const storeLinks = links.filter(
-				(link) =>
-					ALLOWED_STORE_PLATFORMS.has(link.platform) && Boolean(link.link),
-			);
+			const storeLinks = getStoreLinks(project.links);
 			const workflow = workflowByProjectId.get(project.id);
-			const minimumStep = workflow?.steps.find(
-				(step) => step.name === MINIMUM_STAGE_NAME,
-			);
 
-			if (!storeLinks.length || !workflow?.currentStep || !minimumStep) {
+			if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
 				return null;
 			}
 
-			if (workflow.currentStep.order < minimumStep.order) {
+			const currentStep = workflow?.currentStep;
+
+			if (!currentStep) {
 				return null;
 			}
 
@@ -133,8 +183,8 @@ export const getPublishedStoreProjects = async () => {
 				storeLinks,
 				workflow: {
 					currentStep: {
-						name: workflow.currentStep.name,
-						order: workflow.currentStep.order,
+						name: currentStep.name,
+						order: currentStep.order,
 					},
 				},
 			};

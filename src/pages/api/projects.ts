@@ -24,6 +24,19 @@ class ApiProjectsHandler {
 		try {
 			const projects = await prisma.project.getProjectsOrderedByActivity({
 				order: "desc",
+				where: stage
+					? {
+							workflow: {
+								is: {
+									currentStep: {
+										is: {
+											name: stage,
+										},
+									},
+								},
+							},
+						}
+					: undefined,
 			});
 			const teamIds = projects.map((project) => project.teamId);
 			const publishedVacancies = await prisma.teamVacancy.findMany({
@@ -41,14 +54,8 @@ class ApiProjectsHandler {
 				publishedVacancies.map((vacancy) => vacancy.teamId),
 			);
 
-			const filteredProjects = stage
-				? projects.filter(
-						(project) => project.workflow?.currentStep?.name === stage,
-					)
-				: projects;
-
 			return await Promise.all(
-				filteredProjects.map(async (project) => ({
+				projects.map(async (project) => ({
 					...project,
 					applauseCount: await prisma.project.getApplauseCount({
 						projectId: project.id,

@@ -1,16 +1,11 @@
 import { BadRequestException, createHandler, Get } from "next-api-decorators";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
-import type { ProjectLink } from "@/types/project";
-
-const MINIMUM_STAGE_NAME = "Preparing a demo version";
-const ALLOWED_STORE_PLATFORMS = new Set([
-	"steam",
-	"itch-io",
-	"epic-store",
-	"google-play",
-	"app-store",
-]);
+import {
+	getStoreLinks,
+	isProjectAvailableOnStores,
+	MINIMUM_STORE_STAGE_NAME,
+} from "@/services/prisma/queries";
 
 type WorkflowWithSteps = {
 	currentStep: {
@@ -32,6 +27,21 @@ class ApiPublishedProjectsHandler {
 		try {
 			const projects = await prisma.project.getProjectsOrderedByActivity({
 				order: "desc",
+				take: 4,
+				where: {
+					workflow: {
+						is: {
+							currentStep: {
+								isNot: null,
+							},
+							steps: {
+								some: {
+									name: MINIMUM_STORE_STAGE_NAME,
+								},
+							},
+						},
+					},
+				},
 			});
 
 			const projectIds = projects.map((project) => project.id);
@@ -88,23 +98,16 @@ class ApiPublishedProjectsHandler {
 
 			return await Promise.all(
 				projects.map(async (project) => {
-					const links = Array.isArray(project.links)
-						? (project.links as ProjectLink[])
-						: [];
-					const storeLinks = links.filter(
-						(link) =>
-							ALLOWED_STORE_PLATFORMS.has(link.platform) && Boolean(link.link),
-					);
+					const storeLinks = getStoreLinks(project.links);
 					const workflow = workflowByProjectId.get(project.id);
-					const minimumStep = workflow?.steps.find(
-						(step) => step.name === MINIMUM_STAGE_NAME,
-					);
 
-					if (!storeLinks.length || !workflow?.currentStep || !minimumStep) {
+					if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
 						return null;
 					}
 
-					if (workflow.currentStep.order < minimumStep.order) {
+					const currentStep = workflow?.currentStep;
+
+					if (!currentStep) {
 						return null;
 					}
 
@@ -123,8 +126,8 @@ class ApiPublishedProjectsHandler {
 						storeLinks,
 						workflow: {
 							currentStep: {
-								name: workflow.currentStep.name,
-								order: workflow.currentStep.order,
+								name: currentStep.name,
+								order: currentStep.order,
 							},
 						},
 					};

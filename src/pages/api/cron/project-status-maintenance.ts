@@ -4,6 +4,7 @@ import { createHandler, Get } from "next-api-decorators";
 import QueueCronLog from "@/decorators/QueueCronLog";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
+import { isProjectAvailableOnStores } from "@/services/prisma/queries";
 
 const DORMANT_AFTER_MONTHS = 3;
 const ARCHIVE_AFTER_DORMANT_DAYS = 14;
@@ -68,6 +69,7 @@ class CronProjectStatusMaintenanceHandler {
 				statusChangedAt: true,
 				teamId: true,
 				authorId: true,
+				links: true,
 				author: {
 					select: {
 						email: true,
@@ -101,6 +103,7 @@ class CronProjectStatusMaintenanceHandler {
 			projectEquities,
 			workflowUpdates,
 			workflowStepUpdates,
+			workflows,
 			equityAllocations,
 			equityPromises,
 		] = await Promise.all([
@@ -135,6 +138,30 @@ class CronProjectStatusMaintenanceHandler {
 						select: { projectId: true },
 					},
 					updatedAt: true,
+				},
+			}),
+			prisma.projectWorkflow.findMany({
+				where: {
+					projectId: {
+						in: projectIds,
+					},
+				},
+				select: {
+					projectId: true,
+					currentStep: {
+						select: {
+							id: true,
+							name: true,
+							order: true,
+						},
+					},
+					steps: {
+						select: {
+							id: true,
+							name: true,
+							order: true,
+						},
+					},
 				},
 			}),
 			prisma.equityAllocation.findMany({
@@ -203,6 +230,9 @@ class CronProjectStatusMaintenanceHandler {
 			(item) => item.equity.projectId,
 			(item) => item.updatedAt,
 		);
+		const workflowByProjectId = new Map(
+			workflows.map((workflow) => [workflow.projectId, workflow]),
+		);
 		const maxEquityPromiseByProject = toMaxDateMap(
 			equityPromises,
 			(item) => item.allocation.equity.projectId,
@@ -256,6 +286,10 @@ class CronProjectStatusMaintenanceHandler {
 
 			if (
 				project.status === prismaClient.ProjectStatus.Approved &&
+				!isProjectAvailableOnStores({
+					links: project.links,
+					workflow: workflowByProjectId.get(project.id),
+				}) &&
 				lastActivityAt <= dormantThreshold
 			) {
 				await prisma.project.update({
