@@ -168,6 +168,10 @@ export const getStaticProps = async (_context: GetServerSidePropsContext) => {
 					updatedAt: p.updatedAt?.toISOString() || null,
 					startedAt: p.startedAt?.toISOString() || null,
 					finishedAt: p.finishedAt?.toISOString() || null,
+					dormantAt: p.dormantAt?.toISOString() || null,
+					statusChangedAt: p.statusChangedAt?.toISOString() || null,
+					archivedAt: p.archivedAt?.toISOString() || null,
+					killedWithDignityAt: p.killedWithDignityAt?.toISOString() || null,
 					lastPostAt: p.lastPostAt?.toISOString() || null,
 					firstPostAt: p.firstPostAt?.toISOString() || null,
 					author: {
