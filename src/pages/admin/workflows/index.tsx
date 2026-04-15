@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { GoTrash } from "@react-icons/all-files/go/GoTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {

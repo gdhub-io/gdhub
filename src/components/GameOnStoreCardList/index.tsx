@@ -49,7 +49,7 @@ export type GameOnStoreCardListItem = {
 };
 
 type GameOnStoreCardListProps = {
-	projects: GameOnStoreCardListItem[];
+	projects?: GameOnStoreCardListItem[];
 };
 
 const STORE_META: Record<
@@ -94,7 +94,7 @@ const getGenres = (genre?: string | null) =>
 		.filter(Boolean)
 		.slice(0, 3) || [];
 
-const GameOnStoreCardList = ({ projects }: GameOnStoreCardListProps) => {
+const GameOnStoreCardList = ({ projects = [] }: GameOnStoreCardListProps) => {
 	if (!projects.length) {
 		return null;
 	}
