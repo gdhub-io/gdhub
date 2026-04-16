@@ -5,6 +5,7 @@ import {
 	ArrowLeftOutlined,
 	ArrowRightOutlined,
 	ClockCircleOutlined,
+	LoadingOutlined,
 	LockOutlined,
 } from "@ant-design/icons";
 import type { OutputBlockData, OutputData } from "@editorjs/editorjs";
@@ -27,7 +28,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getSession, useSession } from "next-auth/react";
 import type { ComponentProps } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
@@ -104,20 +105,26 @@ const ApplauseIcon = ({
 	active = false,
 	playToken = 0,
 	size = 24,
+	loading = false,
 }: {
 	active?: boolean;
 	playToken?: number;
 	size?: number;
+	loading?: boolean;
 }) => {
 	return (
 		<span className={styles.applauseIcon} style={{ width: size, height: size }}>
-			<Lottie
-				key={`${active ? "active" : "default"}-${playToken}`}
-				animationData={applauseDefaultAnimation}
-				autoplay={active && playToken > 0}
-				loop={false}
-				className={styles.applauseIconAnimation}
-			/>
+			{loading ? (
+				<LoadingOutlined spin style={{ fontSize: size, lineHeight: 1 }} />
+			) : (
+				<Lottie
+					key={`${active ? "active" : "default"}-${playToken}`}
+					animationData={applauseDefaultAnimation}
+					autoplay={active && playToken > 0}
+					loop={false}
+					className={styles.applauseIconAnimation}
+				/>
+			)}
 		</span>
 	);
 };
@@ -195,7 +202,9 @@ export default function ProjectReport({
 	const [applauseCount, setApplauseCount] = useState(post.applauseCount || 0);
 	const [hasApplauded, setHasApplauded] = useState(false);
 	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
+	const [isApplauseStateLoading, setIsApplauseStateLoading] = useState(false);
 	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
+	const applauseRequestIdRef = useRef(0);
 
 	const isUserAuthenticated =
 		authStatus === "authenticated" ||
@@ -208,15 +217,18 @@ export default function ProjectReport({
 	useEffect(() => {
 		if (!isUserAuthenticated) {
 			setHasApplauded(false);
+			setIsApplauseStateLoading(false);
 			return;
 		}
 
 		let isMounted = true;
+		const requestId = ++applauseRequestIdRef.current;
+		setIsApplauseStateLoading(true);
 
 		axios
 			.get(`/api/devlog/${post.id}/applause`)
 			.then(({ data }) => {
-				if (!isMounted) {
+				if (!isMounted || requestId !== applauseRequestIdRef.current) {
 					return;
 				}
 
@@ -225,6 +237,13 @@ export default function ProjectReport({
 			})
 			.catch((error) => {
 				console.error("Error fetching applause state:", error);
+			})
+			.finally(() => {
+				if (!isMounted || requestId !== applauseRequestIdRef.current) {
+					return;
+				}
+
+				setIsApplauseStateLoading(false);
 			});
 
 		return () => {
@@ -261,9 +280,11 @@ export default function ProjectReport({
 	}
 
 	const handleApplauseToggle = async () => {
-		if (!isUserAuthenticated || isApplauseLoading) {
+		if (!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading) {
 			return;
 		}
+
+		applauseRequestIdRef.current += 1;
 
 		const nextHasApplauded = !hasApplauded;
 		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
@@ -306,10 +327,13 @@ export default function ProjectReport({
 						active={hasApplauded}
 						playToken={applauseAnimationToken}
 						size={22}
+						loading={isApplauseStateLoading}
 					/>
 				}
 				onClick={handleApplauseToggle}
-				disabled={!isUserAuthenticated}
+				disabled={
+					!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading
+				}
 			>
 				{applauseCount > 0 ? applauseCount : null}
 			</Button>
@@ -341,10 +365,15 @@ export default function ProjectReport({
 								active={hasApplauded}
 								playToken={applauseAnimationToken}
 								size={40}
+								loading={isApplauseStateLoading}
 							/>
 						}
 						onClick={handleApplauseToggle}
-						disabled={!isUserAuthenticated}
+						disabled={
+							!isUserAuthenticated ||
+							isApplauseLoading ||
+							isApplauseStateLoading
+						}
 					>
 						{applauseCount > 0 ? (
 							<span className={styles.applauseBannerCount}>

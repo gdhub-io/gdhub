@@ -1,4 +1,5 @@
 import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
+import { LoadingOutlined } from "@ant-design/icons";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
 import { IconDownload, IconQrcode } from "@tabler/icons-react";
@@ -25,7 +26,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
 import type { NextSeoProps } from "next-seo";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import YouTube from "react-youtube";
 import rehypeRaw from "rehype-raw";
@@ -83,7 +84,9 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 	const [applauseCount, setApplauseCount] = useState(projectApplauseCount || 0);
 	const [hasApplauded, setHasApplauded] = useState(false);
 	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
+	const [isApplauseStateLoading, setIsApplauseStateLoading] = useState(false);
 	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
+	const applauseRequestIdRef = useRef(0);
 
 	const isUserAuthenticated =
 		authStatus === "authenticated" ||
@@ -109,15 +112,18 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 	useEffect(() => {
 		if (!isUserAuthenticated) {
 			setHasApplauded(false);
+			setIsApplauseStateLoading(false);
 			return;
 		}
 
 		let isMounted = true;
+		const requestId = ++applauseRequestIdRef.current;
+		setIsApplauseStateLoading(true);
 
 		axios
 			.get(`/api/project/${project.id}/applause`)
 			.then(({ data }) => {
-				if (!isMounted) {
+				if (!isMounted || requestId !== applauseRequestIdRef.current) {
 					return;
 				}
 
@@ -126,6 +132,13 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 			})
 			.catch((error) => {
 				console.error("Error fetching project applause state:", error);
+			})
+			.finally(() => {
+				if (!isMounted || requestId !== applauseRequestIdRef.current) {
+					return;
+				}
+
+				setIsApplauseStateLoading(false);
 			});
 
 		return () => {
@@ -188,9 +201,11 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 	const markdownRehypePlugins = [rehypeRaw] as Pluggable[];
 
 	const handleApplauseToggle = async () => {
-		if (!isUserAuthenticated || isApplauseLoading) {
+		if (!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading) {
 			return;
 		}
+
+		applauseRequestIdRef.current += 1;
 
 		const nextHasApplauded = !hasApplauded;
 		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
@@ -224,7 +239,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 		<Tooltip
 			title={
 				isUserAuthenticated
-					? t("page.devlog.applauseTooltip", "Оцени работу команды")
+					? t("page.devlog.applauseTooltip", "Rate the team's work")
 					: t(
 							"page.devlog.applauseAuthTooltip",
 							"Only authorized users can leave applause",
@@ -243,17 +258,28 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 								className={styles.projectApplauseIcon}
 								style={{ width: 33, height: 33 }}
 							>
-								<Lottie
-									key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
-									animationData={applauseDefaultAnimation}
-									autoplay={hasApplauded && applauseAnimationToken > 0}
-									loop={false}
-									className={styles.projectApplauseIconAnimation}
-								/>
+								{isApplauseStateLoading ? (
+									<LoadingOutlined
+										spin
+										style={{ fontSize: 33, lineHeight: 1 }}
+									/>
+								) : (
+									<Lottie
+										key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
+										animationData={applauseDefaultAnimation}
+										autoplay={hasApplauded && applauseAnimationToken > 0}
+										loop={false}
+										className={styles.projectApplauseIconAnimation}
+									/>
+								)}
 							</span>
 						}
 						onClick={handleApplauseToggle}
-						disabled={!isUserAuthenticated}
+						disabled={
+							!isUserAuthenticated ||
+							isApplauseLoading ||
+							isApplauseStateLoading
+						}
 					>
 						{applauseCount > 0 ? applauseCount : null}
 					</Button>
