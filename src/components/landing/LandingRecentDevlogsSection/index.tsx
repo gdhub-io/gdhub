@@ -15,6 +15,7 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
 import styles from "./style.module.scss";
 
 const { Title, Text, Paragraph } = Typography;
@@ -137,9 +138,11 @@ export const LandingRecentDevlogsSection = () => {
 													</div>
 													<div className={styles.cardContent}>
 														<Text>
-															{getEditorjsShortContent(
-																devlog.contentEditor as unknown as OutputData,
-																150,
+															{htmlFragmentToPlainText(
+																getEditorjsShortContent(
+																	devlog.contentEditor as unknown as OutputData,
+																	150,
+																),
 															)}
 														</Text>
 													</div>

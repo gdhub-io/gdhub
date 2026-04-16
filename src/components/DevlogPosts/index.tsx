@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import { PageViews } from "@/components/PageViews";
 import {
@@ -20,6 +20,7 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
 import styles from "./styles.module.scss";
 
 const { Title } = Typography;
@@ -48,54 +49,21 @@ const PostCard: React.FC<{
 	};
 	onClick: (e: React.MouseEvent) => void;
 }> = ({ post, onClick }) => {
-	const { t } = useTranslate();
 	const router = useRouter();
-	const [imageError, setImageError] = useState(false);
-
-	const cleanMarkdown = (text: string) => {
-		return text
-			.replace(/\*\*(.*?)\*\*/g, "$1")
-			.replace(/\*(.*?)\*/g, "$1")
-			.replace(/\[(.*?)\]\((.*?)\)/g, "$1")
-			.replace(/!\[(.*?)\]\((.*?)\)/g, "")
-			.replace(/#{1,6}\s/g, "")
-			.replace(/`(.*?)`/g, "$1")
-			.replace(/```.*?\n([\s\S]*?)```/g, "$1")
-			.trim();
-	};
 
 	const handleProjectClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		router.push(`/project/${post.project?.slug}`);
 	};
 
-	const truncateText = (text: string | undefined, maxLength: number) => {
-		if (!text) return "";
-		if (text.length <= maxLength) return text;
-		return text.slice(0, maxLength) + "...";
-	};
-
-	const getInitials = (title: string) => {
-		if (!title) return "";
-		return title
-			.split(" ")
-			.map((word) => word[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
-	};
-
-	const stripHtml = (html: string) => {
-		return html.replace(/<[^>]*>/g, "");
-	};
-
 	const getPreviewText = () => {
-		return post.contentEditor
+		const raw = post.contentEditor
 			? getEditorjsShortContent(
 					post.contentEditor as unknown as OutputData,
 					300,
 				)
 			: post.content;
+		return htmlFragmentToPlainText(raw ?? "");
 	};
 
 	const pageCoverFromContent = useMemo(
@@ -131,7 +99,6 @@ const PostCard: React.FC<{
 								width={240}
 								height={240}
 								unoptimized
-								onError={() => setImageError(true)}
 							/>
 						) : (
 							<DefaultCover title={post.project?.name || ""} />

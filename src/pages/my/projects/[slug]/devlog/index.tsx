@@ -19,6 +19,7 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
 import { useCurrentProject } from "@/hooks/project";
 import { ProtectedProjectLayout } from "@/layouts/ProtectedProjectLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -115,7 +116,12 @@ const MyProjectPage: NextPageWithLayout = () => {
 				render: (contentEditor, record) =>
 					contentEditor ? (
 						<Text ellipsis style={{ maxWidth: "240px" }}>
-							{getEditorjsShortContent(contentEditor, 100)}
+							{htmlFragmentToPlainText(
+								getEditorjsShortContent(
+									contentEditor as unknown as OutputData,
+									500,
+								),
+							)}
 						</Text>
 					) : (
 						<Text ellipsis style={{ maxWidth: "240px" }}>
