@@ -1,5 +1,5 @@
 import { IconPacman } from "@tabler/icons-react";
-import { Avatar, Card, Space, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +9,14 @@ import DefaultCover from "./DefaultCover";
 import styles from "./styles.module.scss";
 
 const { Title } = Typography;
+
+function accentForWorkflowStage(stage?: string): string {
+	if (!stage) return "#A1A1AA";
+	const s = stage.toLowerCase();
+	if (/active|live|release|done|published|complete/.test(s)) return "#22C55E";
+	if (/draft|progress|planned|pause|hold|wip/.test(s)) return "#F59E0B";
+	return "#6366F1";
+}
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface GameCardProps {
@@ -24,6 +32,7 @@ interface GameCardProps {
 	isUserProject?: boolean;
 	applauseCount?: number;
 	hasOpenPositions?: boolean;
+	variant?: "default" | "hub";
 }
 
 const GameCard: React.FC<GameCardProps> = ({
@@ -38,7 +47,57 @@ const GameCard: React.FC<GameCardProps> = ({
 	isUserProject,
 	applauseCount,
 	hasOpenPositions,
+	variant = "default",
 }) => {
+	if (variant === "hub") {
+		return (
+			<Link
+				href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`}
+				className={`${styles.gameCardLink} ${styles.hubLink}`}
+			>
+				<Card
+					className={`${styles.gameCard} ${styles.hubCard}`}
+					styles={{ body: { padding: 0 } }}
+				>
+					<div className={styles.hubCardContent}>
+						<div className={styles.hubImageContainer}>
+							{coverImage ? (
+								<Image
+									src={coverImage}
+									alt={`${title} cover`}
+									fill
+									className={styles.gameCardImage}
+									sizes="160px"
+								/>
+							) : (
+								<DefaultCover title={title} />
+							)}
+						</div>
+						<div className={styles.hubInfo}>
+							<Title level={5} className={styles.hubTitle}>
+								{title}
+							</Title>
+							<div className={styles.hubMeta}>
+								<span
+									className={styles.hubStageDot}
+									style={{
+										background: accentForWorkflowStage(workflowStage),
+									}}
+									aria-hidden
+								/>
+								<span className={styles.hubMetaText}>
+									{[workflowStage, genre || platform || authorName]
+										.filter(Boolean)
+										.join(" · ") || "Project"}
+								</span>
+							</div>
+						</div>
+					</div>
+				</Card>
+			</Link>
+		);
+	}
+
 	return (
 		<Link
 			href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`}

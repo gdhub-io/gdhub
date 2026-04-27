@@ -5922,6 +5922,7 @@
                   "top": 1
                 }
               },
+              "gap": 16,
               "children": [
                 {
                   "type": "frame",
@@ -7280,7 +7281,7 @@
                   "type": "frame",
                   "id": "kVN3p",
                   "name": "Sidebar",
-                  "width": 300,
+                  "width": 240,
                   "layout": "vertical",
                   "gap": 16,
                   "padding": [

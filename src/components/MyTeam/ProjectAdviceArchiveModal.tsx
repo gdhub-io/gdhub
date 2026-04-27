@@ -75,7 +75,6 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 						);
 						text = t("Closed");
 						break;
-					case "Created":
 					default:
 						icon = (
 							<MdFiberManualRecord style={{ color: "#1890ff", fontSize: 8 }} />
@@ -138,33 +137,31 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 	];
 
 	return (
-		<>
-			<Modal
-				centered
-				open={open}
-				onCancel={onClose}
-				onOk={onClose}
-				title={
-					t("Advice requests archive to ") +
-					(advisor?.id ? `${advisor.profile.name}` : "Advisors")
+		<Modal
+			centered
+			open={open}
+			onCancel={onClose}
+			onOk={onClose}
+			title={
+				t("Advice requests archive to ") +
+				(advisor?.id ? `${advisor.profile.name}` : "Advisors")
+			}
+			width={"80%"}
+			footer={null}
+		>
+			<ModernTable
+				loading={isLoadingAdvisorAdviceRequests}
+				columns={adviceArchiveColumns}
+				dataSource={
+					advisorAdviceRequests?.data?.map((r: any) => ({
+						...r,
+						key: r.id,
+					})) || []
 				}
-				width={"80%"}
-				footer={null}
-			>
-				<ModernTable
-					loading={isLoadingAdvisorAdviceRequests}
-					columns={adviceArchiveColumns}
-					dataSource={
-						advisorAdviceRequests?.data?.map((r: any) => ({
-							...r,
-							key: r.id,
-						})) || []
-					}
-					pagination={false}
-					size="small"
-				/>
-			</Modal>
-		</>
+				pagination={false}
+				size="small"
+			/>
+		</Modal>
 	);
 };
 
