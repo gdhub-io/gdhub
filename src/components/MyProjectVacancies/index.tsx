@@ -47,12 +47,12 @@ const MyProjectVacancies = () => {
 		refetch: fetchMyProjectVacancies,
 		isLoading: isLoadingMyMyProjectVacancies,
 	} = useQuery({
-		queryKey: ["project-team-vacancies", contextProject?.teamId],
+		queryKey: ["project-team-vacancies", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get("/api/user/project/vacancies", {
-				params: { teamId: contextProject?.teamId },
+				params: { teamId: contextProject?.team?.id },
 			}),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 		refetchOnWindowFocus: false,
 	});
 
@@ -203,7 +203,7 @@ const MyProjectVacancies = () => {
 			)}
 
 			<VacancyModal
-				teamId={contextProject?.teamId}
+				teamId={contextProject?.team?.id}
 				projectId={contextProject?.id}
 				vacancyId={selectedVacancyId}
 				open={showVacancyModal}
@@ -215,7 +215,7 @@ const MyProjectVacancies = () => {
 			/>
 
 			<VacancyArchiveModal
-				teamId={contextProject?.teamId}
+				teamId={contextProject?.team?.id}
 				projectId={contextProject?.id}
 				projectName={contextProject?.name}
 				open={showVacancyArchiveModal}

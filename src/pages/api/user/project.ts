@@ -120,7 +120,10 @@ class ApiProjectHandler {
 					{ team: { members: { some: { userId: req.user.id } } } },
 				],
 			},
-			include: { workflow: { include: { steps: true } } },
+			include: {
+				team: { select: { id: true } },
+				workflow: { include: { steps: true } },
+			},
 		});
 
 		return project;
@@ -203,6 +206,7 @@ class ApiProjectHandler {
 				},
 			},
 			include: {
+				team: { select: { id: true } },
 				author: {
 					select: {
 						name: true,
@@ -240,6 +244,7 @@ class ApiProjectHandler {
 				author: authorId ? { connect: { id: authorId } } : undefined,
 			},
 			include: {
+				team: { select: { id: true } },
 				author: {
 					select: {
 						name: true,
@@ -269,7 +274,10 @@ class ApiProjectHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { id }: QueryIdParam,
 	) {
-		await prisma.project.delete({ where: { id, authorId: req.user.id } });
+		return prisma.project.deleteProject({
+			projectId: id,
+			authorId: req.user.id,
+		});
 	}
 }
 

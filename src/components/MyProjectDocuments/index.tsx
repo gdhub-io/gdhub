@@ -63,12 +63,12 @@ const MyProjectDocuments = () => {
 		refetch: fetchMyProjectDocuments,
 		isLoading: isLoadingMyProjectDocuments,
 	} = useQuery({
-		queryKey: ["project-team-documents", contextProject?.teamId],
+		queryKey: ["project-team-documents", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get("/api/user/project/documents", {
-				params: { teamId: contextProject?.teamId },
+				params: { teamId: contextProject?.team?.id },
 			}),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 		refetchOnWindowFocus: false,
 	});
 
@@ -144,7 +144,7 @@ const MyProjectDocuments = () => {
 						onConfirm={() =>
 							handleDeleteDocument({
 								id: record.id,
-								teamId: contextProject?.teamId,
+								teamId: contextProject?.team?.id,
 							})
 						}
 					>
@@ -213,7 +213,7 @@ const MyProjectDocuments = () => {
 			)}
 
 			<CreateDocumentModal
-				teamId={contextProject?.teamId}
+				teamId={contextProject?.team?.id}
 				projectId={contextProject?.id}
 				open={showDocumentModal}
 				onCancel={handleCancelCreateDocument}

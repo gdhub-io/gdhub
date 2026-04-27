@@ -57,20 +57,34 @@ export const getWorkedProjects = async () => {
 	const projects = await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
 	});
-	const teamIds = projects.map((project) => project.teamId);
+	const projectIds = projects.map((project) => project.id);
 	const publishedVacancies = await prisma.teamVacancy.findMany({
 		where: {
-			teamId: {
-				in: teamIds,
+			team: {
+				project: {
+					id: {
+						in: projectIds,
+					},
+				},
 			},
 			status: "Published",
 		},
 		select: {
-			teamId: true,
+			team: {
+				select: {
+					project: {
+						select: {
+							id: true,
+						},
+					},
+				},
+			},
 		},
 	});
-	const teamIdsWithOpenPositions = new Set(
-		publishedVacancies.map((vacancy) => vacancy.teamId),
+	const projectIdsWithOpenPositions = new Set(
+		publishedVacancies.flatMap((vacancy) =>
+			vacancy.team.project?.id ? [vacancy.team.project.id] : [],
+		),
 	);
 
 	return await Promise.all(
@@ -79,7 +93,7 @@ export const getWorkedProjects = async () => {
 			applauseCount: await prisma.project.getApplauseCount({
 				projectId: project.id,
 			}),
-			hasOpenPositions: teamIdsWithOpenPositions.has(project.teamId),
+			hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
 		})),
 	);
 };
@@ -104,7 +118,6 @@ export const getPublishedStoreProjects = async () => {
 	});
 
 	const projectIds = projects.map((project) => project.id);
-	const teamIds = projects.map((project) => project.teamId);
 	const workflows = await prisma.projectWorkflow.findMany({
 		where: {
 			projectId: {
@@ -140,17 +153,31 @@ export const getPublishedStoreProjects = async () => {
 	);
 	const publishedVacancies = await prisma.teamVacancy.findMany({
 		where: {
-			teamId: {
-				in: teamIds,
+			team: {
+				project: {
+					id: {
+						in: projectIds,
+					},
+				},
 			},
 			status: "Published",
 		},
 		select: {
-			teamId: true,
+			team: {
+				select: {
+					project: {
+						select: {
+							id: true,
+						},
+					},
+				},
+			},
 		},
 	});
-	const teamIdsWithOpenPositions = new Set(
-		publishedVacancies.map((vacancy) => vacancy.teamId),
+	const projectIdsWithOpenPositions = new Set(
+		publishedVacancies.flatMap((vacancy) =>
+			vacancy.team.project?.id ? [vacancy.team.project.id] : [],
+		),
 	);
 
 	return await Promise.all(
@@ -179,7 +206,7 @@ export const getPublishedStoreProjects = async () => {
 				applauseCount: await prisma.project.getApplauseCount({
 					projectId: project.id,
 				}),
-				hasOpenPositions: teamIdsWithOpenPositions.has(project.teamId),
+				hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
 				storeLinks,
 				workflow: {
 					currentStep: {

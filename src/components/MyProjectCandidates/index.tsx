@@ -30,7 +30,7 @@ const MyProjectCandidates = () => {
 					user: prismaClient.User & { specialities: prismaClient.Speciality[] };
 				})[]
 			>("/api/user/project/candidates", {
-				params: { teamId: contextProject?.teamId },
+				params: { teamId: contextProject?.team?.id },
 			}),
 		enabled: !!contextProject,
 	});

@@ -82,7 +82,7 @@ export const ProtectedProjectLayout = ({
 		setContextProject({
 			id: project.id,
 			name: project.name,
-			teamId: project.teamId,
+			team: project.team,
 			isProjectAuthor,
 		});
 	}, [project, isProjectAuthor]);

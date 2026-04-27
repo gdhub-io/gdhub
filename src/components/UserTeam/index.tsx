@@ -19,16 +19,16 @@ const UserTeam = () => {
 	const contextProject = useContext(ProjectContext)?.contextProject;
 
 	const { data: team, isLoading: isLoadingMyTeam } = useQuery({
-		queryKey: ["user-project-team", contextProject?.teamId],
+		queryKey: ["user-project-team", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<
 				prismaClient.Team & {
 					members: (prismaClient.TeamMember & { user: prismaClient.User })[];
 				}
 			>("/api/user/project/team", {
-				params: { teamId: contextProject?.teamId },
+				params: { teamId: contextProject?.team?.id },
 			}),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 	});
 
 	const columns: ColumnsType<
