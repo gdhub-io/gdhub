@@ -1,5 +1,5 @@
 import { Client } from "@notionhq/client";
-import { AvailableLocales } from "@/config/locale";
+import { AvailableLocales, defaultLocale } from "@/config/locale";
 
 // Initializing a client
 const NotionService = new Client({
@@ -12,7 +12,7 @@ type GetPagesParams = {
 };
 
 const getDatabase = ({
-	locale = AvailableLocales.ru,
+	locale = defaultLocale,
 }: {
 	locale: AvailableLocales;
 }) => {
@@ -32,7 +32,7 @@ const getDatabase = ({
 
 export const getPages = async ({
 	roles = [],
-	locale = AvailableLocales.ru,
+	locale = defaultLocale,
 }: GetPagesParams) => {
 	try {
 		const filterParams: any = {
@@ -98,10 +98,7 @@ export const getPage = async ({ pageId }: { pageId: string }) => {
 	}
 };
 
-export const getBlocks = async (
-	pageSlug: string,
-	locale = AvailableLocales.ru,
-) => {
+export const getBlocks = async (pageSlug: string, locale = defaultLocale) => {
 	try {
 		const response = await NotionService.databases.query({
 			database_id: getDatabase({ locale }),

@@ -54,6 +54,7 @@ import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { useChat } from "@/components/Chat/useChat";
 import { ChatButton } from "@/components/ChatButton";
+import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { getDeviceDisplayName } from "@/helpers/device";
 import { hasRole } from "@/helpers/user";
@@ -309,7 +310,10 @@ export const ProtectedLayout = ({
 	}, []);
 
 	useEffect(() => {
-		if (session?.user.lang && getLanguage() !== session.user.lang) {
+		if (
+			isAvailableLocale(session?.user.lang) &&
+			getLanguage() !== session.user.lang
+		) {
 			changeLanguage(session.user.lang).then(() =>
 				console.info("language is changed"),
 			);

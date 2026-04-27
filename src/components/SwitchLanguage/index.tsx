@@ -2,6 +2,7 @@ import { TbWorld } from "@react-icons/all-files/tb/TbWorld";
 import { useTolgee } from "@tolgee/react";
 import { Button, Dropdown, type MenuProps, Typography } from "antd";
 import { useRouter } from "next/router";
+import { availableLocales, defaultLocale } from "@/config/locale";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -18,21 +19,19 @@ export const SwitchLanguage = ({
 	const router = useRouter();
 	const tolgee = useTolgee(["language"]);
 
-	const langMenuItems = [
-		{
-			key: "en",
-			label: <Text>English</Text>,
-			value: "en",
-		},
-		{
-			key: "ru",
-			label: <Text>Русский</Text>,
-		},
-	];
+	const langMenuItems = availableLocales.map((locale) => ({
+		key: locale,
+		label: <Text>{locale === "ru" ? "Русский" : "English"}</Text>,
+		value: locale,
+	}));
 
 	const handleSelectLanguage: MenuProps["onClick"] = ({ key }) => {
 		router.replace(router.pathname, undefined, { locale: key });
 	};
+
+	if (availableLocales.length <= 1) {
+		return null;
+	}
 
 	return (
 		<Dropdown

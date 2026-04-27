@@ -6,6 +6,11 @@ import {
 	type TolgeeInstance,
 } from "@tolgee/react";
 import { ContextUi, InContextTools } from "@tolgee/web/tools";
+import {
+	type AvailableLocales,
+	availableLocales,
+	defaultLocale,
+} from "@/config/locale";
 import enLocale from "@/i18n/en.json";
 import ruLocale from "@/i18n/ru.json";
 
@@ -43,13 +48,13 @@ const createTolgeeService = () => {
 	}
 
 	return tolgee.init({
-		defaultLanguage: process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string,
-		availableLanguages: ["en", "ru"],
+		defaultLanguage: defaultLocale,
+		availableLanguages: availableLocales,
 		// for production and server
 		staticData: {
 			en: enLocale,
 			ru: ruLocale,
-		},
+		} satisfies Record<AvailableLocales, unknown>,
 	});
 };
 
