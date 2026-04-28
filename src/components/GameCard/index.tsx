@@ -1,3 +1,4 @@
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { IconPacman } from "@tabler/icons-react";
 import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
 import dynamic from "next/dynamic";
@@ -33,6 +34,7 @@ interface GameCardProps {
 	applauseCount?: number;
 	hasOpenPositions?: boolean;
 	variant?: "default" | "hub";
+	status?: prismaClient.ProjectStatus;
 }
 
 const GameCard: React.FC<GameCardProps> = ({
@@ -48,6 +50,7 @@ const GameCard: React.FC<GameCardProps> = ({
 	applauseCount,
 	hasOpenPositions,
 	variant = "default",
+	status,
 }) => {
 	if (variant === "hub") {
 		return (
@@ -75,7 +78,10 @@ const GameCard: React.FC<GameCardProps> = ({
 						</div>
 						<div className={styles.hubInfo}>
 							<Title level={5} className={styles.hubTitle}>
-								{title}
+								{title}{" "}
+								{status === prismaClient.ProjectStatus.Archived
+									? `(${status})`
+									: null}
 							</Title>
 							<div className={styles.hubMeta}>
 								<span

@@ -306,7 +306,7 @@ export default class TelegramService {
 			? dayjs(lastLog.createdAt).add(1, "second").toDate()
 			: dayjs().subtract(inLastDays, "d").toDate();
 
-		let projectWithVacancies = await prisma.project.findMany({
+		const projectWithVacancies = await prisma.project.findMany({
 			where: {
 				team: {
 					vacancies: {

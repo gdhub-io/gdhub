@@ -1,3 +1,4 @@
+import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { IoAdd } from "@react-icons/all-files/io5/IoAdd";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -20,6 +21,7 @@ const { Title } = Typography;
 type UserProjectCard = {
 	id: string;
 	name: string;
+	status: prismaClient.ProjectStatus;
 	genre?: string | null;
 	platform?: string | null;
 	coverImage?: string | null;
@@ -142,6 +144,7 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 							workflowStage={project.workflow?.steps?.[0]?.name ?? undefined}
 							authorName={project.author?.name ?? undefined}
 							authorAvatar={project.author?.image ?? undefined}
+							status={project.status ?? undefined}
 							isUserProject={true}
 							variant={variant}
 						/>
