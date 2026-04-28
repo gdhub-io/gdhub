@@ -34,6 +34,8 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const { t } = useTranslate();
 	const ctx = useContext(ProjectContext);
 	const [links, setLinks] = useState<ProjectLink[]>([]);
+	const isProjectArchived =
+		!ctx?.contextProject || !!ctx.contextProject.isProjectArchived;
 
 	const { data: projectLinks, isLoading: isLoadingProjectLinks } = useQuery({
 		queryKey: ["project-links", ctx?.contextProject?.id],
@@ -93,6 +95,8 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	};
 
 	const addLink = () => {
+		if (isProjectArchived) return;
+
 		if (links.length >= 3) {
 			message.warning(t("project.links.maxLinks", "Maximum 3 links allowed"));
 			return;
@@ -108,6 +112,8 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	};
 
 	const removeLink = (index: number) => {
+		if (isProjectArchived) return;
+
 		const updatedLinks = links.filter((_, i) => i !== index);
 
 		// If we removed the primary link, make the first remaining link primary
@@ -122,6 +128,8 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	};
 
 	const updateLink = (index: number, field: keyof ProjectLink, value: any) => {
+		if (isProjectArchived) return;
+
 		const updatedLinks = links.map((link, i) => {
 			if (i === index) {
 				// If setting this link as primary, unset all others
@@ -141,6 +149,8 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	};
 
 	const handleForm = async () => {
+		if (isProjectArchived) return;
+
 		try {
 			// Filter out empty links
 			const validLinks = links.filter((link) => link.platform && link.link);
@@ -198,6 +208,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 				>
 					<Select
 						value={link.platform || undefined}
+						disabled={isProjectArchived}
 						labelRender={(option) => (
 							<div
 								style={{
@@ -229,7 +240,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 				</Form.Item>
 			);
 		},
-		[links, getAvailablePlatformOptions, screens.xs, t],
+		[links, getAvailablePlatformOptions, screens.xs, t, isProjectArchived],
 	);
 
 	return (
@@ -241,6 +252,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 				name="project-links-form"
 				autoComplete="off"
 				requiredMark="optional"
+				disabled={isProjectArchived}
 			>
 				<Flex vertical gap={16}>
 					<Flex vertical gap={16} style={{ width: "100%" }}>
@@ -278,6 +290,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 										>
 											<Checkbox
 												checked={link.isPrimary}
+												disabled={isProjectArchived}
 												onChange={(e) =>
 													updateLink(index, "isPrimary", e.target.checked)
 												}
@@ -297,6 +310,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 												danger
 												size="small"
 												icon={<IconTrash size={16} />}
+												disabled={isProjectArchived}
 												style={{ padding: 0 }}
 												onClick={() => removeLink(index)}
 											/>
@@ -336,6 +350,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 												onChange={(e) =>
 													updateLink(index, "link", e.target.value)
 												}
+												disabled={isProjectArchived}
 												placeholder={t(
 													"project.links.urlPlaceholder",
 													"https://",
@@ -350,12 +365,22 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 					</Flex>
 
 					<Flex gap={12} justify="space-between" align="center">
-						<Button type="primary" onClick={handleForm} loading={isSavingLinks}>
+						<Button
+							type="primary"
+							onClick={handleForm}
+							loading={isSavingLinks}
+							disabled={isProjectArchived}
+						>
 							{t("project.links.save", "Save Links")}
 						</Button>
 
 						{links.length < 3 && (
-							<Button type="dashed" onClick={addLink} icon={<IconPlus />}>
+							<Button
+								type="dashed"
+								onClick={addLink}
+								icon={<IconPlus />}
+								disabled={isProjectArchived}
+							>
 								{t("project.links.addLink", "Add Link")}
 							</Button>
 						)}

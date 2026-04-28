@@ -12,6 +12,8 @@ import { ProjectContext } from "@/contexts/ProjectContext";
 const MyProjectCandidates = () => {
 	const contextProject = useContext(ProjectContext)?.contextProject;
 	const { t } = useTranslate();
+	const isProjectArchived =
+		!contextProject || !!contextProject.isProjectArchived;
 	const [showCandidatePreviewModal, setShowCandidatePreviewModal] =
 		useState(false);
 	const [selectedCandidateId, setSelectedCandidateId] = useState<string>();
@@ -51,7 +53,10 @@ const MyProjectCandidates = () => {
 					<div
 						role="button"
 						tabIndex={0}
-						style={{ cursor: "pointer", fontWeight: "bold" }}
+						style={{
+							cursor: isProjectArchived ? "default" : "pointer",
+							fontWeight: "bold",
+						}}
 						onClick={() => handleShowCandidate(record.id)}
 					>
 						<Space>
@@ -92,6 +97,8 @@ const MyProjectCandidates = () => {
 	];
 
 	const handleShowCandidate = (id: string) => {
+		if (isProjectArchived) return;
+
 		setSelectedCandidateId(id);
 		setShowCandidatePreviewModal(true);
 	};
@@ -131,15 +138,17 @@ const MyProjectCandidates = () => {
 						pagination={false}
 					/>
 
-					<ProjectCandidatePreviewModal
-						candidateId={selectedCandidateId}
-						open={showCandidatePreviewModal}
-						onCancel={() => {
-							setShowCandidatePreviewModal(false);
-							setSelectedCandidateId(undefined);
-						}}
-						onOk={handleApproveCandidate}
-					/>
+					{!isProjectArchived && (
+						<ProjectCandidatePreviewModal
+							candidateId={selectedCandidateId}
+							open={showCandidatePreviewModal}
+							onCancel={() => {
+								setShowCandidatePreviewModal(false);
+								setSelectedCandidateId(undefined);
+							}}
+							onOk={handleApproveCandidate}
+						/>
+					)}
 				</>
 			) : (
 				<p style={{ marginTop: 12, color: "gray" }}>

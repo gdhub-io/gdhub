@@ -1,6 +1,6 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useTranslate } from "@tolgee/react";
-import { Button, Card, Space, Spin, Typography } from "antd";
+import { Button, Card, Flex, Space, Spin, Typography } from "antd";
 import { useState } from "react";
 import { useCurrentProject } from "@/hooks/project";
 import ArchiveProjectModal from "./ArchiveProjectModal";
@@ -31,67 +31,74 @@ const DangerProjectForm = () => {
 					)}
 				</Text>
 
-				<Card
-					title={
-						isArchived
-							? t(
-									"project.settings.danger.restore.cardTitle",
-									"Restore Project",
-								)
-							: t(
-									"project.settings.danger.archive.cardTitle",
-									"Archive Project",
-								)
-					}
-					extra={
-						<Button
-							type="primary"
-							disabled={!project}
-							onClick={() => setIsArchiveModalOpen(true)}
-						>
-							{isArchived
-								? t("project.settings.danger.restore.button", "Restore")
-								: t("project.settings.danger.archive.button", "Archive")}
-						</Button>
-					}
-					variant="borderless"
-				>
-					<Text>
-						{isArchived
-							? t(
-									"project.settings.danger.restore.cardDescription",
-									"Restore the project and return it to active circulation.",
-								)
-							: t(
-									"project.settings.danger.archive.description",
-									"Archive keeps the project data but moves the project out of active circulation.",
-								)}
-					</Text>
+				<Card variant="borderless">
+					<Card.Meta
+						title={
+							<Flex justify="space-between" align="center">
+								{isArchived
+									? t(
+											"project.settings.danger.restore.cardTitle",
+											"Restore Project",
+										)
+									: t(
+											"project.settings.danger.archive.cardTitle",
+											"Archive Project",
+										)}
+
+								<Button
+									type="primary"
+									disabled={!project}
+									onClick={() => setIsArchiveModalOpen(true)}
+								>
+									{isArchived
+										? t("project.settings.danger.restore.button", "Restore")
+										: t("project.settings.danger.archive.button", "Archive")}
+								</Button>
+							</Flex>
+						}
+						description={
+							<Text>
+								{isArchived
+									? t(
+											"project.settings.danger.restore.cardDescription",
+											"Restore the project and return it to active circulation.",
+										)
+									: t(
+											"project.settings.danger.archive.description",
+											"Archive keeps the project data but moves the project out of active circulation.",
+										)}
+							</Text>
+						}
+					/>
 				</Card>
 
-				<Card
-					title={t(
-						"project.settings.danger.delete.cardTitle",
-						"Delete Project",
-					)}
-					extra={
-						<Button
-							type="primary"
-							danger
-							disabled={!project}
-							onClick={() => setIsDeleteModalOpen(true)}
-						>
-							{t("project.settings.danger.delete.button", "Delete")}
-						</Button>
-					}
-					variant="borderless"
-				>
-					<Text>
-						{t(
-							"project.settings.danger.delete.description",
-							"Delete permanently removes the project and related data when hard deletion is allowed.",
-						)}
-					</Text>
+				<Card variant="borderless">
+					<Card.Meta
+						title={
+							<Flex justify="space-between" align="center">
+								{t(
+									"project.settings.danger.delete.cardTitle",
+									"Delete Project",
+								)}
+								<Button
+									type="primary"
+									danger
+									disabled={!project}
+									onClick={() => setIsDeleteModalOpen(true)}
+								>
+									{t("project.settings.danger.delete.button", "Delete")}
+								</Button>
+							</Flex>
+						}
+						description={
+							<Text>
+								{t(
+									"project.settings.danger.delete.description",
+									"Delete permanently removes the project and related data when hard deletion is allowed.",
+								)}
+							</Text>
+						}
+					/>
 				</Card>
 			</Space>
 

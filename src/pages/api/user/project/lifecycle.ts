@@ -2,6 +2,10 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { prisma } from "@/services/prisma";
+import {
+	getProjectLifecycleNotificationSnapshot,
+	notifyProjectLifecycleRecipients,
+} from "@/services/projectLifecycleNotifications";
 
 const getAuthenticatedUserId = async (
 	req: NextApiRequest,
@@ -51,12 +55,32 @@ export default async function handler(
 			const params = { projectId, authorId };
 
 			if (action === "delete") {
+				const notificationSnapshot =
+					await getProjectLifecycleNotificationSnapshot({
+						db: prisma,
+						projectId,
+						authorId,
+					});
 				const project = await prisma.project.deleteProject(params);
+				await notifyProjectLifecycleRecipients({
+					action: "delete",
+					snapshot: notificationSnapshot,
+				});
 				return res.status(200).json(project);
 			}
 
 			if (action === "archive") {
+				const notificationSnapshot =
+					await getProjectLifecycleNotificationSnapshot({
+						db: prisma,
+						projectId,
+						authorId,
+					});
 				const project = await prisma.project.archiveProject(params);
+				await notifyProjectLifecycleRecipients({
+					action: "archive",
+					snapshot: notificationSnapshot,
+				});
 				return res.status(200).json(project);
 			}
 

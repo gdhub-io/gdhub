@@ -5,6 +5,8 @@ export type ContextProject = {
 	name: string;
 	team: { id: string } | null;
 	isProjectAuthor: boolean;
+	isProjectArchived: boolean;
+	archivedAt: Date | string | null;
 };
 
 export const ProjectContext = createContext<

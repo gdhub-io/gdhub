@@ -56,6 +56,8 @@ const LinkPreviewText = ({ link }: { link: string }) => {
 const MyProjectDocuments = () => {
 	const { t } = useTranslate();
 	const contextProject = useContext(ProjectContext)?.contextProject;
+	const isProjectArchived =
+		!contextProject || !!contextProject.isProjectArchived;
 	const [showDocumentModal, setShowDocumentModal] = useState(false);
 
 	const {
@@ -135,6 +137,7 @@ const MyProjectDocuments = () => {
 		{
 			key: "actions",
 			width: "1%",
+			hidden: isProjectArchived,
 			render: (value, record) => (
 				<Space>
 					<Popconfirm
@@ -165,6 +168,7 @@ const MyProjectDocuments = () => {
 		teamId?: string;
 	}) => {
 		if (!teamId) return;
+		if (isProjectArchived) return;
 
 		await deleteDocument({ id, teamId });
 		fetchMyProjectDocuments();
@@ -185,16 +189,18 @@ const MyProjectDocuments = () => {
 		<>
 			<Flex justify="space-between" align="center">
 				<Space align="center">
-					<Button onClick={() => setShowDocumentModal(true)}>
-						{t("project.documents.addDocument", "Add document")}
-					</Button>
+					{!isProjectArchived && (
+						<Button onClick={() => setShowDocumentModal(true)}>
+							{t("project.documents.addDocument", "Add document")}
+						</Button>
+					)}
 				</Space>
 			</Flex>
 
 			{projectDocuments?.data.length > 0 ? (
 				<ModernTable
 					loading={isLoadingMyProjectDocuments}
-					columns={documentsColumns}
+					columns={documentsColumns.filter((column) => !column.hidden)}
 					dataSource={projectDocuments?.data?.map(
 						(m: TeamDocumentWithCreatedByUser) => ({
 							...m,
@@ -212,13 +218,15 @@ const MyProjectDocuments = () => {
 				</p>
 			)}
 
-			<CreateDocumentModal
-				teamId={contextProject?.team?.id}
-				projectId={contextProject?.id}
-				open={showDocumentModal}
-				onCancel={handleCancelCreateDocument}
-				onCreate={handleCreateDocument}
-			/>
+			{!isProjectArchived && (
+				<CreateDocumentModal
+					teamId={contextProject?.team?.id}
+					projectId={contextProject?.id}
+					open={showDocumentModal}
+					onCancel={handleCancelCreateDocument}
+					onCreate={handleCreateDocument}
+				/>
+			)}
 		</>
 	);
 };

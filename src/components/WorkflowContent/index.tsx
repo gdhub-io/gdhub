@@ -78,9 +78,11 @@ const WorkflowContent = ({
 		useState(false);
 	const { t } = useTranslate();
 	const isAuthor = useMemo(
-		() => projectContext?.isProjectAuthor,
+		() => projectContext?.isProjectAuthor && !projectContext?.isProjectArchived,
 		[projectContext],
 	);
+	const isProjectArchived =
+		!projectContext || !!projectContext.isProjectArchived;
 
 	const currentStepOrder = useMemo(
 		() => workflow?.currentStep?.order || 0,
@@ -161,6 +163,8 @@ const WorkflowContent = ({
 	);
 
 	const handlePreviousStep = () => {
+		if (isProjectArchived) return;
+
 		moveProjectToStep({ projectId, direction: "previous" });
 		gtmEventTrigger("workflow_move", {
 			projectId,
@@ -171,6 +175,8 @@ const WorkflowContent = ({
 	};
 
 	const handleNextStep = () => {
+		if (isProjectArchived) return;
+
 		if (
 			workflow?.currentStep.equityPromises &&
 			workflow.currentStep.equityPromises.length > 0
@@ -188,6 +194,8 @@ const WorkflowContent = ({
 	};
 
 	const handleEquityTransferConfirm = async () => {
+		if (isProjectArchived) return;
+
 		await moveProjectToStep({ projectId, direction: "next" });
 		setEquityTransferModalVisible(false);
 	};
@@ -206,6 +214,8 @@ const WorkflowContent = ({
 	}, [workflow?.currentStep?.tasks]);
 
 	const handleTaskStatusChange = (taskId: string, checked: boolean) => {
+		if (isProjectArchived) return;
+
 		if (taskId === "1") {
 			setConditionStatus((prev: any) => ({ ...prev, completed: checked }));
 		} else {
@@ -321,6 +331,7 @@ const WorkflowContent = ({
 												stage={""}
 												required={task.required}
 												completed={task.done}
+												disabled={isProjectArchived}
 												onStatusChange={handleTaskStatusChange}
 											/>
 										))}
@@ -343,6 +354,7 @@ const WorkflowContent = ({
 												stage={""}
 												required={task.required}
 												completed={task.done}
+												disabled={isProjectArchived}
 												onStatusChange={handleTaskStatusChange}
 											/>
 										))}

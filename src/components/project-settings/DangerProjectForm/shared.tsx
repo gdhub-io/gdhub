@@ -1,5 +1,5 @@
 import { IconTable } from "@tabler/icons-react";
-import { Flex, List, Space, Tag, Typography } from "antd";
+import { Flex, List, Space, Typography } from "antd";
 import axios from "axios";
 import type { CurrentProject } from "@/hooks/project";
 
@@ -68,14 +68,14 @@ export const renderImpactList = (
 			size="small"
 			dataSource={visibleItems}
 			renderItem={(item) => (
-				<List.Item>
+				<List.Item style={{ paddingLeft: "0" }}>
 					<Flex
 						justify="space-between"
 						align="center"
 						style={{ width: "100%" }}
 					>
 						<Space align="center">
-							<IconTable size={16} />
+							<IconTable size={16} style={{ display: "flex" }} />
 							<Text strong>{item.model}</Text>
 						</Space>
 						<Text>{item.count}</Text>

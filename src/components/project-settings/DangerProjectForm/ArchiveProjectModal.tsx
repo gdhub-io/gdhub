@@ -81,20 +81,11 @@ const ArchiveProjectModal = ({
 	const description = isArchived
 		? t(
 				"project.settings.danger.restore.description",
-				"Restore this project and return it to active circulation.",
+				"The project will be returned to the active list with all its data intact.",
 			)
 		: t(
 				"project.settings.danger.archive.previewTitle",
-				"Project data will stay in the database, but the project will be moved out of active circulation.",
-			);
-	const alertMessage = isArchived
-		? t(
-				"project.settings.danger.restore.modalMessage",
-				"Restoring will make the project active again.",
-			)
-		: t(
-				"project.settings.danger.archive.modalMessage",
-				"Archiving will keep this data in the database.",
+				"The project will be removed from the active list, but all data will be safely preserved. You can restore the project at any time.",
 			);
 
 	return (
@@ -111,8 +102,6 @@ const ArchiveProjectModal = ({
 		>
 			<Space direction="vertical" size="middle" className={styles.modalBody}>
 				<Text>{description}</Text>
-
-				<Alert type="warning" showIcon message={alertMessage} />
 			</Space>
 		</Modal>
 	);

@@ -16,6 +16,10 @@ import {
 import { slugify } from "voca";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
+import {
+	getProjectLifecycleNotificationSnapshot,
+	notifyProjectLifecycleRecipients,
+} from "@/services/projectLifecycleNotifications";
 
 class CreateProjectDto {
 	@IsString()
@@ -274,10 +278,22 @@ class ApiProjectHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { id }: QueryIdParam,
 	) {
-		return prisma.project.deleteProject({
+		const notificationSnapshot = await getProjectLifecycleNotificationSnapshot({
+			db: prisma,
 			projectId: id,
 			authorId: req.user.id,
 		});
+		const project = await prisma.project.deleteProject({
+			projectId: id,
+			authorId: req.user.id,
+		});
+
+		await notifyProjectLifecycleRecipients({
+			action: "delete",
+			snapshot: notificationSnapshot,
+		});
+
+		return project;
 	}
 }
 

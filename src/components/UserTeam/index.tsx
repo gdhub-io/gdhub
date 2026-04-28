@@ -17,6 +17,7 @@ const UserTeam = () => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
 	const contextProject = useContext(ProjectContext)?.contextProject;
+	const archivedAt = contextProject?.archivedAt;
 
 	const { data: team, isLoading: isLoadingMyTeam } = useQuery({
 		queryKey: ["user-project-team", contextProject?.team?.id],
@@ -77,9 +78,17 @@ const UserTeam = () => {
 			key: "startedAt",
 			render(value, member) {
 				const startedAt = dayjs(member.startedAt).format("DD.MM.YYYY");
-				const finishedAt = member.finishedAt
-					? dayjs(member.finishedAt).format("DD.MM.YYYY")
-					: t("present");
+				const archivedAtDate = archivedAt ? dayjs(archivedAt) : null;
+				const wasCurrentAtArchive =
+					!!archivedAtDate &&
+					!dayjs(member.startedAt).isAfter(archivedAtDate) &&
+					(!member.finishedAt ||
+						dayjs(member.finishedAt).isAfter(archivedAtDate));
+				const finishedAt = wasCurrentAtArchive
+					? archivedAtDate.format("DD.MM.YYYY")
+					: member.finishedAt
+						? dayjs(member.finishedAt).format("DD.MM.YYYY")
+						: t("present");
 				return (
 					<Text className={tableStyles.tableMemberDates}>
 						{t("fromToWithDates", "from {fromDate} to {toDate}", {
