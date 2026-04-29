@@ -299,6 +299,7 @@ export const appThemeConfig: ThemeConfig = {
 			defaultShadow: "none",
 			primaryShadow: "none",
 			dangerShadow: "none",
+			borderColorDisabled: "#dbdbdb",
 		},
 		Input: {
 			controlHeight: 48,

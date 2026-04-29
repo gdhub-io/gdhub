@@ -17,6 +17,24 @@
 	}
 }
 
+.contentFlushTop {
+	padding-top: 0 !important;
+}
+
+.contentBleedBelowMd {
+	@media (max-width: 767px) {
+		padding-inline: 0 !important;
+	}
+}
+
+.pageBodySpaced {
+	margin-top: 24px;
+}
+
+.pageBodyFlush {
+	margin-top: 0;
+}
+
 .container {
 	:global {
 		.logo {

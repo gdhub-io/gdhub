@@ -1,10 +1,14 @@
 import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
-import { IconNews } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Flex, Tooltip, Typography } from "antd";
+import { Avatar } from "antd";
 import axios from "axios";
 import Link from "next/link";
+import {
+	HubSectionBleed,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
 import styles from "./styles.module.scss";
 
 interface LatestUser {
@@ -12,8 +16,6 @@ interface LatestUser {
 	image: string | null;
 	speciality: string;
 }
-
-const { Title } = Typography;
 
 export default function NewMembers() {
 	const { t } = useTranslate();
@@ -31,35 +33,38 @@ export default function NewMembers() {
 
 	return (
 		<div className={styles.container}>
-			<Flex align="center" gap={8} style={{ marginBottom: 24 }}>
-				<IconNews size={24} />
-				<Title level={2}>{t("page.hub.new-members", "New members")}</Title>
-			</Flex>
+			<HubSectionHeader
+				title={t("page.hub.new-members", "New members")}
+				linkHref="/hub/members"
+				linkLabel={`${t("hub.view-all", "View all")} →`}
+			/>
 
-			<div className={styles.card}>
-				<div className={styles.scroller}>
-					{latestUsers.slice(0, 10).map((user) => (
-						<div key={user.id} className={styles.memberItem}>
-							<div className={styles.avatarWrapper}>
-								<Avatar src={user.image} size={56} className={styles.avatar} />
+			<HubSectionBody>
+				<HubSectionBleed className={styles.list}>
+					{latestUsers.slice(0, 5).map((user) => (
+						<Link
+							key={user.id}
+							href="/hub/members"
+							className={styles.memberItem}
+						>
+							<div className={styles.memberMain}>
+								<Avatar src={user.image} size={28} className={styles.avatar}>
+									{user.speciality?.charAt(0)?.toUpperCase()}
+								</Avatar>
+								<div className={styles.copy}>
+									<div className={styles.primary}>
+										{user.speciality || t("page.hub.member", "Member")}
+									</div>
+									<div className={styles.secondary}>
+										{t("page.hub.member-joined", "Recently joined")}
+									</div>
+								</div>
 							</div>
-							<div className={styles.speciality}>{user.speciality}</div>
-						</div>
+							<FaChevronRight className={styles.itemIcon} />
+						</Link>
 					))}
-				</div>
-
-				<div className={styles.rightFade} aria-hidden="true" />
-				<Tooltip title={t("all-members", "All members")}>
-					<Link href="/hub/members" className={styles.navButtonLink}>
-						<Button
-							type="text"
-							shape="circle"
-							icon={<FaChevronRight />}
-							className={styles.navButton}
-						/>
-					</Link>
-				</Tooltip>
-			</div>
+				</HubSectionBleed>
+			</HubSectionBody>
 		</div>
 	);
 }

@@ -56,6 +56,13 @@ const SpecialitiesProfileForm = dynamic(
 		),
 	{ ssr: false },
 );
+const DangerProfileForm = dynamic(
+	() =>
+		import("@/components/profile-forms/DangerProfileForm").then(
+			(m) => m.default,
+		),
+	{ ssr: false },
+);
 
 const { Header, Sider, Content } = Layout;
 
@@ -114,6 +121,10 @@ const ProfilePage: NextPageWithLayout = () => {
 			label: t("profile.settings.menu.interests", "Interests"),
 			key: "interests",
 		},
+		{
+			label: t("profile.settings.menu.danger", "Danger Zone"),
+			key: "danger",
+		},
 	];
 
 	const switchContent = useCallback(
@@ -169,6 +180,9 @@ const ProfilePage: NextPageWithLayout = () => {
 							saveProfile={saveProfile}
 						/>
 					);
+					break;
+				case "danger":
+					_content = <DangerProfileForm />;
 					break;
 			}
 

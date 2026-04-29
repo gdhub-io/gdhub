@@ -172,6 +172,8 @@ const formatDocumentDate = (value?: string | Date | null) => {
 const MyProjectDocuments = () => {
 	const { t } = useTranslate();
 	const contextProject = useContext(ProjectContext)?.contextProject;
+	const isProjectArchived =
+		!contextProject || !!contextProject.isProjectArchived;
 	const [showDocumentModal, setShowDocumentModal] = useState(false);
 	const [showAgreementPreview, setShowAgreementPreview] = useState(false);
 	const [showLegalHistory, setShowLegalHistory] = useState(false);
@@ -206,15 +208,15 @@ const MyProjectDocuments = () => {
 		refetch: fetchMyProjectDocuments,
 		isLoading: isLoadingMyProjectDocuments,
 	} = useQuery({
-		queryKey: ["project-team-documents", contextProject?.teamId],
+		queryKey: ["project-team-documents", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<TeamDocumentWithCreatedByUser[]>(
 				"/api/user/project/documents",
 				{
-					params: { teamId: contextProject?.teamId },
+					params: { teamId: contextProject?.team?.id },
 				},
 			),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 		refetchOnWindowFocus: false,
 	});
 
@@ -332,6 +334,7 @@ const MyProjectDocuments = () => {
 		teamId?: string;
 	}) => {
 		if (!teamId) return;
+		if (isProjectArchived) return;
 
 		await deleteDocument({ id, teamId });
 		fetchMyProjectDocuments();
@@ -436,7 +439,7 @@ const MyProjectDocuments = () => {
 		if (record.kind === "external" && key === "delete") {
 			await handleDeleteDocument({
 				id: record.id,
-				teamId: contextProject?.teamId,
+				teamId: contextProject?.team?.id,
 			});
 		}
 	};
@@ -537,9 +540,11 @@ const MyProjectDocuments = () => {
 		<>
 			<Flex justify="space-between" align="center">
 				<Space align="center">
-					<Button onClick={() => setShowDocumentModal(true)}>
-						{t("project.documents.addDocument", "Add document")}
-					</Button>
+					{!isProjectArchived && (
+						<Button onClick={() => setShowDocumentModal(true)}>
+							{t("project.documents.addDocument", "Add document")}
+						</Button>
+					)}
 				</Space>
 			</Flex>
 
@@ -584,7 +589,7 @@ const MyProjectDocuments = () => {
 			/>
 
 			<CreateDocumentModal
-				teamId={contextProject?.teamId}
+				teamId={contextProject?.team?.id}
 				projectId={contextProject?.id}
 				open={showDocumentModal}
 				onCancel={handleCancelCreateDocument}

@@ -38,6 +38,8 @@ const MyProjectVacancies = () => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
 	const contextProject = useContext(ProjectContext)?.contextProject;
+	const isProjectArchived =
+		!contextProject || !!contextProject.isProjectArchived;
 	const [showVacancyModal, setShowVacancyModal] = useState(false);
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>();
 	const [showVacancyArchiveModal, setShowVacancyArchiveModal] = useState(false);
@@ -47,12 +49,12 @@ const MyProjectVacancies = () => {
 		refetch: fetchMyProjectVacancies,
 		isLoading: isLoadingMyMyProjectVacancies,
 	} = useQuery({
-		queryKey: ["project-team-vacancies", contextProject?.teamId],
+		queryKey: ["project-team-vacancies", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get("/api/user/project/vacancies", {
-				params: { teamId: contextProject?.teamId },
+				params: { teamId: contextProject?.team?.id },
 			}),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 		refetchOnWindowFocus: false,
 	});
 
@@ -71,8 +73,10 @@ const MyProjectVacancies = () => {
 				<Space direction="vertical" size={0}>
 					<Text
 						className={tableStyles.tableMemberName}
-						onClick={() => handleEditVacancy(data.id)}
-						style={{ cursor: "pointer" }}
+						onClick={() => {
+							if (!isProjectArchived) handleEditVacancy(data.id);
+						}}
+						style={{ cursor: isProjectArchived ? "default" : "pointer" }}
 					>
 						{value}
 					</Text>
@@ -118,6 +122,7 @@ const MyProjectVacancies = () => {
 		{
 			key: "actions",
 			width: "1%",
+			hidden: isProjectArchived,
 			render: (value, record) => (
 				<Space>
 					{screens.md && (
@@ -141,11 +146,15 @@ const MyProjectVacancies = () => {
 	];
 
 	const handleEditVacancy = (id: string) => {
+		if (isProjectArchived) return;
+
 		setSelectedVacancyId(id);
 		setShowVacancyModal(true);
 	};
 
 	const handleCloseVacancy = async (id: string) => {
+		if (isProjectArchived) return;
+
 		// await fetcher({ url: '/api/user/project/vacancy/close', data: { id } })
 		await cancelVacany({ id });
 		setSelectedVacancyId(undefined);
@@ -163,6 +172,8 @@ const MyProjectVacancies = () => {
 	};
 
 	const handleRestoreVacation = (vacancyId: string) => {
+		if (isProjectArchived) return;
+
 		setShowVacancyArchiveModal(false);
 		fetchMyProjectVacancies();
 
@@ -173,20 +184,24 @@ const MyProjectVacancies = () => {
 	return (
 		<>
 			<Flex justify="space-between" align="center">
-				<Button onClick={() => setShowVacancyModal(true)}>
-					{t("MyProjectVacancies.addTheVacancy", "Add open position")}
-				</Button>
+				{!isProjectArchived && (
+					<Button onClick={() => setShowVacancyModal(true)}>
+						{t("MyProjectVacancies.addTheVacancy", "Add open position")}
+					</Button>
+				)}
 
-				<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
-					{t("MyProjectVacancies.archive", "Archive")}
-				</Button>
+				{!isProjectArchived && (
+					<Button type="link" onClick={() => setShowVacancyArchiveModal(true)}>
+						{t("MyProjectVacancies.archive", "Archive")}
+					</Button>
+				)}
 			</Flex>
 
 			{projectVacancies?.data.length > 0 ? (
 				<ModernTable
 					showHeader={false}
 					loading={isLoadingMyMyProjectVacancies}
-					columns={vacanciesColumns}
+					columns={vacanciesColumns.filter((column) => !column.hidden)}
 					dataSource={projectVacancies?.data?.map((m: any) => ({
 						...m,
 						key: m.id,
@@ -202,28 +217,32 @@ const MyProjectVacancies = () => {
 				</p>
 			)}
 
-			<VacancyModal
-				teamId={contextProject?.teamId}
-				projectId={contextProject?.id}
-				vacancyId={selectedVacancyId}
-				open={showVacancyModal}
-				onCancel={() => {
-					setShowVacancyModal(false);
-					setSelectedVacancyId(undefined);
-				}}
-				onOk={handleSaveVacancy}
-			/>
+			{!isProjectArchived && (
+				<>
+					<VacancyModal
+						teamId={contextProject?.team?.id}
+						projectId={contextProject?.id}
+						vacancyId={selectedVacancyId}
+						open={showVacancyModal}
+						onCancel={() => {
+							setShowVacancyModal(false);
+							setSelectedVacancyId(undefined);
+						}}
+						onOk={handleSaveVacancy}
+					/>
 
-			<VacancyArchiveModal
-				teamId={contextProject?.teamId}
-				projectId={contextProject?.id}
-				projectName={contextProject?.name}
-				open={showVacancyArchiveModal}
-				onCancel={() => {
-					setShowVacancyArchiveModal(false);
-				}}
-				onRestore={handleRestoreVacation}
-			/>
+					<VacancyArchiveModal
+						teamId={contextProject?.team?.id}
+						projectId={contextProject?.id}
+						projectName={contextProject?.name}
+						open={showVacancyArchiveModal}
+						onCancel={() => {
+							setShowVacancyArchiveModal(false);
+						}}
+						onRestore={handleRestoreVacation}
+					/>
+				</>
+			)}
 		</>
 	);
 };

@@ -62,6 +62,8 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 			setDescription(project.data.description || "");
 		}
 	}, [project?.data]);
+	const isProjectArchived =
+		project?.data.status === prismaClient.ProjectStatus.Archived;
 
 	const { mutateAsync: updateProject, isPending: isUpdating } = useMutation({
 		mutationFn: (data: any) =>
@@ -85,6 +87,8 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 	}, [project]);
 
 	const handleOk = async () => {
+		if (isProjectArchived) return;
+
 		try {
 			const formData = await form.validateFields();
 			await updateProject({
@@ -144,6 +148,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 		name: "files",
 		multiple: false,
 		accept: "image/png, image/jpeg",
+		disabled: isProjectArchived,
 		customRequest: ({ onSuccess }) =>
 			setTimeout(() => {
 				if (onSuccess) onSuccess("ok");
@@ -176,6 +181,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 	};
 
 	const handleCoverDelete = async () => {
+		if (isProjectArchived) return;
 		if (!cover) return;
 
 		setCoverProcessing(true);
@@ -199,6 +205,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 				onFinishFailed={() => {}}
 				autoComplete="off"
 				requiredMark="optional"
+				disabled={isProjectArchived}
 			>
 				<Row>
 					<Col xs={24} md={12} lg={8}>
@@ -248,6 +255,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 											shape="circle"
 											type="primary"
 											className="remove-cover-btn"
+											disabled={isProjectArchived}
 											onClick={handleCoverDelete}
 											icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
 										/>
@@ -438,7 +446,12 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 				</Form.Item>
 			</Form>
 
-			<Button type="primary" onClick={handleOk} loading={isUpdating}>
+			<Button
+				type="primary"
+				onClick={handleOk}
+				loading={isUpdating}
+				disabled={isProjectArchived}
+			>
 				{t("page.my.projects.settings.button.save", "Save")}
 			</Button>
 		</Spin>

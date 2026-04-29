@@ -306,7 +306,7 @@ export default class TelegramService {
 			? dayjs(lastLog.createdAt).add(1, "second").toDate()
 			: dayjs().subtract(inLastDays, "d").toDate();
 
-		let projectWithVacancies = await prisma.project.findMany({
+		const projectWithVacancies = await prisma.project.findMany({
 			where: {
 				team: {
 					vacancies: {
@@ -329,16 +329,18 @@ export default class TelegramService {
 			},
 		});
 
-		projectWithVacancies = projectWithVacancies.filter(
-			(r) => r.team.vacancies.length > 0,
+		const projectsWithVacancies = projectWithVacancies.flatMap((project) =>
+			project.team && project.team.vacancies.length > 0
+				? [{ ...project, team: project.team }]
+				: [],
 		);
 
-		if (projectWithVacancies.length === 0) return { sent: 0 };
+		if (projectsWithVacancies.length === 0) return { sent: 0 };
 
-		const ruVacancies = projectWithVacancies.filter(
+		const ruVacancies = projectsWithVacancies.filter(
 			(v) => v.team.project?.author?.lang === "ru",
 		);
-		const enVacancies = projectWithVacancies.filter(
+		const enVacancies = projectsWithVacancies.filter(
 			(v) => v.team.project?.author?.lang === "en",
 		);
 

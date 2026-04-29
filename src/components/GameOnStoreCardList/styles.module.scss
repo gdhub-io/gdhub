@@ -1,0 +1,255 @@
+.card {
+	display: grid;
+	grid-template-columns: 220px minmax(0, 1fr);
+	min-height: 160px;
+	height: 100%;
+	overflow: hidden;
+	border-radius: 14px;
+	background: #111827;
+	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+	position: relative;
+}
+
+.coverLink,
+.projectLink {
+	text-decoration: none;
+}
+
+.cover {
+	position: relative;
+	height: 100%;
+	min-height: 160px;
+	background: #172033;
+}
+
+.coverImage {
+	object-fit: cover;
+}
+
+.storeSkeletonCover {
+	min-height: 160px;
+
+	:global(.ant-skeleton-image) {
+		width: 100%;
+		height: 100%;
+		min-height: 160px;
+		border-radius: 0;
+	}
+}
+
+.storeSkeletonImage {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.storeSkeletonInfo {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px;
+}
+
+.storeSkeletonBadges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 16px;
+}
+
+.gameCardTopRight {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 3;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+}
+
+.openPositionsBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px;
+	border-radius: 999px;
+	background-color: #ff4d4f44;
+	color: #fff;
+	backdrop-filter: blur(4px);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.gameCardApplause {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px;
+	border-radius: 999px;
+	background-color: rgba(0, 0, 0, 0.6);
+	color: white;
+	backdrop-filter: blur(4px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.gameCardApplauseIcon {
+	position: relative;
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+
+.gameCardApplauseIconAnimation {
+	width: 100%;
+	height: 100%;
+	filter: brightness(0) invert(1);
+
+	:global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		shape-rendering: geometricPrecision;
+		text-rendering: geometricPrecision;
+	}
+}
+
+.top {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.projectTitle {
+	margin: 0 !important;
+	color: #fff !important;
+	font-weight: 600 !important;
+}
+
+.description {
+	margin: 6px 0 0 !important;
+	color: #a1a1aa;
+}
+
+.meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.genreTag,
+.platformTag {
+	margin: 0;
+	border: none;
+	border-radius: 4px;
+	font-size: 11px;
+	line-height: 1.2;
+}
+
+.genreTag {
+	background: rgba(255, 255, 255, 0.1);
+	color: #d4d4d8;
+}
+
+.platformTag {
+	background: rgba(0, 0, 0, 0.3);
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.storeBadges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.storeBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.storeLink {
+	text-decoration: none;
+}
+
+.steamBadge {
+	background: #1b2838;
+	color: #66c0f4;
+}
+
+.itchBadge {
+	background: #402126;
+	color: #ff8a98;
+}
+
+.epicBadge {
+	background: #2a2a2a;
+	color: #f5f5f5;
+}
+
+.googlePlayBadge {
+	background: #12392d;
+	color: #8bf0bf;
+}
+
+.appStoreBadge {
+	background: #172554;
+	color: #a5b4fc;
+}
+
+.projectButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-weight: 500;
+	color: #a1a1aa;
+	text-decoration: none;
+}
+
+@media (max-width: 991px) {
+	.card {
+		grid-template-columns: 180px minmax(0, 1fr);
+	}
+
+	.cover {
+		min-height: 180px;
+	}
+}
+
+@media (max-width: 767px) {
+	.card {
+		grid-template-columns: 1fr;
+	}
+
+	.cover {
+		min-height: 220px;
+	}
+
+	.bottom {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}

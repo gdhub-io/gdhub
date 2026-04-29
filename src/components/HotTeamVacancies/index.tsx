@@ -1,11 +1,17 @@
 import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
-import { IconFlame } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Flex, Skeleton, Space, Typography } from "antd";
+import { Skeleton } from "antd";
 import axios from "axios";
 import Link from "next/link";
+import {
+	HubSectionBleed,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
 import styles from "./styles.module.scss";
+
+const VACANCY_DOT_COLORS = ["#3B82F6", "#8B5CF6", "#EC4899", "#F59E0B"];
 
 interface HotVacancyItem {
 	id: string;
@@ -17,8 +23,6 @@ interface HotVacancyItem {
 		slug: string;
 	};
 }
-
-const { Title, Text } = Typography;
 
 export default function HotTeamVacancies() {
 	const { t } = useTranslate();
@@ -39,46 +43,39 @@ export default function HotTeamVacancies() {
 	return (
 		<Skeleton active loading={isLoading}>
 			<div className={styles.container}>
-				<Flex align="center" justify="space-between" className={styles.header}>
-					<Space>
-						<IconFlame size={24} style={{ position: "relative", top: 2 }} />
-						<Title level={4} className={styles.title}>
-							{t("hub.hot-vacancies.title", "Hot positions")}
-						</Title>
-					</Space>
+				<HubSectionHeader
+					title={t("hub.hot-vacancies.title", "Open positions")}
+					linkHref="/hub/jobs"
+					linkLabel={`${t("hub.view-all", "View all")} →`}
+				/>
 
-					<Link href="/hub/jobs" className={styles.seeAll}>
-						<Text type="secondary">
-							{t("hub.hot-vacancies.see-all", "See all")}
-						</Text>
-						<FaChevronRight className={styles.seeAllIcon} />
-					</Link>
-				</Flex>
-
-				<div className={styles.list}>
-					{vacancies?.slice(0, 5).map((v) => (
-						<Link key={v.id} href={`/job/${v.id}`} className={styles.item}>
-							<div className={styles.itemLeft}>
-								<Avatar
-									src={v.project.coverImage ?? undefined}
-									size={40}
-									className={styles.avatar}
-								>
-									{v.project.name?.charAt(0)?.toUpperCase()}
-								</Avatar>
-								<div className={styles.textWrap}>
-									<div className={styles.primary} title={v.title}>
-										{v.title}
-									</div>
-									<div className={styles.secondary} title={v.project.name}>
-										{v.project.name}
+				<HubSectionBody>
+					<HubSectionBleed className={styles.list}>
+						{vacancies?.slice(0, 5).map((v, index) => (
+							<Link key={v.id} href={`/job/${v.id}`} className={styles.item}>
+								<div className={styles.itemLeft}>
+									<span
+										className={styles.accentDot}
+										style={{
+											background:
+												VACANCY_DOT_COLORS[index % VACANCY_DOT_COLORS.length],
+										}}
+										aria-hidden
+									/>
+									<div className={styles.textWrap}>
+										<div className={styles.primary} title={v.title}>
+											{v.title}
+										</div>
+										<div className={styles.secondary} title={v.project.name}>
+											{v.project.name}
+										</div>
 									</div>
 								</div>
-							</div>
-							<FaChevronRight className={styles.itemIcon} />
-						</Link>
-					))}
-				</div>
+								<FaChevronRight className={styles.itemIcon} />
+							</Link>
+						))}
+					</HubSectionBleed>
+				</HubSectionBody>
 			</div>
 		</Skeleton>
 	);

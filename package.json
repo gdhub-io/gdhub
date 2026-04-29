@@ -15,7 +15,8 @@
 		"db:generate": "gdhub-prisma generate --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
 		"db:deploy": "gdhub-prisma deploy --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
 		"db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
-		"test": "dotenv vitest"
+		"test": "dotenv vitest",
+		"test:integration": "cross-env RUN_DOCKER_INTEGRATION_TESTS=1 dotenv -- vitest --run tests/docker-prisma.integration.test.ts"
 	},
 	"prisma": {
 		"seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
@@ -52,7 +53,7 @@
 		"@editorjs/table": "^2.4.5",
 		"@firebase/app": "^0.14.6",
 		"@firebase/messaging": "^0.12.23",
-		"@gdhub-io/gdhub-prisma": "2.0.0-beta.9",
+		"@gdhub-io/gdhub-prisma": "2.0.0-beta.19",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@google-analytics/data": "^5.1.0",
 		"@hello-pangea/dnd": "^18.0.1",

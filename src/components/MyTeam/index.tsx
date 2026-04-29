@@ -77,16 +77,16 @@ const MyTeam = () => {
 		refetch: fetchMyTeam,
 		isLoading: isLoadingMyTeam,
 	} = useQuery({
-		queryKey: ["user-project-team", contextProject?.teamId],
+		queryKey: ["user-project-team", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<
 				prismaClient.Team & {
 					members: (prismaClient.TeamMember & { user: prismaClient.User })[];
 				}
 			>("/api/user/project/team", {
-				params: { teamId: contextProject?.teamId },
+				params: { teamId: contextProject?.team?.id },
 			}),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 	});
 
 	const {
@@ -94,15 +94,15 @@ const MyTeam = () => {
 		refetch: fetchPendingInvitations,
 		isLoading: isLoadingPendingInvitations,
 	} = useQuery({
-		queryKey: ["team-pending-invitations", contextProject?.teamId],
+		queryKey: ["team-pending-invitations", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<prismaClient.TeamInvitation[]>(
 				"/api/user/project/team/pending-invitations",
 				{
-					params: { teamId: contextProject?.teamId },
+					params: { teamId: contextProject?.team?.id },
 				},
 			),
-		enabled: !!contextProject?.teamId && !!contextProject?.isProjectAuthor,
+		enabled: !!contextProject?.team?.id && !!contextProject?.isProjectAuthor,
 	});
 
 	const {
@@ -111,7 +111,7 @@ const MyTeam = () => {
 		isLoading: isLoadingAdvisors,
 		isFetched: isFetchedAdvisors,
 	} = useQuery({
-		queryKey: ["team-advisors", contextProject?.teamId],
+		queryKey: ["team-advisors", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<
 				(prismaClient.User & {
@@ -119,9 +119,9 @@ const MyTeam = () => {
 					specialities: { id: string; name: string }[];
 				})[]
 			>("/api/user/project/team/advisors", {
-				params: { teamId: contextProject?.teamId },
+				params: { teamId: contextProject?.team?.id },
 			}),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 	});
 
 	const {
@@ -130,15 +130,15 @@ const MyTeam = () => {
 		isLoading: isLoadingInvestors,
 		isFetched: isFetchedInvestors,
 	} = useQuery({
-		queryKey: ["team-investors", contextProject?.teamId],
+		queryKey: ["team-investors", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<prismaClient.TeamInvestor[]>(
 				"/api/user/project/team/investors",
 				{
-					params: { teamId: contextProject?.teamId },
+					params: { teamId: contextProject?.team?.id },
 				},
 			),
-		enabled: !!contextProject?.teamId,
+		enabled: !!contextProject?.team?.id,
 	});
 
 	const {
@@ -903,9 +903,9 @@ const MyTeam = () => {
 										</Popover>
 									)
 								) : null)}
-							{contextProject?.teamId && (
+							{contextProject?.team?.id && (
 								<InvestorModal
-									teamId={contextProject.teamId}
+									teamId={contextProject.team.id}
 									open={isAddInvestorModalOpen}
 									onOk={() => {
 										setIsAddInvestorModalOpen(false);
@@ -1061,14 +1061,14 @@ const MyTeam = () => {
 				)}
 			</Tabs>
 
-			{contextProject?.teamId && (
+			{contextProject?.team?.id && (
 				<>
 					{contextHolder}
 					<InviteMemberModal
 						open={isInviteModalOpen}
 						onOk={handleInviteSuccess}
 						onCancel={handleCloseInviteModal}
-						teamId={contextProject?.teamId || ""}
+						teamId={contextProject?.team?.id || ""}
 						projectName={contextProject?.name || ""}
 					/>
 					<EquityShareModal

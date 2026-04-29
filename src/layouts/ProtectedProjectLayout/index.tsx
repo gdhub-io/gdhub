@@ -25,6 +25,7 @@ import {
 import type { ItemType } from "antd/es/menu/interface";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
+import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -35,6 +36,7 @@ import ReactNiceAvatar, { genConfig } from "react-nice-avatar";
 import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import { Error404 } from "@/components/Error404";
 import { NotificationsBell } from "@/components/NotificationsBell";
+import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
 import { hasRole } from "@/helpers/user";
@@ -74,6 +76,15 @@ export const ProtectedProjectLayout = ({
 		() => project?.authorId === session?.user.id,
 		[project, session?.user],
 	);
+	const isProjectArchived = useMemo(
+		() => project?.status === prismaClient.ProjectStatus.Archived,
+		[project?.status],
+	);
+	const archivedAtText = useMemo(() => {
+		if (!project?.archivedAt) return null;
+
+		return dayjs(project.archivedAt).format("LL");
+	}, [project?.archivedAt]);
 
 	useEffect(() => {
 		if (!project) return;
@@ -81,10 +92,12 @@ export const ProtectedProjectLayout = ({
 		setContextProject({
 			id: project.id,
 			name: project.name,
-			teamId: project.teamId,
+			team: project.team,
 			isProjectAuthor,
+			isProjectArchived,
+			archivedAt: project.archivedAt,
 		});
-	}, [project, isProjectAuthor]);
+	}, [project, isProjectAuthor, isProjectArchived]);
 
 	const seoSettings: NextSeoProps = {
 		title: title || "Project",
@@ -96,7 +109,10 @@ export const ProtectedProjectLayout = ({
 	};
 
 	useEffect(() => {
-		if (session?.user.lang && getLanguage() !== session.user.lang) {
+		if (
+			isAvailableLocale(session?.user.lang) &&
+			getLanguage() !== session.user.lang
+		) {
 			changeLanguage(session.user.lang).then((d) =>
 				console.info("language is changed"),
 			);
@@ -409,6 +425,15 @@ export const ProtectedProjectLayout = ({
 							className={styles.appMenu}
 						/>
 					</Header>
+					{isProjectArchived && (
+						<div className={styles.archivedBanner}>
+							{t("project.archived.banner", "Project archived since {date}", {
+								date:
+									archivedAtText ||
+									t("project.archived.banner.unknownDate", "unknown date"),
+							})}
+						</div>
+					)}
 					<Content className={styles.contentContainer}>
 						<div className={styles.content}>
 							<Flex

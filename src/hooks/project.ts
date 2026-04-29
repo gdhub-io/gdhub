@@ -4,6 +4,10 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
+export type CurrentProject = prismaClient.Project & {
+	team: { id: string } | null;
+};
+
 export const useCurrentProject = () => {
 	const router = useRouter();
 	const { slug } = router.query;
@@ -17,7 +21,7 @@ export const useCurrentProject = () => {
 	} = useQuery({
 		queryKey: ["project-data", slug, session?.user.id],
 		queryFn: () =>
-			axios.get<prismaClient.Project>("/api/user/project", {
+			axios.get<CurrentProject>("/api/user/project", {
 				params: { slug },
 			}),
 		enabled: !!slug,

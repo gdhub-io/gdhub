@@ -5,6 +5,7 @@ import { Grid, Layout, Menu, Select } from "antd";
 import { useRouter } from "next/router";
 import type React from "react";
 import { useCallback, useMemo } from "react";
+import DangerProjectForm from "@/components/project-settings/DangerProjectForm";
 import GeneralProjectForm from "@/components/project-settings/GeneralProjectForm";
 import LinksProjectForm from "@/components/project-settings/LinksProjectForm";
 import { ProtectedProjectLayout } from "@/layouts/ProtectedProjectLayout";
@@ -35,13 +36,18 @@ const ProjectSettingsPage: NextPageWithLayout = () => {
 			label: t("project.settings.menu.links", "Links"),
 			key: "links",
 		},
+		{
+			label: t("project.settings.menu.danger-zone", "Danger Zone"),
+			key: "danger",
+		},
 	];
 
 	const renderContent = useCallback(() => {
 		switch (selectedKey[0]) {
 			case "links":
 				return <LinksProjectForm projectSlug={projectSlug} />;
-			case "general":
+			case "danger":
+				return <DangerProjectForm />;
 			default:
 				return <GeneralProjectForm projectSlug={projectSlug} />;
 		}

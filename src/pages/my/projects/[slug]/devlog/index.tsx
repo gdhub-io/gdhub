@@ -19,6 +19,7 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
 import { useCurrentProject } from "@/hooks/project";
 import { ProtectedProjectLayout } from "@/layouts/ProtectedProjectLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -34,6 +35,8 @@ const MyProjectPage: NextPageWithLayout = () => {
 	const [openDevlogPostModal, setOpenDevlogPostModal] = useState(false);
 	const { project } = useCurrentProject();
 	const [selectedReportId, setSelectedReportId] = useState<string>();
+	const isProjectArchived =
+		project?.status === ("Archived" as prismaClient.ProjectStatus);
 
 	const {
 		data: projectReports,
@@ -57,6 +60,8 @@ const MyProjectPage: NextPageWithLayout = () => {
 	});
 
 	const handleDeleteReport = async (id: string) => {
+		if (isProjectArchived) return;
+
 		Modal.confirm({
 			title: t(
 				"modal.dev-log-post.delete-confirm",
@@ -115,7 +120,12 @@ const MyProjectPage: NextPageWithLayout = () => {
 				render: (contentEditor, record) =>
 					contentEditor ? (
 						<Text ellipsis style={{ maxWidth: "240px" }}>
-							{getEditorjsShortContent(contentEditor, 100)}
+							{htmlFragmentToPlainText(
+								getEditorjsShortContent(
+									contentEditor as unknown as OutputData,
+									500,
+								),
+							)}
 						</Text>
 					) : (
 						<Text ellipsis style={{ maxWidth: "240px" }}>
@@ -156,7 +166,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 						>
 							View
 						</Button>
-						{!!record.contentEditor && (
+						{!isProjectArchived && !!record.contentEditor && (
 							<Button
 								type="link"
 								size="small"
@@ -169,19 +179,21 @@ const MyProjectPage: NextPageWithLayout = () => {
 								Edit
 							</Button>
 						)}
-						<Button
-							type="link"
-							size="small"
-							icon={<IconTrash size={16} />}
-							onClick={() => handleDeleteReport(id)}
-						>
-							<T keyName="delete" />
-						</Button>
+						{!isProjectArchived && (
+							<Button
+								type="link"
+								size="small"
+								icon={<IconTrash size={16} />}
+								onClick={() => handleDeleteReport(id)}
+							>
+								<T keyName="delete" />
+							</Button>
+						)}
 					</Space>
 				),
 			},
 		],
-		[t],
+		[t, isProjectArchived],
 	);
 
 	return (
@@ -192,15 +204,17 @@ const MyProjectPage: NextPageWithLayout = () => {
 				"Tell the world about your project development progress",
 			)}
 			actions={
-				<Button
-					type="primary"
-					icon={<PlusOutlined />}
-					onClick={() => {
-						setOpenDevlogPostModal(true);
-					}}
-				>
-					{t("modal.dev-log-post.add-post", "Add post")}
-				</Button>
+				!isProjectArchived ? (
+					<Button
+						type="primary"
+						icon={<PlusOutlined />}
+						onClick={() => {
+							setOpenDevlogPostModal(true);
+						}}
+					>
+						{t("modal.dev-log-post.add-post", "Add post")}
+					</Button>
+				) : null
 			}
 		>
 			<ModernTable<ProjectReportWithProject>
@@ -211,7 +225,7 @@ const MyProjectPage: NextPageWithLayout = () => {
 				scroll={{ x: "max-content" }}
 			/>
 
-			{!!project?.id && (
+			{!isProjectArchived && !!project?.id && (
 				<DevLogPostModal
 					projectId={project.id}
 					postId={selectedReportId}

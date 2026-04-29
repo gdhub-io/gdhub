@@ -1,5 +1,36 @@
 .userProjectsContainer {
-  margin-bottom: 40px;
+  margin-bottom: 0;
+
+  :global(.ant-typography) {
+    margin-bottom: 0;
+  }
+}
+
+.hubSectionWrap .projectsGrid {
+  margin-top: 0;
+}
+
+.hubSectionHeader {
+  gap: 12px;
+}
+
+.hubCreateBtn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: auto !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  background: #151515 !important;
+  border-color: #151515 !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: #2a2a2a !important;
+    border-color: #2a2a2a !important;
+  }
 }
 
 .sectionTitle {
@@ -22,9 +53,13 @@
   margin-top: 16px;
 }
 
+.hubSectionWrap .projectsGrid {
+  margin-top: 0;
+}
+
 .loadingContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
-} 
+}

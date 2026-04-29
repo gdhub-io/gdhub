@@ -4,6 +4,7 @@ import NextAuth, { type NextAuthOptions, type TokenSet } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { brevoTemplates } from "@/config/brevo-templates";
+import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
 import { brevoApi } from "@/services/brevo";
 import { ensureMatrixUser } from "@/services/matrix-admin";
@@ -47,14 +48,13 @@ export const authOptions: NextAuthOptions = {
 							},
 						});
 					} else {
-						const defaultLang = env(
-							"NEXT_PUBLIC_APP_DEFAULT_LOCALE",
-						) as prismaClient.Language;
 						const params = new URL(url).searchParams;
 						const callbackUrl = params.get("callbackUrl") || "";
 						const callback = new URL(callbackUrl).searchParams;
-						const locale =
-							(callback.get("locale") as prismaClient.Language) || defaultLang;
+						const callbackLocale = callback.get("locale");
+						const locale = isAvailableLocale(callbackLocale)
+							? callbackLocale
+							: defaultLocale;
 
 						sendResult = await brevoApi.smtp.sendTransacEmail({
 							to: [{ email }],

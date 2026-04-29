@@ -40,6 +40,35 @@
   font-weight: normal;
 }
 
+.storeProjectsSection {
+	margin-bottom: 40px;
+}
+
+.projectsSection {
+	margin-top: 32px;
+}
+
+.sectionHeader {
+	margin-bottom: 12px;
+}
+
+.sectionTitle {
+	margin: 0 !important;
+	color: #1f1f1f !important;
+	font-weight: 600 !important;
+}
+
+.filterSelect {
+	min-width: 260px;
+}
+
+@media (max-width: 767px) {
+	.filterSelect {
+		width: 100%;
+		min-width: 0;
+	}
+}
+
 .container {
 	// padding: 24px;
 }

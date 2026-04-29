@@ -426,7 +426,7 @@ export class ProjectEquityRepository {
 				where: { projectId },
 				include: {
 					equityAllocations: true,
-					project: true,
+					project: { include: { team: { select: { id: true } } } },
 				},
 			});
 
@@ -463,7 +463,7 @@ export class ProjectEquityRepository {
 				const teamMember = await prisma.teamMember.findFirst({
 					where: {
 						userId: toUserId,
-						teamId: equity.project.teamId,
+						teamId: equity.project.team?.id,
 					},
 				});
 

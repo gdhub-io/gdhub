@@ -51,7 +51,10 @@ class ApiAdviceRequestsHandler {
 
 		const adviceRequests = await prisma.adviceRequest.findMany({
 			where: {
-				project: { teamId, id: projectId },
+				project: {
+					id: projectId,
+					team: teamId ? { id: teamId } : undefined,
+				},
 				toUser: { id: advisorId },
 				status: status ? { in: status } : undefined,
 				OR: userId ? [{ fromUserId: userId }, { toUserId: userId }] : undefined,

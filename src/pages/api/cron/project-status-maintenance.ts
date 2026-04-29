@@ -4,6 +4,7 @@ import { createHandler, Get } from "next-api-decorators";
 import QueueCronLog from "@/decorators/QueueCronLog";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
+import { isProjectAvailableOnStores } from "@/services/prisma/queries";
 
 const DORMANT_AFTER_MONTHS = 3;
 const ARCHIVE_AFTER_DORMANT_DAYS = 14;
@@ -66,8 +67,13 @@ class CronProjectStatusMaintenanceHandler {
 				updatedAt: true,
 				dormantAt: true,
 				statusChangedAt: true,
-				teamId: true,
+				team: {
+					select: {
+						id: true,
+					},
+				},
 				authorId: true,
+				links: true,
 				author: {
 					select: {
 						email: true,
@@ -91,7 +97,9 @@ class CronProjectStatusMaintenanceHandler {
 		}
 
 		const projectIds = projects.map((project) => project.id);
-		const teamIds = projects.map((project) => project.teamId);
+		const teamIds = projects.flatMap((project) =>
+			project.team?.id ? [project.team.id] : [],
+		);
 
 		const [
 			reports,
@@ -101,6 +109,7 @@ class CronProjectStatusMaintenanceHandler {
 			projectEquities,
 			workflowUpdates,
 			workflowStepUpdates,
+			workflows,
 			equityAllocations,
 			equityPromises,
 		] = await Promise.all([
@@ -135,6 +144,30 @@ class CronProjectStatusMaintenanceHandler {
 						select: { projectId: true },
 					},
 					updatedAt: true,
+				},
+			}),
+			prisma.projectWorkflow.findMany({
+				where: {
+					projectId: {
+						in: projectIds,
+					},
+				},
+				select: {
+					projectId: true,
+					currentStep: {
+						select: {
+							id: true,
+							name: true,
+							order: true,
+						},
+					},
+					steps: {
+						select: {
+							id: true,
+							name: true,
+							order: true,
+						},
+					},
 				},
 			}),
 			prisma.equityAllocation.findMany({
@@ -203,6 +236,9 @@ class CronProjectStatusMaintenanceHandler {
 			(item) => item.equity.projectId,
 			(item) => item.updatedAt,
 		);
+		const workflowByProjectId = new Map(
+			workflows.map((workflow) => [workflow.projectId, workflow]),
+		);
 		const maxEquityPromiseByProject = toMaxDateMap(
 			equityPromises,
 			(item) => item.allocation.equity.projectId,
@@ -214,6 +250,7 @@ class CronProjectStatusMaintenanceHandler {
 
 		for (const project of projects) {
 			let lastActivityAt: Date | undefined = project.updatedAt;
+			const teamId = project.team?.id;
 
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
@@ -221,15 +258,15 @@ class CronProjectStatusMaintenanceHandler {
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
-				maxVacancyByTeam.get(project.teamId),
+				teamId ? maxVacancyByTeam.get(teamId) : undefined,
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
-				maxTeamMemberByTeam.get(project.teamId),
+				teamId ? maxTeamMemberByTeam.get(teamId) : undefined,
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
-				maxTeamInvestorByTeam.get(project.teamId),
+				teamId ? maxTeamInvestorByTeam.get(teamId) : undefined,
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
@@ -256,6 +293,10 @@ class CronProjectStatusMaintenanceHandler {
 
 			if (
 				project.status === prismaClient.ProjectStatus.Approved &&
+				!isProjectAvailableOnStores({
+					links: project.links,
+					workflow: workflowByProjectId.get(project.id),
+				}) &&
 				lastActivityAt <= dormantThreshold
 			) {
 				await prisma.project.update({

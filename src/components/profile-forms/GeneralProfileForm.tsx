@@ -14,7 +14,11 @@ import {
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import countryList from "react-select-country-list";
-import { AvailableLocales } from "@/config/locale";
+import {
+	availableLocales,
+	defaultLocale,
+	isAvailableLocale,
+} from "@/config/locale";
 
 type GeneralProfileFormArgs = {
 	profile: prismaClient.Profile & { user: Partial<prismaClient.User> };
@@ -87,7 +91,10 @@ const GeneralProfileForm = ({
 					country: profile.country,
 					city: profile.city,
 					tgNickname: profile.tgNickname,
-					lang: profile?.user.lang || getLanguage(),
+					lang:
+						isAvailableLocale(profile?.user.lang) && availableLocales.length > 1
+							? profile.user.lang
+							: defaultLocale,
 				}}
 			>
 				<Flex vertical gap={16}>
@@ -137,22 +144,29 @@ const GeneralProfileForm = ({
 						>
 							<Input />
 						</Form.Item>
-						<Form.Item
-							label={t(
-								"components.profile-forms.general.field.language",
-								"Platform language",
-							)}
-							name="lang"
-							rules={[{ required: true }]}
-						>
-							<Select
-								defaultValue={getLanguage()}
-								options={[
-									{ value: AvailableLocales.en, label: "English" },
-									{ value: AvailableLocales.ru, label: "Русский" },
-								]}
-							/>
-						</Form.Item>
+						{availableLocales.length > 1 && (
+							<Form.Item
+								label={t(
+									"components.profile-forms.general.field.language",
+									"Platform language",
+								)}
+								name="lang"
+								rules={[{ required: true }]}
+							>
+								<Select
+									defaultValue={getLanguage()}
+									options={availableLocales.map((locale) => ({
+										value: locale,
+										label: locale === "ru" ? "Русский" : "English",
+									}))}
+								/>
+							</Form.Item>
+						)}
+						{availableLocales.length <= 1 && (
+							<Form.Item name="lang" hidden initialValue={defaultLocale}>
+								<Input />
+							</Form.Item>
+						)}
 					</Card>
 
 					<Card

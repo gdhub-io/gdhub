@@ -6,6 +6,10 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import weekday from "dayjs/plugin/weekday";
 import { getEditorjsShortContent } from "@/helpers/content";
+import {
+	escapeTelegramHtml,
+	htmlFragmentToTelegramPlainText,
+} from "@/helpers/telegramHtml";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(localeData);
@@ -43,13 +47,15 @@ export const newProjectReportsMessageRu = (
 
 	reports.forEach((report) => {
 		const content = report.contentEditor
-			? getEditorjsShortContent(
-					report.contentEditor as unknown as OutputData,
-					150,
+			? htmlFragmentToTelegramPlainText(
+					getEditorjsShortContent(
+						report.contentEditor as unknown as OutputData,
+						150,
+					),
 				)
 			: getCleanTextContent(report.content);
 
-		message += `\n\n<b>Проект ${report.project.name}</b>\n`;
+		message += `\n\n<b>Проект ${escapeTelegramHtml(report.project.name)}</b>\n`;
 		message += `${content}`;
 		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>\n`;
 	});
@@ -66,13 +72,15 @@ export const newProjectReportsMessageEn = (
 
 	reports.forEach((report) => {
 		const content = report.contentEditor
-			? getEditorjsShortContent(
-					report.contentEditor as unknown as OutputData,
-					150,
+			? htmlFragmentToTelegramPlainText(
+					getEditorjsShortContent(
+						report.contentEditor as unknown as OutputData,
+						150,
+					),
 				)
 			: getCleanTextContent(report.content);
 
-		message += `\n\n<b>Project ${report.project.name}</b>\n`;
+		message += `\n\n<b>Project ${escapeTelegramHtml(report.project.name)}</b>\n`;
 		message += `${content}`;
 		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>\n`;
 	});

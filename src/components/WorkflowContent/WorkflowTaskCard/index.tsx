@@ -8,6 +8,7 @@ export type TaskCardProps = {
 	stage?: string;
 	required: boolean;
 	completed: boolean;
+	disabled?: boolean;
 	onStatusChange: (taskId: string, checked: boolean) => void;
 };
 
@@ -17,6 +18,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 	stage = "Co-Working",
 	required,
 	completed,
+	disabled = false,
 	onStatusChange,
 }) => {
 	const isCompleted = completed;
@@ -29,7 +31,9 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 					role="button"
 					tabIndex={0}
 					className={`${styles.taskCheckbox} ${isCompleted ? styles.completed : ""}`}
-					onClick={() => onStatusChange(id, !isCompleted)}
+					onClick={() => {
+						if (!disabled) onStatusChange(id, !isCompleted);
+					}}
 				>
 					{isCompleted && <AiOutlineCheck size={14} />}
 				</div>
