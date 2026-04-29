@@ -14,6 +14,11 @@ import { useRouter } from "next/router";
 import type React from "react";
 import { useEffect, useMemo } from "react";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import {
+	getHubSectionShellClass,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
 import { PageViews } from "@/components/PageViews";
 import {
 	getEditorjsPageCover,
@@ -28,6 +33,9 @@ const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface DevlogPostsProps {
 	projectId?: string;
+	variant?: "default" | "hub";
+	/** Outer frame removed — used inside hub `mainSectionsBundle` */
+	bundleInset?: boolean;
 }
 
 const DefaultCover = ({ title }: { title: string }) => {
@@ -179,7 +187,11 @@ const PostSkeleton = () => {
 	);
 };
 
-const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
+const DevlogPosts = ({
+	projectId,
+	variant = "default",
+	bundleInset = false,
+}: DevlogPostsProps) => {
 	const { t } = useTranslate();
 	const limit = 5;
 
@@ -229,42 +241,72 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+	const hubShell =
+		variant === "hub"
+			? getHubSectionShellClass(bundleInset ? "inset" : "main")
+			: "";
+
+	const hubHead = (
+		<HubSectionHeader title={t("hub.activity-feed.title", "Activity Feed")} />
+	);
+
 	if (isLoading) {
+		const body = (
+			<div className={styles.postsList}>
+				{[...Array(3)].map((_, index) => (
+					<div
+						key={`post-skeleton-${index.toString()}`}
+						className={styles.postWrapper}
+					>
+						<PostSkeleton />
+					</div>
+				))}
+			</div>
+		);
+
+		if (variant === "hub") {
+			return (
+				<div
+					className={`${hubShell} ${styles.devlogPostsContainer} ${styles.hubVariant}`}
+				>
+					{hubHead}
+					<HubSectionBody flush>{body}</HubSectionBody>
+				</div>
+			);
+		}
+
 		return (
 			<div className={styles.devlogPostsContainer}>
-				<Flex justify="space-between" wrap>
+				<Flex justify="space-between" wrap align="center">
 					<Title level={2}>
 						<HistoryOutlined style={{ marginRight: 8 }} />
 						{t("page.hub.project-updates", "Project updates")}
 					</Title>
 				</Flex>
-				<div className={styles.postsList}>
-					{[...Array(3)].map((_, index) => (
-						<div
-							key={`post-skeleton-${index.toString()}`}
-							className={styles.postWrapper}
-						>
-							<PostSkeleton />
-						</div>
-					))}
-				</div>
+				{body}
 			</div>
 		);
 	}
 
 	if (!posts.length) {
-		return <div className={styles.empty}>{t("No devlog posts yet")}</div>;
+		const empty = (
+			<div className={styles.empty}>{t("No devlog posts yet")}</div>
+		);
+		if (variant === "hub") {
+			return (
+				<div
+					className={`${hubShell} ${styles.devlogPostsContainer} ${styles.hubVariant}`}
+				>
+					{hubHead}
+					<HubSectionBody>{empty}</HubSectionBody>
+				</div>
+			);
+		}
+		return empty;
 	}
 
-	return (
-		<div className={styles.devlogPostsContainer}>
-			<Flex align="center" gap={8} style={{ marginBottom: 24 }}>
-				<IconNews size={24} />
-				<Title level={2}>
-					{t("page.hub.project-updates", "Project updates")}
-				</Title>
-			</Flex>
-
+	const listBlock = (
+		<>
 			<div className={styles.postsList}>
 				{posts.map((post) => (
 					<div key={`post-${post.id}`} className={styles.postWrapper}>
@@ -284,6 +326,29 @@ const DevlogPosts = ({ projectId }: DevlogPostsProps) => {
 				<div className={styles.loadMore}>
 					<Spin spinning={isFetchingNextPage} />
 				</div>
+			)}
+		</>
+	);
+
+	return (
+		<div
+			className={`${variant === "hub" ? hubShell : ""} ${styles.devlogPostsContainer} ${variant === "hub" ? styles.hubVariant : ""}`}
+		>
+			{variant === "hub" ? (
+				hubHead
+			) : (
+				<Flex align="center" gap={8} style={{ marginBottom: 24 }}>
+					<IconNews size={24} />
+					<Title level={2}>
+						{t("page.hub.project-updates", "Project updates")}
+					</Title>
+				</Flex>
+			)}
+
+			{variant === "hub" ? (
+				<HubSectionBody flush>{listBlock}</HubSectionBody>
+			) : (
+				listBlock
 			)}
 		</div>
 	);

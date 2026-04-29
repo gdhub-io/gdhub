@@ -67,7 +67,11 @@ class CronProjectStatusMaintenanceHandler {
 				updatedAt: true,
 				dormantAt: true,
 				statusChangedAt: true,
-				teamId: true,
+				team: {
+					select: {
+						id: true,
+					},
+				},
 				authorId: true,
 				links: true,
 				author: {
@@ -93,7 +97,9 @@ class CronProjectStatusMaintenanceHandler {
 		}
 
 		const projectIds = projects.map((project) => project.id);
-		const teamIds = projects.map((project) => project.teamId);
+		const teamIds = projects.flatMap((project) =>
+			project.team?.id ? [project.team.id] : [],
+		);
 
 		const [
 			reports,
@@ -244,6 +250,7 @@ class CronProjectStatusMaintenanceHandler {
 
 		for (const project of projects) {
 			let lastActivityAt: Date | undefined = project.updatedAt;
+			const teamId = project.team?.id;
 
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
@@ -251,15 +258,15 @@ class CronProjectStatusMaintenanceHandler {
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
-				maxVacancyByTeam.get(project.teamId),
+				teamId ? maxVacancyByTeam.get(teamId) : undefined,
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
-				maxTeamMemberByTeam.get(project.teamId),
+				teamId ? maxTeamMemberByTeam.get(teamId) : undefined,
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,
-				maxTeamInvestorByTeam.get(project.teamId),
+				teamId ? maxTeamInvestorByTeam.get(teamId) : undefined,
 			);
 			lastActivityAt = pickMaxDate(
 				lastActivityAt,

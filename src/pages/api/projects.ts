@@ -38,20 +38,34 @@ class ApiProjectsHandler {
 						}
 					: undefined,
 			});
-			const teamIds = projects.map((project) => project.teamId);
+			const projectIds = projects.map((project) => project.id);
 			const publishedVacancies = await prisma.teamVacancy.findMany({
 				where: {
-					teamId: {
-						in: teamIds,
+					team: {
+						project: {
+							id: {
+								in: projectIds,
+							},
+						},
 					},
 					status: "Published",
 				},
 				select: {
-					teamId: true,
+					team: {
+						select: {
+							project: {
+								select: {
+									id: true,
+								},
+							},
+						},
+					},
 				},
 			});
-			const teamIdsWithOpenPositions = new Set(
-				publishedVacancies.map((vacancy) => vacancy.teamId),
+			const projectIdsWithOpenPositions = new Set(
+				publishedVacancies.flatMap((vacancy) =>
+					vacancy.team.project?.id ? [vacancy.team.project.id] : [],
+				),
 			);
 
 			return await Promise.all(
@@ -60,7 +74,7 @@ class ApiProjectsHandler {
 					applauseCount: await prisma.project.getApplauseCount({
 						projectId: project.id,
 					}),
-					hasOpenPositions: teamIdsWithOpenPositions.has(project.teamId),
+					hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
 				})),
 			);
 		} catch (error) {

@@ -39,6 +39,7 @@ import ReactNiceAvatar, { genConfig } from "react-nice-avatar";
 import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import { Error404 } from "@/components/Error404";
 import { NotificationsBell } from "@/components/NotificationsBell";
+import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { type ContextEvent, EventContext } from "@/contexts/EventContext";
 import { hasRole } from "@/helpers/user";
@@ -138,7 +139,10 @@ export const ProtectedEventLayout = ({
 	};
 
 	useEffect(() => {
-		if (session?.user.lang && getLanguage() !== session.user.lang) {
+		if (
+			isAvailableLocale(session?.user.lang) &&
+			getLanguage() !== session.user.lang
+		) {
 			changeLanguage(session.user.lang).then((d) =>
 				console.info("language is changed"),
 			);

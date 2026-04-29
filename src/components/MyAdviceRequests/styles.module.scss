@@ -16,13 +16,132 @@
 }
 
 .requestCard {
-  background: #fafcff;
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid #f4f4f5;
+  border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-  transition: box-shadow 0.2s;
+}
+
+/**
+ * Hub sidebar / bundle — same row pattern as HotTeamVacancies & NewMembers.
+ */
+.hubListBlock {
+  margin-top: 0;
+}
+
+.hubListBlockSpacer {
+  height: 12px;
+}
+
+.hubList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.hubListRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 24px;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.08);
+  transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(22, 119, 255, 0.08);
+    background: rgba(0, 0, 0, 0.03);
   }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.hubListRowMain {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.hubAvatar {
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.hubTextWrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hubPrimary {
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hubSecondary {
+  overflow: hidden;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.25;
+  color: rgba(0, 0, 0, 0.45);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hubItemIcon {
+  flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.hubListRowActions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hubListRowButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  padding: 10px 24px;
+  border: none;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.08);
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.requestCardMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.requestCardActions {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #888;
 }

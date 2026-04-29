@@ -1,0 +1,89 @@
+/**
+ * Shared hub layout — bordered sections and unified section headers (Pencil: Hub Overview v3).
+ * Sections use transparent fill so the page/layout background shows through; only strokes count.
+ */
+
+.sectionCard {
+	overflow: hidden;
+	border: 1px solid #f4f4f5;
+	border-radius: 0;
+	background: transparent;
+}
+
+/**
+ * Stripe inside the main column rounded shell (`mainSectionsBundle`) — no outer stroke;
+ * separators come from the bundle wrapper (`> * + *` border).
+ */
+.sectionCardInset {
+	overflow: hidden;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+}
+
+/**
+ * Right-column sidebar cards (Pencil: Positions / Events / Members) — rounded corners, stronger stroke.
+ */
+.sectionCardSidebar {
+	overflow: hidden;
+	border: 1px solid #e4e4e7;
+	border-radius: 16px;
+	background: transparent;
+}
+
+.sectionHead {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	box-sizing: border-box;
+	gap: 12px;
+	padding: 12px 24px;
+}
+
+.sectionTitle {
+	margin: 0 !important;
+	color: #1f1f1f !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	line-height: 1.35 !important;
+}
+
+.sectionBody {
+	padding: 16px 24px;
+}
+
+/**
+ * List wrapper inside `.sectionBody` — cancels horizontal padding so rows span full card width
+ * (hover / separators edge-to-edge). Match row horizontal padding to `.sectionHead` (24px).
+ */
+.sidebarListBleed {
+	margin-left: -24px;
+	margin-right: -24px;
+}
+
+.sectionDivider {
+	display: block;
+	height: 1px;
+	margin: 16px 0;
+	border: 0;
+	background: #f4f4f5;
+}
+
+.sectionSubheading {
+	margin: 0 0 12px;
+	color: #1f1f1f;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.sectionHeadLink {
+	font-size: 12px !important;
+	color: #a1a1aa !important;
+	text-decoration: none;
+
+	&:hover {
+		color: #1f1f1f !important;
+	}
+}

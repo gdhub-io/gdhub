@@ -4,8 +4,9 @@ const nextConfig = {
 	reactStrictMode: true,
 	output: "standalone",
 	i18n: {
-		locales: ["en", "ru"],
+		locales: ["en"],
 		defaultLocale: "en",
+		localeDetection: false,
 	},
 	eslint: {
 		ignoreDuringBuilds: true,

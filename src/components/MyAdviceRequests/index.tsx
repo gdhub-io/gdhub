@@ -1,4 +1,5 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
 import { MdOutlineSupportAgent } from "@react-icons/all-files/md/MdOutlineSupportAgent";
 import { IconBan, IconCancel, IconCheck, IconClock } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -10,6 +11,12 @@ import { useSession } from "next-auth/react";
 import qs from "qs";
 import type React from "react";
 import { useMemo, useState } from "react";
+import {
+	getHubSectionShellClass,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
+import hubSection from "@/components/hub/hubSection.module.scss";
 import { useChat } from "../Chat/useChat";
 import ExpertRequestModal from "../modals/ExpertRequestModal";
 import { TextWithLineBreak } from "../TextWithLineBreak";
@@ -24,8 +31,18 @@ type RequestCardData = prismaClient.AdviceRequest & {
 	project?: prismaClient.Project;
 };
 
-const MyAdviceRequests: React.FC<{ showTitle?: boolean }> = ({
+const MyAdviceRequests: React.FC<{
+	showTitle?: boolean;
+	/** hub: bordered main-column card; hubSidebar: head+body only — wrap with `sectionCardSidebar` on hub page */
+	variant?: "default" | "hub" | "hubSidebar";
+	/** hubSidebar inside hub `mainSectionsBundle` — no nested rounded card */
+	embedInMainBundle?: boolean;
+	bundleSlotClassName?: string;
+}> = ({
 	showTitle = true,
+	variant = "default",
+	embedInMainBundle = false,
+	bundleSlotClassName,
 }) => {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
@@ -37,16 +54,18 @@ const MyAdviceRequests: React.FC<{ showTitle?: boolean }> = ({
 	const { data, isLoading, isFetched, refetch } = useQuery({
 		queryKey: ["advice-requests"],
 		queryFn: () =>
-			axios.get("/api/user/advice-requests", {
-				params: {
-					status: [
-						prismaClient.AdviceRequestStatus.Created,
-						prismaClient.AdviceRequestStatus.Approved,
-					],
-				},
-				paramsSerializer: (params) =>
-					qs.stringify(params, { arrayFormat: "repeat" }),
-			}),
+			axios
+				.get<RequestCardData[]>("/api/user/advice-requests", {
+					params: {
+						status: [
+							prismaClient.AdviceRequestStatus.Created,
+							prismaClient.AdviceRequestStatus.Approved,
+						],
+					},
+					paramsSerializer: (params) =>
+						qs.stringify(params, { arrayFormat: "repeat" }),
+				})
+				.then((res) => res.data),
 	});
 
 	const { mutateAsync: acceptAdviceRequest, isPending: isAccepting } =
@@ -88,11 +107,11 @@ const MyAdviceRequests: React.FC<{ showTitle?: boolean }> = ({
 
 	const userId = session?.user?.id;
 	const incoming = useMemo(
-		() => (data ? data.data.filter((r: any) => r.toUser?.id === userId) : []),
+		() => (data ? data.filter((r) => r.toUser?.id === userId) : []),
 		[data, userId],
 	);
 	const outgoing = useMemo(
-		() => (data ? data.data.filter((r: any) => r.fromUser?.id === userId) : []),
+		() => (data ? data.filter((r) => r.fromUser?.id === userId) : []),
 		[data, userId],
 	);
 
@@ -117,6 +136,18 @@ const MyAdviceRequests: React.FC<{ showTitle?: boolean }> = ({
 		setSelectedAdviceRequestId(undefined);
 	};
 
+	const isHubLayout = variant === "hub" || variant === "hubSidebar";
+
+	const HUB_LIST_PREVIEW = 5;
+	const incomingShown = useMemo(
+		() => (isHubLayout ? incoming.slice(0, HUB_LIST_PREVIEW) : incoming),
+		[isHubLayout, incoming],
+	);
+	const outgoingShown = useMemo(
+		() => (isHubLayout ? outgoing.slice(0, HUB_LIST_PREVIEW) : outgoing),
+		[isHubLayout, outgoing],
+	);
+
 	if (
 		!isFetched ||
 		(!isLoading && incoming.length === 0 && outgoing.length === 0)
@@ -124,70 +155,182 @@ const MyAdviceRequests: React.FC<{ showTitle?: boolean }> = ({
 		return null;
 	}
 
+	const stackGap =
+		incoming.length > 0 && outgoing.length > 0 && !isHubLayout ? 20 : 0;
+
+	const stacksDefault = (
+		<Flex vertical gap={stackGap}>
+			{incoming.length > 0 && (
+				<div>
+					<Title level={4}>{t("page.hub.incoming-requests", "Incoming")}</Title>
+					{isLoading ? (
+						<Spin />
+					) : (
+						<div className={styles.requestsList}>
+							{incomingShown.map((req) => (
+								<RequestCard
+									key={req.id}
+									req={req}
+									type="incoming"
+									isAccepting={isAccepting}
+									isRejecting={isRejecting}
+									onReply={handleOpenRequestChat}
+									onView={setSelectedAdviceRequestId}
+									onAccept={handleAcceptRequest}
+									onReject={handleRejectRequest}
+								/>
+							))}
+						</div>
+					)}
+				</div>
+			)}
+			{incoming.length > 0 && outgoing.length > 0 ? (
+				<hr className={hubSection.sectionDivider} />
+			) : null}
+			{outgoing.length > 0 && (
+				<div>
+					<Title level={4}>{t("page.hub.outgoing-requests", "Outgoing")}</Title>
+					{isLoading ? (
+						<Spin />
+					) : (
+						<div className={styles.requestsList}>
+							{outgoingShown.map((req) => (
+								<RequestCard
+									key={req.id}
+									req={req}
+									type="outgoing"
+									isAccepting={isAccepting}
+									isRejecting={isRejecting}
+									onView={setSelectedAdviceRequestId}
+									onReply={handleOpenRequestChat}
+								/>
+							))}
+						</div>
+					)}
+				</div>
+			)}
+		</Flex>
+	);
+
+	const stacksHub = (
+		<>
+			{incomingShown.length > 0 && (
+				<div className={styles.hubListBlock}>
+					<div className={hubSection.sectionSubheading}>
+						{t("page.hub.incoming-requests", "Incoming")}
+					</div>
+					{isLoading ? (
+						<Spin />
+					) : (
+						<div className={`${styles.hubList} ${hubSection.sidebarListBleed}`}>
+							{incomingShown.map((req) => (
+								<AdviceHubListRow
+									key={req.id}
+									req={req}
+									type="incoming"
+									isAccepting={isAccepting}
+									isRejecting={isRejecting}
+									onReply={handleOpenRequestChat}
+									onView={setSelectedAdviceRequestId}
+									onAccept={handleAcceptRequest}
+									onReject={handleRejectRequest}
+								/>
+							))}
+						</div>
+					)}
+				</div>
+			)}
+			{incomingShown.length > 0 && outgoingShown.length > 0 ? (
+				<div className={styles.hubListBlockSpacer} aria-hidden />
+			) : null}
+			{outgoingShown.length > 0 && (
+				<div className={styles.hubListBlock}>
+					<div className={hubSection.sectionSubheading}>
+						{t("page.hub.outgoing-requests", "Outgoing")}
+					</div>
+					{isLoading ? (
+						<Spin />
+					) : (
+						<div className={`${styles.hubList} ${hubSection.sidebarListBleed}`}>
+							{outgoingShown.map((req) => (
+								<AdviceHubListRow
+									key={req.id}
+									req={req}
+									type="outgoing"
+									isAccepting={isAccepting}
+									isRejecting={isRejecting}
+									onView={setSelectedAdviceRequestId}
+									onReply={handleOpenRequestChat}
+								/>
+							))}
+						</div>
+					)}
+				</div>
+			)}
+		</>
+	);
+
+	const stacks = isHubLayout ? stacksHub : stacksDefault;
+
+	const hubInner = (
+		<>
+			{showTitle && (
+				<HubSectionHeader
+					title={t("page.hub.advice-requests", "Advice Requests")}
+				>
+					{isHubLayout && (
+						<Link
+							href="/hub/experts/my-requests"
+							className={hubSection.sectionHeadLink}
+						>
+							<Text type="secondary">
+								{t("hub.view-all", "View all")}
+								{" →"}
+							</Text>
+						</Link>
+					)}
+				</HubSectionHeader>
+			)}
+			<HubSectionBody>{stacks}</HubSectionBody>
+		</>
+	);
+
+	const body =
+		variant === "hubSidebar" && embedInMainBundle ? (
+			<div
+				className={[getHubSectionShellClass("inset"), bundleSlotClassName]
+					.filter(Boolean)
+					.join(" ")}
+			>
+				{hubInner}
+			</div>
+		) : variant === "hubSidebar" ? (
+			<section className={getHubSectionShellClass("sidebar")}>
+				{hubInner}
+			</section>
+		) : variant === "hub" ? (
+			<div className={getHubSectionShellClass("main")}>{hubInner}</div>
+		) : (
+			<div className={styles.adviceRequestsContainer}>
+				<Flex justify="space-between" align="center" wrap>
+					{showTitle && (
+						<Space>
+							<MdOutlineSupportAgent size={36} />
+							<Title level={2}>
+								{t("page.hub.advice-requests", "Advice Requests")}
+							</Title>
+						</Space>
+					)}
+				</Flex>
+				<Space direction="vertical" size={32} style={{ width: "100%" }}>
+					{stacks}
+				</Space>
+			</div>
+		);
+
 	return (
-		<div className={styles.adviceRequestsContainer}>
-			<Flex justify="space-between" align="center" wrap>
-				{showTitle && (
-					<Space>
-						<MdOutlineSupportAgent size={36} />
-						<Title level={2}>
-							{t("page.hub.advice-requests", "Advice Requests")}
-						</Title>
-					</Space>
-				)}
-			</Flex>
-			<Space direction="vertical" size={32} style={{ width: "100%" }}>
-				{incoming.length > 0 && (
-					<div>
-						<Title level={4}>
-							{t("page.hub.incoming-requests", "Incoming")}
-						</Title>
-						{isLoading ? (
-							<Spin />
-						) : (
-							<div className={styles.requestsList}>
-								{incoming.map((req: any) => (
-									<RequestCard
-										key={req.id}
-										req={req}
-										type="incoming"
-										isAccepting={isAccepting}
-										isRejecting={isRejecting}
-										onReply={handleOpenRequestChat}
-										onView={setSelectedAdviceRequestId}
-										onAccept={handleAcceptRequest}
-										onReject={handleRejectRequest}
-									/>
-								))}
-							</div>
-						)}
-					</div>
-				)}
-				{outgoing.length > 0 && (
-					<div>
-						<Title level={4}>
-							{t("page.hub.outgoing-requests", "Outgoing")}
-						</Title>
-						{isLoading ? (
-							<Spin />
-						) : (
-							<div className={styles.requestsList}>
-								{outgoing.map((req: any) => (
-									<RequestCard
-										key={req.id}
-										req={req}
-										type="outgoing"
-										isAccepting={isAccepting}
-										isRejecting={isRejecting}
-										onView={setSelectedAdviceRequestId}
-										onReply={handleOpenRequestChat}
-									/>
-								))}
-							</div>
-						)}
-					</div>
-				)}
-			</Space>
+		<>
+			{body}
 
 			<ExpertRequestModal
 				adviceRequestId={selectedAdviceRequestId}
@@ -195,7 +338,109 @@ const MyAdviceRequests: React.FC<{ showTitle?: boolean }> = ({
 				onCancel={() => setSelectedAdviceRequestId(undefined)}
 				onUpdate={() => handleRequestsChange()}
 			/>
+		</>
+	);
+};
+
+const AdviceHubListRow: React.FC<{
+	req: RequestCardData;
+	type: "incoming" | "outgoing";
+	isAccepting: boolean;
+	isRejecting: boolean;
+	onView: (adviceRequestId: string) => void;
+	onReply: (adviceRequestId: string) => void | Promise<void>;
+	onAccept?: (adviceRequestId: string) => void;
+	onReject?: (adviceRequestId: string) => void;
+}> = ({
+	req,
+	type,
+	isAccepting,
+	isRejecting,
+	onView,
+	onReply,
+	onAccept,
+	onReject,
+}) => {
+	const { t } = useTranslate();
+	const fromUserName = useMemo(
+		() =>
+			req.fromUser ? req.fromUser.profile.name : req.fromTelegramUser?.name,
+		[req],
+	);
+	const toUserName = useMemo(
+		() => (req.toUser ? req.toUser.profile.name : t("Unknown")),
+		[req, t],
+	);
+
+	const secondaryLine = [
+		type === "incoming"
+			? `${t("page.hub.advice-from-prefix", "From")} ${fromUserName}`
+			: `${t("page.hub.advice-to-prefix", "To")} ${toUserName}`,
+		req.project?.name,
+	]
+		.filter(Boolean)
+		.join(" · ");
+
+	const main = (
+		<div className={styles.hubListRowMain}>
+			<Avatar
+				size={28}
+				className={styles.hubAvatar}
+				src={type === "incoming" ? req.fromUser?.image : req.toUser?.image}
+			/>
+			<div className={styles.hubTextWrap}>
+				<div className={styles.hubPrimary} title={req.topic ?? undefined}>
+					{req.topic}
+				</div>
+				<div className={styles.hubSecondary} title={secondaryLine}>
+					{secondaryLine}
+				</div>
+			</div>
 		</div>
+	);
+
+	if (type === "incoming" && req.status === "Created") {
+		return (
+			<div className={styles.hubListRow}>
+				{main}
+				<div className={styles.hubListRowActions}>
+					<Button
+						type="primary"
+						size="small"
+						loading={isAccepting}
+						onClick={() => onAccept?.(req.id)}
+					>
+						Accept
+					</Button>
+					<Button
+						size="small"
+						loading={isRejecting}
+						onClick={() => onReject?.(req.id)}
+					>
+						Reject
+					</Button>
+				</div>
+			</div>
+		);
+	}
+
+	const handleRowActivate = () => {
+		if (req.status === "Approved") {
+			void onReply(req.id);
+		} else {
+			onView(req.id);
+		}
+	};
+
+	return (
+		<button
+			type="button"
+			className={styles.hubListRowButton}
+			onClick={handleRowActivate}
+		>
+			{main}
+			<FaChevronRight className={styles.hubItemIcon} aria-hidden />
+		</button>
 	);
 };
 
@@ -282,7 +527,7 @@ const RequestCard: React.FC<{
 						{getStatusIcon(req.status)}
 					</span>
 				</div>
-				<Flex vertical>
+				<Flex vertical className={styles.requestCardMain}>
 					<Text>
 						{type === "incoming" ? `From ${fromUserName}` : `To ${toUserName}`}
 					</Text>
@@ -313,15 +558,7 @@ const RequestCard: React.FC<{
 						</Text>
 					)}
 				</Flex>
-				<div
-					style={{
-						marginLeft: "auto",
-						color: "#888",
-						display: "flex",
-						alignItems: "center",
-						gap: 8,
-					}}
-				>
+				<div className={styles.requestCardActions}>
 					{type === "incoming" ? (
 						req.status === "Created" ? (
 							<>

@@ -16,6 +16,10 @@ import {
 import { slugify } from "voca";
 import { NextAuthGuard } from "@/lib/api-middlewares";
 import { prisma } from "@/services/prisma";
+import {
+	getProjectLifecycleNotificationSnapshot,
+	notifyProjectLifecycleRecipients,
+} from "@/services/projectLifecycleNotifications";
 
 class CreateProjectDto {
 	@IsString()
@@ -120,7 +124,10 @@ class ApiProjectHandler {
 					{ team: { members: { some: { userId: req.user.id } } } },
 				],
 			},
-			include: { workflow: { include: { steps: true } } },
+			include: {
+				team: { select: { id: true } },
+				workflow: { include: { steps: true } },
+			},
 		});
 
 		return project;
@@ -203,6 +210,7 @@ class ApiProjectHandler {
 				},
 			},
 			include: {
+				team: { select: { id: true } },
 				author: {
 					select: {
 						name: true,
@@ -240,6 +248,7 @@ class ApiProjectHandler {
 				author: authorId ? { connect: { id: authorId } } : undefined,
 			},
 			include: {
+				team: { select: { id: true } },
 				author: {
 					select: {
 						name: true,
@@ -269,7 +278,22 @@ class ApiProjectHandler {
 		@Req() req: NextApiRequestWithUser,
 		@Query(ValidationPipe) { id }: QueryIdParam,
 	) {
-		await prisma.project.delete({ where: { id, authorId: req.user.id } });
+		const notificationSnapshot = await getProjectLifecycleNotificationSnapshot({
+			db: prisma,
+			projectId: id,
+			authorId: req.user.id,
+		});
+		const project = await prisma.project.deleteProject({
+			projectId: id,
+			authorId: req.user.id,
+		});
+
+		await notifyProjectLifecycleRecipients({
+			action: "delete",
+			snapshot: notificationSnapshot,
+		});
+
+		return project;
 	}
 }
 

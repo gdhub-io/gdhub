@@ -1,19 +1,21 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
-import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Flex, Skeleton, Space, Typography } from "antd";
+import { Avatar, Skeleton } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
+import {
+	HubSectionBleed,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
 import styles from "./styles.module.scss";
 
 type LatestEvent = prismaClient.Event & {
 	schedule?: { startDate: string; endDate: string }[];
 };
-
-const { Title, Text } = Typography;
 
 const SOON_DAYS = 14;
 
@@ -116,72 +118,61 @@ export default function LatestEvents() {
 	return (
 		<Skeleton active loading={isLoading}>
 			<div className={styles.container}>
-				<Flex align="center" justify="space-between" className={styles.header}>
-					<Space>
-						<FaRegCalendarCheck
-							size={22}
-							style={{ position: "relative", top: 1 }}
-						/>
-						<Title level={4} className={styles.title}>
-							{t("hub.latest-events.title", "Latest events")}
-						</Title>
-					</Space>
+				<HubSectionHeader
+					title={t("hub.latest-events.title", "Upcoming events")}
+					linkHref="/hub/events"
+					linkLabel={`${t("hub.view-all", "View all")} →`}
+				/>
 
-					<Link href="/hub/events" className={styles.seeAll}>
-						<Text type="secondary">
-							{t("hub.latest-events.see-all", "See all")}
-						</Text>
-						<FaChevronRight className={styles.seeAllIcon} />
-					</Link>
-				</Flex>
-
-				<div className={styles.list}>
-					{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
-						<Link
-							key={e.id}
-							href={`${e.lang ? `/${e.lang}` : ""}/event/${e.slug}`}
-							target="_blank"
-							className={styles.item}
-						>
-							<div className={styles.itemLeft}>
-								<Avatar
-									src={e.image ?? undefined}
-									size={40}
-									className={styles.avatar}
-								>
-									{e.title?.charAt(0)?.toUpperCase()}
-								</Avatar>
-								<div className={styles.textWrap}>
-									<div className={styles.primary} title={e.title}>
-										{e.title}
-									</div>
-									<div
-										className={styles.secondary}
-										title={
-											isOngoing
-												? dayjs(nearestEnd).format("LL")
-												: dayjs(nextStart).format("LL")
-										}
+				<HubSectionBody>
+					<HubSectionBleed className={styles.list}>
+						{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
+							<Link
+								key={e.id}
+								href={`${e.lang ? `/${e.lang}` : ""}/event/${e.slug}`}
+								target="_blank"
+								className={styles.item}
+							>
+								<div className={styles.itemLeft}>
+									<Avatar
+										src={e.image ?? undefined}
+										size={40}
+										className={styles.avatar}
 									>
-										{isOngoing ? (
-											<>
-												{t("hub.latest-events.ongoing", "Ongoing")} ·{" "}
-												{t("hub.latest-events.until", "until")}{" "}
-												{dayjs(nearestEnd).format("ll")}
-											</>
-										) : (
-											<>
-												{t("hub.latest-events.starts", "Starts")}:{" "}
-												{dayjs(nextStart).format("ll")}
-											</>
-										)}
+										{e.title?.charAt(0)?.toUpperCase()}
+									</Avatar>
+									<div className={styles.textWrap}>
+										<div className={styles.primary} title={e.title}>
+											{e.title}
+										</div>
+										<div
+											className={styles.secondary}
+											title={
+												isOngoing
+													? dayjs(nearestEnd).format("LL")
+													: dayjs(nextStart).format("LL")
+											}
+										>
+											{isOngoing ? (
+												<>
+													{t("hub.latest-events.ongoing", "Ongoing")} ·{" "}
+													{t("hub.latest-events.until", "until")}{" "}
+													{dayjs(nearestEnd).format("ll")}
+												</>
+											) : (
+												<>
+													{t("hub.latest-events.starts", "Starts")}:{" "}
+													{dayjs(nextStart).format("ll")}
+												</>
+											)}
+										</div>
 									</div>
 								</div>
-							</div>
-							<FaChevronRight className={styles.itemIcon} />
-						</Link>
-					))}
-				</div>
+								<FaChevronRight className={styles.itemIcon} />
+							</Link>
+						))}
+					</HubSectionBleed>
+				</HubSectionBody>
 			</div>
 		</Skeleton>
 	);

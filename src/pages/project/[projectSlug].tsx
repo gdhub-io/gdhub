@@ -63,6 +63,7 @@ type ProjectPageParams = {
 		workflow: {
 			currentStep: { name: prismaClient.ProjectWorkflowStep["name"] } | null;
 		} | null;
+		team: { id: string } | null;
 	};
 	projectApplauseCount: number;
 	isAuthenticated: boolean;
@@ -404,7 +405,9 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 
 							{!screens.md && generalData}
 
-							<ProjectVacancies teamId={project.teamId} />
+							{project.team?.id && (
+								<ProjectVacancies teamId={project.team.id} />
+							)}
 
 							<DevlogPosts projectId={project.id} />
 						</Space>
@@ -455,9 +458,11 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 							</Link>
 						) : null}
 
-						<div className="project-team">
-							<TeamMembers teamId={project.teamId} />
-						</div>
+						{project.team?.id && (
+							<div className="project-team">
+								<TeamMembers teamId={project.team.id} />
+							</div>
+						)}
 					</Col>
 				</Row>
 			</div>
@@ -536,6 +541,7 @@ export const getServerSideProps: GetServerSideProps<ProjectPageParams> = async (
 			author: {
 				select: { name: true, profile: { select: { tgNickname: true } } },
 			},
+			team: { select: { id: true } },
 			workflow: { select: { currentStep: { select: { name: true } } } },
 		},
 	});

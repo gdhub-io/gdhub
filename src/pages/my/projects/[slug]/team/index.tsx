@@ -9,6 +9,7 @@ const RenderTeam = () => {
 	const contextProject = useContext(ProjectContext);
 
 	return contextProject?.contextProject?.isProjectAuthor &&
+		!contextProject?.contextProject?.isProjectArchived &&
 		contextProject?.isLoaded ? (
 		<MyTeam />
 	) : (

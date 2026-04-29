@@ -54,6 +54,7 @@ import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { useChat } from "@/components/Chat/useChat";
 import { ChatButton } from "@/components/ChatButton";
+import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { getDeviceDisplayName } from "@/helpers/device";
 import { hasRole } from "@/helpers/user";
@@ -95,6 +96,10 @@ interface ProtectedLayoutProps {
 	access?: prismaClient.UserRole[];
 	topMenuItems?: MenuProps["items"];
 	topMenuSelectedKeys?: string[];
+	/** Removes default content top padding and child top margin so pages can sit flush under the header. */
+	flushBodyTop?: boolean;
+	/** Removes horizontal content padding below `md` for full-width single-column layouts. */
+	contentBleedBelowMd?: boolean;
 }
 
 const { Header, Content } = Layout;
@@ -111,6 +116,8 @@ export const ProtectedLayout = ({
 	access = [],
 	topMenuItems,
 	topMenuSelectedKeys,
+	flushBodyTop = false,
+	contentBleedBelowMd = false,
 }: ProtectedLayoutProps) => {
 	const router = useRouter();
 	const { t, getLanguage, changeLanguage } = useTolgee();
@@ -303,7 +310,10 @@ export const ProtectedLayout = ({
 	}, []);
 
 	useEffect(() => {
-		if (session?.user.lang && getLanguage() !== session.user.lang) {
+		if (
+			isAvailableLocale(session?.user.lang) &&
+			getLanguage() !== session.user.lang
+		) {
 			changeLanguage(session.user.lang).then(() =>
 				console.info("language is changed"),
 			);
@@ -604,7 +614,9 @@ export const ProtectedLayout = ({
 						/>
 					</Header>
 					<Content className={styles.contentContainer}>
-						<div className={styles.content}>
+						<div
+							className={`${styles.content} ${flushBodyTop ? styles.contentFlushTop : ""} ${contentBleedBelowMd ? styles.contentBleedBelowMd : ""}`}
+						>
 							<Flex align="center" justify="space-between" gap={16} wrap={true}>
 								<Space>
 									{showBackButton &&
@@ -635,7 +647,13 @@ export const ProtectedLayout = ({
 								<div style={{ marginLeft: 52 }}>{subTitle}</div>
 							)}
 
-							<div style={{ marginTop: 24 }}>{children}</div>
+							<div
+								className={
+									flushBodyTop ? styles.pageBodyFlush : styles.pageBodySpaced
+								}
+							>
+								{children}
+							</div>
 						</div>
 					</Content>
 					{/* <Footer></Footer> */}

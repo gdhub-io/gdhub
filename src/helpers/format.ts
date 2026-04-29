@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import { AvailableLocales } from "@/config/locale";
+import { defaultLocale, isAvailableLocale } from "@/config/locale";
 
 dayjs.extend(localizedFormat);
 
@@ -62,7 +62,7 @@ export function formatNestedJson(obj: any, parentKey = "", output = "") {
 export const getServerLocale = (
 	req: NextApiRequestWithUser | NextApiRequest,
 ) => {
-	let locale = AvailableLocales.en;
+	let locale = defaultLocale;
 
 	const acceptLanguage = req.headers["accept-language"];
 
@@ -72,11 +72,8 @@ export const getServerLocale = (
 		const shortLocale = fullLocale?.split("-")[0];
 
 		// check allowed locales
-		if (
-			shortLocale &&
-			Object.values(AvailableLocales).includes(shortLocale as any)
-		) {
-			locale = shortLocale as AvailableLocales;
+		if (isAvailableLocale(shortLocale)) {
+			locale = shortLocale;
 		}
 	}
 

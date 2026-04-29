@@ -8,6 +8,25 @@
   }
 }
 
+.hubLink {
+  border-radius: 10px;
+  outline: none;
+
+  &:hover {
+    transform: none;
+  }
+
+  &:hover .hubCard,
+  &:focus-visible .hubCard {
+    border-color: #d4d4d8 !important;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.35);
+    border-radius: 10px;
+  }
+}
+
 .gameCard {
   border-radius: 12px;
   overflow: hidden;
@@ -16,6 +35,83 @@
   position: relative;
   background-color: white;
   border: 1px solid #eaeaea;
+}
+
+.hubCard {
+  border: 1px solid #f4f4f5;
+  border-radius: 10px;
+  box-shadow: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:global(.ant-card) {
+    border-radius: 10px;
+    background: #fff !important;
+  }
+}
+
+.hubCardContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  padding: 10px;
+}
+
+.hubImageContainer {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 8px;
+  flex-shrink: 0;
+
+  .defaultCover {
+    &::after {
+      background-color: rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  .defaultCoverInitials {
+    font-size: 18px !important;
+  }
+}
+
+.hubInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.hubTitle {
+  margin: 0 !important;
+  color: #1f1f1f !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+}
+
+.hubMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  min-width: 0;
+  font-size: 11px;
+  color: #a1a1aa;
+}
+
+.hubStageDot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.hubMetaText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .gameCardContent {
