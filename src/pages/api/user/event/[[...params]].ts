@@ -25,6 +25,7 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	Req,
 	ValidationPipe,
 } from "next-api-decorators";
@@ -179,6 +180,39 @@ class EventMembersMessageDto {
 
 	@IsString()
 	message: string;
+}
+
+class EventMemberUpdateDto {
+	@IsString()
+	@IsOptional()
+	projectId?: string | null;
+
+	@IsOptional()
+	@IsArray()
+	@IsString({ each: true })
+	mentorIds?: string[];
+}
+
+class EventMembersBatchUpdateDto {
+	@IsArray()
+	@IsString({ each: true })
+	memberIds: string[];
+
+	@IsString()
+	@IsOptional()
+	projectId?: string | null;
+
+	@IsOptional()
+	@IsArray()
+	@IsString({ each: true })
+	mentorIds?: string[];
+}
+
+class EventMembersCommonProjectsDto {
+	@IsArray()
+	@IsString({ each: true })
+	@Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+	memberIds: string[];
 }
 
 @NextAuthGuard("user")
@@ -475,11 +509,357 @@ class ApiUserEventEndpointHandler {
 						profile: { select: { name: true } },
 					},
 				},
+				teamMember: {
+					select: {
+						id: true,
+						position: true,
+						startedAt: true,
+						finishedAt: true,
+						team: {
+							select: {
+								projectId: true,
+								project: { select: { id: true, name: true, slug: true } },
+							},
+						},
+					},
+				},
+				mentors: {
+					select: {
+						id: true,
+						name: true,
+						user: {
+							select: {
+								id: true,
+								name: true,
+								image: true,
+								profile: { select: { name: true } },
+							},
+						},
+						direction: { select: { id: true, name: true } },
+					},
+				},
 			},
 			orderBy: { createdAt: "asc" },
 		});
 
 		return members;
+	}
+
+	@Get("/:id/members/common-projects")
+	public async getMembersCommonProjects(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Query(ValidationPipe) { memberIds }: EventMembersCommonProjectsDto,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to view members");
+		}
+
+		if (!memberIds.length) return [];
+
+		const members = await prisma.eventMember.findMany({
+			where: { eventId: id, id: { in: memberIds } },
+			select: { userId: true },
+		});
+
+		if (members.length !== memberIds.length) {
+			throw new BadRequestException("Some members do not belong to this event");
+		}
+
+		const userIds = members.map((m) => m.userId);
+
+		const teamMembers = await prisma.teamMember.findMany({
+			where: { userId: { in: userIds } },
+			select: {
+				userId: true,
+				position: true,
+				startedAt: true,
+				finishedAt: true,
+				team: {
+					select: {
+						projectId: true,
+						project: { select: { id: true, name: true, slug: true } },
+					},
+				},
+			},
+		});
+
+		const userProjectsMap = new Map<string, Set<string>>();
+		const projectById = new Map<
+			string,
+			{ id: string; name: string; slug: string }
+		>();
+
+		for (const tm of teamMembers) {
+			const projectId = tm.team?.projectId;
+			const project = tm.team?.project;
+			if (!projectId || !project) continue;
+
+			projectById.set(projectId, project);
+
+			if (!userProjectsMap.has(tm.userId)) {
+				userProjectsMap.set(tm.userId, new Set());
+			}
+			userProjectsMap.get(tm.userId)?.add(projectId);
+		}
+
+		if (userProjectsMap.size !== userIds.length) {
+			return [];
+		}
+
+		const userProjectSets = Array.from(userProjectsMap.values());
+		const [first, ...rest] = userProjectSets;
+		const intersection = new Set<string>();
+		for (const projectId of first) {
+			if (rest.every((set) => set.has(projectId))) {
+				intersection.add(projectId);
+			}
+		}
+
+		return Array.from(intersection)
+			.map((projectId) => projectById.get(projectId))
+			.filter(Boolean);
+	}
+
+	@Get("/:id/members/:memberId/projects")
+	public async getMemberProjects(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to view members");
+		}
+
+		const member = await prisma.eventMember.findFirst({
+			where: { id: memberId, eventId: id },
+			select: { userId: true },
+		});
+
+		if (!member) {
+			throw new NotFoundException("Member not found");
+		}
+
+		const teamMembers = await prisma.teamMember.findMany({
+			where: { userId: member.userId },
+			select: {
+				position: true,
+				startedAt: true,
+				finishedAt: true,
+				team: {
+					select: {
+						projectId: true,
+						project: { select: { id: true, name: true, slug: true } },
+					},
+				},
+			},
+			orderBy: { startedAt: "desc" },
+		});
+
+		return teamMembers
+			.map((tm) => {
+				const project = tm.team?.project;
+				if (!project) return null;
+				return {
+					id: project.id,
+					name: project.name,
+					slug: project.slug,
+					position: tm.position,
+					startedAt: tm.startedAt,
+					finishedAt: tm.finishedAt,
+				};
+			})
+			.filter(Boolean);
+	}
+
+	@Put("/:id/members/:memberId")
+	public async updateMember(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+		@Body(ValidationPipe) body: EventMemberUpdateDto,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to edit members");
+		}
+
+		const member = await prisma.eventMember.findFirst({
+			where: { id: memberId, eventId: id },
+			select: { id: true, userId: true },
+		});
+
+		if (!member) {
+			throw new NotFoundException("Member not found");
+		}
+
+		let teamMemberId: string | null = null;
+		if (body.projectId) {
+			const teamMembership = await prisma.teamMember.findFirst({
+				where: {
+					userId: member.userId,
+					team: { projectId: body.projectId },
+				},
+				select: { id: true },
+			});
+
+			if (!teamMembership) {
+				throw new BadRequestException(
+					"This user is not a team member of the selected project",
+				);
+			}
+			teamMemberId = teamMembership.id;
+		}
+
+		if (body.mentorIds?.length) {
+			const found = await prisma.speciality.findMany({
+				where: { id: { in: body.mentorIds } },
+				select: { id: true },
+			});
+			if (found.length !== body.mentorIds.length) {
+				throw new BadRequestException(
+					"Some mentor specialities were not found",
+				);
+			}
+		}
+
+		await prisma.eventMember.update({
+			where: { id: memberId },
+			data: {
+				teamMemberId: body.projectId !== undefined ? teamMemberId : undefined,
+				...(body.mentorIds !== undefined
+					? {
+							mentors: {
+								set: body.mentorIds.map((id) => ({ id })),
+							},
+						}
+					: {}),
+			},
+		});
+
+		return { success: true };
+	}
+
+	@Post("/:id/members/batch")
+	public async batchUpdateMembers(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Body(ValidationPipe) body: EventMembersBatchUpdateDto,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException("You are not allowed to edit members");
+		}
+
+		const members = await prisma.eventMember.findMany({
+			where: { id: { in: body.memberIds }, eventId: id },
+			select: { id: true, userId: true },
+		});
+
+		if (members.length !== body.memberIds.length) {
+			throw new BadRequestException("Some members do not belong to this event");
+		}
+
+		let teamMemberByUserId = new Map<string, string>();
+		if (body.projectId) {
+			const teamMembers = await prisma.teamMember.findMany({
+				where: {
+					userId: { in: members.map((m) => m.userId) },
+					team: { projectId: body.projectId },
+				},
+				select: { id: true, userId: true },
+			});
+
+			teamMemberByUserId = new Map(teamMembers.map((tm) => [tm.userId, tm.id]));
+			const missing = members.filter((m) => !teamMemberByUserId.has(m.userId));
+			if (missing.length) {
+				throw new BadRequestException(
+					"Some selected users are not team members of the chosen project",
+				);
+			}
+		}
+
+		if (body.mentorIds?.length) {
+			const found = await prisma.speciality.findMany({
+				where: { id: { in: body.mentorIds } },
+				select: { id: true },
+			});
+			if (found.length !== body.mentorIds.length) {
+				throw new BadRequestException(
+					"Some mentor specialities were not found",
+				);
+			}
+		}
+
+		const mentorsUpdate =
+			body.mentorIds !== undefined
+				? { set: body.mentorIds.map((id) => ({ id })) }
+				: undefined;
+
+		if (body.projectId !== undefined || mentorsUpdate) {
+			// m2m relation updates can't go through updateMany — per-row update needed.
+			await prisma.$transaction(
+				members.map((m) =>
+					prisma.eventMember.update({
+						where: { id: m.id },
+						data: {
+							...(body.projectId !== undefined
+								? {
+										teamMemberId: body.projectId
+											? (teamMemberByUserId.get(m.userId) ?? null)
+											: null,
+									}
+								: {}),
+							...(mentorsUpdate ? { mentors: mentorsUpdate } : {}),
+						},
+					}),
+				),
+			);
+		}
+
+		return { success: true, updated: members.length };
 	}
 
 	@Post("/:id/register")

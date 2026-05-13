@@ -1,11 +1,22 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Input, Modal, message, Tag, Typography } from "antd";
+import {
+	Avatar,
+	Button,
+	Input,
+	Modal,
+	message,
+	Space,
+	Tag,
+	Typography,
+} from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import type React from "react";
 import { useState } from "react";
 import ModernTable from "@/components/ModernTable";
+import BatchAssignEventMembersModal from "@/components/modals/BatchAssignEventMembersModal";
+import EditEventMemberModal from "@/components/modals/EditEventMemberModal";
 import { ProtectedEventLayout } from "@/layouts/ProtectedEventLayout";
 
 const { Text } = Typography;
@@ -15,9 +26,25 @@ interface EventMemberUser {
 	name?: string | null;
 	email?: string | null;
 	image?: string | null;
-	profile?: {
-		name?: string | null;
+	profile?: { name?: string | null } | null;
+}
+
+interface EventMemberTeamMember {
+	id: string;
+	position?: string | null;
+	startedAt?: string | null;
+	finishedAt?: string | null;
+	team?: {
+		projectId?: string | null;
+		project?: { id: string; name: string; slug: string } | null;
 	} | null;
+}
+
+interface EventMemberMentor {
+	id: string;
+	name: string;
+	user?: EventMemberUser | null;
+	direction?: { id: string; name: string } | null;
 }
 
 interface EventMember {
@@ -25,7 +52,52 @@ interface EventMember {
 	createdAt: string;
 	status: string;
 	user: EventMemberUser;
+	teamMemberId?: string | null;
+	teamMember?: EventMemberTeamMember | null;
+	mentors?: EventMemberMentor[] | null;
 }
+
+const formatDate = (value?: string | null) => {
+	if (!value) return "";
+	const date = new Date(value);
+	// Epoch zero is a sentinel for "unset" coming from bad seed data.
+	if (date.getTime() === 0) return "";
+	return date.toLocaleDateString(undefined, {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	});
+};
+
+const renderMentorsCell = (mentors?: EventMemberMentor[] | null) => {
+	if (!mentors?.length) return <Text type="secondary">—</Text>;
+	return (
+		<div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+			{mentors.map((mentor) => {
+				const displayName =
+					mentor.user?.profile?.name || mentor.user?.name || mentor.name;
+				return (
+					<div
+						key={mentor.id}
+						style={{ display: "flex", alignItems: "center", gap: 8 }}
+					>
+						<Avatar size={20} src={mentor.user?.image ?? undefined}>
+							{!mentor.user?.image && displayName ? displayName[0] : null}
+						</Avatar>
+						<div style={{ lineHeight: 1.2 }}>
+							<Text style={{ fontSize: 13 }}>{displayName}</Text>
+							<div>
+								<Text type="secondary" style={{ fontSize: 11 }}>
+									{mentor.name}
+								</Text>
+							</div>
+						</div>
+					</div>
+				);
+			})}
+		</div>
+	);
+};
 
 const EventMembersPage = () => {
 	const { t } = useTranslate();
@@ -33,10 +105,12 @@ const EventMembersPage = () => {
 	const eventId = router.query.eventId as string;
 
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 	const [messageText, setMessageText] = useState("");
+	const [editingMember, setEditingMember] = useState<EventMember | null>(null);
+	const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, refetch } = useQuery({
 		queryKey: ["event-members", eventId],
 		queryFn: () =>
 			axios.get<EventMember[]>(`/api/user/event/${eventId}/members`),
@@ -58,7 +132,7 @@ const EventMembersPage = () => {
 			message.success(
 				t("event.members.message.success", "Message sent successfully"),
 			);
-			setIsModalOpen(false);
+			setIsMessageModalOpen(false);
 			setMessageText("");
 			setSelectedRowKeys([]);
 		},
@@ -72,7 +146,7 @@ const EventMembersPage = () => {
 		},
 	});
 
-	const handleOpenModal = () => {
+	const handleOpenMessageModal = () => {
 		if (!selectedRowKeys.length) {
 			message.warning(
 				t(
@@ -83,7 +157,21 @@ const EventMembersPage = () => {
 			return;
 		}
 
-		setIsModalOpen(true);
+		setIsMessageModalOpen(true);
+	};
+
+	const handleOpenBatchModal = () => {
+		if (!selectedRowKeys.length) {
+			message.warning(
+				t(
+					"event.members.batch.noSelected",
+					"Please select at least one member.",
+				),
+			);
+			return;
+		}
+
+		setIsBatchModalOpen(true);
 	};
 
 	const handleSend = async () => {
@@ -108,13 +196,21 @@ const EventMembersPage = () => {
 				"List of users registered for this event.",
 			)}
 			actions={
-				<Button
-					type="primary"
-					disabled={!members.length}
-					onClick={handleOpenModal}
-				>
-					{t("event.members.actions.sendMessage", "Send message")}
-				</Button>
+				<Space>
+					<Button
+						disabled={!selectedRowKeys.length}
+						onClick={handleOpenBatchModal}
+					>
+						{t("event.members.actions.batchAssign", "Assign project / curator")}
+					</Button>
+					<Button
+						type="primary"
+						disabled={!members.length}
+						onClick={handleOpenMessageModal}
+					>
+						{t("event.members.actions.sendMessage", "Send message")}
+					</Button>
+				</Space>
 			}
 		>
 			<ModernTable
@@ -155,6 +251,48 @@ const EventMembersPage = () => {
 						},
 					},
 					{
+						title: t("event.members.project", "Project"),
+						key: "project",
+						render: (_, record) => {
+							const tm = record.teamMember;
+							const project = tm?.team?.project;
+							if (!project) return <Text type="secondary">—</Text>;
+
+							const started = formatDate(tm?.startedAt);
+							const finished =
+								formatDate(tm?.finishedAt) ||
+								t("event.members.present", "present");
+							const period = started ? `${started} — ${finished}` : null;
+
+							return (
+								<div style={{ lineHeight: 1.3 }}>
+									<Text strong>{project.name}</Text>
+									{tm?.position && (
+										<div>
+											<Text type="secondary" style={{ fontSize: 12 }}>
+												{tm.position}
+											</Text>
+										</div>
+									)}
+									{period && (
+										<div>
+											<Text type="secondary" style={{ fontSize: 12 }}>
+												{period}
+											</Text>
+										</div>
+									)}
+								</div>
+							);
+						},
+					},
+					{
+						title: t("event.members.mentors", "Mentors"),
+						dataIndex: "mentors",
+						key: "mentors",
+						render: (mentors: EventMemberMentor[] | null | undefined) =>
+							renderMentorsCell(mentors),
+					},
+					{
 						title: t("event.members.status", "Status"),
 						dataIndex: "status",
 						key: "status",
@@ -177,13 +315,23 @@ const EventMembersPage = () => {
 								minute: "2-digit",
 							}),
 					},
+					{
+						title: t("event.members.actions", "Actions"),
+						key: "actions",
+						width: 100,
+						render: (_, record) => (
+							<Button size="small" onClick={() => setEditingMember(record)}>
+								{t("common.edit", "Edit")}
+							</Button>
+						),
+					},
 				]}
 			/>
 
 			<Modal
-				open={isModalOpen}
+				open={isMessageModalOpen}
 				title={t("event.members.message.title", "Send message to members")}
-				onCancel={() => setIsModalOpen(false)}
+				onCancel={() => setIsMessageModalOpen(false)}
 				onOk={handleSend}
 				okButtonProps={{ loading: isSending }}
 			>
@@ -205,6 +353,29 @@ const EventMembersPage = () => {
 					)}
 				/>
 			</Modal>
+
+			<EditEventMemberModal
+				open={!!editingMember}
+				eventId={eventId}
+				member={editingMember}
+				onCancel={() => setEditingMember(null)}
+				onSaved={() => {
+					setEditingMember(null);
+					refetch();
+				}}
+			/>
+
+			<BatchAssignEventMembersModal
+				open={isBatchModalOpen}
+				eventId={eventId}
+				memberIds={selectedRowKeys.map(String)}
+				onCancel={() => setIsBatchModalOpen(false)}
+				onSaved={() => {
+					setIsBatchModalOpen(false);
+					setSelectedRowKeys([]);
+					refetch();
+				}}
+			/>
 		</ProtectedEventLayout>
 	);
 };

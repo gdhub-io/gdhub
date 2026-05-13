@@ -27,6 +27,8 @@ class ApiSpeakersSearchHandler {
 
 		const q = query.trim();
 
+		const idsArray = Array.isArray(ids) ? ids : ids ? [ids] : undefined;
+
 		const specialities = await prisma.speciality.findMany({
 			where: q
 				? {
@@ -41,36 +43,24 @@ class ApiSpeakersSearchHandler {
 							{ user: { id: req.user?.id } },
 						],
 					}
-				: {
-						OR: [
-							{ user: { id: req.user?.id } },
-							{
-								id: ids ? { in: Array.isArray(ids) ? ids : [ids] } : undefined,
-							},
-						],
-					},
+				: idsArray?.length
+					? { id: { in: idsArray } }
+					: {},
 			include: {
-				user: true,
+				user: { include: { profile: { select: { name: true } } } },
 				direction: true,
 			},
 			take: 20,
 			orderBy: { updatedAt: "desc" },
 		});
 
-		return specialities.map(
-			(s: {
-				id: string;
-				user: { name?: string | null; image?: string | null };
-				name: string;
-				direction: { name: string };
-			}) => ({
-				id: s.id,
-				name: s.user?.name || "",
-				image: s.user?.image || "",
-				speciality: s.name,
-				direction: s.direction?.name || "",
-			}),
-		);
+		return specialities.map((s) => ({
+			id: s.id,
+			name: s.user?.profile?.name || s.user?.name || "",
+			image: s.user?.image || "",
+			speciality: s.name,
+			direction: s.direction?.name || "",
+		}));
 	}
 }
 

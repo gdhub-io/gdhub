@@ -4,7 +4,10 @@
       "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/ExportDataModal.tsx)",
       "Bash(npx @biomejs/biome check src/components/profile-forms/DangerProfileForm/)",
       "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/)",
-      "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/DeleteAccountModal.tsx)"
+      "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/DeleteAccountModal.tsx)",
+      "Bash(xargs ls -lh)",
+      "Bash(pnpm exec *)",
+      "Bash(pnpm run *)"
     ]
   }
 }

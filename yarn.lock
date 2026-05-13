@@ -1764,6 +1764,11 @@
   resolved "https://registry.npmjs.org/@documenso/sdk-typescript/-/sdk-typescript-0.3.1.tgz"
   integrity sha512-hzNn4NNoGUp4bvBHoXBammafcnPMDx4vVO4o2LLoNORJsKKUgLi2dgpaG4S+YJUvWJhmT/mgQSDEXr2CKjraUQ==
 
+"@docuseal/api@^1.0.23":
+  version "1.0.23"
+  resolved "https://registry.yarnpkg.com/@docuseal/api/-/api-1.0.23.tgz#46121f6e93c44210438dc2b7088e5877508997b9"
+  integrity sha512-ula+35ZipfRNT1X9uz8ZqG/iBkHqON1RvIXDYvXn7Yd24WM6fwDXMz/QWwtj6VOgeZWud8+XELIAmguqWJ3qBw==
+
 "@editorjs/caret@^1.0.1":
   version "1.0.3"
   resolved "https://registry.npmjs.org/@editorjs/caret/-/caret-1.0.3.tgz"
@@ -2495,10 +2500,10 @@
   resolved "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.2.10.tgz"
   integrity sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==
 
-"@gdhub-io/gdhub-prisma@2.0.0-beta.19":
-  version "2.0.0-beta.19"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.19/0d9a4f929a342a17426ab90f51fa2ec96e9fc7fe#0d9a4f929a342a17426ab90f51fa2ec96e9fc7fe"
-  integrity sha512-knhnVaQWj1O4wbhn8+rU9kuBpkK8C2VOXC7UURRELeGS970Zs6C+YJGVEJIxjeRS2Cmq9wQvpnbB8KxNsM3JEQ==
+"@gdhub-io/gdhub-prisma@2.0.0-beta.20":
+  version "2.0.0-beta.20"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.20/08149ad50e534517614e421555e262505d1c8546#08149ad50e534517614e421555e262505d1c8546"
+  integrity sha512-6+XHdvPTXDSiqu6ZbnmisR1nZcn2S6W8NIW/ggrQo2wGNcds6deyHEQdc1XSsI2CaATfpTuP/lpEKM1WUpZudg==
   dependencies:
     "@faker-js/faker" "^9.2.0"
     "@gdhub-io/gdhub-typesense" "^1.0.6"
