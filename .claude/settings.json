@@ -4,7 +4,13 @@
       "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/ExportDataModal.tsx)",
       "Bash(npx @biomejs/biome check src/components/profile-forms/DangerProfileForm/)",
       "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/)",
-      "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/DeleteAccountModal.tsx)"
+      "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/DeleteAccountModal.tsx)",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); deps={**p.get\\('dependencies',{}\\),**p.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k,v in sorted\\(deps.items\\(\\)\\) if any\\(x in k for x in ['plate','slate','editor','prose','tiptap','editorjs']\\)]\")",
+      "WebFetch(domain:platejs.org)",
+      "WebSearch"
+    ],
+    "additionalDirectories": [
+      "/Users/ddrynau/projects/gdhub/app/src/pages/project"
     ]
   }
 }

@@ -44,6 +44,10 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
 				label: <Link href="/admin/workflows">Workflows</Link>,
 			},
 			{
+				key: "/admin/agreements",
+				label: <Link href="/admin/agreements">Agreements</Link>,
+			},
+			{
 				key: "/admin/audit-logs",
 				label: <Link href="/admin/audit-logs">Audit logs</Link>,
 			},
