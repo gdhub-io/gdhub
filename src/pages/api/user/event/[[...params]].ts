@@ -14,6 +14,7 @@ import {
 	ValidateNested,
 } from "class-validator";
 import dayjs from "dayjs";
+import type { NextApiResponse } from "next";
 import {
 	BadRequestException,
 	Body,
@@ -27,10 +28,12 @@ import {
 	Put,
 	Query,
 	Req,
+	Res,
 	ValidationPipe,
 } from "next-api-decorators";
 import slugify from "slugify";
 import { NextAuthGuard } from "@/lib/api-middlewares";
+import { LegalService } from "@/services/legal";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -166,6 +169,20 @@ class UserEventUpdateDto {
 	@IsObject()
 	@IsOptional()
 	content?: Record<string, any>;
+
+	@IsBoolean()
+	@IsOptional()
+	certificationEnabled?: boolean;
+}
+
+class CertificationConfigDto {
+	@IsString()
+	@IsOptional()
+	organizerName?: string | null;
+
+	@IsString()
+	@IsOptional()
+	organizerTitle?: string | null;
 }
 
 class DuplicateEventDto {
@@ -213,6 +230,69 @@ class EventMembersCommonProjectsDto {
 	@IsString({ each: true })
 	@Transform(({ value }) => (Array.isArray(value) ? value : [value]))
 	memberIds: string[];
+}
+
+async function resolveEventCertificationContext(eventId: string) {
+	const event = await prisma.event.findUnique({
+		where: { id: eventId },
+		select: {
+			id: true,
+			title: true,
+			type: true,
+			createdById: true,
+			certificationOrganizerName: true,
+			certificationOrganizerTitle: true,
+			createdBy: {
+				select: {
+					name: true,
+					profile: { select: { name: true } },
+					specialities: {
+						orderBy: { createdAt: "asc" },
+						take: 1,
+						select: { name: true },
+					},
+				},
+			},
+			schedule: {
+				select: { startDate: true, endDate: true },
+			},
+		},
+	});
+
+	if (!event) return null;
+
+	const defaultOrganizerName =
+		event.createdBy.profile?.name?.trim() || event.createdBy.name?.trim() || "";
+	const defaultOrganizerTitle =
+		event.createdBy.specialities[0]?.name?.trim() || "";
+
+	const startTimes = event.schedule
+		.map((s) => s.startDate.getTime())
+		.filter((t) => Number.isFinite(t));
+	const endTimes = event.schedule
+		.map((s) => s.endDate.getTime())
+		.filter((t) => Number.isFinite(t));
+	const startDate = startTimes.length
+		? new Date(Math.min(...startTimes))
+		: null;
+	const endDate = endTimes.length ? new Date(Math.max(...endTimes)) : null;
+
+	return {
+		id: event.id,
+		title: event.title,
+		type: event.type,
+		createdById: event.createdById,
+		startDate,
+		endDate,
+		storedOrganizerName: event.certificationOrganizerName,
+		storedOrganizerTitle: event.certificationOrganizerTitle,
+		defaultOrganizerName,
+		defaultOrganizerTitle,
+		effectiveOrganizerName:
+			event.certificationOrganizerName?.trim() || defaultOrganizerName,
+		effectiveOrganizerTitle:
+			event.certificationOrganizerTitle?.trim() || defaultOrganizerTitle,
+	};
 }
 
 @NextAuthGuard("user")
@@ -456,6 +536,205 @@ class ApiUserEventEndpointHandler {
 				publishedAt: null,
 			},
 		});
+	}
+
+	@Post("/:id/certification/template")
+	public async createCertificationTemplate(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const ctx = await resolveEventCertificationContext(id);
+
+		if (!ctx) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && ctx.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to manage certification for this event",
+			);
+		}
+
+		const legalService = new LegalService();
+		const document = await legalService.createEventCertificateDocument({
+			eventId: ctx.id,
+			eventTitle: ctx.title,
+			eventType: ctx.type,
+			organizerName: ctx.effectiveOrganizerName,
+			organizerTitle: ctx.effectiveOrganizerTitle,
+			startDate: ctx.startDate,
+			endDate: ctx.endDate,
+		});
+
+		await prisma.event.update({
+			where: { id },
+			data: {
+				certificationTemplateId: String(document.documentId),
+			},
+		});
+
+		return {
+			id: document.documentId,
+			title: document.title,
+		};
+	}
+
+	@Get("/:id/certification/template")
+	public async getCertificationTemplate(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: {
+				createdById: true,
+				certificationTemplateId: true,
+			},
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to view certification for this event",
+			);
+		}
+
+		if (!event.certificationTemplateId) {
+			return null;
+		}
+
+		const documentId = Number(event.certificationTemplateId);
+		if (!Number.isFinite(documentId)) {
+			return null;
+		}
+
+		try {
+			const legalService = new LegalService();
+			const document = await legalService.getDocument(documentId);
+			return {
+				id: document.id,
+				title: document.title,
+				status: document.status,
+			};
+		} catch (error) {
+			console.error("Failed to fetch certification document", error);
+			return null;
+		}
+	}
+
+	@Get("/:id/certification/config")
+	public async getCertificationConfig(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const ctx = await resolveEventCertificationContext(id);
+
+		if (!ctx) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && ctx.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to view certification for this event",
+			);
+		}
+
+		return {
+			organizerName: ctx.storedOrganizerName,
+			organizerTitle: ctx.storedOrganizerTitle,
+			defaults: {
+				organizerName: ctx.defaultOrganizerName,
+				organizerTitle: ctx.defaultOrganizerTitle,
+			},
+		};
+	}
+
+	@Put("/:id/certification/config")
+	public async updateCertificationConfig(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Body(ValidationPipe) body: CertificationConfigDto,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to manage certification for this event",
+			);
+		}
+
+		const normalize = (v: string | null | undefined) => {
+			if (v === undefined) return undefined;
+			if (v === null) return null;
+			const trimmed = v.trim();
+			return trimmed === "" ? null : trimmed;
+		};
+
+		await prisma.event.update({
+			where: { id },
+			data: {
+				certificationOrganizerName: normalize(body.organizerName),
+				certificationOrganizerTitle: normalize(body.organizerTitle),
+			},
+		});
+
+		return { ok: true };
+	}
+
+	@Get("/:id/certification/template/pdf")
+	public async getCertificationTemplatePdf(
+		@Req() req: NextApiRequestWithUser,
+		@Res() res: NextApiResponse,
+		@Param("id") id: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const ctx = await resolveEventCertificationContext(id);
+
+		if (!ctx) {
+			throw new NotFoundException("Event not found");
+		}
+
+		if (!isAdmin && ctx.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to view certification for this event",
+			);
+		}
+
+		const legalService = new LegalService();
+		const pdfBytes = await legalService.generateEventCertificatePdf({
+			eventType: ctx.type,
+			organizerName: ctx.effectiveOrganizerName,
+			organizerTitle: ctx.effectiveOrganizerTitle,
+			startDate: ctx.startDate,
+			endDate: ctx.endDate,
+		});
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader(
+			"Content-Disposition",
+			'inline; filename="certificate-preview.pdf"',
+		);
+		res.setHeader("Cache-Control", "no-store");
+		res.send(Buffer.from(pdfBytes));
 	}
 
 	@Put("/:id/archive")

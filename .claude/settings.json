@@ -7,7 +7,29 @@
       "Bash(npx @biomejs/biome check --write src/components/profile-forms/DangerProfileForm/DeleteAccountModal.tsx)",
       "Bash(xargs ls -lh)",
       "Bash(pnpm exec *)",
-      "Bash(pnpm run *)"
+      "Bash(pnpm run *)",
+      "Bash(grep -nA 15 \"CreateTemplateFromHtmlData\\\\|CreateTemplateFromHtmlResponse\" /Users/ddrynau/projects/gdhub/app/node_modules/@docuseal/api/types/types.d.ts)",
+      "Bash(grep -nA 3 \"preview_image_url\\\\|documents_url\\\\|preview\\\\|getTemplate\\\\b\\\\|getTemplateDocuments\" /Users/ddrynau/projects/gdhub/app/node_modules/@docuseal/api/types/api.d.ts)",
+      "Bash(grep -nA 5 \"GetTemplateResponse\\\\b\\\\|preview_image_url\\\\|documents.*url\" /Users/ddrynau/projects/gdhub/app/node_modules/@docuseal/api/types/types.d.ts)",
+      "Bash(yarn add *)",
+      "Bash(grep -nE \"^import \\\\{ Res\\\\b|, Res,\" /Users/ddrynau/projects/gdhub/app/node_modules/next-api-decorators/dist/index.d.ts)",
+      "Read(//tmp/**)",
+      "Bash(grep -v '^$')",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__new_page",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_screenshot",
+      "Bash(node_modules/.bin/ts-node --transpile-only scripts/render-cert.ts)",
+      "Bash(pdftoppm -r 150 -png cert-preview.pdf cert-preview)",
+      "Bash(node -e ' *)",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__navigate_page",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__evaluate_script",
+      "Bash(node -e \" *)",
+      "Bash(rm -rf scripts _cert*.pdf _cert*.png _logo_preview.html _logo_preview.png; ls _cert* _logo* scripts 2>&1 | head -3)",
+      "Bash(node_modules/.bin/tsc --noEmit -p tsconfig.json)",
+      "Bash(rm -rf scripts _cert_*.pdf _cert_*.png)"
+    ],
+    "additionalDirectories": [
+      "/tmp",
+      "/Users/ddrynau/projects/gdhub/app"
     ]
   }
 }
