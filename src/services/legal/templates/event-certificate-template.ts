@@ -11,12 +11,6 @@ export type EventCertificateTemplateInput = {
 	endDate: Date | null;
 };
 
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-	month: "long",
-	day: "numeric",
-	year: "numeric",
-});
-
 const isSameDay = (a: Date, b: Date) =>
 	a.getFullYear() === b.getFullYear() &&
 	a.getMonth() === b.getMonth() &&
@@ -259,12 +253,13 @@ export async function renderEventCertificatePdf({
 		});
 	}
 
-	// Date line: "on <date>." for same-day, "from <start> to <end>." otherwise.
+	// Date line: layout decided by schedule (same-day vs range), values stay
+	// as Documenso placeholders so they get filled per envelope.
 	const line2Y = isGameLab ? 228 : 275;
 	if (startDate && endDate) {
 		if (isSameDay(startDate, endDate)) {
 			const lead = "on ";
-			const date = dateFormatter.format(startDate);
+			const date = "{{start_date}}";
 			const dot = ".";
 			const lw = sans.widthOfTextAtSize(lead, sz);
 			const dw = sansBold.widthOfTextAtSize(date, sz);
@@ -295,9 +290,9 @@ export async function renderEventCertificatePdf({
 			});
 		} else {
 			const f1 = "from ";
-			const f2 = dateFormatter.format(startDate);
+			const f2 = "{{start_date}}";
 			const f3 = " to ";
-			const f4 = dateFormatter.format(endDate);
+			const f4 = "{{end_date}}";
 			const f5 = ".";
 			const fw1 = sans.widthOfTextAtSize(f1, sz);
 			const fw2 = sansBold.widthOfTextAtSize(f2, sz);
