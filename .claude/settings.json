@@ -25,7 +25,10 @@
       "Bash(node -e \" *)",
       "Bash(rm -rf scripts _cert*.pdf _cert*.png _logo_preview.html _logo_preview.png; ls _cert* _logo* scripts 2>&1 | head -3)",
       "Bash(node_modules/.bin/tsc --noEmit -p tsconfig.json)",
-      "Bash(rm -rf scripts _cert_*.pdf _cert_*.png)"
+      "Bash(rm -rf scripts _cert_*.pdf _cert_*.png)",
+      "Bash(yarn list *)",
+      "Bash(grep -B 1 -A 30 \"^export type EnvelopeGet$\" node_modules/@documenso/sdk-typescript/models/operations/envelopeget.d.ts)",
+      "Bash(npm view *)"
     ],
     "additionalDirectories": [
       "/tmp",

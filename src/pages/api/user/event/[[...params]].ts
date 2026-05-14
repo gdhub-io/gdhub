@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { Prisma } from "@prisma/client";
 import { Transform, Type } from "class-transformer";
@@ -33,7 +33,11 @@ import {
 } from "next-api-decorators";
 import slugify from "slugify";
 import { NextAuthGuard } from "@/lib/api-middlewares";
-import { LegalService } from "@/services/legal";
+import {
+	LegalService,
+	MENTOR_SIGNATURE_FIELD,
+	ORGANIZER_SIGNATURE_FIELD,
+} from "@/services/legal";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -295,6 +299,132 @@ async function resolveEventCertificationContext(eventId: string) {
 	};
 }
 
+// Crockford Base32 — 32 chars, no ambiguous I/L/O/U.
+const CROCKFORD_BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+function generateCertificateNumber(): string {
+	const bytes = randomBytes(6);
+	let suffix = "";
+	for (let i = 0; i < 6; i++) {
+		suffix += CROCKFORD_BASE32[bytes[i] & 0x1f]; // 5 random bits per char
+	}
+	return `GDH-${suffix}`;
+}
+
+async function resolveMemberCertificateContext(memberId: string) {
+	const member = await prisma.eventMember.findUnique({
+		where: { id: memberId },
+		include: {
+			event: {
+				select: {
+					id: true,
+					title: true,
+					type: true,
+					createdById: true,
+					certificationEnabled: true,
+					certificationOrganizerName: true,
+					certificationOrganizerTitle: true,
+					createdBy: {
+						select: {
+							name: true,
+							email: true,
+							profile: { select: { name: true } },
+							specialities: {
+								orderBy: { createdAt: "asc" },
+								take: 1,
+								select: { name: true },
+							},
+						},
+					},
+					schedule: { select: { startDate: true, endDate: true } },
+				},
+			},
+			user: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					profile: { select: { name: true } },
+				},
+			},
+			teamMember: {
+				select: {
+					position: true,
+					team: {
+						select: { project: { select: { name: true } } },
+					},
+				},
+			},
+			mentors: {
+				orderBy: { createdAt: "asc" },
+				take: 1,
+				select: {
+					name: true,
+					user: {
+						select: {
+							name: true,
+							email: true,
+							profile: { select: { name: true } },
+						},
+					},
+				},
+			},
+			certificate: true,
+		},
+	});
+
+	if (!member) return null;
+
+	const event = member.event;
+
+	const startTimes = event.schedule
+		.map((s) => s.startDate.getTime())
+		.filter((t) => Number.isFinite(t));
+	const endTimes = event.schedule
+		.map((s) => s.endDate.getTime())
+		.filter((t) => Number.isFinite(t));
+	const startDate = startTimes.length
+		? new Date(Math.min(...startTimes))
+		: null;
+	const endDate = endTimes.length ? new Date(Math.max(...endTimes)) : null;
+
+	const defaultOrganizerName =
+		event.createdBy.profile?.name?.trim() || event.createdBy.name?.trim() || "";
+	const defaultOrganizerTitle =
+		event.createdBy.specialities[0]?.name?.trim() || "";
+
+	const participantName =
+		member.user.profile?.name?.trim() ||
+		member.user.name?.trim() ||
+		member.user.email?.trim() ||
+		"";
+
+	const mentor = member.mentors[0];
+	const mentorName = mentor
+		? mentor.user?.profile?.name?.trim() ||
+			mentor.user?.name?.trim() ||
+			mentor.name.trim()
+		: "";
+	const mentorEmail = mentor?.user?.email?.trim() || "";
+
+	return {
+		member,
+		event,
+		startDate,
+		endDate,
+		participantName,
+		participantPosition: member.teamMember?.position?.trim() || "",
+		projectName: member.teamMember?.team?.project?.name?.trim() || "",
+		organizerName:
+			event.certificationOrganizerName?.trim() || defaultOrganizerName,
+		organizerTitle:
+			event.certificationOrganizerTitle?.trim() || defaultOrganizerTitle,
+		organizerEmail: event.createdBy.email?.trim() || "",
+		mentorName,
+		mentorEmail,
+	};
+}
+
 @NextAuthGuard("user")
 class ApiUserEventEndpointHandler {
 	@Get("/count")
@@ -538,97 +668,6 @@ class ApiUserEventEndpointHandler {
 		});
 	}
 
-	@Post("/:id/certification/template")
-	public async createCertificationTemplate(
-		@Req() req: NextApiRequestWithUser,
-		@Param("id") id: string,
-	) {
-		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
-
-		const ctx = await resolveEventCertificationContext(id);
-
-		if (!ctx) {
-			throw new NotFoundException("Event not found");
-		}
-
-		if (!isAdmin && ctx.createdById !== req.user.id) {
-			throw new ForbiddenException(
-				"You are not allowed to manage certification for this event",
-			);
-		}
-
-		const legalService = new LegalService();
-		const document = await legalService.createEventCertificateDocument({
-			eventId: ctx.id,
-			eventTitle: ctx.title,
-			eventType: ctx.type,
-			organizerName: ctx.effectiveOrganizerName,
-			organizerTitle: ctx.effectiveOrganizerTitle,
-			startDate: ctx.startDate,
-			endDate: ctx.endDate,
-		});
-
-		await prisma.event.update({
-			where: { id },
-			data: {
-				certificationTemplateId: String(document.documentId),
-			},
-		});
-
-		return {
-			id: document.documentId,
-			title: document.title,
-		};
-	}
-
-	@Get("/:id/certification/template")
-	public async getCertificationTemplate(
-		@Req() req: NextApiRequestWithUser,
-		@Param("id") id: string,
-	) {
-		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
-
-		const event = await prisma.event.findUnique({
-			where: { id },
-			select: {
-				createdById: true,
-				certificationTemplateId: true,
-			},
-		});
-
-		if (!event) {
-			throw new NotFoundException("Event not found");
-		}
-
-		if (!isAdmin && event.createdById !== req.user.id) {
-			throw new ForbiddenException(
-				"You are not allowed to view certification for this event",
-			);
-		}
-
-		if (!event.certificationTemplateId) {
-			return null;
-		}
-
-		const documentId = Number(event.certificationTemplateId);
-		if (!Number.isFinite(documentId)) {
-			return null;
-		}
-
-		try {
-			const legalService = new LegalService();
-			const document = await legalService.getDocument(documentId);
-			return {
-				id: document.id,
-				title: document.title,
-				status: document.status,
-			};
-		} catch (error) {
-			console.error("Failed to fetch certification document", error);
-			return null;
-		}
-	}
-
 	@Get("/:id/certification/config")
 	public async getCertificationConfig(
 		@Req() req: NextApiRequestWithUser,
@@ -737,6 +776,348 @@ class ApiUserEventEndpointHandler {
 		res.send(Buffer.from(pdfBytes));
 	}
 
+	@Post("/:id/members/:memberId/certificate")
+	public async createMemberCertificate(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const ctx = await resolveMemberCertificateContext(memberId);
+
+		if (!ctx || ctx.event.id !== id) {
+			throw new NotFoundException("Member not found");
+		}
+
+		if (!isAdmin && ctx.event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to manage certificates for this event",
+			);
+		}
+
+		if (!ctx.event.certificationEnabled) {
+			throw new BadRequestException(
+				"Certification is not enabled for this event",
+			);
+		}
+
+		if (ctx.member.certificate) {
+			throw new BadRequestException(
+				"Certificate has already been created for this member",
+			);
+		}
+
+		const issuedAt = new Date();
+		const legalService = new LegalService();
+
+		// Two-phase create: first claim a unique number in the DB with a
+		// placeholder externalId, then upload to Documenso, then update the row
+		// with the real envelopeId. On Documenso failure we roll the row back
+		// so no orphan PDFs are left in Documenso and no orphan rows in the DB.
+		let claimedRow: { id: string; number: string } | null = null;
+		let lastError: unknown;
+		for (let attempt = 0; attempt < 3; attempt++) {
+			const candidate = generateCertificateNumber();
+			try {
+				claimedRow = await prisma.eventCertificate.create({
+					data: {
+						eventMemberId: ctx.member.id,
+						number: candidate,
+						externalId: `pending:${candidate}`,
+						issuedAt,
+					},
+					select: { id: true, number: true },
+				});
+				break;
+			} catch (error) {
+				if (
+					error instanceof Prisma.PrismaClientKnownRequestError &&
+					error.code === "P2002"
+				) {
+					const target = (error.meta as { target?: string[] } | undefined)
+						?.target;
+					// Conflict on eventMemberId means a parallel create won — no point retrying.
+					if (target?.some((field) => field.includes("eventMemberId"))) {
+						throw new BadRequestException(
+							"Certificate has already been created for this member",
+						);
+					}
+					lastError = error;
+					continue;
+				}
+				throw error;
+			}
+		}
+
+		if (!claimedRow) {
+			throw lastError instanceof Error
+				? lastError
+				: new Error("Failed to allocate certificate number");
+		}
+
+		// Signers: organizer always, mentor only for GameLab events with a
+		// mentor assigned. Matches the signature blocks rendered on the PDF.
+		// Each signer carries a pre-placed signature field so Documenso shows
+		// the field anchored to the right line in the certificate.
+		const signers = [
+			{
+				name: ctx.organizerName,
+				email: ctx.organizerEmail,
+				signatureField: ORGANIZER_SIGNATURE_FIELD,
+			},
+			...(ctx.event.type === "GameLab" && ctx.mentorName && ctx.mentorEmail
+				? [
+						{
+							name: ctx.mentorName,
+							email: ctx.mentorEmail,
+							signatureField: MENTOR_SIGNATURE_FIELD,
+						},
+					]
+				: []),
+		];
+
+		try {
+			const document = await legalService.createMemberCertificateDocument({
+				memberId: ctx.member.id,
+				certificateNumber: claimedRow.number,
+				pdfInput: {
+					eventType: ctx.event.type,
+					organizerName: ctx.organizerName,
+					organizerTitle: ctx.organizerTitle,
+					startDate: ctx.startDate,
+					endDate: ctx.endDate,
+					participantName: ctx.participantName,
+					participantPosition: ctx.participantPosition,
+					projectName: ctx.projectName,
+					eventTitle: ctx.event.title,
+					certificateNumber: claimedRow.number,
+					issuedDate: issuedAt,
+					mentorName: ctx.mentorName,
+				},
+				signers,
+			});
+
+			const certificate = await prisma.eventCertificate.update({
+				where: { id: claimedRow.id },
+				data: { externalId: document.envelopeId },
+			});
+
+			return {
+				id: certificate.id,
+				number: certificate.number,
+				externalId: certificate.externalId,
+				issuedAt: certificate.issuedAt,
+				documentId: document.documentId,
+			};
+		} catch (error) {
+			await prisma.eventCertificate
+				.delete({ where: { id: claimedRow.id } })
+				.catch((rollbackError) => {
+					console.error(
+						"Failed to roll back certificate row after Documenso error",
+						rollbackError,
+					);
+				});
+			throw error;
+		}
+	}
+
+	@Get("/:id/members/:memberId/certificate")
+	public async getMemberCertificate(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const member = await prisma.eventMember.findUnique({
+			where: { id: memberId },
+			select: {
+				eventId: true,
+				event: { select: { createdById: true } },
+				certificate: true,
+			},
+		});
+
+		if (!member || member.eventId !== id) {
+			throw new NotFoundException("Member not found");
+		}
+
+		if (!isAdmin && member.event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to view certificates for this event",
+			);
+		}
+
+		if (!member.certificate) return null;
+
+		let status: string | null = null;
+		const externalId = member.certificate.externalId;
+		if (!externalId.startsWith("pending:")) {
+			try {
+				const envelope = await new LegalService().getEnvelope(externalId);
+				status = envelope.status;
+			} catch (error) {
+				console.error("Failed to fetch envelope status", error);
+			}
+		}
+
+		return {
+			id: member.certificate.id,
+			number: member.certificate.number,
+			externalId: member.certificate.externalId,
+			issuedAt: member.certificate.issuedAt,
+			status,
+		};
+	}
+
+	@Get("/:id/members/:memberId/certificate/pdf")
+	public async getMemberCertificatePdf(
+		@Req() req: NextApiRequestWithUser,
+		@Res() res: NextApiResponse,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const ctx = await resolveMemberCertificateContext(memberId);
+
+		if (!ctx || ctx.event.id !== id) {
+			throw new NotFoundException("Member not found");
+		}
+
+		if (!isAdmin && ctx.event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to view certificates for this event",
+			);
+		}
+
+		if (!ctx.member.certificate) {
+			throw new NotFoundException("Certificate has not been created yet");
+		}
+
+		const legalService = new LegalService();
+		const pdfBytes = await legalService.generateEventCertificatePdf({
+			eventType: ctx.event.type,
+			organizerName: ctx.organizerName,
+			organizerTitle: ctx.organizerTitle,
+			startDate: ctx.startDate,
+			endDate: ctx.endDate,
+			participantName: ctx.participantName,
+			participantPosition: ctx.participantPosition,
+			projectName: ctx.projectName,
+			eventTitle: ctx.event.title,
+			certificateNumber: ctx.member.certificate.number,
+			issuedDate: ctx.member.certificate.issuedAt,
+			mentorName: ctx.mentorName,
+		});
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader(
+			"Content-Disposition",
+			`inline; filename="${ctx.member.certificate.number}.pdf"`,
+		);
+		res.setHeader("Cache-Control", "no-store");
+		res.send(Buffer.from(pdfBytes));
+	}
+
+	@Post("/:id/members/:memberId/certificate/distribute")
+	public async distributeMemberCertificate(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const member = await prisma.eventMember.findUnique({
+			where: { id: memberId },
+			select: {
+				eventId: true,
+				event: { select: { createdById: true } },
+				certificate: true,
+			},
+		});
+
+		if (!member || member.eventId !== id) {
+			throw new NotFoundException("Member not found");
+		}
+
+		if (!isAdmin && member.event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to manage certificates for this event",
+			);
+		}
+
+		if (!member.certificate) {
+			throw new NotFoundException("Certificate has not been created yet");
+		}
+
+		const externalId = member.certificate.externalId;
+		if (externalId.startsWith("pending:")) {
+			throw new BadRequestException(
+				"Certificate document was not uploaded to Documenso",
+			);
+		}
+
+		await new LegalService().distributeEnvelope(externalId);
+
+		return { ok: true };
+	}
+
+	@Delete("/:id/members/:memberId/certificate")
+	public async deleteMemberCertificate(
+		@Req() req: NextApiRequestWithUser,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const member = await prisma.eventMember.findUnique({
+			where: { id: memberId },
+			select: {
+				eventId: true,
+				event: { select: { createdById: true } },
+				certificate: true,
+			},
+		});
+
+		if (!member || member.eventId !== id) {
+			throw new NotFoundException("Member not found");
+		}
+
+		if (!isAdmin && member.event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to manage certificates for this event",
+			);
+		}
+
+		if (!member.certificate) {
+			return { ok: true };
+		}
+
+		// Try to delete the envelope in Documenso. Skip the call if the stored
+		// externalId is still a `pending:` placeholder (never uploaded), or if
+		// Documenso returns 404 — we still want to clean up the DB row.
+		const externalId = member.certificate.externalId;
+		if (!externalId.startsWith("pending:")) {
+			try {
+				await new LegalService().deleteEnvelope(externalId);
+			} catch (error) {
+				console.error(
+					"Failed to delete envelope in Documenso, removing local row anyway",
+					error,
+				);
+			}
+		}
+
+		await prisma.eventCertificate.delete({
+			where: { id: member.certificate.id },
+		});
+
+		return { ok: true };
+	}
+
 	@Put("/:id/archive")
 	public async archive(@Param("id") id: string) {
 		await prisma.event.update({
@@ -817,11 +1198,61 @@ class ApiUserEventEndpointHandler {
 						direction: { select: { id: true, name: true } },
 					},
 				},
+				certificate: {
+					select: {
+						id: true,
+						number: true,
+						externalId: true,
+						issuedAt: true,
+					},
+				},
 			},
 			orderBy: { createdAt: "asc" },
 		});
 
-		return members;
+		// Fetch envelope info from Documenso in parallel for members that
+		// have a certificate. We grab status + team slug so we can build the
+		// Documenso UI URL. Failures are ignored — the UI falls back to "Draft"
+		// and hides the "View in Documenso" button.
+		const legalService = new LegalService();
+		const envelopeInfos = await Promise.all(
+			members.map(async (m) => {
+				if (!m.certificate) return null;
+				const externalId = m.certificate.externalId;
+				if (externalId.startsWith("pending:")) return null;
+				try {
+					const envelope = await legalService.getEnvelope(externalId);
+					return {
+						status: envelope.status,
+						teamUrl: envelope.team.url,
+					};
+				} catch (error) {
+					console.error(
+						`Failed to fetch envelope for cert ${m.certificate.number}`,
+						error,
+					);
+					return null;
+				}
+			}),
+		);
+
+		return members.map((m, i) => {
+			if (!m.certificate) return { ...m, certificate: null };
+			const info = envelopeInfos[i];
+			return {
+				...m,
+				certificate: {
+					...m.certificate,
+					status: info?.status ?? null,
+					documentUrl: info
+						? legalService.getDocumentUrl({
+								teamUrl: info.teamUrl,
+								envelopeId: m.certificate.externalId,
+							})
+						: null,
+				},
+			};
+		});
 	}
 
 	@Get("/:id/members/common-projects")

@@ -10,7 +10,6 @@ import {
 	Space,
 	Spin,
 	Switch,
-	Tag,
 	Typography,
 } from "antd";
 import axios from "axios";
@@ -24,13 +23,6 @@ type CertificationEventFormProps = {
 interface EventCertificationFields {
 	id: string;
 	certificationEnabled?: boolean | null;
-	certificationTemplateId?: string | null;
-}
-
-interface CertificationDocument {
-	id: number;
-	title: string;
-	status?: string;
 }
 
 interface CertificationConfig {
@@ -65,19 +57,6 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 
 	const event = eventResponse?.data;
 	const enabled = !!event?.certificationEnabled;
-	const hasTemplate = !!event?.certificationTemplateId;
-
-	const { data: document, isFetching: isFetchingDocument } = useQuery({
-		queryKey: ["event-certification-template", eventId, hasTemplate],
-		queryFn: () =>
-			axios
-				.get<CertificationDocument | null>(
-					`/api/user/event/${eventId}/certification/template`,
-				)
-				.then((r) => r.data),
-		enabled: !!eventId && enabled && hasTemplate,
-		refetchOnWindowFocus: false,
-	});
 
 	const { data: certificationConfig, isFetching: isFetchingConfig } = useQuery({
 		queryKey: ["event-certification-config", eventId],
@@ -175,12 +154,12 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 				<Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
 					{t(
 						"event.settings.certification.description",
-						"When enabled, you can generate a certificate template that will be used to issue certificates to event participants. The template is created as a document in Documenso.",
+						"When enabled, you can issue certificates to event participants from the Members page.",
 					)}
 				</Typography.Paragraph>
 
 				{enabled && (
-					<Spin spinning={isFetchingDocument || isFetchingConfig}>
+					<Spin spinning={isFetchingConfig}>
 						<Space direction="vertical" size="middle" style={{ width: "100%" }}>
 							<div>
 								<Typography.Title level={5} style={{ marginBottom: 8 }}>
@@ -267,27 +246,6 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 									</div>
 								</Form>
 							</div>
-
-							{hasTemplate && document && (
-								<div>
-									<Typography.Text strong>{document.title}</Typography.Text>
-									{document.status && (
-										<>
-											{" "}
-											<Tag>{document.status}</Tag>
-										</>
-									)}
-									<div>
-										<Typography.Text type="secondary" style={{ fontSize: 12 }}>
-											{t(
-												"event.settings.certification.document.id",
-												"Documenso document #{id}",
-												{ id: document.id },
-											)}
-										</Typography.Text>
-									</div>
-								</div>
-							)}
 						</Space>
 					</Spin>
 				)}

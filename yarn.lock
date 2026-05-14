@@ -2503,10 +2503,10 @@
   resolved "https://registry.npmjs.org/@floating-ui/utils/-/utils-0.2.10.tgz"
   integrity sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==
 
-"@gdhub-io/gdhub-prisma@2.0.0-beta.22":
-  version "2.0.0-beta.22"
-  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.22/0031ba5da42a51327d4b49ffce64b2c77565ebbe#0031ba5da42a51327d4b49ffce64b2c77565ebbe"
-  integrity sha512-UTC+KteiDZGlKMonQ5q/502z7ZWRC1e4bqRzVm+QKJtR+hxNk52hoKeyW2LCVKyWdHVLeEcRsglYyfbxNyG6zw==
+"@gdhub-io/gdhub-prisma@2.0.0-beta.23":
+  version "2.0.0-beta.23"
+  resolved "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.23/7a82618fbe2feb94187b576649434fb1a02c70c1#7a82618fbe2feb94187b576649434fb1a02c70c1"
+  integrity sha512-MQKCpuDLmtLwZruGSs676NfLoJCn6UZEgX/hI/o+mQSn5FJcKsmAPvngwalbjDNk4Rt8smshbJY4y52DQtivZw==
   dependencies:
     "@faker-js/faker" "^9.2.0"
     "@gdhub-io/gdhub-typesense" "^1.0.6"
@@ -3520,6 +3520,13 @@
     "@parcel/watcher-win32-arm64" "2.5.1"
     "@parcel/watcher-win32-ia32" "2.5.1"
     "@parcel/watcher-win32-x64" "2.5.1"
+
+"@pdf-lib/fontkit@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@pdf-lib/fontkit/-/fontkit-1.1.1.tgz#f18473892b65e3253eb73f4569785abd2c03b1e0"
+  integrity sha512-KjMd7grNapIWS/Dm0gvfHEilSyAmeLvrEGVcqLGi0VYebuqqzTbgF29efCx7tvx+IEbG3zQciRSWl3GkUSvjZg==
+  dependencies:
+    pako "^1.0.6"
 
 "@pdf-lib/standard-fonts@^1.0.0":
   version "1.0.0"

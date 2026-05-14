@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { PDFDocument, type PDFFont, rgb, StandardFonts } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
+import { PDFDocument, type PDFFont, rgb } from "pdf-lib";
 
 export type EventCertificateTemplateInput = {
 	eventType: prismaClient.$Enums.EventType;
@@ -9,6 +10,16 @@ export type EventCertificateTemplateInput = {
 	organizerTitle: string;
 	startDate: Date | null;
 	endDate: Date | null;
+	// per-member overrides — when null/undefined, the renderer falls back to
+	// the `{{placeholder}}` text so the same function works for the preview in
+	// settings AND for the fully-populated per-member certificate.
+	participantName?: string | null;
+	participantPosition?: string | null;
+	projectName?: string | null;
+	eventTitle?: string | null;
+	certificateNumber?: string | null;
+	issuedDate?: Date | null;
+	mentorName?: string | null;
 };
 
 const isSameDay = (a: Date, b: Date) =>
@@ -21,23 +32,106 @@ const LOGO_PATH = path.join(
 	"src/assets/images/gdhub-logo-black.png",
 );
 
+const FONTS_DIR = path.join(process.cwd(), "src/assets/fonts/mulish");
+const FONT_FILES = {
+	regular: path.join(FONTS_DIR, "Mulish-Regular.ttf"),
+	bold: path.join(FONTS_DIR, "Mulish-Bold.ttf"),
+	italic: path.join(FONTS_DIR, "Mulish-Italic.ttf"),
+	boldItalic: path.join(FONTS_DIR, "Mulish-BoldItalic.ttf"),
+} as const;
+
+// Page geometry. Documenso expects field coordinates as percentages of
+// page width/height with the origin at the top-left corner.
+const PAGE_WIDTH = 842;
+const PAGE_HEIGHT = 595;
+const SIG_BASELINE_Y = 100; // PDF y (from bottom) of the signature line
+const SIG_BOX_HEIGHT = 40; // signature box height above the line
+const SIG_LINE_LEN = 200;
+const SIG_LEFT_X = 60;
+const SIG_RIGHT_X = PAGE_WIDTH - 60 - SIG_LINE_LEN;
+
+const toPct = (v: number, total: number) => (v / total) * 100;
+
+export type SignatureFieldPosition = {
+	pageNumber: number;
+	pageX: number;
+	pageY: number;
+	width: number;
+	height: number;
+};
+
+const signatureFieldAt = (xPdf: number): SignatureFieldPosition => ({
+	pageNumber: 1,
+	pageX: toPct(xPdf, PAGE_WIDTH),
+	// pageY is measured from the top edge of the page; the signature box
+	// sits above the line, so its top edge is at SIG_BASELINE_Y + SIG_BOX_HEIGHT
+	// from the bottom of the PDF.
+	pageY: toPct(PAGE_HEIGHT - (SIG_BASELINE_Y + SIG_BOX_HEIGHT), PAGE_HEIGHT),
+	width: toPct(SIG_LINE_LEN, PAGE_WIDTH),
+	height: toPct(SIG_BOX_HEIGHT, PAGE_HEIGHT),
+});
+
+export const ORGANIZER_SIGNATURE_FIELD: SignatureFieldPosition =
+	signatureFieldAt(SIG_LEFT_X);
+export const MENTOR_SIGNATURE_FIELD: SignatureFieldPosition =
+	signatureFieldAt(SIG_RIGHT_X);
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+	month: "long",
+	day: "numeric",
+	year: "numeric",
+});
+
+const valueOr = (value: string | null | undefined, placeholder: string) =>
+	value?.trim() ? value : placeholder;
+
 export async function renderEventCertificatePdf({
 	eventType,
 	organizerName,
 	organizerTitle,
 	startDate,
 	endDate,
+	participantName,
+	participantPosition,
+	projectName,
+	eventTitle,
+	certificateNumber,
+	issuedDate,
+	mentorName,
 }: EventCertificateTemplateInput): Promise<Uint8Array> {
+	const participantNameText = valueOr(participantName, "{{participant_name}}");
+	const participantPositionText = valueOr(
+		participantPosition,
+		"{{participant_position}}",
+	);
+	const projectNameText = valueOr(projectName, "{{project_name}}");
+	const eventTitleText = valueOr(eventTitle, "{{event_title}}");
+	const certificateNumberText = valueOr(
+		certificateNumber,
+		"{{certificate_number}}",
+	);
+	const issuedDateText = issuedDate
+		? dateFormatter.format(issuedDate)
+		: "{{issued_date}}";
+	const mentorNameText = valueOr(mentorName, "{{lead_mentor_name}}");
 	const doc = await PDFDocument.create();
+	doc.registerFontkit(fontkit);
 	const page = doc.addPage([842, 595]); // A4 landscape (pt)
 	const { width, height } = page.getSize();
 
-	const sans = await doc.embedFont(StandardFonts.Helvetica);
-	const sansBold = await doc.embedFont(StandardFonts.HelveticaBold);
-	const serifItalic = await doc.embedFont(StandardFonts.TimesRomanItalic);
-	const serifBoldItalic = await doc.embedFont(
-		StandardFonts.TimesRomanBoldItalic,
-	);
+	const [regularBytes, boldBytes, italicBytes, boldItalicBytes] =
+		await Promise.all([
+			readFile(FONT_FILES.regular),
+			readFile(FONT_FILES.bold),
+			readFile(FONT_FILES.italic),
+			readFile(FONT_FILES.boldItalic),
+		]);
+	const sans = await doc.embedFont(regularBytes, { subset: true });
+	const sansBold = await doc.embedFont(boldBytes, { subset: true });
+	const serifItalic = await doc.embedFont(italicBytes, { subset: true });
+	const serifBoldItalic = await doc.embedFont(boldItalicBytes, {
+		subset: true,
+	});
 
 	const ink = rgb(0.13, 0.13, 0.15);
 	const muted = rgb(0.55, 0.55, 0.6);
@@ -144,7 +238,7 @@ export async function renderEventCertificatePdf({
 	);
 
 	// right: certificate number + verify URL
-	const numText = "No. {{certificate_number}}";
+	const numText = `No. ${certificateNumberText}`;
 	const verifyText = "gdhub.io/verify";
 	const numW = sans.widthOfTextAtSize(numText, 9);
 	const verifyW = sans.widthOfTextAtSize(verifyText, 9);
@@ -167,7 +261,7 @@ export async function renderEventCertificatePdf({
 	drawCentered("This is to certify that", 460, serifItalic, 17, muted);
 
 	// participant name — large hero
-	drawCentered("{{participant_name}}", 395, sansBold, 44, ink);
+	drawCentered(participantNameText, 395, sansBold, 44, ink);
 
 	// divider with accent triangle
 	const divY = 360;
@@ -197,9 +291,9 @@ export async function renderEventCertificatePdf({
 
 	if (isGameLab) {
 		drawCentered("participated in the project", 335, sans, 11, muted);
-		drawCentered("{{project_name}}", 308, sansBold, 22, ink);
+		drawCentered(projectNameText, 308, sansBold, 22, ink);
 		drawCentered(
-			"in the position of {{participant_position}}",
+			`in the position of ${participantPositionText}`,
 			278,
 			serifBoldItalic,
 			17,
@@ -213,7 +307,7 @@ export async function renderEventCertificatePdf({
 			11,
 			muted,
 		);
-		drawCentered("{{event_title}}", 308, sansBold, 22, ink);
+		drawCentered(eventTitleText, 308, sansBold, 22, ink);
 	}
 
 	const sz = 11;
@@ -221,7 +315,7 @@ export async function renderEventCertificatePdf({
 	if (isGameLab) {
 		// "as part of <eventTitle>, GDHub's collaborative game-development incubator,"
 		const seg1 = "as part of ";
-		const seg2 = "{{event_title}}";
+		const seg2 = eventTitleText;
 		const seg3 = ", GDHub's collaborative game-development incubator,";
 		const w1 = sans.widthOfTextAtSize(seg1, sz);
 		const w2 = sansBold.widthOfTextAtSize(seg2, sz);
@@ -253,13 +347,21 @@ export async function renderEventCertificatePdf({
 		});
 	}
 
-	// Date line: layout decided by schedule (same-day vs range), values stay
-	// as Documenso placeholders so they get filled per envelope.
+	// Date line: layout decided by schedule (same-day vs range). For preview we
+	// leave the values as {{placeholder}} text; for per-member renders we
+	// inline the formatted dates.
+	const isPerMember = !!(participantName || certificateNumber || issuedDate);
+	const startDateText =
+		isPerMember && startDate
+			? dateFormatter.format(startDate)
+			: "{{start_date}}";
+	const endDateText =
+		isPerMember && endDate ? dateFormatter.format(endDate) : "{{end_date}}";
 	const line2Y = isGameLab ? 228 : 275;
 	if (startDate && endDate) {
 		if (isSameDay(startDate, endDate)) {
 			const lead = "on ";
-			const date = "{{start_date}}";
+			const date = startDateText;
 			const dot = ".";
 			const lw = sans.widthOfTextAtSize(lead, sz);
 			const dw = sansBold.widthOfTextAtSize(date, sz);
@@ -290,9 +392,9 @@ export async function renderEventCertificatePdf({
 			});
 		} else {
 			const f1 = "from ";
-			const f2 = "{{start_date}}";
+			const f2 = startDateText;
 			const f3 = " to ";
-			const f4 = "{{end_date}}";
+			const f4 = endDateText;
 			const f5 = ".";
 			const fw1 = sans.widthOfTextAtSize(f1, sz);
 			const fw2 = sansBold.widthOfTextAtSize(f2, sz);
@@ -343,11 +445,11 @@ export async function renderEventCertificatePdf({
 	}
 
 	// --- FOOTER (signatures) ---
-	const sigY = 100;
-	const sigLineLen = 200;
+	const sigY = SIG_BASELINE_Y;
+	const sigLineLen = SIG_LINE_LEN;
 
 	// left signature
-	const leftX = 60;
+	const leftX = SIG_LEFT_X;
 	page.drawLine({
 		start: { x: leftX, y: sigY },
 		end: { x: leftX + sigLineLen, y: sigY },
@@ -371,18 +473,21 @@ export async function renderEventCertificatePdf({
 
 	// center: ISSUED label + date
 	drawTrackedCentered("ISSUED", sigY + 6, sans, 9, 2, muted);
-	drawCentered("{{issued_date}}", sigY - 16, sansBold, 11, ink);
+	drawCentered(issuedDateText, sigY - 16, sansBold, 11, ink);
 
-	// right signature — lead mentor block only for GameLab events
-	if (isGameLab) {
-		const rightX = width - 60 - sigLineLen;
+	// right signature — lead mentor block only for GameLab events; in preview
+	// (no per-member data) we still draw a placeholder, but in per-member
+	// renders the block is shown only when a mentor is actually assigned.
+	const showMentorBlock = isGameLab && (!isPerMember || !!mentorName?.trim());
+	if (showMentorBlock) {
+		const rightX = SIG_RIGHT_X;
 		page.drawLine({
 			start: { x: rightX, y: sigY },
 			end: { x: rightX + sigLineLen, y: sigY },
 			thickness: 0.6,
 			color: ink,
 		});
-		page.drawText("{{lead_mentor_name}}", {
+		page.drawText(mentorNameText, {
 			x: rightX,
 			y: sigY - 16,
 			size: 11,
