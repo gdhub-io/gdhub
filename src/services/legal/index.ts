@@ -1,5 +1,9 @@
 import { Documenso } from "@documenso/sdk-typescript";
 import {
+	type DocumentCreateRecipient,
+	DocumentCreateRole,
+} from "@documenso/sdk-typescript/models/operations";
+import {
 	type EventCertificateTemplateInput,
 	renderEventCertificatePdf,
 	type SignatureFieldPosition,
@@ -29,11 +33,15 @@ export class LegalService {
 
 	async createMemberCertificateDocument({
 		memberId,
+		memberEmail,
+		memberName,
 		certificateNumber,
 		pdfInput,
 		signers,
 	}: {
 		memberId: string;
+		memberEmail?: string | null;
+		memberName: string;
 		certificateNumber: string;
 		pdfInput: EventCertificateTemplateInput;
 		signers: Array<{
@@ -46,12 +54,12 @@ export class LegalService {
 		const participantName = pdfInput.participantName?.trim() || "participant";
 		const title = `Certificate ${certificateNumber} — ${participantName}`;
 
-		const recipients = signers
+		const recipients: DocumentCreateRecipient[] = signers
 			.filter((s) => s.email && s.name)
 			.map((signer, index) => ({
 				email: signer.email,
 				name: signer.name,
-				role: "SIGNER" as const,
+				role: DocumentCreateRole.Signer,
 				signingOrder: index + 1,
 				fields: signer.signatureField
 					? [
@@ -67,11 +75,23 @@ export class LegalService {
 					: undefined,
 			}));
 
+		// Add event member as CC (receives a copy of the signed document)
+		if (memberEmail) {
+			recipients.push({
+				email: memberEmail,
+				name: memberName,
+				role: DocumentCreateRole.Cc,
+				signingOrder: recipients.length + 1,
+				fields: undefined,
+			});
+		}
+
 		const result = await this.instance.documents.create({
 			payload: {
 				title,
 				externalId: `cert:eventMember:${memberId}`,
 				recipients: recipients.length ? recipients : undefined,
+				folderId: process.env.LEGAL_DOCUMENT_SIGNING_EVENT_FOLDER_ID,
 			},
 			file: {
 				fileName: `${certificateNumber}.pdf`,
@@ -94,6 +114,46 @@ export class LegalService {
 		return await this.instance.envelopes.get({ envelopeId });
 	}
 
+	async downloadSignedDocument(envelopeId: string): Promise<{
+		bytes: Uint8Array;
+		contentType: string;
+		filename: string | null;
+	}> {
+		const envelope = await this.instance.envelopes.get({ envelopeId });
+		const [item] = envelope.envelopeItems;
+		if (!item) {
+			throw new Error("Envelope has no items to download");
+		}
+
+		// The Documenso endpoint streams binary PDF rather than JSON, so we
+		// bypass the SDK helper (which only parses JSON) and fetch raw bytes.
+		const baseUrl = (
+			process.env.LEGAL_DOCUMENT_SIGNING_SERVER_URL ?? ""
+		).replace(/\/$/, "");
+		const apiKey = process.env.LEGAL_DOCUMENT_SIGNING_AUTH_TOKEN ?? "";
+		const url = `${baseUrl}/envelope/item/${encodeURIComponent(item.id)}/download?version=signed`;
+
+		const response = await fetch(url, {
+			method: "GET",
+			headers: { Authorization: `Bearer ${apiKey}` },
+		});
+		if (!response.ok) {
+			const body = await response.text().catch(() => "");
+			throw new Error(
+				`Failed to download envelope item (${response.status}): ${body}`,
+			);
+		}
+
+		const buffer = await response.arrayBuffer();
+		const disposition = response.headers.get("content-disposition");
+		const match = disposition?.match(/filename="?([^";]+)"?/i);
+		return {
+			bytes: new Uint8Array(buffer),
+			contentType: response.headers.get("content-type") ?? "application/pdf",
+			filename: match?.[1] ?? null,
+		};
+	}
+
 	async deleteEnvelope(envelopeId: string) {
 		return await this.instance.envelopes.delete({ envelopeId });
 	}
@@ -102,8 +162,12 @@ export class LegalService {
 		return await this.instance.envelopes.distribute({ envelopeId });
 	}
 
-	// Documenso UI URL — strips the trailing /api/v2 from the SDK base URL
-	// and uses the team slug from the envelope to build the final path.
+	// Documenso UI host — strips the trailing /api/v2 from the SDK base URL.
+	getUiHost(): string {
+		const apiUrl = process.env.LEGAL_DOCUMENT_SIGNING_SERVER_URL ?? "";
+		return apiUrl.replace(/\/api\/v2\/?$/, "");
+	}
+
 	getDocumentUrl({
 		teamUrl,
 		envelopeId,
@@ -111,8 +175,6 @@ export class LegalService {
 		teamUrl: string;
 		envelopeId: string;
 	}): string {
-		const apiUrl = process.env.LEGAL_DOCUMENT_SIGNING_SERVER_URL ?? "";
-		const uiBase = apiUrl.replace(/\/api\/v2\/?$/, "");
-		return `${uiBase}/t/${teamUrl}/documents/${envelopeId}`;
+		return `${this.getUiHost()}/t/${teamUrl}/documents/${envelopeId}`;
 	}
 }

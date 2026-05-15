@@ -28,7 +28,8 @@
       "Bash(rm -rf scripts _cert_*.pdf _cert_*.png)",
       "Bash(yarn list *)",
       "Bash(grep -B 1 -A 30 \"^export type EnvelopeGet$\" node_modules/@documenso/sdk-typescript/models/operations/envelopeget.d.ts)",
-      "Bash(npm view *)"
+      "Bash(npm view *)",
+      "Bash(grep -v \"\\\\.map\\\\|\\\\.js$\")"
     ],
     "additionalDirectories": [
       "/tmp",

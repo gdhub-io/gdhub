@@ -1,23 +1,37 @@
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	IconDotsVertical,
+	IconDownload,
+	IconEye,
+	IconFile,
+	IconFilePlus,
+	IconMail,
+	IconPencil,
+	IconTrash,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Avatar,
 	Button,
+	Dropdown,
 	Input,
+	type MenuProps,
 	Modal,
 	message,
-	Popconfirm,
 	Space,
 	Tag,
 	Typography,
 } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import type React from "react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import BatchAssignEventMembersModal from "@/components/modals/BatchAssignEventMembersModal";
 import EditEventMemberModal from "@/components/modals/EditEventMemberModal";
+import { hasRole } from "@/helpers/user";
 import { ProtectedEventLayout } from "@/layouts/ProtectedEventLayout";
 
 const { Text } = Typography;
@@ -119,14 +133,15 @@ const renderMentorsCell = (mentors?: EventMemberMentor[] | null) => {
 const EventMembersPage = () => {
 	const { t } = useTranslate();
 	const router = useRouter();
+	const session = useSession();
+	const isAdmin = hasRole(prismaClient.UserRole.Admin, session);
 	const eventId = router.query.eventId as string;
-
+	const [confirmModal, confirmModalContextHolder] = Modal.useModal();
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 	const [messageText, setMessageText] = useState("");
 	const [editingMember, setEditingMember] = useState<EventMember | null>(null);
 	const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
-	const [previewMember, setPreviewMember] = useState<EventMember | null>(null);
 	const [creatingMemberId, setCreatingMemberId] = useState<string | null>(null);
 	const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 	const [distributingMemberId, setDistributingMemberId] = useState<
@@ -306,6 +321,136 @@ const EventMembersPage = () => {
 		await sendMessage();
 	};
 
+	const renderItems: (record: EventMember) => MenuProps["items"] = useCallback(
+		(record) => {
+			const items: NonNullable<MenuProps["items"]> = [
+				{
+					key: "edit",
+					label: t("event.members.certificate.edit", "Edit"),
+					icon: <IconPencil />,
+					onClick: () => setEditingMember(record),
+				},
+			];
+
+			if (!certificationEnabled) {
+				return items;
+			}
+
+			const cert = record.certificate;
+
+			if (!cert) {
+				items.push({
+					key: "create-certificate",
+					label: t("event.members.certificate.create", "Create certificate"),
+					icon: <IconFilePlus />,
+					onClick: () => createCertificate(record.id),
+				});
+				return items;
+			}
+
+			const status = cert.status ?? "DRAFT";
+			const isDraft = status === "DRAFT";
+			const isCompleted = status === "COMPLETED";
+
+			const children: NonNullable<MenuProps["items"]> = [
+				{
+					key: "view-certificate",
+					label: t("event.members.certificate.view", "View in Documenso"),
+					icon: <IconEye />,
+					disabled: !cert.documentUrl,
+					onClick: () => {
+						if (cert.documentUrl) {
+							window.open(cert.documentUrl, "_blank", "noopener,noreferrer");
+						}
+					},
+				},
+				{
+					key: "distribute-certificate",
+					label: t("event.members.certificate.distribute", "Send for signing"),
+					icon: <IconMail />,
+					disabled: !isDraft,
+					onClick: () =>
+						confirmModal.confirm({
+							title: t(
+								"event.members.certificate.distribute.confirm",
+								"Send for signing?",
+							),
+							okText: t("event.members.certificate.distribute.send", "Send"),
+							content: t(
+								"event.members.certificate.distribute.confirmDesc",
+								"Signers will receive an email from Documenso. After signing, the certificate will be available in the member",
+							),
+							okButtonProps: { danger: true },
+							cancelText: t("common.cancel", "Cancel"),
+							onOk: () => distributeCertificate(record.id),
+						}),
+				},
+			];
+
+			if (isCompleted) {
+				children.push({
+					key: "download-certificate",
+					label: t("event.members.certificate.download", "Download PDF"),
+					icon: <IconDownload />,
+					onClick: () =>
+						window.open(
+							`/api/user/event/${eventId}/members/${record.id}/certificate/download`,
+							"_blank",
+							"noopener,noreferrer",
+						),
+				});
+			}
+
+			children.push(
+				{
+					key: "divider",
+					type: "divider",
+				},
+				{
+					key: "delete-certificate",
+					label: t("event.members.certificate.delete", "Delete certificate"),
+					icon: <IconTrash />,
+					danger: true,
+					disabled: !(isDraft || (isCompleted && isAdmin)),
+					onClick: () =>
+						confirmModal.confirm({
+							title: t(
+								"event.members.certificate.delete.confirm",
+								"Delete certificate?",
+							),
+							content: t(
+								"event.members.certificate.delete.confirmDesc",
+								"The document will be removed from Documenso as well.",
+							),
+							okText: t("common.delete", "Delete"),
+							okButtonProps: { danger: true },
+							cancelText: t("common.cancel", "Cancel"),
+							onOk: () => deleteCertificate(record.id),
+						}),
+				},
+			);
+
+			items.push({
+				key: "certificate",
+				label: t("event.members.certificate.certificate", "Certificate"),
+				icon: <IconFile />,
+				children,
+			});
+
+			return items;
+		},
+		[
+			t,
+			certificationEnabled,
+			isAdmin,
+			eventId,
+			confirmModal,
+			createCertificate,
+			distributeCertificate,
+			deleteCertificate,
+		],
+	);
+
 	return (
 		<ProtectedEventLayout
 			title={t("event.members.title", "Event members")}
@@ -331,6 +476,8 @@ const EventMembersPage = () => {
 				</Space>
 			}
 		>
+			{confirmModalContextHolder}
+
 			<ModernTable
 				rowKey="id"
 				loading={isLoading}
@@ -420,6 +567,35 @@ const EventMembersPage = () => {
 							</Tag>
 						),
 					},
+					...(certificationEnabled
+						? [
+								{
+									title: t("event.members.certificate", "Certificate"),
+									dataIndex: "certificate",
+									key: "certificate",
+									render: (certificate: EventMemberCertificate) => {
+										if (!certificate) return <Text type="secondary">—</Text>;
+
+										return (
+											<Space>
+												<Text copyable>{certificate.number}</Text>
+												<Tag
+													color={
+														certificate.status === "COMPLETED"
+															? "success"
+															: certificate.status === "PENDING"
+																? "processing"
+																: "default"
+													}
+												>
+													{certificate.status || "unknown"}
+												</Tag>
+											</Space>
+										);
+									},
+								},
+							]
+						: []),
 					{
 						title: t("event.members.createdAt", "Registered at"),
 						dataIndex: "createdAt",
@@ -436,152 +612,124 @@ const EventMembersPage = () => {
 					{
 						title: t("event.members.actions", "Actions"),
 						key: "actions",
-						width: 520,
+						align: "right",
 						render: (_, record) => {
-							const cert = record.certificate;
-							const statusMeta: Record<
-								CertificateStatus,
-								{ color: string; label: string }
-							> = {
-								DRAFT: {
-									color: "default",
-									label: t("event.members.certificate.status.draft", "Draft"),
-								},
-								PENDING: {
-									color: "processing",
-									label: t(
-										"event.members.certificate.status.pending",
-										"On signing",
-									),
-								},
-								COMPLETED: {
-									color: "success",
-									label: t(
-										"event.members.certificate.status.completed",
-										"Signed",
-									),
-								},
-								REJECTED: {
-									color: "error",
-									label: t(
-										"event.members.certificate.status.rejected",
-										"Rejected",
-									),
-								},
-							};
-							const status = cert?.status ?? "DRAFT";
 							return (
-								<Space size={6} wrap>
-									<Button size="small" onClick={() => setEditingMember(record)}>
-										{t("common.edit", "Edit")}
-									</Button>
-									{cert ? (
-										<Space size={6} wrap>
-											<Tag color="blue">{cert.number}</Tag>
-											<Tag color={statusMeta[status].color}>
-												{statusMeta[status].label}
-											</Tag>
-											<Button
-												size="small"
-												onClick={() => setPreviewMember(record)}
-											>
-												{t(
-													"event.members.certificate.view",
-													"View Certificate",
-												)}
-											</Button>
-											{cert.documentUrl && (
-												<Button
-													size="small"
-													onClick={() =>
-														window.open(
-															cert.documentUrl ?? undefined,
-															"_blank",
-															"noopener,noreferrer",
-														)
-													}
-												>
-													{t(
-														"event.members.certificate.viewInDocumenso",
-														"View in Documenso",
-													)}
-												</Button>
-											)}
-											{status === "DRAFT" && (
-												<Popconfirm
-													title={t(
-														"event.members.certificate.distribute.confirm",
-														"Send for signing?",
-													)}
-													description={t(
-														"event.members.certificate.distribute.confirmDesc",
-														"Signers will receive an email from Documenso.",
-													)}
-													okText={t(
-														"event.members.certificate.distribute.send",
-														"Send",
-													)}
-													cancelText={t("common.cancel", "Cancel")}
-													onConfirm={() => distributeCertificate(record.id)}
-												>
-													<Button
-														size="small"
-														type="primary"
-														loading={distributingMemberId === record.id}
-													>
-														{t(
-															"event.members.certificate.distribute",
-															"Send for signing",
-														)}
-													</Button>
-												</Popconfirm>
-											)}
-											<Popconfirm
-												title={t(
-													"event.members.certificate.delete.confirm",
-													"Delete this certificate?",
-												)}
-												description={t(
-													"event.members.certificate.delete.confirmDesc",
-													"The document will be removed from Documenso as well.",
-												)}
-												okText={t("common.delete", "Delete")}
-												okButtonProps={{ danger: true }}
-												cancelText={t("common.cancel", "Cancel")}
-												onConfirm={() => deleteCertificate(record.id)}
-											>
-												<Button
-													size="small"
-													danger
-													loading={deletingMemberId === record.id}
-												>
-													{t("event.members.certificate.delete", "Delete")}
-												</Button>
-											</Popconfirm>
-										</Space>
-									) : (
-										<Button
-											size="small"
-											type="primary"
-											disabled={!certificationEnabled}
-											title={
-												certificationEnabled
-													? undefined
-													: t(
-															"event.members.certificate.disabled",
-															"Enable certification in event settings first",
-														)
-											}
-											loading={creatingMemberId === record.id}
-											onClick={() => createCertificate(record.id)}
-										>
-											{t(
-												"event.members.certificate.create",
-												"Create Certificate",
-											)}
-										</Button>
-									)}
-								</Space>
+								<Dropdown
+									menu={{ items: renderItems(record) }}
+									trigger={["click"]}
+									placement="bottomRight"
+								>
+									<Button
+										type="text"
+										size="small"
+										icon={<IconDotsVertical />}
+									/>
+								</Dropdown>
+
+								// <Space size={6} wrap>
+								// 	<Button size="small" onClick={() => setEditingMember(record)}>
+								// 		{t("common.edit", "Edit")}
+								// 	</Button>
+								// 	{cert ? (
+								// 		<Space size={6} wrap>
+								// 			<Tag color="blue">{cert.number}</Tag>
+								// 			<Tag color={statusMeta[status].color}>
+								// 				{statusMeta[status].label}
+								// 			</Tag>
+
+								// 			{cert.documentUrl && (
+								// 				<Button
+								// 					size="small"
+								// 					onClick={() =>
+								// 						window.open(
+								// 							cert.documentUrl ?? undefined,
+								// 							"_blank",
+								// 							"noopener,noreferrer",
+								// 						)
+								// 					}
+								// 				>
+								// 					{t(
+								// 						"event.members.certificate.viewInDocumenso",
+								// 						"View in Documenso",
+								// 					)}
+								// 				</Button>
+								// 			)}
+								// 			{status === "DRAFT" && (
+								// 				<Popconfirm
+								// 					title={t(
+								// 						"event.members.certificate.distribute.confirm",
+								// 						"Send for signing?",
+								// 					)}
+								// 					description={t(
+								// 						"event.members.certificate.distribute.confirmDesc",
+								// 						"Signers will receive an email from Documenso.",
+								// 					)}
+								// 					okText={t(
+								// 						"event.members.certificate.distribute.send",
+								// 						"Send",
+								// 					)}
+								// 					cancelText={t("common.cancel", "Cancel")}
+								// 					onConfirm={() => distributeCertificate(record.id)}
+								// 				>
+								// 					<Button
+								// 						size="small"
+								// 						type="primary"
+								// 						loading={distributingMemberId === record.id}
+								// 					>
+								// 						{t(
+								// 							"event.members.certificate.distribute",
+								// 							"Send for signing",
+								// 						)}
+								// 					</Button>
+								// 				</Popconfirm>
+								// 			)}
+								// 			<Popconfirm
+								// 				title={t(
+								// 					"event.members.certificate.delete.confirm",
+								// 					"Delete this certificate?",
+								// 				)}
+								// 				description={t(
+								// 					"event.members.certificate.delete.confirmDesc",
+								// 					"The document will be removed from Documenso as well.",
+								// 				)}
+								// 				okText={t("common.delete", "Delete")}
+								// 				okButtonProps={{ danger: true }}
+								// 				cancelText={t("common.cancel", "Cancel")}
+								// 				onConfirm={() => deleteCertificate(record.id)}
+								// 			>
+								// 				<Button
+								// 					size="small"
+								// 					danger
+								// 					loading={deletingMemberId === record.id}
+								// 				>
+								// 					{t("event.members.certificate.delete", "Delete")}
+								// 				</Button>
+								// 			</Popconfirm>
+								// 		</Space>
+								// 	) : (
+								// 		<Button
+								// 			size="small"
+								// 			type="primary"
+								// 			disabled={!certificationEnabled}
+								// 			title={
+								// 				certificationEnabled
+								// 					? undefined
+								// 					: t(
+								// 							"event.members.certificate.disabled",
+								// 							"Enable certification in event settings first",
+								// 						)
+								// 			}
+								// 			loading={creatingMemberId === record.id}
+								// 			onClick={() => createCertificate(record.id)}
+								// 		>
+								// 			{t(
+								// 				"event.members.certificate.create",
+								// 				"Create Certificate",
+								// 			)}
+								// 		</Button>
+								// 	)}
+								// </Space>
 							);
 						},
 					},
@@ -624,54 +772,6 @@ const EventMembersPage = () => {
 					refetch();
 				}}
 			/>
-
-			<Modal
-				open={!!previewMember}
-				title={
-					previewMember?.certificate
-						? t(
-								"event.members.certificate.preview.title",
-								"Certificate {number}",
-								{ number: previewMember.certificate.number },
-							)
-						: t("event.members.certificate.preview.titleEmpty", "Certificate")
-				}
-				onCancel={() => setPreviewMember(null)}
-				footer={null}
-				width={900}
-				centered
-				destroyOnHidden
-			>
-				{previewMember && (
-					<object
-						data={`/api/user/event/${eventId}/members/${previewMember.id}/certificate/pdf`}
-						type="application/pdf"
-						width="100%"
-						style={{
-							height: "70vh",
-							border: "1px solid #eee",
-							borderRadius: 4,
-						}}
-					>
-						<Typography.Paragraph>
-							{t(
-								"event.members.certificate.preview.fallback",
-								"Your browser cannot display PDFs inline.",
-							)}{" "}
-							<a
-								href={`/api/user/event/${eventId}/members/${previewMember.id}/certificate/pdf`}
-								target="_blank"
-								rel="noreferrer"
-							>
-								{t(
-									"event.members.certificate.preview.download",
-									"Open in a new tab",
-								)}
-							</a>
-						</Typography.Paragraph>
-					</object>
-				)}
-			</Modal>
 
 			<BatchAssignEventMembersModal
 				open={isBatchModalOpen}

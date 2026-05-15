@@ -880,6 +880,8 @@ class ApiUserEventEndpointHandler {
 		try {
 			const document = await legalService.createMemberCertificateDocument({
 				memberId: ctx.member.id,
+				memberEmail: ctx.member.user.email,
+				memberName: ctx.participantName,
 				certificateNumber: claimedRow.number,
 				pdfInput: {
 					eventType: ctx.event.type,
@@ -1022,6 +1024,51 @@ class ApiUserEventEndpointHandler {
 		res.send(Buffer.from(pdfBytes));
 	}
 
+	@Get("/:id/members/:memberId/certificate/download")
+	public async downloadMemberCertificate(
+		@Req() req: NextApiRequestWithUser,
+		@Res() res: NextApiResponse,
+		@Param("id") id: string,
+		@Param("memberId") memberId: string,
+	) {
+		const isAdmin = req.user.role === prismaClient.UserRole.Admin;
+
+		const ctx = await resolveMemberCertificateContext(memberId);
+
+		if (!ctx || ctx.event.id !== id) {
+			throw new NotFoundException("Member not found");
+		}
+
+		if (!isAdmin && ctx.event.createdById !== req.user.id) {
+			throw new ForbiddenException(
+				"You are not allowed to view certificates for this event",
+			);
+		}
+
+		if (!ctx.member.certificate) {
+			throw new NotFoundException("Certificate has not been created yet");
+		}
+
+		const externalId = ctx.member.certificate.externalId;
+		if (externalId.startsWith("pending:")) {
+			throw new NotFoundException(
+				"Certificate has not been uploaded to Documenso yet",
+			);
+		}
+
+		const { bytes, contentType, filename } =
+			await new LegalService().downloadSignedDocument(externalId);
+
+		const fallbackName = `${ctx.member.certificate.number}.pdf`;
+		res.setHeader("Content-Type", contentType);
+		res.setHeader(
+			"Content-Disposition",
+			`attachment; filename="${filename ?? fallbackName}"`,
+		);
+		res.setHeader("Cache-Control", "no-store");
+		res.send(Buffer.from(bytes));
+	}
+
 	@Post("/:id/members/:memberId/certificate/distribute")
 	public async distributeMemberCertificate(
 		@Req() req: NextApiRequestWithUser,
@@ -1100,9 +1147,26 @@ class ApiUserEventEndpointHandler {
 		// externalId is still a `pending:` placeholder (never uploaded), or if
 		// Documenso returns 404 — we still want to clean up the DB row.
 		const externalId = member.certificate.externalId;
+		const legalService = new LegalService();
 		if (!externalId.startsWith("pending:")) {
+			if (!isAdmin) {
+				try {
+					const envelope = await legalService.getEnvelope(externalId);
+					if (envelope.status === "COMPLETED") {
+						throw new ForbiddenException(
+							"Only administrators can delete a signed certificate",
+						);
+					}
+				} catch (error) {
+					if (error instanceof ForbiddenException) throw error;
+					console.error(
+						"Failed to fetch envelope status before delete; proceeding",
+						error,
+					);
+				}
+			}
 			try {
-				await new LegalService().deleteEnvelope(externalId);
+				await legalService.deleteEnvelope(externalId);
 			} catch (error) {
 				console.error(
 					"Failed to delete envelope in Documenso, removing local row anyway",
