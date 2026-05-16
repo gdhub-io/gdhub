@@ -1,0 +1,32 @@
+.backButton {
+  @media (max-width: 576px) {
+    display: none;
+  }
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  color: #fff !important;
+  margin: 0 !important;
+  font-size: 48px !important;
+}
+
+.wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.formPage {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}

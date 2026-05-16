@@ -5,6 +5,7 @@ import { Grid, Layout, Menu, Select } from "antd";
 import { useRouter } from "next/router";
 import type React from "react";
 import { useCallback, useMemo } from "react";
+import CertificationEventForm from "@/components/event-settings/CertificationEventForm";
 import DangerEventForm from "@/components/event-settings/DangerEventForm";
 import GeneralEventForm from "@/components/event-settings/GeneralEventForm";
 import { ProtectedEventLayout } from "@/layouts/ProtectedEventLayout";
@@ -32,6 +33,10 @@ const EventSettingsPage: NextPageWithLayout = () => {
 			key: "general",
 		},
 		{
+			label: t("event.settings.menu.certification", "Certification"),
+			key: "certification",
+		},
+		{
 			label: t("event.settings.menu.danger", "Danger"),
 			key: "danger",
 		},
@@ -39,6 +44,8 @@ const EventSettingsPage: NextPageWithLayout = () => {
 
 	const renderContent = useCallback(() => {
 		switch (selectedKey[0]) {
+			case "certification":
+				return <CertificationEventForm eventId={eventId} />;
 			case "danger":
 				return <DangerEventForm eventId={eventId} />;
 			default:

@@ -9,6 +9,7 @@ Disallow: /terms
 Disallow: /my
 Disallow: /admin
 Dissalow: /legal-details
+Disallow: /verify
 
 # Allow
 Allow: /
