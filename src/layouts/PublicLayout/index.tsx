@@ -21,7 +21,7 @@ import ruLocale from "antd/locale/ru_RU";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/react";
-import { type DefaultSeoProps, NextSeo, type NextSeoProps } from "next-seo";
+import { NextSeo, type NextSeoProps } from "next-seo";
 import {
 	type ReactNode,
 	useCallback,
@@ -41,7 +41,7 @@ import styles from "./style.module.scss";
 interface PublicLayoutProps {
 	children: ReactNode;
 	title?: ReactNode;
-	seo?: DefaultSeoProps;
+	seo?: NextSeoProps;
 	subTitle?: string;
 	subLine?: ReactNode;
 	backgroundImage?: string;
@@ -88,9 +88,13 @@ export const PublicLayout = ({
 						? seo?.openGraph.images[0].url
 						: `${process.env.NEXT_PUBLIC_APP_URL}/api/og${ogImageType ? `-${ogImageType}` : ""}?t=${encodeURIComponent(seo?.title || (typeof title === "string" ? title : ""))}&st=${t(
 								seo?.description || subTitle || "",
-							)}&img=${backgroundImage || process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src}&${Object.entries(
-								ogImageParams || {},
-							)
+							)}&img=${
+								backgroundImage
+									? backgroundImage.startsWith("http")
+										? backgroundImage
+										: process.env.NEXT_PUBLIC_APP_URL + backgroundImage
+									: process.env.NEXT_PUBLIC_APP_URL + HeroBgImage.src
+							}&${Object.entries(ogImageParams || {})
 								.map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
 								.join("&")}`,
 					alt: "Indie Game Developers Page Cover",

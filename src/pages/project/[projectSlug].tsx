@@ -50,12 +50,23 @@ const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 type ProjectPageParams = {
 	project: Omit<
 		prismaClient.Project,
-		"createdAt" | "updatedAt" | "startedAt" | "finishedAt"
+		| "createdAt"
+		| "updatedAt"
+		| "startedAt"
+		| "finishedAt"
+		| "archivedAt"
+		| "killedWithDignityAt"
+		| "dormantAt"
+		| "statusChangedAt"
 	> & {
 		createdAt: string;
 		updatedAt: string;
 		startedAt: string | null;
 		finishedAt: string | null;
+		archivedAt: string | null;
+		killedWithDignityAt: string | null;
+		dormantAt: string | null;
+		statusChangedAt: string | null;
 		author: {
 			name: prismaClient.User["name"];
 			profile: { tgNickname: prismaClient.Profile["tgNickname"] } | null;
@@ -566,6 +577,16 @@ export const getServerSideProps: GetServerSideProps<ProjectPageParams> = async (
 				startedAt: project.startedAt ? project.startedAt.toISOString() : null,
 				finishedAt: project.finishedAt
 					? project.finishedAt.toISOString()
+					: null,
+				archivedAt: project.archivedAt
+					? project.archivedAt.toISOString()
+					: null,
+				killedWithDignityAt: project.killedWithDignityAt
+					? project.killedWithDignityAt.toISOString()
+					: null,
+				dormantAt: project.dormantAt ? project.dormantAt.toISOString() : null,
+				statusChangedAt: project.statusChangedAt
+					? project.statusChangedAt.toISOString()
 					: null,
 				workflow: project.workflow
 					? {

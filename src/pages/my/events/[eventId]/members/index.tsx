@@ -623,7 +623,7 @@ const EventMembersPage = () => {
 									<Button
 										type="text"
 										size="small"
-										icon={<IconDotsVertical />}
+										icon={<IconDotsVertical size={16} />}
 									/>
 								</Dropdown>
 
