@@ -14,6 +14,7 @@ class ApiDevlogsRecentHandler {
 			where: {
 				project: {
 					status: "Approved",
+					coverImage: { not: null },
 				},
 			},
 			include: {

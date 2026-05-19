@@ -78,21 +78,26 @@
 	}
 }
 
-.projectMeta {
-	margin: 24px 0;
+.aboutGameItem {
+	padding: 10px 24px;
+	border-bottom: 1px solid rgba(5, 5, 5, 0.08);
 
-	:global {
-		.ant-descriptions-item {
-			&-label {
-				font-size: 14px;
-				color: #666;
-			}
-
-			&-content {
-				font-size: 14px;
-			}
-		}
+	&:last-child {
+		border-bottom: 0;
 	}
+}
+
+.aboutGameLabel {
+	font-size: 12px;
+	line-height: 1.4;
+	flex-shrink: 0;
+}
+
+.aboutGameValue {
+	font-size: 14px;
+	line-height: 1.4;
+	text-align: right;
+	word-break: break-word;
 }
 
 .writeToAuthorButton {
