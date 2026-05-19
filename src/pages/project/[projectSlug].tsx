@@ -8,7 +8,6 @@ import {
 	Button,
 	Col,
 	ConfigProvider,
-	Descriptions,
 	Flex,
 	Grid,
 	Modal,
@@ -26,6 +25,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
 import type { NextSeoProps } from "next-seo";
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import YouTube from "react-youtube";
@@ -35,6 +35,12 @@ import type { Options } from "youtube-player/dist/types";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import DevlogPosts from "@/components/DevlogPosts";
+import {
+	getHubSectionShellClass,
+	HubSectionBleed,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
 import ProjectVacancies from "@/components/ProjectVacancies";
 import TeamMembers from "@/components/TeamMembers";
 import { platformOptions } from "@/helpers/react-content";
@@ -168,33 +174,45 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 
 	if (!project) return null;
 
-	const generalData = (
-		<div className={styles.projectMeta}>
-			<Descriptions
-				size="small"
-				layout={screens.md ? "horizontal" : "vertical"}
-				column={1}
-			>
-				<Descriptions.Item label={t("page.project.genre", "Genre")}>
-					{project.genre}
-				</Descriptions.Item>
-				<Descriptions.Item label={t("page.project.setting", "Game Setting")}>
-					{project.setting}
-				</Descriptions.Item>
-				<Descriptions.Item label={t("page.project.audition", "Audition")}>
-					{project.audition}
-				</Descriptions.Item>
-				<Descriptions.Item label={t("page.project.platform", "Platform")}>
-					{project.platform}
-				</Descriptions.Item>
-				<Descriptions.Item
-					label={t("page.project.visualStyle", "Visual Style")}
-				>
-					{project.visualStyle}
-				</Descriptions.Item>
-			</Descriptions>
-		</div>
-	);
+	const aboutGameItems: { label: string; value: ReactNode }[] = [
+		{ label: t("page.project.genre", "Genre"), value: project.genre },
+		{
+			label: t("page.project.setting", "Game Setting"),
+			value: project.setting,
+		},
+		{ label: t("page.project.audition", "Audition"), value: project.audition },
+		{ label: t("page.project.platform", "Platform"), value: project.platform },
+		{
+			label: t("page.project.visualStyle", "Visual Style"),
+			value: project.visualStyle,
+		},
+	].filter((item) => !!item.value);
+
+	const generalData = aboutGameItems.length ? (
+		<section className={getHubSectionShellClass("sidebar")}>
+			<HubSectionHeader title={t("page.project.aboutGame", "Game details")} />
+			<HubSectionBody>
+				<HubSectionBleed>
+					<Flex vertical>
+						{aboutGameItems.map((item) => (
+							<Flex
+								key={item.label}
+								justify="space-between"
+								align="flex-start"
+								gap={12}
+								className={styles.aboutGameItem}
+							>
+								<Text type="secondary" className={styles.aboutGameLabel}>
+									{item.label}
+								</Text>
+								<Text className={styles.aboutGameValue}>{item.value}</Text>
+							</Flex>
+						))}
+					</Flex>
+				</HubSectionBleed>
+			</HubSectionBody>
+		</section>
+	) : null;
 
 	const pitchVideoOptions: Options = {
 		playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 },
@@ -420,7 +438,12 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 								<ProjectVacancies teamId={project.team.id} />
 							)}
 
-							<DevlogPosts projectId={project.id} />
+							<DevlogPosts
+								projectId={project.id}
+								variant="hub"
+								headerStyle="title"
+								title={t("page.hub.project-updates", "Project updates")}
+							/>
 						</Space>
 					</Col>
 					<Col
@@ -428,52 +451,52 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 						md={{ span: 12, order: 1 }}
 						lg={{ span: 8, order: 1 }}
 					>
-						{!showPitchVideo && !!project.coverImage && (
-							<div className={styles.cover}>
-								{project.videoLink && (
-									<div className={styles.coverButtonContainer}>
-										<Button onClick={handleCoverClick} type="primary">
-											{t(
-												"page.project.viewThePresentation",
-												"View the presentation",
-											)}
-										</Button>
-									</div>
-								)}
-								<Image src={project.coverImage} alt="cover" fill />
-							</div>
-						)}
-						{showPitchVideo && project.videoLink && (
-							<YouTube
-								className={styles.videoCover}
-								videoId={project.videoLink}
-								opts={pitchVideoOptions}
-								onEnd={() => setShowPitchVideo(false)}
-							/>
-						)}
-						{screens.md && generalData}
-						{session && project.author.profile?.tgNickname ? (
-							<Link
-								href={`https://t.me/${project.author.profile.tgNickname}`}
-								target="_blank"
-								style={{ display: "block", width: "fit-content" }}
-							>
-								<Button
-									shape="round"
-									type="dashed"
-									className={styles.writeToAuthorButton}
+						<Flex vertical gap={16}>
+							{!showPitchVideo && !!project.coverImage && (
+								<div className={styles.cover}>
+									{project.videoLink && (
+										<div className={styles.coverButtonContainer}>
+											<Button onClick={handleCoverClick} type="primary">
+												{t(
+													"page.project.viewThePresentation",
+													"View the presentation",
+												)}
+											</Button>
+										</div>
+									)}
+									<Image src={project.coverImage} alt="cover" fill />
+								</div>
+							)}
+							{showPitchVideo && project.videoLink && (
+								<YouTube
+									className={styles.videoCover}
+									videoId={project.videoLink}
+									opts={pitchVideoOptions}
+									onEnd={() => setShowPitchVideo(false)}
+								/>
+							)}
+							{screens.md && generalData}
+							{session && project.author.profile?.tgNickname ? (
+								<Link
+									href={`https://t.me/${project.author.profile.tgNickname}`}
+									target="_blank"
+									style={{ display: "block", width: "fit-content" }}
 								>
-									<TbBrandTelegram size={16} />{" "}
-									{t("page.project.contactTheAuthor", "Contact the author")}
-								</Button>
-							</Link>
-						) : null}
+									<Button
+										shape="round"
+										type="dashed"
+										className={styles.writeToAuthorButton}
+									>
+										<TbBrandTelegram size={16} />{" "}
+										{t("page.project.contactTheAuthor", "Contact the author")}
+									</Button>
+								</Link>
+							) : null}
 
-						{project.team?.id && (
-							<div className="project-team">
-								<TeamMembers teamId={project.team.id} />
-							</div>
-						)}
+							{project.team?.id && (
+								<TeamMembers teamId={project.team.id} variant="hubSidebar" />
+							)}
+						</Flex>
 					</Col>
 				</Row>
 			</div>

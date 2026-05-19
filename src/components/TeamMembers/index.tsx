@@ -6,14 +6,22 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
 import ReactNiceAvatar, { genConfig } from "react-nice-avatar";
+import {
+	getHubSectionShellClass,
+	HubSectionBleed,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
+import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
 
 interface TeamMembersArgs {
 	teamId: string;
+	variant?: "default" | "hubSidebar";
 }
 
-const TeamMembers = ({ teamId }: TeamMembersArgs) => {
+const TeamMembers = ({ teamId, variant = "default" }: TeamMembersArgs) => {
 	const { data: session } = useSession();
 	const { t } = useTranslate();
 
@@ -50,6 +58,61 @@ const TeamMembers = ({ teamId }: TeamMembersArgs) => {
 	}, [team]);
 
 	if (team && team?.data.members.length == 0) return null;
+
+	if (variant === "hubSidebar") {
+		return (
+			<section className={getHubSectionShellClass("sidebar")}>
+				<HubSectionHeader title={t("team-members.title", "Team")} />
+				<HubSectionBody>
+					<HubSectionBleed>
+						<Flex vertical>
+							{data?.map((item, idx) => (
+								<Flex
+									key={`team-member-${idx.toString()}`}
+									align="center"
+									gap={12}
+									className={styles.item}
+								>
+									{session ? (
+										item.avatar ? (
+											<Avatar size={40} src={item.avatar} />
+										) : (
+											<Avatar size={40}>
+												{item.title?.charAt(0)?.toUpperCase()}
+											</Avatar>
+										)
+									) : (
+										<ReactNiceAvatar
+											style={{ width: 40, height: 40 }}
+											{...genConfig(item.description || "")}
+											earSize="big"
+											eyeStyle="circle"
+											hairStyle="normal"
+										/>
+									)}
+									<Flex vertical className={styles.textWrap}>
+										{session && (
+											<Text strong title={item.title || ""} ellipsis>
+												{item.title}
+											</Text>
+										)}
+										<Text
+											type="secondary"
+											title={item.description || ""}
+											ellipsis
+											className={styles.secondary}
+										>
+											{item.description}
+										</Text>
+									</Flex>
+								</Flex>
+							))}
+						</Flex>
+					</HubSectionBleed>
+				</HubSectionBody>
+			</section>
+		);
+	}
 
 	return (
 		<Space direction="vertical" style={{ marginTop: 60, width: "100%" }}>

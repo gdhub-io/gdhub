@@ -1,18 +1,20 @@
-import { ClockCircleOutlined, HistoryOutlined } from "@ant-design/icons";
+import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
+import { LoadingOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { IconNews } from "@tabler/icons-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Skeleton, Spin, Typography } from "antd";
+import { Button, Skeleton, Spin, Tooltip, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import type React from "react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import ReactNiceAvatar from "react-nice-avatar";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import {
 	getHubSectionShellClass,
@@ -36,28 +38,103 @@ interface DevlogPostsProps {
 	variant?: "default" | "hub";
 	/** Outer frame removed — used inside hub `mainSectionsBundle` */
 	bundleInset?: boolean;
+	title?: React.ReactNode;
+	/** "section" — header inside hub shell (default for hub variant); "title" — `<Title level={2}>` above the shell */
+	headerStyle?: "section" | "title";
 }
-
-const DefaultCover = ({ title }: { title: string }) => {
-	return (
-		<div className={styles.defaultCover}>
-			<div className={styles.defaultCoverContent}>
-				<div className={styles.defaultCoverInitials}>
-					{title ? title.charAt(0).toUpperCase() : "?"}
-				</div>
-			</div>
-		</div>
-	);
-};
 
 const PostCard: React.FC<{
 	post: prismaClient.ProjectReport & {
 		project: prismaClient.Project;
 		applauseCount?: number;
+		author: {
+			image: string;
+			name: string;
+		};
 	};
 	onClick: (e: React.MouseEvent) => void;
 }> = ({ post, onClick }) => {
 	const router = useRouter();
+	const { t } = useTranslate();
+	const { status: authStatus } = useSession();
+	const isUserAuthenticated = authStatus === "authenticated";
+
+	const [applauseCount, setApplauseCount] = useState(post.applauseCount || 0);
+	const [hasApplauded, setHasApplauded] = useState(false);
+	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
+	const [isApplauseStateLoading, setIsApplauseStateLoading] = useState(false);
+	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
+	const applauseRequestIdRef = useRef(0);
+
+	useEffect(() => {
+		setApplauseCount(post.applauseCount || 0);
+	}, [post.applauseCount]);
+
+	useEffect(() => {
+		if (!isUserAuthenticated) {
+			setHasApplauded(false);
+			setIsApplauseStateLoading(false);
+			return;
+		}
+
+		let isMounted = true;
+		const requestId = ++applauseRequestIdRef.current;
+		setIsApplauseStateLoading(true);
+
+		axios
+			.get(`/api/devlog/${post.id}/applause`)
+			.then(({ data }) => {
+				if (!isMounted || requestId !== applauseRequestIdRef.current) return;
+				setApplauseCount(data.count || 0);
+				setHasApplauded(!!data.hasApplauded);
+			})
+			.catch((error) => {
+				console.error("Error fetching post applause state:", error);
+			})
+			.finally(() => {
+				if (!isMounted || requestId !== applauseRequestIdRef.current) return;
+				setIsApplauseStateLoading(false);
+			});
+
+		return () => {
+			isMounted = false;
+		};
+	}, [isUserAuthenticated, post.id]);
+
+	const handleApplauseToggle = async (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading) {
+			return;
+		}
+
+		applauseRequestIdRef.current += 1;
+
+		const nextHasApplauded = !hasApplauded;
+		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
+
+		setIsApplauseLoading(true);
+		setHasApplauded(nextHasApplauded);
+		setApplauseCount(nextCount);
+		if (nextHasApplauded) {
+			setApplauseAnimationToken((value) => value + 1);
+		}
+
+		try {
+			const { data } = await axios.request({
+				url: `/api/devlog/${post.id}/applause`,
+				method: nextHasApplauded ? "POST" : "DELETE",
+			});
+			setHasApplauded(!!data.hasApplauded);
+			setApplauseCount(data.count || 0);
+		} catch (error) {
+			console.error("Error toggling post applause:", error);
+			setHasApplauded(hasApplauded);
+			setApplauseCount(applauseCount);
+		} finally {
+			setIsApplauseLoading(false);
+		}
+	};
 
 	const handleProjectClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -91,7 +168,13 @@ const PostCard: React.FC<{
 	}, [post.contentEditor]);
 
 	return (
-		<Link href={`/devlog/${post.id}`}>
+		<Link
+			href={`/devlog/${post.id}`}
+			style={{
+				textDecoration: "none",
+				color: "var(--ant-color-text-secondary)",
+			}}
+		>
 			<div
 				role="button"
 				tabIndex={0}
@@ -99,8 +182,51 @@ const PostCard: React.FC<{
 				onClick={onClick}
 			>
 				<div className={styles.postContent}>
-					<div className={styles.postImage}>
-						{pageCoverFromEditorjs || pageCoverFromContent ? (
+					<div className={styles.postHeader}>
+						{/* author avatar */}
+						{post.author?.image ? (
+							<Image
+								src={post.author?.image || ""}
+								alt={post.author?.name || ""}
+								width={24}
+								height={24}
+								style={{ borderRadius: "50%" }}
+								unoptimized
+							/>
+						) : (
+							<ReactNiceAvatar
+								style={{ width: "24px", height: "24px" }}
+								eyeStyle="circle"
+								faceColor="#F9C9B6"
+								glassesStyle="none"
+								mouthStyle="smile"
+								hatStyle="none"
+							/>
+						)}
+						<span>{post.author?.name}</span>
+						<span>@</span>
+						<span
+							role="link"
+							tabIndex={0}
+							onClick={handleProjectClick}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									handleProjectClick(e as unknown as React.MouseEvent);
+								}
+							}}
+						>
+							{post.project?.name}
+						</span>
+						<span>•</span>
+						<span>{dayjs(post.publishedAt).fromNow()}</span>
+					</div>
+
+					<div className={styles.textContent}>
+						<p className={styles.postExcerpt}>{getPreviewText()}</p>
+					</div>
+
+					{pageCoverFromEditorjs || pageCoverFromContent ? (
+						<div className={styles.postImage}>
 							<Image
 								src={pageCoverFromEditorjs || pageCoverFromContent || ""}
 								alt={post.project?.name || ""}
@@ -108,50 +234,68 @@ const PostCard: React.FC<{
 								height={240}
 								unoptimized
 							/>
-						) : (
-							<DefaultCover title={post.project?.name || ""} />
-						)}
-					</div>
-					<div className={styles.textContent}>
-						<p className={styles.postExcerpt}>{getPreviewText()}</p>
-						<div className={styles.postMeta}>
-							<span
-								role="link"
-								tabIndex={0}
-								onClick={handleProjectClick}
-								onKeyDown={(e) => {
-									if (e.key === "Enter" || e.key === " ") {
-										handleProjectClick(e as unknown as React.MouseEvent);
-									}
-								}}
-							>
-								{post.project?.name}
-							</span>
-							<span>
-								<ClockCircleOutlined style={{ marginRight: 4 }} />
-								{dayjs(post.publishedAt).fromNow()}
-							</span>
-							{post.applauseCount ? (
-								<span className={styles.applauseCount}>
-									<span
-										className={styles.applauseIcon}
-										style={{ width: 18, height: 18 }}
-									>
-										<Lottie
-											animationData={applauseDefaultAnimation}
-											autoplay={false}
-											loop={false}
-											className={styles.applauseIconAnimation}
-										/>
-									</span>
-									{post.applauseCount}
-								</span>
-							) : null}
-							<PageViews
-								path={`/devlog/${post.id}`}
-								startDate={post.publishedAt.toString()}
-							/>
 						</div>
+					) : null}
+
+					<div className={styles.postMeta}>
+						<Tooltip
+							title={
+								isUserAuthenticated
+									? t("page.devlog.applauseTooltip", "Rate the team's work")
+									: t(
+											"page.devlog.applauseAuthTooltip",
+											"Only authorized users can leave applause",
+										)
+							}
+						>
+							<span className={styles.applauseWrapper}>
+								<HappyProvider>
+									<Button
+										type="text"
+										shape="round"
+										size="small"
+										className={`${styles.applauseButton} ${
+											hasApplauded ? styles.applauseButtonActive : ""
+										}`}
+										icon={
+											<span
+												className={styles.applauseIcon}
+												style={{ width: 18, height: 18 }}
+											>
+												{isApplauseStateLoading ? (
+													<LoadingOutlined
+														spin
+														style={{ fontSize: 18, lineHeight: 1 }}
+													/>
+												) : (
+													<Lottie
+														key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
+														animationData={applauseDefaultAnimation}
+														autoplay={
+															hasApplauded && applauseAnimationToken > 0
+														}
+														loop={false}
+														className={styles.applauseIconAnimation}
+													/>
+												)}
+											</span>
+										}
+										onClick={handleApplauseToggle}
+										disabled={
+											!isUserAuthenticated ||
+											isApplauseLoading ||
+											isApplauseStateLoading
+										}
+									>
+										{applauseCount > 0 ? applauseCount : null}
+									</Button>
+								</HappyProvider>
+							</span>
+						</Tooltip>
+						<PageViews
+							path={`/devlog/${post.id}`}
+							startDate={post.publishedAt.toString()}
+						/>
 					</div>
 				</div>
 			</div>
@@ -163,24 +307,21 @@ const PostSkeleton = () => {
 	return (
 		<div className={styles.postCard}>
 			<div className={styles.postContent}>
-				<div className={styles.postImage}>
-					<Skeleton.Node active style={{ width: 240, height: 240 }} />
+				<div className={styles.postHeader}>
+					<Skeleton.Avatar active size={24} shape="circle" />
+					<Skeleton.Input active style={{ width: 180, height: 12 }} />
 				</div>
+
 				<div className={styles.textContent}>
-					<Skeleton.Input
-						active
-						style={{ width: "70%", height: 24, marginBottom: 8 }}
-					/>
-					<Skeleton
-						active
-						paragraph={{ rows: 2 }}
-						style={{ marginBottom: 12 }}
-					/>
-					<div className={styles.postMeta}>
-						<Skeleton.Input active style={{ width: "30%", height: 16 }} />
-						<span className={styles.dot}>•</span>
-						<Skeleton.Input active style={{ width: "20%", height: 16 }} />
-					</div>
+					<Skeleton active paragraph={{ rows: 2 }} title={false} />
+				</div>
+
+				<div className={styles.postImage}>
+					<Skeleton.Node active style={{ width: "100%", height: "100%" }} />
+				</div>
+
+				<div className={styles.postMeta}>
+					<Skeleton.Input active style={{ width: 60, height: 14 }} />
 				</div>
 			</div>
 		</div>
@@ -191,6 +332,8 @@ const DevlogPosts = ({
 	projectId,
 	variant = "default",
 	bundleInset = false,
+	title,
+	headerStyle,
 }: DevlogPostsProps) => {
 	const { t } = useTranslate();
 	const limit = 5;
@@ -246,8 +389,29 @@ const DevlogPosts = ({
 			? getHubSectionShellClass(bundleInset ? "inset" : "main")
 			: "";
 
-	const hubHead = (
-		<HubSectionHeader title={t("hub.activity-feed.title", "Activity Feed")} />
+	const useSectionHeader = variant === "hub" && headerStyle !== "title";
+	const titleAboveShell = variant === "hub" && headerStyle === "title";
+
+	const headerNode = useSectionHeader ? (
+		<HubSectionHeader
+			title={title ?? t("hub.activity-feed.title", "Activity Feed")}
+		/>
+	) : (
+		<Title level={2} style={{ marginBottom: 24 }}>
+			{title ?? t("page.hub.project-updates", "Project updates")}
+		</Title>
+	);
+
+	const wrapHubShell = (inner: React.ReactNode) => (
+		<>
+			{titleAboveShell && headerNode}
+			<div
+				className={`${hubShell} ${styles.devlogPostsContainer} ${styles.hubVariant}`}
+			>
+				{!titleAboveShell && headerNode}
+				{inner}
+			</div>
+		</>
 	);
 
 	if (isLoading) {
@@ -265,24 +429,12 @@ const DevlogPosts = ({
 		);
 
 		if (variant === "hub") {
-			return (
-				<div
-					className={`${hubShell} ${styles.devlogPostsContainer} ${styles.hubVariant}`}
-				>
-					{hubHead}
-					<HubSectionBody flush>{body}</HubSectionBody>
-				</div>
-			);
+			return wrapHubShell(<HubSectionBody flush>{body}</HubSectionBody>);
 		}
 
 		return (
 			<div className={styles.devlogPostsContainer}>
-				<Flex justify="space-between" wrap align="center">
-					<Title level={2}>
-						<HistoryOutlined style={{ marginRight: 8 }} />
-						{t("page.hub.project-updates", "Project updates")}
-					</Title>
-				</Flex>
+				{headerNode}
 				{body}
 			</div>
 		);
@@ -293,14 +445,7 @@ const DevlogPosts = ({
 			<div className={styles.empty}>{t("No devlog posts yet")}</div>
 		);
 		if (variant === "hub") {
-			return (
-				<div
-					className={`${hubShell} ${styles.devlogPostsContainer} ${styles.hubVariant}`}
-				>
-					{hubHead}
-					<HubSectionBody>{empty}</HubSectionBody>
-				</div>
-			);
+			return wrapHubShell(<HubSectionBody>{empty}</HubSectionBody>);
 		}
 		return empty;
 	}
@@ -314,6 +459,10 @@ const DevlogPosts = ({
 							post={
 								post as prismaClient.ProjectReport & {
 									project: prismaClient.Project;
+									author: {
+										image: string;
+										name: string;
+									};
 								}
 							}
 							onClick={(e) => e.stopPropagation()}
@@ -330,26 +479,14 @@ const DevlogPosts = ({
 		</>
 	);
 
-	return (
-		<div
-			className={`${variant === "hub" ? hubShell : ""} ${styles.devlogPostsContainer} ${variant === "hub" ? styles.hubVariant : ""}`}
-		>
-			{variant === "hub" ? (
-				hubHead
-			) : (
-				<Flex align="center" gap={8} style={{ marginBottom: 24 }}>
-					<IconNews size={24} />
-					<Title level={2}>
-						{t("page.hub.project-updates", "Project updates")}
-					</Title>
-				</Flex>
-			)}
+	if (variant === "hub") {
+		return wrapHubShell(<HubSectionBody flush>{listBlock}</HubSectionBody>);
+	}
 
-			{variant === "hub" ? (
-				<HubSectionBody flush>{listBlock}</HubSectionBody>
-			) : (
-				listBlock
-			)}
+	return (
+		<div className={styles.devlogPostsContainer}>
+			{headerNode}
+			{listBlock}
 		</div>
 	);
 };
