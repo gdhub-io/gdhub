@@ -11,6 +11,7 @@ import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
 	Breadcrumb,
+	type BreadcrumbProps,
 	Button,
 	Col,
 	ConfigProvider,
@@ -96,6 +97,8 @@ interface ProtectedLayoutProps {
 	access?: prismaClient.UserRole[];
 	topMenuItems?: MenuProps["items"];
 	topMenuSelectedKeys?: string[];
+	/** Additional breadcrumb items appended after the logo, replacing the default user info crumb when provided. */
+	breadcrumbs?: BreadcrumbProps["items"];
 	/** Removes default content top padding and child top margin so pages can sit flush under the header. */
 	flushBodyTop?: boolean;
 	/** Removes horizontal content padding below `md` for full-width single-column layouts. */
@@ -116,6 +119,7 @@ export const ProtectedLayout = ({
 	access = [],
 	topMenuItems,
 	topMenuSelectedKeys,
+	breadcrumbs,
 	flushBodyTop = false,
 	contentBleedBelowMd = false,
 }: ProtectedLayoutProps) => {
@@ -527,22 +531,25 @@ export const ProtectedLayout = ({
 												</Link>
 											),
 										},
-
-										{
-											title: (
-												<Space>
-													<Avatar
-														src={session?.user?.image ?? undefined}
-														size={24}
-													/>
-													{screens.sm ? (
-														<Text className="username">
-															{session?.user?.name}
-														</Text>
-													) : null}
-												</Space>
-											),
-										},
+										...(breadcrumbs?.length
+											? breadcrumbs
+											: [
+													{
+														title: (
+															<Space>
+																<Avatar
+																	src={session?.user?.image ?? undefined}
+																	size={24}
+																/>
+																{screens.sm ? (
+																	<Text className="username">
+																		{session?.user?.name}
+																	</Text>
+																) : null}
+															</Space>
+														),
+													},
+												]),
 									]}
 								/>
 							</Col>

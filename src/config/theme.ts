@@ -301,6 +301,11 @@ export const appThemeConfig: ThemeConfig = {
 			dangerShadow: "none",
 			borderColorDisabled: "#dbdbdb",
 		},
+		Collapse: {
+			contentBg: "rgba(0, 0, 0, 0)",
+			headerBg: "rgba(0, 0, 0, 0)",
+			colorBorder: "#e4e4e7",
+		},
 		Input: {
 			controlHeight: 48,
 			fontSizeIcon: 20,
