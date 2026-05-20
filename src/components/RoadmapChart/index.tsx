@@ -230,7 +230,9 @@ export const RoadmapChart = ({
 									}
 									variant="borderless"
 									placeholder="set date"
-									onChange={(date) => handleDateChange(step.id, date)}
+									onChange={(date) => {
+										if (date) handleDateChange(step.id, date);
+									}}
 									disabledDate={(current) => disableStepDate(step.id, current)}
 									classNames={{
 										root: styles.dateInput,

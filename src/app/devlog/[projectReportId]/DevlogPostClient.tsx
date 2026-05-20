@@ -553,7 +553,7 @@ export function DevlogPostClient({
 
 										return (
 											<MarkdownImage
-												src={props.src || ""}
+												src={typeof props.src === "string" ? props.src : ""}
 												alt={props.alt || ""}
 												width={props.width as string}
 												height={props.height as string}
@@ -653,10 +653,8 @@ export function DevlogPostClient({
 					</div>
 				</Card>
 				<div className={styles.postNavigation}>
-					<Divider
-						orientation="center"
-						className={styles.postNavigationDivider}
-					>
+					{/* TODO(antd6): Divider's "center" orientation became the default; the prop was tightened to "left" | "right" in AntD 6. */}
+					<Divider className={styles.postNavigationDivider}>
 						{applauseBanner}
 					</Divider>
 					<Flex justify="space-between" align="center" gap={12}>

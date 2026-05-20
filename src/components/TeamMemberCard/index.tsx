@@ -79,7 +79,9 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 			destroyOnHidden
 			maskClosable={false}
 			open={open}
-			classNames={{ content: styles.modalContent }}
+			// TODO(antd6): `content` key was removed from Modal classNames in AntD 6;
+			// `body` is the closest equivalent for the inner content wrapper.
+			classNames={{ body: styles.modalContent }}
 			onCancel={handleCancel}
 			footer={null}
 		>

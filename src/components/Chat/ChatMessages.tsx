@@ -1,7 +1,7 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Bubble, type BubbleProps } from "@ant-design/x";
-import type { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
-import { Flex, type GetRef } from "antd";
+import type { BubbleItemType } from "@ant-design/x/es/bubble/interface";
+import { Avatar, Flex, type GetRef } from "antd";
 import dayjs from "dayjs";
 import {
 	EventTimeline,
@@ -22,7 +22,7 @@ import AdviceRequestInvite from "./special-messages/AdviceRequestInvite";
 import DefaultInvite from "./special-messages/DefaultInvite";
 import { useChat } from "./useChat";
 
-type MessageBubble = BubbleDataType & {
+type MessageBubble = BubbleItemType & {
 	title?: string;
 	avatarUrl?: string;
 	time?: string;
@@ -47,7 +47,7 @@ const availableMessageTypes = [
 	"m.room.member",
 ];
 
-const RenderIndex: BubbleProps["messageRender"] = (content) => (
+const RenderIndex: BubbleProps["contentRender"] = (content) => (
 	<Flex style={{ whiteSpace: "pre-line", wordBreak: "break-word" }}>
 		{content}
 	</Flex>
@@ -190,7 +190,7 @@ export default function ChatMessages() {
 
 		requestAnimationFrame(() => {
 			try {
-				listRef.current?.scrollTo?.({ offset: Number.MAX_SAFE_INTEGER });
+				listRef.current?.scrollTo?.({ top: "bottom" });
 				const container = scrollContainerRef.current;
 				if (container) {
 					container.scrollTop = container.scrollHeight;
@@ -305,78 +305,70 @@ export default function ChatMessages() {
 		);
 	}, [messages, chatClient, buildSystemHeader, currentRoom]);
 
-	const renderRoles = (bubbleData: MessageBubble) => {
-		switch (bubbleData.role) {
-			case "member":
-				return {
-					placement: "start" as const,
-					header: (
-						<div style={{ fontSize: 12, color: "#9c9a9a" }}>
-							{bubbleData.title}
-						</div>
-					),
-					avatar: bubbleData.avatarUrl
-						? { src: bubbleData.avatarUrl }
-						: { icon: <UserOutlined />, style: { background: "#fde3cf" } },
-					typing: { step: 5, interval: 20 },
-					footer: (
-						<div style={{ fontSize: 10, color: "#cccccc" }}>
-							{bubbleData.time}
-						</div>
-					),
-					messageRender: RenderIndex,
-				};
-			case "user":
-				return {
-					placement: "end" as const,
-					header: (
-						<div style={{ fontSize: 12, color: "#9c9a9a" }}>
-							{bubbleData.title}
-						</div>
-					),
-					avatar: bubbleData.avatarUrl
-						? { src: bubbleData.avatarUrl }
-						: { icon: <UserOutlined />, style: { background: "#aad068" } },
-					footer: (
-						<div style={{ fontSize: 10, color: "#cccccc" }}>
-							{bubbleData.time}
-						</div>
-					),
-					messageRender: RenderIndex,
-				};
-			case "system":
-				return {
-					placement: "start" as const,
-					header: (
-						<div
-							style={{
-								fontSize: 12,
-								color: "#9c9a9a",
-								width: "100%",
-								textAlign: "center",
-							}}
-						>
-							{bubbleData.systemText}
-						</div>
-					),
-					className: styles.systemMessage,
-					messageRender: undefined,
-					footer: (
-						<div
-							style={{
-								fontSize: 10,
-								color: "#cccccc",
-								textAlign: "center",
-								width: "100%",
-							}}
-						>
-							{bubbleData.time}
-						</div>
-					),
-				};
-			default:
-				return { messageRender: RenderIndex };
-		}
+	// TODO(antd6): @ant-design/x v2 replaced the `roles` function prop with a
+	// `role` object map keyed by role name (RoleProps | FuncRoleProps). Each role
+	// here returns FuncRoleProps so it can read per-message data (title/avatar/time).
+	const roleConfig = {
+		member: (bubbleData: MessageBubble) => ({
+			placement: "start" as const,
+			header: (
+				<div style={{ fontSize: 12, color: "#9c9a9a" }}>{bubbleData.title}</div>
+			),
+			avatar: bubbleData.avatarUrl ? (
+				<Avatar src={bubbleData.avatarUrl} />
+			) : (
+				<Avatar icon={<UserOutlined />} style={{ background: "#fde3cf" }} />
+			),
+			typing: { step: 5, interval: 20 },
+			footer: (
+				<div style={{ fontSize: 10, color: "#cccccc" }}>{bubbleData.time}</div>
+			),
+			contentRender: RenderIndex,
+		}),
+		user: (bubbleData: MessageBubble) => ({
+			placement: "end" as const,
+			header: (
+				<div style={{ fontSize: 12, color: "#9c9a9a" }}>{bubbleData.title}</div>
+			),
+			avatar: bubbleData.avatarUrl ? (
+				<Avatar src={bubbleData.avatarUrl} />
+			) : (
+				<Avatar icon={<UserOutlined />} style={{ background: "#aad068" }} />
+			),
+			footer: (
+				<div style={{ fontSize: 10, color: "#cccccc" }}>{bubbleData.time}</div>
+			),
+			contentRender: RenderIndex,
+		}),
+		system: (bubbleData: MessageBubble) => ({
+			placement: "start" as const,
+			header: (
+				<div
+					style={{
+						fontSize: 12,
+						color: "#9c9a9a",
+						width: "100%",
+						textAlign: "center",
+					}}
+				>
+					{bubbleData.systemText}
+				</div>
+			),
+			className: styles.systemMessage,
+			contentRender: undefined,
+			footer: (
+				<div
+					style={{
+						fontSize: 10,
+						color: "#cccccc",
+						textAlign: "center",
+						width: "100%",
+					}}
+				>
+					{bubbleData.time}
+				</div>
+			),
+		}),
 	};
 
 	// membership is managed in the global chat store and updated on RoomEvent.MyMembership
@@ -453,7 +445,7 @@ export default function ChatMessages() {
 				style={{ paddingInline: 16 }}
 				className={styles.chatMessages}
 				items={preparedMessages}
-				roles={renderRoles}
+				role={roleConfig}
 			/>
 		</div>
 	);

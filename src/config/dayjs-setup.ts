@@ -24,5 +24,3 @@ dayjs.extend(localeData);
 dayjs.extend(relativeTime);
 dayjs.extend(weekday);
 dayjs.locale(defaultLocale);
-
-export {};

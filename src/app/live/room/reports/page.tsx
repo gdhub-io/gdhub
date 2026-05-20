@@ -68,13 +68,17 @@ const LiveReportsPage = () => {
 	});
 
 	const callFrame = useCallFrame({
-		parentEl: callRef.current,
+		// TODO(daily): `parentEl` was removed from useCallFrame options in
+		// @daily-co/daily-react 0.25. The hook now relies on the consumer
+		// attaching the returned iframe via ref. Re-wire if/when reports UI
+		// is verified end-to-end.
+		parentElement: callRef.current as any,
 		options: { ...dailyCallOptions, token: token?.data.token },
 		shouldCreateInstance: useCallback(
 			() => Boolean(callRef.current) && Boolean(token?.data.token),
 			[token?.data],
 		),
-	});
+	} as any);
 
 	useEffect(() => {
 		if (!callFrame) return;
