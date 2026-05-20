@@ -1,13 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Typography, theme } from "antd";
+import { Button, theme } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
-import React from "react";
+import { useState } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 import styles from "./style.module.scss";
@@ -21,29 +19,21 @@ const CourseSection = dynamic(
 		import("@/components/courses/CourseSection").then((m) => m.CourseSection),
 	{ ssr: false },
 );
+const CreateCourseModal = dynamic(
+	() => import("@/components/modals/CreateCourseModal"),
+	{ ssr: false },
+);
 
-const { Paragraph } = Typography;
-
-/**
- * My courses page component that displays user's courses
- *
- * @returns {JSX.Element} Rendered component
- */
 const MyCoursesPage: NextPageWithLayout = () => {
 	const { t } = useTranslate();
-	const { data: session } = useSession();
 	const { token } = theme.useToken();
-	const router = useRouter();
+	const queryClient = useQueryClient();
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-	const {
-		data: myCourses,
-		isSuccess,
-		isLoading,
-	} = useQuery({
-		queryKey: ["my-courses"],
-		queryFn: () => axios.get("/api/user/courses").then((res) => res.data),
-		enabled: !!session?.user,
-	});
+	const handleCreated = async () => {
+		setIsCreateOpen(false);
+		await queryClient.invalidateQueries({ queryKey: ["my-courses"] });
+	};
 
 	return (
 		<ProtectedLayout
@@ -52,7 +42,11 @@ const MyCoursesPage: NextPageWithLayout = () => {
 				"courses.myCoursesDescription",
 				"Courses where you are an author, student, or instructor",
 			)}
-			extra={<Button>{t("courses.createCourse", "Create course")}</Button>}
+			extra={
+				<Button type="primary" onClick={() => setIsCreateOpen(true)}>
+					{t("courses.createCourse", "Create course")}
+				</Button>
+			}
 			showBackButton
 			backButtonUrl="/hub/courses"
 		>
@@ -63,16 +57,13 @@ const MyCoursesPage: NextPageWithLayout = () => {
 					queryKey={["my-courses"]}
 					queryFn={() => axios.get("/api/user/courses").then((res) => res.data)}
 				/>
-
-				{!isSuccess && !isLoading && (
-					<Paragraph type="secondary">
-						{t(
-							"courses.noMyCourses",
-							"You are not enrolled in any courses yet",
-						)}
-					</Paragraph>
-				)}
 			</div>
+
+			<CreateCourseModal
+				open={isCreateOpen}
+				onCancel={() => setIsCreateOpen(false)}
+				onCreate={handleCreated}
+			/>
 		</ProtectedLayout>
 	);
 };
