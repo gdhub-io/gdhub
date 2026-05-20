@@ -5,13 +5,13 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, message, Space, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
+import type { VerifyCertificateResponse } from "@/app/api/verify/_helpers";
 import VerifyCertGdhubCover from "@/assets/images/verify-cert-gdhub-cover.jpg";
 import { VerifyForm } from "@/components/VerifyCertificate/VerifyForm";
 import { VerifyHero } from "@/components/VerifyCertificate/VerifyHero";
 import { VerifyNotFound } from "@/components/VerifyCertificate/VerifyNotFound";
 import { VerifyResult } from "@/components/VerifyCertificate/VerifyResult";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { VerifyCertificateResponse } from "@/pages/api/verify/[[...params]]";
 import styles from "@/pages/verify/style.module.scss";
 
 const { Title } = Typography;

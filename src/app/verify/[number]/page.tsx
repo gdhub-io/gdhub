@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import type { VerifyCertificateResponse } from "@/pages/api/verify/[[...params]]";
+import type { VerifyCertificateResponse } from "@/app/api/verify/_helpers";
 import { prisma } from "@/services/prisma";
 import { VerifyNumberClient } from "./VerifyNumberClient";
 
