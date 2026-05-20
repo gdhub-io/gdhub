@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
@@ -31,7 +33,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useParams, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
@@ -70,9 +72,10 @@ export const ProtectedEventLayout = ({
 	};
 }) => {
 	const { t } = useTranslate();
-	const router = useRouter();
+	const params = useParams<{ eventId?: string }>();
+	const pathname = usePathname() ?? "";
 	const queryClient = useQueryClient();
-	const eventId = router.query.eventId as string;
+	const eventId = params?.eventId as string;
 	const [messageApi, messageContextHolder] = message.useMessage();
 	const [contextEvent, setContextEvent] = useState<ContextEvent>();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
@@ -99,7 +102,7 @@ export const ProtectedEventLayout = ({
 
 	const seoSettings: NextSeoProps = {
 		title: title || "Event",
-		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
 		nofollow: true,
 		noindex: true,
 		description,
@@ -485,7 +488,7 @@ export const ProtectedEventLayout = ({
 						<Menu
 							items={menuItems.filter((r) => !r.disabled)}
 							mode="horizontal"
-							selectedKeys={[router.asPath]}
+							selectedKeys={[pathname]}
 							className={styles.appMenu}
 						/>
 					</Header>
