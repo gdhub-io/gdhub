@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -5,12 +7,11 @@ import { Button, theme } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import React, { Suspense } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/events/style.module.scss";
 
 const BannerEventSlider = dynamic(
 	() =>
@@ -41,9 +42,9 @@ const SectionSkeleton = dynamic(
 	{ ssr: false },
 );
 
-const EventsPage: NextPageWithLayout = () => {
+export default function HubEventsPage() {
 	const { t } = useTranslate();
-	const router = useRouter();
+	const pathname = usePathname();
 	const { token } = theme.useToken();
 	const { data: session } = useSession();
 
@@ -82,7 +83,7 @@ const EventsPage: NextPageWithLayout = () => {
 	return (
 		<ProtectedLayout
 			title={t("page.events.title", "Events")}
-			seo={{ openGraph: { type: "website", url: router.asPath } }}
+			seo={{ openGraph: { type: "website", url: pathname ?? undefined } }}
 			extra={
 				!!eventCount?.userCount && (
 					<Link href="/hub/events/my">
@@ -175,6 +176,4 @@ const EventsPage: NextPageWithLayout = () => {
 			</div>
 		</ProtectedLayout>
 	);
-};
-
-export default EventsPage;
+}

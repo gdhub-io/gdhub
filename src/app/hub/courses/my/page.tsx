@@ -7,8 +7,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/courses/my/style.module.scss";
 
 const CourseCard = dynamic(
 	() => import("@/components/courses/CourseCard").then((m) => m.CourseCard),
@@ -24,7 +23,7 @@ const CreateCourseModal = dynamic(
 	{ ssr: false },
 );
 
-const MyCoursesPage: NextPageWithLayout = () => {
+export default function MyCoursesPage() {
 	const { t } = useTranslate();
 	const { token } = theme.useToken();
 	const queryClient = useQueryClient();
@@ -66,6 +65,4 @@ const MyCoursesPage: NextPageWithLayout = () => {
 			/>
 		</ProtectedLayout>
 	);
-};
-
-export default MyCoursesPage;
+}

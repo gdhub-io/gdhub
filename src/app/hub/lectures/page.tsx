@@ -1,8 +1,9 @@
+"use client";
+
 import { useTranslate } from "@tolgee/react";
 import { Space } from "antd";
 import dynamic from "next/dynamic";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
 
 const HeldLectures = dynamic(
 	() =>
@@ -22,7 +23,7 @@ const RequestedLectures = dynamic(
 	{ ssr: false },
 );
 
-const LecturesPage: NextPageWithLayout = () => {
+export default function HubLecturesPage() {
 	const { t } = useTranslate();
 
 	return (
@@ -53,6 +54,4 @@ const LecturesPage: NextPageWithLayout = () => {
 			</Space>
 		</ProtectedLayout>
 	);
-};
-
-export default LecturesPage;
+}

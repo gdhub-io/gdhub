@@ -1,8 +1,9 @@
+"use client";
+
 import { useTranslate } from "@tolgee/react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import { usePathname } from "next/navigation";
+import styles from "@/pages/hub/jobs/style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),
@@ -12,9 +13,9 @@ const VacanciesList = dynamic(() => import("@/components/VacanciesList"), {
 	ssr: false,
 });
 
-const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
-	const router = useRouter();
+export default function HubJobsPage() {
 	const { t } = useTranslate();
+	const pathname = usePathname();
 
 	return (
 		<ProtectedLayout
@@ -23,7 +24,7 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 				"page.vacancies.subTitle",
 				"Invest your time in the success of new game projects",
 			)}
-			seo={{ openGraph: { type: "website", url: router.asPath } }}
+			seo={{ openGraph: { type: "website", url: pathname ?? undefined } }}
 		>
 			<div className={styles.container}>
 				<div className="project-vacancies" style={{ marginTop: 32 }}>
@@ -32,6 +33,4 @@ const VacanciesPage: NextPageWithLayout = ({ projects }: any) => {
 			</div>
 		</ProtectedLayout>
 	);
-};
-
-export default VacanciesPage;
+}

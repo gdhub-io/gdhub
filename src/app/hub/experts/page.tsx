@@ -1,11 +1,13 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { useTolgee, useTranslate } from "@tolgee/react";
+import { useTranslate } from "@tolgee/react";
 import { Button, ConfigProvider, Form, Row, Select, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useWorkDirections } from "@/hooks/library";
-import styles from "./styles.module.scss";
+import styles from "@/pages/hub/experts/styles.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),
@@ -20,16 +22,13 @@ const ExpertList = dynamic(
 	{ ssr: false },
 );
 
-const ExpertsPage = () => {
+export default function HubExpertsPage() {
 	const { t } = useTranslate();
-	const { getLanguage } = useTolgee();
 	const [form] = Form.useForm();
 	const [filter, setFilter] = useState<{
 		workDirectionId?: string;
 		lang?: prismaClient.Language;
 	}>({});
-
-	console.log("filter core", filter);
 
 	const [expertRequestModalOpen, setExpertRequestModalOpen] = useState<
 		string | undefined
@@ -39,15 +38,6 @@ const ExpertsPage = () => {
 	const handleExpertClick = async (expertId: string) => {
 		setExpertRequestModalOpen(expertId);
 	};
-
-	// useEffect(() => {
-	// 	const currentLang = getLanguage();
-	// 	form.setFieldsValue({ lang: currentLang });
-	// 	setFilter((prev) => ({
-	// 		...prev,
-	// 		lang: currentLang as prismaClient.Language,
-	// 	}));
-	// }, [getLanguage, form]);
 
 	return (
 		<ProtectedLayout
@@ -81,7 +71,6 @@ const ExpertsPage = () => {
 					<Form
 						variant="filled"
 						form={form}
-						// initialValues={{ lang: getLanguage() }}
 						onValuesChange={(_changedValues, allValues) => {
 							setFilter({
 								workDirectionId: allValues.workDirectionId,
@@ -142,6 +131,4 @@ const ExpertsPage = () => {
 			/>
 		</ProtectedLayout>
 	);
-};
-
-export default ExpertsPage;
+}

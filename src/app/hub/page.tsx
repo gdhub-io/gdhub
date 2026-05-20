@@ -1,3 +1,5 @@
+"use client";
+
 import { useTolgee } from "@tolgee/react";
 import { Alert, Button, Col, Flex, Grid, Row, Space, Typography } from "antd";
 import dynamic from "next/dynamic";
@@ -8,8 +10,7 @@ import {
 	getHubSectionShellClass,
 	HubSectionBody,
 } from "@/components/hub/HubSection";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),
@@ -25,25 +26,20 @@ const MyAdviceRequests = dynamic(
 const MyProjectList = dynamic(() => import("@/components/MyProjectList"), {
 	ssr: false,
 });
-
 const NewMembers = dynamic(() => import("@/components/NewMembers"), {
 	ssr: false,
 });
-
 const HotTeamVacancies = dynamic(
 	() => import("@/components/HotTeamVacancies"),
-	{
-		ssr: false,
-	},
+	{ ssr: false },
 );
-
 const LatestEvents = dynamic(() => import("@/components/LatestEvents/index"), {
 	ssr: false,
 });
 
 const { Title, Text } = Typography;
 
-const HubPage: NextPageWithLayout = () => {
+export default function HubPage() {
 	const session = useSession();
 	const { getLanguage, t } = useTolgee();
 	const screens = Grid.useBreakpoint();
@@ -55,18 +51,14 @@ const HubPage: NextPageWithLayout = () => {
 	const showOnboardingAlert = isAuthenticated && !isOnboardingDone;
 
 	const linkToChat = useMemo(() => {
-		let link = "";
-
 		switch (getLanguage()) {
 			case "en":
-				link = "https://t.me/gdhub_en";
-				break;
+				return "https://t.me/gdhub_en";
 			case "ru":
-				link = "https://t.me/gdhub_io";
-				break;
+				return "https://t.me/gdhub_io";
+			default:
+				return "";
 		}
-
-		return link;
 	}, [getLanguage]);
 
 	return (
@@ -219,6 +211,4 @@ const HubPage: NextPageWithLayout = () => {
 			</Row>
 		</ProtectedLayout>
 	);
-};
-
-export default HubPage;
+}

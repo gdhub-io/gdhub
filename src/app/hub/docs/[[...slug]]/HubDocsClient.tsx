@@ -1,3 +1,5 @@
+"use client";
+
 import { Render } from "@9gustin/react-notion-render";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
@@ -14,26 +16,21 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import type { GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { auth } from "@/auth";
-import type { AvailableLocales } from "@/config/locale";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import { getPages } from "@/services/notion";
-import { tolgeeService } from "@/services/tolgee";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/docs/style.module.scss";
 import "@9gustin/react-notion-render/dist/index.css";
 
 const { Text, Title } = Typography;
 
-const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
+export function HubDocsClient({ pages }: { pages?: any[] }) {
 	const screens = Grid.useBreakpoint();
 	const { t, getLanguage } = useTolgee();
 	const themeToken = theme.useToken();
+	const params = useParams<{ slug?: string[] }>();
 	const router = useRouter();
-	const { slug: urlSlug } = router.query;
+	const urlSlug = params?.slug;
 	const [docsMenu, setDocsMenu] = useState<any[]>();
 	const [pageSlug, setPageSlug] = useState<any>();
 	const [pageProperties, setPageProperties] = useState<any>();
@@ -53,9 +50,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		setPageProperties(getPageProperties(currentPageSlug));
 
 		if (!urlSlug) {
-			router.push("/hub/docs/" + Slug.rich_text[0].plain_text, undefined, {
-				shallow: true,
-			});
+			router.push(`/hub/docs/${Slug.rich_text[0].plain_text}`);
 		}
 	}, [urlSlug]);
 
@@ -141,7 +136,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		try {
 			setPageSlug(key);
 			await refetchPage();
-			await router.push("/hub/docs/" + key, undefined, { shallow: true });
+			router.push(`/hub/docs/${key}`);
 			setPageProperties(getPageProperties(key));
 		} catch (error: any) {}
 	};
@@ -150,7 +145,7 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 		try {
 			setPageSlug(value);
 			await refetchPage();
-			await router.push("/hub/docs/" + value, undefined, { shallow: true });
+			router.push(`/hub/docs/${value}`);
 			setPageProperties(getPageProperties(value));
 		} catch (error: any) {}
 	};
@@ -255,23 +250,4 @@ const DocsPage: NextPageWithLayout = ({ pages }: { pages?: any[] }) => {
 			</div>
 		</ProtectedLayout>
 	);
-};
-
-export const getServerSideProps = async (
-	context: GetServerSidePropsContext,
-) => {
-	const locale = tolgeeService.getLanguage() as AvailableLocales;
-	const session: any = await auth(context.req as any, context.res as any);
-	const pages: any = await getPages({
-		roles: session?.user.roles,
-		locale: session.user.lang || locale,
-	});
-
-	return {
-		props: {
-			pages,
-		},
-	};
-};
-
-export default DocsPage;
+}

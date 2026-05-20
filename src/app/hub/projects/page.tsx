@@ -8,8 +8,7 @@ import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import GameOnStoreCardList from "@/components/GameOnStoreCardList";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/projects/style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),
@@ -22,12 +21,7 @@ const GameCardList = dynamic(
 
 const { Paragraph } = Typography;
 
-/**
- * Projects page component that displays a list of indie game projects
- *
- * @returns {JSX.Element} Rendered component
- */
-const ProjectsPage: NextPageWithLayout = () => {
+export default function HubProjectsPage() {
 	const { t } = useTranslate();
 	const { status } = useSession();
 	const [selectedStage, setSelectedStage] = useState<string>();
@@ -60,11 +54,7 @@ const ProjectsPage: NextPageWithLayout = () => {
 
 	const filteredProjects = useMemo(() => {
 		const items = projects?.data || [];
-
-		if (!selectedStage) {
-			return items;
-		}
-
+		if (!selectedStage) return items;
 		return items.filter(
 			(project: {
 				workflow?: { currentStep?: { name?: string } | null } | null;
@@ -142,6 +132,4 @@ const ProjectsPage: NextPageWithLayout = () => {
 			</div>
 		</ProtectedLayout>
 	);
-};
-
-export default ProjectsPage;
+}

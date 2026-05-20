@@ -1,26 +1,27 @@
+"use client";
+
 import { useTranslate } from "@tolgee/react";
 import { Button } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/courses/style.module.scss";
 
 const CoursesList = dynamic(
 	() => import("@/components/CoursesList").then((m) => m.default),
 	{ ssr: false },
 );
 
-const CoursesPage: NextPageWithLayout = ({ projects }: any) => {
-	const router = useRouter();
+export default function HubCoursesPage() {
 	const { t } = useTranslate();
+	const pathname = usePathname();
 
 	return (
 		<ProtectedLayout
 			title={t("page.courses.title", "Courses")}
 			subTitle={t("page.courses.subTitle", "Invest your time in knowledge")}
-			seo={{ openGraph: { type: "website", url: router.asPath } }}
+			seo={{ openGraph: { type: "website", url: pathname ?? undefined } }}
 			extra={
 				<Link href="/hub/courses/my">
 					<Button type="text">
@@ -36,6 +37,4 @@ const CoursesPage: NextPageWithLayout = ({ projects }: any) => {
 			</div>
 		</ProtectedLayout>
 	);
-};
-
-export default CoursesPage;
+}

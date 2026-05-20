@@ -1,3 +1,5 @@
+"use client";
+
 import { MoreOutlined, SettingOutlined } from "@ant-design/icons";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
@@ -28,12 +30,11 @@ import {
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import React from "react";
 import { formatEventPeriod } from "@/helpers/format";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/events/my/style.module.scss";
 
 const CreateEventButton = dynamic(
 	() => import("@/components/events/CreateEventButton").then((m) => m.default),
@@ -75,9 +76,9 @@ function getTypeIcon(type: string, size = 20) {
 	}
 }
 
-const MyEventsPage: NextPageWithLayout = () => {
+const MyEventsPage = () => {
 	const { t, getLanguage } = useTolgee();
-	const router = useRouter();
+	const pathname = usePathname();
 	const [modal, modalContextHolder] = Modal.useModal();
 	const screens = Grid.useBreakpoint();
 	const [editModalOpen, setEditModalOpen] = React.useState(false);
@@ -351,7 +352,7 @@ const MyEventsPage: NextPageWithLayout = () => {
 	return (
 		<ProtectedLayout
 			title={t("page.myEvents.title", "My Events")}
-			seo={{ openGraph: { type: "website", url: router.asPath } }}
+			seo={{ openGraph: { type: "website", url: pathname ?? undefined } }}
 			extra={<CreateEventButton onCreation={() => refetchMyEvents()} />}
 			showBackButton
 			backButtonUrl="/hub/events"

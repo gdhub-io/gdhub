@@ -1,3 +1,5 @@
+"use client";
+
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import {
 	IconActivity,
@@ -29,11 +31,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./course.module.scss";
+import styles from "@/pages/hub/courses/course.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -64,10 +65,11 @@ const directionBgClass = (name?: string) =>
 		? `bg-direc-${name.replace(" & ", "-").replace(/\s+/g, "-")}`
 		: "bg-direc-default";
 
-const CoursePage: NextPageWithLayout = () => {
+const CoursePage = () => {
 	const { t } = useTranslate();
-	const router = useRouter();
-	const { slug } = router.query;
+	const params = useParams<{ slug: string }>();
+	const pathname = usePathname();
+	const slug = params?.slug;
 
 	const { data, isLoading, isError } = useQuery({
 		queryKey: ["course", slug],
@@ -171,7 +173,7 @@ const CoursePage: NextPageWithLayout = () => {
 			seo={{
 				title: data.name,
 				description: data.shortLine ?? data.description ?? undefined,
-				openGraph: { type: "article", url: router.asPath },
+				openGraph: { type: "article", url: pathname ?? undefined },
 			}}
 		>
 			<div className={styles.container}>

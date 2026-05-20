@@ -6,8 +6,7 @@ import { Button } from "antd";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/experts/my-requests/style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),
@@ -22,7 +21,7 @@ const UserAdviceArchiveModal = dynamic(
 	{ ssr: false },
 );
 
-const MyExpertRequestsPage: NextPageWithLayout = () => {
+export default function MyExpertRequestsPage() {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 	const [showArchive, setShowArchive] = useState(false);
@@ -55,6 +54,4 @@ const MyExpertRequestsPage: NextPageWithLayout = () => {
 			/>
 		</ProtectedLayout>
 	);
-};
-
-export default MyExpertRequestsPage;
+}

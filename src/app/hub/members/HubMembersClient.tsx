@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { InstantsearchAdapter } from "@gdhub-io/gdhub-typesense/dist/adapter";
 import { BsFilter } from "@react-icons/all-files/bs/BsFilter";
@@ -14,7 +16,6 @@ import {
 	Tag,
 	Typography,
 } from "antd";
-import type { GetServerSidePropsContext } from "next";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
@@ -30,13 +31,10 @@ import {
 	Stats,
 	useInstantSearch,
 } from "react-instantsearch";
-import { auth } from "@/auth";
 import { getRelevantText } from "@/helpers/text";
 import { hasRole } from "@/helpers/user";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import { prisma } from "@/services/prisma";
-import styles from "./style.module.scss";
+import styles from "@/pages/hub/members/style.module.scss";
 
 const SpecialistPreviewModal = dynamic(
 	() => import("@/components/modals/SpecialistPreviewModal"),
@@ -45,11 +43,15 @@ const SpecialistPreviewModal = dynamic(
 
 const { Paragraph, Text, Title } = Typography;
 
-const SpecialistsPage: NextPageWithLayout = ({
+export function HubMembersClient({
 	usersCount,
 	specialitiesCount,
 	hasApprovedProjects = false,
-}: any) => {
+}: {
+	usersCount: number;
+	specialitiesCount: number;
+	hasApprovedProjects?: boolean;
+}) {
 	const session = useSession();
 	const { t } = useTranslate();
 	const [openedFilter, setOpenFilter] = useState(false);
@@ -221,9 +223,7 @@ const SpecialistsPage: NextPageWithLayout = ({
 			</div>
 		</ProtectedLayout>
 	);
-};
-
-export default SpecialistsPage;
+}
 
 function NoResultsBoundary({ children, fallback }: any) {
 	const { results } = useInstantSearch();
@@ -312,26 +312,4 @@ function SearchMobileFilter({ onClick, resetButtonText }: any) {
 			{count > 0 && <ClearRefinements translations={{ resetButtonText }} />}
 		</Space>
 	);
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await auth(context.req as any, context.res as any);
-	const usersCount = await prisma.user.count();
-	const specialitiesCount = await prisma.speciality.count();
-	const hasApprovedProjects = await prisma.project.count({
-		where: {
-			authorId: session?.user.id,
-			status: prismaClient.ProjectStatus.Approved,
-		},
-	});
-
-	return {
-		props: {
-			usersCount,
-			specialitiesCount,
-			hasApprovedProjects:
-				hasApprovedProjects !== 0 ||
-				session?.user.roles.includes(prismaClient.UserRole.Admin),
-		},
-	};
 }
