@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import type { AvailableLocales } from "@/config/locale";
 import { getBlocks, getGamelabStageBlocks } from "@/services/notion";
-import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -13,7 +12,7 @@ export default async function handler(
 		locale = process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as AvailableLocales,
 		table = "docs",
 	} = req.body;
-	const session = await getServerSession(req, res, authOptions);
+	const session = await auth(req, res);
 	let response: any;
 
 	try {

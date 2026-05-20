@@ -31,7 +31,7 @@ const ProjectReportModal = ({
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [content, setContent] = useState("");
-	const editorRef = useRef<MDXEditorMethods | null>();
+	const editorRef = useRef<MDXEditorMethods | null>(null);
 
 	const {
 		data: report,

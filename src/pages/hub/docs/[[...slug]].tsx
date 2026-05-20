@@ -16,12 +16,11 @@ import axios from "axios";
 import dayjs from "dayjs";
 import type { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { getServerSession } from "next-auth";
 import { useEffect, useState } from "react";
+import { auth } from "@/auth";
 import type { AvailableLocales } from "@/config/locale";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { getPages } from "@/services/notion";
 import { tolgeeService } from "@/services/tolgee";
 import styles from "./style.module.scss";
@@ -262,11 +261,7 @@ export const getServerSideProps = async (
 	context: GetServerSidePropsContext,
 ) => {
 	const locale = tolgeeService.getLanguage() as AvailableLocales;
-	const session: any = await getServerSession(
-		context.req,
-		context.res,
-		authOptions,
-	);
+	const session: any = await auth(context.req as any, context.res as any);
 	const pages: any = await getPages({
 		roles: session?.user.roles,
 		locale: session.user.lang || locale,

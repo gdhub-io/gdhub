@@ -18,8 +18,9 @@ import {
 import axios from "axios";
 import type { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import React from "react";
+import { auth } from "@/auth";
 import { getCleanTextContent } from "@/helpers/content";
 import { PublicLayout } from "@/layouts/PublicLayout";
 import { prisma } from "@/services/prisma";
@@ -311,7 +312,7 @@ export default function ExpertPage({
 export const getServerSideProps = async (
 	context: GetServerSidePropsContext,
 ) => {
-	const session = await getSession(context);
+	const session = await auth(context.req as any, context.res as any);
 	const { specialityId }: any = context.params;
 
 	const expert = await prisma.user.findFirst({

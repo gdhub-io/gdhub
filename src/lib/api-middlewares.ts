@@ -5,14 +5,13 @@ import {
 	type NextFunction,
 	UnauthorizedException,
 } from "next-api-decorators";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import {
 	backendApiVerify,
 	publicApiVerify,
 	vercelCronVerify,
 } from "@/helpers/access";
 import { env } from "@/helpers/env";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 export const NextAuthGuard = (
 	guardName: "user" | "api" | "public_api" | "vercel_cron" | "gumroad" | "any",
@@ -20,7 +19,8 @@ export const NextAuthGuard = (
 ) =>
 	createMiddlewareDecorator(
 		async (req: any, res: NextApiResponse, next: NextFunction) => {
-			const session = await getServerSession(req, res, authOptions);
+			// Auth.js v5 supports Pages Router via (req, res) overload.
+			const session = await auth(req, res);
 
 			if (guardName === "any") {
 				req.user = session?.user || null;

@@ -31,7 +31,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 	const { t } = useTranslate();
 	const [content, setContent] = useState("");
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false);
-	const editorRef = useRef<MDXEditorMethods | null>();
+	const editorRef = useRef<MDXEditorMethods | null>(null);
 
 	const { mutateAsync: createProjectReport, isPending: isLoading } =
 		useMutation({

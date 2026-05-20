@@ -4,8 +4,7 @@ import {
 	ForbiddenException,
 	type NextFunction,
 } from "next-api-decorators";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { auth } from "@/auth";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -19,7 +18,8 @@ import { prisma } from "@/services/prisma";
 export const ApiProjectTeamGuard = () =>
 	createMiddlewareDecorator(
 		async (req: NextApiRequest, res: NextApiResponse, next: NextFunction) => {
-			const session = await getServerSession(req, res, authOptions);
+			// Auth.js v5 supports Pages Router via (req, res) overload.
+			const session = await auth(req, res);
 
 			const userId = session?.user?.id;
 			const teamId = req.query.teamId || req.body.teamId;

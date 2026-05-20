@@ -14,13 +14,12 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import React, { useState } from "react";
 import LogingBgImage from "@/assets/images/login-bg.jpg";
+import { auth } from "@/auth";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { EmptyLayout } from "@/layouts/EmptyLayout";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import styles from "./style.module.scss";
 
 const { Paragraph, Title } = Typography;
@@ -224,7 +223,7 @@ const LoginPage: NextPage = () => {
 };
 
 export const getServerSideProps = async (context: any) => {
-	const session = await getServerSession(context.req, context.res, authOptions);
+	const session = await auth(context.req as any, context.res as any);
 
 	if (session?.user) {
 		return {

@@ -23,7 +23,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import type { NextSeoProps } from "next-seo";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -34,6 +34,7 @@ import type { Pluggable } from "unified";
 import type { Options } from "youtube-player/dist/types";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { auth } from "@/auth";
 import DevlogPosts from "@/components/DevlogPosts";
 import {
 	getHubSectionShellClass,
@@ -588,7 +589,7 @@ export const getServerSideProps: GetServerSideProps<ProjectPageParams> = async (
 
 	const [applauseSummary, session] = await Promise.all([
 		prisma.project.getApplauseSummary({ projectId: project.id }),
-		getSession(context),
+		auth(context.req as any, context.res as any),
 	]);
 
 	return {

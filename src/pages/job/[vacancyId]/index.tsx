@@ -23,10 +23,11 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import router from "next/router";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import type React from "react";
 import { useState } from "react";
 import Markdown from "react-markdown";
+import { auth } from "@/auth";
 import SpecialitySelectModal from "@/components/modals/SpecialitySelectModal";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { PublicLayout } from "@/layouts/PublicLayout";
@@ -51,7 +52,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context,
 ) => {
 	const vacancyId = context.params?.vacancyId as string;
-	const session = await getSession(context);
+	const session = await auth(context.req as any, context.res as any);
 
 	if (!vacancyId) {
 		return {

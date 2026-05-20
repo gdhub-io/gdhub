@@ -1,8 +1,8 @@
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import NextAuth, { type NextAuthOptions, type TokenSet } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import EmailProvider from "next-auth/providers/nodemailer";
 import { brevoTemplates } from "@/config/brevo-templates";
 import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
@@ -10,7 +10,7 @@ import { brevoApi } from "@/services/brevo";
 import { ensureMatrixUser } from "@/services/matrix-admin";
 import { prisma } from "@/services/prisma";
 
-export const authOptions: NextAuthOptions = {
+export const authConfig: NextAuthConfig = {
 	adapter: PrismaAdapter(prisma as unknown as prismaClient.PrismaClient),
 	secret: env("NEXTAUTH_SECRET"),
 	session: { strategy: "jwt" },
@@ -23,17 +23,13 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,
 			authorization: { params: { access_type: "offline", prompt: "consent" } },
 			allowDangerousEmailAccountLinking: true,
-			httpOptions: { timeout: 10000 },
 		}),
 		EmailProvider({
 			from: process.env.EMAIL_FROM as string,
 			server: process.env.EMAIL_SERVER as string,
-			async sendVerificationRequest(
-				{ identifier: email, url, provider },
-				...other
-			) {
+			async sendVerificationRequest({ identifier: email, url, provider }) {
 				try {
-					console.log("sendVerificationRequest", email, url, provider, other);
+					console.log("sendVerificationRequest", email, url, provider);
 					const userExist = await prisma.user.findUnique({ where: { email } });
 					let sendResult: any;
 
@@ -43,9 +39,7 @@ export const authOptions: NextAuthOptions = {
 							templateId:
 								brevoTemplates[userExist.lang as keyof typeof brevoTemplates]
 									.signin,
-							params: {
-								link: url,
-							},
+							params: { link: url },
 						});
 					} else {
 						const params = new URL(url).searchParams;
@@ -61,9 +55,7 @@ export const authOptions: NextAuthOptions = {
 							templateId:
 								brevoTemplates[locale as keyof typeof brevoTemplates]
 									.registration,
-							params: {
-								link: url,
-							},
+							params: { link: url },
 						});
 					}
 
@@ -78,16 +70,15 @@ export const authOptions: NextAuthOptions = {
 	],
 	callbacks: {
 		async jwt({ token }) {
-			if (!token.email) return;
+			if (!token.email) return token;
 
 			const user = await prisma.user.findUnique({
 				where: { email: token.email },
 				include: { profile: true },
 			});
 
-			if (!user) return;
+			if (!user) return token;
 
-			// ensure that the user has a matrix user id
 			if (!user.matrixUserId) {
 				await ensureMatrixUser(
 					user.id,
@@ -97,7 +88,6 @@ export const authOptions: NextAuthOptions = {
 				);
 			}
 
-			// get the active subscription
 			const activeSubscription = await prisma.user.activeSubscription(user.id);
 
 			return {
@@ -107,19 +97,16 @@ export const authOptions: NextAuthOptions = {
 			} as any;
 		},
 		async session({ session, token }) {
-			if (!token) return { ...session, error: "InvalidGrantError" };
+			if (!token) return { ...session, error: "InvalidGrantError" } as any;
 
 			session.user = token as any;
 
 			const [google] = await prisma.account.findMany({
-				where: { userId: token.id, provider: "google" },
+				where: { userId: (token as any).id, provider: "google" },
 			});
 
 			if (google?.expires_at && google.expires_at * 1000 < Date.now()) {
-				// If the access token has expired, try to refresh it
 				try {
-					// https://accounts.google.com/.well-known/openid-configuration
-					// We need the `token_endpoint`.
 					const response = await fetch("https://oauth2.googleapis.com/token", {
 						headers: { "Content-Type": "application/x-www-form-urlencoded" },
 						body: new URLSearchParams({
@@ -131,13 +118,11 @@ export const authOptions: NextAuthOptions = {
 						method: "POST",
 					});
 
-					const tokens: TokenSet & { expires_in: number } =
-						await response.json();
+					const tokens: Record<string, any> = await response.json();
 
 					if (!response.ok) {
 						console.error("Token refresh response not OK:", tokens);
 
-						// Delete the account if the refresh token is expired or revoked
 						await prisma.account.delete({
 							where: {
 								provider_providerAccountId: {
@@ -147,19 +132,17 @@ export const authOptions: NextAuthOptions = {
 							},
 						});
 
-						// Check for invalid_grant error specifically
 						if (tokens.error === "invalid_grant") {
 							console.error(
 								"Invalid grant error - refresh token is expired or revoked",
 							);
 							session.error = "InvalidGrantError";
 
-							// Clear session and redirect to signin
 							return {
 								...session,
 								error: "InvalidGrantError",
 								redirect: "/signin",
-							};
+							} as any;
 						}
 
 						throw tokens;
@@ -181,7 +164,6 @@ export const authOptions: NextAuthOptions = {
 				} catch (error) {
 					console.error("Error refreshing access token", error);
 
-					// Check if it's an invalid_grant error
 					const errorObj = error as any;
 					if (errorObj?.error === "invalid_grant") {
 						console.error(
@@ -189,7 +171,6 @@ export const authOptions: NextAuthOptions = {
 						);
 						session.error = "InvalidGrantError";
 					} else {
-						// For other errors
 						session.error = "RefreshAccessTokenError";
 					}
 				}
@@ -200,4 +181,4 @@ export const authOptions: NextAuthOptions = {
 	},
 };
 
-export default NextAuth(authOptions);
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);

@@ -26,13 +26,14 @@ import Blocks from "editorjs-blocks-react-renderer";
 import type { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import type { ComponentProps } from "react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { auth } from "@/auth";
 import { PageViews } from "@/components/PageViews";
 import {
 	getCleanTextContent,
@@ -703,7 +704,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context,
 ) => {
 	const projectReportId = context.params?.projectReportId as string;
-	const session = await getSession(context);
+	const session = await auth(context.req as any, context.res as any);
 
 	if (!projectReportId) {
 		return {

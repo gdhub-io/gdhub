@@ -16,7 +16,7 @@ import {
 } from "antd";
 import type { GetServerSidePropsContext } from "next";
 import dynamic from "next/dynamic";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import {
 	ClearRefinements,
@@ -30,6 +30,7 @@ import {
 	Stats,
 	useInstantSearch,
 } from "react-instantsearch";
+import { auth } from "@/auth";
 import { getRelevantText } from "@/helpers/text";
 import { hasRole } from "@/helpers/user";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
@@ -314,7 +315,7 @@ function SearchMobileFilter({ onClick, resetButtonText }: any) {
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await getSession(context);
+	const session = await auth(context.req as any, context.res as any);
 	const usersCount = await prisma.user.count();
 	const specialitiesCount = await prisma.speciality.count();
 	const hasApprovedProjects = await prisma.project.count({

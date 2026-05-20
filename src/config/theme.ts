@@ -19,7 +19,7 @@ export const secondFont = Lora({
 
 export const landingThemeConfig: ThemeConfig = {
 	algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
-	cssVar: true,
+	cssVar: {},
 	token: {
 		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: "rgb(241,85,65)",
@@ -72,7 +72,7 @@ export const landingThemeConfig: ThemeConfig = {
 
 export const publicThemeConfig: ThemeConfig = {
 	algorithm: [theme.defaultAlgorithm],
-	cssVar: true,
+	cssVar: {},
 	token: {
 		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: "#f15541",

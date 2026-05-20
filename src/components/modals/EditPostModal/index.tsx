@@ -26,7 +26,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false);
-	const editorRef = useRef<MDXEditorMethods | null>();
+	const editorRef = useRef<MDXEditorMethods | null>(null);
 	const [content, setContent] = useState("");
 
 	const { data: report, isLoading } = useQuery({

@@ -34,7 +34,7 @@ type GeneralProjectFormArgs = {
 const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 	const { t } = useTranslate();
 	const [form] = Form.useForm();
-	const editorRef = useRef<MDXEditorMethods | null>();
+	const editorRef = useRef<MDXEditorMethods | null>(null);
 	const [cover, setCover] = useState<string | null>();
 	const [description, setDescription] = useState("");
 	const [coverProcessing, setCoverProcessing] = useState(false);

@@ -1,11 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import SanityService from "@/services/sanity";
-import { authOptions } from "../auth/[...nextauth]";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
-		const session: any = await getServerSession(req, res, authOptions);
+		const session = await auth(req, res);
 		const { fileUrl } = req.body;
 
 		if (req.method !== "POST" || !session) throw new Error("Forbidden request");

@@ -1,7 +1,6 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { auth } from "@/auth";
 import { prisma } from "@/services/prisma";
 
 const getApplauseState = async (projectId: string, userId?: string) => {
@@ -48,7 +47,7 @@ export default async function handler(
 		return res.status(400).json({ message: "Project ID is required" });
 	}
 
-	const session = await getServerSession(req, res, authOptions);
+	const session = await auth(req, res);
 	const userId = session?.user?.id;
 
 	if (req.method === "GET") {
