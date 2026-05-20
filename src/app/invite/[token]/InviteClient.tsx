@@ -1,22 +1,21 @@
+"use client";
+
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Result, Spin, Typography } from "antd";
 import axios from "axios";
-import Head from "next/head";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 const { Title, Text, Paragraph } = Typography;
 
-const InvitePage = () => {
+export function InviteClient({ token }: { token: string }) {
 	const router = useRouter();
-	const { token } = router.query;
 	const { t } = useTranslate();
 	const { data: session, status } = useSession();
 	const [error, setError] = useState<string | null>(null);
 
-	// Получаем информацию о приглашении
 	const {
 		data: invitation,
 		isLoading: isLoadingInvitation,
@@ -34,7 +33,6 @@ const InvitePage = () => {
 		}
 	}, [invitationError]);
 
-	// Мутация для принятия приглашения
 	const { mutateAsync: acceptInvite, isPending: isAccepting } = useMutation({
 		mutationFn: () =>
 			axios.get(`/api/user/project/team/accept-invite?token=${token}`),
@@ -48,7 +46,6 @@ const InvitePage = () => {
 		},
 	});
 
-	// Мутация для отклонения приглашения
 	const { mutateAsync: declineInvite, isPending: isDeclining } = useMutation({
 		mutationFn: () =>
 			axios.get(`/api/user/project/team/decline-invite?token=${token}`),
@@ -60,24 +57,20 @@ const InvitePage = () => {
 		},
 	});
 
-	// Если пользователь не авторизован, перенаправляем на страницу входа
 	useEffect(() => {
 		if (status === "unauthenticated" && token) {
 			signIn(undefined, { callbackUrl: `/invite/${token}` });
 		}
 	}, [status, token]);
 
-	// Обработчик принятия приглашения
 	const handleAccept = () => {
 		acceptInvite();
 	};
 
-	// Обработчик отклонения приглашения
 	const handleDecline = () => {
 		declineInvite();
 	};
 
-	// Если идет загрузка сессии или приглашения
 	if (status === "loading" || isLoadingInvitation) {
 		return (
 			<div
@@ -93,7 +86,6 @@ const InvitePage = () => {
 		);
 	}
 
-	// Если произошла ошибка
 	if (error || invitationError) {
 		return (
 			<div
@@ -131,11 +123,9 @@ const InvitePage = () => {
 		);
 	}
 
-	// Если пользователь авторизован и приглашение загружено
 	if (session && invitation?.data) {
 		const inviteData = invitation.data;
 
-		// Проверяем статус приглашения
 		if (inviteData.status === "Accepted") {
 			return (
 				<div
@@ -242,63 +232,52 @@ const InvitePage = () => {
 		}
 
 		return (
-			<>
-				<Head>
-					<title>{t("Team Invitation")}</title>
-				</Head>
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						height: "100vh",
-						padding: "20px",
-					}}
-				>
-					<Card style={{ maxWidth: 600, width: "100%" }}>
-						<Title level={2}>
-							{t("page.invite.teamInvitation", "Team Invitation")}
-						</Title>
-						<Paragraph>
-							{t(
-								"page.invite.invitationText",
-								"You have been invited by {inviterName} to join the team of project {projectName} as a {position}.",
-								{
-									inviterName: inviteData.invitedBy?.name || "Project founder",
-									projectName: inviteData.team?.project?.name || "Project",
-									position: inviteData.position,
-								},
-							)}
-						</Paragraph>
-						<Paragraph>
-							<Text strong>{t("page.invite.startDate", "Start Date")}:</Text>{" "}
-							{new Date(inviteData.startedAt).toLocaleDateString()}
-						</Paragraph>
-						<div
-							style={{
-								marginTop: 24,
-								display: "flex",
-								justifyContent: "space-between",
-							}}
-						>
-							<Button onClick={handleDecline} loading={isDeclining}>
-								{t("page.invite.decline", "Decline")}
-							</Button>
-							<Button
-								type="primary"
-								onClick={handleAccept}
-								loading={isAccepting}
-							>
-								{t("page.invite.acceptInvitation", "Accept Invitation")}
-							</Button>
-						</div>
-					</Card>
-				</div>
-			</>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+					padding: "20px",
+				}}
+			>
+				<Card style={{ maxWidth: 600, width: "100%" }}>
+					<Title level={2}>
+						{t("page.invite.teamInvitation", "Team Invitation")}
+					</Title>
+					<Paragraph>
+						{t(
+							"page.invite.invitationText",
+							"You have been invited by {inviterName} to join the team of project {projectName} as a {position}.",
+							{
+								inviterName: inviteData.invitedBy?.name || "Project founder",
+								projectName: inviteData.team?.project?.name || "Project",
+								position: inviteData.position,
+							},
+						)}
+					</Paragraph>
+					<Paragraph>
+						<Text strong>{t("page.invite.startDate", "Start Date")}:</Text>{" "}
+						{new Date(inviteData.startedAt).toLocaleDateString()}
+					</Paragraph>
+					<div
+						style={{
+							marginTop: 24,
+							display: "flex",
+							justifyContent: "space-between",
+						}}
+					>
+						<Button onClick={handleDecline} loading={isDeclining}>
+							{t("page.invite.decline", "Decline")}
+						</Button>
+						<Button type="primary" onClick={handleAccept} loading={isAccepting}>
+							{t("page.invite.acceptInvitation", "Accept Invitation")}
+						</Button>
+					</div>
+				</Card>
+			</div>
 		);
 	}
 
 	return null;
-};
-
-export default InvitePage;
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslate } from "@tolgee/react";
 import { Col, Flex, Grid, Menu, Row, Steps, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
@@ -10,21 +12,15 @@ import { OnboardingProfileStep } from "@/components/onboarding/OnboardingProfile
 import { OnboardingResourceStep } from "@/components/onboarding/OnboardingResourceStep";
 import { OnboardingSpecialityStep } from "@/components/onboarding/OnboardingSpecialityStep";
 import { OnboardingWelcome } from "@/components/onboarding/OnboardingWelcome";
-import styles from "./style.module.scss";
+import styles from "@/pages/registration/onboarding/style.module.scss";
 
 const { Title } = Typography;
 
-declare global {
-	interface Window {
-		$crisp?: any;
-	}
-}
-
-const OnboardingPage = () => {
+export function OnboardingClient() {
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [error, setError] = useState<string>();
+	const [error] = useState<string>();
 	const [onboardingStep, setOnboardingStep] = useState(-1);
 	const [lastCompletedStep, setLastCompletedStep] = useState(0);
 	const [isCompleted, setIsCompleted] = useState(false);
@@ -48,12 +44,11 @@ const OnboardingPage = () => {
 		},
 	];
 
-	// updating last completed step
 	useEffect(() => {
 		if (onboardingStep > lastCompletedStep)
 			setLastCompletedStep(onboardingStep);
 		if (isCompleted) setLastCompletedStep(3);
-	}, [onboardingStep]);
+	}, [onboardingStep, isCompleted, lastCompletedStep]);
 
 	const onProfileLoading = () => {
 		setOnboardingStep(0);
@@ -73,35 +68,12 @@ const OnboardingPage = () => {
 		setIsCompleted(true);
 	};
 
-	if (error) {
-		return (
-			<>
-				{/* <Head>
-					<title>{t('meta.registration.header', 'Registration')}</title>
-				</Head> */}
-				<OnboardingError error={error} />
-			</>
-		);
-	}
-
-	if (isCompleted) {
-		return (
-			<>
-				{/* <Head>
-					<title>{t('meta.registration.header', 'Registration')}</title>
-				</Head> */}
-				<OnboardingCompleted />
-			</>
-		);
-	}
+	if (error) return <OnboardingError error={error} />;
+	if (isCompleted) return <OnboardingCompleted />;
 
 	return (
 		<>
-			{/* <Head>
-				<title>{t('meta.registration.header', 'Registration')}</title>
-			</Head> */}
-
-			{onboardingStep == -1 && (
+			{onboardingStep === -1 && (
 				<OnboardingWelcome onNext={() => setOnboardingStep(0)} />
 			)}
 
@@ -144,41 +116,32 @@ const OnboardingPage = () => {
 											selectedKeys={[onboardingMenu[onboardingStep].key]}
 											onSelect={(info) =>
 												setOnboardingStep(
-													onboardingMenu.findIndex((d) => d.key == info.key),
+													onboardingMenu.findIndex((d) => d.key === info.key),
 												)
 											}
-											// selectable={false}
 										/>
 									</div>
 								</Col>
 								<Col xs={24} lg={{ span: 19 }}>
-									{/* Profile */}
-									{onboardingStep == 0 && (
+									{onboardingStep === 0 && (
 										<OnboardingProfileStep
 											onLoading={onProfileLoading}
 											onSave={() => handleNextStep()}
 										/>
 									)}
-
-									{/* Speciality */}
-									{onboardingStep == 1 && (
+									{onboardingStep === 1 && (
 										<OnboardingSpecialityStep
 											onSave={() => handleNextStep()}
 											onPreviousStep={() => handlePreviousStep()}
 										/>
 									)}
-
-									{/* Interests */}
-									{onboardingStep == 2 && (
+									{onboardingStep === 2 && (
 										<OnboardingInterestStep
 											onSave={() => handleNextStep()}
 											onPreviousStep={() => handlePreviousStep()}
 										/>
 									)}
-
-									{/* Resource */}
-
-									{onboardingStep == 3 && (
+									{onboardingStep === 3 && (
 										<OnboardingResourceStep
 											onSave={() => handleComplete()}
 											onPreviousStep={() => handlePreviousStep()}
@@ -192,6 +155,4 @@ const OnboardingPage = () => {
 			)}
 		</>
 	);
-};
-
-export default OnboardingPage;
+}
