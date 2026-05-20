@@ -3,11 +3,9 @@
 import { ImageResponse } from "@vercel/og";
 import type { NextRequest } from "next/server";
 
-export const config = {
-	runtime: "edge",
-};
+export const runtime = "edge";
 
-export default async function handler(request: NextRequest) {
+export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
 
@@ -24,7 +22,10 @@ export default async function handler(request: NextRequest) {
 		const eventDate = searchParams.get("date");
 
 		const fontData = await fetch(
-			new URL("../../assets/fonts/mulish/Mulish-Regular.ttf", import.meta.url),
+			new URL(
+				"../../../../assets/fonts/mulish/Mulish-Regular.ttf",
+				import.meta.url,
+			),
 		).then((res) => res.arrayBuffer());
 
 		if (!coverImage)
@@ -41,34 +42,75 @@ export default async function handler(request: NextRequest) {
 					background: "#000",
 					width: "100%",
 					height: "100%",
-					flexDirection: "row",
-					fontFamily: '"Mulish"',
+					// paddingTop: 50,
+					flexDirection: "column",
+					justifyContent: "center",
+					// alignItems: 'center',
 					position: "relative",
+					fontFamily: '"Mulish"',
 				}}
 			>
-				{/* Левая часть: текст */}
+				<img
+					aria-label="OG Image"
+					width="1200"
+					height="630"
+					src={coverImage}
+					style={{ position: "absolute" }}
+				/>
+
 				<div
 					style={{
-						width: Math.round(1200 - 630 * 0.8),
+						width: "100%",
 						height: "100%",
 						display: "flex",
-						flexDirection: "column",
-						alignItems: "flex-start",
-						position: "relative",
-						zIndex: 2,
+						background:
+							"linear-gradient(to right, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.2))",
+						position: "absolute",
 					}}
-				>
-					{/* Лого и тип мероприятия вверху слева */}
+				></div>
+
+				{/* Дата в правом верхнем углу */}
+				{eventDate && (
 					<div
 						style={{
 							position: "absolute",
 							top: 40,
-							left: 64,
+							right: 64,
+							zIndex: 10,
 							display: "flex",
 							alignItems: "center",
-							gap: 24,
+							justifyContent: "flex-end",
 						}}
 					>
+						<span
+							style={{
+								color: "#fff",
+								fontSize: 36,
+								fontWeight: 700,
+								background: "#F15541",
+								borderRadius: 12,
+								padding: "6px 20px",
+								boxShadow: "0 2px 12px #0002",
+							}}
+						>
+							{decodeURIComponent(eventDate)}
+						</span>
+					</div>
+				)}
+
+				<div
+					style={{
+						display: "flex",
+						position: "absolute",
+						width: "100%",
+						height: "100%",
+						justifyContent: "flex-start",
+						alignItems: "flex-start",
+						padding: 64,
+					}}
+				>
+					{/* Лого и тип мероприятия */}
+					<div style={{ display: "flex", alignItems: "center", gap: 24 }}>
 						<svg
 							role="img"
 							aria-label="OG Image"
@@ -212,124 +254,52 @@ export default async function handler(request: NextRequest) {
 								fill="#5F0B00"
 							/>
 						</svg>
-
-						<span
-							style={{
-								color: "#fff",
-								fontSize: 28,
-								fontWeight: 500,
-								letterSpacing: 0.5,
-								textShadow: "0 2px 8px #0008",
-								marginLeft: 0,
-							}}
-						>
-							/{" "}
-							<span style={{ marginLeft: 16 }}>
-								{eventType
-									? upperFirst(decodeURIComponent(eventType))
-									: "Event"}
+						{eventType && (
+							<span
+								style={{
+									color: "#fff",
+									fontSize: 28,
+									fontWeight: 500,
+									letterSpacing: 0.5,
+									textShadow: "0 2px 8px #0008",
+									marginLeft: 0,
+								}}
+							>
+								/{" "}
+								<span style={{ marginLeft: 16 }}>
+									{eventType
+										? upperFirst(decodeURIComponent(eventType))
+										: "Event"}
+								</span>
 							</span>
-						</span>
-					</div>
-					{/* Центрируем только текст */}
-					<div
-						style={{
-							flex: 1,
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "flex-start",
-							paddingLeft: 64,
-							paddingRight: 32,
-						}}
-					>
-						<p
-							style={{
-								color: "#fff",
-								fontSize: title && title.length > 32 ? 64 : 82,
-								lineHeight: 1,
-								textAlign: "left",
-								margin: 0,
-								padding: 0,
-								paddingTop: 32,
-							}}
-						>
-							{title ? decodeURIComponent(title) : "Title"}
-						</p>
-						<p
-							style={{
-								color: "#ffffff80",
-								fontSize: 32,
-								textAlign: "left",
-								margin: 0,
-								padding: 0,
-								marginTop: 24,
-							}}
-						>
-							{subTitle
-								? subTitle.length > 90
-									? subTitle.slice(0, 90) + "..."
-									: decodeURIComponent(subTitle)
-								: "Subtitle"}
-						</p>
+						)}
 					</div>
 				</div>
 
-				{/* Правая часть: картинка */}
-				<div
+				<p
 					style={{
-						width: Math.round(630 * 0.8),
-						height: "100%",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "flex-end",
-						position: "relative",
-						zIndex: 1,
+						paddingTop: 32,
+						color: "#fff",
+						fontSize: title && title.length > 52 ? 48 : 82,
+						lineHeight: 1,
+						paddingLeft: 64,
+						paddingRight: 64,
+						textAlign: "left",
 					}}
 				>
-					<img
-						aria-label="OG Image"
-						src={coverImage}
-						width={Math.round(630 * 0.8)}
-						height={630}
-						style={{
-							objectFit: "cover",
-							// width: '95%',
-							height: "95%",
-							marginRight: 16,
-							borderRadius: 12,
-						}}
-					/>
-				</div>
+					{title ? decodeURIComponent(title) : "Title"}
+				</p>
 
-				{/* Дата в правом верхнем углу */}
-				{eventDate && (
-					<div
-						style={{
-							position: "absolute",
-							top: 40,
-							right: 40,
-							zIndex: 10,
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "flex-end",
-						}}
-					>
-						<span
-							style={{
-								color: "#fff",
-								fontSize: 36,
-								fontWeight: 700,
-								background: "#F15541",
-								borderRadius: 12,
-								padding: "6px 20px",
-								boxShadow: "0 2px 12px #0002",
-							}}
-						>
-							{decodeURIComponent(eventDate)}
-						</span>
-					</div>
-				)}
+				<p
+					style={{
+						color: "#ffffff80",
+						fontSize: 32,
+						paddingLeft: 64,
+						textAlign: "left",
+					}}
+				>
+					{subTitle ? decodeURIComponent(subTitle) : "Subtitle"}
+				</p>
 			</div>,
 			{
 				width: 1200,

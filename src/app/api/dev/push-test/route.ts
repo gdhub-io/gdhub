@@ -1,49 +1,41 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { Body, createHandler, Post } from "next-api-decorators";
+import { z } from "zod";
+import { apiError, json, withValidation } from "@/lib/api-handlers";
 
-class PushTestDto {
-	@IsString()
-	@IsNotEmpty()
-	pushKey!: string;
+const PushTestSchema = z.object({
+	pushKey: z.string().min(1),
+	roomId: z.string().optional(),
+	eventType: z.string().optional(),
+	message: z.string().optional(),
+});
 
-	@IsString()
-	@IsOptional()
-	roomId?: string;
+type PushTestBody = z.infer<typeof PushTestSchema>;
 
-	@IsString()
-	@IsOptional()
-	eventType?: string;
+export const POST = withValidation(PushTestSchema)(
+	async (_req, _ctx, { body }) => {
+		const { pushKey, roomId, eventType, message } = body as PushTestBody;
 
-	@IsString()
-	@IsOptional()
-	message?: string;
-}
-
-class DevPushTestHandler {
-	@Post()
-	async sendTestPush(@Body() body: PushTestDto) {
 		const gatewayUrl = process.env.NEXT_PUBLIC_MATRIX_PUSH_GATEWAY_URL;
 		const appId = process.env.NEXT_PUBLIC_MATRIX_PUSH_APP_ID;
 
 		if (!gatewayUrl || !appId) {
-			throw new Error("Matrix push gateway is not configured");
+			return apiError.internal("Matrix push gateway is not configured");
 		}
 
 		const eventId = `$dev_${Date.now()}`;
 		const payload = {
 			notification: {
 				event_id: eventId,
-				room_id: body.roomId || "!dev:gdhub",
-				type: body.eventType || "m.room.message",
+				room_id: roomId || "!dev:gdhub",
+				type: eventType || "m.room.message",
 				sender: "@dev:gdhub",
 				content: {
-					body: body.message || "Test push from _dev page",
+					body: message || "Test push from _dev page",
 					msgtype: "m.text",
 				},
 				devices: [
 					{
 						app_id: appId,
-						pushkey: body.pushKey,
+						pushkey: pushKey,
 						data: {},
 					},
 				],
@@ -68,12 +60,10 @@ class DevPushTestHandler {
 			}
 		}
 
-		return {
+		return json({
 			ok: response.ok,
 			status: response.status,
 			body: bodyResult,
-		};
-	}
-}
-
-export default createHandler(DevPushTestHandler);
+		});
+	},
+);

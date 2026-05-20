@@ -1,4 +1,5 @@
 import "@/styles/globals.scss";
+import "@/config/dayjs-setup";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";

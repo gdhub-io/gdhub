@@ -1,7 +1,9 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "@/auth";
+import { apiError, json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
+
+type Params = Promise<{ projectReportId: string }>;
 
 const getApplauseState = async (projectReportId: string, userId?: string) => {
 	const [activity, count] = await Promise.all([
@@ -37,26 +39,33 @@ const getApplauseState = async (projectReportId: string, userId?: string) => {
 	};
 };
 
-export default async function handler(
-	req: NextApiRequest,
-	res: NextApiResponse,
-) {
-	const { projectReportId } = req.query;
+export async function GET(_req: Request, { params }: { params: Params }) {
+	const { projectReportId } = await params;
 
-	if (!projectReportId || typeof projectReportId !== "string") {
-		return res.status(400).json({ message: "Project report ID is required" });
+	if (!projectReportId) {
+		return apiError.badRequest("Project report ID is required");
 	}
 
-	const session = await auth(req, res);
+	const session = await auth();
 	const userId = session?.user?.id;
 
-	if (req.method === "GET") {
-		const state = await getApplauseState(projectReportId, userId);
-		return res.status(200).json(state);
+	const state = await getApplauseState(projectReportId, userId);
+	return json(state);
+}
+
+async function mutateApplause(
+	method: "POST" | "DELETE",
+	projectReportId: string,
+) {
+	if (!projectReportId) {
+		return apiError.badRequest("Project report ID is required");
 	}
 
+	const session = await auth();
+	const userId = session?.user?.id;
+
 	if (!userId) {
-		return res.status(401).json({ message: "Unauthorized" });
+		return apiError.unauthorized();
 	}
 
 	try {
@@ -66,7 +75,7 @@ export default async function handler(
 		});
 
 		if (!report) {
-			return res.status(404).json({ message: "Project report not found" });
+			return apiError.notFound("Project report not found");
 		}
 
 		const activity = await prisma.applauseActivity.upsert({
@@ -86,7 +95,7 @@ export default async function handler(
 			select: { id: true },
 		});
 
-		if (req.method === "POST") {
+		if (method === "POST") {
 			await prisma.applause.upsert({
 				where: {
 					userId_activityId: {
@@ -100,26 +109,29 @@ export default async function handler(
 					activityId: activity.id,
 				},
 			});
-
-			const state = await getApplauseState(projectReportId, userId);
-			return res.status(200).json(state);
-		}
-
-		if (req.method === "DELETE") {
+		} else {
 			await prisma.applause.deleteMany({
 				where: {
 					userId,
 					activityId: activity.id,
 				},
 			});
-
-			const state = await getApplauseState(projectReportId, userId);
-			return res.status(200).json(state);
 		}
 
-		return res.status(405).json({ message: "Method not allowed" });
+		const state = await getApplauseState(projectReportId, userId);
+		return json(state);
 	} catch (error) {
 		console.error("Error handling applause:", error);
-		return res.status(500).json({ message: "Internal server error" });
+		return apiError.internal();
 	}
+}
+
+export async function POST(_req: Request, { params }: { params: Params }) {
+	const { projectReportId } = await params;
+	return mutateApplause("POST", projectReportId);
+}
+
+export async function DELETE(_req: Request, { params }: { params: Params }) {
+	const { projectReportId } = await params;
+	return mutateApplause("DELETE", projectReportId);
 }

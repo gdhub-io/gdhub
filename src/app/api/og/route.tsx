@@ -3,11 +3,9 @@
 import { ImageResponse } from "@vercel/og";
 import type { NextRequest } from "next/server";
 
-export const config = {
-	runtime: "edge",
-};
+export const runtime = "edge";
 
-export default async function handler(request: NextRequest) {
+export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
 
@@ -18,7 +16,10 @@ export default async function handler(request: NextRequest) {
 		const subTitle = searchParams.get("st");
 
 		const fontData = await fetch(
-			new URL("../../assets/fonts/mulish/Mulish-Regular.ttf", import.meta.url),
+			new URL(
+				"../../../../assets/fonts/mulish/Mulish-Regular.ttf",
+				import.meta.url,
+			),
 		).then((res) => res.arrayBuffer());
 
 		if (!coverImage)

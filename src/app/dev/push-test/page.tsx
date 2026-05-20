@@ -34,7 +34,7 @@ export default function DevPushTestPage() {
 		setResult(null);
 
 		try {
-			const response = await fetch("/api/_dev/push-test", {
+			const response = await fetch("/api/dev/push-test", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

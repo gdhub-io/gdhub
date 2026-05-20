@@ -1,23 +1,18 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { apiError, json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
-export default async function handler(
-	req: NextApiRequest,
-	res: NextApiResponse,
-) {
-	if (req.method !== "GET") {
-		return res.status(405).json({ message: "Method not allowed" });
-	}
+type Params = Promise<{ projectReportId: string }>;
 
+export async function GET(_req: Request, { params }: { params: Params }) {
 	try {
-		const { projectReportId } = req.query;
+		const { projectReportId } = await params;
 
 		if (!projectReportId) {
-			return res.status(400).json({ message: "Project report ID is required" });
+			return apiError.badRequest("Project report ID is required");
 		}
 
 		const report = await prisma.projectReport.findUnique({
-			where: { id: String(projectReportId) },
+			where: { id: projectReportId },
 			include: {
 				project: {
 					select: {
@@ -37,7 +32,7 @@ export default async function handler(
 		});
 
 		if (!report) {
-			return res.status(404).json({ message: "Project report not found" });
+			return apiError.notFound("Project report not found");
 		}
 
 		const applauseCount = await prisma.projectReport.getApplauseCount({
@@ -109,9 +104,9 @@ export default async function handler(
 				: null,
 		};
 
-		return res.status(200).json(post);
+		return json(post);
 	} catch (error) {
 		console.error("Error fetching project report:", error);
-		return res.status(500).json({ message: "Internal server error" });
+		return apiError.internal();
 	}
 }

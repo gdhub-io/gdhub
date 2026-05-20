@@ -3,11 +3,9 @@
 import { ImageResponse } from "@vercel/og";
 import type { NextRequest } from "next/server";
 
-export const config = {
-	runtime: "edge",
-};
+export const runtime = "edge";
 
-export default async function handler(request: NextRequest) {
+export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
 
@@ -16,7 +14,6 @@ export default async function handler(request: NextRequest) {
 
 		const terms = searchParams.get("vTerms");
 		const vDate = searchParams.get("vDate");
-		const project = searchParams.get("p");
 		const projectCover = searchParams.get("img");
 
 		let title = searchParams.get("t");
@@ -29,7 +26,10 @@ export default async function handler(request: NextRequest) {
 		const subTitle = searchParams.get("st") || `The open position`;
 
 		const fontData = await fetch(
-			new URL("../../assets/fonts/geist/Geist-Regular.ttf", import.meta.url),
+			new URL(
+				"../../../../assets/fonts/geist/Geist-Regular.ttf",
+				import.meta.url,
+			),
 		).then((res) => res.arrayBuffer());
 
 		return new ImageResponse(
