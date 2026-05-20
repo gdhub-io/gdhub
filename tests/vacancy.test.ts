@@ -65,11 +65,18 @@ describe("Vacancy API", () => {
 		(prisma.teamMember.findMany as any).mockResolvedValue([
 			{ id: "m1", user: { id: "user2", name: "User2" }, vacancy: { id: "v1" }, speciality: null },
 		]);
-		const listHandler = (await import("../src/pages/api/user/project/candidates")).default;
-		const { req, res } = createMocks({ method: "GET", query: { teamId: "t1" } });
-		await listHandler(req as any, res as any);
-		expect(res._getStatusCode()).toBe(200);
-		expect(JSON.parse(res._getData())).toHaveLength(1);
+		const candidatesRoute = await import(
+			"../src/app/api/user/project/candidates/route"
+		);
+		const url = "http://test/api/user/project/candidates?teamId=t1";
+		const { NextRequest } = await import("next/server");
+		const nextReq = new NextRequest(new Request(url, { method: "GET" }));
+		const response = await (candidatesRoute as any).GET(nextReq, {
+			params: Promise.resolve({}),
+		});
+		expect(response.status).toBe(200);
+		const data = await response.json();
+		expect(data).toHaveLength(1);
 	});
 
 	it("accepts a candidate", async () => {
