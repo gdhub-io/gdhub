@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
@@ -80,7 +82,7 @@ export const PublicLayout = ({
 	const seoParams: NextSeoProps = {
 		title: seo?.title || (typeof title === "string" ? title : ""),
 		description: seo?.description || subTitle,
-		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + (router?.asPath ?? ""),
 		openGraph: {
 			images: [
 				{
@@ -117,7 +119,7 @@ export const PublicLayout = ({
 		}
 
 		return link;
-	}, [router]);
+	}, [getLanguage]);
 
 	const telegramMenuItem = {
 		label: screens.lg ? (

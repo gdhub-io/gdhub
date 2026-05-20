@@ -1,11 +1,12 @@
+"use client";
+
 import { MdOutlineAlternateEmail } from "@react-icons/all-files/md/MdOutlineAlternateEmail";
 import { Card, Flex, Typography } from "antd";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
 
 const { Text } = Typography;
 
-const LegalDetailsPage: NextPageWithLayout = () => {
+export default function LegalDetailsPage() {
 	return (
 		<PublicLayout title="Legal Details">
 			<Card>
@@ -34,6 +35,4 @@ const LegalDetailsPage: NextPageWithLayout = () => {
 			</Card>
 		</PublicLayout>
 	);
-};
-
-export default LegalDetailsPage;
+}

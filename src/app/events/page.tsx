@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee, useTranslate } from "@tolgee/react";
@@ -14,10 +16,9 @@ import {
 } from "@/components/events";
 import SectionSkeleton from "@/components/events/SectionSkeleton";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
 import styles from "@/pages/hub/events/style.module.scss";
 
-const EventsPage: NextPageWithLayout = () => {
+export default function EventsPage() {
 	const { t } = useTranslate();
 	const { getLanguage } = useTolgee();
 	const { token } = theme.useToken();
@@ -157,6 +158,4 @@ const EventsPage: NextPageWithLayout = () => {
 			</div>
 		</PublicLayout>
 	);
-};
-
-export default EventsPage;
+}
