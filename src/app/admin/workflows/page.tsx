@@ -1,3 +1,5 @@
+"use client";
+
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { GoTrash } from "@react-icons/all-files/go/GoTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -14,17 +16,16 @@ import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CreateWorkflowModal } from "@/components/admin/CreateWorkflowModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/admin/workflows/style.module.scss";
 
 const { Title, Text } = Typography;
 
-const WorkflowsAdminPage: NextPageWithLayout = () => {
+export default function WorkflowsAdminPage() {
 	const router = useRouter();
 	const [showModal, setShowModal] = useState(false);
 	const [workflowId, setWorkflowId] = useState<string | undefined>(undefined);
@@ -281,7 +282,7 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 	];
 
 	return (
-		<>
+		<AdminLayout>
 			<div className={styles.main}>
 				<Title level={2}>Workflows</Title>
 				<Tabs defaultActiveKey="templates" items={tabItems} />
@@ -292,10 +293,6 @@ const WorkflowsAdminPage: NextPageWithLayout = () => {
 				onCancel={() => setShowModal(false)}
 				onOk={handleCreateWorkflow}
 			/>
-		</>
+		</AdminLayout>
 	);
-};
-
-WorkflowsAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
-
-export default WorkflowsAdminPage;
+}

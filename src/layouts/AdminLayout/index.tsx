@@ -1,7 +1,9 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import type { MenuProps } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
@@ -23,7 +25,7 @@ const resolveSelectedMenuKey = (pathname: string) => {
 };
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
-	const router = useRouter();
+	const pathname = usePathname() ?? "";
 
 	const menuItems: MenuProps["items"] = useMemo(
 		() => [
@@ -51,7 +53,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
 		[],
 	);
 
-	const selectedMenuKey = resolveSelectedMenuKey(router.pathname);
+	const selectedMenuKey = resolveSelectedMenuKey(pathname);
 
 	return (
 		<ProtectedLayout

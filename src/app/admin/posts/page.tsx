@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { GoTrash } from "@react-icons/all-files/go/GoTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -6,17 +8,16 @@ import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CreateBlogPostModal } from "@/components/admin/CreateBlogPostModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/admin/posts/style.module.scss";
 
 const { Title, Text, Paragraph } = Typography;
 
-const BlogPostsAdminPage: NextPageWithLayout = () => {
+export default function BlogPostsAdminPage() {
 	const router = useRouter();
 	const [showModal, setShowModal] = useState(false);
 	const [postId, setPostId] = useState<string | undefined>(undefined);
@@ -122,7 +123,7 @@ const BlogPostsAdminPage: NextPageWithLayout = () => {
 	];
 
 	return (
-		<>
+		<AdminLayout>
 			<div className={styles.main}>
 				<Row justify="space-between" align="middle">
 					<Title level={2}>Blog posts</Title>
@@ -142,10 +143,6 @@ const BlogPostsAdminPage: NextPageWithLayout = () => {
 				onCancel={() => setShowModal(false)}
 				onOk={handleCreatePost}
 			/>
-		</>
+		</AdminLayout>
 	);
-};
-
-BlogPostsAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
-
-export default BlogPostsAdminPage;
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, Popover, Row, Space, Tag, Typography } from "antd";
@@ -8,8 +10,7 @@ import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/admin/users/style.module.scss";
 
 const { Title, Text } = Typography;
 
@@ -56,7 +57,7 @@ const isSortField = (value?: string): value is SortField =>
 		"mentorshipCapital",
 	].includes(value || "");
 
-const UsersAdminPage: NextPageWithLayout = () => {
+export default function UsersAdminPage() {
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(20);
 	const [sortField, setSortField] = useState<SortField | undefined>(
@@ -180,53 +181,51 @@ const UsersAdminPage: NextPageWithLayout = () => {
 	);
 
 	return (
-		<div className={styles.main}>
-			<Row justify="space-between" align="middle">
-				<Title level={2}>Users</Title>
-			</Row>
-			<ModernTable
-				loading={isFetching}
-				rowKey="id"
-				dataSource={response?.data || []}
-				columns={columns}
-				onChange={(pagination, _filters, sorter) => {
-					const sortState = Array.isArray(sorter) ? sorter[0] : sorter;
-					const nextOrder = sortState?.order || null;
-					const nextColumnKey =
-						typeof sortState?.columnKey === "string"
-							? sortState.columnKey
-							: undefined;
+		<AdminLayout>
+			<div className={styles.main}>
+				<Row justify="space-between" align="middle">
+					<Title level={2}>Users</Title>
+				</Row>
+				<ModernTable
+					loading={isFetching}
+					rowKey="id"
+					dataSource={response?.data || []}
+					columns={columns}
+					onChange={(pagination, _filters, sorter) => {
+						const sortState = Array.isArray(sorter) ? sorter[0] : sorter;
+						const nextOrder = sortState?.order || null;
+						const nextColumnKey =
+							typeof sortState?.columnKey === "string"
+								? sortState.columnKey
+								: undefined;
 
-					if (!nextOrder || !isSortField(nextColumnKey)) {
-						setSortField(undefined);
-						setSortOrder(null);
-					} else {
-						setSortField(nextColumnKey);
-						setSortOrder(nextOrder);
-					}
+						if (!nextOrder || !isSortField(nextColumnKey)) {
+							setSortField(undefined);
+							setSortOrder(null);
+						} else {
+							setSortField(nextColumnKey);
+							setSortOrder(nextOrder);
+						}
 
-					setPage(pagination.current || 1);
-				}}
-				pagination={{
-					current: page,
-					pageSize,
-					total: response?.meta.totalCount || 0,
-					showSizeChanger: true,
-					pageSizeOptions: [10, 20, 50, 100],
-					onChange: (nextPage, nextPageSize) => {
-						setPage(nextPage);
-						setPageSize(nextPageSize);
-					},
-					onShowSizeChange: (nextPage, nextPageSize) => {
-						setPage(nextPage);
-						setPageSize(nextPageSize);
-					},
-				}}
-			/>
-		</div>
+						setPage(pagination.current || 1);
+					}}
+					pagination={{
+						current: page,
+						pageSize,
+						total: response?.meta.totalCount || 0,
+						showSizeChanger: true,
+						pageSizeOptions: [10, 20, 50, 100],
+						onChange: (nextPage, nextPageSize) => {
+							setPage(nextPage);
+							setPageSize(nextPageSize);
+						},
+						onShowSizeChange: (nextPage, nextPageSize) => {
+							setPage(nextPage);
+							setPageSize(nextPageSize);
+						},
+					}}
+				/>
+			</div>
+		</AdminLayout>
 	);
-};
-
-UsersAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
-
-export default UsersAdminPage;
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 import { Popover, Row, Space, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -6,8 +8,7 @@ import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/admin/audit-logs/style.module.scss";
 
 const { Title, Text } = Typography;
 
@@ -51,7 +52,7 @@ const renderJsonPreview = (value: unknown) => {
 	);
 };
 
-const AuditLogsAdminPage: NextPageWithLayout = () => {
+export default function AuditLogsAdminPage() {
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(20);
 
@@ -138,36 +139,34 @@ const AuditLogsAdminPage: NextPageWithLayout = () => {
 	);
 
 	return (
-		<div className={styles.main}>
-			<Row justify="space-between" align="middle">
-				<Title level={2}>Audit logs</Title>
-			</Row>
-			<ModernTable
-				loading={isFetching}
-				rowKey="id"
-				size="small"
-				dataSource={response?.data || []}
-				columns={columns}
-				pagination={{
-					current: page,
-					pageSize,
-					total: response?.meta.totalCount || 0,
-					showSizeChanger: true,
-					pageSizeOptions: [10, 20, 50, 100],
-					onChange: (nextPage, nextPageSize) => {
-						setPage(nextPage);
-						setPageSize(nextPageSize);
-					},
-					onShowSizeChange: (nextPage, nextPageSize) => {
-						setPage(nextPage);
-						setPageSize(nextPageSize);
-					},
-				}}
-			/>
-		</div>
+		<AdminLayout>
+			<div className={styles.main}>
+				<Row justify="space-between" align="middle">
+					<Title level={2}>Audit logs</Title>
+				</Row>
+				<ModernTable
+					loading={isFetching}
+					rowKey="id"
+					size="small"
+					dataSource={response?.data || []}
+					columns={columns}
+					pagination={{
+						current: page,
+						pageSize,
+						total: response?.meta.totalCount || 0,
+						showSizeChanger: true,
+						pageSizeOptions: [10, 20, 50, 100],
+						onChange: (nextPage, nextPageSize) => {
+							setPage(nextPage);
+							setPageSize(nextPageSize);
+						},
+						onShowSizeChange: (nextPage, nextPageSize) => {
+							setPage(nextPage);
+							setPageSize(nextPageSize);
+						},
+					}}
+				/>
+			</div>
+		</AdminLayout>
 	);
-};
-
-AuditLogsAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
-
-export default AuditLogsAdminPage;
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import { EllipsisOutlined, EyeOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
@@ -30,8 +32,7 @@ import {
 	getPageCover,
 } from "@/helpers/content";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/admin/devlog-posts/style.module.scss";
 
 const { Title, Text } = Typography;
 
@@ -60,7 +61,7 @@ const DefaultCover = ({ title }: { title: string }) => (
 	</Flex>
 );
 
-const DevlogPostsAdminPage: NextPageWithLayout = () => {
+export default function DevlogPostsAdminPage() {
 	const [selectedProjectId, setSelectedProjectId] = useState<string>();
 
 	const { data: projects, isFetching: isFetchingProjects } = useQuery<
@@ -258,45 +259,43 @@ const DevlogPostsAdminPage: NextPageWithLayout = () => {
 	];
 
 	return (
-		<div className={styles.main}>
-			<Title level={2}>DevLog Posts</Title>
-			<Card size="small" title="Filters" style={{ marginBottom: 16 }}>
-				<Flex gap={12} wrap="wrap">
-					<div style={{ minWidth: 280, maxWidth: 420, width: "100%" }}>
-						<Text
-							type="secondary"
-							style={{ display: "block", marginBottom: 8 }}
-						>
-							Project
-						</Text>
-						<Select
-							allowClear
-							showSearch
-							variant="filled"
-							placeholder="All projects"
-							value={selectedProjectId}
-							loading={isFetchingProjects}
-							optionFilterProp="label"
-							style={{ width: "100%" }}
-							options={projects?.map((project) => ({
-								value: project.id,
-								label: project.name || project.slug || project.id,
-							}))}
-							onChange={(value) => setSelectedProjectId(value)}
-						/>
-					</div>
-				</Flex>
-			</Card>
-			<ModernTable<AdminDevlogPost>
-				loading={isFetching}
-				rowKey="id"
-				dataSource={posts}
-				columns={columns}
-			/>
-		</div>
+		<AdminLayout>
+			<div className={styles.main}>
+				<Title level={2}>DevLog Posts</Title>
+				<Card size="small" title="Filters" style={{ marginBottom: 16 }}>
+					<Flex gap={12} wrap="wrap">
+						<div style={{ minWidth: 280, maxWidth: 420, width: "100%" }}>
+							<Text
+								type="secondary"
+								style={{ display: "block", marginBottom: 8 }}
+							>
+								Project
+							</Text>
+							<Select
+								allowClear
+								showSearch
+								variant="filled"
+								placeholder="All projects"
+								value={selectedProjectId}
+								loading={isFetchingProjects}
+								optionFilterProp="label"
+								style={{ width: "100%" }}
+								options={projects?.map((project) => ({
+									value: project.id,
+									label: project.name || project.slug || project.id,
+								}))}
+								onChange={(value) => setSelectedProjectId(value)}
+							/>
+						</div>
+					</Flex>
+				</Card>
+				<ModernTable<AdminDevlogPost>
+					loading={isFetching}
+					rowKey="id"
+					dataSource={posts}
+					columns={columns}
+				/>
+			</div>
+		</AdminLayout>
 	);
-};
-
-DevlogPostsAdminPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
-
-export default DevlogPostsAdminPage;
+}
