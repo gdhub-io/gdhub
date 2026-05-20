@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import styles from "@/pages/admin/audit-logs/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
 

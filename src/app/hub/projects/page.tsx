@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import GameOnStoreCardList from "@/components/GameOnStoreCardList";
-import styles from "@/pages/hub/projects/style.module.scss";
+import styles from "./style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),

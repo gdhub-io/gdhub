@@ -34,7 +34,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 import { formatEventPeriod } from "@/helpers/format";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/hub/events/my/style.module.scss";
+import styles from "./style.module.scss";
 
 const CreateEventButton = dynamic(
 	() => import("@/components/events/CreateEventButton").then((m) => m.default),

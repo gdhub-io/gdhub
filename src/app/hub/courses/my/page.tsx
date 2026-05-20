@@ -7,7 +7,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/hub/courses/my/style.module.scss";
+import styles from "./style.module.scss";
 
 const CourseCard = dynamic(
 	() => import("@/components/courses/CourseCard").then((m) => m.CourseCard),

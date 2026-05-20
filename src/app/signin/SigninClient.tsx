@@ -19,7 +19,7 @@ import React, { useEffect, useState } from "react";
 import LogingBgImage from "@/assets/images/login-bg.jpg";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { EmptyLayout } from "@/layouts/EmptyLayout";
-import styles from "@/pages/signin/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Paragraph, Title } = Typography;
 

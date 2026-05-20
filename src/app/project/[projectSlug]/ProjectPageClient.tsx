@@ -46,8 +46,8 @@ import ProjectVacancies from "@/components/ProjectVacancies";
 import TeamMembers from "@/components/TeamMembers";
 import { platformOptions } from "@/helpers/react-content";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/project/style.module.scss";
 import type { ProjectLink } from "@/types/project";
+import styles from "./style.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });

@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import styles from "@/pages/hub/jobs/style.module.scss";
+import styles from "./style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),

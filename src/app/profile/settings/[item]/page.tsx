@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/profile/settings/style.module.scss";
+import styles from "./style.module.scss";
 
 const ConnectProfileForm = dynamic(
 	() =>

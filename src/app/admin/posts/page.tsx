@@ -13,7 +13,7 @@ import { useState } from "react";
 import { CreateBlogPostModal } from "@/components/admin/CreateBlogPostModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import styles from "@/pages/admin/posts/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Title, Text, Paragraph } = Typography;
 

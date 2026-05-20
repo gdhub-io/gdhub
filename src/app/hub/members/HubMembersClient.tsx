@@ -34,7 +34,7 @@ import {
 import { getRelevantText } from "@/helpers/text";
 import { hasRole } from "@/helpers/user";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/hub/members/style.module.scss";
+import styles from "./style.module.scss";
 
 const SpecialistPreviewModal = dynamic(
 	() => import("@/components/modals/SpecialistPreviewModal"),

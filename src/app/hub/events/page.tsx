@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import React, { Suspense } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/hub/events/style.module.scss";
+import styles from "./style.module.scss";
 
 const BannerEventSlider = dynamic(
 	() =>

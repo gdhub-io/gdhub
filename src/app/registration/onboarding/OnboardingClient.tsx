@@ -12,7 +12,7 @@ import { OnboardingProfileStep } from "@/components/onboarding/OnboardingProfile
 import { OnboardingResourceStep } from "@/components/onboarding/OnboardingResourceStep";
 import { OnboardingSpecialityStep } from "@/components/onboarding/OnboardingSpecialityStep";
 import { OnboardingWelcome } from "@/components/onboarding/OnboardingWelcome";
-import styles from "@/pages/registration/onboarding/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Title } = Typography;
 

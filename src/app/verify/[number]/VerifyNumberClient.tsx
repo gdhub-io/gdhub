@@ -12,7 +12,7 @@ import { VerifyHero } from "@/components/VerifyCertificate/VerifyHero";
 import { VerifyNotFound } from "@/components/VerifyCertificate/VerifyNotFound";
 import { VerifyResult } from "@/components/VerifyCertificate/VerifyResult";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/verify/style.module.scss";
+import styles from "../style.module.scss";
 
 const { Title } = Typography;
 

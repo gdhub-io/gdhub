@@ -22,7 +22,7 @@ import RegistrationBgImage from "@/assets/images/registration-bg.jpg";
 import { setCookie } from "@/helpers/cookie";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { EmptyLayout } from "@/layouts/EmptyLayout";
-import styles from "@/pages/registration/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Paragraph, Title } = Typography;
 

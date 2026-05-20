@@ -9,7 +9,7 @@ import CertificationEventForm from "@/components/event-settings/CertificationEve
 import DangerEventForm from "@/components/event-settings/DangerEventForm";
 import GeneralEventForm from "@/components/event-settings/GeneralEventForm";
 import { ProtectedEventLayout } from "@/layouts/ProtectedEventLayout";
-import styles from "@/pages/my/events/[eventId]/settings/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Header, Sider, Content } = Layout;
 

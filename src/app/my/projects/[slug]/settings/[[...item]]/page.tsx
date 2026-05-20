@@ -9,7 +9,7 @@ import DangerProjectForm from "@/components/project-settings/DangerProjectForm";
 import GeneralProjectForm from "@/components/project-settings/GeneralProjectForm";
 import LinksProjectForm from "@/components/project-settings/LinksProjectForm";
 import { ProtectedProjectLayout } from "@/layouts/ProtectedProjectLayout";
-import styles from "@/pages/my/projects/[slug]/settings/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Header, Sider, Content } = Layout;
 

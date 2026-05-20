@@ -32,7 +32,7 @@ import {
 	getPageCover,
 } from "@/helpers/content";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import styles from "@/pages/admin/devlog-posts/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
 

@@ -10,7 +10,7 @@ import {
 	getHubSectionShellClass,
 	HubSectionBody,
 } from "@/components/hub/HubSection";
-import styles from "@/pages/hub/style.module.scss";
+import styles from "./style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),

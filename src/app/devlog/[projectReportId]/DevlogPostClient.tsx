@@ -37,7 +37,7 @@ import { PageViews } from "@/components/PageViews";
 import { getCleanTextContent } from "@/helpers/content";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/devlog/[projectReportId]/styles.module.scss";
+import styles from "./styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });

@@ -6,7 +6,7 @@ import { Button, Card, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/blog/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
 

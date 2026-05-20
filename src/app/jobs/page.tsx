@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import VacanciesList from "@/components/VacanciesList";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/jobs/style.module.scss";
+import styles from "./style.module.scss";
 
 export default function JobsPage() {
 	const { t } = useTranslate();

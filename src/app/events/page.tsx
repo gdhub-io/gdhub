@@ -6,6 +6,7 @@ import { useTolgee, useTranslate } from "@tolgee/react";
 import { theme } from "antd";
 import axios from "axios";
 import React from "react";
+import styles from "@/app/hub/events/style.module.scss";
 import eventBackgroundImage from "@/assets/images/public-events-header-bg.jpg";
 import {
 	BannerEventSlider,
@@ -16,7 +17,6 @@ import {
 } from "@/components/events";
 import SectionSkeleton from "@/components/events/SectionSkeleton";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/hub/events/style.module.scss";
 
 export default function EventsPage() {
 	const { t } = useTranslate();

@@ -29,7 +29,7 @@ import Markdown from "react-markdown";
 import SpecialitySelectModal from "@/components/modals/SpecialitySelectModal";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/job/[vacancyId]/styles.module.scss";
+import styles from "./styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 

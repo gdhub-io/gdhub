@@ -23,7 +23,7 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import { getCleanTextContent } from "@/helpers/content";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/expert/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
 

@@ -6,7 +6,7 @@ import { Button } from "antd";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import styles from "@/pages/hub/experts/my-requests/style.module.scss";
+import styles from "./style.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),

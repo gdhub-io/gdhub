@@ -13,7 +13,7 @@ import { LandingFeedbackSection } from "@/components/landing/LandingFeedbackSect
 import { LandingWhoWeAreSection } from "@/components/landing/LandingWhoWeAreSection";
 import { publicThemeConfig } from "@/config/theme";
 import { useTelegram } from "@/helpers/useTelegram";
-import styles from "@/pages/home.module.scss";
+import styles from "./home.module.scss";
 
 const LandingLayout = dynamic(
 	() => import("@/layouts/LandingLayout").then((m) => m.LandingLayout),

@@ -6,7 +6,7 @@ import VerifyCertGdhubCover from "@/assets/images/verify-cert-gdhub-cover.jpg";
 import { VerifyForm } from "@/components/VerifyCertificate/VerifyForm";
 import { VerifyHero } from "@/components/VerifyCertificate/VerifyHero";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/verify/style.module.scss";
+import styles from "./style.module.scss";
 
 export default function VerifyPage() {
 	const { t } = useTranslate();

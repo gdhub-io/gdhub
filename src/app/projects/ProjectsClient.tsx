@@ -9,7 +9,7 @@ import GameOnStoreCardList, {
 	type GameOnStoreCardListItem,
 } from "@/components/GameOnStoreCardList";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/projects/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Paragraph } = Typography;
 

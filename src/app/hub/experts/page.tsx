@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { useWorkDirections } from "@/hooks/library";
-import styles from "@/pages/hub/experts/styles.module.scss";
+import styles from "./styles.module.scss";
 
 const ProtectedLayout = dynamic(
 	() => import("@/layouts/ProtectedLayout").then((m) => m.ProtectedLayout),

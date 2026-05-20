@@ -34,7 +34,7 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/hub/courses/course.module.scss";
+import styles from "./course.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
 

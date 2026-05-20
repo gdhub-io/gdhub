@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/hub/docs/style.module.scss";
+import styles from "./style.module.scss";
 import "@9gustin/react-notion-render/dist/index.css";
 
 const { Text, Title } = Typography;

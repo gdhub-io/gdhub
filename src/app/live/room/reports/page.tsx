@@ -20,7 +20,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { pipLayout } from "@/config/daily";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/live/room/reports/style.module.scss";
+import styles from "./style.module.scss";
 
 const dailyCallOptions: DailyCallOptions = {
 	showLeaveButton: true,

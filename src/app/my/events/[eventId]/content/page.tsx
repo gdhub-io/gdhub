@@ -9,7 +9,7 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { ProtectedEventLayout } from "@/layouts/ProtectedEventLayout";
-import styles from "@/pages/my/events/[eventId]/content/style.module.scss";
+import styles from "./style.module.scss";
 
 export default function EventContentPage() {
 	const { token } = theme.useToken();

@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
-import styles from "@/pages/hub/courses/style.module.scss";
+import styles from "./style.module.scss";
 
 const CoursesList = dynamic(
 	() => import("@/components/CoursesList").then((m) => m.default),

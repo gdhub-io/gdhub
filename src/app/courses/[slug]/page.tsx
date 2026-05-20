@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/courses/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Title, Paragraph } = Typography;
 

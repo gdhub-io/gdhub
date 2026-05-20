@@ -8,7 +8,7 @@ import Link from "next/link";
 import { PageViews } from "@/components/PageViews";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/blog/[slug]/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
 

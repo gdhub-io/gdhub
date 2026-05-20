@@ -21,7 +21,7 @@ import { useState } from "react";
 import { CreateWorkflowModal } from "@/components/admin/CreateWorkflowModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import styles from "@/pages/admin/workflows/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
 

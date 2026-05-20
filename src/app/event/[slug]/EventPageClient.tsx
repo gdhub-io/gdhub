@@ -11,7 +11,7 @@ import EventDefaultView from "@/components/event/EventDefaultView";
 import { formatEventPeriod } from "@/helpers/format";
 import { useWorkDirections } from "@/hooks/library";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "@/pages/event/style.module.scss";
+import styles from "./style.module.scss";
 
 const { Text } = Typography;
 
