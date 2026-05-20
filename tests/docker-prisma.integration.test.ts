@@ -43,7 +43,7 @@ let databaseUrl: string;
 let shadowDatabaseUrl: string;
 let prisma: typeof import("../src/services/prisma").prisma;
 let projectLifecycleHandler: typeof import("../src/pages/api/user/project/lifecycle").default;
-let privacyHandler: typeof import("../src/pages/api/user/privacy").default;
+let privacyHandler: (req: any, res: any) => Promise<void>;
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -261,7 +261,39 @@ describeDocker("Docker-backed Prisma integration", () => {
 		projectLifecycleHandler = (
 			await import("../src/pages/api/user/project/lifecycle")
 		).default;
-		privacyHandler = (await import("../src/pages/api/user/privacy")).default;
+		const privacyRoute = await import("../src/app/api/user/privacy/route");
+		privacyHandler = async (req: any, res: any) => {
+			const method = (req.method ?? "GET").toUpperCase();
+			const queryEntries = Object.entries(req.query ?? {}).flatMap(
+				([key, value]) =>
+					Array.isArray(value)
+						? value.map((v) => [key, String(v)] as [string, string])
+						: value != null
+							? [[key, String(value)] as [string, string]]
+							: [],
+			);
+			const queryString = new URLSearchParams(queryEntries).toString();
+			const url = `http://test${req.url ?? "/"}${
+				queryString ? (req.url?.includes("?") ? "&" : "?") + queryString : ""
+			}`;
+			const init: RequestInit = { method };
+			if (method !== "GET" && method !== "HEAD" && req.body != null) {
+				init.headers = { "content-type": "application/json" };
+				init.body =
+					typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+			}
+			const request = new Request(url, init);
+			const { NextRequest } = await import("next/server");
+			const nextReq = new NextRequest(request);
+			const fn: any = method === "POST" ? privacyRoute.POST : privacyRoute.GET;
+			const response = await fn(nextReq as any, {
+				params: Promise.resolve({}),
+			});
+			const text = await response.text();
+			res.statusCode = response.status;
+			res._getStatusCode = () => response.status;
+			res._getData = () => text;
+		};
 	}, 180_000);
 
 	afterAll(async () => {
