@@ -1,3 +1,5 @@
+"use client";
+
 import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
 import { LoadingOutlined } from "@ant-design/icons";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
@@ -18,11 +20,10 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { NextSeoProps } from "next-seo";
 import type { ReactNode } from "react";
@@ -34,7 +35,6 @@ import type { Pluggable } from "unified";
 import type { Options } from "youtube-player/dist/types";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
-import { auth } from "@/auth";
 import DevlogPosts from "@/components/DevlogPosts";
 import {
 	getHubSectionShellClass,
@@ -46,15 +46,13 @@ import ProjectVacancies from "@/components/ProjectVacancies";
 import TeamMembers from "@/components/TeamMembers";
 import { platformOptions } from "@/helpers/react-content";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import { prisma } from "@/services/prisma";
+import styles from "@/pages/project/style.module.scss";
 import type { ProjectLink } from "@/types/project";
-import styles from "./style.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-type ProjectPageParams = {
+export type ProjectPageParams = {
 	project: Omit<
 		prismaClient.Project,
 		| "createdAt"
@@ -88,15 +86,15 @@ type ProjectPageParams = {
 	seo?: { title?: string | null; description?: string | null; image?: string };
 };
 
-const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
+export function ProjectPageClient({
 	project,
 	projectApplauseCount,
 	isAuthenticated,
 	seo,
-}) => {
+}: ProjectPageParams) {
 	const { t } = useTranslate();
 	const { data: session, status: authStatus } = useSession();
-	const router = useRouter();
+	const pathname = usePathname();
 	const screens = Grid.useBreakpoint();
 	const [showPitchVideo, setShowPitchVideo] = useState(false);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -170,7 +168,7 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 			return window.location.href;
 		}
 		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		return `${baseUrl}${router.asPath}`;
+		return `${baseUrl}${pathname ?? ""}`;
 	};
 
 	if (!project) return null;
@@ -554,80 +552,4 @@ const ProjectPage: NextPageWithLayout<ProjectPageParams> = ({
 			</Modal>
 		</PublicLayout>
 	);
-};
-
-export const getServerSideProps: GetServerSideProps<ProjectPageParams> = async (
-	context: GetServerSidePropsContext,
-) => {
-	const projectSlug = context.params?.projectSlug;
-
-	if (typeof projectSlug !== "string") {
-		return {
-			notFound: true,
-		};
-	}
-
-	const project = await prisma.project.findFirst({
-		where: {
-			slug: projectSlug,
-			// status: { notIn: [prismaClient.ProjectStatus.Approved, prismaClient.ProjectStatus.Done] },
-		},
-		include: {
-			author: {
-				select: { name: true, profile: { select: { tgNickname: true } } },
-			},
-			team: { select: { id: true } },
-			workflow: { select: { currentStep: { select: { name: true } } } },
-		},
-	});
-
-	if (!project) {
-		return {
-			notFound: true,
-		};
-	}
-
-	const [applauseSummary, session] = await Promise.all([
-		prisma.project.getApplauseSummary({ projectId: project.id }),
-		auth(context.req as any, context.res as any),
-	]);
-
-	return {
-		props: {
-			project: {
-				...project,
-				createdAt: project.createdAt.toISOString(),
-				updatedAt: project.updatedAt.toISOString(),
-				startedAt: project.startedAt ? project.startedAt.toISOString() : null,
-				finishedAt: project.finishedAt
-					? project.finishedAt.toISOString()
-					: null,
-				archivedAt: project.archivedAt
-					? project.archivedAt.toISOString()
-					: null,
-				killedWithDignityAt: project.killedWithDignityAt
-					? project.killedWithDignityAt.toISOString()
-					: null,
-				dormantAt: project.dormantAt ? project.dormantAt.toISOString() : null,
-				statusChangedAt: project.statusChangedAt
-					? project.statusChangedAt.toISOString()
-					: null,
-				workflow: project.workflow
-					? {
-							...project.workflow,
-							currentStep: project.workflow.currentStep || null,
-						}
-					: null,
-			},
-			projectApplauseCount: applauseSummary.total,
-			isAuthenticated: !!session?.user,
-			seo: {
-				title: project.name || null,
-				description: project.description?.slice(0, 160) || null,
-				image: `${process.env.NEXT_PUBLIC_APP_URL}/api/og?t=${project.name}&st=Author%20${project.author.name}&img=${project.coverImage}`,
-			},
-		},
-	};
-};
-
-export default ProjectPage;
+}

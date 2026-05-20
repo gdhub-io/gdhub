@@ -1,23 +1,21 @@
+"use client";
+
 import { ArrowLeftOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Button, Card, Flex, Space, Typography } from "antd";
-import axios from "axios";
 import Blocks from "editorjs-blocks-react-renderer";
-import type { GetServerSideProps } from "next";
 import Link from "next/link";
-import React from "react";
 import { PageViews } from "@/components/PageViews";
-import { getEditorjsPageCover } from "@/helpers/content";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "./style.module.scss";
+import styles from "@/pages/blog/[slug]/style.module.scss";
 
 const { Text, Title } = Typography;
 
-interface BlogPost {
+export interface BlogPost {
 	id: string;
 	title: string;
-	content: any;
+	content: string;
 	coverImage?: string;
 	createdAt: string;
 	updatedAt: string;
@@ -31,62 +29,13 @@ interface BlogPost {
 	}>;
 }
 
-interface PageProps {
-	post: BlogPost;
-}
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async ({
-	query,
-}) => {
-	const slug = query?.slug as string;
-
-	if (!slug) {
-		return {
-			notFound: true,
-		};
-	}
-
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const response = await axios.get(`${baseUrl}/api/blog/${slug}`);
-		const post = response.data;
-
-		if (!post || !post.id) {
-			console.log("Post not found or invalid:", post);
-			return {
-				notFound: true,
-			};
-		}
-
-		return {
-			props: {
-				post: {
-					...post,
-					coverImage: post.coverImage || getEditorjsPageCover(post.content),
-					content: JSON.stringify(post.content),
-					description: post.description,
-				},
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching blog post:", error);
-		return {
-			notFound: true,
-		};
-	}
-};
-
-export default function BlogPost({ post }: PageProps) {
+export function BlogPostClient({ post }: { post: BlogPost }) {
 	const { t } = useTranslate();
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
 		return date.toISOString().split("T")[0].split("-").reverse().join("/");
 	};
-
-	if (!post) {
-		return null;
-	}
 
 	const author = post.authors?.[0];
 
@@ -149,12 +98,7 @@ export default function BlogPost({ post }: PageProps) {
 				description: post?.description || undefined,
 				openGraph: {
 					images: post.coverImage
-						? [
-								{
-									url: post.coverImage || "",
-									alt: post.title,
-								},
-							]
+						? [{ url: post.coverImage, alt: post.title }]
 						: [],
 				},
 			}}

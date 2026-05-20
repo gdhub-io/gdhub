@@ -1,16 +1,16 @@
+"use client";
+
 import { UserOutlined } from "@ant-design/icons";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Typography } from "antd";
-import axios from "axios";
-import type { GetServerSideProps } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "./style.module.scss";
+import styles from "@/pages/blog/style.module.scss";
 
 const { Text, Title } = Typography;
 
-interface BlogPost {
+export interface BlogPost {
 	id: string;
 	title: string;
 	slug: string;
@@ -24,32 +24,7 @@ interface BlogPost {
 	}>;
 }
 
-interface PageProps {
-	posts: BlogPost[];
-}
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const response = await axios.get(`${baseUrl}/api/blog`);
-		const posts = response.data || [];
-
-		return {
-			props: {
-				posts,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching blog posts:", error);
-		return {
-			props: {
-				posts: [],
-			},
-		};
-	}
-};
-
-export default function BlogPage({ posts }: PageProps) {
+export function BlogClient({ posts }: { posts: BlogPost[] }) {
 	const { t } = useTranslate();
 
 	const formatDate = (dateString: string) => {

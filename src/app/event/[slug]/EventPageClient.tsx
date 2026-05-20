@@ -1,8 +1,9 @@
+"use client";
+
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useTolgee } from "@tolgee/react";
 import { Button, Flex, Space, Typography } from "antd";
-import type { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import EventConferenceOrGamelabView from "@/components/event/EventConferenceOrGamelabView";
@@ -10,18 +11,20 @@ import EventDefaultView from "@/components/event/EventDefaultView";
 import { formatEventPeriod } from "@/helpers/format";
 import { useWorkDirections } from "@/hooks/library";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import { prisma } from "@/services/prisma";
-import styles from "./style.module.scss";
+import styles from "@/pages/event/style.module.scss";
 
 const { Text } = Typography;
 
-interface EventPageProps {
+export interface EventPageProps {
 	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
-	seo?: { title: string; description?: string; image?: string };
+	seo?: {
+		title: string | null;
+		description?: string | null;
+		image?: string | null;
+	};
 }
 
-const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
+export function EventPageClient({ event, seo }: EventPageProps) {
 	const { data: workDirections } = useWorkDirections();
 	const { getLanguage, t } = useTolgee();
 
@@ -70,7 +73,7 @@ const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 
 	return (
 		<PublicLayout
-			seo={seo}
+			seo={(seo ?? undefined) as any}
 			extraPosition="top"
 			extraGap={0}
 			extra={
@@ -175,47 +178,4 @@ const EventPage: NextPageWithLayout<EventPageProps> = ({ event, seo }) => {
 			)}
 		</PublicLayout>
 	);
-};
-
-export const getServerSideProps = async (
-	context: GetServerSidePropsContext,
-) => {
-	const { slug }: { slug: string } = context.params as any;
-	const locale = (context.locale as prismaClient.$Enums.Language) || "en";
-
-	const event = await prisma.event.findFirst({
-		where: { slug, lang: locale },
-		include: { schedule: { orderBy: { startDate: "asc" } } },
-	});
-
-	if (!event) {
-		return { notFound: true };
-	}
-
-	return {
-		props: {
-			event: {
-				...event,
-				createdAt: event.createdAt?.toISOString(),
-				updatedAt: event.updatedAt?.toISOString(),
-				publishedAt: event.publishedAt ? event.publishedAt.toISOString() : null,
-				content: event.content ? JSON.stringify(event.content) : null,
-				schedule:
-					event.schedule?.map((item) => ({
-						...item,
-						startDate: item.startDate?.toISOString(),
-						endDate: item.endDate?.toISOString(),
-						createdAt: item.createdAt?.toISOString?.() ?? null,
-						updatedAt: item.updatedAt?.toISOString?.() ?? null,
-					})) || [],
-			},
-			seo: {
-				title: event.title || null,
-				description: event.shortDescription || null,
-				image: event.image || null,
-			},
-		},
-	};
-};
-
-export default EventPage;
+}

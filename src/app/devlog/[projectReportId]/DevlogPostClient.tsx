@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
+"use client";
+
 import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
 import {
 	ArrowLeftOutlined,
@@ -21,9 +23,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-
 import Blocks from "editorjs-blocks-react-renderer";
-import type { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -33,17 +33,11 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
-import { auth } from "@/auth";
 import { PageViews } from "@/components/PageViews";
-import {
-	getCleanTextContent,
-	getEditorjsPageCover,
-	getEditorjsShortContent,
-	getPageCover,
-} from "@/helpers/content";
+import { getCleanTextContent } from "@/helpers/content";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "./styles.module.scss";
+import styles from "@/pages/devlog/[projectReportId]/styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
@@ -67,7 +61,7 @@ interface PreparedEditorJsData {
 	version: string;
 }
 
-interface Post {
+export interface Post {
 	id: string;
 	title: string;
 	content: string;
@@ -193,7 +187,7 @@ const MarkdownImage = ({
 	);
 };
 
-export default function ProjectReport({
+export function DevlogPostClient({
 	post,
 	contentLength,
 	isAuthenticated,
@@ -699,56 +693,3 @@ export default function ProjectReport({
 		</PublicLayout>
 	);
 }
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context,
-) => {
-	const projectReportId = context.params?.projectReportId as string;
-	const session = await auth(context.req as any, context.res as any);
-
-	if (!projectReportId) {
-		return {
-			notFound: true,
-		};
-	}
-
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const { data: post } = await axios.get(
-			`${baseUrl}/api/devlog/${projectReportId}`,
-		);
-
-		// Save page cover
-		if (post.contentEditor) {
-			post.pageCover = getEditorjsPageCover(post.contentEditor);
-		} else {
-			post.pageCover = getPageCover(post);
-		}
-
-		// Обрезаем контент для неавторизованных пользователей
-		if (!session) {
-			if (post.contentEditor) {
-				post.content = getEditorjsShortContent(post.contentEditor, 1000);
-				// Remove contentEditor so ReactMarkdown is used instead
-				delete post.contentEditor;
-			} else {
-				post.content = getCleanTextContent(post.content, 1000);
-			}
-		}
-
-		return {
-			props: {
-				post,
-				contentLength: post.contentEditor
-					? getEditorjsShortContent(post.contentEditor, 1000).length
-					: post.content.length,
-				isAuthenticated: !!session,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching post:", error);
-		return {
-			notFound: true,
-		};
-	}
-};

@@ -1,10 +1,11 @@
+"use client";
+
 import { useTranslate } from "@tolgee/react";
 import VacanciesList from "@/components/VacanciesList";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/jobs/style.module.scss";
 
-const JobsPage: NextPageWithLayout = ({ projects }: any) => {
+export default function JobsPage() {
 	const { t } = useTranslate();
 
 	return (
@@ -23,6 +24,4 @@ const JobsPage: NextPageWithLayout = ({ projects }: any) => {
 			</div>
 		</PublicLayout>
 	);
-};
-
-export default JobsPage;
+}

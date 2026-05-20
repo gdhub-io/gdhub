@@ -1,13 +1,14 @@
+"use client";
+
 import { useTranslate } from "@tolgee/react";
 import { Flex } from "antd";
 import VerifyCertGdhubCover from "@/assets/images/verify-cert-gdhub-cover.jpg";
 import { VerifyForm } from "@/components/VerifyCertificate/VerifyForm";
 import { VerifyHero } from "@/components/VerifyCertificate/VerifyHero";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/verify/style.module.scss";
 
-const VerifyPage: NextPageWithLayout = () => {
+export default function VerifyPage() {
 	const { t } = useTranslate();
 
 	return (
@@ -42,6 +43,4 @@ const VerifyPage: NextPageWithLayout = () => {
 			</Flex>
 		</PublicLayout>
 	);
-};
-
-export default VerifyPage;
+}

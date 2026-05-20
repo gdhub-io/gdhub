@@ -1,31 +1,26 @@
+"use client";
+
 import { FaBook } from "@react-icons/all-files/fa/FaBook";
 import { FaCode } from "@react-icons/all-files/fa/FaCode";
 import { FaGamepad } from "@react-icons/all-files/fa/FaGamepad";
 import { FaPaintBrush } from "@react-icons/all-files/fa/FaPaintBrush";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Space, Tag, Typography, theme } from "antd";
+import { Button, Space, Tag, Typography } from "antd";
 import axios from "axios";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import React from "react";
+import { useParams, useRouter } from "next/navigation";
 import { ProtectedLayout } from "@/layouts/ProtectedLayout";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import styles from "./style.module.scss";
+import styles from "@/pages/courses/style.module.scss";
 
 const { Title, Paragraph } = Typography;
 
-/**
- * Individual course page component
- *
- * @returns {JSX.Element} Rendered component
- */
-const CoursePage: NextPageWithLayout = () => {
+export default function CoursePage() {
 	const { t } = useTranslate();
 	const router = useRouter();
-	const { slug } = router.query;
-	const { token } = theme.useToken();
+	const params = useParams<{ slug: string }>();
+	const slug = params?.slug;
 
 	const {
 		data: course,
@@ -74,7 +69,6 @@ const CoursePage: NextPageWithLayout = () => {
 			case "art":
 			case "graphics":
 				return <FaPaintBrush size={24} />;
-			case "general":
 			default:
 				return <FaBook size={24} />;
 		}
@@ -130,6 +124,4 @@ const CoursePage: NextPageWithLayout = () => {
 			</div>
 		</PublicLayout>
 	);
-};
-
-export default CoursePage;
+}

@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+"use client";
 
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
@@ -18,83 +18,39 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import type { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import router from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useState } from "react";
 import Markdown from "react-markdown";
-import { auth } from "@/auth";
 import SpecialitySelectModal from "@/components/modals/SpecialitySelectModal";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import styles from "./styles.module.scss";
+import styles from "@/pages/job/[vacancyId]/styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
-const { Text, Title, Paragraph } = Typography;
+const { Text, Title } = Typography;
 
-interface PageProps {
+export interface JobPageProps {
 	vacancy: prismaClient.TeamVacancy & {
 		team: { project: prismaClient.Project };
 		promisePercentage: number;
 		promiseStep: prismaClient.ProjectWorkflowStep;
 		myTeamMemberId: string;
 	};
-	pageCover: string;
+	pageCover: string | null;
 	isAuthenticated: boolean;
 }
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context,
-) => {
-	const vacancyId = context.params?.vacancyId as string;
-	const session = await auth(context.req as any, context.res as any);
-
-	if (!vacancyId) {
-		return {
-			notFound: true,
-		};
-	}
-
-	try {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const { data: vacancy } = await axios.get(
-			`${baseUrl}/api/project/vacancy`,
-			{
-				params: { id: vacancyId },
-				headers: {
-					cookie: context.req.headers.cookie,
-				},
-			},
-		);
-
-		return {
-			props: {
-				vacancy,
-				pageCover: vacancy.team?.project?.coverImage || null,
-				isAuthenticated: !!session,
-				isTeamMember: !!vacancy.myTeamMemberId,
-			},
-		};
-	} catch (error) {
-		console.error("Error fetching post:", error);
-		return {
-			notFound: true,
-		};
-	}
-};
-
-export default function VancancyPage({
-	vacancy,
-	pageCover,
-	isAuthenticated,
-}: PageProps) {
+export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
+	const router = useRouter();
+	const pathname = usePathname();
 	const [showPitchVideo, setShowPitchVideo] = useState(false);
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] =
 		useState(false);
@@ -132,9 +88,7 @@ export default function VancancyPage({
 	const withdrawApplyHandler = async (data: { teamMemberId: string }) => {
 		try {
 			await withdrawApply(data);
-
-			router.reload();
-
+			router.refresh();
 			message.success(
 				t("page.vacancy.withdrawSuccess", "Your response is withdrawn"),
 			);
@@ -146,7 +100,7 @@ export default function VancancyPage({
 
 	const functionOkButton = async () => {
 		if (!session) {
-			router.push("/signin?callbackUrl=" + router.asPath);
+			router.push(`/signin?callbackUrl=${pathname}`);
 		}
 
 		return vacancy?.myTeamMemberId
@@ -155,10 +109,7 @@ export default function VancancyPage({
 	};
 
 	const statusOkButton = () => {
-		if (!session) {
-			return t("signin", "Signin");
-		}
-
+		if (!session) return t("signin", "Signin");
 		return vacancy?.myTeamMemberId
 			? t("modal.vacancy.cancelMyResponse", "Cancel my response")
 			: t("modal.vacancy.apply", "Respond");
@@ -183,8 +134,7 @@ export default function VancancyPage({
 				vacancyId: vacancy.id,
 			});
 
-			router.reload();
-
+			router.refresh();
 			message.success(t("page.vacancy.applySuccess", "Your response is sent"));
 			setShowSpecialitySelectModal(false);
 			setTimeout(() => setShowSpecialitySelectModal(false), 600);
@@ -251,9 +201,7 @@ export default function VancancyPage({
 			}
 			subTitle={`The open position from ${vacancy.team?.project?.name} project`}
 			backgroundImage={pageCover || undefined}
-			seo={{
-				title: `${vacancy.title}`,
-			}}
+			seo={{ title: `${vacancy.title}` }}
 			styles={{ content: { padding: 0 }, layoutBackground: { padding: 0 } }}
 			ogImageType="job"
 			ogImageParams={{
@@ -305,10 +253,6 @@ export default function VancancyPage({
 															"Project description",
 														)}
 													</Text>
-
-													{/* <Paragraph
-														style={{ margin: "8px 0", whiteSpace: "pre-wrap" }}
-													> */}
 													<Markdown>
 														{vacancy.team.project.description.length > 512
 															? `${vacancy.team.project.description.slice(0, 512)}...(more on the project page)`
@@ -356,7 +300,6 @@ export default function VancancyPage({
 									</Col>
 								</Row>
 
-								{/* Position Description */}
 								<Space direction="vertical" style={{ width: "100%" }}>
 									<div>
 										<Text className={styles.fieldLabel}>
@@ -365,14 +308,12 @@ export default function VancancyPage({
 												"Position description",
 											)}
 										</Text>
-
 										<div style={{ whiteSpace: "pre-wrap" }}>
 											{vacancy.description}
 										</div>
 									</div>
 								</Space>
 
-								{/* Finished At */}
 								<Space>
 									<Text>
 										{t(
@@ -384,7 +325,6 @@ export default function VancancyPage({
 									<Text strong>{dayjs(vacancy.finishedAt).format("LL")}</Text>
 								</Space>
 
-								{/* Equity Promise */}
 								{!!vacancy.promisePercentage && !!vacancy.promiseStep?.name && (
 									<Flex vertical gap={8}>
 										<Text className={styles.fieldLabel}>
@@ -405,7 +345,6 @@ export default function VancancyPage({
 									</Flex>
 								)}
 
-								{/* Status Alerts */}
 								{vacancy.myTeamMemberId ? (
 									<Alert
 										type="warning"

@@ -1,23 +1,19 @@
+"use client";
+
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useTranslate } from "@tolgee/react";
 import { ConfigProvider, Flex, Select, Typography } from "antd";
-import type { GetServerSidePropsContext } from "next";
 import { useMemo, useState } from "react";
 import GameCardList from "@/components/GameCard/GameCardList";
 import GameOnStoreCardList, {
 	type GameOnStoreCardListItem,
 } from "@/components/GameOnStoreCardList";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import type { NextPageWithLayout } from "@/pages/_app";
-import {
-	getPublishedStoreProjects,
-	getWorkedProjects,
-} from "@/services/prisma/queries";
-import styles from "./style.module.scss";
+import styles from "@/pages/projects/style.module.scss";
 
 const { Paragraph } = Typography;
 
-type ProjectIncludeAll = prismaClient.Project & {
+export type ProjectIncludeAll = prismaClient.Project & {
 	author: prismaClient.User;
 	workflow:
 		| (prismaClient.ProjectWorkflow & {
@@ -35,15 +31,15 @@ type ProjectIncludeAll = prismaClient.Project & {
 	hasOpenPositions?: boolean;
 };
 
-type ProjectsPageParams = {
+export interface ProjectsPageProps {
 	projects: ProjectIncludeAll[];
 	publishedProjects: GameOnStoreCardListItem[];
-};
+}
 
-const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({
+export function ProjectsClient({
 	projects,
 	publishedProjects,
-}) => {
+}: ProjectsPageProps) {
 	const { t } = useTranslate();
 	const [selectedStage, setSelectedStage] = useState<string>();
 
@@ -55,10 +51,7 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({
 
 		for (const project of projects) {
 			const currentStep = project.workflow?.currentStep;
-
-			if (!currentStep?.name) {
-				continue;
-			}
+			if (!currentStep?.name) continue;
 
 			if (!uniqueStages.has(currentStep.name)) {
 				uniqueStages.set(currentStep.name, {
@@ -75,10 +68,7 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({
 	}, [projects]);
 
 	const filteredProjects = useMemo(() => {
-		if (!selectedStage) {
-			return projects;
-		}
-
+		if (!selectedStage) return projects;
 		return projects.filter(
 			(project) => project.workflow?.currentStep?.name === selectedStage,
 		);
@@ -153,39 +143,4 @@ const ProjectsPage: NextPageWithLayout<ProjectsPageParams> = ({
 			</div>
 		</PublicLayout>
 	);
-};
-
-export const getStaticProps = async (_context: GetServerSidePropsContext) => {
-	const projects = await getWorkedProjects();
-	const publishedProjects = await getPublishedStoreProjects();
-
-	return {
-		props: {
-			projects: projects.map((p: ProjectIncludeAll) => {
-				return {
-					...p,
-					createdAt: p.createdAt?.toISOString() || null,
-					updatedAt: p.updatedAt?.toISOString() || null,
-					startedAt: p.startedAt?.toISOString() || null,
-					finishedAt: p.finishedAt?.toISOString() || null,
-					dormantAt: p.dormantAt?.toISOString() || null,
-					statusChangedAt: p.statusChangedAt?.toISOString() || null,
-					archivedAt: p.archivedAt?.toISOString() || null,
-					killedWithDignityAt: p.killedWithDignityAt?.toISOString() || null,
-					lastPostAt: p.lastPostAt?.toISOString() || null,
-					firstPostAt: p.firstPostAt?.toISOString() || null,
-					author: {
-						...p.author,
-						createdAt: p.author.createdAt?.toISOString() || null,
-						updatedAt: p.author.updatedAt?.toISOString() || null,
-					},
-					workflow: p.workflow || null,
-				};
-			}),
-			publishedProjects,
-		},
-		revalidate: 60,
-	};
-};
-
-export default ProjectsPage;
+}

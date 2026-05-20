@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -16,29 +18,26 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import type { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import React from "react";
-import { auth } from "@/auth";
 import { getCleanTextContent } from "@/helpers/content";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { prisma } from "@/services/prisma";
-import styles from "./style.module.scss";
+import styles from "@/pages/expert/style.module.scss";
 
 const { Text, Title } = Typography;
 
-interface ExpertPageProps {
+export interface ExpertPageProps {
 	isAuthenticated: boolean;
 	expert: any;
-	seo?: { title: string; description?: string; image?: string };
+	seo?: {
+		title?: string | null;
+		description?: string | null;
+		image?: string | null;
+	};
 }
 
-export default function ExpertPage({
-	expert,
-	seo,
-	isAuthenticated,
-}: ExpertPageProps) {
+export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 	const [modalOpen, setModalOpen] = React.useState(false);
@@ -58,15 +57,13 @@ export default function ExpertPage({
 
 	const projects = projectsData?.data || [];
 
-	if (!expert) {
-		return null;
-	}
+	if (!expert) return null;
 
 	const isActiveRequest = expert.speciality.questions?.length > 0;
 
 	return (
 		<PublicLayout
-			seo={seo}
+			seo={(seo ?? undefined) as any}
 			subTitle={
 				getCleanTextContent(expert.speciality.summary || "", 100) || undefined
 			}
@@ -125,7 +122,6 @@ export default function ExpertPage({
 			}
 		>
 			<div style={{ maxWidth: 740, margin: "0 auto", padding: 16 }}>
-				{/* Аватар и имя */}
 				<Flex vertical align="center" style={{ marginBottom: 24 }}>
 					{expert.image && (
 						<AntImage
@@ -146,7 +142,6 @@ export default function ExpertPage({
 					</Title>
 				</Flex>
 
-				{/* Вопросы/темы */}
 				<AntCard style={{ marginBottom: 24 }} styles={{ body: { padding: 0 } }}>
 					<div style={{ padding: 16 }}>
 						<Text type="secondary" style={{ fontSize: 14, letterSpacing: 1 }}>
@@ -182,7 +177,6 @@ export default function ExpertPage({
 					</div>
 				</AntCard>
 
-				{/* About */}
 				<AntCard style={{ marginBottom: 36 }} styles={{ body: { padding: 0 } }}>
 					<div style={{ padding: 16 }}>
 						<Text type="secondary" style={{ fontSize: 14, letterSpacing: 1 }}>
@@ -210,8 +204,6 @@ export default function ExpertPage({
 						</Descriptions>
 					</div>
 				</AntCard>
-
-				{/* Кнопка всегда внизу */}
 
 				<Button
 					type="primary"
@@ -308,44 +300,3 @@ export default function ExpertPage({
 		</PublicLayout>
 	);
 }
-
-export const getServerSideProps = async (
-	context: GetServerSidePropsContext,
-) => {
-	const session = await auth(context.req as any, context.res as any);
-	const { specialityId }: any = context.params;
-
-	const expert = await prisma.user.findFirst({
-		where: { specialities: { some: { id: specialityId } } },
-		select: {
-			id: true,
-			name: true,
-			image: true,
-			investorInTeams: { select: { id: true, name: true } },
-			lang: true,
-			specialities: {
-				where: { id: specialityId },
-				select: { id: true, name: true, summary: true },
-			},
-			profile: { select: { name: true, motivation: true } },
-		},
-	});
-
-	if (!expert) {
-		return { notFound: true };
-	}
-
-	const { specialities, ...expertData } = expert;
-
-	return {
-		props: {
-			isAuthenticated: !!session,
-			expert: { ...expertData, speciality: specialities[0] },
-			seo: {
-				title: expert.profile?.name || expert.name || null,
-				description: expert.profile?.motivation || null,
-				image: expert.image || null,
-			},
-		},
-	};
-};
