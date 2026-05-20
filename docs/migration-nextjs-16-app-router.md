@@ -2,6 +2,22 @@
 
 > Согласовано. Работа идёт в текущей ветке `upgrade-to-16`, поэтапными коммитами.
 
+## Находки Этапа 0 (фактические)
+
+Подробный аудит — [docs/migration-audit.md](docs/migration-audit.md). Baseline-чеклист — [docs/migration-baseline-checklist.md](docs/migration-baseline-checklist.md). Кратко:
+
+- ✅ `type-check`, `lint`, `build` на baseline 14.2.33 — зелёные.
+- ❌ `vitest` — 7 тестов падают (пре-существующая поломка моков, не блокер).
+- ✅ Playwright установлен (`@playwright/test@1.60.0`), Chromium скачан, конфиг [playwright.config.ts](playwright.config.ts), первый smoke [tests/e2e/home.spec.ts](tests/e2e/home.spec.ts) — обнаруживается `playwright test --list`.
+- ✅ Скелет адаптера: [src/lib/route-handler-adapter.ts](src/lib/route-handler-adapter.ts).
+- **`recoil` НЕ ИСПОЛЬЗУЕТСЯ** в коде — Этап 1.5 сводится к `yarn remove recoil`.
+- **`@9gustin/react-notion-render@3.11.4`** — единственный пакет с жёстким peer `react: ^18.2.0`. Используется в 4 файлах ([cookie-policy.tsx](src/pages/cookie-policy.tsx), [privacy-policy.tsx](src/pages/privacy-policy.tsx), [hub/docs/[[...slug]].tsx](src/pages/hub/docs/[[...slug]].tsx), [WorkflowContent/WorkflowStepContent](src/components/WorkflowContent/WorkflowStepContent/index.tsx)). Решение по нему — в Этапе 1 (`--legacy-peer-deps` / `overrides` / замена).
+- **`next-api-decorators` уходит полностью.** Все API мигрируют на нативные Route Handlers в `src/app/api/**`. Декоратор-стиль middleware заменяется на higher-order functions (HOF). Скелет адаптера в [src/lib/route-handler-adapter.ts](src/lib/route-handler-adapter.ts) — это утилита на случай, если для конкретной сложной route понадобится временный «совместимый» wrapper, но дефолтная стратегия — переписывать на чистый App Router.
+- `router.events` использует только [_app.tsx](src/pages/_app.tsx) (dev-only логи, можно удалить) и [BlogPostEditor](src/components/admin/BlogPostEditor/index.tsx) (confirm-on-leave — нужна замена на `beforeunload` + link-interceptor).
+- `next/head` — 3 файла, все в auth-flow страницах (`registration`, `invite`, `signin`).
+
+---
+
 ## Принятые решения (см. §5)
 
 - `next-api-decorators` → **адаптер** в Route Handlers, переписывание — отдельной задачей.
@@ -157,7 +173,7 @@ src/
 
 | Риск | Митигация |
 |---|---|
-| **`next-api-decorators` не работает в App Router** | Стратегия из 2 шагов: (а) на этапе 0 — переписать handlers на простые функции/Hono-роутер (опционально), (б) при переезде в `app/api/.../route.ts` — обернуть каждый класс через тонкий адаптер, который сопоставляет HTTP-метод и вызывает соответствующий метод класса. Альтернатива: оставить старые маршруты в `src/pages/api/` (можно сосуществовать с App Router) и мигрировать постепенно. |
+| **`next-api-decorators` не работает в App Router** | Полная замена: HOF-middleware (`withAuth`, `withTeamGuard`, `withValidation`) + native Route Handlers + Zod вместо class-validator. Catch-all routes (`[[...params]]`) с внутренним суброутингом режутся на отдельные сегменты файловой системы App Router. См. подробно §4 Этап 4. Адаптер `toRouteHandler` остаётся как fallback для нестандартных случаев. |
 | **AntD SSR cache** | Использовать `useServerInsertedHTML` из `next/navigation` в client-провайдере, обёрнутом в `app/layout.tsx`. |
 | **AntD v5 совместимость с React 19** | `antd` поднимаем до последней `^5.x`, проверяем `@ant-design/cssinjs`, `rc-*`, `@ant-design/x`. При несовместимости — обновляем поштучно. |
 | **React 18 → React 19** | `recoil` **удаляется** — все store-кейсы переезжают на `zustand` (см. отдельную задачу в §4 Этап 1.5). Остальной list-check внешних React-зависимостей через `npm ls react`. |
@@ -236,15 +252,8 @@ src/
 - [ ] Зафиксировать `engines.node` в [package.json](package.json) → `">=20.9.0"`.
 - [ ] Не запускать `next dev` — на этом этапе билд ожидаемо падает.
 
-### Этап 1.5. Recoil → Zustand (1–2 дня)
-Делаем **до** массовой миграции страниц, чтобы не тащить за собой сломанные сторы.
-
-- [ ] Найти все `recoil` атомы/селекторы (`grep -r "recoil\|atom(\|selector(" src`).
-- [ ] Для каждого atom'а создать zustand-store аналог в [src/stores/](src/stores/).
-- [ ] Заменить `useRecoilState/Value` → `useStore(...)` (zustand).
-- [ ] Удалить `<RecoilRoot>` из [_app.tsx](src/pages/_app.tsx) (если присутствует).
-- [ ] Удалить `recoil` из `package.json`.
-- [ ] Прогон vitest — зелёный на текущем Next 14. (Playwright smoke по возможности; если ещё не написан — ручная проверка ключевых сторов).
+### Этап 1.5. Recoil → Zustand (отменён по факту аудита)
+Recoil в коде не используется. Удаление пакета `recoil` выполняется в Этапе 1 одной строкой `yarn remove recoil`. Отдельный этап не нужен.
 
 ### Этап 2. Базовый App Router скелет + Turbopack + Auth.js v5 (1.5 дня) — App и Pages сосуществуют
 > Next.js допускает одновременную работу `src/app/` и `src/pages/`. Это даёт пошаговую миграцию.
@@ -301,19 +310,105 @@ src/
 - **Написать Playwright e2e тест** на критичные сценарии раздела (раз тестов ещё нет — пишем сразу против новой App Router версии). Минимум: happy-path + 1–2 edge case (404, неавторизованный доступ).
 - Удалить старый файл из `src/pages/` **после** прохождения e2e + ручной проверки.
 
-### Этап 4. Миграция API (3–5 дней) — параллельно с этапом 3, если ресурсов хватает
-- [ ] Сценарий через адаптер: каждый `src/pages/api/foo/bar.ts` копируется в `src/app/api/foo/bar/route.ts` и оборачивается:
+### Этап 4. Миграция API на native Route Handlers (5–7 дней)
+
+> Главная архитектурная часть: декораторы из `next-api-decorators` уходят, всё переезжает на нативные App Router идиомы. Может идти параллельно с Этапом 3, начиная с Auth.js v5 в Этапе 2 (то уже сделано).
+
+#### 4.1. Библиотека HOF-middleware (0.5 дня)
+Создать [src/lib/api-handlers.ts](src/lib/api-handlers.ts) с композируемыми обёртками:
+
+```ts
+type Locals = { user?: SessionUser; team?: Team; body?: unknown };
+type Handler<L extends Locals = Locals> =
+  (req: NextRequest, ctx: { params: Promise<Record<string,string>> }, locals: L) => Promise<Response>;
+
+export const withAuth = (opts?: { roles?: UserRole[]; mode?: "user"|"any"|"api"|"public_api"|"vercel_cron"|"gumroad" }) =>
+  <L extends Locals>(handler: Handler<L & { user: SessionUser }>): Handler<L> => ...;
+
+export const withTeamGuard = () =>
+  <L extends Locals>(handler: Handler<L & { team: Team }>): Handler<L> => ...;
+
+export const withValidation = <S extends z.ZodSchema>(schema: S, source: "body"|"query" = "body") =>
+  <L extends Locals>(handler: Handler<L & { body: z.infer<S> }>): Handler<L> => ...;
+
+// Композиция: pipe(withAuth(), withValidation(Schema))(handler)
+export const pipe = (...wrappers) => (handler) => wrappers.reduceRight((h, w) => w(h), handler);
+```
+
+Покрывает все текущие декораторы:
+- `@NextAuthGuard(mode, roles?)` → `withAuth({ mode, roles })`
+- `@ApiProjectTeamGuard()` → `withTeamGuard()`
+- `@Body(ValidationPipe) dto: Dto` → `withValidation(Schema, "body")` + переход class-validator → **Zod** (zod уже в зависимостях).
+- `@Query(ValidationPipe) dto: Dto` → `withValidation(Schema, "query")`
+- `@Param("id")` → `ctx.params.id` (native).
+- `@Req()` → доступ к user через `locals.user`.
+
+#### 4.2. Перевод class-validator DTO на Zod (1 день, параллельно с 4.3)
+- ~70 DTO-классов с `@IsString/@IsNumber/@IsBoolean/@IsEnum/@Min` декораторами.
+- Кодомод (или вручную): каждый DTO → Zod-схема в [src/schemas/](src/schemas/).
+- Например:
   ```ts
-  import handler from '@/.../FooHandler';
-  export const { GET, POST } = toRouteHandler(handler);
+  // было
+  class CreateCourseDto { @IsString() name: string; @IsBoolean() agreedToTerms: boolean; }
+  // стало
+  export const CreateCourseSchema = z.object({
+    name: z.string(),
+    agreedToTerms: z.boolean(),
+  });
   ```
-- [ ] Особые случаи:
-  - `pages/api/auth/[...nextauth].ts` → `app/api/auth/[...nextauth]/route.ts` по официальному гайду next-auth v4 для App Router.
-  - `pages/api/file.ts`, `pages/api/user/parse/cv.ts` — перевести на `request.formData()`; убрать `formidable`/`multer`.
-  - `pages/api/og*.tsx` (`@vercel/og`) — без изменений API, переименовать.
-  - CRON (`/api/cron/*`) — без изменений, обновить `vercel.json`.
-- [ ] Обновить [vercel.json](vercel.json): `"src/app/api/**/route.ts": { "maxDuration": 300 }` и убрать pages glob.
-- [ ] Заменить `next-csrf` на App-Router-совместимый CSRF (или собственный helper).
+- Удалить `class-validator`, `class-transformer` из зависимостей.
+
+#### 4.3. Разделение catch-all routes на нативные сегменты (2 дня)
+22 файла `[[...params]].ts` содержат внутренний суброутинг через `@Put("/:id/publish")` и т.п. Каждый разрезается на отдельные `route.ts`.
+
+Пример: [src/pages/api/user/course/[[...params]].ts](src/pages/api/user/course/[[...params]].ts) с эндпоинтами `POST /`, `PUT /:id/publish`, `PUT /:id/unpublish`, `DELETE /` → 
+
+```
+src/app/api/user/course/route.ts                 (POST, DELETE)
+src/app/api/user/course/[id]/publish/route.ts    (PUT)
+src/app/api/user/course/[id]/unpublish/route.ts  (PUT)
+```
+
+#### 4.4. Миграция handler-файлов (2–3 дня)
+Для каждого Pages-handler:
+1. Создать соответствующий `app/api/.../route.ts`.
+2. Экспортировать `GET/POST/PUT/DELETE` через композицию HOF + чистая бизнес-логика:
+   ```ts
+   export const POST = pipe(
+     withAuth({ mode: "user" }),
+     withValidation(CreateCourseSchema),
+   )(async (req, ctx, { user, body }) => {
+     const course = await prisma.course.create({ data: { ...body, createdById: user.id } });
+     return NextResponse.json(course);
+   });
+   ```
+3. Удалить старый файл из `src/pages/api/`.
+4. Если в handler был `getServerSession(authOptions)` — заменить на `auth()` из Auth.js v5 (см. Этап 2).
+
+#### 4.5. Особые случаи
+- `pages/api/auth/[...nextauth].ts` → сделано в Этапе 2 (Auth.js v5).
+- [pages/api/file.ts](src/pages/api/file.ts), [pages/api/user/parse/cv.ts](src/pages/api/user/parse/cv.ts):
+  - Убрать `bodyParser: false` + `formidable`/`multer`.
+  - Использовать `request.formData()` → `formData.get("file") as File` → `file.stream()` для стрима в S3.
+  - `maxDuration` → `export const maxDuration = 300` в route.ts.
+- `pages/api/og*.tsx` (`@vercel/og`): API не меняется, файл переезжает в `app/api/og/route.tsx` (или сохраняем структуру `og-event-big`/`og-event-small`/`og-job`).
+- CRON `/api/cron/*` — переезжают как обычные Route Handlers, URL остаётся.
+
+#### 4.6. Конфиг
+- Обновить [vercel.json](vercel.json):
+  ```json
+  "functions": {
+    "src/app/api/**/route.ts": { "maxDuration": 300 }
+  }
+  ```
+  Убрать pages glob.
+- Удалить `experimentalDecorators` / `emitDecoratorMetadata` из [tsconfig.json](tsconfig.json) (больше не нужны без `next-api-decorators` / `class-validator`).
+
+#### 4.7. CSRF
+Переписать [helpers/csrf.ts](src/helpers/csrf.ts) на `@edge-csrf/nextjs`, использовать в middleware и `withAuth`/`withCsrf`-обёртке.
+
+#### 4.8. Удаление пакетов
+После полной миграции — `yarn remove next-api-decorators class-validator class-transformer reflect-metadata next-csrf formidable multer`.
 
 ### Этап 5. Middleware, Auth.js, Tolgee, CSRF (0.5 дня)
 - [ ] [src/middleware.ts](src/middleware.ts): переписать с `withAuth` next-auth@4 на `auth` wrapper из Auth.js v5 (сделано в Этапе 2, проверить покрытие всех редиректов).
@@ -349,7 +444,7 @@ src/
 
 | # | Вопрос | Решение |
 |---|---|---|
-| 1 | `next-api-decorators` | Оставляем через адаптер `toRouteHandler`. Полное переписывание — отдельной задачей. |
+| 1 | `next-api-decorators` | **Удаляется полностью**. Все API мигрируют на native Route Handlers, декораторы заменяются HOF-middleware (`withAuth`, `withTeamGuard`, `withValidation` и т.д.). Адаптер `toRouteHandler` остаётся как утилита для нестандартных случаев. |
 | 2 | NextAuth v4 → Auth.js v5 | Мигрируем сразу, в Этапе 2. |
 | 3 | Turbopack | Включаем сразу для `dev` и `build`. Webpack — fallback. |
 | 4 | `recoil` | Удаляем, всё на `zustand` (Этап 1.5). |
@@ -365,18 +460,18 @@ src/
 
 | Этап | Дни |
 |---|---|
-| 0. Подготовка, baseline, Playwright setup | 1.5–2 |
+| 0. Подготовка, baseline, Playwright setup | ✅ done |
 | 1. Обновление пакетов | 1 |
-| 1.5. Recoil → Zustand | 1–2 |
+| ~~1.5. Recoil → Zustand~~ | отменён (recoil не используется) |
 | 2. App Router скелет + Turbopack + Auth.js v5 | 1.5 |
 | 3. Миграция страниц (67 файлов) | 5–8 |
-| 4. Миграция API (130 файлов) | 3–5 |
+| 4. Миграция API на native Route Handlers (130 файлов + HOF lib + Zod) | 5–7 |
 | 5. Middleware/Auth/Tolgee/CSRF | 0.5 |
 | 6. Тесты, e2e, билд | 1.5 |
 | 7. Очистка | 0.5 |
-| **Итого** | **15.5–22 рабочих дней** |
+| **Итого (без 0)** | **14.5–20 рабочих дней** |
 
-С буфером на риски (несовместимые зависимости React 19, edge-cases Auth.js v5, Turbopack-ошибки) — **~4 недели** на одного человека.
+С буфером на риски (несовместимые зависимости React 19, edge-cases Auth.js v5, Turbopack-ошибки, объём DTO под Zod) — **~4 недели** на одного человека.
 
 ---
 

@@ -16,7 +16,10 @@
 		"db:deploy": "gdhub-prisma deploy --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
 		"db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
 		"test": "dotenv vitest",
-		"test:integration": "cross-env RUN_DOCKER_INTEGRATION_TESTS=1 dotenv -- vitest --run tests/docker-prisma.integration.test.ts"
+		"test:integration": "cross-env RUN_DOCKER_INTEGRATION_TESTS=1 dotenv -- vitest --run tests/docker-prisma.integration.test.ts",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
+		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test"
 	},
 	"prisma": {
 		"seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
@@ -143,6 +146,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
+		"@playwright/test": "^1.60.0",
 		"@svgr/webpack": "^6.3.1",
 		"@tanstack/react-query-devtools": "^5.87.4",
 		"@tolgee/cli": "^2.14.0",
