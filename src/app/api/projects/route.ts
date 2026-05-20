@@ -1,26 +1,20 @@
-import { IsOptional, IsString } from "class-validator";
-import {
-	BadRequestException,
-	createHandler,
-	Get,
-	Query,
-	ValidationPipe,
-} from "next-api-decorators";
-import { NextAuthGuard } from "@/lib/api-middlewares";
+import { z } from "zod";
+import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
-class ProjectsQueryDto {
-	@IsOptional()
-	@IsString()
-	stage?: string;
-}
+const ProjectsQuerySchema = z.object({
+	stage: z.string().optional(),
+});
 
-@NextAuthGuard("user")
-class ApiProjectsHandler {
-	constructor() {}
+type ProjectsQuery = z.infer<typeof ProjectsQuerySchema>;
 
-	@Get()
-	public async list(@Query(ValidationPipe) { stage }: ProjectsQueryDto) {
+export const GET = withAuth({ mode: "user" })(
+	withValidation(
+		ProjectsQuerySchema,
+		"query",
+	)(async (_req, _ctx, { body }) => {
+		const { stage } = body as ProjectsQuery;
+
 		try {
 			const projects = await prisma.project.getProjectsOrderedByActivity({
 				order: "desc",
@@ -38,27 +32,18 @@ class ApiProjectsHandler {
 						}
 					: undefined,
 			});
+
 			const projectIds = projects.map((project) => project.id);
 			const publishedVacancies = await prisma.teamVacancy.findMany({
 				where: {
 					team: {
-						project: {
-							id: {
-								in: projectIds,
-							},
-						},
+						project: { id: { in: projectIds } },
 					},
 					status: "Published",
 				},
 				select: {
 					team: {
-						select: {
-							project: {
-								select: {
-									id: true,
-								},
-							},
-						},
+						select: { project: { select: { id: true } } },
 					},
 				},
 			});
@@ -68,7 +53,7 @@ class ApiProjectsHandler {
 				),
 			);
 
-			return await Promise.all(
+			const enriched = await Promise.all(
 				projects.map(async (project) => ({
 					...project,
 					applauseCount: await prisma.project.getApplauseCount({
@@ -77,11 +62,11 @@ class ApiProjectsHandler {
 					hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
 				})),
 			);
+
+			return json(enriched);
 		} catch (error) {
 			console.error("[projects: list: error]", error);
-			throw new BadRequestException("Failed to get projects");
+			return apiError.badRequest("Failed to get projects");
 		}
-	}
-}
-
-export default createHandler(ApiProjectsHandler);
+	}),
+);
