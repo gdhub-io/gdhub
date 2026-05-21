@@ -19,7 +19,7 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
 import countryList from "react-select-country-list";
@@ -36,7 +36,7 @@ export const OnboardingProfileStep = ({
 	onSave,
 	onLoading = () => {},
 }: IOnboardingProfileStep) => {
-	const router = useRouter();
+	const searchParams = useSearchParams();
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { data: session } = useSession();
@@ -93,9 +93,10 @@ export const OnboardingProfileStep = ({
 			const { firstName, lastName, ...data } = await form.validateFields();
 			let preRegistrationData: Record<string, any> | undefined;
 
-			if (router.query.provider) {
+			const provider = searchParams.get("provider");
+			if (provider) {
 				const preRegistrationCookie = getCookie(
-					`auth.${router.query.provider}.pre-registration`,
+					`auth.${provider}.pre-registration`,
 				);
 				preRegistrationData = preRegistrationCookie
 					? JSON.parse(preRegistrationCookie)
@@ -110,7 +111,7 @@ export const OnboardingProfileStep = ({
 					preRegistrationData?.needSubscribeToNewsletter,
 			});
 
-			deleteCookie(`auth.${router.query.provider}.pre-registration`);
+			deleteCookie(`auth.${provider}.pre-registration`);
 
 			onSave({ userId: res.data.id });
 		} catch (error: any) {
@@ -143,9 +144,11 @@ export const OnboardingProfileStep = ({
 						requiredMark="optional"
 						autoComplete="off"
 						scrollToFirstError
-						initialValues={{ registrationToken: router.query.token as string }}
+						initialValues={{
+							registrationToken: searchParams.get("token") as string,
+						}}
 					>
-						<Space direction="vertical" size={16} style={{ width: "100%" }}>
+						<Space orientation="vertical" size={16} style={{ width: "100%" }}>
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={12}>
 									<Form.Item

@@ -1,9 +1,7 @@
 .component {
 
-  :global {
-    div.novu {
-      display: flex;
-    }
+  :global(div.novu) {
+    display: flex;
   }
 
   .bellIcon {

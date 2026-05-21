@@ -40,7 +40,7 @@ const UserTeam = () => {
 			key: "userName",
 			render: (_, member) => {
 				return (
-					<Space direction="vertical" size={0}>
+					<Space orientation="vertical" size={0}>
 						<Text className={tableStyles.tableMemberName}>
 							{member.user.name}
 						</Text>

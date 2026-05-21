@@ -137,7 +137,7 @@ export default function HubPage() {
 										<Alert
 											type="warning"
 											message={
-												<Space direction="vertical">
+												<Space orientation="vertical">
 													<div>
 														{t(
 															"hub.text1.part1",

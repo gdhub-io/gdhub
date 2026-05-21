@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { theme } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Suspense, useEffect } from "react";
 import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";

@@ -3,17 +3,15 @@
 		background-color: #fff;
 		
 
-		:global {
-			.onboarding-box {
-				background-color: unset;
-			}
+		:global(.onboarding-box) {
+			background-color: unset;
+		}
 
-			.onboarding-content {
-				margin: unset;
+		:global(.onboarding-content) {
+			margin: unset;
 
-				h1 {
-					font-size: 28px;
-				}
+			h1 {
+				font-size: 28px;
 			}
 		}
 	}

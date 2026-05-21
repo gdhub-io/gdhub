@@ -71,7 +71,7 @@ export const DevLogPostModal = ({
 			destroyOnHidden
 			confirmLoading={isCreating || isUpdating}
 			centered
-			maskClosable={false}
+			mask={{ closable: false }}
 			okText={t("modal.dev-log-post.save", "Save")}
 			cancelText={t("modal.dev-log-post.cancel", "Cancel")}
 			open={open}

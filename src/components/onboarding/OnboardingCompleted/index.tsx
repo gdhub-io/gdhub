@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Grid, Space, Spin, Typography } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import RegistrationBgImage from "@/assets/images/registration-bg.jpg";
 import { gtmEventTrigger } from "@/helpers/gtm";
@@ -12,9 +12,10 @@ const { Title } = Typography;
 
 export const OnboardingCompleted = () => {
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
-	const { pendingInvitation } = router.query;
+	const pendingInvitation = searchParams.get("pendingInvitation");
 	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false);
 
 	// Проверяем, есть ли ожидающие приглашения
@@ -110,7 +111,7 @@ export const OnboardingCompleted = () => {
 		>
 			<div className="onboarding-box">
 				<div className="onboarding-content">
-					<Space direction="vertical" size={56}>
+					<Space orientation="vertical" size={56}>
 						<Title>
 							{t(
 								"onboarding.completed.title",

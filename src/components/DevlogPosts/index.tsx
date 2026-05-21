@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";

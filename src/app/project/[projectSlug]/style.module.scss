@@ -51,30 +51,28 @@
 		line-height: 120%;
 	}
 
-	:global {
-		.project-author {
-			color: #444;
+	:global(.project-author) {
+		color: #444;
 
-			span {
-				// margin-right: 10px;
-				font-weight: bold;
-			}
+		span {
+			// margin-right: 10px;
+			font-weight: bold;
 		}
+	}
 
-		.project-description {
-			margin-top: 24px;
-			font-size: 16px;
+	:global(.project-description) {
+		margin-top: 24px;
+		font-size: 16px;
 
-			// span {
-			// 	margin-right: 10px;
-			// 	font-weight: bold;
-			// 	display: block;
-			// }
-		}
+		// span {
+		// 	margin-right: 10px;
+		// 	font-weight: bold;
+		// 	display: block;
+		// }
+	}
 
-		.project-vacancies {
-			margin-top: 24px;
-		}
+	:global(.project-vacancies) {
+		margin-top: 24px;
 	}
 }
 

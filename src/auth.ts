@@ -13,6 +13,7 @@ import { prisma } from "@/services/prisma";
 export const authConfig: NextAuthConfig = {
 	adapter: PrismaAdapter(prisma as unknown as prismaClient.PrismaClient),
 	secret: env("NEXTAUTH_SECRET"),
+	trustHost: true,
 	session: { strategy: "jwt" },
 	pages: {
 		signIn: "/signin",

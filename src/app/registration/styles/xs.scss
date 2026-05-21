@@ -2,18 +2,16 @@
 	.container {
 		background-color: #fff;
 
-		:global {
-			.login-box {
-				background-color: unset;
-			}
+		:global(.login-box) {
+			background-color: unset;
+		}
 
-			.login-form {
-				padding: 0 32px;
-				border-radius: 16px;
+		:global(.login-form) {
+			padding: 0 32px;
+			border-radius: 16px;
 
-				h1 {
-					font-size: 42px;
-				}
+			h1 {
+				font-size: 42px;
 			}
 		}
 	}

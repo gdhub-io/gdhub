@@ -115,7 +115,7 @@ const TeamMembers = ({ teamId, variant = "default" }: TeamMembersArgs) => {
 	}
 
 	return (
-		<Space direction="vertical" style={{ marginTop: 60, width: "100%" }}>
+		<Space orientation="vertical" style={{ marginTop: 60, width: "100%" }}>
 			<Title level={2}>{t("team-members.title", "Team")}</Title>
 
 			{!!session && (

@@ -115,12 +115,12 @@ export function RegistrationClient() {
 			>
 				<div className="login-box">
 					<div className="login-form">
-						<Space direction="vertical" size={40}>
+						<Space orientation="vertical" size={40}>
 							{registrationStep.step < 3 && (
 								<Title>{t("Registration", "Registration")}</Title>
 							)}
 							{registrationStep.step === 1 && (
-								<Space direction="vertical" size={24}>
+								<Space orientation="vertical" size={24}>
 									<Button
 										type="primary"
 										style={{ width: "100%" }}
@@ -162,7 +162,7 @@ export function RegistrationClient() {
 
 							{registrationStep.step === 2 &&
 								registrationStep.provider === "google" && (
-									<Space direction="vertical" size={24}>
+									<Space orientation="vertical" size={24}>
 										<Form
 											variant="filled"
 											form={formRegGoogle}
@@ -237,7 +237,7 @@ export function RegistrationClient() {
 
 							{registrationStep.step === 2 &&
 								registrationStep.provider === "email" && (
-									<Space direction="vertical" size={24}>
+									<Space orientation="vertical" size={24}>
 										<Paragraph>
 											{t(
 												"page.registration.email.subtitle",
@@ -335,7 +335,7 @@ export function RegistrationClient() {
 
 							{registrationStep.step === 3 &&
 								registrationStep.provider === "email" && (
-									<Space direction="vertical" size={24}>
+									<Space orientation="vertical" size={24}>
 										<Paragraph style={{ maxWidth: 400 }}>
 											{t(
 												"page.registration.email.complete",

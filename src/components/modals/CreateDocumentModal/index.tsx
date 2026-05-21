@@ -94,7 +94,7 @@ const CreateDocumentModal = ({
 				</Flex>
 			}
 			width={640}
-			maskClosable={false}
+			mask={{ closable: false }}
 			okText={t("modal.create-document.ok-text", "Add")}
 			cancelText={t("modal.create-document.cancel-text", "Cancel")}
 			open={open}

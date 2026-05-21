@@ -13,7 +13,7 @@ import {
 	Space,
 } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
@@ -24,6 +24,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	const { data: session, status: authStatus }: any = useSession();
 	const screens = Grid.useBreakpoint();
 	const router = useRouter();
+	const pathname = usePathname();
 	const { t } = useTranslate();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [activeMenuKey, setActiveMenuKey] = useState<string>("");
@@ -39,7 +40,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			if (window.location.hash) {
 				setActiveMenuKey(window.location.hash);
 				// Scroll to anchor after navigation
-				if (router.pathname === "/") {
+				if (pathname === "/") {
 					setTimeout(() => {
 						const element = document.querySelector(window.location.hash);
 						if (element) {
@@ -58,7 +59,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		handleHashChange();
 		window.addEventListener("hashchange", handleHashChange);
 		return () => window.removeEventListener("hashchange", handleHashChange);
-	}, [router.pathname]);
+	}, [pathname]);
 
 	// hide main scroll on open menu
 	useEffect(() => {
@@ -70,7 +71,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	}, [openMobileMenu]);
 
 	const writeInternalLink = (internalLink: string) => {
-		return router.pathname == "/" ? internalLink : `/${internalLink}`;
+		return pathname == "/" ? internalLink : `/${internalLink}`;
 	};
 
 	// Function for smooth scrolling to anchor
@@ -80,15 +81,12 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	) => {
 		if (!selector.startsWith("#")) return;
 
-		const isHomePage = router.pathname === "/";
+		const isHomePage = pathname === "/";
 
 		// On non-home pages, navigate programmatically to "/#anchor" to avoid Menu swallowing link clicks
 		if (!isHomePage) {
 			e.preventDefault();
-			router.push({
-				pathname: "/",
-				hash: selector.slice(1),
-			});
+			router.push(`/#${selector.slice(1)}`);
 			if (openMobileMenu) setOpenMobileMenu(false);
 			return;
 		}
@@ -265,7 +263,6 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			{!screens.xl && (
 				<Drawer
 					className={styles.mobileMenuDrawer}
-					height={"100%"}
 					afterOpenChange={handleOpenMobileMenu}
 					closeIcon={<AiOutlineClose size={24} />}
 					title={
@@ -278,7 +275,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					onClose={() => setOpenMobileMenu(false)}
 					open={openMobileMenu}
 				>
-					<Space direction="vertical" size={32} style={{ width: "100%" }}>
+					<Space orientation="vertical" size={32} style={{ width: "100%" }}>
 						<Menu
 							items={headerMenu}
 							theme="dark"

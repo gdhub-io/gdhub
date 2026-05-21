@@ -264,7 +264,7 @@ const SpecialityModal = ({
 			title={renderTitle()}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			cancelText={t("modal.speciality.title.close", "Close")}
 			okText={t("modal.speciality.title.save", "Save")}
 			open={open}

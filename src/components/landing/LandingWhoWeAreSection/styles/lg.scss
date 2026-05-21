@@ -15,16 +15,14 @@
         top: -32px;
       }
   
-      :global {
-        span.anticon {
-          background: unset;
-          padding: 8px;
-          font-size: 32px;
-          border-right: 1px solid #fff;
-  
-          &>svg>path {
-            fill: #fff;
-          }
+      :global(span.anticon) {
+        background: unset;
+        padding: 8px;
+        font-size: 32px;
+        border-right: 1px solid #fff;
+
+        &>svg>path {
+          fill: #fff;
         }
       }
     }

@@ -53,7 +53,7 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 			width={800}
 			centered
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			footer={
 				<Space>
 					<Button onClick={handleClose}>Отмена</Button>

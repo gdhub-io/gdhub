@@ -1,3 +1,4 @@
+@use "sass:meta";
 .container {
   background-size: cover;
   background-position: center;
@@ -11,63 +12,61 @@
   min-height: 100vh;
   width: 100%;
 
-  :global {
-    h1 {
-      font-size: 48px;
-      font-weight: 800;
-    }
+  :global(h1) {
+    font-size: 48px;
+    font-weight: 800;
+  }
 
-    .ant-typography {
-      color: #000;
-    }
+  :global(.ant-typography) {
+    color: #000;
+  }
 
-    .login-box {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-direction: row-reverse;
-      max-width: 780px;
-      background-color: white;
+  :global(.login-box) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse;
+    max-width: 780px;
+    background-color: white;
+    border-radius: 16px;
+  }
+
+  :global(.login-form) {
+    flex: 1 0 100%;
+    width: 100%;
+    padding: 96px 193px 123px;
+  }
+
+  :global(.login-form p.form-title) {
+    color: #333333;
+    font-size: 42px;
+    font-weight: bold;
+    margin-bottom: 0;
+  }
+
+  :global(label) {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  :global(input) {
+    height: 52px;
+    font-size: 18px;
+  }
+
+  :global(.ant-form) {
+    text-align: left !important;
+  }
+
+  @media screen and (max-width: 767px) {
+    :global(.login-box) {
+      flex-direction: column;
+      box-shadow: none;
       border-radius: 16px;
     }
 
-    .login-form {
-      flex: 1 0 100%;
-      width: 100%;
-      padding: 96px 193px 123px;
-    }
-
-    .login-form p.form-title {
-      color: #333333;
-      font-size: 42px;
-      font-weight: bold;
-      margin-bottom: 0;
-    }
-
-    label {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    input {
-      height: 52px;
-      font-size: 18px;
-    }
-
-    .ant-form {
-      text-align: left !important;
-    }
-
-    @media screen and (max-width: 767px) {
-      .login-box {
-        flex-direction: column;
-        box-shadow: none;
-        border-radius: 16px;
-      }
-
-      .login-form {
-        max-width: 100%;
-      }
+    :global(.login-form) {
+      max-width: 100%;
     }
   }
 }
@@ -84,9 +83,9 @@
 
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

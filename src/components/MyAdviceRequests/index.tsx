@@ -322,7 +322,7 @@ const MyAdviceRequests: React.FC<{
 						</Space>
 					)}
 				</Flex>
-				<Space direction="vertical" size={32} style={{ width: "100%" }}>
+				<Space orientation="vertical" size={32} style={{ width: "100%" }}>
 					{stacks}
 				</Space>
 			</div>

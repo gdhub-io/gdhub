@@ -1,4 +1,5 @@
-@import '../../styles/variables.scss';
+@use "sass:meta";
+@use '../../styles/variables.scss';
 
 .section {
   position: relative;
@@ -6,16 +7,14 @@
   // padding: 48px 165px 24px;
   padding: 28px 70px 16px;
 
-  :global {
-    .ant-typography {
-      color: #FFFDFC;
-      font-size: 13px;
-    }
+  :global(.ant-typography) {
+    color: #FFFDFC;
+    font-size: 13px;
   }
 }
 
 .container {
-  max-width: $wrapper-width;
+  max-width: variables.$wrapper-width;
 
   a {
     font-size: 16px;
@@ -29,45 +28,43 @@
     }
   }
 
-  :global {
-    h5.ant-typography {
-      font-weight: 700;
+  :global(h5.ant-typography) {
+    font-weight: 700;
+  }
+
+  :global(.ant-anchor) {
+    display: inline-flex;
+    flex-direction: column;
+    column-gap: 8px;
+    row-gap: 4px;
+
+    &::before {
+      content: none !important;
     }
 
-    .ant-anchor {
-      display: inline-flex;
-      flex-direction: column;
-      column-gap: 8px;
-      row-gap: 4px;
+    .ant-anchor-ink {
+      display: none !important;
+    }
 
-      &::before {
-        content: none !important;
-      }
+    .ant-anchor-link {
+      font-size: 14px;
+      padding: 0 !important;
 
-      .ant-anchor-ink {
-        display: none !important;
-      }
+      a {
+        color: #FFFDFC !important;
+        font-weight: 400 !important;
+        display: inline;
+        border-bottom: 1px solid transparent;
 
-      .ant-anchor-link {
-        font-size: 14px;
-        padding: 0 !important;
-
-        a {
-          color: #FFFDFC !important;
-          font-weight: 400 !important;
-          display: inline;
-          border-bottom: 1px solid transparent;
-
-          &:hover {
-            border-bottom: 1px solid #FFFDFC;
-          }
+        &:hover {
+          border-bottom: 1px solid #FFFDFC;
         }
       }
     }
+  }
 
-    .ant-divider {
-      border-color: #ffffff26;
-    }
+  :global(.ant-divider) {
+    border-color: #ffffff26;
   }
 }
 
@@ -77,9 +74,9 @@
   color: #9f9f9f !important;
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

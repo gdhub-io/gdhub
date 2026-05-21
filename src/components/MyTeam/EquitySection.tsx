@@ -81,7 +81,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 
 	return (
 		<Card className={styles.equityCard}>
-			<Space direction="vertical" style={{ width: "100%" }} size="middle">
+			<Space orientation="vertical" style={{ width: "100%" }} size="middle">
 				<div className={styles.titleContainer}>
 					<Space align="center">
 						<Typography.Text strong>

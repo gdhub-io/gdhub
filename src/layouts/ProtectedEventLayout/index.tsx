@@ -504,7 +504,7 @@ export const ProtectedEventLayout = ({
 								wrap={true}
 							>
 								<Space
-									direction="vertical"
+									orientation="vertical"
 									size={0}
 									style={{ marginBottom: 24 }}
 								>
@@ -521,7 +521,6 @@ export const ProtectedEventLayout = ({
 				{!screens.lg && (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={"100%"}
 						title={
 							<Space>
 								<Avatar

@@ -65,7 +65,7 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 									</div>
 
 									<div className={styles.cardTitle}>
-										<Space direction="vertical" size={0}>
+										<Space orientation="vertical" size={0}>
 											<Text ellipsis>{course.direction?.name}</Text>
 											<Title
 												ellipsis={{ rows: 2 }}

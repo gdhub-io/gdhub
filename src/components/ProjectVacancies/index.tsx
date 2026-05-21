@@ -7,7 +7,7 @@ import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import VacancyPreviewModal from "@/components/modals/VacancyPreviewModal";
@@ -30,7 +30,7 @@ interface ProjectVacanciesArgs {
 
 const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const { data: session } = useSession();
-	const router = useRouter();
+	const pathname = usePathname();
 	const { t } = useTranslate();
 	const [showVacancyPreviewModal, setShowVacancyPreviewModal] = useState(false);
 	const [selectedVacancyId, setSelectedVacancyId] = useState<string>();
@@ -122,7 +122,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 						{t("vacancy.details", "Details")}
 					</Button>
 				) : (
-					<Link href={`/signin?callbackUrl=${router.asPath}`}>
+					<Link href={`/signin?callbackUrl=${pathname}`}>
 						<Button>{t("vacancy.enterToSee", "Enter to see")}</Button>
 					</Link>
 				),
@@ -153,7 +153,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 
 	return (
 		<>
-			<Space direction="vertical" style={{ width: "100%" }}>
+			<Space orientation="vertical" style={{ width: "100%" }}>
 				<Title level={2}>{t("vacancy.title", "Vacancies")}</Title>
 				{!!projectVacancies?.data.length && (
 					<p style={{ fontSize: 12 }}>

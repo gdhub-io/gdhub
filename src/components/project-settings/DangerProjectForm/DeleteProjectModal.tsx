@@ -13,7 +13,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
 	getErrorMessage,
@@ -95,7 +95,11 @@ const DeleteProjectModal = ({
 			width={760}
 		>
 			<Spin spinning={isFetchingPreview}>
-				<Space direction="vertical" size="middle" className={styles.modalBody}>
+				<Space
+					orientation="vertical"
+					size="middle"
+					className={styles.modalBody}
+				>
 					<Text>
 						{t(
 							"project.settings.danger.preview.title",
@@ -114,7 +118,7 @@ const DeleteProjectModal = ({
 							)}
 							description={
 								preview.blockers.length ? (
-									<Space direction="vertical" size="small">
+									<Space orientation="vertical" size="small">
 										<Text>
 											{t(
 												"project.settings.danger.delete.blockedDescription",

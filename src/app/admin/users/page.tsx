@@ -101,7 +101,7 @@ export default function UsersAdminPage() {
 				sorter: true,
 				sortOrder: sortField === "name" ? sortOrder : null,
 				render: (value, record) => (
-					<Space direction="vertical" size={0}>
+					<Space orientation="vertical" size={0}>
 						<Text strong>{value}</Text>
 						<Text type="secondary">{record.email || "-"}</Text>
 					</Space>

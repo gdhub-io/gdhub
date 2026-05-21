@@ -24,10 +24,8 @@
 			margin-top: 30px !important;
 		}
 
-		:global {
-			.ant-typography {
-				font-size: 14px !important;
-			}
+		:global(.ant-typography) {
+			font-size: 14px !important;
 		}
 	}
 
@@ -43,16 +41,14 @@
 			top: -32px;
 		}
 
-		:global {
-			span.anticon {
-				background: unset;
-				padding: 8px;
-				font-size: 24px;
-				border-right: 1px solid #fff;
+		:global(span.anticon) {
+			background: unset;
+			padding: 8px;
+			font-size: 24px;
+			border-right: 1px solid #fff;
 
-				&>svg>path {
-					fill: #fff;
-				}
+			&>svg>path {
+				fill: #fff;
 			}
 		}
 	}

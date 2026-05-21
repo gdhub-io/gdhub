@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { T, useTolgee } from "@tolgee/react";
 import { Checkbox, Flex, Form, Input, Modal, message, Spin } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
@@ -69,7 +69,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 			}
 			width={640}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			okText={t("modal.create-project.ok-text", "Create")}
 			cancelText={t("modal.create-project.cancel-text", "Cancel")}
 			open={open}

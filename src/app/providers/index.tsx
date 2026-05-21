@@ -1,5 +1,6 @@
 "use client";
 
+import "@/config/dayjs-setup";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";

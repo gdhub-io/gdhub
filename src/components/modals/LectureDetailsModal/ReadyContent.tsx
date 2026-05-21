@@ -3,7 +3,6 @@ import { useTranslate } from "@tolgee/react";
 import { Avatar, Button, Card, Space } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { Fragment, useMemo } from "react";
 import { TextWithLineBreak } from "@/components/TextWithLineBreak";
@@ -11,7 +10,6 @@ import type { LectureDetails } from ".";
 
 export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 	const { t } = useTranslate();
-	const router = useRouter();
 	const { data: session } = useSession();
 	const lecturer = useMemo(
 		() =>
@@ -72,7 +70,7 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 			)}
 
 			{!!lecturer?.linkToStream && userIsRegistered && (
-				<Space wrap direction="vertical">
+				<Space wrap orientation="vertical">
 					<Link href={lecturer.linkToStream} target="_blank">
 						<Button type="primary" style={{ marginTop: 16 }}>
 							{t("lecture.linkToStream", "Link to stream")}

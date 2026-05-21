@@ -54,7 +54,7 @@ export const TaskEditModal: React.FC<TaskEditModalProps> = ({
 			width={600}
 			centered
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			footer={
 				<Space>
 					<Button onClick={handleClose}>Отмена</Button>

@@ -445,7 +445,7 @@ export const ProtectedProjectLayout = ({
 								style={{ marginBottom: 24 }}
 							>
 								<Space
-									direction="vertical"
+									orientation="vertical"
 									size={0}
 									style={{ marginBottom: 24 }}
 								>
@@ -462,7 +462,6 @@ export const ProtectedProjectLayout = ({
 				{!screens.lg && (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={"100%"}
 						title={
 							<Space>
 								<Avatar

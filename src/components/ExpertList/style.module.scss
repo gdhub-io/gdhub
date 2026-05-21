@@ -1,3 +1,4 @@
+@use "sass:meta";
 .description {
   font-family: var(--second-font-family);
   font-style: italic;
@@ -105,4 +106,4 @@
   }
 }
 
-@import './styles/xs.scss'; // screen < 576px
+@include meta.load-css('styles/xs.scss'); // screen < 576px

@@ -97,7 +97,7 @@ export function OnboardingClient() {
 									<Steps
 										current={onboardingStep}
 										className={styles.horizontalSteps}
-										progressDot
+										type="dot"
 										direction="horizontal"
 										items={onboardingMenu}
 										style={{ flex: "auto" }}

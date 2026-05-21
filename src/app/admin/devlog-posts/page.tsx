@@ -158,7 +158,7 @@ export default function DevlogPostsAdminPage() {
 
 				return (
 					<Space
-						direction="vertical"
+						orientation="vertical"
 						size={2}
 						style={{ maxWidth: 260, width: "100%" }}
 					>

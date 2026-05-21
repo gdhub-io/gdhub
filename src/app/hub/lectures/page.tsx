@@ -28,7 +28,7 @@ export default function HubLecturesPage() {
 
 	return (
 		<ProtectedLayout title={t("Lectures")}>
-			<Space direction="vertical" size="large">
+			<Space orientation="vertical" size="large">
 				<p>
 					{t(
 						"hub.lectures.text1.part1",

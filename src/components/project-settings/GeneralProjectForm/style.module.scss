@@ -12,23 +12,19 @@
 		object-fit: contain;
 	}
 
-	:global {
-		.remove-cover-btn {
-			position: absolute;
-			top: 5px;
-			right: 5px;
-		}
+	:global(.remove-cover-btn) {
+		position: absolute;
+		top: 5px;
+		right: 5px;
 	}
 }
 
 .form {
-	:global {
-		.ant-form-item-has-error {
-			.mdxeditor {
-				border-color: #f15541 !important;
-				box-shadow: 0 0 0 2px rgba(255, 73, 12, 0.05);
-				outline: 0;
-			}
+	:global(.ant-form-item-has-error) {
+		.mdxeditor {
+			border-color: #f15541 !important;
+			box-shadow: 0 0 0 2px rgba(255, 73, 12, 0.05);
+			outline: 0;
 		}
 	}
 }

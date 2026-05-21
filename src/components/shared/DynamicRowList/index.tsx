@@ -103,7 +103,7 @@ export const DynamicRowList = <TValue,>({
 
 	return (
 		<DynamicRowListContext.Provider value={{ values: items }}>
-			<Space direction="vertical" style={{ width: "100%" }}>
+			<Space orientation="vertical" style={{ width: "100%" }}>
 				{items.map((currentValue, index) => {
 					return renderRow({
 						index,

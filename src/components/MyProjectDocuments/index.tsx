@@ -89,7 +89,7 @@ const MyProjectDocuments = () => {
 			width: "30%",
 			ellipsis: true,
 			render: (value, data) => (
-				<Space direction="vertical" size={0}>
+				<Space orientation="vertical" size={0}>
 					<Text strong>
 						<Link href={data.link} target="_blank">
 							{value}

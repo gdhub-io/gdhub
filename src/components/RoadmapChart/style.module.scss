@@ -3,10 +3,8 @@
   width: 100%;
   margin: 16px 0;
 
-  :global {
-    .ant-typography {
-      font-size: 10px;
-    }
+  :global(.ant-typography) {
+    font-size: 10px;
   }
 }
 
@@ -46,18 +44,14 @@
 .dateInput {
   max-width: 80px;
 
-  :global {
-    .ant-picker-clear {
-      right: -10px !important;
-    }
+  :global(.ant-picker-clear) {
+    right: -10px !important;
   }
 }
 
 .dateInputPopup {
-  :global {
-    .ant-picker-cell {
-      padding: 0px !important;
-    }
+  :global(.ant-picker-cell) {
+    padding: 0px !important;
   }
 }
 

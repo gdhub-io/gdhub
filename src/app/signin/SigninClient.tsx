@@ -94,10 +94,10 @@ export function SigninClient() {
 			>
 				<div className="login-box">
 					<div className="login-form">
-						<Space direction="vertical" size={40}>
+						<Space orientation="vertical" size={40}>
 							{loginStep < 3 && <Title>{t("signin.title", "Log in")}</Title>}
 							{loginStep === 1 && (
-								<Space direction="vertical" size={24}>
+								<Space orientation="vertical" size={24}>
 									<Button
 										type="primary"
 										style={{ width: "100%" }}
@@ -137,7 +137,7 @@ export function SigninClient() {
 							)}
 
 							{loginStep === 2 && (
-								<Space direction="vertical" size={24}>
+								<Space orientation="vertical" size={24}>
 									<Paragraph>
 										{t(
 											"signin.subtitle",
@@ -177,7 +177,7 @@ export function SigninClient() {
 							)}
 
 							{loginStep === 3 && (
-								<Space direction="vertical" size={24}>
+								<Space orientation="vertical" size={24}>
 									<Paragraph style={{ maxWidth: 400 }}>
 										{t(
 											"signin.email.complete",

@@ -466,7 +466,7 @@ const MyEventsPage = () => {
 											}
 											description={
 												<Space
-													direction="vertical"
+													orientation="vertical"
 													size="small"
 													style={{ width: "100%" }}
 												>

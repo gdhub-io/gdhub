@@ -1,6 +1,5 @@
 import { T } from "@tolgee/react";
 import { Button, Grid, Space, Typography } from "antd";
-import { useRouter } from "next/router";
 import RegistrationBgImage from "@/assets/images/registration-bg.jpg";
 import styles from "./style.module.scss";
 
@@ -8,7 +7,6 @@ const { Paragraph, Title } = Typography;
 
 export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 	const screens = Grid.useBreakpoint();
-	const router = useRouter();
 
 	return (
 		<div
@@ -21,7 +19,7 @@ export const OnboardingWelcome = ({ onNext }: { onNext: () => void }) => {
 		>
 			<div className="onboarding-box">
 				<div className="onboarding-content">
-					<Space direction="vertical" size={56}>
+					<Space orientation="vertical" size={56}>
 						<Title>
 							<T keyName="onboarding.welcome.title">
 								Welcome to the Game Developers Hub community!

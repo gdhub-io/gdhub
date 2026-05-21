@@ -13,17 +13,13 @@
 
 	.stats {
 		.members {
-			:global {
-				span.ant-typography>strong {
-					font-size: 20px;
-				}
+			:global(span.ant-typography>strong) {
+				font-size: 20px;
 			}
 		}
 
-		:global {
-			span.ant-typography>strong {
-				font-size: 32px !important;
-			}
+		:global(span.ant-typography>strong) {
+			font-size: 32px !important;
 		}
 	}
 }

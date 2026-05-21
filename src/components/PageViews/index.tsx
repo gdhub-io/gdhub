@@ -2,7 +2,7 @@ import { EyeOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Space } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { type CSSProperties, useCallback } from "react";
 
 interface PageViewsProps {
@@ -26,12 +26,12 @@ export const PageViews = ({
 	textStyle = { fontSize: "12px" },
 	minViews = 10,
 }: PageViewsProps) => {
-	const router = useRouter();
+	const pathname = usePathname();
 
 	const { data: pageviews = 0 } = useQuery({
-		queryKey: ["pageviews", path, router.asPath, startDate],
+		queryKey: ["pageviews", path, pathname, startDate],
 		queryFn: () => fetchPageviews(path, startDate),
-		enabled: router.isReady,
+		enabled: pathname != null,
 	});
 
 	const fetchPageviews = useCallback(
@@ -39,7 +39,7 @@ export const PageViews = ({
 			try {
 				let pageviews = 0;
 
-				const currentPath = router.asPath;
+				const currentPath = pathname;
 
 				if (isUnique) {
 					const globalResponse = await axios.get(
@@ -62,7 +62,7 @@ export const PageViews = ({
 				console.error("Error fetching pageviews:", error);
 			}
 		},
-		[router, locale],
+		[pathname, locale],
 	);
 
 	const formatPageviews = (views: string): string | null => {

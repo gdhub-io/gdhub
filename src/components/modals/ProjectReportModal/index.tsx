@@ -142,7 +142,7 @@ const ProjectReportModal = ({
 			}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			okText={t("modal.projectReport.save", "Save")}
 			cancelText={t("modal.projectReport.close", "Close")}
 			open={open}

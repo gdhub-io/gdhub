@@ -1,52 +1,68 @@
 {
-	"compilerOptions": {
-		"baseUrl": ".",
-		"target": "ESNext",
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"strictPropertyInitialization": false,
-		"forceConsistentCasingInFileNames": true,
-		"noEmit": true,
-		"esModuleInterop": true,
-		"module": "esnext",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"jsx": "preserve",
-		"incremental": true,
-		"disableSourceOfProjectReferenceRedirect": true,
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
-		"types": ["vitest"],
-		"paths": {
-			"@/*": ["src/*"]
-		}
-	},
-	"watchOptions": {
-		"watchFile": "useFsEvents",
-		"watchDirectory": "useFsEvents",
-		"fallbackPolling": "dynamicPriority"
-	},
-	"include": [
-		"next-env.d.ts",
-		"src/types/common.d.ts",
-		"src/**/*.ts",
-		"src/**/*.tsx",
-		"prisma/**/*.ts",
-		"tests/**/*.ts",
-		"src/components/admin/BlogPostEditor",
-		".next/types/**/*.ts"
-	],
-	"exclude": ["node_modules", "tsconfig.json", ".vscode", ".next"],
-	"ts-node": {
-		"compilerOptions": {
-			"module": "CommonJS"
-		},
-		"require": ["tsconfig-paths/register"]
-	}
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "disableSourceOfProjectReferenceRedirect": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "types": [
+      "vitest"
+    ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority"
+  },
+  "include": [
+    "next-env.d.ts",
+    "src/types/common.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "prisma/**/*.ts",
+    "tests/**/*.ts",
+    "src/components/admin/BlogPostEditor",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "tsconfig.json",
+    ".vscode",
+    ".next"
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    },
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  }
 }

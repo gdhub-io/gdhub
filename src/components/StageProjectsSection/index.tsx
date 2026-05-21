@@ -43,7 +43,7 @@ export const StageProjectsSection = ({
 
 	if (!projects?.data.length) {
 		return (
-			<Space style={{ width: "100%", marginTop: 32 }} direction="vertical">
+			<Space style={{ width: "100%", marginTop: 32 }} orientation="vertical">
 				<Title level={5}>
 					{t(
 						"component.stageProjectsSection.projectListByStage",
@@ -58,7 +58,7 @@ export const StageProjectsSection = ({
 	}
 
 	return (
-		<Space style={{ width: "100%", marginTop: 32 }} direction="vertical">
+		<Space style={{ width: "100%", marginTop: 32 }} orientation="vertical">
 			<Title level={5}>
 				{t(
 					"component.stageProjectsSection.projectListByStage",

@@ -139,7 +139,7 @@ const ProfilePage = () => {
 						>
 							<Space size={10} align="center">
 								<Avatar src={session?.user?.image || undefined} size={48} />
-								<Space direction="vertical" size={0}>
+								<Space orientation="vertical" size={0}>
 									<Text strong style={{ fontSize: 17, lineHeight: "22px" }}>
 										{session?.user?.name || "User"}
 									</Text>

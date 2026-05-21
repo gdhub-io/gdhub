@@ -1,3 +1,5 @@
+@use "sass:color";
+@use "sass:meta";
 .cookieContainer {
   position: fixed;
   bottom: 0px;
@@ -9,53 +11,51 @@
   padding: 45px 165px;
   z-index: 1000;
 
-  :global {
-    .ant-typography {
-      font-weight: 300;
-      color: #fff;
+  :global(.ant-typography) {
+    font-weight: 300;
+    color: #fff;
+  }
+
+  // Style for regular button (Details)
+  :global(.ant-btn) {
+    background-color: transparent;
+    border-color: #ffffff;
+    color: #ffffff;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #f15541;
+      color: #f15541;
+    }
+  }
+  
+  // Style for primary button (I agree)
+  :global(.ant-btn-primary) {
+    background-color: #f15541;
+    border-color: #f15541;
+    color: #ffffff;
+
+    &:hover {
+      background-color: color.adjust(#f15541, $lightness: 5%);
+      border-color: color.adjust(#f15541, $lightness: 5%);
     }
 
-    // Style for regular button (Details)
-    .ant-btn {
-      background-color: transparent;
-      border-color: #ffffff;
-      color: #ffffff;
-      transition: all 0.3s ease;
-
-      &:hover {
-        border-color: #f15541;
-        color: #f15541;
-      }
+    &:active {
+      background-color: color.adjust(#f15541, $lightness: -5%);
+      border-color: color.adjust(#f15541, $lightness: -5%);
     }
+  }
+  
+  :global(.ant-checkbox-wrapper) {
+    color: #fff;
     
-    // Style for primary button (I agree)
-    .ant-btn-primary {
+    .ant-checkbox-checked .ant-checkbox-inner {
       background-color: #f15541;
       border-color: #f15541;
-      color: #ffffff;
-
-      &:hover {
-        background-color: lighten(#f15541, 5%);
-        border-color: lighten(#f15541, 5%);
-      }
-
-      &:active {
-        background-color: darken(#f15541, 5%);
-        border-color: darken(#f15541, 5%);
-      }
     }
     
-    .ant-checkbox-wrapper {
-      color: #fff;
-      
-      .ant-checkbox-checked .ant-checkbox-inner {
-        background-color: #f15541;
-        border-color: #f15541;
-      }
-      
-      &:hover .ant-checkbox-inner {
-        border-color: #f15541;
-      }
+    &:hover .ant-checkbox-inner {
+      border-color: #f15541;
     }
   }
 }
@@ -73,9 +73,9 @@
   }
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

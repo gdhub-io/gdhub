@@ -21,7 +21,7 @@ import {
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import {
@@ -72,7 +72,7 @@ export const PublicLayout = ({
 	ogImageType,
 	ogImageParams,
 }: PublicLayoutProps) => {
-	const router = useRouter();
+	const pathname = usePathname();
 	const { t, getLanguage } = useTolgee();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [isOpenedInTelegram] = useTelegram();
@@ -82,7 +82,7 @@ export const PublicLayout = ({
 	const seoParams: NextSeoProps = {
 		title: seo?.title || (typeof title === "string" ? title : ""),
 		description: seo?.description || subTitle,
-		canonical: process.env.NEXT_PUBLIC_APP_URL + (router?.asPath ?? ""),
+		canonical: process.env.NEXT_PUBLIC_APP_URL + (pathname ?? ""),
 		openGraph: {
 			images: [
 				{
@@ -393,7 +393,6 @@ export const PublicLayout = ({
 				{!screens.lg && (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={"100%"}
 						title={
 							<Space>
 								<Avatar

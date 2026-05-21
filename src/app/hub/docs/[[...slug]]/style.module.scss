@@ -1,55 +1,54 @@
+@use "sass:meta";
 .container {
-	:global {
-		.main-menu {
-			position: relative;
-			min-height: 500px;
-			height: 100%;
-			padding-top: 20px;
-			border: 0 !important;
-		}
+	:global(.main-menu) {
+		position: relative;
+		min-height: 500px;
+		height: 100%;
+		padding-top: 20px;
+		border: 0 !important;
+	}
 
-		.mobile-menu {
-			width: calc(100% - 16px);
-			margin: 16px 0;
-		}
+	:global(.mobile-menu) {
+		width: calc(100% - 16px);
+		margin: 16px 0;
+	}
 
-		.main-container {
-			background-color: #fff;
-			position: relative;
-			min-height: 500px;
-			padding: 32px 64px;
-			line-height: 150%;
+	:global(.main-container) {
+		background-color: #fff;
+		position: relative;
+		min-height: 500px;
+		padding: 32px 64px;
+		line-height: 150%;
 
-			box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 6px 14px rgba(0,0,0,.08);
+		box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 6px 14px rgba(0,0,0,.08);
 
-			a {
-				color: #07ad92;
-				text-decoration: underline;
+		a {
+			color: #07ad92;
+			text-decoration: underline;
 
-				&:hover {
-					color: #25ba9c;
-				}
-
-				&:active {
-					color: #008775;
-				}
+			&:hover {
+				color: #25ba9c;
 			}
 
-			.content-header {
-				margin-bottom: 32px;
+			&:active {
+				color: #008775;
+			}
+		}
 
-				h1 {
-					font-size: 32px;
-					margin-bottom: 0;
-				}
+		.content-header {
+			margin-bottom: 32px;
+
+			h1 {
+				font-size: 32px;
+				margin-bottom: 0;
 			}
 		}
 	}
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

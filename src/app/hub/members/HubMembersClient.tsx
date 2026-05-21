@@ -90,7 +90,7 @@ export function HubMembersClient({
 					}
 					description={
 						<Space
-							direction="vertical"
+							orientation="vertical"
 							size={16}
 							style={{ width: "100%", marginTop: 8 }}
 						>
@@ -256,7 +256,7 @@ const SearchFilter = ({ onClear }: { onClear?: () => void }) => {
 
 	return (
 		<Card className={styles.filterCard}>
-			<Space direction="vertical" size={24} style={{ width: "100%" }}>
+			<Space orientation="vertical" size={24} style={{ width: "100%" }}>
 				<div>
 					<Title level={5}>{t("hub.members.direction", "Direction")}</Title>
 					<RefinementList attribute="direction" />

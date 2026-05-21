@@ -3,11 +3,8 @@
     padding: 28px 32px;
     text-align: center;
 
-    :global {
-
-      div.ant-typography {
-        max-width: none !important;
-      }
+    :global(div.ant-typography) {
+      max-width: none !important;
     }
   }
 }

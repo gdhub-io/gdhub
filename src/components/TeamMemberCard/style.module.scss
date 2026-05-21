@@ -45,11 +45,9 @@
   border: none;
   box-shadow: none;
 
-  :global {
-    .ant-card-head {
-      border-bottom: none;
-      padding: 16px;
-    }
+  :global(.ant-card-head) {
+    border-bottom: none;
+    padding: 16px;
   }
 }
 

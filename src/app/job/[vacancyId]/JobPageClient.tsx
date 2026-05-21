@@ -231,7 +231,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 							<Flex vertical gap={24}>
 								<Row gutter={[24, 24]}>
 									<Col xs={24} md={14}>
-										<Space direction="vertical" style={{ width: "100%" }}>
+										<Space orientation="vertical" style={{ width: "100%" }}>
 											<div>
 												<Text className={styles.fieldLabel}>
 													{t("page.vacancy.section.project", "Project")}
@@ -300,7 +300,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 									</Col>
 								</Row>
 
-								<Space direction="vertical" style={{ width: "100%" }}>
+								<Space orientation="vertical" style={{ width: "100%" }}>
 									<div>
 										<Text className={styles.fieldLabel}>
 											{t(

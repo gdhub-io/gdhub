@@ -2,13 +2,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Result, Spin } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const SpecialityCreated = () => {
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const { t } = useTranslate();
-	const { pendingInvitation } = router.query;
+	const pendingInvitation = searchParams.get("pendingInvitation");
 	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false);
 
 	// Проверяем, есть ли ожидающие приглашения

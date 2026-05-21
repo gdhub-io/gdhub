@@ -669,7 +669,6 @@ export const ProtectedLayout = ({
 				{!screens.lg ? (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={"100%"}
 						title={
 							<Space>
 								<Avatar

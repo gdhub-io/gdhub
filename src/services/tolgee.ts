@@ -28,10 +28,11 @@ const tolgeeCredentials = {
 const createTolgeeService = () => {
 	const tolgee = Tolgee();
 
-	if (
-		process.env.VERCEL_ENV === "preview" ||
-		process.env.NODE_ENV === "development"
-	) {
+	// In-context translation editor — opt-in to avoid CORS errors against
+	// the Tolgee server during local dev. Set NEXT_PUBLIC_TOLGEE_IN_CONTEXT=true
+	// in .env.local when you want to use it (also requires the Tolgee server
+	// to allow your dev origin).
+	if (process.env.NEXT_PUBLIC_TOLGEE_IN_CONTEXT === "true") {
 		tolgee.use(
 			InContextTools({
 				credentials: tolgeeCredentials,

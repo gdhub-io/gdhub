@@ -21,7 +21,6 @@ import dayjs from "dayjs";
 import Blocks from "editorjs-blocks-react-renderer";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -47,7 +46,6 @@ const EventDefaultView = ({
 }) => {
 	const { t, getLanguage } = useTolgee();
 	const screens = Grid.useBreakpoint();
-	const router = useRouter();
 	const { data: session } = useSession();
 	const { token } = theme.useToken();
 	const [modal, modalContextHolder] = Modal.useModal();
@@ -321,7 +319,7 @@ const EventDefaultView = ({
 							<Alert
 								type="info"
 								description={
-									<Space direction="vertical" size={16}>
+									<Space orientation="vertical" size={16}>
 										<Text>
 											{t(
 												"event.loginOrRegister",

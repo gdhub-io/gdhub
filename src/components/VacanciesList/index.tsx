@@ -66,7 +66,7 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 											{t("vacancies.list.validUntil", "Relevant to")}{" "}
 											{dayjs(vacancy.finishedAt).format("ll")}
 										</div>
-										<Space direction="vertical" size={0}>
+										<Space orientation="vertical" size={0}>
 											<Text ellipsis>{vacancy.team.project?.name}</Text>
 											<Title
 												ellipsis={{ rows: 2 }}

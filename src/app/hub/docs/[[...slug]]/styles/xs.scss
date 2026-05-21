@@ -1,9 +1,7 @@
 @media screen and (max-width: 575px) {
 	.container {
-		:global {
-			.main-container {
-				padding: 16px;
-			}
+		:global(.main-container) {
+			padding: 16px;
 		}
 	}
 }

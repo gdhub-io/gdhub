@@ -81,7 +81,7 @@ export default function DevPushTestPage() {
 			}}
 		>
 			<Card style={{ width: "100%", maxWidth: 720 }}>
-				<Space direction="vertical" size="large" style={{ width: "100%" }}>
+				<Space orientation="vertical" size="large" style={{ width: "100%" }}>
 					<div>
 						<Title level={3}>Push Notification Tester</Title>
 						<Paragraph>
@@ -90,7 +90,7 @@ export default function DevPushTestPage() {
 						</Paragraph>
 					</div>
 
-					<Space direction="vertical" style={{ width: "100%" }}>
+					<Space orientation="vertical" style={{ width: "100%" }}>
 						<Text strong>FCM Token status</Text>
 						<Text>Permission: {permissionState}</Text>
 						{!ready && <Text type="secondary">Идёт регистрация…</Text>}

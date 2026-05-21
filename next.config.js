@@ -3,9 +3,6 @@
 const nextConfig = {
 	reactStrictMode: true,
 	output: "standalone",
-	eslint: {
-		ignoreDuringBuilds: true,
-	},
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "images.unsplash.com" },

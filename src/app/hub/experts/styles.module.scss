@@ -33,27 +33,25 @@
     transform: translateY(-4px);
   }
 
-  :global {
-    .ant-card-body {
-      padding: 0;
-    }
+  :global(.ant-card-body) {
+    padding: 0;
+  }
 
-    .ant-tag {
-      background: #f5f5f5;
-      border: none;
-      padding: 4px 12px;
-      border-radius: 6px;
-    }
+  :global(.ant-tag) {
+    background: #f5f5f5;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 6px;
+  }
 
-    .ant-avatar {
-      width: 100%;
-      height: auto;
-      border-radius: 0;
-      font-size: 48px;
-      aspect-ratio: 1/1;
-      line-height: 1;
-      margin-bottom: 0;
-    }
+  :global(.ant-avatar) {
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    font-size: 48px;
+    aspect-ratio: 1/1;
+    line-height: 1;
+    margin-bottom: 0;
   }
 }
 
@@ -96,18 +94,16 @@
   gap: 8px;
   margin-top: 8px;
 
-  :global {
-    .ant-tag-blue {
-      background-color: #e6f7ff;
-      border-color: #91d5ff;
-      color: #1890ff;
-    }
+  :global(.ant-tag-blue) {
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+    color: #1890ff;
+  }
 
-    .ant-tag-green {
-      background-color: #f6ffed;
-      border-color: #b7eb8f;
-      color: #52c41a;
-    }
+  :global(.ant-tag-green) {
+    background-color: #f6ffed;
+    border-color: #b7eb8f;
+    color: #52c41a;
   }
 }
 

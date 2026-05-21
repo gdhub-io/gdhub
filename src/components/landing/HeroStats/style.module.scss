@@ -1,3 +1,4 @@
+@use "sass:meta";
 .container {
   color: #fff;
   display: flex;
@@ -13,21 +14,19 @@
     align-items: center;
     text-align: center;
 
-    :global {
-      span.ant-typography {
-        font-size: 14px;
-        color: #ffffff80;
-        line-height: 1.2;
-      }
+    :global(span.ant-typography) {
+      font-size: 14px;
+      color: #ffffff80;
+      line-height: 1.2;
+    }
 
-      span.ant-typography>strong {
-        color: #ffffff;
-        font-size: 48px;
-      }
+    :global(span.ant-typography>strong) {
+      color: #ffffff;
+      font-size: 48px;
+    }
 
-      span.ant-avatar {
-        border: 0;
-      }
+    :global(span.ant-avatar) {
+      border: 0;
     }
   }
 
@@ -35,35 +34,31 @@
     text-align: center;
 
 
-    :global {
-      span.ant-typography {
-        word-wrap: normal;
-        text-wrap: wrap;
-        font-size: 14px;
-        color: #ffffff80;
-      }
+    :global(span.ant-typography) {
+      word-wrap: normal;
+      text-wrap: wrap;
+      font-size: 14px;
+      color: #ffffff80;
+    }
 
-      span.ant-typography>strong {
-        color: #ffffff;
-        font-size: 48px;
-      }
+    :global(span.ant-typography>strong) {
+      color: #ffffff;
+      font-size: 48px;
     }
   }
 
-  :global {
-    .ant-divider {
-      border-color: #6d6d6d;
-    }
+  :global(.ant-divider) {
+    border-color: #6d6d6d;
+  }
 
-    .ant-space-item:has(.divider) {
-      width: 100%;
-    }
+  :global(.ant-space-item:has(.divider)) {
+    width: 100%;
   }
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

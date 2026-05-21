@@ -240,7 +240,7 @@ const LiveReportsPage = () => {
 										]}
 										onSelect={(value) => setStreamMode(value)}
 									/>
-									<Divider type="vertical" />
+									<Divider orientation="vertical" />
 									<Input
 										ref={titleRef}
 										placeholder={t("pages.live.room.reports.title", "Title")}

@@ -15,7 +15,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import SpecialityModal from "./modals/SpecialityModal";
@@ -24,9 +24,10 @@ const { Text } = Typography;
 
 const SpecialitiesProfileForm = ({ profile }: any) => {
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const pendingInvitationId = useMemo(
-		() => router.query.pendingInvitation,
-		[router.query.pendingInvitation],
+		() => searchParams.get("pendingInvitation"),
+		[searchParams],
 	);
 	const session = useSession();
 	const queryClient = useQueryClient();
@@ -135,7 +136,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 			bordered={false}
 		>
 			<Spin spinning={processing}>
-				<Space direction="vertical" size="large" style={{ width: "100%" }}>
+				<Space orientation="vertical" size="large" style={{ width: "100%" }}>
 					<Text>
 						{t(
 							"profile-forms.specialities.card.description",
@@ -148,7 +149,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 							bordered
 							locale={{
 								emptyText: (
-									<Space direction="vertical">
+									<Space orientation="vertical">
 										<GiSkills size={24} />
 										<span>
 											{t(

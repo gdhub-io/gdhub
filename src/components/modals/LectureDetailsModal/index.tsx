@@ -132,7 +132,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			title={modalTitle()}
 			destroyOnHidden
 			width={screens.lg ? "50vw" : "100%"}
-			maskClosable={false}
+			mask={{ closable: false }}
 			cancelText={t("modal.lectureDetails.close", "Close")}
 			okText={okText()}
 			okButtonProps={{

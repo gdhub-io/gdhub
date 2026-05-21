@@ -77,7 +77,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 			title={null}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			open={open}
 			// TODO(antd6): `content` key was removed from Modal classNames in AntD 6;
 			// `body` is the closest equivalent for the inner content wrapper.
@@ -87,7 +87,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 		>
 			<Spin spinning={processing}>
 				{!!member && (
-					<Space direction="vertical" style={{ width: "100%" }}>
+					<Space orientation="vertical" style={{ width: "100%" }}>
 						<div className={styles.cardHeader}>
 							<Row gutter={24} align="middle">
 								<Col xs={24} md={18}>

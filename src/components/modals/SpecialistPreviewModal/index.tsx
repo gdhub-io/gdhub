@@ -95,7 +95,7 @@ const SpecialistPreviewModal = ({
 			title={null}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			open={open}
 			onCancel={handleCancel}
 			footer={[
@@ -108,7 +108,7 @@ const SpecialistPreviewModal = ({
 		>
 			<Spin spinning={isLoading}>
 				{!!specialist?.data && (
-					<Space direction="vertical" style={{ width: "100%" }}>
+					<Space orientation="vertical" style={{ width: "100%" }}>
 						<div className={styles.cardHeader}>
 							<Text type="secondary" className={styles.cardType}>
 								{t("specialist.preview.cardType", "Talent card")}
@@ -198,9 +198,9 @@ const SpecialistPreviewModal = ({
 										style={{ height: "100%" }}
 									>
 										<Flex vertical className={styles.contactButtons}>
-											<Space direction="vertical" align="start" size={8}>
+											<Space orientation="vertical" align="start" size={8}>
 												{!!specialist.data.user.profile.tgNickname && (
-													<Space direction="vertical" size={0}>
+													<Space orientation="vertical" size={0}>
 														<Text type="secondary">
 															{t("specialist.preview.telegram", "Telegram")}
 														</Text>
@@ -223,7 +223,7 @@ const SpecialistPreviewModal = ({
 													</Space>
 												)}
 												{!!specialist.data.user.email && (
-													<Space direction="vertical" size={0}>
+													<Space orientation="vertical" size={0}>
 														<Text type="secondary">
 															{t("specialist.preview.email", "Email")}
 														</Text>
@@ -454,7 +454,7 @@ const SpecialistPreviewModal = ({
 										</Row>
 									}
 								>
-									<Space direction="vertical" style={{ width: "100%" }}>
+									<Space orientation="vertical" style={{ width: "100%" }}>
 										<Row gutter={16}>
 											<Col xs={24} sm={8}>
 												<Card className={styles.statCard} bordered={false}>

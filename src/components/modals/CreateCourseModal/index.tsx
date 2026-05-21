@@ -121,7 +121,7 @@ const CreateCourseModal = ({
 			centered
 			width={580}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			open={open}
 			title={
 				<Flex vertical gap={2}>

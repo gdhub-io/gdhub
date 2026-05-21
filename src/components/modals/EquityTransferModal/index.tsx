@@ -128,7 +128,7 @@ const EquityTransferModal = ({
 			width={500}
 		>
 			<div className={styles.container}>
-				<Space direction="vertical" style={{ width: "100%" }} size="large">
+				<Space orientation="vertical" style={{ width: "100%" }} size="large">
 					<div className={styles.infoBox}>
 						<Title level={5}>
 							{t("Your current equity share in the project")}

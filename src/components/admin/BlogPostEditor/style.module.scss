@@ -22,24 +22,22 @@
   box-sizing: border-box;
   height: auto;
 
-  :global {
-    .codex-editor__redactor {
-      font-size: 16px !important;
-      min-height: calc(100vw / 1.414 - 48px);
-      line-height: 1.6;
-    }
+  :global(.codex-editor__redactor) {
+    font-size: 16px !important;
+    min-height: calc(100vw / 1.414 - 48px);
+    line-height: 1.6;
+  }
 
-    .ce-block__content,
-    .ce-toolbar__content {
-      max-width: 90% !important;
-    }
+  :global(.ce-block__content),
+  :global(.ce-toolbar__content) {
+    max-width: 90% !important;
+  }
 
-    .ce-block {
-      margin-bottom: 8px;
-    }
+  :global(.ce-block) {
+    margin-bottom: 8px;
+  }
 
-    .ce-paragraph {
-      margin-bottom: 8px;
-    }
+  :global(.ce-paragraph) {
+    margin-bottom: 8px;
   }
 }

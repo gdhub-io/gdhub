@@ -1,18 +1,18 @@
 import { useTranslate } from "@tolgee/react";
 import { Anchor, Col, Divider, Row, Space, Typography } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import GdhubLogo from "@/assets/images/gdhub-beta-logo.svg";
 import styles from "./style.module.scss";
 
 const { Title, Paragraph } = Typography;
 
 export const MainFooter = () => {
-	const router = useRouter();
+	const pathname = usePathname();
 	const { t } = useTranslate();
 
 	const writeInternalLink = (internalLink: string) => {
-		return router.pathname == "/" ? internalLink : `/${internalLink}`;
+		return pathname == "/" ? internalLink : `/${internalLink}`;
 	};
 
 	return (
@@ -35,7 +35,7 @@ export const MainFooter = () => {
 						</Paragraph>
 					</Col>
 					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={6}>
+						<Space orientation="vertical" size={6}>
 							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
 								{t("mainFooter.platform", "Platform")}
 							</Title>
@@ -61,7 +61,7 @@ export const MainFooter = () => {
 						</Space>
 					</Col>
 					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={6}>
+						<Space orientation="vertical" size={6}>
 							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
 								{t("mainFooter.forUsers", "For Users")}
 							</Title>
@@ -82,7 +82,7 @@ export const MainFooter = () => {
 						</Space>
 					</Col>
 					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={6}>
+						<Space orientation="vertical" size={6}>
 							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
 								{t("mainFooter.support", "Support")}
 							</Title>

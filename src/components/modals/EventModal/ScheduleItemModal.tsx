@@ -166,7 +166,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 			centered
 			onCancel={onCancel}
 			onOk={handleOk}
-			maskClosable={false}
+			mask={{ closable: false }}
 			okText={t("common.save", "Save")}
 			cancelText={t("common.cancel", "Cancel")}
 			destroyOnHidden

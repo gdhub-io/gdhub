@@ -160,7 +160,11 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 
 				{enabled && (
 					<Spin spinning={isFetchingConfig}>
-						<Space direction="vertical" size="middle" style={{ width: "100%" }}>
+						<Space
+							orientation="vertical"
+							size="middle"
+							style={{ width: "100%" }}
+						>
 							<div>
 								<Typography.Title level={5} style={{ marginBottom: 8 }}>
 									{t(

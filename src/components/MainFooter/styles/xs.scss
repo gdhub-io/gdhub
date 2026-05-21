@@ -3,16 +3,13 @@
 		padding: 20px 12px;
 		text-align: center;
 
-		:global {
+		:global(div.ant-typography),
+		:global(a) {
+			font-size: 11px;
+		}
 
-			div.ant-typography,
-			a {
-				font-size: 11px;
-			}
-
-			.ant-anchor {
-				row-gap: 6px;
-			}
+		:global(.ant-anchor) {
+			row-gap: 6px;
 		}
 	}
 }

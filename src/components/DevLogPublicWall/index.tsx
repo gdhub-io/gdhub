@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Flex, List, Space, Typography } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player";
@@ -26,7 +25,6 @@ type ProjectReportItem =
 const { Title, Paragraph, Text } = Typography;
 
 export const DevLogPublicWall = ({ projectId }: any) => {
-	const router = useRouter();
 	const { t } = useTranslate();
 
 	const { data: projectReports } = useQuery({
@@ -74,7 +72,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 					label: (
 						<Flex gap={16}>
 							<Avatar src={report.author.image} size={48} />
-							<Space direction="vertical" size={0}>
+							<Space orientation="vertical" size={0}>
 								<Text>{report.author.profile.name || report.author.name}</Text>
 								<Text type="secondary">
 									{report.author.memberInTeams[0]?.position}

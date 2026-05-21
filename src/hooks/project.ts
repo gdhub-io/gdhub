@@ -1,7 +1,7 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export type CurrentProject = prismaClient.Project & {
@@ -9,8 +9,8 @@ export type CurrentProject = prismaClient.Project & {
 };
 
 export const useCurrentProject = () => {
-	const router = useRouter();
-	const { slug } = router.query;
+	const params = useParams();
+	const slug = params?.slug as string | undefined;
 	const { data: session } = useSession();
 
 	const {

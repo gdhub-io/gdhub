@@ -196,7 +196,7 @@ export default function ExpertRequestModal({
 			title={null}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			open={open}
 			okButtonProps={{
 				disabled:
@@ -228,7 +228,7 @@ export default function ExpertRequestModal({
 					expertLoading || isCreatingExpertRequest || adviceRequestLoading
 				}
 			>
-				<Space direction="vertical" style={{ width: "100%" }}>
+				<Space orientation="vertical" style={{ width: "100%" }}>
 					<div className={styles.cardHeader}>
 						<Text type="secondary" className={styles.cardType}>
 							{t("modal.expert.expertCard", "Expert card")}
@@ -249,7 +249,7 @@ export default function ExpertRequestModal({
 								shape="square"
 								size={92}
 							/>
-							<Space direction="vertical">
+							<Space orientation="vertical">
 								<Title level={3} style={{ margin: 0 }}>
 									{expert?.name}
 								</Title>

@@ -413,7 +413,7 @@ export function ProjectPageClient({
 						md={{ span: 12, order: 0 }}
 						lg={{ span: 16, order: 0 }}
 					>
-						<Space direction="vertical" size={64} style={{ width: "100%" }}>
+						<Space orientation="vertical" size={64} style={{ width: "100%" }}>
 							<div className="project-description">
 								<Title level={2}>
 									{t("page.project.aboutGame", "About Game")}

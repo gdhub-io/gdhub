@@ -243,7 +243,7 @@ const WorkflowContent = ({
 
 	return (
 		<div className={styles.container}>
-			<Space direction="vertical" style={{ width: "100%" }}>
+			<Space orientation="vertical" style={{ width: "100%" }}>
 				{!isIntroductionStep && !isCompletionStep && (
 					<RoadmapChart workflow={workflow} editable={isAuthor} />
 				)}
@@ -251,7 +251,7 @@ const WorkflowContent = ({
 				<Row gutter={[32, 32]}>
 					<Col xs={24} lg={16}>
 						<Space
-							direction="vertical"
+							orientation="vertical"
 							size={[32, 16]}
 							style={{ width: "100%" }}
 						>
@@ -381,7 +381,7 @@ const WorkflowContent = ({
 				onCancel={() => setEquityTransferModalVisible(false)}
 				confirmLoading={isMoving}
 			>
-				<Space direction="vertical" style={{ width: "100%" }}>
+				<Space orientation="vertical" style={{ width: "100%" }}>
 					<Text>
 						{t(
 							"workflow.equity-transfer.description",

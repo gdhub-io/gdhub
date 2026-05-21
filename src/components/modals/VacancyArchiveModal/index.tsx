@@ -84,7 +84,7 @@ const VacancyArchiveModal = ({
 			)}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			open={open}
 			onCancel={handleCancel}
 			confirmLoading={processing}
