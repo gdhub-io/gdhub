@@ -7,7 +7,7 @@ import { brevoTemplates } from "@/config/brevo-templates";
 import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
 import { brevoApi } from "@/services/brevo";
-import { ensureMatrixUser } from "@/services/matrix-admin";
+import { ensureMatrixUser } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 import type {
 	CreateSmtpEmail,

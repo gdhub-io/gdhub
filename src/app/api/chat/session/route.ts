@@ -6,7 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix-admin";
+import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 
 const MatrixSessionSchema = z.object({

@@ -1,8 +1,10 @@
 import "@/styles/globals.scss";
-import "@/config/dayjs-setup";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { setupDayjs } from "@/config/dayjs-setup";
 import { Providers } from "./providers";
+
+setupDayjs();
 
 export const metadata: Metadata = {
 	title: "Gamelab",

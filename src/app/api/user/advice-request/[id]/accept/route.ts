@@ -2,7 +2,7 @@ import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { EventType } from "matrix-js-sdk";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { MatrixService } from "@/services/matrix";
-import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix-admin";
+import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix/admin";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 

@@ -1,10 +1,10 @@
 /**
- * Side-effect import that extends dayjs with the plugins the app relies on.
+ * Расширяет глобальный dayjs необходимыми приложению плагинами и
+ * выставляет дефолтную локаль. Раньше жило в src/pages/_app.tsx;
+ * после перехода на App Router вызывается из app/layout.tsx (SSR)
+ * и app/providers (клиент).
  *
- * Originally lived in src/pages/_app.tsx; that file was removed when the
- * project moved to App Router (see Etap 3 batch 6). The plugins are loaded
- * here so both server (app/layout.tsx) and client modules can `import`
- * this file once and have the global dayjs instance ready.
+ * Вызовы dayjs.extend идемпотентны — повторные setupDayjs() безопасны.
  */
 
 import dayjs from "dayjs";
@@ -17,10 +17,12 @@ import weekday from "dayjs/plugin/weekday";
 import "dayjs/locale/en";
 import { defaultLocale } from "@/config/locale";
 
-dayjs.extend(localizedFormat);
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(localeData);
-dayjs.extend(relativeTime);
-dayjs.extend(weekday);
-dayjs.locale(defaultLocale);
+export function setupDayjs(): void {
+	dayjs.extend(localizedFormat);
+	dayjs.extend(utc);
+	dayjs.extend(timezone);
+	dayjs.extend(localeData);
+	dayjs.extend(relativeTime);
+	dayjs.extend(weekday);
+	dayjs.locale(defaultLocale);
+}
