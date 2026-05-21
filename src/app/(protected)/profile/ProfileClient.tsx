@@ -122,7 +122,7 @@ const ProfileClient = () => {
 						>
 							This page is in development
 						</Tag>
-						<Link href="/profile/settings/general">
+						<Link href="/my/settings/general">
 							<Button type="primary">
 								{t("profile.page.actions.settings", "Settings")}
 							</Button>

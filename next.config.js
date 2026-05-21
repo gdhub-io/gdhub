@@ -63,6 +63,20 @@ const nextConfig = {
 
 		return config;
 	},
+	redirects: async () => [
+		// /profile/settings/X → /my/settings/X (Phase 4 of layout migration:
+		// settings переехал из protected/profile в user/my).
+		{
+			source: "/profile/settings",
+			destination: "/my/settings/general",
+			permanent: true,
+		},
+		{
+			source: "/profile/settings/:item",
+			destination: "/my/settings/:item",
+			permanent: true,
+		},
+	],
 	headers: async () => [
 		{
 			source: "/api/:path*",

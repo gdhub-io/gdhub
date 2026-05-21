@@ -7,6 +7,6 @@ export default async function UserLayout({
 }: {
 	children: ReactNode;
 }) {
-	const session = await requireSession();
-	return <ProtectedShell session={session}>{children}</ProtectedShell>;
+	await requireSession();
+	return <ProtectedShell>{children}</ProtectedShell>;
 }

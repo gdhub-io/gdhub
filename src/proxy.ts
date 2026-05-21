@@ -45,8 +45,8 @@ export default auth((req) => {
 		return NextResponse.redirect(new URL("/hub", req.url));
 	}
 
-	if (req.nextUrl.pathname === "/profile/settings") {
-		return NextResponse.redirect(new URL("/profile/settings/general", req.url));
+	if (req.nextUrl.pathname === "/my/settings") {
+		return NextResponse.redirect(new URL("/my/settings/general", req.url));
 	}
 });
 

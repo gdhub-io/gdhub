@@ -133,7 +133,7 @@ export const GET = withAuth({ mode: "user" })(
 				return json({
 					success: true,
 					message: "You need to create a speciality before joining the team",
-					redirect: `/profile/settings/specialities?pendingInvitation=${invitation.id}`,
+					redirect: `/my/settings/specialities?pendingInvitation=${invitation.id}`,
 				});
 			}
 
