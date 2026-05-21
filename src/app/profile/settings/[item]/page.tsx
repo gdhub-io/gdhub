@@ -217,6 +217,7 @@ export default function ProfileSettingsPage() {
 			<Layout>
 				<Sider
 					width={200}
+					theme="light"
 					className={styles.sider}
 					breakpoint="lg"
 					collapsedWidth="0"
@@ -225,6 +226,7 @@ export default function ProfileSettingsPage() {
 					{screens.lg ? (
 						<Menu
 							mode="vertical"
+							theme="light"
 							defaultSelectedKeys={[currentItem]}
 							style={{ height: "100%", borderRight: 0 }}
 							items={settingsMenu}
