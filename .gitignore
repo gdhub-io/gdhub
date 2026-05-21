@@ -60,3 +60,5 @@ backup-tolgee
 # Keep examples in git
 !.env.example
 !.env.docker.example
+
+.playwright-mcp
