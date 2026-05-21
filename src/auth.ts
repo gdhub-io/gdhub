@@ -9,6 +9,11 @@ import { env } from "@/helpers/env";
 import { brevoApi } from "@/services/brevo";
 import { ensureMatrixUser } from "@/services/matrix-admin";
 import { prisma } from "@/services/prisma";
+import type {
+	CreateSmtpEmail,
+	ErrorModel,
+	HttpResponse,
+} from "./services/brevo/api";
 
 export const authConfig: NextAuthConfig = {
 	adapter: PrismaAdapter(prisma as unknown as prismaClient.PrismaClient),
@@ -26,13 +31,13 @@ export const authConfig: NextAuthConfig = {
 			allowDangerousEmailAccountLinking: true,
 		}),
 		EmailProvider({
+			id: "email",
 			from: process.env.EMAIL_FROM as string,
 			server: process.env.EMAIL_SERVER as string,
-			async sendVerificationRequest({ identifier: email, url, provider }) {
+			async sendVerificationRequest({ identifier: email, url }) {
 				try {
-					console.log("sendVerificationRequest", email, url, provider);
 					const userExist = await prisma.user.findUnique({ where: { email } });
-					let sendResult: any;
+					let sendResult: HttpResponse<CreateSmtpEmail, ErrorModel>;
 
 					if (userExist) {
 						sendResult = await brevoApi.smtp.sendTransacEmail({
@@ -63,8 +68,8 @@ export const authConfig: NextAuthConfig = {
 					if (sendResult.error) throw Error(sendResult.error.message);
 
 					console.log("sendVerificationRequest was sent");
-				} catch (error: any) {
-					console.error("", error);
+				} catch (error) {
+					console.error("sendVerificationRequest error", error);
 				}
 			},
 		}),
@@ -91,9 +96,14 @@ export const authConfig: NextAuthConfig = {
 
 			const activeSubscription = await prisma.user.activeSubscription(user.id);
 
+			// Auth.js v5 encodes the JWT via jose, which calls `structuredClone`
+			// on the payload. Prisma rows can contain values that don't clone
+			// (Decimal, BigInt, etc.), so flatten the user through JSON first.
+			const safeUser = JSON.parse(JSON.stringify(user));
+
 			return {
 				...token,
-				...user,
+				...safeUser,
 				activeSubscription: activeSubscription?.id,
 			} as any;
 		},
