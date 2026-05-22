@@ -1,4 +1,4 @@
-import { AiOutlineMessage } from "@react-icons/all-files/ai/AiOutlineMessage";
+import { IconMessageCircle } from "@tabler/icons-react";
 import { Badge, Button } from "antd";
 import { useChat } from "@/components/Chat/useChat";
 
@@ -20,7 +20,7 @@ export const ChatButton = ({
 				type="text"
 				shape="circle"
 				onClick={() => onClick(true)}
-				icon={<AiOutlineMessage />}
+				icon={<IconMessageCircle size={18} stroke={1.75} />}
 			/>
 		</Badge>
 	);

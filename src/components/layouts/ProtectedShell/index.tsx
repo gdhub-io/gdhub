@@ -483,7 +483,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 								/>
 							</Col>
 							<Col flex="none">
-								<Space>
+								<Space align="center" size={8}>
 									{screens.xl ? (
 										<>
 											<Link href="https://docs.gdhub.io" target="_blank">
@@ -501,7 +501,9 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 													type="text"
 													shape="circle"
 													style={{
-														display: "block",
+														display: "inline-flex",
+														alignItems: "center",
+														justifyContent: "center",
 														padding: 0,
 														lineHeight: 0,
 													}}

@@ -5,6 +5,29 @@
 	height: auto;
 	border-bottom: 1px solid #ededed;
 	background: #fff;
+	line-height: normal;
+
+	:global(.ant-breadcrumb) {
+		display: inline-flex;
+		align-items: center;
+		line-height: 1;
+	}
+
+	:global(.ant-breadcrumb ol) {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	:global(.ant-breadcrumb-link) {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	:global(.ant-breadcrumb-separator) {
+		display: inline-flex;
+		align-items: center;
+		margin-inline: 8px;
+	}
 }
 
 .contentContainer {
