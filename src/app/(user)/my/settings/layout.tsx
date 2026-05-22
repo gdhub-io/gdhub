@@ -1,3 +1,5 @@
+"use client";
+
 import { Layout } from "antd";
 import type { ReactNode } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";

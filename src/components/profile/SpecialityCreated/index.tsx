@@ -76,7 +76,7 @@ export const SpecialityCreated = () => {
 					height: "100vh",
 				}}
 			>
-				<Spin size="large" tip={t("Processing your invitation...")} />
+				<Spin size="large" description={t("Processing your invitation...")} />
 			</div>
 		);
 	}

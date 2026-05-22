@@ -415,7 +415,7 @@ const WorkflowContent = ({
 				placement="right"
 				onClose={() => setDrawerVisible(false)}
 				open={drawerVisible}
-				width={screens.sm ? 400 : "80%"}
+				size={screens.sm ? 400 : "80%"}
 			>
 				{stepsStepsList}
 			</Drawer>

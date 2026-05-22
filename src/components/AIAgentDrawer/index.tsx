@@ -210,7 +210,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 		<Drawer
 			classNames={{
 				wrapper: styles.agentDrawerWrapper,
-				content: styles.agentDrawerContent,
+				section: styles.agentDrawerContent,
 				footer: styles.agentDrawerFooter,
 			}}
 			placement="bottom"

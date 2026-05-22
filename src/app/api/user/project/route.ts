@@ -1,6 +1,6 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import dayjs from "dayjs";
-import { slugify } from "voca";
+import slugify from "voca/slugify";
 import { z } from "zod";
 import {
 	apiError,

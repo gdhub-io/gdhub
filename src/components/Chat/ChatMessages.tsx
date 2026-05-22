@@ -22,12 +22,14 @@ import AdviceRequestInvite from "./special-messages/AdviceRequestInvite";
 import DefaultInvite from "./special-messages/DefaultInvite";
 import { useChat } from "./useChat";
 
-type MessageBubble = BubbleItemType & {
+type MessageExtra = {
 	title?: string;
 	avatarUrl?: string;
 	time?: string;
 	systemText?: string;
 };
+
+type MessageBubble = BubbleItemType & { extraInfo?: MessageExtra };
 
 type MessageEventContent = {
 	body?: string;
@@ -285,9 +287,11 @@ export default function ChatMessages() {
 							key,
 							role: senderId === chatClient?.getUserId() ? "user" : "member",
 							content: text,
-							title: displayName,
-							avatarUrl,
-							time: timeLabel,
+							extraInfo: {
+								title: displayName,
+								avatarUrl,
+								time: timeLabel,
+							},
 						};
 					}
 
@@ -298,8 +302,10 @@ export default function ChatMessages() {
 						key,
 						role: "system",
 						content: "",
-						systemText,
-						time,
+						extraInfo: {
+							systemText,
+							time,
+						},
 					};
 				}),
 		);
@@ -309,66 +315,75 @@ export default function ChatMessages() {
 	// `role` object map keyed by role name (RoleProps | FuncRoleProps). Each role
 	// here returns FuncRoleProps so it can read per-message data (title/avatar/time).
 	const roleConfig = {
-		member: (bubbleData: MessageBubble) => ({
-			placement: "start" as const,
-			header: (
-				<div style={{ fontSize: 12, color: "#9c9a9a" }}>{bubbleData.title}</div>
-			),
-			avatar: bubbleData.avatarUrl ? (
-				<Avatar src={bubbleData.avatarUrl} />
-			) : (
-				<Avatar icon={<UserOutlined />} style={{ background: "#fde3cf" }} />
-			),
-			typing: { step: 5, interval: 20 },
-			footer: (
-				<div style={{ fontSize: 10, color: "#cccccc" }}>{bubbleData.time}</div>
-			),
-			contentRender: RenderIndex,
-		}),
-		user: (bubbleData: MessageBubble) => ({
-			placement: "end" as const,
-			header: (
-				<div style={{ fontSize: 12, color: "#9c9a9a" }}>{bubbleData.title}</div>
-			),
-			avatar: bubbleData.avatarUrl ? (
-				<Avatar src={bubbleData.avatarUrl} />
-			) : (
-				<Avatar icon={<UserOutlined />} style={{ background: "#aad068" }} />
-			),
-			footer: (
-				<div style={{ fontSize: 10, color: "#cccccc" }}>{bubbleData.time}</div>
-			),
-			contentRender: RenderIndex,
-		}),
-		system: (bubbleData: MessageBubble) => ({
-			placement: "start" as const,
-			header: (
-				<div
-					style={{
-						fontSize: 12,
-						color: "#9c9a9a",
-						width: "100%",
-						textAlign: "center",
-					}}
-				>
-					{bubbleData.systemText}
-				</div>
-			),
-			className: styles.systemMessage,
-			contentRender: undefined,
-			footer: (
-				<div
-					style={{
-						fontSize: 10,
-						color: "#cccccc",
-						textAlign: "center",
-						width: "100%",
-					}}
-				>
-					{bubbleData.time}
-				</div>
-			),
-		}),
+		member: (bubbleData: MessageBubble) => {
+			const extra = (bubbleData.extraInfo ?? {}) as MessageExtra;
+			return {
+				placement: "start" as const,
+				header: (
+					<div style={{ fontSize: 12, color: "#9c9a9a" }}>{extra.title}</div>
+				),
+				avatar: extra.avatarUrl ? (
+					<Avatar src={extra.avatarUrl} />
+				) : (
+					<Avatar icon={<UserOutlined />} style={{ background: "#fde3cf" }} />
+				),
+				typing: { step: 5, interval: 20 },
+				footer: (
+					<div style={{ fontSize: 10, color: "#cccccc" }}>{extra.time}</div>
+				),
+				contentRender: RenderIndex,
+			};
+		},
+		user: (bubbleData: MessageBubble) => {
+			const extra = (bubbleData.extraInfo ?? {}) as MessageExtra;
+			return {
+				placement: "end" as const,
+				header: (
+					<div style={{ fontSize: 12, color: "#9c9a9a" }}>{extra.title}</div>
+				),
+				avatar: extra.avatarUrl ? (
+					<Avatar src={extra.avatarUrl} />
+				) : (
+					<Avatar icon={<UserOutlined />} style={{ background: "#aad068" }} />
+				),
+				footer: (
+					<div style={{ fontSize: 10, color: "#cccccc" }}>{extra.time}</div>
+				),
+				contentRender: RenderIndex,
+			};
+		},
+		system: (bubbleData: MessageBubble) => {
+			const extra = (bubbleData.extraInfo ?? {}) as MessageExtra;
+			return {
+				placement: "start" as const,
+				header: (
+					<div
+						style={{
+							fontSize: 12,
+							color: "#9c9a9a",
+							width: "100%",
+							textAlign: "center",
+						}}
+					>
+						{extra.systemText}
+					</div>
+				),
+				className: styles.systemMessage,
+				contentRender: undefined,
+				footer: (
+					<div
+						style={{
+							fontSize: 10,
+							color: "#cccccc",
+							textAlign: "center",
+							width: "100%",
+						}}
+					>
+						{extra.time}
+					</div>
+				),
+			};
+		},
 	};
 
 	// membership is managed in the global chat store and updated on RoomEvent.MyMembership

@@ -59,6 +59,10 @@ export async function GET(req: NextRequest) {
 		return json({ pageviews });
 	} catch (error) {
 		console.error("Error fetching pageviews:", error);
-		return apiError.internal("Error fetching pageviews");
+		const msg =
+			process.env.NODE_ENV === "production"
+				? "Error fetching pageviews"
+				: `Error fetching pageviews: ${error instanceof Error ? error.message : String(error)}`;
+		return apiError.internal(msg);
 	}
 }
