@@ -41,9 +41,15 @@ export const PageViews = ({
 
 				const currentPath = pathname;
 
+				const buildUrl = (targetPath: string) => {
+					const params = new URLSearchParams({ path: targetPath });
+					if (startDate) params.set("startDate", startDate);
+					return `/api/analytics/pageviews?${params.toString()}`;
+				};
+
 				if (isUnique) {
 					const globalResponse = await axios.get(
-						`/api/analytics/pageviews?path=${path || currentPath}&startDate=${startDate}`,
+						buildUrl(path || currentPath || ""),
 					);
 
 					pageviews = parseInt(globalResponse?.data?.pageviews || "0", 10);
@@ -51,7 +57,7 @@ export const PageViews = ({
 
 				if (locale) {
 					const localeResponse = await axios.get(
-						`/api/analytics/pageviews?path=/${locale}${path || currentPath}&startDate=${startDate}`,
+						buildUrl(`/${locale}${path || currentPath || ""}`),
 					);
 
 					pageviews += parseInt(localeResponse?.data?.pageviews || "0", 10);

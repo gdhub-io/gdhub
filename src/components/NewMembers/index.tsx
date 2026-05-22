@@ -5,6 +5,7 @@ import { Avatar } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import {
+	getHubSectionShellClass,
 	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
@@ -32,7 +33,9 @@ export default function NewMembers() {
 	}
 
 	return (
-		<div className={styles.container}>
+		<section
+			className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
+		>
 			<HubSectionHeader
 				title={t("page.hub.new-members", "New members")}
 				linkHref="/hub/members"
@@ -65,6 +68,6 @@ export default function NewMembers() {
 					))}
 				</HubSectionBleed>
 			</HubSectionBody>
-		</div>
+		</section>
 	);
 }
