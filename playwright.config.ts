@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { STORAGE_STATE_PATH } from "./tests/e2e/setup/global-setup";
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
 
@@ -7,6 +8,7 @@ const useExternalApp = !!process.env.PLAYWRIGHT_BASE_URL;
 
 export default defineConfig({
 	testDir: "./tests/e2e",
+	globalSetup: "./tests/e2e/setup/global-setup.ts",
 	fullyParallel: true,
 	forbidOnly: isCI,
 	retries: isCI ? 2 : 0,
@@ -19,7 +21,27 @@ export default defineConfig({
 		video: "retain-on-failure",
 	},
 	projects: [
-		{ name: "chromium", use: { ...devices["Desktop Chrome"] } },
+		{
+			name: "anonymous",
+			testMatch: [
+				"**/auth-flow.spec.ts",
+				"**/home.spec.ts",
+				"**/hub.spec.ts",
+				"**/admin.spec.ts",
+				"**/protected-misc.spec.ts",
+				"**/public-dynamic.spec.ts",
+				"**/static-pages.spec.ts",
+			],
+			use: { ...devices["Desktop Chrome"] },
+		},
+		{
+			name: "authenticated",
+			testMatch: ["**/*.authed.spec.ts"],
+			use: {
+				...devices["Desktop Chrome"],
+				storageState: STORAGE_STATE_PATH,
+			},
+		},
 	],
 	webServer: useExternalApp
 		? undefined

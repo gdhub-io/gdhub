@@ -1,6 +1,7 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import NextAuth, { type NextAuthConfig } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/nodemailer";
 import { brevoTemplates } from "@/config/brevo-templates";
@@ -15,6 +16,33 @@ import type {
 	HttpResponse,
 } from "./services/brevo/api";
 
+// E2E-only credentials provider. Gated by env so it can NEVER reach production:
+//   - NODE_ENV must not be "production"
+//   - E2E_TEST_AUTH must be exactly "1"
+// Lets Playwright sign in as an existing user by email, no SMTP/Google needed.
+const isE2EAuth =
+	process.env.NODE_ENV !== "production" && process.env.E2E_TEST_AUTH === "1";
+
+const e2eCredentialsProvider = CredentialsProvider({
+	id: "e2e-credentials",
+	name: "E2E test credentials",
+	credentials: { email: { label: "Email", type: "email" } },
+	async authorize(credentials) {
+		const email = (credentials?.email as string | undefined)?.trim();
+		if (!email) return null;
+		const user = await prisma.user.findUnique({ where: { email } });
+		if (!user) return null;
+		// JWT callback below re-hydrates the full record from Prisma; we only
+		// need to hand NextAuth a minimal identity here.
+		return {
+			id: user.id,
+			email: user.email,
+			name: user.name,
+			image: user.image,
+		} as any;
+	},
+});
+
 export const authConfig: NextAuthConfig = {
 	adapter: PrismaAdapter(prisma as unknown as prismaClient.PrismaClient),
 	secret: env("NEXTAUTH_SECRET"),
@@ -24,6 +52,7 @@ export const authConfig: NextAuthConfig = {
 		signIn: "/signin",
 	},
 	providers: [
+		...(isE2EAuth ? [e2eCredentialsProvider] : []),
 		GoogleProvider({
 			clientId: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
 			clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET as string,

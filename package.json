@@ -22,8 +22,8 @@
 		"db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
 		"test": "dotenv vitest",
 		"test:integration": "cross-env RUN_DOCKER_INTEGRATION_TESTS=1 dotenv -- vitest --run tests/docker-prisma.integration.test.ts",
-		"test:e2e": "playwright test",
-		"test:e2e:ui": "playwright test --ui",
+		"test:e2e": "dotenv -e .env.test -- playwright test",
+		"test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
 		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test"
 	},
 	"prisma": {
@@ -65,7 +65,7 @@
 		"@editorjs/table": "^2.4.5",
 		"@firebase/app": "^0.14.6",
 		"@firebase/messaging": "^0.12.23",
-		"@gdhub-io/gdhub-prisma": "2.0.0-beta.25",
+		"@gdhub-io/gdhub-prisma": "2.0.0-beta.26",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@google-analytics/data": "^5.1.0",
 		"@hello-pangea/dnd": "^18.0.1",
