@@ -1,4 +1,4 @@
-import { type NextApiRequest } from "next";
+import type { NextApiRequest } from "next";
 // Bring dayjs plugin module augmentations (tz, format, etc.) into the
 // global compilation. The runtime side effect (dayjs.extend) is invoked
 // from @/config/dayjs-setup which is imported by app/layout.tsx.
@@ -29,9 +29,4 @@ declare global {
 	interface Window {
 		$crisp?: any;
 	}
-}
-
-declare module "pdf-parse/lib/pdf-parse.js" {
-	import PdfParse = require("pdf-parse");
-	export = PdfParse;
 }
