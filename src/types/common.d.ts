@@ -30,3 +30,8 @@ declare global {
 		$crisp?: any;
 	}
 }
+
+declare module "pdf-parse/lib/pdf-parse.js" {
+	import PdfParse = require("pdf-parse");
+	export = PdfParse;
+}
