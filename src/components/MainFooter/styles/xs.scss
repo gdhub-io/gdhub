@@ -1,15 +1,29 @@
 @media screen and (max-width: 575px) {
-	.section {
-		padding: 20px 12px;
+	.footer {
+		padding: 24px 16px 16px;
+	}
+
+	.top {
+		grid-template-columns: 1fr;
+		gap: 24px;
 		text-align: center;
+	}
 
-		:global(div.ant-typography),
-		:global(a) {
-			font-size: 11px;
-		}
+	.brand {
+		align-items: center;
+	}
 
-		:global(.ant-anchor) {
-			row-gap: 6px;
-		}
+	.description {
+		max-width: none;
+	}
+
+	.nav {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px;
+		text-align: left;
+	}
+
+	.copyright {
+		font-size: 12px;
 	}
 }
