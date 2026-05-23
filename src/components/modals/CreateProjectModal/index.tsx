@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { T, useTolgee } from "@tolgee/react";
 import { Checkbox, Flex, Form, Input, Modal, message, Spin } from "antd";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { gtmEventTrigger } from "@/helpers/gtm";
@@ -144,16 +145,11 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 							{
 								<T
 									keyName="modal.create-project.field.agree.label"
-									defaultValue="I confirm that I have read and agree to the <a>requirements for game projects published on the gdhub.io platform</a>."
+									defaultValue="I confirm that I have read and agree to the <a href='/project-requirements'>requirements for game projects published on the gdhub.io platform</a>."
 									params={{
 										a: (
-											// biome-ignore lint/a11y/useAnchorContent: <explanation>
-											<a
-												href={
-													getLanguage() == "ru"
-														? "https://gdhub.notion.site/gdhub-io-157dcc9e9c9d805f8bace76c04d0a36b"
-														: "https://gdhub.notion.site/Requirements-for-game-projects-published-on-the-gdhub-io-platform-157dcc9e9c9d80c3ab0ae8d12035dc30"
-												}
+											<Link
+												href="/project-requirements"
 												target="_blank"
 												rel="noreferrer"
 												className={styles.link}

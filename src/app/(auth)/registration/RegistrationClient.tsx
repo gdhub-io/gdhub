@@ -1,13 +1,12 @@
 "use client";
 
 import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
-import { useTolgee } from "@tolgee/react";
+import { T, useTolgee } from "@tolgee/react";
 import {
 	Button,
 	Checkbox,
 	Flex,
 	Form,
-	Grid,
 	Input,
 	message,
 	notification,
@@ -18,7 +17,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import RegistrationBgImage from "@/assets/images/registration-bg.jpg";
 import { setCookie } from "@/helpers/cookie";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
@@ -27,7 +25,6 @@ const { Paragraph, Title } = Typography;
 
 export function RegistrationClient() {
 	const searchParams = useSearchParams();
-	const screens = Grid.useBreakpoint();
 	const [formRegEmail] = Form.useForm();
 	const [formRegGoogle] = Form.useForm();
 	const { t, getLanguage } = useTolgee();
@@ -105,48 +102,288 @@ export function RegistrationClient() {
 	return (
 		<div
 			className={`${styles.container} bright-container`}
-			style={{
-				backgroundImage: screens.sm
-					? `url(${RegistrationBgImage.src})`
-					: undefined,
-			}}
+			// style={{
+			// 	backgroundImage: screens.sm
+			// 		? `url(${RegistrationBgImage.src})`
+			// 		: undefined,
+			// }}
 		>
-			<div className="login-box">
-				<div className="login-form">
-					<Space orientation="vertical" size={40}>
-						{registrationStep.step < 3 && (
-							<Title>{t("Registration", "Registration")}</Title>
-						)}
-						{registrationStep.step === 1 && (
+			<div className="login-form">
+				<Space orientation="vertical" size={40}>
+					{registrationStep.step < 3 && (
+						<div>
+							<Title style={{ marginBottom: 4 }}>
+								{t("Registration", "Registration")}
+							</Title>
+							<Paragraph type="secondary" style={{ margin: 0 }}>
+								{t(
+									"page.registration.platformSubtitle",
+									"on the gdhub.io platform",
+								)}
+							</Paragraph>
+						</div>
+					)}
+					{registrationStep.step === 1 && (
+						<Space orientation="vertical" size={24}>
+							<Button
+								type="primary"
+								style={{ width: "100%" }}
+								onClick={() =>
+									setRegistrationStep({ step: 2, provider: "email" })
+								}
+							>
+								{t("Create new account", "Create new account")}
+							</Button>
+							<Button
+								type="primary"
+								style={{ width: "100%" }}
+								icon={<FaGoogle size={16} />}
+								onClick={() =>
+									setRegistrationStep({ step: 2, provider: "google" })
+								}
+							>
+								{t(
+									"page.registration.registrationWithGoogle",
+									"Registration with Google",
+								)}
+							</Button>
+							<Link href="/signin" className={styles.createAccountLink}>
+								{t(
+									"page.registration.iAlreadyHaveAnAccount",
+									"I already have an account",
+								)}
+							</Link>
+							<Link href="/">
+								<Button
+									className="btn-default-on-white"
+									style={{ width: "100%" }}
+								>
+									{t("page.registration.backToMain", "Back to main")}
+								</Button>
+							</Link>
+						</Space>
+					)}
+
+					{registrationStep.step === 2 &&
+						registrationStep.provider === "google" && (
 							<Space orientation="vertical" size={24}>
-								<Button
-									type="primary"
-									style={{ width: "100%" }}
-									onClick={() =>
-										setRegistrationStep({ step: 2, provider: "email" })
-									}
-								>
-									{t("Create new account", "Create new account")}
-								</Button>
-								<Button
-									type="primary"
-									style={{ width: "100%" }}
-									icon={<FaGoogle size={16} />}
-									onClick={() =>
-										setRegistrationStep({ step: 2, provider: "google" })
-									}
-								>
+								<Form variant="filled" form={formRegGoogle} layout="vertical">
+									<Flex vertical gap={12}>
+										<Form.Item
+											name="agreeWithTermsAndPrivacy"
+											valuePropName="checked"
+											noStyle
+											rules={[
+												{
+													validator: (_, value) => {
+														if (!value) {
+															notification.error({
+																message: t(
+																	"agreeWithTermsAndPrivacy.error",
+																	"You should confirm the accuracy of the information entered",
+																),
+															});
+														}
+														return value ? Promise.resolve() : Promise.reject();
+													},
+												},
+											]}
+										>
+											<Checkbox>
+												<T
+													keyName="page.registration.agreeWithTermsAndPrivacy"
+													defaultValue="By joining, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>"
+													params={{
+														terms: (
+															<Link
+																href="/terms"
+																target="_blank"
+																rel="noreferrer"
+																className={styles.policyLink}
+																onClick={(e) => e.stopPropagation()}
+															/>
+														),
+														privacy: (
+															<Link
+																href="/privacy-policy"
+																target="_blank"
+																rel="noreferrer"
+																className={styles.policyLink}
+																onClick={(e) => e.stopPropagation()}
+															/>
+														),
+													}}
+												/>
+											</Checkbox>
+										</Form.Item>
+
+										<Form.Item
+											name="needSubscribeToNewsletter"
+											valuePropName="checked"
+											noStyle
+										>
+											<Checkbox>
+												{t(
+													"page.registration.subscribeToNewsletter",
+													"Receive platform news",
+												)}
+											</Checkbox>
+										</Form.Item>
+									</Flex>
+								</Form>
+
+								<Flex justify="center" wrap="wrap" gap={16}>
+									<Button
+										type="primary"
+										onClick={handleSendWithGoogle}
+										loading={isRegistration}
+									>
+										{t(
+											"page.registration.continueWithGoogle",
+											"Continue with Google",
+										)}
+									</Button>
+									<Button
+										type="link"
+										onClick={() =>
+											setRegistrationStep({ step: 1, provider: "email" })
+										}
+									>
+										{t("page.registration.back", "Back")}
+									</Button>
+								</Flex>
+							</Space>
+						)}
+
+					{registrationStep.step === 2 &&
+						registrationStep.provider === "email" && (
+							<Space orientation="vertical" size={24}>
+								<Paragraph>
 									{t(
-										"page.registration.registrationWithGoogle",
-										"Registration with Google",
+										"page.registration.email.subtitle",
+										"We will send a letter to email with a registration link",
 									)}
-								</Button>
-								<Link href="/signin" className={styles.createAccountLink}>
+								</Paragraph>
+
+								<Form variant="filled" form={formRegEmail} layout="vertical">
+									<Form.Item
+										name="email"
+										label={t(
+											"page.registration.email.enterEmail",
+											"Enter Email",
+										)}
+										rules={[
+											{
+												type: "email",
+												required: true,
+												message: t(
+													"page.registration.email.pleaseEnterEmail",
+													"Please enter Email",
+												),
+											},
+										]}
+									>
+										<Input />
+									</Form.Item>
+
+									<Flex vertical gap={12}>
+										<Form.Item
+											name="agreeWithTermsAndPrivacy"
+											valuePropName="checked"
+											noStyle
+											rules={[
+												{
+													validator: (_, value) => {
+														if (!value) {
+															notification.error({
+																message: t(
+																	"agreeWithTermsAndPrivacy.error",
+																	"You should confirm the accuracy of the information entered",
+																),
+															});
+														}
+														return value ? Promise.resolve() : Promise.reject();
+													},
+												},
+											]}
+										>
+											<Checkbox>
+												<T
+													keyName="page.registration.agreeWithTermsAndPrivacy"
+													defaultValue="By joining, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>"
+													params={{
+														terms: (
+															<Link
+																href="/terms"
+																target="_blank"
+																rel="noreferrer"
+																className={styles.policyLink}
+																onClick={(e) => e.stopPropagation()}
+															/>
+														),
+														privacy: (
+															<Link
+																href="/privacy-policy"
+																target="_blank"
+																rel="noreferrer"
+																className={styles.policyLink}
+																onClick={(e) => e.stopPropagation()}
+															/>
+														),
+													}}
+												/>
+											</Checkbox>
+										</Form.Item>
+
+										<Form.Item
+											name="needSubscribeToNewsletter"
+											valuePropName="checked"
+											noStyle
+										>
+											<Checkbox>
+												{t(
+													"page.registration.subscribeToNewsletter",
+													"Receive platform news",
+												)}
+											</Checkbox>
+										</Form.Item>
+									</Flex>
+								</Form>
+
+								<Flex justify="center" wrap="wrap" gap={16}>
+									<Button
+										type="primary"
+										onClick={handleSendWithEmail}
+										loading={isRegistration}
+									>
+										{t(
+											"page.registration.sendRegistrationLink",
+											"Send registration link",
+										)}
+									</Button>
+									<Button
+										type="link"
+										onClick={() =>
+											setRegistrationStep({ step: 1, provider: "email" })
+										}
+									>
+										{t("page.registration.back", "Back")}
+									</Button>
+								</Flex>
+							</Space>
+						)}
+
+					{registrationStep.step === 3 &&
+						registrationStep.provider === "email" && (
+							<Space orientation="vertical" size={24}>
+								<Paragraph style={{ maxWidth: 400 }}>
 									{t(
-										"page.registration.iAlreadyHaveAnAccount",
-										"I already have an account",
+										"page.registration.email.complete",
+										"We have sent an email to {email} with an access link. Follow the link and complete the following registration steps.",
+										{ email },
 									)}
-								</Link>
+								</Paragraph>
+
 								<Link href="/">
 									<Button
 										className="btn-default-on-white"
@@ -157,195 +394,7 @@ export function RegistrationClient() {
 								</Link>
 							</Space>
 						)}
-
-						{registrationStep.step === 2 &&
-							registrationStep.provider === "google" && (
-								<Space orientation="vertical" size={24}>
-									<Form variant="filled" form={formRegGoogle} layout="vertical">
-										<Form.Item
-											name="agreeWithTermsAndPrivacy"
-											valuePropName="checked"
-											noStyle
-											rules={[
-												{
-													validator: (_, value) => {
-														if (!value) {
-															notification.error({
-																message: t(
-																	"agreeWithTermsAndPrivacy.error",
-																	"You should confirm the accuracy of the information entered",
-																),
-															});
-														}
-														return value ? Promise.resolve() : Promise.reject();
-													},
-												},
-											]}
-										>
-											<Checkbox>
-												{t(
-													"page.registration.agreeWithTermsAndPrivacy",
-													"By joining, you agree to our Terms of Service and Privacy Policy",
-												)}
-											</Checkbox>
-										</Form.Item>
-
-										<Form.Item
-											name="needSubscribeToNewsletter"
-											valuePropName="checked"
-											noStyle
-										>
-											<Checkbox>
-												{t(
-													"page.registration.subscribeToNewsletter",
-													"Receive platform news",
-												)}
-											</Checkbox>
-										</Form.Item>
-									</Form>
-
-									<Flex justify="center" wrap="wrap" gap={16}>
-										<Button
-											type="primary"
-											onClick={handleSendWithGoogle}
-											loading={isRegistration}
-										>
-											{t(
-												"page.registration.continueWithGoogle",
-												"Continue with Google",
-											)}
-										</Button>
-										<Button
-											type="link"
-											onClick={() =>
-												setRegistrationStep({ step: 1, provider: "email" })
-											}
-										>
-											{t("page.registration.back", "Back")}
-										</Button>
-									</Flex>
-								</Space>
-							)}
-
-						{registrationStep.step === 2 &&
-							registrationStep.provider === "email" && (
-								<Space orientation="vertical" size={24}>
-									<Paragraph>
-										{t(
-											"page.registration.email.subtitle",
-											"We will send a letter to email with a registration link",
-										)}
-									</Paragraph>
-
-									<Form form={formRegEmail} layout="vertical">
-										<Form.Item
-											name="email"
-											label={t(
-												"page.registration.email.enterEmail",
-												"Enter Email",
-											)}
-											rules={[
-												{
-													type: "email",
-													required: true,
-													message: t(
-														"page.registration.email.pleaseEnterEmail",
-														"Please enter Email",
-													),
-												},
-											]}
-										>
-											<Input />
-										</Form.Item>
-
-										<Form.Item
-											name="agreeWithTermsAndPrivacy"
-											valuePropName="checked"
-											noStyle
-											rules={[
-												{
-													validator: (_, value) => {
-														if (!value) {
-															notification.error({
-																message: t(
-																	"agreeWithTermsAndPrivacy.error",
-																	"You should confirm the accuracy of the information entered",
-																),
-															});
-														}
-														return value ? Promise.resolve() : Promise.reject();
-													},
-												},
-											]}
-										>
-											<Checkbox>
-												{t(
-													"page.registration.agreeWithTermsAndPrivacy",
-													"By joining, you agree to our Terms of Service and Privacy Policy",
-												)}
-											</Checkbox>
-										</Form.Item>
-
-										<Form.Item
-											name="needSubscribeToNewsletter"
-											valuePropName="checked"
-											noStyle
-										>
-											<Checkbox>
-												{t(
-													"page.registration.subscribeToNewsletter",
-													"Receive platform news",
-												)}
-											</Checkbox>
-										</Form.Item>
-									</Form>
-
-									<Flex justify="center" wrap="wrap" gap={16}>
-										<Button
-											type="primary"
-											onClick={handleSendWithEmail}
-											loading={isRegistration}
-										>
-											{t(
-												"page.registration.sendRegistrationLink",
-												"Send registration link",
-											)}
-										</Button>
-										<Button
-											type="link"
-											onClick={() =>
-												setRegistrationStep({ step: 1, provider: "email" })
-											}
-										>
-											{t("page.registration.back", "Back")}
-										</Button>
-									</Flex>
-								</Space>
-							)}
-
-						{registrationStep.step === 3 &&
-							registrationStep.provider === "email" && (
-								<Space orientation="vertical" size={24}>
-									<Paragraph style={{ maxWidth: 400 }}>
-										{t(
-											"page.registration.email.complete",
-											"We have sent an email to {email} with an access link. Follow the link and complete the following registration steps.",
-											{ email },
-										)}
-									</Paragraph>
-
-									<Link href="/">
-										<Button
-											className="btn-default-on-white"
-											style={{ width: "100%" }}
-										>
-											{t("page.registration.backToMain", "Back to main")}
-										</Button>
-									</Link>
-								</Space>
-							)}
-					</Space>
-				</div>
+				</Space>
 			</div>
 		</div>
 	);

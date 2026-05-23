@@ -20,11 +20,11 @@ const CreateVacancySchema = z.object({
 	status: z.enum(
 		Object.values(prismaClient.TeamVacancyStatus) as [string, ...string[]],
 	),
-	publishedAt: z.string().optional(),
+	publishedAt: z.string().nullable().optional(),
 	finishedAt: z.string(),
 	teamId: z.string(),
-	promisePercentage: z.number().optional(),
-	promiseStepId: z.string().optional(),
+	promisePercentage: z.number().nullable().optional(),
+	promiseStepId: z.string().nullable().optional(),
 });
 
 const UpdateVacancySchema = z.object({
@@ -36,10 +36,10 @@ const UpdateVacancySchema = z.object({
 			Object.values(prismaClient.TeamVacancyStatus) as [string, ...string[]],
 		)
 		.optional(),
-	publishedAt: z.string().optional(),
+	publishedAt: z.string().nullable().optional(),
 	finishedAt: z.string().optional(),
-	promisePercentage: z.number().optional(),
-	promiseStepId: z.string().optional(),
+	promisePercentage: z.number().nullable().optional(),
+	promiseStepId: z.string().nullable().optional(),
 });
 
 type IdQuery = z.infer<typeof IdQuerySchema>;

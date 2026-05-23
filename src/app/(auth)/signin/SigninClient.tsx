@@ -86,14 +86,23 @@ export function SigninClient() {
 	return (
 		<div
 			className={`${styles.container}`}
-			style={{
-				backgroundImage: screens.sm ? `url(${LogingBgImage.src})` : undefined,
-			}}
+			// style={{
+			// 	backgroundImage: screens.sm ? `url(${LogingBgImage.src})` : undefined,
+			// }}
 		>
 			<div className="login-box">
 				<div className="login-form">
 					<Space orientation="vertical" size={40}>
-						{loginStep < 3 && <Title>{t("signin.title", "Log in")}</Title>}
+						{loginStep < 3 && (
+							<div>
+								<Title style={{ marginBottom: 4 }}>
+									{t("signin.title", "Sign in")}
+								</Title>
+								<Paragraph type="secondary" style={{ margin: 0 }}>
+									{t("signin.platformSubtitle", "to the gdhub.io platform")}
+								</Paragraph>
+							</div>
+						)}
 						{loginStep === 1 && (
 							<Space orientation="vertical" size={24}>
 								<Button

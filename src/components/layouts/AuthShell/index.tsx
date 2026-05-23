@@ -6,11 +6,8 @@ import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import type { ReactNode } from "react";
 import { publicThemeConfig } from "@/config/theme";
+import styles from "./style.module.scss";
 
-/**
- * Минимальная обвязка для страниц аутентификации (signin, registration).
- * Только AntD ConfigProvider + Layout, без шапки/футера/нав-меню.
- */
 export function AuthShell({ children }: { children: ReactNode }) {
 	const { getLanguage } = useTolgee();
 
@@ -19,7 +16,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
 			theme={publicThemeConfig}
 			locale={getLanguage() === "en" ? enLocale : ruLocale}
 		>
-			<Layout>{children}</Layout>
+			<Layout className={styles.shell}>{children}</Layout>
 		</ConfigProvider>
 	);
 }

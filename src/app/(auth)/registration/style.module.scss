@@ -83,6 +83,19 @@
 
 }
 
+.policyLink {
+  color: #f15541;
+  text-decoration: underline;
+  text-decoration-color: rgba(241, 85, 65, 0.4);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+
+  &:hover {
+    color: #f15541;
+    text-decoration-color: #f15541;
+  }
+}
+
 @include meta.load-css('styles/xs.scss'); // screen < 576px
 @include meta.load-css('styles/sm.scss'); // screen ≥ 576px
 @include meta.load-css('styles/md.scss'); // screen ≥ 768px
