@@ -124,7 +124,7 @@ export const LandingRecentDevlogsSection = () => {
 													)}
 													<div className={styles.cardHeader}>
 														<Space
-															direction="vertical"
+															orientation="vertical"
 															size={4}
 															className={styles.projectInfo}
 														>

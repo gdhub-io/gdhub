@@ -1,11 +1,13 @@
-import { createMocks } from "node-mocks-http";
 import { describe, expect, it, vi } from "vitest";
-import handler from "../src/pages/api/devlog/[projectReportId]";
 import { prisma } from "../src/services/prisma";
 
 vi.mock("../src/services/prisma", () => ({
 	prisma: {
-		projectReport: { findUnique: vi.fn() },
+		projectReport: {
+			findUnique: vi.fn(),
+			getApplauseCount: vi.fn().mockResolvedValue(0),
+			findFirst: vi.fn().mockResolvedValue(null),
+		},
 	},
 }));
 
@@ -16,14 +18,27 @@ describe("GET /api/devlog/[projectReportId]", () => {
 			content: "content",
 			publishedAt: "2024-01-01",
 			video: null,
-			project: { name: "Project", slug: "project", description: "desc", coverImage: null },
+			project: {
+				name: "Project",
+				slug: "project",
+				description: "desc",
+				coverImage: null,
+			},
 			author: { name: "Author", image: null },
 		};
 		(prisma.projectReport.findUnique as any).mockResolvedValue(mockPost);
-		const { req, res } = createMocks({ method: "GET", query: { projectReportId: "post1" } });
-		await handler(req as any, res as any);
-		expect(res._getStatusCode()).toBe(200);
-		const json = JSON.parse(res._getData());
+
+		const { GET } = await import(
+			"../src/app/api/devlog/[projectReportId]/route"
+		);
+
+		const request = new Request("http://test/api/devlog/post1");
+		const response = await (GET as any)(request, {
+			params: Promise.resolve({ projectReportId: "post1" }),
+		});
+
+		expect(response.status).toBe(200);
+		const json = await response.json();
 		expect(json.id).toBe("post1");
 	});
 });

@@ -43,7 +43,7 @@ export const LandingContactsSection = () => {
 							>
 								<div className={styles.contactItem}>
 									<Link href="mailto:info@gdhub.io" target="_blank">
-										<Space direction="vertical" size={32}>
+										<Space orientation="vertical" size={32}>
 											<div className={styles.contactIcon}>
 												<EmailIcon />
 											</div>
@@ -60,7 +60,7 @@ export const LandingContactsSection = () => {
 										}
 										target="_blank"
 									>
-										<Space direction="vertical" size={32}>
+										<Space orientation="vertical" size={32}>
 											<div className={styles.contactIcon}>
 												<TelegramIcon />
 											</div>
@@ -70,7 +70,7 @@ export const LandingContactsSection = () => {
 								</div>
 								{/* <div className={styles.contactItem}>
 									<Link href="https://discord.gg/WcUFD3tHqg" target="_blank">
-										<Space direction="vertical" size={32}>
+										<Space orientation="vertical" size={32}>
 											<div className={styles.contactIcon}>
 												<DiscordIcon />
 											</div>
@@ -85,7 +85,7 @@ export const LandingContactsSection = () => {
 										href="https://www.youtube.com/@gamedev_hub"
 										target="_blank"
 									>
-										<Space direction="vertical" size={32}>
+										<Space orientation="vertical" size={32}>
 											<div className={styles.contactIcon}>
 												<BiLogoYoutube
 													size={100}
@@ -101,7 +101,7 @@ export const LandingContactsSection = () => {
 										href="https://www.linkedin.com/company/game-developers-hub"
 										target="_blank"
 									>
-										<Space direction="vertical" size={32}>
+										<Space orientation="vertical" size={32}>
 											<div className={styles.contactIcon}>
 												<BiLogoLinkedin
 													size={100}

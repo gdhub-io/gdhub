@@ -1,12 +1,11 @@
+@use "sass:meta";
 .container {
   background-color: transparent;
   transition: background-color 0.5s, backdrop-filter 0.4s;
   width: 100%;
 
-  :global {
-    .ant-typography {
-      color: #fff;
-    }
+  :global(.ant-typography) {
+    color: #fff;
   }
 
   .logo {
@@ -35,35 +34,33 @@
     font-size: 16px;
     background-color: transparent;
 
-    :global {
-      .ant-menu-item {
-        padding-inline: 16px;
-        margin-inline: 4px;
-        border-radius: 4px;
-        transition: all 0.3s ease;
+    :global(.ant-menu-item) {
+      padding-inline: 16px;
+      margin-inline: 4px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+
+      a {
+        position: relative;
+        color: #fff;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08);
 
         a {
-          position: relative;
           color: #fff;
-          font-weight: 500;
-          transition: color 0.3s ease;
         }
+      }
+    }
 
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.08);
+    :global(.ant-menu-item-active) {
+      background-color: rgba(241, 85, 65, 0.1);
 
-          a {
-            color: #fff;
-          }
-        }
-
-        &-active {
-          background-color: rgba(241, 85, 65, 0.1);
-
-          a {
-            color: #fff !important;
-          }
-        }
+      a {
+        color: #fff !important;
       }
     }
   }
@@ -92,11 +89,9 @@
     line-height: normal;
     display: block;
 
-    :global {
-      .ant-skeleton-button {
-        min-width: 100px;
-        height: 40px;
-      }
+    :global(.ant-skeleton-button) {
+      min-width: 100px;
+      height: 40px;
     }
   }
 
@@ -112,34 +107,32 @@
     color: #fff;
   }
 
-  :global {
-    .ant-menu {
-      background: transparent;
-    }
+  :global(.ant-menu) {
+    background: transparent;
+  }
 
-    .ant-drawer-body {
-      padding: 0 40px;
-    }
+  :global(.ant-drawer-body) {
+    padding: 0 40px;
+  }
 
-    .ant-drawer-header {
-      border: 0;
-      padding: 24px 32px;
-    }
+  :global(.ant-drawer-header) {
+    border: 0;
+    padding: 24px 32px;
+  }
 
-    .ant-drawer-header-title {
-      justify-content: flex-end;
-    }
+  :global(.ant-drawer-header-title) {
+    justify-content: flex-end;
+  }
 
-    .ant-drawer-close {
-      width: 36px !important;
-      height: 36px !important;
-    }
+  :global(.ant-drawer-close) {
+    width: 36px !important;
+    height: 36px !important;
   }
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

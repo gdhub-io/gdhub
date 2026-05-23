@@ -1,8 +1,11 @@
-import {
-	type Conversation,
-	Conversations,
-	type ConversationsProps,
-} from "@ant-design/x";
+import { Conversations, type ConversationsProps } from "@ant-design/x";
+import type { ConversationItemType } from "@ant-design/x/es/conversations/interface";
+
+// TODO(antd6): @ant-design/x v2 removed the top-level `Conversation` item type
+// export. Use `ConversationItemType` (the non-divider item) extended with the
+// custom `value` field this codebase relies on.
+type Conversation = ConversationItemType & { value: string };
+
 import { IconDoorExit } from "@tabler/icons-react";
 import { Avatar, Badge, Flex, message, Skeleton } from "antd";
 import { type Room, RoomEvent } from "matrix-js-sdk";

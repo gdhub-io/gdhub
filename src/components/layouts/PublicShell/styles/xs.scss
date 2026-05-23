@@ -1,0 +1,16 @@
+@use "../../../../styles/variables.scss";
+
+@media screen and (max-width: 575px) {
+  .container {
+    padding: 0;
+
+    :global(.ant-layout-content) {
+      padding: 0;
+
+      :global(.layout-background) {
+        padding: 16px variables.$public-padding-xs;
+        min-height: 360px;
+      }
+    }
+  }
+}

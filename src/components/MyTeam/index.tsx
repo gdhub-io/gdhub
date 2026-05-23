@@ -188,7 +188,7 @@ const MyTeam = () => {
 		async (teamMember: prismaClient.TeamMember) => {
 			modal.confirm({
 				title: t("Are you sure you want to fire this member?"),
-				destroyOnClose: true,
+				destroyOnHidden: true,
 				type: "confirm",
 				okText: "Yes",
 				okType: "primary",

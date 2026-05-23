@@ -170,7 +170,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			title={t("modal.setLecturer.title", "I want to give this lecture")}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			cancelText={t("modal.setLecturer.close", "Close")}
 			okText={
 				speakerRequest

@@ -1,117 +1,113 @@
 import { useTranslate } from "@tolgee/react";
-import { Anchor, Col, Divider, Row, Space, Typography } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import GdhubLogo from "@/assets/images/gdhub-beta-logo.svg";
 import styles from "./style.module.scss";
 
-const { Title, Paragraph } = Typography;
+type FooterLink = { href: string; label: string; target?: string };
+type FooterColumn = { title: string; links: FooterLink[] };
 
 export const MainFooter = () => {
-	const router = useRouter();
 	const { t } = useTranslate();
 
-	const writeInternalLink = (internalLink: string) => {
-		return router.pathname == "/" ? internalLink : `/${internalLink}`;
-	};
+	const columns: FooterColumn[] = [
+		{
+			title: t("mainFooter.platform", "Platform"),
+			links: [
+				{
+					href: "/projects",
+					label: t("mainFooter.gameProjects", "Video games"),
+				},
+				{
+					href: "/vacancies",
+					label: t("mainFooter.vacancies", "Open positions"),
+				},
+				{ href: "/events", label: t("mainFooter.events", "Events") },
+			],
+		},
+		{
+			title: t("mainFooter.documentation", "Documentation"),
+			links: [
+				{
+					href: "https://docs.gdhub.io",
+					label: t("mainFooter.documentation", "Documentation"),
+					target: "_blank",
+				},
+				{
+					href: "https://docs.gdhub.io/gd/overview",
+					label: t("mainFooter.gameIndustryGuide", "Game Industry Guide"),
+					target: "_blank",
+				},
+				{
+					href: "/blog",
+					label: t("mainFooter.blog", "Blog"),
+				},
+			],
+		},
+		{
+			title: t("mainFooter.legal", "Legal"),
+			links: [
+				{
+					href: "/cookie-policy",
+					label: t("mainFooter.cookiePolicy", "Cookie Policy"),
+				},
+				{ href: "/terms", label: t("mainFooter.termsOfUse", "Terms of use") },
+				{
+					href: "/legal-details",
+					label: t("mainFooter.legalDetails", "Legal Details"),
+				},
+			],
+		},
+	];
 
 	return (
-		<div className={styles.section}>
+		<footer className={styles.footer}>
 			<div className={styles.container}>
-				<Row
-					gutter={[
-						{ xs: 12, sm: 24, lg: 32 },
-						{ xs: 8, sm: 12, lg: 16 },
-					]}
-					style={{ marginBottom: 12 }}
-				>
-					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
-						<GdhubLogo style={{ width: "auto", height: "31px" }} />
-						<Paragraph style={{ marginTop: 12, maxWidth: 510 }}>
+				<div className={styles.top}>
+					<div className={styles.brand}>
+						<GdhubLogo className={styles.logo} />
+						<p className={styles.description}>
 							{t(
 								"mainFooter.appShortDescription",
 								"A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
 							)}
-						</Paragraph>
-					</Col>
-					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={6}>
-							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
-								{t("mainFooter.platform", "Platform")}
-							</Title>
-							<Anchor
-								items={[
-									{
-										href: "/projects",
-										title: t("mainFooter.gameProjects", "Game Projects"),
-										key: "projects",
-									},
-									{
-										href: "/vacancies",
-										title: t("mainFooter.vacancies", "Vacancies"),
-										key: "vacancies",
-									},
-									{
-										href: writeInternalLink("#about"),
-										title: t("mainFooter.aboutUs", "About us"),
-										key: "about",
-									},
-								]}
-							/>
-						</Space>
-					</Col>
-					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={6}>
-							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
-								{t("mainFooter.forUsers", "For Users")}
-							</Title>
-							<Anchor
-								items={[
-									{
-										href: writeInternalLink("#for-authors"),
-										title: t("mainFooter.forAuthors", "For Authors"),
-										key: "for-authors",
-									},
-									{
-										href: writeInternalLink("#for-specialists"),
-										title: t("mainFooter.forSpecialists", "For Specialists"),
-										key: "for-specialists",
-									},
-								]}
-							/>
-						</Space>
-					</Col>
-					<Col xs={{ span: 12 }} sm={{ span: 8 }} lg={{ span: 4 }}>
-						<Space direction="vertical" size={6}>
-							<Title level={5} style={{ marginBottom: 8, marginTop: 0 }}>
-								{t("mainFooter.support", "Support")}
-							</Title>
-							<Link href="/cookie-policy">
-								{t("mainFooter.cookiePolicy", "Cookie Policy")}
-							</Link>
-							<Link href="/terms">
-								{t("mainFooter.termsOfUse", "Terms of use")}
-							</Link>
-						</Space>
-					</Col>
-				</Row>
+						</p>
+					</div>
 
-				<Divider style={{ margin: "16px 0" }} />
+					<nav
+						className={styles.nav}
+						aria-label={t("mainFooter.navAria", "Footer navigation")}
+					>
+						{columns.map((col) => (
+							<div key={col.title} className={styles.column}>
+								<h2 className={styles.columnTitle}>{col.title}</h2>
+								<ul className={styles.linkList}>
+									{col.links.map((link) => (
+										<li key={`${link.href}-${link.label}`}>
+											<Link
+												href={link.href}
+												className={styles.link}
+												target={link.target}
+											>
+												{link.label}
+											</Link>
+										</li>
+									))}
+								</ul>
+							</div>
+						))}
+					</nav>
+				</div>
 
-				<Paragraph className={styles.copyright}>
+				<hr className={styles.divider} />
+
+				<p className={styles.copyright}>
 					© {new Date().getFullYear()}{" "}
 					{t(
 						"mainFooter.copyright",
-						"VšĮ Žaidimų Kūrėjų Hubas. All rights reserved.",
-					)}{" "}
-					<Link
-						href="/legal-details"
-						style={{ color: "#9f9f9f", fontWeight: 200, fontSize: 13 }}
-					>
-						{t("mainFooter.companyDetails", "Legal details")}
-					</Link>
-				</Paragraph>
+						"Game Develoeprs Hub. All rights reserved.",
+					)}
+				</p>
 			</div>
-		</div>
+		</footer>
 	);
 };

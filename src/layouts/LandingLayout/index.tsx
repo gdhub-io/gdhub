@@ -15,7 +15,7 @@ import {
 	Typography,
 } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { useEffect, useMemo, useState } from "react";
@@ -43,7 +43,7 @@ const scrollIntoViewWithOffset = (selector: string, offset: number) => {
 
 export const LandingLayout = ({ children }: any) => {
 	const { t } = useTranslate();
-	const router = useRouter();
+	const pathname = usePathname();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [scrollY, setScrollY] = useState(0);
 	const screens = Grid.useBreakpoint();
@@ -55,7 +55,7 @@ export const LandingLayout = ({ children }: any) => {
 			"landing.seo.description",
 			"Game Developers Hub is a platform for game developers and specialists.",
 		),
-		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
 		openGraph: {
 			title: t("landing.seo.title", "Game Developers Hub"),
 			description: t(
@@ -63,7 +63,7 @@ export const LandingLayout = ({ children }: any) => {
 				"Game Developers Hub is a platform for game developers and specialists.",
 			),
 			type: "website",
-			url: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+			url: process.env.NEXT_PUBLIC_APP_URL + pathname,
 		},
 	};
 
@@ -73,7 +73,7 @@ export const LandingLayout = ({ children }: any) => {
 				scrollIntoViewWithOffset(document.location.hash, 100);
 			}, 300);
 		}
-	}, [router]);
+	}, [pathname]);
 
 	useEffect(() => {
 		if (!screens.xl) setOpenMobileMenu(false);
@@ -200,7 +200,6 @@ export const LandingLayout = ({ children }: any) => {
 				{!screens.xl && (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={"100%"}
 						afterOpenChange={handleOpenMobileMenu}
 						closeIcon={<AiOutlineClose size={24} />}
 						title={
@@ -221,7 +220,7 @@ export const LandingLayout = ({ children }: any) => {
 						onClose={() => setOpenMobileMenu(false)}
 						open={openMobileMenu}
 					>
-						<Space direction="vertical" size={32} style={{ width: "100%" }}>
+						<Space orientation="vertical" size={32} style={{ width: "100%" }}>
 							<Menu
 								items={headerMenu}
 								theme="dark"

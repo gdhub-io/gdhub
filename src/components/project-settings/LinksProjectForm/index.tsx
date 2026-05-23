@@ -268,7 +268,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 							bordered={false}
 							locale={{
 								emptyText: (
-									<Space direction="vertical">
+									<Space orientation="vertical">
 										<Text type="secondary">
 											{t(
 												"project.links.noLinks",

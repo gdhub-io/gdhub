@@ -56,7 +56,7 @@ export const LandingForSpecialistsSection = () => {
 							</Title>
 
 							<div className={styles.content}>
-								<Space direction="vertical" size={screens.lg ? 46 : 24}>
+								<Space orientation="vertical" size={screens.lg ? 46 : 24}>
 									<Space size={screens.lg ? 32 : 16} align="center">
 										<div className={styles.star}>
 											<Star2Icon />

@@ -13,19 +13,17 @@
 		object-fit: contain;
 	}
 
-	:global {
-		.remove-cover-btn {
-			position: absolute;
-			top: 5px;
-			right: 5px;
+	:global(.remove-cover-btn) {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		box-shadow: none !important;
+		background: #222;
+
+		&:hover,
+		&:focus {
 			box-shadow: none !important;
 			background: #222;
-
-			&:hover,
-			&:focus {
-				box-shadow: none !important;
-				background: #222;
-			}
 		}
 	}
 }

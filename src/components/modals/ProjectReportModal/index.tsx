@@ -31,7 +31,7 @@ const ProjectReportModal = ({
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [content, setContent] = useState("");
-	const editorRef = useRef<MDXEditorMethods | null>();
+	const editorRef = useRef<MDXEditorMethods | null>(null);
 
 	const {
 		data: report,
@@ -142,7 +142,7 @@ const ProjectReportModal = ({
 			}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			okText={t("modal.projectReport.save", "Save")}
 			cancelText={t("modal.projectReport.close", "Close")}
 			open={open}

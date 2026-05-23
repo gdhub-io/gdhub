@@ -60,7 +60,7 @@ export const LandingForAuthorsSection = () => {
 					<Title level={2}>{t("landing.author.title", "FOR AUTHORS")}</Title>
 
 					<div className={styles.content}>
-						<Space direction="vertical" size={screens.lg ? 46 : 24}>
+						<Space orientation="vertical" size={screens.lg ? 46 : 24}>
 							<Space size={screens.lg ? 32 : 16} align="center">
 								<div className={styles.star}>
 									<Star2Icon />

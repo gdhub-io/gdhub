@@ -116,7 +116,11 @@ const DeleteAccountModal = ({
 			width={760}
 		>
 			<Spin spinning={isFetchingPreview}>
-				<Space direction="vertical" size="middle" className={styles.modalBody}>
+				<Space
+					orientation="vertical"
+					size="middle"
+					className={styles.modalBody}
+				>
 					<Alert
 						type="warning"
 						showIcon

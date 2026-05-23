@@ -1,8 +1,6 @@
 .wall {
-  :global {
-    .ant-list-split .ant-list-item {
-      border-block-end: unset;
-    }
+  :global(.ant-list-split .ant-list-item) {
+    border-block-end: unset;
   }
 }
 

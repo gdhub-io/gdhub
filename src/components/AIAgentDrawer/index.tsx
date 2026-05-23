@@ -14,7 +14,7 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	hasImageUrl,
@@ -41,7 +41,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 	const [errorText, setErrorText] = useState("");
 	const queryClient = useQueryClient();
 	const messagesEndRef = useRef<HTMLDivElement | null>(null);
-	const router = useRouter();
+	const pathname = usePathname();
 
 	// Load assistants and pick the first one by default
 	const { data: assistantsData } = useQuery({
@@ -122,7 +122,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 				threadId,
 				text,
 				assistantId,
-				route: router.asPath,
+				route: pathname,
 			});
 			return res.data as { threadId: string; values: any; messages: Message[] };
 		},
@@ -210,11 +210,10 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 		<Drawer
 			classNames={{
 				wrapper: styles.agentDrawerWrapper,
-				content: styles.agentDrawerContent,
+				section: styles.agentDrawerContent,
 				footer: styles.agentDrawerFooter,
 			}}
 			placement="bottom"
-			height={"auto"}
 			open={open}
 			onClose={onClose}
 			title="Triangle Assistant"

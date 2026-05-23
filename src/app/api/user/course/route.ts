@@ -1,0 +1,88 @@
+import { randomUUID } from "node:crypto";
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import slugify from "slugify";
+import { z } from "zod";
+import {
+	apiError,
+	json,
+	type SessionUser,
+	withAuth,
+	withValidation,
+} from "@/lib/api-handlers";
+import { prisma } from "@/services/prisma";
+
+const CreateCourseSchema = z.object({
+	name: z.string(),
+	slug: z.string().optional(),
+	shortLine: z.string().optional(),
+	directionId: z.string(),
+	language: z
+		.enum(Object.values(prismaClient.$Enums.Language) as [string, ...string[]])
+		.optional(),
+	authorRate: z.number().min(0),
+	agreedToTerms: z.boolean(),
+});
+
+const DeleteCourseQuerySchema = z.object({
+	id: z.string(),
+});
+
+type CreateCourseBody = z.infer<typeof CreateCourseSchema>;
+type DeleteCourseQuery = z.infer<typeof DeleteCourseQuerySchema>;
+
+export const POST = withAuth({ mode: "user" })(
+	withValidation(CreateCourseSchema)(async (_req, _ctx, { user, body }) => {
+		const currentUser = user as SessionUser | undefined;
+		if (!currentUser) return apiError.unauthorized();
+		const data = body as CreateCourseBody;
+
+		if (!data.agreedToTerms) {
+			return apiError.badRequest(
+				"Course agreement must be accepted before creating a course",
+			);
+		}
+
+		const slug =
+			(data.slug && slugify(data.slug, { lower: true, strict: true })) ||
+			`${slugify(data.name, { lower: true, strict: true })}-${randomUUID().slice(-6)}`;
+
+		const course = await prisma.course.create({
+			data: {
+				name: data.name.trim(),
+				slug,
+				shortLine: data.shortLine?.trim() || null,
+				directionId: data.directionId,
+				language:
+					(data.language as prismaClient.$Enums.Language) ??
+					prismaClient.$Enums.Language.en,
+				status: prismaClient.$Enums.CourseStatus.Draft,
+				createdById: currentUser.id as string,
+			},
+		});
+
+		// TODO(prisma): persist the author rate once the CourseTeacher model is
+		// added to the @gdhub-io/gdhub-prisma package (see proposal at the
+		// bottom of this PR description). Until then, the rate is accepted by
+		// the API but not stored.
+		void data.authorRate;
+
+		return json(course);
+	}),
+);
+
+export const DELETE = withAuth({ mode: "user" })(
+	withValidation(
+		DeleteCourseQuerySchema,
+		"query",
+	)(async (_req, _ctx, { user, body }) => {
+		const currentUser = user as SessionUser | undefined;
+		if (!currentUser) return apiError.unauthorized();
+		const { id } = body as DeleteCourseQuery;
+
+		await prisma.course.delete({
+			where: { id },
+		});
+
+		return json({ success: true });
+	}),
+);

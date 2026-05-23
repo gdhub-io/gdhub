@@ -2,7 +2,7 @@ import { EyeOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Space } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { type CSSProperties, useCallback } from "react";
 
 interface PageViewsProps {
@@ -26,12 +26,12 @@ export const PageViews = ({
 	textStyle = { fontSize: "12px" },
 	minViews = 10,
 }: PageViewsProps) => {
-	const router = useRouter();
+	const pathname = usePathname();
 
 	const { data: pageviews = 0 } = useQuery({
-		queryKey: ["pageviews", path, router.asPath, startDate],
+		queryKey: ["pageviews", path, pathname, startDate],
 		queryFn: () => fetchPageviews(path, startDate),
-		enabled: router.isReady,
+		enabled: pathname != null,
 	});
 
 	const fetchPageviews = useCallback(
@@ -39,11 +39,17 @@ export const PageViews = ({
 			try {
 				let pageviews = 0;
 
-				const currentPath = router.asPath;
+				const currentPath = pathname;
+
+				const buildUrl = (targetPath: string) => {
+					const params = new URLSearchParams({ path: targetPath });
+					if (startDate) params.set("startDate", startDate);
+					return `/api/analytics/pageviews?${params.toString()}`;
+				};
 
 				if (isUnique) {
 					const globalResponse = await axios.get(
-						`/api/analytics/pageviews?path=${path || currentPath}&startDate=${startDate}`,
+						buildUrl(path || currentPath || ""),
 					);
 
 					pageviews = parseInt(globalResponse?.data?.pageviews || "0", 10);
@@ -51,7 +57,7 @@ export const PageViews = ({
 
 				if (locale) {
 					const localeResponse = await axios.get(
-						`/api/analytics/pageviews?path=/${locale}${path || currentPath}&startDate=${startDate}`,
+						buildUrl(`/${locale}${path || currentPath || ""}`),
 					);
 
 					pageviews += parseInt(localeResponse?.data?.pageviews || "0", 10);
@@ -62,7 +68,7 @@ export const PageViews = ({
 				console.error("Error fetching pageviews:", error);
 			}
 		},
-		[router, locale],
+		[pathname, locale],
 	);
 
 	const formatPageviews = (views: string): string | null => {

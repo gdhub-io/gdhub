@@ -1,9 +1,7 @@
 @media screen and (max-width: 575px) {
 	.content {
-		:global {
-			.ant-segmented-item {
-				margin: unset !important;
-			}
+		:global(.ant-segmented-item) {
+			margin: unset !important;
 		}
 
 		.segmentedOption {

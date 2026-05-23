@@ -1,0 +1,50 @@
+@use "sass:meta";
+@use '../../../styles/variables.scss';
+
+.header {
+  height: auto;
+  padding: 0 variables.$public-padding;
+  background-position: right;
+  background-size: cover;
+  background-color: #07010C;
+  position: relative;
+}
+
+.titleContainer {
+  padding: 42px 0 32px;
+  position: relative;
+  z-index: 1;
+
+  :global(h1) {
+    font-size: 48px;
+    color: #fff;
+    margin-bottom: 0;
+  }
+
+  :global(.ant-typography-secondary) {
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.title {
+  margin: 0;
+}
+
+.titleTop {
+  margin: 0;
+}
+
+.subTitle {
+  font-size: 18px;
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+@include meta.load-css('./styles/xs.scss'); // screen < 576px
+@include meta.load-css('./styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('./styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('./styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('./styles/xl.scss'); // screen ≥ 1200px

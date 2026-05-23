@@ -3,18 +3,6 @@
 const nextConfig = {
 	reactStrictMode: true,
 	output: "standalone",
-	i18n: {
-		locales: ["en"],
-		defaultLocale: "en",
-		localeDetection: false,
-	},
-	eslint: {
-		ignoreDuringBuilds: true,
-	},
-	experimental: {
-		// serverComponentsExternalPackages: ['@svar-ui/react-gantt'],
-		// instrumentationHook: true,
-	},
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "images.unsplash.com" },
@@ -30,7 +18,7 @@ const nextConfig = {
 		],
 	},
 	env: {
-		NEXT_PUBLIC_ENV: "PRODUCTION", //your next configs goes here
+		NEXT_PUBLIC_ENV: "PRODUCTION",
 	},
 	transpilePackages: [
 		"@mdxeditor/editor",
@@ -46,8 +34,15 @@ const nextConfig = {
 		"rc-tree",
 		"rc-table",
 	],
-	webpack: (config) =>
-	{
+	turbopack: {
+		rules: {
+			"*.svg": {
+				loaders: ["@svgr/webpack"],
+				as: "*.js",
+			},
+		},
+	},
+	webpack: (config) => {
 		config.module.rules.push({
 			test: /\.svg$/,
 			use: ["@svgr/webpack"],
@@ -60,21 +55,37 @@ const nextConfig = {
 			cacheUnaffected: true,
 		};
 
-		// 👉 add ignore warning for autoprefixer for external css
-    config.ignoreWarnings = config.ignoreWarnings || [];
-    config.ignoreWarnings.push({
-      module: /@svar-ui\/react-gantt\/dist-full\/index\.css/,
-      message: /end value has mixed support, consider using flex-end instead/,
-    });
+		config.ignoreWarnings = config.ignoreWarnings || [];
+		config.ignoreWarnings.push({
+			module: /@svar-ui\/react-gantt\/dist-full\/index\.css/,
+			message: /end value has mixed support, consider using flex-end instead/,
+		});
 
 		return config;
 	},
+	redirects: async () => [
+		// /profile/settings/X → /my/settings/X (Phase 4 of layout migration:
+		// settings переехал из protected/profile в user/my).
+		{
+			source: "/profile/settings",
+			destination: "/my/settings/general",
+			permanent: true,
+		},
+		{
+			source: "/profile/settings/:item",
+			destination: "/my/settings/:item",
+			permanent: true,
+		},
+	],
 	headers: async () => [
 		{
 			source: "/api/:path*",
 			headers: [
 				{ key: "Access-Control-Allow-Origin", value: "*" },
-				{ key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+				{
+					key: "Access-Control-Allow-Methods",
+					value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+				},
 				{
 					key: "Access-Control-Allow-Headers",
 					value:

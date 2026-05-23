@@ -6,13 +6,11 @@
   }
 
   .container {
-    :global {
-      .ant-layout-content {
-        padding: 0 64px;
+    :global(.ant-layout-content) {
+      padding: 0 64px;
 
-        .layout-background {
-          padding: 32px 0px;
-        }
+      .layout-background {
+        padding: 32px 0px;
       }
     }
   }

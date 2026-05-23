@@ -1,6 +1,4 @@
-import { createMocks } from "node-mocks-http";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import handler from "../src/pages/api/user/project";
 import { prisma } from "../src/services/prisma";
 
 vi.mock("@gdhub-io/gdhub-prisma/dist/client", () => ({
@@ -25,7 +23,7 @@ vi.mock("../src/services/prisma", () => ({
 }));
 
 vi.mock("next-auth/next", () => ({
-	getServerSession: vi.fn().mockImplementation((req, res, authOptions) => {
+	getServerSession: vi.fn().mockImplementation(() => {
 		return Promise.resolve({
 			user: {
 				id: "user1",
@@ -35,6 +33,19 @@ vi.mock("next-auth/next", () => ({
 			},
 		});
 	}),
+}));
+
+vi.mock("@/auth", () => ({
+	auth: vi.fn().mockImplementation(() =>
+		Promise.resolve({
+			user: {
+				id: "user1",
+				email: "test@example.com",
+				name: "Test User",
+				roles: ["Author"],
+			},
+		}),
+	),
 }));
 
 describe("POST /api/user/project", () => {
@@ -55,37 +66,33 @@ describe("POST /api/user/project", () => {
 			author: { roles: [] },
 		});
 
-		const { req, res } = createMocks({
+		const { POST } = await import("../src/app/api/user/project/route");
+		const request = new Request("http://test/api/user/project", {
 			method: "POST",
-			url: "/api/user/project",
-			body: { name: "Test Project", description: "Test Description", agree: true },
-			user: {
-				id: "user1",
-				email: "test@example.com",
-				name: "Test User",
-				roles: ["Author"],
-			},
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({
+				name: "Test Project",
+				description: "Test Description",
+				agree: true,
+			}),
 		});
+		const { NextRequest } = await import("next/server");
+		const nextReq = new NextRequest(request);
 
-		req.user = {
-			id: "user1",
-			email: "test@example.com",
-			name: "Test User",
-			roles: ["Author"],
-		};
-
+		let response: Response | undefined;
 		try {
-			await handler(req as any, res as any);
+			response = await (POST as any)(nextReq, { params: Promise.resolve({}) });
 		} catch (error: any) {
 			console.error("Handler error:", error);
 			console.error("Error stack:", error.stack);
 		}
 
-		console.info("Response status:", res._getStatusCode());
-		console.info("Response body:", res._getData());
-		console.info("Response headers:", res._getHeaders());
+		const status = response?.status;
+		const body = response ? await response.text() : undefined;
+		console.info("Response status:", status);
+		console.info("Response body:", body);
 
-		expect(res._getStatusCode()).toBe(200);
+		expect(status).toBe(200);
 		expect(prisma.project.create).toHaveBeenCalled();
 	});
 });

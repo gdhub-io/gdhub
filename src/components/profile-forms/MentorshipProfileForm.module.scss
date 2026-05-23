@@ -1,7 +1,5 @@
 .questionSelect {
-  :global {
-    .ant-select-selection-overflow-item {
-      width: 100%;
-    }
+  :global(.ant-select-selection-overflow-item) {
+    width: 100%;
   }
 }

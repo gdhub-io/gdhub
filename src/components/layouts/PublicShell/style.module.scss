@@ -1,0 +1,51 @@
+@use "sass:meta";
+@use '../../../styles/variables.scss';
+
+.container {
+  :global(.logo) {
+    font-weight: bold;
+    margin: 0 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  :global(.username) {
+    font-size: 14px;
+    color: var(--dark-grey);
+  }
+
+  // Content само full-width; horizontal padding — на `:global(.layout-background)`.
+  // Так Hero (PublicPageHeader) тоже full-width до краёв viewport, а
+  // body-контент сидит внутри `:global(.layout-background)` с responsive padding.
+  :global(.ant-layout-content) {
+    padding: 0;
+
+    :global(.layout-background) {
+      padding: 24px variables.$public-padding;
+      min-height: 360px;
+    }
+  }
+}
+
+.footer {
+  padding: 0;
+
+  :global(.ant-typography) {
+    color: #fff;
+  }
+}
+
+.mobileMenuDrawer {
+  :global(.ant-drawer-close) {
+    display: none;
+  }
+}
+
+@include meta.load-css('./styles/xs.scss'); // screen < 576px
+@include meta.load-css('./styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('./styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('./styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('./styles/xl.scss'); // screen ≥ 1200px

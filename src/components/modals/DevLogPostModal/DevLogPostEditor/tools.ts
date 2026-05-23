@@ -2,6 +2,7 @@
 import CheckList from "@editorjs/checklist";
 import Delimiter from "@editorjs/delimiter";
 import type { ToolConstructable, ToolSettings } from "@editorjs/editorjs";
+// @ts-expect-error - dist/index.d.ts exists but package.json `exports` lacks a "types" entry
 import Embed from "@editorjs/embed";
 import Header from "@editorjs/header";
 import Image from "@editorjs/image";

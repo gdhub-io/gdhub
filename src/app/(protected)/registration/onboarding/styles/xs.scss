@@ -1,0 +1,20 @@
+@media screen and (max-width: 575px) {
+	.container {
+		background-color: #fff;
+		padding: unset;
+
+		:global(.onboarding-box) {
+			background-color: unset;
+		}
+
+		:global(.onboarding-content) {
+			margin: 8px;
+		}
+
+		:global(.onboarding-footer) {
+			button {
+				width: 100%;
+			}
+		}
+	}
+}

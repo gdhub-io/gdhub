@@ -1,11 +1,12 @@
 "use client";
 
 import { Inbox } from "@novu/react";
+import { IconBell } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
-import { theme } from "antd";
+import { Badge, theme } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Suspense, useEffect } from "react";
 import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
@@ -152,6 +153,15 @@ export const NotificationsBell = () => {
 					subscriberId={session?.user.id}
 					subscriberHash={signature?.data.signature}
 					routerPush={(path: string) => router.push(path)}
+					renderBell={(unreadCount) => (
+						<Badge
+							count={unreadCount?.total ?? 0}
+							size="small"
+							offset={[-2, 2]}
+						>
+							<IconBell className={styles.bellIcon} stroke={1.75} />
+						</Badge>
+					)}
 					appearance={{
 						variables: {
 							colorPrimary: token.colorPrimaryText,

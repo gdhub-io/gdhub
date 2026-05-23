@@ -42,7 +42,7 @@ export const LandingHeroSection = ({
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Space
 							size={[64, 64]}
-							direction="vertical"
+							orientation="vertical"
 							className={styles.heroMain}
 						>
 							<Title>
@@ -82,7 +82,7 @@ export const LandingHeroSection = ({
 									</Space>
 								</li>
 							</ul>
-							<Space direction="vertical">
+							<Space orientation="vertical">
 								<Link href="/registration">
 									<Button className={styles.heroButton} type="primary">
 										{t(

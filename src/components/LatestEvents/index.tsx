@@ -7,6 +7,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import {
+	getHubSectionShellClass,
 	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
@@ -117,7 +118,9 @@ export default function LatestEvents() {
 
 	return (
 		<Skeleton active loading={isLoading}>
-			<div className={styles.container}>
+			<section
+				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
+			>
 				<HubSectionHeader
 					title={t("hub.latest-events.title", "Upcoming events")}
 					linkHref="/hub/events"
@@ -173,7 +176,7 @@ export default function LatestEvents() {
 						))}
 					</HubSectionBleed>
 				</HubSectionBody>
-			</div>
+			</section>
 		</Skeleton>
 	);
 }

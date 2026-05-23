@@ -61,7 +61,7 @@ export const HeroStats = ({
 					</Flex>
 					<Divider style={{ margin: "24px 0 0" }} className="divider" />
 					<Flex className={styles.stats}>
-						<Space direction="vertical" align="center" size={0}>
+						<Space orientation="vertical" align="center" size={0}>
 							<Text strong>{formatDollar(stats?.investmentAmount || 0)}</Text>
 							<Text>
 								{t(
@@ -70,15 +70,21 @@ export const HeroStats = ({
 								)}
 							</Text>
 						</Space>
-						<Divider type="vertical" style={{ height: 52, margin: "0 16px" }} />
-						<Space direction="vertical" align="center" size={0}>
+						<Divider
+							orientation="vertical"
+							style={{ height: 52, margin: "0 16px" }}
+						/>
+						<Space orientation="vertical" align="center" size={0}>
 							<Text strong>{stats?.projectsCount}</Text>
 							<Text>
 								{t("component.heroStats.currentProjects", "current projects")}
 							</Text>
 						</Space>
-						<Divider type="vertical" style={{ height: 52, margin: "0 16px" }} />
-						<Space direction="vertical" align="center" size={0}>
+						<Divider
+							orientation="vertical"
+							style={{ height: 52, margin: "0 16px" }}
+						/>
+						<Space orientation="vertical" align="center" size={0}>
 							<Text strong>{stats?.vacanciesCount}+</Text>
 							<Text>
 								{t("component.heroStats.actualVacancies", "actual vacancies")}

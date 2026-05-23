@@ -90,7 +90,7 @@ const ExportDataModal = ({ open, onClose }: ExportDataModalProps) => {
 			cancelText={t("profile.settings.danger.cancel", "Cancel")}
 			width={600}
 		>
-			<Space direction="vertical" size="middle" className={styles.modalBody}>
+			<Space orientation="vertical" size="middle" className={styles.modalBody}>
 				<Text>
 					{t(
 						"profile.settings.danger.export.description",
@@ -126,7 +126,7 @@ const ExportDataModal = ({ open, onClose }: ExportDataModalProps) => {
 							),
 							children: (
 								<Space
-									direction="vertical"
+									orientation="vertical"
 									size={4}
 									className={styles.categoryList}
 								>
@@ -154,7 +154,7 @@ const ExportDataModal = ({ open, onClose }: ExportDataModalProps) => {
 							),
 							children: (
 								<Space
-									direction="vertical"
+									orientation="vertical"
 									size={4}
 									className={styles.categoryList}
 								>

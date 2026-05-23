@@ -233,7 +233,7 @@ const InterestsProfileForm = ({
 
 						{!screens.lg && (
 							<Radio.Group>
-								<Space direction="vertical">
+								<Space orientation="vertical">
 									<Radio value={prismaClient.PrimaryInterest.Author}>
 										{t("wantToBe.text", "I want to be")}{" "}
 										<Text italic>{t("Author", "Author")}</Text>

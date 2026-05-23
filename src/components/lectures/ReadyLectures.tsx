@@ -5,14 +5,12 @@ import { Button, Grid, Spin, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import LectureDetailsModal, {
 	type LectureDetails,
 } from "@/components/modals/LectureDetailsModal";
 
 export const ReadyLectures = () => {
-	const router = useRouter();
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
 	const [selectedLectureId, setSelectedLectureId] = useState<string>();

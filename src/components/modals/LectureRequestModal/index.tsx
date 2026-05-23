@@ -112,7 +112,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			cancelText={t("modal.lectureRequest.close", "Close")}
 			okText={
 				lectureId

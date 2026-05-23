@@ -1,0 +1,158 @@
+@use "sass:meta";
+@use '../../../styles/variables.scss';
+
+.header {
+	height: auto;
+	border-bottom: 1px solid #ededed;
+	background: #fff;
+	line-height: normal;
+
+	:global(.ant-breadcrumb) {
+		display: inline-flex;
+		align-items: center;
+		line-height: 1;
+	}
+
+	:global(.ant-breadcrumb ol) {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	:global(.ant-breadcrumb-link) {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	:global(.ant-breadcrumb-separator) {
+		display: inline-flex;
+		align-items: center;
+		margin-inline: 8px;
+	}
+}
+
+.contentContainer {
+	padding-bottom: 16px;
+
+	:global(.layout-background) {
+		padding: 36px 50px 0;
+		max-width: variables.$app-content-width;
+		margin: 0 auto;
+	}
+}
+
+.container {
+	:global(.logo) {
+		font-weight: bold;
+		display: flex;
+		gap: 8px;
+		align-items: center;
+	}
+
+	:global(.header) {
+
+		.ant-btn.ant-btn-text {
+			color: var(--dark-grey);
+
+			&:hover {
+				color: white;
+			}
+		}
+	}
+
+	:global(.username) {
+		font-size: 14px;
+		color: var(--dark-grey) !important;
+	}
+}
+
+.mobileMenuDrawer {
+	:global(.ant-drawer-close) {
+		display: none;
+	}
+}
+
+.backTop {
+	background-color: transparent;
+	box-shadow: none;
+
+
+	:global(.ant-float-btn-body:hover) {
+		background-color: transparent;
+	}
+}
+
+.appMenu {
+	line-height: 32px !important;
+	margin-left: -16px;
+	margin-right: -16px;
+	margin-bottom: 4px;
+	margin-top: 4px;
+	font-size: 14px;
+
+	:global(.ant-menu-item) {
+		margin-inline: 2px;
+	}
+
+	:global(.ant-menu-item:not(.ant-menu-item-disabled)) {
+		border-radius: 4px;
+		background: transparent;
+
+		.ant-menu-title-content {
+			color: #777;
+		}
+
+		&::after {
+			border-width: 0px !important;
+		}
+	}
+
+	:global(.ant-menu-item-active) {
+		background: #efefef !important;
+
+		&::before {
+			border-color: #181818 !important;
+		}
+	}
+
+	:global(.ant-menu-item-selected) {
+		background: #efefef !important;
+
+		.ant-menu-title-content {
+			color: #181818;
+		}
+
+		&::before {
+			border-color: #181818 !important;
+		}
+	}
+}
+
+.agentDrawerFloatButton {
+	width: 64px !important;
+	height: 64px !important;
+
+	outline: 2px solid transparent !important;
+	outline-offset: 3px !important;
+
+	&:hover {
+		outline-color: #2b2b2b !important;
+	}
+
+	:global(.ant-float-btn-content) {
+		width: 64px !important;
+		height: 64px !important;
+		position: absolute !important;
+
+		.ant-float-btn-icon {
+			width: 60px !important;
+			height: 60px !important;
+		}
+	}
+}
+
+@include meta.load-css('./styles/xs.scss'); // screen < 576px
+@include meta.load-css('./styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('./styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('./styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('./styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('./styles/xxl.scss'); // screen ≥ 1600px

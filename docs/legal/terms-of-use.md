@@ -1,0 +1,190 @@
+# Terms of Use
+
+_Last updated: 23 May 2026_
+
+These Terms of Use ("Terms") form a binding agreement between you ("you", "User") and **Game Developers Hub** (gdhub), operated by:
+
+- **Founder:** Individual Entrepreneur Dzmitry Drynau, legal entity code 306422564, registered at Georgia, Tbilisi, Samgori District, Police Street I Dead End, N5.
+- **Representative office (Lithuania):** Public Institution "Game Developers Hub", legal entity code 307277444, registered at Vilnius, Giedraičių g. 39-R53, LT-09302.
+
+For contact details see [Legal Details](/legal-details).
+
+By creating an account, accessing, or using **gdhub.io** (the "Platform") you confirm that you have read, understood, and agreed to be bound by these Terms, the [Privacy Policy](/privacy-policy), and the [Cookie Policy](/cookie-policy). If you do not agree, do not use the Platform.
+
+---
+
+## 1. About the Platform
+
+gdhub is an online community for game industry professionals and aspiring game creators. The Platform enables Users to:
+
+1. Create and present **game projects**, assemble teams, and track progress through devlog posts.
+2. Publish and browse **vacancies** ("Open positions") for project roles.
+3. Discover and attend **events** organised by gdhub or by the community.
+4. Take and complete **courses** related to game development.
+5. Maintain a **public profile**, including specialisation, portfolio, and skill information.
+6. Issue and **verify certificates** of course or event participation.
+7. Communicate with other Users for collaboration purposes.
+
+gdhub does not develop, fund, or own the projects that Users publish. The Platform is a coordination and discovery tool. All decisions regarding project scope, team composition, revenue, equity, intellectual property, and product release belong solely to the project participants.
+
+## 2. Eligibility
+
+You may use the Platform only if:
+
+1. You are at least **16 years old**, or the minimum age of digital consent in your jurisdiction (whichever is higher);
+2. You have the legal capacity to enter into a binding contract;
+3. You are not barred from using the Platform under the laws of your country, Georgia, the European Union, or Lithuania;
+4. You provide accurate registration information.
+
+If you use the Platform on behalf of a company or organisation, you confirm that you are authorised to bind that entity to these Terms.
+
+## 3. Account Registration & Security
+
+1. To access most features you must register an account and complete the onboarding flow (interests, role, specialisation).
+2. You are responsible for keeping your credentials confidential and for every action performed under your account.
+3. You must notify gdhub immediately at **office@gdhub.io** if you suspect unauthorised access to your account.
+4. gdhub may, at its sole discretion, suspend or terminate accounts that violate these Terms, infringe third-party rights, or pose a security risk.
+5. You may delete your account at any time from profile settings. Public artefacts you have contributed (e.g. devlog posts, project pages, comments) may be retained in anonymised form where necessary to preserve the integrity of collaborative work, in accordance with the Privacy Policy.
+
+## 4. User Roles
+
+Within a project, Users may take one or more of the following roles:
+
+- **Author / Project Owner** — creates a project, defines its scope, invites participants, and is primarily responsible for the project's content and conduct on the Platform.
+- **Team Member / Specialist** — joins a project and contributes work (code, art, design, writing, audio, QA, marketing, etc.).
+- **Reader / Community Member** — browses public content, follows projects, attends events.
+
+Specific role permissions are defined inside the Platform UI and may be updated as the product evolves.
+
+## 5. User-Generated Content
+
+"User Content" means anything you post, upload, or transmit through the Platform, including project descriptions, devlog posts, comments, vacancy listings, profile data, images, audio, video, links, and code references.
+
+### 5.1. Your Rights
+
+You retain all ownership rights in your User Content. You are solely responsible for it.
+
+### 5.2. Licence You Grant to gdhub
+
+By submitting User Content you grant gdhub a worldwide, non-exclusive, royalty-free, sublicensable licence to host, store, reproduce, adapt for display, publish, distribute, and otherwise use that content **strictly for the purpose of operating, providing, promoting, and improving the Platform**, including in newsletters, social media excerpts, and search-engine indexing. This licence ends when you remove the content, except where retention is required by law or to preserve evidence of conduct that violated these Terms.
+
+### 5.3. Licence to Other Users
+
+By making content public on the Platform you allow other Users to view, share within the Platform, and quote it under fair-use conventions. This does **not** grant other Users any right to copy, redistribute, or commercially exploit your content outside the Platform without your separate permission.
+
+### 5.4. Project Ownership Among Team Members
+
+gdhub does **not** mediate intellectual property between team members of a project. You are strongly encouraged to agree in writing (a team charter, contributor agreement, or operating agreement) on:
+
+- Who owns the resulting game, code, art, and other deliverables;
+- How revenue, equity, royalties, and credits are split;
+- What happens when a member leaves or the project is dissolved.
+
+gdhub provides templates and guidance in the [Equity description](https://gdhub.io/docs/equity-description) and [Skill capital](https://gdhub.io/docs/skill-capital) documents as a starting point only — they are not legal advice.
+
+## 6. Acceptable Use
+
+You agree **not** to:
+
+1. Post unlawful, defamatory, harassing, discriminatory, threatening, hateful, sexually explicit, or violent content;
+2. Post content that infringes any patent, trademark, trade secret, copyright, moral, privacy, or publicity right;
+3. Impersonate any person or entity, or misrepresent your affiliation with a person or entity;
+4. Upload viruses, malware, or any code designed to disrupt, damage, or limit the Platform or its Users;
+5. Attempt unauthorised access to any part of the Platform, related systems, or other Users' accounts;
+6. Scrape, crawl, or harvest data from the Platform except via APIs we explicitly publish, and only within their documented limits;
+7. Use the Platform to send spam, phishing messages, unsolicited advertising, or any commercial messaging outside features intended for that purpose (e.g. vacancies, official announcements);
+8. Recruit Users for purposes unrelated to game development (e.g. MLM, unrelated job offers, paid promotions) without explicit gdhub approval;
+9. Use automated tools (bots, scripts, generators) to create accounts, votes, follows, or any artificial engagement;
+10. Misuse vacancies — every "Open position" must reflect a real role on a real project;
+11. Misuse certificates — you may not issue, request, or display certificates for work or attendance that did not occur;
+12. Use the Platform in any way that violates Georgian, Lithuanian, EU, or your local law.
+
+We may remove content and restrict access without prior notice when we reasonably believe it violates this Section 6.
+
+## 7. Courses, Events & Certificates
+
+1. Courses and events listed on the Platform may be free or paid. Pricing, refund policy, and access conditions are shown at the point of enrolment.
+2. Certificates issued by gdhub confirm participation or completion based on activity recorded by the Platform. They do not constitute formal accreditation in any jurisdiction unless explicitly stated.
+3. The authenticity of any certificate can be verified at [`/verify`](/verify) using its unique code.
+4. gdhub is not responsible for the content, accuracy, or outcomes of courses or events organised by third parties through the Platform.
+
+## 8. Payments
+
+Where the Platform enables paid features (e.g. paid courses, ticketed events, premium subscriptions):
+
+1. Payments are processed by third-party payment service providers. By paying, you also accept the terms of the relevant provider.
+2. Prices are shown including applicable taxes where required by law. You are responsible for any additional taxes or fees imposed by your jurisdiction.
+3. Refunds are governed by the policy displayed at checkout and by mandatory consumer-protection rules (in particular, the EU 14-day withdrawal right, where applicable).
+4. We may change prices and introduce new paid features. Active paid plans continue at the originally agreed price until the end of the paid period.
+
+## 9. Third-Party Services
+
+The Platform integrates with or links to third-party services (analytics, authentication providers, payment processors, video hosting, Notion-powered legal pages, etc.). gdhub is not responsible for the content, privacy practices, or availability of third-party services. Your use of those services is governed by their respective terms.
+
+## 10. Intellectual Property of gdhub
+
+The Platform, its design, code, the "gdhub" name and logo, and all related materials are owned by the Founder or licensed to gdhub. Except for the rights expressly granted to you in these Terms, no rights are transferred to you by your use of the Platform. You may not copy, modify, decompile, reverse-engineer, or create derivative works of the Platform without prior written consent.
+
+## 11. Feedback
+
+If you send us suggestions, ideas, or feedback about the Platform, we may use them without any obligation or compensation to you. You confirm that any feedback you submit is non-confidential and is provided on a royalty-free basis.
+
+## 12. Suspension and Termination
+
+1. You may stop using the Platform and delete your account at any time.
+2. We may suspend or terminate your access to all or part of the Platform if you violate these Terms, if required by law, or if your conduct poses a risk to other Users or to gdhub.
+3. Termination does not affect rights and obligations that, by their nature, are intended to survive (e.g. accrued payments, licences granted under Section 5.2 for content we are legally required to retain, sections 13–17).
+
+## 13. Disclaimers
+
+The Platform is provided **"as is"** and **"as available"**. To the maximum extent permitted by law, gdhub disclaims all warranties, express or implied, including warranties of merchantability, fitness for a particular purpose, non-infringement, accuracy, and uninterrupted availability. We do not guarantee that:
+
+- The Platform will always be available, secure, or error-free;
+- User Content (including project pages, vacancies, certificates, courses) is accurate, complete, or up to date;
+- Any collaboration formed via the Platform will result in a finished game, revenue, employment, or any other outcome.
+
+You use the Platform at your own risk.
+
+## 14. Limitation of Liability
+
+To the maximum extent permitted by law, gdhub, its Founder, its representative offices, its officers, employees, and contractors shall not be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages, or for any loss of profits, revenue, data, goodwill, business opportunities, or game-development outcomes, arising out of or in connection with your use of the Platform.
+
+Where liability cannot be excluded by law, our aggregate liability to you for any claim is limited to the greater of (a) the amount you paid to gdhub in the twelve (12) months before the event giving rise to the claim, or (b) **EUR 100**.
+
+Nothing in these Terms limits liability that cannot be limited under applicable mandatory consumer-protection law.
+
+## 15. Indemnity
+
+You agree to defend, indemnify, and hold harmless gdhub, its Founder, its representative offices, and their personnel from and against any claims, damages, liabilities, costs, and expenses (including reasonable legal fees) arising out of: (a) your User Content; (b) your breach of these Terms; (c) your violation of any law or third-party right; or (d) your use of the Platform in a way not authorised by these Terms.
+
+## 16. Changes to the Terms
+
+We may update these Terms from time to time. When changes are material we will notify you through the Platform or by email at least 14 days before they take effect. Continued use of the Platform after changes take effect constitutes acceptance of the updated Terms. The "Last updated" date at the top of this document always reflects the current version.
+
+## 17. Governing Law and Disputes
+
+1. These Terms are governed by the laws of **Georgia**, without regard to its conflict-of-laws rules. Where you reside in the European Union, this choice of law does not deprive you of the protections of the mandatory consumer-protection rules of your country of residence.
+2. The parties will first try to resolve any dispute amicably by contacting **office@gdhub.io**.
+3. If a dispute cannot be resolved within 30 days, it will be submitted to the competent courts at the registered seat of the Founder, unless mandatory law of your country of residence requires a different forum.
+4. Consumers resident in the EU may also use the European Commission's [Online Dispute Resolution platform](https://ec.europa.eu/consumers/odr/).
+
+## 18. Miscellaneous
+
+1. **Entire agreement.** These Terms, together with the Privacy Policy and Cookie Policy, constitute the entire agreement between you and gdhub regarding the Platform.
+2. **Severability.** If any provision of these Terms is held invalid or unenforceable, the remaining provisions remain in full force and effect.
+3. **No waiver.** Our failure to enforce any provision does not waive our right to enforce it later.
+4. **Assignment.** You may not assign your rights or obligations under these Terms without our written consent. We may assign our rights and obligations to an affiliate or successor without your consent.
+5. **Language.** These Terms are provided in English. Translations are for convenience only; in case of discrepancy, the English version prevails.
+
+## 19. Contact
+
+For any question about these Terms please contact:
+
+- **Email:** office@gdhub.io
+- **Postal address:**
+  - Founder — Georgia, Tbilisi, Samgori District, Police Street I Dead End, N5
+  - Lithuania office — Vilnius, Giedraičių g. 39-R53, LT-09302
+
+---
+
+_By using gdhub you confirm that you have read and accepted these Terms of Use._

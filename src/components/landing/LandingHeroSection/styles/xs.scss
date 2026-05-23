@@ -1,6 +1,8 @@
+@use "../../../../styles/variables.scss";
+
 @media screen and (max-width: 575px) {
   .section {
-    padding: calc($landing-header-height + 48px) 16px 48px;
+    padding: calc(variables.$landing-header-height + 48px) 16px 48px;
     background-position-y: top;
     background-position-x: center;
     background-size: contain;
@@ -19,25 +21,23 @@
       display: inline-block;
     }
 
-    :global {
-      h1 {
-        text-align: center;
-        font-size: 40px;
-        font-weight: 800;
-        line-height: 1.25;
-      }
+    :global(h1) {
+      text-align: center;
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
 
-      ul {
-        >li {
-          margin-bottom: 16px;
+    :global(ul) {
+      >li {
+        margin-bottom: 16px;
 
-          svg {
-            margin: 8px;
-          }
+        svg {
+          margin: 8px;
+        }
 
-          span {
-            font-size: 14px;
-          }
+        span {
+          font-size: 14px;
         }
       }
     }

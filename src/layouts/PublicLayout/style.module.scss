@@ -1,8 +1,9 @@
-@import '../../styles/variables.scss';
+@use "sass:meta";
+@use '../../styles/variables.scss';
 
 .header {
   height: auto;
-  padding: 0 $public-padding;
+  padding: 0 variables.$public-padding;
   background-position: right;
   background-size: cover;
   background-color: #07010C;
@@ -25,16 +26,14 @@
     position: relative;
     z-index: 1;
 
-    :global {
-      h1 {
-        font-size: 48px;
-        color: #fff;
-        margin-bottom: 0;
-      }
+    :global(h1) {
+      font-size: 48px;
+      color: #fff;
+      margin-bottom: 0;
+    }
 
-      .ant-typography-secondary {
-        color: rgba(255, 255, 255, 0.5);
-      }
+    :global(.ant-typography-secondary) {
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }
@@ -44,48 +43,42 @@
 }
 
 .container {
-  :global {
-    .logo {
-      font-weight: bold;
-      margin: 0 20px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
+  :global(.logo) {
+    font-weight: bold;
+    margin: 0 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
 
-    .username {
-      font-size: 14px;
-      color: var(--dark-grey);
-    }
+  :global(.username) {
+    font-size: 14px;
+    color: var(--dark-grey);
+  }
 
-    .ant-layout-content {
-      padding: 0 $public-padding;
+  :global(.ant-layout-content) {
+    padding: 0 variables.$public-padding;
 
-      .layout-background {
-        padding: 24px;
-        min-height: 360px;
-      }
+    .layout-background {
+      padding: 24px;
+      min-height: 360px;
     }
   }
 }
 
 .mobileMenuDrawer {
-  :global {
-    .ant-drawer-close {
-      display: none;
-    }
+  :global(.ant-drawer-close) {
+    display: none;
   }
 }
 
 .footer {
   padding: 0;
 
-  :global {
-    .ant-typography {
-      color: #fff;
-    }
+  :global(.ant-typography) {
+    color: #fff;
   }
 }
 
@@ -105,9 +98,9 @@
   margin-top: 8px !important;
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

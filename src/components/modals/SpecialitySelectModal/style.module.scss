@@ -1,9 +1,7 @@
 .contactTypes {
   display: block;
 
-  :global {
-    .ant-checkbox-group-item {
-      margin-left: 0;
-    }
+  :global(.ant-checkbox-group-item) {
+    margin-left: 0;
   }
 }

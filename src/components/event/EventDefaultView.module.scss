@@ -66,158 +66,156 @@
     line-height: 1.6;
     color: rgba(0, 0, 0, 0.85);
 
-    :global {
-      .ant-image {
-        max-width: 100%;
-        display: block;
-        margin: 16px 0;
-      }
+    :global(.ant-image) {
+      max-width: 100%;
+      display: block;
+      margin: 16px 0;
+    }
 
-      img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        display: block;
-        object-fit: contain;
-      }
+    :global(img) {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      object-fit: contain;
+    }
 
-      p {
-        margin-bottom: 16px;
-      }
+    :global(p) {
+      margin-bottom: 16px;
+    }
 
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        margin: 24px 0 16px;
-        font-weight: 600;
-      }
+    :global(h1),
+    :global(h2),
+    :global(h3),
+    :global(h4),
+    :global(h5),
+    :global(h6) {
+      margin: 24px 0 16px;
+      font-weight: 600;
+    }
 
-      h1 {
-        font-size: 32px;
-      }
+    :global(h1) {
+      font-size: 32px;
+    }
 
-      h2 {
-        font-size: 24px;
-      }
+    :global(h2) {
+      font-size: 24px;
+    }
 
-      h3 {
-        font-size: 20px;
-      }
+    :global(h3) {
+      font-size: 20px;
+    }
 
-      h4 {
-        font-size: 18px;
-      }
+    :global(h4) {
+      font-size: 18px;
+    }
 
-      h5 {
-        font-size: 16px;
-      }
+    :global(h5) {
+      font-size: 16px;
+    }
 
-      h6 {
-        font-size: 14px;
-      }
+    :global(h6) {
+      font-size: 14px;
+    }
 
-      ul,
-      ol {
-        margin: 16px 0;
-        padding-left: 24px;
-      }
+    :global(ul),
+    :global(ol) {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
 
-      li {
-        margin-bottom: 8px;
-      }
+    :global(li) {
+      margin-bottom: 8px;
+    }
 
-      blockquote {
-        margin: 16px 0;
-        padding: 16px 24px;
-        border-left: 4px solid #1890ff;
-        background: rgba(24, 144, 255, 0.05);
-        border-radius: 4px;
-      }
+    :global(blockquote) {
+      margin: 16px 0;
+      padding: 16px 24px;
+      border-left: 4px solid #1890ff;
+      background: rgba(24, 144, 255, 0.05);
+      border-radius: 4px;
+    }
+
+    :global(code) {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    :global(pre) {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
 
       code {
-        background: rgba(0, 0, 0, 0.05);
-        padding: 2px 4px;
-        border-radius: 4px;
-        font-family: monospace;
+        background: none;
+        padding: 0;
+      }
+    }
+
+    :global(a) {
+      color: #1890ff;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    :global(table) {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+
+      th,
+      td {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 8px 16px;
+        text-align: left;
       }
 
-      pre {
-        background: rgba(0, 0, 0, 0.05);
-        padding: 16px;
-        border-radius: 8px;
-        overflow-x: auto;
-        margin: 16px 0;
-
-        code {
-          background: none;
-          padding: 0;
-        }
+      th {
+        background: rgba(0, 0, 0, 0.02);
+        font-weight: 600;
       }
+    }
 
-      a {
-        color: #1890ff;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 16px 0;
-
-        th,
-        td {
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          padding: 8px 16px;
-          text-align: left;
-        }
-
-        th {
-          background: rgba(0, 0, 0, 0.02);
-          font-weight: 600;
-        }
-      }
-
-      .editorjs-video-block {
-        border-radius: 16px;
-        overflow: hidden;
-
-        iframe {
-          border: none !important;
-        }
-      }
+    :global(.editorjs-video-block) {
+      border-radius: 16px;
+      overflow: hidden;
 
       iframe {
-        width: 100% !important;
-        max-width: 690px;
-        height: auto;
-        aspect-ratio: 16 / 9;
-        display: block;
-        margin: 16px auto;
-        border-radius: 8px;
+        border: none !important;
       }
+    }
 
-      .embed-block-service-youtube,
-      .embed-block-service-vimeo,
-      .embed-block-service-coub,
-      .embed-block-service-codepen,
-      .embed-block-service-instagram,
-      .embed-block-service-twitter,
-      .embed-block-service-facebook {
-        width: 100% !important;
-        max-width: 690px;
-        height: auto;
-        aspect-ratio: 16 / 9;
-        display: block;
-        margin: 16px auto;
-        border-radius: 8px;
-      }
+    :global(iframe) {
+      width: 100% !important;
+      max-width: 690px;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      display: block;
+      margin: 16px auto;
+      border-radius: 8px;
+    }
+
+    :global(.embed-block-service-youtube),
+    :global(.embed-block-service-vimeo),
+    :global(.embed-block-service-coub),
+    :global(.embed-block-service-codepen),
+    :global(.embed-block-service-instagram),
+    :global(.embed-block-service-twitter),
+    :global(.embed-block-service-facebook) {
+      width: 100% !important;
+      max-width: 690px;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      display: block;
+      margin: 16px auto;
+      border-radius: 8px;
     }
   }
 }

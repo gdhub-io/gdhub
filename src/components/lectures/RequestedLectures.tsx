@@ -265,7 +265,7 @@ export const RequestedLectures = ({
 			title: null,
 			key: "join-to-lecture",
 			render: (_, lecture) => (
-				<Space direction="vertical">
+				<Space orientation="vertical">
 					{lecture.isRelevant ? (
 						<Space align="center">
 							{t("lecture.relevant", "Relevant")}

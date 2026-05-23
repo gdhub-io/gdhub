@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";

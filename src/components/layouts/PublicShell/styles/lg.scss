@@ -1,0 +1,11 @@
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .container {
+    :global(.ant-layout-content) {
+      padding: 0;
+
+      :global(.layout-background) {
+        padding: 32px 48px;
+      }
+    }
+  }
+}

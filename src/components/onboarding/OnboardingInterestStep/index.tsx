@@ -18,7 +18,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
 import InterestAuthorIcon from "@/assets/images/icons/interest-author-icon.svg";
@@ -37,14 +37,15 @@ export const OnboardingInterestStep = ({
 	onSave,
 	onPreviousStep = () => {},
 }: IOnboardingInterestStep) => {
-	const router = useRouter();
+	const searchParams = useSearchParams();
 	const screens = Grid.useBreakpoint();
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 
+	const forParam = searchParams.get("for");
 	const preSelectedInterest = useMemo(() => {
-		switch (router.query.for) {
+		switch (forParam) {
 			case "author":
 				return prismaClient.PrimaryInterest.Author;
 			case "specialist":
@@ -54,7 +55,7 @@ export const OnboardingInterestStep = ({
 			default:
 				return undefined;
 		}
-	}, [router.query.for]);
+	}, [forParam]);
 
 	const { data: profileData } = useQuery({
 		queryKey: ["profile", session?.user.id],
@@ -132,7 +133,7 @@ export const OnboardingInterestStep = ({
 			<div className="onboarding-content">
 				<div className="onboarding-form">
 					<Space
-						direction="vertical"
+						orientation="vertical"
 						className="onboarding-form-title"
 						style={{ width: "100%" }}
 					>
@@ -173,7 +174,7 @@ export const OnboardingInterestStep = ({
 						onValuesChange={(a, b) => console.log("change", a, b)}
 						initialValues={{ primaryInterest: preSelectedInterest }}
 					>
-						<Space direction="vertical" size={16} style={{ width: "100%" }}>
+						<Space orientation="vertical" size={16} style={{ width: "100%" }}>
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={24}>
 									<Form.Item
@@ -255,7 +256,7 @@ export const OnboardingInterestStep = ({
 
 										{!screens.lg && (
 											<Radio.Group>
-												<Space direction="vertical">
+												<Space orientation="vertical">
 													<Radio value={prismaClient.PrimaryInterest.Author}>
 														{t(
 															"onboarding.interests.wantToBe.text",

@@ -22,7 +22,7 @@ import {
 	type UploadProps,
 } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 
@@ -37,8 +37,8 @@ export const OnboardingSpecialityStep = ({
 	onSave,
 	onPreviousStep = () => {},
 }: IOnboardingSpecialityStep) => {
-	const router = useRouter();
-	const pendingInvitationId = router.query?.pendingInvitation as string;
+	const searchParams = useSearchParams();
+	const pendingInvitationId = searchParams.get("pendingInvitation") as string;
 	const [form] = Form.useForm();
 	const [messageApi, contextHolder] = message.useMessage();
 	const screens = Grid.useBreakpoint();
@@ -249,7 +249,7 @@ export const OnboardingSpecialityStep = ({
 				<div className="onboarding-content">
 					<div className="onboarding-form">
 						<Space
-							direction="vertical"
+							orientation="vertical"
 							className="onboarding-form-title"
 							style={{ width: "100%" }}
 						>
@@ -304,7 +304,7 @@ export const OnboardingSpecialityStep = ({
 								<Input />
 							</Form.Item>
 
-							<Space direction="vertical" size={16} style={{ width: "100%" }}>
+							<Space orientation="vertical" size={16} style={{ width: "100%" }}>
 								<Row gutter={[32, 16]}>
 									<Col xs={24} lg={16}>
 										<Form.Item

@@ -290,7 +290,7 @@ const EventModal: React.FC<EventModalProps> = ({
 			}
 			cancelText={t("event.modal.cancel", "Cancel")}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 		>
 			<Form
 				form={form}

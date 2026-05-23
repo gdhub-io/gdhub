@@ -1,0 +1,19 @@
+import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { prisma } from "@/services/prisma";
+
+export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+	const { id } = (await ctx.params) as { id: string };
+
+	const adviceRequest = await prisma.adviceRequest.findUnique({
+		where: { id },
+		include: {
+			fromUser: true,
+			toUser: true,
+			project: true,
+		},
+	});
+
+	return json(adviceRequest);
+});

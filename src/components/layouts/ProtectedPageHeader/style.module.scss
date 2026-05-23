@@ -1,0 +1,28 @@
+@use "sass:meta";
+
+.pageHeader {
+	margin-bottom: 24px;
+}
+
+.breadcrumb {
+	margin-bottom: 12px;
+}
+
+.title {
+	margin: 0;
+}
+
+.subTitle {
+	margin-top: 4px;
+}
+
+.subTitleWithBack {
+	margin-top: 4px;
+	margin-left: 52px;
+}
+
+@include meta.load-css('./styles/xs.scss'); // screen < 576px
+@include meta.load-css('./styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('./styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('./styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('./styles/xl.scss'); // screen ≥ 1200px

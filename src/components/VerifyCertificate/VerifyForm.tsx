@@ -1,7 +1,7 @@
 import { IconHash, IconInfoCircle, IconShieldCheck } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Button, Card, Flex, Form, Input, Typography } from "antd";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const { Text } = Typography;

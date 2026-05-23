@@ -90,18 +90,18 @@ export default function DevLogPostEditor({
 	}, [post, onContentChange]);
 
 	const destroyEditor = useCallback(() => {
-		if (editorInstance.current) {
-			try {
-				editorInstance.current.destroy();
-				editorInstance.current = null;
-				editorInitialized.current = false;
-				if (editorHolderRef.current) editorHolderRef.current.innerHTML = "";
-			} catch (error) {
-				console.warn("Error destroying editor:", error);
-			}
-		}
+		const instance = editorInstance.current;
 		editorInstance.current = null;
 		editorInitialized.current = false;
+		if (!instance) return;
+		try {
+			// EditorJS 2.31 assigns `destroy` only after `isReady` resolves —
+			// skip when it isn't a function yet; the orphaned instance will GC.
+			instance.destroy?.();
+			if (editorHolderRef.current) editorHolderRef.current.innerHTML = "";
+		} catch (error) {
+			console.warn("Error destroying editor:", error);
+		}
 	}, []);
 
 	useEffect(() => {

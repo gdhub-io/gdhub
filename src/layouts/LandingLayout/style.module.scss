@@ -1,9 +1,10 @@
-@import '../../styles/variables.scss';
+@use "sass:meta";
+@use '../../styles/variables.scss';
 
 .header,
 .fixedHeader {
   position: sticky;
-  padding: 0 $landing-padding;
+  padding: 0 variables.$landing-padding;
   top: 0;
   z-index: 9;
   height: auto;
@@ -27,7 +28,7 @@
 }
 
 .content {
-  margin-top: -$landing-header-height;
+  margin-top: -(variables.$landing-header-height);
 }
 
 .fixedHeader {
@@ -36,76 +37,68 @@
 }
 
 .headerContainer {
-  max-width: $wrapper-width;
+  max-width: variables.$wrapper-width;
   margin: 0 auto;
-  height: $landing-header-height;
+  height: variables.$landing-header-height;
 
-  :global {
-    .logo {
-      height: 29px;
-      line-height: initial;
-      font-weight: bold;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+  :global(.logo) {
+    height: 29px;
+    line-height: initial;
+    font-weight: bold;
+    display: flex;
+    gap: 8px;
+    align-items: center;
   }
 }
 
 .headerMenu {
   font-size: 16px;
 
-  :global {
-    .ant-menu-item {
-      order: 1 !important;
+  :global(.ant-menu-item) {
+    order: 1 !important;
 
-      a {
-        border-bottom: 2px solid transparent;
-        font-weight: 700;
+    a {
+      border-bottom: 2px solid transparent;
+      font-weight: 700;
 
-        &:hover {
-          border-color: #F15541;
-        }
-      }
-    }
-
-    .ant-menu-item-selected {
-      a {
+      &:hover {
         border-color: #F15541;
       }
+    }
+  }
+
+  :global(.ant-menu-item-selected) {
+    a {
+      border-color: #F15541;
     }
   }
 }
 
 .container {
-  :global {
-    .username {
-      font-size: 14px;
-      color: var(--dark-grey);
-    }
+  :global(.username) {
+    font-size: 14px;
+    color: var(--dark-grey);
   }
 }
 
 .mobileMenuDrawer {
   background: linear-gradient(-90deg, rgba(6, 22, 41, 1) 0%, rgba(4, 13, 20, 1) 50%, rgba(1, 11, 22, 1) 100%) !important;
 
-  :global {
-    .ant-menu {
-      background: transparent;
-    }
+  :global(.ant-menu) {
+    background: transparent;
+  }
 
-    .ant-drawer-body {
-      padding: 0 40px;
-    }
+  :global(.ant-drawer-body) {
+    padding: 0 40px;
+  }
 
-    .ant-drawer-header {
-      border: 0;
-      padding: 24px 32px;
-    }
+  :global(.ant-drawer-header) {
+    border: 0;
+    padding: 24px 32px;
+  }
 
-    .ant-drawer-header-title {
-      justify-content: flex-end;
-    }
+  :global(.ant-drawer-header-title) {
+    justify-content: flex-end;
   }
 }
 
@@ -113,9 +106,9 @@
   padding: 0;
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

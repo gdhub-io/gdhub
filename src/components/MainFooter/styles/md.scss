@@ -1,13 +1,14 @@
 @media screen and (min-width: 768px) and (max-width: 991px) {
-  .section {
-    padding: 28px 40px;
-    text-align: center;
+	.footer {
+		padding: 28px 40px 16px;
+	}
 
-    :global {
+	.top {
+		grid-template-columns: 1fr;
+		gap: 32px;
+	}
 
-      div.ant-typography {
-        max-width: none !important;
-      }
-    }
-  }
+	.description {
+		max-width: none;
+	}
 }

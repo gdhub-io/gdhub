@@ -52,7 +52,7 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 			width={600}
 			centered
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			footer={
 				<Space>
 					<Button onClick={onClose}>Отмена</Button>
