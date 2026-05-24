@@ -2,9 +2,12 @@ import { z } from "zod";
 import { apiError, json, withValidation } from "@/lib/api-handlers";
 import TelegramService from "@/services/telegram";
 
-if (process.env.NODE_ENV === "production") {
-	throw new Error("dev/telegram-test must not be loaded in production");
-}
+const devOnly = () => {
+	if (process.env.NODE_ENV === "production") {
+		return apiError.notFound("Not found");
+	}
+	return null;
+};
 
 const TelegramTestSchema = z.object({
 	chatId: z.coerce.number(),
@@ -16,6 +19,9 @@ type TelegramTestBody = z.infer<typeof TelegramTestSchema>;
 
 export const POST = withValidation(TelegramTestSchema)(
 	async (_req, _ctx, { body }) => {
+		const blocked = devOnly();
+		if (blocked) return blocked;
+
 		const { chatId, topicId, message } = body as TelegramTestBody;
 
 		if (!process.env.TELEGRAM_BOT_TOKEN) {
@@ -44,6 +50,9 @@ export const POST = withValidation(TelegramTestSchema)(
 );
 
 export const GET = async () => {
+	const blocked = devOnly();
+	if (blocked) return blocked;
+
 	if (!process.env.TELEGRAM_BOT_TOKEN) {
 		return json({ ok: false, reason: "TELEGRAM_BOT_TOKEN not set" });
 	}
