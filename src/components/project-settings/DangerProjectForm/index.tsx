@@ -23,7 +23,7 @@ const DangerProjectForm = () => {
 
 	return (
 		<Spin spinning={isLoading}>
-			<Space direction="vertical" size="large" className={styles.container}>
+			<Space orientation="vertical" size="large" className={styles.container}>
 				<Text type="secondary">
 					{t(
 						"project.settings.danger.description",

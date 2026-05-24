@@ -1,22 +1,22 @@
+@use "../../../styles/variables.scss";
+
 @media screen and (max-width: 575px) {
 
 	.header,
 	.fixedHeader {
-		padding: 0 $landing-padding-xs;
+		padding: 0 variables.$landing-padding-xs;
 	}
 
 	.container {
-		max-width: $wrapper-width;
+		max-width: variables.$wrapper-width;
 		margin: 0 auto;
 
-		:global {
-			.ant-layout-content {
-				padding: 0;
-			}
+		:global(.ant-layout-content) {
+			padding: 0;
 		}
 	}
 
 	.headerContainer {
-		height: calc($landing-header-height / 1.5);
+		height: calc(variables.$landing-header-height / 1.5);
 	}
 }

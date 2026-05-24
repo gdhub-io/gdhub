@@ -70,7 +70,7 @@ const MyProjectVacancies = () => {
 			key: "title",
 			width: "50%",
 			render: (value, data) => (
-				<Space direction="vertical" size={0}>
+				<Space orientation="vertical" size={0}>
 					<Text
 						className={tableStyles.tableMemberName}
 						onClick={() => {

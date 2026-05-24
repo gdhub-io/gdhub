@@ -18,10 +18,10 @@
 		}
 	],
 	"functions": {
-		"src/pages/api/**/*.js": {
+		"src/app/api/**/route.ts": {
 			"maxDuration": 300
 		},
-		"src/pages/api/**/*.ts": {
+		"src/app/api/**/route.tsx": {
 			"maxDuration": 300
 		}
 	}

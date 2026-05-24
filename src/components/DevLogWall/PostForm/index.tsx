@@ -31,7 +31,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 	const { t } = useTranslate();
 	const [content, setContent] = useState("");
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false);
-	const editorRef = useRef<MDXEditorMethods | null>();
+	const editorRef = useRef<MDXEditorMethods | null>(null);
 
 	const { mutateAsync: createProjectReport, isPending: isLoading } =
 		useMutation({
@@ -96,7 +96,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 					<Input />
 				</Form.Item>
 
-				<Space direction="vertical" style={{ width: "100%" }}>
+				<Space orientation="vertical" style={{ width: "100%" }}>
 					<Form.Item
 						name="content"
 						label={t(

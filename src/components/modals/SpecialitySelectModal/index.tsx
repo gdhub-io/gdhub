@@ -99,7 +99,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 							contactType.includes("telegram") &&
 							!telegramNickname),
 				}}
-				maskClosable={false}
+				mask={{ closable: false }}
 				okText={t("modal.speciality-select.okText", "Choose")}
 				onOk={handleOk}
 				cancelText={t("modal.specialitySelect.close", "Close")}

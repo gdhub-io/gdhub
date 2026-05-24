@@ -100,7 +100,7 @@ const ArchiveProjectModal = ({
 			cancelText={t("project.settings.danger.cancel", "Cancel")}
 			width={560}
 		>
-			<Space direction="vertical" size="middle" className={styles.modalBody}>
+			<Space orientation="vertical" size="middle" className={styles.modalBody}>
 				<Text>{description}</Text>
 			</Space>
 		</Modal>

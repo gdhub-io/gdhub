@@ -84,7 +84,7 @@ export const ChatModal = ({
 			classNames={{ wrapper: styles.chatDrawerWrapper }}
 			onClose={onClose}
 			title={<ChatTitle />}
-			width={screens.lg ? 720 : "100%"}
+			size={screens.lg ? 720 : "100%"}
 			styles={{
 				body: { padding: 0, display: "flex", flexDirection: "column" },
 			}}
@@ -111,7 +111,7 @@ export const ChatModal = ({
 								margin: "0 auto",
 							}}
 						>
-							<Spin tip="Loading chats..." />
+							<Spin description="Loading chats..." />
 						</Flex>
 					)}
 					{showEmptyState && (

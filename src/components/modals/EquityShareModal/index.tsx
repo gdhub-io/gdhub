@@ -148,7 +148,7 @@ const EquityShareModal = ({
 			centered
 			title={t("Equity Settings")}
 			open={open}
-			maskClosable={false}
+			mask={{ closable: false }}
 			width={600}
 			onCancel={onCancel}
 			footer={[
@@ -167,7 +167,7 @@ const EquityShareModal = ({
 			]}
 		>
 			<Space
-				direction="vertical"
+				orientation="vertical"
 				style={{ width: "100%", paddingInline: 8 }}
 				size="large"
 			>

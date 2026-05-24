@@ -22,7 +22,7 @@ const CheckHealth = ({ children }: any) => {
 		return (
 			<EmptyLayout>
 				<div className={styles.container}>
-					<Space direction="vertical" align="center" size="large">
+					<Space orientation="vertical" align="center" size="large">
 						<div className="logo">
 							<GdhubLogo style={{ width: "120px", height: "31px" }} />
 						</div>

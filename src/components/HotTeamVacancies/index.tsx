@@ -5,6 +5,7 @@ import { Skeleton } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import {
+	getHubSectionShellClass,
 	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
@@ -42,7 +43,9 @@ export default function HotTeamVacancies() {
 
 	return (
 		<Skeleton active loading={isLoading}>
-			<div className={styles.container}>
+			<section
+				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
+			>
 				<HubSectionHeader
 					title={t("hub.hot-vacancies.title", "Open positions")}
 					linkHref="/hub/jobs"
@@ -76,7 +79,7 @@ export default function HotTeamVacancies() {
 						))}
 					</HubSectionBleed>
 				</HubSectionBody>
-			</div>
+			</section>
 		</Skeleton>
 	);
 }

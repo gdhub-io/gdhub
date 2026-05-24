@@ -26,7 +26,7 @@ const members: any = {
 export const LandingWhoWeAreSection = () => {
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
-	const tooltipMemberRef = useRef<any>();
+	const tooltipMemberRef = useRef<any>(null);
 	const [member, setMember] = useState();
 
 	useEffect(() => {

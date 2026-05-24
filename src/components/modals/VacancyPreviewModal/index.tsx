@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import SpecialitySelectModal from "../SpecialitySelectModal";
@@ -31,6 +31,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const session: any = useSession();
 	const { t } = useTranslate();
 	const router = useRouter();
+	const pathname = usePathname();
 	const [form] = Form.useForm();
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] =
 		useState(false);
@@ -147,7 +148,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 
 	const functionOkButton = async () => {
 		if (!session?.data) {
-			router.push("/signin?callbackUrl=" + router.asPath);
+			router.push("/signin?callbackUrl=" + pathname);
 		}
 
 		return vacancy?.data.myTeamMemberId
@@ -164,7 +165,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 				title={null}
 				width={800}
 				destroyOnHidden
-				maskClosable={false}
+				mask={{ closable: false }}
 				open={open}
 				onCancel={handleCancel}
 				footer={[
@@ -187,7 +188,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			>
 				<Spin spinning={processing}>
 					{!!vacancy && (
-						<Space direction="vertical" style={{ width: "100%" }}>
+						<Space orientation="vertical" style={{ width: "100%" }}>
 							<div className={styles.cardHeader}>
 								<Text type="secondary" className={styles.cardType}>
 									{t("modal.vacancy.vacancyCard", "Position card")}
@@ -203,7 +204,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 
 							<Row gutter={[24, 24]}>
 								<Col xs={24} md={14}>
-									<Space direction="vertical" style={{ width: "100%" }}>
+									<Space orientation="vertical" style={{ width: "100%" }}>
 										<div>
 											<Text type="secondary" className={styles.fieldLabel}>
 												{t("modal.section.project", "Project")}
@@ -269,7 +270,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							</Row>
 
 							{/* Position Description */}
-							<Space direction="vertical" style={{ width: "100%" }}>
+							<Space orientation="vertical" style={{ width: "100%" }}>
 								<div>
 									<Text type="secondary" className={styles.fieldLabel}>
 										{t(

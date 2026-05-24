@@ -19,7 +19,7 @@ export const secondFont = Lora({
 
 export const landingThemeConfig: ThemeConfig = {
 	algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
-	cssVar: true,
+	cssVar: {},
 	token: {
 		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: "rgb(241,85,65)",
@@ -72,7 +72,7 @@ export const landingThemeConfig: ThemeConfig = {
 
 export const publicThemeConfig: ThemeConfig = {
 	algorithm: [theme.defaultAlgorithm],
-	cssVar: true,
+	cssVar: {},
 	token: {
 		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: "#f15541",
@@ -300,6 +300,11 @@ export const appThemeConfig: ThemeConfig = {
 			primaryShadow: "none",
 			dangerShadow: "none",
 			borderColorDisabled: "#dbdbdb",
+		},
+		Collapse: {
+			contentBg: "rgba(0, 0, 0, 0)",
+			headerBg: "rgba(0, 0, 0, 0)",
+			colorBorder: "#e4e4e7",
 		},
 		Input: {
 			controlHeight: 48,

@@ -5,18 +5,13 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Col, Flex, Row, Space, Spin, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useState } from "react";
+import Link from "next/link";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
 
-const CoursePreviewModal = ({ courseId, open, onOk, onCancel }: any) => {
-	return <div>CoursePreviewModal</div>;
-};
-
 const CoursesList = ({ location }: { location?: "hub" }) => {
 	const { t } = useTranslate();
-	const [selectedCourseId, setSelectedCourseId] = useState<string>();
 
 	const {
 		data: courses,
@@ -70,7 +65,7 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 									</div>
 
 									<div className={styles.cardTitle}>
-										<Space direction="vertical" size={0}>
+										<Space orientation="vertical" size={0}>
 											<Text ellipsis>{course.direction?.name}</Text>
 											<Title
 												ellipsis={{ rows: 2 }}
@@ -95,23 +90,20 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 											) : (
 												<Text>Free</Text>
 											)}
-											<Text>terms of learning</Text>
+											<Text>38 lessons</Text>
 										</div>
 
-										<Button
-											type="primary"
-											href={!location ? `/course/${course.id}` : undefined}
-											onClick={
+										<Link
+											href={
 												location === "hub"
-													? () => {
-															setSelectedCourseId(course.id);
-														}
-													: undefined
+													? `/hub/courses/${course.slug}`
+													: `/courses/${course.slug}`
 											}
-											className="black-btn"
 										>
-											{t("course-card.details-button", "Details")}
-										</Button>
+											<Button type="primary" className="black-btn">
+												{t("course-card.details-button", "Details")}
+											</Button>
+										</Link>
 									</div>
 								</div>
 							</Col>
@@ -125,15 +117,6 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 						"There are no open courses at the moment",
 					)}
 				</p>
-			)}
-
-			{location && (
-				<CoursePreviewModal
-					courseId={selectedCourseId}
-					open={!!selectedCourseId}
-					onCancel={() => setSelectedCourseId(undefined)}
-					onOk={() => setSelectedCourseId(undefined)}
-				/>
 			)}
 		</>
 	);

@@ -3,6 +3,7 @@ $drawer-border-radius: 16px;
 .agentDrawerWrapper {
   border-radius: $drawer-border-radius $drawer-border-radius 0 0;
   width: 640px;
+  height: auto;
   margin-inline: auto;
 }
 

@@ -1,12 +1,12 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export const useCurrentEvent = () => {
-	const router = useRouter();
-	const { eventId } = router.query;
+	const params = useParams();
+	const eventId = params?.eventId as string | undefined;
 	const { data: session } = useSession();
 
 	const {

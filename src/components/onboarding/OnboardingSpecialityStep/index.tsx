@@ -9,7 +9,6 @@ import {
 	Col,
 	Flex,
 	Form,
-	Grid,
 	Input,
 	message,
 	Row,
@@ -22,7 +21,7 @@ import {
 	type UploadProps,
 } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 
@@ -37,11 +36,10 @@ export const OnboardingSpecialityStep = ({
 	onSave,
 	onPreviousStep = () => {},
 }: IOnboardingSpecialityStep) => {
-	const router = useRouter();
-	const pendingInvitationId = router.query?.pendingInvitation as string;
+	const searchParams = useSearchParams();
+	const pendingInvitationId = searchParams.get("pendingInvitation") as string;
 	const [form] = Form.useForm();
 	const [messageApi, contextHolder] = message.useMessage();
-	const screens = Grid.useBreakpoint();
 	const { t, getLanguage } = useTolgee();
 
 	const [showParseCVButton, setShowParseCVButton] = useState(false);
@@ -473,35 +471,21 @@ export const OnboardingSpecialityStep = ({
 							</Space>
 						</Form>
 					</div>
-					<Space
-						className="onboarding-footer"
-						wrap
-						size={16}
-						style={
-							screens.lg
-								? { flexDirection: "row" }
-								: { flexDirection: "column-reverse" }
-						}
-					>
+					<div className="onboarding-footer">
 						<Button onClick={onPreviousStep}>
 							{t("onboarding.speciality.back", "Back")}
 						</Button>
-						<Space>
-							{/* <Button type="text" onClick={() => router.push('/hub')}>
-							<T keyName="onboarding.welcome.later">Continue later</T>
-						</Button> */}
-							<Button
-								type="primary"
-								onClick={handleSave}
-								loading={isCreating || isUpdating}
-							>
-								{t(
-									"onboarding.speciality.save-and-continue",
-									"Save and continue",
-								)}
-							</Button>
-						</Space>
-					</Space>
+						<Button
+							type="primary"
+							onClick={handleSave}
+							loading={isCreating || isUpdating}
+						>
+							{t(
+								"onboarding.speciality.save-and-continue",
+								"Save and continue",
+							)}
+						</Button>
+					</div>
 				</div>
 			</Spin>
 		</>

@@ -1,4 +1,5 @@
-@import '../../../styles/variables.scss';
+@use "sass:meta";
+@use '../../../styles/variables.scss';
 
 .section {
   position: relative;
@@ -11,7 +12,7 @@
 }
 
 .container {
-  max-width: $wrapper-width;
+  max-width: variables.$wrapper-width;
   text-align: left;
 
   .preTitle {
@@ -30,10 +31,8 @@
     margin-top: 64px;
     margin-bottom: 24px;
 
-    :global {
-      span.ant-typography {
-        font-size: 18px;
-      }
+    :global(span.ant-typography) {
+      font-size: 18px;
     }
 
     .star {
@@ -130,9 +129,9 @@
   }
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

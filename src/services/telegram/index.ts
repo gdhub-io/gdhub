@@ -21,14 +21,21 @@ import {
 
 export default class TelegramService {
 	private apiUrl: string;
+	private mode: "test" | "production" = "production";
 
-	private constructor({ botToken }: { botToken: string }) {
-		this.apiUrl = `https://api.telegram.org/bot${botToken}${process.env.NODE_ENV === "development" ? "/test" : ""}`;
+	private constructor({
+		botToken,
+		mode,
+	}: { botToken: string; mode: "test" | "production" }) {
+		this.apiUrl = `https://api.telegram.org/bot${botToken}${mode === "test" ? "/test" : ""}`;
+		this.mode = mode;
 	}
 
 	static init(botToken?: string) {
 		const defaultBotToken = process.env.TELEGRAM_BOT_TOKEN as string;
-		return new TelegramService({ botToken: botToken || defaultBotToken });
+		const mode =
+			process.env.TELEGRAM_BOT_API_MODE === "test" ? "test" : "production";
+		return new TelegramService({ botToken: botToken || defaultBotToken, mode });
 	}
 
 	async health() {
@@ -47,6 +54,12 @@ export default class TelegramService {
 		}
 	}
 
+	prepareChatId(chatId: number) {
+		const preparedChatId =
+			this.mode === "test" ? `-100${chatId}` : String(chatId);
+		return Number(preparedChatId);
+	}
+
 	async sendMessage({
 		chatId,
 		topicId,
@@ -61,7 +74,7 @@ export default class TelegramService {
 		const text = await parseInline(message);
 
 		const body = {
-			chat_id: chatId,
+			chat_id: this.prepareChatId(chatId),
 			message_thread_id: topicId || undefined,
 			parse_mode: "HTML",
 			disable_notification: process.env.TELEGRAM_DISABLE_NOTIFICATIONS === "1",
@@ -75,8 +88,10 @@ export default class TelegramService {
 			if (!res.data) throw new Error("Telegram sendMessage response is wrong");
 
 			console.info("Message successfully send.");
+			return res.data;
 		} catch (error: unknown) {
 			console.error(error);
+			throw error;
 		}
 	}
 
@@ -92,7 +107,7 @@ export default class TelegramService {
 		message?: string;
 	}) {
 		const body = JSON.stringify({
-			chat_id: chatId,
+			chat_id: this.prepareChatId(chatId),
 			message_thread_id: topicId || undefined,
 			photo: url,
 			caption: message, //0-1024 characters
@@ -138,6 +153,7 @@ export default class TelegramService {
 			where: {
 				publishedAt: { gte: lastLogDate },
 				project: {
+					author: { personalDataDeletedAt: null },
 					status: prismaClient.ProjectStatus.Approved,
 					workflow: {
 						currentStep: {
@@ -230,6 +246,7 @@ export default class TelegramService {
 		const specialities = await prisma.speciality.findMany({
 			where: {
 				createdAt: { gte: lastLogDate },
+				user: { personalDataDeletedAt: null },
 			},
 			include: { user: { include: { profile: true } } },
 		});
@@ -308,6 +325,7 @@ export default class TelegramService {
 
 		const projectWithVacancies = await prisma.project.findMany({
 			where: {
+				author: { personalDataDeletedAt: null },
 				team: {
 					vacancies: {
 						some: {

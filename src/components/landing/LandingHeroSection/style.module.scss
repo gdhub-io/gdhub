@@ -1,9 +1,10 @@
-@import '../../../styles/variables.scss';
+@use "sass:meta";
+@use '../../../styles/variables.scss';
 
 .section {
   position: relative;
   background-color: #0b0b0d;
-  padding: calc($landing-header-height + 96px) 165px 96px;
+  padding: calc(variables.$landing-header-height + 96px) 165px 96px;
   background-repeat: no-repeat;
   background-position-x: right;
   background-position-y: center;
@@ -12,7 +13,7 @@
 }
 
 .container {
-  max-width: $wrapper-width;
+  max-width: variables.$wrapper-width;
 }
 
 .heroMain {
@@ -41,42 +42,40 @@
     line-height: 120%;
   }
 
-  :global {
-    h1 {
-      font-size: 72px;
-      font-weight: 800;
-      line-height: 72px;
-      margin-bottom: 0;
-    }
+  :global(h1) {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 72px;
+    margin-bottom: 0;
+  }
 
-    ul {
-      list-style: none;
-      padding-left: 0;
-      margin-bottom: 0;
+  :global(ul) {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
 
-      >li {
-        margin-bottom: 32px;
-        max-width: 516px;
+    >li {
+      margin-bottom: 32px;
+      max-width: 516px;
 
-        &:last-child {
-          margin-bottom: 0;
-        }
+      &:last-child {
+        margin-bottom: 0;
+      }
 
-        svg {
-          margin: 14px;
-        }
+      svg {
+        margin: 14px;
+      }
 
-        span {
-          font-size: 16px;
-        }
+      span {
+        font-size: 16px;
       }
     }
   }
 }
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

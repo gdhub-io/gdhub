@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "authjs.csrf-token",
+      "value": "bf4ed833d7fee69b0dfd46af8fbe982f2e505b13dc779fb559933dc63e6046e8%7C2348827492f661ee9378238bfdab8e047a909d34061241ef9924abb18cd675c8",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "authjs.callback-url",
+      "value": "http%3A%2F%2Flocalhost%3A3000%2Fhub",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "authjs.session-token",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwia2lkIjoiWkZEaHhiSDJNQ1hvOWdDakNiQ2lzYm1XdGVPcVo4LU1aenF6SXB4alh2UnFOTjFWenBGUW1fY3JyV3E4eTlubUcxRmcxLTNqbUdSaTI3cWo2RXJ2OEEifQ..6lEIjXfxRCK1x5PV8xjKjg.gHKX5x0LT88tgTWKEwBBWnhC0l78oreOGs-UxeS1oV8lPfcWP6F4D1UU7YOxOkFFZVnX2LFZlFiv8wjuJZV2wqvHEP55WQtqLAcnyJ6O-W82hAYlup_aYzQd0mnZhPte3oETz4JZAeQJUjspxka-_Vmgiqq2wZewMXxgHkk4nkBYFjNkCI5KxRkSQmEoUI3DgvL0hsedc6aP4AZCMmlIdDiG011V2XYmb5BxgQq9YyQzMiKbKcshyDkzSWi1x7AW-283CC-1e4oiFCoIaSqABkOdh8yKqKA3K2HhOwLEUkizXdbkgjrIgsIRK-bOiDKOSTSdFbA3mqMQNGmnSm8lT1XKK2iTqVzRdExQcycJ5YnFozQ6HUnLRZZ9DRaUWNok2F9-ve88VPMT9a8zz3izXg4F8dyiTNu1qOHMhMGcdT3qNN1L8VfxC5RGlWns92lc_TUzGUwU9cKwahl14-W0yETKgC8vU_mU1L-mzupq38crh8FYQzdIDPJVy_DjNrScxx26onmVrk1BNXQOq-drhzZaIzN5VwUshCCzSWJphKdD2D1vRW210rk4D5q4nwIfS_81C9rXcjgy6G1ZnwFAnLEXjvloSz0qvcslkOL3doDP5rUojetB7hT_U3263vhcgmk_slvvFZTROsm3x3MFv-ugaFD54YQ94TISZPOESZkXbzzm2Op6ZUg4RguWnCAIb1T80Xc_q5gLeCJ978J4A3hsINVUlsS2RaVN2NuTuNgrkH33VphEuRcEZZbQExQDgi7ZZkzpfGgMBwv2QWPadPw1KhcWNYHCvbBaNB0OuY87rosbhy1UAH7Gk9cQUAx5LEGpzhlwYROQTt0Dz5P5OBbH47A3A3Ov2RHLJ76Pd_fx_t9BnV7Mc-Yv6CtuF444cVwG9HI2WWGHHypJsTjSz765jMZTEhsp1ldZvKRm55MVQjez490Gi02Vl1OYWgX7WpU343v5LpH5xLXNYqjy1g.nvIewbTh7wXojpenEyQsTsd6bd6iSG5M1KAsa8LS1yA",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1782228042,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

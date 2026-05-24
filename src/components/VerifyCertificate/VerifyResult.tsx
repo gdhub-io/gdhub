@@ -9,7 +9,7 @@ import { useTranslate } from "@tolgee/react";
 import { Avatar, Button, Card, Col, Flex, Row, Space, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
-import type { VerifyCertificateResponse } from "@/pages/api/verify/[[...params]]";
+import type { VerifyCertificateResponse } from "@/app/api/verify/_helpers";
 import styles from "./style.module.scss";
 
 const { Text, Title, Paragraph } = Typography;

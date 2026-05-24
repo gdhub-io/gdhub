@@ -11,6 +11,7 @@ import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
 	Breadcrumb,
+	type BreadcrumbProps,
 	Button,
 	Col,
 	ConfigProvider,
@@ -39,7 +40,7 @@ import {
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import {
@@ -96,6 +97,8 @@ interface ProtectedLayoutProps {
 	access?: prismaClient.UserRole[];
 	topMenuItems?: MenuProps["items"];
 	topMenuSelectedKeys?: string[];
+	/** Additional breadcrumb items appended after the logo, replacing the default user info crumb when provided. */
+	breadcrumbs?: BreadcrumbProps["items"];
 	/** Removes default content top padding and child top margin so pages can sit flush under the header. */
 	flushBodyTop?: boolean;
 	/** Removes horizontal content padding below `md` for full-width single-column layouts. */
@@ -116,10 +119,12 @@ export const ProtectedLayout = ({
 	access = [],
 	topMenuItems,
 	topMenuSelectedKeys,
+	breadcrumbs,
 	flushBodyTop = false,
 	contentBleedBelowMd = false,
 }: ProtectedLayoutProps) => {
 	const router = useRouter();
+	const pathname = usePathname() ?? "";
 	const { t, getLanguage, changeLanguage } = useTolgee();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [isOpenedInTelegram] = useTelegram();
@@ -290,12 +295,12 @@ export const ProtectedLayout = ({
 		() => ({
 			title,
 			description: subTitle,
-			canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+			canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
 			nofollow: true,
 			noindex: true,
 			...seo,
 		}),
-		[title, subTitle, router.asPath, seo],
+		[title, subTitle, pathname, seo],
 	);
 
 	useEffect(() => {
@@ -326,10 +331,10 @@ export const ProtectedLayout = ({
 	}, [screens]);
 
 	useEffect(() => {
-		if (!hasAccess && session?.user && router.pathname !== "/hub") {
+		if (!hasAccess && session?.user && pathname !== "/hub") {
 			router.push("/hub");
 		}
-	}, [hasAccess, router, router.pathname, session?.user]);
+	}, [hasAccess, router, pathname, session?.user]);
 
 	const inlineMenuItems: MenuProps["items"] = useMemo(() => {
 		const menu: MenuProps["items"] = [
@@ -499,7 +504,7 @@ export const ProtectedLayout = ({
 	];
 
 	const resolvedTopMenuItems = topMenuItems || menuItems;
-	const resolvedTopMenuSelectedKeys = topMenuSelectedKeys || [router.pathname];
+	const resolvedTopMenuSelectedKeys = topMenuSelectedKeys || [pathname];
 
 	return (
 		<>
@@ -527,22 +532,25 @@ export const ProtectedLayout = ({
 												</Link>
 											),
 										},
-
-										{
-											title: (
-												<Space>
-													<Avatar
-														src={session?.user?.image ?? undefined}
-														size={24}
-													/>
-													{screens.sm ? (
-														<Text className="username">
-															{session?.user?.name}
-														</Text>
-													) : null}
-												</Space>
-											),
-										},
+										...(breadcrumbs?.length
+											? breadcrumbs
+											: [
+													{
+														title: (
+															<Space>
+																<Avatar
+																	src={session?.user?.image ?? undefined}
+																	size={24}
+																/>
+																{screens.sm ? (
+																	<Text className="username">
+																		{session?.user?.name}
+																	</Text>
+																) : null}
+															</Space>
+														),
+													},
+												]),
 									]}
 								/>
 							</Col>
@@ -661,7 +669,6 @@ export const ProtectedLayout = ({
 				{!screens.lg ? (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={"100%"}
 						title={
 							<Space>
 								<Avatar

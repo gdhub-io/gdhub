@@ -1,7 +1,5 @@
 .chatMessages {
-  :global {
-    .ant-bubble-footer {
-      margin-top: 4px;
-    }
+  :global(.ant-bubble-footer) {
+    margin-top: 4px;
   }
 }

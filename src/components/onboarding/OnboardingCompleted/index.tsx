@@ -1,31 +1,29 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Grid, Space, Spin, Typography } from "antd";
+import { Button, Space, Spin, Typography } from "antd";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import RegistrationBgImage from "@/assets/images/registration-bg.jpg";
 import { gtmEventTrigger } from "@/helpers/gtm";
-import styles from "./style.module.scss";
 
-const { Title } = Typography;
+const { Paragraph, Title } = Typography;
 
 export const OnboardingCompleted = () => {
 	const router = useRouter();
-	const screens = Grid.useBreakpoint();
+	const searchParams = useSearchParams();
 	const { t } = useTranslate();
-	const { pendingInvitation } = router.query;
-	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false);
+	const pendingInvitation = searchParams.get("pendingInvitation");
+	const [isProcessingInvitation, setIsProcessingInvitation] = useState(
+		!!pendingInvitation,
+	);
 
-	// Проверяем, есть ли ожидающие приглашения
-	const { data: user, isLoading: isLoadingUser } = useQuery({
+	const { data: user } = useQuery({
 		queryKey: ["user", "current"],
 		queryFn: () => axios.get("/api/user/me"),
-		enabled: !pendingInvitation, // Не запрашиваем, если есть pendingInvitation в URL
+		enabled: !pendingInvitation,
 		refetchOnWindowFocus: false,
 	});
 
-	// Мутация для обработки ожидающего приглашения
 	const {
 		mutateAsync: completePendingInvitation,
 		isPending: isCompletingInvitation,
@@ -42,50 +40,45 @@ export const OnboardingCompleted = () => {
 			}
 		},
 		onError: () => {
-			// В случае ошибки просто перенаправляем на главную страницу
 			router.push("/hub");
 		},
 	});
 
-	// Обрабатываем приглашение из URL параметра
 	useEffect(() => {
-		if (pendingInvitation && !isProcessingInvitation) {
+		if (pendingInvitation && !isCompletingInvitation) {
 			setIsProcessingInvitation(true);
 			completePendingInvitation(pendingInvitation as string);
 		}
 	}, [pendingInvitation]);
 
-	// Проверяем наличие ожидающих приглашений в профиле пользователя
 	useEffect(() => {
 		if (
 			user?.data &&
 			user.data.pendingTeamInvitations?.length > 0 &&
 			!isProcessingInvitation
 		) {
-			const firstPendingInvitation = user.data.pendingTeamInvitations[0];
-			if (firstPendingInvitation.invitationId) {
+			const firstInvitation = user.data.pendingTeamInvitations[0];
+			if (firstInvitation.invitationId) {
 				setIsProcessingInvitation(true);
-				completePendingInvitation(firstPendingInvitation.invitationId);
+				completePendingInvitation(firstInvitation.invitationId);
 			}
 		}
 	}, [user]);
 
-	// После проверки, что нет pendingInvitation и не идет загрузка, отправляем событие
 	useEffect(() => {
-		if (!isProcessingInvitation && !isCompletingInvitation && !isLoadingUser) {
+		if (!isProcessingInvitation && !isCompletingInvitation) {
 			gtmEventTrigger("onboarding_complete", {});
 		}
-	}, [isProcessingInvitation, isCompletingInvitation, isLoadingUser]);
+	}, [isProcessingInvitation, isCompletingInvitation]);
 
-	// Если обрабатываем приглашение, показываем спиннер
-	if (isProcessingInvitation || isCompletingInvitation || isLoadingUser) {
+	if (isProcessingInvitation || isCompletingInvitation) {
 		return (
 			<div
 				style={{
 					display: "flex",
 					justifyContent: "center",
 					alignItems: "center",
-					height: "100vh",
+					minHeight: 300,
 				}}
 			>
 				<Spin
@@ -100,32 +93,27 @@ export const OnboardingCompleted = () => {
 	}
 
 	return (
-		<div
-			className={`${styles.container}`}
-			style={{
-				backgroundImage: screens.sm
-					? `url(${RegistrationBgImage.src})`
-					: undefined,
-			}}
-		>
-			<div className="onboarding-box">
-				<div className="onboarding-content">
-					<Space direction="vertical" size={56}>
-						<Title>
-							{t(
-								"onboarding.completed.title",
-								"Your profile was successfully completed!",
-							)}
-						</Title>
-						<Button
-							style={{ width: "300px" }}
-							onClick={() => router.push("/hub")}
-						>
-							{t("onboarding.completed.button", "Let&apos;s go")}
-						</Button>
-					</Space>
-				</div>
-			</div>
-		</div>
+		<Space direction="vertical" size={32} align="center">
+			<Title>
+				{t(
+					"onboarding.completed.title",
+					"Your profile was successfully completed!",
+				)}
+			</Title>
+			<Paragraph style={{ maxWidth: 560 }}>
+				{t(
+					"onboarding.completed.description",
+					"Welcome aboard. You can now explore projects, teams and opportunities tailored to your interests.",
+				)}
+			</Paragraph>
+			<Button
+				type="primary"
+				size="large"
+				style={{ width: 300, maxWidth: "100%" }}
+				onClick={() => router.push("/hub")}
+			>
+				{t("onboarding.completed.button", "Let's go")}
+			</Button>
+		</Space>
 	);
 };

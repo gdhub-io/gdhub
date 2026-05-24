@@ -145,7 +145,7 @@ const ProjectCandidatePreviewModal = ({
 			title={t("projectCandidatePreviewModal.title", "Candidate card")}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			open={open}
 			onCancel={handleCancel}
 			confirmLoading={processing}
@@ -259,7 +259,7 @@ const ProjectCandidatePreviewModal = ({
 							</Col>
 							<Col xs={{ span: 24, order: 0 }} md={{ span: 6, order: 1 }}>
 								<Space
-									direction="vertical"
+									orientation="vertical"
 									align="center"
 									style={{ width: "100%" }}
 								>
@@ -275,7 +275,7 @@ const ProjectCandidatePreviewModal = ({
 									)}
 									{!!candidate.data?.allowedContacts.includes("email") &&
 										!!candidate.data.user.email && (
-											<Space direction="vertical" size={0}>
+											<Space orientation="vertical" size={0}>
 												<Text type="secondary">
 													{t("projectCandidatePreviewModal.email", "Email")}
 												</Text>
@@ -292,7 +292,7 @@ const ProjectCandidatePreviewModal = ({
 
 									{!!candidate.data?.allowedContacts.includes("telegram") &&
 										!!candidate.data?.user.profile.tgNickname && (
-											<Space direction="vertical" align="start" size={0}>
+											<Space orientation="vertical" align="start" size={0}>
 												<Text type="secondary">
 													{t(
 														"projectCandidatePreviewModal.telegram",

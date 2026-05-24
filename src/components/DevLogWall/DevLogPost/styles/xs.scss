@@ -1,10 +1,8 @@
 @media screen and (max-width: 575px) {}.postCard {
-  :global {
-    .ant-card-head {
-      padding-inline: 8px;
-    }
-    .ant-card-body {
-      padding: 8px;
-    }
+  :global(.ant-card-head) {
+    padding-inline: 8px;
+  }
+  :global(.ant-card-body) {
+    padding: 8px;
   }
 }

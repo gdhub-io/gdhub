@@ -24,7 +24,7 @@ export const Error404 = ({
 			className={`${styles.errorPageContainer} ${styles[`theme-` + theme]}`}
 			style={containerStyle}
 		>
-			<Space direction="vertical">
+			<Space orientation="vertical">
 				<div className={styles.notFound}>
 					<h1>{t("page.error404.title", "Error 404")}</h1>
 				</div>

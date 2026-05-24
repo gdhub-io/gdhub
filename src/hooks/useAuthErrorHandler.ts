@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
@@ -8,7 +8,7 @@ import { useEffect } from "react";
  */
 export function useAuthErrorHandler() {
 	const { data: session } = useSession();
-	const router = useRouter();
+	const pathname = usePathname();
 
 	useEffect(() => {
 		if (!session?.error) return;
@@ -18,14 +18,14 @@ export function useAuthErrorHandler() {
 
 			// Sign out and redirect to signin page
 			signOut({
-				callbackUrl: `/signin?error=RefreshTokenExpired&callbackUrl=${encodeURIComponent(router.asPath)}`,
+				callbackUrl: `/signin?error=RefreshTokenExpired&callbackUrl=${encodeURIComponent(pathname ?? "")}`,
 				redirect: true,
 			});
 		} else if (session.error === "RefreshAccessTokenError") {
 			console.error("Error refreshing access token");
 			// You might want to show a notification to the user or handle it differently
 		}
-	}, [session, router]);
+	}, [session, pathname]);
 
 	return session;
 }

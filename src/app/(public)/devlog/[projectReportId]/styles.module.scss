@@ -1,0 +1,570 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+
+  @media (max-width: 576px) {
+    padding: 0;
+
+    :global(.ant-card) {
+      border-radius: 0;
+    }
+  }
+
+  :global(.ant-card) {
+    margin: 0;
+  }
+}
+
+.postNavigation {
+  margin-top: 24px;
+}
+
+.postNavigationDivider {
+  margin: 0 0 16px !important;
+
+  @media (max-width: 768px) {
+    :global(.ant-divider-inner-text) {
+      padding-inline: 12px !important;
+    }
+  }
+}
+
+.postNavigationSide {
+  flex: 1 1 0;
+  display: flex;
+  min-width: 0;
+  min-height: 32px;
+  align-items: center;
+
+  &:last-child {
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 768px) {
+    &:last-child {
+      justify-content: flex-end;
+    }
+  }
+}
+
+.applauseTooltipWrapper {
+  display: inline-flex;
+}
+
+.applauseIcon {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.applauseIconAnimation {
+  width: 100%;
+  height: 100%;
+
+  :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    shape-rendering: geometricPrecision;
+    text-rendering: geometricPrecision;
+  }
+}
+
+.applauseButton {
+  &:global(.ant-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    height: auto;
+    padding-inline: 6px;
+    color: rgba(0, 0, 0, 0.65);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  &:global(.ant-btn:hover),
+  &:global(.ant-btn:focus) {
+    color: rgba(0, 0, 0, 0.85);
+    background: transparent;
+  }
+}
+
+.applauseButtonActive {
+  &:global(.ant-btn) {
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.1);
+  }
+
+  &:global(.ant-btn:hover),
+  &:global(.ant-btn:focus) {
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.14);
+  }
+}
+
+.applauseCount {
+  color: #ff4d4f;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.applauseBannerWrapper {
+  display: inline-flex;
+  width: auto;
+}
+
+.applauseBanner {
+  &:global(.ant-btn) {
+    width: auto;
+    height: auto;
+    justify-content: center;
+    gap: 8px;
+    padding-inline: 8px;
+    padding-block: 4px;
+    font-weight: 600;
+    border-radius: 999px;
+    color: rgba(0, 0, 0, 0.72);
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+
+  &:global(.ant-btn:hover),
+  &:global(.ant-btn:focus) {
+    color: rgba(0, 0, 0, 0.88);
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+}
+
+.applauseBannerActive {
+  &:global(.ant-btn) {
+    color: #ff4d4f;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+
+  &:global(.ant-btn:hover),
+  &:global(.ant-btn:focus) {
+    color: #ff4d4f;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+}
+
+.applauseBannerCount {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #ff4d4f;
+  background: transparent;
+  pointer-events: none;
+
+  :global(.ant-btn-primary) & {
+    color: #ff4d4f;
+    background: transparent;
+  }
+}
+
+.pageHeader {
+  :global(.ant-page-header) {
+    @media (max-width: 576px) {
+      :global(.ant-page-header-back) {
+        position: relative;
+        display: block;
+        margin-bottom: 16px;
+      }
+
+      :global(.ant-page-header-heading) {
+        flex-direction: column;
+        align-items: flex-start;
+
+        :global(.ant-page-header-heading-left) {
+          margin: 0;
+          margin-bottom: 8px;
+        }
+      }
+    }
+  }
+}
+
+.subtitleContainer {
+  margin-left: 40px; // Отступ для выравнивания с заголовком, если есть кнопка назад
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+}
+
+.postCard {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.postMeta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.authorAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.authorName {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.content {
+  position: relative;
+  margin-bottom: 24px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+
+  :global(.ant-image) {
+    max-width: 100%;
+    display: block;
+    margin: 16px 0;
+  }
+
+  :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    object-fit: contain;
+  }
+
+  :global(figure) {
+    margin: 16px 0;
+    text-align: center;
+  }
+
+  :global(p) {
+    margin-bottom: 16px;
+  }
+
+  :global(h1),
+  :global(h2),
+  :global(h3),
+  :global(h4),
+  :global(h5),
+  :global(h6) {
+    margin: 24px 0 16px;
+    font-weight: 600;
+  }
+
+  :global(h1) {
+    font-size: 32px;
+  }
+
+  :global(h2) {
+    font-size: 24px;
+  }
+
+  :global(h3) {
+    font-size: 20px;
+  }
+
+  :global(h4) {
+    font-size: 18px;
+  }
+
+  :global(h5) {
+    font-size: 16px;
+  }
+
+  :global(h6) {
+    font-size: 14px;
+  }
+
+  :global(ul),
+  :global(ol) {
+    margin: 16px 0;
+    padding-left: 24px;
+  }
+
+  :global(li) {
+    margin-bottom: 8px;
+  }
+
+  :global(blockquote) {
+    margin: 16px 0;
+    padding: 16px 24px;
+    border-left: 4px solid #1890ff;
+    background: rgba(24, 144, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  :global(code) {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+
+  :global(pre) {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 16px 0;
+
+    code {
+      background: none;
+      padding: 0;
+    }
+  }
+
+  :global(a) {
+    color: #1890ff;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+
+    th,
+    td {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 8px 16px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(0, 0, 0, 0.02);
+      font-weight: 600;
+    }
+  }
+
+  :global(iframe) {
+    width: 100% !important;
+    max-width: 690px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    display: block;
+    margin: 16px auto;
+    border-radius: 8px;
+  }
+
+  :global(.embed-block-service-youtube),
+  :global(.embed-block-service-vimeo),
+  :global(.embed-block-service-coub),
+  :global(.embed-block-service-codepen),
+  :global(.embed-block-service-instagram),
+  :global(.embed-block-service-twitter),
+  :global(.embed-block-service-facebook) {
+    width: 100% !important;
+    max-width: 690px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    display: block;
+    margin: 16px auto;
+    border-radius: 8px;
+  }
+}
+
+.videoWrapper {
+  position: relative;
+  padding-top: 56.25%;
+  /* 16:9 Aspect Ratio */
+  margin-bottom: 24px;
+
+  :global(.react-player) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.playerWrapper {
+  margin: 24px 0;
+  aspect-ratio: 16/9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.coverImage {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+
+  :global(.react-player) {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+.defaultCover {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.defaultCoverContent {
+  text-align: center;
+  color: white;
+}
+
+.defaultCoverInitials {
+  font-size: 48px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.imagePreview {
+  :global(.ant-image) {
+    display: inline-block;
+    position: relative;
+    line-height: 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  :global(.ant-image-img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  :global(.ant-image-mask) {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    cursor: zoom-in !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+
+    .anticon {
+      font-size: 24px;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.1) !important;
+
+      .anticon {
+        opacity: 1;
+      }
+    }
+  }
+
+  :global(.ant-image-preview-img) {
+    border-radius: 8px;
+  }
+
+  :global(.ant-image-preview-operations) {
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.backButton {
+  @media (max-width: 576px) {
+    display: none;
+  }
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  color: #fff !important;
+  margin: 0 !important;
+  font-size: 48px !important;
+}
+
+.projectTitle {
+  height: auto !important;
+  font-size: 16px !important;
+  transition: padding 0.3s ease !important;
+}
+
+.content {
+  position: relative;
+}
+
+.imagePreview {
+  :global(.ant-image-preview-operations) {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}

@@ -383,7 +383,7 @@ const EventConferenceOrGamelabView = ({
 					<Alert
 						type="info"
 						description={
-							<Space direction="vertical" size={16}>
+							<Space orientation="vertical" size={16}>
 								<Text>
 									{t(
 										"event.loginOrRegister",

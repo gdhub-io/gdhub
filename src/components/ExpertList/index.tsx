@@ -86,7 +86,7 @@ const ExpertList = ({
 										/>
 
 										<Space
-											direction="vertical"
+											orientation="vertical"
 											size={0}
 											style={{ flex: "100%" }}
 										>

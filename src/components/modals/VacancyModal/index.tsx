@@ -191,7 +191,7 @@ const VacancyModal = ({
 			title={vacancyId ? t("Change the position") : t("Create a new position")}
 			width={800}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			open={open}
 			onCancel={handleCancel}
 			confirmLoading={isLoadingVacancy || isUpdating || isCreating}

@@ -1,7 +1,7 @@
 import { TbWorld } from "@react-icons/all-files/tb/TbWorld";
 import { useTolgee } from "@tolgee/react";
 import { Button, Dropdown, type MenuProps, Typography } from "antd";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { availableLocales, defaultLocale } from "@/config/locale";
 import styles from "./style.module.scss";
 
@@ -17,6 +17,7 @@ export const SwitchLanguage = ({
 	size?: "small" | "middle" | "large";
 }) => {
 	const router = useRouter();
+	const pathname = usePathname();
 	const tolgee = useTolgee(["language"]);
 
 	const langMenuItems = availableLocales.map((locale) => ({
@@ -25,8 +26,13 @@ export const SwitchLanguage = ({
 		value: locale,
 	}));
 
-	const handleSelectLanguage: MenuProps["onClick"] = ({ key }) => {
-		router.replace(router.pathname, undefined, { locale: key });
+	const handleSelectLanguage: MenuProps["onClick"] = ({ key: _key }) => {
+		// TODO: App Router migration — Pages Router's `router.replace(path, undefined, { locale })`
+		// has no equivalent in next/navigation. Locale switching previously relied on Next.js
+		// i18n routing which was removed. This codebase is currently single-locale ('en') and
+		// `availableLocales.length <= 1` causes early return below, so this handler is unreachable.
+		// Re-implement once a locale-switching strategy is chosen (e.g. middleware or path prefix).
+		router.replace(pathname);
 	};
 
 	if (availableLocales.length <= 1) {

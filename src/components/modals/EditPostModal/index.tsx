@@ -26,7 +26,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [showAddVideoInput, setShowAddVideoInput] = useState(false);
-	const editorRef = useRef<MDXEditorMethods | null>();
+	const editorRef = useRef<MDXEditorMethods | null>(null);
 	const [content, setContent] = useState("");
 
 	const { data: report, isLoading } = useQuery({
@@ -102,7 +102,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 			title={t("modal.edit-devlog-post.title", "Edit post")}
 			width={640}
 			destroyOnHidden
-			maskClosable={false}
+			mask={{ closable: false }}
 			okText={t("modal.edit-devlog-post.save", "Save")}
 			cancelText={t("modal.edit-devlog-post.cancel", "Cancel")}
 			open={open}
@@ -151,7 +151,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 						<Input />
 					</Form.Item>
 
-					<Space direction="vertical" style={{ width: "100%" }}>
+					<Space orientation="vertical" style={{ width: "100%" }}>
 						<Form.Item
 							name="content"
 							label={t(

@@ -29,10 +29,8 @@
 			}
 		}
 
-		:global {
-			.ant-typography {
-				font-size: 14px !important;
-			}
+		:global(.ant-typography) {
+			font-size: 14px !important;
 		}
 	}
 

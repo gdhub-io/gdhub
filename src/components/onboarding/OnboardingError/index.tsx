@@ -19,7 +19,7 @@ export const OnboardingError = ({ error }: { error: string }) => {
 		>
 			<div className={styles.completedBox}>
 				<div className="completed-content" style={{ textAlign: "center" }}>
-					<Space direction="vertical" size={56}>
+					<Space orientation="vertical" size={56}>
 						<Title>{t("page.onboardingError.title", "Error!")}</Title>
 						<Paragraph>
 							{t("page.onboardingError.description", error)}

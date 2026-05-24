@@ -1,4 +1,5 @@
-@import '../../../styles/variables.scss';
+@use "sass:meta";
+@use '../../../styles/variables.scss';
 
 .section {
   background-color: #F15541;
@@ -11,7 +12,7 @@
 }
 
 .container {
-  max-width: $wrapper-width;
+  max-width: variables.$wrapper-width;
 
   .preTitle {
     color: #FFBB55;
@@ -45,17 +46,15 @@
 
   .content {
 
-    :global {
-      .ant-btn {
-        outline: 0px solid #111;
+    :global(.ant-btn) {
+      outline: 0px solid #111;
 
-        &:hover,
-        &:active,
-        &:focus {
-          color: #fff;
-          outline: 2px solid #111;
-          outline-offset: 2px;
-        }
+      &:hover,
+      &:active,
+      &:focus {
+        color: #fff;
+        outline: 2px solid #111;
+        outline-offset: 2px;
       }
     }
 
@@ -66,19 +65,17 @@
       border-radius: 0px;
       box-shadow: 0 0 30px -10px #33170D;
 
-      :global {
-        .ant-card-body {
-          padding: 40px;
-        }
+      :global(.ant-card-body) {
+        padding: 40px;
+      }
 
-        .ant-card-meta {
-          align-items: center;
-          margin-bottom: 14px;
-        }
+      :global(.ant-card-meta) {
+        align-items: center;
+        margin-bottom: 14px;
+      }
 
-        .ant-card-meta-detail>* {
-          color: #111 !important;
-        }
+      :global(.ant-card-meta-detail>*) {
+        color: #111 !important;
       }
     }
 
@@ -87,39 +84,35 @@
       margin-bottom: 48px;
       text-align: left;
 
-      :global {
-        .slick-list {
-          padding: 0px 24px;
-        }
+      :global(.slick-list) {
+        padding: 0px 24px;
+      }
 
-        .slick-dots-bottom {
-          bottom: -30px;
-        }
+      :global(.slick-dots-bottom) {
+        bottom: -30px;
+      }
 
-        .slick-slide {
-          transition: opacity 0.2s;
-        }
+      :global(.slick-slide) {
+        transition: opacity 0.2s;
+      }
 
-        .slick-slide:not(.slick-active) {
-          opacity: 0.7;
-        }
+      :global(.slick-slide:not(.slick-active)) {
+        opacity: 0.7;
       }
 
       .feedbackDot {
-        :global {
-          li>button {
-            background-color: #fff;
-            width: 8px;
-            height: 8px;
-            border-radius: 8px;
-          }
+        :global(li>button) {
+          background-color: #fff;
+          width: 8px;
+          height: 8px;
+          border-radius: 8px;
+        }
 
-          .slick-active {
-            width: 32px;
+        :global(.slick-active) {
+          width: 32px;
 
-            button {
-              width: 24px;
-            }
+          button {
+            width: 24px;
           }
         }
       }
@@ -136,19 +129,17 @@
       border-radius: 0px;
       box-shadow: 0 0 30px -10px #33170D;
 
-      :global {
-        .ant-card-body {
-          padding: 24px;
-        }
+      :global(.ant-card-body) {
+        padding: 24px;
+      }
 
-        .ant-card-meta {
-          align-items: center;
-          margin-bottom: 14px;
-        }
+      :global(.ant-card-meta) {
+        align-items: center;
+        margin-bottom: 14px;
+      }
 
-        .ant-card-meta-detail>* {
-          color: #111 !important;
-        }
+      :global(.ant-card-meta-detail>*) {
+        color: #111 !important;
       }
     }
   }
@@ -172,9 +163,9 @@
 
 
 
-@import './styles/xs.scss'; // screen < 576px
-@import './styles/sm.scss'; // screen ≥ 576px
-@import './styles/md.scss'; // screen ≥ 768px
-@import './styles/lg.scss'; // screen ≥ 992px
-@import './styles/xl.scss'; // screen ≥ 1200px
-@import './styles/xxl.scss'; // screen ≥ 1600px
+@include meta.load-css('styles/xs.scss'); // screen < 576px
+@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
+@include meta.load-css('styles/md.scss'); // screen ≥ 768px
+@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
+@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
+@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px

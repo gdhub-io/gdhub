@@ -73,7 +73,7 @@ export const UserSeasonProjectsList = ({
 	}
 
 	return (
-		<Space style={{ width: "100%", marginTop: 32 }} direction="vertical">
+		<Space style={{ width: "100%", marginTop: 32 }} orientation="vertical">
 			<Title level={5}>
 				<T keyName="userProjectList" />
 			</Title>

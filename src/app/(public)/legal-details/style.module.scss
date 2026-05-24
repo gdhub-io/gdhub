@@ -1,0 +1,184 @@
+.sectionTitle {
+	margin: 0 0 16px !important;
+	color: #0f0f0f !important;
+	font-weight: 700 !important;
+}
+
+.countryRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+.countryFlag {
+	font-size: 18px;
+	line-height: 1;
+}
+
+.countryName {
+	font-size: 16px;
+	font-weight: 600;
+	color: #0f0f0f;
+}
+
+.card {
+	border: 1px solid #0000000f;
+	border-radius: 8px;
+	background: #ffffff;
+
+	:global(.ant-card-body) {
+		padding: 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	min-width: 0;
+}
+
+.avatar {
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: rgba(241, 85, 65, 0.08);
+	color: #f15541;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.titleBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.entityName {
+	font-size: 16px;
+	font-weight: 700;
+	color: #0f0f0f;
+	line-height: 1.3;
+}
+
+.metaRow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.statusPill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px 4px 8px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1;
+}
+
+.statusDot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: currentColor;
+}
+
+.statusActive {
+	background: rgba(22, 163, 74, 0.08);
+	color: #16a34a;
+}
+
+.statusPending {
+	background: rgba(245, 158, 11, 0.08);
+	color: #b45309;
+
+	.statusDot {
+		background: #f59e0b;
+	}
+}
+
+.metaNote {
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.divider {
+	border: 0;
+	height: 1px;
+	background: #0000000f;
+	margin: 0;
+}
+
+.fields {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.fieldRow {
+	display: grid;
+	grid-template-columns: 240px 1fr;
+	gap: 24px;
+	align-items: start;
+}
+
+.fieldLabel {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #6b7280;
+}
+
+.fieldValue {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.5;
+	color: #0f0f0f;
+	word-break: break-word;
+}
+
+.contacts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px 8px 10px;
+	border-radius: 8px;
+	background: #f5f6f8;
+	color: #6b7280;
+	font-size: 13px;
+	font-weight: 500;
+
+	span {
+		color: #0f0f0f;
+	}
+}
+
+@media (max-width: 767px) {
+	.card :global(.ant-card-body) {
+		padding: 20px;
+	}
+
+	.fieldRow {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+}

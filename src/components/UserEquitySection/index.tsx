@@ -68,7 +68,7 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 
 	return (
 		<Space
-			direction="vertical"
+			orientation="vertical"
 			size="middle"
 			style={{ width: "100%", marginBottom: "32px" }}
 		>

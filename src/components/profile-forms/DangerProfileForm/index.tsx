@@ -15,7 +15,7 @@ const DangerProfileForm = () => {
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
 	return (
-		<Space direction="vertical" size="large" className={styles.container}>
+		<Space orientation="vertical" size="large" className={styles.container}>
 			<Text type="secondary">
 				{t(
 					"profile.settings.danger.description",

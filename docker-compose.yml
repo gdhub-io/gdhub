@@ -95,13 +95,20 @@ services:
       - APP_PASSWORD=admin
       - REDIS_URL=redis://default:password12345@redis:6379
       - QUEUES_LIST=telegram,matching
-      - APP_MAIN=${BROKER_APP_MAIN}
-      - APP_EXPERTS=${BROKER_APP_EXPERTS}
     ports:
       - '3003:3000'
     restart: unless-stopped
     depends_on:
       - redis
+    networks:
+      - gdhub_network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: gdhub_mailhog
+    ports:
+      - '1025:1025'
+      - '8025:8025'
     networks:
       - gdhub_network
 

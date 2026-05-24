@@ -1,4 +1,4 @@
-@import './variables.scss';
+@use 'variables.scss';
 
 // flex-column flex justify-center items-center h-screen
 .container {
@@ -8,7 +8,7 @@
 	align-items: center;
 	min-height: 100vh;
 	margin: 40px 10px;
-	max-width: $wrapper-width;
+	max-width: variables.$wrapper-width;
 
 	p {
 		color: #333;
@@ -18,19 +18,17 @@
 		width: 80vw;
 	}
 
-	:global {
-		.logo {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			font-size: 24px;
-			font-weight: 500;
-		}
+	:global(.logo) {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 24px;
+		font-weight: 500;
+	}
 
-		.login-button {
-			.ant-space-item {
-				display: flex;
-			}
+	:global(.login-button) {
+		.ant-space-item {
+			display: flex;
 		}
 	}
 }

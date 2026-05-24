@@ -1,8 +1,9 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { IoAdd } from "@react-icons/all-files/io5/IoAdd";
+import { IconBriefcase, IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Empty, Flex, Row, Spin, Typography } from "antd";
+import { Button, Col, Empty, Flex, Row, Space, Spin, Typography } from "antd";
 import axios from "axios";
 import type React from "react";
 import { useState } from "react";
@@ -87,22 +88,40 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 				title={t("page.hub.user-projects", "My projects")}
 				className={styles.hubSectionHeader}
 			>
-				<Button
-					type="primary"
-					className={styles.hubCreateBtn}
-					icon={<IoAdd aria-hidden />}
-					onClick={() => setOpenCreateProjectModal(true)}
-				>
-					{t("hub.new-project", "New Project")}
-				</Button>
+				<Space>
+					<Button
+						href="/hub/jobs"
+						icon={<IconBriefcase size={16} aria-hidden />}
+					>
+						{t("project.openPositions", "Open Positions")}
+					</Button>
+					<Button
+						type="primary"
+						icon={<IconPlus size={16} aria-hidden />}
+						onClick={() => setOpenCreateProjectModal(true)}
+					>
+						{t("hub.new-project", "New Project")}
+					</Button>
+				</Space>
 			</HubSectionHeader>
 		) : (
 			<Flex justify="space-between" wrap>
 				<Title level={2}>{t("page.hub.user-projects", "My Projects")}</Title>
 
-				<Button type="primary" onClick={() => setOpenCreateProjectModal(true)}>
-					{t("project.create", "Add Project")}
-				</Button>
+				<Space>
+					<Button
+						href="/hub/jobs"
+						icon={<IconBriefcase size={16} aria-hidden />}
+					>
+						{t("project.openPositions", "Open Positions")}
+					</Button>
+					<Button
+						type="primary"
+						onClick={() => setOpenCreateProjectModal(true)}
+					>
+						{t("project.create", "Add Project")}
+					</Button>
+				</Space>
 			</Flex>
 		);
 

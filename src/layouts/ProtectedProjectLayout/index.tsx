@@ -1,3 +1,5 @@
+"use client";
+
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
@@ -28,7 +30,7 @@ import ruLocale from "antd/locale/ru_RU";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useParams, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
@@ -62,8 +64,9 @@ export const ProtectedProjectLayout = ({
 	actions?: ReactNode;
 }) => {
 	const { t } = useTranslate();
-	const router = useRouter();
-	const projectSlug = router.query.slug as string;
+	const params = useParams<{ slug?: string }>();
+	const pathname = usePathname() ?? "";
+	const projectSlug = params?.slug as string;
 	const [contextProject, setContextProject] = useState<ContextProject>();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [isOpenedInTelegram] = useTelegram();
@@ -101,7 +104,7 @@ export const ProtectedProjectLayout = ({
 
 	const seoSettings: NextSeoProps = {
 		title: title || "Project",
-		canonical: process.env.NEXT_PUBLIC_APP_URL + router.asPath,
+		canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
 		nofollow: true,
 		noindex: true,
 		description,
@@ -421,7 +424,7 @@ export const ProtectedProjectLayout = ({
 						<Menu
 							items={menuItems.filter((r) => !r.disabled)}
 							mode="horizontal"
-							selectedKeys={[router.asPath]}
+							selectedKeys={[pathname]}
 							className={styles.appMenu}
 						/>
 					</Header>
@@ -442,7 +445,7 @@ export const ProtectedProjectLayout = ({
 								style={{ marginBottom: 24 }}
 							>
 								<Space
-									direction="vertical"
+									orientation="vertical"
 									size={0}
 									style={{ marginBottom: 24 }}
 								>
@@ -459,7 +462,6 @@ export const ProtectedProjectLayout = ({
 				{!screens.lg && (
 					<Drawer
 						className={styles.mobileMenuDrawer}
-						height={"100%"}
 						title={
 							<Space>
 								<Avatar

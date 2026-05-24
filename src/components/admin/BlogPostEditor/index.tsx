@@ -18,7 +18,6 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { trim } from "lodash";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./style.module.scss";
 import { tools } from "./tools";
@@ -32,11 +31,10 @@ const { Title, Text } = Typography;
 
 export default function BlogPostEditor({ id }: { id?: string }) {
 	const { token } = theme.useToken();
-	const router = useRouter();
 	const [postTitle, setPostTitle] = useState("New Blog Post");
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [initialContentHash, setInitialContentHash] = useState<string>("");
-	const [isNavigating, setIsNavigating] = useState(false);
+	const [isNavigating] = useState(false);
 
 	const editorHolderId = "blog-post-editor";
 	const editorInstance = useRef<EditorJS | null>(null);
@@ -133,39 +131,12 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		};
 	}, [hasUnsavedChanges, isNavigating]);
 
-	// Handle Next.js router navigation
-	useEffect(() => {
-		const handleRouteChangeStart = () => {
-			if (hasUnsavedChanges && !isNavigating) {
-				const confirmed = window.confirm(
-					"You have unsaved changes. Are you sure you want to leave?",
-				);
-				if (!confirmed) {
-					router.events.emit("routeChangeError");
-					throw "Route change aborted";
-				}
-				setIsNavigating(true);
-			}
-		};
-
-		const handleRouteChangeComplete = () => {
-			setIsNavigating(false);
-		};
-
-		const handleRouteChangeError = () => {
-			setIsNavigating(false);
-		};
-
-		router.events.on("routeChangeStart", handleRouteChangeStart);
-		router.events.on("routeChangeComplete", handleRouteChangeComplete);
-		router.events.on("routeChangeError", handleRouteChangeError);
-
-		return () => {
-			router.events.off("routeChangeStart", handleRouteChangeStart);
-			router.events.off("routeChangeComplete", handleRouteChangeComplete);
-			router.events.off("routeChangeError", handleRouteChangeError);
-		};
-	}, [router, hasUnsavedChanges, isNavigating]);
+	// TODO: App Router migration — `router.events` API has no equivalent in next/navigation.
+	// The previous Pages Router implementation used router.events to intercept route changes
+	// and confirm before discarding unsaved edits. There is no direct replacement in App Router;
+	// the recommended approach is to intercept Link clicks and the browser back button manually
+	// or use a custom solution. For now this is left as a TODO so we don't fabricate behavior.
+	// The `beforeunload` handler above still covers full-page navigations / closes.
 
 	const initEditor = useCallback(async () => {
 		if (editorInitialized.current || editorInstance.current !== null) return;
