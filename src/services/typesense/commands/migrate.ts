@@ -19,6 +19,7 @@ export async function migrate(searchClient: SearchEngineService) {
 		console.info("Start");
 
 		const specialists = await prisma.speciality.findMany({
+			where: { user: { personalDataDeletedAt: null } },
 			orderBy: { id: "asc" },
 			include: { direction: true, user: { include: { profile: true } } },
 		});

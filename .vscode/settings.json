@@ -1,5 +1,6 @@
 {
 	"biome.enabled": true,
+	"eslint.enable": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"typescript.tsserver.maxTsServerMemory": 4096,
 	"files.watcherExclude": {

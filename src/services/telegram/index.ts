@@ -153,6 +153,7 @@ export default class TelegramService {
 			where: {
 				publishedAt: { gte: lastLogDate },
 				project: {
+					author: { personalDataDeletedAt: null },
 					status: prismaClient.ProjectStatus.Approved,
 					workflow: {
 						currentStep: {
@@ -245,6 +246,7 @@ export default class TelegramService {
 		const specialities = await prisma.speciality.findMany({
 			where: {
 				createdAt: { gte: lastLogDate },
+				user: { personalDataDeletedAt: null },
 			},
 			include: { user: { include: { profile: true } } },
 		});
@@ -323,6 +325,7 @@ export default class TelegramService {
 
 		const projectWithVacancies = await prisma.project.findMany({
 			where: {
+				author: { personalDataDeletedAt: null },
 				team: {
 					vacancies: {
 						some: {

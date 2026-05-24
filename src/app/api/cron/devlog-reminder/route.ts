@@ -16,6 +16,7 @@ export async function GET() {
 				finishedAt: { equals: null },
 				author: {
 					profile: { isActive: true },
+					personalDataDeletedAt: null,
 				},
 				OR: [
 					{ reports: { none: {} } },

@@ -15,6 +15,8 @@ export async function GET() {
 
 		const adviceRequestsToRemind = await prisma.adviceRequest.findMany({
 			where: {
+				fromUser: { personalDataDeletedAt: null },
+				toUser: { personalDataDeletedAt: null },
 				status: prismaClient.AdviceRequestStatus.Created,
 				finishedAt: { equals: null },
 				OR: reminderDiffDays.map((d) => ({
@@ -99,6 +101,8 @@ export async function GET() {
 		// EXPIRED ADVICE REQUESTS
 		const expiredAdviceRequests = await prisma.adviceRequest.findMany({
 			where: {
+				fromUser: { personalDataDeletedAt: null },
+				toUser: { personalDataDeletedAt: null },
 				status: prismaClient.AdviceRequestStatus.Created,
 				finishedAt: { equals: null },
 				createdAt: {

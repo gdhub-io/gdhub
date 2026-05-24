@@ -30,6 +30,7 @@ export const POST = withValidation(
 				where: {
 					id: projectId,
 					status: prismaClient.ProjectStatus.Approved,
+					author: { personalDataDeletedAt: null },
 					OR: !specialityId
 						? [
 								{
@@ -136,7 +137,7 @@ export const POST = withValidation(
 			const specialists = await prisma.speciality.findMany({
 				where: {
 					id: specialityId,
-					user: { profile: { isActive: true } },
+					user: { profile: { isActive: true }, personalDataDeletedAt: null },
 					OR: [{ availableProjects: { none: {} } }],
 				},
 				select: {
