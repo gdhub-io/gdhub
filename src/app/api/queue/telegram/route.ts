@@ -11,27 +11,36 @@ async function runWithBrokerLog<T>(
 ): Promise<T | null> {
 	try {
 		const result = await fn();
-		await prisma.queueJobLog.create({
-			data: {
-				name: jobName,
-				status: prismaClient.QueueJobStatus.Completed,
-				type: prismaClient.QueueJobType.Broker,
-				data:
-					result && typeof result === "object"
-						? (result as Record<string, unknown>)
-						: undefined,
-			},
-		});
+		await prisma.queueJobLog
+			.create({
+				data: {
+					name: jobName,
+					status: prismaClient.QueueJobStatus.Completed,
+					type: prismaClient.QueueJobType.Broker,
+					data:
+						result && typeof result === "object"
+							? (result as Record<string, unknown>)
+							: undefined,
+				},
+			})
+			.catch((e) =>
+				console.error(`[queue:${jobName}] Failed to write success log:`, e),
+			);
 		return result;
 	} catch (e: unknown) {
-		await prisma.queueJobLog.create({
-			data: {
-				name: jobName,
-				status: prismaClient.QueueJobStatus.Failed,
-				type: prismaClient.QueueJobType.Broker,
-				log: (e as Error).message,
-			},
-		});
+		console.error(`[queue:${jobName}] Job failed:`, e);
+		await prisma.queueJobLog
+			.create({
+				data: {
+					name: jobName,
+					status: prismaClient.QueueJobStatus.Failed,
+					type: prismaClient.QueueJobType.Broker,
+					log: (e as Error).message,
+				},
+			})
+			.catch((logErr) =>
+				console.error(`[queue:${jobName}] Failed to write error log:`, logErr),
+			);
 		return null;
 	}
 }
@@ -43,6 +52,11 @@ export const POST = withAuth({ mode: "api" })(async (req: NextRequest) => {
 		string
 	> | null;
 	if (!job) return apiError.badRequest("Invalid JSON body");
+
+	if (!process.env.TELEGRAM_BOT_TOKEN) {
+		console.warn("[queue:telegram] TELEGRAM_BOT_TOKEN is not set, skipping");
+		return json({ success: true, skipped: true });
+	}
 
 	const telegramBot = TelegramService.init();
 
