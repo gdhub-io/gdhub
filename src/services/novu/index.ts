@@ -38,7 +38,9 @@ export class NovuService {
 	}
 
 	static async send({ to, payload, template }: NovuSendArgs) {
-		await novuClient.trigger({
+		if (process.env.E2E_TEST_AUTH === "1") return;
+
+		const trigger = novuClient.trigger({
 			workflowId: template,
 			to: {
 				subscriberId: to.subscriberId,
@@ -46,5 +48,9 @@ export class NovuService {
 			},
 			payload: { app: "main", ...payload },
 		});
+		const timeout = new Promise<never>((_, reject) =>
+			setTimeout(() => reject(new Error("Novu send timeout")), 5_000),
+		);
+		await Promise.race([trigger, timeout]);
 	}
 }
