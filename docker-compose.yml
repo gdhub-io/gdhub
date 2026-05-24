@@ -105,6 +105,15 @@ services:
     networks:
       - gdhub_network
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: gdhub_mailhog
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    networks:
+      - gdhub_network
+
 volumes:
   gdhub_typesense_data:
   gdhub_postgres_data:

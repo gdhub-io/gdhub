@@ -72,7 +72,7 @@ export const POST = withAuth({ mode: "user" })(
 				},
 			});
 
-			return json(undefined);
+			return json({ ok: true });
 		},
 	),
 );

@@ -16,5 +16,5 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		},
 	});
 
-	return json(undefined);
+	return json({ ok: true });
 });

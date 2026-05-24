@@ -4,6 +4,7 @@ import NextAuth, { type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/nodemailer";
+import { createTransport } from "nodemailer";
 import { brevoTemplates } from "@/config/brevo-templates";
 import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
@@ -63,7 +64,22 @@ export const authConfig: NextAuthConfig = {
 			id: "email",
 			from: process.env.EMAIL_FROM as string,
 			server: process.env.EMAIL_SERVER as string,
-			async sendVerificationRequest({ identifier: email, url }) {
+			async sendVerificationRequest({ identifier: email, url, provider }) {
+				// In development, send via SMTP (EMAIL_SERVER) so we can use a local
+				// MailHog/MailPit. Brevo HTTP API is used only in production.
+				if (process.env.NODE_ENV !== "production") {
+					const transport = createTransport(provider.server);
+					await transport.sendMail({
+						to: email,
+						from: provider.from,
+						subject: "Sign in",
+						text: `Sign in: ${url}`,
+						html: `<p>Sign in: <a href="${url}">${url}</a></p>`,
+					});
+					console.log("sendVerificationRequest sent via SMTP", { email });
+					return;
+				}
+
 				try {
 					const userExist = await prisma.user.findUnique({ where: { email } });
 					let sendResult: HttpResponse<CreateSmtpEmail, ErrorModel>;

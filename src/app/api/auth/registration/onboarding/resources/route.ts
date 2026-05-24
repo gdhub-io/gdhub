@@ -10,9 +10,9 @@ import { brevoApi } from "@/services/brevo";
 import { prisma } from "@/services/prisma";
 
 const UpdateResourcesSchema = z.object({
-	timeForWork: z.array(z.number()).optional(),
-	otherResources: z.string().optional(),
-	isActive: z.boolean().optional(),
+	timeForWork: z.array(z.number()).optional().nullable(),
+	otherResources: z.string().optional().nullable(),
+	isActive: z.boolean().optional().nullable(),
 });
 
 type UpdateResourcesBody = z.infer<typeof UpdateResourcesSchema>;
@@ -45,9 +45,9 @@ export const PUT = withAuth({ mode: "user" })(
 		const profile = await prisma.profile.update({
 			where: { userId: currentUser.id },
 			data: {
-				timeForWork,
-				otherResources,
-				isActive,
+				timeForWork: timeForWork ?? undefined,
+				otherResources: otherResources ?? undefined,
+				isActive: isActive ?? undefined,
 				user: { update: { onboardingDone: true } },
 			},
 			select: {
@@ -62,7 +62,7 @@ export const PUT = withAuth({ mode: "user" })(
 		try {
 			const agreements = profile.user.agreements as Record<string, boolean>;
 
-			const newSubscriber = await brevoApi.contacts.createContact({
+			const response = await brevoApi.contacts.createContact({
 				email: profile.user.email as string,
 				listIds: [2],
 				attributes: {
@@ -74,12 +74,11 @@ export const PUT = withAuth({ mode: "user" })(
 				},
 			});
 
-			const response = await newSubscriber.json();
 			console.log("[brevo: newSubscriber: response]", response);
 		} catch (error) {
 			console.error("[brevo: newSubscriber: error]", error);
 		}
 
-		return json(undefined);
+		return json({ ok: true });
 	}),
 );

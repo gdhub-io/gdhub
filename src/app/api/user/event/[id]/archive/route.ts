@@ -13,5 +13,5 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		data: { status: prismaClient.$Enums.EventStatus.Archived },
 	});
 
-	return json(undefined);
+	return json({ ok: true });
 });

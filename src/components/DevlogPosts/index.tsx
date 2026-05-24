@@ -394,7 +394,9 @@ const DevlogPosts = ({
 
 	const headerNode = useSectionHeader ? (
 		<HubSectionHeader
-			title={title ?? t("hub.activity-feed.title", "Activity Feed")}
+			title={
+				title ?? t("hub.activity-feed.title", "Devlog posts from projects")
+			}
 		/>
 	) : (
 		<Title level={2} style={{ marginBottom: 24 }}>

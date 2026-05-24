@@ -120,7 +120,7 @@ export const OnboardingResourceStep = ({
 						scrollToFirstError
 						initialValues={{ isActive: true }}
 					>
-						<Space orientation="vertical" size={16} style={{ width: "100%" }}>
+						<Space direction="vertical" size={16} style={{ width: "100%" }}>
 							<Form.Item
 								label={t(
 									"onboarding.resources.availableTime",
@@ -198,14 +198,14 @@ export const OnboardingResourceStep = ({
 						</Space>
 					</Form>
 				</div>
-				<Space wrap className="onboarding-footer">
+				<div className="onboarding-footer">
 					<Button onClick={onPreviousStep}>
 						{t("onboarding.resources.back", "Back")}
 					</Button>
 					<Button type="primary" onClick={handleSave} loading={isSaving}>
 						{t("onboarding.resources.save", "Save")}
 					</Button>
-				</Space>
+				</div>
 			</div>
 		</div>
 	);

@@ -17,7 +17,7 @@ const SpecialityDataSchema = z.object({
 	level: z
 		.enum(Object.values(prismaClient.SkillLevel) as [string, ...string[]])
 		.optional(),
-	portfolioUrl: z.string().optional(),
+	portfolioUrl: z.string().nullable().optional(),
 	workDirectionId: z.string().optional(),
 	userId: z.string().optional(),
 	skills: z.any().optional(),
@@ -95,6 +95,6 @@ export const PUT = withAuth({ mode: "user" })(
 			include: { direction: true },
 		});
 
-		return json(undefined);
+		return json({ ok: true });
 	}),
 );

@@ -93,6 +93,6 @@ export const PUT = withAuth({ mode: "user" })(
 			} as any,
 		});
 
-		return json(undefined);
+		return json({ ok: true });
 	}),
 );

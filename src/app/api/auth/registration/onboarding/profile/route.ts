@@ -10,13 +10,13 @@ import {
 import { prisma } from "@/services/prisma";
 
 const SaveOnboardingProfileSchema = z.object({
-	name: z.string().optional(),
-	yearOfBirth: z.number().optional(),
-	country: z.string().optional(),
-	city: z.string().optional(),
-	confirmUserData: z.boolean().optional(),
-	agreeWithTermsAndPrivacy: z.boolean().optional(),
-	needSubscribeToNewsletter: z.boolean().optional(),
+	name: z.string().nullish(),
+	yearOfBirth: z.number().nullish(),
+	country: z.string().nullish(),
+	city: z.string().nullish(),
+	confirmUserData: z.boolean().nullish(),
+	agreeWithTermsAndPrivacy: z.boolean().nullish(),
+	needSubscribeToNewsletter: z.boolean().nullish(),
 });
 
 type SaveOnboardingProfileBody = z.infer<typeof SaveOnboardingProfileSchema>;
@@ -75,32 +75,49 @@ export const PUT = withAuth({ mode: "user" })(
 
 				if (!userRecord) return apiError.badRequest("The user is not exist");
 
-				const agreements: any = userRecord?.agreements || {};
+				// `name` and `yearOfBirth` are non-nullable in Profile — convert
+				// form-sent nulls to `undefined` so Prisma skips them on update
+				// instead of failing. `city`/`country` are nullable, leave as-is.
+				const safeName = name ?? undefined;
+				const safeYearOfBirth = yearOfBirth ?? undefined;
 
-				agreements.confirmUserData = confirmUserData;
-				if (agreeWithTermsAndPrivacy)
-					agreements.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy;
-				if (needSubscribeToNewsletter)
-					agreements.needSubscribeToNewsletter = needSubscribeToNewsletter;
+				// Prisma rejects `undefined` inside Json columns with
+				// "Value is not JSON serializable". Build a plain object and
+				// strip nulls/undefineds via JSON round-trip before writing.
+				const existing = (userRecord.agreements ?? {}) as Record<
+					string,
+					unknown
+				>;
+				const agreementsPayload: Record<string, unknown> = { ...existing };
+				if (confirmUserData != null)
+					agreementsPayload.confirmUserData = confirmUserData;
+				if (agreeWithTermsAndPrivacy != null)
+					agreementsPayload.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy;
+				if (needSubscribeToNewsletter != null)
+					agreementsPayload.needSubscribeToNewsletter =
+						needSubscribeToNewsletter;
+				const agreements = JSON.parse(JSON.stringify(agreementsPayload));
 
-				if (userRecord?.profile) {
+				if (userRecord.profile) {
 					await prisma.profile.update({
 						where: { userId: currentUser.id },
 						data: {
-							name,
+							name: safeName,
 							city,
-							yearOfBirth,
+							yearOfBirth: safeYearOfBirth,
 							country,
-							user: { update: { agreements, lang: locale } },
 						},
 					});
 				} else {
+					if (!safeName) {
+						return apiError.badRequest("Name is required");
+					}
 					await prisma.profile.create({
 						data: {
-							name: name as string,
-							city,
-							yearOfBirth,
-							country,
+							name: safeName,
+							city: city ?? undefined,
+							yearOfBirth: safeYearOfBirth,
+							country: country ?? undefined,
 							user: { connect: { id: userRecord.id } },
 						},
 					});
@@ -108,13 +125,20 @@ export const PUT = withAuth({ mode: "user" })(
 
 				await prisma.user.update({
 					where: { id: userRecord.id },
-					data: { agreements },
+					data: { agreements, lang: locale },
 				});
 
-				return json(undefined);
+				return json({ ok: true });
 			} catch (error) {
 				console.error("saveOnboardingProfile: error", error);
-				return apiError.badRequest("Failed to save onboarding profile");
+				const details =
+					process.env.NODE_ENV !== "production"
+						? (error as Error)?.message
+						: undefined;
+				return apiError.badRequest(
+					"Failed to save onboarding profile",
+					details,
+				);
 			}
 		},
 	),

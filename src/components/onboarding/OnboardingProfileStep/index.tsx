@@ -61,14 +61,14 @@ export const OnboardingProfileStep = ({
 
 		const { data } = profileData;
 
-		const [firstName, lastName] = data.name.split(" ");
+		const [firstName, lastName] = (data.name ?? "").split(" ");
 		form.setFieldsValue({
 			firstName,
 			lastName,
 			yearOfBirth: data.yearOfBirth,
 			country: data.country,
 			city: data.city,
-			confirmUserData: data.user.agreements.confirmUserData,
+			confirmUserData: data.user?.agreements?.confirmUserData,
 		});
 
 		onLoading(data);
@@ -148,7 +148,7 @@ export const OnboardingProfileStep = ({
 							registrationToken: searchParams.get("token") as string,
 						}}
 					>
-						<Space orientation="vertical" size={16} style={{ width: "100%" }}>
+						<Space direction="vertical" size={16} style={{ width: "100%" }}>
 							<Row gutter={[32, 16]}>
 								<Col xs={24} lg={12}>
 									<Form.Item
@@ -290,7 +290,7 @@ export const OnboardingProfileStep = ({
 					</Form>
 				</div>
 				<div className="onboarding-footer">
-					<span></span>
+					<div />
 					<Button
 						type="primary"
 						onClick={handleSaveProfileAndNextStep}

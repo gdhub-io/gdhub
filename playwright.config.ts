@@ -35,6 +35,11 @@ export default defineConfig({
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
+			name: "onboarding",
+			testMatch: ["**/onboarding.spec.ts"],
+			use: { ...devices["Desktop Chrome"] },
+		},
+		{
 			name: "authenticated",
 			testMatch: ["**/*.authed.spec.ts"],
 			use: {
