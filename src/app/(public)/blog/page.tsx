@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { BlogClient, type BlogPost } from "./BlogClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
 	title: "Blog | gdhub.io",
 	alternates: { canonical: "/blog" },
