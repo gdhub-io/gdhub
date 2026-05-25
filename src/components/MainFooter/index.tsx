@@ -47,8 +47,16 @@ export const MainFooter = () => {
 			title: t("mainFooter.legal", "Legal"),
 			links: [
 				{
+					href: "/privacy-policy",
+					label: t("mainFooter.privacyPolicy", "Privacy Policy"),
+				},
+				{
 					href: "/cookie-policy",
 					label: t("mainFooter.cookiePolicy", "Cookie Policy"),
+				},
+				{
+					href: "/refund-policy",
+					label: t("mainFooter.refundPolicy", "Refund Policy"),
 				},
 				{ href: "/terms", label: t("mainFooter.termsOfUse", "Terms of use") },
 				{
