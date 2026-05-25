@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { auth } from "@/auth";
 import {
-	getCleanTextContent,
 	getEditorjsPageCover,
 	getEditorjsShortContent,
 	getPageCover,
@@ -19,7 +17,6 @@ const loadPost = cache(
 	): Promise<{ post: Post; contentLength: number } | null> => {
 		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 		const cookieHeader = (await headers()).get("cookie") ?? "";
-		const session = await auth();
 
 		try {
 			const response = await fetch(`${baseUrl}/api/devlog/${projectReportId}`, {
@@ -35,18 +32,6 @@ const loadPost = cache(
 					getEditorjsPageCover(post.contentEditor as any) ?? undefined;
 			} else {
 				post.pageCover = getPageCover(post as any) ?? undefined;
-			}
-
-			if (!session) {
-				if (post.contentEditor) {
-					post.content = getEditorjsShortContent(
-						post.contentEditor as any,
-						1000,
-					);
-					delete post.contentEditor;
-				} else {
-					post.content = getCleanTextContent(post.content, 1000);
-				}
 			}
 
 			const contentLength = post.contentEditor
@@ -91,13 +76,5 @@ export default async function DevlogPostPage({ params }: { params: Params }) {
 	const result = await loadPost(projectReportId);
 	if (!result) notFound();
 
-	const session = await auth();
-
-	return (
-		<DevlogPostClient
-			post={result.post}
-			contentLength={result.contentLength}
-			isAuthenticated={!!session}
-		/>
-	);
+	return <DevlogPostClient post={result.post} />;
 }
