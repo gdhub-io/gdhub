@@ -1,6 +1,6 @@
-import { DeleteOutlined } from "@ant-design/icons";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { MdOutlineHandshake } from "@react-icons/all-files/md/MdOutlineHandshake";
+import { IconCashBanknote, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -27,6 +27,8 @@ import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
 import styles from "./style.module.scss";
 
+const PAID_VACANCY_FEE = 3;
+
 interface VacancyModalProps {
 	teamId?: string;
 	projectId?: string;
@@ -48,6 +50,7 @@ const VacancyModal = ({
 	const { t } = useTranslate();
 	const { options: directionsOptions } = useWorkDirections();
 	const [showPromiseFields, setShowPromiseFields] = useState(false);
+	const [showPaymentFields, setShowPaymentFields] = useState(false);
 
 	const {
 		data: vacancy,
@@ -107,44 +110,43 @@ const VacancyModal = ({
 				const data = res.data?.data;
 				form.setFieldsValue({ ...data, finishedAt: dayjs(data?.finishedAt) });
 				setShowPromiseFields(!!data?.promisePercentage);
+				setShowPaymentFields(
+					!!(data as Record<string, unknown>)?.paymentAmount,
+				);
 			});
 		}
 	}, [open]);
+
+	const isPaidVacancy = showPaymentFields;
+	const alreadyPaid = !!(vacancy?.data as Record<string, unknown>)?.paidAt;
 
 	const handleOk = async (asDraft?: { asDraft: boolean }) => {
 		try {
 			const formData = await form.validateFields();
 
+			const payload = {
+				...formData,
+				publishedAt: asDraft ? null : dayjs().toISOString(),
+				status: asDraft
+					? prismaClient.TeamVacancyStatus.Draft
+					: prismaClient.TeamVacancyStatus.Published,
+				teamId,
+				promisePercentage: formData.promisePercentage || null,
+				promiseStepId: formData.promiseStepId || null,
+				paymentAmount: formData.paymentAmount || null,
+				paymentRateType: formData.paymentRateType || null,
+			};
+
 			if (vacancyId) {
-				await saveVacancy({
-					id: vacancyId,
-					data: {
-						...formData,
-						publishedAt: asDraft ? null : dayjs().toISOString(),
-						status: asDraft
-							? prismaClient.TeamVacancyStatus.Draft
-							: prismaClient.TeamVacancyStatus.Published,
-						teamId,
-						promisePercentage: formData.promisePercentage || null,
-						promiseStepId: formData.promiseStepId || null,
-					},
-				});
+				await saveVacancy({ id: vacancyId, data: payload });
 			} else {
-				await createVacancy({
-					...formData,
-					publishedAt: asDraft ? null : dayjs().toISOString(),
-					status: asDraft
-						? prismaClient.TeamVacancyStatus.Draft
-						: prismaClient.TeamVacancyStatus.Published,
-					teamId,
-					promisePercentage: formData.promisePercentage || null,
-					promiseStepId: formData.promiseStepId || null,
-				});
+				await createVacancy(payload);
 				gtmEventTrigger("vacancy_create", { teamId, title: formData.title });
 			}
 
 			form.resetFields();
 			setShowPromiseFields(false);
+			setShowPaymentFields(false);
 			message.success(
 				vacancyId
 					? t("The position is changed")
@@ -165,6 +167,7 @@ const VacancyModal = ({
 	const handleCancel = () => {
 		form.resetFields();
 		setShowPromiseFields(false);
+		setShowPaymentFields(false);
 		onCancel();
 	};
 
@@ -217,9 +220,11 @@ const VacancyModal = ({
 						type="primary"
 						onClick={() => handleOk()}
 					>
-						{vacancy?.data.status == prismaClient.TeamVacancyStatus.Published
+						{vacancy?.data.status === prismaClient.TeamVacancyStatus.Published
 							? t("Save")
-							: t("Publish")}
+							: isPaidVacancy && !alreadyPaid
+								? t("Pay & Publish")
+								: t("Publish")}
 					</Button>
 				</Space>,
 			]}
@@ -264,7 +269,9 @@ const VacancyModal = ({
 								<DatePicker
 									format="DD.MM.YYYY"
 									disabledDate={(current) =>
-										current && current < dayjs().endOf("day")
+										current &&
+										(current < dayjs().endOf("day") ||
+											current > dayjs().add(90, "day").endOf("day"))
 									}
 								/>
 							</Form.Item>
@@ -304,29 +311,122 @@ const VacancyModal = ({
 						/>
 					</Form.Item>
 
-					{!showPromiseFields && (
+					{(!showPromiseFields || !showPaymentFields) && (
 						<Form.Item wrapperCol={{ span: 24 }}>
-							<Popover
-								content={
-									adjustedMaxAvailableShare <= 0 ? t("No available equity") : ""
-								}
-								placement="topRight"
-							>
-								<Button
-									type="text"
-									disabled={adjustedMaxAvailableShare <= 0}
-									icon={<MdOutlineHandshake />}
-									onClick={() => setShowPromiseFields(true)}
-								>
-									{t("Add equity promise")}
-								</Button>
-							</Popover>
+							<Space>
+								{!showPromiseFields && (
+									<Popover
+										content={
+											adjustedMaxAvailableShare <= 0
+												? t("No available equity")
+												: ""
+										}
+										placement="topRight"
+									>
+										<Button
+											type="text"
+											disabled={adjustedMaxAvailableShare <= 0}
+											icon={<MdOutlineHandshake />}
+											onClick={() => setShowPromiseFields(true)}
+										>
+											{t("Add equity promise")}
+										</Button>
+									</Popover>
+								)}
+								{!showPaymentFields && (
+									<Popover content={t("In development")} placement="topRight">
+										<Button type="text" disabled icon={<IconCashBanknote />}>
+											{t("Add payment")}
+										</Button>
+									</Popover>
+								)}
+							</Space>
 						</Form.Item>
+					)}
+
+					{showPaymentFields && (
+						<Card
+							className={styles.optionCard}
+							title={t("Payment")}
+							extra={
+								<Popconfirm
+									title={t("Remove payment")}
+									placement="topRight"
+									onConfirm={() => {
+										form.setFieldsValue({
+											paymentAmount: null,
+											paymentRateType: null,
+										});
+										setShowPaymentFields(false);
+									}}
+								>
+									<Button
+										type="text"
+										size="small"
+										danger
+										icon={<IconTrash size={16} />}
+										onClick={(e) => {
+											e.stopPropagation();
+										}}
+									/>
+								</Popconfirm>
+							}
+						>
+							<div
+								style={{
+									fontSize: 12,
+									color: "#8c8c8c",
+									marginBottom: 16,
+								}}
+							>
+								{t(
+									"modal.vacancy.paymentNotice",
+									`Paid positions require a listing fee of €${PAID_VACANCY_FEE} to publish.`,
+								)}
+							</div>
+							<Row gutter={[16, 16]}>
+								<Col span={12}>
+									<Form.Item
+										name="paymentAmount"
+										label={t("Amount (EUR)")}
+										wrapperCol={{ span: 24 }}
+										style={{ marginBottom: 0 }}
+										rules={[{ required: true }]}
+									>
+										<InputNumber
+											min={1}
+											prefix="€"
+											style={{ width: "100%", height: 40 }}
+											placeholder={t("Enter amount")}
+										/>
+									</Form.Item>
+								</Col>
+								<Col span={12}>
+									<Form.Item
+										name="paymentRateType"
+										label={t("Rate type")}
+										wrapperCol={{ span: 24 }}
+										style={{ marginBottom: 0 }}
+										rules={[{ required: true }]}
+									>
+										<Select
+											style={{ width: "100%", height: 40 }}
+											placeholder={t("Select rate type")}
+											options={[
+												{ label: t("Hourly"), value: "Hourly" },
+												{ label: t("One-time"), value: "OneTime" },
+												{ label: t("Monthly"), value: "Monthly" },
+											]}
+										/>
+									</Form.Item>
+								</Col>
+							</Row>
+						</Card>
 					)}
 
 					{!!showPromiseFields && (
 						<Card
-							className={styles.promiseCard}
+							className={styles.optionCard}
 							title={t("Equity Promise")}
 							extra={
 								<Popconfirm
@@ -344,7 +444,7 @@ const VacancyModal = ({
 										type="text"
 										size="small"
 										danger
-										icon={<DeleteOutlined />}
+										icon={<IconTrash size={16} />}
 										onClick={(e) => {
 											e.stopPropagation();
 										}}
