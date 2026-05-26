@@ -12,6 +12,12 @@ export default auth((req) => {
 		return;
 	}
 
+	const localeMatch = req.nextUrl.pathname.match(/^\/(en|ru)(\/.*)?$/);
+	if (localeMatch) {
+		const rest = localeMatch[2] || "/";
+		return NextResponse.redirect(new URL(rest, req.url));
+	}
+
 	if (!session) {
 		const signInUrl = new URL("/signin", req.url);
 		signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
@@ -52,6 +58,8 @@ export default auth((req) => {
 
 export const config = {
 	matcher: [
+		"/en/:path*",
+		"/ru/:path*",
 		"/registration/onboarding",
 		"/hub",
 		"/hub/:path*",

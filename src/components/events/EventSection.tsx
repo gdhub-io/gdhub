@@ -5,7 +5,7 @@ import { Col, Row } from "antd";
 import axios from "axios";
 import qs from "qs";
 import type React from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface EventSectionProps {
 	title: string;
@@ -41,37 +41,36 @@ export const EventSection = ({
 		isFetched,
 	} = useQuery<any[]>({
 		queryKey: ["events", eventTypes, timeStatus],
-		queryFn: () => {
-			return new Promise((resolve) => {
-				setTimeout(() => {
-					axios
-						.get(`/api/events`, {
-							params: {
-								type: eventTypes,
-								timeStatus,
-								withDates: true,
-								lang: getLanguage(),
-							},
-							paramsSerializer: (params) =>
-								qs.stringify(params, { arrayFormat: "repeat" }),
-						})
-						.then((res) => resolve(res.data));
-				}, 5000);
-			});
-		},
+		queryFn: () =>
+			axios
+				.get(`/api/events`, {
+					params: {
+						type: eventTypes,
+						timeStatus,
+						withDates: true,
+						lang: getLanguage(),
+					},
+					paramsSerializer: (params) =>
+						qs.stringify(params, { arrayFormat: "repeat" }),
+				})
+				.then((res) => res.data),
 	});
+
+	const onLoadedRef = useRef(onLoaded);
+	onLoadedRef.current = onLoaded;
 
 	useEffect(() => {
 		if (isFetched && events?.length) {
-			onLoaded();
+			onLoadedRef.current();
 		}
-	}, [events?.length, isFetched, onLoaded]);
+	}, [events?.length, isFetched]);
+
+	const onLoadingChangeRef = useRef(onLoadingChange);
+	onLoadingChangeRef.current = onLoadingChange;
 
 	useEffect(() => {
-		if (typeof onLoadingChange === "function") {
-			onLoadingChange(isLoading);
-		}
-	}, [isLoading, onLoadingChange]);
+		onLoadingChangeRef.current?.(isLoading);
+	}, [isLoading]);
 
 	if (!events?.length) return null;
 
