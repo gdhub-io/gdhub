@@ -46939,6 +46939,3591 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "zgj5X",
+      "x": 18845,
+      "y": 40,
+      "name": "Payment Modal — Loading",
+      "clip": true,
+      "width": 500,
+      "height": 600,
+      "fill": "#0F0F0F40",
+      "padding": 32,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "WcYXa",
+          "name": "dialog",
+          "width": 400,
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F66",
+            "offset": {
+              "x": 0,
+              "y": 24
+            },
+            "blur": 60
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "CGKpu",
+              "name": "header",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "S2fKkE",
+                  "name": "Title",
+                  "fill": "#0F0F0F",
+                  "content": "Complete Payment",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "npVjD",
+              "name": "body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": 24,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "h2l2RM",
+                  "name": "paddle-form-loading",
+                  "width": "fill_container",
+                  "height": 200,
+                  "fill": "#FAFAFA",
+                  "cornerRadius": 8,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JoSWw",
+                      "name": "Loading text",
+                      "fill": "#6B7280",
+                      "content": "Loading payment form...",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "U9qY4s",
+              "name": "footer",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "top": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "gap": 10,
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "gr9on",
+                  "name": "cancel-button",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#D4D4D8"
+                  },
+                  "padding": [
+                    10,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "I5wiW",
+                      "name": "label",
+                      "fill": "#0F0F0F",
+                      "content": "Cancel",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "s49vn",
+      "x": 19425,
+      "y": 40,
+      "name": "Payment Modal — Active Form",
+      "clip": true,
+      "width": 500,
+      "height": 650,
+      "fill": "#0F0F0F40",
+      "padding": 32,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "NP0qU",
+          "name": "dialog",
+          "width": 420,
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F66",
+            "offset": {
+              "x": 0,
+              "y": 24
+            },
+            "blur": 60
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "TfXyM",
+              "name": "header",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "EvTKC",
+                  "name": "title-section",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "rZwqZ",
+                      "name": "Title",
+                      "fill": "#0F0F0F",
+                      "content": "Complete Payment",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "z9IGMo",
+                      "name": "Subtitle",
+                      "fill": "#9CA3AF",
+                      "content": "Secure payment powered by Paddle",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "SyiN0",
+                  "name": "close-button",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#F4F4F5",
+                  "cornerRadius": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "PaoOr",
+                      "name": "icon",
+                      "fill": "#6B7280",
+                      "content": "×",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "dFfej",
+              "name": "body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "uUUdm",
+                  "name": "order-summary-section",
+                  "width": "fill_container",
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "#E4E4E7"
+                  },
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    0,
+                    0,
+                    16,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zHxAM",
+                      "name": "summary-label",
+                      "fill": "#6B7280",
+                      "content": "ORDER SUMMARY",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "yi7se",
+                      "name": "items",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "UhzOb",
+                          "name": "item",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "B354o",
+                              "name": "item-name",
+                              "fill": "#374151",
+                              "content": "Job posting",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ZsHp7",
+                              "name": "item-price",
+                              "fill": "#0F0F0F",
+                              "content": "$49.00",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Xtyqh",
+                      "name": "total",
+                      "width": "fill_container",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "top": 1
+                        },
+                        "fill": "#E4E4E7"
+                      },
+                      "padding": [
+                        12,
+                        0,
+                        0,
+                        0
+                      ],
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "wecQz",
+                          "name": "total-label",
+                          "fill": "#0F0F0F",
+                          "content": "Total",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "cHz6n",
+                          "name": "total-amount",
+                          "fill": "#0F0F0F",
+                          "content": "$49.00",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "a1G0Jl",
+                  "name": "paddle-checkout-form",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": [
+                    16,
+                    0,
+                    0,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "W4hNZT",
+                      "name": "email-group",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "iTpYQ",
+                          "name": "label",
+                          "fill": "#374151",
+                          "content": "Email",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aKy0J",
+                          "name": "input",
+                          "width": "fill_container",
+                          "height": 40,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 6,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#D1D5DB"
+                          },
+                          "padding": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "oZdlk",
+                              "name": "placeholder",
+                              "fill": "#9CA3AF",
+                              "content": "your@email.com",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "w4Q6B",
+                      "name": "card-group",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qc8Ei",
+                          "name": "label",
+                          "fill": "#374151",
+                          "content": "Card details",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "g8YsFa",
+                          "name": "card-input",
+                          "width": "fill_container",
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 6,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#D1D5DB"
+                          },
+                          "gap": 8,
+                          "padding": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 4,
+                              "id": "dGZHq",
+                              "name": "card-icons",
+                              "fill": "#F3F4F6",
+                              "width": 80,
+                              "height": 24
+                            },
+                            {
+                              "type": "text",
+                              "id": "jH3Ym",
+                              "name": "placeholder",
+                              "fill": "#9CA3AF",
+                              "content": "1234 5678 9012 3456",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "gWnvk",
+                      "name": "expiry-cvv-row",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Rp4QQ",
+                          "name": "expiry-group",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Lqhxc",
+                              "name": "label",
+                              "fill": "#374151",
+                              "content": "Expires",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "TkdWI",
+                              "name": "input",
+                              "width": "fill_container",
+                              "height": 40,
+                              "fill": "#FFFFFF",
+                              "cornerRadius": 6,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#D1D5DB"
+                              },
+                              "padding": 12,
+                              "alignItems": "center"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "TXtZw",
+                          "name": "cvv-group",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zcVOF",
+                              "name": "label",
+                              "fill": "#374151",
+                              "content": "CVV",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "u07hO",
+                              "name": "input",
+                              "width": "fill_container",
+                              "height": 40,
+                              "fill": "#FFFFFF",
+                              "cornerRadius": 6,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "#D1D5DB"
+                              },
+                              "padding": 12,
+                              "alignItems": "center"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZKgdQ",
+                      "name": "address-group",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "VrgPj",
+                          "name": "label",
+                          "fill": "#374151",
+                          "content": "Billing country",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "w7Y0zL",
+                          "name": "input",
+                          "width": "fill_container",
+                          "height": 40,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 6,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#D1D5DB"
+                          },
+                          "padding": 12,
+                          "justifyContent": "space_between",
+                          "alignItems": "center"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "XFIrW",
+                      "name": "security-note",
+                      "fill": "#9CA3AF",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "🔒 Your payment is secure. Paddle handles payment processing with PCI DSS compliance.",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "AYhM9",
+      "x": 20005,
+      "y": 40,
+      "name": "Payment Modal — Success",
+      "clip": true,
+      "width": 500,
+      "height": 600,
+      "fill": "#0F0F0F40",
+      "padding": 32,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "jlCev",
+          "name": "dialog",
+          "width": 400,
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F66",
+            "offset": {
+              "x": 0,
+              "y": 24
+            },
+            "blur": 60
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "fCf1s",
+              "name": "header",
+              "width": "fill_container",
+              "layout": "vertical",
+              "padding": [
+                32,
+                24,
+                0,
+                24
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "KBogy",
+                  "name": "success-icon",
+                  "width": 64,
+                  "height": 64,
+                  "fill": "#ECFDF5",
+                  "cornerRadius": 32,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "vAqXR",
+                      "name": "checkmark",
+                      "fill": "#10B981",
+                      "content": "✓",
+                      "fontFamily": "Inter",
+                      "fontSize": 32,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "DycZP",
+              "name": "body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 24,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yVDfo",
+                  "name": "success-title",
+                  "fill": "#0F0F0F",
+                  "content": "Payment Successful!",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "AORZ5",
+                  "name": "success-message",
+                  "fill": "#6B7280",
+                  "textGrowth": "fixed-width",
+                  "width": 350,
+                  "content": "Your job posting has been published and is now live for candidates to see",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LWEyB",
+              "name": "footer",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "top": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "gap": 10,
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "D6fEC",
+                  "name": "close-button",
+                  "fill": "#0F0F0F",
+                  "cornerRadius": 8,
+                  "padding": [
+                    10,
+                    24
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gvJLC",
+                      "name": "label",
+                      "fill": "#FFFFFF",
+                      "content": "Done",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "BkfbN",
+      "x": 20585,
+      "y": 40,
+      "name": "Payment Modal — Error",
+      "clip": true,
+      "width": 500,
+      "height": 600,
+      "fill": "#0F0F0F40",
+      "padding": 32,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "siqm6",
+          "name": "dialog",
+          "width": 400,
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F66",
+            "offset": {
+              "x": 0,
+              "y": 24
+            },
+            "blur": 60
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Q536XU",
+              "name": "header",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "O18bS0",
+                  "name": "title",
+                  "fill": "#0F0F0F",
+                  "content": "Payment Failed",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "iKnYs",
+                  "name": "close-button",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#F4F4F5",
+                  "cornerRadius": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "m85cOz",
+                      "name": "icon",
+                      "fill": "#6B7280",
+                      "content": "×",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "n8oJev",
+              "name": "body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 24,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "DdhLE",
+                  "name": "error-icon",
+                  "width": 64,
+                  "height": 64,
+                  "fill": "#FEF2F2",
+                  "cornerRadius": 32,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "VveW9",
+                      "name": "x-mark",
+                      "fill": "#DC2626",
+                      "content": "✕",
+                      "fontFamily": "Inter",
+                      "fontSize": 32,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DX9OA",
+                  "name": "message-container",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "boiiW",
+                      "name": "error-title",
+                      "fill": "#0F0F0F",
+                      "content": "Payment Could Not Be Processed",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "XiK1C",
+                      "name": "error-description",
+                      "fill": "#6B7280",
+                      "textGrowth": "fixed-width",
+                      "width": 340,
+                      "content": "Your payment was declined by your bank or card issuer. Please try again with a different payment method or contact your bank.",
+                      "textAlign": "center",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "G6ica",
+                  "name": "error-details",
+                  "width": "fill_container",
+                  "fill": "#FEF2F2",
+                  "cornerRadius": 6,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#FECACA"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sldzW",
+                      "name": "error-code-label",
+                      "fill": "#7F1D1D",
+                      "content": "Error Code: card_declined",
+                      "fontFamily": "Inter",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hE3Fx",
+                      "name": "error-code-value",
+                      "fill": "#7F1D1D",
+                      "content": "Your card was declined. Please check your card details or contact your bank.",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "lvsMh",
+              "name": "footer",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "top": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "gap": 10,
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Q5Vk55",
+                  "name": "retry-button",
+                  "fill": "#0F0F0F",
+                  "cornerRadius": 8,
+                  "padding": [
+                    10,
+                    24
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "qxgGJ",
+                      "name": "label",
+                      "fill": "#FFFFFF",
+                      "content": "Try Again",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "vSvdY",
+      "x": 21165,
+      "y": 40,
+      "name": "Payment Modal — Select Method",
+      "clip": true,
+      "width": 520,
+      "height": 700,
+      "fill": "#0F0F0F40",
+      "padding": 32,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "H11B0",
+          "name": "dialog",
+          "width": 420,
+          "fill": "#FFFFFF",
+          "cornerRadius": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F66",
+            "offset": {
+              "x": 0,
+              "y": 24
+            },
+            "blur": 60
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Q4AU0H",
+              "name": "header",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "D8RWiQ",
+                  "name": "title",
+                  "fill": "#0F0F0F",
+                  "content": "Choose Payment Method",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "B1b5fF",
+                  "name": "close-button",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#F4F4F5",
+                  "cornerRadius": 8,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "NPZFR",
+                      "name": "icon",
+                      "fill": "#6B7280",
+                      "content": "×",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "eHq48",
+              "name": "body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "VGJJy",
+                  "name": "price-summary",
+                  "width": "fill_container",
+                  "fill": "#F9FAFB",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E5E7EB"
+                  },
+                  "padding": 16,
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "fsoPt",
+                      "name": "label",
+                      "fill": "#374151",
+                      "content": "Job posting fee",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "NbKmO",
+                      "name": "price",
+                      "fill": "#0F0F0F",
+                      "content": "$49.00",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "B6zWW",
+                  "name": "methods",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "foeDC",
+                      "name": "credit-card-method",
+                      "width": "fill_container",
+                      "fill": "#F9FAFB",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#E5E7EB"
+                      },
+                      "gap": 12,
+                      "padding": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Qpdsd",
+                          "name": "radio-button",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#0F0F0F",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "u9hAR",
+                              "name": "radio-dot",
+                              "width": 10,
+                              "height": 10,
+                              "fill": "#FFFFFF",
+                              "cornerRadius": 5
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "tDtNZ",
+                          "name": "card-info",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "rJmLK",
+                              "name": "method-name",
+                              "fill": "#0F0F0F",
+                              "content": "Credit or Debit Card",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "IDpyT",
+                              "name": "method-description",
+                              "fill": "#9CA3AF",
+                              "content": "Visa, Mastercard, Amex, etc.",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "esFC7",
+                      "name": "paypal-method",
+                      "width": "fill_container",
+                      "fill": "#FAFAFA",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "#E4E4E7"
+                      },
+                      "gap": 12,
+                      "padding": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TdZ7H",
+                          "name": "radio-button",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#E5E7EB",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "iD2oM",
+                              "name": "radio-dot",
+                              "width": 0,
+                              "height": 0,
+                              "fill": "#00000000"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "d1wyD",
+                          "name": "paypal-info",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "mQp2o",
+                              "name": "method-name",
+                              "fill": "#0F0F0F",
+                              "content": "PayPal",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "t88Qt",
+                              "name": "method-description",
+                              "fill": "#9CA3AF",
+                              "content": "Fast and secure payment with PayPal",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "b1lyX",
+              "name": "footer",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "top": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "gap": 10,
+              "padding": [
+                20,
+                24
+              ],
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "P7NzaT",
+                  "name": "cancel-button",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#D4D4D8"
+                  },
+                  "padding": [
+                    10,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tluCN",
+                      "name": "label",
+                      "fill": "#0F0F0F",
+                      "content": "Cancel",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "AWxpn",
+                  "name": "continue-button",
+                  "fill": "#0F0F0F",
+                  "cornerRadius": 8,
+                  "padding": [
+                    10,
+                    24
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hOBaZ",
+                      "name": "label",
+                      "fill": "#FFFFFF",
+                      "content": "Continue",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "v9GPX",
+      "x": 40,
+      "y": 12542,
+      "name": "Payment Flow — Documentation",
+      "width": 800,
+      "height": 400,
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "UmfE4",
+          "name": "title",
+          "fill": "#0F0F0F",
+          "content": "Payment Flow for Paid Job Postings",
+          "fontFamily": "Inter",
+          "fontSize": 24,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "iBLhk",
+          "name": "description",
+          "fill": "#6B7280",
+          "textGrowth": "fixed-width",
+          "width": 700,
+          "content": "When a user creates a paid job posting (job posting type = 'paid'), they see 'Pay & Publish' button. On click, the following flow is triggered:",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "TyuIo",
+          "name": "steps",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "qLGG6",
+              "name": "step-1",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "UGbxz",
+                  "name": "badge",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#0F0F0F",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "U1WgJ",
+                      "name": "number",
+                      "fill": "#FFFFFF",
+                      "content": "1",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "SXcPC",
+                  "name": "text",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OQtWh",
+                      "name": "step-title",
+                      "fill": "#0F0F0F",
+                      "content": "Select Payment Method",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "MGnl3",
+                      "name": "step-desc",
+                      "fill": "#9CA3AF",
+                      "content": "User chooses between Credit Card, PayPal, or other options",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hjMeV",
+              "name": "step-2",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AByad",
+                  "name": "badge",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#0F0F0F",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hNhQ5",
+                      "name": "number",
+                      "fill": "#FFFFFF",
+                      "content": "2",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A1MLk",
+                  "name": "text",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "X1jdBw",
+                      "name": "step-title",
+                      "fill": "#0F0F0F",
+                      "content": "Loading State",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "DQGlR",
+                      "name": "step-desc",
+                      "fill": "#9CA3AF",
+                      "content": "Paddle payment form is loading in the background",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "z8t12H",
+              "name": "step-3",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "KnSpz",
+                  "name": "badge",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#0F0F0F",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "qkwdQ",
+                      "name": "number",
+                      "fill": "#FFFFFF",
+                      "content": "3",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RyTp1",
+                  "name": "text",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "U3i2LG",
+                      "name": "step-title",
+                      "fill": "#0F0F0F",
+                      "content": "Enter Payment Details",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "X0l628",
+                      "name": "step-desc",
+                      "fill": "#9CA3AF",
+                      "content": "Paddle form embeds securely with card/PayPal details",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "p4curJ",
+              "name": "step-4",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "WjZdP",
+                  "name": "badge",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#0F0F0F",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "DjKY3",
+                      "name": "number",
+                      "fill": "#FFFFFF",
+                      "content": "4",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "pwmfV",
+                  "name": "text",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wyrsY",
+                      "name": "step-title",
+                      "fill": "#0F0F0F",
+                      "content": "Process Payment",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "MGKFS",
+                      "name": "step-desc",
+                      "fill": "#9CA3AF",
+                      "content": "Payment is processed through Paddle",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "E3HXxj",
+              "name": "outcomes-label",
+              "fill": "#6B7280",
+              "content": "Outcomes:",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "pkEdX",
+              "name": "outcome-success",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "PAQwn",
+                  "name": "badge",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#ECFDF5",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Ginfr",
+                      "name": "checkmark",
+                      "fill": "#10B981",
+                      "content": "✓",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Xp2ye",
+                  "name": "text",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "H1Srsa",
+                      "name": "title",
+                      "fill": "#0F0F0F",
+                      "content": "Success (5a)",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ecspS",
+                      "name": "desc",
+                      "fill": "#9CA3AF",
+                      "content": "Payment confirmed → Job posting published → User sees success modal with job details",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YZkU8",
+              "name": "outcome-error",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ehujZ",
+                  "name": "badge",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#FEF2F2",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sruWX",
+                      "name": "x-mark",
+                      "fill": "#DC2626",
+                      "content": "✕",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "P8BEYW",
+                  "name": "text",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "t2kMQ",
+                      "name": "title",
+                      "fill": "#0F0F0F",
+                      "content": "Error (5b)",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "M8ZL2",
+                      "name": "desc",
+                      "fill": "#9CA3AF",
+                      "content": "Payment declined → User sees error details → Can retry with different payment method or cancel",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "vFTJC",
+      "x": 40,
+      "y": 13022,
+      "name": "Payment Implementation — Specifications",
+      "width": 900,
+      "height": 500,
+      "layout": "vertical",
+      "gap": 20,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "WlAZl",
+          "name": "title",
+          "fill": "#0F0F0F",
+          "content": "Implementation Specifications",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "mZIrw",
+          "name": "specs",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "sp5X9",
+              "name": "section-trigger",
+              "width": "fill_container",
+              "fill": "#F9FAFB",
+              "cornerRadius": 6,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E5E7EB"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "osJ66",
+                  "name": "title",
+                  "fill": "#0F0F0F",
+                  "content": "1. Payment Trigger",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Sde9a",
+                  "name": "content",
+                  "fill": "#6B7280",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "When user clicks 'Pay & Publish' on vacancy form with pricing = true, show modal flow starting with method selection",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yGgNJ",
+              "name": "section-paddle",
+              "width": "fill_container",
+              "fill": "#F9FAFB",
+              "cornerRadius": 6,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E5E7EB"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "SwEpK",
+                  "name": "title",
+                  "fill": "#0F0F0F",
+                  "content": "2. Paddle Form Embedding",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "IgOqd",
+                  "name": "content",
+                  "fill": "#6B7280",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Paddle checkout form is embedded in the 'Active Form' modal via iframe. Monitor paddleInstance.checkout() events for success/error",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vv8Xk",
+              "name": "section-success",
+              "width": "fill_container",
+              "fill": "#ECFDF5",
+              "cornerRadius": 6,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1FAE5"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "vBr5p",
+                  "name": "title",
+                  "fill": "#065F46",
+                  "content": "3. On Payment Success",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "sgpnT",
+                  "name": "content",
+                  "fill": "#047857",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Send POST /api/vacancies with payment_id, transaction_id, and status='published'. Close all modals and redirect to vacancy details",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "La1RV",
+              "name": "section-error",
+              "width": "fill_container",
+              "fill": "#FEF2F2",
+              "cornerRadius": 6,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#FECACA"
+              },
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "W03JI",
+                  "name": "title",
+                  "fill": "#7F1D1D",
+                  "content": "4. On Payment Error",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "nvIju",
+                  "name": "content",
+                  "fill": "#B91C1C",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Display error modal with error_code and message. User can close and retry, or select different payment method. Draft is saved locally",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "tATAz",
+      "x": 40,
+      "y": 13602,
+      "name": "Payment Flow — Paddle Integration Guide",
+      "width": 1000,
+      "height": 450,
+      "layout": "vertical",
+      "gap": 20,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "YMT2t",
+          "name": "title",
+          "fill": "#0F0F0F",
+          "content": "Paddle Integration Guide",
+          "fontFamily": "Inter",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "y4es7H",
+          "name": "content",
+          "width": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "DhoRl",
+              "name": "implementation",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "RjiHT",
+                  "name": "section-title",
+                  "fill": "#0F0F0F",
+                  "content": "Using Paddle.js Inline Checkout",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "SCusA",
+                  "name": "points",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "uztAQ",
+                      "name": "point",
+                      "fill": "#6B7280",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "1. Install @paddle/paddle-js npm package",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Upyrb",
+                      "name": "point",
+                      "fill": "#6B7280",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "2. Initialize Paddle with your client token",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "vVlZ1",
+                      "name": "point",
+                      "fill": "#6B7280",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "3. Use Paddle.Checkout.open() with configuration",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YUl5g",
+                      "name": "point",
+                      "fill": "#6B7280",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "4. Embed checkout form in modal with layout options",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mvqWX",
+                      "name": "point",
+                      "fill": "#6B7280",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "5. Handle success/error callbacks from Paddle",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "g0nhv",
+              "name": "features",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Ddhyw",
+                  "name": "section-title",
+                  "fill": "#0F0F0F",
+                  "content": "Paddle Handles",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "e9hqef",
+                  "name": "features-list",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "my4uM",
+                      "name": "feature",
+                      "fill": "#10B981",
+                      "content": "✓ Payment form UI and validation",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "fPIh6",
+                      "name": "feature",
+                      "fill": "#10B981",
+                      "content": "✓ Card tokenization and encryption",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hEW94",
+                      "name": "feature",
+                      "fill": "#10B981",
+                      "content": "✓ Tax calculation (auto location detect)",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mK3cY",
+                      "name": "feature",
+                      "fill": "#10B981",
+                      "content": "✓ Currency conversion",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "CYwHy",
+                      "name": "feature",
+                      "fill": "#10B981",
+                      "content": "✓ PCI DSS compliance",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "HOHvk",
+                      "name": "feature",
+                      "fill": "#10B981",
+                      "content": "✓ Multiple payment methods (card, PayPal, etc)",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "dalEk",
+          "name": "note-title",
+          "fill": "#1E40AF",
+          "content": "Key Implementation Points",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "nCEqJ",
+          "name": "note-content",
+          "fill": "#1E3A8A",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Modal shows loading → Active form (Paddle Inline Checkout embedded) → Success/Error. On success, send payment_id & transaction_id to backend. Paddle webhooks confirm transactions separately.",
+          "fontFamily": "Inter",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "tWM4M",
+          "name": "note-section",
+          "width": "fill_container",
+          "fill": "#FEF3C7",
+          "cornerRadius": 8,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#FCD34D"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "q8ru5",
+              "name": "note-title",
+              "fill": "#92400E",
+              "content": "💡 Implementation Tips",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "R2aBs",
+              "name": "note-content",
+              "fill": "#B45309",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Modal sequence: loading → active form (Paddle Inline Checkout embedded) → success/error. On success, POST to /api/vacancies with payment_id from Paddle. Use webhooks for transaction confirmation.",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "vyEn5",
+      "x": 40,
+      "y": 14132,
+      "name": "Payment Modals — Summary",
+      "width": 1200,
+      "height": 350,
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "frame",
+          "id": "lGNDe",
+          "name": "header",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "GoneL",
+              "name": "title",
+              "fill": "#0F0F0F",
+              "content": "Payment Modals for Paid Job Postings",
+              "fontFamily": "Inter",
+              "fontSize": 24,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "zSGIc",
+              "name": "subtitle",
+              "fill": "#6B7280",
+              "content": "Complete payment flow using Paddle.js Inline Checkout — 5 modal states + documentation",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "P7viTD",
+          "name": "modals-grid",
+          "width": "fill_container",
+          "gap": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ckFP2",
+              "name": "modal-1. Select Method",
+              "width": "fill_container",
+              "fill": "#E0E7FF",
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "X8gK3",
+                  "name": "name",
+                  "fill": "#0F0F0F",
+                  "content": "1. Select Method",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Bgjql",
+                  "name": "desc",
+                  "fill": "#6B7280",
+                  "content": "Choose payment method",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gjMYe",
+              "name": "modal-2. Loading",
+              "width": "fill_container",
+              "fill": "#F0FDFA",
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "B0YxEH",
+                  "name": "name",
+                  "fill": "#0F0F0F",
+                  "content": "2. Loading",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "pWP6U",
+                  "name": "desc",
+                  "fill": "#6B7280",
+                  "content": "Paddle form loading",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BwAF5",
+              "name": "modal-3. Active Form",
+              "width": "fill_container",
+              "fill": "#ECFDF5",
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mRZM4",
+                  "name": "name",
+                  "fill": "#0F0F0F",
+                  "content": "3. Active Form",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "pSYJX",
+                  "name": "desc",
+                  "fill": "#6B7280",
+                  "content": "Paddle Inline Checkout",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zYC99",
+              "name": "modal-4. Success",
+              "width": "fill_container",
+              "fill": "#DBEAFE",
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ET5qM",
+                  "name": "name",
+                  "fill": "#0F0F0F",
+                  "content": "4. Success",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "H2Dbw",
+                  "name": "desc",
+                  "fill": "#6B7280",
+                  "content": "Payment confirmed",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "JHPub",
+              "name": "modal-5. Error",
+              "width": "fill_container",
+              "fill": "#FEE2E2",
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "m2MDy8",
+                  "name": "name",
+                  "fill": "#0F0F0F",
+                  "content": "5. Error",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "h61Gsx",
+                  "name": "desc",
+                  "fill": "#6B7280",
+                  "content": "Payment failed",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "gxpTp",
+          "name": "resources",
+          "width": "fill_container",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "w0aBc3",
+              "name": "resources-label",
+              "fill": "#6B7280",
+              "content": "📚 Resources:",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "k1Cu5",
+              "name": "resource-Flow Documentation",
+              "fill": "#F3F4F6",
+              "cornerRadius": 6,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "padding": [
+                8,
+                12
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "LgzaI",
+                  "name": "label",
+                  "fill": "#374151",
+                  "content": "Flow Documentation",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "y3bW4j",
+              "name": "resource-Implementation Specs",
+              "fill": "#F3F4F6",
+              "cornerRadius": 6,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "padding": [
+                8,
+                12
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dYVdw",
+                  "name": "label",
+                  "fill": "#374151",
+                  "content": "Implementation Specs",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "f1tjZE",
+              "name": "resource-Paddle Integration Guide",
+              "fill": "#F3F4F6",
+              "cornerRadius": 6,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "padding": [
+                8,
+                12
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "h2MKE",
+                  "name": "label",
+                  "fill": "#374151",
+                  "content": "Paddle Integration Guide",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "G5iaOy",
+      "x": 21765,
+      "y": 40,
+      "name": "Payment Modal — Express Checkout (Mobile)",
+      "clip": true,
+      "width": 400,
+      "height": 700,
+      "fill": "#0F0F0F40",
+      "justifyContent": "end",
+      "alignItems": "end",
+      "children": [
+        {
+          "type": "frame",
+          "id": "m8Sj4",
+          "name": "drawer",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": [
+            16,
+            16,
+            0,
+            0
+          ],
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F33",
+            "offset": {
+              "x": 0,
+              "y": -12
+            },
+            "blur": 40
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "UuaRB",
+              "name": "drawer-header",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                16,
+                24
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "QUcZL",
+                  "name": "drag-handle",
+                  "fill": "#E5E7EB",
+                  "width": 40,
+                  "height": 4
+                },
+                {
+                  "type": "text",
+                  "id": "PW2bT",
+                  "name": "title",
+                  "fill": "#0F0F0F",
+                  "content": "Complete Payment",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "wFs6U",
+              "name": "body",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "top": 1
+                },
+                "fill": "#F0F0F0"
+              },
+              "layout": "vertical",
+              "gap": 16,
+              "padding": [
+                0,
+                24,
+                24,
+                24
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Rzg9S",
+                  "name": "order-summary",
+                  "width": "fill_container",
+                  "fill": "#FAFAFA",
+                  "cornerRadius": 6,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E4E4E7"
+                  },
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "P0pZH",
+                      "name": "item",
+                      "fill": "#374151",
+                      "content": "Job posting — 30 days",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ywAw4",
+                      "name": "total",
+                      "width": "fill_container",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "top": 1
+                        },
+                        "fill": "#E4E4E7"
+                      },
+                      "padding": [
+                        8,
+                        0,
+                        0,
+                        0
+                      ],
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "gnNS7",
+                          "name": "label",
+                          "fill": "#0F0F0F",
+                          "content": "Total",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Jf5Zw",
+                          "name": "amount",
+                          "fill": "#0F0F0F",
+                          "content": "$49.00",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A13EDv",
+                  "name": "plan-section",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "qvhTw",
+                      "name": "label",
+                      "fill": "#6B7280",
+                      "content": "Payment Method",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "k0yWRf",
+                      "name": "options",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ilCkK",
+                          "name": "apple-pay",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "#000000",
+                          "cornerRadius": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Cp0Ds",
+                              "name": "label",
+                              "fill": "#FFFFFF",
+                              "content": "Pay with Apple Pay",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XDQrv",
+                          "name": "google-pay",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#D1D5DB"
+                          },
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Df5kb",
+                              "name": "label",
+                              "fill": "#0F0F0F",
+                              "content": "Pay with Google Pay",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "E3zTZ",
+                          "name": "card-option",
+                          "width": "fill_container",
+                          "height": 48,
+                          "fill": "#FAFAFA",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#E5E7EB"
+                          },
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "jh56g",
+                              "name": "label",
+                              "fill": "#374151",
+                              "content": "Use a debit or credit card",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "bKzfy",
+                  "name": "security-badge",
+                  "fill": "#9CA3AF",
+                  "content": "🔒 Powered by Paddle • Secure & encrypted",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "P2g1k",
+      "x": 40,
+      "y": 14562,
+      "name": "Paddle Components — Inline vs Express Checkout",
+      "width": 1100,
+      "height": 500,
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "XaIih",
+          "name": "title",
+          "fill": "#0F0F0F",
+          "content": "Paddle Checkout Components: Inline vs Express",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "ifv7B",
+          "name": "table",
+          "width": "fill_container",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "BV1I6",
+              "name": "header",
+              "width": "fill_container",
+              "fill": "#F3F4F6",
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#D1D5DB"
+              },
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "oXydb",
+                  "name": "header-Feature",
+                  "fill": "#374151",
+                  "content": "Feature",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "ptxvW",
+                  "name": "header-Inline Checkout",
+                  "fill": "#374151",
+                  "content": "Inline Checkout",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "i2AP1",
+                  "name": "header-Express Checkout",
+                  "fill": "#374151",
+                  "content": "Express Checkout",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YojdW",
+              "name": "row-Layout",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#E5E7EB"
+              },
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "N3V0Wm",
+                  "name": "feature",
+                  "fill": "#0F0F0F",
+                  "content": "Layout",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "llUK8",
+                  "name": "inline",
+                  "fill": "#6B7280",
+                  "content": "Embedded in page/modal",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "palSH",
+                  "name": "express",
+                  "fill": "#6B7280",
+                  "content": "Drawer/bottom sheet (mobile)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "D6c9Jq",
+              "name": "row-Order Summary",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#E5E7EB"
+              },
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "zAkx8",
+                  "name": "feature",
+                  "fill": "#0F0F0F",
+                  "content": "Order Summary",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "G2eJT",
+                  "name": "inline",
+                  "fill": "#6B7280",
+                  "content": "Live sync with form",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "rMk5m",
+                  "name": "express",
+                  "fill": "#6B7280",
+                  "content": "Compact summary",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nfDZY",
+              "name": "row-Payment Methods",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#E5E7EB"
+              },
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "voPNj",
+                  "name": "feature",
+                  "fill": "#0F0F0F",
+                  "content": "Payment Methods",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "K82k81",
+                  "name": "inline",
+                  "fill": "#6B7280",
+                  "content": "Cards, PayPal, etc",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "VvViS",
+                  "name": "express",
+                  "fill": "#6B7280",
+                  "content": "Apple Pay, Google Pay, Cards",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Pwxym",
+              "name": "row-Device",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#E5E7EB"
+              },
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "U6M5m",
+                  "name": "feature",
+                  "fill": "#0F0F0F",
+                  "content": "Device",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "w3HiQ",
+                  "name": "inline",
+                  "fill": "#6B7280",
+                  "content": "Desktop/Tablet",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "ZAAX5",
+                  "name": "express",
+                  "fill": "#6B7280",
+                  "content": "Mobile-first",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "n6VXCx",
+              "name": "row-User Flow",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#E5E7EB"
+              },
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "vmPUm",
+                  "name": "feature",
+                  "fill": "#0F0F0F",
+                  "content": "User Flow",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "jm2if",
+                  "name": "inline",
+                  "fill": "#6B7280",
+                  "content": "Full form visible at once",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "O1d9d",
+                  "name": "express",
+                  "fill": "#6B7280",
+                  "content": "Plan selection → payment",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "T9C1qd",
+              "name": "row-Best For",
+              "width": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 1
+                },
+                "fill": "#E5E7EB"
+              },
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "V5Oat",
+                  "name": "feature",
+                  "fill": "#0F0F0F",
+                  "content": "Best For",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "UGVqM",
+                  "name": "inline",
+                  "fill": "#6B7280",
+                  "content": "Web/Desktop checkout",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "Pwtxe",
+                  "name": "express",
+                  "fill": "#6B7280",
+                  "content": "Mobile & fast checkout",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "EE1KZ",
+          "name": "recommendation",
+          "width": "fill_container",
+          "fill": "#DBEAFE",
+          "cornerRadius": 8,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#93C5FD"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "K3UNoR",
+              "name": "rec-title",
+              "fill": "#1E40AF",
+              "content": "✅ Рекомендация для GDHub",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "PUHxt",
+              "name": "rec-content",
+              "fill": "#1E3A8A",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Использовать Inline Checkout как основное решение (desktop/web). Express Checkout добавить для мобильной версии как drawer-стиль с Apple Pay/Google Pay для быстрой оплаты.",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "JYxlo",
+      "x": 40,
+      "y": 15142,
+      "name": "Design Inventory — Payment Modals Complete",
+      "width": 1000,
+      "height": 450,
+      "layout": "vertical",
+      "gap": 20,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "tRkVL",
+          "name": "title",
+          "fill": "#0F0F0F",
+          "content": "✅ Design Complete: Payment Flow for Paid Job Postings",
+          "fontFamily": "Inter",
+          "fontSize": 22,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "c1O57c",
+          "name": "content",
+          "width": "fill_container",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "a5CsJI",
+              "name": "left",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EVT9s",
+                  "name": "left-title",
+                  "fill": "#0F0F0F",
+                  "content": "🎨 Modal States Created",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "n5hwz",
+                  "name": "modal-1. Payment Modal — Select Method (payment method selection)",
+                  "fill": "#6B7280",
+                  "content": "1. Payment Modal — Select Method (payment method selection)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "NbX2S",
+                  "name": "modal-2. Payment Modal — Loading (Paddle form loading state)",
+                  "fill": "#6B7280",
+                  "content": "2. Payment Modal — Loading (Paddle form loading state)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "g4KY4",
+                  "name": "modal-3. Payment Modal — Active Form (Inline Checkout with form)",
+                  "fill": "#6B7280",
+                  "content": "3. Payment Modal — Active Form (Inline Checkout with form)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "lQ94T",
+                  "name": "modal-4. Payment Modal — Success (payment confirmed)",
+                  "fill": "#6B7280",
+                  "content": "4. Payment Modal — Success (payment confirmed)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "kI7I5",
+                  "name": "modal-5. Payment Modal — Error (payment declined)",
+                  "fill": "#6B7280",
+                  "content": "5. Payment Modal — Error (payment declined)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "bzKQY",
+                  "name": "modal-6. Payment Modal — Express Checkout (mobile drawer style)",
+                  "fill": "#6B7280",
+                  "content": "6. Payment Modal — Express Checkout (mobile drawer style)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "c4CdI",
+              "name": "right",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Y9IyvK",
+                  "name": "right-title",
+                  "fill": "#0F0F0F",
+                  "content": "📚 Documentation Created",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "TAci5",
+                  "name": "doc-✓ Payment Flow Documentation (5-step process)",
+                  "fill": "#10B981",
+                  "content": "✓ Payment Flow Documentation (5-step process)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "IWvJ0",
+                  "name": "doc-✓ Implementation Specifications (backend integration)",
+                  "fill": "#10B981",
+                  "content": "✓ Implementation Specifications (backend integration)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "f5no4",
+                  "name": "doc-✓ Paddle Integration Guide (SDK usage)",
+                  "fill": "#10B981",
+                  "content": "✓ Paddle Integration Guide (SDK usage)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "UKaEL",
+                  "name": "doc-✓ Paddle Components Comparison (Inline vs Express)",
+                  "fill": "#10B981",
+                  "content": "✓ Paddle Components Comparison (Inline vs Express)",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "LEsmR",
+                  "name": "doc-✓ UI using Paddle.js ready-made components",
+                  "fill": "#10B981",
+                  "content": "✓ UI using Paddle.js ready-made components",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "X7slbq",
+                  "name": "doc-✓ Mobile & Desktop responsive layouts",
+                  "fill": "#10B981",
+                  "content": "✓ Mobile & Desktop responsive layouts",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "CoARt",
+          "name": "info-box",
+          "width": "fill_container",
+          "fill": "#F0FDF4",
+          "cornerRadius": 8,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": "#BBF7D0"
+          },
+          "layout": "vertical",
+          "gap": 8,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "aEJ3h",
+              "name": "info-title",
+              "fill": "#166534",
+              "content": "🚀 Ready for Development",
+              "fontFamily": "Inter",
+              "fontSize": 12,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "XkjiM",
+              "name": "info-content",
+              "fill": "#15803D",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Все компоненты спроектированы на основе готовых Paddle.js UI решений. Используется Inline Checkout для web и Express Checkout для мобильных. Flow: Select Method → Loading → Active Form → Success/Error.",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

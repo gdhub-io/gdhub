@@ -16,7 +16,9 @@ import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useContext, useState } from "react";
+
 import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import VacancyModal from "@/components/modals/VacancyModal";
@@ -37,6 +39,8 @@ interface Vacancy {
 const MyProjectVacancies = () => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
+	const params = useParams();
+	const projectSlug = params?.slug as string | undefined;
 	const contextProject = useContext(ProjectContext)?.contextProject;
 	const isProjectArchived =
 		!contextProject || !!contextProject.isProjectArchived;
@@ -222,6 +226,7 @@ const MyProjectVacancies = () => {
 					<VacancyModal
 						teamId={contextProject?.team?.id}
 						projectId={contextProject?.id}
+						projectSlug={projectSlug}
 						vacancyId={selectedVacancyId}
 						open={showVacancyModal}
 						onCancel={() => {

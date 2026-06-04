@@ -25,6 +25,11 @@ const CreateVacancySchema = z.object({
 	teamId: z.string(),
 	promisePercentage: z.number().nullable().optional(),
 	promiseStepId: z.string().nullable().optional(),
+	paymentAmount: z.number().nullable().optional(),
+	paymentRateType: z
+		.enum(["Hourly", "OneTime", "Monthly"])
+		.nullable()
+		.optional(),
 });
 
 const UpdateVacancySchema = z.object({
@@ -40,6 +45,11 @@ const UpdateVacancySchema = z.object({
 	finishedAt: z.string().optional(),
 	promisePercentage: z.number().nullable().optional(),
 	promiseStepId: z.string().nullable().optional(),
+	paymentAmount: z.number().nullable().optional(),
+	paymentRateType: z
+		.enum(["Hourly", "OneTime", "Monthly"])
+		.nullable()
+		.optional(),
 });
 
 type IdQuery = z.infer<typeof IdQuerySchema>;
@@ -100,7 +110,13 @@ export const POST = withAuth({ mode: "user" })(
 		if (!currentUser) return apiError.unauthorized();
 		const data = body as CreateVacancyBody;
 		try {
-			const { promisePercentage, promiseStepId, ...vacancyData } = data;
+			const {
+				promisePercentage,
+				promiseStepId,
+				paymentAmount,
+				paymentRateType,
+				...vacancyData
+			} = data;
 			const hasEquityPromise = promisePercentage && promiseStepId;
 
 			const vacancy = await prisma.teamVacancy.create({
@@ -112,7 +128,13 @@ export const POST = withAuth({ mode: "user" })(
 				},
 			});
 
-			return json(vacancy);
+			return json({
+				...vacancy,
+				pendingPaymentData:
+					paymentAmount && paymentRateType
+						? { paymentAmount, paymentRateType }
+						: null,
+			});
 		} catch (error) {
 			console.error("[project.create]", error);
 			throw error;
@@ -128,7 +150,13 @@ export const PUT = withAuth({ mode: "user" })(
 		const id = url.searchParams.get("id");
 		if (!id) return apiError.badRequest("id is required");
 		const data = body as UpdateVacancyBody;
-		const { promisePercentage, promiseStepId, ...vacancyData } = data;
+		const {
+			promisePercentage,
+			promiseStepId,
+			paymentAmount,
+			paymentRateType,
+			...vacancyData
+		} = data;
 
 		const vacancy = await prisma.teamVacancy.update({
 			where: { id },
@@ -142,7 +170,13 @@ export const PUT = withAuth({ mode: "user" })(
 			},
 		});
 
-		return json(vacancy);
+		return json({
+			...vacancy,
+			pendingPaymentData:
+				paymentAmount && paymentRateType
+					? { paymentAmount, paymentRateType }
+					: null,
+		});
 	}),
 );
 

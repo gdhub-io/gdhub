@@ -23,8 +23,10 @@ import {
 import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
+import { usePaddle } from "@/services/paddle/usePaddle";
 import styles from "./style.module.scss";
 
 const PAID_VACANCY_FEE = 3;
@@ -32,6 +34,7 @@ const PAID_VACANCY_FEE = 3;
 interface VacancyModalProps {
 	teamId?: string;
 	projectId?: string;
+	projectSlug?: string;
 	vacancyId?: string;
 	open: boolean;
 	onOk: () => void;
@@ -41,6 +44,7 @@ interface VacancyModalProps {
 const VacancyModal = ({
 	teamId,
 	projectId,
+	projectSlug,
 	vacancyId,
 	open,
 	onOk,
@@ -49,6 +53,7 @@ const VacancyModal = ({
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { options: directionsOptions } = useWorkDirections();
+	const { checkout } = usePaddle();
 	const [showPromiseFields, setShowPromiseFields] = useState(false);
 	const [showPaymentFields, setShowPaymentFields] = useState(false);
 
@@ -111,25 +116,43 @@ const VacancyModal = ({
 				form.setFieldsValue({ ...data, finishedAt: dayjs(data?.finishedAt) });
 				setShowPromiseFields(!!data?.promisePercentage);
 				setShowPaymentFields(
-					!!(data as Record<string, unknown>)?.paymentAmount,
+					!!(data as Record<string, unknown>)?.pendingPaymentData,
 				);
 			});
 		}
 	}, [open]);
 
+	const handleFormValuesChange = () => {
+		const paymentAmount = form.getFieldValue("paymentAmount");
+		const paymentRateType = form.getFieldValue("paymentRateType");
+		const hasPaymentData = !!paymentAmount && !!paymentRateType;
+
+		if (hasPaymentData && !showPaymentFields) {
+			setShowPaymentFields(true);
+		}
+	};
+
 	const isPaidVacancy = showPaymentFields;
-	const alreadyPaid = !!(vacancy?.data as Record<string, unknown>)?.paidAt;
+	const hasPayments = !!(vacancy?.data as Record<string, unknown>)?.payments;
 
 	const handleOk = async (asDraft?: { asDraft: boolean }) => {
 		try {
 			const formData = await form.validateFields();
 
+			const hasPendingPayment =
+				!asDraft &&
+				isPaidVacancy &&
+				formData.paymentAmount &&
+				formData.paymentRateType;
+
 			const payload = {
 				...formData,
-				publishedAt: asDraft ? null : dayjs().toISOString(),
-				status: asDraft
-					? prismaClient.TeamVacancyStatus.Draft
-					: prismaClient.TeamVacancyStatus.Published,
+				publishedAt:
+					asDraft || hasPendingPayment ? null : dayjs().toISOString(),
+				status:
+					asDraft || hasPendingPayment
+						? prismaClient.TeamVacancyStatus.Draft
+						: prismaClient.TeamVacancyStatus.Published,
 				teamId,
 				promisePercentage: formData.promisePercentage || null,
 				promiseStepId: formData.promiseStepId || null,
@@ -137,22 +160,66 @@ const VacancyModal = ({
 				paymentRateType: formData.paymentRateType || null,
 			};
 
+			let createdVacancyId = vacancyId;
 			if (vacancyId) {
 				await saveVacancy({ id: vacancyId, data: payload });
 			} else {
-				await createVacancy(payload);
+				const response = await createVacancy(payload);
+				createdVacancyId = response?.data?.id;
 				gtmEventTrigger("vacancy_create", { teamId, title: formData.title });
 			}
 
-			form.resetFields();
-			setShowPromiseFields(false);
-			setShowPaymentFields(false);
-			message.success(
-				vacancyId
-					? t("The position is changed")
-					: t("A new open position has been added"),
-			);
-			onOk();
+			if (hasPendingPayment && createdVacancyId) {
+				const paymentResponse = await axios.post(
+					"/api/user/project/vacancy/payment",
+					{
+						vacancyId: createdVacancyId,
+						rateType: formData.paymentRateType,
+					},
+				);
+
+				const paymentId = paymentResponse?.data?.id;
+
+				message.success(
+					t("A new open position has been added. Redirecting to payment..."),
+				);
+
+				form.resetFields();
+				setShowPromiseFields(false);
+				setShowPaymentFields(false);
+				onOk();
+
+				if (paymentId) {
+					try {
+						const baseUrl =
+							typeof window !== "undefined"
+								? window.location.origin
+								: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
+						const successUrl = projectSlug
+							? `${baseUrl}/my/projects/${projectSlug}/vacancies?payment_success=true`
+							: `${baseUrl}/my/projects`;
+
+						await checkout({
+							priceId: "pdl_vacancy_listing",
+							customData: { paymentId },
+							successUrl,
+						});
+					} catch (checkoutError) {
+						console.error("Checkout failed:", checkoutError);
+						message.error(t("Payment checkout failed. Please try again."));
+					}
+				}
+			} else {
+				form.resetFields();
+				setShowPromiseFields(false);
+				setShowPaymentFields(false);
+				message.success(
+					vacancyId
+						? t("The position is changed")
+						: t("A new open position has been added"),
+				);
+				onOk();
+			}
 		} catch (error: any) {
 			if (!Object.hasOwn(error, "errorFields")) {
 				message.error(error.message);
@@ -222,7 +289,7 @@ const VacancyModal = ({
 					>
 						{vacancy?.data.status === prismaClient.TeamVacancyStatus.Published
 							? t("Save")
-							: isPaidVacancy && !alreadyPaid
+							: isPaidVacancy && !hasPayments
 								? t("Pay & Publish")
 								: t("Publish")}
 					</Button>
@@ -238,6 +305,7 @@ const VacancyModal = ({
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}
 					onFinishFailed={() => {}}
+					onValuesChange={handleFormValuesChange}
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
@@ -334,11 +402,13 @@ const VacancyModal = ({
 									</Popover>
 								)}
 								{!showPaymentFields && (
-									<Popover content={t("In development")} placement="topRight">
-										<Button type="text" disabled icon={<IconCashBanknote />}>
-											{t("Add payment")}
-										</Button>
-									</Popover>
+									<Button
+										type="text"
+										icon={<IconCashBanknote />}
+										onClick={() => setShowPaymentFields(true)}
+									>
+										{t("Add payment")}
+									</Button>
 								)}
 							</Space>
 						</Form.Item>
