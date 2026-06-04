@@ -13,6 +13,10 @@ import {
 import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 
+// auth + server-side Matrix SDK — never prerender (also avoids loading
+// matrix-js-sdk at build time, which trips its "Multiple entrypoints" guard)
+export const dynamic = "force-dynamic";
+
 const DirectChatSchema = z.object({
 	toUserId: z.string().min(1),
 });
