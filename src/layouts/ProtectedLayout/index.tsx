@@ -6,7 +6,6 @@ import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
 // removed unused AiOutlineMessage import
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
-import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
@@ -29,43 +28,22 @@ import {
 } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
-import axios from "axios";
-import {
-	ClientEvent,
-	type MatrixClient,
-	NotificationCountType,
-	type Room,
-	RoomEvent,
-} from "matrix-js-sdk";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
-import {
-	type ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
+import { ChatProvider } from "@/components/Chat/ChatProvider";
 import { useChat } from "@/components/Chat/useChat";
 import { ChatButton } from "@/components/ChatButton";
 import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
-import { getDeviceDisplayName } from "@/helpers/device";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
-import { useChatDrawerQuery } from "@/hooks/useChatDrawerQuery";
-import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
-import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
-import { useMatrixPushRegistration } from "@/hooks/useMatrixPushRegistration";
-import { createMatrixClient } from "@/lib/matrix-client";
-import type { MatrixChatSessionResponse } from "@/types/chat";
 import styles from "./style.module.scss";
 
 const NotificationsBell = dynamic(
@@ -130,151 +108,8 @@ export const ProtectedLayout = ({
 	const [isOpenedInTelegram] = useTelegram();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
-	const matrixDeviceId = useMatrixDeviceId();
 	const [openAgentDrawer, setOpenAgentDrawer] = useState(false);
-	const [initialChatRoomId, setInitialChatRoomId] = useState<string | null>(
-		null,
-	);
-	const clientRef = useRef<MatrixClient | null>(null);
-	const {
-		setOpenChatModal,
-		openChatModal,
-		chatClient,
-		setChatClient,
-		setReady,
-		setUnreadTotal,
-	} = useChat();
-
-	useChatDrawerQuery({
-		chatClient,
-		setOpenChatModal,
-		onResolveRoomId: setInitialChatRoomId,
-	});
-
-	// Start Matrix client in background for unread counters
-	const { data: chatSessionData } = useQuery<MatrixChatSessionResponse>({
-		queryKey: ["chat-client-session", session?.user.id],
-		queryFn: () =>
-			axios
-				.post<MatrixChatSessionResponse>("/api/chat/session", {
-					deviceId: matrixDeviceId,
-				})
-				.then((r) => r.data),
-		enabled: !!session?.user.id && !!matrixDeviceId,
-	});
-
-	const { token: firebasePushToken } = useFirebaseMessagingToken();
-
-	useMatrixPushRegistration({
-		session: chatSessionData,
-		pushKey: firebasePushToken,
-		lang: session?.user.lang ?? getLanguage(),
-		deviceDisplayName: getDeviceDisplayName(),
-	});
-
-	const tryComputeUnreadTotal = useCallback(
-		(client: MatrixClient) => {
-			try {
-				const rooms = (client.getRooms() || []).filter((r: Room) =>
-					["join", "invite"].includes(r.getMyMembership()),
-				);
-				const total = rooms.reduce((acc: number, r: Room) => {
-					const count =
-						r.getUnreadNotificationCount?.(NotificationCountType.Total) || 0;
-					return acc + (Number.isFinite(count) ? count : 0);
-				}, 0);
-				setUnreadTotal(total);
-			} catch {}
-		},
-		[setUnreadTotal],
-	);
-
-	useEffect(() => {
-		if (!chatSessionData?.token) return;
-		if (clientRef.current) return;
-
-		let active = true;
-		let createdClient: MatrixClient | null = null;
-
-		const handleSync = (state: string) => {
-			if (state === "PREPARED") {
-				setReady(true);
-				if (createdClient) {
-					tryComputeUnreadTotal(createdClient);
-				}
-			}
-		};
-
-		createMatrixClient({
-			accessToken: chatSessionData.token,
-			userId: chatSessionData.userId,
-			deviceId: chatSessionData.deviceId ?? undefined,
-		})
-			.then((client) => {
-				if (!active) {
-					client.stopClient();
-					return;
-				}
-
-				clientRef.current = client;
-				createdClient = client;
-				client.startClient();
-				client.once(ClientEvent.Sync, handleSync);
-				setChatClient(client);
-			})
-			.catch(() => {});
-
-		return () => {
-			active = false;
-			if (createdClient) {
-				createdClient.removeListener(ClientEvent.Sync, handleSync);
-				createdClient.stopClient();
-			}
-			clientRef.current = null;
-			setChatClient(null);
-			setReady(false);
-		};
-	}, [
-		chatSessionData?.deviceId,
-		chatSessionData?.token,
-		setChatClient,
-		chatSessionData?.userId,
-		setReady,
-		tryComputeUnreadTotal,
-	]);
-
-	useEffect(() => {
-		if (!chatClient) return;
-
-		const recompute = () => tryComputeUnreadTotal(chatClient);
-
-		chatClient.on(RoomEvent.Receipt, recompute);
-		chatClient.on(RoomEvent.Timeline, recompute);
-		chatClient.on(RoomEvent.MyMembership, recompute);
-
-		// also periodic safety net
-		const interval = setInterval(recompute, 60_000);
-
-		// initial
-		recompute();
-
-		return () => {
-			chatClient.removeListener(RoomEvent.Receipt, recompute);
-			chatClient.removeListener(RoomEvent.Timeline, recompute);
-			chatClient.removeListener(RoomEvent.MyMembership, recompute);
-			clearInterval(interval);
-		};
-	}, [chatClient, tryComputeUnreadTotal]);
-
-	useEffect(() => {
-		const handler = (e: CustomEvent<{ roomId: string }>) => {
-			setInitialChatRoomId(e?.detail?.roomId || null);
-			setOpenChatModal(true);
-		};
-		window.addEventListener("open-chat", handler as EventListener);
-		return () =>
-			window.removeEventListener("open-chat", handler as EventListener);
-	}, [setOpenChatModal]);
+	const { setOpenChatModal } = useChat();
 
 	const hasAccess = useMemo(() => {
 		if (!session) return false;
@@ -507,7 +342,7 @@ export const ProtectedLayout = ({
 	const resolvedTopMenuSelectedKeys = topMenuSelectedKeys || [pathname];
 
 	return (
-		<>
+		<ChatProvider>
 			<NextSeo {...seoSettings} />
 			<style jsx global>{`
 				:root {
@@ -718,12 +553,8 @@ export const ProtectedLayout = ({
 				)}
 
 				{/* chat modal */}
-				<ChatModal
-					open={openChatModal}
-					onClose={() => setOpenChatModal(false)}
-					initialRoomId={initialChatRoomId}
-				/>
+				<ChatModal />
 			</ConfigProvider>
-		</>
+		</ChatProvider>
 	);
 };
