@@ -1,9 +1,16 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Bubble, type BubbleProps } from "@ant-design/x";
 import type { BubbleItemType } from "@ant-design/x/es/bubble/interface";
+import {
+	IconAlertCircle,
+	IconCheck,
+	IconChecks,
+	IconClock,
+} from "@tabler/icons-react";
 import { Avatar, Flex, type GetRef } from "antd";
 import dayjs from "dayjs";
 import {
+	EventStatus,
 	EventTimeline,
 	type MatrixEvent,
 	type Room,
@@ -22,11 +29,14 @@ import AdviceRequestInvite from "./special-messages/AdviceRequestInvite";
 import DefaultInvite from "./special-messages/DefaultInvite";
 import { useChat } from "./useChat";
 
+type MessageStatus = "sending" | "sent" | "read" | "failed";
+
 type MessageExtra = {
 	title?: string;
 	avatarUrl?: string;
 	time?: string;
 	systemText?: string;
+	status?: MessageStatus;
 };
 
 type MessageBubble = BubbleItemType & { extraInfo?: MessageExtra };
@@ -54,6 +64,23 @@ const RenderIndex: BubbleProps["contentRender"] = (content) => (
 		{content}
 	</Flex>
 );
+
+// delivery status indicator for our own messages (Matrix has no "delivered"
+// receipt, so we only surface sending / sent / read / failed)
+const renderMessageStatus = (status?: MessageStatus) => {
+	switch (status) {
+		case "sending":
+			return <IconClock size={13} color="#cccccc" />;
+		case "sent":
+			return <IconCheck size={13} color="#9c9a9a" />;
+		case "read":
+			return <IconChecks size={13} color="#4096ff" />;
+		case "failed":
+			return <IconAlertCircle size={13} color="#ff4d4f" />;
+		default:
+			return null;
+	}
+};
 
 export default function ChatMessages() {
 	const listRef = useRef<GetRef<typeof Bubble.List>>(null);
@@ -170,9 +197,18 @@ export default function ChatMessages() {
 			syncRoomMessages(evRoom);
 		};
 
+		// read receipts arrive on a separate event — recompute so the
+		// sent/read status on our own messages updates in real time
+		const handleReceipt = (_event: MatrixEvent, evRoom?: Room) => {
+			if (!evRoom || evRoom.roomId !== selectedRoomId) return;
+			syncRoomMessages(evRoom);
+		};
+
 		chatClient.on(RoomEvent.Timeline, handleTimeline);
+		chatClient.on(RoomEvent.Receipt, handleReceipt);
 		return () => {
 			chatClient.removeListener(RoomEvent.Timeline, handleTimeline);
+			chatClient.removeListener(RoomEvent.Receipt, handleReceipt);
 		};
 	}, [chatClient, ready, selectedRoomId, syncRoomMessages]);
 
@@ -282,15 +318,38 @@ export default function ChatMessages() {
 						const displayName = member?.name || chatUser?.displayName;
 						const edited = !!ev.replacingEventId?.();
 						const timeLabel = edited ? `${time} · edited` : time;
+						const isOwn = senderId === chatClient?.getUserId();
+
+						let status: MessageStatus | undefined;
+						if (isOwn) {
+							const sendStatus = ev.getAssociatedStatus();
+							if (sendStatus === EventStatus.NOT_SENT) {
+								status = "failed";
+							} else if (
+								sendStatus === EventStatus.SENDING ||
+								sendStatus === EventStatus.QUEUED ||
+								sendStatus === EventStatus.ENCRYPTING
+							) {
+								status = "sending";
+							} else {
+								// on the server — read if anyone else has a receipt past it
+								const readers = currentRoom?.getUsersReadUpTo(ev) || [];
+								const readByOther = readers.some(
+									(u) => u !== chatClient?.getUserId(),
+								);
+								status = readByOther ? "read" : "sent";
+							}
+						}
 
 						return {
 							key,
-							role: senderId === chatClient?.getUserId() ? "user" : "member",
+							role: isOwn ? "user" : "member",
 							content: text,
 							extraInfo: {
 								title: displayName,
 								avatarUrl,
 								time: timeLabel,
+								status,
 							},
 						};
 					}
@@ -347,7 +406,14 @@ export default function ChatMessages() {
 					<Avatar icon={<UserOutlined />} style={{ background: "#aad068" }} />
 				),
 				footer: (
-					<div style={{ fontSize: 10, color: "#cccccc" }}>{extra.time}</div>
+					<Flex
+						align="center"
+						gap={4}
+						style={{ fontSize: 10, color: "#cccccc" }}
+					>
+						<span>{extra.time}</span>
+						{renderMessageStatus(extra.status)}
+					</Flex>
 				),
 				contentRender: RenderIndex,
 			};
@@ -356,6 +422,10 @@ export default function ChatMessages() {
 			const extra = (bubbleData.extraInfo ?? {}) as MessageExtra;
 			return {
 				placement: "start" as const,
+				// system events carry no message body — render text in the header
+				// only, and fully hide the (empty) content box so it leaves no gap
+				variant: "borderless" as const,
+				styles: { content: { display: "none" } },
 				header: (
 					<div
 						style={{

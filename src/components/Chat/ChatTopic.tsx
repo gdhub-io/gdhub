@@ -42,9 +42,10 @@ export default function ChatTopic() {
 		},
 	});
 
-	if (!chatContext) return null;
+	// this section only makes sense for the expert advice-request chat;
+	// regular direct chats have no topic/project/comment
+	if (!chatContext || chatContext.type !== "advice-request") return null;
 
-	const isAdviceRequest = chatContext.type === "advice-request";
 	const adviceData = (chatContext.data || {}) as AdviceRequestContext;
 	const isResolved = (adviceData.status || "").toLowerCase() === "closed";
 
@@ -80,7 +81,7 @@ export default function ChatTopic() {
 						</Text>
 					)}
 				</Flex>
-				{isAdviceRequest && !isResolved && (
+				{!isResolved && (
 					<Button
 						type="primary"
 						ghost
