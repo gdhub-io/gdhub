@@ -1,15 +1,20 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { HiDotsVertical } from "@react-icons/all-files/hi/HiDotsVertical";
+import { HiOutlineDocumentDownload } from "@react-icons/all-files/hi/HiOutlineDocumentDownload";
+import { HiOutlineExternalLink } from "@react-icons/all-files/hi/HiOutlineExternalLink";
 import { HiOutlineLockClosed } from "@react-icons/all-files/hi/HiOutlineLockClosed";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
+	Dropdown,
 	Flex,
 	Grid,
+	Modal,
 	message,
-	Popconfirm,
 	Space,
 	Tag,
+	Tooltip,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -23,9 +28,18 @@ import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import VacancyModal from "@/components/modals/VacancyModal";
 import { ProjectContext } from "@/contexts/ProjectContext";
+import { usePaddle } from "@/services/paddle/usePaddle";
 import VacancyArchiveModal from "../modals/VacancyArchiveModal";
 
 const { Text } = Typography;
+
+interface VacancyPayment {
+	id: string;
+	amount: number;
+	currency: string;
+	status: prismaClient.PaymentStatus;
+	rateType: prismaClient.PaymentRateType;
+}
 
 interface Vacancy {
 	key: string;
@@ -33,6 +47,9 @@ interface Vacancy {
 	Description: string;
 	FinishedAt: string;
 	Status: prismaClient.TeamVacancyStatus;
+	promisePercentage?: number | null;
+	payment?: VacancyPayment | null;
+	direction?: { name: string } | null;
 	[key: string]: any;
 }
 
@@ -67,14 +84,22 @@ const MyProjectVacancies = () => {
 			axios.delete<any>("/api/user/project/vacancy", { params: data }),
 	});
 
+	const { mutateAsync: publishVacancy } = useMutation({
+		mutationFn: (params: { id: string; data: Record<string, any> }) =>
+			axios.put<any>("/api/user/project/vacancy", params.data, {
+				params: { id: params.id },
+			}),
+	});
+
+	const { checkout } = usePaddle();
+
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
 			title: t("Title"),
 			dataIndex: "title",
 			key: "title",
-			width: "50%",
 			render: (value, data) => (
-				<Space orientation="vertical" size={0}>
+				<Space orientation="vertical" size={2}>
 					<Text
 						className={tableStyles.tableMemberName}
 						onClick={() => {
@@ -85,7 +110,7 @@ const MyProjectVacancies = () => {
 						{value}
 					</Text>
 					{data.status == "Draft" && (
-						<Tag color="lime">
+						<Tag color="lime" style={{ marginInlineEnd: 0 }}>
 							{t(`vacancy.status.${data.status}`, data.status)}
 						</Tag>
 					)}
@@ -94,11 +119,12 @@ const MyProjectVacancies = () => {
 		},
 		{
 			title: t("Direction"),
-			dataIndex: "direction",
 			key: "direction",
 			responsive: ["md"],
-			render: (value) => (
-				<Text className={tableStyles.tableMemberPosition}>{value}</Text>
+			render: (_value, record) => (
+				<Text className={tableStyles.tableMemberPosition}>
+					{record.direction?.name ?? "—"}
+				</Text>
 			),
 		},
 		{
@@ -110,42 +136,167 @@ const MyProjectVacancies = () => {
 				value ? (
 					<Text
 						className={tableStyles.tableMemberDates}
-					>{`${t("to")} ${dayjs(value).format("LLL")}`}</Text>
-				) : null,
+						style={{ whiteSpace: "nowrap" }}
+					>
+						{dayjs(value).format("DD.MM.YYYY")}
+					</Text>
+				) : (
+					<Text type="secondary">—</Text>
+				),
+		},
+		{
+			title: t("Payment"),
+			key: "payment",
+			align: "center",
+			responsive: ["md"],
+			render: (_value, record) => {
+				const payment = record.payment;
+				if (!payment) return <Text type="secondary">—</Text>;
+
+				const rateLabel =
+					{
+						Hourly: t("vacancy.rate.Hourly", "per hour"),
+						OneTime: t("vacancy.rate.OneTime", "one-time"),
+						Monthly: t("vacancy.rate.Monthly", "per month"),
+					}[payment.rateType as string] ?? "";
+
+				return (
+					<Tag
+						color="purple"
+						style={{ marginInlineEnd: 0, whiteSpace: "nowrap" }}
+					>
+						{`€${payment.amount} · ${rateLabel}`}
+					</Tag>
+				);
+			},
+		},
+		{
+			title: t("Paid"),
+			key: "paid",
+			align: "center",
+			responsive: ["md"],
+			render: (_value, record) => {
+				const payment = record.payment;
+				if (!payment) return <Text type="secondary">—</Text>;
+
+				const statusConfig: Record<string, { color: string; label: string }> = {
+					COMPLETED: {
+						color: "green",
+						label: t("vacancy.payment.status.COMPLETED", "Paid"),
+					},
+					PENDING: {
+						color: "orange",
+						label: t("vacancy.payment.status.PENDING", "Pending"),
+					},
+					FAILED: {
+						color: "red",
+						label: t("vacancy.payment.status.FAILED", "Failed"),
+					},
+					REFUNDED: {
+						color: "default",
+						label: t("vacancy.payment.status.REFUNDED", "Refunded"),
+					},
+				};
+
+				const config = statusConfig[payment.status] ?? {
+					color: "default",
+					label: payment.status,
+				};
+
+				return (
+					<Tag
+						color={config.color}
+						style={{ marginInlineEnd: 0, whiteSpace: "nowrap" }}
+					>
+						{config.label}
+					</Tag>
+				);
+			},
+		},
+		{
+			title: t("Equity"),
+			dataIndex: "promisePercentage",
+			key: "promisePercentage",
+			align: "center",
+			responsive: ["md"],
+			render: (value) =>
+				value && value > 0 ? (
+					<Tag color="blue" style={{ marginInlineEnd: 0 }}>{`${value}%`}</Tag>
+				) : (
+					<Text type="secondary">—</Text>
+				),
 		},
 		{
 			key: "links",
 			dataIndex: "id",
+			align: "center",
 			responsive: ["md"],
 			render: (value, record) => (
-				<Link href={`/job/${value}`} target="_blank" rel="noopener noreferrer">
-					{t("MyProjectVacancies.link", "Go to the page")}
-				</Link>
+				<Tooltip title={t("MyProjectVacancies.link", "Go to the page")}>
+					<Link
+						href={`/job/${value}`}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<Button type="text" icon={<HiOutlineExternalLink size={18} />} />
+					</Link>
+				</Tooltip>
 			),
 		},
 		{
 			key: "actions",
 			width: "1%",
+			align: "right",
 			hidden: isProjectArchived,
-			render: (value, record) => (
-				<Space>
-					{screens.md && (
-						<Button onClick={() => handleEditVacancy(record.id)}>
-							{t("MyProjectVacancies.change", "Change")}
-						</Button>
-					)}
-					<Popconfirm
-						title={t("You definitely want to close the open position?")}
-						okText={t("MyProjectVacancies.yes", "Yes")}
-						cancelText={t("MyProjectVacancies.no", "No")}
-						onConfirm={() => handleCloseVacancy(record.id)}
-					>
-						<Button type="text" danger>
-							<HiOutlineLockClosed />
-						</Button>
-					</Popconfirm>
-				</Space>
-			),
+			render: (value, record) => {
+				const hasReceipt = record.payment?.status === "COMPLETED";
+
+				return (
+					<Space>
+						{screens.md && (
+							<Button onClick={() => handleEditVacancy(record.id)}>
+								{t("MyProjectVacancies.change", "Change")}
+							</Button>
+						)}
+						{record.status !== "Published" && (
+							<Button type="primary" onClick={() => handlePublish(record)}>
+								{record.payment && record.payment.status !== "COMPLETED"
+									? t("Pay & Publish")
+									: t("Publish")}
+							</Button>
+						)}
+						<Dropdown
+							trigger={["click"]}
+							menu={{
+								items: [
+									...(hasReceipt
+										? [
+												{
+													key: "receipt",
+													icon: <HiOutlineDocumentDownload />,
+													label: t(
+														"MyProjectVacancies.downloadReceipt",
+														"Download receipt",
+													),
+													onClick: () => handleOpenReceipt(record),
+												},
+											]
+										: []),
+									{
+										key: "archive",
+										danger: true,
+										icon: <HiOutlineLockClosed />,
+										label: t("MyProjectVacancies.archiveVacancy", "Archive"),
+										onClick: () => confirmArchiveVacancy(record.id),
+									},
+								],
+							}}
+						>
+							<Button type="text" icon={<HiDotsVertical />} />
+						</Dropdown>
+					</Space>
+				);
+			},
 		},
 	];
 
@@ -154,6 +305,82 @@ const MyProjectVacancies = () => {
 
 		setSelectedVacancyId(id);
 		setShowVacancyModal(true);
+	};
+
+	const handlePublish = async (record: Vacancy) => {
+		if (isProjectArchived) return;
+
+		const payment = record.payment;
+		// Paid vacancy whose listing fee isn't settled yet → go through checkout.
+		// The vacancy stays a draft and gets published by the Paddle webhook once paid.
+		const needsCheckout = !!payment && payment.status !== "COMPLETED";
+
+		try {
+			if (needsCheckout && payment) {
+				const priceId = process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID;
+				if (!priceId) {
+					message.warning(
+						t(
+							"modal.vacancy.paymentNotConfigured",
+							"Payment is not configured yet. The position was saved as a draft.",
+						),
+					);
+					return;
+				}
+
+				const baseUrl =
+					typeof window !== "undefined"
+						? window.location.origin
+						: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
+				const successUrl = projectSlug
+					? `${baseUrl}/my/projects/${projectSlug}/vacancies?payment_success=true`
+					: `${baseUrl}/my/projects`;
+
+				await checkout({
+					priceId,
+					customData: { paymentId: payment.id },
+					successUrl,
+				});
+				return;
+			}
+
+			await publishVacancy({
+				id: record.id,
+				data: { status: "Published", publishedAt: dayjs().toISOString() },
+			});
+			fetchMyProjectVacancies();
+			message.success(
+				t("MyProjectVacancies.published", "The open position is published"),
+			);
+		} catch (error: any) {
+			message.error(
+				error?.message ??
+					t("form.error", "Error.Check if all data is entered correctly"),
+			);
+		}
+	};
+
+	const handleOpenReceipt = async (record: Vacancy) => {
+		try {
+			const res = await axios.get("/api/user/project/vacancy/payment/invoice", {
+				params: { vacancyId: record.id },
+			});
+			const url = res?.data?.url;
+			if (url) {
+				window.open(url, "_blank", "noopener,noreferrer");
+			} else {
+				message.error(
+					t(
+						"MyProjectVacancies.receiptUnavailable",
+						"Receipt is not available",
+					),
+				);
+			}
+		} catch {
+			message.error(
+				t("MyProjectVacancies.receiptUnavailable", "Receipt is not available"),
+			);
+		}
 	};
 
 	const handleCloseVacancy = async (id: string) => {
@@ -167,6 +394,16 @@ const MyProjectVacancies = () => {
 		message.success(
 			t("MyProjectVacancies.theVacancyIsClosed", "The open position is closed"),
 		);
+	};
+
+	const confirmArchiveVacancy = (id: string) => {
+		Modal.confirm({
+			title: t("You definitely want to close the open position?"),
+			okText: t("MyProjectVacancies.yes", "Yes"),
+			cancelText: t("MyProjectVacancies.no", "No"),
+			okButtonProps: { danger: true },
+			onOk: () => handleCloseVacancy(id),
+		});
 	};
 
 	const handleSaveVacancy = () => {
@@ -203,7 +440,7 @@ const MyProjectVacancies = () => {
 
 			{projectVacancies?.data.length > 0 ? (
 				<ModernTable
-					showHeader={false}
+					showHeader
 					loading={isLoadingMyMyProjectVacancies}
 					columns={vacanciesColumns.filter((column) => !column.hidden)}
 					dataSource={projectVacancies?.data?.map((m: any) => ({

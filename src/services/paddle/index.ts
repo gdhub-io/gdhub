@@ -1,4 +1,4 @@
-import { initializePaddle, Paddle } from "@paddle/paddle-js";
+import { initializePaddle, type Paddle } from "@paddle/paddle-js";
 
 let paddleInstance: Paddle | null = null;
 
