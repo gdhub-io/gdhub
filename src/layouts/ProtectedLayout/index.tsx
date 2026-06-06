@@ -3,56 +3,42 @@
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
-// removed unused AiOutlineMessage import
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
-	Breadcrumb,
 	type BreadcrumbProps,
 	Button,
-	Col,
 	ConfigProvider,
 	Drawer,
-	Dropdown,
 	Flex,
 	FloatButton,
 	Grid,
 	Layout,
 	Menu,
 	type MenuProps,
-	Row,
 	Space,
 	Typography,
 } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { ChatProvider } from "@/components/Chat/ChatProvider";
 import { useChat } from "@/components/Chat/useChat";
-import { ChatButton } from "@/components/ChatButton";
+import { Header as AppHeader } from "@/components/layouts/Header";
+import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
-const NotificationsBell = dynamic(
-	() =>
-		import("@/components/NotificationsBell").then((m) => m.NotificationsBell),
-	{
-		ssr: false,
-	},
-);
 const AIAgentDrawer = dynamic(
 	() => import("@/components/AIAgentDrawer").then((m) => m.AIAgentDrawer),
 	{ ssr: false },
@@ -83,7 +69,7 @@ interface ProtectedLayoutProps {
 	contentBleedBelowMd?: boolean;
 }
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export const ProtectedLayout = ({
@@ -354,108 +340,45 @@ export const ProtectedLayout = ({
 				locale={getLanguage() === "en" ? enLocale : ruLocale}
 			>
 				<Layout className={styles.container}>
-					<Header className={styles.header}>
-						<Row wrap={false} align="middle" style={{ height: "64px" }}>
-							<Col flex="auto">
-								<Breadcrumb
-									separator={<span style={{ color: "#00000033" }}>/</span>}
-									items={[
+					<AppHeader
+						className={styles.header}
+						breadcrumbItems={
+							breadcrumbs?.length
+								? breadcrumbs
+								: [
 										{
 											title: (
-												<Link href="/hub" className="logo">
-													<GdhubLogo style={{ width: "100px" }} />
-												</Link>
+												<Space>
+													<Avatar
+														src={session?.user?.image ?? undefined}
+														size={24}
+													/>
+													{screens.sm ? (
+														<Text className="username">
+															{session?.user?.name}
+														</Text>
+													) : null}
+												</Space>
 											),
 										},
-										...(breadcrumbs?.length
-											? breadcrumbs
-											: [
-													{
-														title: (
-															<Space>
-																<Avatar
-																	src={session?.user?.image ?? undefined}
-																	size={24}
-																/>
-																{screens.sm ? (
-																	<Text className="username">
-																		{session?.user?.name}
-																	</Text>
-																) : null}
-															</Space>
-														),
-													},
-												]),
-									]}
-								/>
-							</Col>
-							<Col flex="none">
-								<Space>
-									{screens.xl ? (
-										<>
-											<Link href="https://docs.gdhub.io" target="_blank">
-												<Button type="text" style={{ fontSize: 14 }}>
-													{t("hub.menu.documentation", "Documentation")}
-												</Button>
-											</Link>
-											<ChatButton onClick={() => setOpenChatModal(true)} />
-											<NotificationsBell />
-											<Dropdown
-												menu={{ items: dropdownMenuItems }}
-												trigger={["click"]}
-											>
-												<Button
-													type="text"
-													shape="circle"
-													style={{
-														display: "block",
-														padding: 0,
-														lineHeight: 0,
-													}}
-													icon={
-														session?.user.image ? (
-															<Avatar
-																size={32}
-																src={
-																	session?.user?.image ? (
-																		<Image
-																			src={session?.user.image}
-																			width={32}
-																			height={32}
-																			alt="avatar"
-																		/>
-																	) : null
-																}
-															/>
-														) : null
-													}
-												/>
-											</Dropdown>
-										</>
-									) : (
-										<>
-											<NotificationsBell />
-											<ChatButton onClick={() => setOpenChatModal(true)} />
-											<Button
-												type="text"
-												shape="circle"
-												style={{ top: 2 }}
-												onClick={() => setOpenMobileMenu(true)}
-											>
-												<AiOutlineMenu />
-											</Button>
-										</>
-									)}
-								</Space>
-							</Col>
-						</Row>
-						<Menu
-							items={resolvedTopMenuItems}
-							mode="horizontal"
-							selectedKeys={resolvedTopMenuSelectedKeys}
-							className={styles.appMenu}
-						/>
-					</Header>
+									]
+						}
+						actions={
+							<HeaderActions
+								dropdownMenuItems={dropdownMenuItems}
+								onOpenMobileMenu={() => setOpenMobileMenu(true)}
+								onOpenChat={() => setOpenChatModal(true)}
+							/>
+						}
+						menu={
+							<Menu
+								items={resolvedTopMenuItems}
+								mode="horizontal"
+								selectedKeys={resolvedTopMenuSelectedKeys}
+								className={styles.appMenu}
+							/>
+						}
+					/>
 					<Content className={styles.contentContainer}>
 						<div
 							className={`${styles.content} ${flushBodyTop ? styles.contentFlushTop : ""} ${contentBleedBelowMd ? styles.contentBleedBelowMd : ""}`}

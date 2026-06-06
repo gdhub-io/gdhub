@@ -2,25 +2,20 @@
 
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
 import { GoArrowUp } from "@react-icons/all-files/go/GoArrowUp";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import {
 	Avatar,
-	Breadcrumb,
 	Button,
-	Col,
 	ConfigProvider,
 	Drawer,
-	Dropdown,
 	Flex,
 	FloatButton,
 	Grid,
 	Layout,
 	Menu,
 	type MenuProps,
-	Row,
 	Space,
 	Typography,
 } from "antd";
@@ -34,10 +29,10 @@ import { useParams, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import ReactNiceAvatar, { genConfig } from "react-nice-avatar";
-import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
+import { genConfig } from "react-nice-avatar";
 import { Error404 } from "@/components/Error404";
-import { NotificationsBell } from "@/components/NotificationsBell";
+import { Header as AppHeader } from "@/components/layouts/Header";
+import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
@@ -47,7 +42,7 @@ import { useCurrentProject } from "@/hooks/project";
 import { ProtectedLayout } from "../ProtectedLayout";
 import styles from "./style.module.scss";
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export const ProtectedProjectLayout = ({
@@ -329,105 +324,38 @@ export const ProtectedProjectLayout = ({
 					}
 				`}</style>
 				<Layout className={styles.container}>
-					<Header className={styles.header}>
-						<Row wrap={false} align="middle" style={{ height: "64px" }}>
-							<Col flex="auto">
-								<Breadcrumb
-									separator={<span style={{ color: "#00000033" }}>/</span>}
-									items={[
-										{
-											title: (
-												<Link href="/hub" className="logo">
-													<GdhubLogo style={{ width: "100px" }} />
-												</Link>
-											),
-										},
-										{
-											title: screens.md ? (
-												<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
-											) : null,
-										},
-										{
-											title: (
-												<Text ellipsis={{ tooltip: true }}>
-													{project?.name || "Project"}
-												</Text>
-											),
-										},
-									]}
-								/>
-							</Col>
-							<Col flex="none">
-								<Space>
-									{screens.xl ? (
-										<>
-											<Link href="https://docs.gdhub.io" target="_blank">
-												<Button type="text" style={{ fontSize: 14 }}>
-													{t("hub.menu.documentation", "Documentation")}
-												</Button>
-											</Link>
-											<NotificationsBell />
-											<Dropdown
-												menu={{ items: dropdownMenuItems }}
-												trigger={["click"]}
-											>
-												<Button
-													type="text"
-													shape="circle"
-													style={{
-														display: "block",
-														padding: 0,
-														lineHeight: 0,
-													}}
-													icon={
-														session?.user.image ? (
-															<Avatar
-																size={32}
-																src={
-																	session?.user?.image ? (
-																		<Image
-																			src={session?.user.image}
-																			width={32}
-																			height={32}
-																			alt="avatar"
-																		/>
-																	) : null
-																}
-															/>
-														) : (
-															<ReactNiceAvatar
-																style={{ width: "32px", height: "32px" }}
-																{...avatarConfig}
-															/>
-														)
-													}
-												></Button>
-											</Dropdown>
-										</>
-									) : (
-										<>
-											<NotificationsBell />
-											<Button
-												type="text"
-												shape="circle"
-												style={{ top: 2 }}
-												onClick={() => setOpenMobileMenu(true)}
-											>
-												<AiOutlineMenu />
-											</Button>
-										</>
-									)}
-								</Space>
-							</Col>
-						</Row>
-
-						<Menu
-							items={menuItems.filter((r) => !r.disabled)}
-							mode="horizontal"
-							selectedKeys={[pathname]}
-							className={styles.appMenu}
-						/>
-					</Header>
+					<AppHeader
+						className={styles.header}
+						breadcrumbItems={[
+							{
+								title: screens.md ? (
+									<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
+								) : null,
+							},
+							{
+								title: (
+									<Text ellipsis={{ tooltip: true }}>
+										{project?.name || "Project"}
+									</Text>
+								),
+							},
+						]}
+						actions={
+							<HeaderActions
+								dropdownMenuItems={dropdownMenuItems}
+								onOpenMobileMenu={() => setOpenMobileMenu(true)}
+								avatarConfig={avatarConfig}
+							/>
+						}
+						menu={
+							<Menu
+								items={menuItems.filter((r) => !r.disabled)}
+								mode="horizontal"
+								selectedKeys={[pathname]}
+								className={styles.appMenu}
+							/>
+						}
+					/>
 					{isProjectArchived && (
 						<div className={styles.archivedBanner}>
 							{t("project.archived.banner", "Project archived since {date}", {

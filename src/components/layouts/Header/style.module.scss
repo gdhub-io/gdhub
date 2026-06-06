@@ -1,0 +1,71 @@
+.header {
+	height: auto;
+	border-bottom: 1px solid #ededed;
+	background: #fff;
+	line-height: normal;
+
+	:global(.ant-breadcrumb) {
+		display: flex;
+		align-items: center;
+		line-height: 1;
+		// Truncate long crumbs instead of wrapping to a second line and
+		// colliding with the right-side actions on narrow screens.
+		min-width: 0;
+	}
+
+	:global(.ant-breadcrumb ol) {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		min-width: 0;
+	}
+
+	:global(.ant-breadcrumb-link) {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	// Breadcrumb links (<a>) carry antd's own line-height/padding which
+	// top-aligns their glyph inside the centered box, leaving link crumbs a few
+	// px higher than plain-text crumbs. Center the glyph so all crumbs line up.
+	:global(.ant-breadcrumb) a {
+		display: inline-flex;
+		align-items: center;
+		line-height: 1;
+	}
+
+	:global(.ant-breadcrumb-separator) {
+		display: inline-flex;
+		align-items: center;
+		margin-inline: 8px;
+	}
+
+	// The logo link uses the global "logo" class. The brand SVG carries a
+	// "beta" badge that inflates the top of its box, so its wordmark sits
+	// optically low — lift it a touch to line up with the breadcrumb text.
+	:global(.logo) {
+		display: inline-flex;
+		align-items: center;
+
+		svg {
+			display: block;
+			transform: translateY(-2px);
+		}
+
+		// The logo is a breadcrumb link, so antd tints its background on hover.
+		// It's just a click target, so keep the background unchanged.
+		&:hover,
+		&:focus,
+		&:focus-visible {
+			background-color: transparent !important;
+		}
+	}
+}
+
+.topRow {
+	height: 64px;
+}
+
+.separator {
+	color: #00000033;
+}

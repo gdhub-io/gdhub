@@ -72,7 +72,7 @@ const SectionSkeleton: React.FC<SectionSkeletonProps> = ({
 						<Skeleton.Input
 							style={{ width: "90%", height: 24 }}
 							active
-							size="default"
+							size="medium"
 						/>
 					</div>
 					{/* Subtitle imitation */}

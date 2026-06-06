@@ -1,0 +1,125 @@
+"use client";
+
+import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
+import { useTranslate } from "@tolgee/react";
+import type { MenuProps } from "antd";
+import { Avatar, Button, Dropdown, Grid, Space } from "antd";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import ReactNiceAvatar, { type AvatarFullConfig } from "react-nice-avatar";
+import { ChatButton } from "@/components/ChatButton";
+
+const NotificationsBell = dynamic(
+	() =>
+		import("@/components/NotificationsBell").then((m) => m.NotificationsBell),
+	{ ssr: false },
+);
+
+const DOCS_URL = "https://docs.gdhub.io";
+
+type HeaderActionsProps = {
+	dropdownMenuItems: MenuProps["items"];
+	onOpenMobileMenu: () => void;
+	/** When provided, renders the chat button (only the hub-level layouts have it). */
+	onOpenChat?: () => void;
+	/** When provided, falls back to a generated avatar instead of nothing. */
+	avatarConfig?: AvatarFullConfig;
+};
+
+/**
+ * Right-side actions of the authenticated header (documentation, chat,
+ * notifications, user menu) — shared by every layout. The header structure
+ * lives in `Header`; this fills its `actions` slot. Reads breakpoints/session
+ * from hooks itself. Not used in Storybook: ChatButton / NotificationsBell need
+ * session / react-query / websocket context.
+ */
+export const HeaderActions = ({
+	dropdownMenuItems,
+	onOpenMobileMenu,
+	onOpenChat,
+	avatarConfig,
+}: HeaderActionsProps) => {
+	const { t } = useTranslate();
+	const screens = Grid.useBreakpoint();
+	const { data: session } = useSession();
+
+	const avatar = session?.user?.image ? (
+		<Avatar
+			size={32}
+			src={
+				<Image src={session.user.image} width={32} height={32} alt="avatar" />
+			}
+		/>
+	) : avatarConfig ? (
+		<ReactNiceAvatar
+			style={{ width: "32px", height: "32px" }}
+			{...avatarConfig}
+		/>
+	) : null;
+
+	if (!screens.xl) {
+		return (
+			<Space align="center" size={8}>
+				<NotificationsBell />
+				{onOpenChat && <ChatButton onClick={() => onOpenChat()} />}
+				<Button
+					type="text"
+					shape="circle"
+					style={{ top: 2 }}
+					onClick={onOpenMobileMenu}
+				>
+					<AiOutlineMenu />
+				</Button>
+			</Space>
+		);
+	}
+
+	// On smaller desktops/tablets keep the right side compact: drop the
+	// standalone "Documentation" button and surface it inside the user dropdown.
+	const showDocsButton = !!screens.xxl;
+	const menuItems: MenuProps["items"] = showDocsButton
+		? dropdownMenuItems
+		: [
+				{
+					key: "header-docs",
+					label: (
+						<Link href={DOCS_URL} target="_blank">
+							{t("hub.menu.documentation", "Documentation")}
+						</Link>
+					),
+				},
+				...(dropdownMenuItems ?? []),
+			];
+
+	return (
+		<Space align="center" size={8}>
+			{showDocsButton && (
+				<Link href={DOCS_URL} target="_blank">
+					<Button type="text" style={{ fontSize: 14 }}>
+						{t("hub.menu.documentation", "Documentation")}
+					</Button>
+				</Link>
+			)}
+			{onOpenChat && <ChatButton onClick={() => onOpenChat()} />}
+			<NotificationsBell />
+			<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+				<Button
+					type="text"
+					shape="circle"
+					style={{
+						display: "inline-flex",
+						alignItems: "center",
+						justifyContent: "center",
+						padding: 0,
+						lineHeight: 0,
+					}}
+					icon={avatar}
+				/>
+			</Dropdown>
+		</Space>
+	);
+};
+
+export default HeaderActions;

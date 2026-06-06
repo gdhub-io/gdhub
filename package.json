@@ -8,6 +8,8 @@
 	"scripts": {
 		"dev": "next dev --turbopack",
 		"dev:webpack": "next dev",
+		"storybook": "storybook dev -p 6006",
+		"build-storybook": "storybook build",
 		"build": "next build --turbopack",
 		"build:webpack": "next build",
 		"prebuild": "npm run refresh-translations && npm run lint",
@@ -145,6 +147,8 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
 		"@playwright/test": "^1.60.0",
+		"@storybook/addon-docs": "^10",
+		"@storybook/nextjs": "^10",
 		"@svgr/webpack": "^6.3.1",
 		"@tanstack/react-query-devtools": "^5.100.11",
 		"@tolgee/cli": "^2.14.0",
@@ -183,6 +187,7 @@
 		"node-mocks-http": "^1.17.2",
 		"prettier": "^3.0.0",
 		"sass": "^1.93.0",
+		"storybook": "^10",
 		"ts-node": "^10.9.2",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.8.3",

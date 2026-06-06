@@ -266,30 +266,33 @@ export const BannerEventSlider = () => {
 					borderRadius: 16,
 					minHeight: 480,
 					overflow: "hidden",
+					background: "#161616",
 				}}
 			>
 				{/* Previous image (underneath) */}
-				<Image
-					key={events.data[prevActive].id + "-prev"}
-					src={events.data[prevActive].image || ""}
-					alt={events.data[prevActive].title}
-					fill
-					style={{
-						objectFit: "cover",
-						position: "absolute",
-						top: 0,
-						left: 0,
-						transition: "opacity 0.5s",
-						opacity: active === prevActive && fadeImage ? 1 : 0.7,
-						zIndex: 1,
-					}}
-					sizes="100vw"
-				/>
+				{events.data[prevActive].image && (
+					<Image
+						key={events.data[prevActive].id + "-prev"}
+						src={events.data[prevActive].image}
+						alt={events.data[prevActive].title}
+						fill
+						style={{
+							objectFit: "cover",
+							position: "absolute",
+							top: 0,
+							left: 0,
+							transition: "opacity 0.5s",
+							opacity: active === prevActive && fadeImage ? 1 : 0.7,
+							zIndex: 1,
+						}}
+						sizes="100vw"
+					/>
+				)}
 				{/* Active image (on top, fades in) */}
-				{active !== prevActive && (
+				{active !== prevActive && events.data[active].image && (
 					<Image
 						key={events.data[active].id + "-active"}
-						src={events.data[active].image || ""}
+						src={events.data[active].image}
 						alt={events.data[active].title}
 						fill
 						style={{
