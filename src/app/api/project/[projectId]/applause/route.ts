@@ -23,15 +23,19 @@ const getApplauseState = async (projectId: string, userId?: string) => {
 		}),
 	]);
 
-	const userApplause = userId
-		? await prisma.applause.findFirst({
-				where: {
-					userId,
-					activityId: activity?.id,
-				},
-				select: { id: true },
-			})
-		: null;
+	// Guard on activity?.id: with no activity row yet, activityId would be
+	// undefined and Prisma would drop the filter, matching the user's applause
+	// on ANY activity → falsely reporting hasApplauded for this subject.
+	const userApplause =
+		userId && activity?.id
+			? await prisma.applause.findFirst({
+					where: {
+						userId,
+						activityId: activity.id,
+					},
+					select: { id: true },
+				})
+			: null;
 
 	return {
 		count,
