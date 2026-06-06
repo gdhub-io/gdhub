@@ -86,7 +86,19 @@
 }
 
 .videoContainer {
+	position: relative;
 	width: 100%;
+	aspect-ratio: 16 / 9;
 	border-radius: 8px;
 	overflow: hidden;
+	background: #000;
+
+	// react-player v3 renders its media element directly; pin it to the 16/9
+	// box so the video fits (letterboxes) instead of overflowing and cropping.
+	> * {
+		position: absolute;
+		inset: 0;
+		width: 100% !important;
+		height: 100% !important;
+	}
 }

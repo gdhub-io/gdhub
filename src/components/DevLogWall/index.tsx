@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import ReactPlayer from "react-player/lazy";
+import ReactPlayer from "react-player";
 import rehypeRaw from "rehype-raw";
 import DevlogPosts from "../DevlogPosts";
 import EditPostModal from "../modals/EditPostModal";
@@ -83,7 +83,7 @@ export const DevLogWall = ({ slug }: { slug: string }) => {
 							{!!report.video && (
 								<div className={styles.playerWrapper}>
 									<ReactPlayer
-										url={report.video}
+										src={report.video}
 										light
 										width="100%"
 										height="100%"

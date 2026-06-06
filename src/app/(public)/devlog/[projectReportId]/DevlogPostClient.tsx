@@ -504,7 +504,7 @@ export function DevlogPostClient({ post }: PageProps) {
 							{post.video && (
 								<div className={styles.video}>
 									<ReactPlayer
-										url={post.video}
+										src={post.video}
 										width="100%"
 										height="100%"
 										controls

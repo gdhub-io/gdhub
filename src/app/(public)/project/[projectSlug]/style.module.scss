@@ -9,22 +9,21 @@
 }
 
 .videoCover {
-	width: 100%;
-	padding-top: 56.25%;
-	/* 16:9 Aspect Ratio */
 	position: relative;
+	width: 100%;
 	aspect-ratio: 16 / 9;
 	border-radius: 12px;
 	overflow: hidden;
+	background: #000;
 
-	iframe {
+	// react-player v3 renders its player/preview element directly (and in
+	// `light` mode the preview doesn't accept className), so we wrap it and pin
+	// the child to this 16/9 box: correct height, rounded corners, no crop.
+	> * {
 		position: absolute;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		width: 100%;
-		height: 100%;
+		inset: 0;
+		width: 100% !important;
+		height: 100% !important;
 	}
 }
 

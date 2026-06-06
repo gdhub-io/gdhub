@@ -1,11 +1,13 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
+import { TbInfoCircle } from "@react-icons/all-files/tb/TbInfoCircle";
 import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
 	Col,
+	Flex,
 	Form,
 	Input,
 	message,
@@ -19,13 +21,18 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import ReactPlayer from "react-player";
 import { normUploadFile } from "@/helpers/file";
+import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import styles from "./style.module.scss";
 import "@mdxeditor/editor/style.css";
 
 const ContentEditor = dynamic(() => import("@/components/ContentEditor"), {
 	ssr: false,
 });
+
+const PITCH_VIDEO_DOCS_URL =
+	"https://docs.gdhub.io/how-to-pitch-your-project-and-attract-talent";
 
 type GeneralProjectFormArgs = {
 	projectSlug: string;
@@ -38,6 +45,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 	const [cover, setCover] = useState<string | null>();
 	const [description, setDescription] = useState("");
 	const [coverProcessing, setCoverProcessing] = useState(false);
+	const [videoUrl, setVideoUrl] = useState<string | null>();
 
 	const { data: project, isFetching } = useQuery({
 		queryKey: ["project", projectSlug],
@@ -60,6 +68,9 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 		if (project?.data) {
 			setCover(project.data.coverImage);
 			setDescription(project.data.description || "");
+
+			const playable = toPlayableVideoUrl(project.data.videoLink);
+			setVideoUrl(ReactPlayer.canPlay?.(playable) ? playable : undefined);
 		}
 	}, [project?.data]);
 	const isProjectArchived =
@@ -76,6 +87,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 		if (projectSlug) {
 			setCover(undefined);
 			setDescription("");
+			setVideoUrl(undefined);
 		}
 	}, []);
 
@@ -91,11 +103,17 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 
 		try {
 			const formData = await form.validateFields();
-			await updateProject({
+			const payload: Record<string, unknown> = {
 				...formData,
 				description: formData.description?.trim(),
 				coverImage: cover ? cover : null,
-			});
+			};
+
+			if (project?.data.status === prismaClient.ProjectStatus.Approved) {
+				payload.videoLink = videoUrl ? videoUrl : null;
+			}
+
+			await updateProject(payload);
 
 			message.success(
 				projectSlug ? t("Project data updated") : t("Added a new game project"),
@@ -149,6 +167,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 		multiple: false,
 		accept: "image/png, image/jpeg",
 		disabled: isProjectArchived,
+		className: styles.coverUploadDragger,
 		customRequest: ({ onSuccess }) =>
 			setTimeout(() => {
 				if (onSuccess) onSuccess("ok");
@@ -192,6 +211,23 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 		setCover(undefined);
 	};
 
+	// As soon as a playable video URL is entered, embed it in place.
+	const handleVideoInput = (value: string) => {
+		const url = value.trim();
+
+		if (ReactPlayer.canPlay?.(url)) {
+			form.setFieldValue("videoLink", url);
+			setVideoUrl(url);
+		}
+	};
+
+	const handleVideoRemove = () => {
+		if (isProjectArchived) return;
+
+		form.setFieldValue("videoLink", undefined);
+		setVideoUrl(undefined);
+	};
+
 	return (
 		<Spin spinning={isFetching || isUpdating}>
 			<Form
@@ -207,16 +243,18 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 				requiredMark="optional"
 				disabled={isProjectArchived}
 			>
-				<Row>
-					<Col xs={24} md={12} lg={8}>
+				<Row gutter={[24, 24]} align="stretch">
+					<Col xs={24} md={12} lg={8} className={styles.mediaCol}>
+						<div className={styles.boxCaption}>
+							{t(
+								"page.my.projects.settings.coverImage.label",
+								"Cover for the project",
+							)}
+						</div>
 						{!cover ? (
 							<Form.Item
 								wrapperCol={{ xs: 12 }}
 								name="coverImage"
-								label={t(
-									"page.my.projects.settings.coverImage.label",
-									"Cover for the project",
-								)}
 								valuePropName="file"
 								getValueFromEvent={normUploadFile}
 								noStyle
@@ -264,6 +302,113 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 							</Spin>
 						)}
 					</Col>
+					{project?.data.status === prismaClient.ProjectStatus.Approved && (
+						<Col xs={24} md={12} lg={8} className={styles.mediaCol}>
+							<Flex
+								justify="space-between"
+								align="center"
+								gap={8}
+								className={styles.boxCaption}
+							>
+								<span>
+									{t(
+										"page.my.projects.settings.videoLink.label",
+										"Pitch or gameplay video",
+									)}
+								</span>
+								<a
+									href={PITCH_VIDEO_DOCS_URL}
+									target="_blank"
+									rel="noopener noreferrer"
+									className={styles.videoDocsLink}
+								>
+									<TbInfoCircle size={15} />
+									{t(
+										"page.my.projects.settings.videoLink.docs",
+										"How to prepare",
+									)}
+								</a>
+							</Flex>
+							<div
+								className={`${styles.videoBox} ${
+									videoUrl ? styles.videoBoxFilled : ""
+								}`}
+							>
+								{videoUrl ? (
+									<div className={styles.videoPreview}>
+										<div className={styles.videoPreviewPlayer}>
+											<ReactPlayer
+												src={videoUrl}
+												light={getVideoPoster(videoUrl) || true}
+												controls
+												width="100%"
+												height="100%"
+											/>
+										</div>
+										<Popover
+											content={t(
+												"page.my.projects.settings.videoLink.deletePopover",
+												"Remove pitch video",
+											)}
+										>
+											<Button
+												shape="circle"
+												type="primary"
+												className="remove-cover-btn"
+												disabled={isProjectArchived}
+												onClick={handleVideoRemove}
+												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+											/>
+										</Popover>
+									</div>
+								) : (
+									<Form.Item
+										className={styles.videoFormItem}
+										name="videoLink"
+										wrapperCol={{ span: 24 }}
+										extra={
+											<span className={styles.videoServices}>
+												{t(
+													"page.my.projects.settings.videoLink.services",
+													"YouTube, Vimeo, Twitch, TikTok, Wistia and more",
+												)}
+											</span>
+										}
+										rules={[
+											{
+												validator: (_, value) => {
+													if (!value) return Promise.resolve();
+
+													if (ReactPlayer.canPlay?.(value.trim())) {
+														return Promise.resolve();
+													}
+
+													return Promise.reject(
+														t(
+															"page.my.projects.settings.videoLink.error",
+															"Paste a valid video link (YouTube, Vimeo, Twitch, …)",
+														),
+													);
+												},
+											},
+										]}
+									>
+										<Input
+											width={"100%"}
+											placeholder={t(
+												"page.my.projects.settings.videoLink.placeholder",
+												"https://youtube.com/watch?v=…",
+											)}
+											onChange={(e) => handleVideoInput(e.target.value)}
+											onPressEnter={(e) =>
+												handleVideoInput((e.target as HTMLInputElement).value)
+											}
+										/>
+									</Form.Item>
+								)}
+							</div>
+						</Col>
+					)}
 				</Row>
 
 				<Row gutter={[16, 0]} align="middle" style={{ marginTop: 30 }}>
@@ -342,48 +487,16 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 					/>
 				</Form.Item>
 
-				{project?.data.status == prismaClient.ProjectStatus.Approved && (
-					<>
-						<Row gutter={[16, 16]}>
-							<Col md={{ span: 16 }} sm={{ span: 12 }} xs={{ span: 24 }}>
-								<Form.Item
-									name="pitchdeckLink"
-									label={t(
-										"page.my.projects.settings.pitchdeckLink.label",
-										"Link to presentation (to pitch)",
-									)}
-									wrapperCol={{ span: 24 }}
-									rules={[{ type: "url" }]}
-								>
-									<Input width={"100%"} />
-								</Form.Item>
-							</Col>
-							<Col md={{ span: 8 }} sm={{ span: 12 }} xs={{ span: 24 }}>
-								<Form.Item
-									name="videoLink"
-									label={t(
-										"page.my.projects.settings.videoLink.label",
-										"Pitch video",
-									)}
-									wrapperCol={{ span: 24 }}
-									rules={[{ max: 64, min: 4 }]}
-								>
-									<Input
-										width={"100%"}
-										placeholder={t(
-											"page.my.projects.settings.videoLink.placeholder",
-											"Specify video ID: ECxL-7DWVSE",
-										)}
-									/>
-								</Form.Item>
-							</Col>
-						</Row>
-					</>
-				)}
-
 				<Form.Item
 					name="genre"
 					label={t("page.my.projects.settings.genre.label", "Genre")}
+					tooltip={{
+						title: t(
+							"page.my.projects.settings.genre.tooltip",
+							"The gameplay genre your project belongs to. You can combine several.",
+						),
+						icon: <TbInfoCircle size={15} />,
+					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}
 					required
@@ -399,6 +512,13 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 				<Form.Item
 					name="setting"
 					label={t("page.my.projects.settings.setting.label", "Game Setting")}
+					tooltip={{
+						title: t(
+							"page.my.projects.settings.setting.tooltip",
+							"The world, theme and atmosphere of the game (e.g. post-apocalyptic, fantasy).",
+						),
+						icon: <TbInfoCircle size={15} />,
+					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}
 					required
@@ -417,6 +537,13 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 						"page.my.projects.settings.visualStyle.label",
 						"Visual Style",
 					)}
+					tooltip={{
+						title: t(
+							"page.my.projects.settings.visualStyle.tooltip",
+							"The art style and visual references (e.g. low poly, similar to Brawl Stars).",
+						),
+						icon: <TbInfoCircle size={15} />,
+					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}
 					required
@@ -432,6 +559,13 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 				<Form.Item
 					name="audition"
 					label={t("page.my.projects.settings.audition.label", "Audition")}
+					tooltip={{
+						title: t(
+							"page.my.projects.settings.audition.tooltip",
+							"The players you target by their interests and tastes — what they enjoy (e.g. people who love cooking).",
+						),
+						icon: <TbInfoCircle size={15} />,
+					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}
 					required
@@ -440,7 +574,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 						width={"100%"}
 						placeholder={t(
 							"page.my.projects.settings.audition.placeholder",
-							"Example: men 16-45",
+							"Example: people who love cooking games",
 						)}
 					/>
 				</Form.Item>

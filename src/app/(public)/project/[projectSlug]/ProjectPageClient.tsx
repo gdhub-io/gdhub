@@ -28,10 +28,8 @@ import { useSession } from "next-auth/react";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import YouTube from "react-youtube";
 import rehypeRaw from "rehype-raw";
 import type { Pluggable } from "unified";
-import type { Options } from "youtube-player/dist/types";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import DevlogPosts from "@/components/DevlogPosts";
@@ -45,11 +43,13 @@ import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import ProjectVacancies from "@/components/ProjectVacancies";
 import TeamMembers from "@/components/TeamMembers";
 import { platformOptions } from "@/helpers/react-content";
+import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import type { ProjectLink } from "@/types/project";
 import styles from "./style.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export type ProjectPageParams = {
 	project: Omit<
@@ -200,10 +200,6 @@ export function ProjectPageClient({
 			</HubSectionBody>
 		</section>
 	) : null;
-
-	const pitchVideoOptions: Options = {
-		playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 },
-	};
 
 	const getPlatformIcon = (type: string) => {
 		const option = platformOptions.find((opt) => opt.value === type);
@@ -454,14 +450,25 @@ export function ProjectPageClient({
 										<Image src={project.coverImage} alt="cover" fill />
 									</div>
 								)}
-								{showPitchVideo && project.videoLink && (
-									<YouTube
-										className={styles.videoCover}
-										videoId={project.videoLink}
-										opts={pitchVideoOptions}
-										onEnd={() => setShowPitchVideo(false)}
-									/>
-								)}
+								{project.videoLink &&
+									(showPitchVideo || !project.coverImage) && (
+										<div className={styles.videoCover}>
+											<ReactPlayer
+												src={toPlayableVideoUrl(project.videoLink)}
+												light={
+													showPitchVideo
+														? false
+														: getVideoPoster(project.videoLink) || true
+												}
+												playing={showPitchVideo}
+												onClickPreview={() => setShowPitchVideo(true)}
+												controls
+												width="100%"
+												height="100%"
+												onEnded={() => setShowPitchVideo(false)}
+											/>
+										</div>
+									)}
 								{screens.md && generalData}
 								{session && project.author.profile?.tgNickname ? (
 									<Link
