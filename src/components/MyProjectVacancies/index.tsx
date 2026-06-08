@@ -35,10 +35,7 @@ const { Text } = Typography;
 
 interface VacancyPayment {
 	id: string;
-	amount: number;
-	currency: string;
 	status: prismaClient.PaymentStatus;
-	rateType: prismaClient.PaymentRateType;
 }
 
 interface Vacancy {
@@ -48,6 +45,9 @@ interface Vacancy {
 	FinishedAt: string;
 	Status: prismaClient.TeamVacancyStatus;
 	promisePercentage?: number | null;
+	// Offered compensation (EUR) lives on the vacancy; payment row is the fee/status.
+	offeredAmount?: number | null;
+	offeredRateType?: prismaClient.PaymentRateType | null;
 	payment?: VacancyPayment | null;
 	direction?: { name: string } | null;
 	[key: string]: any;
@@ -150,22 +150,24 @@ const MyProjectVacancies = () => {
 			align: "center",
 			responsive: ["md"],
 			render: (_value, record) => {
-				const payment = record.payment;
-				if (!payment) return <Text type="secondary">—</Text>;
+				// Offered compensation now lives on the vacancy (EUR).
+				if (!record.offeredAmount || !record.offeredRateType) {
+					return <Text type="secondary">—</Text>;
+				}
 
 				const rateLabel =
 					{
 						Hourly: t("vacancy.rate.Hourly", "per hour"),
 						OneTime: t("vacancy.rate.OneTime", "one-time"),
 						Monthly: t("vacancy.rate.Monthly", "per month"),
-					}[payment.rateType as string] ?? "";
+					}[record.offeredRateType as string] ?? "";
 
 				return (
 					<Tag
 						color="purple"
 						style={{ marginInlineEnd: 0, whiteSpace: "nowrap" }}
 					>
-						{`€${payment.amount} · ${rateLabel}`}
+						{`€${record.offeredAmount} · ${rateLabel}`}
 					</Tag>
 				);
 			},
@@ -292,7 +294,11 @@ const MyProjectVacancies = () => {
 								],
 							}}
 						>
-							<Button type="text" icon={<HiDotsVertical />} />
+							<Button
+								type="text"
+								aria-label={t("MyProjectVacancies.actions", "Actions")}
+								icon={<HiDotsVertical />}
+							/>
 						</Dropdown>
 					</Space>
 				);

@@ -38,8 +38,9 @@ const CreateVacancySchema = z.object({
 	teamId: z.string(),
 	promisePercentage: z.number().nullable().optional(),
 	promiseStepId: z.string().nullable().optional(),
-	paymentAmount: z.number().nullable().optional(),
-	paymentRateType: z
+	// Offered compensation (in major units, EUR) — stored on the vacancy in cents.
+	offeredAmount: z.number().nullable().optional(),
+	offeredRateType: z
 		.enum(["Hourly", "OneTime", "Monthly"])
 		.nullable()
 		.optional(),
@@ -58,12 +59,17 @@ const UpdateVacancySchema = z.object({
 	finishedAt: z.string().optional(),
 	promisePercentage: z.number().nullable().optional(),
 	promiseStepId: z.string().nullable().optional(),
-	paymentAmount: z.number().nullable().optional(),
-	paymentRateType: z
+	offeredAmount: z.number().nullable().optional(),
+	offeredRateType: z
 		.enum(["Hourly", "OneTime", "Monthly"])
 		.nullable()
 		.optional(),
 });
+
+// Offered compensation is entered/displayed in EUR but stored in minor units.
+const toCents = (eur: number) => Math.round(eur * 100);
+const fromCents = (cents: number | null | undefined) =>
+	cents != null ? cents / 100 : null;
 
 type IdQuery = z.infer<typeof IdQuerySchema>;
 type CreateVacancyBody = z.infer<typeof CreateVacancySchema>;
@@ -113,8 +119,8 @@ export const GET = withAuth({ mode: "user" })(
 			where: { vacancyId: id, userId: currentUser.id },
 		});
 
-		// Payment data lives in the Payment table, not on the vacancy. Surface the
-		// latest one so the edit form can repopulate the amount/rate fields.
+		// The Payment row is the listing fee (status/receipt). Surface the latest one
+		// so the edit form knows whether the fee is paid.
 		const payment = await prisma.payment.findFirst({
 			where: {
 				payableType: prismaClient.PayableType.VACANCY,
@@ -125,10 +131,10 @@ export const GET = withAuth({ mode: "user" })(
 
 		return json({
 			...data,
+			// Offered compensation lives on the vacancy; expose it in EUR for the form.
+			offeredAmount: fromCents(data?.offeredAmount),
 			myTeamMemberId: teamMember?.id,
 			payment,
-			paymentAmount: payment?.amount ?? null,
-			paymentRateType: payment?.rateType ?? null,
 		});
 	}),
 );
@@ -142,8 +148,8 @@ export const POST = withAuth({ mode: "user" })(
 			const {
 				promisePercentage,
 				promiseStepId,
-				paymentAmount,
-				paymentRateType,
+				offeredAmount,
+				offeredRateType,
 				...vacancyData
 			} = data;
 			const hasEquityPromise = promisePercentage && promiseStepId;
@@ -161,15 +167,15 @@ export const POST = withAuth({ mode: "user" })(
 					status: vacancyData.status as prismaClient.TeamVacancyStatus,
 					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
 					promiseStepId: hasEquityPromise ? promiseStepId : undefined,
+					offeredAmount: offeredAmount != null ? toCents(offeredAmount) : null,
+					offeredRateType:
+						(offeredRateType as prismaClient.PaymentRateType | null) ?? null,
 				},
 			});
 
 			return json({
 				...vacancy,
-				pendingPaymentData:
-					paymentAmount && paymentRateType
-						? { paymentAmount, paymentRateType }
-						: null,
+				offeredAmount: fromCents(vacancy.offeredAmount),
 			});
 		} catch (error) {
 			console.error("[project.create]", error);
@@ -189,8 +195,8 @@ export const PUT = withAuth({ mode: "user" })(
 		const {
 			promisePercentage,
 			promiseStepId,
-			paymentAmount,
-			paymentRateType,
+			offeredAmount,
+			offeredRateType,
 			// publishedAt from the client is ignored — it's set once, server-side.
 			publishedAt: _clientPublishedAt,
 			...vacancyData
@@ -242,15 +248,25 @@ export const PUT = withAuth({ mode: "user" })(
 				publishedAt,
 				promisePercentage,
 				promiseStepId,
+				// `undefined` = field not in the payload → leave unchanged (so e.g. a
+				// table "Publish" that only sends status doesn't wipe the offer).
+				offeredAmount:
+					offeredAmount === undefined
+						? undefined
+						: offeredAmount === null
+							? null
+							: toCents(offeredAmount),
+				offeredRateType:
+					offeredRateType === undefined
+						? undefined
+						: ((offeredRateType as prismaClient.PaymentRateType | null) ??
+							null),
 			},
 		});
 
 		return json({
 			...vacancy,
-			pendingPaymentData:
-				paymentAmount && paymentRateType
-					? { paymentAmount, paymentRateType }
-					: null,
+			offeredAmount: fromCents(vacancy.offeredAmount),
 		});
 	}),
 );

@@ -47,16 +47,16 @@ export const GET = withAuth({ mode: "user" })(
 				payableType: prismaClient.PayableType.VACANCY,
 				payableId: vacancyId,
 				status: prismaClient.PaymentStatus.COMPLETED,
-				paddleTransactionId: { not: null },
+				providerTransactionId: { not: null },
 			},
 			orderBy: { completedAt: "desc" },
 		});
 
-		if (!payment?.paddleTransactionId) {
+		if (!payment?.providerTransactionId) {
 			return apiError.notFound("No paid invoice found for this vacancy");
 		}
 
-		const url = await getTransactionInvoiceUrl(payment.paddleTransactionId);
+		const url = await getTransactionInvoiceUrl(payment.providerTransactionId);
 		if (!url) {
 			return apiError.notFound("Invoice is not available yet");
 		}

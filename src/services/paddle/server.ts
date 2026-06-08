@@ -1,6 +1,61 @@
 // Server-side Paddle API helpers. Uses the secret PADDLE_API_KEY — never import
 // this into client components.
 
+import crypto from "node:crypto";
+
+/**
+ * Verifies a Paddle webhook against the `Paddle-Signature` header
+ * (`ts=<unix>;h1=<hex>`): HMAC-SHA256 of `${ts}:${rawBody}` with the
+ * destination's secret key, compared in constant time.
+ *
+ * Pass the RAW request body (not parsed) — any reformatting breaks the hash.
+ *
+ * If `PADDLE_WEBHOOK_SECRET` is unset, verification is skipped outside of
+ * production (so local dev / Paddle "simulate" works without it) and rejected in
+ * production (a missing secret there is a misconfiguration).
+ *
+ * Note: the timestamp is intentionally not range-checked. Our handlers are
+ * idempotent, so replay is harmless, and a strict window would risk dropping
+ * legitimately delayed/retried deliveries.
+ */
+export function verifyPaddleWebhook(
+	rawBody: string,
+	signatureHeader: string | null,
+): { ok: boolean; reason?: string } {
+	const secret = process.env.PADDLE_WEBHOOK_SECRET;
+
+	if (!secret) {
+		if (process.env.NODE_ENV === "production") {
+			return { ok: false, reason: "PADDLE_WEBHOOK_SECRET is not set" };
+		}
+		return { ok: true, reason: "skipped (no secret outside production)" };
+	}
+
+	if (!signatureHeader)
+		return { ok: false, reason: "missing Paddle-Signature" };
+
+	const parts: Record<string, string> = {};
+	for (const segment of signatureHeader.split(";")) {
+		const [k, v] = segment.split("=");
+		if (k && v) parts[k.trim()] = v.trim();
+	}
+	const { ts, h1 } = parts;
+	if (!ts || !h1) return { ok: false, reason: "malformed signature header" };
+
+	const computed = crypto
+		.createHmac("sha256", secret)
+		.update(`${ts}:${rawBody}`)
+		.digest("hex");
+
+	const a = Buffer.from(computed, "hex");
+	const b = Buffer.from(h1, "hex");
+	if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+		return { ok: false, reason: "signature mismatch" };
+	}
+
+	return { ok: true };
+}
+
 const PADDLE_API_BASE =
 	process.env.NODE_ENV === "production"
 		? "https://api.paddle.com"

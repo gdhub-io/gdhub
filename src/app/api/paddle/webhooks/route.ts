@@ -1,10 +1,22 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { verifyPaddleWebhook } from "@/services/paddle/server";
 import { prisma } from "@/services/prisma";
 
 export async function POST(request: NextRequest) {
 	try {
-		const body = await request.json();
+		// Read the RAW body and verify the signature before trusting anything.
+		const rawBody = await request.text();
+		const verification = verifyPaddleWebhook(
+			rawBody,
+			request.headers.get("paddle-signature"),
+		);
+		if (!verification.ok) {
+			console.warn("[paddle.webhook] signature rejected:", verification.reason);
+			return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+		}
+
+		const body = JSON.parse(rawBody);
 		const eventType = body?.event_type;
 
 		console.log("[paddle.webhook]", eventType);
@@ -33,41 +45,64 @@ export async function POST(request: NextRequest) {
 
 async function handleTransactionCompleted(body: any) {
 	try {
-		const transactionId = body?.data?.id;
-		const customData = body?.data?.custom_data;
+		const data = body?.data ?? {};
+		const eventId = body?.event_id;
+		const transactionId = data.id;
+		const paymentId = data.custom_data?.paymentId;
 
-		if (!customData?.paymentId) {
-			console.log(
-				"[paddle.webhook] no paymentId in custom_data",
-				transactionId,
-			);
+		const payment = paymentId
+			? await prisma.payment.findUnique({ where: { id: paymentId } })
+			: null;
+
+		// Idempotency + audit: record the event keyed by its unique id. A duplicate
+		// delivery (Paddle retries) hits the unique constraint and is skipped before
+		// any side effect runs.
+		if (eventId) {
+			try {
+				await prisma.paymentEvent.create({
+					data: {
+						eventId,
+						type: body.event_type,
+						payload: body,
+						paymentId: payment?.id ?? null,
+					},
+				});
+			} catch (e: any) {
+				if (e?.code === "P2002") {
+					console.log("[paddle.webhook] duplicate event, skipping:", eventId);
+					return NextResponse.json({ success: true });
+				}
+				throw e;
+			}
+		}
+
+		if (!paymentId || !payment) {
+			console.log("[paddle.webhook] no matching payment for", transactionId);
 			return NextResponse.json({ success: true });
 		}
 
-		const payment = await prisma.payment.findUnique({
-			where: { id: customData.paymentId },
-		});
+		// The real fee + provider references come from the transaction itself.
+		const grandTotal = data.details?.totals?.grand_total;
+		const amount =
+			grandTotal != null ? Number.parseInt(grandTotal, 10) : payment.amount;
 
-		if (!payment) {
-			console.log("[paddle.webhook] payment not found:", customData.paymentId);
-			return NextResponse.json({ success: true });
-		}
-
-		// Paddle sends both `transaction.paid` and `transaction.completed` for the
-		// same transaction. Gate on an atomic conditional update so only the first
-		// event that wins flips PENDING → COMPLETED; concurrent duplicates match 0
-		// rows and skip the side effects (publishing) entirely. Exactly-once.
+		// Atomic guard: only the first event that flips PENDING → COMPLETED runs the
+		// side effects (publishing); concurrent duplicates match 0 rows.
 		const { count } = await prisma.payment.updateMany({
 			where: { id: payment.id, status: { not: "COMPLETED" as any } },
 			data: {
 				status: "COMPLETED" as any,
-				paddleTransactionId: transactionId,
+				providerTransactionId: transactionId,
+				providerInvoiceId: data.invoice_id ?? undefined,
+				providerCustomerId: data.customer_id ?? undefined,
+				providerPriceId: data.items?.[0]?.price?.id ?? undefined,
+				amount: Number.isFinite(amount) ? amount : payment.amount,
+				currency: data.currency_code ?? undefined,
 				completedAt: new Date(),
 			},
 		});
 
 		if (count === 0) {
-			// Already completed by the sibling event — nothing more to do.
 			return NextResponse.json({ success: true });
 		}
 
@@ -88,7 +123,7 @@ async function handleTransactionCompleted(body: any) {
 
 		return NextResponse.json({ success: true });
 	} catch (error) {
-		console.error("[paddle.webhook.transaction.paid]", error);
+		console.error("[paddle.webhook.transaction.completed]", error);
 		throw error;
 	}
 }

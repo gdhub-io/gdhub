@@ -121,18 +121,18 @@ const VacancyModal = ({
 				form.setFieldsValue({ ...data, finishedAt: dayjs(data?.finishedAt) });
 				setShowPromiseFields(!!data?.promisePercentage);
 				setShowPaymentFields(
-					!!(data as Record<string, unknown>)?.paymentAmount,
+					!!(data as Record<string, unknown>)?.offeredAmount,
 				);
 			});
 		}
 	}, [open]);
 
 	const handleFormValuesChange = () => {
-		const paymentAmount = form.getFieldValue("paymentAmount");
-		const paymentRateType = form.getFieldValue("paymentRateType");
-		const hasPaymentData = !!paymentAmount && !!paymentRateType;
+		const offeredAmount = form.getFieldValue("offeredAmount");
+		const offeredRateType = form.getFieldValue("offeredRateType");
+		const hasOfferedComp = !!offeredAmount && !!offeredRateType;
 
-		if (hasPaymentData && !showPaymentFields) {
+		if (hasOfferedComp && !showPaymentFields) {
 			setShowPaymentFields(true);
 		}
 	};
@@ -159,12 +159,13 @@ const VacancyModal = ({
 		try {
 			const formData = await form.validateFields();
 
-			const hasPaymentData =
-				isPaidVacancy && !!formData.paymentAmount && !!formData.paymentRateType;
+			// "Paid vacancy" = it offers compensation, which requires the listing fee.
+			const hasOfferedComp =
+				isPaidVacancy && !!formData.offeredAmount && !!formData.offeredRateType;
 
 			// The listing fee (Paddle checkout) is only required when publishing a
 			// paid vacancy whose fee hasn't been settled yet. Drafts never charge.
-			const needsCheckout = !asDraft && hasPaymentData && !isListingFeePaid;
+			const needsCheckout = !asDraft && hasOfferedComp && !isListingFeePaid;
 
 			const payload = {
 				...formData,
@@ -176,8 +177,9 @@ const VacancyModal = ({
 				teamId,
 				promisePercentage: formData.promisePercentage || null,
 				promiseStepId: formData.promiseStepId || null,
-				paymentAmount: formData.paymentAmount || null,
-				paymentRateType: formData.paymentRateType || null,
+				// Offered compensation now lives on the vacancy (EUR; server stores cents).
+				offeredAmount: formData.offeredAmount || null,
+				offeredRateType: formData.offeredRateType || null,
 			};
 
 			let createdVacancyId = vacancyId;
@@ -189,16 +191,13 @@ const VacancyModal = ({
 				gtmEventTrigger("vacancy_create", { teamId, title: formData.title });
 			}
 
-			// Persist the offered amount/rate in the Payment table for BOTH drafts and
-			// published vacancies, so it survives saves and reloads on edit.
-			if (createdVacancyId && hasPaymentData) {
+			// Ensure a listing-fee Payment exists for paid vacancies (drafts too), so
+			// the fee can be charged on publish. The offered amount itself is already
+			// stored on the vacancy above.
+			if (createdVacancyId && hasOfferedComp) {
 				const paymentResponse = await axios.post(
 					"/api/user/project/vacancy/payment",
-					{
-						vacancyId: createdVacancyId,
-						amount: formData.paymentAmount,
-						rateType: formData.paymentRateType,
-					},
+					{ vacancyId: createdVacancyId },
 				);
 
 				const paymentId = paymentResponse?.data?.id;
@@ -251,7 +250,7 @@ const VacancyModal = ({
 					}
 					return;
 				}
-			} else if (createdVacancyId && vacancyId && !hasPaymentData) {
+			} else if (createdVacancyId && vacancyId && !hasOfferedComp) {
 				// Editing and the payment block was removed → drop any pending payment.
 				await axios.delete("/api/user/project/vacancy/payment", {
 					params: { vacancyId: createdVacancyId },
@@ -479,8 +478,8 @@ const VacancyModal = ({
 										placement="topRight"
 										onConfirm={() => {
 											form.setFieldsValue({
-												paymentAmount: null,
-												paymentRateType: null,
+												offeredAmount: null,
+												offeredRateType: null,
 											});
 											setShowPaymentFields(false);
 										}}
@@ -508,12 +507,23 @@ const VacancyModal = ({
 								{t(
 									"modal.vacancy.paymentNotice",
 									`Paid positions require a listing fee of €${PAID_VACANCY_FEE} to publish.`,
-								)}
+								)}{" "}
+								{t(
+									"modal.vacancy.paymentNonRefundable",
+									"The listing fee is non-refundable.",
+								)}{" "}
+								<a
+									href="/refund-policy"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{t("modal.vacancy.refundPolicyLink", "Refund policy")}
+								</a>
 							</div>
 							<Row gutter={[16, 16]}>
 								<Col span={12}>
 									<Form.Item
-										name="paymentAmount"
+										name="offeredAmount"
 										label={t("Amount (EUR)")}
 										wrapperCol={{ span: 24 }}
 										style={{ marginBottom: 0 }}
@@ -529,7 +539,7 @@ const VacancyModal = ({
 								</Col>
 								<Col span={12}>
 									<Form.Item
-										name="paymentRateType"
+										name="offeredRateType"
 										label={t("Rate type")}
 										wrapperCol={{ span: 24 }}
 										style={{ marginBottom: 0 }}
