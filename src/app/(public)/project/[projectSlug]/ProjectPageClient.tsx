@@ -21,28 +21,20 @@ import {
 } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import YouTube from "react-youtube";
 import rehypeRaw from "rehype-raw";
 import type { Pluggable } from "unified";
-import type { Options } from "youtube-player/dist/types";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import DevlogPosts from "@/components/DevlogPosts";
-import {
-	getHubSectionShellClass,
-	HubSectionBleed,
-	HubSectionBody,
-	HubSectionHeader,
-} from "@/components/hub/HubSection";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import ProjectVacancies from "@/components/ProjectVacancies";
+import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
+import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import TeamMembers from "@/components/TeamMembers";
 import { platformOptions } from "@/helpers/react-content";
 import type { ProjectLink } from "@/types/project";
@@ -95,7 +87,6 @@ export function ProjectPageClient({
 	const { data: session, status: authStatus } = useSession();
 	const pathname = usePathname();
 	const screens = Grid.useBreakpoint();
-	const [showPitchVideo, setShowPitchVideo] = useState(false);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [applauseCount, setApplauseCount] = useState(projectApplauseCount || 0);
 	const [hasApplauded, setHasApplauded] = useState(false);
@@ -107,8 +98,6 @@ export function ProjectPageClient({
 	const isUserAuthenticated =
 		authStatus === "authenticated" ||
 		(authStatus === "loading" && isAuthenticated);
-
-	const handleCoverClick = () => setShowPitchVideo(true);
 
 	useEffect(() => {
 		setApplauseCount(projectApplauseCount || 0);
@@ -161,49 +150,7 @@ export function ProjectPageClient({
 
 	if (!project) return null;
 
-	const aboutGameItems: { label: string; value: ReactNode }[] = [
-		{ label: t("page.project.genre", "Genre"), value: project.genre },
-		{
-			label: t("page.project.setting", "Game Setting"),
-			value: project.setting,
-		},
-		{ label: t("page.project.audition", "Audition"), value: project.audition },
-		{ label: t("page.project.platform", "Platform"), value: project.platform },
-		{
-			label: t("page.project.visualStyle", "Visual Style"),
-			value: project.visualStyle,
-		},
-	].filter((item) => !!item.value);
-
-	const generalData = aboutGameItems.length ? (
-		<section className={getHubSectionShellClass("sidebar")}>
-			<HubSectionHeader title={t("page.project.aboutGame", "Game details")} />
-			<HubSectionBody>
-				<HubSectionBleed>
-					<Flex vertical>
-						{aboutGameItems.map((item) => (
-							<Flex
-								key={item.label}
-								justify="space-between"
-								align="flex-start"
-								gap={12}
-								className={styles.aboutGameItem}
-							>
-								<Text type="secondary" className={styles.aboutGameLabel}>
-									{item.label}
-								</Text>
-								<Text className={styles.aboutGameValue}>{item.value}</Text>
-							</Flex>
-						))}
-					</Flex>
-				</HubSectionBleed>
-			</HubSectionBody>
-		</section>
-	) : null;
-
-	const pitchVideoOptions: Options = {
-		playerVars: { disablekb: 1, autoplay: showPitchVideo ? 1 : 0 },
-	};
+	const generalData = <ProjectGameDetails project={project} />;
 
 	const getPlatformIcon = (type: string) => {
 		const option = platformOptions.find((opt) => opt.value === type);
@@ -439,29 +386,11 @@ export function ProjectPageClient({
 							lg={{ span: 8, order: 1 }}
 						>
 							<Flex vertical gap={16}>
-								{!showPitchVideo && !!project.coverImage && (
-									<div className={styles.cover}>
-										{project.videoLink && (
-											<div className={styles.coverButtonContainer}>
-												<Button onClick={handleCoverClick} type="primary">
-													{t(
-														"page.project.viewThePresentation",
-														"View the presentation",
-													)}
-												</Button>
-											</div>
-										)}
-										<Image src={project.coverImage} alt="cover" fill />
-									</div>
-								)}
-								{showPitchVideo && project.videoLink && (
-									<YouTube
-										className={styles.videoCover}
-										videoId={project.videoLink}
-										opts={pitchVideoOptions}
-										onEnd={() => setShowPitchVideo(false)}
-									/>
-								)}
+								<ProjectVideoCover
+									coverImage={project.coverImage}
+									videoLink={project.videoLink}
+									alt="cover"
+								/>
 								{screens.md && generalData}
 								{session && project.author.profile?.tgNickname ? (
 									<Link

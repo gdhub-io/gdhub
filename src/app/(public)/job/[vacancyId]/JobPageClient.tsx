@@ -1,25 +1,27 @@
 "use client";
 
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	IconArrowLeft,
+	IconCoin,
+	IconHeartHandshake,
+	IconInfoCircle,
+	IconMapPin,
+} from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { T, useTranslate } from "@tolgee/react";
 import {
 	Alert,
 	Button,
-	Card,
 	Col,
 	Flex,
 	message,
 	Row,
-	Space,
-	Spin,
+	Tooltip,
 	Typography,
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -28,19 +30,46 @@ import { useState } from "react";
 import Markdown from "react-markdown";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import SpecialitySelectModal from "@/components/modals/SpecialitySelectModal";
+import { ProjectAuthorCard } from "@/components/project/ProjectAuthorCard";
+import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
+import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./styles.module.scss";
 
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+const { Text } = Typography;
 
-const { Text, Title } = Typography;
+type VacancyProject = {
+	id: string;
+	name: string;
+	slug: string;
+	description?: string | null;
+	coverImage?: string | null;
+	videoLink?: string | null;
+	genre?: string | null;
+	setting?: string | null;
+	audition?: string | null;
+	platform?: string | null;
+	visualStyle?: string | null;
+	author?: {
+		name?: string | null;
+		image?: string | null;
+		profile?: { name?: string | null; motivation?: string | null } | null;
+		specialities?: {
+			name?: string | null;
+			specialization?: string | null;
+			level?: string | null;
+		}[];
+	} | null;
+};
 
 export interface JobPageProps {
 	vacancy: prismaClient.TeamVacancy & {
-		team: { project: prismaClient.Project };
+		team: { project: VacancyProject } | null;
 		promisePercentage: number;
-		promiseStep: prismaClient.ProjectWorkflowStep;
-		myTeamMemberId: string;
+		promiseStep: prismaClient.ProjectWorkflowStep | null;
+		myTeamMemberId?: string;
+		offeredAmount?: number | null;
+		offeredRateType?: prismaClient.PaymentRateType | null;
 	};
 	pageCover: string | null;
 	isAuthenticated: boolean;
@@ -51,9 +80,10 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 	const { data: session } = useSession();
 	const router = useRouter();
 	const pathname = usePathname();
-	const [showPitchVideo, setShowPitchVideo] = useState(false);
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] =
 		useState(false);
+
+	const project = vacancy.team?.project;
 
 	const { mutateAsync: withdrawApply } = useMutation({
 		mutationFn: (data: { teamMemberId: string }) =>
@@ -62,7 +92,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 			gtmEventTrigger("job", {
 				action: "withdraw",
 				vacancyName: vacancy.title,
-				projectName: vacancy.team?.project?.name,
+				projectName: project?.name,
 			});
 		},
 	});
@@ -78,12 +108,10 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 			gtmEventTrigger("job", {
 				action: "apply",
 				vacancyName: vacancy.title,
-				projectName: vacancy.team?.project?.name,
+				projectName: project?.name,
 			});
 		},
 	});
-
-	const handleCoverClick = () => setShowPitchVideo(true);
 
 	const withdrawApplyHandler = async (data: { teamMemberId: string }) => {
 		try {
@@ -101,6 +129,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 	const functionOkButton = async () => {
 		if (!session) {
 			router.push(`/signin?callbackUrl=${pathname}`);
+			return;
 		}
 
 		return vacancy?.myTeamMemberId
@@ -112,7 +141,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 		if (!session) return t("signin", "Signin");
 		return vacancy?.myTeamMemberId
 			? t("modal.vacancy.cancelMyResponse", "Cancel my response")
-			: t("modal.vacancy.apply", "Respond");
+			: t("page.vacancy.applyAction", "Apply");
 	};
 
 	const handleSpecialitySelect = async ({
@@ -137,210 +166,167 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 			router.refresh();
 			message.success(t("page.vacancy.applySuccess", "Your response is sent"));
 			setShowSpecialitySelectModal(false);
-			setTimeout(() => setShowSpecialitySelectModal(false), 600);
 		} catch (error: any) {
 			console.log(error);
 			message.error(error.response?.data.message || error.message);
 		}
 	};
 
+	const hasCompensation = !!vacancy.offeredAmount && !!vacancy.offeredRateType;
+	const hasEquity = !!vacancy.promisePercentage && !!vacancy.promiseStep?.name;
+
+	const rateSuffix = vacancy.offeredRateType
+		? {
+				Hourly: t("vacancy.rate.short.Hourly", "/ hour"),
+				OneTime: t("vacancy.rate.short.OneTime", "one-time"),
+				Monthly: t("vacancy.rate.short.Monthly", "/ month"),
+			}[vacancy.offeredRateType as string]
+		: "";
+
+	const compensationText = `€${(vacancy.offeredAmount ?? 0).toLocaleString()} ${rateSuffix}`;
+
+	const equityTooltip = `${vacancy.promisePercentage}% ${t(
+		"page.vacancy.section.equityPromiseDescription",
+		"of project equity will be allocated upon reaching the required workflow step {step}",
+		{ step: vacancy.promiseStep?.name ?? "" },
+	)}`;
+
 	return (
 		<>
 			<PublicPageHeader
-				title={
-					<div className={styles.titleContainer}>
-						<Link href={`/jobs`}>
-							<Button
-								type="text"
-								size="small"
-								className={styles.projectTitle}
-								onMouseEnter={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "16px";
-										arrow.style.marginRight = "8px";
-										arrow.style.opacity = "1";
-									}
-									button.style.paddingLeft = "8px";
-									button.style.paddingRight = "8px";
-								}}
-								onMouseLeave={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "0";
-										arrow.style.marginRight = "0";
-										arrow.style.opacity = "0";
-									}
-									button.style.paddingLeft = "0";
-									button.style.paddingRight = "0";
-								}}
-							>
-								<Space size={0}>
-									<ArrowLeftOutlined
-										className="arrow"
-										style={{
-											width: 0,
-											marginRight: 0,
-											opacity: 0,
-											transition: "all 0.3s ease",
-											overflow: "hidden",
-											color: "#ff4d4f",
-										}}
-									/>
-									<span style={{ color: "#ff4d4f" }}>
-										{t("page.vacancy.title", "Jobs")}
-									</span>
-								</Space>
-							</Button>
-						</Link>
-						<Title className={styles.title}>
-							{t("page.vacancy.title", vacancy.title)}
-						</Title>
-					</div>
-				}
-				subTitle={`The open position from ${vacancy.team?.project?.name} project`}
+				title={vacancy.title}
+				subTitle={t(
+					"page.vacancy.subtitle",
+					"The open position from {project} project",
+					{ project: project?.name ?? "" },
+				)}
 				backgroundImage={pageCover || undefined}
+				extraPosition="top"
+				extra={
+					<Link href="/jobs" className={styles.backLink}>
+						<IconArrowLeft size={16} />
+						<span>{t("page.vacancy.title", "Jobs")}</span>
+					</Link>
+				}
 			/>
+
 			<div className="layout-background">
 				<div className={styles.container}>
-					<Spin spinning={false}>
-						{!!vacancy && (
-							<Card
-								actions={
-									session?.user
-										? [
-												<Button
-													key="action"
-													type={vacancy?.myTeamMemberId ? "default" : "primary"}
-													onClick={functionOkButton}
-												>
-													{statusOkButton()}
-												</Button>,
-											]
-										: undefined
-								}
-							>
-								<Flex vertical gap={24}>
-									<Row gutter={[24, 24]}>
-										<Col xs={24} md={14}>
-											<Space orientation="vertical" style={{ width: "100%" }}>
-												<div>
-													<Text className={styles.fieldLabel}>
-														{t("page.vacancy.section.project", "Project")}
-													</Text>
-													<Title level={4} style={{ margin: "8px 0" }}>
-														<Link
-															href={`/project/${vacancy.team?.project?.slug}`}
-														>
-															{vacancy.team?.project?.name}
-														</Link>
-													</Title>
-												</div>
-
-												{vacancy.team?.project?.description && (
-													<div>
-														<Text className={styles.fieldLabel}>
-															{t(
-																"page.vacancy.section.projectDescription",
-																"Project description",
-															)}
-														</Text>
-														<Markdown>
-															{vacancy.team.project.description.length > 512
-																? `${vacancy.team.project.description.slice(0, 512)}...(more on the project page)`
-																: vacancy.team.project.description}
-														</Markdown>
-													</div>
+					<Row gutter={[32, 32]}>
+						<Col xs={{ span: 24, order: 1 }} lg={{ span: 16, order: 0 }}>
+							<div className={styles.mainCard}>
+								<div className={styles.headBand}>
+									<div className={styles.headLeft}>
+										<div className={styles.companyRow}>
+											<div className={styles.projLogo}>
+												{project?.name?.charAt(0)?.toUpperCase() ?? "P"}
+											</div>
+											<div className={styles.companyMeta}>
+												{project?.slug ? (
+													<Link
+														href={`/project/${project.slug}`}
+														className={styles.projName}
+													>
+														{project?.name}
+													</Link>
+												) : (
+													<span className={styles.projName}>
+														{project?.name}
+													</span>
 												)}
-											</Space>
-										</Col>
-
-										<Col xs={24} md={10}>
-											{!showPitchVideo && vacancy.team?.project?.coverImage && (
-												<div className={styles.projectCover}>
-													{vacancy.team?.project?.videoLink && (
-														<div className={styles.coverButtonContainer}>
-															<Button
-																onClick={handleCoverClick}
-																type="primary"
-																size="small"
-															>
-																{t("page.vacancy.section.watch", "Watch")}
-															</Button>
-														</div>
-													)}
-													<Image
-														src={vacancy.team?.project?.coverImage}
-														alt="Project cover"
-														fill
-														style={{ objectFit: "cover" }}
-													/>
-												</div>
-											)}
-											{showPitchVideo && vacancy.team.project.videoLink && (
-												<div className={styles.videoContainer}>
-													<iframe
-														src={`https://www.youtube.com/embed/${vacancy.team.project.videoLink}?autoplay=1`}
-														title="Project video"
-														width="100%"
-														height="200"
-														style={{ border: "none", borderRadius: "8px" }}
-														onEnded={() => setShowPitchVideo(false)}
-													/>
-												</div>
-											)}
-										</Col>
-									</Row>
-
-									<Space orientation="vertical" style={{ width: "100%" }}>
-										<div>
-											<Text className={styles.fieldLabel}>
-												{t(
-													"page.vacancy.section.vacancyDescription",
-													"Position description",
-												)}
-											</Text>
-											<div style={{ whiteSpace: "pre-wrap" }}>
-												{vacancy.description}
+												<span className={styles.metaDot}>•</span>
+												<span className={styles.location}>
+													<IconMapPin size={15} />
+													{t("page.vacancy.remote", "Remote")}
+												</span>
 											</div>
 										</div>
-									</Space>
 
-									<Space>
-										<Text>
+										{(hasCompensation || hasEquity) && (
+											<div className={styles.badges}>
+												{hasCompensation && (
+													<Tooltip
+														title={t(
+															"page.vacancy.compensationTooltip",
+															"Compensation paid by the project for this position.",
+														)}
+													>
+														<span
+															className={`${styles.badge} ${styles.badgeBlue}`}
+														>
+															<IconCoin size={15} />
+															{compensationText}
+															<IconInfoCircle
+																size={13}
+																className={styles.badgeInfo}
+															/>
+														</span>
+													</Tooltip>
+												)}
+												{hasEquity && (
+													<Tooltip title={equityTooltip}>
+														<span
+															className={`${styles.badge} ${styles.badgeGreen}`}
+														>
+															<IconHeartHandshake size={15} />
+															{vacancy.promisePercentage}%{" "}
+															{t("page.vacancy.equity", "equity")}
+															<IconInfoCircle
+																size={13}
+																className={styles.badgeInfo}
+															/>
+														</span>
+													</Tooltip>
+												)}
+											</div>
+										)}
+									</div>
+
+									<div className={styles.headActions}>
+										<Button
+											type={vacancy?.myTeamMemberId ? "default" : "primary"}
+											size="large"
+											onClick={functionOkButton}
+										>
+											{statusOkButton()}
+										</Button>
+									</div>
+								</div>
+
+								<div className={styles.mainBody}>
+									{project?.description && (
+										<section className={styles.section}>
+											<h3 className={styles.sectionTitle}>
+												{t("page.vacancy.aboutProject", "About this project")}
+											</h3>
+											<div className={styles.prose}>
+												<Markdown>
+													{project.description.length > 700
+														? `${project.description.slice(0, 700)}…`
+														: project.description}
+												</Markdown>
+											</div>
+										</section>
+									)}
+
+									<section className={styles.section}>
+										<h3 className={styles.sectionTitle}>
+											{t("page.vacancy.aboutRole", "About this role")}
+										</h3>
+										<div className={styles.proseRaw}>{vacancy.description}</div>
+									</section>
+
+									{!!vacancy.finishedAt && (
+										<Text type="secondary" className={styles.relevantTo}>
 											{t(
 												"page.vacancy.section.theVacancyIsAcuteBefore",
 												"The position is relevant to",
 											)}
-											:
+											: <b>{dayjs(vacancy.finishedAt).format("LL")}</b>
 										</Text>
-										<Text strong>{dayjs(vacancy.finishedAt).format("LL")}</Text>
-									</Space>
+									)}
 
-									{!!vacancy.promisePercentage &&
-										!!vacancy.promiseStep?.name && (
-											<Flex vertical gap={8}>
-												<Text className={styles.fieldLabel}>
-													{t(
-														"page.vacancy.section.termsOfCooperation",
-														"Terms of cooperation",
-													)}
-												</Text>
-
-												<Alert
-													type="success"
-													message={`${t("page.vacancy.equityPromise", "Equity Promise")}: ${vacancy.promisePercentage}% ${t(
-														"page.vacancy.section.equityPromiseDescription",
-														"of project equity will be allocated upon reaching the required workflow step {step}",
-														{ step: vacancy.promiseStep.name },
-													)}`}
-												/>
-											</Flex>
-										)}
-
-									{vacancy.myTeamMemberId ? (
+									{vacancy.myTeamMemberId && (
 										<Alert
 											type="warning"
 											message={t(
@@ -348,7 +334,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 												"You have already responded to this position",
 											)}
 										/>
-									) : null}
+									)}
 
 									{!session?.user && (
 										<Alert
@@ -372,10 +358,22 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 											}
 										/>
 									)}
-								</Flex>
-							</Card>
-						)}
-					</Spin>
+								</div>
+							</div>
+						</Col>
+
+						<Col xs={{ span: 24, order: 0 }} lg={{ span: 8, order: 1 }}>
+							<Flex vertical gap={16}>
+								<ProjectVideoCover
+									coverImage={project?.coverImage}
+									videoLink={project?.videoLink}
+									alt={project?.name}
+								/>
+								<ProjectGameDetails project={project} />
+								<ProjectAuthorCard author={project?.author} />
+							</Flex>
+						</Col>
+					</Row>
 				</div>
 
 				{Boolean(session) && (

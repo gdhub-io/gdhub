@@ -64,3 +64,6 @@ backup-tolgee
 !.env.test.example
 
 .playwright-mcp
+
+# storybook
+storybook-static

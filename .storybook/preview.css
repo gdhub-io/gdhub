@@ -1,0 +1,6 @@
+/* Storybook canvas: force the app's light surface instead of the dark app html/body bg. */
+html,
+body {
+	background: #ffffff !important;
+	background-color: #ffffff !important;
+}

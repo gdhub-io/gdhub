@@ -8,24 +8,25 @@
 	:root {
 		--background-color: #0b0b0d;
 
-		// work direction colors
+		// work direction colors — light backgrounds, paired with black icons.
+		// Chosen by association; reused on vacancy cards and DirectionBadge.
 		--bg-direc-development: #E5F1FF;
 		--bg-direc-web-development: #D3F7FF;
-		--bg-direc-game-design: #FDFEC8;
+		--bg-direc-game-design: #EDE9FE;
 		--bg-direc-2d-art-animation: #FFEBEB;
-		--bg-direc-3d-art-animation: #FFF4CF;
-		--bg-direc-management: #F0EBFF;
+		--bg-direc-3d-art-animation: #FFE6CC;
+		--bg-direc-management: #E9EEF5;
 		--bg-direc-game-writer: #FDFEC8;
 		--bg-direc-learning: #DCFFF9;
 		--bg-direc-technical-art: #F2FEE6;
 		--bg-direc-music-sound: #C9EBFF;
 		--bg-direc-marketing: #FFD5C8;
-		--bg-direc-vfx: #FFD7BA;
-		--bg-direc-qa: #F2DDFF;
+		--bg-direc-vfx: #F3E8FF;
+		--bg-direc-qa: #E3F7EA;
 		--bg-direc-hr: #FFE2F0;
 		--bg-direc-video-editing: #FFEDFB;
-		--bg-direc-backend-development: #F6FFBF;
-		--bg-direc-investment: #FFCECE;
+		--bg-direc-backend-development: #E6EAFB;
+		--bg-direc-investment: #D9F2DF;
 		--bg-direc-other: #eeeeee;
 	}
 
