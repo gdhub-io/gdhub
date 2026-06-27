@@ -17,12 +17,16 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import SpecialitySelectModal from "../SpecialitySelectModal";
 import styles from "./style.module.scss";
+
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -254,18 +258,30 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 											/>
 										</div>
 									)}
-									{showPitchVideo && vacancy.data.team.project.videoLink && (
-										<div className={styles.videoContainer}>
-											<iframe
-												src={`https://www.youtube.com/embed/${vacancy.data.team.project.videoLink}?autoplay=1`}
-												title="Project video"
-												width="100%"
-												height="200"
-												style={{ border: "none", borderRadius: "8px" }}
-												onEnded={() => setShowPitchVideo(false)}
-											/>
-										</div>
-									)}
+									{vacancy.data.team.project.videoLink &&
+										(showPitchVideo ||
+											!vacancy.data.team.project.coverImage) && (
+											<div className={styles.videoContainer}>
+												<ReactPlayer
+													src={toPlayableVideoUrl(
+														vacancy.data.team.project.videoLink,
+													)}
+													light={
+														showPitchVideo
+															? false
+															: getVideoPoster(
+																	vacancy.data.team.project.videoLink,
+																) || true
+													}
+													playing={showPitchVideo}
+													onClickPreview={() => setShowPitchVideo(true)}
+													controls
+													width="100%"
+													height="100%"
+													onEnded={() => setShowPitchVideo(false)}
+												/>
+											</div>
+										)}
 								</Col>
 							</Row>
 

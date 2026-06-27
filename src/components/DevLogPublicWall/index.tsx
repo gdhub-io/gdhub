@@ -101,7 +101,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 							{!!report.video && (
 								<div className={styles.playerWrapper}>
 									<ReactPlayer
-										url={report.video}
+										src={report.video}
 										light
 										width="100%"
 										height="100%"

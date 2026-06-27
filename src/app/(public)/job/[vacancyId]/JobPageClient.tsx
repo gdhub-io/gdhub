@@ -29,6 +29,7 @@ import Markdown from "react-markdown";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import SpecialitySelectModal from "@/components/modals/SpecialitySelectModal";
 import { gtmEventTrigger } from "@/helpers/gtm";
+import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import styles from "./styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
@@ -279,18 +280,30 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 													/>
 												</div>
 											)}
-											{showPitchVideo && vacancy.team.project.videoLink && (
-												<div className={styles.videoContainer}>
-													<iframe
-														src={`https://www.youtube.com/embed/${vacancy.team.project.videoLink}?autoplay=1`}
-														title="Project video"
-														width="100%"
-														height="200"
-														style={{ border: "none", borderRadius: "8px" }}
-														onEnded={() => setShowPitchVideo(false)}
-													/>
-												</div>
-											)}
+											{vacancy.team.project.videoLink &&
+												(showPitchVideo ||
+													!vacancy.team?.project?.coverImage) && (
+													<div className={styles.videoContainer}>
+														<ReactPlayer
+															src={toPlayableVideoUrl(
+																vacancy.team.project.videoLink,
+															)}
+															light={
+																showPitchVideo
+																	? false
+																	: getVideoPoster(
+																			vacancy.team.project.videoLink,
+																		) || true
+															}
+															playing={showPitchVideo}
+															onClickPreview={() => setShowPitchVideo(true)}
+															controls
+															width="100%"
+															height="100%"
+															onEnded={() => setShowPitchVideo(false)}
+														/>
+													</div>
+												)}
 										</Col>
 									</Row>
 

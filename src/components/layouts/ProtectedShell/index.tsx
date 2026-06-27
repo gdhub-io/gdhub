@@ -2,51 +2,38 @@
 
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
-	Breadcrumb,
 	Button,
-	Col,
 	ConfigProvider,
 	Drawer,
-	Dropdown,
 	FloatButton,
 	Grid,
 	Layout,
 	Menu,
 	type MenuProps,
-	Row,
 	Space,
 	Typography,
 } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
 import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { useChat } from "@/components/Chat/useChat";
-import { ChatButton } from "@/components/ChatButton";
+import { Header as AppHeader } from "@/components/layouts/Header";
+import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
-const NotificationsBell = dynamic(
-	() =>
-		import("@/components/NotificationsBell").then((m) => m.NotificationsBell),
-	{
-		ssr: false,
-	},
-);
 const AIAgentDrawer = dynamic(
 	() => import("@/components/AIAgentDrawer").then((m) => m.AIAgentDrawer),
 	{ ssr: false },
@@ -56,7 +43,7 @@ const ChatModal = dynamic(
 	{ ssr: false },
 );
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Text } = Typography;
 
 /**
@@ -285,106 +272,36 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				locale={getLanguage() === "en" ? enLocale : ruLocale}
 			>
 				<Layout className={styles.container}>
-					<Header className={styles.header}>
-						<Row wrap={false} align="middle" style={{ height: "64px" }}>
-							<Col flex="auto">
-								<Breadcrumb
-									separator={<span style={{ color: "#00000033" }}>/</span>}
-									items={[
-										{
-											title: (
-												<Link href="/hub" className="logo">
-													<GdhubLogo style={{ width: "100px" }} />
-												</Link>
-											),
-										},
-										{
-											title: (
-												<Space>
-													<Avatar
-														src={session?.user?.image ?? undefined}
-														size={24}
-													/>
-													{screens.sm ? (
-														<Text className="username">
-															{session?.user?.name}
-														</Text>
-													) : null}
-												</Space>
-											),
-										},
-									]}
-								/>
-							</Col>
-							<Col flex="none">
-								<Space align="center" size={8}>
-									{screens.xl ? (
-										<>
-											<Link href="https://docs.gdhub.io" target="_blank">
-												<Button type="text" style={{ fontSize: 14 }}>
-													{t("hub.menu.documentation", "Documentation")}
-												</Button>
-											</Link>
-											<ChatButton onClick={() => setOpenChatModal(true)} />
-											<NotificationsBell />
-											<Dropdown
-												menu={{ items: dropdownMenuItems }}
-												trigger={["click"]}
-											>
-												<Button
-													type="text"
-													shape="circle"
-													style={{
-														display: "inline-flex",
-														alignItems: "center",
-														justifyContent: "center",
-														padding: 0,
-														lineHeight: 0,
-													}}
-													icon={
-														session?.user.image ? (
-															<Avatar
-																size={32}
-																src={
-																	session?.user?.image ? (
-																		<Image
-																			src={session?.user.image}
-																			width={32}
-																			height={32}
-																			alt="avatar"
-																		/>
-																	) : null
-																}
-															/>
-														) : null
-													}
-												/>
-											</Dropdown>
-										</>
-									) : (
-										<>
-											<NotificationsBell />
-											<ChatButton onClick={() => setOpenChatModal(true)} />
-											<Button
-												type="text"
-												shape="circle"
-												style={{ top: 2 }}
-												onClick={() => setOpenMobileMenu(true)}
-											>
-												<AiOutlineMenu />
-											</Button>
-										</>
-									)}
-								</Space>
-							</Col>
-						</Row>
-						<Menu
-							items={menuItems}
-							mode="horizontal"
-							selectedKeys={[pathname]}
-							className={styles.appMenu}
-						/>
-					</Header>
+					<AppHeader
+						className={styles.header}
+						breadcrumbItems={[
+							{
+								title: (
+									<Space>
+										<Avatar src={session?.user?.image ?? undefined} size={24} />
+										{screens.sm ? (
+											<Text className="username">{session?.user?.name}</Text>
+										) : null}
+									</Space>
+								),
+							},
+						]}
+						actions={
+							<HeaderActions
+								dropdownMenuItems={dropdownMenuItems}
+								onOpenMobileMenu={() => setOpenMobileMenu(true)}
+								onOpenChat={() => setOpenChatModal(true)}
+							/>
+						}
+						menu={
+							<Menu
+								items={menuItems}
+								mode="horizontal"
+								selectedKeys={[pathname]}
+								className={styles.appMenu}
+							/>
+						}
+					/>
 					<Content className={styles.contentContainer}>
 						<div className="layout-background">{children}</div>
 					</Content>
