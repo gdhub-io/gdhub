@@ -1,4 +1,3 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { BsCheckLg } from "@react-icons/all-files/bs/BsCheckLg";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -32,9 +31,9 @@ const VacancyArchiveModal = ({
 		refetchOnWindowFocus: false,
 	});
 
-	const { mutateAsync: saveVacancy, isPending: isUpdating } = useMutation({
-		mutationFn: (params: { id: string; data: Record<string, any> }) =>
-			axios.put<any>("/api/user/project/vacancy", params.data, {
+	const { mutateAsync: restoreVacancy } = useMutation({
+		mutationFn: (params: { id: string }) =>
+			axios.post<any>("/api/user/project/vacancy/restore", null, {
 				params: { id: params.id },
 			}),
 	});
@@ -57,17 +56,14 @@ const VacancyArchiveModal = ({
 		try {
 			setProcessing(true);
 
-			await saveVacancy({
-				id: selectedItem,
-				data: {
-					status: prismaClient.TeamVacancyStatus.Draft,
-					publishedAt: null,
-				},
-			});
+			// Restore = duplicate the archived vacancy into a fresh Draft (no payment);
+			// the archived one stays Closed. Open the new vacancy for review/payment.
+			const res = await restoreVacancy({ id: selectedItem });
+			const newVacancyId = res?.data?.id;
 			fetchArchivedProjectVacancies();
 
 			setProcessing(false);
-			onRestore(selectedItem);
+			onRestore(newVacancyId);
 		} catch (error) {
 			console.error(error);
 			setProcessing(false);

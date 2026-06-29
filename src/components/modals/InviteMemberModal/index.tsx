@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, DatePicker, Form, Input, Modal, message, Select } from "antd";
+import { Button, DatePicker, Form, Input, Modal, message } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
 
@@ -144,9 +145,9 @@ const InviteMemberModal = ({
 						{ required: true, message: t("Please select work direction") },
 					]}
 				>
-					<Select
+					<DirectionSelect
 						placeholder={t("Select work direction")}
-						options={directionsOptions}
+						options={directionsOptions ?? []}
 					/>
 				</Form.Item>
 

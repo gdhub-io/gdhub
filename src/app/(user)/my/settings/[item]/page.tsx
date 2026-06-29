@@ -14,6 +14,7 @@ export async function generateMetadata({
 		resources: "Resources",
 		connections: "Connections",
 		interests: "Interests",
+		payments: "Payments",
 		danger: "Danger Zone",
 	};
 	const title = titles[item] ?? "Settings";

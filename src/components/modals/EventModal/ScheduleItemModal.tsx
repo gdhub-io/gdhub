@@ -19,6 +19,7 @@ import debounce from "lodash/debounce";
 import { useSession } from "next-auth/react";
 import qs from "qs";
 import React, { useEffect } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 import type { ScheduleItemFormValues } from ".";
 
 const { RangePicker } = DatePicker;
@@ -337,11 +338,13 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 						},
 					]}
 				>
-					<Select
-						options={workDirections?.map((direction) => ({
-							label: direction.name,
-							value: direction.id,
-						}))}
+					<DirectionSelect
+						options={
+							workDirections?.map((direction) => ({
+								label: direction.name,
+								value: direction.id,
+							})) ?? []
+						}
 						placeholder={t(
 							"event.schedule.direction.placeholder",
 							"Select direction",

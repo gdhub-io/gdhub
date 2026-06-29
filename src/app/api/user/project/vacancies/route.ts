@@ -30,8 +30,36 @@ export const GET = withAuth({ mode: "user" })(
 					? { equals: prismaClient.TeamVacancyStatus.Closed }
 					: { not: prismaClient.TeamVacancyStatus.Closed },
 			},
+			include: {
+				direction: { select: { name: true } },
+			},
 		});
 
-		return json(vacancies);
+		const payments = vacancies.length
+			? await prisma.payment.findMany({
+					where: {
+						payableType: prismaClient.PayableType.VACANCY,
+						payableId: { in: vacancies.map((v) => v.id) },
+					},
+					orderBy: { createdAt: "desc" },
+				})
+			: [];
+
+		const paymentByVacancy = new Map<string, (typeof payments)[number]>();
+		for (const payment of payments) {
+			if (!paymentByVacancy.has(payment.payableId)) {
+				paymentByVacancy.set(payment.payableId, payment);
+			}
+		}
+
+		const result = vacancies.map((vacancy) => ({
+			...vacancy,
+			// Offered compensation is stored in minor units — expose it in EUR.
+			offeredAmount:
+				vacancy.offeredAmount != null ? vacancy.offeredAmount / 100 : null,
+			payment: paymentByVacancy.get(vacancy.id) ?? null,
+		}));
+
+		return json(result);
 	}),
 );

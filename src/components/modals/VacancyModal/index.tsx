@@ -19,28 +19,38 @@ import {
 	Select,
 	Space,
 	Spin,
+	Tag,
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+
+import { DirectionSelect } from "@/components/DirectionSelect";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
+import { usePaddle } from "@/services/paddle/usePaddle";
 import styles from "./style.module.scss";
 
-const PAID_VACANCY_FEE = 3;
+// Display-only: the actual charge is the configured Paddle price.
+const PAID_VACANCY_FEE = 9;
 
 interface VacancyModalProps {
 	teamId?: string;
 	projectId?: string;
+	projectSlug?: string;
 	vacancyId?: string;
 	open: boolean;
 	onOk: () => void;
 	onCancel: () => void;
 }
 
+// Keep in sync with LISTING_WINDOW_DAYS in the vacancy API route.
+const LISTING_WINDOW_DAYS = 90;
+
 const VacancyModal = ({
 	teamId,
 	projectId,
+	projectSlug,
 	vacancyId,
 	open,
 	onOk,
@@ -49,6 +59,7 @@ const VacancyModal = ({
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { options: directionsOptions } = useWorkDirections();
+	const { checkout } = usePaddle();
 	const [showPromiseFields, setShowPromiseFields] = useState(false);
 	const [showPaymentFields, setShowPaymentFields] = useState(false);
 
@@ -111,37 +122,140 @@ const VacancyModal = ({
 				form.setFieldsValue({ ...data, finishedAt: dayjs(data?.finishedAt) });
 				setShowPromiseFields(!!data?.promisePercentage);
 				setShowPaymentFields(
-					!!(data as Record<string, unknown>)?.paymentAmount,
+					!!(data as Record<string, unknown>)?.offeredAmount,
 				);
 			});
 		}
 	}, [open]);
 
+	const handleFormValuesChange = () => {
+		const offeredAmount = form.getFieldValue("offeredAmount");
+		const offeredRateType = form.getFieldValue("offeredRateType");
+		const hasOfferedComp = !!offeredAmount && !!offeredRateType;
+
+		if (hasOfferedComp && !showPaymentFields) {
+			setShowPaymentFields(true);
+		}
+	};
+
 	const isPaidVacancy = showPaymentFields;
-	const alreadyPaid = !!(vacancy?.data as Record<string, unknown>)?.paidAt;
+	const existingPayment = (vacancy?.data as Record<string, any>)?.payment;
+	// Listing fee already settled → no need to send the user through checkout again.
+	const isListingFeePaid = existingPayment?.status === "COMPLETED";
+
+	// A listing can be valid for at most LISTING_WINDOW_DAYS from its publication
+	// (set-once), so the date can be edited within that window but not extended
+	// indefinitely. Falls back to creation time / now for not-yet-published ones.
+	const vacancyData = vacancy?.data as Record<string, any> | undefined;
+	const listingAnchor = vacancyData?.publishedAt
+		? dayjs(vacancyData.publishedAt)
+		: vacancyData?.createdAt
+			? dayjs(vacancyData.createdAt)
+			: dayjs();
+	const maxFinishedDate = listingAnchor
+		.add(LISTING_WINDOW_DAYS, "day")
+		.endOf("day");
 
 	const handleOk = async (asDraft?: { asDraft: boolean }) => {
 		try {
 			const formData = await form.validateFields();
 
+			// "Paid vacancy" = it offers compensation, which requires the listing fee.
+			const hasOfferedComp =
+				isPaidVacancy && !!formData.offeredAmount && !!formData.offeredRateType;
+
+			// The listing fee (Paddle checkout) is only required when publishing a
+			// paid vacancy whose fee hasn't been settled yet. Drafts never charge.
+			const needsCheckout = !asDraft && hasOfferedComp && !isListingFeePaid;
+
 			const payload = {
 				...formData,
-				publishedAt: asDraft ? null : dayjs().toISOString(),
-				status: asDraft
-					? prismaClient.TeamVacancyStatus.Draft
-					: prismaClient.TeamVacancyStatus.Published,
+				publishedAt: asDraft || needsCheckout ? null : dayjs().toISOString(),
+				status:
+					asDraft || needsCheckout
+						? prismaClient.TeamVacancyStatus.Draft
+						: prismaClient.TeamVacancyStatus.Published,
 				teamId,
 				promisePercentage: formData.promisePercentage || null,
 				promiseStepId: formData.promiseStepId || null,
-				paymentAmount: formData.paymentAmount || null,
-				paymentRateType: formData.paymentRateType || null,
+				// Offered compensation now lives on the vacancy (EUR; server stores cents).
+				offeredAmount: formData.offeredAmount || null,
+				offeredRateType: formData.offeredRateType || null,
 			};
 
+			let createdVacancyId = vacancyId;
 			if (vacancyId) {
 				await saveVacancy({ id: vacancyId, data: payload });
 			} else {
-				await createVacancy(payload);
+				const response = await createVacancy(payload);
+				createdVacancyId = response?.data?.id;
 				gtmEventTrigger("vacancy_create", { teamId, title: formData.title });
+			}
+
+			// Ensure a listing-fee Payment exists for paid vacancies (drafts too), so
+			// the fee can be charged on publish. The offered amount itself is already
+			// stored on the vacancy above.
+			if (createdVacancyId && hasOfferedComp) {
+				const paymentResponse = await axios.post(
+					"/api/user/project/vacancy/payment",
+					{ vacancyId: createdVacancyId },
+				);
+
+				const paymentId = paymentResponse?.data?.id;
+
+				if (needsCheckout && paymentId) {
+					const priceId = process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID;
+
+					// Without a valid Paddle price id the checkout overlay fails with a
+					// generic "Something went wrong". Keep the vacancy as a saved draft
+					// (the payment is already persisted as PENDING) and tell the user.
+					if (!priceId) {
+						message.warning(
+							t(
+								"modal.vacancy.paymentNotConfigured",
+								"Payment is not configured yet. The position was saved as a draft.",
+							),
+						);
+						form.resetFields();
+						setShowPromiseFields(false);
+						setShowPaymentFields(false);
+						onOk();
+						return;
+					}
+
+					message.success(
+						t("A new open position has been added. Redirecting to payment..."),
+					);
+					form.resetFields();
+					setShowPromiseFields(false);
+					setShowPaymentFields(false);
+					onOk();
+
+					try {
+						const baseUrl =
+							typeof window !== "undefined"
+								? window.location.origin
+								: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
+						const successUrl = projectSlug
+							? `${baseUrl}/my/projects/${projectSlug}/vacancies?payment_success=true`
+							: `${baseUrl}/my/projects`;
+
+						await checkout({
+							priceId,
+							customData: { paymentId },
+							successUrl,
+						});
+					} catch (checkoutError) {
+						console.error("Checkout failed:", checkoutError);
+						message.error(t("Payment checkout failed. Please try again."));
+					}
+					return;
+				}
+			} else if (createdVacancyId && vacancyId && !hasOfferedComp) {
+				// Editing and the payment block was removed → drop any pending payment.
+				await axios.delete("/api/user/project/vacancy/payment", {
+					params: { vacancyId: createdVacancyId },
+				});
 			}
 
 			form.resetFields();
@@ -222,7 +336,7 @@ const VacancyModal = ({
 					>
 						{vacancy?.data.status === prismaClient.TeamVacancyStatus.Published
 							? t("Save")
-							: isPaidVacancy && !alreadyPaid
+							: isPaidVacancy && !isListingFeePaid
 								? t("Pay & Publish")
 								: t("Publish")}
 					</Button>
@@ -238,6 +352,7 @@ const VacancyModal = ({
 					wrapperCol={{ span: 12 }}
 					onFinish={() => {}}
 					onFinishFailed={() => {}}
+					onValuesChange={handleFormValuesChange}
 					autoComplete="off"
 					requiredMark="optional"
 					initialValues={{
@@ -271,7 +386,7 @@ const VacancyModal = ({
 									disabledDate={(current) =>
 										current &&
 										(current < dayjs().endOf("day") ||
-											current > dayjs().add(90, "day").endOf("day"))
+											current > maxFinishedDate)
 									}
 								/>
 							</Form.Item>
@@ -285,10 +400,10 @@ const VacancyModal = ({
 						rules={[{ required: true }]}
 						required
 					>
-						<Select
+						<DirectionSelect
 							style={{ width: "100%" }}
 							placeholder={t(`For example: 2D art and animation`)}
-							options={directionsOptions}
+							options={directionsOptions ?? []}
 						/>
 					</Form.Item>
 
@@ -334,11 +449,13 @@ const VacancyModal = ({
 									</Popover>
 								)}
 								{!showPaymentFields && (
-									<Popover content={t("In development")} placement="topRight">
-										<Button type="text" disabled icon={<IconCashBanknote />}>
-											{t("Add payment")}
-										</Button>
-									</Popover>
+									<Button
+										type="text"
+										icon={<IconCashBanknote />}
+										onClick={() => setShowPaymentFields(true)}
+									>
+										{t("Add payment")}
+									</Button>
 								)}
 							</Space>
 						</Form.Item>
@@ -349,27 +466,36 @@ const VacancyModal = ({
 							className={styles.optionCard}
 							title={t("Payment")}
 							extra={
-								<Popconfirm
-									title={t("Remove payment")}
-									placement="topRight"
-									onConfirm={() => {
-										form.setFieldsValue({
-											paymentAmount: null,
-											paymentRateType: null,
-										});
-										setShowPaymentFields(false);
-									}}
-								>
-									<Button
-										type="text"
-										size="small"
-										danger
-										icon={<IconTrash size={16} />}
-										onClick={(e) => {
-											e.stopPropagation();
+								isListingFeePaid ? (
+									// The listing fee is already paid — it can't be removed,
+									// so we show a paid badge instead of the delete button.
+									// (The amount/rate can still be edited above.)
+									<Tag color="green" style={{ marginInlineEnd: 0 }}>
+										{t("vacancy.payment.status.COMPLETED", "Paid")}
+									</Tag>
+								) : (
+									<Popconfirm
+										title={t("Remove payment")}
+										placement="topRight"
+										onConfirm={() => {
+											form.setFieldsValue({
+												offeredAmount: null,
+												offeredRateType: null,
+											});
+											setShowPaymentFields(false);
 										}}
-									/>
-								</Popconfirm>
+									>
+										<Button
+											type="text"
+											size="small"
+											danger
+											icon={<IconTrash size={16} />}
+											onClick={(e) => {
+												e.stopPropagation();
+											}}
+										/>
+									</Popconfirm>
+								)
 							}
 						>
 							<div
@@ -382,12 +508,23 @@ const VacancyModal = ({
 								{t(
 									"modal.vacancy.paymentNotice",
 									`Paid positions require a listing fee of €${PAID_VACANCY_FEE} to publish.`,
-								)}
+								)}{" "}
+								{t(
+									"modal.vacancy.paymentNonRefundable",
+									"The listing fee is non-refundable.",
+								)}{" "}
+								<a
+									href="/refund-policy"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{t("modal.vacancy.refundPolicyLink", "Refund policy")}
+								</a>
 							</div>
 							<Row gutter={[16, 16]}>
 								<Col span={12}>
 									<Form.Item
-										name="paymentAmount"
+										name="offeredAmount"
 										label={t("Amount (EUR)")}
 										wrapperCol={{ span: 24 }}
 										style={{ marginBottom: 0 }}
@@ -403,7 +540,7 @@ const VacancyModal = ({
 								</Col>
 								<Col span={12}>
 									<Form.Item
-										name="paymentRateType"
+										name="offeredRateType"
 										label={t("Rate type")}
 										wrapperCol={{ span: 24 }}
 										style={{ marginBottom: 0 }}

@@ -57,6 +57,10 @@ const DangerProfileForm = dynamic(
 		),
 	{ ssr: false },
 );
+const PaymentsList = dynamic(
+	() => import("@/components/PaymentsList").then((m) => m.default),
+	{ ssr: false },
+);
 
 export function SettingsItemClient() {
 	const params = useParams<{ item?: string }>();
@@ -87,6 +91,9 @@ export function SettingsItemClient() {
 		},
 		[saveProfileMutate],
 	);
+
+	// Payments don't depend on the profile payload — render before the guard.
+	if (currentItem === "payments") return <PaymentsList />;
 
 	if (!profile?.data) return null;
 

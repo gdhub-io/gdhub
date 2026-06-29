@@ -26,6 +26,7 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 import { hasRole } from "@/helpers/user";
 import styles from "./style.module.scss";
 
@@ -513,15 +514,17 @@ const EventModal: React.FC<EventModalProps> = ({
 								},
 							]}
 						>
-							<Select
+							<DirectionSelect
 								placeholder={t(
 									"event.modal.direction.placeholder",
 									"Select direction",
 								)}
-								options={workDirections?.map((direction) => ({
-									label: direction.name,
-									value: direction.id,
-								}))}
+								options={
+									workDirections?.map((direction) => ({
+										label: direction.name,
+										value: direction.id,
+									})) ?? []
+								}
 							/>
 						</Form.Item>
 

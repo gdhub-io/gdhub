@@ -14,6 +14,8 @@ const preview: Preview = {
 				date: /Date$/i,
 			},
 		},
+		layout: "padded",
+		backgrounds: { disable: true },
 	},
 	decorators: [
 		(Story: () => ReactElement) => (
