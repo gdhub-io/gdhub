@@ -9,7 +9,6 @@ import {
 	Modal,
 	message,
 	Row,
-	Select,
 	Spin,
 	TimePicker,
 } from "antd";
@@ -17,6 +16,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 
 const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm();
@@ -210,13 +210,13 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						rules={[{ required: true }]}
 						required
 					>
-						<Select
+						<DirectionSelect
 							style={{ width: "100%" }}
 							placeholder={t(
 								"modal.proposition-lecture.field.directionId.placeholder",
 								`For example: Game design`,
 							)}
-							options={directionsOptions}
+							options={directionsOptions ?? []}
 						/>
 					</Form.Item>
 

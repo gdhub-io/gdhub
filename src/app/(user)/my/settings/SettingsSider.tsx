@@ -44,6 +44,10 @@ export function SettingsSider() {
 				key: "interests",
 			},
 			{
+				label: t("profile.settings.menu.payments", "Payments"),
+				key: "payments",
+			},
+			{
 				label: t("profile.settings.menu.danger", "Danger Zone"),
 				key: "danger",
 			},

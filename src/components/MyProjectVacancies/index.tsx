@@ -36,6 +36,7 @@ const { Text } = Typography;
 interface VacancyPayment {
 	id: string;
 	status: prismaClient.PaymentStatus;
+	completedAt?: string | null;
 }
 
 interface Vacancy {
@@ -206,12 +207,23 @@ const MyProjectVacancies = () => {
 				};
 
 				return (
-					<Tag
-						color={config.color}
-						style={{ marginInlineEnd: 0, whiteSpace: "nowrap" }}
+					<span
+						style={{
+							display: "inline-flex",
+							alignItems: "center",
+							gap: 6,
+							whiteSpace: "nowrap",
+						}}
 					>
-						{config.label}
-					</Tag>
+						<Tag color={config.color} style={{ marginInlineEnd: 0 }}>
+							{config.label}
+						</Tag>
+						{payment.status === "COMPLETED" && payment.completedAt && (
+							<Text type="secondary" style={{ fontSize: 12 }}>
+								{dayjs(payment.completedAt).format("ll")}
+							</Text>
+						)}
+					</span>
 				);
 			},
 		},

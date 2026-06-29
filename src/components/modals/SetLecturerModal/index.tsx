@@ -9,7 +9,6 @@ import {
 	Modal,
 	message,
 	Row,
-	Select,
 	Spin,
 	TimePicker,
 } from "antd";
@@ -18,6 +17,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 
 const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm();
@@ -240,10 +240,10 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						wrapperCol={{ span: 24 }}
 						required
 					>
-						<Select
+						<DirectionSelect
 							style={{ width: "100%" }}
 							placeholder={t("For example: game design")}
-							options={directionsOptions}
+							options={directionsOptions ?? []}
 						/>
 					</Form.Item>
 

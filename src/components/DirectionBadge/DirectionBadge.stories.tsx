@@ -1,38 +1,28 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
+import { WORK_DIRECTIONS } from "./directions";
 import { DirectionBadge } from "./index";
-
-/** All work directions, matching the seed list in the database. */
-const DIRECTIONS = [
-	"development",
-	"web development",
-	"game design",
-	"2d art & animation",
-	"3d art & animation",
-	"management",
-	"game writer",
-	"learning",
-	"technical art",
-	"music & sound",
-	"marketing",
-	"vfx",
-	"qa",
-	"hr",
-	"video editing",
-	"backend development",
-	"investment",
-	"other",
-];
 
 const meta: Meta<typeof DirectionBadge> = {
 	title: "Components/DirectionBadge",
 	component: DirectionBadge,
 	parameters: { layout: "padded" },
 	args: { onlyIcon: false, size: 28 },
+	argTypes: {
+		name: {
+			control: "select",
+			options: WORK_DIRECTIONS.map((d) => d.label),
+		},
+	},
 };
 
 export default meta;
 
 type Story = StoryObj<typeof DirectionBadge>;
+
+/** Single badge, configurable via controls. */
+export const Playground: Story = {
+	args: { name: "game design" },
+};
 
 /** Every work direction with its icon + light background (two columns, as in the design). */
 export const AllDirections: Story = {
@@ -44,8 +34,49 @@ export const AllDirections: Story = {
 				gap: "14px 40px",
 			}}
 		>
-			{DIRECTIONS.map((name) => (
-				<DirectionBadge key={name} {...args} name={name} />
+			{WORK_DIRECTIONS.map((d) => (
+				<DirectionBadge key={d.slug} {...args} name={d.label} />
+			))}
+		</div>
+	),
+};
+
+/** The full direction → icon + color mapping object, rendered as a reference table. */
+export const DirectionMap: StoryObj = {
+	parameters: { controls: { disable: true } },
+	render: () => (
+		<div
+			style={{
+				display: "grid",
+				gridTemplateColumns: "repeat(3, max-content)",
+				alignItems: "center",
+				gap: "14px 28px",
+				fontSize: 13,
+			}}
+		>
+			{WORK_DIRECTIONS.map((d) => (
+				<div key={d.slug} style={{ display: "contents" }}>
+					<DirectionBadge name={d.label} />
+					<span style={{ color: "#71717a", fontFamily: "monospace" }}>
+						{d.slug}
+					</span>
+					<span
+						style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
+					>
+						<span
+							style={{
+								width: 20,
+								height: 20,
+								borderRadius: 6,
+								background: d.color,
+								border: "1px solid rgba(0,0,0,0.08)",
+							}}
+						/>
+						<span style={{ color: "#71717a", fontFamily: "monospace" }}>
+							{d.color}
+						</span>
+					</span>
+				</div>
 			))}
 		</div>
 	),

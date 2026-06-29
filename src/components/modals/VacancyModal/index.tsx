@@ -25,6 +25,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
+import { DirectionSelect } from "@/components/DirectionSelect";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
 import { usePaddle } from "@/services/paddle/usePaddle";
@@ -399,10 +400,10 @@ const VacancyModal = ({
 						rules={[{ required: true }]}
 						required
 					>
-						<Select
+						<DirectionSelect
 							style={{ width: "100%" }}
 							placeholder={t(`For example: 2D art and animation`)}
-							options={directionsOptions}
+							options={directionsOptions ?? []}
 						/>
 					</Form.Item>
 
