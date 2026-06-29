@@ -17,8 +17,6 @@
 		"start": "next start",
 		"lint": "biome check --diagnostic-level=error ./src",
 		"type-check": "tsc --noEmit",
-		"storybook": "storybook dev -p 6006",
-		"build-storybook": "storybook build",
 		"prepare": "husky install",
 		"refresh-translations": "node import-translations.js",
 		"db:generate": "gdhub-prisma generate --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
