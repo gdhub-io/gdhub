@@ -70,6 +70,7 @@ export default function EventSettingsPage() {
 			<Layout>
 				<Sider
 					width={200}
+					theme="light"
 					className={styles.sider}
 					breakpoint="lg"
 					collapsedWidth="0"
@@ -78,6 +79,7 @@ export default function EventSettingsPage() {
 					{screens.lg ? (
 						<Menu
 							mode="vertical"
+							theme="light"
 							selectedKeys={selectedKey}
 							style={{ height: "100%", borderRight: 0 }}
 							items={settingsMenu}

@@ -44,6 +44,15 @@ import ProjectAdviceArchiveModal from "./ProjectAdviceArchiveModal";
 
 const { Paragraph, Text } = Typography;
 
+/** Team member row with the offered compensation of the vacancy they applied through. */
+type TeamMemberRow = prismaClient.TeamMember & {
+	user: prismaClient.User;
+	vacancy?: Pick<
+		prismaClient.TeamVacancy,
+		"offeredAmount" | "offeredRateType"
+	> | null;
+};
+
 const getTelegramExpertLink = (specialityId: string) => {
 	return `https://t.me/gdhub_experts_bot/app?startapp=expert_${specialityId}`;
 };
@@ -81,7 +90,7 @@ const MyTeam = () => {
 		queryFn: () =>
 			axios.get<
 				prismaClient.Team & {
-					members: (prismaClient.TeamMember & { user: prismaClient.User })[];
+					members: TeamMemberRow[];
 				}
 			>("/api/user/project/team", {
 				params: { teamId: contextProject?.team?.id },
@@ -353,9 +362,14 @@ const MyTeam = () => {
 	const noAvailableInvestorShare =
 		investmentReserve > 0 && totalInvestorShare >= investmentReserve;
 
-	const columns: ColumnsType<
-		prismaClient.TeamMember & { user: prismaClient.User }
-	> = [
+	// Short suffix shown after the offered amount, mirrors VacancyCard wording.
+	const rateSuffix: Record<prismaClient.PaymentRateType, string> = {
+		Hourly: t("vacancy.rate.hourly", "/ hour"),
+		OneTime: t("vacancy.rate.oneTime", "one-time"),
+		Monthly: t("vacancy.rate.monthly", "/ month"),
+	};
+
+	const columns: ColumnsType<TeamMemberRow> = [
 		{
 			title: t("Team Member"),
 			dataIndex: "id",
@@ -403,6 +417,26 @@ const MyTeam = () => {
 					</Space>
 				) : (
 					value
+				);
+			},
+		},
+		{
+			title: t("table.team.compensation", "Compensation"),
+			key: "compensation",
+			responsive: ["md"],
+			render: (_, member) => {
+				const amount = member.vacancy?.offeredAmount;
+				const rateType = member.vacancy?.offeredRateType;
+
+				// Only members who applied through a paid vacancy have offered terms.
+				if (amount == null || rateType == null) {
+					return <Text type="secondary">-</Text>;
+				}
+
+				return (
+					<Text strong>
+						€{amount.toLocaleString()} {rateSuffix[rateType]}
+					</Text>
 				);
 			},
 		},

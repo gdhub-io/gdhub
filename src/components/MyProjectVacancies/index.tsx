@@ -351,7 +351,7 @@ const MyProjectVacancies = () => {
 						? window.location.origin
 						: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
 				const successUrl = projectSlug
-					? `${baseUrl}/my/projects/${projectSlug}/vacancies?payment_success=true`
+					? `${baseUrl}/my/projects/${projectSlug}/open-positions?payment_success=true`
 					: `${baseUrl}/my/projects`;
 
 				await checkout({

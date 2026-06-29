@@ -244,11 +244,11 @@ export const ProtectedProjectLayout = ({
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/vacancies`,
+			key: `/my/projects/${projectSlug}/open-positions`,
 			disabled: !isProjectAuthor,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/vacancies`}>
-					{t("app.user-project.menu.vacancies", "Open positions")}
+				<Link href={`/my/projects/${projectSlug}/open-positions`}>
+					{t("app.user-project.menu.open-positions", "Open positions")}
 				</Link>
 			),
 		},
