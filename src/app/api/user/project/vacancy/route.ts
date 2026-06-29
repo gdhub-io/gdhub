@@ -9,6 +9,19 @@ import {
 } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
+// A paid listing is valid for at most this many days from its publication.
+// Anchoring the cap to the (set-once) publish date stops a single payment from
+// being extended forever by repeatedly editing the finish date.
+const LISTING_WINDOW_DAYS = 90;
+
+function maxFinishedAt(anchor: Date): Date {
+	const d = new Date(
+		anchor.getTime() + LISTING_WINDOW_DAYS * 24 * 60 * 60 * 1000,
+	);
+	d.setHours(23, 59, 59, 999);
+	return d;
+}
+
 const IdQuerySchema = z.object({
 	id: z.string(),
 });
@@ -25,6 +38,12 @@ const CreateVacancySchema = z.object({
 	teamId: z.string(),
 	promisePercentage: z.number().nullable().optional(),
 	promiseStepId: z.string().nullable().optional(),
+	// Offered compensation (in major units, EUR) — stored on the vacancy in cents.
+	offeredAmount: z.number().nullable().optional(),
+	offeredRateType: z
+		.enum(["Hourly", "OneTime", "Monthly"])
+		.nullable()
+		.optional(),
 });
 
 const UpdateVacancySchema = z.object({
@@ -40,7 +59,17 @@ const UpdateVacancySchema = z.object({
 	finishedAt: z.string().optional(),
 	promisePercentage: z.number().nullable().optional(),
 	promiseStepId: z.string().nullable().optional(),
+	offeredAmount: z.number().nullable().optional(),
+	offeredRateType: z
+		.enum(["Hourly", "OneTime", "Monthly"])
+		.nullable()
+		.optional(),
 });
+
+// Offered compensation is entered/displayed in EUR but stored in minor units.
+const toCents = (eur: number) => Math.round(eur * 100);
+const fromCents = (cents: number | null | undefined) =>
+	cents != null ? cents / 100 : null;
 
 type IdQuery = z.infer<typeof IdQuerySchema>;
 type CreateVacancyBody = z.infer<typeof CreateVacancySchema>;
@@ -90,7 +119,23 @@ export const GET = withAuth({ mode: "user" })(
 			where: { vacancyId: id, userId: currentUser.id },
 		});
 
-		return json({ ...data, myTeamMemberId: teamMember?.id });
+		// The Payment row is the listing fee (status/receipt). Surface the latest one
+		// so the edit form knows whether the fee is paid.
+		const payment = await prisma.payment.findFirst({
+			where: {
+				payableType: prismaClient.PayableType.VACANCY,
+				payableId: id,
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		return json({
+			...data,
+			// Offered compensation lives on the vacancy; expose it in EUR for the form.
+			offeredAmount: fromCents(data?.offeredAmount),
+			myTeamMemberId: teamMember?.id,
+			payment,
+		});
 	}),
 );
 
@@ -100,8 +145,21 @@ export const POST = withAuth({ mode: "user" })(
 		if (!currentUser) return apiError.unauthorized();
 		const data = body as CreateVacancyBody;
 		try {
-			const { promisePercentage, promiseStepId, ...vacancyData } = data;
+			const {
+				promisePercentage,
+				promiseStepId,
+				offeredAmount,
+				offeredRateType,
+				...vacancyData
+			} = data;
 			const hasEquityPromise = promisePercentage && promiseStepId;
+
+			// New listing: the window is anchored to now.
+			if (new Date(vacancyData.finishedAt) > maxFinishedAt(new Date())) {
+				return apiError.badRequest(
+					`finishedAt cannot be more than ${LISTING_WINDOW_DAYS} days from now`,
+				);
+			}
 
 			const vacancy = await prisma.teamVacancy.create({
 				data: {
@@ -109,10 +167,16 @@ export const POST = withAuth({ mode: "user" })(
 					status: vacancyData.status as prismaClient.TeamVacancyStatus,
 					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
 					promiseStepId: hasEquityPromise ? promiseStepId : undefined,
+					offeredAmount: offeredAmount != null ? toCents(offeredAmount) : null,
+					offeredRateType:
+						(offeredRateType as prismaClient.PaymentRateType | null) ?? null,
 				},
 			});
 
-			return json(vacancy);
+			return json({
+				...vacancy,
+				offeredAmount: fromCents(vacancy.offeredAmount),
+			});
 		} catch (error) {
 			console.error("[project.create]", error);
 			throw error;
@@ -128,7 +192,51 @@ export const PUT = withAuth({ mode: "user" })(
 		const id = url.searchParams.get("id");
 		if (!id) return apiError.badRequest("id is required");
 		const data = body as UpdateVacancyBody;
-		const { promisePercentage, promiseStepId, ...vacancyData } = data;
+		const {
+			promisePercentage,
+			promiseStepId,
+			offeredAmount,
+			offeredRateType,
+			// publishedAt from the client is ignored — it's set once, server-side.
+			publishedAt: _clientPublishedAt,
+			...vacancyData
+		} = data;
+
+		const existing = await prisma.teamVacancy.findUnique({
+			where: { id },
+			select: {
+				publishedAt: true,
+				createdAt: true,
+				status: true,
+				finishedAt: true,
+			},
+		});
+		if (!existing) return apiError.notFound("Vacancy not found");
+
+		// The window is anchored to the first publication (set-once). Falls back to
+		// creation time while the vacancy has never been published. Only block an
+		// actual extension past the window — keeping or shortening the date is always
+		// allowed (so existing/legacy listings stay editable).
+		if (vacancyData.finishedAt) {
+			const anchor = existing.publishedAt ?? existing.createdAt;
+			const nextFinishedAt = new Date(vacancyData.finishedAt);
+			const isExtending = nextFinishedAt > existing.finishedAt;
+			if (isExtending && nextFinishedAt > maxFinishedAt(anchor)) {
+				return apiError.badRequest(
+					`finishedAt cannot be more than ${LISTING_WINDOW_DAYS} days from publication`,
+				);
+			}
+		}
+
+		// Set publishedAt only on the first publish; never reset it afterwards, so
+		// toggling draft/publish can't move the window anchor.
+		const nextStatus = (vacancyData.status ??
+			existing.status) as prismaClient.TeamVacancyStatus;
+		const publishedAt =
+			existing.publishedAt ??
+			(nextStatus === prismaClient.TeamVacancyStatus.Published
+				? new Date()
+				: null);
 
 		const vacancy = await prisma.teamVacancy.update({
 			where: { id },
@@ -137,12 +245,29 @@ export const PUT = withAuth({ mode: "user" })(
 				status: vacancyData.status as
 					| prismaClient.TeamVacancyStatus
 					| undefined,
+				publishedAt,
 				promisePercentage,
 				promiseStepId,
+				// `undefined` = field not in the payload → leave unchanged (so e.g. a
+				// table "Publish" that only sends status doesn't wipe the offer).
+				offeredAmount:
+					offeredAmount === undefined
+						? undefined
+						: offeredAmount === null
+							? null
+							: toCents(offeredAmount),
+				offeredRateType:
+					offeredRateType === undefined
+						? undefined
+						: ((offeredRateType as prismaClient.PaymentRateType | null) ??
+							null),
 			},
 		});
 
-		return json(vacancy);
+		return json({
+			...vacancy,
+			offeredAmount: fromCents(vacancy.offeredAmount),
+		});
 	}),
 );
 
@@ -157,6 +282,17 @@ export const DELETE = withAuth({ mode: "user" })(
 		await prisma.teamVacancy.update({
 			where: { id },
 			data: { status: prismaClient.TeamVacancyStatus.Closed },
+		});
+
+		// Drop any unsettled (non-COMPLETED) payment so an archived vacancy doesn't
+		// carry a stale "pending" listing fee that would resurface on restore.
+		// COMPLETED payments are kept as payment history.
+		await prisma.payment.deleteMany({
+			where: {
+				payableType: prismaClient.PayableType.VACANCY,
+				payableId: id,
+				status: { not: prismaClient.PaymentStatus.COMPLETED },
+			},
 		});
 
 		return json({ success: true });

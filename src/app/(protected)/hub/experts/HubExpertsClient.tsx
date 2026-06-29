@@ -6,6 +6,7 @@ import { Button, ConfigProvider, Form, Row, Select, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { useWorkDirections } from "@/hooks/library";
 import styles from "./styles.module.scss";
@@ -98,10 +99,10 @@ export default function HubExpertsClient() {
 							</Form.Item>
 
 							<Form.Item name="workDirectionId">
-								<Select
+								<DirectionSelect
 									allowClear
 									placeholder={t("experts.page.filter", "Filter by direction")}
-									options={workDirectionOptions}
+									options={workDirectionOptions ?? []}
 									className={styles.filterSelect}
 								/>
 							</Form.Item>

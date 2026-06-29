@@ -23,6 +23,7 @@ import {
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 
 interface IOnboardingSpecialityStep {
@@ -384,10 +385,10 @@ export const OnboardingSpecialityStep = ({
 											label={t("workDirection")}
 											rules={[{ required: true }]}
 										>
-											<Select
+											<DirectionSelect
 												style={{ width: "100%" }}
 												placeholder={t(`For example: Game Design`)}
-												options={workDirectionOptions}
+												options={workDirectionOptions ?? []}
 												disabled={!!pendingInvitation}
 											/>
 										</Form.Item>

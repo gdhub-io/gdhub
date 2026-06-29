@@ -2,6 +2,14 @@ import type * as sdk from "matrix-js-sdk";
 import { create } from "zustand";
 import type { MatrixSession } from "@/services/matrix";
 
+export type PushStatus = {
+	supported: boolean;
+	permission: NotificationPermission;
+	hasToken: boolean;
+	pusherRegistered: boolean;
+	error: string | null;
+};
+
 export type ChatStore = {
 	ready: boolean;
 	openChatModal: boolean;
@@ -10,6 +18,7 @@ export type ChatStore = {
 	chatClient: sdk.MatrixClient | null;
 	userMembership: string | null;
 	unreadTotal: number;
+	pushStatus: PushStatus | null;
 	chatContext: {
 		type: string;
 		data: Record<string, any> | null;
@@ -28,6 +37,7 @@ export type ChatStore = {
 	setChatClient: (chatClient: sdk.MatrixClient | null) => void;
 	setUserMembership: (userMembership: string | null) => void;
 	setUnreadTotal: (unreadTotal: number) => void;
+	setPushStatus: (pushStatus: PushStatus | null) => void;
 };
 
 export const useChat = create<ChatStore>((set, get, store) => ({
@@ -38,6 +48,7 @@ export const useChat = create<ChatStore>((set, get, store) => ({
 	chatClient: null,
 	userMembership: null,
 	unreadTotal: 0,
+	pushStatus: null,
 	chatContext: null,
 	setChatContext: (
 		chatContext: {
@@ -48,6 +59,7 @@ export const useChat = create<ChatStore>((set, get, store) => ({
 	setChatClient: (chatClient: sdk.MatrixClient | null) => set({ chatClient }),
 	setUserMembership: (userMembership: string | null) => set({ userMembership }),
 	setUnreadTotal: (unreadTotal: number) => set({ unreadTotal }),
+	setPushStatus: (pushStatus: PushStatus | null) => set({ pushStatus }),
 	setReady: (ready: boolean) => set({ ready }),
 	setOpenChatModal: (openChatModal: boolean) => set({ openChatModal }),
 	setSelectedRoomId: (selectedRoomId: string) => set({ selectedRoomId }),

@@ -1,7 +1,17 @@
 import { Prompts, Welcome } from "@ant-design/x";
+import axios from "axios";
 import { useState } from "react";
 import { useChat } from "../useChat";
 import styles from "./style.module.scss";
+
+// fire-and-forget: tell the backend to notify the inviter (Novu inbox)
+function notifyInviteResponse(roomId: string, action: "accepted" | "declined") {
+	axios
+		.post(`/api/chat/rooms/${encodeURIComponent(roomId)}/invite-response`, {
+			action,
+		})
+		.catch(() => {});
+}
 
 export default function DefaultInvite() {
 	const [isJoining, setIsJoining] = useState(false);
@@ -27,6 +37,7 @@ export default function DefaultInvite() {
 							try {
 								setIsJoining(true);
 								await chatClient.joinRoom(selectedRoomId);
+								notifyInviteResponse(selectedRoomId, "accepted");
 							} finally {
 								setIsJoining(false);
 							}
@@ -35,6 +46,7 @@ export default function DefaultInvite() {
 							try {
 								setIsDeclining(true);
 								await chatClient.leave(selectedRoomId);
+								notifyInviteResponse(selectedRoomId, "declined");
 							} finally {
 								setIsDeclining(false);
 							}

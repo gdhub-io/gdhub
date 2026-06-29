@@ -1,6 +1,5 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import * as sdk from "matrix-js-sdk";
-import { EventType } from "matrix-js-sdk";
 import { z } from "zod";
 import { env } from "@/helpers/env";
 import {
@@ -11,6 +10,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix/admin";
+import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
 // auth + server-side Matrix SDK — never prerender (also avoids loading
@@ -35,19 +35,28 @@ export const POST = withAuth({
 			return apiError.badRequest("Cannot start a chat with yourself");
 		}
 
-		const target = await prisma.user.findUnique({
-			where: { id: toUserId },
-			select: { id: true, email: true, name: true, image: true },
-		});
+		const [admin, target] = await Promise.all([
+			prisma.user.findUnique({
+				where: { id: currentUser.id },
+				select: { id: true, email: true, name: true, image: true },
+			}),
+			prisma.user.findUnique({
+				where: { id: toUserId },
+				select: { id: true, email: true, name: true, image: true },
+			}),
+		]);
 
 		if (!target?.email) {
 			return apiError.badRequest("Target user not found or has no email");
 		}
 
-		// make sure both sides exist in Matrix
+		// make sure both sides exist in Matrix — with display name + avatar so the
+		// other participant sees a proper name/picture in the auto-named DM
 		const adminMatrixUser = await ensureMatrixUser(
 			currentUser.id,
-			currentUser.email,
+			admin?.email || currentUser.email,
+			admin?.name || undefined,
+			admin?.image || undefined,
 		);
 		const targetMatrixUser = await ensureMatrixUser(
 			target.id,
@@ -67,27 +76,33 @@ export const POST = withAuth({
 			deviceId: adminSession.deviceId,
 		});
 
+		// No explicit room name/avatar: for a 1:1 DM each side should see the OTHER
+		// participant. Matrix computes the room name/avatar from the other member
+		// (heroes), so a shared name set to one user would otherwise make that user
+		// see a chat named after themselves.
 		const room = await adminMatrixClient.createRoom({
-			name: target.name || target.email,
 			is_direct: true,
 			invite: [targetMatrixUser.user_id],
 		});
 
-		if (target.image) {
-			try {
-				const avatarFile = await fetch(target.image).then((res) => res.blob());
-				const uploaded = await adminMatrixClient.uploadContent(avatarFile, {
-					type: avatarFile.type || "image/png",
-					name: `dm-${target.id}-avatar`,
-				});
-				await adminMatrixClient.sendStateEvent(
-					room.room_id,
-					EventType.RoomAvatar,
-					{ url: uploaded.content_uri || undefined },
-				);
-			} catch (error) {
-				console.error("[chat/rooms/direct] avatar upload failed", error);
-			}
+		// notify the recipient about the new chat invitation (persistent in-app
+		// inbox via Novu — independent of the Matrix push / live toast)
+		try {
+			await NovuService.send({
+				template: "default-message",
+				to: { subscriberId: target.id, email: target.email || undefined },
+				payload: {
+					title: "New chat invitation",
+					message: `${admin?.name || "Someone"} invited you to a chat.`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub?chat=1&roomId=${room.room_id}`,
+					redirectUrlType: "internal",
+				},
+			});
+		} catch (error) {
+			console.error(
+				"[chat/rooms/direct] novu invite notification failed",
+				error,
+			);
 		}
 
 		return json({ roomId: room.room_id });

@@ -11,6 +11,10 @@ vi.mock("../src/services/prisma", () => ({
 	},
 }));
 
+vi.mock("@/auth", () => ({
+	auth: vi.fn().mockResolvedValue(null),
+}));
+
 describe("GET /api/devlog/[projectReportId]", () => {
 	it("returns a devlog post", async () => {
 		const mockPost = {

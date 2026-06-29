@@ -23,14 +23,16 @@ export const GET = withAuth({ mode: "user" })(
 					include: {
 						equity: {
 							include: {
-								equityAllocations: { include: { promises: true } },
+								equityAllocations: {
+									// Only count promises that haven't been executed yet.
+									// Executed promises are already converted into the
+									// allocation's vested `percentage`, so counting them
+									// again would double-count (matches the equity endpoint
+									// used by the team page / make-promise flow).
+									include: { promises: { where: { isExecuted: false } } },
+								},
 							},
 						},
-					},
-				},
-				members: {
-					include: {
-						equityAllocations: { include: { promises: true } },
 					},
 				},
 				vacancies: {
@@ -56,17 +58,10 @@ export const GET = withAuth({ mode: "user" })(
 			0,
 		);
 
-		const membersPromisesSum = team.members.reduce(
-			(sum: number, member: { equityAllocations: { percentage: number }[] }) =>
-				sum +
-				member.equityAllocations.reduce(
-					(promiseSum: number, promise: { percentage: number }) =>
-						promiseSum + promise.percentage,
-					0,
-				),
-			0,
-		);
-
+		// NOTE: every EquityAllocation belongs to the project's equity (equityId is
+		// required) and is optionally linked to a team member. So member allocations
+		// are already included in projectPromisesSum below — counting them again here
+		// double-counts and was the cause of maxAvailableShare dropping to <= 0.
 		const projectPromisesSum = team.project?.equity?.equityAllocations.reduce(
 			(
 				sum: number,
@@ -90,10 +85,7 @@ export const GET = withAuth({ mode: "user" })(
 			(team.project?.equity?.investmentReserve || 0);
 
 		const totalAllocated =
-			systemShares +
-			(projectPromisesSum || 0) +
-			vacanciesPromisesSum +
-			membersPromisesSum;
+			systemShares + (projectPromisesSum || 0) + vacanciesPromisesSum;
 
 		const maxAvailableShare = 100 - totalAllocated;
 

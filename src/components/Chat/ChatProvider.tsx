@@ -55,7 +55,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		enabled: !!session?.user.id && !!matrixDeviceId,
 	});
 
-	const { token: firebasePushToken } = useFirebaseMessagingToken();
+	const {
+		token: firebasePushToken,
+		isSupported: pushSupported,
+		permissionState: pushPermission,
+		error: pushError,
+	} = useFirebaseMessagingToken();
 
 	useMatrixPushRegistration({
 		session: chatSessionData,
@@ -63,6 +68,32 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		lang: session?.user.lang ?? getLanguage(),
 		deviceDisplayName: getDeviceDisplayName(),
 	});
+
+	// surface push readiness so the chat UI can show a diagnostics indicator
+	const setPushStatus = useChat((s) => s.setPushStatus);
+	useEffect(() => {
+		const deviceId = chatSessionData?.deviceId;
+		const pusherRegistered =
+			typeof window !== "undefined" && deviceId && firebasePushToken
+				? !!localStorage.getItem(
+						`matrix-pusher:${deviceId}:${firebasePushToken}`,
+					)
+				: false;
+		setPushStatus({
+			supported: pushSupported,
+			permission: pushPermission,
+			hasToken: !!firebasePushToken,
+			pusherRegistered,
+			error: pushError?.message ?? null,
+		});
+	}, [
+		chatSessionData?.deviceId,
+		firebasePushToken,
+		pushSupported,
+		pushPermission,
+		pushError,
+		setPushStatus,
+	]);
 
 	const tryComputeUnreadTotal = useCallback(
 		(client: MatrixClient) => {
@@ -216,6 +247,62 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		chatClient.on(RoomEvent.Timeline, onTimeline);
 		return () => {
 			chatClient.removeListener(RoomEvent.Timeline, onTimeline);
+		};
+	}, [chatClient]);
+
+	// in-app toast when a new chat invitation arrives (live only)
+	useEffect(() => {
+		if (!chatClient) return;
+
+		const onMembership = (
+			room: Room,
+			membership: string,
+			prevMembership?: string,
+		) => {
+			try {
+				// only a fresh invite, and only on live sync (skip initial backfill)
+				if (membership !== "invite") return;
+				if (prevMembership === "invite") return;
+				if (chatClient.getSyncState() !== "SYNCING") return;
+
+				// skip when the tab is hidden — the push notification covers that
+				if (typeof document !== "undefined" && document.hidden) return;
+
+				const inviter = room.currentState
+					.getStateEvents("m.room.member", chatClient.getUserId() || "")
+					?.getSender();
+				const inviterMember = inviter ? room.getMember(inviter) : null;
+				const inviterName = inviterMember?.name || inviter || "Someone";
+				const avatarUrl =
+					inviterMember?.getAvatarUrl(
+						chatClient.baseUrl,
+						40,
+						40,
+						"crop",
+						true,
+						true,
+					) || undefined;
+
+				notification.open({
+					key: `invite:${room.roomId}`,
+					message: "New chat",
+					description: `${inviterName} started a chat with you`,
+					icon: (
+						<Avatar src={avatarUrl}>{inviterName?.[0]?.toUpperCase()}</Avatar>
+					),
+					onClick: () => {
+						const { setSelectedRoomId, setOpenChatModal } = useChat.getState();
+						setSelectedRoomId(room.roomId);
+						setOpenChatModal(true);
+						notification.destroy(`invite:${room.roomId}`);
+					},
+				});
+			} catch {}
+		};
+
+		chatClient.on(RoomEvent.MyMembership, onMembership);
+		return () => {
+			chatClient.removeListener(RoomEvent.MyMembership, onMembership);
 		};
 	}, [chatClient]);
 

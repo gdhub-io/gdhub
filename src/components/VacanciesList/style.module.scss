@@ -1,103 +1,13 @@
-.description {
-  font-family: var(--second-font-family);
-  font-style: italic;
+.filterBar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 20px;
+	flex-wrap: wrap;
 }
 
-.col:first-child {
-  padding-right: 16px !important;
-}
-
-.vacancyCard {
-  position: relative;
-  cursor: pointer;
-  // background-color: #FFF4CF;
-  padding: 12px 12px 40px 24px;
-  height: 100%;
-  min-height: 214px;
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
-  }
-
-  .content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    height: 100%;
-
-    h2 {
-      font-weight: 700;
-      margin-top: 8px;
-      margin-bottom: 0px;
-    }
-
-    .projectName {
-      padding: 8px 12px;
-      border: 1px solid #333;
-    }
-  }
-
-  .validDate {
-    text-align: right;
-    font-size: 12px;
-    color: #17132C;
-  }
-
-  .linkBtn {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 36px;
-    height: 36px;
-  }
-}
-
-.jobCard {
-  background: #fff;
-  padding: 8px;
-  border-radius: 12px;
-  border: 1px solid #d1d1d1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  // width: 350px;
-  width: 100%;
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 8px 6px rgba(0, 0, 0, 0.04);
-  }
-
-  .jobCardContent {
-    padding: 16px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    .jobCardDate {
-      display: block;
-      background-color: #ffffff;
-      border-radius: 8px;
-      padding: 8px;
-      font-size: 12px;
-      width: 160px;
-      text-align: center;
-    }
-  }
-
-  .jobCardFooter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px;
-
-    .footerContent {
-      display: flex;
-      flex-direction: column;
-    }
-
-  }
+.loadingContainer {
+	display: flex;
+	justify-content: center;
+	padding: 48px 0;
 }

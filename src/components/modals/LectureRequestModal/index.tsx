@@ -1,9 +1,10 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Form, Input, Modal, message, Select, Spin } from "antd";
+import { Form, Input, Modal, message, Spin } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 
 const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm();
@@ -162,13 +163,13 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						rules={[{ required: true }]}
 						required
 					>
-						<Select
+						<DirectionSelect
 							style={{ width: "100%" }}
 							placeholder={t(
 								"modal.lectureRequest.directionId.placeholder",
 								`For example: Game Design`,
 							)}
-							options={workDirectionOptions}
+							options={workDirectionOptions ?? []}
 						/>
 					</Form.Item>
 

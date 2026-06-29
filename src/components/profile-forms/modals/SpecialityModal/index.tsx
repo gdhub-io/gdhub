@@ -21,6 +21,7 @@ import type { DefaultOptionType } from "antd/es/select";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
+import { DirectionSelect } from "@/components/DirectionSelect";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 
 interface SpecialityModalArgs {
@@ -373,14 +374,14 @@ const SpecialityModal = ({
 						wrapperCol={{ span: 24 }}
 						rules={[{ required: true }]}
 					>
-						<Select
+						<DirectionSelect
 							disabled={!!teamInvitation}
 							style={{ width: "100%" }}
 							placeholder={t(
 								"modal.speciality.form.workDirectionId.placeholder",
 								`Choose`,
 							)}
-							options={workDirectionOptions}
+							options={workDirectionOptions ?? []}
 						/>
 					</Form.Item>
 					<Form.Item

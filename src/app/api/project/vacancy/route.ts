@@ -36,6 +36,27 @@ export const GET = withAuth({ mode: "any" })(
 								description: true,
 								coverImage: true,
 								videoLink: true,
+								genre: true,
+								setting: true,
+								audition: true,
+								platform: true,
+								visualStyle: true,
+								author: {
+									select: {
+										name: true,
+										image: true,
+										profile: { select: { name: true, motivation: true } },
+										specialities: {
+											select: {
+												name: true,
+												specialization: true,
+												level: true,
+											},
+											orderBy: { level: "desc" },
+											take: 1,
+										},
+									},
+								},
 								workflow: {
 									select: { steps: { select: { id: true, name: true } } },
 								},
