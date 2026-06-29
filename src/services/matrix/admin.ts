@@ -101,6 +101,36 @@ export async function ensureMatrixUser(
 	return { user_id: userId };
 }
 
+// Matrix user id -> platform user id (localpart). Returns null for ids that
+// don't belong to this homeserver.
+export function matrixIdToUserId(matrixUserId: string): string | null {
+	const DOMAIN = env("MATRIX_CHAT_HOMESERVER_DOMAIN");
+	const match = matrixUserId.match(/^@(.+):(.+)$/);
+	if (!match) return null;
+	const [, localpart, domain] = match;
+	if (domain !== DOMAIN) return null;
+	return localpart;
+}
+
+// Current member ids of a room via the Synapse Admin API.
+export async function getRoomMemberIds(roomId: string): Promise<string[]> {
+	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
+	const ADMIN_TOKEN = env("MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN");
+
+	const resp = await fetch(
+		`${BASE_URL}/_synapse/admin/v1/rooms/${encodeURIComponent(roomId)}/members`,
+		{ headers: { Authorization: `Bearer ${ADMIN_TOKEN}` } },
+	);
+
+	if (!resp.ok) {
+		const text = await resp.text();
+		throw new Error(`Failed to get room members: ${resp.status} ${text}`);
+	}
+
+	const data = (await resp.json()) as { members?: string[] };
+	return data.members || [];
+}
+
 export type MatrixUserToken = {
 	accessToken: string;
 	deviceId?: string;

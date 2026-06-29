@@ -28,6 +28,9 @@ const ChatTitle = dynamic(() => import("./ChatTitle"), { ssr: false });
 const ChatRooms = dynamic(() => import("./ChatRooms"), { ssr: false });
 const ChatMessages = dynamic(() => import("./ChatMessages"), { ssr: false });
 const ChatInput = dynamic(() => import("./ChatInput"), { ssr: false });
+const ChatPushStatus = dynamic(() => import("./ChatPushStatus"), {
+	ssr: false,
+});
 
 export const ChatModal = () => {
 	const screens = Grid.useBreakpoint();
@@ -103,6 +106,7 @@ export const ChatModal = () => {
 										accessible only to the conversation participants.
 									</span>
 									<span>Chat is powered by Matrix.</span>
+									<ChatPushStatus />
 								</Flex>
 							}
 						>
