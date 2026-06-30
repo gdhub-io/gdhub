@@ -22,6 +22,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useContext, useState } from "react";
 
 import ModernTable from "@/components/ModernTable";
@@ -93,6 +94,7 @@ const MyProjectVacancies = () => {
 	});
 
 	const { checkout } = usePaddle();
+	const { data: session } = useSession();
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
@@ -358,6 +360,7 @@ const MyProjectVacancies = () => {
 					priceId,
 					customData: { paymentId: payment.id },
 					successUrl,
+					customerEmail: session?.user?.email,
 				});
 				return;
 			}

@@ -47,6 +47,7 @@ export function usePaddle() {
 			priceId: string;
 			customData?: Record<string, any>;
 			successUrl?: string;
+			customerEmail?: string;
 		}) => {
 			try {
 				await openPaddleCheckout(options);
