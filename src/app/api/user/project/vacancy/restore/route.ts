@@ -1,10 +1,9 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 
+import { DEFAULT_FINISH_DAYS, LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
-const LISTING_WINDOW_DAYS = 90;
-const DEFAULT_FINISH_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // Restoring an archived vacancy does NOT revive the old paid listing — a paid

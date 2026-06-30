@@ -114,23 +114,62 @@ export const newSpecialitiesMessageEn = (specialities: any[]) => {
 	return message;
 };
 
+type CooperationType = "paid" | "equity" | "experience";
+
+/** Classify a vacancy by its cooperation terms (paid takes precedence over equity). */
+const cooperationType = (v: {
+	offeredAmount?: number | null;
+	offeredRateType?: string | null;
+	promisePercentage?: number | null;
+}): CooperationType => {
+	if (v.offeredAmount != null && v.offeredRateType != null) return "paid";
+	if (v.promisePercentage) return "equity";
+	return "experience";
+};
+
+const RATE_SUFFIX_RU: Record<string, string> = {
+	Hourly: "/ч",
+	OneTime: "разово",
+	Monthly: "/мес",
+};
+
+const RATE_SUFFIX_EN: Record<string, string> = {
+	Hourly: "/ hr",
+	OneTime: "one-time",
+	Monthly: "/ mo",
+};
+
+const cooperationLabelRu = (v: any): string => {
+	switch (cooperationType(v)) {
+		case "paid":
+			return `💰 €${Math.round((v.offeredAmount ?? 0) / 100).toLocaleString()} ${RATE_SUFFIX_RU[v.offeredRateType] ?? ""}`.trim();
+		case "equity":
+			return `🤝 Доля ${v.promisePercentage?.toFixed(1)}%`;
+		default:
+			return "🎓 За опыт";
+	}
+};
+
+const cooperationLabelEn = (v: any): string => {
+	switch (cooperationType(v)) {
+		case "paid":
+			return `💰 €${Math.round((v.offeredAmount ?? 0) / 100).toLocaleString()} ${RATE_SUFFIX_EN[v.offeredRateType] ?? ""}`.trim();
+		case "equity":
+			return `🤝 Equity ${v.promisePercentage?.toFixed(1)}%`;
+		default:
+			return "🎓 For experience";
+	}
+};
+
 export const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
 	let message = "🔥 <b>Новые вакансии на проекты сообщества</b>";
 
 	projectWithVacancies.forEach((project) => {
-		const vacancyList = project.team.vacancies.map((v: any) => ({
-			name: v.title,
-			id: v.id,
-		})) as {
-			name: string;
-			id: string;
-		}[];
-
-		message += `\n\n<b>Проект ${project.name}</b>\n`;
-		message += vacancyList
+		message += `\n\n<b>Проект ${escapeTelegramHtml(project.name)}</b>\n`;
+		message += project.team.vacancies
 			.map(
-				({ name, id }) =>
-					`▶ <b><a href="https://gdhub.io/job/${id}">${name}</a></b>`,
+				(v: any) =>
+					`▶ <b><a href="https://gdhub.io/job/${v.id}">${escapeTelegramHtml(v.title)}</a></b> — ${cooperationLabelRu(v)}`,
 			)
 			.join("\n");
 	});
@@ -142,19 +181,11 @@ export const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 	let message = "🔥 <b>New vacancies for indie game projects</b>";
 
 	projectWithVacancies.forEach((project) => {
-		const vacancyList = project.team.vacancies.map((v: any) => ({
-			name: v.title,
-			id: v.id,
-		})) as {
-			name: string;
-			id: string;
-		}[];
-
-		message += `\n\n<b>Project ${project.name}</b>\n`;
-		message += vacancyList
+		message += `\n\n<b>Project ${escapeTelegramHtml(project.name)}</b>\n`;
+		message += project.team.vacancies
 			.map(
-				({ name, id }) =>
-					`▶ <b><a href="https://gdhub.io/job/${id}">${name}</a></b>`,
+				(v: any) =>
+					`▶ <b><a href="https://gdhub.io/job/${v.id}">${escapeTelegramHtml(v.title)}</a></b> — ${cooperationLabelEn(v)}`,
 			)
 			.join("\n");
 	});

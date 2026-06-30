@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import { parseInline } from "marked";
 import fetch from "node-fetch";
 import { env } from "@/helpers/env";
+import DiscordService from "../discord";
 import { prisma } from "../prisma";
 import {
 	newProjectReportsMessageEn,
@@ -398,15 +399,17 @@ export default class TelegramService {
 			);
 		}
 
-		// Send to Discord
-		// try {
-		// 	await DiscordService.init().sendProjectNewsMessage(
-		// 		newVacanciesMessageEn(projectWithVacancies),
-		// 	);
-		// } catch (error) {
-		// 	console.error("Error sending message to Discord (new vacancies)", error);
-		// }
+		// Send to Discord (English project-news channel)
+		try {
+			if (process.env.DISCORD_BOT_TOKEN) {
+				await DiscordService.init().sendProjectNewsMessage(
+					newVacanciesMessageEn(projectsWithVacancies),
+				);
+			}
+		} catch (error) {
+			console.error("Error sending message to Discord (new vacancies)", error);
+		}
 
-		return { sent: projectWithVacancies.length };
+		return { sent: projectsWithVacancies.length };
 	}
 }
