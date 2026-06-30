@@ -8,8 +8,12 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { ensureVacancyOfferChat } from "@/services/chat/vacancy-offer";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
+
+// imports the server-side Matrix SDK via ensureVacancyOfferChat — keep dynamic
+export const dynamic = "force-dynamic";
 
 const ApplySchema = z.object({
 	specialityId: z.string(),
@@ -80,6 +84,25 @@ export const POST = withAuth({ mode: "user" })(
 			include: { user: { include: { profile: true } } },
 		});
 
+		const candidateName =
+			candidate.user.profile?.name || candidate.user.name || "A candidate";
+
+		// Auto-create the 1:1 vacancy chat: the candidate starts the room and
+		// invites the project author. Best-effort — never block the application.
+		let chatRoomId: string | undefined;
+		try {
+			const chat = await ensureVacancyOfferChat({
+				vacancyId,
+				candidateUserId: currentUser.id,
+				initiatorUserId: currentUser.id,
+				teamMemberId: candidate.id,
+				firstMessage: `👋 ${candidateName} applied for "${vacancy.title}".`,
+			});
+			chatRoomId = chat.roomId;
+		} catch (e) {
+			console.error("[vacancy-chat] auto-create on apply failed", e);
+		}
+
 		try {
 			await NovuService.send({
 				template: "default-message",
@@ -91,12 +114,14 @@ export const POST = withAuth({ mode: "user" })(
 				},
 				payload: {
 					title: "New job response",
-					message: `New job response for position "${vacancy.title}" from ${candidate.user.profile?.name || candidate.user.name}`,
-					redirectUrl:
-						process.env.NEXT_PUBLIC_APP_URL +
-						"/my/projects/" +
-						// biome-ignore lint/style/noNonNullAssertion: original semantics
-						vacancy.team!.project?.slug,
+					message: `New job response for position "${vacancy.title}" from ${candidateName}`,
+					// Deep-link straight into the chat when it was created, otherwise
+					// fall back to the project's candidates page.
+					redirectUrl: chatRoomId
+						? `${process.env.NEXT_PUBLIC_APP_URL}/hub?chat=1&roomId=${chatRoomId}`
+						: // biome-ignore lint/style/noNonNullAssertion: original semantics
+							`${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${vacancy.team!.project?.slug}`,
+					redirectUrlType: "internal",
 				},
 			});
 

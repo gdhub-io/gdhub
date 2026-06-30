@@ -18,6 +18,13 @@ type AdviceRequestContext = {
 	} | null;
 };
 
+type VacancyChatContext = {
+	id?: string;
+	status?: string;
+	vacancy?: { id?: string; title?: string | null } | null;
+	project?: { id?: string; name?: string | null } | null;
+};
+
 export default function ChatTopic() {
 	const { chatContext, selectedRoomId, setChatContext } = useChat();
 	const queryClient = useQueryClient();
@@ -42,12 +49,14 @@ export default function ChatTopic() {
 		},
 	});
 
-	// this section only makes sense for the expert advice-request chat;
-	// regular direct chats have no topic/project/comment
-	if (!chatContext || chatContext.type !== "advice-request") return null;
+	const isAdviceRequest = chatContext?.type === "advice-request";
+	const isVacancyChat = chatContext?.type === "vacancy-application";
 
-	const adviceData = (chatContext.data || {}) as AdviceRequestContext;
-	const isResolved = (adviceData.status || "").toLowerCase() === "closed";
+	// Only contextual chats have a topic header; plain direct chats don't.
+	if (!chatContext || (!isAdviceRequest && !isVacancyChat)) return null;
+
+	const status = ((chatContext.data?.status as string) || "").toLowerCase();
+	const isResolved = status === "closed";
 
 	const handleResolveClick = () => {
 		if (!selectedRoomId) return;
@@ -61,6 +70,30 @@ export default function ChatTopic() {
 		});
 	};
 
+	let header: React.ReactNode;
+	if (isAdviceRequest) {
+		const adviceData = (chatContext.data || {}) as AdviceRequestContext;
+		header = (
+			<>
+				<Text strong ellipsis>
+					Topic: {adviceData.topic || "—"}
+				</Text>
+				<Text ellipsis>Project: {adviceData.project?.name || "—"}</Text>
+				<Text ellipsis>Comment: {adviceData.comment || "—"}</Text>
+			</>
+		);
+	} else {
+		const vacancyData = (chatContext.data || {}) as VacancyChatContext;
+		header = (
+			<>
+				<Text strong ellipsis>
+					Vacancy: {vacancyData.vacancy?.title || "—"}
+				</Text>
+				<Text ellipsis>Project: {vacancyData.project?.name || "—"}</Text>
+			</>
+		);
+	}
+
 	return (
 		<div className={styles.chatTopicContainer}>
 			<Flex
@@ -70,11 +103,7 @@ export default function ChatTopic() {
 				style={{ width: "100%", flexWrap: "wrap" }}
 			>
 				<Flex vertical style={{ flex: 1, minWidth: 0 }}>
-					<Text strong ellipsis>
-						Topic: {adviceData.topic || "—"}
-					</Text>
-					<Text ellipsis>Project: {adviceData.project?.name || "—"}</Text>
-					<Text ellipsis>Comment: {adviceData.comment || "—"}</Text>
+					{header}
 					{isResolved && (
 						<Text type="secondary">
 							This chat is archived. New messages are disabled.
@@ -89,7 +118,7 @@ export default function ChatTopic() {
 						loading={resolveMutation.status === "pending"}
 						disabled={!selectedRoomId}
 					>
-						Question Resolved
+						{isAdviceRequest ? "Question Resolved" : "Archive chat"}
 					</Button>
 				)}
 			</Flex>
