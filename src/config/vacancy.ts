@@ -9,4 +9,4 @@
 export const LISTING_WINDOW_DAYS = 90;
 
 /** Fallback listing length used when restoring a vacancy whose window has lapsed. */
-export const DEFAULT_FINISH_DAYS = 30;
+export const DEFAULT_FINISH_DAYS = 90;
