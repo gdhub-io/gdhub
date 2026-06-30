@@ -192,3 +192,17 @@ export const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 
 	return message;
 };
+
+// Plain-text variant for LinkedIn (no HTML; URLs are auto-linked by LinkedIn).
+export const newVacanciesMessageLinkedIn = (projectWithVacancies: any[]) => {
+	let message = "🔥 New vacancies for indie game projects";
+
+	projectWithVacancies.forEach((project) => {
+		message += `\n\nProject ${project.name}`;
+		project.team.vacancies.forEach((v: any) => {
+			message += `\n▶ ${v.title} — ${cooperationLabelEn(v)}\nhttps://gdhub.io/job/${v.id}`;
+		});
+	});
+
+	return message;
+};

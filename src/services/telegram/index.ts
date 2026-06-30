@@ -10,6 +10,7 @@ import { parseInline } from "marked";
 import fetch from "node-fetch";
 import { env } from "@/helpers/env";
 import DiscordService from "../discord";
+import LinkedInService from "../linkedin";
 import { prisma } from "../prisma";
 import {
 	newProjectReportsMessageEn,
@@ -17,6 +18,7 @@ import {
 	newSpecialitiesMessageEn,
 	newSpecialitiesMessageRu,
 	newVacanciesMessageEn,
+	newVacanciesMessageLinkedIn,
 	newVacanciesMessageRu,
 } from "./messages";
 
@@ -408,6 +410,17 @@ export default class TelegramService {
 			}
 		} catch (error) {
 			console.error("Error sending message to Discord (new vacancies)", error);
+		}
+
+		// Send to LinkedIn company page
+		try {
+			if (LinkedInService.isConfigured()) {
+				await LinkedInService.init().sharePost(
+					newVacanciesMessageLinkedIn(projectsWithVacancies),
+				);
+			}
+		} catch (error) {
+			console.error("Error sending message to LinkedIn (new vacancies)", error);
 		}
 
 		return { sent: projectsWithVacancies.length };

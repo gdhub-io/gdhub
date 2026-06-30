@@ -26,7 +26,8 @@
 		"test:integration": "cross-env RUN_DOCKER_INTEGRATION_TESTS=1 dotenv -- vitest --run tests/docker-prisma.integration.test.ts",
 		"test:e2e": "dotenv -e .env.test -- playwright test",
 		"test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
-		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test"
+		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test",
+		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs"
 	},
 	"prisma": {
 		"seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
