@@ -26,6 +26,7 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
 import { DirectionSelect } from "@/components/DirectionSelect";
+import { LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
 import { usePaddle } from "@/services/paddle/usePaddle";
@@ -43,9 +44,6 @@ interface VacancyModalProps {
 	onOk: () => void;
 	onCancel: () => void;
 }
-
-// Keep in sync with LISTING_WINDOW_DAYS in the vacancy API route.
-const LISTING_WINDOW_DAYS = 90;
 
 const VacancyModal = ({
 	teamId,

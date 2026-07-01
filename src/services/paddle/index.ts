@@ -34,12 +34,21 @@ export async function openPaddleCheckout(options: {
 	customData?: Record<string, any>;
 	successUrl?: string;
 	customMessage?: string;
+	customerEmail?: string;
 }): Promise<void> {
 	const paddle = await getPaddleInstance();
 
 	if (!paddle) {
 		throw new Error("Paddle instance not initialized");
 	}
+
+	// Only prefill the (trusted) account email. We intentionally don't pass the
+	// country: providing it makes Paddle treat the details as complete and skip
+	// the "Your details" step, and the profile country may be inaccurate. Paddle
+	// shows the details step with email prefilled and detects country by IP.
+	const customer = options.customerEmail
+		? { email: options.customerEmail }
+		: undefined;
 
 	paddle.Checkout.open({
 		items: [
@@ -49,6 +58,7 @@ export async function openPaddleCheckout(options: {
 			},
 		],
 		customData: options.customData,
+		customer,
 		settings: {
 			displayMode: "overlay",
 			theme: "light",

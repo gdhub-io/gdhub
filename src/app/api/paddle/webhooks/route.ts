@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { NovuService } from "@/services/novu";
 import { verifyPaddleWebhook } from "@/services/paddle/server";
 import { prisma } from "@/services/prisma";
 
@@ -110,15 +111,43 @@ async function handleTransactionCompleted(body: any) {
 
 		// Publish the vacancy now that its listing fee is settled.
 		if (payment.payableType === "VACANCY") {
-			await prisma.teamVacancy.update({
+			const vacancy = await prisma.teamVacancy.update({
 				where: { id: payment.payableId },
 				data: {
 					status: "Published" as any,
 					publishedAt: new Date(),
 				},
+				include: {
+					team: {
+						include: {
+							project: { include: { author: true } },
+						},
+					},
+				},
 			});
 
 			console.log("[paddle.webhook] vacancy published:", payment.payableId);
+
+			// Notify the author that their listing went live.
+			const author = vacancy.team?.project?.author;
+			const projectSlug = vacancy.team?.project?.slug;
+			if (author) {
+				try {
+					await NovuService.send({
+						template: "default-message",
+						to: { subscriberId: author.id, email: author.email ?? undefined },
+						payload: {
+							title: "Vacancy published",
+							message: `Your vacancy "${vacancy.title}" is now live.`,
+							redirectUrl: projectSlug
+								? `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${projectSlug}`
+								: undefined,
+						},
+					});
+				} catch (error) {
+					console.error("[paddle.webhook] publish notification failed:", error);
+				}
+			}
 		}
 
 		return NextResponse.json({ success: true });

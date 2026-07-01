@@ -1,0 +1,257 @@
+# GDHub — Vacancy publication & lifecycle flow
+# Rendered with https://d2lang.com/  (e.g. `d2 vacancy-flow.d2 vacancy-flow.svg`)
+#
+# Scope: publication, applications (responses), archiving, editing,
+#        accept/reject, all notifications/messages, all cron/queue jobs.
+# Built from current code (branch dev, 2026-06-30). File:line refs in labels.
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+direction: right
+
+# ──────────────────────────────────────────────────────────────
+# Legend / status enums
+# ──────────────────────────────────────────────────────────────
+legend: Legend {
+  near: top-left
+  grid-columns: 1
+
+  vac_enum: |md
+    **TeamVacancyStatus** (schema.prisma:1110)
+    `Draft` → `Published` → `Closed`
+  |
+  mem_enum: |md
+    **TeamMemberStatus = «отклик»** (schema.prisma:1102)
+    `Applicant` → `Hired` / `Rejected` / `Fired` · `Founder`
+  |
+  pay_enum: |md
+    **PaymentStatus** (schema.prisma:659)
+    `PENDING` `PROCESSING` `COMPLETED` `FAILED`
+    `CANCELED` `REFUNDED` `PARTIALLY_REFUNDED` `DISPUTED`
+  |
+  notif: |md
+    🔔 = Novu (push+email, шаблон `default-message`)
+    📣 = Telegram (публично, RU/EN)
+    ⏰ = Cron / BullMQ job
+    ⚠️ = пробел / проблема
+  |
+}
+
+# ──────────────────────────────────────────────────────────────
+# 1. PUBLICATION (pay & publish)
+# ──────────────────────────────────────────────────────────────
+publish: "1 · Публикация (Pay & Publish)" {
+  style.fill: "#eef6ff"
+
+  create: "POST .../vacancy\nСоздание вакансии\napi/user/project/vacancy/route.ts:142" {
+    shape: rectangle
+  }
+  draft: "Vacancy = Draft" {
+    shape: oval
+    style.fill: "#fff3cd"
+  }
+  pay_init: "POST .../vacancy/payment\nPayment = PENDING, €9 (900¢)\npayment/route.ts:50" {
+    shape: rectangle
+  }
+  checkout: "Paddle Checkout\n(prefill email+country)" {
+    shape: hexagon
+    style.fill: "#e7ddff"
+  }
+  webhook: "Paddle webhook\ntransaction.completed\npaddle/webhooks/route.ts:46" {
+    shape: hexagon
+    style.fill: "#e7ddff"
+  }
+  pay_done: "Payment = COMPLETED\n(PaymentEvent дедуп по eventId)" {
+    shape: oval
+    style.fill: "#d4edda"
+  }
+  published: "Vacancy = Published\npublishedAt = now (set-once)\nwebhooks:112" {
+    shape: oval
+    style.fill: "#d4edda"
+  }
+
+  create -> draft
+  draft -> pay_init -> checkout -> webhook -> pay_done -> published
+
+  gap_pub: "⚠️ При публикации НЕТ\nличного уведомления автору\n(только публичный Telegram, см. блок 5)" {
+    style.fill: "#f8d7da"
+    style.font-size: 11
+  }
+  published -> gap_pub: {style.stroke-dash: 3}
+}
+
+# ──────────────────────────────────────────────────────────────
+# 2. EDIT
+# ──────────────────────────────────────────────────────────────
+edit: "2 · Изменение" {
+  style.fill: "#eef6ff"
+
+  put: "PUT .../vacancy\nvacancy/route.ts:187" {shape: rectangle}
+  toggle: "Draft ⇄ Published toggle\nбез повторной оплаты" {shape: rectangle}
+  window: "Окно листинга = 90 дней\nanchor = publishedAt ?? createdAt\nfinishedAt можно только СОКРАЩАТЬ\nroute.ts:15,220" {
+    shape: rectangle
+    style.font-size: 11
+  }
+  comp: "offeredAmount / rateType\nизменяемы всегда\n(Hourly|OneTime|Monthly)" {shape: rectangle}
+
+  put -> toggle
+  put -> window
+  put -> comp
+}
+
+# ──────────────────────────────────────────────────────────────
+# 3. ARCHIVE / EXPIRY
+# ──────────────────────────────────────────────────────────────
+archive: "3 · Архив / Истечение" {
+  style.fill: "#eef6ff"
+
+  del: "DELETE .../vacancy\nРучная архивация\nroute.ts:274" {shape: rectangle}
+  closed: "Vacancy = Closed\nудаляет non-COMPLETED платежи\n(COMPLETED остаётся историей)" {
+    shape: oval
+    style.fill: "#f1f1f1"
+  }
+  cron_arch: "⏰ GET /api/cron/relevant-vacancies\nPublished + finishedAt < now → Closed\nrelevant-vacancies/route.ts:6" {
+    shape: hexagon
+    style.fill: "#ffe5cc"
+  }
+  cron_gap: "⚠️ НЕ зарегистрирован в vercel.json\n→ авто-архивация по факту НЕ работает" {
+    style.fill: "#f8d7da"
+    style.font-size: 11
+  }
+  restore: "POST .../vacancy/restore\nСоздаёт НОВЫЙ Draft (копию)\nновое окно, нужна новая оплата\nrestore/route.ts:14" {shape: rectangle}
+
+  del -> closed
+  cron_arch -> closed
+  cron_arch -> cron_gap: {style.stroke-dash: 3}
+  closed -> restore: "restore"
+  exp_gap: "⚠️ При архивации/истечении НЕТ\nуведомлений (нет «вакансия скоро\nистечёт» / «архивирована»)" {
+    style.fill: "#f8d7da"
+    style.font-size: 11
+  }
+  closed -> exp_gap: {style.stroke-dash: 3}
+}
+
+# ──────────────────────────────────────────────────────────────
+# 4. APPLICATIONS (responses) — модель TeamMember
+# ──────────────────────────────────────────────────────────────
+apply: "4 · Отклики и решения (TeamMember)" {
+  style.fill: "#eefbf0"
+
+  applicant: "Applicant\nоткликнулся" {shape: oval; style.fill: "#fff3cd"}
+  hired: "Hired\nпринят" {shape: oval; style.fill: "#d4edda"}
+  rejected: "Rejected\nотклонён" {shape: oval; style.fill: "#f1f1f1"}
+  fired: "Fired\nуволен" {shape: oval; style.fill: "#f1f1f1"}
+  gone: "удалён из БД" {shape: oval; style.fill: "#f8d7da"}
+
+  a_apply: "POST .../vacancy/apply\nstatus=Applicant\napply/route.ts:68" {shape: rectangle}
+  a_hire: "PUT .../candidate/hire\n→ Hired (+ equity promise)\nhire/route.ts:45" {shape: rectangle}
+  a_reject: "PUT .../candidate/reject\n→ Rejected\nreject/route.ts:25" {shape: rectangle}
+  a_withdraw: "PUT .../vacancy/withdraw\nкандидат сам отзывает → DELETE\nwithdraw/route.ts:25" {shape: rectangle}
+  a_fire: "PUT .../candidate/fire\n→ Fired (− equity)\nfire/route.ts:45" {shape: rectangle}
+
+  a_apply -> applicant
+  applicant -> a_hire -> hired
+  applicant -> a_reject -> rejected
+  applicant -> a_withdraw -> gone
+  hired -> a_fire -> fired
+
+  view: "Работодатель смотрит отклики\nGET /api/user/project/candidates\n(filter status=Applicant)\nMyProjectCandidates" {
+    shape: rectangle
+    style.font-size: 11
+    style.fill: "#ffffff"
+  }
+  view -> applicant: {style.stroke-dash: 2}
+}
+
+# ──────────────────────────────────────────────────────────────
+# 5. NOTIFICATIONS & MESSAGES
+# ──────────────────────────────────────────────────────────────
+notify: "5 · Уведомления и сообщения" {
+  style.fill: "#fff7e6"
+
+  n_apply: "🔔 «New job response»\n→ автору проекта\napply/route.ts:84" {style.fill: "#fff"}
+  n_hire: "🔔 «Accepted into the team»\n→ кандидату\nhire/route.ts:107" {style.fill: "#fff"}
+  n_reject: "🔔 «Candidate rejected»\n→ кандидату\nreject/route.ts:31" {style.fill: "#fff"}
+  n_withdraw: "🔔 «Candidate rejected»\n→ всем Founder команды\nwithdraw/route.ts:43" {style.fill: "#fff"}
+  n_fire: "🔔 «Candidate fired»\n→ уволенному\nfire/route.ts:64" {style.fill: "#fff"}
+
+  tg: "📣 «Новые вакансии сообщества»\n⏰ BullMQ telegram queue, job=new-vacancies\nQUEUE_VACANCIES_TIME (deflt 12:00 UTC)\nTelegram RU+EN темы\ntelegram/index.ts:310" {
+    style.fill: "#e7ddff"
+    style.font-size: 11
+  }
+
+  proj_dormant: "🔔 «Project → Dormant / Archived»\n(косвенно влияет на вакансии)\nproject-status-maintenance:316,366" {
+    style.fill: "#fff"
+    style.font-size: 11
+  }
+}
+
+# ──────────────────────────────────────────────────────────────
+# 6. CRON & QUEUE JOBS
+# ──────────────────────────────────────────────────────────────
+jobs: "6 · Cron / BullMQ jobs" {
+  style.fill: "#fdeef6"
+
+  j_arch: "⏰ relevant-vacancies\nархив истёкших Published→Closed\n⚠️ НЕТ в vercel.json (не запускается)" {
+    style.fill: "#f8d7da"
+    style.font-size: 11
+  }
+  j_tg: "⏰ new-vacancies (telegram queue)\n12:00 UTC → Telegram анонс\nqueue/telegram/route.ts:75" {
+    style.fill: "#e7ddff"
+    style.font-size: 11
+  }
+  j_proj: "⏰ project-status-maintenance\n04:00 UTC (vercel.json)\nучитывает updatedAt вакансий\nкак признак активности проекта" {
+    style.fill: "#fff"
+    style.font-size: 11
+  }
+  j_match: "⏰ matching-spec-and-proj (matching queue)\nматч специалистов с проектами,\nу которых есть Published вакансии\nqueue/matching/route.ts" {
+    style.fill: "#fff"
+    style.font-size: 11
+  }
+}
+
+# ──────────────────────────────────────────────────────────────
+# Cross-block triggers
+# ──────────────────────────────────────────────────────────────
+apply.a_apply -> notify.n_apply: {style.stroke: "#d48806"}
+apply.a_hire -> notify.n_hire: {style.stroke: "#d48806"}
+apply.a_reject -> notify.n_reject: {style.stroke: "#d48806"}
+apply.a_withdraw -> notify.n_withdraw: {style.stroke: "#d48806"}
+apply.a_fire -> notify.n_fire: {style.stroke: "#d48806"}
+
+publish.published -> jobs.j_tg: "входит в анонс" {style.stroke-dash: 3}
+jobs.j_tg -> notify.tg: {style.stroke-dash: 3}
+jobs.j_arch -> archive.cron_arch: {style.stroke-dash: 3}
+
+# ──────────────────────────────────────────────────────────────
+# 7. GAPS — что не хватает / лишнее (итог)
+# ──────────────────────────────────────────────────────────────
+gaps: "7 · Выводы: пробелы и лишнее" {
+  near: bottom-right
+  style.fill: "#fff1f0"
+  grid-columns: 1
+
+  g1: |md
+    ### ⚠️ Пробелы (не хватает)
+    1. **Авто-архивация не работает** — `relevant-vacancies` не в `vercel.json`.
+    2. **Нет уведомления автору при публикации / успешной оплате.**
+    3. **Нет напоминаний об истечении** («вакансия истекает через N дней»).
+    4. **Нет уведомления при архивации** (ни ручной, ни по cron).
+    5. **`LISTING_WINDOW_DAYS=90` продублирован** в 3 местах (route, restore, VacancyModal).
+    6. **`QUEUE_VACANCIES_TIME` не задан явно** — молчаливый дефолт 12:00.
+    7. **Withdraw физически DELETE** — теряется история отклика/аналитика.
+  |
+  g2: |md
+    ### Возможно лишнее / к проверке
+    - `PaymentStatus` имеет `REFUNDED/PARTIALLY_REFUNDED/DISPUTED`,
+      но возвраты не реализованы (зарезервировано).
+    - Matrix chat для вакансий **не используется** (только Novu+Telegram).
+    - `restore` плодит новые Draft-копии вместо реактивации —
+      возможен мусор из Closed-записей.
+  |
+}

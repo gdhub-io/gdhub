@@ -1,5 +1,6 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { z } from "zod";
+import { LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import {
 	apiError,
 	json,
@@ -8,11 +9,6 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
-
-// A paid listing is valid for at most this many days from its publication.
-// Anchoring the cap to the (set-once) publish date stops a single payment from
-// being extended forever by repeatedly editing the finish date.
-const LISTING_WINDOW_DAYS = 90;
 
 function maxFinishedAt(anchor: Date): Date {
 	const d = new Date(
