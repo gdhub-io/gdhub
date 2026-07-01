@@ -37,13 +37,11 @@ import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import TeamMembers from "@/components/TeamMembers";
 import { platformOptions } from "@/helpers/react-content";
-import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import type { ProjectLink } from "@/types/project";
 import styles from "./style.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export type ProjectPageParams = {
 	project: Omit<

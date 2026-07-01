@@ -34,7 +34,6 @@ import { ProjectAuthorCard } from "@/components/project/ProjectAuthorCard";
 import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import { gtmEventTrigger } from "@/helpers/gtm";
-import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import styles from "./styles.module.scss";
 
 const { Text } = Typography;
