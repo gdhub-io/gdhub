@@ -1,6 +1,8 @@
 import "@/styles/globals.scss";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { CookieConsent } from "@/components/CookieConsent";
+import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { setupDayjs } from "@/config/dayjs-setup";
 import { Providers } from "./providers";
 
@@ -33,7 +35,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
 			<body suppressHydrationWarning>
-				<Providers>{children}</Providers>
+				{process.env.NODE_ENV === "production" && (
+					<noscript
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: GTM noscript container, filled on consent
+						dangerouslySetInnerHTML={{
+							__html: `<div id="gtm-noscript-container"></div>`,
+						}}
+					/>
+				)}
+				<GoogleTagManager />
+				<Providers>
+					{children}
+					<CookieConsent />
+				</Providers>
 			</body>
 		</html>
 	);
