@@ -1,11 +1,13 @@
 "use client";
 
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
-import YouTube from "react-youtube";
-import type { Options } from "youtube-player/dist/types";
+import { toPlayableVideoUrl } from "@/helpers/video";
 import styles from "./ProjectVideoCover.module.scss";
+
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 type ProjectVideoCoverProps = {
 	coverImage?: string | null;
@@ -17,8 +19,11 @@ type ProjectVideoCoverProps = {
 
 /**
  * Project cover with an inline video. Shows the cover image with a centered
- * play affordance; clicking swaps to the YouTube player (pitch / gameplay reel).
- * Shared between the project page and the vacancy page.
+ * play affordance; clicking swaps to the player (pitch / gameplay reel).
+ *
+ * Uses `react-player`, so `videoLink` may be a full URL of any supported
+ * service (YouTube, Vimeo, Twitch, TikTok, …) or a legacy bare YouTube ID —
+ * all play consistently. Shared between the project page and the vacancy page.
  */
 export function ProjectVideoCover({
 	coverImage,
@@ -27,18 +32,30 @@ export function ProjectVideoCover({
 	duration,
 }: ProjectVideoCoverProps) {
 	const [showVideo, setShowVideo] = useState(false);
+	// Keep `playing` controlled and in sync with the actual player state.
+	// A hard-coded `playing` prop makes react-player force playback back on
+	// whenever the browser auto-pauses the video (e.g. on tab switch).
+	const [playing, setPlaying] = useState(false);
 
 	if (!coverImage && !videoLink) return null;
 
 	if (showVideo && videoLink) {
-		const opts: Options = { playerVars: { autoplay: 1 } };
 		return (
-			<YouTube
-				className={styles.videoCover}
-				videoId={videoLink}
-				opts={opts}
-				onEnd={() => setShowVideo(false)}
-			/>
+			<div className={styles.videoCover}>
+				<ReactPlayer
+					src={toPlayableVideoUrl(videoLink)}
+					playing={playing}
+					controls
+					width="100%"
+					height="100%"
+					onPlay={() => setPlaying(true)}
+					onPause={() => setPlaying(false)}
+					onEnded={() => {
+						setPlaying(false);
+						setShowVideo(false);
+					}}
+				/>
+			</div>
 		);
 	}
 
@@ -56,7 +73,10 @@ export function ProjectVideoCover({
 				<button
 					type="button"
 					className={styles.playButton}
-					onClick={() => setShowVideo(true)}
+					onClick={() => {
+						setShowVideo(true);
+						setPlaying(true);
+					}}
 					aria-label="Play video"
 				>
 					<IconPlayerPlayFilled size={22} />

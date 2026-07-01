@@ -40,6 +40,9 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] =
 		useState(false);
 	const [showPitchVideo, setShowPitchVideo] = useState(false);
+	// Controlled play state kept in sync with the player, so the browser
+	// pausing the video (e.g. on tab switch) isn't overridden back to playing.
+	const [playingPitch, setPlayingPitch] = useState(false);
 
 	const {
 		data: vacancy,
@@ -160,7 +163,10 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			: setShowSpecialitySelectModal(true);
 	};
 
-	const handleCoverClick = () => setShowPitchVideo(true);
+	const handleCoverClick = () => {
+		setShowPitchVideo(true);
+		setPlayingPitch(true);
+	};
 
 	return (
 		<>
@@ -273,12 +279,20 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 																	vacancy.data.team.project.videoLink,
 																) || true
 													}
-													playing={showPitchVideo}
-													onClickPreview={() => setShowPitchVideo(true)}
+													playing={playingPitch}
+													onClickPreview={() => {
+														setShowPitchVideo(true);
+														setPlayingPitch(true);
+													}}
+													onPlay={() => setPlayingPitch(true)}
+													onPause={() => setPlayingPitch(false)}
 													controls
 													width="100%"
 													height="100%"
-													onEnded={() => setShowPitchVideo(false)}
+													onEnded={() => {
+														setPlayingPitch(false);
+														setShowPitchVideo(false);
+													}}
 												/>
 											</div>
 										)}
