@@ -1,3 +1,5 @@
+"use client";
+
 import { T } from "@tolgee/react";
 import { Button, Checkbox, Flex, Grid, Space, Typography } from "antd";
 import Cookies from "js-cookie";

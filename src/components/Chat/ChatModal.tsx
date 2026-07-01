@@ -68,7 +68,8 @@ export const ChatModal = () => {
 	}, [clientContextData, setChatContext]);
 
 	const isChatArchived =
-		chatContext?.type === "advice-request" &&
+		(chatContext?.type === "advice-request" ||
+			chatContext?.type === "vacancy-application") &&
 		(
 			(chatContext.data as { status?: string } | null)?.status || ""
 		).toLowerCase() === "closed";

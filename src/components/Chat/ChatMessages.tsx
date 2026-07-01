@@ -27,6 +27,7 @@ import {
 import styles from "./ChatModal.module.scss";
 import AdviceRequestInvite from "./special-messages/AdviceRequestInvite";
 import DefaultInvite from "./special-messages/DefaultInvite";
+import VacancyChatInvite from "./special-messages/VacancyChatInvite";
 import { useChat } from "./useChat";
 
 type MessageStatus = "sending" | "sent" | "read" | "failed";
@@ -514,6 +515,10 @@ export default function ChatMessages() {
 	if (selectedRoomId && userMembership === "invite") {
 		if (chatContext?.type === "advice-request") {
 			return <AdviceRequestInvite />;
+		}
+
+		if (chatContext?.type === "vacancy-application") {
+			return <VacancyChatInvite />;
 		}
 
 		return <DefaultInvite />;

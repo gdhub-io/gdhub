@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { vacancyChatDirectKey } from "@/services/chat/vacancy-offer";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -27,6 +28,23 @@ export const PUT = withAuth({ mode: "user" })(
 			data: { status: prismaClient.TeamMemberStatus.Rejected },
 			select: { user: true, vacancy: true, team: true },
 		});
+
+		// Close the related vacancy chat so messaging is disabled on both sides.
+		if (rejectedCandidate.vacancy) {
+			await prisma.chatRoom.updateMany({
+				where: {
+					directKey: vacancyChatDirectKey(
+						rejectedCandidate.vacancy.id,
+						rejectedCandidate.user.id,
+					),
+					status: prismaClient.ChatRoomStatus.Open,
+				},
+				data: {
+					status: prismaClient.ChatRoomStatus.Closed,
+					finishedAt: new Date(),
+				},
+			});
+		}
 
 		try {
 			await NovuService.send({
