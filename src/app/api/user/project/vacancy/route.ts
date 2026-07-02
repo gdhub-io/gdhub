@@ -8,6 +8,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
 
 function maxFinishedAt(anchor: Date): Date {
@@ -205,9 +206,13 @@ export const PUT = withAuth({ mode: "user" })(
 				createdAt: true,
 				status: true,
 				finishedAt: true,
+				team: { select: { project: { select: { authorId: true } } } },
 			},
 		});
 		if (!existing) return apiError.notFound("Vacancy not found");
+		if (existing.team?.project?.authorId !== currentUser.id) {
+			return apiError.forbidden("Only the project author can edit a vacancy");
+		}
 
 		// The window is anchored to the first publication (set-once). Falls back to
 		// creation time while the vacancy has never been published. Only block an
@@ -260,6 +265,15 @@ export const PUT = withAuth({ mode: "user" })(
 			},
 		});
 
+		// Archiving the listing ends its conversations too.
+		if (vacancy.status === prismaClient.TeamVacancyStatus.Closed) {
+			try {
+				await closeVacancyChats(vacancy.id);
+			} catch (e) {
+				console.error("[vacancy-chat] close on vacancy close failed", e);
+			}
+		}
+
 		return json({
 			...vacancy,
 			offeredAmount: fromCents(vacancy.offeredAmount),
@@ -275,10 +289,30 @@ export const DELETE = withAuth({ mode: "user" })(
 		const id = url.searchParams.get("id");
 		if (!id) return apiError.badRequest("id is required");
 
+		const target = await prisma.teamVacancy.findUnique({
+			where: { id },
+			select: {
+				team: { select: { project: { select: { authorId: true } } } },
+			},
+		});
+		if (!target) return apiError.notFound("Vacancy not found");
+		if (target.team?.project?.authorId !== currentUser.id) {
+			return apiError.forbidden(
+				"Only the project author can archive a vacancy",
+			);
+		}
+
 		await prisma.teamVacancy.update({
 			where: { id },
 			data: { status: prismaClient.TeamVacancyStatus.Closed },
 		});
+
+		// Archiving the listing ends its conversations too.
+		try {
+			await closeVacancyChats(id);
+		} catch (e) {
+			console.error("[vacancy-chat] close on vacancy delete failed", e);
+		}
 
 		// Drop any unsettled (non-COMPLETED) payment so an archived vacancy doesn't
 		// carry a stale "pending" listing fee that would resurface on restore.

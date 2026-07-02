@@ -1,14 +1,8 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { makeRoomWritable } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 import { type EnsureChatRoomResult, ensureChatRoom } from "./ensure-room";
-
-/** Deterministic registry key for a vacancy ↔ candidate chat. */
-export function vacancyChatDirectKey(
-	vacancyId: string,
-	candidateUserId: string,
-): string {
-	return `vacancy:${vacancyId}:${candidateUserId}`;
-}
+import { vacancyChatDirectKey } from "./vacancy-keys";
 
 type EnsureVacancyOfferChatArgs = {
 	vacancyId: string;
@@ -17,6 +11,14 @@ type EnsureVacancyOfferChatArgs = {
 	initiatorUserId: string;
 	teamMemberId?: string;
 	firstMessage?: string;
+	/** Join the invitee immediately (no invite screen) — for applied candidates. */
+	autoJoinInvitees?: boolean;
+	/**
+	 * Allow reopening an existing Closed room. Only for an active application or
+	 * an explicit new offer — a bare "open chat" must not resurrect a chat that
+	 * reject/hire just closed.
+	 */
+	allowReopen?: boolean;
 };
 
 export type EnsureVacancyOfferChatResult = EnsureChatRoomResult & {
@@ -38,6 +40,7 @@ export async function ensureVacancyOfferChat(
 		select: {
 			id: true,
 			title: true,
+			status: true,
 			team: {
 				select: {
 					project: {
@@ -74,7 +77,33 @@ export async function ensureVacancyOfferChat(
 		inviteeUserIds: [inviteeUserId],
 		avatarUrl: vacancy.team?.project?.coverImage || undefined,
 		firstMessage: args.firstMessage,
+		autoJoinInvitees: args.autoJoinInvitees,
 	});
+
+	// Re-apply after a withdraw/reject finds the pair's old Closed room —
+	// reopen it so the conversation continues in one place. Never for a
+	// closed/expired vacancy, and only when the caller explicitly allows it.
+	if (
+		!result.created &&
+		args.allowReopen &&
+		vacancy.status === prismaClient.TeamVacancyStatus.Published
+	) {
+		const row = await prisma.chatRoom.findUnique({
+			where: { id: result.chatRoomId },
+			select: { status: true },
+		});
+		if (row?.status === prismaClient.ChatRoomStatus.Closed) {
+			await prisma.chatRoom.update({
+				where: { id: result.chatRoomId },
+				data: { status: prismaClient.ChatRoomStatus.Open, finishedAt: null },
+			});
+			try {
+				await makeRoomWritable(result.roomId);
+			} catch (error) {
+				console.error("[chat] makeRoomWritable failed", error);
+			}
+		}
+	}
 
 	return { ...result, inviteeUserId };
 }

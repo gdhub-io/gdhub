@@ -25,7 +25,6 @@ import {
 	useState,
 } from "react";
 import styles from "./ChatModal.module.scss";
-import AdviceRequestInvite from "./special-messages/AdviceRequestInvite";
 import DefaultInvite from "./special-messages/DefaultInvite";
 import VacancyChatInvite from "./special-messages/VacancyChatInvite";
 import { useChat } from "./useChat";
@@ -513,10 +512,8 @@ export default function ChatMessages() {
 	}, [markRoomAsRead, openChatModal, preparedMessages, selectedRoomId]);
 
 	if (selectedRoomId && userMembership === "invite") {
-		if (chatContext?.type === "advice-request") {
-			return <AdviceRequestInvite />;
-		}
-
+		// Advice-request chats auto-join the requester, so no invite branch here;
+		// a legacy pre-migration invite falls through to DefaultInvite.
 		if (chatContext?.type === "vacancy-application") {
 			return <VacancyChatInvite />;
 		}

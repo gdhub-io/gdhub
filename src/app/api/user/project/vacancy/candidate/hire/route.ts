@@ -8,6 +8,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -51,6 +52,17 @@ export const PUT = withAuth({ mode: "user" })(
 			},
 			select: { id: true, user: true, team: true, vacancy: true },
 		});
+
+		// The vacancy conversation is over — the room stays readable, but further
+		// communication moves to the team (future ProjectGroup chat).
+		// NB: `id` is the TeamMember id — the chat key needs the vacancy id.
+		if (member.vacancy?.id) {
+			try {
+				await closeVacancyChats(member.vacancy.id, member.user.id);
+			} catch (e) {
+				console.error("[vacancy-chat] close on hire failed", e);
+			}
+		}
 
 		// If vacancy has a promise, create an equity allocation for the member
 		const hasEquityPromise =

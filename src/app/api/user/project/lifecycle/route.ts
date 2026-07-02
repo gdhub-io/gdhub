@@ -6,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
 import {
 	getProjectLifecycleNotificationSnapshot,
@@ -63,7 +64,23 @@ export const POST = withAuth({ mode: "user" })(
 						projectId,
 						authorId: currentUser.id,
 					});
+				// Collect BEFORE deletion — the cascade removes the vacancy rows.
+				const projectVacancies = await prisma.teamVacancy.findMany({
+					where: { team: { project: { id: projectId } } },
+					select: { id: true },
+				});
+
 				const project = await prisma.project.deleteProject(params);
+
+				// Deleting the project takes its vacancies away — end their chats too.
+				try {
+					await Promise.all(
+						projectVacancies.map((vacancy) => closeVacancyChats(vacancy.id)),
+					);
+				} catch (e) {
+					console.error("[vacancy-chat] close on project delete failed", e);
+				}
+
 				await notifyProjectLifecycleRecipients({
 					action: "delete",
 					snapshot: notificationSnapshot,

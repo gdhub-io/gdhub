@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -39,6 +40,13 @@ export const PUT = withAuth({ mode: "user" })(
 		});
 
 		if (!deletedMember.vacancy) return json({ success: true });
+
+		// The application is gone — close the vacancy chat on both sides.
+		try {
+			await closeVacancyChats(deletedMember.vacancy.id, deletedMember.user.id);
+		} catch (e) {
+			console.error("[vacancy-chat] close on withdraw failed", e);
+		}
 
 		for (const founderMember of deletedMember.team.members) {
 			try {
