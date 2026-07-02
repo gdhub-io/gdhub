@@ -66,7 +66,9 @@ export const GET = withAuth({ mode: "user" })(
 						profile: { select: { name: true } },
 					},
 				},
-				project: { select: { id: true, name: true, coverImage: true } },
+				project: {
+					select: { id: true, slug: true, name: true, coverImage: true },
+				},
 				fromTelegramUser: true,
 				createdAt: true,
 				finishedAt: true,
@@ -75,6 +77,9 @@ export const GET = withAuth({ mode: "user" })(
 				comment: true,
 				feedback: true,
 				topic: true,
+				// Needed so "Open chat" resolves the registry room by id instead of
+				// the legacy `advreq-{id}` alias.
+				matrixRoomId: true,
 			},
 			orderBy: { createdAt: "desc" },
 		});
