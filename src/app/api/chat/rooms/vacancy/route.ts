@@ -1,3 +1,4 @@
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { z } from "zod";
 import {
 	apiError,
@@ -7,6 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { ensureVacancyOfferChat } from "@/services/chat/vacancy-offer";
+import { sendRoomMessageAs } from "@/services/matrix/admin";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -53,20 +55,68 @@ export const POST = withAuth({ mode: "user" })(
 
 		const candidate = await prisma.user.findUnique({
 			where: { id: candidateUserId },
-			select: { id: true, email: true },
+			select: {
+				id: true,
+				email: true,
+				name: true,
+				profile: { select: { name: true } },
+			},
 		});
 		if (!candidate) return apiError.notFound("Candidate not found");
+
+		// Applied candidates are auto-joined — they responded to the vacancy and
+		// are awaiting a reply, an accept-invite screen would be a redundant step.
+		// Talent-pool outreach (no application) keeps the invite screen: the
+		// specialist never asked for this conversation, their consent is the point.
+		// Only an ACTIVE application counts — a Rejected/Hired row must not
+		// auto-join the person or replay their old greeting.
+		const application = await prisma.teamMember.findFirst({
+			where: {
+				userId: candidateUserId,
+				vacancyId,
+				status: prismaClient.TeamMemberStatus.Applicant,
+			},
+			select: { id: true, applicationMessage: true },
+		});
+
+		// Open the chat with the candidate's greeting from the apply form (unless
+		// the author typed their own first message, e.g. a talent-pool offer).
+		const candidateName = candidate.profile?.name || candidate.name;
+		const firstMessage =
+			message ||
+			(application?.applicationMessage
+				? `💬 ${candidateName || "The candidate"}: "${application.applicationMessage}"`
+				: undefined);
 
 		const chat = await ensureVacancyOfferChat({
 			vacancyId,
 			candidateUserId,
 			initiatorUserId: currentUser.id,
-			firstMessage: message,
+			teamMemberId: application?.id,
+			firstMessage,
+			// Stored in context so the specialist reads it on the invite screen.
+			offerMessage: !application ? message : undefined,
+			autoJoinInvitees: !!application,
+			// A bare "open chat" must not resurrect a chat that reject/hire closed.
+			allowReopen: !!application || !!message,
 		});
 
-		// Notify the candidate only when a new chat was opened (talent-pool
-		// outreach). Re-opening an existing chat from a card shouldn't notify.
-		if (chat.created) {
+		// ensureChatRoom only delivers firstMessage on creation — for an existing
+		// room the author's typed offer would be silently dropped. Deliver it.
+		let messageDelivered = chat.created;
+		if (!chat.created && message) {
+			try {
+				await sendRoomMessageAs(currentUser.id, chat.roomId, message);
+				messageDelivered = true;
+			} catch (error) {
+				console.error("[chat/rooms/vacancy] message delivery failed", error);
+			}
+		}
+
+		// Notify the candidate when a new chat was opened, they were re-invited
+		// after leaving, OR a new offer message landed in an existing room. A
+		// bare re-open of a chat they're already in shouldn't notify.
+		if (chat.created || chat.reinvited || (messageDelivered && message)) {
 			try {
 				await NovuService.send({
 					template: "default-message",
@@ -75,8 +125,12 @@ export const POST = withAuth({ mode: "user" })(
 						email: candidate.email || undefined,
 					},
 					payload: {
-						title: "New chat invitation",
-						message: `${currentUser.name || "A recruiter"} wants to discuss a vacancy with you.`,
+						title: application
+							? "New message on your application"
+							: "New chat invitation",
+						message: application
+							? `${currentUser.name || "The project author"} opened a chat about your application.`
+							: `${currentUser.name || "A recruiter"} wants to discuss a vacancy with you.`,
 						redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub?chat=1&roomId=${chat.roomId}`,
 						redirectUrlType: "internal",
 					},

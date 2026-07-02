@@ -19,7 +19,7 @@ export default function DefaultInvite() {
 	const { selectedRoomId, chatClient } = useChat();
 
 	return (
-		<div className={styles.chatMessages} style={{ paddingInline: 16 }}>
+		<div className={styles.inviteScreen}>
 			<Welcome
 				title="Invitation pending"
 				description="You were invited to this chat. Accept to start messaging."

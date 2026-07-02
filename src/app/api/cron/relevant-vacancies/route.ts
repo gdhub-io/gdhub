@@ -1,6 +1,7 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import dayjs from "dayjs";
 import { json } from "@/lib/api-handlers";
+import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -85,6 +86,12 @@ export async function GET() {
 	});
 
 	for (const vacancy of notRelevantVacancies) {
+		// Archiving the listing ends its conversations too.
+		try {
+			await closeVacancyChats(vacancy.id);
+		} catch (error) {
+			console.error("[cron.relevant-vacancies] chat close failed:", error);
+		}
 		await notifyAuthor(vacancy, {
 			title: "Vacancy archived",
 			message: `Your vacancy "${vacancy.title}" has expired and was archived.`,

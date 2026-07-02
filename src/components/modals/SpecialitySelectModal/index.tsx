@@ -14,6 +14,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const [selectedItem, setSelectedItem] = useState<string>();
 	const [contactType, setContactType] = useState<string[]>(["email"]);
 	const [telegramNickname, setTelegramNickname] = useState<string>();
+	const [applicationMessage, setApplicationMessage] = useState<string>();
 
 	const {
 		data: specialities,
@@ -76,7 +77,12 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		try {
 			setProcessing(true);
 
-			await onOk({ specialityId: selectedItem, contactType, telegramNickname });
+			await onOk({
+				specialityId: selectedItem,
+				contactType,
+				telegramNickname,
+				applicationMessage: applicationMessage?.trim() || undefined,
+			});
 
 			setProcessing(false);
 		} catch (error) {
@@ -156,6 +162,26 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 							onChange={(e) => setTelegramNickname(e.target.value)}
 						/>
 					)}
+
+					<br />
+					<br />
+					<p>
+						{t(
+							"modal.speciality-select.greeting-text",
+							"Add a short message for the project author (optional)",
+						)}
+					</p>
+					<Input.TextArea
+						rows={3}
+						maxLength={1000}
+						showCount
+						placeholder={t(
+							"modal.speciality-select.greeting-placeholder",
+							"Hi! I'd love to join your project because…",
+						)}
+						value={applicationMessage}
+						onChange={(e) => setApplicationMessage(e.target.value)}
+					/>
 				</Spin>
 			</Modal>
 		</>

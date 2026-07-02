@@ -131,12 +131,18 @@ export const authConfig: NextAuthConfig = {
 			if (!user) return token;
 
 			if (!user.matrixUserId) {
-				await ensureMatrixUser(
-					user.id,
-					user.email || token.email || undefined,
-					user.profile?.name || user.name || token.name || undefined,
-					user.image || token.picture || undefined,
-				);
+				// Best-effort: a Synapse outage must never block sign-in — the chat
+				// session route provisions the Matrix user again on first use.
+				try {
+					await ensureMatrixUser(
+						user.id,
+						user.email || token.email || undefined,
+						user.profile?.name || user.name || token.name || undefined,
+						user.image || token.picture || undefined,
+					);
+				} catch (error) {
+					console.error("[auth] matrix provisioning failed", error);
+				}
 			}
 
 			const activeSubscription = await prisma.user.activeSubscription(user.id);

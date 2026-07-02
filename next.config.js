@@ -3,7 +3,7 @@
 const nextConfig = {
 	reactStrictMode: true,
 	output: "standalone",
-	serverExternalPackages: ["discord.js"],
+	serverExternalPackages: ["discord.js", "matrix-js-sdk"],
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "images.unsplash.com" },

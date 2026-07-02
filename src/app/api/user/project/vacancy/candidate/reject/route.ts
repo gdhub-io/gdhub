@@ -7,7 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { vacancyChatDirectKey } from "@/services/chat/vacancy-offer";
+import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -31,19 +31,20 @@ export const PUT = withAuth({ mode: "user" })(
 
 		// Close the related vacancy chat so messaging is disabled on both sides.
 		if (rejectedCandidate.vacancy) {
-			await prisma.chatRoom.updateMany({
-				where: {
-					directKey: vacancyChatDirectKey(
-						rejectedCandidate.vacancy.id,
-						rejectedCandidate.user.id,
-					),
-					status: prismaClient.ChatRoomStatus.Open,
-				},
-				data: {
-					status: prismaClient.ChatRoomStatus.Closed,
-					finishedAt: new Date(),
-				},
-			});
+			try {
+				await closeVacancyChats(
+					rejectedCandidate.vacancy.id,
+					rejectedCandidate.user.id,
+					{
+						notice: {
+							senderUserId: currentUser.id,
+							text: "❌ The application was declined. This chat is now closed.",
+						},
+					},
+				);
+			} catch (e) {
+				console.error("[vacancy-chat] close on reject failed", e);
+			}
 		}
 
 		try {
@@ -57,6 +58,8 @@ export const PUT = withAuth({ mode: "user" })(
 				payload: {
 					title: "Candidate rejected",
 					message: `Your candidacy for a position on the team ${rejectedCandidate.team.name} has been rejected ${rejectedCandidate.vacancy?.title}`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub?chat=1`,
+					redirectUrlType: "internal",
 				},
 			});
 

@@ -21,13 +21,13 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
-import { useChat } from "@/components/Chat/useChat";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import {
 	useGameDifficulties,
 	useGameGenres,
 	useGameSettings,
 } from "@/hooks/library";
+import { useOpenVacancyChat } from "@/hooks/useVacancyChat";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -44,7 +44,6 @@ const ProjectCandidatePreviewModal = ({
 	const { getGameGenreName } = useGameGenres();
 	const { getGameSettingName } = useGameSettings();
 	const { getGameDifficultyName } = useGameDifficulties();
-	const { setSelectedRoomId, setOpenChatModal } = useChat();
 
 	const {
 		data: candidate,
@@ -106,23 +105,16 @@ const ProjectCandidatePreviewModal = ({
 		},
 	});
 
-	const { mutateAsync: openChat, isPending: isOpeningChat } = useMutation({
-		mutationFn: (data: { vacancyId: string; candidateUserId: string }) =>
-			axios.post<{ roomId: string }>("/api/chat/rooms/vacancy", data),
-	});
+	const { openVacancyChat, isOpening: isOpeningChat } = useOpenVacancyChat();
 
 	const handleOpenChat = async () => {
 		if (!candidate?.data) return;
 		try {
-			const { data } = await openChat({
+			const { roomId } = await openVacancyChat({
 				vacancyId: candidate.data.vacancy.id,
 				candidateUserId: candidate.data.user.id,
 			});
-			if (data.roomId) {
-				setSelectedRoomId(data.roomId);
-				setOpenChatModal(true);
-				onCancel();
-			}
+			if (roomId) onCancel();
 		} catch (error: any) {
 			message.error(error?.response?.data?.message || error.message);
 		}
@@ -226,6 +218,16 @@ const ProjectCandidatePreviewModal = ({
 									<Descriptions.Item label={t("Created")}>
 										{dayjs(candidate.data.createdAt).format("LLL")}
 									</Descriptions.Item>
+									{!!candidate.data.applicationMessage && (
+										<Descriptions.Item
+											label={t(
+												"projectCandidatePreviewModal.greeting",
+												"Message from the candidate",
+											)}
+										>
+											{candidate.data.applicationMessage}
+										</Descriptions.Item>
+									)}
 								</Descriptions>
 
 								<Descriptions

@@ -7,7 +7,7 @@ import {
 	IconChecks,
 	IconClock,
 } from "@tabler/icons-react";
-import { Avatar, Flex, type GetRef } from "antd";
+import { Flex, type GetRef } from "antd";
 import dayjs from "dayjs";
 import {
 	EventStatus,
@@ -25,7 +25,7 @@ import {
 	useState,
 } from "react";
 import styles from "./ChatModal.module.scss";
-import AdviceRequestInvite from "./special-messages/AdviceRequestInvite";
+import { MatrixAvatar } from "./MatrixAvatar";
 import DefaultInvite from "./special-messages/DefaultInvite";
 import VacancyChatInvite from "./special-messages/VacancyChatInvite";
 import { useChat } from "./useChat";
@@ -34,7 +34,8 @@ type MessageStatus = "sending" | "sent" | "read" | "failed";
 
 type MessageExtra = {
 	title?: string;
-	avatarUrl?: string;
+	/** Raw mxc:// avatar — resolved via authenticated media by MatrixAvatar. */
+	avatarMxc?: string;
 	time?: string;
 	systemText?: string;
 	status?: MessageStatus;
@@ -300,22 +301,9 @@ export default function ChatMessages() {
 							content.body || content.formatted_body || JSON.stringify(content);
 						const chatUser = chatClient?.getUser(senderId || "");
 						const member = currentRoom?.getMember(senderId || "");
-						const homeserverBaseUrl = chatClient?.baseUrl;
-						const memberAvatarUrl = homeserverBaseUrl
-							? member?.getAvatarUrl(
-									homeserverBaseUrl,
-									64,
-									64,
-									"crop",
-									true,
-									true,
-								) || undefined
-							: undefined;
-						const avatarUrl =
-							memberAvatarUrl ||
-							(chatUser?.avatarUrl
-								? chatClient?.mxcUrlToHttp(chatUser.avatarUrl) || undefined
-								: undefined);
+						// Keep the raw mxc — MatrixAvatar loads it via authenticated media.
+						const avatarMxc =
+							member?.getMxcAvatarUrl() || chatUser?.avatarUrl || undefined;
 						const displayName = member?.name || chatUser?.displayName;
 						const edited = !!ev.replacingEventId?.();
 						const timeLabel = edited ? `${time} · edited` : time;
@@ -348,7 +336,7 @@ export default function ChatMessages() {
 							content: text,
 							extraInfo: {
 								title: displayName,
-								avatarUrl,
+								avatarMxc,
 								time: timeLabel,
 								status,
 							},
@@ -382,10 +370,13 @@ export default function ChatMessages() {
 				header: (
 					<div style={{ fontSize: 12, color: "#9c9a9a" }}>{extra.title}</div>
 				),
-				avatar: extra.avatarUrl ? (
-					<Avatar src={extra.avatarUrl} />
-				) : (
-					<Avatar icon={<UserOutlined />} style={{ background: "#fde3cf" }} />
+				avatar: (
+					<MatrixAvatar
+						mxcUrl={extra.avatarMxc}
+						style={{ background: "#fde3cf" }}
+					>
+						<UserOutlined />
+					</MatrixAvatar>
 				),
 				typing: { step: 5, interval: 20 },
 				footer: (
@@ -401,10 +392,13 @@ export default function ChatMessages() {
 				header: (
 					<div style={{ fontSize: 12, color: "#9c9a9a" }}>{extra.title}</div>
 				),
-				avatar: extra.avatarUrl ? (
-					<Avatar src={extra.avatarUrl} />
-				) : (
-					<Avatar icon={<UserOutlined />} style={{ background: "#aad068" }} />
+				avatar: (
+					<MatrixAvatar
+						mxcUrl={extra.avatarMxc}
+						style={{ background: "#aad068" }}
+					>
+						<UserOutlined />
+					</MatrixAvatar>
 				),
 				footer: (
 					<Flex
@@ -513,10 +507,8 @@ export default function ChatMessages() {
 	}, [markRoomAsRead, openChatModal, preparedMessages, selectedRoomId]);
 
 	if (selectedRoomId && userMembership === "invite") {
-		if (chatContext?.type === "advice-request") {
-			return <AdviceRequestInvite />;
-		}
-
+		// Advice-request chats auto-join the requester, so no invite branch here;
+		// a legacy pre-migration invite falls through to DefaultInvite.
 		if (chatContext?.type === "vacancy-application") {
 			return <VacancyChatInvite />;
 		}

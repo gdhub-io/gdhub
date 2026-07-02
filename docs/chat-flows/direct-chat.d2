@@ -1,0 +1,45 @@
+# GDHub — Direct chat: обычный DM 1:1 между двумя юзерами, TARGET flow (Stage 2)
+# Render: `d2 direct-chat.d2 direct-chat.svg`
+# Потенциально — чат между ЛЮБЫМИ двумя юзерами платформы; сейчас создание
+# разрешено только админу (гейт на роуте, не свойство модели).
+# 🔧 = изменение против текущего кода.
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+shape: sequence_diagram
+
+initiator: "Инициатор\n(сейчас: только админ)"
+api: "GDHub API"
+db: "БД (ChatRoom)"
+matrix: "Matrix (Synapse)"
+user: "Юзер (собеседник)"
+
+create: "1 · Создание DM из окна чатов" {
+  initiator -> initiator: "ChatModal → кнопка «New chat»\n(сейчас гейт isAdmin) → NewChatModal"
+  initiator -> api: "поиск юзера: GET /api/users/search"
+  initiator -> api: "POST rooms/direct { userId }\n(сейчас роут roles:[Admin] —\nоткрытие DM для всех = снять гейт)"
+  api -> db: "🔧 ensureChatRoom:\nkind=Direct (переименован из AdminDirect —\nстрок с ним в БД никогда не было),\ndirectKey = direct:{minUserId}:{maxUserId}\n(сейчас ChatRoom-строка НЕ пишется)"
+  api -> matrix: "createRoom от сессии инициатора,\ninvite: собеседник (если комнаты ещё нет —\nensureChatRoom идемпотентен)"
+  api -> user: "🔔 Novu: «New chat invitation»\n(deep-link /hub?chat=1&roomId=…)"
+  api -> initiator: "matrixRoomId (существующий или новый)\n🔧 дедуп на сервере по directKey —\nклиентский скан Matrix-комнат в\nNewChatModal больше не нужен"
+}
+
+invite: "2 · Собеседник принимает инвайт" {
+  user -> matrix: "toast о новом чате (ChatProvider),\nmembership = invite → DefaultInvite\n(в отличие от advice, DM может прийти\nнежданно — подтверждение остаётся)"
+  user -> matrix: "Accept → joinRoom / Decline → leave"
+  user -> api: "POST rooms/[id]/invite-response"
+  api -> initiator: "🔔 Novu: инвайт принят/отклонён"
+}
+
+chat: "3 · Общение" {
+  initiator <-> user: "сообщения через Matrix"
+}
+
+lifecycle: "4 · Жизненный цикл" {
+  api."🔧 directProvider (переименован из adminDirectProvider):\ncontext type=default, canClose=false —\nчат не архивируется, но Leave в сайдбаре\nдоступен обоим (open question: разрешить закрытие?)"
+}

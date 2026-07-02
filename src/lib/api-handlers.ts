@@ -217,7 +217,14 @@ export function withValidation<S extends ZodSchema>(
 				}
 			} else {
 				const url = new URL(req.url);
-				raw = Object.fromEntries(url.searchParams.entries());
+				// Collapse to a plain object, but preserve repeated keys
+				// (e.g. `?status=a&status=b`) as arrays so array schemas work.
+				const params: Record<string, string | string[]> = {};
+				for (const key of new Set(url.searchParams.keys())) {
+					const values = url.searchParams.getAll(key);
+					params[key] = values.length > 1 ? values : values[0];
+				}
+				raw = params;
 			}
 
 			const result = schema.safeParse(raw);

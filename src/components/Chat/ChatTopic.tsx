@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Modal, message, Typography } from "antd";
 import axios from "axios";
+import Link from "next/link";
 import styles from "./ChatModal.module.scss";
 import { useChat } from "./useChat";
 
@@ -26,6 +28,7 @@ type VacancyChatContext = {
 };
 
 export default function ChatTopic() {
+	const { t } = useTranslate();
 	const { chatContext, selectedRoomId, setChatContext } = useChat();
 	const queryClient = useQueryClient();
 
@@ -87,9 +90,16 @@ export default function ChatTopic() {
 		header = (
 			<>
 				<Text strong ellipsis>
-					Vacancy: {vacancyData.vacancy?.title || "—"}
+					Open position: {vacancyData.vacancy?.title || "—"}
 				</Text>
 				<Text ellipsis>Project: {vacancyData.project?.name || "—"}</Text>
+				{!!vacancyData.vacancy?.id && (
+					<Link href={`/job/${vacancyData.vacancy.id}`} target="_blank">
+						<Button size="small" style={{ marginTop: 4 }}>
+							{t("chat.topic.openPositionPage", "Open position page")}
+						</Button>
+					</Link>
+				)}
 			</>
 		);
 	}

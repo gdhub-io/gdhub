@@ -7,11 +7,24 @@ import type { ConversationItemType } from "@ant-design/x/es/conversations/interf
 type Conversation = ConversationItemType & { value: string };
 
 import { IconDoorExit } from "@tabler/icons-react";
-import { Avatar, Badge, Flex, message, Skeleton } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
+import { Badge, Flex, message, Skeleton } from "antd";
+import axios from "axios";
 import { type Room, RoomEvent } from "matrix-js-sdk";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+	type ChatGroup,
+	GROUP_ORDER,
+	groupOfKind,
+} from "@/services/chat/kind-groups";
 import styles from "./ChatModal.module.scss";
+import { MatrixAvatar } from "./MatrixAvatar";
+import { resolveRoomDisplayName } from "./roomName";
 import { useChat } from "./useChat";
+
+// Room ids per request — keeps the GET URL far below header limits.
+const KINDS_CHUNK = 100;
 
 export default function ChatRooms({
 	onReady,
@@ -25,7 +38,58 @@ export default function ChatRooms({
 		chatClient,
 		ready,
 	} = useChat();
+	const { t } = useTranslate();
 	const [items, setItems] = useState<Conversation[]>([]);
+
+	const roomIds = useMemo(() => items.map((i) => i.value).sort(), [items]);
+
+	// matrixRoomId -> ChatRoomKind from the registry, batched: unbounded id
+	// lists would overflow the URL/header limit on large accounts.
+	const { data: roomKinds } = useQuery({
+		queryKey: ["chat-room-kinds", roomIds.join(",")],
+		queryFn: async () => {
+			const chunks: string[][] = [];
+			for (let i = 0; i < roomIds.length; i += KINDS_CHUNK) {
+				chunks.push(roomIds.slice(i, i + KINDS_CHUNK));
+			}
+			const results = await Promise.all(
+				chunks.map((chunk) =>
+					axios
+						.get<Record<string, string>>("/api/chat/rooms/kinds", {
+							params: { matrixRoomIds: chunk.join(",") },
+						})
+						.then((res) => res.data),
+				),
+			);
+			return Object.assign({}, ...results) as Record<string, string>;
+		},
+		enabled: roomIds.length > 0,
+		staleTime: 60_000,
+	});
+
+	const groupLabels: Record<ChatGroup, string> = {
+		experts: t("chat.groups.experts", "Experts"),
+		positions: t("chat.groups.offers", "Offers"),
+		direct: t("chat.groups.direct", "Direct chats"),
+	};
+
+	// Attach groups only once the mapping is loaded — an ungrouped flat list is
+	// better than everything flashing into "Direct" and re-sorting. Group order
+	// follows item order, so sort by GROUP_ORDER (stable — keeps recency inside
+	// each group).
+	const groupedItems = useMemo(() => {
+		if (!roomKinds) return items;
+		return items
+			.map((item) => ({
+				...item,
+				group: groupOfKind(roomKinds[item.value]),
+			}))
+			.sort(
+				(a, b) =>
+					GROUP_ORDER.indexOf(a.group as ChatGroup) -
+					GROUP_ORDER.indexOf(b.group as ChatGroup),
+			);
+	}, [items, roomKinds]);
 
 	useEffect(() => {
 		if (!chatClient || !ready) {
@@ -38,10 +102,15 @@ export default function ChatRooms({
 				.map((r) => {
 					const fallbackMember = r.getAvatarFallbackMember();
 					const userActive = fallbackMember?.user?.currentlyActive;
+					// Prefer the room avatar (mxc), else the DM counterpart's avatar.
+					const roomMxc =
+						r.getMxcAvatarUrl() ||
+						fallbackMember?.getMxcAvatarUrl() ||
+						undefined;
 
 					return {
 						key: r.roomId,
-						label: r.name,
+						label: resolveRoomDisplayName(r, chatClient) || r.name,
 						value: r.roomId,
 						icon: (
 							<Badge
@@ -49,17 +118,7 @@ export default function ChatRooms({
 								color={userActive ? "green" : "red"}
 								offset={[0, 28]}
 							>
-								<Avatar
-									shape="square"
-									src={fallbackMember?.getAvatarUrl(
-										chatClient.baseUrl,
-										24,
-										24,
-										"crop",
-										true,
-										true,
-									)}
-								/>
+								<MatrixAvatar shape="square" size={24} mxcUrl={roomMxc} />
 							</Badge>
 						),
 					};
@@ -202,7 +261,15 @@ export default function ChatRooms({
 
 	return (
 		<Conversations
-			items={items}
+			items={groupedItems}
+			groupable={
+				roomKinds
+					? {
+							label: (group: string) =>
+								groupLabels[group as ChatGroup] ?? group,
+						}
+					: undefined
+			}
 			menu={menuConfig}
 			activeKey={selectedRoomId || undefined}
 			onActiveChange={handleSelectRoom}
