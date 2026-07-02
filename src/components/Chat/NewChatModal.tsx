@@ -17,8 +17,6 @@ type NewChatModalProps = {
 	onClose: () => void;
 };
 
-const DOMAIN = process.env.NEXT_PUBLIC_MATRIX_CHAT_HOMESERVER_DOMAIN;
-
 export default function NewChatModal({ open, onClose }: NewChatModalProps) {
 	const { chatClient, setSelectedRoomId } = useChat();
 	const [search, setSearch] = useState("");
@@ -33,23 +31,6 @@ export default function NewChatModal({ open, onClose }: NewChatModalProps) {
 				.then((res) => res.data),
 		enabled: open,
 	});
-
-	// platform user ids that already have a 1-1 room with the current user —
-	// they are hidden from the picker so we never create duplicate DMs
-	const existingPartnerIds = (() => {
-		const ids = new Set<string>();
-		if (!chatClient) return ids;
-		const myId = chatClient.getUserId();
-		for (const r of chatClient.getRooms() || []) {
-			if (!["join", "invite"].includes(r.getMyMembership())) continue;
-			const members = r.getMembers();
-			if (members.length > 2) continue;
-			const other = members.find((m) => m.userId !== myId);
-			const localpart = other?.userId.match(/^@([^:]+):/)?.[1];
-			if (localpart) ids.add(localpart);
-		}
-		return ids;
-	})();
 
 	const close = () => {
 		setSelected(null);
@@ -67,23 +48,9 @@ export default function NewChatModal({ open, onClose }: NewChatModalProps) {
 
 		setCreating(true);
 		try {
-			const targetMatrixId = `@${selected}:${DOMAIN}`;
-
-			// reuse an existing direct room with this user if there is one
-			const existing = (chatClient.getRooms() || []).find((r) => {
-				if (!["join", "invite"].includes(r.getMyMembership())) return false;
-				const members = r.getMembers();
-				return (
-					members.length <= 2 &&
-					members.some((m) => m.userId === targetMatrixId)
-				);
-			});
-
-			if (existing) {
-				selectRoomAndClose(existing.roomId);
-				return;
-			}
-
+			// The server dedups by directKey (direct:{minId}:{maxId}) and returns
+			// the existing Direct room if there is one — no client-side scan, which
+			// used to conflate typed chats (vacancy/advice) with a Direct DM.
 			const { data } = await axios.post<{ roomId: string }>(
 				"/api/chat/rooms/direct",
 				{ toUserId: selected },
@@ -138,19 +105,17 @@ export default function NewChatModal({ open, onClose }: NewChatModalProps) {
 				onChange={(value: string) => setSelected(value)}
 				loading={isFetching}
 				notFoundContent={isFetching ? "Searching..." : "No users found"}
-				options={users
-					.filter((u) => !existingPartnerIds.has(u.id))
-					.map((u) => ({
-						value: u.id,
-						label: (
-							<Space>
-								<Avatar size="small" src={u.image}>
-									{(u.name || u.email)?.[0]?.toUpperCase()}
-								</Avatar>
-								{u.name || u.email}
-							</Space>
-						),
-					}))}
+				options={users.map((u) => ({
+					value: u.id,
+					label: (
+						<Space>
+							<Avatar size="small" src={u.image}>
+								{(u.name || u.email)?.[0]?.toUpperCase()}
+							</Avatar>
+							{u.name || u.email}
+						</Space>
+					),
+				}))}
 			/>
 		</Modal>
 	);

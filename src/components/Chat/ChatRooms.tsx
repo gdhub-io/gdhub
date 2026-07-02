@@ -20,6 +20,7 @@ import {
 } from "@/services/chat/kind-groups";
 import styles from "./ChatModal.module.scss";
 import { MatrixAvatar } from "./MatrixAvatar";
+import { resolveRoomDisplayName } from "./roomName";
 import { useChat } from "./useChat";
 
 // Room ids per request — keeps the GET URL far below header limits.
@@ -109,7 +110,7 @@ export default function ChatRooms({
 
 					return {
 						key: r.roomId,
-						label: r.name,
+						label: resolveRoomDisplayName(r, chatClient) || r.name,
 						value: r.roomId,
 						icon: (
 							<Badge
