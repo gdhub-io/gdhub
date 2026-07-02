@@ -43,7 +43,12 @@ export const PUT = withAuth({ mode: "user" })(
 
 		// The application is gone — close the vacancy chat on both sides.
 		try {
-			await closeVacancyChats(deletedMember.vacancy.id, deletedMember.user.id);
+			await closeVacancyChats(deletedMember.vacancy.id, deletedMember.user.id, {
+				notice: {
+					senderUserId: deletedMember.user.id,
+					text: "↩️ The candidate withdrew the application. This chat is now closed.",
+				},
+			});
 		} catch (e) {
 			console.error("[vacancy-chat] close on withdraw failed", e);
 		}

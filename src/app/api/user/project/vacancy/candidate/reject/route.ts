@@ -35,6 +35,12 @@ export const PUT = withAuth({ mode: "user" })(
 				await closeVacancyChats(
 					rejectedCandidate.vacancy.id,
 					rejectedCandidate.user.id,
+					{
+						notice: {
+							senderUserId: currentUser.id,
+							text: "❌ The application was declined. This chat is now closed.",
+						},
+					},
 				);
 			} catch (e) {
 				console.error("[vacancy-chat] close on reject failed", e);
@@ -52,6 +58,8 @@ export const PUT = withAuth({ mode: "user" })(
 				payload: {
 					title: "Candidate rejected",
 					message: `Your candidacy for a position on the team ${rejectedCandidate.team.name} has been rejected ${rejectedCandidate.vacancy?.title}`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub?chat=1`,
+					redirectUrlType: "internal",
 				},
 			});
 

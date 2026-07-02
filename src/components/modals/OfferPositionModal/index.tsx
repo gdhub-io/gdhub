@@ -13,8 +13,9 @@ type OfferPositionModalProps = {
 };
 
 // Talent-pool outreach: the author picks one of their open positions, writes an
-// optional message and a VacancyOffer chat is opened (chat-only — the
-// specialist does NOT become a candidate unless they apply later).
+// optional message and a VacancyOffer chat invite is sent (chat-only — the
+// specialist does NOT become a candidate unless they apply later). The chat is
+// NOT opened here; it appears once the specialist accepts the invite.
 const OfferPositionModal = ({
 	open,
 	candidateUserId,
@@ -40,10 +41,11 @@ const OfferPositionModal = ({
 				vacancyId,
 				candidateUserId,
 				message: offerMessage?.trim() || undefined,
+				openDrawer: false,
 			});
 
 			message.success(
-				t("offerPositionModal.success", "Chat with the specialist is opened"),
+				t("offerPositionModal.success", "The offer was sent to the specialist"),
 			);
 			close();
 		} catch (error: any) {
@@ -59,7 +61,7 @@ const OfferPositionModal = ({
 			open={open}
 			onCancel={close}
 			onOk={handleOk}
-			okText={t("offerPositionModal.okText", "Offer & open chat")}
+			okText={t("offerPositionModal.okText", "Offer")}
 			okButtonProps={{ disabled: !vacancyId }}
 			confirmLoading={isLoading || isOpening}
 		>
@@ -72,6 +74,7 @@ const OfferPositionModal = ({
 				</Text>
 				<Select
 					style={{ width: "100%" }}
+					variant="filled"
 					value={vacancyId}
 					placeholder={t(
 						"offerPositionModal.positionPlaceholder",
@@ -102,8 +105,10 @@ const OfferPositionModal = ({
 				</Text>
 				<Input.TextArea
 					rows={3}
-					maxLength={2000}
+					maxLength={500}
+					variant="filled"
 					showCount
+					style={{ marginBottom: 24 }}
 					placeholder={t(
 						"offerPositionModal.messagePlaceholder",
 						"Hi! I think you'd be a great fit for this position…",

@@ -107,7 +107,7 @@ export const ChatModal = () => {
 										accessible only to the conversation participants.
 									</span>
 									<span>Chat is powered by Matrix.</span>
-									<ChatPushStatus />
+									{isAdmin && <ChatPushStatus />}
 								</Flex>
 							}
 						>

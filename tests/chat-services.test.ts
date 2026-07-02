@@ -30,6 +30,7 @@ vi.mock("../src/services/prisma", () => ({
 vi.mock("../src/services/matrix/admin", () => ({
 	makeRoomReadOnly: vi.fn(),
 	makeRoomWritable: vi.fn(),
+	inviteUserToRoom: vi.fn(),
 }));
 
 import type { ChatRoomRow } from "../src/services/chat/providers";
@@ -40,6 +41,7 @@ import {
 } from "../src/services/chat/vacancy-keys";
 import { ensureVacancyOfferChat } from "../src/services/chat/vacancy-offer";
 import {
+	inviteUserToRoom,
 	makeRoomReadOnly,
 	makeRoomWritable,
 } from "../src/services/matrix/admin";
@@ -260,15 +262,34 @@ describe("ensureVacancyOfferChat reopen guard", () => {
 	});
 
 	it("a bare open-chat call never resurrects a closed room", async () => {
-		await ensureVacancyOfferChat({
+		// Closed room, no allowReopen -> stays closed, no re-invite.
+		(prisma.chatRoom.findUnique as any).mockResolvedValue({ status: "Closed" });
+
+		const result = await ensureVacancyOfferChat({
 			vacancyId: "vac1",
 			candidateUserId: "cand1",
 			initiatorUserId: "author1",
 		});
 
-		expect(prisma.chatRoom.findUnique).not.toHaveBeenCalled();
 		expect(prisma.chatRoom.update).not.toHaveBeenCalled();
 		expect(makeRoomWritable).not.toHaveBeenCalled();
+		expect(inviteUserToRoom).not.toHaveBeenCalled();
+		expect(result.reinvited).toBe(false);
+	});
+
+	it("re-invites the invitee when the OPEN room's chat still exists", async () => {
+		// e.g. the invitee left; re-offer must bring them back.
+		(prisma.chatRoom.findUnique as any).mockResolvedValue({ status: "Open" });
+		(inviteUserToRoom as any).mockResolvedValue(true);
+
+		const result = await ensureVacancyOfferChat({
+			vacancyId: "vac1",
+			candidateUserId: "cand1",
+			initiatorUserId: "author1",
+		});
+
+		expect(inviteUserToRoom).toHaveBeenCalledWith("author1", "!room1", "cand1");
+		expect(result.reinvited).toBe(true);
 	});
 
 	it("never reopens chats of a closed vacancy", async () => {

@@ -24,17 +24,24 @@ type OpenVacancyChatArgs = {
 	vacancyId: string;
 	candidateUserId: string;
 	message?: string;
+	/**
+	 * Reveal the chat drawer after the call. Default true (candidate card, where
+	 * the author starts a live conversation). Talent-pool offers pass false —
+	 * the specialist must accept the invite first, so nothing to show yet.
+	 */
+	openDrawer?: boolean;
 };
 
 /**
- * Open (or create) the vacancy chat with a candidate/specialist and switch the
- * chat drawer to it. Shared by the candidate card and the talent-pool offer.
+ * Open (or create) the vacancy chat with a candidate/specialist. Optionally
+ * switches the chat drawer to it. Shared by the candidate card and the
+ * talent-pool offer.
  */
 export function useOpenVacancyChat() {
 	const { setSelectedRoomId, setOpenChatModal } = useChat();
 
 	const mutation = useMutation({
-		mutationFn: (data: OpenVacancyChatArgs) =>
+		mutationFn: ({ openDrawer: _o, ...data }: OpenVacancyChatArgs) =>
 			axios
 				.post<{ roomId: string }>("/api/chat/rooms/vacancy", data)
 				.then((res) => res.data),
@@ -42,7 +49,7 @@ export function useOpenVacancyChat() {
 
 	const openVacancyChat = async (data: OpenVacancyChatArgs) => {
 		const result = await mutation.mutateAsync(data);
-		if (result.roomId) {
+		if (result.roomId && data.openDrawer !== false) {
 			setSelectedRoomId(result.roomId);
 			setOpenChatModal(true);
 		}

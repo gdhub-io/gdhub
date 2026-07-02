@@ -102,6 +102,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 			specialityId: string;
 			contactType: string[];
 			telegramNickname?: string;
+			applicationMessage?: string;
 			vacancyId: string;
 		}) => axios.post<void>("/api/user/project/vacancy/apply", data),
 		onSuccess: () => {
@@ -148,10 +149,12 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 		specialityId,
 		contactType,
 		telegramNickname,
+		applicationMessage,
 	}: {
 		specialityId: any;
 		contactType: string[];
 		telegramNickname?: string;
+		applicationMessage?: string;
 	}) => {
 		if (!vacancy) return;
 
@@ -160,6 +163,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 				specialityId,
 				contactType,
 				telegramNickname,
+				applicationMessage,
 				vacancyId: vacancy.id,
 			});
 

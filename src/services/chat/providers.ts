@@ -50,6 +50,7 @@ type VacancyOfferContext = {
 	vacancyId?: string;
 	candidateUserId?: string;
 	teamMemberId?: string | null;
+	offerMessage?: string | null;
 };
 
 async function loadVacancyOffer(room: ChatRoomRow) {
@@ -104,6 +105,7 @@ const vacancyOfferProvider: ChatKindProvider<VacancyOfferLoaded> = {
 				project: project
 					? { id: project.id, name: project.name, slug: project.slug }
 					: null,
+				offerMessage: ctx.offerMessage ?? null,
 			},
 			isRecruiter: ctx.candidateUserId !== currentUserId,
 		};

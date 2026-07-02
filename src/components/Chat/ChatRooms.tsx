@@ -9,7 +9,7 @@ type Conversation = ConversationItemType & { value: string };
 import { IconDoorExit } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Badge, Flex, message, Skeleton } from "antd";
+import { Badge, Flex, message, Skeleton } from "antd";
 import axios from "axios";
 import { type Room, RoomEvent } from "matrix-js-sdk";
 import { useEffect, useMemo, useState } from "react";
@@ -19,6 +19,7 @@ import {
 	groupOfKind,
 } from "@/services/chat/kind-groups";
 import styles from "./ChatModal.module.scss";
+import { MatrixAvatar } from "./MatrixAvatar";
 import { useChat } from "./useChat";
 
 // Room ids per request — keeps the GET URL far below header limits.
@@ -67,7 +68,7 @@ export default function ChatRooms({
 
 	const groupLabels: Record<ChatGroup, string> = {
 		experts: t("chat.groups.experts", "Experts"),
-		positions: t("chat.groups.openPositions", "Open positions"),
+		positions: t("chat.groups.offers", "Offers"),
 		direct: t("chat.groups.direct", "Direct chats"),
 	};
 
@@ -100,6 +101,11 @@ export default function ChatRooms({
 				.map((r) => {
 					const fallbackMember = r.getAvatarFallbackMember();
 					const userActive = fallbackMember?.user?.currentlyActive;
+					// Prefer the room avatar (mxc), else the DM counterpart's avatar.
+					const roomMxc =
+						r.getMxcAvatarUrl() ||
+						fallbackMember?.getMxcAvatarUrl() ||
+						undefined;
 
 					return {
 						key: r.roomId,
@@ -111,17 +117,7 @@ export default function ChatRooms({
 								color={userActive ? "green" : "red"}
 								offset={[0, 28]}
 							>
-								<Avatar
-									shape="square"
-									src={fallbackMember?.getAvatarUrl(
-										chatClient.baseUrl,
-										24,
-										24,
-										"crop",
-										true,
-										true,
-									)}
-								/>
+								<MatrixAvatar shape="square" size={24} mxcUrl={roomMxc} />
 							</Badge>
 						),
 					};

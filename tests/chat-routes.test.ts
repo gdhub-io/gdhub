@@ -106,7 +106,14 @@ describe("PUT /api/user/project/vacancy/candidate/hire", () => {
 		});
 
 		expect(response.status).toBe(200);
-		expect(closeVacancyChats).toHaveBeenCalledWith("vac1", "cand1");
+		// Third arg: the farewell system message posted before the room closes.
+		expect(closeVacancyChats).toHaveBeenCalledWith(
+			"vac1",
+			"cand1",
+			expect.objectContaining({
+				notice: expect.objectContaining({ senderUserId: "author1" }),
+			}),
+		);
 	});
 });
 

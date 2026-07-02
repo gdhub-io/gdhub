@@ -23,6 +23,7 @@ import type { ItemType } from "antd/es/menu/interface";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -30,6 +31,8 @@ import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { genConfig } from "react-nice-avatar";
+import { ChatProvider } from "@/components/Chat/ChatProvider";
+import { useChat } from "@/components/Chat/useChat";
 import { Error404 } from "@/components/Error404";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
@@ -44,6 +47,11 @@ import styles from "./style.module.scss";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
+
+const ChatModal = dynamic(
+	() => import("@/components/Chat/ChatModal").then((m) => m.ChatModal),
+	{ ssr: false },
+);
 
 export const ProtectedProjectLayout = ({
 	title,
@@ -68,6 +76,7 @@ export const ProtectedProjectLayout = ({
 	const screens = Grid.useBreakpoint();
 	const { data: session }: any = useSession();
 	const { changeLanguage, getLanguage } = useTolgee();
+	const { setOpenChatModal } = useChat();
 
 	const { project, isFetched } = useCurrentProject();
 	const isProjectAuthor = useMemo(
@@ -314,126 +323,132 @@ export const ProtectedProjectLayout = ({
 			value={{ contextProject, isLoaded: isFetched, setContextProject }}
 		>
 			<NextSeo {...seoSettings} />
-			<ConfigProvider
-				theme={appThemeConfig}
-				locale={getLanguage() == "en" ? enLocale : ruLocale}
-			>
-				<style jsx global>{`
+			<ChatProvider>
+				<ConfigProvider
+					theme={appThemeConfig}
+					locale={getLanguage() == "en" ? enLocale : ruLocale}
+				>
+					<style jsx global>{`
 					:root {
 						--background-color: #fafafa;
 					}
 				`}</style>
-				<Layout className={styles.container}>
-					<AppHeader
-						className={styles.header}
-						breadcrumbItems={[
-							{
-								title: screens.md ? (
-									<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
-								) : null,
-							},
-							{
-								title: (
-									<Text ellipsis={{ tooltip: true }}>
-										{project?.name || "Project"}
-									</Text>
-								),
-							},
-						]}
-						actions={
-							<HeaderActions
-								dropdownMenuItems={dropdownMenuItems}
-								onOpenMobileMenu={() => setOpenMobileMenu(true)}
-								avatarConfig={avatarConfig}
-							/>
-						}
-						menu={
-							<Menu
-								items={menuItems.filter((r) => !r.disabled)}
-								mode="horizontal"
-								selectedKeys={[pathname]}
-								className={styles.appMenu}
-							/>
-						}
-					/>
-					{isProjectArchived && (
-						<div className={styles.archivedBanner}>
-							{t("project.archived.banner", "Project archived since {date}", {
-								date:
-									archivedAtText ||
-									t("project.archived.banner.unknownDate", "unknown date"),
-							})}
-						</div>
-					)}
-					<Content className={styles.contentContainer}>
-						<div className={styles.content}>
-							<Flex
-								justify="space-between"
-								align="center"
-								style={{ marginBottom: 24 }}
-							>
-								<Space
-									orientation="vertical"
-									size={0}
+					<Layout className={styles.container}>
+						<AppHeader
+							className={styles.header}
+							breadcrumbItems={[
+								{
+									title: screens.md ? (
+										<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
+									) : null,
+								},
+								{
+									title: (
+										<Text ellipsis={{ tooltip: true }}>
+											{project?.name || "Project"}
+										</Text>
+									),
+								},
+							]}
+							actions={
+								<HeaderActions
+									dropdownMenuItems={dropdownMenuItems}
+									onOpenMobileMenu={() => setOpenMobileMenu(true)}
+									onOpenChat={() => setOpenChatModal(true)}
+									avatarConfig={avatarConfig}
+								/>
+							}
+							menu={
+								<Menu
+									items={menuItems.filter((r) => !r.disabled)}
+									mode="horizontal"
+									selectedKeys={[pathname]}
+									className={styles.appMenu}
+								/>
+							}
+						/>
+						{isProjectArchived && (
+							<div className={styles.archivedBanner}>
+								{t("project.archived.banner", "Project archived since {date}", {
+									date:
+										archivedAtText ||
+										t("project.archived.banner.unknownDate", "unknown date"),
+								})}
+							</div>
+						)}
+						<Content className={styles.contentContainer}>
+							<div className={styles.content}>
+								<Flex
+									justify="space-between"
+									align="center"
 									style={{ marginBottom: 24 }}
 								>
-									{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
-									{!!description && <Text type="secondary">{description}</Text>}
-								</Space>
-								{actions}
-							</Flex>
+									<Space
+										orientation="vertical"
+										size={0}
+										style={{ marginBottom: 24 }}
+									>
+										{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+										{!!description && (
+											<Text type="secondary">{description}</Text>
+										)}
+									</Space>
+									{actions}
+								</Flex>
 
-							{children}
-						</div>
-					</Content>
-				</Layout>
-				{!screens.lg && (
-					<Drawer
-						className={styles.mobileMenuDrawer}
-						title={
-							<Space>
-								<Avatar
-									src={
-										session?.user?.image ? (
-											<Image
-												src={session?.user.image}
-												width={32}
-												height={32}
-												alt="avatar"
-											/>
-										) : null
-									}
-									shape="square"
-								/>
-								<div className="username">{session?.user?.name}</div>
-							</Space>
-						}
-						placement="top"
-						onClose={() => setOpenMobileMenu(false)}
-						open={openMobileMenu}
-						extra={
-							<Button
-								shape="circle"
-								style={{ top: 2 }}
-								onClick={() => setOpenMobileMenu(false)}
-								type="text"
-							>
-								<AiOutlineClose />
-							</Button>
-						}
-					>
-						<Menu
-							items={dropdownMenuItems}
-							onSelect={() => setOpenMobileMenu(false)}
-						/>
-					</Drawer>
-				)}
-				<FloatButton.BackTop
-					icon={<GoArrowUp />}
-					rootClassName={styles.backTop}
-					description="Scroll to up"
-				/>
-			</ConfigProvider>
+								{children}
+							</div>
+						</Content>
+					</Layout>
+					{!screens.lg && (
+						<Drawer
+							className={styles.mobileMenuDrawer}
+							title={
+								<Space>
+									<Avatar
+										src={
+											session?.user?.image ? (
+												<Image
+													src={session?.user.image}
+													width={32}
+													height={32}
+													alt="avatar"
+												/>
+											) : null
+										}
+										shape="square"
+									/>
+									<div className="username">{session?.user?.name}</div>
+								</Space>
+							}
+							placement="top"
+							onClose={() => setOpenMobileMenu(false)}
+							open={openMobileMenu}
+							extra={
+								<Button
+									shape="circle"
+									style={{ top: 2 }}
+									onClick={() => setOpenMobileMenu(false)}
+									type="text"
+								>
+									<AiOutlineClose />
+								</Button>
+							}
+						>
+							<Menu
+								items={dropdownMenuItems}
+								onSelect={() => setOpenMobileMenu(false)}
+							/>
+						</Drawer>
+					)}
+					<FloatButton.BackTop
+						icon={<GoArrowUp />}
+						rootClassName={styles.backTop}
+						description="Scroll to up"
+					/>
+					<ChatModal />
+				</ConfigProvider>
+			</ChatProvider>
 		</ProjectContext.Provider>
 	);
 };

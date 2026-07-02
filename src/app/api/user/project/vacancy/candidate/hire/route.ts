@@ -58,7 +58,12 @@ export const PUT = withAuth({ mode: "user" })(
 		// NB: `id` is the TeamMember id — the chat key needs the vacancy id.
 		if (member.vacancy?.id) {
 			try {
-				await closeVacancyChats(member.vacancy.id, member.user.id);
+				await closeVacancyChats(member.vacancy.id, member.user.id, {
+					notice: {
+						senderUserId: currentUser.id,
+						text: "🎉 The candidate was accepted into the team! This chat is closed — further communication moves to the team.",
+					},
+				});
 			} catch (e) {
 				console.error("[vacancy-chat] close on hire failed", e);
 			}
@@ -126,6 +131,8 @@ export const PUT = withAuth({ mode: "user" })(
 				payload: {
 					title: "Accepted into the team",
 					message: `You have been accepted into the team ${member.team.name}`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub?chat=1`,
+					redirectUrlType: "internal",
 				},
 			});
 

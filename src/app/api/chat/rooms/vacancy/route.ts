@@ -94,6 +94,8 @@ export const POST = withAuth({ mode: "user" })(
 			initiatorUserId: currentUser.id,
 			teamMemberId: application?.id,
 			firstMessage,
+			// Stored in context so the specialist reads it on the invite screen.
+			offerMessage: !application ? message : undefined,
 			autoJoinInvitees: !!application,
 			// A bare "open chat" must not resurrect a chat that reject/hire closed.
 			allowReopen: !!application || !!message,
@@ -111,9 +113,10 @@ export const POST = withAuth({ mode: "user" })(
 			}
 		}
 
-		// Notify the candidate when a new chat was opened OR a new offer message
-		// landed in an existing one. A bare re-open from a card shouldn't notify.
-		if (chat.created || (messageDelivered && message)) {
+		// Notify the candidate when a new chat was opened, they were re-invited
+		// after leaving, OR a new offer message landed in an existing room. A
+		// bare re-open of a chat they're already in shouldn't notify.
+		if (chat.created || chat.reinvited || (messageDelivered && message)) {
 			try {
 				await NovuService.send({
 					template: "default-message",
