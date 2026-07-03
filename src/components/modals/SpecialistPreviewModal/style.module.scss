@@ -283,6 +283,18 @@ $btn-black: #222222;
 	}
 }
 
+/* skeleton mini-card container (mirrors .miniCard box) */
+.skMiniCard {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	background: $surface;
+	border: 1px solid $border;
+	border-radius: 10px;
+	padding: 10px;
+}
+
 /* mini cards (projects + certificates) */
 .miniCard {
 	display: flex;

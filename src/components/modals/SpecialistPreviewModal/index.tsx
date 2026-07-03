@@ -14,7 +14,15 @@ import {
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Modal, Popover, Spin, Tag, Tooltip, Typography, theme } from "antd";
+import {
+	Modal,
+	Popover,
+	Skeleton,
+	Tag,
+	Tooltip,
+	Typography,
+	theme,
+} from "antd";
 import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -63,6 +71,7 @@ type SpecialistData = prismaClient.Speciality & {
 		name: string | null;
 		image: string | null;
 		email: string | null;
+		updatedAt: string;
 		profile: prismaClient.Profile & { [key: string]: any };
 	};
 	projects: SpecialistProject[];
@@ -129,7 +138,9 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 					params: { id: specialistId },
 				})
 				.then((res) => res.data),
-		staleTime: Infinity,
+		// Cache briefly so profile edits propagate to other viewers, while
+		// avoiding a refetch on every reopen within a few minutes.
+		staleTime: 1000 * 60 * 5,
 		enabled: open && !!specialistId,
 	});
 
@@ -218,8 +229,10 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 			onCancel={onCancel}
 			footer={null}
 		>
-			<Spin spinning={isLoading}>
-				{!!data && (
+			{isLoading && !data ? (
+				<TalentCardSkeleton />
+			) : (
+				!!data && (
 					<div className={styles.card}>
 						{/* ---------- Header ---------- */}
 						<div
@@ -554,15 +567,12 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 							<span className={styles.footerNote}>
 								<IconHistory size={14} />
 								{t("specialist.preview.lastUpdated", "Last updated")}{" "}
-								{formatDate(
-									(data.user.profile as any)?.updatedAt ||
-										(data as any).updatedAt,
-								)}
+								{formatDate(data.user.updatedAt)}
 							</span>
 						</div>
 					</div>
-				)}
-			</Spin>
+				)
+			)}
 
 			<OfferPositionModal
 				open={offerOpen}
@@ -574,6 +584,79 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 };
 
 /* ---------- subcomponents ---------- */
+
+// Loading placeholder mirroring the talent-card layout (header + rail + cards).
+const skInput = (width: number, height: number, block?: boolean) => (
+	<Skeleton.Input
+		active
+		size="small"
+		block={block}
+		style={
+			block
+				? { height, borderRadius: 8 }
+				: { width, minWidth: width, height, borderRadius: 6 }
+		}
+	/>
+);
+
+const TalentCardSkeleton = () => (
+	<div className={styles.card}>
+		<div className={styles.header} style={{ background: "#F4F4F5" }}>
+			{skInput(90, 12)}
+			<div className={styles.identity}>
+				<Skeleton.Avatar
+					active
+					shape="square"
+					size={76}
+					style={{ borderRadius: 18 }}
+				/>
+				<div className={styles.identityText}>
+					{skInput(220, 26)}
+					{skInput(160, 16)}
+				</div>
+			</div>
+			<div className={styles.metaRow}>
+				<div className={styles.metaLeft}>
+					<Skeleton.Button active size="small" style={{ width: 150 }} />
+					<Skeleton.Button active size="small" style={{ width: 130 }} />
+				</div>
+				<Skeleton.Button active style={{ width: 150 }} />
+			</div>
+		</div>
+
+		<div className={styles.body}>
+			<div className={styles.leftRail}>
+				{skInput(70, 12)}
+				{skInput(0, 40, true)}
+				{skInput(70, 12)}
+				{[0, 1, 2].map((i) => (
+					<div key={`sk-mini-${i}`} className={styles.skMiniCard}>
+						<Skeleton.Avatar
+							active
+							shape="square"
+							size={40}
+							style={{ borderRadius: 8 }}
+						/>
+						<div className={styles.miniText}>
+							{skInput(120, 13)}
+							{skInput(80, 12)}
+						</div>
+					</div>
+				))}
+			</div>
+
+			<div className={styles.rightContent}>
+				{[0, 1].map((i) => (
+					<div key={`sk-card-${i}`} className={styles.contentCard}>
+						<Skeleton active title={{ width: 140 }} paragraph={{ rows: 3 }} />
+					</div>
+				))}
+			</div>
+		</div>
+
+		<div className={styles.footer}>{skInput(160, 12)}</div>
+	</div>
+);
 
 const Field = ({ label, value }: { label: string; value?: string | null }) =>
 	value ? (
