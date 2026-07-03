@@ -12,7 +12,6 @@ import {
 	ConfigProvider,
 	Drawer,
 	Flex,
-	FloatButton,
 	Grid,
 	Layout,
 	Menu,
@@ -28,7 +27,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { ChatProvider } from "@/components/Chat/ChatProvider";
 import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
@@ -39,10 +37,6 @@ import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
-const AIAgentDrawer = dynamic(
-	() => import("@/components/AIAgentDrawer").then((m) => m.AIAgentDrawer),
-	{ ssr: false },
-);
 const ChatModal = dynamic(
 	() => import("@/components/Chat/ChatModal").then((m) => m.ChatModal),
 	{ ssr: false },
@@ -94,7 +88,6 @@ export const ProtectedLayout = ({
 	const [isOpenedInTelegram] = useTelegram();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
-	const [openAgentDrawer, setOpenAgentDrawer] = useState(false);
 	const { setOpenChatModal } = useChat();
 
 	const hasAccess = useMemo(() => {
@@ -458,7 +451,7 @@ export const ProtectedLayout = ({
 				) : null}
 
 				{/* agent drawer */}
-				{isAdmin && (
+				{/* {isAdmin && (
 					<>
 						<FloatButton
 							style={{ insetInlineEnd: 22, insetBlockEnd: 90 }}
@@ -473,7 +466,7 @@ export const ProtectedLayout = ({
 							onClose={() => setOpenAgentDrawer(false)}
 						/>
 					</>
-				)}
+				)} */}
 
 				{/* chat modal */}
 				<ChatModal />
