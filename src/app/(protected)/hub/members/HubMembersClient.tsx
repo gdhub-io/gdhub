@@ -41,7 +41,7 @@ const SpecialistPreviewModal = dynamic(
 );
 
 // A specialist counts as "new" for two weeks after their card is created.
-const NEW_WINDOW_DAYS = 140;
+const NEW_WINDOW_DAYS = 14;
 // Experience order + rank (drives the mini meter and dropdown ordering).
 const LEVEL_RANK: Record<string, number> = {
 	Novice: 1,
