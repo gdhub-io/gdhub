@@ -2,18 +2,15 @@ import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { BsCheckLg } from "@react-icons/all-files/bs/BsCheckLg";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Checkbox, Form, Input, List, Modal, Spin } from "antd";
+import { Form, Input, List, Modal, Spin } from "antd";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
-import styles from "./style.module.scss";
+import { useEffect, useState } from "react";
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [processing, setProcessing] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<string>();
-	const [contactType, setContactType] = useState<string[]>(["email"]);
-	const [telegramNickname, setTelegramNickname] = useState<string>();
 	const [applicationMessage, setApplicationMessage] = useState<string>();
 
 	const {
@@ -26,51 +23,16 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 			axios.get<prismaClient.Speciality[]>("/api/user/specialities"),
 	});
 
-	const {
-		data: contacts,
-		isLoading: isContactsLoading,
-		refetch: fetchContacts,
-	} = useQuery({
-		queryKey: ["user-contacts"],
-		queryFn: (): Promise<any> => axios.get("/api/user/contacts"),
-	});
-
 	useEffect(() => {
 		if (open) {
 			fetchSpecialities();
-			fetchContacts();
 			setSelectedItem(undefined);
 		}
 	}, [open]);
 
-	const options = useMemo(
-		() => [
-			{
-				value: "email",
-				label:
-					t(`Email`) +
-					" " +
-					`${contacts?.data.email ? "(" + contacts?.data.email + ")" : ""}`,
-				disabled: !contacts?.data.email,
-			},
-			{
-				value: "telegram",
-				label:
-					t(`Telegram`) +
-					" " +
-					`${contacts?.data.telegram ? "(@" + contacts?.data.telegram + ")" : ""}`,
-			},
-		],
-		[contacts],
-	);
-
 	const handleCancel = () => {
 		form.resetFields();
 		onCancel();
-	};
-
-	const handleSetContact = (checkedValue: string[]) => {
-		setContactType(checkedValue);
 	};
 
 	const handleOk = async () => {
@@ -79,8 +41,6 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 
 			await onOk({
 				specialityId: selectedItem,
-				contactType,
-				telegramNickname,
 				applicationMessage: applicationMessage?.trim() || undefined,
 			});
 
@@ -95,25 +55,18 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		<>
 			<Modal
 				centered
-				title={t("modal.speciality-select.title", "Indicate the specialty")}
+				title={null}
 				destroyOnHidden
-				okButtonProps={{
-					disabled:
-						!selectedItem ||
-						!contactType?.length ||
-						(!contacts?.data.telegram &&
-							contactType.includes("telegram") &&
-							!telegramNickname),
-				}}
+				okButtonProps={{ disabled: !selectedItem }}
 				mask={{ closable: false }}
 				okText={t("modal.speciality-select.okText", "Choose")}
 				onOk={handleOk}
 				cancelText={t("modal.specialitySelect.close", "Close")}
 				open={open}
 				onCancel={handleCancel}
-				confirmLoading={isLoading || isContactsLoading || processing}
+				confirmLoading={isLoading || processing}
 			>
-				<Spin spinning={isLoading || isContactsLoading || processing}>
+				<Spin spinning={isLoading || processing}>
 					<p>
 						{t(
 							"modal.speciality-select.choose-text",
@@ -140,30 +93,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 							</List.Item>
 						)}
 					/>
-					<br />
-					<p>
-						{t(
-							"modal.speciality-select.contact-text",
-							"How to contact the author of the project with you?",
-						)}
-					</p>
-					<Checkbox.Group
-						rootClassName={styles.contactTypes}
-						options={options}
-						// defaultValue={contactType}
-						value={contactType}
-						onChange={handleSetContact}
-					/>
 
-					{!contacts?.data.telegram && contactType.includes("telegram") && (
-						<Input
-							prefix="@"
-							placeholder={t("Enter your Telegram nickname")}
-							onChange={(e) => setTelegramNickname(e.target.value)}
-						/>
-					)}
-
-					<br />
 					<br />
 					<p>
 						{t(

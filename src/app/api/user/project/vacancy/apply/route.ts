@@ -15,7 +15,8 @@ export const dynamic = "force-dynamic";
 
 const ApplySchema = z.object({
 	specialityId: z.string(),
-	contactType: z.array(z.string()),
+	// Email is the default contact method — clients no longer send this.
+	contactType: z.array(z.string()).default(["email"]),
 	telegramNickname: z.string().optional(),
 	applicationMessage: z.string().trim().max(1000).optional(),
 	vacancyId: z.string(),

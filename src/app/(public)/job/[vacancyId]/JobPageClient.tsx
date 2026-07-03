@@ -100,8 +100,6 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 	const { mutateAsync: vacancyApply } = useMutation({
 		mutationFn: (data: {
 			specialityId: string;
-			contactType: string[];
-			telegramNickname?: string;
 			applicationMessage?: string;
 			vacancyId: string;
 		}) => axios.post<void>("/api/user/project/vacancy/apply", data),
@@ -147,13 +145,9 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 
 	const handleSpecialitySelect = async ({
 		specialityId,
-		contactType,
-		telegramNickname,
 		applicationMessage,
 	}: {
 		specialityId: any;
-		contactType: string[];
-		telegramNickname?: string;
 		applicationMessage?: string;
 	}) => {
 		if (!vacancy) return;
@@ -161,8 +155,6 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 		try {
 			await vacancyApply({
 				specialityId,
-				contactType,
-				telegramNickname,
 				applicationMessage,
 				vacancyId: vacancy.id,
 			});

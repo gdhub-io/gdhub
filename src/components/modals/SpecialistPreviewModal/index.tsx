@@ -1,585 +1,802 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { TbClock } from "@react-icons/all-files/tb/TbClock";
-import { TbFileText } from "@react-icons/all-files/tb/TbFileText";
-import { TbMapPin } from "@react-icons/all-files/tb/TbMapPin";
-import { TbQuote } from "@react-icons/all-files/tb/TbQuote";
-import { IconCopy } from "@tabler/icons-react";
+import {
+	IconAward,
+	IconBriefcase,
+	IconClock,
+	IconCopy,
+	IconExternalLink,
+	IconHistory,
+	IconLock,
+	IconMapPin,
+	IconMessageCircle,
+	IconPlayerPlay,
+	IconRosetteDiscountCheck,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import {
-	Button,
-	Card,
-	Col,
-	Divider,
-	Flex,
-	Modal,
-	Progress,
-	Row,
-	Space,
-	Spin,
-	Tag,
-	Typography,
-	theme,
-} from "antd";
+import { Modal, Popover, Spin, Tag, Tooltip, Typography, theme } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useChat } from "@/components/Chat/useChat";
+import { getWorkDirection } from "@/components/DirectionBadge";
 import OfferPositionModal from "@/components/modals/OfferPositionModal";
 import { useMyOpenPositions } from "@/hooks/useVacancyChat";
 import styles from "./style.module.scss";
 
-const { Paragraph, Text, Title } = Typography;
+const { Paragraph, Text } = Typography;
 
-const SpecialistPreviewModal = ({
-	specialistId,
-	open,
-	onOk,
-	onCancel,
-}: any) => {
-	const { token } = theme.useToken();
+type SpecialistProject = {
+	id: string;
+	name: string;
+	slug: string | null;
+	coverImage: string | null;
+	description: string | null;
+	videoLink: string | null;
+	genre: string | null;
+	role: string | null;
+	status: string;
+	startedAt: string | null;
+	active: boolean;
+};
+
+type SpecialistCertificate = {
+	number: string;
+	issuedAt: string;
+	event: {
+		title: string;
+		type: string;
+		slug: string | null;
+		image: string | null;
+		organizerName: string | null;
+	} | null;
+};
+
+type SpecialistData = prismaClient.Speciality & {
+	availableProjects: (prismaClient.MatchingSpecialistAndProject & {
+		project: { name: string };
+	})[];
+	direction: prismaClient.WorkDirection;
+	user: {
+		id: string;
+		name: string | null;
+		image: string | null;
+		email: string | null;
+		profile: prismaClient.Profile & { [key: string]: any };
+	};
+	projects: SpecialistProject[];
+	certificates: SpecialistCertificate[];
+	chat: { roomId: string } | null;
+};
+
+const formatDate = (value?: string | null) =>
+	value
+		? new Date(value).toLocaleDateString(undefined, {
+				year: "numeric",
+				month: "short",
+				day: "numeric",
+			})
+		: "";
+
+const matchColor = (percent: number, token: any) => {
+	if (percent >= 80) return token.colorSuccess;
+	if (percent >= 60) return token.colorWarning;
+	return token.colorError;
+};
+
+// Keep the rail tidy for prolific members — active projects first, the rest
+// behind a "show more" toggle.
+const PROJECTS_LIMIT = 5;
+
+// A darker shade of the header's direction tint — same hue, low lightness —
+// used for the "Talent card" eyebrow so it reads as "the background, darker".
+const darkenTint = (hex: string, lightness = 0.32) => {
+	const clean = hex.replace("#", "");
+	if (clean.length < 6) return hex;
+	const r = Number.parseInt(clean.slice(0, 2), 16) / 255;
+	const g = Number.parseInt(clean.slice(2, 4), 16) / 255;
+	const b = Number.parseInt(clean.slice(4, 6), 16) / 255;
+	const max = Math.max(r, g, b);
+	const min = Math.min(r, g, b);
+	const l = (max + min) / 2;
+	const d = max - min;
+	let h = 0;
+	let s = 0;
+	if (d !== 0) {
+		s = d / (1 - Math.abs(2 * l - 1));
+		if (max === r) h = ((((g - b) / d) % 6) + 6) % 6;
+		else if (max === g) h = (b - r) / d + 2;
+		else h = (r - g) / d + 4;
+		h *= 60;
+	}
+	const sat = s < 0.1 ? 0 : Math.min(1, s + 0.2);
+	return `hsl(${Math.round(h)}, ${Math.round(sat * 100)}%, ${Math.round(lightness * 100)}%)`;
+};
+
+const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 	const { t } = useTranslate();
 	const session: any = useSession();
+	const { setSelectedRoomId, setOpenChatModal } = useChat();
 	const [offerOpen, setOfferOpen] = useState(false);
-	const {
-		data: specialist,
-		refetch: fetchSpecialist,
-		isLoading,
-	} = useQuery({
+	const [showAllProjects, setShowAllProjects] = useState(false);
+
+	const { data: specialist, isLoading } = useQuery({
 		queryKey: ["specialist", specialistId],
 		queryFn: () =>
-			axios.get<
-				prismaClient.Speciality & {
-					availableProjects: (prismaClient.MatchingSpecialistAndProject & {
-						project: { name: string };
-					})[];
-					direction: prismaClient.WorkDirection;
-					user: prismaClient.User & {
-						profile: prismaClient.Profile & { [key: string]: any };
-					};
-				}
-			>("/api/specialist", { params: { id: specialistId } }),
+			axios
+				.get<SpecialistData>("/api/specialist", {
+					params: { id: specialistId },
+				})
+				.then((res) => res.data),
 		staleTime: Infinity,
-		enabled: open,
+		enabled: open && !!specialistId,
 	});
 
-	// The "Offer a position" action shows up only when the viewer has published
-	// vacancies to offer (and isn't looking at their own card).
+	// Offer is available to project authors who have open positions (and not on
+	// their own card). Once the specialist accepted an offer, the CTA becomes
+	// "Go to chat" instead.
 	const { data: myPositions = [] } = useMyOpenPositions(
 		open && !!session?.data,
 	);
 
-	const canOffer =
-		myPositions.length > 0 &&
-		!!specialist?.data &&
-		specialist.data.user.id !== session?.data?.user?.id;
+	const data = specialist;
+	const isSelf = data?.user.id === session?.data?.user?.id;
+	const acceptedRoomId = data?.chat?.roomId ?? null;
+	const canOffer = myPositions.length > 0 && !!data && !isSelf;
+	const emailRevealed = !!data?.user.email;
 
-	useEffect(() => {
-		if (open && specialistId) {
-			fetchSpecialist();
-		}
-	}, [open]);
-
-	const handleCancel = () => {
+	const goToChat = () => {
+		if (!acceptedRoomId) return;
+		setSelectedRoomId(acceptedRoomId);
+		setOpenChatModal(true);
 		onCancel();
 	};
 
-	const calculateMatchColor = (percent: number) => {
-		if (percent >= 60 && percent < 80) {
-			return token.colorWarning;
-		}
+	const direction = data?.direction?.name
+		? getWorkDirection(data.direction.name)
+		: null;
+	const DirIcon = direction?.icon;
 
-		if (percent >= 80) {
-			return token.colorSuccess;
-		}
+	const initials = (data?.user.name || data?.name || "?")
+		.split(" ")
+		.map((w: string) => w[0])
+		.slice(0, 2)
+		.join("")
+		.toUpperCase();
 
-		return token.colorError;
-	};
+	const timeForWork = data?.user.profile?.timeForWork;
 
-	const renderSkillTags = (skills: string | null) => {
-		if (!skills) return t("specialist.skills.notPointed", "(not pointed)");
-		return skills.split(",").map((skill, index) => (
-			<Tag key={`skill-${index.toString()}`} className={styles.skillTag}>
-				{skill.trim()}
+	// Active memberships first, then the rest; collapse long lists.
+	const sortedProjects = (data?.projects ?? [])
+		.slice()
+		.sort((a, b) => Number(b.active) - Number(a.active));
+	const visibleProjects = showAllProjects
+		? sortedProjects
+		: sortedProjects.slice(0, PROJECTS_LIMIT);
+	const hiddenProjectsCount = sortedProjects.length - visibleProjects.length;
+
+	const renderTags = (value?: string | null, tone?: "pref") =>
+		value
+			? value.split(",").map((item, index) => (
+					<Tag
+						key={`tag-${index.toString()}`}
+						className={tone === "pref" ? styles.prefTag : styles.tag}
+					>
+						{item.trim()}
+					</Tag>
+				))
+			: null;
+
+	const renderPreference = (items?: { name: string }[], tone?: "pref") =>
+		(items ?? []).map((item, index) => (
+			<Tag
+				key={`pref-${index.toString()}`}
+				className={tone === "pref" ? styles.prefTag : styles.tag}
+			>
+				{item.name}
 			</Tag>
 		));
-	};
 
 	return (
 		<Modal
 			centered
 			title={null}
-			width={800}
+			width={900}
 			destroyOnHidden
+			styles={{
+				container: {
+					padding: 0,
+					border: "none",
+					overflow: "hidden",
+					borderRadius: 16,
+				},
+				body: { padding: 0 },
+			}}
 			mask={{ closable: false }}
 			open={open}
-			onCancel={handleCancel}
-			footer={[
-				<Space key="form-buttons" wrap>
-					<Button key="close" onClick={handleCancel} disabled={isLoading}>
-						{t("specialist.preview.close", "Close")}
-					</Button>
-					{canOffer && (
-						<Button
-							key="offer"
-							type="primary"
-							disabled={isLoading}
-							onClick={() => setOfferOpen(true)}
-						>
-							{t("specialist.preview.offerPosition", "Offer a position")}
-						</Button>
-					)}
-				</Space>,
-			]}
+			onCancel={onCancel}
+			footer={null}
 		>
 			<Spin spinning={isLoading}>
-				{!!specialist?.data && (
-					<Space orientation="vertical" style={{ width: "100%" }}>
-						<div className={styles.cardHeader}>
-							<Text type="secondary" className={styles.cardType}>
+				{!!data && (
+					<div className={styles.card}>
+						{/* ---------- Header ---------- */}
+						<div
+							className={styles.header}
+							style={{ background: direction?.color || "#F4F4F5" }}
+						>
+							<div
+								className={styles.eyebrow}
+								style={
+									direction ? { color: darkenTint(direction.color) } : undefined
+								}
+							>
 								{t("specialist.preview.cardType", "Talent card")}
-							</Text>
-							<div className={styles.specialityTitle}>
-								<Title level={2} style={{ margin: 0 }}>
-									{specialist?.data.name}
-								</Title>
-								<span className={styles.levelBadge}>
-									{specialist?.data.level}
-								</span>
+							</div>
+
+							<div className={styles.identity}>
+								<div className={styles.avatar}>
+									{data.user.image ? (
+										// biome-ignore lint/performance/noImgElement: external avatar url
+										<img
+											src={data.user.image}
+											alt={data.user.name || ""}
+											className={styles.avatarImg}
+										/>
+									) : (
+										<span>{initials}</span>
+									)}
+								</div>
+
+								<div className={styles.identityText}>
+									<div className={styles.nameRow}>
+										<span className={styles.name}>
+											{data.user.name || data.name}
+										</span>
+										{!!data.level && (
+											<span className={styles.levelBadge}>{data.level}</span>
+										)}
+									</div>
+									<div className={styles.roleRow}>
+										{DirIcon && (
+											<span className={styles.dirChip}>
+												<DirIcon size={14} stroke={2} color="#18181B" />
+											</span>
+										)}
+										<span className={styles.role}>{data.name}</span>
+										{data.direction?.name && (
+											<span className={styles.roleMuted}>
+												· {data.direction.name}
+											</span>
+										)}
+									</div>
+								</div>
+							</div>
+
+							<div className={styles.metaRow}>
+								<div className={styles.metaLeft}>
+									{!!data.user.profile?.country && (
+										<span className={styles.pill}>
+											<IconMapPin size={14} className={styles.pillIcon} />
+											{[data.user.profile.country, data.user.profile.city]
+												.filter(Boolean)
+												.join(", ")}
+										</span>
+									)}
+									{Array.isArray(timeForWork) && (
+										<span className={styles.pill}>
+											<IconClock size={14} className={styles.pillIcon} />
+											{t("fromTo", "from {fromDate} to {toDate} hours a week", {
+												fromDate: timeForWork[0],
+												toDate: timeForWork[1],
+											})}
+										</span>
+									)}
+								</div>
+
+								{acceptedRoomId ? (
+									<button
+										type="button"
+										className={styles.offerBtn}
+										onClick={goToChat}
+									>
+										<IconMessageCircle size={15} />
+										{t("specialist.preview.goToChat", "Go to chat")}
+									</button>
+								) : (
+									canOffer && (
+										<button
+											type="button"
+											className={styles.offerBtn}
+											onClick={() => setOfferOpen(true)}
+										>
+											<IconBriefcase size={15} />
+											{t(
+												"specialist.preview.offerPosition",
+												"Offer a position",
+											)}
+										</button>
+									)
+								)}
 							</div>
 						</div>
 
-						<Row gutter={[24, 24]}>
-							<Col xs={24} md={16}>
-								<Card className={styles.cardWrapper} variant="borderless">
-									<Row gutter={[24, 16]} className={styles.profileInfo}>
-										{!!specialist.data.user.profile.country && (
-											<Col xs={24} sm={12}>
-												<Space>
-													<TbMapPin
-														size={18}
-														style={{ color: token.colorPrimary }}
-													/>
-													<Text>
-														{[
-															specialist.data.user.profile.country,
-															specialist.data.user.profile.city,
-														].join(", ")}
-													</Text>
-												</Space>
-											</Col>
-										)}
-										<Col xs={24} sm={12}>
-											<Space>
-												<TbClock
-													size={18}
-													style={{ color: token.colorPrimary }}
-												/>
-												<Text>
-													{t(
-														"fromTo",
-														"from {fromDate} to {toDate} hours a week",
-														{
-															fromDate:
-																specialist.data.user.profile.timeForWork[0],
-															toDate:
-																specialist.data.user.profile.timeForWork[1],
-														},
-													)}
-												</Text>
-											</Space>
-										</Col>
-										{!!specialist.data.portfolioUrl && (
-											<Col span={24}>
-												<Space>
-													<TbFileText
-														size={18}
-														style={{ color: token.colorPrimary }}
-													/>
-													<Link
-														href={specialist.data.portfolioUrl}
-														target="_blank"
-													>
-														<Button type="text" ghost size="small">
-															{t(
-																"specialist.preview.summaryPortfolio",
-																"Summary/portfolio",
-															)}
-														</Button>
-													</Link>
-												</Space>
-											</Col>
-										)}
-									</Row>
-								</Card>
-							</Col>
+						{/* ---------- Body ---------- */}
+						<div className={styles.body}>
+							{/* Left rail */}
+							<div className={styles.leftRail}>
+								<div className={styles.railLabel}>
+									{t("specialist.preview.contacts", "Contacts")}
+								</div>
 
-							<Col xs={24} md={8}>
-								{(specialist.data.user.profile.tgNickname ||
-									specialist.data.user.email) && (
-									<Card
-										className={styles.cardWrapper}
-										title={t("specialist.preview.contacts", "Contacts")}
-										variant="borderless"
-										style={{ height: "100%" }}
-									>
-										<Flex vertical className={styles.contactButtons}>
-											<Space orientation="vertical" align="start" size={8}>
-												{!!specialist.data.user.profile.tgNickname && (
-													<Space orientation="vertical" size={0}>
-														<Text type="secondary">
-															{t("specialist.preview.telegram", "Telegram")}
-														</Text>
-
-														<Text
-															copyable={{
-																icon: (
-																	<IconCopy
-																		size={16}
-																		style={{ position: "relative", top: 2 }}
-																	/>
-																),
-																text:
-																	"https://t.me/" +
-																	specialist.data.user.profile.tgNickname,
-															}}
-														>
-															{`t.me/${specialist.data.user.profile.tgNickname}`}
-														</Text>
-													</Space>
-												)}
-												{!!specialist.data.user.email && (
-													<Space orientation="vertical" size={0}>
-														<Text type="secondary">
-															{t("specialist.preview.email", "Email")}
-														</Text>
-														<Text
-															copyable={{
-																icon: <IconCopy size={16} />,
-																text: specialist.data.user.email,
-															}}
-														>
-															{specialist.data.user.email}
-														</Text>
-													</Space>
-												)}
-											</Space>
-										</Flex>
-									</Card>
-								)}
-							</Col>
-						</Row>
-
-						{specialist.data.user.profile.about && (
-							<Card
-								className={styles.cardWrapper}
-								title={t("specialist.preview.aboutMe", "About me")}
-								bordered={false}
-							>
-								<Row>
-									<Col span={24}>
-										<div className={styles.quoteBlock}>
-											<TbQuote
-												size={24}
-												style={{ color: token.colorPrimary, marginRight: 8 }}
+								<div className={styles.field}>
+									<span className={styles.fieldLabel}>
+										{t("specialist.preview.email", "Email")}
+									</span>
+									{emailRevealed ? (
+										<div className={styles.valueBox}>
+											<span className={styles.valueText}>
+												{data.user.email}
+											</span>
+											<Text
+												className={styles.copyBtn}
+												copyable={{
+													icon: (
+														<IconCopy size={14} className={styles.copyIcon} />
+													),
+													tooltips: false,
+													text: data.user.email || "",
+												}}
 											/>
-											<Paragraph>
-												{specialist.data.user.profile.about}
-											</Paragraph>
 										</div>
-									</Col>
-								</Row>
-							</Card>
-						)}
-
-						<Card
-							className={styles.cardWrapper}
-							title={t(
-								"specialist.preview.professionalInfo",
-								"Professional info",
-							)}
-							bordered={false}
-						>
-							<Row gutter={[24, 24]}>
-								<Col xs={24} md={12}>
-									<div>
-										<Text type="secondary" className={styles.fieldLabel}>
-											{t("specialist.preview.specialization", "Specialization")}
-										</Text>
-										<Paragraph>{specialist.data.specialization}</Paragraph>
-									</div>
-
-									{specialist.data.tools && (
-										<div style={{ marginTop: 16 }}>
-											<Text type="secondary" className={styles.fieldLabel}>
-												{t(
-													"specialist.preview.iUseItInWork",
-													"I use it in work",
-												)}
-											</Text>
-											<Paragraph>{specialist.data.tools}</Paragraph>
-										</div>
-									)}
-								</Col>
-
-								<Col xs={24} md={12}>
-									{specialist.data.jobs && (
-										<div>
-											<Text type="secondary" className={styles.fieldLabel}>
-												{t("specialist.preview.experience", "Experience")}
-											</Text>
-											<Paragraph>{specialist.data.jobs}</Paragraph>
-										</div>
-									)}
-
-									{specialist.data.schools && (
-										<div style={{ marginTop: 16 }}>
-											<Text type="secondary" className={styles.fieldLabel}>
-												{t(
-													"specialist.preview.whereIReceivedKnowledge",
-													"Where I received knowledge",
-												)}
-											</Text>
-											<Paragraph>{specialist.data.schools}</Paragraph>
-										</div>
-									)}
-								</Col>
-							</Row>
-							<Row gutter={[24, 24]}>
-								<Col span={24}>
-									{specialist.data.skills && (
-										<div style={{ marginTop: 16 }}>
-											<Text type="secondary" className={styles.fieldLabel}>
-												{t("specialist.preview.skills", "Skills")}
-											</Text>
-											<div style={{ marginTop: 4 }}>
-												{renderSkillTags(specialist.data.skills)}
-											</div>
-										</div>
-									)}
-								</Col>
-							</Row>
-						</Card>
-
-						{(specialist.data.user.profile.preferredGenres?.length > 0 ||
-							specialist.data.user.profile.preferredSettings?.length > 0 ||
-							specialist.data.user.profile.preferredLevels?.length > 0) && (
-							<Card
-								className={styles.cardWrapper}
-								title={t(
-									"specialist.preview.preferencesInGames",
-									"Preferences in games",
-								)}
-								bordered={false}
-							>
-								<Row gutter={[24, 24]}>
-									{specialist.data.user.profile.preferredGenres?.length > 0 && (
-										<Col xs={24} md={8}>
-											<Text type="secondary" className={styles.fieldLabel}>
-												{t(
-													"specialist.preview.iPreferGenres",
-													"I prefer genres",
-												)}
-											</Text>
-											<div style={{ marginTop: 4 }}>
-												{specialist.data.user.profile.preferredGenres.map(
-													(r: any, index: number) => (
-														<Tag
-															key={`skill-${index.toString()}`}
-															className={styles.skillTag}
-														>
-															{r.name}
-														</Tag>
-													),
-												)}
-											</div>
-										</Col>
-									)}
-
-									{specialist.data.user.profile.preferredSettings?.length >
-										0 && (
-										<Col xs={24} md={8}>
-											<Text type="secondary" className={styles.fieldLabel}>
-												{t(
-													"specialist.preview.iPreferGameSettings",
-													"I prefer game settings",
-												)}
-											</Text>
-											<div style={{ marginTop: 4 }}>
-												{specialist.data.user.profile.preferredSettings.map(
-													(r: any, index: number) => (
-														<Tag
-															key={`skill-${index.toString()}`}
-															className={styles.skillTag}
-														>
-															{r.name}
-														</Tag>
-													),
-												)}
-											</div>
-										</Col>
-									)}
-
-									{specialist.data.user.profile.preferredLevels?.length > 0 && (
-										<Col xs={24} md={8}>
-											<Text type="secondary" className={styles.fieldLabel}>
-												{t(
-													"specialist.preview.iPreferGamesOfTheFollowingComplexity",
-													"I prefer games of the following complexity",
-												)}
-											</Text>
-											<div style={{ marginTop: 4 }}>
-												{specialist.data.user.profile.preferredLevels.map(
-													(r: any, index: number) => (
-														<Tag
-															key={`skill-${index.toString()}`}
-															className={styles.skillTag}
-														>
-															{r.name}
-														</Tag>
-													),
-												)}
-											</div>
-										</Col>
-									)}
-								</Row>
-							</Card>
-						)}
-
-						{specialist.data?.availableProjects?.length > 0 &&
-							specialist.data.availableProjects.map((record) => (
-								<Card
-									key={`project-${record.id}`}
-									className={styles.cardWrapper}
-									bordered={false}
-									title={
-										<Row
-											justify="space-between"
-											align="middle"
-											style={{ width: "100%" }}
+									) : (
+										<Tooltip
+											title={t(
+												"specialist.preview.emailLocked",
+												"The email becomes visible after the specialist accepts your offer.",
+											)}
 										>
-											<Col>
-												<Text strong>
-													{t("Suitable for the project") +
-														" " +
-														record.project.name}
-												</Text>
-											</Col>
-											<Col>
-												<Tag
-													style={{
-														padding: "4px 12px",
-														borderRadius: "16px",
-														color: "white",
-														background: calculateMatchColor(record.avgScore),
-													}}
+											<div
+												className={`${styles.valueBox} ${styles.valueLocked}`}
+											>
+												<span
+													className={`${styles.valueText} ${styles.blurred}`}
 												>
-													{record.avgScore}%
-												</Tag>
-											</Col>
-										</Row>
-									}
-								>
-									<Space orientation="vertical" style={{ width: "100%" }}>
-										<Row gutter={16}>
-											<Col xs={24} sm={8}>
-												<Card className={styles.statCard} bordered={false}>
-													<div style={{ textAlign: "center" }}>
-														<Progress
-															type="circle"
-															percent={record.projectScore}
-															size={80}
-															strokeColor={calculateMatchColor(
-																record.projectScore,
-															)}
-														/>
-														<div style={{ marginTop: 12 }}>
-															<Text
-																type="secondary"
-																className={styles.fieldLabel}
-															>
-																{t(
-																	"specialist.preview.complianceWithTheProject",
-																	"Compliance with the project",
-																)}
-															</Text>
-														</div>
-													</div>
-												</Card>
-											</Col>
-											<Col xs={24} sm={8}>
-												<Card className={styles.statCard} bordered={false}>
-													<div style={{ textAlign: "center" }}>
-														<Progress
-															type="circle"
-															percent={record.authorScore}
-															size={80}
-															strokeColor={calculateMatchColor(
-																record.authorScore,
-															)}
-														/>
-														<div style={{ marginTop: 12 }}>
-															<Text
-																type="secondary"
-																className={styles.fieldLabel}
-															>
-																{t(
-																	"specialist.preview.complianceWithTheAuthor",
-																	"Compliance with the author",
-																)}
-															</Text>
-														</div>
-													</div>
-												</Card>
-											</Col>
-											<Col xs={24} sm={8}>
-												<Card className={styles.statCard} bordered={false}>
-													<div style={{ textAlign: "center" }}>
-														<Progress
-															type="circle"
-															percent={record.teamScore}
-															size={80}
-															strokeColor={calculateMatchColor(
-																record.teamScore,
-															)}
-														/>
-														<div style={{ marginTop: 12 }}>
-															<Text
-																type="secondary"
-																className={styles.fieldLabel}
-															>
-																{t(
-																	"specialist.preview.complianceWithTheTeam",
-																	"Compliance with the team",
-																)}
-															</Text>
-														</div>
-													</div>
-												</Card>
-											</Col>
-										</Row>
-
-										{record.summary && (
-											<div style={{ marginTop: 24 }}>
-												<Divider />
-												<Text type="secondary" className={styles.fieldLabel}>
-													{t("specialist.preview.comment", "Comment")}
-												</Text>
-												<Paragraph>{record.summary}</Paragraph>
+													contact.hidden@gdhub.io
+												</span>
+												<IconLock size={14} className={styles.lockIcon} />
 											</div>
+										</Tooltip>
+									)}
+								</div>
+
+								{!!data.portfolioUrl && (
+									<>
+										<div className={styles.railLabel}>
+											{t("specialist.preview.links", "Links")}
+										</div>
+										<Link
+											href={data.portfolioUrl}
+											target="_blank"
+											className={styles.portfolioBtn}
+										>
+											<IconExternalLink size={15} />
+											{t(
+												"specialist.preview.summaryPortfolio",
+												"Summary / Portfolio",
+											)}
+										</Link>
+									</>
+								)}
+
+								{sortedProjects.length > 0 && (
+									<>
+										<div className={styles.railLabel}>
+											{t("specialist.preview.projects", "Projects")}
+										</div>
+										{visibleProjects.map((project) => (
+											<ProjectMiniCard
+												key={project.id}
+												project={project}
+												t={t}
+											/>
+										))}
+										{hiddenProjectsCount > 0 && (
+											<button
+												type="button"
+												className={styles.moreBtn}
+												onClick={() => setShowAllProjects(true)}
+											>
+												{t("specialist.preview.showMore", "Show {count} more", {
+													count: hiddenProjectsCount,
+												})}
+											</button>
 										)}
-									</Space>
-								</Card>
-							))}
-					</Space>
+									</>
+								)}
+
+								{data.certificates.length > 0 && (
+									<>
+										<div className={styles.railLabel}>
+											{t("specialist.preview.certificates", "Certificates")}
+										</div>
+										{data.certificates.map((cert) => (
+											<CertificateMiniCard
+												key={cert.number}
+												cert={cert}
+												t={t}
+											/>
+										))}
+									</>
+								)}
+							</div>
+
+							{/* Right content */}
+							<div className={styles.rightContent}>
+								{!!data.user.profile?.about && (
+									<div className={styles.contentCard}>
+										<div className={styles.cardTitle}>
+											{t("specialist.preview.aboutMe", "About")}
+										</div>
+										<Paragraph className={styles.para}>
+											{data.user.profile.about}
+										</Paragraph>
+									</div>
+								)}
+
+								<div className={styles.contentCard}>
+									<div className={styles.cardTitle}>
+										{t(
+											"specialist.preview.professionalInfo",
+											"Professional info",
+										)}
+									</div>
+									<div className={styles.proGrid}>
+										<Field
+											label={t(
+												"specialist.preview.specialization",
+												"Specialization",
+											)}
+											value={data.specialization}
+										/>
+										<Field
+											label={t("specialist.preview.experience", "Experience")}
+											value={data.jobs}
+										/>
+										<Field
+											label={t(
+												"specialist.preview.iUseItInWork",
+												"I use in work",
+											)}
+											value={data.tools}
+										/>
+										<Field
+											label={t(
+												"specialist.preview.whereIReceivedKnowledge",
+												"Education",
+											)}
+											value={data.schools}
+										/>
+									</div>
+									{!!data.skills && (
+										<div className={styles.tagBlock}>
+											<span className={styles.fieldLabel}>
+												{t("specialist.preview.skills", "Skills")}
+											</span>
+											<div className={styles.tagRow}>
+												{renderTags(data.skills)}
+											</div>
+										</div>
+									)}
+								</div>
+
+								{(data.user.profile?.preferredGenres?.length > 0 ||
+									data.user.profile?.preferredSettings?.length > 0 ||
+									data.user.profile?.preferredLevels?.length > 0) && (
+									<div className={styles.contentCard}>
+										<div className={styles.cardTitle}>
+											{t(
+												"specialist.preview.preferencesInGames",
+												"Preferences in games",
+											)}
+										</div>
+										{data.user.profile.preferredGenres?.length > 0 && (
+											<PrefGroup
+												label={t(
+													"specialist.preview.iPreferGenres",
+													"Favorite genres",
+												)}
+											>
+												{renderPreference(
+													data.user.profile.preferredGenres,
+													"pref",
+												)}
+											</PrefGroup>
+										)}
+										{data.user.profile.preferredSettings?.length > 0 && (
+											<PrefGroup
+												label={t(
+													"specialist.preview.iPreferGameSettings",
+													"Settings",
+												)}
+											>
+												{renderPreference(
+													data.user.profile.preferredSettings,
+													"pref",
+												)}
+											</PrefGroup>
+										)}
+										{data.user.profile.preferredLevels?.length > 0 && (
+											<PrefGroup
+												label={t(
+													"specialist.preview.iPreferGamesOfTheFollowingComplexity",
+													"Complexity",
+												)}
+											>
+												{renderPreference(
+													data.user.profile.preferredLevels,
+													"pref",
+												)}
+											</PrefGroup>
+										)}
+									</div>
+								)}
+
+								{data.availableProjects?.map((record) => (
+									<MatchCard key={record.id} record={record} t={t} />
+								))}
+							</div>
+						</div>
+
+						{/* ---------- Footer ---------- */}
+						<div className={styles.footer}>
+							<span className={styles.footerNote}>
+								<IconHistory size={14} />
+								{t("specialist.preview.lastUpdated", "Last updated")}{" "}
+								{formatDate(
+									(data.user.profile as any)?.updatedAt ||
+										(data as any).updatedAt,
+								)}
+							</span>
+						</div>
+					</div>
 				)}
 			</Spin>
+
 			<OfferPositionModal
 				open={offerOpen}
-				candidateUserId={specialist?.data.user.id}
+				candidateUserId={data?.user.id}
 				onClose={() => setOfferOpen(false)}
 			/>
 		</Modal>
+	);
+};
+
+/* ---------- subcomponents ---------- */
+
+const Field = ({ label, value }: { label: string; value?: string | null }) =>
+	value ? (
+		<div className={styles.proField}>
+			<span className={styles.fieldLabel}>{label}</span>
+			<span className={styles.fieldValue}>{value}</span>
+		</div>
+	) : null;
+
+const PrefGroup = ({
+	label,
+	children,
+}: {
+	label: string;
+	children: React.ReactNode;
+}) => (
+	<div className={styles.prefGroup}>
+		<span className={styles.fieldLabel}>{label}</span>
+		<div className={styles.tagRow}>{children}</div>
+	</div>
+);
+
+const ProjectMiniCard = ({
+	project,
+	t,
+}: {
+	project: SpecialistProject;
+	t: any;
+}) => (
+	<Popover
+		trigger="click"
+		placement="right"
+		classNames={{ root: styles.popoverRoot }}
+		content={<ProjectPreview project={project} t={t} />}
+	>
+		<button type="button" className={styles.miniCard}>
+			<span
+				className={styles.miniCover}
+				style={
+					project.coverImage
+						? { backgroundImage: `url(${project.coverImage})` }
+						: undefined
+				}
+			/>
+			<span className={styles.miniText}>
+				<span className={styles.miniTitle}>{project.name}</span>
+				{!!project.role && (
+					<span className={styles.miniSub}>{project.role}</span>
+				)}
+			</span>
+		</button>
+	</Popover>
+);
+
+const ProjectPreview = ({
+	project,
+	t,
+}: {
+	project: SpecialistProject;
+	t: any;
+}) => (
+	<div className={styles.projectPop}>
+		<div
+			className={styles.ppCover}
+			style={
+				project.coverImage
+					? { backgroundImage: `url(${project.coverImage})` }
+					: undefined
+			}
+		>
+			<span className={styles.ppTitle}>{project.name}</span>
+		</div>
+		<div className={styles.ppBody}>
+			<div className={styles.ppChips}>
+				{!!project.genre && <Tag className={styles.tag}>{project.genre}</Tag>}
+				<Tag className={project.active ? styles.tagActive : styles.tag}>
+					{project.active
+						? t("specialist.preview.active", "Active")
+						: t("specialist.preview.past", "Past")}
+				</Tag>
+			</div>
+			{!!project.description && (
+				<Paragraph className={styles.ppDesc} ellipsis={{ rows: 4 }}>
+					{project.description}
+				</Paragraph>
+			)}
+			{!!project.videoLink && (
+				<Link
+					href={project.videoLink}
+					target="_blank"
+					className={styles.ppVideoBtn}
+				>
+					<IconPlayerPlay size={14} />
+					{t("specialist.preview.watchVideo", "Watch video")}
+				</Link>
+			)}
+			{!!project.role && (
+				<div className={styles.ppRole}>
+					<span className={styles.fieldLabel}>
+						{t("specialist.preview.roleInProject", "Role")}
+					</span>
+					<span className={styles.fieldValue}>{project.role}</span>
+				</div>
+			)}
+		</div>
+	</div>
+);
+
+const CertificateMiniCard = ({
+	cert,
+	t,
+}: {
+	cert: SpecialistCertificate;
+	t: any;
+}) => (
+	<Tooltip
+		placement="right"
+		title={
+			<div className={styles.certTip}>
+				<div className={styles.certTipTitle}>
+					{cert.event?.title ||
+						t("specialist.preview.certificate", "Certificate")}
+				</div>
+				<div className={styles.certTipRow}>
+					{t("specialist.preview.issued", "Issued")} {formatDate(cert.issuedAt)}
+				</div>
+				{!!cert.event?.organizerName && (
+					<div className={styles.certTipRow}>{cert.event.organizerName}</div>
+				)}
+				<div className={styles.certTipCode}>№ {cert.number}</div>
+			</div>
+		}
+	>
+		<div className={styles.miniCard}>
+			<span className={styles.certThumb}>
+				<IconAward size={18} color="#B45309" />
+			</span>
+			<span className={styles.miniText}>
+				<span className={styles.miniTitle}>
+					{cert.event?.title ||
+						t("specialist.preview.certificate", "Certificate")}
+				</span>
+				<span className={styles.miniSubVerified}>
+					<IconRosetteDiscountCheck size={13} color="#16A34A" />
+					{t("specialist.preview.verified", "Verified")} ·{" "}
+					{new Date(cert.issuedAt).getFullYear()}
+				</span>
+			</span>
+		</div>
+	</Tooltip>
+);
+
+const MatchCard = ({ record, t }: { record: any; t: any }) => {
+	const { token } = theme.useToken();
+	const bars = [
+		{
+			label: t(
+				"specialist.preview.complianceWithTheProject",
+				"Compliance with the project",
+			),
+			value: record.projectScore,
+		},
+		{
+			label: t(
+				"specialist.preview.complianceWithTheAuthor",
+				"Compliance with the author",
+			),
+			value: record.authorScore,
+		},
+		{
+			label: t(
+				"specialist.preview.complianceWithTheTeam",
+				"Compliance with the team",
+			),
+			value: record.teamScore,
+		},
+	];
+
+	return (
+		<div className={styles.contentCard}>
+			<div className={styles.matchHeader}>
+				<div>
+					<div className={styles.cardTitle}>
+						{t("specialist.preview.projectMatch", "Project match")}
+					</div>
+					<div className={styles.matchSub}>{record.project.name}</div>
+				</div>
+				<span
+					className={styles.matchPill}
+					style={{
+						background: `${matchColor(record.avgScore, token)}1A`,
+						color: matchColor(record.avgScore, token),
+					}}
+				>
+					{record.avgScore}% {t("specialist.preview.match", "match")}
+				</span>
+			</div>
+			{bars.map((bar) => (
+				<div key={bar.label} className={styles.bar}>
+					<div className={styles.barTop}>
+						<span className={styles.barLabel}>{bar.label}</span>
+						<span className={styles.barValue}>{bar.value}%</span>
+					</div>
+					<div className={styles.barTrack}>
+						<span
+							className={styles.barFill}
+							style={{
+								width: `${bar.value}%`,
+								background: matchColor(bar.value, token),
+							}}
+						/>
+					</div>
+				</div>
+			))}
+			{!!record.summary && (
+				<div className={styles.comment}>
+					<span className={styles.fieldLabel}>
+						{t("specialist.preview.comment", "Comment")}
+					</span>
+					<Paragraph className={styles.para}>{record.summary}</Paragraph>
+				</div>
+			)}
+		</div>
 	);
 };
 
