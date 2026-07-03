@@ -22,6 +22,12 @@ export type EnsureChatRoomArgs = {
 	avatarUrl?: string;
 	/** Best-effort opening message from the initiator. */
 	firstMessage?: string;
+	/**
+	 * Join invitees with their own Matrix sessions right after room creation,
+	 * skipping the accept-invite screen. Use when the invitee already asked for
+	 * the conversation (advice requester, vacancy applicant). Best-effort.
+	 */
+	autoJoinInvitees?: boolean;
 };
 
 export type EnsureChatRoomResult = {
@@ -50,6 +56,7 @@ export async function ensureChatRoom(
 		inviteeUserIds,
 		avatarUrl,
 		firstMessage,
+		autoJoinInvitees,
 	} = args;
 
 	// Registry row first so we have a stable id for the room alias.
@@ -110,13 +117,67 @@ export async function ensureChatRoom(
 		deviceId: session.deviceId,
 	});
 
-	const room = await client.createRoom({
-		room_alias_name: `room-${row.id}`,
-		name: title,
-		topic: topic || undefined,
-		is_direct: isDirect,
-		invite: inviteeMatrixIds,
+	let roomId: string;
+	try {
+		const room = await client.createRoom({
+			room_alias_name: `room-${row.id}`,
+			name: title,
+			topic: topic || undefined,
+			is_direct: isDirect,
+			invite: inviteeMatrixIds,
+		});
+		roomId = room.room_id;
+	} catch (error) {
+		// A previous attempt crashed after createRoom but before persisting
+		// matrixRoomId (or a concurrent call won the race): the fixed alias is
+		// taken while the row is empty. Adopt the existing room instead of
+		// wedging this directKey forever.
+		const errcode = (error as { errcode?: string })?.errcode;
+		if (errcode !== "M_ROOM_IN_USE") throw error;
+		const alias = `#room-${row.id}:${env("MATRIX_CHAT_HOMESERVER_DOMAIN")}`;
+		const resolved = await client.getRoomIdForAlias(alias);
+		roomId = resolved.room_id;
+	}
+
+	// Persist the link FIRST — the steps below are best-effort, and a crash
+	// between room creation and this write would orphan the alias.
+	await prisma.chatRoom.update({
+		where: { id: row.id },
+		data: {
+			matrixRoomId: roomId,
+			status: prismaClient.ChatRoomStatus.Open,
+		},
 	});
+
+	if (autoJoinInvitees) {
+		const baseUrl = env("MATRIX_CHAT_BASE_URL");
+		await Promise.all(
+			inviteeUserIds.map(async (inviteeId) => {
+				try {
+					// Dedicated device id — minting for an existing device would rotate
+					// its token and log out that user's live web session.
+					const invitee = await getMatrixUserToken(inviteeId, "svc_autojoin");
+					const resp = await fetch(
+						`${baseUrl}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}/join`,
+						{
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${invitee.accessToken}`,
+							},
+							body: "{}",
+						},
+					);
+					if (!resp.ok) {
+						throw new Error(`${resp.status} ${await resp.text()}`);
+					}
+				} catch (error) {
+					// The invite still stands — the user can accept manually.
+					console.error(`[chat] auto-join failed for ${inviteeId}`, error);
+				}
+			}),
+		);
+	}
 
 	if (avatarUrl) {
 		try {
@@ -125,7 +186,7 @@ export async function ensureChatRoom(
 				type: "image/png",
 				name: `room-${row.id}-avatar.png`,
 			});
-			await client.sendStateEvent(room.room_id, EventType.RoomAvatar, {
+			await client.sendStateEvent(roomId, EventType.RoomAvatar, {
 				url: uploaded.content_uri || undefined,
 			});
 		} catch (error) {
@@ -135,7 +196,7 @@ export async function ensureChatRoom(
 
 	if (firstMessage) {
 		try {
-			await client.sendEvent(room.room_id, EventType.RoomMessage, {
+			await client.sendEvent(roomId, EventType.RoomMessage, {
 				msgtype: MsgType.Text,
 				body: firstMessage,
 			});
@@ -144,13 +205,5 @@ export async function ensureChatRoom(
 		}
 	}
 
-	await prisma.chatRoom.update({
-		where: { id: row.id },
-		data: {
-			matrixRoomId: room.room_id,
-			status: prismaClient.ChatRoomStatus.Open,
-		},
-	});
-
-	return { chatRoomId: row.id, roomId: room.room_id, created: true };
+	return { chatRoomId: row.id, roomId, created: true };
 }

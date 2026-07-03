@@ -1,0 +1,60 @@
+# GDHub — Advice request chat (user ↔ expert), TARGET flow (Stage 1)
+# Render: `d2 advice-request-chat.d2 advice-request-chat.svg`
+# 🔧 = изменение против текущего кода, ⚠️ = текущий пробел. Остальное уже работает.
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+shape: sequence_diagram
+
+requester: "Юзер (requester)"
+api: "GDHub API"
+db: "БД (ChatRoom / AdviceRequest)"
+matrix: "Matrix (Synapse)"
+expert: "Эксперт"
+
+request: "1 · Запрос совета (без изменений)" {
+  requester -> api: "POST advice-request"
+  api -> db: "AdviceRequest = Pending"
+  api -> expert: "🔔 Novu: новый advice request"
+}
+
+decision: "2a · Решение эксперта: отказать (без изменений)" {
+  expert -> api: "reject: advice-request/[id]/reject\n→ AdviceRequest = Rejected, чат НЕ создаётся"
+  api -> requester: "🔔 Novu: «Advice request rejected»"
+  requester -> api: "(также requester может сам отменить:\n[id]/cancel → Closed, 🔔 эксперту)"
+}
+
+accept: "2b · Эксперт принимает → чат" {
+  expert -> api: "POST advice-request/[id]/accept"
+  api -> db: "🔧 ensureChatRoom:\nupsert ChatRoom kind=AdviceRequest\ndirectKey = advice:{id}"
+  api -> matrix: "🔧 createRoom от сессии эксперта\n(fresh client вместо singleton)\ninvite: requester, avatar = обложка проекта"
+  api -> db: "matrixRoomId → ChatRoom (status=Open)\n+ AdviceRequest.matrixRoomId (dual-write)\nAdviceRequest = Approved"
+  api -> requester: "🔔 Novu: эксперт принял запрос\n(deep-link /hub?chat=1&roomId=…)"
+}
+
+autojoin: "3 · Requester сразу в чате (без инвайт-экрана)" {
+  api -> matrix: "🔧 auto-join: сервер джойнит requester'а\nЕГО Matrix-сессией (autoJoinInvitees в\nensureChatRoom) — requester уже хотел\nобщаться, отправив запрос; решение\nпринимал только эксперт"
+  requester -> matrix: "открывает чат уже joined\n🔧 AdviceRequestInvite удаляется\n(membership=invite для advice не бывает)"
+}
+
+chat: "4 · Общение" {
+  requester <-> expert: "сообщения через Matrix\n(ChatMessages, timeline)"
+}
+
+close: "5 · Закрытие — ОБА участника, в любой момент" {
+  requester -> api: "PUT rooms/[id]/resolve\n(«Question Resolved» в ChatTopic)"
+  expert -> api: "PUT rooms/[id]/resolve\n(та же кнопка у эксперта)"
+  api -> db: "🔧 registry-путь: canClose (оба) →\nChatRoom = Closed, finishedAt +\nprovider.onClose(): AdviceRequest = Closed"
+  api -> matrix: "🔧 makeRoomReadOnly: m.room.power_levels\n(plain HTTP, без matrix-js-sdk) —\nкомната read-only на уровне Matrix,\nа не только скрытый ChatInput"
+  api."покинуть комнату (Leave в сайдбаре)\nтакже доступно обоим в любой момент"
+  api."🔧 legacy-ветка (AdviceRequest.matrixRoomId)\nостаётся как fallback для старых комнат"
+}
+
+context: "Контекст для фронта" {
+  api."GET rooms/[matrixRoomId] →\n🔧 adviceRequestProvider.buildContext\ntype=advice-request, isExpert, status\n(та же форма, что _helpers.ts — фронт не меняется)"
+}

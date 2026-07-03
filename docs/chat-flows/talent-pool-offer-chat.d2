@@ -1,0 +1,49 @@
+# GDHub — Talent pool: «Offer a position» (автор проекта ↔ специалист), TARGET flow (Stage 4)
+# Render: `d2 talent-pool-offer-chat.d2 talent-pool-offer-chat.svg`
+# Бэкенд (POST /api/chat/rooms/vacancy + first message) готов. 🆕 = новый UI/логика.
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+shape: sequence_diagram
+
+author: "Автор проекта"
+api: "GDHub API"
+db: "БД (ChatRoom)"
+matrix: "Matrix (Synapse)"
+specialist: "Специалист (talent pool)"
+
+offer: "1 · Автор предлагает позицию" {
+  author -> author: "Talent pool (/hub/members) →\nSpecialistPreviewModal\n🆕 кнопка «Offer a position»\n(видна при наличии Published-вакансий)"
+  author -> author: "🆕 диалог: выбор своей открытой\nпозиции (picker по Published-вакансиям)\n+ опциональное сообщение"
+  author -> api: "POST rooms/vacancy\n{vacancyId, candidateUserId, message}\n(🆕 message сейчас никем не передаётся)"
+  api -> db: "ensureVacancyOfferChat:\nChatRoom kind=VacancyOffer\ndirectKey = vacancy:{vacancyId}:{specialistId}\n⚠️ TeamMember НЕ создаётся — chat-only by design"
+  api -> matrix: "createRoom от сессии автора,\ninvite: специалист, avatar = обложка проекта,\nfirst message = текст автора"
+  api -> specialist: "🔔 Novu: приглашение в чат\n(deep-link /hub?chat=1&roomId=…)"
+}
+
+invite: "2 · Специалист решает" {
+  specialist -> matrix: "membership=invite → VacancyChatInvite\n(видит вакансию: title, rate, equity).\nЗдесь инвайт-экран НУЖЕН — человек сам\nне откликался, требуется его согласие\n(в отличие от apply-флоу, где auto-join)"
+  specialist -> matrix: "Accept → joinRoom / Decline → leave"
+  specialist -> api: "POST rooms/[id]/invite-response"
+  api -> author: "🔔 Novu: инвайт принят/отклонён"
+}
+
+chat: "3 · Обе стороны решают: подходим ли друг другу" {
+  author <-> specialist: "обсуждение условий, проекта, ожиданий"
+}
+
+convert: "4 · Специалист становится кандидатом (опционально)" {
+  author -> specialist: "кидает в чат ссылку на вакансию (apply link)"
+  specialist -> api: "POST vacancy/apply → TeamMember = Applicant\n(чат apply не трогает — см. Stage 3)"
+  api -> db: "комната уже существует (тот же directKey),\nразговор продолжается бесшовно"
+  api."дальше — обычный флоу кандидата:\nhire / reject (см. vacancy-application-chat.d2)"
+}
+
+closing: "5 · Закрытие" {
+  api."по правилам Stage 3: закрытие вакансии →\ncloseVacancyChats(vacancyId); reject → закрытие,\nесли специалист успел стать кандидатом"
+}

@@ -26,6 +26,7 @@ import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -33,6 +34,8 @@ import { signOut, useSession } from "next-auth/react";
 import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { genConfig } from "react-nice-avatar";
+import { ChatProvider } from "@/components/Chat/ChatProvider";
+import { useChat } from "@/components/Chat/useChat";
 import { Error404 } from "@/components/Error404";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
@@ -46,6 +49,11 @@ import { ProtectedLayout } from "../ProtectedLayout";
 import styles from "./style.module.scss";
 
 const { Content } = Layout;
+
+const ChatModal = dynamic(
+	() => import("@/components/Chat/ChatModal").then((m) => m.ChatModal),
+	{ ssr: false },
+);
 const { Title, Text } = Typography;
 
 export const ProtectedEventLayout = ({
@@ -78,6 +86,7 @@ export const ProtectedEventLayout = ({
 	const screens = Grid.useBreakpoint();
 	const { data: session }: any = useSession();
 	const { changeLanguage, getLanguage } = useTolgee();
+	const { setOpenChatModal } = useChat();
 
 	const { event, isFetched } = useCurrentEvent();
 	const isEventAuthor = useMemo(
@@ -373,126 +382,132 @@ export const ProtectedEventLayout = ({
 		>
 			{messageContextHolder}
 			<NextSeo {...seoSettings} />
-			<ConfigProvider
-				theme={appThemeConfig}
-				locale={getLanguage() == "en" ? enLocale : ruLocale}
-			>
-				<style jsx global>{`
+			<ChatProvider>
+				<ConfigProvider
+					theme={appThemeConfig}
+					locale={getLanguage() == "en" ? enLocale : ruLocale}
+				>
+					<style jsx global>{`
 					:root {
 						--background-color: #fafafa;
 						--wx-font-family: ${appThemeConfig?.token?.fontFamily}, sans-serif !important;
 					}
 				`}</style>
-				<Layout className={styles.container}>
-					<AppHeader
-						className={styles.header}
-						breadcrumbItems={[
-							{
-								title: screens.md ? (
-									<Link href="/hub/events/my">
-										{t("hub.menu.my-events", "My events")}
-									</Link>
-								) : null,
-							},
-							{
-								title: (
-									<div style={{ display: "grid" }}>
-										<Text ellipsis={{ tooltip: true }}>
-											{event?.title || "Event"}
-										</Text>
-									</div>
-								),
-							},
-						]}
-						actions={
-							<HeaderActions
-								dropdownMenuItems={dropdownMenuItems}
-								onOpenMobileMenu={() => setOpenMobileMenu(true)}
-								avatarConfig={avatarConfig}
-							/>
-						}
-						menu={
-							<Menu
-								items={menuItems.filter((r) => !r.disabled)}
-								mode="horizontal"
-								selectedKeys={[pathname]}
-								className={styles.appMenu}
-							/>
-						}
-					/>
-					<Content
-						className={styles.contentContainer}
-						style={customStyles?.contentContainer}
-					>
-						<div className={styles.content} style={customStyles?.content}>
-							<Flex
-								justify="space-between"
-								align="center"
-								style={{ marginBottom: 24 }}
-								wrap={true}
-							>
-								<Space
-									orientation="vertical"
-									size={0}
-									style={{ marginBottom: 24 }}
-								>
-									{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
-									{!!description && <Text type="secondary">{description}</Text>}
-								</Space>
-								{actions}
-							</Flex>
-
-							{children}
-						</div>
-					</Content>
-				</Layout>
-				{!screens.lg && (
-					<Drawer
-						className={styles.mobileMenuDrawer}
-						title={
-							<Space>
-								<Avatar
-									src={
-										session?.user?.image ? (
-											<Image
-												src={session?.user.image}
-												width={32}
-												height={32}
-												alt="avatar"
-											/>
-										) : null
-									}
-									shape="square"
+					<Layout className={styles.container}>
+						<AppHeader
+							className={styles.header}
+							breadcrumbItems={[
+								{
+									title: screens.md ? (
+										<Link href="/hub/events/my">
+											{t("hub.menu.my-events", "My events")}
+										</Link>
+									) : null,
+								},
+								{
+									title: (
+										<div style={{ display: "grid" }}>
+											<Text ellipsis={{ tooltip: true }}>
+												{event?.title || "Event"}
+											</Text>
+										</div>
+									),
+								},
+							]}
+							actions={
+								<HeaderActions
+									dropdownMenuItems={dropdownMenuItems}
+									onOpenMobileMenu={() => setOpenMobileMenu(true)}
+									onOpenChat={() => setOpenChatModal(true)}
+									avatarConfig={avatarConfig}
 								/>
-								<div className="username">{session?.user?.name}</div>
-							</Space>
-						}
-						placement="top"
-						onClose={() => setOpenMobileMenu(false)}
-						open={openMobileMenu}
-						extra={
-							<Button
-								shape="circle"
-								style={{ top: 2 }}
-								onClick={() => setOpenMobileMenu(false)}
-								type="text"
-							>
-								<AiOutlineClose />
-							</Button>
-						}
-					>
-						<Menu
-							items={dropdownMenuItems}
-							onSelect={() => setOpenMobileMenu(false)}
+							}
+							menu={
+								<Menu
+									items={menuItems.filter((r) => !r.disabled)}
+									mode="horizontal"
+									selectedKeys={[pathname]}
+									className={styles.appMenu}
+								/>
+							}
 						/>
-					</Drawer>
-				)}
-				<FloatButton.BackTop
-					icon={<GoArrowUp />}
-					rootClassName={styles.backTop}
-					description="Scroll to up"
-				/>
-			</ConfigProvider>
+						<Content
+							className={styles.contentContainer}
+							style={customStyles?.contentContainer}
+						>
+							<div className={styles.content} style={customStyles?.content}>
+								<Flex
+									justify="space-between"
+									align="center"
+									style={{ marginBottom: 24 }}
+									wrap={true}
+								>
+									<Space
+										orientation="vertical"
+										size={0}
+										style={{ marginBottom: 24 }}
+									>
+										{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+										{!!description && (
+											<Text type="secondary">{description}</Text>
+										)}
+									</Space>
+									{actions}
+								</Flex>
+
+								{children}
+							</div>
+						</Content>
+					</Layout>
+					{!screens.lg && (
+						<Drawer
+							className={styles.mobileMenuDrawer}
+							title={
+								<Space>
+									<Avatar
+										src={
+											session?.user?.image ? (
+												<Image
+													src={session?.user.image}
+													width={32}
+													height={32}
+													alt="avatar"
+												/>
+											) : null
+										}
+										shape="square"
+									/>
+									<div className="username">{session?.user?.name}</div>
+								</Space>
+							}
+							placement="top"
+							onClose={() => setOpenMobileMenu(false)}
+							open={openMobileMenu}
+							extra={
+								<Button
+									shape="circle"
+									style={{ top: 2 }}
+									onClick={() => setOpenMobileMenu(false)}
+									type="text"
+								>
+									<AiOutlineClose />
+								</Button>
+							}
+						>
+							<Menu
+								items={dropdownMenuItems}
+								onSelect={() => setOpenMobileMenu(false)}
+							/>
+						</Drawer>
+					)}
+					<FloatButton.BackTop
+						icon={<GoArrowUp />}
+						rootClassName={styles.backTop}
+						description="Scroll to up"
+					/>
+					<ChatModal />
+				</ConfigProvider>
+			</ChatProvider>
 		</EventContext.Provider>
 	);
 };

@@ -1,10 +1,11 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { EventType } from "matrix-js-sdk";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { MatrixService } from "@/services/matrix";
-import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix/admin";
+import { ensureChatRoom } from "@/services/chat/ensure-room";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
+
+// Imports the server-side Matrix SDK via ensureChatRoom — keep dynamic
+export const dynamic = "force-dynamic";
 
 export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
@@ -33,58 +34,31 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		);
 	}
 
-	// ensure that the expert has a matrix session
-	const userMatrixUser = await ensureMatrixUser(
-		adviceRequest.fromUser.id,
-		// biome-ignore lint/style/noNonNullAssertion: original semantics
-		adviceRequest.fromUser.email!,
-	);
-	const expertMatrixUser = await ensureMatrixUser(
-		adviceRequest.toUser.id,
-		// biome-ignore lint/style/noNonNullAssertion: original semantics
-		adviceRequest.toUser.email!,
-	);
-	const expertSession = await getMatrixUserToken(adviceRequest.toUser?.id);
-
-	// create a chat between the user and the expert
-	const expertMatrixClient = MatrixService.getInstance().init({
-		userId: expertMatrixUser.user_id,
-		accessToken: expertSession.accessToken,
-	});
-
-	// create a chat and invite the user
-	const adviceRequestRoom = await expertMatrixClient.createRoom({
-		room_alias_name: `advreq-${adviceRequest.id}`,
-		name: `${adviceRequest.project?.name}`,
+	// The expert accepts and their session creates the room. The requester asked
+	// for this conversation, so they are auto-joined — no invite screen.
+	const chat = await ensureChatRoom({
+		kind: prismaClient.ChatRoomKind.AdviceRequest,
+		directKey: `advice:${adviceRequest.id}`,
+		title: adviceRequest.project?.name || undefined,
 		topic: adviceRequest.topic || undefined,
-		is_direct: true,
-		invite: [userMatrixUser.user_id],
+		context: {
+			adviceRequestId: adviceRequest.id,
+			fromUserId: adviceRequest.fromUser.id,
+			toUserId: adviceRequest.toUser.id,
+		},
+		initiatorUserId: adviceRequest.toUser.id,
+		inviteeUserIds: [adviceRequest.fromUser.id],
+		avatarUrl: adviceRequest.project?.coverImage || undefined,
+		autoJoinInvitees: true,
 	});
 
-	if (adviceRequest.project?.coverImage) {
-		const coverImageFile = await fetch(adviceRequest.project?.coverImage).then(
-			(res) => res.blob(),
-		);
-
-		const roomAvatar = await expertMatrixClient.uploadContent(coverImageFile, {
-			type: "image/png",
-			name: `room-${adviceRequest.id}-avatar.png`,
-		});
-
-		await expertMatrixClient.sendStateEvent(
-			adviceRequestRoom.room_id,
-			EventType.RoomAvatar,
-			{
-				url: roomAvatar.content_uri || undefined,
-			},
-		);
-	}
-
+	// Dual-write during the migration: MyAdviceRequests and
+	// UserAdviceArchiveModal still read AdviceRequest.matrixRoomId.
 	const updatedAdviceRequest = await prisma.adviceRequest.update({
 		where: { id },
 		data: {
 			status: prismaClient.AdviceRequestStatus.Approved,
-			matrixRoomId: adviceRequestRoom.room_id,
+			matrixRoomId: chat.roomId,
 		},
 		include: {
 			fromUser: true,
@@ -105,7 +79,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			payload: {
 				title: "Advice request accepted",
 				message: `Advice request to ${updatedAdviceRequest.toUser?.name} was accepted. Start a chat with the expert to discuss the details.`,
-				redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
+				redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub?chat=1&roomId=${chat.roomId}`,
 				redirectUrlType: "internal",
 			},
 		});

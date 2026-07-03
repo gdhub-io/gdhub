@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { prisma } from "@/services/prisma";
 
 export type ChatRoomRow = {
@@ -15,15 +15,34 @@ export type ChatContextResult = {
 	[key: string]: unknown;
 };
 
-export type ChatKindProvider = {
+// Method syntax on purpose: it keeps the loaded param bivariant, so providers
+// with a concrete TLoaded fit the heterogeneous registry below.
+export interface ChatKindProvider<TLoaded = unknown> {
+	/**
+	 * Load the domain entity ONCE per request — the hooks below receive it,
+	 * so a single route never repeats the same query.
+	 */
+	load(room: ChatRoomRow): Promise<TLoaded | null>;
 	/** Build the display context the chat window renders. */
-	buildContext: (
+	buildContext(
 		room: ChatRoomRow,
+		loaded: TLoaded | null,
 		currentUserId: string,
-	) => Promise<ChatContextResult>;
+	): ChatContextResult;
 	/** Whether the given user may archive/close the chat. */
-	canClose: (room: ChatRoomRow, currentUserId: string) => Promise<boolean>;
-};
+	canClose(
+		room: ChatRoomRow,
+		loaded: TLoaded | null,
+		currentUserId: string,
+	): boolean;
+	/** Sync the domain entity when the chat is closed (best-effort). */
+	onClose?(room: ChatRoomRow): Promise<void>;
+	/**
+	 * Platform user ids of the chat participants — used to notify the
+	 * counterpart on close without querying Matrix.
+	 */
+	participantIds?(room: ChatRoomRow, loaded: TLoaded | null): string[];
+}
 
 const DEFAULT_CONTEXT: ChatContextResult = { type: "default", data: null };
 
@@ -31,6 +50,7 @@ type VacancyOfferContext = {
 	vacancyId?: string;
 	candidateUserId?: string;
 	teamMemberId?: string | null;
+	offerMessage?: string | null;
 };
 
 async function loadVacancyOffer(room: ChatRoomRow) {
@@ -58,9 +78,13 @@ async function loadVacancyOffer(room: ChatRoomRow) {
 	return { ctx, vacancy };
 }
 
-const vacancyOfferProvider: ChatKindProvider = {
-	buildContext: async (room, currentUserId) => {
-		const loaded = await loadVacancyOffer(room);
+type VacancyOfferLoaded = NonNullable<
+	Awaited<ReturnType<typeof loadVacancyOffer>>
+>;
+
+const vacancyOfferProvider: ChatKindProvider<VacancyOfferLoaded> = {
+	load: loadVacancyOffer,
+	buildContext(room, loaded, currentUserId) {
 		if (!loaded?.vacancy) return DEFAULT_CONTEXT;
 		const { ctx, vacancy } = loaded;
 		const project = vacancy.team?.project;
@@ -81,30 +105,115 @@ const vacancyOfferProvider: ChatKindProvider = {
 				project: project
 					? { id: project.id, name: project.name, slug: project.slug }
 					: null,
+				offerMessage: ctx.offerMessage ?? null,
 			},
 			isRecruiter: ctx.candidateUserId !== currentUserId,
 		};
 	},
-	canClose: async (room, currentUserId) => {
-		const loaded = await loadVacancyOffer(room);
+	canClose(_room, loaded, currentUserId) {
 		const authorId = loaded?.vacancy?.team?.project?.authorId;
 		return (
 			currentUserId === loaded?.ctx.candidateUserId ||
 			currentUserId === authorId
 		);
 	},
+	participantIds(_room, loaded) {
+		const authorId = loaded?.vacancy?.team?.project?.authorId;
+		return [loaded?.ctx.candidateUserId, authorId].filter(
+			(id): id is string => !!id,
+		);
+	},
 };
 
-const adminDirectProvider: ChatKindProvider = {
-	buildContext: async () => DEFAULT_CONTEXT,
-	canClose: async () => false,
+// Generic 1:1 DM (creation is admin-gated at the route level for now).
+const directProvider: ChatKindProvider<null> = {
+	load: async () => null,
+	buildContext: () => DEFAULT_CONTEXT,
+	canClose: () => false,
+};
+
+type AdviceRequestContext = {
+	adviceRequestId?: string;
+	fromUserId?: string;
+	toUserId?: string;
+};
+
+async function loadAdviceRequest(room: ChatRoomRow) {
+	const ctx = (room.context ?? {}) as AdviceRequestContext;
+	if (!ctx.adviceRequestId) return null;
+
+	return prisma.adviceRequest.findUnique({
+		where: { id: ctx.adviceRequestId },
+		select: {
+			id: true,
+			topic: true,
+			comment: true,
+			status: true,
+			finishedAt: true,
+			fromUserId: true,
+			toUserId: true,
+			project: { select: { id: true, name: true, coverImage: true } },
+		},
+	});
+}
+
+type AdviceRequestLoaded = NonNullable<
+	Awaited<ReturnType<typeof loadAdviceRequest>>
+>;
+
+const adviceRequestProvider: ChatKindProvider<AdviceRequestLoaded> = {
+	load: loadAdviceRequest,
+	buildContext(_room, adviceRequest, currentUserId) {
+		if (!adviceRequest) return DEFAULT_CONTEXT;
+
+		return {
+			type: "advice-request",
+			data: {
+				id: adviceRequest.id,
+				topic: adviceRequest.topic,
+				comment: adviceRequest.comment,
+				status: adviceRequest.status,
+				finishedAt: adviceRequest.finishedAt,
+				project: adviceRequest.project,
+			},
+			isExpert: adviceRequest.toUserId === currentUserId,
+		};
+	},
+	// Either participant may resolve the question, any time.
+	canClose(_room, adviceRequest, currentUserId) {
+		return (
+			adviceRequest?.fromUserId === currentUserId ||
+			adviceRequest?.toUserId === currentUserId
+		);
+	},
+	async onClose(room) {
+		const ctx = (room.context ?? {}) as AdviceRequestContext;
+		if (!ctx.adviceRequestId) return;
+		await prisma.adviceRequest.updateMany({
+			where: {
+				id: ctx.adviceRequestId,
+				status: { not: prismaClient.AdviceRequestStatus.Closed },
+			},
+			data: {
+				status: prismaClient.AdviceRequestStatus.Closed,
+				finishedAt: new Date(),
+			},
+		});
+	},
+	participantIds(_room, adviceRequest) {
+		if (!adviceRequest) return [];
+		return [adviceRequest.fromUserId, adviceRequest.toUserId].filter(
+			(id): id is string => !!id,
+		);
+	},
 };
 
 export const chatProviders: Partial<
 	Record<prismaClient.ChatRoomKind, ChatKindProvider>
 > = {
 	VacancyOffer: vacancyOfferProvider,
-	AdminDirect: adminDirectProvider,
+	Direct: directProvider,
+	AdviceRequest: adviceRequestProvider,
 };
 
 export function getChatProvider(

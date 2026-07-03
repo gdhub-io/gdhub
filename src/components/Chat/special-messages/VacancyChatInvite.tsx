@@ -1,8 +1,11 @@
 import { Prompts, Welcome } from "@ant-design/x";
+import { Typography } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { useChat } from "../useChat";
 import styles from "./style.module.scss";
+
+const { Text } = Typography;
 
 // fire-and-forget: tell the backend to notify the inviter (Novu inbox)
 function notifyInviteResponse(roomId: string, action: "accepted" | "declined") {
@@ -18,17 +21,24 @@ export default function VacancyChatInvite() {
 	const [isDeclining, setIsDeclining] = useState(false);
 	const { selectedRoomId, chatClient, chatContext } = useChat();
 
-	const vacancyTitle = chatContext?.data?.vacancy?.title;
+	const positionTitle = chatContext?.data?.vacancy?.title;
 	const projectName = chatContext?.data?.project?.name;
-	const description = vacancyTitle
-		? `Invitation to discuss the vacancy "${vacancyTitle}"${
+	const offerMessage = chatContext?.data?.offerMessage as string | undefined;
+	const description = positionTitle
+		? `Invitation to discuss the open position "${positionTitle}"${
 				projectName ? ` on ${projectName}` : ""
 			}. Accept to start messaging.`
-		: "You were invited to discuss a vacancy. Accept to start messaging.";
+		: "You were invited to discuss an open position. Accept to start messaging.";
 
 	return (
-		<div className={styles.chatMessages} style={{ paddingInline: 16 }}>
+		<div className={styles.inviteScreen}>
 			<Welcome title="Invitation pending" description={description} />
+			{!!offerMessage && (
+				<div className={styles.offerNote}>
+					<Text type="secondary">Message from the author:</Text>
+					<Text>{offerMessage}</Text>
+				</div>
+			)}
 			<div style={{ marginTop: 12 }}>
 				<Prompts
 					title="Actions"

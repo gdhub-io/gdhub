@@ -36,6 +36,7 @@ export const GET = withAuth({ mode: "user" })(
 			include: {
 				user: {
 					select: {
+						id: true,
 						name: true,
 						image: true,
 						email: true,

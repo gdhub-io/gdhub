@@ -49,7 +49,8 @@ const MyAdviceRequests: React.FC<{
 	const [selectedAdviceRequestId, setSelectedAdviceRequestId] = useState<
 		string | undefined
 	>(undefined);
-	const { setSelectedRoomByAlias, setOpenChatModal } = useChat();
+	const { setSelectedRoomId, setSelectedRoomByAlias, setOpenChatModal } =
+		useChat();
 
 	const { data, isLoading, isFetched, refetch } = useQuery({
 		queryKey: ["advice-requests"],
@@ -121,7 +122,14 @@ const MyAdviceRequests: React.FC<{
 	};
 
 	const handleOpenRequestChat = async (adviceRequestId: string) => {
-		await setSelectedRoomByAlias(`advreq-${adviceRequestId}`);
+		// Rooms created via the registry have no `advreq-*` alias — open by the
+		// stored room id; the alias remains only as a legacy fallback.
+		const record = data?.find((r) => r.id === adviceRequestId);
+		if (record?.matrixRoomId) {
+			setSelectedRoomId(record.matrixRoomId);
+		} else {
+			await setSelectedRoomByAlias(`advreq-${adviceRequestId}`);
+		}
 		setOpenChatModal(true);
 		setSelectedAdviceRequestId(undefined);
 	};

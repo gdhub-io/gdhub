@@ -23,7 +23,10 @@ import {
 } from "antd";
 import axios from "axios";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import OfferPositionModal from "@/components/modals/OfferPositionModal";
+import { useMyOpenPositions } from "@/hooks/useVacancyChat";
 import styles from "./style.module.scss";
 
 const { Paragraph, Text, Title } = Typography;
@@ -36,6 +39,8 @@ const SpecialistPreviewModal = ({
 }: any) => {
 	const { token } = theme.useToken();
 	const { t } = useTranslate();
+	const session: any = useSession();
+	const [offerOpen, setOfferOpen] = useState(false);
 	const {
 		data: specialist,
 		refetch: fetchSpecialist,
@@ -57,6 +62,17 @@ const SpecialistPreviewModal = ({
 		staleTime: Infinity,
 		enabled: open,
 	});
+
+	// The "Offer a position" action shows up only when the viewer has published
+	// vacancies to offer (and isn't looking at their own card).
+	const { data: myPositions = [] } = useMyOpenPositions(
+		open && !!session?.data,
+	);
+
+	const canOffer =
+		myPositions.length > 0 &&
+		!!specialist?.data &&
+		specialist.data.user.id !== session?.data?.user?.id;
 
 	useEffect(() => {
 		if (open && specialistId) {
@@ -103,6 +119,16 @@ const SpecialistPreviewModal = ({
 					<Button key="close" onClick={handleCancel} disabled={isLoading}>
 						{t("specialist.preview.close", "Close")}
 					</Button>
+					{canOffer && (
+						<Button
+							key="offer"
+							type="primary"
+							disabled={isLoading}
+							onClick={() => setOfferOpen(true)}
+						>
+							{t("specialist.preview.offerPosition", "Offer a position")}
+						</Button>
+					)}
 				</Space>,
 			]}
 		>
@@ -548,6 +574,11 @@ const SpecialistPreviewModal = ({
 					</Space>
 				)}
 			</Spin>
+			<OfferPositionModal
+				open={offerOpen}
+				candidateUserId={specialist?.data.user.id}
+				onClose={() => setOfferOpen(false)}
+			/>
 		</Modal>
 	);
 };

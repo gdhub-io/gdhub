@@ -1,0 +1,60 @@
+# GDHub — Vacancy chat: кандидат ↔ автор проекта, TARGET flow (Stage 3)
+# Render: `d2 vacancy-application-chat.d2 vacancy-application-chat.svg`
+# Реестр ChatRoom (kind=VacancyOffer). Главное изменение: чат инициирует АВТОР,
+# apply больше не создаёт комнату автоматически.
+# 🔧 = изменение против текущего кода, 🆕 = новое, ⚠️ = текущий пробел.
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+shape: sequence_diagram
+
+candidate: "Кандидат"
+api: "GDHub API"
+db: "БД (ChatRoom / TeamMember)"
+matrix: "Matrix (Synapse)"
+author: "Автор проекта"
+
+apply: "1 · Отклик на вакансию" {
+  candidate -> api: "POST vacancy/apply\n{specialityId, contactType,\n🆕 applicationMessage? — приветственное слово}"
+  api -> db: "TeamMember = Applicant\n🆕 + applicationMessage\n(аддитивное поле в @gdhub-io/gdhub-prisma)"
+  api."🔧 чат НЕ создаётся автоматически\n(сейчас apply создаёт комнату от имени\nкандидата с сообщением «applied» — убрать).\nВнутренний чат доступен по умолчанию,\nотдельной опции в зоне контактов нет"
+  api -> author: "🔔 Novu: «New job response»\n🔧 deep-link на страницу кандидатов\n(а не в чат)"
+}
+
+authorSide: "2 · Автор открывает/создаёт чат" {
+  author -> author: "страница открытых позиций:\nсписок откликнувшихся (MyProjectCandidates)\n→ ProjectCandidatePreviewModal\n(видит приветствие кандидата)"
+  author -> api: "«Open chat» → POST rooms/vacancy\n{vacancyId, candidateUserId}\n(кнопка уже существует)"
+  api -> db: "ensureVacancyOfferChat:\nChatRoom kind=VacancyOffer\ndirectKey = vacancy:{vacancyId}:{candidateUserId}\n→ чат НА КАЖДЫЙ ОТКЛИК: несколько вакансий\nодного автора = отдельные комнаты той же пары\n(идемпотентно; Closed-комната при повторном\nотклике переоткрывается: Open, finishedAt=null)"
+  api -> matrix: "🔧 createRoom от сессии АВТОРА,\navatar = обложка проекта,\nfirst message цитирует приветствие кандидата"
+  api -> candidate: "🔔 Novu: автор открыл чат по отклику\n(deep-link /hub?chat=1&roomId=…)"
+}
+
+autojoin: "3 · Кандидат сразу в чате (без инвайт-экрана)" {
+  api -> matrix: "🔧 auto-join: сервер джойнит кандидата\nЕГО Matrix-сессией (autoJoinInvitees) —\nон откликнулся и уже ждёт ответа,\nпринимать инвайт — лишний шаг"
+  candidate -> matrix: "открывает чат уже joined\n(VacancyChatInvite остаётся ТОЛЬКО\nдля talent pool — там человек не откликался).\nПравило в rooms/vacancy: есть TeamMember →\nauto-join; нет → обычный инвайт"
+}
+
+chat: "4 · Общение" {
+  candidate <-> author: "обсуждение вакансии, решение\nбрать / не брать (ChatTopic: title, rate, equity)"
+}
+
+closing: "5 · Закрытие чата" {
+  author -> api: "PUT candidate/reject"
+  api -> db: "🔧 closeVacancyChats(vacancyId, candidateUserId)\nиз нового vacancy-keys.ts (без matrix-импортов)\nсейчас updateMany захардкожен в reject"
+  candidate -> api: "PUT vacancy/withdraw"
+  api -> db: "🔧 закрыть чат при отзыве отклика\n⚠️ сейчас чат остаётся Open после\nудаления TeamMember"
+  api -> db: "🔧 закрытие вакансии (DELETE / PUT→Closed /\ncron relevant-vacancies) →\ncloseVacancyChats(vacancyId) по префиксу\ndirectKey vacancy:{vacancyId}:"
+  author -> api: "PUT candidate/hire"
+  api -> db: "🔧 hire ТОЖЕ закрывает чат:\nкомната остаётся видимой (read-only,\nClosed прячет ChatInput), дальше общение —\nв будущем групповом чате команды (ProjectGroup)"
+  api -> matrix: "🔧 каждый close → makeRoomReadOnly:\nm.room.power_levels (plain HTTP) —\nкомната read-only на уровне Matrix,\nчитать можно, писать нельзя"
+  api."итого: чат закрывается на reject / withdraw /\nhire / закрытие вакансии — не переживает отклик"
+}
+
+context: "Контекст для фронта (работает)" {
+  api."GET rooms/[matrixRoomId] →\nvacancyOfferProvider.buildContext\ntype=vacancy-application, isRecruiter,\nvacancy + project + status"
+}

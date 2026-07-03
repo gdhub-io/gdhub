@@ -30,11 +30,10 @@ export const POST = withAuth({ mode: "user" })(
 		if (!fullUser.email) return apiError.notFound("User email is not set");
 
 		let matrixUserId = fullUser.matrixUserId;
+		const displayName = fullUser.profile?.name || fullUser.name || undefined;
+		const avatarUrl = fullUser.image || undefined;
 
 		if (!matrixUserId) {
-			const displayName = fullUser.profile?.name || fullUser.name || undefined;
-			const avatarUrl = fullUser.image || undefined;
-
 			const existingMatrixUser = await ensureMatrixUser(
 				fullUser.id,
 				fullUser.email,
@@ -55,7 +54,22 @@ export const POST = withAuth({ mode: "user" })(
 			return apiError.notFound("Matrix user could not be provisioned");
 		}
 
-		const token = await getMatrixUserToken(currentUser.id, deviceId);
+		let token: Awaited<ReturnType<typeof getMatrixUserToken>>;
+		try {
+			token = await getMatrixUserToken(currentUser.id, deviceId);
+		} catch (error) {
+			// The platform row can point at a Matrix account that no longer exists
+			// on this homeserver (e.g. a re-created local Synapse). Re-provision
+			// the account and retry once instead of handing out dead sessions.
+			console.warn("[chat/session] token mint failed, re-provisioning", error);
+			await ensureMatrixUser(
+				fullUser.id,
+				fullUser.email,
+				displayName,
+				avatarUrl,
+			);
+			token = await getMatrixUserToken(currentUser.id, deviceId);
+		}
 
 		return json({
 			userId: matrixUserId,
