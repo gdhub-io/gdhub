@@ -79,6 +79,12 @@ type SpecialistData = prismaClient.Speciality & {
 	chat: { roomId: string } | null;
 };
 
+// Portfolio URLs are user-entered and often lack a protocol
+// (e.g. "www.linkedin.com/..."), which Next's <Link> would treat as an
+// in-app relative path. Normalize to an absolute external URL.
+const toExternalUrl = (url: string) =>
+	/^https?:\/\//i.test(url) ? url : `https://${url}`;
+
 const formatDate = (value?: string | null) =>
 	value
 		? new Date(value).toLocaleDateString(undefined, {
@@ -390,8 +396,9 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 											{t("specialist.preview.links", "Links")}
 										</div>
 										<Link
-											href={data.portfolioUrl}
+											href={toExternalUrl(data.portfolioUrl)}
 											target="_blank"
+											rel="noopener noreferrer"
 											className={styles.portfolioBtn}
 										>
 											<IconExternalLink size={15} />

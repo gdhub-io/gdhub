@@ -9,7 +9,6 @@ import {
 	Button,
 	ConfigProvider,
 	Drawer,
-	FloatButton,
 	Grid,
 	Layout,
 	Menu,
@@ -24,7 +23,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import IconGDHubTriangle from "@/assets/images/gdhub-triangle.svg";
 import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
@@ -34,10 +32,6 @@ import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
-const AIAgentDrawer = dynamic(
-	() => import("@/components/AIAgentDrawer").then((m) => m.AIAgentDrawer),
-	{ ssr: false },
-);
 const ChatModal = dynamic(
 	() => import("@/components/Chat/ChatModal").then((m) => m.ChatModal),
 	{ ssr: false },
@@ -62,7 +56,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const [isOpenedInTelegram] = useTelegram();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
-	const [openAgentDrawer, setOpenAgentDrawer] = useState(false);
 	const { setOpenChatModal } = useChat();
 
 	const isAdmin = useMemo(() => {
@@ -340,7 +333,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				) : null}
 
 				{/* agent drawer */}
-				{isAdmin && (
+				{/* {isAdmin && (
 					<>
 						<FloatButton
 							style={{ insetInlineEnd: 22, insetBlockEnd: 90 }}
@@ -355,7 +348,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 							onClose={() => setOpenAgentDrawer(false)}
 						/>
 					</>
-				)}
+				)} */}
 
 				{/* chat modal */}
 				<ChatModal />
