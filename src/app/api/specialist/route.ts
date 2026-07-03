@@ -101,6 +101,7 @@ export const GET = withAuth({ mode: "user" })(
 						name: true,
 						image: true,
 						email: true,
+						updatedAt: true,
 						profile: {
 							include: {
 								preferredGenres: true,
@@ -226,6 +227,7 @@ export const GET = withAuth({ mode: "user" })(
 				name: specialist.user.name,
 				image: specialist.user.image,
 				profile: specialist.user.profile,
+				updatedAt: specialist.user.updatedAt,
 				// Email is private until the offer is accepted (a chat exists).
 				email: viewerIsSelf || chatRoomId ? specialist.user.email : null,
 			},
