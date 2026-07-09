@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { ImageResponse } from "@vercel/og";
+import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import { loadOgFont, safeDecodeURIComponent } from "@/helpers/og-font";
 
 export const runtime = "edge";
 
@@ -15,12 +16,7 @@ export async function GET(request: NextRequest) {
 		const title = searchParams.get("t");
 		const subTitle = searchParams.get("st");
 
-		const fontData = await fetch(
-			new URL(
-				"../../../../assets/fonts/mulish/Mulish-Regular.ttf",
-				import.meta.url,
-			),
-		).then((res) => res.arrayBuffer());
+		const fontData = await loadOgFont(request, "Mulish-Regular.ttf");
 
 		if (!coverImage)
 			return new ImageResponse(<>Error</>, {
@@ -228,7 +224,7 @@ export async function GET(request: NextRequest) {
 						textAlign: "left",
 					}}
 				>
-					{title ? decodeURIComponent(title) : "Title"}
+					{title ? safeDecodeURIComponent(title) : "Title"}
 				</p>
 
 				<p
@@ -239,7 +235,7 @@ export async function GET(request: NextRequest) {
 						textAlign: "left",
 					}}
 				>
-					{subTitle ? decodeURIComponent(subTitle) : "Subtitle"}
+					{subTitle ? safeDecodeURIComponent(subTitle) : "Subtitle"}
 				</p>
 			</div>,
 			{

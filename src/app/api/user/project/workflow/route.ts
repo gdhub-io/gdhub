@@ -8,6 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
+import { recomputeStepTasks } from "@/services/workflow/recomputeStepTasks";
 
 const WorkflowQuerySchema = z.object({
 	projectId: z.string(),
@@ -41,7 +42,7 @@ export const GET = withAuth({ mode: "user" })(
 			include: {
 				currentStep: {
 					include: {
-						tasks: true,
+						tasks: { orderBy: { order: "asc" } },
 						equityPromises: projectAuthor
 							? {
 									where: { isExecuted: false },
@@ -72,6 +73,16 @@ export const GET = withAuth({ mode: "user" })(
 				},
 			},
 		});
+
+		// Task completion is evaluated by the platform from project data, not
+		// toggled by users. Recompute the current step's tasks before returning.
+		if (projectWorkflow?.currentStep) {
+			projectWorkflow.currentStep.tasks = await recomputeStepTasks(
+				projectWorkflow.currentStep.tasks,
+				projectId,
+				projectWorkflow.currentStep.id,
+			);
+		}
 
 		return json(projectWorkflow);
 	}),

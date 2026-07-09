@@ -13,6 +13,8 @@ import DiscordService from "../discord";
 import LinkedInService from "../linkedin";
 import { prisma } from "../prisma";
 import {
+	blogPostMessageTelegram,
+	blogPostOgImage,
 	newProjectReportsMessageEn,
 	newProjectReportsMessageRu,
 	newSpecialitiesMessageEn,
@@ -57,7 +59,9 @@ export default class TelegramService {
 		}
 	}
 
-	prepareChatId(chatId: number) {
+	prepareChatId(chatId: number | string) {
+		// Channel usernames (@name) are passed through as-is.
+		if (typeof chatId === "string" && chatId.startsWith("@")) return chatId;
 		const preparedChatId =
 			this.mode === "test" ? `-100${chatId}` : String(chatId);
 		return Number(preparedChatId);
@@ -69,7 +73,7 @@ export default class TelegramService {
 		message,
 		options,
 	}: {
-		chatId: number;
+		chatId: number | string;
 		topicId?: number;
 		message: string;
 		options?: Record<string, unknown>;
@@ -93,8 +97,12 @@ export default class TelegramService {
 			console.info("Message successfully send.");
 			return res.data;
 		} catch (error: unknown) {
-			console.error(error);
-			throw error;
+			// Surface Telegram's concise description instead of dumping the whole
+			// axios error object (chat not found, not enough rights, etc.).
+			const description = axios.isAxiosError(error)
+				? error.response?.data?.description || error.message
+				: (error as Error).message;
+			throw new Error(`Telegram sendMessage failed: ${description}`);
 		}
 	}
 
@@ -104,7 +112,7 @@ export default class TelegramService {
 		url,
 		message,
 	}: {
-		chatId: number;
+		chatId: number | string;
 		topicId?: number;
 		url: string;
 		message?: string;
@@ -128,11 +136,25 @@ export default class TelegramService {
 				},
 			});
 
-			if (!res.ok) throw new Error("Telegram sendMessage response is wrong");
+			// Telegram signals API errors via a JSON body ({ ok:false, description })
+			// often with a non-2xx status. Surface that description so failures like
+			// "wrong HTTP URL" (unreachable photo) or "chat not found" are diagnosable.
+			const data = (await res.json().catch(() => null)) as {
+				ok?: boolean;
+				description?: string;
+			} | null;
+
+			if (!res.ok || !data?.ok) {
+				throw new Error(
+					`Telegram sendPhoto failed: ${data?.description || `HTTP ${res.status}`}`,
+				);
+			}
 
 			console.info("Message successfully send.");
+			return data;
 		} catch (error: unknown) {
 			console.error(error);
+			throw error;
 		}
 	}
 
@@ -424,5 +446,55 @@ export default class TelegramService {
 		}
 
 		return { sent: projectsWithVacancies.length };
+	}
+
+	/**
+	 * Post a single blog post to the news channel(s). Channels (unlike group
+	 * topics) have no threads, so no `message_thread_id` is sent. The bot must be
+	 * an admin of the channel with post permission. Channel ids are the numeric
+	 * `-100…` form (from getChat / forwarding a channel post to @userinfobot).
+	 */
+	async sendBlogPost(
+		post: Pick<prismaClient.BlogPost, "title" | "content" | "slug" | "image">,
+	) {
+		const message = blogPostMessageTelegram(post);
+		const imageUrl = blogPostOgImage(post);
+
+		const channels: { id?: string; label: string }[] = [
+			{ id: process.env.TELEGRAM_NEWS_CHANNEL_ID, label: "RU" },
+			{ id: process.env.TELEGRAM_EN_NEWS_CHANNEL_ID, label: "EN" },
+		];
+
+		for (const channel of channels) {
+			if (!channel.id) continue;
+			try {
+				// Photo caption is capped at 1024 chars; the blog message stays under.
+				// No topicId — channels have no topics. Accepts a numeric -100… id or
+				// an @username (passed through by prepareChatId).
+				await this.sendPhoto({
+					chatId: channel.id,
+					url: imageUrl,
+					message,
+				});
+			} catch (photoError) {
+				// The photo can fail when Telegram can't fetch the image URL (e.g. a
+				// non-public NEXT_PUBLIC_APP_URL like localhost). Fall back to a plain
+				// text message so the announcement still goes out.
+				console.error(
+					`Error sending photo to ${channel.label} Telegram channel (blog post), falling back to text`,
+					photoError,
+				);
+				try {
+					await this.sendMessage({ chatId: channel.id, message });
+				} catch (textError) {
+					console.error(
+						`Error sending message to ${channel.label} Telegram channel (blog post)`,
+						textError,
+					);
+				}
+			}
+		}
+
+		return { ok: true };
 	}
 }

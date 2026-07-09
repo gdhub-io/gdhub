@@ -1,89 +1,48 @@
 import { AiOutlineCheck } from "@react-icons/all-files/ai/AiOutlineCheck";
+import { useTranslate } from "@tolgee/react";
 import type React from "react";
 import styles from "./style.module.scss";
 
 export type TaskCardProps = {
-	id: string;
 	label: string;
-	stage?: string;
+	description?: string | null;
 	required: boolean;
 	completed: boolean;
-	disabled?: boolean;
-	onStatusChange: (taskId: string, checked: boolean) => void;
 };
 
+/**
+ * A single workflow task row. Completion is evaluated by the platform from
+ * project data (not toggled by the user), so the checkbox is a read-only
+ * status indicator.
+ */
 const WorkflowTaskCard: React.FC<TaskCardProps> = ({
-	id,
 	label,
-	stage = "Co-Working",
+	description,
 	required,
 	completed,
-	disabled = false,
-	onStatusChange,
 }) => {
-	const isCompleted = completed;
-	const isRequired = required;
+	const { t } = useTranslate();
 
 	return (
-		<div className={styles.taskItem}>
-			<div className={styles.taskTitleRow}>
-				<div
-					role="button"
-					tabIndex={0}
-					className={`${styles.taskCheckbox} ${isCompleted ? styles.completed : ""}`}
-					onClick={() => {
-						if (!disabled) onStatusChange(id, !isCompleted);
-					}}
-				>
-					{isCompleted && <AiOutlineCheck size={14} />}
-				</div>
-				<div
-					role="button"
-					tabIndex={0}
-					className={`${styles.taskTitle} ${isCompleted ? styles.completed : ""}`}
-				>
+		<div className={styles.row}>
+			<div
+				className={`${styles.check} ${completed ? styles.checkDone : ""}`}
+				aria-hidden
+			>
+				{completed && <AiOutlineCheck size={12} />}
+			</div>
+			<div className={styles.texts}>
+				<div className={`${styles.label} ${completed ? styles.labelDone : ""}`}>
 					{label}
 				</div>
+				{description && <div className={styles.description}>{description}</div>}
 			</div>
-			<div className={styles.taskInfoGrid}>
-				<div className={styles.taskInfoItem}>
-					<div className={styles.taskInfoLabel}>Implementation Stage</div>
-					<div className={styles.taskInfoValue}>
-						<div
-							className={`${styles.stageTag} ${isRequired ? styles.required : styles.optional}`}
-						>
-							{stage}
-						</div>
-					</div>
-				</div>
-
-				<div className={styles.taskInfoItem}>
-					<div className={styles.taskInfoLabel}>Status</div>
-					<div className={styles.taskInfoValue}>
-						<div
-							className={`${styles.statusTag} ${isCompleted ? styles.completed : styles.inProgress}`}
-						>
-							{isCompleted ? (
-								<>
-									<AiOutlineCheck size={14} />
-									Completed
-								</>
-							) : (
-								<>In Progress</>
-							)}
-						</div>
-					</div>
-				</div>
-
-				<div className={styles.taskInfoItem}>
-					<div className={styles.taskInfoLabel}>Assignee</div>
-					<div className={styles.taskInfoValue}>
-						<div className={styles.assigneeTag}>
-							<div className={styles.assigneeAvatar}>A</div>
-							Assignee
-						</div>
-					</div>
-				</div>
+			<div
+				className={`${styles.pill} ${required ? styles.required : styles.optional}`}
+			>
+				{required
+					? t("workflow.tasks.required", "Required")
+					: t("workflow.tasks.optional", "Optional")}
 			</div>
 		</div>
 	);

@@ -1,5 +1,5 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import {
 	apiError,
@@ -8,7 +8,17 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { WorkflowTaskConditionSchema } from "@/schemas/workflowTaskCondition";
 import { prisma } from "@/services/prisma";
+
+/** Validate an incoming task condition; `DbNull` clears it. */
+function parseTaskCondition(raw: unknown) {
+	if (raw == null) return Prisma.DbNull;
+	const parsed = WorkflowTaskConditionSchema.safeParse(raw);
+	return parsed.success
+		? (parsed.data as Prisma.InputJsonValue)
+		: Prisma.DbNull;
+}
 
 const UpdateProjectWorkflowSchema = z.object({
 	title: z.string().optional(),
@@ -37,11 +47,12 @@ async function updateStepTasks(
 			await prisma.projectWorkflowTask.update({
 				where: { id: existingTask.id },
 				data: {
-					description:
-						taskData.description || taskData.name || taskData.title || "",
+					name: taskData.name ?? taskData.title ?? null,
+					description: taskData.description ?? null,
 					required: Boolean(taskData.required),
 					order: index,
 					done: Boolean(taskData.done),
+					condition: parseTaskCondition(taskData.condition),
 				},
 			});
 
@@ -49,12 +60,13 @@ async function updateStepTasks(
 		} else {
 			const newTask = await prisma.projectWorkflowTask.create({
 				data: {
-					description:
-						taskData.description || taskData.name || taskData.title || "",
+					name: taskData.name ?? taskData.title ?? null,
+					description: taskData.description ?? null,
 					required: Boolean(taskData.required),
 					order: index,
 					stepId,
 					done: Boolean(taskData.done || false),
+					condition: parseTaskCondition(taskData.condition),
 				},
 			});
 

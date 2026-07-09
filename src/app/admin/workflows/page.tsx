@@ -136,10 +136,10 @@ export default function WorkflowsAdminPage() {
 			render: (_, record) => (
 				<div>
 					<div style={{ fontWeight: "bold", color: "#1890ff" }}>
-						{record.analytics?.currentStepName || "Не начат"}
+						{record.analytics?.currentStepName || "Not started"}
 					</div>
 					<Text type="secondary" style={{ fontSize: "12px" }}>
-						Этап {(record.analytics?.currentStepOrder || 0) + 1} из{" "}
+						Step {(record.analytics?.currentStepOrder || 0) + 1} of{" "}
 						{record.analytics?.totalSteps || 0}
 					</Text>
 				</div>
@@ -171,7 +171,7 @@ export default function WorkflowsAdminPage() {
 							{completed}/{total}
 						</div>
 						<Text type="secondary" style={{ fontSize: "12px" }}>
-							{percentage}% выполнено
+							{percentage}% done
 						</Text>
 					</div>
 				);
@@ -191,7 +191,7 @@ export default function WorkflowsAdminPage() {
 							{days}
 						</div>
 						<Text type="secondary" style={{ fontSize: "11px" }}>
-							{days === 1 ? "день" : days < 5 ? "дня" : "дней"}
+							{days === 1 ? "day" : "days"}
 						</Text>
 					</div>
 				);
@@ -238,7 +238,7 @@ export default function WorkflowsAdminPage() {
 	const tabItems = [
 		{
 			key: "templates",
-			label: "Шаблоны воркфлоу",
+			label: "Workflow templates",
 			children: (
 				<div>
 					<Row
@@ -246,9 +246,9 @@ export default function WorkflowsAdminPage() {
 						align="middle"
 						style={{ marginBottom: 16 }}
 					>
-						<Title level={3}>Шаблоны воркфлоу</Title>
+						<Title level={3}>Workflow templates</Title>
 						<Button onClick={() => setShowModal(true)} type="primary">
-							Добавить шаблон
+							Add template
 						</Button>
 					</Row>
 					<ModernTable
@@ -261,7 +261,7 @@ export default function WorkflowsAdminPage() {
 		},
 		{
 			key: "projects",
-			label: "Проектные воркфлоу",
+			label: "Project workflows",
 			children: (
 				<div>
 					<Row
@@ -269,7 +269,7 @@ export default function WorkflowsAdminPage() {
 						align="middle"
 						style={{ marginBottom: 16 }}
 					>
-						<Title level={3}>Проектные воркфлоу</Title>
+						<Title level={3}>Project workflows</Title>
 					</Row>
 					<ModernTable
 						loading={isFetchingProjectWorkflows}

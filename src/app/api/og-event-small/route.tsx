@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { ImageResponse } from "@vercel/og";
+import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import { loadOgFont, safeDecodeURIComponent } from "@/helpers/og-font";
 
 export const runtime = "edge";
 
@@ -21,12 +22,7 @@ export async function GET(request: NextRequest) {
 		const eventType = searchParams.get("type");
 		const eventDate = searchParams.get("date");
 
-		const fontData = await fetch(
-			new URL(
-				"../../../../assets/fonts/mulish/Mulish-Regular.ttf",
-				import.meta.url,
-			),
-		).then((res) => res.arrayBuffer());
+		const fontData = await loadOgFont(request, "Mulish-Regular.ttf");
 
 		if (!coverImage)
 			return new ImageResponse(<>Error</>, {
@@ -227,7 +223,7 @@ export async function GET(request: NextRequest) {
 							/{" "}
 							<span style={{ marginLeft: 16 }}>
 								{eventType
-									? upperFirst(decodeURIComponent(eventType))
+									? upperFirst(safeDecodeURIComponent(eventType))
 									: "Event"}
 							</span>
 						</span>
@@ -255,7 +251,7 @@ export async function GET(request: NextRequest) {
 								paddingTop: 32,
 							}}
 						>
-							{title ? decodeURIComponent(title) : "Title"}
+							{title ? safeDecodeURIComponent(title) : "Title"}
 						</p>
 						<p
 							style={{
@@ -270,7 +266,7 @@ export async function GET(request: NextRequest) {
 							{subTitle
 								? subTitle.length > 90
 									? subTitle.slice(0, 90) + "..."
-									: decodeURIComponent(subTitle)
+									: safeDecodeURIComponent(subTitle)
 								: "Subtitle"}
 						</p>
 					</div>
@@ -327,7 +323,7 @@ export async function GET(request: NextRequest) {
 								boxShadow: "0 2px 12px #0002",
 							}}
 						>
-							{decodeURIComponent(eventDate)}
+							{safeDecodeURIComponent(eventDate)}
 						</span>
 					</div>
 				)}

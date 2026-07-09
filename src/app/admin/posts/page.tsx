@@ -1,9 +1,25 @@
 "use client";
 
+import { EllipsisOutlined } from "@ant-design/icons";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { GoTrash } from "@react-icons/all-files/go/GoTrash";
+import { FaDiscord } from "@react-icons/all-files/fa/FaDiscord";
+import { FaLinkedinIn } from "@react-icons/all-files/fa/FaLinkedinIn";
+import { FaTelegramPlane } from "@react-icons/all-files/fa/FaTelegramPlane";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Button, Popconfirm, Popover, Row, Space, Typography } from "antd";
+import type { MenuProps } from "antd";
+import {
+	Button,
+	Dropdown,
+	Image,
+	Modal,
+	message,
+	Popover,
+	Row,
+	Space,
+	Spin,
+	Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -15,7 +31,15 @@ import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import styles from "./style.module.scss";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
+
+type AnnounceChannel = "linkedin" | "discord" | "telegram";
+
+const channelLabels: Record<AnnounceChannel, string> = {
+	linkedin: "LinkedIn",
+	discord: "Discord",
+	telegram: "Telegram",
+};
 
 export default function BlogPostsAdminPage() {
 	const router = useRouter();
@@ -38,14 +62,69 @@ export default function BlogPostsAdminPage() {
 		},
 	});
 
-	// const handleChange = (recordId: string) => {
-	// 	setLectureId(recordId)
-	// 	setShowModal(true)
-	// }
+	const [preview, setPreview] = useState<{
+		postId: string;
+		channel: AnnounceChannel;
+	} | null>(null);
+
+	const {
+		data: previewData,
+		isFetching: isPreviewLoading,
+		isError: isPreviewError,
+		error: previewError,
+	} = useQuery({
+		queryKey: [
+			"admin",
+			"post-announce-preview",
+			preview?.postId,
+			preview?.channel,
+		],
+		queryFn: () =>
+			axios
+				.get<{
+					channel: AnnounceChannel;
+					message: string;
+					image: string | null;
+				}>(`/api/admin/post/${preview?.postId}/announce`, {
+					params: { channel: preview?.channel },
+				})
+				.then((res) => res.data),
+		enabled: Boolean(preview),
+	});
+
+	const { mutateAsync: announcePost, isPending: isPosting } = useMutation({
+		mutationFn: ({ id, channel }: { id: string; channel: AnnounceChannel }) =>
+			axios.post(`/api/admin/post/${id}/announce`, { channel }),
+	});
+
+	const handleConfirmAnnounce = async () => {
+		if (!preview) return;
+		const { channel } = preview;
+		try {
+			await announcePost({ id: preview.postId, channel });
+			message.success(`Posted to ${channelLabels[channel]}`);
+			setPreview(null);
+		} catch (error) {
+			const description = axios.isAxiosError(error)
+				? error.response?.data?.error || error.message
+				: "Unknown error";
+			message.error(
+				`Failed to post to ${channelLabels[channel]}: ${description}`,
+			);
+		}
+	};
 
 	const handleDelete = (recordId: string) => {
-		deletePost({ id: recordId });
-		setPostId(undefined);
+		Modal.confirm({
+			title: "Are you sure you want to delete this post?",
+			content: "This action cannot be undone.",
+			okText: "Delete",
+			okButtonProps: { danger: true },
+			onOk: async () => {
+				await deletePost({ id: recordId });
+				setPostId(undefined);
+			},
+		});
 	};
 
 	const handleCreatePost = (id: string) => {
@@ -104,19 +183,69 @@ export default function BlogPostsAdminPage() {
 		{
 			key: "actions",
 			width: "1%",
+			align: "right",
 			render(value, record) {
+				const isPublished =
+					record.status === prismaClient.BlogPostStatus.Published;
+
+				const items: MenuProps["items"] = [
+					{
+						key: "open",
+						label: (
+							<Link href={`/blog/${record.slug}`} target="_blank">
+								Go to post
+							</Link>
+						),
+					},
+					{ type: "divider" },
+					{
+						key: "linkedin",
+						label: "Post to LinkedIn",
+						icon: <FaLinkedinIn />,
+						disabled: !isPublished || !record.slug,
+					},
+					{
+						key: "discord",
+						label: "Post to Discord",
+						icon: <FaDiscord />,
+						disabled: !isPublished || !record.slug,
+					},
+					{
+						key: "telegram",
+						label: "Post to Telegram",
+						icon: <FaTelegramPlane />,
+						disabled: !isPublished || !record.slug,
+					},
+					{ type: "divider" },
+					{
+						key: "delete",
+						label: "Delete",
+						danger: true,
+						icon: <IconTrash size={14} />,
+					},
+				];
+
 				return (
-					<Space size="large">
-						<Link href={`/blog/${record.slug}`} target="_blank">
-							<Button type="text">Go to post</Button>
-						</Link>
-						<Popconfirm
-							title="Are you sure you want to delete this entry?"
-							onConfirm={() => handleDelete(record.id)}
-						>
-							<Button type="text" danger icon={<GoTrash />} />
-						</Popconfirm>
-					</Space>
+					<Dropdown
+						trigger={["click"]}
+						menu={{
+							items,
+							onClick: ({ key, domEvent }) => {
+								domEvent.stopPropagation();
+								if (key === "delete") {
+									handleDelete(record.id);
+								} else if (
+									key === "linkedin" ||
+									key === "discord" ||
+									key === "telegram"
+								) {
+									setPreview({ postId: record.id, channel: key });
+								}
+							},
+						}}
+					>
+						<Button type="text" icon={<EllipsisOutlined />} />
+					</Dropdown>
 				);
 			},
 		},
@@ -143,6 +272,62 @@ export default function BlogPostsAdminPage() {
 				onCancel={() => setShowModal(false)}
 				onOk={handleCreatePost}
 			/>
+
+			<Modal
+				open={Boolean(preview)}
+				title={
+					preview
+						? `Announce preview — ${channelLabels[preview.channel]}`
+						: "Announce preview"
+				}
+				onCancel={() => setPreview(null)}
+				okText={preview ? `Post to ${channelLabels[preview.channel]}` : "Post"}
+				okButtonProps={{ disabled: isPreviewLoading || isPreviewError }}
+				confirmLoading={isPosting}
+				onOk={handleConfirmAnnounce}
+				destroyOnHidden
+			>
+				{isPreviewLoading ? (
+					<div style={{ textAlign: "center", padding: 32 }}>
+						<Spin />
+					</div>
+				) : isPreviewError ? (
+					<Text type="danger">
+						{axios.isAxiosError(previewError)
+							? previewError.response?.data?.error || previewError.message
+							: "Failed to build preview"}
+					</Text>
+				) : (
+					<Space orientation="vertical" size={12} style={{ width: "100%" }}>
+						<div
+							style={{
+								whiteSpace: "pre-wrap",
+								wordBreak: "break-word",
+								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+								fontSize: 13,
+								background: "rgba(0,0,0,0.04)",
+								borderRadius: 8,
+								padding: 12,
+								maxHeight: 320,
+								overflow: "auto",
+							}}
+						>
+							{previewData?.message}
+						</div>
+						{previewData?.image ? (
+							<Image
+								src={previewData.image}
+								alt="Announcement preview"
+								style={{
+									width: "100%",
+									borderRadius: 8,
+									border: "1px solid rgba(0,0,0,0.06)",
+								}}
+							/>
+						) : null}
+					</Space>
+				)}
+			</Modal>
 		</AdminLayout>
 	);
 }

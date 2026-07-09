@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import { ImageResponse } from "@vercel/og";
+import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import { loadOgFont, safeDecodeURIComponent } from "@/helpers/og-font";
 
 export const runtime = "edge";
 
@@ -18,19 +19,14 @@ export async function GET(request: NextRequest) {
 
 		let title = searchParams.get("t");
 		title = title
-			? decodeURIComponent(title).length > 45
-				? decodeURIComponent(title).slice(0, 45) + "..."
-				: decodeURIComponent(title)
+			? safeDecodeURIComponent(title).length > 45
+				? safeDecodeURIComponent(title).slice(0, 45) + "..."
+				: safeDecodeURIComponent(title)
 			: "Title";
 
 		const subTitle = searchParams.get("st") || `The open position`;
 
-		const fontData = await fetch(
-			new URL(
-				"../../../../assets/fonts/geist/Geist-Regular.ttf",
-				import.meta.url,
-			),
-		).then((res) => res.arrayBuffer());
+		const fontData = await loadOgFont(request, "Geist-Regular.ttf");
 
 		return new ImageResponse(
 			<div
@@ -245,7 +241,7 @@ export async function GET(request: NextRequest) {
 							textAlign: "left",
 						}}
 					>
-						{decodeURIComponent(subTitle)}
+						{safeDecodeURIComponent(subTitle)}
 					</p>
 				)}
 
@@ -258,7 +254,7 @@ export async function GET(request: NextRequest) {
 						textAlign: "left",
 					}}
 				>
-					{title ? decodeURIComponent(title) : "Title"}
+					{title ? safeDecodeURIComponent(title) : "Title"}
 				</p>
 
 				<div
@@ -284,7 +280,7 @@ export async function GET(request: NextRequest) {
 						}}
 					>
 						{terms && terms !== "0"
-							? `Equity offered: ${decodeURIComponent(terms)}%`
+							? `Equity offered: ${safeDecodeURIComponent(terms)}%`
 							: "negotiable terms of cooperation"}
 					</span>
 				</div>
@@ -312,7 +308,7 @@ export async function GET(request: NextRequest) {
 								boxShadow: "0 2px 12px #0002",
 							}}
 						>
-							Relevant to {decodeURIComponent(vDate)}
+							Relevant to {safeDecodeURIComponent(vDate)}
 						</span>
 					</div>
 				)}
