@@ -23,9 +23,11 @@ import { capitalize } from "@/helpers/text";
 import { RoadmapChart } from "../RoadmapChart";
 import styles from "./style.module.scss";
 import WorkflowStepContent from "./WorkflowStepContent";
-import WorkflowTaskCard from "./WorkflowTaskCard";
+import WorkflowTasksPanel, {
+	type WorkflowTaskItem,
+} from "./WorkflowTasksPanel";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export type ProjectWorkflow = prismaClient.ProjectWorkflow & {
 	steps: prismaClient.ProjectWorkflowStep[];
@@ -73,7 +75,6 @@ const WorkflowContent = ({
 	const [workflow, setWorkflow] = useState<ProjectWorkflowWithSteps>();
 	const [drawerVisible, setDrawerVisible] = useState(false);
 	const [popoverVisible, setPopoverVisible] = useState(false);
-	const [taskStatuses, setTaskStatuses] = useState<Record<string, boolean>>({});
 	const [equityTransferModalVisible, setEquityTransferModalVisible] =
 		useState(false);
 	const { t } = useTranslate();
@@ -88,36 +89,6 @@ const WorkflowContent = ({
 		() => workflow?.currentStep?.order || 0,
 		[workflow?.currentStep],
 	);
-	// const mockTasks: ExtendedTask[] = useMemo(
-	// 	() => [
-	// 		{
-	// 			id: '1',
-	// 			label: 'Complete project description',
-	// 			field: 'description',
-	// 			required: true,
-	// 			completed: conditionStatus.completed,
-	// 			stage: 'Co-Working',
-	// 		},
-	// 		{
-	// 			id: '2',
-	// 			label: 'Add project team members',
-	// 			field: 'team',
-	// 			required: false,
-	// 			completed: taskStatuses['2'] || false,
-	// 			stage: 'Research v2',
-	// 		},
-	// 		{
-	// 			id: '3',
-	// 			label: 'Set project timeline',
-	// 			field: 'timeline',
-	// 			required: true,
-	// 			completed: taskStatuses['3'] || false,
-	// 			stage: 'Co-Working',
-	// 		},
-	// 	],
-	// 	[conditionStatus.completed, taskStatuses]
-	// )
-
 	const { data: workflowResponse, refetch: refetchWorkflowData } = useQuery({
 		queryKey: ["project-workflow", projectId],
 		queryFn: () =>
@@ -201,27 +172,23 @@ const WorkflowContent = ({
 	};
 
 	useEffect(() => {
-		const stepTasks = workflow?.currentStep?.tasks;
+		const stepTasks = workflow?.currentStep?.tasks ?? [];
+		const requiredTasks = stepTasks.filter((t) => t.required);
 
-		if (!stepTasks || stepTasks.length === 0) {
-			setConditionStatus({ completed: true });
-			return;
-		}
-
-		if (stepTasks.every((t) => t.done)) {
-			setConditionStatus({ completed: true });
-		}
+		// Advancing is gated on required tasks only; a step with no required
+		// tasks is always completable.
+		setConditionStatus({ completed: requiredTasks.every((t) => t.done) });
 	}, [workflow?.currentStep?.tasks]);
 
-	const handleTaskStatusChange = (taskId: string, checked: boolean) => {
-		if (isProjectArchived) return;
-
-		if (taskId === "1") {
-			setConditionStatus((prev: any) => ({ ...prev, completed: checked }));
-		} else {
-			setTaskStatuses((prev) => ({ ...prev, [taskId]: checked }));
-		}
-	};
+	const taskItems: WorkflowTaskItem[] = (
+		workflow?.currentStep?.tasks ?? []
+	).map((task) => ({
+		id: task.id,
+		label: task.name || task.description || "",
+		description: task.name ? task.description : null,
+		required: task.required,
+		done: task.done,
+	}));
 
 	const stepsStepsList = (
 		<div className={styles.stepsWrapper}>
@@ -319,46 +286,18 @@ const WorkflowContent = ({
 								</Button>
 							)}
 
-							{!screens.lg && workflow.currentStep?.tasks?.length > 0 && (
-								<div className={styles.stepContent}>
-									<Title level={3}>{t("workflow.tasks.title", "Tasks")}</Title>
-									<div className={styles.tasksContainer}>
-										{workflow.currentStep?.tasks?.map((task) => (
-											<WorkflowTaskCard
-												key={task.id}
-												id={task.id}
-												label={task.description || ""}
-												stage={""}
-												required={task.required}
-												completed={task.done}
-												disabled={isProjectArchived}
-												onStatusChange={handleTaskStatusChange}
-											/>
-										))}
-									</div>
+							{!screens.lg && isRoadmapStep && taskItems.length > 0 && (
+								<div className={styles.tasksSidebar}>
+									<WorkflowTasksPanel tasks={taskItems} />
 								</div>
 							)}
 						</Space>
 					</Col>
 					{screens.lg && isRoadmapStep && (
 						<Col xs={24} lg={8}>
-							<div className={styles.sidebarContent}>
-								<Title level={3}>{t("workflow.tasks.title", "Tasks")}</Title>
-								{workflow.currentStep?.tasks?.length > 0 ? (
-									<div className={styles.tasksContainer}>
-										{workflow.currentStep?.tasks?.map((task) => (
-											<WorkflowTaskCard
-												key={task.id}
-												id={task.id}
-												label={task.description || ""}
-												stage={""}
-												required={task.required}
-												completed={task.done}
-												disabled={isProjectArchived}
-												onStatusChange={handleTaskStatusChange}
-											/>
-										))}
-									</div>
+							<div className={styles.tasksSidebar}>
+								{taskItems.length > 0 ? (
+									<WorkflowTasksPanel tasks={taskItems} />
 								) : (
 									<Text type="secondary">
 										{t("workflow.no-tasks", "No tasks for this step")}

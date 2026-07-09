@@ -46,7 +46,7 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 
 	return (
 		<Modal
-			title="Основные настройки воркфлоу"
+			title="Workflow settings"
 			open={visible}
 			onCancel={onClose}
 			width={600}
@@ -55,9 +55,9 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 			mask={{ closable: false }}
 			footer={
 				<Space>
-					<Button onClick={onClose}>Отмена</Button>
+					<Button onClick={onClose}>Cancel</Button>
 					<Button type="primary" onClick={handleSave}>
-						Сохранить
+						Save
 					</Button>
 				</Space>
 			}
@@ -70,22 +70,22 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 			>
 				<Form.Item
 					name="title"
-					label="Название воркфлоу"
-					rules={[{ required: true, message: "Введите название" }]}
+					label="Workflow title"
+					rules={[{ required: true, message: "Enter a title" }]}
 				>
-					<Input placeholder="Название воркфлоу" />
+					<Input placeholder="Workflow title" />
 				</Form.Item>
 
 				<Form.Item
 					name="name"
-					label="Системное имя"
-					rules={[{ required: true, message: "Введите системное имя" }]}
+					label="System name"
+					rules={[{ required: true, message: "Enter a system name" }]}
 				>
 					<Input placeholder="workflow-name" />
 				</Form.Item>
 
-				<Form.Item name="description" label="Описание">
-					<Input.TextArea rows={4} placeholder="Описание воркфлоу" />
+				<Form.Item name="description" label="Description">
+					<Input.TextArea rows={4} placeholder="Workflow description" />
 				</Form.Item>
 			</Form>
 		</Modal>

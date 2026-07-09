@@ -47,7 +47,7 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 
 	return (
 		<Modal
-			title={isNew ? "Новый этап" : "Редактировать этап"}
+			title={isNew ? "New step" : "Edit step"}
 			open={visible}
 			onCancel={handleClose}
 			width={800}
@@ -56,9 +56,9 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 			mask={{ closable: false }}
 			footer={
 				<Space>
-					<Button onClick={handleClose}>Отмена</Button>
+					<Button onClick={handleClose}>Cancel</Button>
 					<Button type="primary" onClick={handleSave}>
-						{isNew ? "Создать" : "Сохранить"}
+						{isNew ? "Create" : "Save"}
 					</Button>
 				</Space>
 			}
@@ -73,21 +73,21 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 					<Col xs={24} lg={12}>
 						<Form.Item
 							name="title"
-							label="Название этапа"
-							rules={[{ required: true, message: "Введите название" }]}
+							label="Step name"
+							rules={[{ required: true, message: "Enter a name" }]}
 						>
-							<Input placeholder="Название этапа" />
+							<Input placeholder="Step name" />
 						</Form.Item>
 					</Col>
 					<Col xs={24} lg={12}>
 						<Form.Item
 							name="name"
-							label="Идентификатор этапа"
+							label="Step identifier"
 							rules={[
-								{ required: true, message: "Введите идентификатор" },
+								{ required: true, message: "Enter an identifier" },
 								{
 									pattern: /^[a-z0-9-]+$/,
-									message: "Только маленькие латинские буквы, цифры и дефисы",
+									message: "Only lowercase latin letters, digits and dashes",
 								},
 							]}
 						>
@@ -95,8 +95,8 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 						</Form.Item>
 					</Col>
 					<Col span={24}>
-						<Form.Item name="description" label="Описание этапа">
-							<TextArea rows={3} placeholder="Описание этапа" />
+						<Form.Item name="description" label="Step description">
+							<TextArea rows={3} placeholder="Step description" />
 						</Form.Item>
 					</Col>
 				</Row>

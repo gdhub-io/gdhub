@@ -65,6 +65,8 @@ const CreateDocumentModal = ({
 
 	const renderDocumentType = (type: string) => {
 		switch (type) {
+			case prismaClient.TeamDocumentType.JDA:
+				return "Joint Development Agreement";
 			case prismaClient.TeamDocumentType.Concept:
 				return "Concept Document";
 			case prismaClient.TeamDocumentType.GDD:
@@ -77,9 +79,9 @@ const CreateDocumentModal = ({
 	};
 
 	useEffect(() => {
-		if (selectedDocumentType === "other") {
+		if (selectedDocumentType === prismaClient.TeamDocumentType.Other) {
 			form.setFieldsValue({ name: "" });
-		} else {
+		} else if (selectedDocumentType) {
 			form.setFieldsValue({ name: renderDocumentType(selectedDocumentType) });
 		}
 	}, [selectedDocumentType]);
@@ -126,12 +128,19 @@ const CreateDocumentModal = ({
 								"Select document type",
 							)}
 							options={[
-								// { label: 'Concept Document', value: prismaClient.TeamDocumentType.Concept },
+								{
+									label: "Joint Development Agreement",
+									value: prismaClient.TeamDocumentType.JDA,
+								},
+								{
+									label: "Concept Document",
+									value: prismaClient.TeamDocumentType.Concept,
+								},
 								{
 									label: "Game Design Document",
 									value: prismaClient.TeamDocumentType.GDD,
 								},
-								// { label: 'NDA', value: prismaClient.TeamDocumentType.NDA },
+								{ label: "NDA", value: prismaClient.TeamDocumentType.NDA },
 								{ label: "Other", value: prismaClient.TeamDocumentType.Other },
 							]}
 						/>
@@ -139,9 +148,16 @@ const CreateDocumentModal = ({
 					<Form.Item
 						label={t("modal.create-document.field.name.label", "Title")}
 						name="name"
-						rules={[{ required: selectedDocumentType === "other" }]}
+						rules={[
+							{
+								required:
+									selectedDocumentType === prismaClient.TeamDocumentType.Other,
+							},
+						]}
 						wrapperCol={{ span: 24 }}
-						hidden={selectedDocumentType != "other"}
+						hidden={
+							selectedDocumentType !== prismaClient.TeamDocumentType.Other
+						}
 					>
 						<Input
 							placeholder={t(

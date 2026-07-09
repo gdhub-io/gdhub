@@ -8,6 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
+import { recomputeStepTasks } from "@/services/workflow/recomputeStepTasks";
 
 const ProjectMoveSchema = z.object({
 	projectId: z.string(),
@@ -33,6 +34,7 @@ export const PUT = withAuth({
 					include: {
 						currentStep: {
 							include: {
+								tasks: true,
 								equityPromises: {
 									where: { isExecuted: false },
 									include: { allocation: { include: { owner: true } } },
@@ -59,6 +61,22 @@ export const PUT = withAuth({
 			if (!currentStep) return apiError.badRequest("Current step not found");
 
 			if (direction === "next") {
+				// Gate: all required tasks of the current step must be done.
+				// Recompute completion from project data first (server-authoritative).
+				const currentTasks = await recomputeStepTasks(
+					currentStep.tasks ?? [],
+					projectId,
+					currentStep.id,
+				);
+				const hasPendingRequiredTasks = currentTasks.some(
+					(task) => task.required && !task.done,
+				);
+				if (hasPendingRequiredTasks) {
+					return apiError.badRequest(
+						"Complete all required tasks before moving to the next step",
+					);
+				}
+
 				changedStep = project.workflow?.steps.find(
 					(step: { order: number }) =>
 						step.order === (currentStep?.order || 0) + 1,

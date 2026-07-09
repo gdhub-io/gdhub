@@ -1,4 +1,5 @@
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { WorkflowTaskCondition } from "@/schemas/workflowTaskCondition";
 
 // Types based on Prisma schema
 export type WorkflowSchema = prismaClient.WorkflowSchema;
@@ -24,6 +25,7 @@ export interface WorkflowTaskTemplate {
 	required: boolean;
 	order?: number;
 	done?: boolean;
+	condition?: WorkflowTaskCondition | null;
 }
 
 // Extended types for the editor
@@ -54,6 +56,7 @@ export const normalizeWorkflowSteps = (
 			required: Boolean(task.required),
 			order: task.order || taskIndex,
 			done: Boolean(task.done),
+			condition: task.condition ?? null,
 		})),
 	}));
 };

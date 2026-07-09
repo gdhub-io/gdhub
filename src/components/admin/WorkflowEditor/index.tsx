@@ -20,6 +20,7 @@ import {
 	Row,
 	Select,
 	Space,
+	Tag,
 	Typography,
 	theme,
 } from "antd";
@@ -27,6 +28,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CONDITION_SOURCE_META } from "@/schemas/workflowTaskCondition";
 import { normalizeWorkflowSteps } from "@/types/workflow";
 import StepEditModal from "./StepEditModal";
 import styles from "./style.module.scss";
@@ -125,12 +127,13 @@ export const WorkflowEditor = ({
 				order: step.order || 0,
 				tasks: (step.tasks || []).map((task: any) => ({
 					id: task.id,
-					name: task.description || "", // Use description as name since ProjectWorkflowTask has no name field
-					title: task.description || "", // Use description as title since ProjectWorkflowTask has no name field
+					name: task.name || task.description || "",
+					title: task.name || task.description || "",
 					description: task.description || "",
 					required: Boolean(task.required),
 					order: task.order || 0,
 					done: Boolean(task.done),
+					condition: task.condition ?? null,
 				})),
 			}));
 
@@ -184,9 +187,7 @@ export const WorkflowEditor = ({
 				});
 
 				message.success(
-					type === "project"
-						? "Проектный воркфлоу успешно сохранен!"
-						: "Воркфлоу успешно сохранен!",
+					type === "project" ? "Project workflow saved!" : "Workflow saved!",
 				);
 
 				queryClient.invalidateQueries({ queryKey });
@@ -427,7 +428,7 @@ export const WorkflowEditor = ({
 	}, []);
 
 	if (isLoading) {
-		return <div>Загрузка...</div>;
+		return <div>Loading...</div>;
 	}
 
 	const workflowData = workflow?.data;
@@ -461,17 +462,17 @@ export const WorkflowEditor = ({
 				<Card style={{ marginBottom: 24 }}>
 					<Row gutter={[16, 16]}>
 						<Col span={12}>
-							<Text strong>Проект:</Text> {workflowData.project.name}
+							<Text strong>Project:</Text> {workflowData.project.name}
 						</Col>
 						<Col span={12}>
-							<Text strong>Автор:</Text> {workflowData.project.author.name}
+							<Text strong>Author:</Text> {workflowData.project.author.name}
 						</Col>
 						<Col span={12}>
-							<Text strong>Создан:</Text>{" "}
+							<Text strong>Created:</Text>{" "}
 							{dayjs(workflowData.createdAt).format("DD/MM/YYYY")}
 						</Col>
 						<Col span={12}>
-							<Text strong>Шагов:</Text> {workflowData.steps?.length || 0}
+							<Text strong>Steps:</Text> {workflowData.steps?.length || 0}
 						</Col>
 					</Row>
 				</Card>
@@ -499,10 +500,10 @@ export const WorkflowEditor = ({
 					<div className={styles.headerActions}>
 						{isProjectWorkflow && (
 							<Space>
-								<Text strong>Текущий этап:</Text>
+								<Text strong>Current step:</Text>
 								<Select
 									style={{ width: 200 }}
-									placeholder="Выберите текущий этап"
+									placeholder="Select the current step"
 									value={currentStepId}
 									onChange={handleCurrentStepChange}
 									allowClear
@@ -520,7 +521,7 @@ export const WorkflowEditor = ({
 								icon={<SettingOutlined />}
 								onClick={() => setSettingsModalVisible(true)}
 							>
-								Настройки
+								Settings
 							</Button>
 						)}
 						<Button
@@ -529,7 +530,7 @@ export const WorkflowEditor = ({
 							disabled={!hasUnsavedChanges}
 							loading={isSaving}
 						>
-							Сохранить
+							Save
 						</Button>
 					</div>
 				</Flex>
@@ -545,10 +546,10 @@ export const WorkflowEditor = ({
 					}}
 				>
 					<Title level={2} style={{ margin: 0 }}>
-						{isProjectWorkflow ? "Шаги проекта" : "Этапы (Steps)"}
+						{isProjectWorkflow ? "Project steps" : "Steps"}
 					</Title>
 					<Button type="primary" icon={<PlusOutlined />} onClick={addStep}>
-						Добавить этап
+						Add step
 					</Button>
 				</div>
 
@@ -593,7 +594,7 @@ export const WorkflowEditor = ({
 																						stepIndex,
 																						"name",
 																					]) ||
-																					`Шаг ${stepIndex + 1}`}
+																					`Step ${stepIndex + 1}`}
 																			</span>
 																			<div className={styles.stepActions}>
 																				<Button
@@ -602,10 +603,10 @@ export const WorkflowEditor = ({
 																					onClick={() => editStep(stepIndex)}
 																					size="small"
 																				>
-																					Редактировать
+																					Edit
 																				</Button>
 																				<Popconfirm
-																					title="Удалить этап?"
+																					title="Delete step?"
 																					onConfirm={() =>
 																						removeStep(stepIndex)
 																					}
@@ -626,7 +627,7 @@ export const WorkflowEditor = ({
 																			"steps",
 																			stepIndex,
 																			"description",
-																		]) || "Нет описания"}
+																		]) || "No description"}
 																	</div>
 																	<div style={{ marginTop: 12 }}>
 																		<div
@@ -637,14 +638,14 @@ export const WorkflowEditor = ({
 																				marginBottom: 8,
 																			}}
 																		>
-																			<Text strong>Задачи:</Text>
+																			<Text strong>Tasks:</Text>
 																			<Button
 																				type="link"
 																				size="small"
 																				icon={<PlusOutlined />}
 																				onClick={() => addTask(stepIndex)}
 																			>
-																				Добавить
+																				Add
 																			</Button>
 																		</div>
 																		<div style={{ marginTop: 8 }}>
@@ -699,7 +700,7 @@ export const WorkflowEditor = ({
 																									{task.title ||
 																										task.name ||
 																										task.description ||
-																										`Задача ${taskIndex + 1}`}
+																										`Task ${taskIndex + 1}`}
 																								</span>
 																							</Checkbox>
 																						) : (
@@ -707,8 +708,25 @@ export const WorkflowEditor = ({
 																								{task.title ||
 																									task.name ||
 																									task.description ||
-																									`Задача ${taskIndex + 1}`}
+																									`Task ${taskIndex + 1}`}
 																							</span>
+																						)}
+																						{task.required && (
+																							<Tag
+																								color="red"
+																								style={{ marginLeft: 8 }}
+																							>
+																								Required
+																							</Tag>
+																						)}
+																						{task.condition?.source && (
+																							<Tag color="blue">
+																								{CONDITION_SOURCE_META.find(
+																									(m) =>
+																										m.source ===
+																										task.condition.source,
+																								)?.label || "Condition"}
+																							</Tag>
 																						)}
 																					</div>
 																					<div
@@ -723,7 +741,7 @@ export const WorkflowEditor = ({
 																							}
 																						/>
 																						<Popconfirm
-																							title="Удалить задачу?"
+																							title="Delete task?"
 																							onConfirm={() =>
 																								removeTask(stepIndex, taskIndex)
 																							}
@@ -752,7 +770,7 @@ export const WorkflowEditor = ({
 																					type="secondary"
 																					style={{ fontSize: "12px" }}
 																				>
-																					Нет задач
+																					No tasks
 																				</Text>
 																			)}
 																		</div>

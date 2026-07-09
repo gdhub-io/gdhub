@@ -70,6 +70,13 @@ export const POST = withAuth({ mode: "user" })(
 		const { content, contentEditor, video, publishedAt, projectId } =
 			body as CreateReportBody;
 
+		// Bind the post to the project's current workflow step so step-scoped
+		// task conditions (e.g. "post a devlog in this step") can be evaluated.
+		const workflow = await prisma.projectWorkflow.findFirst({
+			where: { projectId },
+			select: { currentStepId: true },
+		});
+
 		await prisma.projectReport.create({
 			data: {
 				content,
@@ -78,6 +85,7 @@ export const POST = withAuth({ mode: "user" })(
 				video,
 				authorId: currentUser.id,
 				projectId,
+				stepId: workflow?.currentStepId ?? undefined,
 			},
 		});
 
