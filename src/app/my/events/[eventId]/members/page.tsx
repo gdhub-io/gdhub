@@ -31,6 +31,7 @@ import { useSession } from "next-auth/react";
 import type React from "react";
 import { useCallback, useState } from "react";
 import ModernTable from "@/components/ModernTable";
+import AddEventMembersModal from "@/components/modals/AddEventMembersModal";
 import BatchAssignEventMembersModal from "@/components/modals/BatchAssignEventMembersModal";
 import EditEventMemberModal from "@/components/modals/EditEventMemberModal";
 import { hasRole } from "@/helpers/user";
@@ -144,6 +145,7 @@ export default function EventMembersPage() {
 	const [messageText, setMessageText] = useState("");
 	const [editingMember, setEditingMember] = useState<EventMember | null>(null);
 	const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 	const [creatingMemberId, setCreatingMemberId] = useState<string | null>(null);
 	const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 	const [distributingMemberId, setDistributingMemberId] = useState<
@@ -462,6 +464,11 @@ export default function EventMembersPage() {
 			)}
 			actions={
 				<Space>
+					{isAdmin && (
+						<Button onClick={() => setIsAddModalOpen(true)}>
+							{t("event.members.actions.add", "Add members")}
+						</Button>
+					)}
 					<Button
 						disabled={!selectedRowKeys.length}
 						onClick={handleOpenBatchModal}
@@ -783,6 +790,16 @@ export default function EventMembersPage() {
 				onSaved={() => {
 					setIsBatchModalOpen(false);
 					setSelectedRowKeys([]);
+					refetch();
+				}}
+			/>
+
+			<AddEventMembersModal
+				open={isAddModalOpen}
+				eventId={eventId}
+				onCancel={() => setIsAddModalOpen(false)}
+				onSaved={() => {
+					setIsAddModalOpen(false);
 					refetch();
 				}}
 			/>
