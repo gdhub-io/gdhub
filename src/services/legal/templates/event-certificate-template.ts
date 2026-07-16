@@ -17,6 +17,7 @@ export type EventCertificateTemplateInput = {
 	participantPosition?: string | null;
 	projectName?: string | null;
 	eventTitle?: string | null;
+	eventShortDescription?: string | null;
 	certificateNumber?: string | null;
 	issuedDate?: Date | null;
 	mentorName?: string | null;
@@ -49,7 +50,11 @@ const SIG_LINE_LEN = 200; // signature box width (matches the drawn line)
 // Signature box keeps a 16:7 width-to-height aspect ratio, so the height
 // follows the width instead of being a standalone magic number.
 const SIG_BOX_ASPECT = 16 / 7;
-const SIG_BOX_HEIGHT = SIG_LINE_LEN / SIG_BOX_ASPECT; // ≈ 87.5, height above the line
+const SIG_BOX_HEIGHT = SIG_LINE_LEN / SIG_BOX_ASPECT; // ≈ 87.5
+// The box straddles the signature line: 1/4 of its height sits below the line,
+// 3/4 above. That lifts the box centre above the line, so a signature drawn
+// centred in the box reads as sitting just above the line.
+const SIG_BOX_BELOW_LINE = SIG_BOX_HEIGHT / 4;
 const SIG_LEFT_X = 60;
 const SIG_RIGHT_X = PAGE_WIDTH - 60 - SIG_LINE_LEN;
 
@@ -66,10 +71,13 @@ export type SignatureFieldPosition = {
 const signatureFieldAt = (xPdf: number): SignatureFieldPosition => ({
 	pageNumber: 1,
 	pageX: toPct(xPdf, PAGE_WIDTH),
-	// pageY is measured from the top edge of the page; the signature box
-	// sits above the line, so its top edge is at SIG_BASELINE_Y + SIG_BOX_HEIGHT
-	// from the bottom of the PDF.
-	pageY: toPct(PAGE_HEIGHT - (SIG_BASELINE_Y + SIG_BOX_HEIGHT), PAGE_HEIGHT),
+	// pageY is measured from the top edge of the page. The box straddles the
+	// line: its top edge sits SIG_BOX_HEIGHT - SIG_BOX_BELOW_LINE above the line
+	// (2/3 of the height), the remaining 1/3 hangs below the line.
+	pageY: toPct(
+		PAGE_HEIGHT - (SIG_BASELINE_Y + SIG_BOX_HEIGHT - SIG_BOX_BELOW_LINE),
+		PAGE_HEIGHT,
+	),
 	width: toPct(SIG_LINE_LEN, PAGE_WIDTH),
 	height: toPct(SIG_BOX_HEIGHT, PAGE_HEIGHT),
 });
@@ -98,6 +106,7 @@ export async function renderEventCertificatePdf({
 	participantPosition,
 	projectName,
 	eventTitle,
+	eventShortDescription,
 	certificateNumber,
 	issuedDate,
 	mentorName,
@@ -109,6 +118,10 @@ export async function renderEventCertificatePdf({
 	);
 	const projectNameText = valueOr(projectName, "{{project_name}}");
 	const eventTitleText = valueOr(eventTitle, "{{event_title}}");
+	const eventShortDescriptionText = valueOr(
+		eventShortDescription,
+		"{{event_short_description}}",
+	);
 	const certificateNumberText = valueOr(
 		certificateNumber,
 		"{{certificate_number}}",
@@ -319,7 +332,10 @@ export async function renderEventCertificatePdf({
 		// "as part of <eventTitle>, GDHub's collaborative game-development incubator,"
 		const seg1 = "as part of ";
 		const seg2 = eventTitleText;
-		const seg3 = ", GDHub's collaborative game-development incubator,";
+		const seg3 = eventShortDescriptionText
+			? `, ${eventShortDescriptionText},`
+			: "";
+		// const seg3 = ", GDHub's game-development incubation program,";
 		const w1 = sans.widthOfTextAtSize(seg1, sz);
 		const w2 = sansBold.widthOfTextAtSize(seg2, sz);
 		const w3 = sans.widthOfTextAtSize(seg3, sz);
@@ -450,6 +466,7 @@ export async function renderEventCertificatePdf({
 	// --- FOOTER (signatures) ---
 	const sigY = SIG_BASELINE_Y;
 	const sigLineLen = SIG_LINE_LEN;
+	const sigNameSize = 13; // printed signer name under the line
 
 	// left signature
 	const leftX = SIG_LEFT_X;
@@ -462,7 +479,7 @@ export async function renderEventCertificatePdf({
 	page.drawText(organizerName, {
 		x: leftX,
 		y: sigY - 16,
-		size: 11,
+		size: sigNameSize,
 		font: sansBold,
 		color: ink,
 	});
@@ -493,7 +510,7 @@ export async function renderEventCertificatePdf({
 		page.drawText(mentorNameText, {
 			x: rightX,
 			y: sigY - 16,
-			size: 11,
+			size: sigNameSize,
 			font: sansBold,
 			color: ink,
 		});
