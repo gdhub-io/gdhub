@@ -1,5 +1,12 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { z } from "zod";
+import {
+	apiError,
+	json,
+	type SessionUser,
+	withAuth,
+	withValidation,
+} from "@/lib/api-handlers";
 import { LegalService } from "@/services/legal";
 import { prisma } from "@/services/prisma";
 
@@ -122,3 +129,83 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 	return json(result);
 });
+
+const AddEventMembersSchema = z.object({
+	userIds: z.array(z.string()).min(1),
+});
+
+type AddEventMembersBody = z.infer<typeof AddEventMembersSchema>;
+
+/**
+ * Manually add members to an event. Used for people who attended but never
+ * registered themselves (e.g. the registration form is already closed) and
+ * still need a certificate.
+ */
+export const POST = withAuth({ mode: "user" })(
+	withValidation(AddEventMembersSchema)(async (_req, ctx, { user, body }) => {
+		const currentUser = user as SessionUser | undefined;
+		if (!currentUser) return apiError.unauthorized();
+
+		const { id } = (await ctx.params) as { id: string };
+		const { userIds } = body as AddEventMembersBody;
+		const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+
+		const event = await prisma.event.findUnique({
+			where: { id },
+			select: { createdById: true },
+		});
+
+		if (!event) {
+			return apiError.notFound("Event not found");
+		}
+
+		if (!isAdmin && event.createdById !== currentUser.id) {
+			return apiError.forbidden("You are not allowed to add members");
+		}
+
+		const uniqueUserIds = [...new Set(userIds)];
+
+		const foundUsers = await prisma.user.findMany({
+			where: { id: { in: uniqueUserIds } },
+			select: { id: true },
+		});
+
+		if (foundUsers.length !== uniqueUserIds.length) {
+			return apiError.badRequest("Some users were not found");
+		}
+
+		// EventMember has no unique constraint on (eventId, userId) — dedup here.
+		const existing = await prisma.eventMember.findMany({
+			where: {
+				eventId: id,
+				userId: { in: uniqueUserIds },
+				status: {
+					in: [
+						prismaClient.$Enums.EventMemberStatus.Pending,
+						prismaClient.$Enums.EventMemberStatus.Approved,
+					],
+				},
+			},
+			select: { userId: true },
+		});
+
+		const existingUserIds = new Set(existing.map((m) => m.userId));
+		const newUserIds = uniqueUserIds.filter((uid) => !existingUserIds.has(uid));
+
+		if (newUserIds.length) {
+			await prisma.eventMember.createMany({
+				data: newUserIds.map((userId) => ({
+					eventId: id,
+					userId,
+					status: prismaClient.$Enums.EventMemberStatus.Approved,
+				})),
+			});
+		}
+
+		return json({
+			success: true,
+			added: newUserIds.length,
+			skipped: existingUserIds.size,
+		});
+	}),
+);
