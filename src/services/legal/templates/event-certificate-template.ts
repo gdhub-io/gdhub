@@ -45,8 +45,11 @@ const FONT_FILES = {
 const PAGE_WIDTH = 842;
 const PAGE_HEIGHT = 595;
 const SIG_BASELINE_Y = 100; // PDF y (from bottom) of the signature line
-const SIG_BOX_HEIGHT = 40; // signature box height above the line
-const SIG_LINE_LEN = 200;
+const SIG_LINE_LEN = 200; // signature box width (matches the drawn line)
+// Signature box keeps a 16:7 width-to-height aspect ratio, so the height
+// follows the width instead of being a standalone magic number.
+const SIG_BOX_ASPECT = 16 / 7;
+const SIG_BOX_HEIGHT = SIG_LINE_LEN / SIG_BOX_ASPECT; // ≈ 87.5, height above the line
 const SIG_LEFT_X = 60;
 const SIG_RIGHT_X = PAGE_WIDTH - 60 - SIG_LINE_LEN;
 
