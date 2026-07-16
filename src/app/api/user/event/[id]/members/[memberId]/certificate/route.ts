@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { Prisma } from "@prisma/client";
+import { EventType, Prisma } from "@prisma/client";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import {
 	LegalService,
@@ -141,6 +141,10 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 				participantPosition: eventCtx.participantPosition,
 				projectName: eventCtx.projectName,
 				eventTitle: eventCtx.event.title,
+				eventShortDescription:
+					eventCtx.event.type === EventType.GameLab
+						? `GDHub's game-development incubation program`
+						: null,
 				certificateNumber: claimedRow.number,
 				issuedDate: issuedAt,
 				mentorName: eventCtx.mentorName,
