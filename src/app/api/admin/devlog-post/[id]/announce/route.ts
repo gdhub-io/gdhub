@@ -101,7 +101,7 @@ export const POST = withAuth({
 			if (!process.env.DISCORD_BOT_TOKEN) {
 				return apiError.badRequest("Discord is not configured");
 			}
-			const result = await DiscordService.init().sendPlatformNewsMessage(
+			const result = await DiscordService.init().sendProjectNewsMessage(
 				devlogPostMessageDiscord(post),
 				devlogOgImage(post),
 			);

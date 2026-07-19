@@ -493,17 +493,30 @@ export default class TelegramService {
 		const message = devlogPostMessageTelegram(post);
 		const imageUrl = devlogOgImage(post);
 
-		const channels: { id?: string; label: string }[] = [
-			{ id: process.env.TELEGRAM_NEWS_CHANNEL_ID, label: "RU" },
-			{ id: process.env.TELEGRAM_EN_NEWS_CHANNEL_ID, label: "EN" },
+		// Devlogs go to the project-news topic of each community chat, the same
+		// place the daily digest posts them.
+		const channels: { id?: string; topicId?: string; label: string }[] = [
+			{
+				id: process.env.TELEGRAM_CHAT_ID,
+				topicId: process.env.TELEGRAM_TOPIC_REPORTS,
+				label: "RU",
+			},
+			{
+				id: process.env.TELEGRAM_EN_CHAT_ID,
+				topicId: process.env.TELEGRAM_EN_TOPIC_REPORTS,
+				label: "EN",
+			},
 		];
 
 		for (const channel of channels) {
 			if (!channel.id) continue;
+			const topicId = channel.topicId ? Number(channel.topicId) : undefined;
+
 			try {
 				// Photo caption is capped at 1024 chars; the devlog message stays under.
 				await this.sendPhoto({
 					chatId: channel.id,
+					topicId,
 					url: imageUrl,
 					message,
 				});
@@ -512,14 +525,14 @@ export default class TelegramService {
 				// non-public NEXT_PUBLIC_APP_URL like localhost). Fall back to a plain
 				// text message so the announcement still goes out.
 				console.error(
-					`Error sending photo to ${channel.label} Telegram channel (devlog post), falling back to text`,
+					`Error sending photo to ${channel.label} Telegram chat (devlog post), falling back to text`,
 					photoError,
 				);
 				try {
-					await this.sendMessage({ chatId: channel.id, message });
+					await this.sendMessage({ chatId: channel.id, topicId, message });
 				} catch (textError) {
 					console.error(
-						`Error sending message to ${channel.label} Telegram channel (devlog post)`,
+						`Error sending message to ${channel.label} Telegram chat (devlog post)`,
 						textError,
 					);
 				}

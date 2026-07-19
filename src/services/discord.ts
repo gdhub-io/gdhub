@@ -37,7 +37,7 @@ export default class DiscordService {
 		await this.loginPromise;
 	}
 
-	async sendProjectNewsMessage(message: string) {
+	async sendProjectNewsMessage(message: string, imageUrl?: string) {
 		try {
 			await this.ensureReady();
 
@@ -49,7 +49,10 @@ export default class DiscordService {
 				throw new Error("Discord channel is not text-based or not found");
 			}
 
-			await (channel as TextChannel).send({ content: message });
+			await (channel as TextChannel).send({
+				content: message,
+				embeds: imageUrl ? [{ image: { url: imageUrl } }] : undefined,
+			});
 
 			return { ok: true };
 		} catch (error) {

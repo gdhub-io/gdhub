@@ -49,14 +49,21 @@ describe("devlog announce messages", () => {
 		expect(message).toContain("A &lt;b&gt;&amp; B");
 	});
 
-	it("keeps the Discord message free of HTML tags", () => {
+	it("keeps the Discord message free of HTML markup", () => {
+		const message = devlogPostMessageDiscord(makePost());
+
+		expect(message).not.toMatch(/<\/?[a-z]/i);
+		expect(message).toContain("**Update on project Drain the Galaxy**");
+		expect(message).toContain("https://gdhub.io/devlog/devlog-1");
+	});
+
+	it("does not HTML-escape the project name for Discord", () => {
 		const message = devlogPostMessageDiscord(
 			makePost({ project: { name: "A <b>& B", coverImage: null } }),
 		);
 
-		expect(message).not.toMatch(/<\/?[a-z]/i);
 		expect(message).toContain("**Update on project A <b>& B**");
-		expect(message).toContain("https://gdhub.io/devlog/devlog-1");
+		expect(message).not.toContain("&amp;");
 	});
 
 	it("keeps the LinkedIn message free of markup", () => {
