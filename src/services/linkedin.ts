@@ -18,6 +18,14 @@ const DEFAULT_API_VERSION = "202606";
 // Refresh a bit before the real expiry to avoid races on a token about to lapse.
 const EXPIRY_SAFETY_MS = 60_000;
 
+// LinkedIn renders `commentary` as "Little Text Format", where these characters
+// carry markup meaning. An unescaped one makes LinkedIn silently truncate the
+// post at that character, so every commentary is escaped before it is sent.
+const LITTLE_TEXT_RESERVED = /[\\|{}@[\]()<>#*_~]/g;
+
+export const escapeLinkedInText = (text: string) =>
+	text.replace(LITTLE_TEXT_RESERVED, (char) => `\\${char}`);
+
 type RefreshCredentials = {
 	refreshToken: string;
 	clientId: string;
@@ -158,7 +166,7 @@ export default class LinkedInService {
 				},
 				body: JSON.stringify({
 					author: this.authorUrn,
-					commentary,
+					commentary: escapeLinkedInText(commentary),
 					visibility: "PUBLIC",
 					distribution: {
 						feedDistribution: "MAIN_FEED",
