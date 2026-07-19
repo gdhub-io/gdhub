@@ -8,38 +8,23 @@ import { FaTelegramPlane } from "@react-icons/all-files/fa/FaTelegramPlane";
 import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { MenuProps } from "antd";
-import {
-	Button,
-	Dropdown,
-	Image,
-	Modal,
-	message,
-	Popover,
-	Row,
-	Space,
-	Spin,
-	Typography,
-} from "antd";
+import { Button, Dropdown, Modal, Popover, Row, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+	AnnouncePreviewModal,
+	type AnnounceTarget,
+} from "@/components/admin/AnnouncePreviewModal";
 import { CreateBlogPostModal } from "@/components/admin/CreateBlogPostModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
-
-type AnnounceChannel = "linkedin" | "discord" | "telegram";
-
-const channelLabels: Record<AnnounceChannel, string> = {
-	linkedin: "LinkedIn",
-	discord: "Discord",
-	telegram: "Telegram",
-};
 
 export default function BlogPostsAdminPage() {
 	const router = useRouter();
@@ -62,57 +47,9 @@ export default function BlogPostsAdminPage() {
 		},
 	});
 
-	const [preview, setPreview] = useState<{
-		postId: string;
-		channel: AnnounceChannel;
-	} | null>(null);
-
-	const {
-		data: previewData,
-		isFetching: isPreviewLoading,
-		isError: isPreviewError,
-		error: previewError,
-	} = useQuery({
-		queryKey: [
-			"admin",
-			"post-announce-preview",
-			preview?.postId,
-			preview?.channel,
-		],
-		queryFn: () =>
-			axios
-				.get<{
-					channel: AnnounceChannel;
-					message: string;
-					image: string | null;
-				}>(`/api/admin/post/${preview?.postId}/announce`, {
-					params: { channel: preview?.channel },
-				})
-				.then((res) => res.data),
-		enabled: Boolean(preview),
-	});
-
-	const { mutateAsync: announcePost, isPending: isPosting } = useMutation({
-		mutationFn: ({ id, channel }: { id: string; channel: AnnounceChannel }) =>
-			axios.post(`/api/admin/post/${id}/announce`, { channel }),
-	});
-
-	const handleConfirmAnnounce = async () => {
-		if (!preview) return;
-		const { channel } = preview;
-		try {
-			await announcePost({ id: preview.postId, channel });
-			message.success(`Posted to ${channelLabels[channel]}`);
-			setPreview(null);
-		} catch (error) {
-			const description = axios.isAxiosError(error)
-				? error.response?.data?.error || error.message
-				: "Unknown error";
-			message.error(
-				`Failed to post to ${channelLabels[channel]}: ${description}`,
-			);
-		}
-	};
+	const [announceTarget, setAnnounceTarget] = useState<AnnounceTarget | null>(
+		null,
+	);
 
 	const handleDelete = (recordId: string) => {
 		Modal.confirm({
@@ -239,7 +176,10 @@ export default function BlogPostsAdminPage() {
 									key === "discord" ||
 									key === "telegram"
 								) {
-									setPreview({ postId: record.id, channel: key });
+									setAnnounceTarget({
+										apiPath: `/api/admin/post/${record.id}/announce`,
+										channel: key,
+									});
 								}
 							},
 						}}
@@ -273,61 +213,10 @@ export default function BlogPostsAdminPage() {
 				onOk={handleCreatePost}
 			/>
 
-			<Modal
-				open={Boolean(preview)}
-				title={
-					preview
-						? `Announce preview — ${channelLabels[preview.channel]}`
-						: "Announce preview"
-				}
-				onCancel={() => setPreview(null)}
-				okText={preview ? `Post to ${channelLabels[preview.channel]}` : "Post"}
-				okButtonProps={{ disabled: isPreviewLoading || isPreviewError }}
-				confirmLoading={isPosting}
-				onOk={handleConfirmAnnounce}
-				destroyOnHidden
-			>
-				{isPreviewLoading ? (
-					<div style={{ textAlign: "center", padding: 32 }}>
-						<Spin />
-					</div>
-				) : isPreviewError ? (
-					<Text type="danger">
-						{axios.isAxiosError(previewError)
-							? previewError.response?.data?.error || previewError.message
-							: "Failed to build preview"}
-					</Text>
-				) : (
-					<Space orientation="vertical" size={12} style={{ width: "100%" }}>
-						<div
-							style={{
-								whiteSpace: "pre-wrap",
-								wordBreak: "break-word",
-								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-								fontSize: 13,
-								background: "rgba(0,0,0,0.04)",
-								borderRadius: 8,
-								padding: 12,
-								maxHeight: 320,
-								overflow: "auto",
-							}}
-						>
-							{previewData?.message}
-						</div>
-						{previewData?.image ? (
-							<Image
-								src={previewData.image}
-								alt="Announcement preview"
-								style={{
-									width: "100%",
-									borderRadius: 8,
-									border: "1px solid rgba(0,0,0,0.06)",
-								}}
-							/>
-						) : null}
-					</Space>
-				)}
-			</Modal>
+			<AnnouncePreviewModal
+				target={announceTarget}
+				onClose={() => setAnnounceTarget(null)}
+			/>
 		</AdminLayout>
 	);
 }

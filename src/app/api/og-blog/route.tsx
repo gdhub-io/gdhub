@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
 
 		const coverImage = searchParams.get("img");
 		const title = searchParams.get("t");
+		// Footer label — lets non-blog announcements (e.g. devlogs) reuse this card.
+		const urlLabel = searchParams.get("u") || "gdhub.io/blog";
 
 		const fontData = await loadOgFont(request, "Mulish-Regular.ttf");
 
@@ -225,7 +227,7 @@ export async function GET(request: NextRequest) {
 						textAlign: "left",
 					}}
 				>
-					{title ? safeDecodeURIComponent(title) : "Blog post"}
+					{title ? safeDecodeURIComponent(title) : "GDHub"}
 				</p>
 
 				<p
@@ -236,7 +238,7 @@ export async function GET(request: NextRequest) {
 						textAlign: "left",
 					}}
 				>
-					gdhub.io/blog
+					{safeDecodeURIComponent(urlLabel)}
 				</p>
 			</div>,
 			{

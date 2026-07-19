@@ -6,8 +6,10 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import weekday from "dayjs/plugin/weekday";
 import {
+	getCleanTextContent as cleanTextContent,
 	getEditorjsPageCover,
 	getEditorjsShortContent,
+	getPageCover,
 } from "@/helpers/content";
 import {
 	escapeTelegramHtml,
@@ -42,52 +44,34 @@ const getCleanTextContent = (content: string) => {
 	return cleanText.slice(0, 250);
 };
 
-export const newProjectReportsMessageRu = (
-	reports: (prismaClient.ProjectReport & {
-		project: { name: string; slug: string };
-	})[],
-) => {
-	let message = "<b>Новое на проектах сообщества</b>";
+type ProjectReportForMessage = prismaClient.ProjectReport & {
+	project: { name: string; slug: string };
+};
 
-	reports.forEach((report) => {
-		const content = report.contentEditor
-			? htmlFragmentToTelegramPlainText(
-					getEditorjsShortContent(
-						report.contentEditor as unknown as OutputData,
-						150,
-					),
-				)
-			: getCleanTextContent(report.content);
+const projectReportShortContent = (report: ProjectReportForMessage) =>
+	report.contentEditor
+		? htmlFragmentToTelegramPlainText(
+				getEditorjsShortContent(
+					report.contentEditor as unknown as OutputData,
+					150,
+				),
+			)
+		: getCleanTextContent(report.content);
 
-		message += `\n\n<b>Проект ${escapeTelegramHtml(report.project.name)}</b>\n`;
-		message += `${content}`;
-		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>\n`;
-	});
+/** One devlog — one post. */
+export const newProjectReportsMessageRu = (report: ProjectReportForMessage) => {
+	let message = `<b>Новое на проекте ${escapeTelegramHtml(report.project.name)}</b>\n\n`;
+	message += projectReportShortContent(report);
+	message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Читать</a>`;
 
 	return message;
 };
 
-export const newProjectReportsMessageEn = (
-	reports: (prismaClient.ProjectReport & {
-		project: { name: string; slug: string };
-	})[],
-) => {
-	let message = "<b>New on games projects</b>";
-
-	reports.forEach((report) => {
-		const content = report.contentEditor
-			? htmlFragmentToTelegramPlainText(
-					getEditorjsShortContent(
-						report.contentEditor as unknown as OutputData,
-						150,
-					),
-				)
-			: getCleanTextContent(report.content);
-
-		message += `\n\n<b>Project ${escapeTelegramHtml(report.project.name)}</b>\n`;
-		message += `${content}`;
-		message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>\n`;
-	});
+/** One devlog — one post. */
+export const newProjectReportsMessageEn = (report: ProjectReportForMessage) => {
+	let message = `<b>New on project ${escapeTelegramHtml(report.project.name)}</b>\n\n`;
+	message += projectReportShortContent(report);
+	message += `\n\n<a href="https://gdhub.io/devlog/${report.id}">Read more</a>`;
 
 	return message;
 };
@@ -165,48 +149,147 @@ const cooperationLabelEn = (v: any): string => {
 	}
 };
 
-export const newVacanciesMessageRu = (projectWithVacancies: any[]) => {
-	let message = "🔥 <b>Новые вакансии на проекты сообщества</b>";
-
-	projectWithVacancies.forEach((project) => {
-		message += `\n\n<b>Проект ${escapeTelegramHtml(project.name)}</b>\n`;
-		message += project.team.vacancies
-			.map(
-				(v: any) =>
-					`▶ <b><a href="https://gdhub.io/job/${v.id}">${escapeTelegramHtml(v.title)}</a></b> — ${cooperationLabelRu(v)}`,
-			)
-			.join("\n");
-	});
+/** One project — one post, listing all of that project's new vacancies. */
+export const newVacanciesMessageRu = (project: any) => {
+	let message = `🔥 <b>Новые вакансии на проекте ${escapeTelegramHtml(project.name)}</b>\n\n`;
+	message += project.team.vacancies
+		.map(
+			(v: any) =>
+				`▶ <b><a href="https://gdhub.io/job/${v.id}">${escapeTelegramHtml(v.title)}</a></b> — ${cooperationLabelRu(v)}`,
+		)
+		.join("\n");
 
 	return message;
 };
 
-export const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
-	let message = "🔥 <b>New vacancies for indie game projects</b>";
+/** One project — one post, listing all of that project's new vacancies. */
+export const newVacanciesMessageEn = (project: any) => {
+	let message = `🔥 <b>New vacancies on project ${escapeTelegramHtml(project.name)}</b>\n\n`;
+	message += project.team.vacancies
+		.map(
+			(v: any) =>
+				`▶ <b><a href="https://gdhub.io/job/${v.id}">${escapeTelegramHtml(v.title)}</a></b> — ${cooperationLabelEn(v)}`,
+		)
+		.join("\n");
 
-	projectWithVacancies.forEach((project) => {
-		message += `\n\n<b>Project ${escapeTelegramHtml(project.name)}</b>\n`;
-		message += project.team.vacancies
-			.map(
-				(v: any) =>
-					`▶ <b><a href="https://gdhub.io/job/${v.id}">${escapeTelegramHtml(v.title)}</a></b> — ${cooperationLabelEn(v)}`,
-			)
-			.join("\n");
-	});
+	return message;
+};
+
+// Discord Markdown variant (no HTML). Links are wrapped in <> to suppress
+// per-link preview embeds, which would otherwise duplicate the site description.
+export const newVacanciesMessageDiscord = (project: any) => {
+	let message = `🔥 **New vacancies on project ${project.name}**\n\n`;
+	message += project.team.vacancies
+		.map(
+			(v: any) =>
+				`▶ **${v.title}** — ${cooperationLabelEn(v)}\n<https://gdhub.io/job/${v.id}>`,
+		)
+		.join("\n");
 
 	return message;
 };
 
 // Plain-text variant for LinkedIn (no HTML; URLs are auto-linked by LinkedIn).
-export const newVacanciesMessageLinkedIn = (projectWithVacancies: any[]) => {
-	let message = "🔥 New vacancies for indie game projects";
+export const newVacanciesMessageLinkedIn = (project: any) => {
+	let message = `🔥 New vacancies on project ${project.name}`;
 
-	projectWithVacancies.forEach((project) => {
-		message += `\n\nProject ${project.name}`;
-		project.team.vacancies.forEach((v: any) => {
-			message += `\n▶ ${v.title} — ${cooperationLabelEn(v)}\nhttps://gdhub.io/job/${v.id}`;
-		});
+	project.team.vacancies.forEach((v: any) => {
+		message += `\n▶ ${v.title} — ${cooperationLabelEn(v)}\nhttps://gdhub.io/job/${v.id}`;
 	});
+
+	return message;
+};
+
+export type DevlogPostForMessage = Pick<
+	prismaClient.ProjectReport,
+	"id" | "content" | "contentEditor"
+> & {
+	project: Pick<prismaClient.Project, "name" | "coverImage">;
+};
+
+/** Teaser length: enough to show what the update is about, short enough to keep
+ * the click worthwhile. Fits a Telegram photo caption (1024) with room to spare. */
+const DEVLOG_TEASER_LENGTH = 300;
+
+const devlogUrl = (post: DevlogPostForMessage) =>
+	`https://gdhub.io/devlog/${post.id}`;
+
+/** Cut at the last sentence/word boundary so the teaser never breaks mid-word. */
+const trimToWord = (text: string, maxLength: number) => {
+	if (text.length <= maxLength) return text;
+
+	const cut = text.slice(0, maxLength);
+	const lastSpace = cut.lastIndexOf(" ");
+
+	return `${(lastSpace > maxLength * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[\s.,;:—-]+$/, "")}…`;
+};
+
+const devlogTeaser = (post: DevlogPostForMessage) => {
+	const raw = post.contentEditor
+		? htmlFragmentToPlainText(
+				getEditorjsShortContent(
+					post.contentEditor as unknown as OutputData,
+					DEVLOG_TEASER_LENGTH * 2,
+				),
+			)
+		: cleanTextContent(post.content, DEVLOG_TEASER_LENGTH * 2);
+
+	return trimToWord(raw.replace(/\s+/g, " ").trim(), DEVLOG_TEASER_LENGTH);
+};
+
+/** Branded OG card for a devlog: project name over the devlog's first image. */
+export const devlogOgImage = (post: DevlogPostForMessage) => {
+	const base = process.env.NEXT_PUBLIC_APP_URL || "https://gdhub.io";
+	const cover =
+		getEditorjsPageCover(post.contentEditor as unknown as OutputData) ||
+		getPageCover({ content: post.content }) ||
+		post.project.coverImage ||
+		undefined;
+
+	const params = new URLSearchParams({
+		t: post.project.name,
+		u: "gdhub.io/devlog",
+	});
+	if (cover) params.set("img", cover);
+
+	return `${base}/api/og-blog?${params.toString()}`;
+};
+
+// Telegram HTML variant (news channels).
+export const devlogPostMessageTelegram = (post: DevlogPostForMessage) => {
+	let message = `🚀 <b>Update on project ${escapeTelegramHtml(post.project.name)}</b>`;
+
+	const teaser = devlogTeaser(post);
+	if (teaser) message += `\n\n${escapeTelegramHtml(teaser)}`;
+
+	message += `\n\n<a href="${devlogUrl(post)}">Read the devlog</a>`;
+	message += `\n\n<i>P.S. Like it? Hit 👏 on the devlog — applause counts toward the project's rating.</i>`;
+
+	return message;
+};
+
+// Discord Markdown variant (no HTML).
+export const devlogPostMessageDiscord = (post: DevlogPostForMessage) => {
+	let message = `🚀 **Update on project ${post.project.name}**`;
+
+	const teaser = devlogTeaser(post);
+	if (teaser) message += `\n\n${teaser}`;
+
+	message += `\n\n${devlogUrl(post)}`;
+	message += `\n\n*P.S. Like it? Hit 👏 on the devlog — applause counts toward the project's rating.*`;
+
+	return message;
+};
+
+// Plain-text variant for LinkedIn (no markup; URLs are auto-linked by LinkedIn).
+export const devlogPostMessageLinkedIn = (post: DevlogPostForMessage) => {
+	let message = `🚀 Update on project ${post.project.name}`;
+
+	const teaser = devlogTeaser(post);
+	if (teaser) message += `\n\n${teaser}`;
+
+	message += `\n\n${devlogUrl(post)}`;
+	message += `\n\nP.S. Like it? Hit 👏 on the devlog — applause counts toward the project's rating.`;
 
 	return message;
 };

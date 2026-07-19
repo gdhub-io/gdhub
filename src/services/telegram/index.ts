@@ -15,10 +15,14 @@ import { prisma } from "../prisma";
 import {
 	blogPostMessageTelegram,
 	blogPostOgImage,
+	type DevlogPostForMessage,
+	devlogOgImage,
+	devlogPostMessageTelegram,
 	newProjectReportsMessageEn,
 	newProjectReportsMessageRu,
 	newSpecialitiesMessageEn,
 	newSpecialitiesMessageRu,
+	newVacanciesMessageDiscord,
 	newVacanciesMessageEn,
 	newVacanciesMessageLinkedIn,
 	newVacanciesMessageRu,
@@ -198,43 +202,32 @@ export default class TelegramService {
 
 		if (reports.length === 0) return { sent: 0 };
 
-		const ruReports = reports.filter((report) => report.author.lang === "ru");
-		const enReports = reports.filter((report) => report.author.lang === "en");
+		// Each devlog goes out as its own post, so a busy day reads as a feed of
+		// updates instead of one wall of text. A failed post never blocks the rest.
+		for (const report of reports) {
+			const lang = report.author.lang;
+			if (lang !== "ru" && lang !== "en") continue;
 
-		// Send to RU chat
-		try {
-			if (ruReports.length > 0) {
-				const ruReportsMessage = newProjectReportsMessageRu(ruReports);
+			const isRu = lang === "ru";
 
+			try {
 				await this.sendMessage({
-					chatId: env<number>("TELEGRAM_CHAT_ID"),
-					topicId: env<number>("TELEGRAM_TOPIC_REPORTS"),
-					message: `${ruReportsMessage}`,
+					chatId: env<number>(
+						isRu ? "TELEGRAM_CHAT_ID" : "TELEGRAM_EN_CHAT_ID",
+					),
+					topicId: env<number>(
+						isRu ? "TELEGRAM_TOPIC_REPORTS" : "TELEGRAM_EN_TOPIC_REPORTS",
+					),
+					message: isRu
+						? newProjectReportsMessageRu(report)
+						: newProjectReportsMessageEn(report),
 				});
+			} catch (error) {
+				console.error(
+					`Error sending message to ${isRu ? "RU" : "EN"} Telegram chat (new project report ${report.id})`,
+					error,
+				);
 			}
-		} catch (error) {
-			console.error(
-				"Error sending message to RU Telegram chat (new project reports)",
-				error,
-			);
-		}
-
-		// Send to EN chat
-		try {
-			if (enReports.length > 0) {
-				const enReportsMessage = newProjectReportsMessageEn(enReports);
-
-				await this.sendMessage({
-					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
-					topicId: env<number>("TELEGRAM_EN_TOPIC_REPORTS"),
-					message: `${enReportsMessage}`,
-				});
-			}
-		} catch (error) {
-			console.error(
-				"Error sending message to EN Telegram chat (new project reports)",
-				error,
-			);
 		}
 
 		// Send to Discord
@@ -365,7 +358,13 @@ export default class TelegramService {
 				team: {
 					include: {
 						_count: { select: { vacancies: true } },
-						vacancies: true,
+						// Only the vacancies this run announces — not the team's whole backlog.
+						vacancies: {
+							where: {
+								status: prismaClient.TeamVacancyStatus.Published,
+								publishedAt: { gte: lastLogDate },
+							},
+						},
 						project: { include: { author: { select: { lang: true } } } },
 					},
 				},
@@ -380,69 +379,61 @@ export default class TelegramService {
 
 		if (projectsWithVacancies.length === 0) return { sent: 0 };
 
-		const ruVacancies = projectsWithVacancies.filter(
-			(v) => v.team.project?.author?.lang === "ru",
-		);
-		const enVacancies = projectsWithVacancies.filter(
-			(v) => v.team.project?.author?.lang === "en",
-		);
+		// One post per project — its vacancies grouped together, but two projects
+		// never share a post. A failed post never blocks the remaining projects.
+		for (const project of projectsWithVacancies) {
+			const lang = project.team.project?.author?.lang;
+			const isRu = lang === "ru";
 
-		// Send to RU chat
-		try {
-			if (ruVacancies.length > 0) {
-				const ruVacanciesMessage = newVacanciesMessageRu(ruVacancies);
-
-				await this.sendMessage({
-					chatId: env<number>("TELEGRAM_CHAT_ID"),
-					topicId: env<number>("TELEGRAM_TOPIC_VACANCIES"),
-					message: `${ruVacanciesMessage}`,
-				});
+			// Send to the project author's Telegram chat
+			if (lang === "ru" || lang === "en") {
+				try {
+					await this.sendMessage({
+						chatId: env<number>(
+							isRu ? "TELEGRAM_CHAT_ID" : "TELEGRAM_EN_CHAT_ID",
+						),
+						topicId: env<number>(
+							isRu ? "TELEGRAM_TOPIC_VACANCIES" : "TELEGRAM_EN_TOPIC_VACANCIES",
+						),
+						message: isRu
+							? newVacanciesMessageRu(project)
+							: newVacanciesMessageEn(project),
+					});
+				} catch (error) {
+					console.error(
+						`Error sending message to ${isRu ? "RU" : "EN"} Telegram chat (new vacancies, project ${project.id})`,
+						error,
+					);
+				}
 			}
-		} catch (error) {
-			console.error(
-				"Error sending message to RU Telegram chat (new vacancies)",
-				error,
-			);
-		}
 
-		// Send to EN chat
-		try {
-			if (enVacancies.length > 0) {
-				const enVacanciesMessage = newVacanciesMessageEn(enVacancies);
-
-				await this.sendMessage({
-					chatId: env<number>("TELEGRAM_EN_CHAT_ID"),
-					topicId: env<number>("TELEGRAM_EN_TOPIC_VACANCIES"),
-					message: `${enVacanciesMessage}`,
-				});
-			}
-		} catch (error) {
-			console.error(
-				"Error sending message to RU Telegram chat (new vacancies)",
-				error,
-			);
-		}
-
-		// Send to Discord (English project-news channel)
-		try {
-			if (process.env.DISCORD_BOT_TOKEN) {
-				await DiscordService.init().sendProjectNewsMessage(
-					newVacanciesMessageEn(projectsWithVacancies),
+			// Send to Discord (English project-news channel)
+			try {
+				if (process.env.DISCORD_BOT_TOKEN) {
+					await DiscordService.init().sendProjectNewsMessage(
+						newVacanciesMessageDiscord(project),
+					);
+				}
+			} catch (error) {
+				console.error(
+					`Error sending message to Discord (new vacancies, project ${project.id})`,
+					error,
 				);
 			}
-		} catch (error) {
-			console.error("Error sending message to Discord (new vacancies)", error);
-		}
 
-		// Send to LinkedIn company page
-		try {
-			if (LinkedInService.isConfigured()) {
-				await LinkedInService.init().sharePost(
-					newVacanciesMessageLinkedIn(projectsWithVacancies),
+			// Send to LinkedIn company page
+			try {
+				if (LinkedInService.isConfigured()) {
+					await LinkedInService.init().sharePost(
+						newVacanciesMessageLinkedIn(project),
+					);
+				}
+			} catch (error) {
+				console.error(
+					`Error sending message to LinkedIn (new vacancies, project ${project.id})`,
+					error,
 				);
 			}
-		} catch (error) {
-			console.error("Error sending message to LinkedIn (new vacancies)", error);
 		}
 
 		return { sent: projectsWithVacancies.length };
@@ -489,6 +480,46 @@ export default class TelegramService {
 				} catch (textError) {
 					console.error(
 						`Error sending message to ${channel.label} Telegram channel (blog post)`,
+						textError,
+					);
+				}
+			}
+		}
+
+		return { ok: true };
+	}
+
+	async sendDevlogPost(post: DevlogPostForMessage) {
+		const message = devlogPostMessageTelegram(post);
+		const imageUrl = devlogOgImage(post);
+
+		const channels: { id?: string; label: string }[] = [
+			{ id: process.env.TELEGRAM_NEWS_CHANNEL_ID, label: "RU" },
+			{ id: process.env.TELEGRAM_EN_NEWS_CHANNEL_ID, label: "EN" },
+		];
+
+		for (const channel of channels) {
+			if (!channel.id) continue;
+			try {
+				// Photo caption is capped at 1024 chars; the devlog message stays under.
+				await this.sendPhoto({
+					chatId: channel.id,
+					url: imageUrl,
+					message,
+				});
+			} catch (photoError) {
+				// The photo can fail when Telegram can't fetch the image URL (e.g. a
+				// non-public NEXT_PUBLIC_APP_URL like localhost). Fall back to a plain
+				// text message so the announcement still goes out.
+				console.error(
+					`Error sending photo to ${channel.label} Telegram channel (devlog post), falling back to text`,
+					photoError,
+				);
+				try {
+					await this.sendMessage({ chatId: channel.id, message });
+				} catch (textError) {
+					console.error(
+						`Error sending message to ${channel.label} Telegram channel (devlog post)`,
 						textError,
 					);
 				}
