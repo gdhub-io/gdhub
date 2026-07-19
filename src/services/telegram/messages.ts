@@ -197,6 +197,24 @@ export const newVacanciesMessageEn = (projectWithVacancies: any[]) => {
 	return message;
 };
 
+// Discord Markdown variant (no HTML). Links are wrapped in <> to suppress
+// per-link preview embeds, which would otherwise duplicate the site description.
+export const newVacanciesMessageDiscord = (projectWithVacancies: any[]) => {
+	let message = "🔥 **New vacancies for indie game projects**";
+
+	projectWithVacancies.forEach((project) => {
+		message += `\n\n**Project ${project.name}**\n`;
+		message += project.team.vacancies
+			.map(
+				(v: any) =>
+					`▶ **${v.title}** — ${cooperationLabelEn(v)}\n<https://gdhub.io/job/${v.id}>`,
+			)
+			.join("\n");
+	});
+
+	return message;
+};
+
 // Plain-text variant for LinkedIn (no HTML; URLs are auto-linked by LinkedIn).
 export const newVacanciesMessageLinkedIn = (projectWithVacancies: any[]) => {
 	let message = "🔥 New vacancies for indie game projects";

@@ -19,6 +19,7 @@ import {
 	newProjectReportsMessageRu,
 	newSpecialitiesMessageEn,
 	newSpecialitiesMessageRu,
+	newVacanciesMessageDiscord,
 	newVacanciesMessageEn,
 	newVacanciesMessageLinkedIn,
 	newVacanciesMessageRu,
@@ -427,7 +428,7 @@ export default class TelegramService {
 		try {
 			if (process.env.DISCORD_BOT_TOKEN) {
 				await DiscordService.init().sendProjectNewsMessage(
-					newVacanciesMessageEn(projectsWithVacancies),
+					newVacanciesMessageDiscord(projectsWithVacancies),
 				);
 			}
 		} catch (error) {
