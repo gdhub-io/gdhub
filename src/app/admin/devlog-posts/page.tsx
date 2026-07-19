@@ -3,6 +3,9 @@
 import { EllipsisOutlined, EyeOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
 import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { FaDiscord } from "@react-icons/all-files/fa/FaDiscord";
+import { FaLinkedinIn } from "@react-icons/all-files/fa/FaLinkedinIn";
+import { FaTelegramPlane } from "@react-icons/all-files/fa/FaTelegramPlane";
 import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { MenuProps } from "antd";
@@ -23,6 +26,10 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import {
+	AnnouncePreviewModal,
+	type AnnounceTarget,
+} from "@/components/admin/AnnouncePreviewModal";
 import ModernTable from "@/components/ModernTable";
 import { PageViews } from "@/components/PageViews";
 import {
@@ -63,6 +70,9 @@ const DefaultCover = ({ title }: { title: string }) => (
 
 export default function DevlogPostsAdminPage() {
 	const [selectedProjectId, setSelectedProjectId] = useState<string>();
+	const [announceTarget, setAnnounceTarget] = useState<AnnounceTarget | null>(
+		null,
+	);
 
 	const { data: projects, isFetching: isFetchingProjects } = useQuery<
 		AdminProjectOption[]
@@ -229,6 +239,23 @@ export default function DevlogPostsAdminPage() {
 							</Link>
 						),
 					},
+					{ type: "divider" },
+					{
+						key: "linkedin",
+						label: "Post to LinkedIn",
+						icon: <FaLinkedinIn />,
+					},
+					{
+						key: "discord",
+						label: "Post to Discord",
+						icon: <FaDiscord />,
+					},
+					{
+						key: "telegram",
+						label: "Post to Telegram",
+						icon: <FaTelegramPlane />,
+					},
+					{ type: "divider" },
 					{
 						key: "delete",
 						label: "Delete",
@@ -243,10 +270,23 @@ export default function DevlogPostsAdminPage() {
 						menu={{
 							items,
 							onClick: ({ key, domEvent }) => {
+								// "open" is a plain link — let its default navigation through.
+								if (key === "open") return;
+
+								domEvent.preventDefault();
+								domEvent.stopPropagation();
+
 								if (key === "delete") {
-									domEvent.preventDefault();
-									domEvent.stopPropagation();
 									handleDelete(record.id);
+								} else if (
+									key === "linkedin" ||
+									key === "discord" ||
+									key === "telegram"
+								) {
+									setAnnounceTarget({
+										apiPath: `/api/admin/devlog-post/${record.id}/announce`,
+										channel: key,
+									});
 								}
 							},
 						}}
@@ -296,6 +336,11 @@ export default function DevlogPostsAdminPage() {
 					columns={columns}
 				/>
 			</div>
+
+			<AnnouncePreviewModal
+				target={announceTarget}
+				onClose={() => setAnnounceTarget(null)}
+			/>
 		</AdminLayout>
 	);
 }
