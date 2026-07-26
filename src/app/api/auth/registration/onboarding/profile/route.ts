@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { aiValidation } from "@/services/ai-validation";
 import { prisma } from "@/services/prisma";
 
 const SaveOnboardingProfileSchema = z.object({
@@ -75,6 +76,26 @@ export const PUT = withAuth({ mode: "user" })(
 
 				if (!userRecord) return apiError.badRequest("The user is not exist");
 
+				// AI checks: no offensive/forbidden content, and the name field
+				// actually looks like a name (advisory warning, does not block).
+				const validation = await aiValidation.validate(
+					[
+						{
+							key: "name",
+							label: "Name",
+							value: name ?? "",
+							kind: "person_name",
+						},
+					],
+					{ locale },
+				);
+				if (!validation.ok) {
+					return json(
+						{ error: "Validation failed", statusCode: 400, validation },
+						{ status: 400 },
+					);
+				}
+
 				// `name` and `yearOfBirth` are non-nullable in Profile — convert
 				// form-sent nulls to `undefined` so Prisma skips them on update
 				// instead of failing. `city`/`country` are nullable, leave as-is.
@@ -128,7 +149,7 @@ export const PUT = withAuth({ mode: "user" })(
 					data: { agreements, lang: locale },
 				});
 
-				return json({ ok: true });
+				return json({ ok: true, validation });
 			} catch (error) {
 				console.error("saveOnboardingProfile: error", error);
 				const details =

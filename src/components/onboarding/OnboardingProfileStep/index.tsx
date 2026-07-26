@@ -113,9 +113,25 @@ export const OnboardingProfileStep = ({
 
 			deleteCookie(`auth.${provider}.pre-registration`);
 
+			// Advisory AI warnings (e.g. "name" doesn't look like a name) — shown
+			// but never block the step.
+			for (const warning of res.data?.validation?.warnings ?? []) {
+				notification.warning({
+					message: t(warning.messageKey, warning.message),
+				});
+			}
+
 			onSave({ userId: res.data.id });
 		} catch (error: any) {
 			if (!error.response || !error.message) return;
+
+			const validationErrors = error.response?.data?.validation?.errors;
+			if (validationErrors?.length) {
+				for (const issue of validationErrors) {
+					message.error(t(issue.messageKey, issue.message));
+				}
+				return;
+			}
 
 			message.error(error.response?.data?.message || error.message);
 		}
