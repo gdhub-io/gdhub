@@ -57861,7 +57861,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "./images/generated-1785059144089.png",
+                "url": "images/generated-1785059144089.png",
                 "mode": "fill"
               },
               "layout": "vertical",
@@ -58576,7 +58576,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "./images/generated-1785060075602.png",
+                        "url": "images/generated-1785060075602.png",
                         "mode": "fill"
                       },
                       "cornerRadius": 12,
@@ -60412,13 +60412,10 @@
           "width": "fill_container",
           "fill": "$surface",
           "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
-          },
           "strokeAlignment": "inner",
           "padding": [
-            14,
-            32
+            16,
+            40
           ],
           "justifyContent": "space_between",
           "alignItems": "center",
@@ -60431,10 +60428,12 @@
               "alignItems": "center",
               "children": [
                 {
-                  "id": "z3wr6j",
+                  "id": "xfPEz",
                   "type": "ref",
-                  "ref": "S9E11",
-                  "name": "Logo"
+                  "ref": "MDNum",
+                  "name": "Logo",
+                  "width": 104,
+                  "height": 28
                 },
                 {
                   "type": "frame",
@@ -60551,9 +60550,7 @@
           "strokeAlignment": "inner",
           "gap": 6,
           "padding": [
-            0,
-            32,
-            10,
+            12,
             32
           ],
           "alignItems": "center",
@@ -63457,13 +63454,10 @@
           "width": "fill_container",
           "fill": "$surface",
           "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
-          },
           "strokeAlignment": "inner",
           "padding": [
-            14,
-            32
+            16,
+            40
           ],
           "justifyContent": "space_between",
           "alignItems": "center",
@@ -63476,10 +63470,12 @@
               "alignItems": "center",
               "children": [
                 {
-                  "id": "hGmtk",
+                  "id": "u1UPI",
                   "type": "ref",
-                  "ref": "S9E11",
-                  "name": "Logo"
+                  "ref": "MDNum",
+                  "name": "Logo",
+                  "width": 104,
+                  "height": 28
                 },
                 {
                   "type": "frame",
@@ -63596,9 +63592,7 @@
           "strokeAlignment": "inner",
           "gap": 6,
           "padding": [
-            0,
-            32,
-            10,
+            12,
             32
           ],
           "alignItems": "center",
@@ -64442,13 +64436,10 @@
           "width": "fill_container",
           "fill": "$surface",
           "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
-          },
           "strokeAlignment": "inner",
           "padding": [
-            14,
-            32
+            16,
+            40
           ],
           "justifyContent": "space_between",
           "alignItems": "center",
@@ -64461,10 +64452,12 @@
               "alignItems": "center",
               "children": [
                 {
-                  "id": "gEqcK",
+                  "id": "i0WfiF",
                   "type": "ref",
-                  "ref": "S9E11",
-                  "name": "Logo"
+                  "ref": "MDNum",
+                  "name": "Logo",
+                  "width": 104,
+                  "height": 28
                 },
                 {
                   "type": "frame",
@@ -64581,9 +64574,7 @@
           "strokeAlignment": "inner",
           "gap": 6,
           "padding": [
-            0,
-            32,
-            10,
+            12,
             32
           ],
           "alignItems": "center",
@@ -65706,13 +65697,10 @@
           "width": "fill_container",
           "fill": "$surface",
           "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
-          },
           "strokeAlignment": "inner",
           "padding": [
-            14,
-            32
+            16,
+            40
           ],
           "justifyContent": "space_between",
           "alignItems": "center",
@@ -65725,10 +65713,12 @@
               "alignItems": "center",
               "children": [
                 {
-                  "id": "F3SAe",
+                  "id": "w3ViNJ",
                   "type": "ref",
-                  "ref": "S9E11",
-                  "name": "Logo"
+                  "ref": "MDNum",
+                  "name": "Logo",
+                  "width": 104,
+                  "height": 28
                 },
                 {
                   "type": "frame",
@@ -65845,9 +65835,7 @@
           "strokeAlignment": "inner",
           "gap": 6,
           "padding": [
-            0,
-            32,
-            10,
+            12,
             32
           ],
           "alignItems": "center",
@@ -66471,13 +66459,10 @@
           "width": "fill_container",
           "fill": "$surface",
           "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
-          },
           "strokeAlignment": "inner",
           "padding": [
-            14,
-            32
+            16,
+            40
           ],
           "justifyContent": "space_between",
           "alignItems": "center",
@@ -66490,10 +66475,12 @@
               "alignItems": "center",
               "children": [
                 {
-                  "id": "E1bG9",
+                  "id": "Au9w1",
                   "type": "ref",
-                  "ref": "S9E11",
-                  "name": "Logo"
+                  "ref": "MDNum",
+                  "name": "Logo",
+                  "width": 104,
+                  "height": 28
                 },
                 {
                   "type": "frame",
@@ -66610,9 +66597,7 @@
           "strokeAlignment": "inner",
           "gap": 6,
           "padding": [
-            0,
-            32,
-            10,
+            12,
             32
           ],
           "alignItems": "center",
@@ -67214,7 +67199,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "./images/generated-1785059144089.png",
+                "url": "images/generated-1785059144089.png",
                 "mode": "fill"
               },
               "layout": "vertical",
@@ -68789,7 +68774,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "./images/generated-1785059144089.png",
+                "url": "images/generated-1785059144089.png",
                 "mode": "fill"
               },
               "layout": "vertical",
@@ -70021,7 +70006,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "./images/generated-1785059144089.png",
+                "url": "images/generated-1785059144089.png",
                 "mode": "fill"
               },
               "layout": "vertical",
@@ -70966,7 +70951,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "./images/generated-1785059144089.png",
+                "url": "images/generated-1785059144089.png",
                 "mode": "fill"
               },
               "layout": "vertical",
@@ -72433,7 +72418,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "./images/generated-1785059144089.png",
+                "url": "images/generated-1785059144089.png",
                 "mode": "fill"
               },
               "layout": "vertical",
