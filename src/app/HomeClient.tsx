@@ -95,21 +95,30 @@ export function HomeClient({ stats }: { stats: HomeStats }) {
 	}, [isOpenedInTelegram, handleSignInTelegram]);
 
 	return (
-		<ConfigProvider
-			theme={publicThemeConfig}
-			locale={getLanguage() === "en" ? enLocale : ruLocale}
-		>
-			<LandingLayout className={styles.container}>
-				<div className={styles.main}>
-					<LandingHeroSection stats={stats} />
-					<LandingWhoWeAreSection />
-					<LandingForAuthorsSection />
-					<LandingForSpecialistsSection />
-					<LandingRecentDevlogsSection />
-					<LandingFeedbackSection />
-					<LandingContactsSection />
-				</div>
-			</LandingLayout>
-		</ConfigProvider>
+		<>
+			{/*
+			 * The marketing home is dark. Own the dark background here (SSR-rendered,
+			 * so no light flash) instead of via the global default — this <style>
+			 * unmounts on navigation into the app, reverting to the light default so
+			 * the dark background never bleeds into in-app routes.
+			 */}
+			<style>{`:root{--background-color:#050505}`}</style>
+			<ConfigProvider
+				theme={publicThemeConfig}
+				locale={getLanguage() === "en" ? enLocale : ruLocale}
+			>
+				<LandingLayout className={styles.container}>
+					<div className={styles.main}>
+						<LandingHeroSection stats={stats} />
+						<LandingWhoWeAreSection />
+						<LandingForAuthorsSection />
+						<LandingForSpecialistsSection />
+						<LandingRecentDevlogsSection />
+						<LandingFeedbackSection />
+						<LandingContactsSection />
+					</div>
+				</LandingLayout>
+			</ConfigProvider>
+		</>
 	);
 }

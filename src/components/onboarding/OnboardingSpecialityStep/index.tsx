@@ -141,15 +141,33 @@ export const OnboardingSpecialityStep = ({
 		try {
 			const data = await form.validateFields();
 
-			if (data.id) {
-				await updateSpeciality({ id: data.id, data });
-			} else {
-				await createSpeciality({ data });
+			const res = data.id
+				? await updateSpeciality({ id: data.id, data })
+				: await createSpeciality({ data });
+
+			// Advisory AI warnings (e.g. weak skills/education text) — shown but
+			// do not block the step.
+			for (const warning of res?.data?.validation?.warnings ?? []) {
+				messageApi.warning(t(warning.messageKey, warning.message));
 			}
 
 			onSave();
 		} catch (error: any) {
 			if (!error.response || !error.message) return;
+
+			// Blocking AI errors (irrelevant / offensive content) — attach to the
+			// matching form fields so they highlight and scroll into view.
+			const validationErrors = error.response?.data?.validation?.errors;
+			if (validationErrors?.length) {
+				form.setFields(
+					validationErrors.map((issue: any) => ({
+						name: issue.key,
+						errors: [t(issue.messageKey, issue.message)],
+					})),
+				);
+				form.scrollToField(validationErrors[0].key);
+				return;
+			}
 
 			messageApi.error(error.response?.data?.message || error.message);
 		}

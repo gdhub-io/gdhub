@@ -19,7 +19,9 @@ export const secondFont = Lora({
 
 export const landingThemeConfig: ThemeConfig = {
 	algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
-	cssVar: {},
+	// Unique cssVar key so the dark landing's `--ant-*` tokens live in their own
+	// namespace and don't collide with the light public theme on the shared :root.
+	cssVar: { key: "landing" },
 	token: {
 		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: "rgb(241,85,65)",
@@ -72,7 +74,9 @@ export const landingThemeConfig: ThemeConfig = {
 
 export const publicThemeConfig: ThemeConfig = {
 	algorithm: [theme.defaultAlgorithm],
-	cssVar: {},
+	// Unique cssVar key — see landingThemeConfig. `appThemeConfig` intentionally
+	// stays off cssVar (hashed styles), so it never writes tokens to :root.
+	cssVar: { key: "public" },
 	token: {
 		fontFamily: mainLandingFont.style.fontFamily,
 		colorPrimary: "#f15541",

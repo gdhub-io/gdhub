@@ -163,21 +163,25 @@ class OpenAI {
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
 				model: process.env.OPENAI_API_MODEL || "gpt-4o-mini",
-				functions: [{ name: "parse_resume", parameters: schema }],
-				function_call: { name: "parse_resume" },
+				tools: [
+					{
+						type: "function",
+						function: { name: "parse_resume", parameters: schema },
+					},
+				],
+				tool_choice: { type: "function", function: { name: "parse_resume" } },
 				messages: prompt,
 				temperature: 0.25,
 			});
 
-			const {
-				choices: [{ message }],
-			} = completionResponse;
+			const message = completionResponse.choices[0]?.message;
+			const toolCall = message?.tool_calls?.[0];
+			const args =
+				toolCall?.type === "function" ? toolCall.function.arguments : undefined;
 
-			console.debug(`[parseCV][result]`, message?.function_call?.arguments);
+			console.debug(`[parseCV][result]`, args);
 
-			return isValidJSON(message?.function_call?.arguments)
-				? JSON.parse(message?.function_call?.arguments as string)
-				: undefined;
+			return isValidJSON(args) ? JSON.parse(args as string) : undefined;
 		} catch (error: any) {
 			console.error(error.message);
 			throw error;
@@ -250,21 +254,25 @@ class OpenAI {
 		try {
 			const completionResponse = await this.openai.chat.completions.create({
 				model: process.env.OPENAI_API_MODEL || "gpt-4o-mini",
-				functions: [{ name: "parse_resume", parameters: schema }],
-				function_call: { name: "parse_resume" },
+				tools: [
+					{
+						type: "function",
+						function: { name: "parse_resume", parameters: schema },
+					},
+				],
+				tool_choice: { type: "function", function: { name: "parse_resume" } },
 				messages: prompt,
 				temperature: 0.25,
 			});
 
-			const {
-				choices: [{ message }],
-			} = completionResponse;
+			const message = completionResponse.choices[0]?.message;
+			const toolCall = message?.tool_calls?.[0];
+			const args =
+				toolCall?.type === "function" ? toolCall.function.arguments : undefined;
 
-			// console.debug(`[matchingSpecAndProj][result]`, message?.function_call?.arguments)
+			// console.debug(`[matchingSpecAndProj][result]`, args)
 
-			return isValidJSON(message?.function_call?.arguments)
-				? JSON.parse(message?.function_call?.arguments as string)
-				: undefined;
+			return isValidJSON(args) ? JSON.parse(args as string) : undefined;
 		} catch (error: any) {
 			console.error(error.message);
 			throw error;

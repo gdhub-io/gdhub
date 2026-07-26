@@ -1,0 +1,157 @@
+# GDHub — Project Author User Flow
+# Render: d2 --theme 200 --pad 40 --layout dagre docs/design/user-flow.d2 docs/design/user-flow.svg
+
+direction: right
+
+classes: {
+  stage: {
+    style: {
+      border-radius: 10
+      fill: "#EEF2FF"
+      stroke: "#6366F1"
+      stroke-width: 2
+      font-color: "#312E81"
+      shadow: true
+    }
+  }
+  terminal: {
+    shape: oval
+    style: {
+      fill: "#DCFCE7"
+      stroke: "#16A34A"
+      stroke-width: 2
+      font-color: "#14532D"
+      bold: true
+      shadow: true
+    }
+  }
+  fail: {
+    shape: oval
+    style: {
+      fill: "#FEE2E2"
+      stroke: "#DC2626"
+      stroke-width: 2
+      font-color: "#7F1D1D"
+      bold: true
+      shadow: true
+    }
+  }
+  support: {
+    style: {
+      border-radius: 10
+      fill: "#FEF3C7"
+      stroke: "#D97706"
+      stroke-width: 2
+      font-color: "#78350F"
+    }
+  }
+}
+
+start: "Author joins\nthe platform" {class: terminal}
+
+create: "Creates a project" {class: stage}
+vacancies: "Posts vacancies" {class: stage}
+team: "Builds a team" {class: stage}
+
+# Core development loop
+dev: "Game development" {
+  style: {
+    border-radius: 14
+    fill: "#F0FDF4"
+    stroke: "#059669"
+    stroke-width: 2
+    font-color: "#065F46"
+    bold: true
+  }
+
+  build: "Moving through\nworkflow stages" {
+    style: {
+      border-radius: 10
+      fill: "#D1FAE5"
+      stroke: "#059669"
+      font-color: "#064E3B"
+    }
+  }
+  devlog: "Publishes devlogs" {
+    style: {
+      border-radius: 10
+      fill: "#D1FAE5"
+      stroke: "#059669"
+      font-color: "#064E3B"
+    }
+  }
+  build -> devlog: progress {
+    style.stroke: "#059669"
+  }
+  devlog -> build: next stage {
+    style.stroke: "#059669"
+    style.stroke-dash: 3
+  }
+}
+
+store: "Publishes game page\nin the store" {class: stage}
+funding: "Finds funding\nor a publisher" {class: stage}
+release: "Game release" {class: terminal}
+
+# Support activities (available throughout development)
+experts: "Asks experts\nquestions" {class: support}
+curator: "Engages a curator" {class: support}
+
+# Terminal fail state
+closed: "Project closed\n(failure / no responses)" {class: fail}
+
+# --- Happy path ---
+start -> create: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+create -> vacancies: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+vacancies -> team: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+team -> dev: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+dev -> store: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+store -> funding: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+funding -> dev: "continues\ndevelopment" {
+  style.stroke: "#6366F1"
+  style.stroke-width: 2
+  style.stroke-dash: 2
+}
+dev -> release: "ready to release" {style.stroke: "#16A34A"; style.stroke-width: 2}
+
+# --- Support during development (non-blocking) ---
+dev.build -> experts: help {
+  style.stroke-dash: 4
+  style.stroke: "#D97706"
+}
+dev.build -> curator: mentorship {
+  style.stroke-dash: 4
+  style.stroke: "#D97706"
+}
+
+# --- Restart loop: new project after release ---
+release -> create: "new project\n(same path)" {
+  style.stroke: "#059669"
+  style.stroke-dash: 2
+  style.stroke-width: 2
+}
+
+# --- Failure can happen at any stage ---
+vacancies -> closed: no responses {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 4
+}
+team -> closed: team not assembled {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 4
+}
+dev -> closed: development failure {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 4
+}
+funding -> closed: no funding {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 4
+}
+
+# Restart after failure
+closed -> create: "tries again" {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 2
+  style.stroke-width: 2
+}
