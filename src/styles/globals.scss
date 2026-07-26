@@ -6,7 +6,12 @@
 @layer base {
 
 	:root {
-		--background-color: #0b0b0d;
+		// Light is the app-wide default — the product (hub, my, admin, auth) is
+		// light. The dark marketing home opts in explicitly and server-side (see
+		// src/app/HomeClient.tsx). Keeping the default light stops the dark
+		// background from bleeding into in-app routes that render before/without
+		// a theme layer on the persistent <html>/<body>.
+		--background-color: #fafafa;
 
 		// work direction colors — light backgrounds, paired with black icons.
 		// Chosen by association; reused on vacancy cards and DirectionBadge.
