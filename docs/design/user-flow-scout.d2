@@ -1,0 +1,112 @@
+# GDHub — Scout User Flow
+# Render: d2 --theme 200 --pad 40 --layout dagre docs/design/user-flow-scout.d2 docs/design/user-flow-scout.svg
+
+direction: right
+
+classes: {
+  stage: {
+    style: {
+      border-radius: 10
+      fill: "#EEF2FF"
+      stroke: "#6366F1"
+      stroke-width: 2
+      font-color: "#312E81"
+      shadow: true
+    }
+  }
+  terminal: {
+    shape: oval
+    style: {
+      fill: "#DCFCE7"
+      stroke: "#16A34A"
+      stroke-width: 2
+      font-color: "#14532D"
+      bold: true
+      shadow: true
+    }
+  }
+  fail: {
+    shape: oval
+    style: {
+      fill: "#FEE2E2"
+      stroke: "#DC2626"
+      stroke-width: 2
+      font-color: "#7F1D1D"
+      bold: true
+      shadow: true
+    }
+  }
+}
+
+start: "Scout joins\nthe platform" {class: terminal}
+
+browse: "Selects projects\nof interest" {class: stage}
+
+# Continuous monitoring loop
+watch: "Follows activity\nand progress" {
+  style: {
+    border-radius: 14
+    fill: "#F0FDF4"
+    stroke: "#059669"
+    stroke-width: 2
+    font-color: "#065F46"
+    bold: true
+  }
+
+  activity: "Team activity" {
+    style: {
+      border-radius: 10
+      fill: "#D1FAE5"
+      stroke: "#059669"
+      font-color: "#064E3B"
+    }
+  }
+  progress: "Progress\nand devlogs" {
+    style: {
+      border-radius: 10
+      fill: "#D1FAE5"
+      stroke: "#059669"
+      font-color: "#064E3B"
+    }
+  }
+  activity -> progress: monitors {
+    style.stroke: "#059669"
+  }
+  progress -> activity: keeps watching {
+    style.stroke: "#059669"
+    style.stroke-dash: 3
+  }
+}
+
+propose: "Proposes a deal" {class: stage}
+
+deal: "Deal closed" {class: terminal}
+declined: "Project declines\n/ not a fit" {class: fail}
+
+# --- Happy path ---
+start -> browse: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+browse -> watch: "" {style.stroke: "#6366F1"; style.stroke-width: 2}
+watch -> propose: "ready to propose" {style.stroke: "#6366F1"; style.stroke-width: 2}
+propose -> deal: "accepted" {style.stroke: "#16A34A"; style.stroke-width: 2}
+
+# --- Deal declined / lost interest -> back to browsing ---
+propose -> declined: "rejected" {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 4
+}
+watch -> declined: "loses interest" {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 4
+}
+
+# --- Restart: pick more projects ---
+declined -> browse: "looks for\nother projects" {
+  style.stroke: "#DC2626"
+  style.stroke-dash: 2
+  style.stroke-width: 2
+}
+deal -> browse: "takes on new\nprojects" {
+  style.stroke: "#059669"
+  style.stroke-dash: 2
+  style.stroke-width: 2
+}
