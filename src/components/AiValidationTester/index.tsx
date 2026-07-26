@@ -264,6 +264,19 @@ export const EXAMPLE_FIELDS: TesterField[] = [
 		kind: "freeform",
 		value: "I love board games and analyzing the design of my favorite games",
 	},
+	{
+		key: "projectName",
+		label: "Project title",
+		kind: "project_name",
+		value: "Drain the Galaxy",
+	},
+	{
+		key: "projectDescription",
+		label: "Project description",
+		kind: "project_description",
+		value:
+			"A roguelike space shooter where you pilot a salvage ship through hostile sectors, upgrading modules between runs.",
+	},
 ];
 
 export default AiValidationTester;

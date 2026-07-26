@@ -22,6 +22,8 @@ export type FieldKind =
 	| "skills"
 	| "education"
 	| "motivation"
+	| "project_name"
+	| "project_description"
 	| "freeform";
 
 /** Why a field failed validation. */

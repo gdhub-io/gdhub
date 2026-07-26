@@ -62,6 +62,21 @@ export const FIELD_KINDS: Record<FieldKind, FieldKindConfig> = {
 			"game development or professional growth. Some free expression is fine " +
 			"as long as it stays on-topic and meaningful.",
 	},
+	project_name: {
+		defaultSeverity: "error",
+		expectation:
+			"A plausible name or title for a game or game-development project. " +
+			'Short, invented, or stylized titles are perfectly fine (e.g. "Limbo", ' +
+			'"Hollow Knight", "FTL"). Only reject keyboard-mashing, random ' +
+			"characters, or obvious filler.",
+	},
+	project_description: {
+		defaultSeverity: "warning",
+		expectation:
+			"A meaningful description of a game or game-development project — its " +
+			"concept, genre, gameplay, setting, or goals. Not filler, unrelated " +
+			"text, or gibberish.",
+	},
 	freeform: {
 		defaultSeverity: "warning",
 		expectation:

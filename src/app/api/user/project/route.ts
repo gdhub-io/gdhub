@@ -9,6 +9,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { aiValidation } from "@/services/ai-validation";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
 import {
@@ -85,6 +86,27 @@ export const POST = withAuth({ mode: "user" })(
 		const { name, description, agree } = body as CreateProjectBody;
 
 		if (!agree) return apiError.badRequest("Should accept requirements");
+
+		// AI checks: no offensive/forbidden content, name looks like a real
+		// project title, and the description (if any) is on-topic.
+		const validation = await aiValidation.validate(
+			[
+				{ key: "name", label: "Title", value: name, kind: "project_name" },
+				{
+					key: "description",
+					label: "Description",
+					value: description ?? "",
+					kind: "project_description",
+				},
+			],
+			{ locale: currentUser.lang },
+		);
+		if (!validation.ok) {
+			return json(
+				{ error: "Validation failed", statusCode: 400, validation },
+				{ status: 400 },
+			);
+		}
 
 		const userRecord = await prisma.user.findUnique({
 			where: { id: currentUser.id },
@@ -178,7 +200,7 @@ export const POST = withAuth({ mode: "user" })(
 			});
 		}
 
-		return json(project);
+		return json({ ...project, validation });
 	}),
 );
 

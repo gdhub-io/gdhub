@@ -45,13 +45,39 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 
 		if (!data) return;
 
-		const project = await createProject(data);
-		gtmEventTrigger("project_create", {
-			projectId: project.data.id,
-			name: project.data.name,
-		});
+		try {
+			const project = await createProject(data);
 
-		router.push("/my/projects/" + project.data.slug);
+			// Advisory AI warnings (e.g. a weak description) — shown, not blocking.
+			const warnings = (project.data as any)?.validation?.warnings ?? [];
+			for (const warning of warnings) {
+				message.warning(t(warning.messageKey, warning.message));
+			}
+
+			gtmEventTrigger("project_create", {
+				projectId: project.data.id,
+				name: project.data.name,
+			});
+
+			router.push("/my/projects/" + project.data.slug);
+		} catch (error: any) {
+			// Blocking AI errors (irrelevant / offensive) — attach to the fields.
+			const validationErrors = error?.response?.data?.validation?.errors;
+			if (validationErrors?.length) {
+				form.setFields(
+					validationErrors.map((issue: any) => ({
+						name: issue.key,
+						errors: [t(issue.messageKey, issue.message)],
+					})),
+				);
+				return;
+			}
+			message.error(
+				error?.response?.data?.error ??
+					error?.response?.data?.message ??
+					error.message,
+			);
+		}
 	};
 
 	const handleCancel = () => {
