@@ -117,7 +117,7 @@ export const OnboardingProfileStep = ({
 			// but never block the step.
 			for (const warning of res.data?.validation?.warnings ?? []) {
 				notification.warning({
-					message: t(warning.messageKey, warning.message),
+					title: t(warning.messageKey, warning.message),
 				});
 			}
 
@@ -284,7 +284,7 @@ export const OnboardingProfileStep = ({
 										validator: (_, value) => {
 											if (!value) {
 												notification.error({
-													message: t(
+													title: t(
 														"confirmUserData.error",
 														"You should confirm the accuracy of the information entered",
 													),

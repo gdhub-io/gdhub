@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { acceptCookieConsent } from "./setup/cookies";
 import {
 	cleanupOnboardingUser,
 	ensureOnboardingUser,
@@ -30,6 +31,7 @@ test.describe.serial("onboarding flow for a new user", () => {
 		});
 
 		// Navigate — proxy should redirect non-onboarded user to onboarding
+		await acceptCookieConsent(page, baseURL);
 		await page.goto("/hub");
 		await expect(page).toHaveURL(/\/registration\/onboarding/);
 

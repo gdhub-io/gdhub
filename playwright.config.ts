@@ -36,7 +36,7 @@ export default defineConfig({
 		},
 		{
 			name: "onboarding",
-			testMatch: ["**/onboarding.spec.ts"],
+			testMatch: ["**/onboarding.spec.ts", "**/onboarding-validation.spec.ts"],
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
