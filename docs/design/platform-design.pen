@@ -42,38 +42,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "oD0Al",
-                      "name": "logoIcon",
-                      "width": 28,
-                      "height": 28,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6,
-                      "layout": "none",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "hpHid",
-                          "x": 8,
-                          "y": 4,
-                          "name": "logoA",
-                          "fill": "#FFFFFF",
-                          "content": "A",
-                          "fontFamily": "Inter",
-                          "fontSize": 16,
-                          "fontWeight": "700"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "oE5tb",
-                      "name": "logo",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 18,
-                      "fontWeight": "700"
+                      "id": "G9vQID",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -1248,22 +1222,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "KMkWZ",
-                      "name": "logo",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6
-                    },
-                    {
-                      "type": "text",
-                      "id": "Z70XUN",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 17,
-                      "fontWeight": "700"
+                      "id": "hY3YC",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -1655,22 +1619,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "lq7pe",
-                      "name": "logo",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6
-                    },
-                    {
-                      "type": "text",
-                      "id": "lY8Zj",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 17,
-                      "fontWeight": "700"
+                      "id": "CE2lC",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -3105,22 +3059,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "wNixO",
-                      "name": "logo",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6
-                    },
-                    {
-                      "type": "text",
-                      "id": "T99GWJ",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 17,
-                      "fontWeight": "700"
+                      "id": "wtaXA",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -3582,24 +3526,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "xNjlu",
-                      "name": "logo",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6,
-                      "layout": "none"
-                    },
-                    {
-                      "type": "text",
-                      "id": "vv3Pg",
-                      "name": "logoTxt",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 17,
-                      "fontWeight": "700"
+                      "id": "L63US",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -5369,23 +5301,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "XQFWv",
-                      "name": "logo",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6,
-                      "layout": "none"
-                    },
-                    {
-                      "type": "text",
-                      "id": "NY9d0",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 17,
-                      "fontWeight": "700"
+                      "id": "NYCZp",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -7108,23 +7029,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "qFXxA",
-                      "name": "logo",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6,
-                      "layout": "none"
-                    },
-                    {
-                      "type": "text",
-                      "id": "ASvTv",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 17,
-                      "fontWeight": "700"
+                      "id": "Z9dYzX",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -10236,22 +10146,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "FhA4R",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6,
-                      "layout": "none"
-                    },
-                    {
-                      "type": "text",
-                      "id": "Z2HLR",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "Inter",
-                      "fontSize": 17,
-                      "fontWeight": "700"
+                      "id": "y0Xgv",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -35122,20 +35022,12 @@
                       "alignItems": "center",
                       "children": [
                         {
-                          "type": "ellipse",
-                          "id": "kHKlU",
-                          "fill": "#E53E3E",
-                          "width": 22,
-                          "height": 22
-                        },
-                        {
-                          "type": "text",
-                          "id": "reh7l",
-                          "fill": "#1F1F1F",
-                          "content": "gdhub",
-                          "fontFamily": "Inter",
-                          "fontSize": 16,
-                          "fontWeight": "700"
+                          "id": "ELkCD",
+                          "type": "ref",
+                          "ref": "MDNum",
+                          "name": "Logo",
+                          "width": 104,
+                          "height": 28
                         }
                       ]
                     },
@@ -45567,37 +45459,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "XAOkE",
-                      "name": "logoIcon",
-                      "width": 28,
-                      "height": 28,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "SuEGA",
-                          "name": "g",
-                          "fill": "#FFFFFF",
-                          "content": "G",
-                          "fontFamily": "$font",
-                          "fontSize": 15,
-                          "fontWeight": "700"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "FgfJm",
-                      "name": "logo",
-                      "fill": "$text-primary",
-                      "content": "gdhub",
-                      "fontFamily": "$font",
-                      "fontSize": 18,
-                      "fontWeight": "700"
+                      "id": "EYaUR",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
@@ -49942,21 +49809,12 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "lbZ6J",
-                      "width": 26,
-                      "height": 26,
-                      "fill": "#E53E3E",
-                      "cornerRadius": 6
-                    },
-                    {
-                      "type": "text",
-                      "id": "JAaqm",
-                      "fill": "#0F0F0F",
-                      "content": "gdhub",
-                      "fontFamily": "$font",
-                      "fontSize": 18,
-                      "fontWeight": "700"
+                      "id": "CwZOF",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 104,
+                      "height": 28
                     },
                     {
                       "type": "text",
