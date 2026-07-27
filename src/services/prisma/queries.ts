@@ -1,7 +1,36 @@
 import type { ProjectLink } from "@/types/project";
 import { prisma } from ".";
 
-export const MINIMUM_STORE_STAGE_NAME = "Preparing a demo version";
+/**
+ * Stage positions in the workflow template (`ProjectWorkflowStep.order`).
+ * Stage checks are bound to the position, not to the name, so renaming
+ * a stage in the template does not break them.
+ */
+export const WorkflowStageOrder = {
+	Introduction: 0,
+	Ideation: 1,
+	Concepting: 2,
+	Prototyping: 3,
+	DemoVersion: 4,
+	Metrics: 5,
+	ReleaseVersion: 6,
+	Support: 7,
+	Completion: 8,
+} as const;
+
+export const MINIMUM_FEED_STAGE_ORDER = WorkflowStageOrder.Ideation;
+export const MINIMUM_STORE_STAGE_ORDER = WorkflowStageOrder.DemoVersion;
+
+export const feedVisibleProjectFilter = {
+	workflow: {
+		is: {
+			currentStep: {
+				is: { order: { gte: MINIMUM_FEED_STAGE_ORDER } },
+			},
+		},
+	},
+} as const;
+
 export const ALLOWED_STORE_PLATFORMS = new Set([
 	"steam",
 	"itch-io",
@@ -12,15 +41,8 @@ export const ALLOWED_STORE_PLATFORMS = new Set([
 
 type StoreWorkflow = {
 	currentStep: {
-		id: string;
-		name: string;
 		order: number;
 	} | null;
-	steps: {
-		id: string;
-		name: string;
-		order: number;
-	}[];
 };
 
 export const getStoreLinks = (links: unknown): ProjectLink[] => {
@@ -40,17 +62,12 @@ export const isProjectAvailableOnStores = ({
 	workflow?: StoreWorkflow | null;
 }) => {
 	const storeLinks = getStoreLinks(links);
-	const minimumStep = workflow?.steps.find(
-		(step) => step.name === MINIMUM_STORE_STAGE_NAME,
-	);
 
-	if (!storeLinks.length || !workflow?.currentStep || !minimumStep) {
+	if (!storeLinks.length || !workflow?.currentStep) {
 		return false;
 	}
 
-	const currentStep = workflow.currentStep;
-
-	return currentStep.order >= minimumStep.order;
+	return workflow.currentStep.order >= MINIMUM_STORE_STAGE_ORDER;
 };
 
 export const getWorkedProjects = async () => {
@@ -105,12 +122,7 @@ export const getPublishedStoreProjects = async () => {
 			workflow: {
 				is: {
 					currentStep: {
-						isNot: null,
-					},
-					steps: {
-						some: {
-							name: MINIMUM_STORE_STAGE_NAME,
-						},
+						is: { order: { gte: MINIMUM_STORE_STAGE_ORDER } },
 					},
 				},
 			},
@@ -128,14 +140,6 @@ export const getPublishedStoreProjects = async () => {
 			projectId: true,
 			currentStep: {
 				select: {
-					id: true,
-					name: true,
-					order: true,
-				},
-			},
-			steps: {
-				select: {
-					id: true,
 					name: true,
 					order: true,
 				},
@@ -147,7 +151,6 @@ export const getPublishedStoreProjects = async () => {
 			workflow.projectId,
 			{
 				currentStep: workflow.currentStep,
-				steps: workflow.steps,
 			},
 		]),
 	);

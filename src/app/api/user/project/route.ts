@@ -2,6 +2,7 @@ import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import dayjs from "dayjs";
 import slugify from "voca/slugify";
 import { z } from "zod";
+import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
 import {
 	apiError,
 	json,
@@ -171,7 +172,7 @@ export const POST = withAuth({ mode: "user" })(
 						},
 				reports: {
 					create: {
-						content: "Registration of the project on the service",
+						content: PROJECT_REGISTERED_DEVLOG_CONTENT,
 						publishedAt: dayjs().toISOString(),
 						authorId: currentUser.id,
 					},
