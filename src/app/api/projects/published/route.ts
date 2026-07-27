@@ -3,20 +3,14 @@ import { prisma } from "@/services/prisma";
 import {
 	getStoreLinks,
 	isProjectAvailableOnStores,
-	MINIMUM_STORE_STAGE_NAME,
+	MINIMUM_STORE_STAGE_ORDER,
 } from "@/services/prisma/queries";
 
-type WorkflowWithSteps = {
+type WorkflowWithCurrentStep = {
 	currentStep: {
-		id: string;
 		name: string;
 		order: number;
 	} | null;
-	steps: {
-		id: string;
-		name: string;
-		order: number;
-	}[];
 };
 
 export const GET = withAuth({ mode: "user" })(async () => {
@@ -27,12 +21,7 @@ export const GET = withAuth({ mode: "user" })(async () => {
 				workflow: {
 					is: {
 						currentStep: {
-							isNot: null,
-						},
-						steps: {
-							some: {
-								name: MINIMUM_STORE_STAGE_NAME,
-							},
+							is: { order: { gte: MINIMUM_STORE_STAGE_ORDER } },
 						},
 					},
 				},
@@ -51,14 +40,6 @@ export const GET = withAuth({ mode: "user" })(async () => {
 				projectId: true,
 				currentStep: {
 					select: {
-						id: true,
-						name: true,
-						order: true,
-					},
-				},
-				steps: {
-					select: {
-						id: true,
 						name: true,
 						order: true,
 					},
@@ -71,8 +52,7 @@ export const GET = withAuth({ mode: "user" })(async () => {
 				workflow.projectId,
 				{
 					currentStep: workflow.currentStep,
-					steps: workflow.steps,
-				} satisfies WorkflowWithSteps,
+				} satisfies WorkflowWithCurrentStep,
 			]),
 		);
 		const publishedVacancies = await prisma.teamVacancy.findMany({
