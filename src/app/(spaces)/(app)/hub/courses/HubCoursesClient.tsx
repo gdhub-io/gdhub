@@ -21,7 +21,7 @@ export default function HubCoursesClient() {
 				title={t("page.courses.title", "Courses")}
 				subTitle={t("page.courses.subTitle", "Invest your time in knowledge")}
 				extra={
-					<Link href="/hub/courses/my">
+					<Link href="/user/courses">
 						<Button type="text">
 							{t("page.courses.myCourses", "My Courses")}
 						</Button>

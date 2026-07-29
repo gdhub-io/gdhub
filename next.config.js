@@ -100,6 +100,12 @@ const nextConfig = {
 			destination: "/course/:path*",
 			permanent: true,
 		},
+		// "My courses" moved from the hub into the personal user space.
+		{
+			source: "/hub/courses/my",
+			destination: "/user/courses",
+			permanent: true,
+		},
 	],
 	headers: async () => [
 		{
