@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
     networks:
       - gdhub_network
-    command: yarn dev
+    command: bun run dev
 
   searchengine: #dashboard https://bfritscher.github.io
     container_name: gdhub_searchengine

@@ -2,7 +2,7 @@
 
 Chats are unified onto the existing `ChatRoom` / `ChatRoomMember` registry instead
 of a per-feature table. The change is **additive to `ChatRoom`** — apply it in the
-`@gdhub-io/gdhub-prisma` package source, add a migration, then `yarn db:generate`
+`@gdhub-io/gdhub-prisma` package source, add a migration, then `bun run db:generate`
 in the app. (The app's generated client is updated locally for development, but the
 canonical change must live in the package.)
 
@@ -65,7 +65,7 @@ gdhub-prisma migrate dev --name chatroom_kind_status_matrix
 Then in the app, after bumping the package:
 
 ```bash
-yarn db:generate
+bun run db:generate
 ```
 
 ## How the app uses it

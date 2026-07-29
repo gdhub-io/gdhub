@@ -1,7 +1,7 @@
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { T } from "@tolgee/react";
 import { Tooltip } from "antd";
-import type { ReactElement } from "react-markdown/lib/react-markdown";
+import type { ReactElement } from "react";
 import SkillBeginnerIcon from "@/assets/images/skills/beginner.svg";
 import SkillExperiencedIcon from "@/assets/images/skills/experienced.svg";
 import SkillExpertIcon from "@/assets/images/skills/expert.svg";

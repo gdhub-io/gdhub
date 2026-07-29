@@ -23,7 +23,7 @@ export default async function globalSetup(config: FullConfig) {
 		throw new Error(
 			"Playwright e2e tests need E2E_TEST_AUTH=1 in the dev server's env " +
 				"so the gated CredentialsProvider is active. Add it to .env.test " +
-				"(see .env.test.example) and restart `yarn dev`.",
+				"(see .env.test.example) and restart `bun run dev`.",
 		);
 	}
 

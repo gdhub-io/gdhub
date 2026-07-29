@@ -13,7 +13,7 @@
  * Usage:
  *   node -r dotenv/config scripts/test-announce-channels.mjs [discord|linkedin|all] [--keep] [--message "text"]
  *   # or via npm:
- *   yarn test:announce -- linkedin
+ *   bun run test:announce -- linkedin
  *
  * Discord env:   DISCORD_BOT_TOKEN, DISCORD_PROJECT_NEWS_CHANNEL_ID
  *                (optional override: DISCORD_TEST_CHANNEL_ID)

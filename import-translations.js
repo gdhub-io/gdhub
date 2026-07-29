@@ -29,7 +29,7 @@ async function main() {
 					// Format JSON files after import
 					try {
 						execSync(
-							`npx biome format --write ${__dirname}/src/i18n/en.json ${__dirname}/src/i18n/ru.json`,
+							`bunx biome format --write ${__dirname}/src/i18n/en.json ${__dirname}/src/i18n/ru.json`,
 							{ stdio: "inherit" },
 						);
 						console.log("Translation files formatted");

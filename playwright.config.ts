@@ -51,7 +51,7 @@ export default defineConfig({
 	webServer: useExternalApp
 		? undefined
 		: {
-				command: "yarn dev",
+				command: "bun run dev",
 				url: baseURL,
 				reuseExistingServer: !isCI,
 				timeout: 180_000,

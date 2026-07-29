@@ -33,14 +33,14 @@ Every spec matching `*.authed.spec.ts` is then run with that storage state.
 cp .env.test.example .env.test
 
 # 3. Apply migrations + base seed against the test DB.
-yarn db:deploy --env-file .env.test
-yarn db:seed   --env-file .env.test
+bun run db:deploy --env-file .env.test
+bun run db:seed   --env-file .env.test
 
 # 4. Run dev server with the e2e env so the credentials provider is active.
 #    Next.js honours existing process.env, so dotenv-cli is enough here.
-yarn dotenv -e .env.test -- yarn dev
+bunx dotenv -e .env.test -- bun run dev
 # 5. In another terminal:
-yarn test:e2e
+bun run test:e2e
 ```
 
 Playwright will reuse an already-running dev server on port 3000 (see

@@ -9,7 +9,7 @@ export const TEST_USER_EMAIL =
  * e2e-credentials provider can sign in as. Idempotent.
  *
  * Requires the test DB to already be seeded with at least one WorkDirection
- * (run `yarn db:seed --env-file .env.test` once before).
+ * (run `bun run db:seed --env-file .env.test` once before).
  *
  * - `matrixUserId` is set to a stub so the JWT callback in src/auth.ts skips
  *   `ensureMatrixUser()` (no Matrix server needed for tests).
@@ -23,7 +23,7 @@ export async function ensureTestUser() {
 	if (!direction) {
 		throw new Error(
 			"No WorkDirection rows in the test DB. Seed the base data first " +
-				"(`yarn db:seed --env-file .env.test`).",
+				"(`bun run db:seed --env-file .env.test`).",
 		);
 	}
 
