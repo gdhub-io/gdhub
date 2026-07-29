@@ -49,7 +49,7 @@ async function fillVacancyBase(page: Page, modal: Locator, title: string) {
 }
 
 async function deleteProject(page: Page, slug: string) {
-	await page.goto(`/my/projects/${slug}/settings/danger`);
+	await page.goto(`/user/project/${slug}/settings/danger`);
 	await page.getByRole("button", { name: /^delete$/i }).click();
 	const del = page.getByRole("dialog");
 	const confirmInput = del.getByRole("textbox");
@@ -67,7 +67,7 @@ test("paid vacancy: create draft → offered comp + pending → edit reload → 
 	test.setTimeout(150_000);
 
 	const slug = await createProject(page);
-	await page.goto(`/my/projects/${slug}/vacancies`);
+	await page.goto(`/user/project/${slug}/vacancies`);
 	const addBtn = page.getByRole("button", { name: /add open position/i });
 	await expect(addBtn).toBeVisible();
 
@@ -149,7 +149,7 @@ test("free vacancy: publish without payment → published, no fee", async ({
 	test.setTimeout(150_000);
 
 	const slug = await createProject(page);
-	await page.goto(`/my/projects/${slug}/vacancies`);
+	await page.goto(`/user/project/${slug}/vacancies`);
 	const addBtn = page.getByRole("button", { name: /add open position/i });
 	await expect(addBtn).toBeVisible();
 

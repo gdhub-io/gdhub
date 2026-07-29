@@ -55,7 +55,7 @@ const GameCard: React.FC<GameCardProps> = ({
 	if (variant === "hub") {
 		return (
 			<Link
-				href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`}
+				href={isUserProject ? `/user/project/${slug}` : `/project/${slug}`}
 				className={`${styles.gameCardLink} ${styles.hubLink}`}
 			>
 				<Card
@@ -106,7 +106,7 @@ const GameCard: React.FC<GameCardProps> = ({
 
 	return (
 		<Link
-			href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`}
+			href={isUserProject ? `/user/project/${slug}` : `/project/${slug}`}
 			className={styles.gameCardLink}
 		>
 			<Card className={styles.gameCard} styles={{ body: { padding: 0 } }}>

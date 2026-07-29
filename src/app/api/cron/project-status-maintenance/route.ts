@@ -326,7 +326,7 @@ export async function GET() {
 									`Your project "${project.name}" was moved to Dormant due to inactivity. ` +
 									"To restore activity, publish a devlog or make other project updates. " +
 									`If there is no activity in the next ${ARCHIVE_AFTER_DORMANT_DAYS} days, the project will be archived.`,
-								redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${project.slug}`,
+								redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${project.slug}`,
 							},
 						});
 					} catch (error) {
@@ -373,7 +373,7 @@ export async function GET() {
 								payload: {
 									title: "Project status changed to Archived",
 									message: `Your project "${project.name}" was moved to Archived because there was no activity during the Dormant period.`,
-									redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${project.slug}`,
+									redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${project.slug}`,
 								},
 							});
 						} catch (error) {

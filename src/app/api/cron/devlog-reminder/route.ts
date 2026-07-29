@@ -111,7 +111,7 @@ export async function GET() {
 				payload: {
 					locale: project.author.lang || "en",
 					projectName: project.name,
-					addDevlogPostUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${project.slug}`,
+					addDevlogPostUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${project.slug}`,
 				},
 			});
 

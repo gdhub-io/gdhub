@@ -235,55 +235,55 @@ export const ProtectedProjectLayout = ({
 
 	const menuItems: (ItemType & { disabled: boolean })[] = [
 		{
-			key: `/my/projects/${projectSlug}`,
+			key: `/user/project/${projectSlug}`,
 			disabled: false,
 			label: (
-				<Link href={`/my/projects/${projectSlug}`}>
+				<Link href={`/user/project/${projectSlug}`}>
 					{t("app.user-project.menu.workflow", "Workflow")}
 				</Link>
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/devlog`,
+			key: `/user/project/${projectSlug}/devlog`,
 			disabled: false,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/devlog`}>
+				<Link href={`/user/project/${projectSlug}/devlog`}>
 					{t("app.user-project.menu.overview", "Devlog")}
 				</Link>
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/open-positions`,
+			key: `/user/project/${projectSlug}/open-positions`,
 			disabled: !isProjectAuthor,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/open-positions`}>
+				<Link href={`/user/project/${projectSlug}/open-positions`}>
 					{t("app.user-project.menu.open-positions", "Open positions")}
 				</Link>
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/team`,
+			key: `/user/project/${projectSlug}/team`,
 			disabled: false,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/team`}>
+				<Link href={`/user/project/${projectSlug}/team`}>
 					{t("app.user-project.menu.team", "Team")}
 				</Link>
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/documents`,
+			key: `/user/project/${projectSlug}/documents`,
 			disabled: false,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/documents`}>
+				<Link href={`/user/project/${projectSlug}/documents`}>
 					{t("app.user-project.menu.documents", "Documents")}
 				</Link>
 			),
 		},
 		{
-			key: `/my/projects/${projectSlug}/settings/general`,
+			key: `/user/project/${projectSlug}/settings/general`,
 			disabled: !isProjectAuthor,
 			label: (
-				<Link href={`/my/projects/${projectSlug}/settings/general`}>
+				<Link href={`/user/project/${projectSlug}/settings/general`}>
 					{t("app.user.menu.settings", "Settings")}
 				</Link>
 			),

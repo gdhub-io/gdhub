@@ -133,7 +133,7 @@ export const GET = withAuth({ mode: "user" })(
 				return json({
 					success: true,
 					message: "You need to create a speciality before joining the team",
-					redirect: `/my/settings/specialities?pendingInvitation=${invitation.id}`,
+					redirect: `/user/settings/specialities?pendingInvitation=${invitation.id}`,
 				});
 			}
 
@@ -172,7 +172,7 @@ export const GET = withAuth({ mode: "user" })(
 			return json({
 				success: true,
 				message: "You have successfully joined the team",
-				redirect: `/my/projects/${invitation.team.project?.slug || invitation.team.project?.id}`,
+				redirect: `/user/project/${invitation.team.project?.slug || invitation.team.project?.id}`,
 			});
 		} catch (error) {
 			console.error("[team.accept-invite]", error);

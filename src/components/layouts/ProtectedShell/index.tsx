@@ -164,7 +164,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 			},
 			{
 				label: (
-					<Link href="/my/settings/general">
+					<Link href="/user/settings/general">
 						{t("hub.menu.settings", "Settings")}
 					</Link>
 				),
@@ -244,9 +244,9 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 			),
 		},
 		{
-			key: "/my/settings/general",
+			key: "/user/settings/general",
 			label: (
-				<Link href="/my/settings/general">
+				<Link href="/user/settings/general">
 					{t("hub.menu.settings", "Settings")}
 				</Link>
 			),

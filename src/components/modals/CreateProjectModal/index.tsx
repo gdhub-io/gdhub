@@ -59,7 +59,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 				name: project.data.name,
 			});
 
-			router.push("/my/projects/" + project.data.slug);
+			router.push("/user/project/" + project.data.slug);
 		} catch (error: any) {
 			// Blocking AI errors (irrelevant / offensive) — attach to the fields.
 			const validationErrors = error?.response?.data?.validation?.errors;

@@ -140,7 +140,7 @@ async function handleTransactionCompleted(body: any) {
 							title: "Vacancy published",
 							message: `Your vacancy "${vacancy.title}" is now live.`,
 							redirectUrl: projectSlug
-								? `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${projectSlug}`
+								? `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${projectSlug}`
 								: undefined,
 						},
 					});

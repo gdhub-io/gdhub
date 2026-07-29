@@ -265,46 +265,46 @@ export const ProtectedEventLayout = ({
 
 	const menuItems: (ItemType & { disabled: boolean })[] = [
 		{
-			key: `/my/events/${eventId}/schedule`,
+			key: `/user/event/${eventId}/schedule`,
 			disabled: false,
 			label: (
-				<Link href={`/my/events/${eventId}/schedule`}>
+				<Link href={`/user/event/${eventId}/schedule`}>
 					{t("app.user-event.menu.schedule", "Schedule")}
 				</Link>
 			),
 		},
 		{
-			key: `/my/events/${eventId}/content`,
+			key: `/user/event/${eventId}/content`,
 			disabled: false,
 			label: (
-				<Link href={`/my/events/${eventId}/content`}>
+				<Link href={`/user/event/${eventId}/content`}>
 					{t("app.user-event.menu.content", "Content")}
 				</Link>
 			),
 		},
 		{
-			key: `/my/events/${eventId}/members`,
+			key: `/user/event/${eventId}/members`,
 			disabled: false,
 			label: (
-				<Link href={`/my/events/${eventId}/members`}>
+				<Link href={`/user/event/${eventId}/members`}>
 					{t("app.user-event.menu.members", "Members")}
 				</Link>
 			),
 		},
 		// {
-		// 	key: `/my/events/${eventId}/live-room`,
+		// 	key: `/user/event/${eventId}/live-room`,
 		// 	disabled: false,
 		// 	label: (
-		// 		<Link href={`/my/events/${eventId}/live-room`}>
+		// 		<Link href={`/user/event/${eventId}/live-room`}>
 		// 			{t("app.user-event.menu.live-room", "Live room")}
 		// 		</Link>
 		// 	),
 		// },
 		{
-			key: `/my/events/${eventId}/settings/general`,
+			key: `/user/event/${eventId}/settings/general`,
 			disabled: !isEventAuthor,
 			label: (
-				<Link href={`/my/events/${eventId}/settings/general`}>
+				<Link href={`/user/event/${eventId}/settings/general`}>
 					{t("app.user.menu.settings", "Settings")}
 				</Link>
 			),

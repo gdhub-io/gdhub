@@ -36,7 +36,7 @@ async function notifyAuthor(
 			payload: {
 				...payload,
 				redirectUrl: projectSlug
-					? `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${projectSlug}`
+					? `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${projectSlug}`
 					: undefined,
 			},
 		});

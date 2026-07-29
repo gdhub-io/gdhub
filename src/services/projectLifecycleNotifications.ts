@@ -82,7 +82,7 @@ export const notifyProjectLifecycleRecipients = async ({
 		? `The project "${snapshot.projectName}" was archived by the project author.`
 		: `The project "${snapshot.projectName}" was deleted by the project author.`;
 	const redirectUrl = isArchive
-		? `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${snapshot.projectSlug}`
+		? `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${snapshot.projectSlug}`
 		: `${process.env.NEXT_PUBLIC_APP_URL}/hub`;
 
 	await Promise.allSettled(

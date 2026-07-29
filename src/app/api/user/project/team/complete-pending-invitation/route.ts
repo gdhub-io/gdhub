@@ -137,7 +137,7 @@ export const GET = withAuth({ mode: "user" })(
 			return json({
 				success: true,
 				message: "You have successfully joined the team",
-				redirect: `/my/projects/${invitation.team.project?.slug || invitation.team.project?.id}`,
+				redirect: `/user/project/${invitation.team.project?.slug || invitation.team.project?.id}`,
 			});
 		} catch (error) {
 			console.error("[team.complete-pending-invitation]", error);

@@ -110,7 +110,7 @@ test.describe.serial("team invitation flow", () => {
 		invitationId = invitation.id;
 
 		// --- 3. Verify pending invitation in UI ---
-		await page.goto(`/my/projects/${projectSlug}/team`);
+		await page.goto(`/user/project/${projectSlug}/team`);
 		await expect(page.getByText(/pending invitations/i)).toBeVisible({
 			timeout: 10_000,
 		});
@@ -191,7 +191,7 @@ test.describe.serial("team invitation flow", () => {
 		});
 
 		// Verify the invited user appears in the team members UI
-		await page.goto(`/my/projects/${projectSlug}/team`);
+		await page.goto(`/user/project/${projectSlug}/team`);
 		await expect(page.getByText("E2E Invited User")).toBeVisible({
 			timeout: 10_000,
 		});
