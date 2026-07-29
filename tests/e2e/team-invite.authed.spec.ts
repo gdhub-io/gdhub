@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { expect, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
 import {
 	cleanupInvitedUser,
