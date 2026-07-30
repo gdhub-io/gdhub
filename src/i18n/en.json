@@ -3,35 +3,57 @@
 		"": "and send a consultation request."
 	},
 	"(not pointed)": "(not pointed)",
+	"(places of training are not indicated)": "(places of training are not indicated)",
+	"(places of work are not indicated)": "(places of work are not indicated)",
+	"(tools are not indicated)": "(tools are not indicated)",
 	"3% is fixed for the platform": "3% is fixed for the platform",
 	"A new open position has been added": "A new vacancy has been added",
+	"A new open position has been added. Redirecting to payment...": "A new open position has been added. Redirecting to payment...",
 	"A new report has been added": "A new report has been added",
 	"A portion should be reserved for future investments": "A portion should be reserved for future investments",
+	"AI Candidate": "AI Candidate",
 	"About Game": "About Game",
+	"About specialty": "About specialty",
+	"About the participant": "About the participant",
 	"About us": "About us",
 	"Accept the team": "Accept the team",
 	"Achiever": "Achiever",
+	"Actions": "Actions",
 	"Actual Equity": "Actual Equity",
 	"Add a report": "Add a report",
+	"Add equity promise": "Add equity promise",
 	"Add investor": "Add investor",
+	"Add payment": "Add payment",
 	"Add specialty": "Add specialty",
-	"Add the vacancy": "Add the vacancy",
-	"Add your project idea": "Add your project idea",
+	"Added a new event": "Added a new event",
 	"Added a new game project": "Added a new game project",
 	"Administration": "Administration",
+	"Advice request accepted error": "Advice request accepted error",
+	"Advice request rejected error": "Advice request rejected error",
+	"Advice request rejected successfully": "Advice request rejected successfully",
+	"Advice requests archive to ": "Advice requests archive to ",
 	"Advisors": "Advisors",
 	"After completing": "After completing",
 	"Allows you to contribute to game development through advising": "Allows you to contribute to game development through advising",
-	"Appendix": "Appendix",
+	"Amount (EUR)": "Amount (EUR)",
+	"Approved": "Approved",
+	"Approved requests": "Approved requests",
+	"Approximate shares": "Approximate shares",
 	"Archive": "Archive",
+	"Are you sure you want to delete it?": "Are you sure you want to delete it?",
+	"Are you sure you want to fire this member?": "Are you sure you want to fire this member?",
 	"Are you sure?": "Are you sure?",
 	"Assemble a team": "Assemble a team",
 	"At least 2% is allocated to the mentor fund": "At least 2% is allocated to the mentor fund",
 	"At the moment, reports are not provided": "At the moment, reports are not provided",
 	"Audition": "Audition",
 	"Author": "Author",
+	"Author Compliance": "Author Compliance",
 	"Autonomy": "Autonomy",
 	"Available Hours": "Available Hours",
+	"Avg": {
+		" Score": "Avg. Score"
+	},
 	"Back": "Back",
 	"Back to home": "Back to home",
 	"Back to main": "Back to main",
@@ -39,41 +61,45 @@
 	"Beginner": "Beginner",
 	"CV/Portfolio": "CV/Portfolio",
 	"Cancel": "Cancel",
+	"Candidate": "Candidate",
 	"Candidate card": "Candidate card",
 	"Change": "Change",
+	"Change Promise": "Change Promise",
 	"Change the lecture request": "Change the lecture request",
 	"Change the parametes of lectures": "Change the parametes of lectures",
+	"Change the position": "Change the position",
 	"Change the report": "Change the report",
-	"Change the vacancy": "Change the vacancy",
-	"Change your project idea": "Change your project idea",
 	"City": "City",
+	"Clear all": "Clear all",
 	"Close": "Close",
+	"Closed": "Closed",
 	"Comment": "Comment",
+	"Comment/Feedback": "Comment/Feedback",
 	"Community Chat": "Community Chat",
 	"Community Members": "Talent Pool",
-	"Community Projects": "Community Projects",
+	"Community chat on Telegram": "Community chat on Telegram",
 	"Community member": "Community member",
-	"Community members": "Community members",
 	"Complete Registration": "Complete Registration",
 	"Completed": "Completed",
-	"Concept document": "Concept document",
 	"Connecting to Telegram will allow you to request advice from community mentors through the app": "Connecting to Telegram will allow you to request advice from community mentors through the app",
 	"Contact the author": "Contact the author",
 	"Contacts": "Contacts",
 	"Contents of the lecture": "Contents of the lecture",
 	"Continue with Google": "Continue with Google",
 	"Cookie Policy": "Cookie Policy",
-	"Cookies Policy": "Cookies Policy",
 	"Country": "Country",
 	"Create": "Create",
-	"Create a new vacancy": "Create a new vacancy",
+	"Create a new position": "Create a new position",
 	"Create new account": "Create new account",
+	"Created": "Created",
+	"Created At": "Created At",
 	"Current vested equity": "Current vested equity",
 	"Date": "Date",
 	"Days on Project": "Days on Project",
 	"Deal date": "Deal date",
+	"Delete": "Delete",
 	"Details": "Details",
-	"Development Log": "Development Log",
+	"Dilution": "Dilution",
 	"Direction": "Direction",
 	"Discord": "Discord",
 	"Display Name": "Display Name",
@@ -82,111 +108,197 @@
 		"": "Does not have any advisors yet. "
 	},
 	"Does not have any investors yet": "Does not have any investors yet",
+	"Don't want to be a lecturer": "Don't want to be a lecturer",
+	"Edit": "Edit",
+	"Edit investor": "Edit investor",
 	"Email": "Email",
 	"End stream": "End stream",
 	"Enter Email": "Enter Email",
+	"Enter amount": "Enter amount",
+	"Enter email address": "Enter email address",
+	"Enter percentage": "Enter percentage",
+	"Enter position": "Enter position",
 	"Enter to see": "Enter to see",
+	"Equity": "Equity",
 	"Equity Distribution Rules": "Equity Distribution Rules ",
+	"Equity Promise": "Equity Promise",
 	"Equity Settings": "Equity Settings",
+	"Equity distribution not found": "Equity distribution not found",
+	"Equity share to transfer (%)": "Equity share to transfer (%)",
+	"Error": "Error",
 	"Error 404": "Error 404",
+	"Error loading transaction history": "Error loading transaction history",
 	"Error!": "Error!",
+	"Event Schedule": "Event Schedule",
+	"Event Settings": "Event Settings",
+	"Event data updated": "Event data updated",
+	"Experience": "Experience",
 	"Experienced": "Experienced",
 	"Expert": "Expert",
+	"Expires At": "Expires At",
 	"Exploration": "Exploration",
+	"Failed to delete investor": "Failed to delete investor",
+	"Failed to send invitation": "Failed to send invitation",
+	"Feedback": "Feedback",
 	"Fill in from CV/resume": "Fill in from CV/resume",
-	"Filter": "Filter",
 	"Find mentors": "Find mentors",
-	"Fire": "Fire",
+	"Finished At": "Finished At",
+	"Fire Member": "Fire Member",
+	"First allocation": "First allocation",
 	"Follow this link before the lecture": "Follow this link before the lecture",
 	"For Authors": "For Authors",
 	"For Specialists": "For Specialists",
-	"For Users": "For Users",
+	"For example: 2D art and animation": "For example: 2D art and animation",
+	"For example: Game Design": "For example: Game Design",
 	"For example: The concept of the environment": "For example: The concept artist of the environment",
+	"For example: game design": "For example: game design",
 	"Form for adding information about investors who have invested in your project financially (bought a share)": "Form for adding information about investors who have invested in your project financially (bought a share) ",
 	"Free time": "Free time",
 	"From": "From",
 	"GDD": "GDD",
-	"Game Developers Hub for everyone who wants to make": "Game Developers Hub for everyone who wants to make",
 	"Game Projects": "Game Projects",
 	"Game Setting": "Visual setting",
 	"General information about new member": "General information about new member",
 	"Genre": "Genre",
 	"Get in touch": "Get in touch",
-	"Get started": "Get started",
 	"Go": "Go",
-	"Go to GDHub": "Go to GDHub",
 	"Go to app": "Go to app",
-	"Go to project page": "View details",
 	"Go to registration": "Go to registration",
 	"Goal-oriented": "Goal-oriented",
 	"Home": "Home",
+	"Hourly": "Hourly",
 	"How can you be useful to teams?": "How can you be useful to teams?",
 	"How many hours a week can you devote to projects?": "How many hours a week can you devote to projects?",
 	"Hub": "Hub",
 	"I already have an account": "I already have an account",
-	"I think now is the perfect time to make games": {
-		"": "I think now is the perfect time to make games. "
-	},
+	"I prefer game settings": "I prefer game settings",
+	"I prefer games of the following complexity": "I prefer games of the following complexity",
+	"I prefer genres": "I prefer genres",
+	"I use it in work": "I use it in work",
 	"I want to give a lecture": "I want to give a lecture",
-	"I'm available for offering": "I am available for offers of participation in projects",
 	"If you need one, you can find experts or mentors on the ": "If you need one, you can find experts or mentors on the ",
-	"Im available for offering": "I'm available for offering",
-	"IncubaMation program GameLab": "Incubation program GameLab",
+	"Increase": "Increase",
 	"Indie Game Projects": "Indie Game Projects",
 	"Individuality": "Individuality",
-	"Infomation about your preferences": "Infomation about your preferences",
 	"Information about your main speciality": "Information about your main speciality",
+	"Initiator": "Initiator",
+	"Insert ID video from YouTube": "Insert ID video from YouTube",
 	"Insert video url": "Insert video url",
+	"Interested in the vacancy": "Interested in the vacancy",
 	"Interests and preferences": "Interests and preferences",
 	"Interests and preferences updated": "Interests and preferences updated",
 	"Investment Reserve": "Investment Reserve ",
+	"Investor deleted": "Investor deleted",
 	"Investor name": "Investor name",
 	"Investors": "Investors",
+	"Invitation canceled": "Invitation canceled",
+	"Invitation sent successfully": "Invitation sent successfully",
 	"Invite Member": "Invite Member",
+	"Invited At": "Invited At",
 	"Join the team": "Join the team",
 	"Join us and become a part of new era in the gaming industry!": "Join us and become a part of new era in the gaming industry!",
 	"Language": "Language",
 	"Last updates": "Last updates",
 	"Lecture Information": "Lecture Information",
 	"Lecture Proposal Information": "Lecture Proposal Information",
-	"Legal officer": "Legal officer",
 	"Let's go": "Let's go",
 	"Level": "Level",
+	"Loading transaction history": {
+		"": {
+			"": {
+				"": "Loading transaction history..."
+			}
+		}
+	},
 	"Log in": "Log in",
 	"Log in with Google": "Log in with Google",
 	"Log in with email": "Log in with email",
+	"Main Page": "Main Page",
 	"Make Promise": "Make Promise",
 	"Manage Equity": "Manage Equity",
 	"Mastering communication and networking skills": "Mastering communication and networking skills",
+	"Maximum available equity": "Maximum available equity",
 	"Member Name": "Member",
 	"Members": "Members",
 	"Mentor": "Mentor",
 	"Mentor Fund Share (minimum 2%)": "Mentor Fund Share (minimum 2%)",
-	"Mentor of digital art": "Mentor of digital art",
-	"Mentor of game design": "Mentor of game design",
-	"Mentor of game development": "Mentor of game development",
-	"Mentor of team management": "Mentor of team management",
+	"Monthly": "Monthly",
 	"My Projects": "My Projects",
+	"MyProjectVacancies": {
+		"actions": "Actions",
+		"addTheVacancy": "Add open position",
+		"archive": "Archive",
+		"archiveVacancy": "Archive",
+		"change": "Change",
+		"downloadReceipt": "Download receipt",
+		"link": "Go to the page",
+		"no": "No",
+		"published": "The open position is published",
+		"receiptUnavailable": "Receipt is not available",
+		"theVacancyIsClosed": "The open position is closed",
+		"thereAreNoOpenVacanciesAtTheMoment": "There are no open positions at the moment",
+		"yes": "Yes"
+	},
 	"Name": "Name",
+	"New request": "New request",
+	"Next milestone": "Next milestone",
+	"No": "No",
+	"No available equity": "No available equity",
+	"No available shares for new investor": "No available shares for new investor",
 	"No data about transactions": "No data about transactions",
+	"No devlog posts yet": "No devlog posts yet",
+	"No longer relevant": "No longer relevant",
+	"No position specified": "No position specified",
 	"Novice": "Novice",
+	"Obtained": "Obtained",
 	"On the page of the project": "On the page of the project",
+	"On the project": "On the project",
+	"One-time": "One-time",
+	"Open position": "Open position",
+	"Open positions": "Open positions",
+	"Open the chat": "Open the chat",
+	"Other type": "Other type",
 	"Our Core Values": "Our Core Values",
+	"Paid": "Paid",
+	"Pay & Publish": "Pay & Publish",
+	"Payment": "Payment",
+	"Payment checkout failed": {
+		" Please try again": {
+			"": "Payment checkout failed. Please try again."
+		}
+	},
 	"Pending Invitations": "Pending Invitations",
+	"Percentage": "Percentage",
+	"Percentage of equity that will be promised to the candidate": "Percentage of equity that will be promised to the candidate",
 	"Platform": "Platform",
 	"Player": "Player",
+	"Please enter a valid email": "Please enter a valid email",
+	"Please enter email": "Please enter email",
+	"Please enter position": "Please enter position",
+	"Please select start date": "Please select start date",
+	"Please select work direction": "Please select work direction",
 	"Position": "Position",
+	"Preferences in games": "Preferences in games",
+	"Processing your invitation": {
+		"": {
+			"": {
+				"": "Processing your invitation..."
+			}
+		}
+	},
 	"Profile": "Profile",
+	"Project": "Project",
+	"Project Compliance": "Project Compliance",
 	"Project Settings": "Project Settings",
 	"Project Team": "Project Team",
-	"Projects developed independently by community members (outside the incubation program)": {
-		"": "Projects developed independently by community members (outside the incubation program)."
-	},
+	"Project Vacancies": "Project Vacancies",
+	"Project data updated": "Project data updated",
+	"Projects": "Projects",
 	"Projects developed independently by users": {
 		"": "Projects developed independently by users."
 	},
-	"Projects preparing for pitch": "Projects preparing for pitch",
 	"Promised Equity": "Promised Equity",
+	"Promised equity percentage": "Promised equity percentage",
 	"Promised shares will be automatically vested when the project reaches the specified workflow step": {
 		"": "Promised shares will be automatically vested when the project reaches the specified workflow step."
 	},
@@ -194,22 +306,34 @@
 	"Public page": "Public page",
 	"Publish": "Publish",
 	"Pursuing oppurtunities instead of settling": "Pursuing oppurtunities instead of settling",
+	"Rate type": "Rate type",
 	"Read more": "Read more",
+	"Reason": "Reason",
+	"Reason for transfer (optional)": "Reason for transfer (optional)",
+	"Recipient of the equity share": "Recipient of the equity share",
 	"Registration": "Registration",
-	"Registration completed successfully!": "Registration completed successfully!",
-	"Registration token expired": "Registration token expired. Start a registration again.",
-	"Registration token is wrong": "This registration link is wrong",
-	"Registration token is wrong. Go to Signup page before.": "Registration token is wrong. Go to Signup page before",
+	"Registration successful": "Registration successful",
 	"Registration with Google": "Registration with Google",
+	"Rejected": "Rejected",
 	"Relevant to": "Relevant to",
-	"Required actions is not completed": "Required actions is not completed",
+	"Remove equity promise": "Remove equity promise",
+	"Remove payment": "Remove payment",
+	"Report was deleted": "Report was deleted",
+	"Request for lecture has been deleted": "Request for lecture has been deleted",
+	"Required workflow step": "Required workflow step",
 	"Respond": "Respond",
-	"Responses on vacancies": "Responses on vacancies",
 	"Restore": "Restore",
 	"Return to main": "Return to main",
 	"Save": "Save",
 	"Save as draft": "Save as draft",
-	"Select the vacancy you want to restore": "Select the vacancy you want to restore",
+	"Select": "Select",
+	"Select a participant": "Select a participant",
+	"Select a recipient": "Select a recipient",
+	"Select rate type": "Select rate type",
+	"Select start date": "Select start date",
+	"Select step": "Select step",
+	"Select the step for vesting": "Select the step for vesting",
+	"Select work direction": "Select work direction",
 	"Send link to email": "Send link to email",
 	"Send registration link": "Send registration link",
 	"Setting goals and working towards them": "Setting goals and working towards them",
@@ -220,244 +344,702 @@
 	"Share price paid, USD": "Share price paid, USD",
 	"Shares": "Shares",
 	"Sign out": "Sign out",
+	"Since": "Since",
 	"Skillful": "Skillful",
 	"Skills": "Skills",
-	"Sorry, we couldn't find the page you're looking for": {
-		"": "Sorry, we couldn't find the page you're looking for."
-	},
 	"Specialist": "Specialist",
+	"Speciality Created!": "Speciality Created!",
+	"Specialization": "Specialization",
+	"Specialty has been removed": "Specialty has been removed",
+	"Specify the equity share to transfer": "Specify the equity share to transfer",
+	"Specify the reason for transferring the equity share": "Specify the reason for transferring the equity share",
 	"Start and End Dates": "Start and End Dates",
-	"Support": "Support",
+	"Status": "Status",
+	"Step that needs to be completed to receive the promised equity": "Step that needs to be completed to receive the promised equity",
 	"Taking risks and making mistakes": "Taking risks and making mistakes",
+	"Tasks are not completed": "Tasks are not completed",
+	"Team Compliance": "Team Compliance",
 	"Team Member": "Team Member",
-	"Technical officer": "Technical officer",
 	"Telegram": "Telegram",
 	"Terms of use": "Terms of use",
+	"The Offer of the Lecture has been created": "The Offer of the Lecture has been created",
+	"The employee is dismissed": "The employee is dismissed",
 	"The main resource is your time, which you are willing to spend on participating in projects": {
-		" You can\n\t\t\t\t\t\t\t\talso provide additional information": "The main resource is your time, which you are willing to spend on participating in projects. You can also provide additional information",
 		" You can also provide additional information": "The main resource is your time, which you are willing to spend on participating in projects. You can also provide additional information"
 	},
 	"The maximum value cannot be less than the minimum": "The maximum value cannot be less than the minimum",
-	"The name of the vacancy": "The name of the vacancy",
+	"The name of the open position": "The name of the open position",
 	"The need for liberty": "The need for liberty",
+	"The position is changed": "The position is changed",
+	"The post can not be empty": "The post can not be empty",
 	"The power of self-identity": "The power of self-identity",
-	"The registration link is incorrect or has already been used": "The registration link is incorrect or has already been used",
+	"The proposal of the lecture is updated": "The proposal of the lecture is updated",
 	"There are no applications for participation at the moment": "There are no applications for participation at the moment",
 	"There are no open vacancies at the moment": "There are no open vacancies at the moment",
+	"This action will dismisse the member from the team and delete all their equity promises": {
+		"": "This action will dismisse the member from the team and delete all their equity promises."
+	},
+	"This field is required": "This field is required",
 	"Time for work": "Time for work",
+	"Title": "Title",
+	"To": "To",
+	"Topic": "Topic",
 	"Transactions History": "Transactions History",
-	"UI/UX designer": "UI/UX designer",
-	"Updated": "Updated",
+	"Transfer": "Transfer",
+	"Transfer My Share": "Transfer My Share",
+	"Transfer equity": "Transfer equity",
+	"Transferring equity to another team member means you are transferring part of your rights in the project": {
+		" This action cannot be undone": {
+			"": "Transferring equity to another team member means you are transferring part of your rights in the project. This action cannot be undone."
+		}
+	},
+	"Type": "Type",
+	"Unknown": "Unknown",
 	"Upload PDF": "Upload PDF",
-	"User Settings": "User Settings",
 	"Vacancies": "Vacancies",
-	"Vacancy description": "Vacancy description",
 	"Valid until": "Valid until",
 	"Value": "Value",
+	"Vesting": "Vesting",
 	"Vesting at Workflow Step": "Vesting at Workflow Step",
+	"Video Games": "Video Games",
 	"Video report": "Video report",
-	"View the presentation": "View the presentation",
 	"Visual Style": "Visual Style",
+	"Visual style": "Visual style",
 	"Want to attend": "Want to attend",
-	"We help Authors of new video games to assemble a team of game designers, programmers, artists,\n\t\t\t\t\t\t\t\t\t\t\t\tanimators, etc": {
-		"": "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc."
-	},
 	"We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc": {
 		"": "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc."
 	},
-	"We help game industry professionals find an interesting role for themselves in new projects": {
-		"": "We help game industry professionals find an interesting role for themselves in new projects."
-	},
 	"Weekly commitment": "Weekly commitment",
-	"Welcome to the community where games are made": {
-		"": "Welcome to the community where games are made."
-	},
-	"What direction does this vacancy belong": "What direction does this vacancy belong ",
+	"What direction does this open position belong": "What direction does this open position belong",
 	"What will happen": "What will happen",
 	"When": "When",
-	"Will help the service and project authors offer solutions that are interesting to you": "Will help the service and project authors offer solutions that are interesting to you",
+	"Where I received knowledge": "Where I received knowledge",
 	"Workflow": "Workflow",
 	"Yes": "Yes",
 	"You": "You",
 	"You are already registered": "You are already registered",
 	"You can change it or add more ones after": "You can change it or add more ones after",
+	"You definitely want to close the open position?": "You definitely want to close the open position?",
+	"You definitely want to delete the document?": "You definitely want to delete the document?",
+	"You definitely want to delete this report?": "You definitely want to delete this report?",
 	"You definitely want to remove?": "You definitely want to remove?",
 	"You have canceled your vote": "You have canceled your vote",
-	"You have no projects": "You have no projects",
+	"You have successfully created a new speciality": {
+		"": "You have successfully created a new speciality."
+	},
+	"You rejected the candidacy ": "You rejected the candidacy ",
 	"You should not be younger than 16 years": "You should not be younger than 16 years",
-	"Your Name": "Your Name",
+	"You took the team": "You took the team",
 	"Your Participation": "Your Participation",
+	"Your advice requests archive": "Your advice requests archive",
+	"Your current equity share in the project": "Your current equity share in the project",
 	"Your profile was successfully completed!": "Your profile was successfully completed!",
 	"Your vote has been counted": "Your vote has been counted",
 	"Youtube": "Youtube",
-	"action-adventure": "Action adventure",
 	"actual vacancies": "actual vacancies",
-	"add-new-concept": "Propose a new game concept",
-	"additionalInformation": "Additional information",
-	"adventure": "Adventure",
 	"agreeWithTermsAndPrivacy": "By joining, you agree to our Terms of Service and Privacy Policy",
 	"agreeWithTermsAndPrivacy.error": "To register for the service you must agree with the specified documents",
-	"agreements": "Agreenments",
-	"app-short-description": "A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
 	"app": {
+		"user-event": {
+			"menu": {
+				"content": "Content",
+				"members": "Members",
+				"schedule": "Schedule"
+			}
+		},
 		"user-project": {
 			"menu": {
+				"documents": "Documents",
+				"open-positions": "Open positions",
 				"overview": "Devlog",
 				"team": "Team",
-				"vacancies": "Vacancies",
 				"workflow": "Workflow"
 			}
 		},
 		"user": {
 			"menu": {
-				"events": "Events",
-				"hub": "Overview",
-				"lectures": "Lectures",
-				"members": "Talent Pool",
-				"mentors": "Mentors",
-				"projects": "Projects",
-				"settings": "Settings",
-				"vacancies": "Vacancies"
+				"settings": "Settings"
 			}
 		}
 	},
-	"application": {
-		"experts": {
-			"name": "Mentors from gamedev"
+	"are-you-sure-you-want-to-delete-it": "Are you sure you want to delete it?",
+	"blog": {
+		"create-post": {
+			"modal": {
+				"cancel-text": "Cancel",
+				"ok-text": "Create",
+				"title": "Create blog post",
+				"title-placeholder": "Title",
+				"title-required": "Title is required"
+			}
 		}
 	},
-	"are-you-sure-you-want-to-delete-it": "Are you sure you want to delete it?",
-	"availableTime": "Available Time",
-	"back": "Back",
 	"button": {
 		"edit": {
 			"label": "Edit"
-		},
-		"save": "Save"
+		}
 	},
-	"casual": "Casual",
 	"change": "Edit",
+	"chat": {
+		"groups": {
+			"direct": "Direct chats",
+			"experts": "Experts",
+			"offers": "Offers"
+		},
+		"topic": {
+			"openPositionPage": "Open position page"
+		}
+	},
 	"checkhealth": {
 		"description": "This is a game developers hub for industry professionals whose members form teams to develop new games.",
-		"error_no_connection": "No connection. Try later."
+		"error_no_connection": "No connection. Try later.",
+		"go_to_chat": "Go to chat"
 	},
 	"city": "City",
-	"city-placeholder": "Enter city",
-	"city.placeholder": "Enter your city name",
 	"close": "Close",
 	"common": {
-		"formError": "Error. Check if all data is entered correctly"
+		"apply": "Apply",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"save": "Save"
 	},
-	"community members": "community members",
-	"communityMember": "Community Member",
 	"component": {
 		"heroStats": {
+			"actualVacancies": "actual vacancies",
+			"communityMembers": "members",
+			"currentProjects": "current projects",
 			"qualifiedSpecialists": "ready to invest up to in the form of their time"
 		},
-		"landingGameCreationSection": {
-			"joinTheProgram": "Go to Game Creation Program"
+		"indieList": {
+			"description": "Projects developed independently by users.",
+			"title": "Game Projects"
+		},
+		"landingFeedbackSection": {
+			"readMore": "Read more"
+		},
+		"landingForAuthorsSection": {
+			"assembleATeam": "Assemble a team",
+			"latestSpecialistsFromTalentPool": "Latest specialists from Talent Pool"
+		},
+		"landingForSpecialistsSection": {
+			"joinTheTeam": "Join the team",
+			"latestProjects": "Latest projects"
+		},
+		"landingWhoWeAreSection": {
+			"achiever": "Achiever",
+			"autonomy": "Autonomy",
+			"coreValues": "Our Core Values",
+			"exploration": "Exploration",
+			"goalOriented": "Goal-oriented",
+			"individuality": "Individuality",
+			"player": "Player"
+		},
+		"myTeam": {
+			"addInvestor": "Add investor",
+			"cancel": "Cancel",
+			"findMentors": "Find mentors",
+			"inviteMember": "Invite Member",
+			"makePromise": "Make Promise",
+			"total": "Total"
+		},
+		"stageProjectsSection": {
+			"noProjectsYet": "No projects yet",
+			"onThePageOfTheProject": "On the page of the project",
+			"projectListByStage": "Project list by stage"
+		},
+		"teamMemberCard": {
+			"aboutMe": "About me",
+			"experience": "Experience",
+			"fromTo": "from {fromDate} to {toDate} hours a week",
+			"iUseItInWork": "I use it in work",
+			"notPointed": "(not pointed)",
+			"professionalInfo": "Professional info",
+			"skills": "Skills",
+			"specialization": "Specialization",
+			"summaryPortfolio": "Summary/portfolio",
+			"title": "Team Member Card",
+			"whereIReceivedKnowledge": "Where I received knowledge"
+		}
+	},
+	"components": {
+		"lectures": {
+			"heldLectures": {
+				"date": "Date",
+				"pastLectures": "Past Lectures"
+			},
+			"readyLectures": {
+				"date": "Date",
+				"more": "More",
+				"scheduledLectures": "Scheduled lectures"
+			}
+		},
+		"my-project-ai-reccomend-candidates": {
+			"aiReccomendationSpecialists": "AI Reccomendation Specialists",
+			"noAiRecommendations": "There are currently no AI recommendations for specialists."
+		},
+		"my-project-candidates": {
+			"noApplicationsForParticipation": "There are no applications for participation at the moment",
+			"responsesOnVacancies": "Responses on open positions"
+		},
+		"my-project-reports": {
+			"add-report": "Add a report",
+			"at-the-moment-reports-are-not-provided": "At the moment, reports are not provided",
+			"change": "Change",
+			"no": "No",
+			"report": "Report",
+			"report-deleted": "Report was deleted",
+			"report-from": "Report from",
+			"reports": "Reports",
+			"yes": "Yes"
+		},
+		"profile-forms": {
+			"connect": {
+				"card": {
+					"application": {
+						"experts": {
+							"name": "Mentors from gamedev"
+						}
+					},
+					"description": "Connecting to Telegram will allow you to request advice from community mentors through the app",
+					"disconnect": "Disconnect",
+					"title": "Telegram connection",
+					"yourTelegramAccountIsConnected": "Your Telegram account is connected"
+				}
+			},
+			"general": {
+				"card": {
+					"account": "Account",
+					"city": "City",
+					"country": "Country",
+					"location": "Location",
+					"save": "Save"
+				},
+				"field": {
+					"email": {
+						"title": "Email"
+					},
+					"language": "Platform language",
+					"tgNickname": {
+						"extra": "Indicate without symbol @",
+						"title": "Telegram nickname"
+					}
+				}
+			},
+			"mentorship": {
+				"card": {
+					"description": "Turn on if you want other community members to contact you for advice.",
+					"save": "Save",
+					"title": "Mentorship"
+				}
+			}
 		}
 	},
 	"concept-link": "Link to the concept",
-	"concept-list": "Concept list",
 	"confirmUserData": "I confirm the accuracy of the information entered",
 	"confirmUserData.error": "You should confirm the accuracy of the information entered",
-	"copyright": "GDHub, All rights reserved.",
+	"contacts": {
+		"email": "Email",
+		"linkedin": "Linkedin",
+		"preTitle": "Contacts",
+		"subTitle": "Join us and become a part of new era in the gaming industry!",
+		"telegram": "Telegram",
+		"title": "Get in touch",
+		"youtube": "Youtube"
+	},
 	"country": "Country",
 	"country.placeholder": "Select country",
+	"course-card": {
+		"details-button": "Details"
+	},
+	"course": {
+		"authorPrefix": "A course by",
+		"backToCourses": "Back to courses",
+		"difficulty": {
+			"advanced": "Advanced"
+		},
+		"enroll": "Enroll in course",
+		"language": {
+			"en": "English",
+			"ru": "Russian"
+		},
+		"lesson": {
+			"noDescription": "No description provided."
+		},
+		"meta": {
+			"certificate": "Certificate",
+			"certificateValue": "Upon completion of the course",
+			"difficulty": "Difficulty",
+			"language": "Language",
+			"lessons": "Lessons",
+			"startsAt": "Starts at"
+		},
+		"notFound": {
+			"description": "This course doesn't exist or is no longer available.",
+			"title": "Course not found"
+		},
+		"priceFree": "Free",
+		"readMore": "Click to read more",
+		"sidebar": {
+			"assignment": "Assignment",
+			"assignmentBody": "Plan to dedicate a minimum of 1–2 hours per day to watch lecture videos, engage in Q&A sessions, and complete assignments.",
+			"materials": "Materials",
+			"materialsBody": "Recommended hardware and software for participation will be provided in the welcome materials after enrollment.",
+			"prerequisites": "Prerequisites",
+			"prerequisitesBody": "Familiarity with the chosen tool's interface and basic concepts. Understanding of fundamental theory related to the topic is recommended."
+		},
+		"teachers": {
+			"label": "Teachers"
+		},
+		"toc": "Course table of contents",
+		"type": {
+			"free": "Free",
+			"paid": "Paid"
+		}
+	},
+	"courses": {
+		"createCourse": "Create course",
+		"list": {
+			"noOpenCourses": "There are no open courses at the moment",
+			"validUntil": "Starts at"
+		},
+		"myCourses": "My courses",
+		"myCoursesDescription": "Courses where you are an author, student, or instructor"
+	},
 	"current projects": "current projects",
 	"cvLink": "CV/Portfolio link",
 	"cvLink.plachehloder": "Linkedin, Artstation or other links",
-	"dance": "Dance/rhythm",
+	"date": "Date",
 	"days": "days",
-	"demoday": {
-		"text1": {
-			"part1": "Join our",
-			"part2": "community"
-		},
-		"text2": "Register on gdhub.io - indicate your specialties, respond to vacancies for indie projects or launch yours.",
-		"text3": "Join us in the community chat, communicate and find out the latest news from projects.",
-		"text4": "Contact us"
-	},
+	"delete": "Delete",
 	"devlog": {
-		"button": {
-			"add-yt-video": "Add Youtube video"
+		"empty": {
+			"description": "Share your progress on the development of {projectName}",
+			"description2": " will help attract attention to the project and get feedback.",
+			"title": "Your devlog is empty"
 		}
 	},
 	"devlogwall": {
-		"postform": {
+		"form": {
 			"add-video": "Add video"
 		}
 	},
-	"difficultyLevel": "Level of Difficulty",
 	"education": "Education",
 	"education.plachehloder": "For example:\n2000-2010, Gymnasium No. 145; \n2011, Course on Udemy “How to become a tester”",
 	"email": "Email",
 	"equity": {
+		"investmentReserve": {
+			"description": "Reserved shares for future investors (can be changed)"
+		},
+		"mentorsFund": {
+			"description": "Share for rewarding mentors of the project when it is sold or released"
+		},
 		"platform": {
 			"description": "Platform: Commission for using the service"
 		},
-		"title": "Equity Distribution"
+		"team": {
+			"description": "Shares of the team members (vested or promised when the goal is reached)"
+		},
+		"title": "Equity Distribution",
+		"unallocated": {
+			"description": "Free shares for distributing to new participants"
+		}
 	},
 	"equityPromise": {
-		"confirm": "I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions."
+		"confirm": "I confirm that I have discussed the equity terms with the member, and they have agreed to these conditions.",
+		"confirm.error": "You should confirm the accuracy of the information entered",
+		"delete": {
+			"confirm": "I confirm that I have discussed the removal of this equity promise with the member.",
+			"confirm.error": "You should confirm that the member has been informed about the deletion"
+		}
 	},
+	"error_sending_email": "Error sending email. Please try again.",
 	"event": {
 		"about": "About the event",
 		"bookNow": "Book Now Free",
+		"button": {
+			"publicPage": "Go to page",
+			"publish": "Publish",
+			"unpublish": "Unpublish"
+		},
+		"child": "Child",
+		"content": {
+			"hint": "Describe the event in detail.",
+			"placeholder": "Start typing...",
+			"saveButton": "Save",
+			"saveError": "Failed to save content",
+			"saved": "Content saved successfully",
+			"title": "Event description"
+		},
+		"createLocaleVersion": {
+			"error": "Error creating locale version",
+			"success": "Locale version created"
+		},
 		"dates": "Dates",
-		"format": "Format",
+		"delete": "Delete",
+		"delete.confirm": "Are you sure you want to delete this event?",
+		"delete.error": "Error deleting event",
+		"delete.success": "Event deleted",
+		"edit": "Edit",
+		"edit.success": "Event edited successfully",
+		"format": {
+			"conference": "Conference",
+			"gamejam": "Game Jam",
+			"gamelab": "Game Lab",
+			"meetup": "Meetup",
+			"workshop": "Workshop"
+		},
+		"generateSlug": "Generate Slug",
+		"generateSlug.cancel": "Cancel",
+		"generateSlug.confirm": "Are you sure you want to generate a slug?",
+		"generateSlug.error": "Error generating slug",
+		"generateSlug.success": "Slug generated",
+		"loginOrRegister": "For registration on the event, please signin or register on the platform first",
+		"manage": "Manage",
+		"members": {
+			"actions": "Actions",
+			"actions.add": "Add members",
+			"actions.batchAssign": "Assign project / curator",
+			"actions.sendMessage": "Send message",
+			"add": {
+				"error": "Failed to add members",
+				"skipped": "{count} user(s) were already members and were skipped",
+				"submit": "Add",
+				"success": "Added {count} member(s)",
+				"title": "Add members",
+				"users": {
+					"empty": "No users found",
+					"placeholder": "Search for a user by name or email",
+					"required": "Select at least one user"
+				}
+			},
+			"batch": {
+				"empty": "Select a project or mentor(s) to apply changes",
+				"error": "Failed to update members",
+				"mentors": "Mentors",
+				"mentors.empty": "Start typing to search",
+				"mentors.hint": "Pick one or more users by their speciality. Leave empty to clear mentors only if explicitly cleared.",
+				"mentors.placeholder": "Type a name or speciality...",
+				"noCommon": "No project is shared by all selected members. You can still assign mentors.",
+				"noSelected": "Please select at least one member.",
+				"project": "Project",
+				"project.placeholder": "Select project (optional)",
+				"subtitle": "Applying changes to {count} selected member(s). Project list contains only projects where all selected members were team members. Mentors selection REPLACES the existing mentors on every selected member.",
+				"success": "Selected members updated successfully",
+				"title": "Assign project / mentors"
+			},
+			"certificate": "Certificate",
+			"certificate.certificate": "Certificate",
+			"certificate.create": "Create certificate",
+			"certificate.create.error": "Failed to create certificate",
+			"certificate.create.success": "Certificate created",
+			"certificate.delete": "Delete certificate",
+			"certificate.delete.confirm": "Delete certificate?",
+			"certificate.delete.confirmDesc": "The document will be removed from Documenso as well.",
+			"certificate.delete.error": "Failed to delete certificate",
+			"certificate.delete.success": "Certificate deleted",
+			"certificate.distribute": "Send for signing",
+			"certificate.distribute.confirm": "Send for signing?",
+			"certificate.distribute.confirmDesc": "Signers will receive an email from Documenso. After signing, the certificate will be available in the member",
+			"certificate.distribute.error": "Failed to send for signing",
+			"certificate.distribute.send": "Send",
+			"certificate.distribute.success": "Sent for signing",
+			"certificate.download": "Download PDF",
+			"certificate.edit": "Edit",
+			"certificate.view": "View in Documenso",
+			"createdAt": "Registered at",
+			"description": "List of users registered for this event.",
+			"edit": {
+				"email": "Email",
+				"error": "Failed to update member",
+				"mentors": "Mentors",
+				"mentors.empty": "Start typing to search",
+				"mentors.hint": "Pick one or more users by their speciality",
+				"mentors.placeholder": "Type a name or speciality...",
+				"name": "Name",
+				"period": "Period",
+				"position": "Position",
+				"present": "present",
+				"project": "Project",
+				"project.empty": "This user has no team memberships",
+				"project.hint": "Only projects where this user was a team member are shown",
+				"project.placeholder": "Select project (optional)",
+				"success": "Member updated successfully",
+				"title": "Edit member"
+			},
+			"mentors": "Mentors",
+			"message": {
+				"empty": "Please enter a message before sending.",
+				"error": "Failed to send message. Please try again later.",
+				"noSelected": "Please select at least one member.",
+				"placeholder": "Enter your message for event members...",
+				"subtitle": "Your message will be sent to all selected members via notifications.",
+				"success": "Message sent successfully",
+				"title": "Send message to members"
+			},
+			"present": "present",
+			"project": "Project",
+			"status": "Status",
+			"title": "Event members",
+			"user": "User"
+		},
 		"modal": {
 			"cancel": "Cancel",
+			"conference": "Conference",
 			"create": "Сreate draft",
-			"description": {
-				"label": "Description",
-				"placeholder": "Event description"
-			},
-			"format": {
-				"label": "Format"
-			},
+			"danger": "Delete Event",
+			"danger.button": "Delete",
+			"danger.description": "Are you sure you want to delete this event?",
+			"danger.description2": "This action cannot be undone.",
+			"danger.description3": "This will delete all the event data and all the event data will be lost.",
+			"direction": "Direction",
+			"direction.placeholder": "Select direction",
+			"direction.required": "Direction required",
+			"edit": "Edit event",
+			"error": "Error creating event",
+			"event": "Event",
+			"format": "Format",
+			"format.required": "Format required",
 			"gamejam": "Game Jam",
 			"gamelab": "GameLab",
-			"image": {
-				"add": "Add event image",
-				"hint": "Click or drag image here. JPG, PNG. 4:5 recommended."
-			},
+			"image": "Image",
+			"image.add": "Add event image",
+			"image.deletePopover": "Remove image",
+			"image.hint": "Click or drag image here. JPG, PNG. 4:5 recommended.",
 			"language": "Language",
-			"language.any": "Any",
+			"language.required": "Language is required",
 			"link": "Registration Link",
-			"location": "Location",
-			"schedule": "Schedule",
-			"schedule.add": "Add Item",
-			"schedule.hint": "You can add one or multiple schedule items to the event. Each item can have multiple speakers.",
+			"link.help": "The link to the external event registration page. Leave blank if you want use internal registration.",
+			"link.placeholder": "https://",
+			"meetup": "Meetup",
+			"save": "Save",
+			"schedule": {
+				"add": "Add Item",
+				"hint": "You can add one or multiple schedule items to the event. Each item can have multiple speakers."
+			},
 			"shortDescription": {
 				"label": "Short Description",
 				"placeholder": "Short description or a phrase"
 			},
+			"success": "Event created successfully",
 			"title": "New {eventType} ",
 			"title.label": "Title",
-			"title.placeholder": "Event title"
+			"title.placeholder": "Event title",
+			"title.required": "Title is required",
+			"workshop": "Workshop"
 		},
+		"newLocale": "New Locale version",
+		"newLocaleVersion": {
+			"cancel": "Cancel",
+			"confirm": "New locale version",
+			"description": "Select the language for the new locale version",
+			"selectLanguage": "Select language"
+		},
+		"noDates": "You need to set a schedule",
+		"noEvents": "No events found",
 		"open": "Open",
+		"parent": "Parent",
+		"publish": {
+			"error": "Error publishing event",
+			"success": "Event published"
+		},
 		"readMore": "Click to read more",
 		"register": "Register",
+		"register.error": "Failed to register for the event. Please try again later.",
+		"register.success.description": "You have been successfully registered for the event.",
+		"register.success.title": "Registration successful",
+		"restore": "Restore",
+		"restore.error": "Error restoring event",
+		"restore.success": "Event is restored",
 		"schedule": "Event Schedule",
 		"schedule.dates": "Start/End Dates (local time)",
+		"schedule.dates.required": "Dates required",
 		"schedule.description": "Description",
 		"schedule.description.placeholder": "Item description",
 		"schedule.direction": "Direction",
-		"schedule.end": "End Date",
+		"schedule.direction.placeholder": "Select direction",
+		"schedule.direction.required": "Direction required",
 		"schedule.format": "Format",
+		"schedule.format.required": "Format required",
+		"schedule.item.title": "Untitled",
 		"schedule.language": "Language",
+		"schedule.language.required": "Language required",
 		"schedule.link": "Link",
+		"schedule.link.placeholder": "https://",
+		"schedule.modal.error": "Error saving schedule item",
 		"schedule.modal.title": "Schedule Item",
 		"schedule.speakers": "Speakers",
-		"schedule.start": "Start Date",
+		"schedule.speakers.placeholder": "Select speakers",
 		"schedule.title": "Title",
 		"schedule.title.placeholder": "Item title",
-		"type": "Type",
-		"type.free": "Free",
-		"type.paid": "Paid"
+		"settings": {
+			"certification": {
+				"config": {
+					"save": {
+						"error": "Failed to save organizer settings",
+						"success": "Organizer settings saved"
+					}
+				},
+				"description": "When enabled, you can issue certificates to event participants from the Members page.",
+				"organizer": {
+					"description": "Shown in the left signature block of the certificate. Leave blank to use the event creator's profile name and first speciality.",
+					"name": {
+						"label": "Name"
+					},
+					"reset": "Reset to default",
+					"save": "Save",
+					"title": "Organizer signer",
+					"title.label": "Title"
+				},
+				"preview": "Preview PDF",
+				"preview.download": "Open in a new tab",
+				"preview.fallback": "Your browser cannot display PDFs inline.",
+				"preview.title": "Certificate preview",
+				"title": "Certification",
+				"toggle": {
+					"error": "Failed to update certification setting"
+				}
+			},
+			"danger": {
+				"archive": "Archive Event",
+				"archive.button": "Archive",
+				"archive.cancel": "No",
+				"archive.confirm": "Are you sure you want to archive this event?",
+				"archive.description": "Are you sure you want to archive this event?",
+				"archive.description2": "This will move the event to the archive and it will be hidden from the public.",
+				"archive.success": "Event archived successfully",
+				"delete": {
+					"button": "Delete",
+					"cancel": "No",
+					"description": "Are you sure you want to delete this event?",
+					"success": "Event deleted successfully"
+				},
+				"restore": "Restore Event",
+				"restore.button": "Restore",
+				"restore.cancel": "No",
+				"restore.description": "Are you sure you want to restore this event?",
+				"restore.description2": "This will move the event to the draft status and will be visible to the your events list.",
+				"restore.success": "Event restored successfully"
+			},
+			"menu": {
+				"certification": "Certification",
+				"danger": "Danger",
+				"general": "General"
+			}
+		},
+		"status": {
+			"archived": "Archived",
+			"closed": "Closed",
+			"draft": "Draft",
+			"published": "Published at {publishedAt}"
+		},
+		"type": {
+			"free": "Free",
+			"paid": "Paid"
+		},
+		"unpublish": "Unpublish",
+		"unpublish.error": "Error unpublishing event",
+		"unpublish.success": "Event unpublished",
+		"view": "View"
 	},
 	"events": {
 		"banner": {
@@ -472,29 +1054,26 @@
 	"expert-card": {
 		"details-button": "Details"
 	},
+	"expert-requests": {
+		"myRequests": "Advice Requests"
+	},
 	"experts": {
 		"page": {
 			"description": "On this page, you can find experts who are ready to help with your questions. Click on a expert card to contact them",
-			"filter": {
-				"language": {
-					"en": "English speaking experts",
-					"ru": "Russian speaking experts"
-				}
-			},
+			"filter": "Filter by direction",
+			"filter.language": "Answering language",
+			"filter.language.en": "English speaking experts",
+			"filter.language.ru": "Russian speaking experts",
+			"noResults": "No experts found with the selected filter.",
 			"title": "Experts"
 		}
 	},
-	"fairy": "Fairy",
-	"fantasy": "Fantasy",
-	"fighting": "Fighting",
 	"firstName": "First Name",
-	"firstName.plachehloder": "Max",
 	"form": {
 		"difficulty": {
 			"label": "Difficulty of the game you want to develop"
 		},
 		"error": "Error. Check if all data is entered correctly",
-		"error.required.text": "This field is required",
 		"genres": {
 			"label": "Genres of games in the development of which you want to participate"
 		},
@@ -509,34 +1088,80 @@
 			"label": "Visual setting of games you want to work with"
 		}
 	},
-	"fps": "First person shooter (FPS)",
 	"fromTo": "from {fromDate} to {toDate} hours a week",
 	"fromToWithDates": "from {fromDate} to {toDate}",
-	"hard-core": "Hard-core",
-	"historic": "Historic",
 	"hours": "hours",
 	"hours a week": "hours a week",
+	"hours-a-week": "hours a week",
 	"hours/week": "hours/week",
 	"hub": {
-		"lectures": {
-			"text1": {
-				"part1": "Often, when solving certain problems, many questions arise. This section will help you find answers to them from other GDHub participants. Create a request for a topic that interests you and, if it is relevant not only for you, we will try to carry it out.",
-				"part2": "And for those who want to share their experience with others, here you will find the opportunity to do so. Follow topics that interest other participants and offer yourself as a lecturer.",
-				"part3": "Let's share knowledge, gain wisdom ;)"
-			}
+		"activity-feed": {
+			"title": "Devlog posts from projects"
+		},
+		"hot-vacancies": {
+			"title": "Open positions"
+		},
+		"latest-events": {
+			"ongoing": "Ongoing",
+			"starts": "Starts",
+			"title": "Upcoming events",
+			"until": "until"
+		},
+		"members": {
+			"all": "All",
+			"clear": "Clear",
+			"direction": "Direction",
+			"done": "Done",
+			"level": "Experience",
+			"noResults": "No specialists match your filters.",
+			"noResultsFor": "No specialists match “{query}”.",
+			"searchPlaceholder": "Search by name, role or skill…",
+			"subtitle": "{count} specialists open to collaborate"
 		},
 		"menu": {
-			"talentPool": "Talent Pool"
+			"administration": "Administration",
+			"communityChat": "Community Chat",
+			"courses": "Courses",
+			"documentation": "Documentation",
+			"events": "Events",
+			"experts": "Experts",
+			"home": "Home",
+			"jobs": "Open positions",
+			"my-events": "My events",
+			"overview": "Overview",
+			"profile": "Profile",
+			"projects": "Projects",
+			"settings": "Settings",
+			"signOut": "Sign out",
+			"talentPool": "Talent Pool",
+			"website": "Website"
 		},
-		"text1": "Hello, {userName} \uD83D\uDC4B",
-		"text1.part1": "It's a good day for game development",
-		"text1.part2": "And dont forget to join the community chat using"
+		"new-project": "New Project",
+		"text1": {
+			"part1": "It's a good day for game development",
+			"part2": "And dont forget to join the community chat using",
+			"part3": "Complete Registration"
+		},
+		"view-all": "View all",
+		"welcome-subtitle": "It's a good day for game development",
+		"welcome-title": "Welcome back, {userName} \uD83D\uDC4B"
 	},
-	"hyper-casual": "Hyper-casual",
-	"in the form of short pitches": "in the form of short pitches",
 	"interest": "Main interest",
 	"interests": "Interests",
 	"interestsAndPreferencesDescription": "This information will help us more accurately formulate recommendations for you on projects and project candidates.",
+	"invalid_grant_error": "Invalid authorization. Please sign in again.",
+	"inviteMemberModal": {
+		"cancel": "Cancel",
+		"email": "Email",
+		"position": "Position",
+		"sendInvitation": "Send Invitation",
+		"startDate": "Start Date",
+		"title": "Invite Team Member",
+		"workDirection": "Work Direction"
+	},
+	"job-card": {
+		"details-button": "Details"
+	},
 	"landing": {
 		"about": {
 			"abovetitle": "Know about us",
@@ -552,6 +1177,11 @@
 			"text2": "Start developing a game without funding for a team",
 			"text3": "Each Author can choose the format of work on our portal: as a part of the Gamelab incubation program or work independently at his own pace",
 			"title": "FOR AUTHORS"
+		},
+		"devlogs": {
+			"description": "Follow the progress of game development on our platform. Developers regularly share updates about their projects.",
+			"pretitle": "Active Development",
+			"title": "Recent Devlogs"
 		},
 		"feedback": {
 			"description0": "Game designer",
@@ -586,10 +1216,24 @@
 			"title7": "Sergey",
 			"title8": "Alex"
 		},
-		"gameCreation": {
-			"pretitle": "Bachelor’s program in Game Creation at EHU",
-			"subtitle": "Together with Europian Humanities University we designed a bachelor’s program for future game creators with a focus on authorship, art and real projects during the studies that grants a European-standard bachelor diploma.",
-			"title": "Build your future in the video game industry"
+		"hero": {
+			"getStartedForFree": "Get started for free",
+			"noCreditCardRequired": "No credit card required",
+			"text1": "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc.",
+			"text2": "We help game industry professionals find an interesting role for investing their time in developing new video games.",
+			"title": "Community-driven platform for video game creators"
+		},
+		"menu": {
+			"aboutUs": "About us",
+			"contacts": "Contacts",
+			"forAuthors": "For Authors",
+			"forSpecialists": "For Specialists",
+			"goToApp": "Go to app",
+			"logIn": "Log in"
+		},
+		"seo": {
+			"description": "Game Developers Hub is a platform for game developers and specialists.",
+			"title": "Game Developers Hub"
 		},
 		"specialist": {
 			"pretitle": "what are our advantages",
@@ -599,15 +1243,111 @@
 		}
 	},
 	"lastName": "Last Name",
-	"lastName.plachehloder": "Pain",
-	"mid-core": "Mid-core",
-	"military": "Military",
-	"mmorpg": "Massively multiplayer online role playing game (MMORPG)",
+	"lecture": {
+		"areYouSure": "Are you sure?",
+		"becomeALecturer": "Become a Lecturer",
+		"change": "Change",
+		"communityMember": "Community member",
+		"followThisLinkBeforeTheLecture": "Follow this link before the lecture",
+		"lecturer": "Lecturer",
+		"linkToStream": "Link to stream",
+		"markLecturesThatYouWouldBeInterestedInAttending": "Mark lectures that you would be interested in attending.",
+		"myProposal": "My Proposal",
+		"no": "No",
+		"notYet": "Not yet, we are waiting for more people to come",
+		"online": "online",
+		"participants": "participants",
+		"relevant": "Relevant",
+		"relevantFor": "relevant for",
+		"requestANewLecture": "Request a new lecture",
+		"requestsForLectures": "Requests for lectures",
+		"topic": "Lecture Topic",
+		"wantToAttend": "Want to attend",
+		"whatWillHappen": "What will happen",
+		"when": "When",
+		"yes": "Yes"
+	},
+	"lecturer": "Lecturer",
+	"mainFooter": {
+		"appShortDescription": "A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
+		"blog": "Blog",
+		"cookiePolicy": "Cookie Policy",
+		"copyright": "Game Develoeprs Hub. All rights reserved.",
+		"documentation": "Documentation",
+		"events": "Events",
+		"gameIndustryGuide": "Game Industry Guide",
+		"gameProjects": "Video games",
+		"legal": "Legal",
+		"legalDetails": "Legal Details",
+		"navAria": "Footer navigation",
+		"platform": "Platform",
+		"privacyPolicy": "Privacy Policy",
+		"refundPolicy": "Refund Policy",
+		"termsOfUse": "Terms of use",
+		"vacancies": "Open positions"
+	},
+	"mainHeader": {
+		"goToApp": "Go to app",
+		"logIn": "Log in",
+		"logout": "Logout"
+	},
+	"maximum": "maximum",
+	"minimum": "minimum",
 	"modal": {
 		"confirm": {
+			"deleteInvestor": "Are you sure you want to delete investor information for {name}?",
+			"editInvestor": "I confirm that the change in the share sale has already been confirmed between the author and the investor",
 			"investor": "I confirm that the share sale has already been completed between the author and the investor."
 		},
+		"create-course": {
+			"cancel": "Cancel",
+			"error": "Could not create the course. Please try again.",
+			"field": {
+				"agreedToTerms": "I agree to the",
+				"agreedToTerms.error": "You must agree to the platform terms",
+				"agreedToTerms.link": "Course Agreement & Payouts Policy",
+				"authorRate": "Your teaching rate (EUR/hour)",
+				"authorRate.hint": "Used to estimate the breakeven price for the course",
+				"direction": "Direction",
+				"direction.placeholder": "Select a direction",
+				"language": "Language",
+				"name": "Course name",
+				"name.placeholder": "e.g. 3D Modeling for Stylized Characters",
+				"shortLine": "Short description",
+				"shortLine.placeholder": "One sentence about what students will learn",
+				"slug": "Slug",
+				"slug.hint": "Auto-generated from the name · you can change it later"
+			},
+			"ok": "Create course",
+			"subtitle": "We'll create a draft you can polish in Settings",
+			"success": "Course created as draft",
+			"title": "New course"
+		},
+		"create-document": {
+			"cancel-text": "Cancel",
+			"field": {
+				"description": {
+					"label": "Short Description",
+					"placeholder": "This document is about..."
+				},
+				"link": {
+					"label": "Link to document",
+					"placeholder": "https://example.com/document.pdf"
+				},
+				"name": {
+					"label": "Title",
+					"placeholder": "Document title"
+				},
+				"type": {
+					"label": "Type",
+					"placeholder": "Select document type"
+				}
+			},
+			"ok-text": "Add",
+			"title": "Add new team document"
+		},
 		"create-project": {
+			"cancel-text": "Cancel",
 			"field": {
 				"agree": {
 					"error": "Should accept requirements",
@@ -621,112 +1361,187 @@
 					"label": "Title"
 				}
 			},
+			"ok-text": "Create",
 			"title": "Create new game project"
+		},
+		"dev-log-post": {
+			"add-post": "Add post",
+			"cancel": "Cancel",
+			"delete-confirm": "Are you sure you want to delete this report?",
+			"delete-confirm-no": "No",
+			"delete-confirm-yes": "Yes",
+			"report-deleted": "Report deleted",
+			"save": "Save"
 		},
 		"devlogwall": {
 			"newpost": {
 				"label": "What's new in the project?",
 				"postBtn": {
 					"label": "Post"
-				}
+				},
+				"required": "This field is required"
 			}
 		},
+		"edit-devlog-post": {
+			"cancel": "Cancel",
+			"no": "No",
+			"save": "Save",
+			"title": "Edit post",
+			"yes": "Yes"
+		},
 		"expert": {
+			"cancelRequest": "Cancel request",
+			"expertCard": "Expert card",
+			"requestSent": "Your request is sent",
 			"sendRequest": "Send request"
 		},
-		"lectureRequest": {
-			"lecture-created-success": "Added a new request for a lecture",
-			"lecture-name": "Lecture theme",
-			"lecture-updated-success": "Lecture amended",
-			"wishes": "Wishes for the content of the lecture",
-			"wishes-help": "So you want to know at this lecture?",
-			"work-direction": "What direction does this lecture belong"
+		"investor": {
+			"dealDate": "Deal date",
+			"formDescription": "Form for adding information about investors who have invested in your project financially (bought a share)",
+			"investorName": "Investor name",
+			"share": "Share (%)",
+			"sharePricePaid": "Share price paid, USD"
 		},
-		"lecturerRequest": {
-			"createSuccess": "Your proposal to conduct a lecture sent",
-			"curriculum": "Lecture plan. What are you planning to talk about",
-			"direction": "What direction does this lecture belong",
-			"linkToStream": "Link to the broadcast",
-			"linkToStream.extra.part1": "Create a link to a broadcast in",
-			"linkToStream.extra.part2": "(or on another service) and insert into this field.",
-			"title": "I want to give this lecture",
-			"updateSuccess": "Your proposal is updated",
-			"wishes": "Wishes for the content of the lecture"
+		"lectureDetails": {
+			"close": "Close",
+			"lectureInformation": "Lecture Information",
+			"lectureProposalInformation": "Lecture Proposal Information",
+			"lectureRequestInformation": "Lecture Request Information",
+			"registrationForTheLecture": "Registration for the lecture",
+			"youAreAlreadyRegistered": "You are already registered"
+		},
+		"lectureRequest": {
+			"changeLectureRequest": "Change the lecture request",
+			"close": "Close",
+			"directionId": {
+				"placeholder": "For example: Game Design"
+			},
+			"lectureCreatedSuccess": "Added a new request for a lecture",
+			"lectureTheme": "Lecture theme",
+			"lectureUpdatedSuccess": "Lecture amended",
+			"name": {
+				"placeholder": "For example: how to analyze the project"
+			},
+			"publish": "Publish",
+			"requestNewLecture": "Request a new lecture",
+			"save": "Save",
+			"wishes": "Wishes for the content of the lecture",
+			"wishes.placeholder": "For example: I want to know how to spend a SWOT analysis and why it is needed",
+			"wishesHelp": "So you want to know at this lecture?",
+			"workDirection": "What direction does this lecture belong"
+		},
+		"lecturedetails": {
+			"communityMember": "Community Member",
+			"contentsOfTheLecture": "Contents of the lecture",
+			"lecturer": "Lecturer",
+			"noVideoYet": "No video yet",
+			"passed": "Passed",
+			"theAuthorOfTheRequestIsInterested": "The author of the request is interested",
+			"theLecturerOffers": "The lecturer offers",
+			"theme": "Theme"
 		},
 		"memberEquityPromise": {
 			"create": {
 				"title": "New Promise for {memberName}"
-			}
-		},
-		"project": {
-			"audition": {
-				"label": "Audition"
 			},
-			"conceptLink": {
-				"label": "Link to concept document (idea description)"
+			"delete": {
+				"description": "Are you sure you want to delete this equity promise?",
+				"title": "Delete equity promise"
 			},
-			"coreMechanics": {
-				"extra": "Start typing. To enter a new mechanic, press Enter on your keyboard and enter text",
-				"label": "Core Mechanics"
-			},
-			"coverImage": {
-				"deletePopover": "Remove project cover",
-				"hint": "Files in jpg, png formats are allowed. Aspect ratio 16/9. For example, the size is 1920x1080px.",
-				"label": "Cover for the project",
-				"text": "Add a project cover"
-			},
-			"description": {
-				"label": "Short Description"
-			},
-			"errorText": "Error. Check if all data is entered correctly",
-			"gddLink": {
-				"label": "Link to game design document"
-			},
-			"genre": {
-				"label": "Genre"
-			},
-			"name": {
-				"label": "Project Name"
-			},
-			"pitchdeckLink": {
-				"label": "Link to presentation (to pitch)"
-			},
-			"platform": {
-				"label": "Platform"
-			},
-			"setting": {
-				"label": "Game Setting"
-			},
-			"videoLink": {
-				"label": "Pitch video"
-			},
-			"visualStyle": {
-				"label": "Visual Style"
+			"update": {
+				"title": "Update Promise for {memberName}"
 			}
 		},
 		"projectReport": {
-			"content": "What has been made new relative to the past report?"
+			"addReport": "Add a report",
+			"changeReport": "Change the report",
+			"close": "Close",
+			"content": "What has been made new relative to the past report?",
+			"fieldRequired": "This field is required",
+			"reportAdded": "A new report has been added",
+			"reportChanged": "The report has been changed",
+			"reportDate": "Report Date",
+			"save": "Save",
+			"videoReport": "Video report"
 		},
 		"proposition-lecture": {
 			"field": {
+				"date": {
+					"label": "Date"
+				},
+				"description": {
+					"label": "Lecture plan.What are you planning to talk about"
+				},
+				"directionId": {
+					"label": "What direction does this lecture belong",
+					"placeholder": "For example: Game design"
+				},
+				"duration": {
+					"label": "Duration of the lecture"
+				},
+				"lecturer": {
+					"label": "Lecturer"
+				},
 				"linkToStream": {
 					"extra": {
 						"part1": "Create a link to broadcast in",
 						"part2": "(or on another service) and insert into this field."
-					}
+					},
+					"label": "Link to the lecture"
+				},
+				"name": {
+					"label": "Lecture Theme",
+					"placeholder": "For example: how to analyze the project"
+				},
+				"time": {
+					"extra": "Time zone",
+					"label": "Time"
 				}
+			},
+			"title": {
+				"change": "Change the parametes of lectures",
+				"close": "Close",
+				"give": "I want to give a lecture",
+				"publish": "Publish",
+				"save": "Save"
 			}
 		},
+		"roadmapChart": {
+			"clearSuccess": "Clear date for {step}",
+			"updateError": "Error updating step date",
+			"updateSuccess": "Set {date} date for {step}"
+		},
 		"section": {
+			"equityPromiseDescription": "of project equity will be allocated upon reaching the required workflow step {step}",
 			"project": "Project",
+			"projectDescription": "Project description",
 			"theVacancyIsAcuteBefore": "The position is acute before",
-			"vacancyDescription": "Position description"
+			"vacancyDescription": "Position description",
+			"watch": "Watch"
+		},
+		"setLecturer": {
+			"close": "Close",
+			"createSuccess": "Your proposal to conduct a lecture sent",
+			"curriculum": "Lecture plan.What are you planning to talk about",
+			"date": "Date",
+			"direction": "What direction does this lecture belong",
+			"lectureTheme": "Lecture theme",
+			"linkToStream": "Link to the broadcast",
+			"linkToStream.extra.part1": "Create a link to a broadcast in",
+			"linkToStream.extra.part2": "(or on another service) and insert into this field.",
+			"offer": "Offer",
+			"save": "Save",
+			"time": "Time",
+			"timeZone": "Time zone",
+			"title": "I want to give this lecture",
+			"updateSuccess": "Your proposal is updated",
+			"wishes": "Wishes for the content of the lecture"
 		},
 		"speciality-select": {
 			"choose-text": "Choose your specialty that corresponds to the selected vacancy",
-			"contact-text": "How to contact the author of the project with you?",
-			"okText": "Choose",
-			"title": "Indicate the specialty"
+			"greeting-placeholder": "Hi! I'd love to join your project because…",
+			"greeting-text": "Add a short message for the project author (optional)",
+			"okText": "Choose"
 		},
 		"speciality": {
 			"create-update": {
@@ -738,49 +1553,62 @@
 			"form": {
 				"jobs": {
 					"extra": "Write the work from a new line.Indicate in the format: Dates of work, place of work, position",
-					"label": "Where did you work?"
+					"label": "Where did you work?",
+					"placeholder": "Example:\n2015-2020, LLC \"Gamboka\", Unity developer\n2020-to-date, LLC \"Lukomorye\", Sound designer"
 				},
 				"level": {
-					"label": "Level of ownership"
+					"label": "Level of ownership",
+					"placeholder": "Select"
 				},
 				"name": {
-					"label": "Name of specialty"
+					"extra": "Fill in from CV/resume",
+					"label": "Name of specialty",
+					"placeholder": "Example: Character Concept Artist",
+					"upload": "Upload PDF"
 				},
 				"portfolioUrl": {
 					"label": "Link to portfolio/resume"
 				},
 				"schools": {
 					"extra": "Write each place of training from a new line.Indicate in the format: training period, place of study, name/specialty name",
-					"label": "Where did you study?"
+					"label": "Where did you study?",
+					"placeholder": "Example:\n2000-2010, High school №145\n2011, The course on UDEMY \"How to become a tester\""
 				},
 				"skills": {
 					"extra": "Write each skill from a new line.Indicate in the format: verb + definition",
 					"label": "List of skills"
 				},
 				"specialization": {
-					"label": "Specialization"
+					"label": "Specialization",
+					"placeholder": "Example: Realistic characters"
 				},
 				"summary": {
 					"label": "Briefly about what you are doing"
+				},
+				"tags": {
+					"placeholder": "Example: Photoshop, Google Docs, Unity, VS Code"
 				},
 				"tools": {
 					"extra": "Indicate which tools/software/services you use in your work",
 					"label": "Tools"
 				},
 				"workDirectionId": {
-					"label": "Direction of activity"
+					"label": "Direction of activity",
+					"placeholder": "Choose"
 				}
 			},
 			"title": {
+				"close": "Close",
 				"create": "Add specialty",
+				"save": "Save",
 				"update": "Change the specialty"
 			},
 			"update": {
 				"success": "Data on the specialty updated"
 			}
 		},
-		"vacancy-archive": {
-			"title": "Archive of vacancies from the {projectName} project"
+		"specialitySelect": {
+			"close": "Close"
 		},
 		"vacancy": {
 			"applied": "You have already responded to this vacancy",
@@ -788,24 +1616,29 @@
 			"applySuccess": "Your response is sent",
 			"cancelMyResponse": "Cancel my response",
 			"close": "Close",
+			"description": "Open position description",
 			"descriptionHelp": "Describe the requirements/wishes for the candidate, describe the kaku a job he has to do",
+			"descriptionPlaceholder": "For example: I am looking for a concept designer from the environment that has experience at PC projects, works in a realistic style.",
+			"equityPromise": "Equity Promise",
 			"notAuth": "Only registered users can respond to this vacancy. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>.",
-			"titleSession": "Open Role",
+			"paymentNonRefundable": "The listing fee is non-refundable.",
+			"paymentNotConfigured": "Payment is not configured yet. The position was saved as a draft.",
+			"refundPolicyLink": "Refund policy",
 			"vacancyCard": "Position Card",
 			"withdrawSuccess": "Your response is withdrawn"
+		},
+		"vacancyArchive": {
+			"restore": "Restore",
+			"selectVacancy": "Select the open position you want to restore",
+			"title": "Archive of open positions from the {projectName} project"
 		}
 	},
-	"my-project": {
-		"list": {
-			"empty": "You don't have any project yet. Create a new one or join existing ones."
-		}
-	},
-	"needAuth": "Authorization required",
-	"needAuthDescription": "Viewing the data is available only to authorized users of the platform.",
 	"no": "No",
-	"no-projects-yet": "No projects found for this stage",
 	"no-user-projects": "No project yet.",
 	"novu": {
+		"dynamic": {
+			"comment-on-post": "Post comments"
+		},
 		"inbox": {
 			"filters": {
 				"dropdownOptions": {
@@ -814,7 +1647,9 @@
 					"unread": "Unread"
 				},
 				"labels": {
-					"default": "All"
+					"archived": "Archived",
+					"default": "All",
+					"unread": "Unread"
 				}
 			}
 		},
@@ -825,6 +1660,9 @@
 				},
 				"read": {
 					"tooltip": "Mark as read"
+				},
+				"unarchive": {
+					"tooltip": "Unarchive"
 				},
 				"unread": {
 					"tooltip": "Mark as unread"
@@ -837,24 +1675,93 @@
 				"archiveRead": "Archive read",
 				"readAll": "Mark all as read"
 			},
-			"emptyNotice": "No notifications"
+			"emptyNotice": "No notifications",
+			"newNotifications": "New notifications"
 		},
 		"preferences": {
 			"global": "General",
-			"title": "Settings"
+			"title": "Settings",
+			"workflow": {
+				"disabled": {
+					"notice": "This workflow is disabled",
+					"tooltip": "This workflow is disabled"
+				}
+			}
 		}
+	},
+	"offerPositionModal": {
+		"loading": "Loading…",
+		"messagePlaceholder": "Hi! I think you'd be a great fit for this position…",
+		"messageText": "Add a message for the specialist (optional)",
+		"noPositions": "You have no published vacancies",
+		"okText": "Offer",
+		"positionPlaceholder": "Select an open position",
+		"positionText": "Choose one of your open positions to offer",
+		"success": "The offer was sent to the specialist",
+		"title": "Offer a position"
 	},
 	"onboarding": {
 		"completed": {
-			"button": "Let's go"
+			"button": "Let's go",
+			"description": "Welcome aboard. You can now explore projects, teams and opportunities tailored to your interests.",
+			"processingInvitation": "Processing your invitation...",
+			"title": "Your profile was successfully completed!"
 		},
 		"interests": {
+			"back": "Back",
 			"motivation": {
 				"description": "Information about your motivations and preferences. This information will allow the platform to suggest you the most suitable projects, vacancies or candidates for your project."
+			},
+			"saveAndContinue": "Save and continue",
+			"title": "Interests",
+			"wantToBe": {
+				"text": "I want to be"
+			},
+			"youCanChangeItOrAddMoreOnesAfter": "You can change it or add more ones after"
+		},
+		"profile": {
+			"city": {
+				"placeholder": "City"
+			},
+			"confirmUserData": "I confirm the accuracy of the information entered",
+			"description": "General information about new member",
+			"email": {
+				"placeholder": "Email"
+			},
+			"firstName": {
+				"placeholder": "First name"
+			},
+			"lastName": {
+				"placeholder": "Last name"
+			},
+			"saveAndContinue": "Save and continue",
+			"title": "User Profile",
+			"yearOfBirth": {
+				"tooltip": "You should not be younger than 16 years"
 			}
 		},
+		"registration": {
+			"title": "Registration"
+		},
 		"resources": {
-			"availableForOffering": "I'm available for offering"
+			"additionalInformation": "Additional information",
+			"availableForOffering": "I'm available for offering",
+			"availableTime": "Available time",
+			"back": "Back",
+			"description": "How can you be useful to teams?",
+			"description2": "The main resource is your time, which you are willing to spend on participating in projects. You can also provide additional information",
+			"save": "Save",
+			"title": "Recources"
+		},
+		"speciality": {
+			"back": "Back",
+			"fill-additional-fields": "Fill additional fields",
+			"fill-in-from-cv-resume": "Fill in from CV/resume",
+			"hide-additional-fields": "Hide additional fields",
+			"information-about-your-main-speciality": "Information about your main speciality",
+			"save-and-continue": "Save and continue",
+			"upload-pdf": "Upload PDF",
+			"you-can-change-it-or-add-more-ones-after": "You can change it or add more ones after"
 		},
 		"welcome": {
 			"button1": "Fill out the profile",
@@ -863,18 +1770,36 @@
 		}
 	},
 	"online": "online",
-	"oriental fantasy": "Oriental Fantasy",
 	"other": "Other",
 	"page": {
+		"blog": {
+			"readMore": "Read More",
+			"subtitle": "The latest news and articles",
+			"title": "Blog"
+		},
+		"courses": {
+			"myCourses": "My Courses",
+			"subTitle": "Invest your time in knowledge",
+			"title": "Courses"
+		},
 		"devlog": {
+			"applauseAuthTooltip": "Only authorized users can leave applause",
+			"applauseTooltip": "Rate the team's work",
 			"nextPost": "Next post",
 			"previousPost": "Previous post",
-			"title": "Project updates"
+			"title": "Project updates",
+			"untitledProject": "Game Project",
+			"wall": {
+				"title": "Last updates"
+			}
 		},
-		"documentation": {
-			"title": "Documentation"
+		"error404": {
+			"backToHome": "Back to home",
+			"description": "Sorry, we couldn&apos;t find the page you&apos;re looking for.",
+			"title": "Error 404"
 		},
 		"events": {
+			"allEvents": "Events",
 			"createEvent": "Create Event",
 			"gameJamsAndExperiments": "Experience & Experiments",
 			"gameJamsAndExperimentsDescription": "Game jams for practice, experiments, and new connections.",
@@ -885,16 +1810,27 @@
 			"pastEventsDescription": "Here are some of the platform's completed events.",
 			"title": "Events"
 		},
+		"expert": {
+			"back": "Experts"
+		},
 		"experts": {
 			"myExperts": "My requests"
 		},
-		"hab": {
-			"projects": {
-				"subtitle": "Projects developed or being developed by users",
-				"title": "Game Projects"
-			}
-		},
 		"hub": {
+			"activity": "Activity",
+			"advice-from-prefix": "From",
+			"advice-requests": "Advice Requests",
+			"advice-requests.accepted": "Advice request accepted successfully. You can chat now.",
+			"advice-to-prefix": "To",
+			"events": {
+				"empty": {
+					"description": "There are currently no events. Stay tuned for upcoming meetups, workshops, and game jams!",
+					"title": "No events yet"
+				}
+			},
+			"incoming-requests": "Incoming",
+			"member": "Member",
+			"member-joined": "Recently joined",
 			"members": {
 				"text1": "Any registered user of our portal is considered a community member. Today we are",
 				"text2": {
@@ -903,83 +1839,216 @@
 				},
 				"text3": "Authors of indie projects have access to a database of specialists and can invite them to their projects. For this you need to create a project and and bring your project to the recruiting stage."
 			},
+			"new-members": "New members",
+			"outgoing-requests": "Outgoing",
+			"project-updates": "Project updates",
+			"projects": {
+				"allProjects": "All Projects",
+				"availableOnStores": "Available on Stores",
+				"filterByStage": "Filter by stage",
+				"subtitle": "Projects developed independently by users",
+				"title": "Indie Game Projects"
+			},
 			"user-projects": "My projects",
 			"user-projects.empty.description": "You haven't created or joined any projects yet. Begin your game development journey by creating your own project or joining an existing team.",
-			"user-projects.empty.title": "Start Your Game Development Journey"
+			"user-projects.empty.title": "Start Your Game Development Journey",
+			"user-projects.load-error": "Failed to load user projects"
+		},
+		"invite": {
+			"acceptInvitation": "Accept Invitation",
+			"decline": "Decline",
+			"error": "Error",
+			"failedToLoadInvitation": "Failed to load invitation",
+			"goHome": "Go Home",
+			"invitationAlreadyAccepted": "Invitation Already Accepted",
+			"invitationAlreadyAcceptedSubtitle": "This invitation has already been accepted.",
+			"invitationDeclined": "Invitation Declined",
+			"invitationDeclinedSubtitle": "This invitation has been declined.",
+			"invitationExpired": "Invitation Expired",
+			"invitationExpiredSubtitle": "This invitation has expired.",
+			"invitationText": "You have been invited by {inviterName} to join the team of project {projectName} as a {position}.",
+			"startDate": "Start Date",
+			"teamInvitation": "Team Invitation"
+		},
+		"my-project-devlog": {
+			"description": "Tell the world about your project development progress",
+			"title": "Project Devlog"
+		},
+		"my": {
+			"projects": {
+				"settings": {
+					"audition": {
+						"label": "Audition",
+						"placeholder": "Example: people who love cooking games",
+						"tooltip": "The players you target by their interests and tastes — what they enjoy (e.g. people who love cooking)."
+					},
+					"button": {
+						"save": "Save"
+					},
+					"coverImage": {
+						"deletePopover": "Remove project cover",
+						"hint": "To upload an image, click or drag it into this field.",
+						"label": "Cover for the project",
+						"text": "Add a project cover"
+					},
+					"description": {
+						"error": "This field is required",
+						"label": "Short Description"
+					},
+					"genre": {
+						"label": "Genre",
+						"placeholder": "Example: arcade idle + tower defense",
+						"tooltip": "The gameplay genre your project belongs to. You can combine several."
+					},
+					"name": {
+						"label": "Project Name",
+						"placeholder": "Example: Hitman"
+					},
+					"platform": {
+						"label": "Platform",
+						"placeholder": "Example: PC"
+					},
+					"setting": {
+						"label": "Game Setting",
+						"placeholder": "Example: post-apocalyptic/zombie",
+						"tooltip": "The world, theme and atmosphere of the game (e.g. post-apocalyptic, fantasy)."
+					},
+					"videoLink": {
+						"deletePopover": "Remove pitch video",
+						"docs": "How to prepare",
+						"error": "Paste a valid video link (YouTube, Vimeo, Twitch, …)",
+						"label": "Pitch or gameplay video",
+						"placeholder": "https://youtube.com/watch?v=…",
+						"services": "YouTube, Vimeo, Twitch, TikTok, Wistia and more"
+					},
+					"visualStyle": {
+						"label": "Visual Style",
+						"placeholder": "Example: low poly or something reminiscent of brawlstars",
+						"tooltip": "The art style and visual references (e.g. low poly, similar to Brawl Stars)."
+					}
+				}
+			}
 		},
 		"myEvents": {
 			"title": "My Events"
 		},
+		"onboardingError": {
+			"goToRegistration": "Go to registration",
+			"title": "Error!"
+		},
 		"project": {
+			"aboutGame": "Game details",
+			"audition": "Audition",
+			"author": "Project author",
+			"contactTheAuthor": "Contact the author",
+			"developmentStage": "Development stage",
 			"downloadAsImage": "Download as image",
+			"genre": "Genre",
+			"last-updates": "Last updates",
 			"members": {
 				"table-title": "Members"
-			}
+			},
+			"platform": "Platform",
+			"qrCode": "Scan QR Code",
+			"scanToShare": "Scan to share {projectName} on gdhub.io",
+			"setting": "Game Setting",
+			"visualStyle": "Visual Style"
+		},
+		"projects": {
+			"subtitle": "Projects developed independently by users and teams",
+			"title": "Video Games"
+		},
+		"registration": {
+			"agreeWithTermsAndPrivacy": "By joining, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
+			"back": "Back",
+			"backToMain": "Back to main",
+			"continueWithGoogle": "Continue with Google",
+			"email": {
+				"complete": "We have sent an email to {email} with an access link. Follow the link and complete the following registration steps.",
+				"enterEmail": "Enter Email",
+				"pleaseEnterEmail": "Please enter Email",
+				"subtitle": "We will send a letter to email with a registration link"
+			},
+			"iAlreadyHaveAnAccount": "I already have an account",
+			"platformSubtitle": "on the gdhub.io platform",
+			"registrationWithGoogle": "Registration with Google",
+			"sendRegistrationLink": "Send registration link",
+			"subscribeToNewsletter": "Receive platform news"
 		},
 		"vacancies": {
 			"subTitle": "Current project roles and collaboration offers available to join",
 			"title": "Open positions"
 		},
 		"vacancy": {
-			"equityPromise": "Equity Promise",
+			"aboutProject": "About this project",
+			"aboutRole": "About this role",
+			"applied": "You have already responded to this position",
+			"applyAction": "Apply",
+			"applySuccess": "Your response is sent",
+			"compensationTooltip": "Compensation paid by the project for this position.",
+			"equity": "equity",
+			"notAuth": "Only registered users can respond to this position. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>.",
+			"remote": "Remote",
 			"section": {
 				"equityPromiseDescription": "will be allocated upon completion of the necessary stage of the work process",
-				"termsOfCooperation": "Terms of cooperation",
 				"theVacancyIsAcuteBefore": "The position is relevant to"
+			},
+			"subtitle": "The open position from {project} project",
+			"title": "Jobs",
+			"withdrawSuccess": "Your response is withdrawn"
+		},
+		"verify": {
+			"back": "Verify another certificate",
+			"notFound": {
+				"subtitle": "We couldn't find a signed certificate with this number.",
+				"title": "Certificate not found"
+			},
+			"number": {
+				"subtitle": "Issued to {name} on {issuedAt}.",
+				"title": "Verified certificate {number}"
+			}
+		}
+	},
+	"pages": {
+		"live": {
+			"room": {
+				"reports": {
+					"dominant": "Dominant",
+					"endStream": "End stream",
+					"grid": "Grid",
+					"hideTitleSlate": "Hide",
+					"pip": "Pip",
+					"rtmpUrl": "Rtml Url",
+					"showTitleSlate": "Show",
+					"single": "Single",
+					"split": "Split",
+					"startStream": "Start a stream",
+					"subtitle": "Subtitle",
+					"title": "Title"
+				}
 			}
 		}
 	},
 	"participants": "participants",
-	"pitches-will-at-date-on-our-channel": "Project pitches will take place on {date} of the year on our channel in",
-	"platformer": "Platformer",
 	"popup": {
 		"cookie": {
 			"accept": "I accept",
+			"google": "Google services (Google Tag Manager) - Allow us to analyze website traffic and usage to improve your experience",
+			"manage": "Manage cookies",
 			"more": "Read more",
+			"preferences": "Cookie Preferences",
 			"text": "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy."
 		}
 	},
 	"present": "present",
-	"profile-form": {
-		"mentorship": {
-			"card": {
-				"description": "Turn on if you want other community members to contact you for advice."
-			}
-		},
-		"specialities": {
-			"card": {
-				"button": {
-					"add-speciality": "Add Speciality",
-					"change-speciality": "Change"
-				},
-				"description": "Specialties allow you to apply for vacancies from existing projects and conduct lectures.",
-				"no-specialities": "You have not added a single specialty yet.",
-				"title": "Specialties"
-			}
-		}
-	},
 	"profile-forms": {
-		"connect": {
-			"card": {
-				"title": "Telegram connection"
-			}
-		},
 		"general": {
-			"card": {
-				"account": "Account",
-				"location": "Location",
-				"title": "User data"
-			},
 			"field": {
 				"email": {
-					"title": "Email"
-				},
-				"language": "Platform Language",
-				"tgNickname": {
-					"extra": "Indicate without symbol @",
-					"title": "Telegram nickname"
+					"tooltip": "Received from your Google account"
 				}
-			}
+			},
+			"update-message": "Your profile data is updated"
 		},
 		"interests": {
 			"field": {
@@ -999,17 +2068,14 @@
 		},
 		"mentorship": {
 			"card": {
-				"no-specialities": "To become a mentor, you must have at least one specialty of the Experienced or Expert level",
-				"title": "Mentorship"
+				"no-specialities": "To become a mentor, you must have at least one specialty of the Experienced or Expert level"
 			},
 			"field": {
 				"openForQuestions": {
-					"label": "A list of questions that can be addressed to you"
-				},
-				"response-rate": {
-					"help": "How quickly do you plan to respond to new requests?",
-					"label": "Query response rate",
-					"placeholder": "I answer as much as possible"
+					"addPlaceholder": "Add question",
+					"label": "A list of questions that can be addressed to you",
+					"placeholder": "Question",
+					"remove": "Remove question"
 				},
 				"speciality": {
 					"label": "Speciality in which you can help"
@@ -1019,10 +2085,12 @@
 					"label": "Query response rate",
 					"placeholder": "I answer as much as possible"
 				}
-			}
+			},
+			"update-message": "Mentorship settins is updated"
 		},
 		"resources": {
 			"card": {
+				"save": "Save",
 				"title": "Resources"
 			},
 			"field": {
@@ -1030,75 +2098,264 @@
 					"label": "Other resources"
 				},
 				"timeForWork": {
-					"title": "Available time (per week)"
+					"from": "From",
+					"hoursAWeek": "hours a week",
+					"title": "Available time (per week)",
+					"to": "to",
+					"tooltip": "How many hours a week can you pay to participation in projects."
+				},
+				"timeForWorkMax": {
+					"error": "The maximum value cannot be less than the minimum"
 				}
+			},
+			"update-message": "Resource data updated"
+		},
+		"specialities": {
+			"card": {
+				"button": {
+					"add-speciality": "Add",
+					"change-speciality": "Change",
+					"delete-speciality": "You definitely want to remove?",
+					"delete-speciality-no": "No",
+					"delete-speciality-yes": "Yes"
+				},
+				"description": "Specialties allow you to respond to vacancies from existing projects and conduct lectures.",
+				"no-specialities": "You have not added a single specialty yet.",
+				"title": "Specialties"
 			}
 		}
 	},
 	"profile": {
 		"page": {
-			"bio": {
-				"title": "Bio"
+			"actions": {
+				"settings": "Settings"
 			},
 			"skillCapital": {
-				"activeProjects": "Active Projects",
+				"ec": "Execution",
 				"help": {
 					"ec": "Execution Capital from your work as a team member.",
 					"lc": "Leadership Capital from projects where you are the author.",
 					"mc": "Mentorship Capital from completed advisory sessions.",
-					"pcs": "Project Commitment Score based on time, entry stage, and project outcome.",
-					"ri": "Retention index: released projects vs started projects.",
-					"sc": "Total Skill Capital from your project participation.",
-					"sds": "Stage depth: how many project stages you touched."
+					"sc": "Total Skill Capital from your project participation."
 				},
-				"history": "Project History",
-				"history.empty": "No project history",
-				"note": "Metrics are calculated from your project activity and will evolve.",
-				"pcs": "PCS"
+				"lc": "Leadership",
+				"mc": "Mentorship",
+				"note": "Metrics are calculated from your project activity and will evolve."
 			},
-			"specialities": {
-				"title": "Specialities"
-			}
+			"title": "My profile"
 		},
 		"settings": {
+			"danger": {
+				"cancel": "Cancel",
+				"delete": {
+					"button": "Delete Account",
+					"cardDescription": "Permanently anonymize your personal data. Your projects and contributions will be preserved but unlinked from your identity.",
+					"cardTitle": "Delete Account",
+					"confirm": "Delete Account",
+					"confirmEmailLabel": "Type your email",
+					"confirmEmailSuffix": "to confirm deletion.",
+					"reasonLabel": "Reason for deletion (optional)",
+					"reasonPlaceholder": "Tell us why you want to delete your account...",
+					"success": "Your account has been anonymized successfully",
+					"title": "Delete Account",
+					"warning": "This action is irreversible. Your personal data will be anonymized and you will be signed out."
+				},
+				"description": "Export your data or permanently remove your personal information.",
+				"export": {
+					"button": "Export",
+					"cardDescription": "Download a copy of all your personal data stored in the system.",
+					"cardTitle": "Export Personal Data",
+					"confirm": "Export",
+					"description": "Download a machine-readable JSON archive of all your personal data stored on the platform.",
+					"excludedLabel": "What's intentionally excluded",
+					"includedLabel": "What's included in the export",
+					"legalBasis": "Legal basis: GDPR Art. 15 (Right of access) & Art. 20 (Right to data portability)",
+					"success": "Your data has been exported successfully",
+					"title": "Export Personal Data"
+				},
+				"preview": {
+					"noAnonymizeItems": "No data will be anonymized.",
+					"noDeleteItems": "No data will be deleted.",
+					"noDetachItems": "No data will be detached.",
+					"noKeepItems": "No data will be kept.",
+					"willAnonymize": "Will be anonymized:",
+					"willAnonymizeTooltip": "Your name, email, and other identifiers are replaced with generic placeholders (e.g. 'Deleted user'). The record still exists, but no one can link it back to you. GDPR considers anonymized data to no longer be personal data — it's legally equivalent to deletion (Recital 26).",
+					"willDelete": "Will be deleted:",
+					"willDeleteTooltip": "Permanently erased from our servers — no way to recover. This is your right to erasure under GDPR Art. 17.",
+					"willDetach": "Will be detached:",
+					"willDetachTooltip": "Your user ID is removed from these records (set to null). The entries remain for system integrity but no longer point to you in any way.",
+					"willKeep": "Will be kept:",
+					"willKeepTooltip": "These records involve other people's rights too — equity agreements, financial transactions, legal events. They stay linked to an anonymous placeholder, not your real identity. The law allows retaining shared history even after a deletion request (GDPR Art. 89)."
+				}
+			},
 			"menu": {
 				"connections": "Connections",
+				"danger": "Danger Zone",
 				"general": "General",
 				"interests": "Interests",
 				"mentorship": "Mentorship",
+				"payments": "Payments",
 				"resources": "Resources",
 				"specialities": "Specialities "
 			}
+		},
+		"specialityCreated": {
+			"viewYourSpecialities": "View Your Specialities"
 		}
 	},
 	"project": {
-		"create": "Create project"
+		"archived": {
+			"banner": "Project archived since {date}",
+			"banner.unknownDate": "unknown date"
+		},
+		"create": "Create project",
+		"documents": {
+			"addDocument": "Add document",
+			"description": "Description",
+			"documentDeleted": "Document deleted",
+			"noDocuments": "There are no documents at the moment",
+			"title": "Title",
+			"type": "Added by",
+			"updatedAt": "Updated At"
+		},
+		"links": {
+			"addLink": "Add Link",
+			"description": "Add links to your project on various platforms. The primary link will be displayed prominently on your project page.",
+			"invalidUrls": "Please enter valid URLs for all links",
+			"maxLinks": "Maximum 3 links allowed",
+			"noLinks": "No links added yet. Click \"Add Link\" to add first one.",
+			"platformRequired": "Platform is required",
+			"primary": "Primary",
+			"remove": "Remove link",
+			"save": "Save Links",
+			"saveError": "Failed to save links",
+			"saved": "Links saved successfully",
+			"selectPlatform": "Select",
+			"urlInvalid": "Please enter a valid URL",
+			"urlPlaceholder": "https://",
+			"urlRequired": "URL is required"
+		},
+		"openPositions": "Open Positions",
+		"settings": {
+			"danger": {
+				"archive": {
+					"button": "Archive",
+					"cardTitle": "Archive Project",
+					"confirm": "Archive",
+					"description": "Archive keeps the project data but moves the project out of active circulation.",
+					"previewTitle": "The project will be removed from the active list, but all data will be safely preserved. You can restore the project at any time.",
+					"success": "Project archived successfully",
+					"title": "Archive Project"
+				},
+				"cancel": "Cancel",
+				"delete": {
+					"blocked": "This project cannot be deleted. Use Archive Project instead to preserve required history.",
+					"blockedDescription": "The project cannot be deleted because it has the following blockers:",
+					"button": "Delete",
+					"cardTitle": "Delete Project",
+					"confirm": "Delete",
+					"confirmNameLabel": "Type the project name",
+					"confirmNameSuffix": "to confirm deletion.",
+					"description": "Delete permanently removes the project and related data when hard deletion is allowed.",
+					"success": "Project deleted successfully",
+					"title": "Delete Project"
+				},
+				"description": "Archive or permanently delete this project.",
+				"preview": {
+					"noDeleteItems": "No data will be deleted.",
+					"noUpdateItems": "No data will be updated.",
+					"title": "All project data will be deleted without the ability to restore.",
+					"willDelete": "Will be deleted:",
+					"willUpdate": "Will be updated before deletion"
+				},
+				"restore": {
+					"button": "Restore",
+					"cardDescription": "Restore the project and return it to active circulation.",
+					"cardTitle": "Restore Project",
+					"confirm": "Restore",
+					"description": "The project will be returned to the active list with all its data intact.",
+					"success": "Project restored successfully",
+					"title": "Restore Project"
+				}
+			},
+			"menu": {
+				"danger-zone": "Danger Zone",
+				"general": "General",
+				"links": "Links"
+			}
+		}
 	},
-	"projectListByStage": "List of projects at the current stage",
+	"projectCandidatePreviewModal": {
+		"acceptTheTeam": "Accept the team",
+		"close": "Close",
+		"cvPortfolio": "CV/Portfolio",
+		"email": "Email",
+		"freeTime": "Free time",
+		"fromTo": "from {fromDate} to {toDate} hours a week",
+		"go": "Go",
+		"greeting": "Message from the candidate",
+		"message": "Message",
+		"motivation": "Motivation",
+		"notPointed": "(not pointed)",
+		"placeOfResidence": "Place of residence",
+		"reject": "Reject",
+		"telegram": "Telegram",
+		"title": "Candidate card"
+	},
 	"promised equity will become actual": "promised equity will become actual",
-	"puzzle": "Puzzle",
-	"qualified specialists": "qualified specialists",
-	"real life": "Real Life",
-	"registration": "Registration",
-	"registration.email.complete": "We have sent an {email} to email with an access link. Follow the link and complete the following registration steps.",
-	"registration.email.extra": "The email must match the one you entered when you started registering",
-	"registration.email.subtitle": "We will send a letter to email with a registration link",
+	"public-menu": {
+		"contacts": "Contacts",
+		"events": "Events",
+		"for-authors": "For Authors",
+		"for-specialists": "For Specialists",
+		"jobs": "Open positions",
+		"video-games": "Video Games"
+	},
+	"refresh_token_expired": "Your session has expired. Please sign in again.",
 	"relevant for": "relevant for",
-	"resigration-to-demoday": "Registration for Demo Day",
 	"resources": "Recources",
-	"rpg": "Role playing games",
-	"rts": "Real time strategy (RTS)",
-	"save": "Save",
-	"saveAndContinue": "Save and continue",
-	"sci-fi": "Sci-Fi",
-	"seasonsListDesc": "Through the framework of this program, the authors of games can submit their ideas, and other specialists can join development teams and turn these ideas into a computer or mobile game.",
-	"seasonsListEmpty": "At the moment, there are no active launches of the Gamelab incubation program. Follow the announcements of future launches in our chats and social networks. You can also initiate the launch of your project outside of the Gamelab incubation program by filling out",
+	"season-projects-section": {
+		"author": "Author",
+		"button": {
+			"on-the-page-of-the-project": "On the page of the project"
+		},
+		"game-setting": "Game Setting",
+		"genre": "Genre",
+		"no-project": "No project yet.",
+		"platform": "Platform",
+		"project-suits-you": "The project suits you",
+		"visual-style": "Visual style"
+	},
 	"select": "Select",
-	"shooter": "Shooter",
+	"settings": {
+		"payments": {
+			"column": {
+				"amount": "Amount",
+				"date": "Date",
+				"description": "Description",
+				"receipt": "Receipt",
+				"status": "Status"
+			},
+			"download": "Download",
+			"empty": "No payments yet",
+			"subtitle": "Your payment history across the platform.",
+			"title": "Payments",
+			"vacancyFee": "Vacancy listing"
+		}
+	},
 	"signin": "Sign in",
+	"signin.backToMain.title": "Back to main",
+	"signin.createAccount.title": "Create new account",
+	"signin.email.back.title": "Back",
+	"signin.email.backToMain.title": "Return to main",
 	"signin.email.complete": "We have sent an email to {email} using the link to access the platform. Follow this link and use the platform.",
+	"signin.email.label": "Enter Email",
+	"signin.email.sendLink.title": "Send link to email",
+	"signin.email.title": "Log in with email",
+	"signin.google.title": "Log in with Google",
+	"signin.platformSubtitle": "to the gdhub.io platform",
 	"signin.subtitle": "We will send a letter to email with a link to log into your account",
-	"simulation": "Simulation",
+	"signin.title": "Sign in",
 	"skill": {
 		"beginner": {
 			"description": "You know how to do the job, you already have some experience"
@@ -1119,57 +2376,157 @@
 	"skillList": "Skills",
 	"skillList.extra": "Write each skill on a new line. Enter in the format: verb + definition",
 	"skillList.plachehloder": "For example:\ndraw concepts of cartoon characters\ndevelop dialogue systems",
-	"specialisation": "Specialization",
-	"specialisation.plachehloder": "I specialize in...",
 	"specialist": {
 		"preview": {
-			"cardType": "Talent Card"
+			"aboutMe": "About",
+			"active": "Active",
+			"cardType": "Talent Card",
+			"certificate": "Certificate",
+			"certificates": "Certificates",
+			"comment": "Comment",
+			"complianceWithTheAuthor": "Compliance with the author",
+			"complianceWithTheProject": "Compliance with the project",
+			"complianceWithTheTeam": "Compliance with the team",
+			"contacts": "Contacts",
+			"email": "Email",
+			"emailLocked": "The email becomes visible after the specialist accepts your offer.",
+			"experience": "Experience",
+			"goToChat": "Go to chat",
+			"iPreferGameSettings": "Settings",
+			"iPreferGamesOfTheFollowingComplexity": "Complexity",
+			"iPreferGenres": "Favorite genres",
+			"iUseItInWork": "I use in work",
+			"issued": "Issued",
+			"lastUpdated": "Last updated",
+			"links": "Links",
+			"match": "match",
+			"offerPosition": "Offer a position",
+			"past": "Past",
+			"preferencesInGames": "Preferences in games",
+			"professionalInfo": "Professional info",
+			"projectMatch": "Project match",
+			"projects": "Projects",
+			"roleInProject": "Role",
+			"showMore": "Show {count} more",
+			"skills": "Skills",
+			"specialization": "Specialization",
+			"summaryPortfolio": "Summary / Portfolio",
+			"verified": "Verified",
+			"watchVideo": "Watch video",
+			"whereIReceivedKnowledge": "Education"
 		}
 	},
+	"speciality": "speciality",
+	"speciality-step": "Speciality",
 	"specialityLevel": "Level",
 	"specialityName": "Specialty Name",
 	"specialityName.plachehloder": "Example: Unity developer",
 	"specialization": "Specialization ",
 	"specialization.plachehloder": "Example: I specialize in cartoon character concepts",
-	"specilaity": "Speciality",
-	"sport": "Sport",
 	"sports": "Sports",
-	"stage-expired": "At the moment, the reception of ideas is completed.Mentors on the game design are discussing the presented ideas, communicate with their authors.At the end of the discussion, a list of projects that will go further to the stage will be determined Project preparation",
 	"start-and-end-dates": "from {fromDate} to {toDate} ",
-	"subscribeToNewsletter": "Receive platform news",
-	"survival horror": "Survival horror",
 	"table": {
 		"investors": {
 			"description": "List of investors, their investments and purchased shares."
+		},
+		"team": {
+			"compensation": "Compensation"
 		}
 	},
-	"tbs": "Turn based strategy",
-	"th from": "th from",
-	"th of": "th of",
-	"this form": "this form",
+	"team-members": {
+		"title": "Team"
+	},
 	"to": "to",
+	"uploadcv-error-message": "We couldn't process your file. Enter data manually",
 	"user-profile": "User Profile",
-	"user": {
-		"welcome": "Hello, {userName} \uD83D\uDC4B"
-	},
 	"userProjectList": "Your game projects",
-	"users-proposed-concepts-total": "In total, members proposed {total} ideas",
 	"vacancies": {
+		"filter": {
+			"allDirections": "All directions",
+			"type": {
+				"all": "All",
+				"equity": "Equity",
+				"experience": "For experience",
+				"paid": "Paid"
+			}
+		},
 		"list": {
-			"description": "Invest your time in the success of new game projects"
+			"description": "Invest your time in the success of new game projects",
+			"noOpenVacancies": "There are no open positions at the moment",
+			"validUntil": "Relevant to"
 		}
 	},
-	"video games": "video games",
+	"vacancy": {
+		"details": "Details",
+		"enterToSee": "Enter to see",
+		"noOpenVacancies": "There are no open vacancies at the moment",
+		"payment": {
+			"status": {
+				"COMPLETED": "Paid",
+				"FAILED": "Failed",
+				"PENDING": "Pending",
+				"REFUNDED": "Refunded"
+			}
+		},
+		"rate": {
+			"Hourly": "per hour",
+			"Monthly": "per month",
+			"OneTime": "one-time",
+			"hourly": "/ hour",
+			"monthly": "/ month",
+			"oneTime": "one-time",
+			"short": {
+				"Hourly": "/ hour",
+				"Monthly": "/ month",
+				"OneTime": "one-time"
+			}
+		},
+		"title": "Vacancies",
+		"validUntil": "Valid until"
+	},
+	"verify": {
+		"form": {
+			"hint": "You can also open gdhub.io/verify/<NUMBER> to see the result directly.",
+			"label": "Certificate number",
+			"placeholder": "GDH-XXXXXX",
+			"submit": "Verify"
+		},
+		"hero": {
+			"subtitle": "Enter the certificate number printed on the document to confirm its authenticity and view its details.",
+			"title": "Verify a Certificate"
+		},
+		"notFound": {
+			"text": "We couldn't find a signed certificate with number {number}. Either no certificate exists with this number, or it has not been signed yet. Double-check the code and try again.",
+			"title": "No signed certificate found"
+		},
+		"result": {
+			"copied": "Certificate link copied",
+			"copy": "Copy link",
+			"download": "Download PDF",
+			"endDate": "End date",
+			"event": "Event",
+			"mentor": "Lead mentor",
+			"organizer": "Organizer",
+			"project": "Project",
+			"recipient": "Recipient",
+			"signedPdf": "Signed PDF",
+			"startDate": "Start date",
+			"viewEvent": "View event",
+			"viewProject": "View project"
+		}
+	},
 	"wantToBe": {
-		"author": "an Author",
-		"author.description": "I want to create my own games",
-		"mentor": "a Mentor",
-		"mentor.description": "I want to share my expertise",
-		"specialist": "a Specialist",
-		"specialist.description": "I want to join the team",
+		"author": {
+			"description": "I want to create my own games"
+		},
+		"mentor": {
+			"description": "I want to share my expertise"
+		},
+		"specialist": {
+			"description": "I want to join the team"
+		},
 		"text": "I want to be a"
 	},
-	"will present their indie projects": "will present their indie projects",
 	"workDirection": "Field of Activity",
 	"workDirection-2d art & animation": "2D Art & Animation",
 	"workDirection-3d art & animation": "3D Art & Animation",
@@ -1230,14 +2587,38 @@
 				"name": "Closing"
 			}
 		},
-		"current-stage": "Current Stage",
-		"next-stage": "Next Stage",
-		"previous-stage": "Previous",
-		"required-acitons": {
-			"title": "Required Actions"
+		"all-steps": "All steps",
+		"create-workflow": {
+			"modal": {
+				"cancel-text": "Cancel",
+				"ok-text": "Create",
+				"title": "Create workflow",
+				"title-placeholder": "Title",
+				"title-required": "Title is required"
+			}
+		},
+		"equity-transfer": {
+			"description": "By proceeding to the next step, the following equity promises will be transferred to actual allocations:",
+			"title": "Equity Transfer Confirmation",
+			"total": "Total after transfer: {total}%"
+		},
+		"finish-step": "Next step",
+		"next-step": "Go to completion step",
+		"no-tasks": "No tasks for this step",
+		"previous-step": "Previous",
+		"start-step": "Go to the next step",
+		"tasks": {
+			"gate-hint": "Required tasks unlock the next step. Optional ones can be skipped.",
+			"optional": "Optional",
+			"required": "Required",
+			"required-progress": "{done} of {total} required",
+			"title": "Tasks"
 		}
 	},
 	"yearOfBirth": "Year of Birth",
 	"yes": "Yes",
-	"zombie": "Zombie"
+	"Доля должна быть больше 0": "The share must be greater than 0",
+	"Недостаточно долей для передачи": "Not enough equity to transfer",
+	"Передача доли участнику": "Transfer equity to a member",
+	"Участник": "Member"
 }
