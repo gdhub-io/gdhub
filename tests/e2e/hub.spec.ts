@@ -8,8 +8,6 @@ const HUB_ROUTES = [
 	"/hub/experts",
 	"/hub/jobs",
 	"/hub/members",
-	"/hub/lectures",
-	"/hub/docs",
 ];
 
 for (const path of HUB_ROUTES) {

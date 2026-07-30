@@ -23,9 +23,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { genConfig } from "react-nice-avatar";
 import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
+import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { isAvailableLocale } from "@/config/locale";
 import { appThemeConfig } from "@/config/theme";
 import { hasRole } from "@/helpers/user";
@@ -41,13 +43,14 @@ const { Content } = Layout;
 const { Text } = Typography;
 
 /**
- * Общая обвязка защищённых страниц: AntD ConfigProvider, top-nav (logo,
- * dropdown, notifications, chat), top-menu, мобильный Drawer, AIAgentDrawer,
- * ChatModal. Используется в `app/(protected)/layout.tsx`.
+ * The single shell of the authenticated app, mounted once in
+ * `app/(app)/layout.tsx`: AntD ConfigProvider, top header (logo, breadcrumbs,
+ * navigation, actions), mobile drawer and ChatModal.
  *
- * Per-page hero (заголовок, subTitle, extra, backButton, breadcrumbs)
- * рендерится не здесь — страницы вставляют <ProtectedPageHeader> в своё
- * содержимое.
+ * Breadcrumbs and top navigation default to the hub ones, and are replaced by
+ * whatever the current space publishes through `useSetSpaceHeader` (project,
+ * event, admin). Per-page heroes are not rendered here — pages put
+ * <ProtectedPageHeader> into their own content.
  */
 export function ProtectedShell({ children }: { children: ReactNode }) {
 	const pathname = usePathname() ?? "";
@@ -57,11 +60,22 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
 	const { setOpenChatModal } = useChat();
+	const spaceHeader = useSpaceHeader();
 
 	const isAdmin = useMemo(() => {
 		if (!session) return false;
 		return hasRole(prismaClient.UserRole.Admin, { data: session });
 	}, [session]);
+
+	/** Fallback avatar for users without an uploaded image. */
+	const avatarConfig = useMemo(() => {
+		if (!session?.user.email) return;
+
+		const config = genConfig(session.user.email);
+		config.hairStyle = "normal";
+
+		return config;
+	}, [session?.user.email]);
 
 	useEffect(() => {
 		const unsetOverflow = () => {
@@ -267,30 +281,36 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				<Layout className={styles.container}>
 					<AppHeader
 						className={styles.header}
-						breadcrumbItems={[
-							{
-								title: (
-									<Space>
-										<Avatar src={session?.user?.image ?? undefined} size={24} />
-										{screens.sm ? (
-											<Text className="username">{session?.user?.name}</Text>
-										) : null}
-									</Space>
-								),
-							},
-						]}
+						breadcrumbItems={
+							spaceHeader?.breadcrumbItems ?? [
+								{
+									title: (
+										<Space>
+											<Avatar
+												src={session?.user?.image ?? undefined}
+												size={24}
+											/>
+											{screens.sm ? (
+												<Text className="username">{session?.user?.name}</Text>
+											) : null}
+										</Space>
+									),
+								},
+							]
+						}
 						actions={
 							<HeaderActions
 								dropdownMenuItems={dropdownMenuItems}
 								onOpenMobileMenu={() => setOpenMobileMenu(true)}
 								onOpenChat={() => setOpenChatModal(true)}
+								avatarConfig={avatarConfig}
 							/>
 						}
 						menu={
 							<Menu
-								items={menuItems}
+								items={spaceHeader?.menuItems ?? menuItems}
 								mode="horizontal"
-								selectedKeys={[pathname]}
+								selectedKeys={spaceHeader?.menuSelectedKeys ?? [pathname]}
 								className={styles.appMenu}
 							/>
 						}

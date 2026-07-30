@@ -62,7 +62,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					),
 				);
 
-				router.push("/hub/events/my");
+				router.push("/user/events");
 			},
 			okText: t("event.settings.danger.archive.button", "Archive"),
 			cancelText: t("event.settings.danger.archive.cancel", "No"),
@@ -86,7 +86,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					),
 				);
 
-				router.push("/hub/events/my");
+				router.push("/user/events");
 			},
 			okText: t("event.settings.danger.delete.button", "Delete"),
 			cancelText: t("event.settings.danger.delete.cancel", "No"),
@@ -110,7 +110,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					),
 				);
 
-				router.push("/hub/events/my");
+				router.push("/user/events");
 			},
 			okText: t("event.settings.danger.restore.button", "Restore"),
 			cancelText: t("event.settings.danger.restore.cancel", "No"),

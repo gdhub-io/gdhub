@@ -66,7 +66,7 @@ export const Project: Story = {
 export const Event: Story = {
 	args: {
 		breadcrumbItems: [
-			{ title: <Link href="/hub/events/my">My events</Link> },
+			{ title: <Link href="/user/events">My events</Link> },
 			{ title: <Text ellipsis={{ tooltip: true }}>GameDev Meetup 2026</Text> },
 		],
 	},

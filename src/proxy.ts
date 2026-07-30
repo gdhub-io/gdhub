@@ -68,5 +68,6 @@ export const config = {
 		"/user/:path*",
 		"/live/:path*",
 		"/admin/:path*",
+		"/dev/:path*",
 	],
 };

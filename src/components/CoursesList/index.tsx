@@ -97,7 +97,7 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 											href={
 												location === "hub"
 													? `/hub/courses/${course.slug}`
-													: `/courses/${course.slug}`
+													: `/course/${course.slug}`
 											}
 										>
 											<Button type="primary" className="black-btn">

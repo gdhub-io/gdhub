@@ -184,7 +184,7 @@ const CreateCourseModal = ({
 					>
 						<Input
 							variant="filled"
-							prefix="/courses/"
+							prefix="/course/"
 							onChange={handleSlugChange}
 						/>
 					</Form.Item>

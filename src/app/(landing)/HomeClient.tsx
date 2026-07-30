@@ -16,7 +16,8 @@ import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./home.module.scss";
 
 const LandingLayout = dynamic(
-	() => import("@/layouts/LandingLayout").then((m) => m.LandingLayout),
+	() =>
+		import("@/components/layouts/LandingLayout").then((m) => m.LandingLayout),
 	{ ssr: false },
 );
 const LandingHeroSection = dynamic(

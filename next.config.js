@@ -66,7 +66,7 @@ const nextConfig = {
 	},
 	redirects: async () => [
 		// /profile/settings/X → /user/settings/X (settings moved from
-		// protected/profile → (spaces)/user/settings).
+		// protected/profile → (app)/(spaces)/user/settings).
 		{
 			source: "/profile/settings",
 			destination: "/user/settings/general",
@@ -100,11 +100,27 @@ const nextConfig = {
 			destination: "/course/:path*",
 			permanent: true,
 		},
-		// "My courses" moved from the hub into the personal user space.
+		// Personal lists moved from the hub into the user space.
 		{
 			source: "/hub/courses/my",
 			destination: "/user/courses",
 			permanent: true,
+		},
+		{
+			source: "/hub/events/my",
+			destination: "/user/events",
+			permanent: true,
+		},
+		// The hub docs viewer was dropped; documentation lives on its own domain.
+		{
+			source: "/hub/docs",
+			destination: "https://docs.gdhub.io",
+			permanent: false,
+		},
+		{
+			source: "/hub/docs/:path*",
+			destination: "https://docs.gdhub.io",
+			permanent: false,
 		},
 	],
 	headers: async () => [
