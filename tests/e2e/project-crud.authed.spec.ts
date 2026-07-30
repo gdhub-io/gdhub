@@ -5,6 +5,9 @@ const ts = () => Date.now().toString(36);
 test("create → edit in settings/general → delete via danger zone", async ({
 	page,
 }) => {
+	// Creation alone runs AI validation and can take ~25s on a dev server, so the
+	// default 30s test budget leaves nothing for the edit and delete steps.
+	test.setTimeout(120_000);
 	const initialName = `E2E Project ${ts()}`;
 	const renamedName = `${initialName} Renamed`;
 	const description = "Created by the project-crud e2e test.";
@@ -26,7 +29,9 @@ test("create → edit in settings/general → delete via danger zone", async ({
 		.check();
 
 	await Promise.all([
-		page.waitForURL(/\/my\/projects\/[^/]+(\/|$)/, { timeout: 15_000 }),
+		// Same generous window as paid-vacancy: creation runs AI validation and,
+		// on a cold dev server, compiles the route on first hit. 15s was not enough.
+		page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 60_000 }),
 		modal.getByRole("button", { name: /^create$/i }).click(),
 	]);
 

@@ -25,7 +25,7 @@ async function createProject(page: Page): Promise<string> {
 		.check();
 	await Promise.all([
 		// Generous timeout: on a cold dev server the route compiles on first hit.
-		page.waitForURL(/\/my\/projects\/[^/]+(\/|$)/, { timeout: 60_000 }),
+		page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 60_000 }),
 		modal.getByRole("button", { name: /^create$/i }).click(),
 	]);
 	const slug = new URL(page.url()).pathname.split("/").filter(Boolean).at(-1);
@@ -67,7 +67,7 @@ test("paid vacancy: create draft → offered comp + pending → edit reload → 
 	test.setTimeout(150_000);
 
 	const slug = await createProject(page);
-	await page.goto(`/user/project/${slug}/vacancies`);
+	await page.goto(`/user/project/${slug}/open-positions`);
 	const addBtn = page.getByRole("button", { name: /add open position/i });
 	await expect(addBtn).toBeVisible();
 
@@ -149,7 +149,7 @@ test("free vacancy: publish without payment → published, no fee", async ({
 	test.setTimeout(150_000);
 
 	const slug = await createProject(page);
-	await page.goto(`/user/project/${slug}/vacancies`);
+	await page.goto(`/user/project/${slug}/open-positions`);
 	const addBtn = page.getByRole("button", { name: /add open position/i });
 	await expect(addBtn).toBeVisible();
 

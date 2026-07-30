@@ -20,7 +20,7 @@
 		"lint": "biome check --diagnostic-level=error ./src",
 		"type-check": "tsc --noEmit",
 		"prepare": "husky install",
-		"refresh-translations": "node import-translations.js",
+		"refresh-translations": "dotenv -- node scripts/import-translations.js",
 		"db:generate": "gdhub-prisma generate",
 		"db:status": "gdhub-prisma status",
 		"db:deploy": "gdhub-prisma deploy",
@@ -30,7 +30,8 @@
 		"test:e2e": "dotenv -e .env.test -- playwright test",
 		"test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
 		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test",
-		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs"
+		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs",
+		"queues:clean": "dotenv -- node scripts/clean-queues.mjs"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",

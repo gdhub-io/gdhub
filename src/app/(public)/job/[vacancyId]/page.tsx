@@ -20,7 +20,10 @@ const loadVacancy = cache(
 				},
 			);
 			if (!response.ok) return null;
-			return (await response.json()) as JobPageProps["vacancy"];
+			const data = (await response.json()) as JobPageProps["vacancy"] | null;
+			// A body without an id is not a vacancy, whatever the status said.
+			if (!data?.id) return null;
+			return data;
 		} catch (error) {
 			console.error("Error fetching vacancy:", error);
 			return null;

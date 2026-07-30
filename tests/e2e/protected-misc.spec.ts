@@ -9,7 +9,7 @@ const PROTECTED_ROUTES = [
 	"/user/course/__no__",
 	"/user/project/__no__",
 	"/user/project/__no__/team",
-	"/user/project/__no__/vacancies",
+	"/user/project/__no__/open-positions",
 	"/user/project/__no__/workflow",
 	"/user/project/__no__/devlog",
 	"/user/project/__no__/documents",

@@ -867,6 +867,8 @@
 	"other": "Other",
 	"page": {
 		"devlog": {
+			"nextPost": "Next post",
+			"previousPost": "Previous post",
 			"title": "Project updates"
 		},
 		"documentation": {
@@ -1044,15 +1046,15 @@
 					"ec": "Execution Capital from your work as a team member.",
 					"lc": "Leadership Capital from projects where you are the author.",
 					"mc": "Mentorship Capital from completed advisory sessions.",
-					"sc": "Total of Leadership, Execution, and Mentorship capital."
+					"pcs": "Project Commitment Score based on time, entry stage, and project outcome.",
+					"ri": "Retention index: released projects vs started projects.",
+					"sc": "Total Skill Capital from your project participation.",
+					"sds": "Stage depth: how many project stages you touched."
 				},
 				"history": "Project History",
 				"history.empty": "No project history",
 				"note": "Metrics are calculated from your project activity and will evolve.",
-				"ec": "Execution",
-				"lc": "Leadership",
-				"mc": "Mentorship",
-				"sc": "Skill Capital"
+				"pcs": "PCS"
 			},
 			"specialities": {
 				"title": "Specialities"

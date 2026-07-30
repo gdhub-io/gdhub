@@ -82,13 +82,17 @@ export async function cleanupTestUserProjects() {
 		.map((m) => m.team.project?.id)
 		.filter((id): id is string => Boolean(id));
 
-	// Best-effort cleanup. Project has plenty of relations (ProjectEquity etc.)
-	// that the app's own lifecycle handler cascades through; from Prisma alone
-	// FK violations are expected. If cascade fails, mark the project Archived
-	// so it stops showing up in the test user's UI.
+	// `deleteProject` is the package extension the app itself uses — it clears
+	// ProjectEquity and the other relations first. A plain `project.delete()`
+	// always tripped `ProjectEquity_projectId_fkey`, so every run fell through to
+	// the archive branch and left orphans piling up in the test database.
+	// Archiving stays as the fallback, so a new relation can't break setup.
 	for (const id of projectIds) {
 		try {
-			await prisma.project.delete({ where: { id } });
+			await prisma.project.deleteProject({
+				projectId: id,
+				authorId: user.id,
+			});
 		} catch {
 			await prisma.project
 				.update({

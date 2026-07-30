@@ -71,7 +71,7 @@ test.describe.serial("team invitation flow", () => {
 			.check();
 
 		await Promise.all([
-			page.waitForURL(/\/my\/projects\/[^/]+(\/|$)/, { timeout: 30_000 }),
+			page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 30_000 }),
 			createModal.getByRole("button", { name: /^create$/i }).click(),
 		]);
 
