@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
 import { useTolgee } from "@tolgee/react";
 import { Button, Flex, Space, Typography } from "antd";
 import Link from "next/link";
@@ -16,7 +16,7 @@ import styles from "./style.module.scss";
 const { Text } = Typography;
 
 export interface EventPageProps {
-	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+	event: Event & { schedule: EventScheduleItem[] };
 	seo?: {
 		title: string | null;
 		description?: string | null;

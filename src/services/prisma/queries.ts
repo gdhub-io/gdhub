@@ -1,4 +1,4 @@
-import type { ProjectLink } from "@/types/project";
+import type { ProjectActivityRow, ProjectLink } from "@/types/project";
 import { prisma } from ".";
 
 /**
@@ -71,9 +71,9 @@ export const isProjectAvailableOnStores = ({
 };
 
 export const getWorkedProjects = async () => {
-	const projects = await prisma.project.getProjectsOrderedByActivity({
+	const projects = (await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
-	});
+	})) as ProjectActivityRow[];
 	const projectIds = projects.map((project) => project.id);
 	const publishedVacancies = await prisma.teamVacancy.findMany({
 		where: {

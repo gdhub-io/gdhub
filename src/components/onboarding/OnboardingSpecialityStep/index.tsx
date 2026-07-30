@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Speciality, WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { AiOutlineDown } from "@react-icons/all-files/ai/AiOutlineDown";
 import { AiOutlineUp } from "@react-icons/all-files/ai/AiOutlineUp";
 import { PiWarningCircleLight } from "@react-icons/all-files/pi/PiWarningCircleLight";
@@ -55,18 +55,16 @@ export const OnboardingSpecialityStep = ({
 	} = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 		staleTime: Infinity,
 	});
 
 	const { data: specialityResponse } = useQuery({
 		queryKey: ["onboarding", "speciality"],
 		queryFn: () =>
-			axios.get<
-				prismaClient.Speciality & { direction: prismaClient.WorkDirection }
-			>("/api/auth/registration/onboarding/speciality"),
+			axios.get<Speciality & { direction: WorkDirection }>(
+				"/api/auth/registration/onboarding/speciality",
+			),
 		refetchInterval: false,
 		refetchOnWindowFocus: false,
 	});

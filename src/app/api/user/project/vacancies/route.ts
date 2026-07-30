@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PayableType, TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -27,8 +27,8 @@ export const GET = withAuth({ mode: "user" })(
 			where: {
 				teamId,
 				status: isArchive
-					? { equals: prismaClient.TeamVacancyStatus.Closed }
-					: { not: prismaClient.TeamVacancyStatus.Closed },
+					? { equals: TeamVacancyStatus.Closed }
+					: { not: TeamVacancyStatus.Closed },
 			},
 			include: {
 				direction: { select: { name: true } },
@@ -38,7 +38,7 @@ export const GET = withAuth({ mode: "user" })(
 		const payments = vacancies.length
 			? await prisma.payment.findMany({
 					where: {
-						payableType: prismaClient.PayableType.VACANCY,
+						payableType: PayableType.VACANCY,
 						payableId: { in: vacancies.map((v) => v.id) },
 					},
 					orderBy: { createdAt: "desc" },

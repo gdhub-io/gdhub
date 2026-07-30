@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	MatchingSpecialistAndProject,
+	Speciality,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Space, Table, Tag, Typography, theme } from "antd";
@@ -30,8 +34,8 @@ const MyProjectAIReccomendCandidates = ({
 		queryKey: ["AICandidates", projectId],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.MatchingSpecialistAndProject & {
-					specialist: prismaClient.Speciality & { user: prismaClient.User };
+				(MatchingSpecialistAndProject & {
+					specialist: Speciality & { user: User };
 				})[]
 			>("/api/user/project/ai-candidates", {
 				params: { projectId },

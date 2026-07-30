@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { EventFormat, Language } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -27,13 +27,9 @@ const UserEventScheduleItemSchema = z.object({
 	),
 	directionId: z.string(),
 	format: z
-		.enum(
-			Object.values(prismaClient.$Enums.EventFormat) as [string, ...string[]],
-		)
+		.enum(Object.values(EventFormat) as [string, ...string[]])
 		.optional(),
-	language: z
-		.enum(Object.values(prismaClient.$Enums.Language) as [string, ...string[]])
-		.optional(),
+	language: z.enum(Object.values(Language) as [string, ...string[]]).optional(),
 });
 
 type UserEventScheduleItemBody = z.infer<typeof UserEventScheduleItemSchema>;
@@ -60,8 +56,8 @@ export const PUT = withAuth({ mode: "user" })(
 					description: data.description,
 					url: data.url,
 					directionId: data.directionId,
-					format: data.format as prismaClient.$Enums.EventFormat,
-					language: data.language as prismaClient.$Enums.Language,
+					format: data.format as EventFormat,
+					language: data.language as Language,
 					startDate: data.startDate,
 					endDate: data.endDate,
 					speakers: data.speakers?.length

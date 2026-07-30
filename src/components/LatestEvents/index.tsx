@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event } from "@gdhub-io/gdhub-prisma";
 import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -14,7 +14,7 @@ import {
 } from "@/components/hub/HubSection";
 import styles from "./styles.module.scss";
 
-type LatestEvent = prismaClient.Event & {
+type LatestEvent = Event & {
 	schedule?: { startDate: string; endDate: string }[];
 };
 

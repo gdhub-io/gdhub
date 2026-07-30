@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { SubscriptionStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import type { NextRequest } from "next/server";
 import { env } from "@/helpers/env";
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 		await prisma.subscription.update({
 			where: { providerId: subscription_id },
 			data: {
-				status: prismaClient.SubscriptionStatus.Canceled,
+				status: SubscriptionStatus.Canceled,
 				endDate: dayjs().toDate(),
 			},
 		});

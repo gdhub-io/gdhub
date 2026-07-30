@@ -1,4 +1,12 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	type Lecture,
+	type LectureListener,
+	type LecturerRequest,
+	LectureStage,
+	type Speciality,
+	type User,
+	type WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Grid, Modal, message, Spin } from "antd";
@@ -10,12 +18,12 @@ import { ReadyContent } from "./ReadyContent";
 import { RequestedContent } from "./RequestedContent";
 import styles from "./style.module.scss";
 
-export type LectureDetails = prismaClient.Lecture & {
-	lecturerRequests: (prismaClient.LecturerRequest & {
-		user: prismaClient.User & { specialities: prismaClient.Speciality[] };
+export type LectureDetails = Lecture & {
+	lecturerRequests: (LecturerRequest & {
+		user: User & { specialities: Speciality[] };
 	})[];
-	listeners: prismaClient.LectureListener[];
-	direction: prismaClient.WorkDirection;
+	listeners: LectureListener[];
+	direction: WorkDirection;
 };
 
 const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
@@ -85,7 +93,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 	const okText = () => {
 		if (!lecture?.data) return null;
 
-		if (lecture.data.stage == prismaClient.LectureStage.Ready) {
+		if (lecture.data.stage == LectureStage.Ready) {
 			return userIsRegistered
 				? t(
 						"modal.lectureDetails.youAreAlreadyRegistered",
@@ -136,7 +144,7 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 			cancelText={t("modal.lectureDetails.close", "Close")}
 			okText={okText()}
 			okButtonProps={{
-				hidden: lecture?.data.stage !== prismaClient.LectureStage.Ready,
+				hidden: lecture?.data.stage !== LectureStage.Ready,
 			}}
 			open={open}
 			onOk={handleOk}
@@ -148,16 +156,16 @@ const LectureDetailsModal = ({ lectureId, open, onCancel }: any) => {
 				{!!lecture && (
 					<>
 						{[
-							prismaClient.LectureStage.Requested as string,
-							prismaClient.LectureStage.Proposed as string,
-							prismaClient.LectureStage.Actualized as string,
+							LectureStage.Requested as string,
+							LectureStage.Proposed as string,
+							LectureStage.Actualized as string,
 						].includes(lecture.data.stage) && (
 							<RequestedContent lecture={lecture.data} />
 						)}
-						{lecture.data.stage == prismaClient.LectureStage.Ready && (
+						{lecture.data.stage == LectureStage.Ready && (
 							<ReadyContent lecture={lecture.data} />
 						)}
-						{lecture.data.stage == prismaClient.LectureStage.Held && (
+						{lecture.data.stage == LectureStage.Held && (
 							<HeldContent lecture={lecture.data} />
 						)}
 					</>

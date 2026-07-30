@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus, SkillLevel, TeamMemberStatus, UserRole } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "../../../src/services/prisma";
 
 export const TEST_USER_EMAIL =
@@ -9,7 +9,7 @@ export const TEST_USER_EMAIL =
  * e2e-credentials provider can sign in as. Idempotent.
  *
  * Requires the test DB to already be seeded with at least one WorkDirection
- * (run `yarn db:seed --env-file .env.test` once before).
+ * (run `bun run db:seed --env-file .env.test` once before).
  *
  * - `matrixUserId` is set to a stub so the JWT callback in src/auth.ts skips
  *   `ensureMatrixUser()` (no Matrix server needed for tests).
@@ -23,7 +23,7 @@ export async function ensureTestUser() {
 	if (!direction) {
 		throw new Error(
 			"No WorkDirection rows in the test DB. Seed the base data first " +
-				"(`yarn db:seed --env-file .env.test`).",
+				"(`bun run db:seed --env-file .env.test`).",
 		);
 	}
 
@@ -35,12 +35,12 @@ export async function ensureTestUser() {
 			emailVerified: new Date(),
 			matrixUserId: "@e2e-test:matrix.local",
 			onboardingDone: true,
-			roles: [prismaClient.UserRole.Author, prismaClient.UserRole.Member],
+			roles: [UserRole.Author, UserRole.Member],
 		},
 		update: {
 			matrixUserId: "@e2e-test:matrix.local",
 			onboardingDone: true,
-			roles: { set: [prismaClient.UserRole.Author, prismaClient.UserRole.Member] },
+			roles: { set: [UserRole.Author, UserRole.Member] },
 		},
 	});
 
@@ -52,7 +52,7 @@ export async function ensureTestUser() {
 			data: {
 				name: "E2E Test Speciality",
 				specialization: "E2E Test Specialization",
-				level: prismaClient.SkillLevel.Skillful,
+				level: SkillLevel.Skillful,
 				user: { connect: { id: user.id } },
 				direction: { connect: { id: direction.id } },
 			} as never,
@@ -71,7 +71,7 @@ export async function cleanupTestUserProjects() {
 		where: { email: TEST_USER_EMAIL },
 		include: {
 			memberInTeams: {
-				where: { status: prismaClient.TeamMemberStatus.Founder },
+				where: { status: TeamMemberStatus.Founder },
 				select: { team: { select: { project: { select: { id: true } } } } },
 			},
 		},
@@ -93,7 +93,7 @@ export async function cleanupTestUserProjects() {
 			await prisma.project
 				.update({
 					where: { id },
-					data: { status: prismaClient.ProjectStatus.Archived },
+					data: { status: ProjectStatus.Archived },
 				})
 				.catch(() => undefined);
 		}

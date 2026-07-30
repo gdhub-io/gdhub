@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Lecture,
+	LecturerRequest,
+	WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -23,15 +27,14 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { data: session } = useSession();
-	const [speakerRequest, setSpeakerRequest] =
-		useState<prismaClient.LecturerRequest>();
+	const [speakerRequest, setSpeakerRequest] = useState<LecturerRequest>();
 
 	const { data: lectureRequest, isLoading: isLoadingLecture } = useQuery({
 		queryKey: ["lecturer-request", lectureId],
 		queryFn: () =>
 			axios.get<
-				prismaClient.Lecture & {
-					lecturerRequests: prismaClient.LecturerRequest[];
+				Lecture & {
+					lecturerRequests: LecturerRequest[];
 				}
 			>("/api/user/lecture", {
 				params: { id: lectureId },
@@ -70,7 +73,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	}, [lectureRequest?.data]);
 
 	const { mutateAsync: createLecturerRequest } = useMutation({
-		mutationFn: (data: Partial<prismaClient.LecturerRequest>) =>
+		mutationFn: (data: Partial<LecturerRequest>) =>
 			axios.post<any>(`/api/user/lecture/${lectureId}/lecturer`, data),
 	});
 
@@ -80,7 +83,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 			data,
 		}: {
 			lecturerRequestId: string;
-			data: Partial<prismaClient.LecturerRequest>;
+			data: Partial<LecturerRequest>;
 		}) =>
 			axios.put<any>(
 				`/api/user/lecture/${lectureId}/lecturer/${lecturerRequestId}`,
@@ -91,9 +94,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const { data: workDirections } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 		staleTime: Infinity,
 	});
 

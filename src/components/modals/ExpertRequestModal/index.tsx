@@ -1,4 +1,7 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	AdviceRequest,
+	ProjectWorkflowStep,
+} from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -19,6 +22,7 @@ import {
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect } from "react";
+import { AdviceRequestStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 interface ExpertRequestModalProps {
@@ -39,7 +43,7 @@ type UserProject = {
 	workflow: {
 		id: string;
 		title: string;
-		currentStep: prismaClient.ProjectWorkflowStep;
+		currentStep: ProjectWorkflowStep;
 	} | null;
 };
 
@@ -91,9 +95,7 @@ export default function ExpertRequestModal({
 		queryKey: ["adviceRequest", adviceRequestId],
 		queryFn: () =>
 			axios
-				.get<prismaClient.AdviceRequest>(
-					`/api/user/advice-request/${adviceRequestId}`,
-				)
+				.get<AdviceRequest>(`/api/user/advice-request/${adviceRequestId}`)
 				.then((res) => res.data),
 		enabled: !!adviceRequestId && open,
 	});
@@ -122,8 +124,8 @@ export default function ExpertRequestModal({
 		mutateAsync: createExpertRequest,
 		isPending: isCreatingExpertRequest,
 	} = useMutation({
-		mutationFn: (data: Partial<prismaClient.AdviceRequest>) =>
-			axios.post<prismaClient.AdviceRequest>("/api/user/advice-request", data),
+		mutationFn: (data: Partial<AdviceRequest>) =>
+			axios.post<AdviceRequest>("/api/user/advice-request", data),
 	});
 
 	const {
@@ -131,9 +133,7 @@ export default function ExpertRequestModal({
 		isPending: isCancellingExpertRequest,
 	} = useMutation({
 		mutationFn: ({ id }: { id: string }) =>
-			axios.put<prismaClient.AdviceRequest>(
-				`/api/user/advice-request/${id}/cancel`,
-			),
+			axios.put<AdviceRequest>(`/api/user/advice-request/${id}/cancel`),
 	});
 
 	useEffect(() => {
@@ -205,18 +205,16 @@ export default function ExpertRequestModal({
 					isCreatingExpertRequest ||
 					isCancellingExpertRequest ||
 					(adviceRequest
-						? adviceRequest.status !== prismaClient.AdviceRequestStatus.Created
+						? adviceRequest.status !== AdviceRequestStatus.Created
 						: false),
 			}}
 			okText={
-				adviceRequestId &&
-				adviceRequest?.status === prismaClient.AdviceRequestStatus.Created
+				adviceRequestId && adviceRequest?.status === AdviceRequestStatus.Created
 					? t("modal.expert.cancelRequest", "Cancel request")
 					: t("modal.expert.sendRequest", "Send request")
 			}
 			okType={
-				adviceRequestId &&
-				adviceRequest?.status === prismaClient.AdviceRequestStatus.Created
+				adviceRequestId && adviceRequest?.status === AdviceRequestStatus.Created
 					? "danger"
 					: "primary"
 			}

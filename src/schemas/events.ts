@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { EventStatus, EventType, Language } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 
 export enum EventTimeStatus {
@@ -21,19 +21,13 @@ const booleanish = z.preprocess((v) => {
 }, z.boolean().optional());
 
 export const EventsCountQuerySchema = z.object({
-	type: enumArray(
-		Object.values(prismaClient.EventType) as [string, ...string[]],
-	),
-	status: enumArray(
-		Object.values(prismaClient.EventStatus) as [string, ...string[]],
-	),
+	type: enumArray(Object.values(EventType) as [string, ...string[]]),
+	status: enumArray(Object.values(EventStatus) as [string, ...string[]]),
 	timeStatus: enumArray(
 		Object.values(EventTimeStatus) as [string, ...string[]],
 	),
 	withDates: booleanish,
-	lang: z
-		.enum(Object.values(prismaClient.Language) as [string, ...string[]])
-		.optional(),
+	lang: z.enum(Object.values(Language) as [string, ...string[]]).optional(),
 });
 
 export type EventsCountQuery = z.infer<typeof EventsCountQuerySchema>;

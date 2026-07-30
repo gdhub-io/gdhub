@@ -1,5 +1,4 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -45,7 +44,7 @@ const e2eCredentialsProvider = CredentialsProvider({
 });
 
 export const authConfig: NextAuthConfig = {
-	adapter: PrismaAdapter(prisma as unknown as prismaClient.PrismaClient),
+	adapter: PrismaAdapter(prisma),
 	secret: env("NEXTAUTH_SECRET"),
 	trustHost: true,
 	session: { strategy: "jwt" },

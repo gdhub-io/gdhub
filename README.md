@@ -12,33 +12,33 @@ Tolgee (i18n) · BullMQ + Redis · Typesense · Paddle · Biome · Vitest + Play
 ## Requirements
 
 - Node.js >= 20.9
-- Yarn
+- Bun >= 1.2 (the only supported package manager — see `packageManager` in `package.json`)
 - PostgreSQL and Redis (or use `docker-compose up`)
 
 ## Getting started
 
 ```bash
-yarn install
-cp .env.example .env      # fill in the values
-yarn db:generate          # generate the Prisma client
-yarn dev                  # http://localhost:3000
+bun install
+cp .env.example .env          # fill in the values
+bun run db:generate           # generate the Prisma client
+bun run dev                   # http://localhost:3000
 ```
 
 ## Common commands
 
 | Task | Command |
 |------|---------|
-| Dev server (Turbopack) | `yarn dev` |
-| Production build | `yarn build` |
-| Lint (Biome) | `yarn lint` |
-| Type-check | `yarn type-check` |
-| Unit tests | `yarn test` |
-| E2E tests (Playwright) | `yarn test:e2e` |
-| Refresh translations | `yarn refresh-translations` |
-| Prisma client | `yarn db:generate` |
-| Storybook | `yarn storybook` |
+| Dev server (Turbopack) | `bun run dev` |
+| Production build | `bun run build` |
+| Lint (Biome) | `bun run lint` |
+| Type-check | `bun run type-check` |
+| Unit tests | `bun run test` |
+| E2E tests (Playwright) | `bun run test:e2e` |
+| Refresh translations | `bun run refresh-translations` |
+| Prisma client | `bun run db:generate` |
+| Storybook | `bun run storybook` |
 
-Pre-PR checklist: `yarn lint && yarn type-check && yarn test`.
+Pre-PR checklist: `bun run lint && bun run type-check && bun run test`.
 
 ## Project structure
 

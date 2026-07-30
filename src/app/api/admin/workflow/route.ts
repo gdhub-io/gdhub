@@ -1,5 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import type { Prisma } from "@prisma/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -21,7 +20,7 @@ type CreateWorkflowBody = z.infer<typeof CreateWorkflowSchema>;
 
 export const POST = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(CreateWorkflowSchema)(async (_req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
@@ -33,7 +32,7 @@ export const POST = withAuth({
 				name,
 				title,
 				description: description || undefined,
-				steps: (steps ?? []) as Prisma.InputJsonValue[],
+				steps: (steps ?? []) as PrismaJson.WorkflowStep[],
 			},
 		});
 

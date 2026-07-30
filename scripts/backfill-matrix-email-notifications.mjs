@@ -24,7 +24,7 @@
  */
 
 import "dotenv/config";
-import { GdhubDatabaseService } from "@gdhub-io/gdhub-prisma";
+import { GDHubPrismaClient } from "@gdhub-io/gdhub-prisma";
 
 const BASE_URL = process.env.MATRIX_CHAT_BASE_URL;
 const ADMIN_TOKEN = process.env.MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN;
@@ -180,7 +180,7 @@ async function ensureUser(userId, email, imageUrl) {
 	return result;
 }
 
-const prisma = GdhubDatabaseService.init().client;
+const prisma = new GDHubPrismaClient();
 
 try {
 	const synapseUsers = await listSynapseUsers();

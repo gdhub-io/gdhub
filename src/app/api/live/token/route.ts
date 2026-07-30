@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -23,7 +23,7 @@ export const GET = withAuth({ mode: "user" })(
 		if (!currentUser) return apiError.unauthorized();
 		const { roomName } = body as LiveTokenQuery;
 
-		const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 		const response = await fetch("https://api.daily.co/v1/meeting-tokens", {
 			method: "post",

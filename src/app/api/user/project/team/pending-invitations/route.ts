@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { InvitationStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -19,7 +19,7 @@ export const GET = withAuth({ mode: "user" })(
 		const pendingInvitations = await prisma.teamInvitation.findMany({
 			where: {
 				teamId,
-				status: prismaClient.InvitationStatus.Pending,
+				status: InvitationStatus.Pending,
 			},
 			orderBy: { createdAt: "desc" },
 		});

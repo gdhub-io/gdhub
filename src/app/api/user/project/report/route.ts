@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import {

@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	MatchingSpecialistAndProject,
+	Project,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Button, Card, Col, Descriptions, Grid, Row } from "antd";
@@ -25,9 +29,9 @@ export const SeasonProjectsSection = ({
 		queryKey: ["projects", seasonId],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.Project & {
-					availableSpecialists: prismaClient.MatchingSpecialistAndProject[];
-					author: prismaClient.User;
+				(Project & {
+					availableSpecialists: MatchingSpecialistAndProject[];
+					author: User;
 				})[]
 			>("/api/projects", {}),
 		enabled: !!seasonId || !!seasonSlug,

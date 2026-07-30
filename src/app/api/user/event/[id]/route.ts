@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Language, type Prisma, UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -12,9 +12,7 @@ import { prisma } from "@/services/prisma";
 const UserEventUpdateSchema = z.object({
 	title: z.string().optional(),
 	slug: z.string().optional(),
-	lang: z
-		.enum(Object.values(prismaClient.$Enums.Language) as [string, ...string[]])
-		.optional(),
+	lang: z.enum(Object.values(Language) as [string, ...string[]]).optional(),
 	description: z.string().optional(),
 	shortDescription: z.string().optional(),
 	url: z.string().optional(),
@@ -31,7 +29,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const event = await prisma.event.findUnique({
 		where: {
@@ -82,7 +80,7 @@ export const PUT = withAuth({ mode: "user" })(
 			where: {
 				id,
 			},
-			data: data as prismaClient.Prisma.EventUpdateInput,
+			data: data as Prisma.EventUpdateInput,
 			include: {
 				schedule: true,
 			},

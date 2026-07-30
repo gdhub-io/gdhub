@@ -153,7 +153,7 @@ property of the chat — opening DMs to everyone later means relaxing that gate
 1. **Schema**: rename `ChatRoomKind.AdminDirect` → `Direct` in the
    `@gdhub-io/gdhub-prisma` package (safe — zero `ChatRoom` rows were ever
    persisted with that kind; also change the column default), then
-   `yarn db:generate`.
+   `bun run db:generate`.
 2. **`rooms/direct`**: replace the bare Matrix-room creation with
    `ensureChatRoom` (kind `Direct`, `directKey direct:{minUserId}:{maxUserId}`,
    initiator = caller). The `roles:[Admin]` gate **stays for now**. Novu invite
@@ -186,7 +186,7 @@ applicant (no extra option in the contact-type zone).
    optional greeting textarea ("welcome message"). Stored as
    `TeamMember.applicationMessage String?` — **additive schema change in the
    external `@gdhub-io/gdhub-prisma` package** (never edit the schema in
-   `node_modules`), then `yarn db:generate`.
+   `node_modules`), then `bun run db:generate`.
 3. **Author opens/creates the chat**: on the candidates page
    (`MyProjectCandidates` → `ProjectCandidatePreviewModal`, "Open chat" already
    wired to `POST rooms/vacancy`) — `ensureVacancyOfferChat` with

@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { BlogPostStatus } from "@gdhub-io/gdhub-prisma";
 import { json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -6,7 +6,7 @@ export const GET = async () => {
 	const posts = await prisma.blogPost.findMany({
 		include: { authors: { select: { name: true, image: true } } },
 		where: {
-			status: prismaClient.BlogPostStatus.Published,
+			status: BlogPostStatus.Published,
 		},
 		orderBy: {
 			publishedAt: "desc",

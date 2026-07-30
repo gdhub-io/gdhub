@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -33,7 +33,7 @@ export const GET = withAuth({ mode: "user" })(
 						id: projectId,
 					},
 				},
-				status: prismaClient.TeamMemberStatus.Founder,
+				status: TeamMemberStatus.Founder,
 			},
 		});
 

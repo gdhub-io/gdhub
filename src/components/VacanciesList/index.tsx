@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { TeamVacancy, WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Col, ConfigProvider, Row, Segmented, Spin } from "antd";
@@ -10,8 +10,8 @@ import VacancyPreviewModal from "@/components/modals/VacancyPreviewModal";
 import { VacancyCard, type VacancyRateType } from "@/components/VacancyCard";
 import styles from "./style.module.scss";
 
-type Vacancy = prismaClient.TeamVacancy & {
-	direction: prismaClient.WorkDirection;
+type Vacancy = TeamVacancy & {
+	direction: WorkDirection;
 	team: {
 		project: {
 			id: string;

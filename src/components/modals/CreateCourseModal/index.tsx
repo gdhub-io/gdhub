@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Course, Language, WorkDirection } from "@gdhub-io/gdhub-prisma";
 import {
 	IconBookmark,
 	IconCoinEuro,
@@ -29,7 +29,7 @@ interface CreateCourseFormValues {
 	name: string;
 	slug?: string;
 	directionId: string;
-	language: prismaClient.$Enums.Language;
+	language: Language;
 	shortLine?: string;
 	authorRate: number;
 	agreedToTerms: boolean;
@@ -38,7 +38,7 @@ interface CreateCourseFormValues {
 interface CreateCourseModalProps {
 	open: boolean;
 	onCancel: () => void;
-	onCreate: (course: prismaClient.Course) => void;
+	onCreate: (course: Course) => void;
 }
 
 const CreateCourseModal = ({
@@ -54,14 +54,14 @@ const CreateCourseModal = ({
 		queryKey: ["dictionary", "work-directions"],
 		queryFn: () =>
 			axios
-				.get<prismaClient.WorkDirection[]>("/api/dictionary/work-directions")
+				.get<WorkDirection[]>("/api/dictionary/work-directions")
 				.then((res) => res.data),
 		staleTime: 5 * 60 * 1000,
 	});
 
 	const { mutateAsync: createCourse, isPending } = useMutation({
 		mutationFn: (data: CreateCourseFormValues) =>
-			axios.post<prismaClient.Course>("/api/user/course", data),
+			axios.post<Course>("/api/user/course", data),
 		onError: (error: any) => {
 			const msg = error?.response?.data?.message;
 			message.error(
@@ -148,10 +148,7 @@ const CreateCourseModal = ({
 					layout="vertical"
 					requiredMark="optional"
 					initialValues={{
-						language:
-							getLanguage() === "ru"
-								? "ru"
-								: ("en" as prismaClient.$Enums.Language),
+						language: getLanguage() === "ru" ? "ru" : ("en" as Language),
 						authorRate: 20,
 						agreedToTerms: false,
 					}}
@@ -184,7 +181,7 @@ const CreateCourseModal = ({
 					>
 						<Input
 							variant="filled"
-							prefix="/courses/"
+							prefix="/course/"
 							onChange={handleSlugChange}
 						/>
 					</Form.Item>

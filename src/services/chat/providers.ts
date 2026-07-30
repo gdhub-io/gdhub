@@ -1,12 +1,18 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	AdviceRequestStatus,
+	type ChatRoomKind,
+	type ChatRoomStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
 
 export type ChatRoomRow = {
 	id: string;
-	kind: prismaClient.ChatRoomKind;
-	status: prismaClient.ChatRoomStatus;
+	kind: ChatRoomKind;
+	status: ChatRoomStatus;
 	finishedAt: Date | null;
-	context: prismaClient.Prisma.JsonValue | null;
+	// Untyped `Json?` column: Prisma 7 surfaces it as `unknown`, so every reader
+	// narrows it to its own context shape.
+	context: unknown;
 };
 
 export type ChatContextResult = {
@@ -192,10 +198,10 @@ const adviceRequestProvider: ChatKindProvider<AdviceRequestLoaded> = {
 		await prisma.adviceRequest.updateMany({
 			where: {
 				id: ctx.adviceRequestId,
-				status: { not: prismaClient.AdviceRequestStatus.Closed },
+				status: { not: AdviceRequestStatus.Closed },
 			},
 			data: {
-				status: prismaClient.AdviceRequestStatus.Closed,
+				status: AdviceRequestStatus.Closed,
 				finishedAt: new Date(),
 			},
 		});
@@ -208,16 +214,14 @@ const adviceRequestProvider: ChatKindProvider<AdviceRequestLoaded> = {
 	},
 };
 
-export const chatProviders: Partial<
-	Record<prismaClient.ChatRoomKind, ChatKindProvider>
-> = {
+export const chatProviders: Partial<Record<ChatRoomKind, ChatKindProvider>> = {
 	VacancyOffer: vacancyOfferProvider,
 	Direct: directProvider,
 	AdviceRequest: adviceRequestProvider,
 };
 
 export function getChatProvider(
-	kind: prismaClient.ChatRoomKind,
+	kind: ChatRoomKind,
 ): ChatKindProvider | undefined {
 	return chatProviders[kind];
 }

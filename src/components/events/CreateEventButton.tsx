@@ -1,5 +1,4 @@
 import { DownOutlined } from "@ant-design/icons";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
 import { FaMicroscope } from "@react-icons/all-files/fa/FaMicroscope";
 import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
@@ -13,22 +12,20 @@ import { useSession } from "next-auth/react";
 import qs from "qs";
 import React, { useCallback } from "react";
 import EventModal from "@/components/modals/EventModal";
+import { EventType, SkillLevel, UserRole } from "@/config/prisma-enums";
 import { hasRole } from "@/helpers/user";
 
-function getTypeIcon(
-	type: prismaClient.$Enums.EventType,
-	args: { size: number; color: string },
-) {
+function getTypeIcon(type: EventType, args: { size: number; color: string }) {
 	switch (type) {
-		case prismaClient.$Enums.EventType.Meetup:
+		case EventType.Meetup:
 			return <FaUsers {...args} />;
-		case prismaClient.$Enums.EventType.GameJam:
+		case EventType.GameJam:
 			return <GiGamepad {...args} />;
-		case prismaClient.$Enums.EventType.Workshop:
+		case EventType.Workshop:
 			return <FaChalkboardTeacher {...args} />;
-		case prismaClient.$Enums.EventType.GameLab:
+		case EventType.GameLab:
 			return <FaMicroscope {...args} />;
-		case prismaClient.$Enums.EventType.Conference:
+		case EventType.Conference:
 			return <FaRegCalendarCheck {...args} />;
 		default:
 			return null;
@@ -41,14 +38,14 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 	const { data: session } = useSession();
 	const { t } = useTranslate();
 	const { token } = theme.useToken();
-	const isAdmin = hasRole(prismaClient.$Enums.UserRole.Admin, {
+	const isAdmin = hasRole(UserRole.Admin, {
 		data: session,
 	});
 
 	const [modalOpen, setModalOpen] = React.useState(false);
-	const [eventType, setEventType] = React.useState<
-		prismaClient.$Enums.EventType | undefined
-	>(undefined);
+	const [eventType, setEventType] = React.useState<EventType | undefined>(
+		undefined,
+	);
 
 	const { data: specialityLevels } = useQuery({
 		queryKey: ["user-speciality-levels", session?.user?.id],
@@ -56,10 +53,7 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 			axios
 				.get("/api/user/speciality-levels", {
 					params: {
-						level: [
-							prismaClient.$Enums.SkillLevel.Experienced,
-							prismaClient.$Enums.SkillLevel.Expert,
-						],
+						level: [SkillLevel.Experienced, SkillLevel.Expert],
 					},
 					paramsSerializer: (params) =>
 						qs.stringify(params, { arrayFormat: "repeat" }),
@@ -72,28 +66,13 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 		isAdmin || (Array.isArray(specialityLevels) && specialityLevels.length > 0);
 
 	const eventLabel = useCallback(
-		(eventType: prismaClient.$Enums.EventType) => {
+		(eventType: EventType) => {
 			const labels = {
-				[prismaClient.$Enums.EventType.Meetup]: t(
-					"event.format.meetup",
-					"Meetup",
-				),
-				[prismaClient.$Enums.EventType.Workshop]: t(
-					"event.format.workshop",
-					"Workshop",
-				),
-				[prismaClient.$Enums.EventType.GameJam]: t(
-					"event.format.gamejam",
-					"Game Jam",
-				),
-				[prismaClient.$Enums.EventType.GameLab]: t(
-					"event.format.gamelab",
-					"Game Lab",
-				),
-				[prismaClient.$Enums.EventType.Conference]: t(
-					"event.format.conference",
-					"Conference",
-				),
+				[EventType.Meetup]: t("event.format.meetup", "Meetup"),
+				[EventType.Workshop]: t("event.format.workshop", "Workshop"),
+				[EventType.GameJam]: t("event.format.gamejam", "Game Jam"),
+				[EventType.GameLab]: t("event.format.gamelab", "Game Lab"),
+				[EventType.Conference]: t("event.format.conference", "Conference"),
 			};
 
 			return (
@@ -111,33 +90,33 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 
 	const items: MenuProps["items"] = [
 		canCreateMeetupOrWorkshop && {
-			label: eventLabel(prismaClient.$Enums.EventType.Meetup),
-			key: prismaClient.$Enums.EventType.Meetup,
+			label: eventLabel(EventType.Meetup),
+			key: EventType.Meetup,
 			icon: null,
 		},
 		canCreateMeetupOrWorkshop && {
-			label: eventLabel(prismaClient.$Enums.EventType.Workshop),
-			key: prismaClient.$Enums.EventType.Workshop,
+			label: eventLabel(EventType.Workshop),
+			key: EventType.Workshop,
 			icon: null,
 		},
 		isAdmin
 			? {
-					label: eventLabel(prismaClient.$Enums.EventType.GameJam),
-					key: prismaClient.$Enums.EventType.GameJam,
+					label: eventLabel(EventType.GameJam),
+					key: EventType.GameJam,
 					icon: null,
 				}
 			: null,
 		isAdmin
 			? {
-					label: eventLabel(prismaClient.$Enums.EventType.GameLab),
-					key: prismaClient.$Enums.EventType.GameLab,
+					label: eventLabel(EventType.GameLab),
+					key: EventType.GameLab,
 					icon: null,
 				}
 			: null,
 		isAdmin
 			? {
-					label: eventLabel(prismaClient.$Enums.EventType.Conference),
-					key: prismaClient.$Enums.EventType.Conference,
+					label: eventLabel(EventType.Conference),
+					key: EventType.Conference,
 					icon: null,
 				}
 			: null,
@@ -146,7 +125,7 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 	);
 
 	const handleMenuClick: MenuProps["onClick"] = (e) => {
-		setEventType(e.key as prismaClient.$Enums.EventType);
+		setEventType(e.key as EventType);
 		setModalOpen(true);
 	};
 

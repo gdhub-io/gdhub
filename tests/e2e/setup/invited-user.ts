@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PrimaryInterest, SkillLevel, UserRole } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "../../../src/services/prisma";
 
 export const INVITED_USER_EMAIL =
@@ -23,12 +23,12 @@ export async function ensureInvitedUser() {
 			emailVerified: new Date(),
 			matrixUserId: "@e2e-invited:matrix.local",
 			onboardingDone: true,
-			roles: [prismaClient.UserRole.Member],
+			roles: [UserRole.Member],
 		},
 		update: {
 			matrixUserId: "@e2e-invited:matrix.local",
 			onboardingDone: true,
-			roles: { set: [prismaClient.UserRole.Member] },
+			roles: { set: [UserRole.Member] },
 			pendingTeamInvitations: [],
 		},
 	});
@@ -38,7 +38,7 @@ export async function ensureInvitedUser() {
 		create: {
 			userId: user.id,
 			name: "E2E Invited User",
-			primaryInterest: prismaClient.PrimaryInterest.Specialist,
+			primaryInterest: PrimaryInterest.Specialist,
 		},
 		update: {},
 	});
@@ -51,7 +51,7 @@ export async function ensureInvitedUser() {
 			data: {
 				name: "E2E Invited Speciality",
 				specialization: "E2E Testing",
-				level: prismaClient.SkillLevel.Skillful,
+				level: SkillLevel.Skillful,
 				user: { connect: { id: user.id } },
 				direction: { connect: { id: direction.id } },
 			} as never,

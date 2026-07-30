@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
 import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
 import { FaMicroscope } from "@react-icons/all-files/fa/FaMicroscope";
 import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
@@ -9,20 +9,21 @@ import { Card, Tag } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
+import { EventType } from "@/config/prisma-enums";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./style.module.scss";
 
-function getTypeIcon(type: prismaClient.EventType) {
+function getTypeIcon(type: EventType) {
 	switch (type) {
-		case prismaClient.$Enums.EventType.Meetup:
+		case EventType.Meetup:
 			return <FaUsers size={28} />;
-		case prismaClient.$Enums.EventType.GameJam:
+		case EventType.GameJam:
 			return <GiGamepad size={28} />;
-		case prismaClient.$Enums.EventType.Workshop:
+		case EventType.Workshop:
 			return <FaChalkboardTeacher size={28} />;
-		case prismaClient.$Enums.EventType.GameLab:
+		case EventType.GameLab:
 			return <FaMicroscope size={28} />;
-		case prismaClient.$Enums.EventType.Conference:
+		case EventType.Conference:
 			return <FaRegCalendarCheck size={28} />;
 		default:
 			return null;
@@ -33,18 +34,18 @@ export const EventCard = ({
 	event,
 	token,
 }: {
-	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+	event: Event & { schedule: EventScheduleItem[] };
 	token: any;
 }) => {
 	const { t, getLanguage } = useTolgee();
 	const now = useMemo(() => new Date(), []);
 	const [hovered, setHovered] = useState(false);
-	const typeLabels: Record<prismaClient.$Enums.EventType, string> = {
-		[prismaClient.$Enums.EventType.Meetup]: "Meetup",
-		[prismaClient.$Enums.EventType.GameJam]: "Gamejam",
-		[prismaClient.$Enums.EventType.Workshop]: "Workshop",
-		[prismaClient.$Enums.EventType.GameLab]: "Gamelab",
-		[prismaClient.$Enums.EventType.Conference]: "Conference",
+	const typeLabels: Record<EventType, string> = {
+		[EventType.Meetup]: "Meetup",
+		[EventType.GameJam]: "Gamejam",
+		[EventType.Workshop]: "Workshop",
+		[EventType.GameLab]: "Gamelab",
+		[EventType.Conference]: "Conference",
 	};
 
 	return (

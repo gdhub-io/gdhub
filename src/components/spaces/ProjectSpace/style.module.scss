@@ -1,0 +1,28 @@
+.archivedBanner {
+	background: #fff5e6;
+	color: #d98d09;
+	font-size: 14px;
+	line-height: 20px;
+	padding: 10px 50px;
+	margin: -36px -50px 24px;
+	text-align: center;
+}
+
+.publicPageMenuItem {
+	:global(.ant-menu-title-content) {
+		a {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 8px;
+			color: #ff4d4f !important;
+			font-weight: 500;
+		}
+	}
+
+	&:hover {
+		:global(.ant-menu-title-content a) {
+			color: #ff7875 !important;
+		}
+	}
+}

@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	InvitationStatus,
+	type Prisma,
+	TeamMemberStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -68,7 +72,7 @@ export const GET = withAuth({ mode: "user" })(
 				return apiError.forbidden("This invitation is not for you");
 			}
 
-			if (invitation.status !== prismaClient.InvitationStatus.Accepted) {
+			if (invitation.status !== InvitationStatus.Accepted) {
 				return apiError.badRequest("Invitation has not been accepted");
 			}
 
@@ -92,7 +96,7 @@ export const GET = withAuth({ mode: "user" })(
 			const teamMember = await prisma.teamMember.create({
 				data: {
 					position: pendingInvitation.position,
-					status: prismaClient.TeamMemberStatus.Hired,
+					status: TeamMemberStatus.Hired,
 					startedAt: new Date(pendingInvitation.startedAt),
 					speciality: { connect: { id: neededSpeciality.id } },
 					team: { connect: { id: pendingInvitation.teamId } },
@@ -109,7 +113,7 @@ export const GET = withAuth({ mode: "user" })(
 				where: { id: currentUser.id },
 				data: {
 					pendingTeamInvitations:
-						updatedPendingInvitations as prismaClient.Prisma.InputJsonValue[],
+						updatedPendingInvitations as Prisma.InputJsonValue[],
 				},
 			});
 
@@ -137,7 +141,7 @@ export const GET = withAuth({ mode: "user" })(
 			return json({
 				success: true,
 				message: "You have successfully joined the team",
-				redirect: `/my/projects/${invitation.team.project?.slug || invitation.team.project?.id}`,
+				redirect: `/user/project/${invitation.team.project?.slug || invitation.team.project?.id}`,
 			});
 		} catch (error) {
 			console.error("[team.complete-pending-invitation]", error);

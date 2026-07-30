@@ -1,7 +1,7 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Flex, Space, Spin, Typography } from "antd";
 import { useState } from "react";
+import { ProjectStatus } from "@/config/prisma-enums";
 import { useCurrentProject } from "@/hooks/project";
 import ArchiveProjectModal from "./ArchiveProjectModal";
 import DeleteProjectModal from "./DeleteProjectModal";
@@ -15,7 +15,7 @@ const DangerProjectForm = () => {
 	const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-	const isArchived = project?.status === prismaClient.ProjectStatus.Archived;
+	const isArchived = project?.status === ProjectStatus.Archived;
 
 	const refreshProjectData = async () => {
 		await refetch();

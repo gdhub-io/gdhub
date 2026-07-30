@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Profile, User } from "@gdhub-io/gdhub-prisma";
 import { useTolgee } from "@tolgee/react";
 import {
 	AutoComplete,
@@ -21,11 +21,8 @@ import {
 } from "@/config/locale";
 
 type GeneralProfileFormArgs = {
-	profile: prismaClient.Profile & { user: Partial<prismaClient.User> };
-	saveProfile: (data: {
-		id: string;
-		data: Partial<prismaClient.Profile>;
-	}) => Promise<void>;
+	profile: Profile & { user: Partial<User> };
+	saveProfile: (data: { id: string; data: Partial<Profile> }) => Promise<void>;
 };
 
 const GeneralProfileForm = ({

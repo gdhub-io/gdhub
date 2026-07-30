@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	ChatRoomKind,
+	ChatRoomStatus,
+	type Prisma,
+	TeamVacancyStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { inviteUserToRoom, makeRoomWritable } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 import { type EnsureChatRoomResult, ensureChatRoom } from "./ensure-room";
@@ -75,7 +80,7 @@ export async function ensureVacancyOfferChat(
 	}
 
 	const result = await ensureChatRoom({
-		kind: prismaClient.ChatRoomKind.VacancyOffer,
+		kind: ChatRoomKind.VacancyOffer,
 		directKey: vacancyChatDirectKey(vacancyId, candidateUserId),
 		title: vacancy.title,
 		topic: vacancy.team?.project?.name || undefined,
@@ -99,7 +104,7 @@ export async function ensureVacancyOfferChat(
 			where: { id: result.chatRoomId },
 			select: { status: true, context: true },
 		});
-		let isOpen = row?.status === prismaClient.ChatRoomStatus.Open;
+		let isOpen = row?.status === ChatRoomStatus.Open;
 
 		// ensureChatRoom writes context only on creation. Refresh the offer note
 		// on the existing row so the invitee reads the LATEST offer on the invite
@@ -111,7 +116,7 @@ export async function ensureVacancyOfferChat(
 					context: {
 						...((row?.context ?? {}) as Record<string, unknown>),
 						offerMessage: args.offerMessage,
-					} as prismaClient.Prisma.InputJsonValue,
+					} as Prisma.InputJsonValue,
 				},
 			});
 		}
@@ -122,11 +127,11 @@ export async function ensureVacancyOfferChat(
 		if (
 			!isOpen &&
 			args.allowReopen &&
-			vacancy.status === prismaClient.TeamVacancyStatus.Published
+			vacancy.status === TeamVacancyStatus.Published
 		) {
 			await prisma.chatRoom.update({
 				where: { id: result.chatRoomId },
-				data: { status: prismaClient.ChatRoomStatus.Open, finishedAt: null },
+				data: { status: ChatRoomStatus.Open, finishedAt: null },
 			});
 			isOpen = true;
 			try {

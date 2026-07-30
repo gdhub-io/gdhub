@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectEquity } from "@gdhub-io/gdhub-prisma";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -22,7 +22,7 @@ interface EquityShareModalProps {
 	open: boolean;
 	onOk: () => void;
 	onCancel: () => void;
-	projectEquity?: prismaClient.ProjectEquity & { equityAllocations: any[] };
+	projectEquity?: ProjectEquity & { equityAllocations: any[] };
 	investors?: { share: number }[];
 }
 
@@ -35,7 +35,7 @@ const EquityShareModal = ({
 }: EquityShareModalProps) => {
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
-	const [equity, setEquity] = useState<prismaClient.ProjectEquity>();
+	const [equity, setEquity] = useState<ProjectEquity>();
 	const [remainingPercentage, setRemainingPercentage] = useState<number>(0);
 
 	// Calculate minimum investment reserve as sum of sold shares
@@ -90,7 +90,7 @@ const EquityShareModal = ({
 
 	// Mutation for saving equity distribution
 	const { mutateAsync: saveEquity, isPending: isSaving } = useMutation({
-		mutationFn: (data: Partial<prismaClient.ProjectEquity>) =>
+		mutationFn: (data: Partial<ProjectEquity>) =>
 			axios.put("/api/user/project/equity", data),
 		onSuccess: () => {
 			onOk();

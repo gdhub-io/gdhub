@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	type Language,
+	PrimaryInterest,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { AvailableLocales } from "@/config/locale";
 import {
@@ -22,7 +26,7 @@ const UpdateProfileSchema = z.object({
 	otherResources: z.string().optional(),
 	isActive: z.boolean().optional(),
 	primaryInterest: z
-		.enum(Object.values(prismaClient.PrimaryInterest) as [string, ...string[]])
+		.enum(Object.values(PrimaryInterest) as [string, ...string[]])
 		.optional(),
 	preferredGenres: z.array(z.string()).optional(),
 	preferredLevels: z.array(z.string()).optional(),
@@ -78,7 +82,7 @@ export const PUT = withAuth({ mode: "user" })(
 			where: { userId: currentUser.id! },
 			include: { user: true },
 		});
-		let updatedRoles = (profile?.user.roles as prismaClient.UserRole[]) || [];
+		let updatedRoles = (profile?.user.roles as UserRole[]) || [];
 
 		if (!profile) {
 			profile = await prisma.profile.create({
@@ -107,19 +111,12 @@ export const PUT = withAuth({ mode: "user" })(
 
 		// on  onboarding
 		if (onboardingDone) {
-			updatedRoles = [prismaClient.UserRole.Member];
+			updatedRoles = [UserRole.Member];
 		}
 		// on  save profile
-		if (
-			primaryInterest &&
-			primaryInterest === prismaClient.PrimaryInterest.Specialist
-		) {
-			const idxMentor = updatedRoles.findIndex(
-				(v) => v === prismaClient.UserRole.Mentor,
-			);
-			const idxAuthor = updatedRoles.findIndex(
-				(v) => v === prismaClient.UserRole.Author,
-			);
+		if (primaryInterest && primaryInterest === PrimaryInterest.Specialist) {
+			const idxMentor = updatedRoles.findIndex((v) => v === UserRole.Mentor);
+			const idxAuthor = updatedRoles.findIndex((v) => v === UserRole.Author);
 
 			if (idxMentor !== -1) {
 				updatedRoles.splice(idxMentor, 1);
@@ -130,32 +127,28 @@ export const PUT = withAuth({ mode: "user" })(
 		}
 		if (
 			primaryInterest &&
-			primaryInterest === prismaClient.PrimaryInterest.Author &&
-			!updatedRoles.includes(prismaClient.UserRole.Author)
+			primaryInterest === PrimaryInterest.Author &&
+			!updatedRoles.includes(UserRole.Author)
 		) {
-			const idx = updatedRoles.findIndex(
-				(v) => v === prismaClient.UserRole.Mentor,
-			);
+			const idx = updatedRoles.findIndex((v) => v === UserRole.Mentor);
 
 			if (idx !== -1) {
 				updatedRoles.splice(idx, 1);
 			}
-			updatedRoles.push(prismaClient.UserRole.Author);
+			updatedRoles.push(UserRole.Author);
 		}
 		if (
 			primaryInterest &&
-			primaryInterest === prismaClient.PrimaryInterest.Mentor &&
-			!updatedRoles.includes(prismaClient.UserRole.Mentor)
+			primaryInterest === PrimaryInterest.Mentor &&
+			!updatedRoles.includes(UserRole.Mentor)
 		) {
-			const idx = updatedRoles.findIndex(
-				(v) => v === prismaClient.UserRole.Author,
-			);
+			const idx = updatedRoles.findIndex((v) => v === UserRole.Author);
 
 			if (idx !== -1) {
 				updatedRoles.splice(idx, 1);
 			}
 
-			updatedRoles.push(prismaClient.UserRole.Mentor);
+			updatedRoles.push(UserRole.Mentor);
 		}
 
 		await prisma.profile.update({
@@ -163,9 +156,7 @@ export const PUT = withAuth({ mode: "user" })(
 			data: {
 				...othersProfileData,
 				name,
-				primaryInterest: primaryInterest as
-					| prismaClient.PrimaryInterest
-					| undefined,
+				primaryInterest: primaryInterest as PrimaryInterest | undefined,
 				preferredGenres: preferredGenres
 					? {
 							set: preferredGenres?.map((v: string) => ({ id: v })),
@@ -179,7 +170,7 @@ export const PUT = withAuth({ mode: "user" })(
 					: undefined,
 				user: {
 					update: {
-						lang: lang as prismaClient.Language | undefined,
+						lang: lang as Language | undefined,
 						onboardingDone,
 						roles: updatedRoles,
 						agreements: agreementsChanged ? agreements : undefined,

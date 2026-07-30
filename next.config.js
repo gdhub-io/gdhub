@@ -3,7 +3,13 @@
 const nextConfig = {
 	reactStrictMode: true,
 	output: "standalone",
-	serverExternalPackages: ["discord.js", "matrix-js-sdk"],
+	serverExternalPackages: [
+		"discord.js",
+		"matrix-js-sdk",
+		"@gdhub-io/gdhub-prisma",
+		"@prisma/client",
+		"@prisma/adapter-pg",
+	],
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "images.unsplash.com" },
@@ -65,17 +71,67 @@ const nextConfig = {
 		return config;
 	},
 	redirects: async () => [
-		// /profile/settings/X → /my/settings/X (Phase 4 of layout migration:
-		// settings переехал из protected/profile в user/my).
+		// /profile/settings/X → /user/settings/X (settings moved from
+		// protected/profile → (app)/(spaces)/user/settings).
 		{
 			source: "/profile/settings",
-			destination: "/my/settings/general",
+			destination: "/user/settings/general",
 			permanent: true,
 		},
 		{
 			source: "/profile/settings/:item",
-			destination: "/my/settings/:item",
+			destination: "/user/settings/:item",
 			permanent: true,
+		},
+		// Personal spaces moved: /my/* → /user/* (projects→project, events→event).
+		// Covers already-sent emails, bookmarks, and external links.
+		{
+			source: "/my/projects/:path*",
+			destination: "/user/project/:path*",
+			permanent: true,
+		},
+		{
+			source: "/my/events/:path*",
+			destination: "/user/event/:path*",
+			permanent: true,
+		},
+		{
+			source: "/my/settings/:path*",
+			destination: "/user/settings/:path*",
+			permanent: true,
+		},
+		// Public course detail renamed: /courses/[slug] → /course/[slug].
+		{
+			source: "/courses/:path*",
+			destination: "/course/:path*",
+			permanent: true,
+		},
+		// Personal lists moved from the hub into the user space.
+		{
+			source: "/hub/courses/my",
+			destination: "/user/courses",
+			permanent: true,
+		},
+		{
+			source: "/hub/events/my",
+			destination: "/user/events",
+			permanent: true,
+		},
+		{
+			source: "/hub/experts/my-requests",
+			destination: "/user/advice-requests",
+			permanent: true,
+		},
+		// The hub docs viewer was dropped; documentation lives on its own domain.
+		{
+			source: "/hub/docs",
+			destination: "https://docs.gdhub.io",
+			permanent: false,
+		},
+		{
+			source: "/hub/docs/:path*",
+			destination: "https://docs.gdhub.io",
+			permanent: false,
 		},
 	],
 	headers: async () => [

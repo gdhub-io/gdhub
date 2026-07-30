@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { LectureStage, type WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Grid, Spin, Table } from "antd";
@@ -20,10 +20,7 @@ export const ReadyLectures = () => {
 		queryFn: () =>
 			axios.get<LectureDetails[]>("/api/lectures", {
 				params: {
-					stage: [
-						prismaClient.LectureStage.Ready,
-						prismaClient.LectureStage.Proposed,
-					].join(","),
+					stage: [LectureStage.Ready, LectureStage.Proposed].join(","),
 				},
 			}),
 	});
@@ -31,9 +28,7 @@ export const ReadyLectures = () => {
 	const { data: workDirections } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 		staleTime: Infinity,
 	});
 

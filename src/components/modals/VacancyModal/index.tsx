@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { TeamVacancy } from "@gdhub-io/gdhub-prisma";
 import { MdOutlineHandshake } from "@react-icons/all-files/md/MdOutlineHandshake";
 import { IconCashBanknote, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -24,8 +24,8 @@ import {
 import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-
 import { DirectionSelect } from "@/components/DirectionSelect";
+import { TeamVacancyStatus } from "@/config/prisma-enums";
 import { LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
@@ -68,7 +68,7 @@ const VacancyModal = ({
 	} = useQuery({
 		queryKey: ["vacancy", vacancyId],
 		queryFn: () =>
-			axios.get<prismaClient.TeamVacancy>("/api/user/project/vacancy", {
+			axios.get<TeamVacancy>("/api/user/project/vacancy", {
 				params: { id: vacancyId },
 			}),
 		enabled: !!vacancyId,
@@ -171,8 +171,8 @@ const VacancyModal = ({
 				publishedAt: asDraft || needsCheckout ? null : dayjs().toISOString(),
 				status:
 					asDraft || needsCheckout
-						? prismaClient.TeamVacancyStatus.Draft
-						: prismaClient.TeamVacancyStatus.Published,
+						? TeamVacancyStatus.Draft
+						: TeamVacancyStatus.Published,
 				teamId,
 				promisePercentage: formData.promisePercentage || null,
 				promiseStepId: formData.promiseStepId || null,
@@ -235,8 +235,8 @@ const VacancyModal = ({
 								? window.location.origin
 								: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
 						const successUrl = projectSlug
-							? `${baseUrl}/my/projects/${projectSlug}/open-positions?payment_success=true`
-							: `${baseUrl}/my/projects`;
+							? `${baseUrl}/user/project/${projectSlug}/open-positions?payment_success=true`
+							: `${baseUrl}/user/project`;
 
 						await checkout({
 							priceId,
@@ -332,7 +332,7 @@ const VacancyModal = ({
 						type="primary"
 						onClick={() => handleOk()}
 					>
-						{vacancy?.data.status === prismaClient.TeamVacancyStatus.Published
+						{vacancy?.data.status === TeamVacancyStatus.Published
 							? t("Save")
 							: isPaidVacancy && !isListingFeePaid
 								? t("Pay & Publish")

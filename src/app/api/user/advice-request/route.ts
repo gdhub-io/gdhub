@@ -52,7 +52,7 @@ export const POST = withAuth({ mode: "user" })(
 					payload: {
 						title: "You have a new advice request",
 						message: `You have a new advice request from ${adviceRequest.project?.name}. Please answer it as soon as possible.`,
-						redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
+						redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/advice-requests`,
 						redirectUrlType: "internal",
 					},
 				});

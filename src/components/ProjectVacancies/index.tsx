@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { TeamVacancy, WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { GoArrowDownRight } from "@react-icons/all-files/go/GoArrowDownRight";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -38,9 +38,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 	const { data: workDirections } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 		staleTime: Infinity,
 	});
 
@@ -52,8 +50,8 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 		queryKey: ["team-vacancy", teamId],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.TeamVacancy & {
-					direction: prismaClient.WorkDirection;
+				(TeamVacancy & {
+					direction: WorkDirection;
 					team: {
 						project: {
 							id: string;

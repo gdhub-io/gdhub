@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { LecturerRequest } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Button, Card, Space } from "antd";
 import dayjs from "dayjs";
@@ -14,7 +14,7 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 	const lecturer = useMemo(
 		() =>
 			lecture.lecturerRequests.find(
-				(r: prismaClient.LecturerRequest) => r.userId == session?.user.id,
+				(r: LecturerRequest) => r.userId == session?.user.id,
 			),
 		[lecture],
 	);

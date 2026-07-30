@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	ChatRoomKind,
+	ChatRoomStatus,
+	TeamMemberStatus,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -22,8 +27,8 @@ type SpecialistQuery = z.infer<typeof SpecialistQuerySchema>;
 // Confirmed memberships surface as "projects the specialist works on". An
 // applicant/rejected/fired row is not a real participation.
 const CONFIRMED_MEMBER_STATUSES = [
-	prismaClient.TeamMemberStatus.Hired,
-	prismaClient.TeamMemberStatus.Founder,
+	TeamMemberStatus.Hired,
+	TeamMemberStatus.Founder,
 ];
 
 /**
@@ -41,8 +46,8 @@ async function resolveAcceptedOfferRoom(
 ): Promise<string | null> {
 	const rooms = await prisma.chatRoom.findMany({
 		where: {
-			kind: prismaClient.ChatRoomKind.VacancyOffer,
-			status: prismaClient.ChatRoomStatus.Open,
+			kind: ChatRoomKind.VacancyOffer,
+			status: ChatRoomStatus.Open,
 			// directKey === `vacancy:{vacancyId}:{candidateUserId}`
 			directKey: { endsWith: `:${specialistUserId}` },
 			matrixRoomId: { not: null },
@@ -87,7 +92,7 @@ export const GET = withAuth({ mode: "user" })(
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
 
-		const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 		const activeSubscription = await prisma.user.activeSubscription(
 			currentUser.id,
 		);

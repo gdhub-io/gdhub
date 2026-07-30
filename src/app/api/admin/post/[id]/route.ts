@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { BlogPostStatus, UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -15,7 +15,7 @@ const UpdateBlogPostSchema = z.object({
 	slug: z.string().optional(),
 	authors: z.array(z.object({ id: z.string() })).optional(),
 	status: z
-		.enum(Object.values(prismaClient.BlogPostStatus) as [string, ...string[]])
+		.enum(Object.values(BlogPostStatus) as [string, ...string[]])
 		.optional(),
 });
 
@@ -23,7 +23,7 @@ type UpdateBlogPostBody = z.infer<typeof UpdateBlogPostSchema>;
 
 export const GET = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
@@ -41,7 +41,7 @@ export const GET = withAuth({
 
 export const PUT = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(UpdateBlogPostSchema)(async (_req, ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
@@ -64,9 +64,8 @@ export const PUT = withAuth({
 				authors: {
 					connect: authors?.map((author) => ({ id: author.id })) || [],
 				},
-				status: (status as prismaClient.BlogPostStatus) || undefined,
-				publishedAt:
-					status === prismaClient.BlogPostStatus.Published ? new Date() : null,
+				status: (status as BlogPostStatus) || undefined,
+				publishedAt: status === BlogPostStatus.Published ? new Date() : null,
 			},
 		});
 
@@ -76,7 +75,7 @@ export const PUT = withAuth({
 
 export const DELETE = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();

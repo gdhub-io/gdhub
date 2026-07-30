@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { SkillLevel } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -19,9 +19,7 @@ const SpecialityDataSchema = z.object({
 	teamInvitationId: z.string().optional(),
 	name: z.string().optional(),
 	specialization: z.string().optional(),
-	level: z
-		.enum(Object.values(prismaClient.SkillLevel) as [string, ...string[]])
-		.optional(),
+	level: z.enum(Object.values(SkillLevel) as [string, ...string[]]).optional(),
 	portfolioUrl: z.string().nullable().optional(),
 	workDirectionId: z.string().optional(),
 	userId: z.string().optional(),

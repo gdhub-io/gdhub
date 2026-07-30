@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project, ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { Col, List, Row, Spin, Typography } from "antd";
 import axios from "axios";
@@ -36,7 +36,7 @@ export const DevLogWall = ({ slug }: { slug: string }) => {
 	const { data: project } = useQuery({
 		queryKey: ["project", slug],
 		queryFn: () =>
-			axios.get<Partial<prismaClient.Project>>(`/api/user/project`, {
+			axios.get<Partial<Project>>(`/api/user/project`, {
 				params: { slug },
 			}),
 		enabled: !!slug,
@@ -56,45 +56,43 @@ export const DevLogWall = ({ slug }: { slug: string }) => {
 	});
 
 	const items: ProjectReportItem = useMemo(() => {
-		const reports = projectReports?.data.map(
-			(report: prismaClient.ProjectReport) => {
-				return {
-					id: report.id,
-					authorId: report.authorId,
-					label: dayjs(report.publishedAt).format("ll"),
-					children: (
-						<div className={styles.reportItem}>
-							<Paragraph ellipsis={{ rows: 20, expandable: true }}>
-								<ReactMarkdown
-									rehypePlugins={[rehypeRaw as any]}
-									components={{
-										img: (props) => (
-											<img
-												style={{ maxWidth: "100%" }}
-												alt={props.alt || ""}
-												{...props}
-											/>
-										),
-									}}
-								>
-									{report.content}
-								</ReactMarkdown>
-							</Paragraph>
-							{!!report.video && (
-								<div className={styles.playerWrapper}>
-									<ReactPlayer
-										src={report.video}
-										light
-										width="100%"
-										height="100%"
-									/>
-								</div>
-							)}
-						</div>
-					),
-				};
-			},
-		);
+		const reports = projectReports?.data.map((report: ProjectReport) => {
+			return {
+				id: report.id,
+				authorId: report.authorId,
+				label: dayjs(report.publishedAt).format("ll"),
+				children: (
+					<div className={styles.reportItem}>
+						<Paragraph ellipsis={{ rows: 20, expandable: true }}>
+							<ReactMarkdown
+								rehypePlugins={[rehypeRaw as any]}
+								components={{
+									img: (props) => (
+										<img
+											style={{ maxWidth: "100%" }}
+											alt={props.alt || ""}
+											{...props}
+										/>
+									),
+								}}
+							>
+								{report.content}
+							</ReactMarkdown>
+						</Paragraph>
+						{!!report.video && (
+							<div className={styles.playerWrapper}>
+								<ReactPlayer
+									src={report.video}
+									light
+									width="100%"
+									height="100%"
+								/>
+							</div>
+						)}
+					</div>
+				),
+			};
+		});
 
 		if (!reports?.length || !projectReports) return [];
 

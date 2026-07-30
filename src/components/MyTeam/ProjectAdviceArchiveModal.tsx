@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { AdviceRequest, Profile, User } from "@gdhub-io/gdhub-prisma";
 import { FaBan } from "@react-icons/all-files/fa/FaBan";
 import { MdCancel } from "@react-icons/all-files/md/MdCancel";
 import { MdCheckCircle } from "@react-icons/all-files/md/MdCheckCircle";
@@ -16,7 +16,7 @@ import ModernTable from "../ModernTable";
 interface ProjectAdviceArchiveModalProps {
 	open: boolean;
 	projectId: string;
-	advisor: prismaClient.User & { profile: prismaClient.Profile };
+	advisor: User & { profile: Profile };
 	onClose: () => void;
 }
 
@@ -37,7 +37,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 	} = useQuery({
 		queryKey: ["project-advice-requests", projectId, advisor?.id],
 		queryFn: () =>
-			axios.get<prismaClient.AdviceRequest[]>("/api/user/advice-requests", {
+			axios.get<AdviceRequest[]>("/api/user/advice-requests", {
 				params: { projectId, advisorId: advisor?.id },
 			}),
 		enabled: !!projectId && !!advisor?.id,
@@ -49,7 +49,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 		}
 	}, [open, projectId]);
 
-	const adviceArchiveColumns: ColumnsType<prismaClient.AdviceRequest> = [
+	const adviceArchiveColumns: ColumnsType<AdviceRequest> = [
 		{
 			title: t("Status"),
 			dataIndex: "status",
@@ -89,9 +89,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 			title: t("From"),
 			dataIndex: "fromUser",
 			key: "fromUser",
-			render: (
-				fromUser: prismaClient.User & { profile: prismaClient.Profile },
-			) => {
+			render: (fromUser: User & { profile: Profile }) => {
 				if (!fromUser) return "-";
 				if (fromUser.id === session?.user?.id) {
 					return t("You");
@@ -107,7 +105,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 		{
 			title: t("Comment/Feedback"),
 			key: "commentFeedback",
-			render: (_: any, record: prismaClient.AdviceRequest) => (
+			render: (_: any, record: AdviceRequest) => (
 				<>
 					<span style={{ color: themeToken.colorTextSecondary }}>
 						{t("Comment")}:

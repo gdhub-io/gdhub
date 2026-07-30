@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { InvitationStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -42,7 +42,7 @@ export const POST = withAuth({ mode: "user" })(
 				where: {
 					teamId: data.teamId,
 					userId: currentUser.id,
-					status: prismaClient.TeamMemberStatus.Founder,
+					status: TeamMemberStatus.Founder,
 				},
 			});
 
@@ -63,7 +63,7 @@ export const POST = withAuth({ mode: "user" })(
 						startedAt: data.startedAt ? new Date(data.startedAt) : new Date(),
 						team: { connect: { id: data.teamId } },
 						invitedBy: { connect: { id: currentUser.id } },
-						status: prismaClient.InvitationStatus.Pending,
+						status: InvitationStatus.Pending,
 						expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 					},
 				});
@@ -95,10 +95,7 @@ export const POST = withAuth({ mode: "user" })(
 					teamId: data.teamId,
 					userId: userRecord.id,
 					status: {
-						in: [
-							prismaClient.TeamMemberStatus.Hired,
-							prismaClient.TeamMemberStatus.Founder,
-						],
+						in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder],
 					},
 				},
 			});
@@ -116,7 +113,7 @@ export const POST = withAuth({ mode: "user" })(
 					team: { connect: { id: data.teamId } },
 					invitedBy: { connect: { id: currentUser.id } },
 					user: { connect: { id: userRecord.id } },
-					status: prismaClient.InvitationStatus.Pending,
+					status: InvitationStatus.Pending,
 					expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 				},
 			});

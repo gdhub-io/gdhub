@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 
 export const LEADERSHIP_FINISH_BONUS_WEIGHT = 100;
@@ -18,14 +18,14 @@ const ENTRY_STAGE_COEFS: Record<string, number> = {
 	release: 0.8,
 };
 
-const OUTCOME_COEFS: Record<prismaClient.ProjectStatus, number> = {
-	[prismaClient.ProjectStatus.Registered]: 0,
-	[prismaClient.ProjectStatus.Approved]: 1.0,
-	[prismaClient.ProjectStatus.Rejected]: 0,
-	[prismaClient.ProjectStatus.Dormant]: 0.8,
-	[prismaClient.ProjectStatus.Archived]: 0.6,
-	[prismaClient.ProjectStatus.Released]: 1.5,
-	[prismaClient.ProjectStatus.KilledWithDignity]: 1.1,
+const OUTCOME_COEFS: Record<ProjectStatus, number> = {
+	[ProjectStatus.Registered]: 0,
+	[ProjectStatus.Approved]: 1.0,
+	[ProjectStatus.Rejected]: 0,
+	[ProjectStatus.Dormant]: 0.8,
+	[ProjectStatus.Archived]: 0.6,
+	[ProjectStatus.Released]: 1.5,
+	[ProjectStatus.KilledWithDignity]: 1.1,
 };
 
 type WorkflowStep = { name?: string | null; order?: number | null };
@@ -70,11 +70,11 @@ export const getEntryStageCoef = (
 	return ENTRY_STAGE_COEFS[stageKey] ?? ENTRY_STAGE_COEFS.mvp;
 };
 
-export const getOutcomeCoef = (status: prismaClient.ProjectStatus) =>
+export const getOutcomeCoef = (status: ProjectStatus) =>
 	OUTCOME_COEFS[status] ?? 1;
 
-export const getAdvisorOutcomeCoef = (status: prismaClient.ProjectStatus) =>
-	status === prismaClient.ProjectStatus.Released ? 1.2 : 1.0;
+export const getAdvisorOutcomeCoef = (status: ProjectStatus) =>
+	status === ProjectStatus.Released ? 1.2 : 1.0;
 
 export const getActiveDays = ({
 	startedAt,
@@ -88,7 +88,7 @@ export const getActiveDays = ({
 }: {
 	startedAt: Date;
 	finishedAt?: Date | null;
-	status: prismaClient.ProjectStatus;
+	status: ProjectStatus;
 	dormantAt?: Date | null;
 	statusChangedAt?: Date | null;
 	archivedAt?: Date | null;
@@ -96,8 +96,8 @@ export const getActiveDays = ({
 	projectFinishedAt?: Date | null;
 }) => {
 	if (
-		status === prismaClient.ProjectStatus.Registered ||
-		status === prismaClient.ProjectStatus.Rejected
+		status === ProjectStatus.Registered ||
+		status === ProjectStatus.Rejected
 	) {
 		return 0;
 	}
@@ -106,7 +106,7 @@ export const getActiveDays = ({
 	const end = dayjs(finishedAt ?? new Date());
 	let activeEnd = end;
 
-	if (status !== prismaClient.ProjectStatus.Approved) {
+	if (status !== ProjectStatus.Approved) {
 		const frozenAt =
 			dormantAt ??
 			statusChangedAt ??

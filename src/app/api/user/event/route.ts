@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { EventFormat, EventType, Language } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "slugify";
 import { z } from "zod";
@@ -30,13 +30,9 @@ const UserEventScheduleItemSchema = z.object({
 	),
 	directionId: z.string(),
 	format: z
-		.enum(
-			Object.values(prismaClient.$Enums.EventFormat) as [string, ...string[]],
-		)
+		.enum(Object.values(EventFormat) as [string, ...string[]])
 		.optional(),
-	language: z
-		.enum(Object.values(prismaClient.$Enums.Language) as [string, ...string[]])
-		.optional(),
+	language: z.enum(Object.values(Language) as [string, ...string[]]).optional(),
 });
 
 const UserEventCreateSchema = z.object({
@@ -46,15 +42,11 @@ const UserEventCreateSchema = z.object({
 	startDate: z.coerce.date(),
 	endDate: z.coerce.date(),
 	directionId: z.string(),
-	lang: z.enum(
-		Object.values(prismaClient.$Enums.Language) as [string, ...string[]],
-	),
-	format: z.enum(
-		Object.values(prismaClient.$Enums.EventFormat) as [string, ...string[]],
-	),
+	lang: z.enum(Object.values(Language) as [string, ...string[]]),
+	format: z.enum(Object.values(EventFormat) as [string, ...string[]]),
 	url: z.string().optional(),
 	image: z.string().optional(),
-	type: z.enum(Object.values(prismaClient.EventType) as [string, ...string[]]),
+	type: z.enum(Object.values(EventType) as [string, ...string[]]),
 	isFree: z.boolean().optional(),
 	schedule: z.array(UserEventScheduleItemSchema).optional(),
 });
@@ -69,13 +61,13 @@ export const POST = withAuth({ mode: "user" })(
 
 		const event = await prisma.event.create({
 			data: {
-				type: data.type as prismaClient.EventType,
+				type: data.type as EventType,
 				title: data.title,
 				shortDescription: data.shortDescription,
 				description: "", //use content instead
 				url: data.url,
 				image: data.image,
-				lang: data.lang as prismaClient.$Enums.Language,
+				lang: data.lang as Language,
 				createdById: currentUser.id,
 				slug:
 					data.slug ||
@@ -92,8 +84,8 @@ export const POST = withAuth({ mode: "user" })(
 					startDate: dayjs(data.startDate).toISOString(),
 					endDate: dayjs(data.endDate).toISOString(),
 					directionId: data.directionId,
-					language: data.lang as prismaClient.$Enums.Language,
-					format: data.format as prismaClient.$Enums.EventFormat,
+					language: data.lang as Language,
+					format: data.format as EventFormat,
 				},
 			});
 		}

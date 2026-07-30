@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { QueueJobStatus, QueueJobType } from "@gdhub-io/gdhub-prisma";
 import type { Job } from "bullmq";
 import type { NextRequest } from "next/server";
 import { apiError, json, withAuth } from "@/lib/api-handlers";
@@ -15,8 +15,8 @@ async function runWithBrokerLog<T>(
 			.create({
 				data: {
 					name: jobName,
-					status: prismaClient.QueueJobStatus.Completed,
-					type: prismaClient.QueueJobType.Broker,
+					status: QueueJobStatus.Completed,
+					type: QueueJobType.Broker,
 					data:
 						result && typeof result === "object"
 							? (result as Record<string, unknown>)
@@ -33,8 +33,8 @@ async function runWithBrokerLog<T>(
 			.create({
 				data: {
 					name: jobName,
-					status: prismaClient.QueueJobStatus.Failed,
-					type: prismaClient.QueueJobType.Broker,
+					status: QueueJobStatus.Failed,
+					type: QueueJobType.Broker,
 					log: (e as Error).message,
 				},
 			})

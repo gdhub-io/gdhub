@@ -1,5 +1,5 @@
 import { Render } from "@9gustin/react-notion-render";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectWorkflowStep } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { Skeleton, Spin } from "antd";
@@ -7,7 +7,7 @@ import axios from "axios";
 import { useMemo } from "react";
 import styles from "./style.module.scss";
 
-const prepareContentRequest = (step: prismaClient.ProjectWorkflowStep) => {
+const prepareContentRequest = (step: ProjectWorkflowStep) => {
 	const [source, path] = step?.description?.split("::") || [];
 
 	if (source === "notion" && path) {
@@ -23,7 +23,7 @@ const WorkflowStepContent = ({
 	step,
 	locale = "en",
 }: {
-	step: prismaClient.ProjectWorkflowStep;
+	step: ProjectWorkflowStep;
 	locale?: string;
 }) => {
 	const { getLanguage } = useTolgee();

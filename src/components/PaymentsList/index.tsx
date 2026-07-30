@@ -1,6 +1,6 @@
 "use client";
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Table, type TableProps, Tag, Typography } from "antd";
@@ -14,8 +14,8 @@ type UserPayment = {
 	id: string;
 	amount: number;
 	currency: string;
-	status: prismaClient.PaymentStatus;
-	payableType: prismaClient.PayableType;
+	status: PaymentStatus;
+	payableType: PayableType;
 	payableId: string;
 	createdAt: string;
 	completedAt: string | null;

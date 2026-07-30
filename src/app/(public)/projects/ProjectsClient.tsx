@@ -1,6 +1,11 @@
 "use client";
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Project,
+	ProjectWorkflow,
+	ProjectWorkflowStep,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import { ConfigProvider, Flex, Select, Typography } from "antd";
 import { useMemo, useState } from "react";
@@ -13,16 +18,16 @@ import styles from "./style.module.scss";
 
 const { Paragraph } = Typography;
 
-export type ProjectIncludeAll = prismaClient.Project & {
-	author: prismaClient.User;
+export type ProjectIncludeAll = Project & {
+	author: User;
 	workflow:
-		| (prismaClient.ProjectWorkflow & {
+		| (ProjectWorkflow & {
 				currentStep: {
 					id: string;
 					name: string;
 					order: number;
 				} | null;
-				steps: prismaClient.ProjectWorkflowStep[];
+				steps: ProjectWorkflowStep[];
 		  })
 		| null;
 	lastPostAt: Date;

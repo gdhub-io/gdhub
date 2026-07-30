@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import slugify from "slugify";
 import { z } from "zod";
 import {
@@ -21,7 +21,7 @@ type CreateBlogPostBody = z.infer<typeof CreateBlogPostSchema>;
 
 export const POST = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(CreateBlogPostSchema)(async (_req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;

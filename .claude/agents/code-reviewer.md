@@ -21,7 +21,7 @@ Check, in priority order:
 3. **Quality** — clear naming, no dead code, reasonable error handling, no obvious N+1 or
    unbounded queries, tests added/updated for non-trivial logic.
 
-Run `yarn type-check` and `yarn lint` if useful and fold the results into the review.
+Run `bun run type-check` and `bun run lint` if useful and fold the results into the review.
 
 Output: a short summary verdict, then findings grouped as **Blocking** / **Should fix** /
 **Nice to have**, each with `file:line` and a concrete suggested fix. Be specific and brief.

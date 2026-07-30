@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Profile, User } from "@gdhub-io/gdhub-prisma";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -22,8 +22,8 @@ import TelegramReactAuthButton, {
 const { Text } = Typography;
 
 type ConnectProfileFormArgs = {
-	profile: prismaClient.Profile;
-	saveProfile: (data: Partial<prismaClient.User>) => Promise<void>;
+	profile: Profile;
+	saveProfile: (data: Partial<User>) => Promise<void>;
 };
 
 const ConnectProfileForm = ({

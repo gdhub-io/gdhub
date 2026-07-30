@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -12,7 +12,7 @@ import { prisma } from "@/services/prisma";
 const UserProjectsQuerySchema = z.object({
 	seasonId: z.string().optional(),
 	status: z
-		.enum(Object.values(prismaClient.ProjectStatus) as [string, ...string[]])
+		.enum(Object.values(ProjectStatus) as [string, ...string[]])
 		.optional(),
 });
 
@@ -41,9 +41,7 @@ export const GET = withAuth({ mode: "user" })(
 						},
 					},
 				],
-				status: status
-					? { equals: status as prismaClient.ProjectStatus }
-					: undefined,
+				status: status ? { equals: status as ProjectStatus } : undefined,
 			},
 			select: {
 				id: true,

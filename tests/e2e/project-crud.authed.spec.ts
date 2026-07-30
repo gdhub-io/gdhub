@@ -35,7 +35,7 @@ test("create → edit in settings/general → delete via danger zone", async ({
 	expect(slug, "project slug in URL").toBeTruthy();
 
 	// --- 3. Edit the project in settings/general ---
-	await page.goto(`/my/projects/${slug}/settings/general`);
+	await page.goto(`/user/project/${slug}/settings/general`);
 	await expect(
 		page.getByRole("menuitem", { name: /general/i }),
 	).toBeVisible();
@@ -72,7 +72,7 @@ test("create → edit in settings/general → delete via danger zone", async ({
 	await expect(nameInput).toHaveValue(renamedName);
 
 	// --- 4. Delete via danger zone ---
-	await page.goto(`/my/projects/${slug}/settings/danger`);
+	await page.goto(`/user/project/${slug}/settings/danger`);
 	await page.getByRole("button", { name: /^delete$/i }).click();
 
 	const deleteDialog = page.getByRole("dialog");

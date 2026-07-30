@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 
 import {
@@ -63,7 +63,7 @@ export const POST = withAuth({ mode: "user" })(
 			// up duplicates; status/amount of a completed fee stay untouched.
 			const existing = await prisma.payment.findFirst({
 				where: {
-					payableType: prismaClient.PayableType.VACANCY,
+					payableType: PayableType.VACANCY,
 					payableId: vacancyId,
 				},
 				orderBy: { createdAt: "desc" },
@@ -81,8 +81,8 @@ export const POST = withAuth({ mode: "user" })(
 						data: {
 							amount: LISTING_FEE_CENTS,
 							currency: "EUR",
-							status: prismaClient.PaymentStatus.PENDING,
-							payableType: prismaClient.PayableType.VACANCY,
+							status: PaymentStatus.PENDING,
+							payableType: PayableType.VACANCY,
 							payableId: vacancyId,
 							payerId: currentUser.id,
 							providerPriceId,
@@ -114,9 +114,9 @@ export const DELETE = withAuth({ mode: "user" })(
 			// must never be deleted from history.
 			await prisma.payment.deleteMany({
 				where: {
-					payableType: prismaClient.PayableType.VACANCY,
+					payableType: PayableType.VACANCY,
 					payableId: vacancyId,
-					status: { not: prismaClient.PaymentStatus.COMPLETED },
+					status: { not: PaymentStatus.COMPLETED },
 				},
 			});
 

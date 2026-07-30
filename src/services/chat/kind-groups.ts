@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ChatRoomKind } from "@gdhub-io/gdhub-prisma";
 
 // Drawer grouping for chat kinds. Client-safe (type-only prisma import).
 // The Record over the enum forces a compile error when a new ChatRoomKind is
@@ -7,7 +7,7 @@ import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 export const GROUP_ORDER = ["experts", "positions", "direct"] as const;
 export type ChatGroup = (typeof GROUP_ORDER)[number];
 
-const KIND_GROUPS: Record<prismaClient.ChatRoomKind, ChatGroup> = {
+const KIND_GROUPS: Record<ChatRoomKind, ChatGroup> = {
 	AdviceRequest: "experts",
 	VacancyOffer: "positions",
 	Direct: "direct",
@@ -19,5 +19,5 @@ const KIND_GROUPS: Record<prismaClient.ChatRoomKind, ChatGroup> = {
 
 // Rooms unknown to the registry (e.g. legacy admin DMs) fall into Direct.
 export function groupOfKind(kind?: string): ChatGroup {
-	return KIND_GROUPS[kind as prismaClient.ChatRoomKind] ?? "direct";
+	return KIND_GROUPS[kind as ChatRoomKind] ?? "direct";
 }

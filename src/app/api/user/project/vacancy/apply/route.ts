@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import {
@@ -82,7 +82,7 @@ export const POST = withAuth({ mode: "user" })(
 				vacancyId,
 				teamId: vacancy.teamId,
 				position: vacancy.title,
-				status: prismaClient.TeamMemberStatus.Applicant,
+				status: TeamMemberStatus.Applicant,
 				specialityId,
 				allowedContacts: contactType,
 				applicationMessage: applicationMessage || null,
@@ -111,7 +111,7 @@ export const POST = withAuth({ mode: "user" })(
 					// Deep-link to the project's candidates page — the author opens the
 					// chat from there when they want to talk.
 					// biome-ignore lint/style/noNonNullAssertion: original semantics
-					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${vacancy.team!.project?.slug}`,
+					redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${vacancy.team!.project?.slug}`,
 					redirectUrlType: "internal",
 				},
 			});

@@ -1,5 +1,13 @@
 import { EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	PaymentRateType,
+	Team,
+	TeamInvestor,
+	TeamInvitation,
+	TeamMember,
+	TeamVacancy,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { AiOutlinePlus } from "@react-icons/all-files/ai/AiOutlinePlus";
 import { BiTrash } from "@react-icons/all-files/bi/BiTrash";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
@@ -36,6 +44,7 @@ import EquityShareModal from "@/components/modals/EquityShareModal";
 import InviteMemberModal from "@/components/modals/InviteMemberModal";
 import MemberEquityPromiseModal from "@/components/modals/MemberEquityPromiseModal";
 import TeamMemberCard from "@/components/TeamMemberCard";
+import { TeamMemberStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import EquitySection from "./EquitySection";
@@ -45,12 +54,9 @@ import ProjectAdviceArchiveModal from "./ProjectAdviceArchiveModal";
 const { Paragraph, Text } = Typography;
 
 /** Team member row with the offered compensation of the vacancy they applied through. */
-type TeamMemberRow = prismaClient.TeamMember & {
-	user: prismaClient.User;
-	vacancy?: Pick<
-		prismaClient.TeamVacancy,
-		"offeredAmount" | "offeredRateType"
-	> | null;
+type TeamMemberRow = TeamMember & {
+	user: User;
+	vacancy?: Pick<TeamVacancy, "offeredAmount" | "offeredRateType"> | null;
 };
 
 const getTelegramExpertLink = (specialityId: string) => {
@@ -89,7 +95,7 @@ const MyTeam = () => {
 		queryKey: ["user-project-team", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<
-				prismaClient.Team & {
+				Team & {
 					members: TeamMemberRow[];
 				}
 			>("/api/user/project/team", {
@@ -105,7 +111,7 @@ const MyTeam = () => {
 	} = useQuery({
 		queryKey: ["team-pending-invitations", contextProject?.team?.id],
 		queryFn: () =>
-			axios.get<prismaClient.TeamInvitation[]>(
+			axios.get<TeamInvitation[]>(
 				"/api/user/project/team/pending-invitations",
 				{
 					params: { teamId: contextProject?.team?.id },
@@ -123,7 +129,7 @@ const MyTeam = () => {
 		queryKey: ["team-advisors", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.User & {
+				(User & {
 					_count: any;
 					specialities: { id: string; name: string }[];
 				})[]
@@ -141,12 +147,9 @@ const MyTeam = () => {
 	} = useQuery({
 		queryKey: ["team-investors", contextProject?.team?.id],
 		queryFn: () =>
-			axios.get<prismaClient.TeamInvestor[]>(
-				"/api/user/project/team/investors",
-				{
-					params: { teamId: contextProject?.team?.id },
-				},
-			),
+			axios.get<TeamInvestor[]>("/api/user/project/team/investors", {
+				params: { teamId: contextProject?.team?.id },
+			}),
 		enabled: !!contextProject?.team?.id,
 	});
 
@@ -194,7 +197,7 @@ const MyTeam = () => {
 	});
 
 	const handleFired = useCallback(
-		async (teamMember: prismaClient.TeamMember) => {
+		async (teamMember: TeamMember) => {
 			modal.confirm({
 				title: t("Are you sure you want to fire this member?"),
 				destroyOnHidden: true,
@@ -287,7 +290,7 @@ const MyTeam = () => {
 	};
 
 	const handleOpenMemberEquityPromiseModal = (
-		member: prismaClient.TeamMember & { user: prismaClient.User },
+		member: TeamMember & { user: User },
 	) => {
 		setSelectedMemberId(member.id);
 		setIsMemberEquityPromiseModalOpen(true);
@@ -363,7 +366,7 @@ const MyTeam = () => {
 		investmentReserve > 0 && totalInvestorShare >= investmentReserve;
 
 	// Short suffix shown after the offered amount, mirrors VacancyCard wording.
-	const rateSuffix: Record<prismaClient.PaymentRateType, string> = {
+	const rateSuffix: Record<PaymentRateType, string> = {
 		Hourly: t("vacancy.rate.hourly", "/ hour"),
 		OneTime: t("vacancy.rate.oneTime", "one-time"),
 		Monthly: t("vacancy.rate.monthly", "/ month"),
@@ -410,7 +413,7 @@ const MyTeam = () => {
 			key: "position",
 			responsive: ["md"],
 			render: (value, member) => {
-				return member.status === prismaClient.TeamMemberStatus.Founder ? (
+				return member.status === TeamMemberStatus.Founder ? (
 					<Space>
 						<Text>{value}</Text>
 						<Tag color="gold">founder</Tag>
@@ -490,8 +493,8 @@ const MyTeam = () => {
 			align: "center",
 			render: (_, member) => {
 				if (
-					member.status === prismaClient.TeamMemberStatus.Fired ||
-					member.status === prismaClient.TeamMemberStatus.Rejected
+					member.status === TeamMemberStatus.Fired ||
+					member.status === TeamMemberStatus.Rejected
 				) {
 					return <Text type="secondary">-</Text>;
 				}
@@ -535,7 +538,7 @@ const MyTeam = () => {
 			render: (_, member) => {
 				if (
 					!contextProject?.isProjectAuthor ||
-					member.status === prismaClient.TeamMemberStatus.Fired
+					member.status === TeamMemberStatus.Fired
 				)
 					return null;
 
@@ -562,8 +565,8 @@ const MyTeam = () => {
 						label: t("Fire Member"),
 						icon: <BiTrash size={16} />,
 						disabled:
-							member.status === prismaClient.TeamMemberStatus.Founder ||
-							member.status === (prismaClient.TeamMemberStatus.Fired as any),
+							member.status === TeamMemberStatus.Founder ||
+							member.status === (TeamMemberStatus.Fired as any),
 						danger: true,
 						onClick: () => handleFired(member),
 					},
@@ -590,7 +593,7 @@ const MyTeam = () => {
 		},
 	];
 
-	const pendingInvitationsColumns: ColumnsType<prismaClient.TeamInvitation> = [
+	const pendingInvitationsColumns: ColumnsType<TeamInvitation> = [
 		{
 			title: t("Email"),
 			key: "email",
@@ -632,7 +635,7 @@ const MyTeam = () => {
 
 	// Advisors columns (conditionally hide some columns for non-authors)
 	const advisorsColumnsBase: ColumnsType<
-		prismaClient.User & { _count: any; specialities: any[] }
+		User & { _count: any; specialities: any[] }
 	> = [
 		{
 			key: "name",
@@ -720,7 +723,7 @@ const MyTeam = () => {
 				(col) => col.key === "name" || col.key === "actions",
 			);
 
-	const investorsColumns: ColumnsType<prismaClient.TeamInvestor> = [
+	const investorsColumns: ColumnsType<TeamInvestor> = [
 		{
 			key: "name",
 			title: t("Name"),

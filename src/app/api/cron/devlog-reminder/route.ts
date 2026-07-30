@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json } from "@/lib/api-handlers";
@@ -12,7 +12,7 @@ export async function GET() {
 	const result = await runWithCronLog("devlog-reminder", async () => {
 		const projects = await prisma.project.findMany({
 			where: {
-				status: prismaClient.ProjectStatus.Approved,
+				status: ProjectStatus.Approved,
 				finishedAt: { equals: null },
 				author: {
 					profile: { isActive: true },
@@ -111,7 +111,7 @@ export async function GET() {
 				payload: {
 					locale: project.author.lang || "en",
 					projectName: project.name,
-					addDevlogPostUrl: `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${project.slug}`,
+					addDevlogPostUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${project.slug}`,
 				},
 			});
 

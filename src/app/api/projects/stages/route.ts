@@ -1,10 +1,11 @@
 import { json, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
+import type { ProjectActivityRow } from "@/types/project";
 
 export const GET = withAuth({ mode: "user" })(async () => {
-	const projects = await prisma.project.getProjectsOrderedByActivity({
+	const projects = (await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
-	});
+	})) as ProjectActivityRow[];
 
 	const uniqueStages = new Map<
 		string,

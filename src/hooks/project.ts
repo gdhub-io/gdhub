@@ -1,10 +1,10 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export type CurrentProject = prismaClient.Project & {
+export type CurrentProject = Project & {
 	team: { id: string } | null;
 };
 

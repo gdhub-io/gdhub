@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -24,8 +24,8 @@ export const PUT = withAuth({ mode: "user" })(
 		const { id } = body as IdBody;
 
 		const rejectedCandidate = await prisma.teamMember.update({
-			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
-			data: { status: prismaClient.TeamMemberStatus.Rejected },
+			where: { id, status: TeamMemberStatus.Applicant },
+			data: { status: TeamMemberStatus.Rejected },
 			select: { user: true, vacancy: true, team: true },
 		});
 

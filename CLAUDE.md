@@ -28,7 +28,7 @@ events, devlogs, equity, paid job listings). Single Next.js app.
   `import { prisma } from "@/services/prisma"`. Prisma types come from
   `@gdhub-io/gdhub-prisma/dist/client`.
 - **Auth:** NextAuth v5 (`auth()` from `@/auth`).
-- **i18n:** Tolgee. Translation files in `src/i18n/`, refreshed via `yarn refresh-translations`.
+- **i18n:** Tolgee. Translation files in `src/i18n/`, refreshed via `bun run refresh-translations`.
 - **Queues/jobs:** BullMQ (`src/queues`), Redis (`ioredis`).
 - **Search:** Typesense (`@gdhub-io/gdhub-typesense`).
 - **Payments:** Paddle (`src/services/paddle`). See [PADDLE_INTEGRATION.md](PADDLE_INTEGRATION.md).
@@ -39,19 +39,23 @@ events, devlogs, equity, paid job listings). Single Next.js app.
 
 | Task | Command |
 |------|---------|
-| Dev server | `yarn dev` (Turbopack) |
-| Build | `yarn build` |
-| Lint (Biome) | `yarn lint` |
-| Type-check | `yarn type-check` |
-| Unit tests | `yarn test` |
-| Single test file | `yarn test <path>` |
-| E2E tests | `yarn test:e2e` |
-| Refresh translations | `yarn refresh-translations` |
-| Prisma generate | `yarn db:generate` |
-| Storybook | `yarn storybook` |
+| Install deps | `bun install` |
+| Dev server | `bun run dev` (Turbopack) |
+| Build | `bun run build` |
+| Lint (Biome) | `bun run lint` |
+| Type-check | `bun run type-check` |
+| Unit tests | `bun run test` |
+| Single test file | `bun run test <path>` |
+| E2E tests | `bun run test:e2e` |
+| Refresh translations | `bun run refresh-translations` |
+| Prisma generate | `bun run db:generate` |
+| Storybook | `bun run storybook` |
 
-`yarn lint` runs on **pre-commit** (husky); `yarn refresh-translations` runs on **pre-push**.
-Before opening a PR, run `yarn lint && yarn type-check && yarn test`.
+**Package manager: Bun only** (pinned via `packageManager` in `package.json`, lockfile
+`bun.lock`). Never use `yarn`/`npm`/`pnpm` — they would produce a competing lockfile.
+
+`bun run lint` runs on **pre-commit** (husky); `bun run refresh-translations` runs on
+**pre-push**. Before opening a PR, run `bun run lint && bun run type-check && bun run test`.
 
 ## Repository layout
 
@@ -127,7 +131,7 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
 - **Icons:** import from `@react-icons/all-files/<pack>/<Icon>` (the full barrel import is
   forbidden for bundle size).
 - **i18n:** add user-facing strings as Tolgee keys, not hardcoded text; run
-  `yarn refresh-translations` after adding keys.
+  `bun run refresh-translations` after adding keys.
 - **Formatting:** let Biome handle it (tabs, double quotes). Don't hand-format or fight it.
 - **Comments:** English, only where they add non-obvious context.
 - **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
@@ -137,12 +141,12 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
 
 - Unit: Vitest, files `tests/**/*.test.ts` or co-located `src/**/*.test.{ts,tsx}`.
 - E2E: Playwright in `tests/e2e`. `*.authed.spec.ts` need an authenticated session.
-  Run with `yarn test:e2e` (uses `.env.test`).
+  Run with `bun run test:e2e` (uses `.env.test`).
 - When changing API or domain logic, add/extend a test rather than only manual checks.
 
 ## Gotchas
 
 - The Prisma schema is in `node_modules`, not the repo — don't look for a local `prisma/`
-  folder for the schema; use `yarn db:generate` after the package updates.
+  folder for the schema; use `bun run db:generate` after the package updates.
 - ESLint is intentionally disabled in the editor; Biome is the single source of truth.
 - `tsconfig.tsbuildinfo` / `.next` are build artifacts — never edit.

@@ -24,5 +24,5 @@ Hard rules:
 - Read env via `env()` from `@/helpers/env`.
 - Tabs, double quotes — Biome owns formatting.
 
-After changes, run `yarn lint` and `yarn type-check` and report results. Add or update a
+After changes, run `bun run lint` and `bun run type-check` and report results. Add or update a
 test when the logic is non-trivial. Comments and identifiers in English.

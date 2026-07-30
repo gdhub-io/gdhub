@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { AdviceRequestStatus, ChatRoomKind } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { ensureChatRoom } from "@/services/chat/ensure-room";
 import { NovuService } from "@/services/novu";
@@ -37,7 +37,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	// The expert accepts and their session creates the room. The requester asked
 	// for this conversation, so they are auto-joined — no invite screen.
 	const chat = await ensureChatRoom({
-		kind: prismaClient.ChatRoomKind.AdviceRequest,
+		kind: ChatRoomKind.AdviceRequest,
 		directKey: `advice:${adviceRequest.id}`,
 		title: adviceRequest.project?.name || undefined,
 		topic: adviceRequest.topic || undefined,
@@ -57,7 +57,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const updatedAdviceRequest = await prisma.adviceRequest.update({
 		where: { id },
 		data: {
-			status: prismaClient.AdviceRequestStatus.Approved,
+			status: AdviceRequestStatus.Approved,
 			matrixRoomId: chat.roomId,
 		},
 		include: {

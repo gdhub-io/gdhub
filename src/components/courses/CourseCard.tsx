@@ -41,7 +41,7 @@ export const CourseCard = ({ course, token }: { course: any; token: any }) => {
 	};
 
 	return (
-		<Link href={`/courses/${course.slug}`}>
+		<Link href={`/course/${course.slug}`}>
 			<Card
 				onMouseEnter={() => setHovered(true)}
 				onMouseLeave={() => setHovered(false)}

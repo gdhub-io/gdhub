@@ -1,4 +1,14 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	GameDifficultyLevel,
+	GameGenre,
+	GameSetting,
+	Profile,
+	Project,
+	Speciality,
+	TeamMember,
+	TeamVacancy,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
 import { TbMail } from "@react-icons/all-files/tb/TbMail";
 import { IconCopy } from "@tabler/icons-react";
@@ -53,16 +63,16 @@ const ProjectCandidatePreviewModal = ({
 		queryKey: ["candidate", candidateId],
 		queryFn: () =>
 			axios.get<
-				prismaClient.TeamMember & {
-					vacancy: prismaClient.TeamVacancy;
-					team: { project: prismaClient.Project };
-					speciality: prismaClient.Speciality;
-					user: prismaClient.User & {
-						specialities: prismaClient.Speciality[];
-						profile: prismaClient.Profile & {
-							preferedGenres: prismaClient.GameGenre[];
-							preferedSettings: prismaClient.GameSetting[];
-							preferedDifficulties: prismaClient.GameDifficultyLevel[];
+				TeamMember & {
+					vacancy: TeamVacancy;
+					team: { project: Project };
+					speciality: Speciality;
+					user: User & {
+						specialities: Speciality[];
+						profile: Profile & {
+							preferedGenres: GameGenre[];
+							preferedSettings: GameSetting[];
+							preferedDifficulties: GameDifficultyLevel[];
 						};
 					};
 				}

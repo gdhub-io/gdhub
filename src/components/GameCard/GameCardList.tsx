@@ -1,10 +1,10 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project } from "@gdhub-io/gdhub-prisma";
 import { Col, Empty, Row, Skeleton } from "antd";
 import type React from "react";
 import GameCard from "./index";
 import styles from "./styles.module.scss";
 
-type GameListItem = prismaClient.Project & {
+type GameListItem = Project & {
 	applauseCount?: number;
 	hasOpenPositions?: boolean;
 };

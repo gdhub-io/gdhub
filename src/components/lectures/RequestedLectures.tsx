@@ -1,4 +1,11 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	type Lecture,
+	type LectureListener,
+	type LecturerRequest,
+	LectureStage,
+	type User,
+	type WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
 import { HiOutlineTrash } from "@react-icons/all-files/hi/HiOutlineTrash";
 import { HiOutlineX } from "@react-icons/all-files/hi/HiOutlineX";
@@ -81,9 +88,7 @@ export const RequestedLectures = ({
 	const { data: workDirections } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 
 		staleTime: Infinity,
 	});
@@ -110,31 +115,28 @@ export const RequestedLectures = ({
 		queryKey: ["lectures", "requested"],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.Lecture & {
-					listeners: prismaClient.LectureListener[];
-					direction: prismaClient.WorkDirection;
-					lecturerRequests: (prismaClient.LecturerRequest & {
-						user: prismaClient.User;
+				(Lecture & {
+					listeners: LectureListener[];
+					direction: WorkDirection;
+					lecturerRequests: (LecturerRequest & {
+						user: User;
 					})[];
 					isRelevant: boolean;
 					isAuthor: boolean;
 				})[]
 			>("/api/lectures", {
 				params: {
-					stage: [
-						prismaClient.LectureStage.Requested,
-						prismaClient.LectureStage.Actualized,
-					].join(","),
+					stage: [LectureStage.Requested, LectureStage.Actualized].join(","),
 				},
 			}),
 	});
 
 	const columns: ColumnsType<
-		prismaClient.Lecture & {
-			listeners: prismaClient.LectureListener[];
-			direction: prismaClient.WorkDirection;
-			lecturerRequests: (prismaClient.LecturerRequest & {
-				user: prismaClient.User;
+		Lecture & {
+			listeners: LectureListener[];
+			direction: WorkDirection;
+			lecturerRequests: (LecturerRequest & {
+				user: User;
 			})[];
 			isRelevant: boolean;
 			isAuthor: boolean;
@@ -311,8 +313,8 @@ export const RequestedLectures = ({
 						/>
 					</Dropdown>
 				) : lecture.requestedById === session?.user?.id &&
-					(lecture.stage === prismaClient.LectureStage.Requested ||
-						lecture.stage === prismaClient.LectureStage.Proposed) ? (
+					(lecture.stage === LectureStage.Requested ||
+						lecture.stage === LectureStage.Proposed) ? (
 					<Space wrap={screens.md ? false : true}>
 						<Button onClick={() => handleEditLectureRequest(lecture.id)}>
 							{t("lecture.change", "Change")}

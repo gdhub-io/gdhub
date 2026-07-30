@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	type ChatRoomKind,
+	ChatRoomStatus,
+	type Prisma,
+} from "@gdhub-io/gdhub-prisma";
 import * as sdk from "matrix-js-sdk";
 import { EventType, MsgType } from "matrix-js-sdk";
 import { env } from "@/helpers/env";
@@ -6,7 +10,7 @@ import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 
 export type EnsureChatRoomArgs = {
-	kind: prismaClient.ChatRoomKind;
+	kind: ChatRoomKind;
 	/** Deterministic unique key for dedup, e.g. `vacancy:{vacancyId}:{candidateId}`. */
 	directKey: string;
 	title?: string;
@@ -67,7 +71,7 @@ export async function ensureChatRoom(
 			directKey,
 			title,
 			isDirect,
-			context: (context ?? undefined) as prismaClient.Prisma.InputJsonValue,
+			context: (context ?? undefined) as Prisma.InputJsonValue,
 		},
 		update: {},
 		select: { id: true, matrixRoomId: true },
@@ -145,7 +149,7 @@ export async function ensureChatRoom(
 		where: { id: row.id },
 		data: {
 			matrixRoomId: roomId,
-			status: prismaClient.ChatRoomStatus.Open,
+			status: ChatRoomStatus.Open,
 		},
 	});
 

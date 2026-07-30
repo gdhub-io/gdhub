@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 
 import { DEFAULT_FINISH_DAYS, LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
@@ -58,7 +58,7 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 			directionId: source.directionId,
 			teamId: source.teamId,
 			finishedAt,
-			status: prismaClient.TeamVacancyStatus.Draft,
+			status: TeamVacancyStatus.Draft,
 			promisePercentage: source.promisePercentage,
 			promiseStepId: source.promiseStepId,
 			// Copy the offered compensation (already in cents); the new listing is
