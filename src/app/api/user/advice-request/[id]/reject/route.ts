@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -24,7 +24,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const updatedAdviceRequest = await prisma.adviceRequest.update({
 		where: { id },
 		data: {
-			status: prismaClient.AdviceRequestStatus.Rejected,
+			status: AdviceRequestStatus.Rejected,
 			finishedAt: new Date(),
 		},
 		include: {

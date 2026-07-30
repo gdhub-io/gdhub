@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	GameGenre,
+	GameSetting,
+	WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useMemo } from "react";
@@ -7,9 +11,7 @@ export const useWorkDirections = () => {
 	const { data: records } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 		staleTime: Infinity,
 	});
 
@@ -28,8 +30,7 @@ export const useWorkDirections = () => {
 export const useGameGenres = () => {
 	const { data: records } = useQuery({
 		queryKey: ["gameGenres"],
-		queryFn: () =>
-			axios.get<prismaClient.GameGenre[]>("/api/dictionary/game-genres"),
+		queryFn: () => axios.get<GameGenre[]>("/api/dictionary/game-genres"),
 		staleTime: Infinity,
 	});
 
@@ -48,8 +49,7 @@ export const useGameGenres = () => {
 export const useGameSettings = () => {
 	const { data: records } = useQuery({
 		queryKey: ["gameSettings"],
-		queryFn: () =>
-			axios.get<prismaClient.GameSetting[]>("/api/dictionary/game-settings"),
+		queryFn: () => axios.get<GameSetting[]>("/api/dictionary/game-settings"),
 		staleTime: Infinity,
 	});
 
@@ -68,8 +68,7 @@ export const useGameSettings = () => {
 export const useGameDifficulties = () => {
 	const { data: records } = useQuery({
 		queryKey: ["gameDifficulties"],
-		queryFn: () =>
-			axios.get<prismaClient.GameGenre[]>("/api/dictionary/game-levels"),
+		queryFn: () => axios.get<GameGenre[]>("/api/dictionary/game-levels"),
 		staleTime: Infinity,
 	});
 

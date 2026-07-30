@@ -1,6 +1,6 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { EventFormat, Language } from "@gdhub-io/gdhub-prisma";
 import { IconPlus } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -15,6 +15,7 @@ import {
 } from "@/components/event/EventScheduleGantt";
 import type { ScheduleItemFormValues } from "@/components/modals/EventModal";
 import { EventSpace } from "@/components/spaces/EventSpace";
+import { UserRole } from "@/config/prisma-enums";
 import { hasRole } from "@/helpers/user";
 
 interface EventScheduleItem {
@@ -25,8 +26,8 @@ interface EventScheduleItem {
 	startDate: string;
 	endDate: string;
 	directionId: string;
-	format?: prismaClient.$Enums.EventFormat;
-	language?: prismaClient.$Enums.Language;
+	format?: EventFormat;
+	language?: Language;
 	speakers?: Array<{
 		id: string;
 		name?: string;
@@ -48,7 +49,7 @@ export default function EventSchedulePage() {
 	const [schedule, setSchedule] = useState<ScheduleItemFormValues[]>([]);
 	const ganttRef = useRef<EventScheduleGanttRef>(null);
 
-	const isAdmin = hasRole(prismaClient.UserRole.Admin, { data: session });
+	const isAdmin = hasRole(UserRole.Admin, { data: session });
 
 	const { data: event, refetch: refetchEvent } = useQuery({
 		queryKey: ["event", eventId],

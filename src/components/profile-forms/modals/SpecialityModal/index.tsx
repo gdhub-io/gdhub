@@ -1,4 +1,10 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Project,
+	Speciality,
+	Team,
+	TeamInvitation,
+	WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
@@ -25,9 +31,9 @@ import { DirectionSelect } from "@/components/DirectionSelect";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 
 interface SpecialityModalArgs {
-	speciality: prismaClient.Speciality;
-	teamInvitation?: prismaClient.TeamInvitation & {
-		team: prismaClient.Team & { project: prismaClient.Project };
+	speciality: Speciality;
+	teamInvitation?: TeamInvitation & {
+		team: Team & { project: Project };
 	};
 	open: boolean;
 	onOk: (options?: { invitationCompleted?: boolean }) => void;
@@ -54,9 +60,7 @@ const SpecialityModal = ({
 	const { data: workDirections } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 		staleTime: Infinity,
 	});
 

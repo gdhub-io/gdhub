@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -10,7 +10,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 
 	const vacancies = await prisma.teamVacancy.findMany({
 		where: {
-			status: prismaClient.TeamVacancyStatus.Published,
+			status: TeamVacancyStatus.Published,
 			team: { project: { authorId: currentUser.id } },
 		},
 		select: {

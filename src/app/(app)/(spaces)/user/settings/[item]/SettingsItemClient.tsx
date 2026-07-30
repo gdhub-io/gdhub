@@ -1,6 +1,6 @@
 "use client";
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Profile, User } from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import dynamic from "next/dynamic";
@@ -71,9 +71,7 @@ export function SettingsItemClient() {
 	const { data: profile } = useQuery({
 		queryKey: ["profile-setting", session?.user.id],
 		queryFn: () =>
-			axios.get<prismaClient.Profile & { user: Partial<prismaClient.User> }>(
-				"/api/user/profile",
-			),
+			axios.get<Profile & { user: Partial<User> }>("/api/user/profile"),
 		enabled: !!session?.user,
 	});
 

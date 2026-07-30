@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { BlogPostStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type RouteContext } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -14,7 +14,7 @@ export const GET = async (
 		const post = await prisma.blogPost.findUnique({
 			where: {
 				slug,
-				status: prismaClient.BlogPostStatus.Published,
+				status: BlogPostStatus.Published,
 			},
 			include: { authors: { select: { name: true, image: true } } },
 		});

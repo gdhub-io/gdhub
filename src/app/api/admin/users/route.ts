@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	AdviceRequestStatus,
+	ProjectStatus,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
@@ -60,7 +64,7 @@ type AdminUsersSortOrder = "ascend" | "descend";
 
 type CapitalProjectAccumulator = {
 	id: string;
-	status: prismaClient.ProjectStatus;
+	status: ProjectStatus;
 	currentStepName?: string | null;
 	roles: Set<string>;
 	stepsCount: number;
@@ -80,7 +84,7 @@ type UserSkillAccumulator = {
 
 type CapitalProject = {
 	id: string;
-	status: prismaClient.ProjectStatus;
+	status: ProjectStatus;
 	authorId: string;
 	startedAt: Date | null;
 	finishedAt: Date | null;
@@ -265,10 +269,7 @@ const computeSkillCapitalForUsers = async (
 				where: {
 					toUserId: { in: userIds },
 					status: {
-						in: [
-							prismaClient.AdviceRequestStatus.Closed,
-							prismaClient.AdviceRequestStatus.Executed,
-						],
+						in: [AdviceRequestStatus.Closed, AdviceRequestStatus.Executed],
 					},
 					projectId: { not: null },
 					finishedAt: { not: null },
@@ -312,10 +313,10 @@ const computeSkillCapitalForUsers = async (
 	for (const project of authoredProjects) {
 		const data = ensureUserAccumulator(userData, project.authorId);
 		data.startedAsAuthor += 1;
-		if (project.status === prismaClient.ProjectStatus.Released) {
+		if (project.status === ProjectStatus.Released) {
 			data.releasedAsAuthor += 1;
 		}
-		if (project.status === prismaClient.ProjectStatus.KilledWithDignity) {
+		if (project.status === ProjectStatus.KilledWithDignity) {
 			data.killedWithDignityAsAuthor += 1;
 		}
 
@@ -519,7 +520,7 @@ const computeSkillCapitalForUsers = async (
 
 export const GET = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(
 		AdminUsersQuerySchema,

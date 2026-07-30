@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { LegalService } from "@/services/legal";
 import { prisma } from "@/services/prisma";
@@ -11,7 +11,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const member = await prisma.eventMember.findUnique({
 		where: { id: memberId },

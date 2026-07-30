@@ -1,4 +1,9 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Lecture,
+	LecturerRequest,
+	Speciality,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Avatar, Card } from "antd";
 import dayjs from "dayjs";
@@ -10,9 +15,9 @@ import styles from "./style.module.scss";
 export const HeldContent = ({
 	lecture,
 }: {
-	lecture: prismaClient.Lecture & {
-		lecturerRequests: (prismaClient.LecturerRequest & {
-			user: prismaClient.User & { specialities: prismaClient.Speciality[] };
+	lecture: Lecture & {
+		lecturerRequests: (LecturerRequest & {
+			user: User & { specialities: Speciality[] };
 		})[];
 	};
 }) => {

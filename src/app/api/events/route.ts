@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	EventStatus,
+	EventType,
+	Language,
+	type Prisma,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -22,19 +27,13 @@ const booleanish = z.preprocess((v) => {
 }, z.boolean().optional());
 
 const GetEventsQuerySchema = z.object({
-	type: enumArray(
-		Object.values(prismaClient.EventType) as [string, ...string[]],
-	),
+	type: enumArray(Object.values(EventType) as [string, ...string[]]),
 	withDates: booleanish,
-	status: enumArray(
-		Object.values(prismaClient.EventStatus) as [string, ...string[]],
-	),
+	status: enumArray(Object.values(EventStatus) as [string, ...string[]]),
 	timeStatus: enumArray(
 		Object.values(EventTimeStatus) as [string, ...string[]],
 	),
-	lang: z
-		.enum(Object.values(prismaClient.Language) as [string, ...string[]])
-		.optional(),
+	lang: z.enum(Object.values(Language) as [string, ...string[]]).optional(),
 });
 
 type GetEventsQuery = z.infer<typeof GetEventsQuerySchema>;
@@ -57,7 +56,7 @@ export const GET = withAuth({ mode: "user" })(
 			lang,
 		} = query;
 
-		const timeWhere: prismaClient.Prisma.EventScheduleItemWhereInput = {
+		const timeWhere: Prisma.EventScheduleItemWhereInput = {
 			OR: [],
 		};
 
@@ -92,19 +91,12 @@ export const GET = withAuth({ mode: "user" })(
 
 		const events = await prisma.event.findMany({
 			where: {
-				type: type
-					? { in: type as prismaClient.$Enums.EventType[] }
-					: undefined,
-				lang: lang
-					? { equals: lang as prismaClient.$Enums.Language }
-					: undefined,
+				type: type ? { in: type as EventType[] } : undefined,
+				lang: lang ? { equals: lang as Language } : undefined,
 				status: preparedStatus
-					? { in: preparedStatus as prismaClient.$Enums.EventStatus[] }
+					? { in: preparedStatus as EventStatus[] }
 					: {
-							notIn: [
-								prismaClient.$Enums.EventStatus.Closed,
-								prismaClient.$Enums.EventStatus.Draft,
-							],
+							notIn: [EventStatus.Closed, EventStatus.Draft],
 						},
 				schedule: timeWhere.OR?.length
 					? {

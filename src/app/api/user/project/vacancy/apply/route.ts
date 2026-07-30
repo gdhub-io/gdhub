@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import {
@@ -82,7 +82,7 @@ export const POST = withAuth({ mode: "user" })(
 				vacancyId,
 				teamId: vacancy.teamId,
 				position: vacancy.title,
-				status: prismaClient.TeamMemberStatus.Applicant,
+				status: TeamMemberStatus.Applicant,
 				specialityId,
 				allowedContacts: contactType,
 				applicationMessage: applicationMessage || null,

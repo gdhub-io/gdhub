@@ -3,7 +3,13 @@
  * Telegram Bot API Docs https://core.telegram.org/bots/api#formatting-options
  */
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	type BlogPost,
+	ProjectStatus,
+	QueueJobStatus,
+	QueueJobType,
+	TeamVacancyStatus,
+} from "@gdhub-io/gdhub-prisma";
 import axios from "axios";
 import dayjs from "dayjs";
 import { parseInline } from "marked";
@@ -166,8 +172,8 @@ export default class TelegramService {
 		const lastLog = await prisma.queueJobLog.findFirst({
 			where: {
 				name: "new-project-reports",
-				type: prismaClient.QueueJobType.Broker,
-				status: prismaClient.QueueJobStatus.Completed,
+				type: QueueJobType.Broker,
+				status: QueueJobStatus.Completed,
 			},
 			orderBy: {
 				createdAt: "desc",
@@ -183,7 +189,7 @@ export default class TelegramService {
 				publishedAt: { gte: lastLogDate },
 				project: {
 					author: { personalDataDeletedAt: null },
-					status: prismaClient.ProjectStatus.Approved,
+					status: ProjectStatus.Approved,
 					workflow: {
 						currentStep: {
 							name: {
@@ -249,8 +255,8 @@ export default class TelegramService {
 		const lastLog = await prisma.queueJobLog.findFirst({
 			where: {
 				name: "new-specialities",
-				type: prismaClient.QueueJobType.Broker,
-				status: prismaClient.QueueJobStatus.Completed,
+				type: QueueJobType.Broker,
+				status: QueueJobStatus.Completed,
 			},
 			orderBy: {
 				createdAt: "desc",
@@ -329,8 +335,8 @@ export default class TelegramService {
 		const lastLog = await prisma.queueJobLog.findFirst({
 			where: {
 				name: "new-vacancies",
-				type: prismaClient.QueueJobType.Broker,
-				status: prismaClient.QueueJobStatus.Completed,
+				type: QueueJobType.Broker,
+				status: QueueJobStatus.Completed,
 			},
 			orderBy: {
 				createdAt: "desc",
@@ -347,12 +353,12 @@ export default class TelegramService {
 				team: {
 					vacancies: {
 						some: {
-							status: prismaClient.TeamVacancyStatus.Published,
+							status: TeamVacancyStatus.Published,
 							publishedAt: { gte: lastLogDate },
 						},
 					},
 				},
-				status: prismaClient.ProjectStatus.Approved,
+				status: ProjectStatus.Approved,
 			},
 			include: {
 				team: {
@@ -361,7 +367,7 @@ export default class TelegramService {
 						// Only the vacancies this run announces — not the team's whole backlog.
 						vacancies: {
 							where: {
-								status: prismaClient.TeamVacancyStatus.Published,
+								status: TeamVacancyStatus.Published,
 								publishedAt: { gte: lastLogDate },
 							},
 						},
@@ -446,7 +452,7 @@ export default class TelegramService {
 	 * `-100…` form (from getChat / forwarding a channel post to @userinfobot).
 	 */
 	async sendBlogPost(
-		post: Pick<prismaClient.BlogPost, "title" | "content" | "slug" | "image">,
+		post: Pick<BlogPost, "title" | "content" | "slug" | "image">,
 	) {
 		const message = blogPostMessageTelegram(post);
 		const imageUrl = blogPostOgImage(post);

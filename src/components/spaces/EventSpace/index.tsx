@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -18,6 +17,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { EventStatus } from "@/config/prisma-enums";
 import { type ContextEvent, EventContext } from "@/contexts/EventContext";
 import { useCurrentEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
@@ -149,7 +149,7 @@ export const EventSpace = ({
 				className: styles.publicPageMenuItem,
 				label: (
 					<Space wrap={true}>
-						{event?.status === prismaClient.$Enums.EventStatus.Draft && (
+						{event?.status === EventStatus.Draft && (
 							<Space wrap={true}>
 								<Text type="secondary">The event is not published yet</Text>
 								<Button
@@ -173,7 +173,7 @@ export const EventSpace = ({
 							<GoLinkExternal size={12} color="gray" />
 						</Button>
 
-						{event?.status === prismaClient.$Enums.EventStatus.Published && (
+						{event?.status === EventStatus.Published && (
 							<Button
 								type="default"
 								size="small"

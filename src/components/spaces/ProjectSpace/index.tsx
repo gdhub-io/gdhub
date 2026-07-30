@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Grid, Space, Typography } from "antd";
@@ -16,6 +15,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { ProjectStatus } from "@/config/prisma-enums";
 import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
 import { useCurrentProject } from "@/hooks/project";
 import styles from "./style.module.scss";
@@ -58,7 +58,7 @@ export const ProjectSpace = ({
 		[project, session?.user],
 	);
 	const isProjectArchived = useMemo(
-		() => project?.status === prismaClient.ProjectStatus.Archived,
+		() => project?.status === ProjectStatus.Archived,
 		[project?.status],
 	);
 	const archivedAtText = useMemo(() => {

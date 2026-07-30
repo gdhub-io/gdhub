@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { EventStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -11,7 +11,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	await prisma.event.update({
 		where: { id },
 		data: {
-			status: prismaClient.$Enums.EventStatus.Published,
+			status: EventStatus.Published,
 			publishedAt: new Date().toISOString(),
 		},
 	});

@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
 import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -27,6 +27,12 @@ import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
+import {
+	EventFormat,
+	EventType,
+	Language,
+	UserRole,
+} from "@/config/prisma-enums";
 import { hasRole } from "@/helpers/user";
 import styles from "./style.module.scss";
 
@@ -35,7 +41,7 @@ const { RangePicker } = DatePicker;
 interface EventModalProps {
 	open: boolean;
 	eventId?: string;
-	eventType?: prismaClient.EventType;
+	eventType?: EventType;
 	onCancel: () => void;
 	onSubmit: () => void;
 	initialValues?: any;
@@ -48,8 +54,8 @@ export type ScheduleItemFormValues = {
 	startDate: string;
 	endDate: string;
 	speakers: { name: string; speciality: string; id: string }[];
-	format?: prismaClient.$Enums.EventFormat;
-	language?: prismaClient.$Enums.Language;
+	format?: EventFormat;
+	language?: Language;
 	directionId: string;
 };
 
@@ -67,10 +73,9 @@ const EventModal: React.FC<EventModalProps> = ({
 		initialValues?.image,
 	);
 	const { data: session } = useSession();
-	const isAdmin = hasRole(prismaClient.UserRole.Admin, { data: session });
+	const isAdmin = hasRole(UserRole.Admin, { data: session });
 	const isBigEvent =
-		eventType === prismaClient.$Enums.EventType.GameLab ||
-		eventType === prismaClient.$Enums.EventType.Conference;
+		eventType === EventType.GameLab || eventType === EventType.Conference;
 	const [imageProcessing, setImageProcessing] = useState(false);
 	const [fileList, setFileList] = useState<any[]>([]);
 
@@ -84,7 +89,7 @@ const EventModal: React.FC<EventModalProps> = ({
 		queryKey: ["work-directions"],
 		queryFn: () =>
 			axios
-				.get<prismaClient.WorkDirection[]>("/api/dictionary/work-directions")
+				.get<WorkDirection[]>("/api/dictionary/work-directions")
 				.then((res) => res.data),
 	});
 
@@ -242,17 +247,17 @@ const EventModal: React.FC<EventModalProps> = ({
 		onCancel();
 	};
 
-	const eventLabel = (eventType: prismaClient.$Enums.EventType) => {
+	const eventLabel = (eventType: EventType) => {
 		switch (eventType) {
-			case prismaClient.$Enums.EventType.Meetup:
+			case EventType.Meetup:
 				return t("event.modal.meetup", "Meetup");
-			case prismaClient.$Enums.EventType.Workshop:
+			case EventType.Workshop:
 				return t("event.modal.workshop", "Workshop");
-			case prismaClient.$Enums.EventType.GameJam:
+			case EventType.GameJam:
 				return t("event.modal.gamejam", "Game Jam");
-			case prismaClient.$Enums.EventType.GameLab:
+			case EventType.GameLab:
 				return t("event.modal.gamelab", "Game Lab");
-			case prismaClient.$Enums.EventType.Conference:
+			case EventType.Conference:
 				return t("event.modal.conference", "Conference");
 			default:
 				return t("event.modal.event", "Event");
@@ -299,8 +304,8 @@ const EventModal: React.FC<EventModalProps> = ({
 				layout="vertical"
 				initialValues={{
 					...initialValues,
-					format: prismaClient.$Enums.EventFormat.Online,
-					lang: session?.user?.lang || prismaClient.$Enums.Language.en,
+					format: EventFormat.Online,
+					lang: session?.user?.lang || Language.en,
 				}}
 				requiredMark="optional"
 			>
@@ -544,12 +549,10 @@ const EventModal: React.FC<EventModalProps> = ({
 									]}
 								>
 									<Select
-										options={Object.values(prismaClient.$Enums.EventFormat).map(
-											(format) => ({
-												label: format,
-												value: format,
-											}),
-										)}
+										options={Object.values(EventFormat).map((format) => ({
+											label: format,
+											value: format,
+										}))}
 									/>
 								</Form.Item>
 							</Col>
@@ -568,12 +571,10 @@ const EventModal: React.FC<EventModalProps> = ({
 									]}
 								>
 									<Select
-										options={Object.values(prismaClient.$Enums.Language).map(
-											(lang) => ({
-												label: lang.toUpperCase(),
-												value: lang,
-											}),
-										)}
+										options={Object.values(Language).map((lang) => ({
+											label: lang.toUpperCase(),
+											value: lang,
+										}))}
 									/>
 								</Form.Item>
 							</Col>

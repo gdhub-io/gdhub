@@ -1,7 +1,6 @@
 "use client";
 
 import EditorJS, { type OutputData } from "@editorjs/editorjs";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	Breadcrumb,
@@ -19,6 +18,7 @@ import dayjs from "dayjs";
 import { trim } from "lodash";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { BlogPostStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 import { tools } from "./tools";
 
@@ -56,7 +56,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 
 	const { mutateAsync: changeStatus, isPending: isChangingStatus } =
 		useMutation({
-			mutationFn: (status: prismaClient.BlogPostStatus) => {
+			mutationFn: (status: BlogPostStatus) => {
 				return axios.put(`/api/admin/post/${id}`, { status });
 			},
 			onSuccess: () => {
@@ -269,9 +269,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 	const handleChangeStatus = useCallback(
 		async (checked: boolean) => {
 			await changeStatus(
-				checked
-					? prismaClient.BlogPostStatus.Published
-					: prismaClient.BlogPostStatus.Draft,
+				checked ? BlogPostStatus.Published : BlogPostStatus.Draft,
 			);
 		},
 		[changeStatus],
@@ -331,9 +329,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 								<Switch
 									title="Change status"
 									disabled={hasUnsavedChanges}
-									checked={
-										post?.data?.status === prismaClient.BlogPostStatus.Published
-									}
+									checked={post?.data?.status === BlogPostStatus.Published}
 									onChange={handleChangeStatus}
 								/>
 							</Popover>

@@ -1,7 +1,7 @@
 "use client";
 
 import { MoreOutlined, SettingOutlined } from "@ant-design/icons";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Language } from "@gdhub-io/gdhub-prisma";
 import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
 import { FaMicroscope } from "@react-icons/all-files/fa/FaMicroscope";
 import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
@@ -32,6 +32,7 @@ import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { EventStatus } from "@/config/prisma-enums";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./style.module.scss";
 
@@ -86,7 +87,7 @@ const MyEventsClient = () => {
 		string | null
 	>(null);
 	const [localeModalEventLang, setLocaleModalEventLang] =
-		React.useState<prismaClient.$Enums.Language | null>(null);
+		React.useState<Language | null>(null);
 	const [hoveredEventId, setHoveredEventId] = React.useState<string | null>(
 		null,
 	);
@@ -249,11 +250,11 @@ const MyEventsClient = () => {
 			},
 		];
 
-		if (record.status === prismaClient.$Enums.EventStatus.Draft) {
+		if (record.status === EventStatus.Draft) {
 			menu.push(...startOfMenu);
 		}
 
-		if (record.status === prismaClient.$Enums.EventStatus.Published) {
+		if (record.status === EventStatus.Published) {
 			menu.push(...startOfMenu);
 			menu.push({
 				key: "unpublish",
@@ -262,7 +263,7 @@ const MyEventsClient = () => {
 			});
 		}
 
-		if (record.status === prismaClient.$Enums.EventStatus.Closed) {
+		if (record.status === EventStatus.Closed) {
 			menu.push({
 				key: "restore",
 				label: t("event.restore", "Restore"),
@@ -275,14 +276,11 @@ const MyEventsClient = () => {
 		return menu;
 	};
 
-	const getStatusTag = (
-		status: prismaClient.$Enums.EventStatus,
-		record: any,
-	) => {
+	const getStatusTag = (status: EventStatus, record: any) => {
 		switch (status) {
-			case prismaClient.$Enums.EventStatus.Draft:
+			case EventStatus.Draft:
 				return <Tag color="default">{t("event.status.draft", "Draft")}</Tag>;
-			case prismaClient.$Enums.EventStatus.Published:
+			case EventStatus.Published:
 				return (
 					<Tag color="success">
 						{t("event.status.published", "Published at {publishedAt}", {
@@ -290,11 +288,11 @@ const MyEventsClient = () => {
 						})}
 					</Tag>
 				);
-			case prismaClient.$Enums.EventStatus.Archived:
+			case EventStatus.Archived:
 				return (
 					<Tag color="error">{t("event.status.archived", "Archived")}</Tag>
 				);
-			case prismaClient.$Enums.EventStatus.Closed:
+			case EventStatus.Closed:
 				return <Tag color="error">{t("event.status.closed", "Closed")}</Tag>;
 			default:
 				return null;

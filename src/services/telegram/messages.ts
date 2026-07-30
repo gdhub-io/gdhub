@@ -1,5 +1,5 @@
 import type { OutputData } from "@editorjs/editorjs";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { BlogPost, Project, ProjectReport } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -44,7 +44,7 @@ const getCleanTextContent = (content: string) => {
 	return cleanText.slice(0, 250);
 };
 
-type ProjectReportForMessage = prismaClient.ProjectReport & {
+type ProjectReportForMessage = ProjectReport & {
 	project: { name: string; slug: string };
 };
 
@@ -201,10 +201,10 @@ export const newVacanciesMessageLinkedIn = (project: any) => {
 };
 
 export type DevlogPostForMessage = Pick<
-	prismaClient.ProjectReport,
+	ProjectReport,
 	"id" | "content" | "contentEditor"
 > & {
-	project: Pick<prismaClient.Project, "name" | "coverImage">;
+	project: Pick<Project, "name" | "coverImage">;
 };
 
 /** Teaser length: enough to show what the update is about, short enough to keep
@@ -295,7 +295,7 @@ export const devlogPostMessageLinkedIn = (post: DevlogPostForMessage) => {
 };
 
 type BlogPostForMessage = Pick<
-	prismaClient.BlogPost,
+	BlogPost,
 	"title" | "content" | "slug" | "image"
 >;
 

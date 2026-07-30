@@ -1,4 +1,7 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	EquityTransactionType,
+	type ProjectEquity,
+} from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -114,10 +117,7 @@ export class ProjectEquityRepository {
 	/**
 	 * Update project equity data
 	 */
-	static async updateProjectEquity(
-		projectId: string,
-		data: prismaClient.ProjectEquity,
-	) {
+	static async updateProjectEquity(projectId: string, data: ProjectEquity) {
 		try {
 			// Check if project exists
 			const project = await prisma.project.findUnique({
@@ -280,7 +280,7 @@ export class ProjectEquityRepository {
 				data: {
 					toAllocationId: allocation.id,
 					percentage,
-					transactionType: prismaClient.EquityTransactionType.InitialAllocation,
+					transactionType: EquityTransactionType.InitialAllocation,
 					reason: "Initial equity allocation",
 					createdById,
 				},
@@ -360,8 +360,7 @@ export class ProjectEquityRepository {
 					data: {
 						toAllocationId: allocation.id,
 						percentage,
-						transactionType:
-							prismaClient.EquityTransactionType.InitialAllocation,
+						transactionType: EquityTransactionType.InitialAllocation,
 						reason: "Initial equity allocation",
 						createdById: teamMember.userId, // Или можно использовать ID автора проекта
 					},
@@ -497,7 +496,7 @@ export class ProjectEquityRepository {
 						fromAllocationId: fromAllocation.id,
 						toAllocationId: toAllocation.id,
 						percentage,
-						transactionType: prismaClient.EquityTransactionType.Transfer,
+						transactionType: EquityTransactionType.Transfer,
 						reason: reason || "Equity transfer",
 						createdById: fromUserId,
 					},

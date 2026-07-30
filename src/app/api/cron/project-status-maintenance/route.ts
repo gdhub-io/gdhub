@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json } from "@/lib/api-handlers";
@@ -47,10 +47,7 @@ export async function GET() {
 			const projects = await prisma.project.findMany({
 				where: {
 					status: {
-						in: [
-							prismaClient.ProjectStatus.Approved,
-							prismaClient.ProjectStatus.Dormant,
-						],
+						in: [ProjectStatus.Approved, ProjectStatus.Dormant],
 					},
 					finishedAt: { equals: null },
 					author: {
@@ -292,7 +289,7 @@ export async function GET() {
 				if (!lastActivityAt) continue;
 
 				if (
-					project.status === prismaClient.ProjectStatus.Approved &&
+					project.status === ProjectStatus.Approved &&
 					!isProjectAvailableOnStores({
 						links: project.links,
 						workflow: workflowByProjectId.get(project.id),
@@ -302,10 +299,10 @@ export async function GET() {
 					await prisma.project.update({
 						where: {
 							id: project.id,
-							status: prismaClient.ProjectStatus.Approved,
+							status: ProjectStatus.Approved,
 						},
 						data: {
-							status: prismaClient.ProjectStatus.Dormant,
+							status: ProjectStatus.Dormant,
 							dormantAt: now,
 							statusChangedAt: now,
 						},
@@ -339,7 +336,7 @@ export async function GET() {
 					continue;
 				}
 
-				if (project.status === prismaClient.ProjectStatus.Dormant) {
+				if (project.status === ProjectStatus.Dormant) {
 					const dormantSince = project.dormantAt;
 					if (!dormantSince) continue;
 
@@ -352,10 +349,10 @@ export async function GET() {
 						await prisma.project.update({
 							where: {
 								id: project.id,
-								status: prismaClient.ProjectStatus.Dormant,
+								status: ProjectStatus.Dormant,
 							},
 							data: {
-								status: prismaClient.ProjectStatus.Archived,
+								status: ProjectStatus.Archived,
 								archivedAt: now,
 								statusChangedAt: now,
 							},

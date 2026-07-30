@@ -15,7 +15,7 @@
  *   )(async (req, ctx, { user, body }) => { ... });
  */
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Team, UserRole } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type { ZodSchema, z } from "zod";
 import { auth } from "@/auth";
@@ -24,7 +24,7 @@ import { prisma } from "@/services/prisma";
 
 export type SessionUser = {
 	id: string;
-	roles: prismaClient.UserRole[];
+	roles: UserRole[];
 	onboardingDone: boolean;
 	lang: string;
 	email: string;
@@ -37,7 +37,7 @@ export type SessionUser = {
 
 export type Locals = {
 	user?: SessionUser;
-	team?: prismaClient.Team;
+	team?: Team;
 	body?: unknown;
 	query?: unknown;
 };
@@ -81,7 +81,7 @@ export type AuthMode =
 
 export interface AuthOptions {
 	mode?: AuthMode;
-	roles?: prismaClient.UserRole[];
+	roles?: UserRole[];
 }
 
 function bearerMatches(req: NextRequest, expected: string) {
@@ -161,7 +161,7 @@ export function withAuth(opts: AuthOptions = {}) {
 
 export function withTeamGuard() {
 	return function wrap<L extends Locals>(
-		handler: Handler<L & { team: prismaClient.Team; user: SessionUser }>,
+		handler: Handler<L & { team: Team; user: SessionUser }>,
 	): Handler<L> {
 		return async (req, ctx, locals) => {
 			const session = await auth();
@@ -193,7 +193,7 @@ export function withTeamGuard() {
 				...locals,
 				user: session.user as SessionUser,
 				team,
-			} as L & { team: prismaClient.Team; user: SessionUser });
+			} as L & { team: Team; user: SessionUser });
 		};
 	};
 }

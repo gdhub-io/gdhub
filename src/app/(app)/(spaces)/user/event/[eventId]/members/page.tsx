@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import {
 	IconDotsVertical,
 	IconDownload,
@@ -35,6 +34,7 @@ import AddEventMembersModal from "@/components/modals/AddEventMembersModal";
 import BatchAssignEventMembersModal from "@/components/modals/BatchAssignEventMembersModal";
 import EditEventMemberModal from "@/components/modals/EditEventMemberModal";
 import { EventSpace } from "@/components/spaces/EventSpace";
+import { UserRole } from "@/config/prisma-enums";
 import { hasRole } from "@/helpers/user";
 
 const { Text } = Typography;
@@ -137,7 +137,7 @@ export default function EventMembersPage() {
 	const { t } = useTranslate();
 	const params = useParams<{ eventId?: string }>();
 	const session = useSession();
-	const isAdmin = hasRole(prismaClient.UserRole.Admin, session);
+	const isAdmin = hasRole(UserRole.Admin, session);
 	const eventId = params?.eventId as string;
 	const [confirmModal, confirmModalContextHolder] = Modal.useModal();
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);

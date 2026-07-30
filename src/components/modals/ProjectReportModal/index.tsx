@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectReport } from "@gdhub-io/gdhub-prisma";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -40,7 +40,7 @@ const ProjectReportModal = ({
 	} = useQuery({
 		queryKey: ["project-report", reportId],
 		queryFn: () =>
-			axios.get<prismaClient.ProjectReport>("/api/user/project/report", {
+			axios.get<ProjectReport>("/api/user/project/report", {
 				params: { id: reportId },
 			}),
 		enabled: !!reportId,
@@ -48,12 +48,12 @@ const ProjectReportModal = ({
 	});
 
 	const { mutateAsync: createProjectReport } = useMutation({
-		mutationFn: (data: Omit<Partial<prismaClient.ProjectReport>, "id">) =>
+		mutationFn: (data: Omit<Partial<ProjectReport>, "id">) =>
 			axios.post<void>("/api/user/project/report", data),
 	});
 
 	const { mutateAsync: updateProjectReport } = useMutation({
-		mutationFn: (data: Partial<prismaClient.ProjectReport>) =>
+		mutationFn: (data: Partial<ProjectReport>) =>
 			axios.put<void>("/api/user/project/report", data),
 	});
 

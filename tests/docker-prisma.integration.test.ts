@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import net from "node:net";
 import { promisify } from "node:util";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus, SkillLevel, TeamMemberStatus, TeamVacancyStatus, UserRole } from "@gdhub-io/gdhub-prisma";
 import { createMocks } from "node-mocks-http";
 import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -152,14 +152,14 @@ const createAuthorWithSpeciality = async (id = sessionUser.id) => {
 			id,
 			email: `${id}@example.com`,
 			name: `User ${id}`,
-			roles: [prismaClient.UserRole.Author],
+			roles: [UserRole.Author],
 		},
 	});
 	const speciality = await prisma.speciality.create({
 		data: {
 			name: `Speciality ${id}`,
 			specialization: "Engineering",
-			level: prismaClient.SkillLevel.Skillful,
+			level: SkillLevel.Skillful,
 			workDirectionId: direction.id,
 			userId: user.id,
 			openForQuestions: [],
@@ -176,7 +176,7 @@ const createProjectWithTeam = async ({
 	authorId,
 	teamId,
 	teamName,
-	status = prismaClient.ProjectStatus.Approved,
+	status = ProjectStatus.Approved,
 }: {
 	id: string;
 	name: string;
@@ -184,7 +184,7 @@ const createProjectWithTeam = async ({
 	authorId: string;
 	teamId: string;
 	teamName: string;
-	status?: prismaClient.ProjectStatus;
+	status?: ProjectStatus;
 }) => {
 	await prisma.$executeRaw`
 		INSERT INTO "Project" (
@@ -324,7 +324,7 @@ describeDocker("Docker-backed Prisma integration", () => {
 				specialityId: speciality.id,
 				teamId: project.team?.id ?? "",
 				startedAt: new Date(),
-				status: prismaClient.TeamMemberStatus.Founder,
+				status: TeamMemberStatus.Founder,
 				position: "Founder",
 			},
 		});
@@ -334,7 +334,7 @@ describeDocker("Docker-backed Prisma integration", () => {
 				description: "Build things",
 				directionId: speciality.workDirectionId,
 				teamId: project.team?.id ?? "",
-				status: prismaClient.TeamVacancyStatus.Published,
+				status: TeamVacancyStatus.Published,
 				finishedAt: new Date(Date.now() + 86_400_000),
 			},
 		});
@@ -368,7 +368,7 @@ describeDocker("Docker-backed Prisma integration", () => {
 				specialityId: speciality.id,
 				teamId: project.team?.id ?? "",
 				startedAt: new Date(),
-				status: prismaClient.TeamMemberStatus.Founder,
+				status: TeamMemberStatus.Founder,
 				position: "Founder",
 			},
 		});
@@ -393,7 +393,7 @@ describeDocker("Docker-backed Prisma integration", () => {
 		await expect(
 			prisma.project.findUniqueOrThrow({ where: { id: project.id } }),
 		).resolves.toMatchObject({
-			status: prismaClient.ProjectStatus.Archived,
+			status: ProjectStatus.Archived,
 		});
 
 		const restoreRes = await callHandler(projectLifecycleHandler, {
@@ -406,7 +406,7 @@ describeDocker("Docker-backed Prisma integration", () => {
 		await expect(
 			prisma.project.findUniqueOrThrow({ where: { id: project.id } }),
 		).resolves.toMatchObject({
-			status: prismaClient.ProjectStatus.Approved,
+			status: ProjectStatus.Approved,
 		});
 	});
 
@@ -474,7 +474,7 @@ describeDocker("Docker-backed Prisma integration", () => {
 			data: {
 				name: "Privacy Portfolio",
 				specialization: "Art",
-				level: prismaClient.SkillLevel.Beginner,
+				level: SkillLevel.Beginner,
 				workDirectionId: direction.id,
 				userId: user.id,
 				openForQuestions: ["portfolio"],

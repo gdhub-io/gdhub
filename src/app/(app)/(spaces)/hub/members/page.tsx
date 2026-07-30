@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus, UserRole } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { prisma } from "@/services/prisma";
@@ -20,7 +20,7 @@ export default async function HubMembersPage() {
 			prisma.project.count({
 				where: {
 					authorId: session?.user?.id,
-					status: prismaClient.ProjectStatus.Approved,
+					status: ProjectStatus.Approved,
 				},
 			}),
 		]);
@@ -31,7 +31,7 @@ export default async function HubMembersPage() {
 			specialitiesCount={specialitiesCount}
 			hasApprovedProjects={
 				hasApprovedProjects !== 0 ||
-				!!session?.user?.roles?.includes(prismaClient.UserRole.Admin)
+				!!session?.user?.roles?.includes(UserRole.Admin)
 			}
 		/>
 	);

@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Language, SkillLevel } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Col, Row, Space, Spin, Typography } from "antd";
@@ -15,7 +15,7 @@ type Expert = {
 	specialities: Array<{
 		id: string;
 		name: string;
-		level: prismaClient.SkillLevel;
+		level: SkillLevel;
 		openForQuestions: string[];
 		summary: string;
 		specialization: string;
@@ -32,7 +32,7 @@ const ExpertList = ({
 	filter,
 	onClick,
 }: {
-	filter?: { workDirectionId?: string; lang?: prismaClient.Language };
+	filter?: { workDirectionId?: string; lang?: Language };
 	onClick?: (expertId: string) => void;
 }) => {
 	const { t } = useTranslate();

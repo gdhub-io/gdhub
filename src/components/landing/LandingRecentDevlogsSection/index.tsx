@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import type { OutputData } from "@editorjs/editorjs";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project, ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Card, Col, Grid, Row, Skeleton, Space, Typography } from "antd";
@@ -76,8 +76,8 @@ export const LandingRecentDevlogsSection = () => {
 						<Row gutter={[24, 24]}>
 							{recentDevlogs?.data?.map(
 								(
-									devlog: prismaClient.ProjectReport & {
-										project: prismaClient.Project;
+									devlog: ProjectReport & {
+										project: Project;
 									},
 								) => {
 									const pageCoverFromContent = getPageCover({

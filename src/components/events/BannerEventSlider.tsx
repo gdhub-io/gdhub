@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { Button, Carousel, Flex, theme } from "antd";
@@ -8,6 +8,7 @@ import Link from "next/link";
 import qs from "qs";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { EventStatus, EventType } from "@/config/prisma-enums";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./BannerEventSlider.module.scss";
 
@@ -125,20 +126,14 @@ export const BannerEventSlider = () => {
 		queryKey: ["slider-events"],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.Event & {
-					schedule: Pick<
-						prismaClient.EventScheduleItem,
-						"startDate" | "endDate"
-					>[];
+				(Event & {
+					schedule: Pick<EventScheduleItem, "startDate" | "endDate">[];
 				})[]
 			>("/api/events", {
 				params: {
-					type: [
-						prismaClient.$Enums.EventType.Conference,
-						prismaClient.$Enums.EventType.GameLab,
-					],
+					type: [EventType.Conference, EventType.GameLab],
 					withDates: true,
-					status: [prismaClient.$Enums.EventStatus.Published],
+					status: [EventStatus.Published],
 					lang: getLanguage(),
 				},
 				paramsSerializer: (params) =>

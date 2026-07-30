@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useTranslate } from "@tolgee/react";
 import { Button, ConfigProvider, Form, Row, Select, Space } from "antd";
 import dynamic from "next/dynamic";
@@ -8,6 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { Language } from "@/config/prisma-enums";
 import { useWorkDirections } from "@/hooks/library";
 import styles from "./styles.module.scss";
 
@@ -25,7 +25,7 @@ export default function HubExpertsClient() {
 	const [form] = Form.useForm();
 	const [filter, setFilter] = useState<{
 		workDirectionId?: string;
-		lang?: prismaClient.Language;
+		lang?: Language;
 	}>({});
 
 	const [expertRequestModalOpen, setExpertRequestModalOpen] = useState<
@@ -80,14 +80,14 @@ export default function HubExpertsClient() {
 									)}
 									options={[
 										{
-											value: prismaClient.$Enums.Language.en,
+											value: Language.en,
 											label: t(
 												"experts.page.filter.language.en",
 												"English speaking experts",
 											),
 										},
 										{
-											value: prismaClient.$Enums.Language.ru,
+											value: Language.ru,
 											label: t(
 												"experts.page.filter.language.ru",
 												"Russian speaking experts",

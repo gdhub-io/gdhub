@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	AdviceRequest,
+	Profile,
+	Project,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
 import { MdOutlineSupportAgent } from "@react-icons/all-files/md/MdOutlineSupportAgent";
 import { IconBan, IconCancel, IconCheck, IconClock } from "@tabler/icons-react";
@@ -17,6 +22,7 @@ import {
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
 import hubSection from "@/components/hub/hubSection.module.scss";
+import { AdviceRequestStatus } from "@/config/prisma-enums";
 import { useChat } from "../Chat/useChat";
 import ExpertRequestModal from "../modals/ExpertRequestModal";
 import { TextWithLineBreak } from "../TextWithLineBreak";
@@ -24,11 +30,11 @@ import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
 
-type RequestCardData = prismaClient.AdviceRequest & {
-	fromUser?: prismaClient.User & { profile: prismaClient.Profile };
-	toUser: prismaClient.User & { profile: prismaClient.Profile };
+type RequestCardData = AdviceRequest & {
+	fromUser?: User & { profile: Profile };
+	toUser: User & { profile: Profile };
 	fromTelegramUser?: { name: string; image: string };
-	project?: prismaClient.Project;
+	project?: Project;
 };
 
 const MyAdviceRequests: React.FC<{
@@ -58,10 +64,7 @@ const MyAdviceRequests: React.FC<{
 			axios
 				.get<RequestCardData[]>("/api/user/advice-requests", {
 					params: {
-						status: [
-							prismaClient.AdviceRequestStatus.Created,
-							prismaClient.AdviceRequestStatus.Approved,
-						],
+						status: [AdviceRequestStatus.Created, AdviceRequestStatus.Approved],
 					},
 					paramsSerializer: (params) =>
 						qs.stringify(params, { arrayFormat: "repeat" }),

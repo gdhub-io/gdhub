@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { InstantsearchAdapter } from "@gdhub-io/gdhub-typesense/dist/adapter";
 import {
 	IconCheck,
@@ -32,6 +31,7 @@ import {
 } from "react-instantsearch";
 import { getWorkDirection } from "@/components/DirectionBadge";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { UserRole } from "@/config/prisma-enums";
 import { hasRole } from "@/helpers/user";
 import styles from "./style.module.scss";
 
@@ -85,7 +85,7 @@ export function HubMembersClient({
 		[],
 	);
 
-	if (!hasRole(prismaClient.UserRole.Author, session) || !hasApprovedProjects) {
+	if (!hasRole(UserRole.Author, session) || !hasApprovedProjects) {
 		return (
 			<div className="layout-background">
 				<ProtectedPageHeader title={t("Community Members")} />

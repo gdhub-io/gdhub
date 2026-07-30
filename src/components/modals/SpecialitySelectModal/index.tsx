@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Speciality } from "@gdhub-io/gdhub-prisma";
 import { BsCheckLg } from "@react-icons/all-files/bs/BsCheckLg";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -19,8 +19,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 		refetch: fetchSpecialities,
 	} = useQuery({
 		queryKey: ["user-specialities"],
-		queryFn: () =>
-			axios.get<prismaClient.Speciality[]>("/api/user/specialities"),
+		queryFn: () => axios.get<Speciality[]>("/api/user/specialities"),
 	});
 
 	useEffect(() => {

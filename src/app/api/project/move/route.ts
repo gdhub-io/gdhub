@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	EquityTransactionType,
+	type ProjectWorkflowStep,
+	type ProjectWorkflowTask,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -20,7 +25,7 @@ type ProjectMoveBody = z.infer<typeof ProjectMoveSchema>;
 
 export const PUT = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Author],
+	roles: [UserRole.Author],
 })(
 	withValidation(ProjectMoveSchema)(async (_req, _ctx, { user, body }) => {
 		const { projectId, direction, targetStepId } = body as ProjectMoveBody;
@@ -53,8 +58,8 @@ export const PUT = withAuth({
 
 		if (direction) {
 			let changedStep:
-				| (prismaClient.ProjectWorkflowStep & {
-						tasks: prismaClient.ProjectWorkflowTask[];
+				| (ProjectWorkflowStep & {
+						tasks: ProjectWorkflowTask[];
 				  })
 				| undefined;
 
@@ -125,7 +130,7 @@ export const PUT = withAuth({
 							data: {
 								percentage: promise.percentage,
 								reason: `Realized equity promise from step ${currentStep.name}`,
-								transactionType: prismaClient.EquityTransactionType.Vesting,
+								transactionType: EquityTransactionType.Vesting,
 								fromAllocation: { connect: { id: promise.allocation.id } },
 								toAllocation: { connect: { id: promise.allocation.id } },
 								promise: { connect: { id: promise.id } },

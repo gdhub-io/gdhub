@@ -3,7 +3,13 @@
 const nextConfig = {
 	reactStrictMode: true,
 	output: "standalone",
-	serverExternalPackages: ["discord.js", "matrix-js-sdk"],
+	serverExternalPackages: [
+		"discord.js",
+		"matrix-js-sdk",
+		"@gdhub-io/gdhub-prisma",
+		"@prisma/client",
+		"@prisma/adapter-pg",
+	],
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "images.unsplash.com" },

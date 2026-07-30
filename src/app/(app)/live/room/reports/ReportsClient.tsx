@@ -2,7 +2,6 @@
 
 import type { DailyCallOptions } from "@daily-co/daily-js";
 import { DailyProvider, useCallFrame } from "@daily-co/daily-react";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -19,6 +18,7 @@ import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { pipLayout } from "@/config/daily";
+import { UserRole } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const dailyCallOptions: DailyCallOptions = {
@@ -164,7 +164,7 @@ const ReportsClient = () => {
 		<div className="layout-background">
 			<DailyProvider callObject={callFrame}>
 				<main className="container">
-					{session?.user.roles.includes(prismaClient.UserRole.Admin) && (
+					{session?.user.roles.includes(UserRole.Admin) && (
 						<>
 							<Space align="start">
 								<Form

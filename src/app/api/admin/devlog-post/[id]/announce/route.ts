@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -51,7 +51,7 @@ const loadPost = (id: string) =>
 // Preview: return the message that would be posted, without sending anything.
 export const GET = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(
 		ChannelSchema,
@@ -77,7 +77,7 @@ export const GET = withAuth({
 
 export const POST = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(ChannelSchema)(async (_req, ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;

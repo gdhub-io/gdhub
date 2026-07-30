@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ChatRoomKind, UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -27,7 +27,7 @@ type DirectChatBody = z.infer<typeof DirectChatSchema>;
 // the "New chat" button), nothing else.
 export const POST = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(DirectChatSchema)(async (_req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser;
@@ -59,7 +59,7 @@ export const POST = withAuth({
 		// No title/avatar: for a 1:1 DM each side should see the OTHER participant.
 		// Matrix computes the room name/avatar from the other member (heroes).
 		const chat = await ensureChatRoom({
-			kind: prismaClient.ChatRoomKind.Direct,
+			kind: ChatRoomKind.Direct,
 			directKey: `direct:${minUserId}:${maxUserId}`,
 			isDirect: true,
 			context: { userIds: [minUserId, maxUserId] },

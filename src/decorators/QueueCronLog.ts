@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { QueueJobStatus, QueueJobType } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -16,8 +16,8 @@ export async function runWithCronLog<T>(
 		await prisma.queueJobLog.create({
 			data: {
 				name: jobName,
-				status: prismaClient.QueueJobStatus.Completed,
-				type: prismaClient.QueueJobType.Cron,
+				status: QueueJobStatus.Completed,
+				type: QueueJobType.Cron,
 				data: (result as any) || null,
 			},
 		});
@@ -27,8 +27,8 @@ export async function runWithCronLog<T>(
 		await prisma.queueJobLog.create({
 			data: {
 				name: jobName,
-				status: prismaClient.QueueJobStatus.Failed,
-				type: prismaClient.QueueJobType.Cron,
+				status: QueueJobStatus.Failed,
+				type: QueueJobType.Cron,
 				log: (e as Error).message,
 			},
 		});
@@ -49,8 +49,8 @@ function QueueCronLog(jobName: string) {
 				await prisma.queueJobLog.create({
 					data: {
 						name: jobName,
-						status: prismaClient.QueueJobStatus.Completed,
-						type: prismaClient.QueueJobType.Cron,
+						status: QueueJobStatus.Completed,
+						type: QueueJobType.Cron,
 						data: result || null,
 					},
 				});
@@ -60,8 +60,8 @@ function QueueCronLog(jobName: string) {
 				await prisma.queueJobLog.create({
 					data: {
 						name: jobName,
-						status: prismaClient.QueueJobStatus.Failed,
-						type: prismaClient.QueueJobType.Cron,
+						status: QueueJobStatus.Failed,
+						type: QueueJobType.Cron,
 						log: (e as Error).message,
 					},
 				});

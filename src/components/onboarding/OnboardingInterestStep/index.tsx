@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	GameDifficultyLevel,
+	GameGenre,
+	GameSetting,
+} from "@gdhub-io/gdhub-prisma";
 import { LuFeather } from "@react-icons/all-files/lu/LuFeather";
 import { LuGraduationCap } from "@react-icons/all-files/lu/LuGraduationCap";
 import { LuUsers } from "@react-icons/all-files/lu/LuUsers";
@@ -20,6 +24,7 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
+import { PrimaryInterest } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 interface IOnboardingInterestStep {
@@ -31,7 +36,7 @@ const { Paragraph, Title, Text } = Typography;
 
 const interestOptions = [
 	{
-		value: prismaClient.PrimaryInterest.Author,
+		value: PrimaryInterest.Author,
 		icon: LuFeather,
 		titleKey: "onboarding.interests.wantToBe.author",
 		titleDefault: "Author",
@@ -39,7 +44,7 @@ const interestOptions = [
 		subtitleDefault: "I want to collect a team for development of my own game",
 	},
 	{
-		value: prismaClient.PrimaryInterest.Specialist,
+		value: PrimaryInterest.Specialist,
 		icon: LuUsers,
 		titleKey: "onboarding.interests.wantToBe.specialist",
 		titleDefault: "Specialist",
@@ -47,7 +52,7 @@ const interestOptions = [
 		subtitleDefault: "I want to join the team",
 	},
 	{
-		value: prismaClient.PrimaryInterest.Mentor,
+		value: PrimaryInterest.Mentor,
 		icon: LuGraduationCap,
 		titleKey: "onboarding.interests.wantToBe.mentor",
 		titleDefault: "Mentor",
@@ -70,11 +75,11 @@ export const OnboardingInterestStep = ({
 	const preSelectedInterest = useMemo(() => {
 		switch (forParam) {
 			case "author":
-				return prismaClient.PrimaryInterest.Author;
+				return PrimaryInterest.Author;
 			case "specialist":
-				return prismaClient.PrimaryInterest.Specialist;
+				return PrimaryInterest.Specialist;
 			case "mentor":
-				return prismaClient.PrimaryInterest.Mentor;
+				return PrimaryInterest.Mentor;
 			default:
 				return undefined;
 		}
@@ -99,22 +104,18 @@ export const OnboardingInterestStep = ({
 
 	const { data: gameGenres } = useQuery({
 		queryKey: ["gameGenres"],
-		queryFn: () =>
-			axios.get<prismaClient.GameGenre[]>("/api/dictionary/game-genres"),
+		queryFn: () => axios.get<GameGenre[]>("/api/dictionary/game-genres"),
 		staleTime: Infinity,
 	});
 	const { data: gameSettings } = useQuery({
 		queryKey: ["gameSettings"],
-		queryFn: () =>
-			axios.get<prismaClient.GameSetting[]>("/api/dictionary/game-settings"),
+		queryFn: () => axios.get<GameSetting[]>("/api/dictionary/game-settings"),
 		staleTime: Infinity,
 	});
 	const { data: gameLevels } = useQuery({
 		queryKey: ["gameLevels"],
 		queryFn: () =>
-			axios.get<prismaClient.GameDifficultyLevel[]>(
-				"/api/dictionary/game-levels",
-			),
+			axios.get<GameDifficultyLevel[]>("/api/dictionary/game-levels"),
 		staleTime: Infinity,
 	});
 

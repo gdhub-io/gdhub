@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus, UserRole } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const projectFindFirst = vi.fn();
@@ -15,8 +15,8 @@ vi.mock("@/services/prisma", () => ({
 
 import { resolveSpaceAccess } from "@/helpers/space-access";
 
-const admin = { id: "u-admin", roles: [prismaClient.UserRole.Admin] };
-const member = { id: "u-member", roles: [prismaClient.UserRole.Member] };
+const admin = { id: "u-admin", roles: [UserRole.Admin] };
+const member = { id: "u-member", roles: [UserRole.Member] };
 
 beforeEach(() => {
 	projectFindFirst.mockReset();
@@ -48,7 +48,7 @@ describe("resolveSpaceAccess — project", () => {
 	it("Founder team membership → owner", async () => {
 		projectFindFirst.mockResolvedValue({
 			authorId: "someone-else",
-			team: { members: [{ status: prismaClient.TeamMemberStatus.Founder }] },
+			team: { members: [{ status: TeamMemberStatus.Founder }] },
 		});
 		expect(await resolveSpaceAccess("project", "slug", member)).toBe("owner");
 	});
@@ -56,7 +56,7 @@ describe("resolveSpaceAccess — project", () => {
 	it("non-Founder team membership → member", async () => {
 		projectFindFirst.mockResolvedValue({
 			authorId: "someone-else",
-			team: { members: [{ status: prismaClient.TeamMemberStatus.Hired }] },
+			team: { members: [{ status: TeamMemberStatus.Hired }] },
 		});
 		expect(await resolveSpaceAccess("project", "slug", member)).toBe("member");
 	});

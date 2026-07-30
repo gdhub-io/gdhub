@@ -1,4 +1,9 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Speciality,
+	TeamMember,
+	TeamVacancy,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Space, Table, Tag } from "antd";
@@ -26,10 +31,10 @@ const MyProjectCandidates = () => {
 		queryKey: ["candidates", contextProject?.id],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.TeamMember & {
-					vacancy: prismaClient.TeamVacancy;
-					speciality: prismaClient.Speciality;
-					user: prismaClient.User & { specialities: prismaClient.Speciality[] };
+				(TeamMember & {
+					vacancy: TeamVacancy;
+					speciality: Speciality;
+					user: User & { specialities: Speciality[] };
 				})[]
 			>("/api/user/project/candidates", {
 				params: { teamId: contextProject?.team?.id },
@@ -38,10 +43,10 @@ const MyProjectCandidates = () => {
 	});
 
 	const columns: ColumnsType<
-		prismaClient.TeamMember & {
-			vacancy: prismaClient.TeamVacancy;
-			speciality: prismaClient.Speciality;
-			user: prismaClient.User & { specialities: prismaClient.Speciality[] };
+		TeamMember & {
+			vacancy: TeamVacancy;
+			speciality: Speciality;
+			user: User & { specialities: Speciality[] };
 		}
 	> = [
 		{

@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -20,7 +20,7 @@ const AdviceRequestsQuerySchema = z.object({
 	projectId: z.string().optional(),
 	advisorId: z.string().optional(),
 	status: enumArray(
-		Object.values(prismaClient.AdviceRequestStatus) as [string, ...string[]],
+		Object.values(AdviceRequestStatus) as [string, ...string[]],
 	),
 });
 
@@ -46,9 +46,7 @@ export const GET = withAuth({ mode: "user" })(
 					team: teamId ? { id: teamId } : undefined,
 				},
 				toUser: { id: advisorId },
-				status: status
-					? { in: status as prismaClient.AdviceRequestStatus[] }
-					: undefined,
+				status: status ? { in: status as AdviceRequestStatus[] } : undefined,
 				OR: userId ? [{ fromUserId: userId }, { toUserId: userId }] : undefined,
 			},
 			select: {

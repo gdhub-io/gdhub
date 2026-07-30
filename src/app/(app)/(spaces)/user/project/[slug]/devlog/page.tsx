@@ -2,7 +2,11 @@
 
 import { PlusOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Project,
+	ProjectReport,
+	ProjectStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { T, useTranslate } from "@tolgee/react";
@@ -27,8 +31,8 @@ import { useCurrentProject } from "@/hooks/project";
 
 const { Text } = Typography;
 
-type ProjectReportWithProject = prismaClient.ProjectReport & {
-	project: prismaClient.Project;
+type ProjectReportWithProject = ProjectReport & {
+	project: Project;
 };
 
 export default function MyProjectDevlogPage() {
@@ -36,8 +40,7 @@ export default function MyProjectDevlogPage() {
 	const [openDevlogPostModal, setOpenDevlogPostModal] = useState(false);
 	const { project } = useCurrentProject();
 	const [selectedReportId, setSelectedReportId] = useState<string>();
-	const isProjectArchived =
-		project?.status === ("Archived" as prismaClient.ProjectStatus);
+	const isProjectArchived = project?.status === ("Archived" as ProjectStatus);
 
 	const {
 		data: projectReports,

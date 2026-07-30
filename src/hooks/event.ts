@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -16,7 +16,7 @@ export const useCurrentEvent = () => {
 		isFetched,
 	} = useQuery({
 		queryKey: ["event", eventId],
-		queryFn: () => axios.get<prismaClient.Event>(`/api/user/event/${eventId}`),
+		queryFn: () => axios.get<Event>(`/api/user/event/${eventId}`),
 		enabled: !!eventId,
 		refetchOnWindowFocus: false,
 	});

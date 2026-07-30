@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -27,7 +27,7 @@ export const POST = withAuth({ mode: "user" })(
 
 			const { id } = (await ctx.params) as { id: string };
 			const data = body as EventMembersBatchUpdateBody;
-			const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+			const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 			const event = await prisma.event.findUnique({
 				where: { id },

@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	EventStatus,
+	type Language,
+	type Prisma,
+} from "@gdhub-io/gdhub-prisma";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
 import {
 	type EventsCountQuery,
@@ -26,7 +30,7 @@ export const GET = withAuth({ mode: "user" })(
 		// The timeWhere block is preserved verbatim from the original handler
 		// even though it is currently unused in the count query below. Cleanup
 		// is intentionally deferred to avoid behavioral drift during migration.
-		const timeWhere: prismaClient.Prisma.EventScheduleItemWhereInput = {
+		const timeWhere: Prisma.EventScheduleItemWhereInput = {
 			startDate: { lt: new Date() },
 		};
 
@@ -56,16 +60,11 @@ export const GET = withAuth({ mode: "user" })(
 
 		const eventCount = await prisma.event.count({
 			where: {
-				lang: lang
-					? { equals: lang as prismaClient.$Enums.Language }
-					: undefined,
+				lang: lang ? { equals: lang as Language } : undefined,
 				status: status
-					? { in: status as prismaClient.$Enums.EventStatus[] }
+					? { in: status as EventStatus[] }
 					: {
-							in: [
-								prismaClient.$Enums.EventStatus.Published,
-								prismaClient.$Enums.EventStatus.Archived,
-							],
+							in: [EventStatus.Published, EventStatus.Archived],
 						},
 			},
 		});

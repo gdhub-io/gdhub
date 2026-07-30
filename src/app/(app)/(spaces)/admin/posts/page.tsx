@@ -1,7 +1,7 @@
 "use client";
 
 import { EllipsisOutlined } from "@ant-design/icons";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { BlogPost } from "@gdhub-io/gdhub-prisma";
 import { FaDiscord } from "@react-icons/all-files/fa/FaDiscord";
 import { FaLinkedinIn } from "@react-icons/all-files/fa/FaLinkedinIn";
 import { FaTelegramPlane } from "@react-icons/all-files/fa/FaTelegramPlane";
@@ -22,6 +22,7 @@ import {
 import { CreateBlogPostModal } from "@/components/admin/CreateBlogPostModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { BlogPostStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -71,7 +72,7 @@ export default function BlogPostsAdminPage() {
 		router.push(`/admin/post/${id}`);
 	};
 
-	const columns: ColumnsType<prismaClient.BlogPost> = [
+	const columns: ColumnsType<BlogPost> = [
 		{
 			title: "Title",
 			dataIndex: "title",
@@ -85,7 +86,7 @@ export default function BlogPostsAdminPage() {
 			dataIndex: "publishedAt",
 			key: "publishedAt",
 			render: (value, data) =>
-				data.status == prismaClient.BlogPostStatus.Draft ? (
+				data.status == BlogPostStatus.Draft ? (
 					<Text type="secondary">not selected</Text>
 				) : (
 					dayjs(data.publishedAt).format("LLL")
@@ -122,8 +123,7 @@ export default function BlogPostsAdminPage() {
 			width: "1%",
 			align: "right",
 			render(value, record) {
-				const isPublished =
-					record.status === prismaClient.BlogPostStatus.Published;
+				const isPublished = record.status === BlogPostStatus.Published;
 
 				const items: MenuProps["items"] = [
 					{

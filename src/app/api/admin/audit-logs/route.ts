@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -33,7 +33,7 @@ const clamp = (value: number, min: number, max: number) =>
 
 export const GET = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(
 		AuditLogsQuerySchema,

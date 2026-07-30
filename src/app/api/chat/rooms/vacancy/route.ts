@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -74,7 +74,7 @@ export const POST = withAuth({ mode: "user" })(
 			where: {
 				userId: candidateUserId,
 				vacancyId,
-				status: prismaClient.TeamMemberStatus.Applicant,
+				status: TeamMemberStatus.Applicant,
 			},
 			select: { id: true, applicationMessage: true },
 		});

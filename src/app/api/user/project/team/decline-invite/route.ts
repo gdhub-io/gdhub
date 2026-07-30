@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { InvitationStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -55,7 +55,7 @@ export const GET = withAuth({ mode: "user" })(
 
 			await prisma.teamInvitation.update({
 				where: { id: token },
-				data: { status: prismaClient.InvitationStatus.Declined },
+				data: { status: InvitationStatus.Declined },
 			});
 
 			try {

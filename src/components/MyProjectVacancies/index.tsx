@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	PaymentRateType,
+	PaymentStatus,
+	TeamVacancyStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { HiDotsVertical } from "@react-icons/all-files/hi/HiDotsVertical";
 import { HiOutlineDocumentDownload } from "@react-icons/all-files/hi/HiOutlineDocumentDownload";
 import { HiOutlineExternalLink } from "@react-icons/all-files/hi/HiOutlineExternalLink";
@@ -36,7 +40,7 @@ const { Text } = Typography;
 
 interface VacancyPayment {
 	id: string;
-	status: prismaClient.PaymentStatus;
+	status: PaymentStatus;
 	completedAt?: string | null;
 }
 
@@ -45,11 +49,11 @@ interface Vacancy {
 	Name: string;
 	Description: string;
 	FinishedAt: string;
-	Status: prismaClient.TeamVacancyStatus;
+	Status: TeamVacancyStatus;
 	promisePercentage?: number | null;
 	// Offered compensation (EUR) lives on the vacancy; payment row is the fee/status.
 	offeredAmount?: number | null;
-	offeredRateType?: prismaClient.PaymentRateType | null;
+	offeredRateType?: PaymentRateType | null;
 	payment?: VacancyPayment | null;
 	direction?: { name: string } | null;
 	[key: string]: any;

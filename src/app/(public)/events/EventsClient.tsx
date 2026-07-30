@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import { theme } from "antd";
@@ -17,6 +16,7 @@ import {
 } from "@/components/events";
 import SectionSkeleton from "@/components/events/SectionSkeleton";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { EventType } from "@/config/prisma-enums";
 
 export function EventsClient() {
 	const { t } = useTranslate();
@@ -100,10 +100,7 @@ export function EventsClient() {
 									"page.events.newKnowledgeDescription",
 									"Meetups and workshops for sharing experience, learning, and networking.",
 								)}
-								eventTypes={[
-									prismaClient.$Enums.EventType.Meetup,
-									prismaClient.$Enums.EventType.Workshop,
-								]}
+								eventTypes={[EventType.Meetup, EventType.Workshop]}
 								timeStatus={["ongoing", "upcoming"]}
 								CardComponent={EventCard}
 								token={token}
@@ -120,10 +117,7 @@ export function EventsClient() {
 									"page.events.gameJamsAndExperimentsDescription",
 									"Game jams for practice, experiments, and new connections.",
 								)}
-								eventTypes={[
-									prismaClient.$Enums.EventType.GameJam,
-									prismaClient.$Enums.EventType.GameLab,
-								]}
+								eventTypes={[EventType.GameJam, EventType.GameLab]}
 								timeStatus={["ongoing", "upcoming"]}
 								CardComponent={EventCard}
 								token={token}
@@ -138,11 +132,11 @@ export function EventsClient() {
 									"Here are some of the platform's completed events.",
 								)}
 								eventTypes={[
-									prismaClient.$Enums.EventType.Meetup,
-									prismaClient.$Enums.EventType.Workshop,
-									prismaClient.$Enums.EventType.GameJam,
-									prismaClient.$Enums.EventType.GameLab,
-									prismaClient.$Enums.EventType.Conference,
+									EventType.Meetup,
+									EventType.Workshop,
+									EventType.GameJam,
+									EventType.GameLab,
+									EventType.Conference,
 								]}
 								timeStatus={["past"]}
 								CardComponent={PastEventCard}

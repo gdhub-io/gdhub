@@ -4,7 +4,7 @@
 	"private": true,
 	"packageManager": "bun@1.2.19",
 	"engines": {
-		"node": ">=20.9.0",
+		"node": ">=20.19.0",
 		"bun": ">=1.2.0"
 	},
 	"scripts": {
@@ -21,18 +21,16 @@
 		"type-check": "tsc --noEmit",
 		"prepare": "husky install",
 		"refresh-translations": "node import-translations.js",
-		"db:generate": "gdhub-prisma generate --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
-		"db:deploy": "gdhub-prisma deploy --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
-		"db:seed": "gdhub-prisma seed --schema ./node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma",
+		"db:generate": "gdhub-prisma generate",
+		"db:status": "gdhub-prisma status",
+		"db:deploy": "gdhub-prisma deploy",
+		"db:seed": "gdhub-prisma seed",
 		"test": "dotenv vitest",
 		"test:integration": "cross-env RUN_DOCKER_INTEGRATION_TESTS=1 dotenv -- vitest --run tests/docker-prisma.integration.test.ts",
 		"test:e2e": "dotenv -e .env.test -- playwright test",
 		"test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
 		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test",
 		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs"
-	},
-	"prisma": {
-		"seed": "node ./node_modules/@gdhub-io/gdhub-prisma/dist/seed.js"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",
@@ -70,7 +68,7 @@
 		"@editorjs/table": "^2.4.5",
 		"@firebase/app": "^0.14.6",
 		"@firebase/messaging": "^0.12.23",
-		"@gdhub-io/gdhub-prisma": "2.0.0-beta.36",
+		"@gdhub-io/gdhub-prisma": "2.0.0-beta.37",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@google-analytics/data": "^5.1.0",
 		"@hello-pangea/dnd": "^18.0.1",
@@ -206,8 +204,5 @@
 		"protobufjs",
 		"typesense-instantsearch-adapter",
 		"unrs-resolver"
-	],
-	"@snaplet/seed": {
-		"config": "prisma/seed/seed.config.ts"
-	}
+	]
 }

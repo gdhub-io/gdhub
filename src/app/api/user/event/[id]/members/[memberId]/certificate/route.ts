@@ -1,6 +1,5 @@
 import { randomBytes } from "node:crypto";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { EventType, Prisma } from "@prisma/client";
+import { EventType, Prisma, UserRole } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import {
 	LegalService,
@@ -30,7 +29,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const eventCtx = await resolveMemberCertificateContext(memberId);
 
@@ -185,7 +184,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const member = await prisma.eventMember.findUnique({
 		where: { id: memberId },
@@ -237,7 +236,7 @@ export const DELETE = withAuth({ mode: "user" })(
 			id: string;
 			memberId: string;
 		};
-		const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 		const member = await prisma.eventMember.findUnique({
 			where: { id: memberId },

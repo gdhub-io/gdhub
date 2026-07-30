@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Event,
+	EventScheduleItem,
+	EventType,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { Col, Row } from "antd";
@@ -10,10 +14,10 @@ import { useEffect, useRef } from "react";
 interface EventSectionProps {
 	title: string;
 	description?: string;
-	eventTypes: prismaClient.$Enums.EventType[];
+	eventTypes: EventType[];
 	timeStatus: ("upcoming" | "ongoing" | "past")[];
 	CardComponent: React.ComponentType<{
-		event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+		event: Event & { schedule: EventScheduleItem[] };
 		token: any;
 	}>;
 	token: any;

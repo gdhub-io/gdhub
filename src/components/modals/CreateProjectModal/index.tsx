@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project } from "@gdhub-io/gdhub-prisma";
 import { PiRocketDuotone } from "@react-icons/all-files/pi/PiRocketDuotone";
 import { useMutation } from "@tanstack/react-query";
 import { T, useTolgee } from "@tolgee/react";
@@ -20,8 +20,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 		error: createProjectError,
 		isPending: isCreateProcessing,
 	} = useMutation({
-		mutationFn: (data) =>
-			axios.post<prismaClient.Project>("/api/user/project", data),
+		mutationFn: (data) => axios.post<Project>("/api/user/project", data),
 	});
 
 	useEffect(() => {

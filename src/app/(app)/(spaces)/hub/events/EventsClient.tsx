@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, theme } from "antd";
@@ -10,6 +9,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import React, { Suspense } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { EventType } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const BannerEventSlider = dynamic(
@@ -116,10 +116,7 @@ export default function EventsClient() {
 									"page.events.newKnowledgeDescription",
 									"Meetups and workshops for sharing experience, learning, and networking.",
 								)}
-								eventTypes={[
-									prismaClient.$Enums.EventType.Meetup,
-									prismaClient.$Enums.EventType.Workshop,
-								]}
+								eventTypes={[EventType.Meetup, EventType.Workshop]}
 								timeStatus={["ongoing", "upcoming"]}
 								CardComponent={EventCard}
 								token={token}
@@ -136,10 +133,7 @@ export default function EventsClient() {
 									"page.events.gameJamsAndExperimentsDescription",
 									"Game jams for practice, experiments, and new connections.",
 								)}
-								eventTypes={[
-									prismaClient.$Enums.EventType.GameJam,
-									prismaClient.$Enums.EventType.GameLab,
-								]}
+								eventTypes={[EventType.GameJam, EventType.GameLab]}
 								timeStatus={["ongoing", "upcoming"]}
 								CardComponent={EventCard}
 								token={token}
@@ -154,11 +148,11 @@ export default function EventsClient() {
 									"Here are some of the platform's completed events.",
 								)}
 								eventTypes={[
-									prismaClient.$Enums.EventType.Meetup,
-									prismaClient.$Enums.EventType.Workshop,
-									prismaClient.$Enums.EventType.GameJam,
-									prismaClient.$Enums.EventType.GameLab,
-									prismaClient.$Enums.EventType.Conference,
+									EventType.Meetup,
+									EventType.Workshop,
+									EventType.GameJam,
+									EventType.GameLab,
+									EventType.Conference,
 								]}
 								timeStatus={["past"]}
 								CardComponent={PastEventCard}

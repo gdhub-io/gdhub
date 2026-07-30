@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	type Lecture,
+	LectureStage,
+	type WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Form, Input, Modal, message, Spin } from "antd";
@@ -18,7 +22,7 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	} = useQuery({
 		queryKey: ["lecture", lectureId],
 		queryFn: () =>
-			axios.get<prismaClient.Lecture>("/api/lecture", {
+			axios.get<Lecture>("/api/lecture", {
 				params: { id: lectureId },
 			}),
 		enabled: !!lectureId,
@@ -37,29 +41,21 @@ const LectureRequestModal = ({ lectureId, open, onOk, onCancel }: any) => {
 	const { data: workDirections } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
-			axios.get<prismaClient.WorkDirection[]>(
-				"/api/dictionary/work-directions",
-			),
+			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
 		staleTime: Infinity,
 	});
 
 	const { mutateAsync: createLecture } = useMutation({
-		mutationFn: (data: Partial<prismaClient.Lecture>) =>
-			axios.post<prismaClient.Lecture>("/api/user/lecture", {
+		mutationFn: (data: Partial<Lecture>) =>
+			axios.post<Lecture>("/api/user/lecture", {
 				...data,
-				stage: prismaClient.LectureStage.Requested,
+				stage: LectureStage.Requested,
 			}),
 	});
 
 	const { mutateAsync: updateLecture } = useMutation({
-		mutationFn: ({
-			id,
-			data,
-		}: {
-			id: string;
-			data: Partial<prismaClient.Lecture>;
-		}) =>
-			axios.put<prismaClient.Lecture>("/api/user/lecture", data, {
+		mutationFn: ({ id, data }: { id: string; data: Partial<Lecture> }) =>
+			axios.put<Lecture>("/api/user/lecture", data, {
 				params: { id },
 			}),
 	});

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { CourseStatus, Language } from "@gdhub-io/gdhub-prisma";
 import slugify from "slugify";
 import { z } from "zod";
 import {
@@ -16,9 +16,7 @@ const CreateCourseSchema = z.object({
 	slug: z.string().optional(),
 	shortLine: z.string().optional(),
 	directionId: z.string(),
-	language: z
-		.enum(Object.values(prismaClient.$Enums.Language) as [string, ...string[]])
-		.optional(),
+	language: z.enum(Object.values(Language) as [string, ...string[]]).optional(),
 	authorRate: z.number().min(0),
 	agreedToTerms: z.boolean(),
 });
@@ -52,10 +50,8 @@ export const POST = withAuth({ mode: "user" })(
 				slug,
 				shortLine: data.shortLine?.trim() || null,
 				directionId: data.directionId,
-				language:
-					(data.language as prismaClient.$Enums.Language) ??
-					prismaClient.$Enums.Language.en,
-				status: prismaClient.$Enums.CourseStatus.Draft,
+				language: (data.language as Language) ?? Language.en,
+				status: CourseStatus.Draft,
 				createdById: currentUser.id as string,
 			},
 		});

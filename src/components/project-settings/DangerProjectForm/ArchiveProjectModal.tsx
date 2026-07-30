@@ -1,8 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project } from "@gdhub-io/gdhub-prisma";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Modal, message, Space, Typography } from "antd";
 import axios from "axios";
+import { ProjectStatus } from "@/config/prisma-enums";
 import { getErrorMessage, type ProjectLifecycleModalProps } from "./shared";
 import styles from "./style.module.scss";
 
@@ -19,13 +20,13 @@ const ArchiveProjectModal = ({
 	onStatusChanged,
 }: ArchiveProjectModalProps) => {
 	const { t } = useTranslate();
-	const isArchived = project?.status === prismaClient.ProjectStatus.Archived;
+	const isArchived = project?.status === ProjectStatus.Archived;
 
 	const { mutateAsync: archiveProject, isPending: isArchivingProject } =
 		useMutation({
 			mutationFn: () =>
 				axios
-					.post<prismaClient.Project>("/api/user/project/lifecycle", {
+					.post<Project>("/api/user/project/lifecycle", {
 						id: project?.id,
 						action: "archive",
 					})
@@ -36,7 +37,7 @@ const ArchiveProjectModal = ({
 		useMutation({
 			mutationFn: () =>
 				axios
-					.post<prismaClient.Project>("/api/user/project/lifecycle", {
+					.post<Project>("/api/user/project/lifecycle", {
 						id: project?.id,
 						action: "restore",
 					})

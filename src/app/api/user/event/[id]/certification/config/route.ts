@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -22,7 +22,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const eventCtx = await resolveEventCertificationContext(id);
 
@@ -54,7 +54,7 @@ export const PUT = withAuth({ mode: "user" })(
 
 			const { id } = (await ctx.params) as { id: string };
 			const data = body as CertificationConfigBody;
-			const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+			const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 			const event = await prisma.event.findUnique({
 				where: { id },

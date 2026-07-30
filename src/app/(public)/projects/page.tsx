@@ -26,7 +26,7 @@ export default async function ProjectsPage() {
 	const projects = await getWorkedProjects();
 	const publishedProjects = await getPublishedStoreProjects();
 
-	const serializedProjects = projects.map((p: ProjectIncludeAll) => ({
+	const serializedProjects = projects.map((p) => ({
 		...p,
 		createdAt: serializeDate(p.createdAt),
 		updatedAt: serializeDate(p.updatedAt),
@@ -38,11 +38,9 @@ export default async function ProjectsPage() {
 		killedWithDignityAt: serializeDate(p.killedWithDignityAt),
 		lastPostAt: serializeDate(p.lastPostAt),
 		firstPostAt: serializeDate(p.firstPostAt),
-		author: {
-			...p.author,
-			createdAt: serializeDate(p.author.createdAt),
-			updatedAt: serializeDate(p.author.updatedAt),
-		},
+		// The activity query projects the author as `{ name }` only — there are no
+		// author timestamps to serialize.
+		author: p.author,
 		workflow: p.workflow || null,
 	})) as unknown as ProjectIncludeAll[];
 

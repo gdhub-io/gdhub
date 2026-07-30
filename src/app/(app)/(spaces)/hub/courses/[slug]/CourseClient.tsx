@@ -1,6 +1,14 @@
 "use client";
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Course,
+	CourseCurriculum,
+	CourseGroup,
+	CourseGroupSchedule,
+	CourseLesson,
+	User,
+	WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import {
 	IconActivity,
 	IconBookmark,
@@ -38,25 +46,25 @@ import styles from "./course.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
 
-type TeacherSummary = Pick<prismaClient.User, "id" | "name" | "image">;
+type TeacherSummary = Pick<User, "id" | "name" | "image">;
 
-type CourseDetail = prismaClient.Course & {
-	direction: Pick<prismaClient.WorkDirection, "id" | "name">;
+type CourseDetail = Course & {
+	direction: Pick<WorkDirection, "id" | "name">;
 	createdByUser: TeacherSummary;
 	curriculums: (Pick<
-		prismaClient.CourseCurriculum,
+		CourseCurriculum,
 		"id" | "name" | "description" | "price"
 	> & {
 		lessons: (Pick<
-			prismaClient.CourseLesson,
+			CourseLesson,
 			"id" | "name" | "description" | "order" | "ectsInClass" | "ectsHomework"
 		> & {
 			teacher: TeacherSummary | null;
 		})[];
 	})[];
-	groups: (Pick<prismaClient.CourseGroup, "id" | "name"> & {
-		curriculum: Pick<prismaClient.CourseCurriculum, "id" | "price">;
-		schedule: Pick<prismaClient.CourseGroupSchedule, "date">[];
+	groups: (Pick<CourseGroup, "id" | "name"> & {
+		curriculum: Pick<CourseCurriculum, "id" | "price">;
+		schedule: Pick<CourseGroupSchedule, "date">[];
 	})[];
 };
 

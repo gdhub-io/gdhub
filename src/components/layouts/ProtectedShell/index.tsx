@@ -1,6 +1,5 @@
 "use client";
 
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { useTolgee } from "@tolgee/react";
@@ -29,6 +28,7 @@ import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { isAvailableLocale } from "@/config/locale";
+import { UserRole } from "@/config/prisma-enums";
 import { appThemeConfig } from "@/config/theme";
 import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
@@ -64,7 +64,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 
 	const isAdmin = useMemo(() => {
 		if (!session) return false;
-		return hasRole(prismaClient.UserRole.Admin, { data: session });
+		return hasRole(UserRole.Admin, { data: session });
 	}, [session]);
 
 	/** Fallback avatar for users without an uploaded image. */

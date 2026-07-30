@@ -1,6 +1,4 @@
 "use client";
-
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, Popover, Row, Space, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";

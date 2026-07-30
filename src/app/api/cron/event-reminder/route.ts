@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { EventStatus } from "@gdhub-io/gdhub-prisma";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -8,7 +8,7 @@ export async function GET() {
 		const now = new Date();
 		const archivedEvents = await prisma.event.updateMany({
 			where: {
-				status: prismaClient.EventStatus.Published,
+				status: EventStatus.Published,
 				schedule: {
 					some: {},
 					every: {
@@ -19,7 +19,7 @@ export async function GET() {
 				},
 			},
 			data: {
-				status: prismaClient.EventStatus.Archived,
+				status: EventStatus.Archived,
 			},
 		});
 

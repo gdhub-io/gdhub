@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
 import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -19,6 +19,7 @@ import {
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { EventType, Language } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 import "@mdxeditor/editor/style.css";
 import ImgCrop from "antd-img-crop";
@@ -38,8 +39,8 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 		queryKey: ["event", eventId],
 		queryFn: () =>
 			axios.get<
-				prismaClient.Event & {
-					schedule: prismaClient.EventScheduleItem[];
+				Event & {
+					schedule: EventScheduleItem[];
 				}
 			>(`/api/user/event/${eventId}`),
 		enabled: !!eventId,
@@ -49,8 +50,8 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 
 	const isBigEvent = useMemo(() => {
 		return (
-			event?.data?.type === prismaClient.$Enums.EventType.GameLab ||
-			event?.data?.type === prismaClient.$Enums.EventType.Conference
+			event?.data?.type === EventType.GameLab ||
+			event?.data?.type === EventType.Conference
 		);
 	}, [event?.data?.type]);
 
@@ -61,8 +62,8 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	}, [event?.data]);
 
 	const { mutateAsync: updateEvent, isPending: isUpdating } = useMutation({
-		mutationFn: (data: Partial<prismaClient.Event>) =>
-			axios.put<prismaClient.Event>(`/api/user/event/${eventId}`, data),
+		mutationFn: (data: Partial<Event>) =>
+			axios.put<Event>(`/api/user/event/${eventId}`, data),
 	});
 
 	useEffect(() => {
@@ -345,12 +346,10 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 							{
 								<Select
 									options={[
-										...Object.values(prismaClient.$Enums.Language).map(
-											(lang) => ({
-												label: lang,
-												value: lang,
-											}),
-										),
+										...Object.values(Language).map((lang) => ({
+											label: lang,
+											value: lang,
+										})),
 									]}
 								/>
 							}

@@ -1,9 +1,9 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectWorkflowTask } from "@gdhub-io/gdhub-prisma";
 import { WorkflowTaskConditionSchema } from "@/schemas/workflowTaskCondition";
 import { prisma } from "@/services/prisma";
 import { evaluateTaskCondition } from "./evaluateTaskCondition";
 
-type WorkflowTask = prismaClient.ProjectWorkflowTask;
+type WorkflowTask = ProjectWorkflowTask;
 
 /**
  * Recompute `done` for the given step tasks from their conditions and persist

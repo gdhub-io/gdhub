@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	InvitationStatus,
+	type Speciality,
+	TeamMemberStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -46,7 +50,7 @@ export const GET = withAuth({ mode: "user" })(
 				return apiError.badRequest("Invitation has expired");
 			}
 
-			if (invitation.status === prismaClient.InvitationStatus.Accepted) {
+			if (invitation.status === InvitationStatus.Accepted) {
 				return apiError.badRequest("Invitation has already been accepted");
 			}
 
@@ -69,7 +73,7 @@ export const GET = withAuth({ mode: "user" })(
 			await prisma.teamInvitation.update({
 				where: { id: token },
 				data: {
-					status: prismaClient.InvitationStatus.Accepted,
+					status: InvitationStatus.Accepted,
 					acceptedAt: new Date(),
 					user: { connect: { id: currentUser.id } },
 				},
@@ -79,7 +83,7 @@ export const GET = withAuth({ mode: "user" })(
 			const hasSpeciality =
 				userRecord.specialities &&
 				userRecord.specialities.filter(
-					(speciality: prismaClient.Speciality) =>
+					(speciality: Speciality) =>
 						speciality.workDirectionId === invitation.directionId,
 				).length > 0;
 
@@ -141,7 +145,7 @@ export const GET = withAuth({ mode: "user" })(
 				data: {
 					position: invitation.position,
 					speciality: { connect: { id: userRecord.specialities[0].id } },
-					status: prismaClient.TeamMemberStatus.Hired,
+					status: TeamMemberStatus.Hired,
 					startedAt: invitation.startedAt,
 					team: { connect: { id: invitation.teamId } },
 					user: { connect: { id: currentUser.id } },

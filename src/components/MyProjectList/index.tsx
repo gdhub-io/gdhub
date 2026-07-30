@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import { IoAdd } from "@react-icons/all-files/io5/IoAdd";
 import { IconBriefcase, IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -22,7 +22,7 @@ const { Title } = Typography;
 type UserProjectCard = {
 	id: string;
 	name: string;
-	status: prismaClient.ProjectStatus;
+	status: ProjectStatus;
 	genre?: string | null;
 	platform?: string | null;
 	coverImage?: string | null;

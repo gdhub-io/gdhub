@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -37,15 +37,15 @@ export const PUT = withAuth({ mode: "user" })(
 		if (isSwitchMentorshipType(data)) {
 			const { enabled } = data;
 
-			const roles = currentUser.roles as prismaClient.UserRole[];
-			const hasMentorshipRole = roles.includes(prismaClient.UserRole.Mentor);
+			const roles = currentUser.roles as UserRole[];
+			const hasMentorshipRole = roles.includes(UserRole.Mentor);
 
 			if (enabled && !hasMentorshipRole) {
-				roles.push(prismaClient.UserRole.Mentor);
+				roles.push(UserRole.Mentor);
 			}
 
 			if (!enabled && hasMentorshipRole) {
-				const idx = roles.findIndex((v) => v === prismaClient.UserRole.Mentor);
+				const idx = roles.findIndex((v) => v === UserRole.Mentor);
 
 				if (idx !== -1) {
 					roles.splice(idx, 1);

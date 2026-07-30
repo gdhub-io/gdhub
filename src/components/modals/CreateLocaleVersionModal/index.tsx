@@ -1,17 +1,17 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { Flex, Modal, message, Select, Typography } from "antd";
 import axios from "axios";
 import type React from "react";
 import { useState } from "react";
+import { Language } from "@/config/prisma-enums";
 
 const { Text } = Typography;
 
 interface CreateLocaleVersionModalProps {
 	open: boolean;
 	eventId: string | null;
-	currentLang: prismaClient.$Enums.Language | null;
+	currentLang: Language | null;
 	onCancel: () => void;
 	onSuccess: () => void;
 }
@@ -24,18 +24,13 @@ const CreateLocaleVersionModal: React.FC<CreateLocaleVersionModalProps> = ({
 	onSuccess,
 }) => {
 	const { t } = useTolgee();
-	const [selectedLocaleLang, setSelectedLocaleLang] =
-		useState<prismaClient.$Enums.Language | null>(null);
+	const [selectedLocaleLang, setSelectedLocaleLang] = useState<Language | null>(
+		null,
+	);
 
 	const { mutateAsync: createLocaleVersionEvent, isPending: isCreating } =
 		useMutation({
-			mutationFn: ({
-				id,
-				lang,
-			}: {
-				id: string;
-				lang: prismaClient.$Enums.Language;
-			}) =>
+			mutationFn: ({ id, lang }: { id: string; lang: Language }) =>
 				axios
 					.post(`/api/user/event/${id}/duplicate`, { lang })
 					.then((res) => res.data),
@@ -87,7 +82,7 @@ const CreateLocaleVersionModal: React.FC<CreateLocaleVersionModalProps> = ({
 				<Select
 					value={selectedLocaleLang}
 					onChange={(value) => setSelectedLocaleLang(value)}
-					options={Object.values(prismaClient.$Enums.Language)
+					options={Object.values(Language)
 						.filter((lang) => currentLang && lang !== currentLang)
 						.map((lang) => ({ label: lang, value: lang }))}
 					placeholder={t(

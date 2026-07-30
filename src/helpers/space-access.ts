@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	CourseStudentStatus,
+	TeamMemberStatus,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
 
 /** Kinds of "space" a user can enter. */
@@ -10,11 +14,11 @@ export type SpaceRole = "owner" | "admin" | "member" | "none";
 /** Minimal user shape needed to resolve access (from `auth()` session). */
 export type SpaceAccessUser = {
 	id: string;
-	roles?: prismaClient.UserRole[];
+	roles?: UserRole[];
 } | null;
 
 const isPlatformAdmin = (user: SpaceAccessUser): boolean =>
-	!!user?.roles?.includes(prismaClient.UserRole.Admin);
+	!!user?.roles?.includes(UserRole.Admin);
 
 /**
  * Single source of truth for "can this user enter this space, and as what role".
@@ -83,9 +87,7 @@ async function resolveProjectAccess(
 
 	const membership = project.team?.members[0];
 	if (!membership) return "none";
-	return membership.status === prismaClient.TeamMemberStatus.Founder
-		? "owner"
-		: "member";
+	return membership.status === TeamMemberStatus.Founder ? "owner" : "member";
 }
 
 async function resolveEventAccess(
@@ -121,8 +123,8 @@ async function resolveCourseAccess(
 							userId: user.id,
 							status: {
 								in: [
-									prismaClient.CourseStudentStatus.Enrolled,
-									prismaClient.CourseStudentStatus.Finished,
+									CourseStudentStatus.Enrolled,
+									CourseStudentStatus.Finished,
 								],
 							},
 						},

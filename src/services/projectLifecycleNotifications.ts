@@ -1,5 +1,5 @@
-import type { GdhubDatabaseClient } from "@gdhub-io/gdhub-prisma";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { GDHubPrismaClient } from "@gdhub-io/gdhub-prisma";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { NovuService } from "./novu";
 
 type ProjectLifecycleNotificationAction = "archive" | "delete";
@@ -17,8 +17,8 @@ type ProjectLifecycleNotificationSnapshot = {
 };
 
 const currentTeamMemberStatuses = [
-	prismaClient.TeamMemberStatus.Founder,
-	prismaClient.TeamMemberStatus.Hired,
+	TeamMemberStatus.Founder,
+	TeamMemberStatus.Hired,
 ];
 
 export const getProjectLifecycleNotificationSnapshot = async ({
@@ -26,7 +26,7 @@ export const getProjectLifecycleNotificationSnapshot = async ({
 	projectId,
 	authorId,
 }: {
-	db: GdhubDatabaseClient;
+	db: GDHubPrismaClient;
 	projectId: string;
 	authorId: string;
 }): Promise<ProjectLifecycleNotificationSnapshot | null> => {

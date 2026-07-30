@@ -1,4 +1,9 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Lecture,
+	LecturerRequest,
+	Speciality,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Card } from "antd";
 import { useSession } from "next-auth/react";
@@ -8,9 +13,9 @@ import { TextWithLineBreak } from "@/components/TextWithLineBreak";
 export const RequestedContent = ({
 	lecture,
 }: {
-	lecture: prismaClient.Lecture & {
-		lecturerRequests: (prismaClient.LecturerRequest & {
-			user: prismaClient.User & { specialities: prismaClient.Speciality[] };
+	lecture: Lecture & {
+		lecturerRequests: (LecturerRequest & {
+			user: User & { specialities: Speciality[] };
 		})[];
 	};
 }) => {
@@ -60,14 +65,12 @@ export const RequestedContent = ({
 							description={
 								<>
 									{lecturer.user.specialities
-										? lecturer.user.specialities.map(
-												(s: prismaClient.Speciality) => (
-													<Fragment key={s.name}>
-														{s.name} ({s.level})
-														<br />
-													</Fragment>
-												),
-											)
+										? lecturer.user.specialities.map((s: Speciality) => (
+												<Fragment key={s.name}>
+													{s.name} ({s.level})
+													<br />
+												</Fragment>
+											))
 										: t(
 												"modal.lecturedetails.communityMember",
 												"Community member",

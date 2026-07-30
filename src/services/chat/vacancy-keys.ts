@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ChatRoomStatus } from "@gdhub-io/gdhub-prisma";
 import { makeRoomReadOnly, sendRoomMessageAs } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 
@@ -34,7 +34,7 @@ export async function closeVacancyChats(
 	options?: CloseVacancyChatsOptions,
 ): Promise<number> {
 	const where = {
-		status: prismaClient.ChatRoomStatus.Open,
+		status: ChatRoomStatus.Open,
 		directKey: candidateUserId
 			? vacancyChatDirectKey(vacancyId, candidateUserId)
 			: { startsWith: `vacancy:${vacancyId}:` },
@@ -49,7 +49,7 @@ export async function closeVacancyChats(
 	await prisma.chatRoom.updateMany({
 		where: { id: { in: rooms.map((r) => r.id) } },
 		data: {
-			status: prismaClient.ChatRoomStatus.Closed,
+			status: ChatRoomStatus.Closed,
 			finishedAt: new Date(),
 		},
 	});

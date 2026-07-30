@@ -1,6 +1,6 @@
 "use client";
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { WorkflowSchema } from "@gdhub-io/gdhub-prisma";
 import { GoTrash } from "@react-icons/all-files/go/GoTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -72,7 +72,7 @@ export default function WorkflowsAdminPage() {
 	};
 
 	// Columns for workflow schemas (templates)
-	const workflowColumns: ColumnsType<prismaClient.WorkflowSchema> = [
+	const workflowColumns: ColumnsType<WorkflowSchema> = [
 		{
 			title: "Title",
 			dataIndex: "title",

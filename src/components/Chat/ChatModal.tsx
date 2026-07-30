@@ -1,4 +1,3 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { IconInfoCircle, IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -16,6 +15,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { UserRole } from "@/config/prisma-enums";
 import { hasRole } from "@/helpers/user";
 import styles from "./ChatModal.module.scss";
 import ChatTopic from "./ChatTopic";
@@ -37,7 +37,7 @@ export const ChatModal = () => {
 	const [hasRooms, setHasRooms] = useState<boolean | null>(null);
 	const [openNewChat, setOpenNewChat] = useState(false);
 	const { data: session } = useSession();
-	const isAdmin = hasRole(prismaClient.UserRole.Admin, { data: session });
+	const isAdmin = hasRole(UserRole.Admin, { data: session });
 	const {
 		setChatContext,
 		selectedRoomId,

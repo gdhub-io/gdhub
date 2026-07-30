@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	ProjectStatus,
+	TeamMemberStatus,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "voca/slugify";
 import { z } from "zod";
@@ -44,7 +48,7 @@ const UpdateProjectSchema = z.object({
 	conceptLink: z.string().nullable().optional(),
 	authorId: z.string().optional(),
 	status: z
-		.enum(Object.values(prismaClient.ProjectStatus) as [string, ...string[]])
+		.enum(Object.values(ProjectStatus) as [string, ...string[]])
 		.optional(),
 	stageId: z.string().optional(),
 });
@@ -114,7 +118,7 @@ export const POST = withAuth({ mode: "user" })(
 			include: {
 				specialities: true,
 				memberInTeams: {
-					where: { status: prismaClient.TeamMemberStatus.Founder },
+					where: { status: TeamMemberStatus.Founder },
 					include: {
 						team: {
 							include: {
@@ -130,10 +134,10 @@ export const POST = withAuth({ mode: "user" })(
 
 		const existingProjectTeam = userRecord.memberInTeams.find(
 			(member: {
-				status: prismaClient.TeamMemberStatus;
+				status: TeamMemberStatus;
 				team: { project: { slug: string } | null };
 			}) =>
-				member.status === prismaClient.TeamMemberStatus.Founder &&
+				member.status === TeamMemberStatus.Founder &&
 				member.team.project?.slug === slugify(name),
 		);
 
@@ -152,7 +156,7 @@ export const POST = withAuth({ mode: "user" })(
 				slug: slugify(name),
 				description,
 				author: { connect: { id: currentUser.id } },
-				status: prismaClient.ProjectStatus.Approved,
+				status: ProjectStatus.Approved,
 				team: existingProjectTeam
 					? { connect: { id: existingProjectTeam.teamId } }
 					: {
@@ -164,7 +168,7 @@ export const POST = withAuth({ mode: "user" })(
 										// biome-ignore lint/style/noNonNullAssertion: original semantics
 										specialityId: userRecord.specialities[0]!.id,
 										startedAt: dayjs().toISOString(),
-										status: prismaClient.TeamMemberStatus.Founder,
+										status: TeamMemberStatus.Founder,
 										userId: currentUser.id,
 									},
 								},
@@ -192,11 +196,11 @@ export const POST = withAuth({ mode: "user" })(
 			},
 		});
 
-		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
+		if (!project.author.roles.includes(UserRole.Author)) {
 			await prisma.user.update({
 				where: { id: currentUser.id },
 				data: {
-					roles: [...project.author.roles, prismaClient.UserRole.Author],
+					roles: [...project.author.roles, UserRole.Author],
 				},
 			});
 		}
@@ -220,7 +224,7 @@ export const PUT = withAuth({ mode: "user" })(
 			where: { id },
 			data: {
 				...data,
-				status: data.status as prismaClient.ProjectStatus | undefined,
+				status: data.status as ProjectStatus | undefined,
 				author: authorId ? { connect: { id: authorId } } : undefined,
 			},
 			include: {
@@ -237,11 +241,11 @@ export const PUT = withAuth({ mode: "user" })(
 			},
 		});
 
-		if (!project.author.roles.includes(prismaClient.UserRole.Author)) {
+		if (!project.author.roles.includes(UserRole.Author)) {
 			await prisma.user.update({
 				where: { id: currentUser.id },
 				data: {
-					roles: [...project.author.roles, prismaClient.UserRole.Author],
+					roles: [...project.author.roles, UserRole.Author],
 				},
 			});
 		}

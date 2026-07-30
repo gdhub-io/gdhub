@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { SkillLevel } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -13,10 +13,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			specialities: {
 				some: {
 					level: {
-						in: [
-							prismaClient.SkillLevel.Experienced,
-							prismaClient.SkillLevel.Expert,
-						],
+						in: [SkillLevel.Experienced, SkillLevel.Expert],
 					},
 					openForQuestions: { isEmpty: false },
 				},
@@ -48,10 +45,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			specialities: {
 				where: {
 					level: {
-						in: [
-							prismaClient.SkillLevel.Experienced,
-							prismaClient.SkillLevel.Expert,
-						],
+						in: [SkillLevel.Experienced, SkillLevel.Expert],
 					},
 					openForQuestions: { isEmpty: false },
 				},

@@ -2,7 +2,7 @@
 
 import { EllipsisOutlined, EyeOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project, ProjectReport, User } from "@gdhub-io/gdhub-prisma";
 import { FaDiscord } from "@react-icons/all-files/fa/FaDiscord";
 import { FaLinkedinIn } from "@react-icons/all-files/fa/FaLinkedinIn";
 import { FaTelegramPlane } from "@react-icons/all-files/fa/FaTelegramPlane";
@@ -43,12 +43,12 @@ import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
 
-type AdminDevlogPost = prismaClient.ProjectReport & {
-	project: Pick<prismaClient.Project, "id" | "name" | "slug" | "coverImage">;
-	author: Pick<prismaClient.User, "id" | "name" | "image"> | null;
+type AdminDevlogPost = ProjectReport & {
+	project: Pick<Project, "id" | "name" | "slug" | "coverImage">;
+	author: Pick<User, "id" | "name" | "image"> | null;
 };
 
-type AdminProjectOption = Pick<prismaClient.Project, "id" | "name" | "slug">;
+type AdminProjectOption = Pick<Project, "id" | "name" | "slug">;
 
 const DefaultCover = ({ title }: { title: string }) => (
 	<Flex

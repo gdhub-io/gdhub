@@ -1,17 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "../src/services/prisma";
 
-vi.mock("@gdhub-io/gdhub-prisma/dist/client", () => ({
-	default: {
-		ChatRoomStatus: { Open: "Open", Closed: "Closed" },
-		ChatRoomKind: {
-			VacancyOffer: "VacancyOffer",
-			AdviceRequest: "AdviceRequest",
-			Direct: "Direct",
-		},
-		AdviceRequestStatus: { Closed: "Closed" },
-		TeamVacancyStatus: { Published: "Published", Closed: "Closed" },
+vi.mock("@gdhub-io/gdhub-prisma", () => ({
+	ChatRoomStatus: { Open: "Open", Closed: "Closed" },
+	ChatRoomKind: {
+		VacancyOffer: "VacancyOffer",
+		AdviceRequest: "AdviceRequest",
+		Direct: "Direct",
 	},
+	AdviceRequestStatus: { Closed: "Closed" },
+	TeamVacancyStatus: { Published: "Published", Closed: "Closed" },
 }));
 
 vi.mock("../src/services/prisma", () => ({
