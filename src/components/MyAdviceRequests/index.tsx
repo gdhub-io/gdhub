@@ -288,7 +288,7 @@ const MyAdviceRequests: React.FC<{
 				>
 					{isHubLayout && (
 						<Link
-							href="/hub/experts/my-requests"
+							href="/user/advice-requests"
 							className={hubSection.sectionHeadLink}
 						>
 							<Text type="secondary">

@@ -31,7 +31,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			payload: {
 				title: "Advice request canceled",
 				message: `Advice request from ${adviceRequest.project?.name} was canceled.`,
-				redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
+				redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/advice-requests`,
 				redirectUrlType: "internal",
 			},
 		});

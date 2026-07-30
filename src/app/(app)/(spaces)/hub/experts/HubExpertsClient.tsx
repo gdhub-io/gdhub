@@ -46,7 +46,7 @@ export default function HubExpertsClient() {
 					"On this page, you can find experts who are ready to help with your questions. Click on a expert card to contact them via Telegram",
 				)}
 				extra={
-					<Link href="/hub/experts/my-requests">
+					<Link href="/user/advice-requests">
 						<Button>{t("page.experts.myExperts", "My requests")}</Button>
 					</Link>
 				}

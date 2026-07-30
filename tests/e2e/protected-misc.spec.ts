@@ -5,6 +5,7 @@ const PROTECTED_ROUTES = [
 	"/user/settings/general",
 	"/user/courses",
 	"/user/events",
+	"/user/advice-requests",
 	"/user/course/__no__",
 	"/user/project/__no__",
 	"/user/project/__no__/team",

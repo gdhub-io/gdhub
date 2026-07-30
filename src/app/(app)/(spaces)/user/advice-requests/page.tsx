@@ -4,10 +4,10 @@ import MyRequestsClient from "./MyRequestsClient";
 export const metadata: Metadata = {
 	title: "Advice Requests",
 	robots: { index: false, follow: false },
-	alternates: { canonical: "/hub/experts/my-requests" },
+	alternates: { canonical: "/user/advice-requests" },
 	openGraph: {
 		type: "website",
-		url: "/hub/experts/my-requests",
+		url: "/user/advice-requests",
 		title: "Advice Requests",
 	},
 };

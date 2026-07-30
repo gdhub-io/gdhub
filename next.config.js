@@ -111,6 +111,11 @@ const nextConfig = {
 			destination: "/user/events",
 			permanent: true,
 		},
+		{
+			source: "/hub/experts/my-requests",
+			destination: "/user/advice-requests",
+			permanent: true,
+		},
 		// The hub docs viewer was dropped; documentation lives on its own domain.
 		{
 			source: "/hub/docs",

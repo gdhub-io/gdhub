@@ -45,7 +45,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			payload: {
 				title: "Advice request rejected",
 				message: `Advice request to ${updatedAdviceRequest.toUser?.name} was rejected.`,
-				redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/hub/experts/my-requests`,
+				redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/advice-requests`,
 				redirectUrlType: "internal",
 			},
 		});
