@@ -1,9 +1,10 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Modal, message, Spin } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { EventStatus } from "@/config/prisma-enums";
 
 type DangerEventFormArgs = {
 	eventId: string;
@@ -19,8 +20,8 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 		queryKey: ["event", eventId],
 		queryFn: () =>
 			axios.get<
-				prismaClient.Event & {
-					schedule: prismaClient.EventScheduleItem[];
+				Event & {
+					schedule: EventScheduleItem[];
 				}
 			>(`/api/user/event/${eventId}`),
 		enabled: !!eventId,
@@ -62,7 +63,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					),
 				);
 
-				router.push("/hub/events/my");
+				router.push("/user/events");
 			},
 			okText: t("event.settings.danger.archive.button", "Archive"),
 			cancelText: t("event.settings.danger.archive.cancel", "No"),
@@ -86,7 +87,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					),
 				);
 
-				router.push("/hub/events/my");
+				router.push("/user/events");
 			},
 			okText: t("event.settings.danger.delete.button", "Delete"),
 			cancelText: t("event.settings.danger.delete.cancel", "No"),
@@ -110,7 +111,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					),
 				);
 
-				router.push("/hub/events/my");
+				router.push("/user/events");
 			},
 			okText: t("event.settings.danger.restore.button", "Restore"),
 			cancelText: t("event.settings.danger.restore.cancel", "No"),
@@ -129,7 +130,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					isDeletingEvent
 				}
 			>
-				{event?.data?.status !== prismaClient.$Enums.EventStatus.Archived ? (
+				{event?.data?.status !== EventStatus.Archived ? (
 					<Card
 						extra={
 							<Button

@@ -1,17 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "../src/services/prisma";
 
-vi.mock("@gdhub-io/gdhub-prisma/dist/client", () => ({
-	default: {
-		TeamMemberStatus: {
-			Founder: "Founder",
-		},
-		ProjectStatus: {
-			Approved: "Approved",
-		},
-		UserRole: {
-			Author: "Author",
-		},
+vi.mock("@gdhub-io/gdhub-prisma", () => ({
+	TeamMemberStatus: {
+		Founder: "Founder",
+	},
+	ProjectStatus: {
+		Approved: "Approved",
+	},
+	UserRole: {
+		Author: "Author",
 	},
 }));
 

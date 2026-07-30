@@ -1,5 +1,5 @@
+import { InvitationStatus, ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { prisma } from "../../src/services/prisma";
 import {
 	cleanupInvitedUser,
@@ -42,7 +42,7 @@ test.describe.serial("team invitation flow", () => {
 				await prisma.project
 					.update({
 						where: { id: project.id },
-						data: { status: prismaClient.ProjectStatus.Archived },
+						data: { status: ProjectStatus.Archived },
 					})
 					.catch(() => undefined);
 			}
@@ -71,7 +71,7 @@ test.describe.serial("team invitation flow", () => {
 			.check();
 
 		await Promise.all([
-			page.waitForURL(/\/my\/projects\/[^/]+(\/|$)/, { timeout: 30_000 }),
+			page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 30_000 }),
 			createModal.getByRole("button", { name: /^create$/i }).click(),
 		]);
 
@@ -103,14 +103,14 @@ test.describe.serial("team invitation flow", () => {
 				team: { connect: { id: teamId } },
 				invitedBy: { connect: { id: author!.id } },
 				user: { connect: { email: INVITED_USER_EMAIL } },
-				status: prismaClient.InvitationStatus.Pending,
+				status: InvitationStatus.Pending,
 				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 			},
 		});
 		invitationId = invitation.id;
 
 		// --- 3. Verify pending invitation in UI ---
-		await page.goto(`/my/projects/${projectSlug}/team`);
+		await page.goto(`/user/project/${projectSlug}/team`);
 		await expect(page.getByText(/pending invitations/i)).toBeVisible({
 			timeout: 10_000,
 		});
@@ -173,7 +173,7 @@ test.describe.serial("team invitation flow", () => {
 		await prisma.teamInvitation.update({
 			where: { id: invitationId },
 			data: {
-				status: prismaClient.InvitationStatus.Accepted,
+				status: InvitationStatus.Accepted,
 				acceptedAt: new Date(),
 				user: { connect: { id: invitedUser!.id } },
 			},
@@ -183,7 +183,7 @@ test.describe.serial("team invitation flow", () => {
 			data: {
 				position: "Game Designer",
 				speciality: { connect: { id: invitedUser!.specialities[0].id } },
-				status: prismaClient.TeamMemberStatus.Hired,
+				status: TeamMemberStatus.Hired,
 				startedAt: new Date(),
 				team: { connect: { id: teamId } },
 				user: { connect: { id: invitedUser!.id } },
@@ -191,7 +191,7 @@ test.describe.serial("team invitation flow", () => {
 		});
 
 		// Verify the invited user appears in the team members UI
-		await page.goto(`/my/projects/${projectSlug}/team`);
+		await page.goto(`/user/project/${projectSlug}/team`);
 		await expect(page.getByText("E2E Invited User")).toBeVisible({
 			timeout: 10_000,
 		});

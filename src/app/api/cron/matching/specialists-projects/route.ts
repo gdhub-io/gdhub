@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
@@ -29,7 +29,7 @@ export const POST = withValidation(
 			const projects = await prisma.project.findMany({
 				where: {
 					id: projectId,
-					status: prismaClient.ProjectStatus.Approved,
+					status: ProjectStatus.Approved,
 					author: { personalDataDeletedAt: null },
 					OR: !specialityId
 						? [

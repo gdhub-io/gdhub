@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { AdviceRequest } from "@gdhub-io/gdhub-prisma";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { IconBan, IconCancel, IconCheck, IconClock } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -32,7 +32,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 	} = useQuery({
 		queryKey: ["user-advice-archive", user?.id],
 		queryFn: () =>
-			axios.get<prismaClient.AdviceRequest[]>("/api/user/advice-requests", {
+			axios.get<AdviceRequest[]>("/api/user/advice-requests", {
 				params: { userId: user?.id },
 			}),
 		enabled: !!user?.id,
@@ -44,7 +44,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 		}
 	}, [open, user?.id]);
 
-	const columns: ColumnsType<prismaClient.AdviceRequest> = [
+	const columns: ColumnsType<AdviceRequest> = [
 		{
 			title: t("Status"),
 			dataIndex: "status",
@@ -106,7 +106,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 		{
 			title: t("Comment"),
 			key: "comment",
-			render: (_: any, record: prismaClient.AdviceRequest) => (
+			render: (_: any, record: AdviceRequest) => (
 				<>
 					<span style={{ color: themeToken.colorTextSecondary }}>
 						{t("Comment")}:
@@ -130,7 +130,7 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 		},
 		{
 			key: "actions",
-			render: (_: any, record: prismaClient.AdviceRequest) =>
+			render: (_: any, record: AdviceRequest) =>
 				record.matrixRoomId ? (
 					<Button type="text" size="small">
 						{t("Open the chat")}

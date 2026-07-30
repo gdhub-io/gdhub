@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -33,7 +33,7 @@ export const GET = withAuth({ mode: "user" })(
 				_count: {
 					select: {
 						adviceRequestsForMe: {
-							where: { status: prismaClient.AdviceRequestStatus.Approved },
+							where: { status: AdviceRequestStatus.Approved },
 						},
 					},
 				},

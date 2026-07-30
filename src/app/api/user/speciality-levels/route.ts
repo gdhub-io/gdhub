@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { SkillLevel } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -16,9 +16,7 @@ const enumArray = <T extends [string, ...string[]]>(values: T) =>
 	);
 
 const SpecialityLevelsQuerySchema = z.object({
-	level: enumArray(
-		Object.values(prismaClient.$Enums.SkillLevel) as [string, ...string[]],
-	),
+	level: enumArray(Object.values(SkillLevel) as [string, ...string[]]),
 });
 
 type SpecialityLevelsQuery = z.infer<typeof SpecialityLevelsQuerySchema>;
@@ -35,16 +33,13 @@ export const GET = withAuth({ mode: "user" })(
 		const specialities = await prisma.speciality.findMany({
 			where: {
 				userId: currentUser.id,
-				level: level
-					? { in: level as prismaClient.$Enums.SkillLevel[] }
-					: undefined,
+				level: level ? { in: level as SkillLevel[] } : undefined,
 			},
 			select: { level: true },
 		});
 
 		const levels = specialities.map(
-			(speciality: { level: prismaClient.$Enums.SkillLevel }) =>
-				speciality.level,
+			(speciality: { level: SkillLevel }) => speciality.level,
 		);
 		const uniqueLevels = [...new Set(levels)];
 

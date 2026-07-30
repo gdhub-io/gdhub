@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ApplauseActivityType } from "@gdhub-io/gdhub-prisma";
 import { auth } from "@/auth";
 import { apiError, json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -10,7 +10,7 @@ const getApplauseState = async (projectReportId: string, userId?: string) => {
 		prisma.applauseActivity.findUnique({
 			where: {
 				type_subjectId: {
-					type: prismaClient.ApplauseActivityType.ProjectReport,
+					type: ApplauseActivityType.ProjectReport,
 					subjectId: projectReportId,
 				},
 			},
@@ -85,13 +85,13 @@ async function mutateApplause(
 		const activity = await prisma.applauseActivity.upsert({
 			where: {
 				type_subjectId: {
-					type: prismaClient.ApplauseActivityType.ProjectReport,
+					type: ApplauseActivityType.ProjectReport,
 					subjectId: projectReportId,
 				},
 			},
 			update: {},
 			create: {
-				type: prismaClient.ApplauseActivityType.ProjectReport,
+				type: ApplauseActivityType.ProjectReport,
 				subjectId: projectReportId,
 				projectId: report.projectId,
 				projectReportId: report.id,

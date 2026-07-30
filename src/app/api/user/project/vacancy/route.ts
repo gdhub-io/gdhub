@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	PayableType,
+	type PaymentRateType,
+	PaymentStatus,
+	TeamVacancyStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import {
@@ -27,9 +32,7 @@ const CreateVacancySchema = z.object({
 	title: z.string(),
 	description: z.string(),
 	directionId: z.string(),
-	status: z.enum(
-		Object.values(prismaClient.TeamVacancyStatus) as [string, ...string[]],
-	),
+	status: z.enum(Object.values(TeamVacancyStatus) as [string, ...string[]]),
 	publishedAt: z.string().nullable().optional(),
 	finishedAt: z.string(),
 	teamId: z.string(),
@@ -48,9 +51,7 @@ const UpdateVacancySchema = z.object({
 	description: z.string().optional(),
 	directionId: z.string().optional(),
 	status: z
-		.enum(
-			Object.values(prismaClient.TeamVacancyStatus) as [string, ...string[]],
-		)
+		.enum(Object.values(TeamVacancyStatus) as [string, ...string[]])
 		.optional(),
 	publishedAt: z.string().nullable().optional(),
 	finishedAt: z.string().optional(),
@@ -120,7 +121,7 @@ export const GET = withAuth({ mode: "user" })(
 		// so the edit form knows whether the fee is paid.
 		const payment = await prisma.payment.findFirst({
 			where: {
-				payableType: prismaClient.PayableType.VACANCY,
+				payableType: PayableType.VACANCY,
 				payableId: id,
 			},
 			orderBy: { createdAt: "desc" },
@@ -161,12 +162,11 @@ export const POST = withAuth({ mode: "user" })(
 			const vacancy = await prisma.teamVacancy.create({
 				data: {
 					...vacancyData,
-					status: vacancyData.status as prismaClient.TeamVacancyStatus,
+					status: vacancyData.status as TeamVacancyStatus,
 					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
 					promiseStepId: hasEquityPromise ? promiseStepId : undefined,
 					offeredAmount: offeredAmount != null ? toCents(offeredAmount) : null,
-					offeredRateType:
-						(offeredRateType as prismaClient.PaymentRateType | null) ?? null,
+					offeredRateType: (offeredRateType as PaymentRateType | null) ?? null,
 				},
 			});
 
@@ -232,20 +232,16 @@ export const PUT = withAuth({ mode: "user" })(
 		// Set publishedAt only on the first publish; never reset it afterwards, so
 		// toggling draft/publish can't move the window anchor.
 		const nextStatus = (vacancyData.status ??
-			existing.status) as prismaClient.TeamVacancyStatus;
+			existing.status) as TeamVacancyStatus;
 		const publishedAt =
 			existing.publishedAt ??
-			(nextStatus === prismaClient.TeamVacancyStatus.Published
-				? new Date()
-				: null);
+			(nextStatus === TeamVacancyStatus.Published ? new Date() : null);
 
 		const vacancy = await prisma.teamVacancy.update({
 			where: { id },
 			data: {
 				...vacancyData,
-				status: vacancyData.status as
-					| prismaClient.TeamVacancyStatus
-					| undefined,
+				status: vacancyData.status as TeamVacancyStatus | undefined,
 				publishedAt,
 				promisePercentage,
 				promiseStepId,
@@ -260,13 +256,12 @@ export const PUT = withAuth({ mode: "user" })(
 				offeredRateType:
 					offeredRateType === undefined
 						? undefined
-						: ((offeredRateType as prismaClient.PaymentRateType | null) ??
-							null),
+						: ((offeredRateType as PaymentRateType | null) ?? null),
 			},
 		});
 
 		// Archiving the listing ends its conversations too.
-		if (vacancy.status === prismaClient.TeamVacancyStatus.Closed) {
+		if (vacancy.status === TeamVacancyStatus.Closed) {
 			try {
 				await closeVacancyChats(vacancy.id);
 			} catch (e) {
@@ -304,7 +299,7 @@ export const DELETE = withAuth({ mode: "user" })(
 
 		await prisma.teamVacancy.update({
 			where: { id },
-			data: { status: prismaClient.TeamVacancyStatus.Closed },
+			data: { status: TeamVacancyStatus.Closed },
 		});
 
 		// Archiving the listing ends its conversations too.
@@ -319,9 +314,9 @@ export const DELETE = withAuth({ mode: "user" })(
 		// COMPLETED payments are kept as payment history.
 		await prisma.payment.deleteMany({
 			where: {
-				payableType: prismaClient.PayableType.VACANCY,
+				payableType: PayableType.VACANCY,
 				payableId: id,
-				status: { not: prismaClient.PaymentStatus.COMPLETED },
+				status: { not: PaymentStatus.COMPLETED },
 			},
 		});
 

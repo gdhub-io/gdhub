@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { QueueJobStatus, QueueJobType } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
 
 function QueueBrokerLog(jobName: string) {
@@ -13,8 +13,8 @@ function QueueBrokerLog(jobName: string) {
 				await prisma.queueJobLog.create({
 					data: {
 						name: jobName,
-						status: prismaClient.QueueJobStatus.Completed,
-						type: prismaClient.QueueJobType.Broker,
+						status: QueueJobStatus.Completed,
+						type: QueueJobType.Broker,
 						data: result && typeof result === "object" ? result : null,
 					},
 				});
@@ -24,8 +24,8 @@ function QueueBrokerLog(jobName: string) {
 				await prisma.queueJobLog.create({
 					data: {
 						name: jobName,
-						status: prismaClient.QueueJobStatus.Failed,
-						type: prismaClient.QueueJobType.Broker,
+						status: QueueJobStatus.Failed,
+						type: QueueJobType.Broker,
 						log: (e as Error).message,
 					},
 				});

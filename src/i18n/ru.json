@@ -3,35 +3,57 @@
 		"": "и отправьте запрос на консультацию."
 	},
 	"(not pointed)": "(не указано)",
+	"(places of training are not indicated)": "(места обучения не указаны)",
+	"(places of work are not indicated)": "(места работы не указаны)",
+	"(tools are not indicated)": "(инструменты не указаны)",
 	"3% is fixed for the platform": "3% зафиксированы за платформой",
 	"A new open position has been added": "Добавлена новая вакансия",
+	"A new open position has been added. Redirecting to payment...": "Новая вакансия добавлена. Переходим к оплате...",
 	"A new report has been added": "Добавлен новый отчет",
 	"A portion should be reserved for future investments": "Часть долей рекомендуем зарезервировать для будущих инвесторов",
+	"AI Candidate": "ИИ-кандидат",
 	"About Game": "Об игре",
+	"About specialty": "О специальности",
+	"About the participant": "Об участнике",
 	"About us": "О нас",
 	"Accept the team": "Принять команду",
 	"Achiever": "Добиваться успеха",
+	"Actions": "Действия",
 	"Actual Equity": "Фактическая доля",
 	"Add a report": "Добавить отчет",
+	"Add equity promise": "Добавить обещание доли",
 	"Add investor": "Добавить инвестора",
+	"Add payment": "Добавить оплату",
 	"Add specialty": "Добавить специальность",
-	"Add the vacancy": "Добавить вакансию",
-	"Add your project idea": "Добавьте идею вашего проекта",
+	"Added a new event": "Добавлено новое мероприятие",
 	"Added a new game project": "Добавлен новый игровой проект",
 	"Administration": "Администрация",
+	"Advice request accepted error": "Не удалось принять запрос на консультацию",
+	"Advice request rejected error": "Не удалось отклонить запрос на консультацию",
+	"Advice request rejected successfully": "Запрос на консультацию отклонён",
+	"Advice requests archive to ": "Архив запросов на консультацию к ",
 	"Advisors": "Менторы",
 	"After completing": "По завершении шага",
 	"Allows you to contribute to game development through advising": "Позволяет вам внести свой вклад в разработку игр посредством консультирования",
-	"Appendix": "Приложение",
+	"Amount (EUR)": "Сумма (EUR)",
+	"Approved": "Одобрено",
+	"Approved requests": "Одобренные запросы",
+	"Approximate shares": "Примерные доли",
 	"Archive": "Архив",
+	"Are you sure you want to delete it?": "Вы уверены, что хотите это удалить?",
+	"Are you sure you want to fire this member?": "Вы уверены, что хотите исключить этого участника?",
 	"Are you sure?": "Вы уверены?",
 	"Assemble a team": "Собрать команду",
 	"At least 2% is allocated to the mentor fund": "Не менее 2% должно быть указано для фонда менторов",
 	"At the moment, reports are not provided": "На данный момент отчеты не предоставляются",
 	"Audition": "Прослушивание",
 	"Author": "Автор",
+	"Author Compliance": "Соответствие автору",
 	"Autonomy": "Автономия",
 	"Available Hours": "Доступное время",
+	"Avg": {
+		" Score": "Средний балл"
+	},
 	"Back": "Назад",
 	"Back to home": "Вернуться на главную",
 	"Back to main": "На главную",
@@ -39,41 +61,45 @@
 	"Beginner": "Начинающий",
 	"CV/Portfolio": "Резюме/Портфолио",
 	"Cancel": "Отменить",
+	"Candidate": "Кандидат",
 	"Candidate card": "Карточка кандидата",
 	"Change": "Изменить",
+	"Change Promise": "Изменить обещание",
 	"Change the lecture request": "Изменить запрос на лекцию",
 	"Change the parametes of lectures": "Изменение параметров лекции",
+	"Change the position": "Изменить вакансию",
 	"Change the report": "Изменить отчет",
-	"Change the vacancy": "Изменить вакансию",
-	"Change your project idea": "Измените идею вашего проекта",
 	"City": "Город",
+	"Clear all": "Очистить всё",
 	"Close": "Закрыть",
+	"Closed": "Закрыта",
 	"Comment": "Комментарий",
+	"Comment/Feedback": "Комментарий/отзыв",
 	"Community Chat": "Чат Сообщества",
 	"Community Members": "Таланты",
-	"Community Projects": "Проекты сообщества",
+	"Community chat on Telegram": "Чат сообщества в Telegram",
 	"Community member": "Участник сообщества",
-	"Community members": "Участники сообщества",
 	"Complete Registration": "Завершить регистрацию",
 	"Completed": "Завершенно",
-	"Concept document": "Концепт-документ",
 	"Connecting to Telegram will allow you to request advice from community mentors through the app": "Подключение вашего Телеграм-аккаунта позволит запрашивать советы у менторов через приложение",
 	"Contact the author": "Связаться с автором",
 	"Contacts": "Контакты",
 	"Contents of the lecture": "Содержание лекции",
 	"Continue with Google": "Продолжить через Google",
 	"Cookie Policy": "Политика работы с Cookie",
-	"Cookies Policy": "Политика использования файлов Cookie",
 	"Country": "Страна",
 	"Create": "Создать",
-	"Create a new vacancy": "Создать новую вакансию",
+	"Create a new position": "Создать новую вакансию",
 	"Create new account": "Регистрация",
+	"Created": "Создано",
+	"Created At": "Дата создания",
 	"Current vested equity": "Текущая закрепленная доля",
 	"Date": "Дата",
 	"Days on Project": "Дней на проекте",
 	"Deal date": "Дата сделки",
+	"Delete": "Удалить",
 	"Details": "Подробнее",
-	"Development Log": "Журнал разработки",
+	"Dilution": "Размытие доли",
 	"Direction": "Направление деятельности",
 	"Discord": "Дискорд",
 	"Display Name": "Отображаемое имя",
@@ -82,111 +108,197 @@
 		"": "У вас пока нет менторов."
 	},
 	"Does not have any investors yet": "У вас еще не указана информация об инвесторах",
+	"Don't want to be a lecturer": "Не хочу быть лектором",
+	"Edit": "Редактировать",
+	"Edit investor": "Изменить инвестора",
 	"Email": "Эл. почта",
 	"End stream": "Завершить трансляцию",
 	"Enter Email": "Введите Email",
+	"Enter amount": "Введите сумму",
+	"Enter email address": "Введите адрес email",
+	"Enter percentage": "Введите процент",
+	"Enter position": "Введите должность",
 	"Enter to see": "Войдите, чтобы увидеть",
+	"Equity": "Доля",
 	"Equity Distribution Rules": "Правила распределения долей",
+	"Equity Promise": "Обещание доли",
 	"Equity Settings": "Настройки распределения долей",
+	"Equity distribution not found": "Распределение долей не найдено",
+	"Equity share to transfer (%)": "Передаваемая доля (%)",
+	"Error": "Ошибка",
 	"Error 404": "Ошибка 404",
+	"Error loading transaction history": "Ошибка загрузки истории транзакций",
 	"Error!": "Ошибка!",
+	"Event Schedule": "Расписание мероприятия",
+	"Event Settings": "Настройки мероприятия",
+	"Event data updated": "Данные мероприятия обновлены",
+	"Experience": "Опыт",
 	"Experienced": "Опытный",
 	"Expert": "Эксперт",
+	"Expires At": "Истекает",
 	"Exploration": "Исследлование",
+	"Failed to delete investor": "Не удалось удалить инвестора",
+	"Failed to send invitation": "Не удалось отправить приглашение",
+	"Feedback": "Отзыв",
 	"Fill in from CV/resume": "Заполнить из резюме",
-	"Filter": "Фильтр",
 	"Find mentors": "Найти ментора",
-	"Fire": "Уволить",
+	"Finished At": "Завершено",
+	"Fire Member": "Исключить участника",
+	"First allocation": "Первое распределение",
 	"Follow this link before the lecture": "Перед началом лекции перейдите по этой ссылке",
 	"For Authors": "Для авторов",
 	"For Specialists": "Для специалистов",
-	"For Users": "Длф пользователей",
+	"For example: 2D art and animation": "Например: 2D-арт и анимация",
+	"For example: Game Design": "Например: гейм-дизайн",
 	"For example: The concept of the environment": "Например: концепт-художник по окружению",
+	"For example: game design": "Например: гейм-дизайн",
 	"Form for adding information about investors who have invested in your project financially (bought a share)": "Форма для добавления информации об инвесторах, которые вложили в ваш проект финансовые средства (купили долю)",
 	"Free time": "Свободное время",
 	"From": "От",
 	"GDD": "ГДД",
-	"Game Developers Hub for everyone who wants to make": "Хаб разработчиков игр, которые хотят создавать",
 	"Game Projects": "Игровые проекты",
 	"Game Setting": "Визуальная обстановка",
 	"General information about new member": "Общая информация о новом участнике",
 	"Genre": "Жанр",
 	"Get in touch": "Свяжитесь с нами",
-	"Get started": "Начать",
 	"Go": "Вперед",
-	"Go to GDHub": "Перейти в GDHub",
 	"Go to app": "Мой кабинет",
-	"Go to project page": "Подробнее",
 	"Go to registration": "Начать регистрацию заново",
 	"Goal-oriented": "Целеориентированность",
 	"Home": "Главная",
+	"Hourly": "Почасовая",
 	"How can you be useful to teams?": "Чем вы можете быть полезны командам?",
 	"How many hours a week can you devote to projects?": "Сколько часов в неделю вы можете уделять участию в проектах?",
 	"Hub": "Хаб",
 	"I already have an account": "Я уже зарегистрирован",
-	"I think now is the perfect time to make games": {
-		"": "Думаю, сейчас самое время, чтобы делать игры."
-	},
+	"I prefer game settings": "Предпочитаю сеттинги игр",
+	"I prefer games of the following complexity": "Предпочитаю игры следующей сложности",
+	"I prefer genres": "Предпочитаю жанры",
+	"I use it in work": "Использую в работе",
 	"I want to give a lecture": "Я хочу прочитать лекцию",
-	"I'm available for offering": "Я доступен для предложений участия в проектах",
 	"If you need one, you can find experts or mentors on the ": "Если вам это нужно, вы можете найти менторов или экспертов на ",
-	"Im available for offering": "Я открыт для предложений",
-	"IncubaMation program GameLab": "Инкубационная программа GameLab",
+	"Increase": "Увеличение",
 	"Indie Game Projects": "Игровые проекты сообщества",
 	"Individuality": "Индивидуальность",
-	"Infomation about your preferences": "Информация о ваших предпочтениях",
 	"Information about your main speciality": "Информация о вас, как специалисте в геймдеве",
+	"Initiator": "Инициатор",
+	"Insert ID video from YouTube": "Вставьте ID видео с YouTube",
 	"Insert video url": "Вставьте ссылку на видео",
+	"Interested in the vacancy": "Заинтересован в вакансии",
 	"Interests and preferences": "Интересы и предпочтения",
 	"Interests and preferences updated": "Интересы и предпочтения обновлены",
 	"Investment Reserve": "Зарезервировать для инвестиций",
+	"Investor deleted": "Инвестор удалён",
 	"Investor name": "Наименование инвестора",
 	"Investors": "Инвесторы",
+	"Invitation canceled": "Приглашение отменено",
+	"Invitation sent successfully": "Приглашение успешно отправлено",
 	"Invite Member": "Пригласить участника",
+	"Invited At": "Дата приглашения",
 	"Join the team": "Присоединиться",
 	"Join us and become a part of new era in the gaming industry!": "Присоединяйтесь к нам и станьте частью новой эры игровой индустрии!",
 	"Language": "Язык",
 	"Last updates": "Последние обновления",
 	"Lecture Information": "Информация о лекции",
 	"Lecture Proposal Information": "Информация о предложении лекции",
-	"Legal officer": "Юрист в геймдеве",
 	"Let's go": "Вперед!",
 	"Level": "Уровень владения",
+	"Loading transaction history": {
+		"": {
+			"": {
+				"": "Загрузка истории транзакций..."
+			}
+		}
+	},
 	"Log in": "Войти",
 	"Log in with Google": "Войти через Google",
 	"Log in with email": "Войти через Email",
+	"Main Page": "Главная страница",
 	"Make Promise": "Дать обещание",
 	"Manage Equity": "Настройки распределения",
 	"Mastering communication and networking skills": "Овладение коммуникативными и сетевыми навыками",
+	"Maximum available equity": "Максимально доступная доля",
 	"Member Name": "Участник",
 	"Members": "Участники",
 	"Mentor": "Ментор",
 	"Mentor Fund Share (minimum 2%)": "Фонд менторов (минимум 2%)",
-	"Mentor of digital art": "Ментор по цифровому искусству",
-	"Mentor of game design": "Ментор по геймдизайну инди-игр",
-	"Mentor of game development": "Ментор по программированию игр",
-	"Mentor of team management": "Ментор по управлению проектами",
+	"Monthly": "Ежемесячная",
 	"My Projects": "Мои проекты",
+	"MyProjectVacancies": {
+		"actions": "Действия",
+		"addTheVacancy": "Добавить вакансию",
+		"archive": "Архив",
+		"archiveVacancy": "В архив",
+		"change": "Изменить",
+		"downloadReceipt": "Скачать чек",
+		"link": "Перейти на страницу",
+		"no": "Нет",
+		"published": "Вакансия опубликована",
+		"receiptUnavailable": "Чек недоступен",
+		"theVacancyIsClosed": "Вакансия закрыта",
+		"thereAreNoOpenVacanciesAtTheMoment": "На данный момент открытых вакансий нет",
+		"yes": "Да"
+	},
 	"Name": "Инвестор",
+	"New request": "Новый запрос",
+	"Next milestone": "Следующая веха",
+	"No": "Нет",
+	"No available equity": "Нет доступной доли",
+	"No available shares for new investor": "Нет доступных долей для нового инвестора",
 	"No data about transactions": "Нет данных",
+	"No devlog posts yet": "Пока нет записей в дневнике разработки",
+	"No longer relevant": "Больше неактуально",
+	"No position specified": "Должность не указана",
 	"Novice": "Без опыта",
+	"Obtained": "Получено",
 	"On the page of the project": "На страницу проекта",
+	"On the project": "На проекте",
+	"One-time": "Разовая",
+	"Open position": "Вакансия",
+	"Open positions": "Вакансии",
+	"Open the chat": "Открыть чат",
+	"Other type": "Другой тип",
 	"Our Core Values": "Наши ключевые ценности",
+	"Paid": "Оплачено",
+	"Pay & Publish": "Оплатить и опубликовать",
+	"Payment": "Оплата",
+	"Payment checkout failed": {
+		" Please try again": {
+			"": "Не удалось перейти к оплате. Попробуйте ещё раз."
+		}
+	},
 	"Pending Invitations": "Ожидание приглашений",
+	"Percentage": "Процент",
+	"Percentage of equity that will be promised to the candidate": "Процент доли, который будет обещан кандидату",
 	"Platform": "Платформа",
 	"Player": "Коммуникация",
+	"Please enter a valid email": "Введите корректный email",
+	"Please enter email": "Введите email",
+	"Please enter position": "Введите должность",
+	"Please select start date": "Выберите дату начала",
+	"Please select work direction": "Выберите направление работы",
 	"Position": "Роль",
+	"Preferences in games": "Предпочтения в играх",
+	"Processing your invitation": {
+		"": {
+			"": {
+				"": "Обрабатываем ваше приглашение..."
+			}
+		}
+	},
 	"Profile": "Профиль",
+	"Project": "Проект",
+	"Project Compliance": "Соответствие проекту",
 	"Project Settings": "Настройки проекта",
 	"Project Team": "Команда проекта",
-	"Projects developed independently by community members (outside the incubation program)": {
-		"": "Проекты, разработанные членами сообщества самостоятельно (вне инкубационной программы)."
-	},
+	"Project Vacancies": "Вакансии проекта",
+	"Project data updated": "Данные проекта обновлены",
+	"Projects": "Проекты",
 	"Projects developed independently by users": {
 		"": "Проекты, разрабатываемые другими пользователями"
 	},
-	"Projects preparing for pitch": "Проекты готовятся к питчу",
 	"Promised Equity": "Обещанная доля",
+	"Promised equity percentage": "Процент обещанной доли",
 	"Promised shares will be automatically vested when the project reaches the specified workflow step": {
 		"": "Обещанные доли будут автоматически переданы, когда проект достигнет указанного этапа рабочего процесса."
 	},
@@ -194,22 +306,34 @@
 	"Public page": "Публичная страница",
 	"Publish": "Опубликовать",
 	"Pursuing oppurtunities instead of settling": "Поиск возможностей вместо того, чтобы останавливаться на достигнутом",
+	"Rate type": "Тип ставки",
 	"Read more": "Смотреть еще",
+	"Reason": "Причина",
+	"Reason for transfer (optional)": "Причина передачи (необязательно)",
+	"Recipient of the equity share": "Получатель доли",
 	"Registration": "Регистрация",
-	"Registration completed successfully!": "Регистрация прошла успешно!",
-	"Registration token expired": "Регистрационный токен просрочен. Начните регистрацию заново.",
-	"Registration token is wrong": "Сссылка регистрации некорректна",
-	"Registration token is wrong. Go to Signup page before.": "Неправильная ссылка на регистрацию. Начните процесс регистрации заново",
+	"Registration successful": "Регистрация прошла успешно",
 	"Registration with Google": "Регистрация через Google",
+	"Rejected": "Отклонено",
 	"Relevant to": "Актуальна до",
-	"Required actions is not completed": "Обязтельные действия должны быть выполнены",
+	"Remove equity promise": "Удалить обещание доли",
+	"Remove payment": "Удалить оплату",
+	"Report was deleted": "Отчёт удалён",
+	"Request for lecture has been deleted": "Запрос на лекцию удалён",
+	"Required workflow step": "Требуемый этап рабочего процесса",
 	"Respond": "Откликнуться",
-	"Responses on vacancies": "Отклики на вакансии",
 	"Restore": "Восстановить",
 	"Return to main": "Вернуться на главную",
 	"Save": "Сохранить",
 	"Save as draft": "Сохранить черновик",
-	"Select the vacancy you want to restore": "Выберите вакансию, которую желаете восстановить",
+	"Select": "Выбрать",
+	"Select a participant": "Выберите участника",
+	"Select a recipient": "Выберите получателя",
+	"Select rate type": "Выберите тип ставки",
+	"Select start date": "Выберите дату начала",
+	"Select step": "Выберите этап",
+	"Select the step for vesting": "Выберите этап для наделения правами",
+	"Select work direction": "Выберите направление работы",
 	"Send link to email": "Отправить ссылку",
 	"Send registration link": "Продолжить регистрацию",
 	"Setting goals and working towards them": "Ставим цели и работаем над их достижением",
@@ -220,244 +344,702 @@
 	"Share price paid, USD": "Стоимость доли, USD",
 	"Shares": "Доли",
 	"Sign out": "Выйти",
+	"Since": "С",
 	"Skillful": "Средний уровень",
 	"Skills": "Навыки",
-	"Sorry, we couldn't find the page you're looking for": {
-		"": "К сожалению, мы не смогли найти страницу, которую вы ищете."
-	},
 	"Specialist": "Специалист",
+	"Speciality Created!": "Специальность создана!",
+	"Specialization": "Специализация",
+	"Specialty has been removed": "Специальность удалена",
+	"Specify the equity share to transfer": "Укажите передаваемую долю",
+	"Specify the reason for transferring the equity share": "Укажите причину передачи доли",
 	"Start and End Dates": "Период участия",
-	"Support": "Поддержка",
+	"Status": "Статус",
+	"Step that needs to be completed to receive the promised equity": "Этап, который нужно завершить, чтобы получить обещанную долю",
 	"Taking risks and making mistakes": "Рисковать и совершать ошибки",
+	"Tasks are not completed": "Задачи не выполнены",
+	"Team Compliance": "Соответствие команде",
 	"Team Member": "Участник команды",
-	"Technical officer": "Основатель и разработчик портала",
 	"Telegram": "Телеграм",
 	"Terms of use": "Правила использования",
+	"The Offer of the Lecture has been created": "Предложение лекции создано",
+	"The employee is dismissed": "Участник исключён",
 	"The main resource is your time, which you are willing to spend on participating in projects": {
-		" You can\n\t\t\t\t\t\t\t\talso provide additional information": "Главный ресурс – это ваше время, которое вы готовы потратить на участие в проектах. Вы также можете предоставить дополнительную информацию",
 		" You can also provide additional information": "Главный ресурс – это ваше время, которое вы готовы потратить на участие в проектах. Вы также можете предоставить дополнительную информацию"
 	},
 	"The maximum value cannot be less than the minimum": "Максимальное значение не может быть меньше минимального",
-	"The name of the vacancy": "Название вакансии",
+	"The name of the open position": "Название вакансии",
 	"The need for liberty": "Потребность в свободе",
+	"The position is changed": "Вакансия изменена",
+	"The post can not be empty": "Запись не может быть пустой",
 	"The power of self-identity": "Сила самоидентификации",
-	"The registration link is incorrect or has already been used": "Ссылка регистрации неправильная или была уже использована",
+	"The proposal of the lecture is updated": "Предложение лекции обновлено",
 	"There are no applications for participation at the moment": "В данный момент откликов на вакансии нет",
 	"There are no open vacancies at the moment": "В данный момент вакансий нет",
+	"This action will dismisse the member from the team and delete all their equity promises": {
+		"": "Это действие исключит участника из команды и удалит все обещания долей для него."
+	},
+	"This field is required": "Это поле обязательно",
 	"Time for work": "Доступное время",
+	"Title": "Название",
+	"To": "До",
+	"Topic": "Тема",
 	"Transactions History": "История транзакций",
-	"UI/UX designer": "Веб-дизайнер портала",
-	"Updated": "Обновлено",
+	"Transfer": "Передать",
+	"Transfer My Share": "Передать мою долю",
+	"Transfer equity": "Передать долю",
+	"Transferring equity to another team member means you are transferring part of your rights in the project": {
+		" This action cannot be undone": {
+			"": "Передача доли другому участнику команды означает, что вы передаёте часть своих прав в проекте. Это действие нельзя отменить."
+		}
+	},
+	"Type": "Тип",
+	"Unknown": "Неизвестно",
 	"Upload PDF": "Загрузить PDF",
-	"User Settings": "Настройки",
 	"Vacancies": "Вакансии",
-	"Vacancy description": "Описание вакансии",
 	"Valid until": "Актуальна до",
 	"Value": "Стоимость",
+	"Vesting": "Наделение правами",
 	"Vesting at Workflow Step": "Наделение правами при завершении этапа рабочего процесса",
+	"Video Games": "Видеоигры",
 	"Video report": "Видеоотчет",
-	"View the presentation": "Посмотреть презентацию",
 	"Visual Style": "Визуальный стиль",
+	"Visual style": "Визуальный стиль",
 	"Want to attend": "Хочу принять участие",
-	"We help Authors of new video games to assemble a team of game designers, programmers, artists,\n\t\t\t\t\t\t\t\t\t\t\t\tanimators, etc": {
-		"": "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
-	},
 	"We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc": {
 		"": "Мы помогаем Авторам новых видеоигр собрать команду геймдизайнеров, программистов, художников, аниматоров и т.д."
 	},
-	"We help game industry professionals find an interesting role for themselves in new projects": {
-		"": "Мы помогаем профессионалам игровой индустрии найти для себя интересную роль в новых проектах."
-	},
 	"Weekly commitment": "Еженедельное обязательство",
-	"Welcome to the community where games are made": {
-		"": "Добро пожаловать в сообщество, где создаются игры."
-	},
-	"What direction does this vacancy belong": "К какому направлению деятельности относится данная вакансия",
+	"What direction does this open position belong": "К какому направлению относится эта вакансия",
 	"What will happen": "Что будет",
 	"When": "Когда",
-	"Will help the service and project authors offer solutions that are interesting to you": "Поможем авторам сервиса и проекта предложить интересные вам решения",
+	"Where I received knowledge": "Где я получил знания",
 	"Workflow": "Рабочий процесс",
 	"Yes": "Да",
 	"You": "Ты",
 	"You are already registered": "Вы уже зарегистрированы",
 	"You can change it or add more ones after": "Вы сможете изменить эти данные позже",
+	"You definitely want to close the open position?": "Вы точно хотите закрыть вакансию?",
+	"You definitely want to delete the document?": "Вы точно хотите удалить документ?",
+	"You definitely want to delete this report?": "Вы точно хотите удалить этот отчёт?",
 	"You definitely want to remove?": "Вы точно хотите удалить?",
 	"You have canceled your vote": "Вы отменили свой голос",
-	"You have no projects": "У вас нет проектов",
+	"You have successfully created a new speciality": {
+		"": "Вы успешно создали новую специальность."
+	},
+	"You rejected the candidacy ": "Вы отклонили кандидатуру ",
 	"You should not be younger than 16 years": "Вы не должны быть моложе 16 лет",
-	"Your Name": "Ваше имя",
+	"You took the team": "Вы приняли команду",
 	"Your Participation": "Ваше участие",
+	"Your advice requests archive": "Архив ваших запросов на консультацию",
+	"Your current equity share in the project": "Ваша текущая доля в проекте",
 	"Your profile was successfully completed!": "Ваш профиль успешно заполнен!",
 	"Your vote has been counted": "Ваш голос засчитан",
 	"Youtube": "Youtube",
-	"action-adventure": "Приключенческий боевик",
 	"actual vacancies": "открытых вакансий",
-	"add-new-concept": "Предложить новый кноцепт игры",
-	"additionalInformation": "Дополнительная информация",
-	"adventure": "Приключения",
 	"agreeWithTermsAndPrivacy": "Присоединяясь, вы соглашаетесь с нашими Условиями обслуживания и Политикой конфиденциальности",
 	"agreeWithTermsAndPrivacy.error": "Для регистрации на сервисе вам необходимо согласиться с указанными документами",
-	"agreements": "Соглашения",
-	"app-short-description": "Сообщество профессионалов игровой индустрии, члены которого формируют команды для разработки новых игр. Хотите получить новый опыт или разработать собственную игру? Присоединяйся сейчас!",
 	"app": {
+		"user-event": {
+			"menu": {
+				"content": "Контент",
+				"members": "Участники",
+				"schedule": "Расписание"
+			}
+		},
 		"user-project": {
 			"menu": {
+				"documents": "Документы",
+				"open-positions": "Вакансии",
 				"overview": "Дневник разработки",
 				"team": "Команда",
-				"vacancies": "Вакансии",
 				"workflow": "Рабочий процесс"
 			}
 		},
 		"user": {
 			"menu": {
-				"events": "События",
-				"hub": "Обзор",
-				"lectures": "Лекции",
-				"members": "Найти таланты",
-				"mentors": "Менторы",
-				"projects": "Проекты",
-				"settings": "Настройки",
-				"vacancies": "Вакансии"
+				"settings": "Настройки"
 			}
 		}
 	},
-	"application": {
-		"experts": {
-			"name": "Менторы из геймдева"
+	"are-you-sure-you-want-to-delete-it": "Точно хотите удалить?",
+	"blog": {
+		"create-post": {
+			"modal": {
+				"cancel-text": "Отмена",
+				"ok-text": "Создать",
+				"title": "Создать пост в блоге",
+				"title-placeholder": "Заголовок",
+				"title-required": "Заголовок обязателен"
+			}
 		}
 	},
-	"are-you-sure-you-want-to-delete-it": "Точно хотите удалить?",
-	"availableTime": "Доступное время",
-	"back": "Назад",
 	"button": {
 		"edit": {
 			"label": "Изменить"
-		},
-		"save": "Сохранить"
+		}
 	},
-	"casual": "Казуальные",
 	"change": "Изменить",
+	"chat": {
+		"groups": {
+			"direct": "Личные чаты",
+			"experts": "Эксперты",
+			"offers": "Предложения"
+		},
+		"topic": {
+			"openPositionPage": "Страница вакансии"
+		}
+	},
 	"checkhealth": {
 		"description": "Добро пожаловать в хаб профессионалов из геймдев, которые собираются вместе, чтобы делать новые видео игры.",
-		"error_no_connection": "Нет связи с сервером. Попробуйте зайти позже."
+		"error_no_connection": "Нет связи с сервером. Попробуйте зайти позже.",
+		"go_to_chat": "Перейти в чат"
 	},
 	"city": "Город",
-	"city-placeholder": "Укажите город",
-	"city.placeholder": "Введите название вашего города",
 	"close": "Закрыть",
 	"common": {
-		"formError": "Ошибка. Проверьте, все ли данные введены правильно"
+		"apply": "Применить",
+		"cancel": "Отмена",
+		"delete": "Удалить",
+		"save": "Сохранить"
 	},
-	"community members": "участников сообщества",
-	"communityMember": "Участник сообщества",
 	"component": {
 		"heroStats": {
+			"actualVacancies": "актуальных вакансий",
+			"communityMembers": "участников",
+			"currentProjects": "активных проектов",
 			"qualifiedSpecialists": "готовыe инвестировать в виде своего времени"
 		},
-		"landingGameCreationSection": {
-			"joinTheProgram": "Перейти на страницу программы"
+		"indieList": {
+			"description": "Проекты, которые участники разрабатывают самостоятельно.",
+			"title": "Игровые проекты"
+		},
+		"landingFeedbackSection": {
+			"readMore": "Читать далее"
+		},
+		"landingForAuthorsSection": {
+			"assembleATeam": "Собрать команду",
+			"latestSpecialistsFromTalentPool": "Новые специалисты из Talent Pool"
+		},
+		"landingForSpecialistsSection": {
+			"joinTheTeam": "Присоединиться",
+			"latestProjects": "Последние проекты"
+		},
+		"landingWhoWeAreSection": {
+			"achiever": "Добиваться успеха",
+			"autonomy": "Самостоятельность",
+			"coreValues": "Наши ценности",
+			"exploration": "Исследование",
+			"goalOriented": "Нацеленность на результат",
+			"individuality": "Индивидуальность",
+			"player": "Игрок"
+		},
+		"myTeam": {
+			"addInvestor": "Добавить инвестора",
+			"cancel": "Отмена",
+			"findMentors": "Найти ментора",
+			"inviteMember": "Пригласить участника",
+			"makePromise": "Обещать долю",
+			"total": "Всего"
+		},
+		"stageProjectsSection": {
+			"noProjectsYet": "Пока нет проектов",
+			"onThePageOfTheProject": "На страницу проекта",
+			"projectListByStage": "Список проектов по стадиям"
+		},
+		"teamMemberCard": {
+			"aboutMe": "Обо мне",
+			"experience": "Опыт",
+			"fromTo": "от {fromDate} до {toDate} часов в неделю",
+			"iUseItInWork": "Использую в работе",
+			"notPointed": "(не указано)",
+			"professionalInfo": "Профессиональная информация",
+			"skills": "Навыки",
+			"specialization": "Специализация",
+			"summaryPortfolio": "Резюме/портфолио",
+			"title": "Карточка участника команды",
+			"whereIReceivedKnowledge": "Где я получил знания"
+		}
+	},
+	"components": {
+		"lectures": {
+			"heldLectures": {
+				"date": "Дата",
+				"pastLectures": "Прошедшие лекции"
+			},
+			"readyLectures": {
+				"date": "Дата",
+				"more": "Подробнее",
+				"scheduledLectures": "Запланированные лекции"
+			}
+		},
+		"my-project-ai-reccomend-candidates": {
+			"aiReccomendationSpecialists": "ИИ-рекомендации специалистов",
+			"noAiRecommendations": "Сейчас нет ИИ-рекомендаций по специалистам."
+		},
+		"my-project-candidates": {
+			"noApplicationsForParticipation": "На данный момент заявок на участие нет",
+			"responsesOnVacancies": "Отклики на вакансии"
+		},
+		"my-project-reports": {
+			"add-report": "Добавить отчёт",
+			"at-the-moment-reports-are-not-provided": "На данный момент отчёты не предоставляются",
+			"change": "Изменить",
+			"no": "Нет",
+			"report": "Отчёт",
+			"report-deleted": "Отчёт удалён",
+			"report-from": "Отчёт от",
+			"reports": "Отчёты",
+			"yes": "Да"
+		},
+		"profile-forms": {
+			"connect": {
+				"card": {
+					"application": {
+						"experts": {
+							"name": "Менторы из геймдева"
+						}
+					},
+					"description": "Подключение вашего Телеграм-аккаунта позволит запрашивать советы у менторов через приложение",
+					"disconnect": "Отключить",
+					"title": "Подключение Telegram",
+					"yourTelegramAccountIsConnected": "Ваш Telegram-аккаунт подключён"
+				}
+			},
+			"general": {
+				"card": {
+					"account": "Аккаунт",
+					"city": "Город",
+					"country": "Страна",
+					"location": "Местоположение",
+					"save": "Сохранить"
+				},
+				"field": {
+					"email": {
+						"title": "Email"
+					},
+					"language": "Язык платформы",
+					"tgNickname": {
+						"extra": "Укажите без символа @",
+						"title": "Никнейм в Telegram"
+					}
+				}
+			},
+			"mentorship": {
+				"card": {
+					"description": "Включите, если хотите, чтобы другие участники сообщества к вам обращались за консультациями.",
+					"save": "Сохранить",
+					"title": "Менторство"
+				}
+			}
 		}
 	},
 	"concept-link": "Ссылка на концепт",
-	"concept-list": "Список концептов игр",
 	"confirmUserData": "Я подтверждаю достоверность введенной информации",
 	"confirmUserData.error": "Вам следует подтвердить достоверность введенной информации",
-	"copyright": "GDHub, Все права защищены.",
+	"contacts": {
+		"email": "Email",
+		"linkedin": "Linkedin",
+		"preTitle": "Контакты",
+		"subTitle": "Присоединяйтесь и станьте частью новой эры игровой индустрии!",
+		"telegram": "Telegram",
+		"title": "Связаться с нами",
+		"youtube": "Youtube"
+	},
 	"country": "Страна",
 	"country.placeholder": "Выберите страну",
+	"course-card": {
+		"details-button": "Подробнее"
+	},
+	"course": {
+		"authorPrefix": "Курс от",
+		"backToCourses": "Назад к курсам",
+		"difficulty": {
+			"advanced": "Продвинутый"
+		},
+		"enroll": "Записаться на курс",
+		"language": {
+			"en": "Английский",
+			"ru": "Русский"
+		},
+		"lesson": {
+			"noDescription": "Описание не указано."
+		},
+		"meta": {
+			"certificate": "Сертификат",
+			"certificateValue": "По завершении курса",
+			"difficulty": "Сложность",
+			"language": "Язык",
+			"lessons": "Уроков",
+			"startsAt": "Начало"
+		},
+		"notFound": {
+			"description": "Такого курса не существует или он больше недоступен.",
+			"title": "Курс не найден"
+		},
+		"priceFree": "Бесплатно",
+		"readMore": "Нажмите, чтобы прочитать полностью",
+		"sidebar": {
+			"assignment": "Задания",
+			"assignmentBody": "Планируйте уделять минимум 1–2 часа в день на просмотр видеолекций, участие в сессиях вопросов и ответов и выполнение заданий.",
+			"materials": "Материалы",
+			"materialsBody": "Рекомендуемое оборудование и программы для участия будут указаны в приветственных материалах после записи на курс.",
+			"prerequisites": "Требования",
+			"prerequisitesBody": "Знакомство с интерфейсом выбранного инструмента и базовыми понятиями. Желательно понимание основ теории по теме курса."
+		},
+		"teachers": {
+			"label": "Преподаватели"
+		},
+		"toc": "Содержание курса",
+		"type": {
+			"free": "Бесплатный",
+			"paid": "Платный"
+		}
+	},
+	"courses": {
+		"createCourse": "Создать курс",
+		"list": {
+			"noOpenCourses": "На данный момент открытых курсов нет",
+			"validUntil": "Начало"
+		},
+		"myCourses": "Мои курсы",
+		"myCoursesDescription": "Курсы, где вы автор, студент или преподаватель"
+	},
 	"current projects": "текущих проектов",
 	"cvLink": "Ссылка на резюме/портфолио",
 	"cvLink.plachehloder": "Ссылка на Linkedin, Artstation или другой сервис",
-	"dance": "Танцевальные, ритмичные",
+	"date": "Дата",
 	"days": "дней",
-	"demoday": {
-		"text1": {
-			"part1": "Присоединяйтесь к нашему",
-			"part2": "сообществу"
-		},
-		"text2": "Регистрируйтесь на gdhub.io — указывайте свою специальность, откликайтесь на вакансии для инди-проектов или запускайте свой.",
-		"text3": "Присоединяйтесь к нам в чате сообщества, общайтесь и узнавайте последние новости проектов.",
-		"text4": "Связаться с нами"
-	},
+	"delete": "Удалить",
 	"devlog": {
-		"button": {
-			"add-yt-video": "Добавить видео из Youtube"
+		"empty": {
+			"description": "Расскажите о ходе разработки проекта {projectName}",
+			"description2": " поможет привлечь внимание к проекту и получить обратную связь.",
+			"title": "Ваш дневник разработки пуст"
 		}
 	},
 	"devlogwall": {
-		"postform": {
+		"form": {
 			"add-video": "Добавить видео"
 		}
 	},
-	"difficultyLevel": "Уровень сложности",
 	"education": "Учебные заведения, где вы получили знания по этой специальности",
 	"education.plachehloder": "Например:\n2000-2010 гг., Гимназия № 145; \n2011, Курс на Udemy «Как стать тестировщиком»",
 	"email": "Электронная почта",
 	"equity": {
+		"investmentReserve": {
+			"description": "Доли, зарезервированные для будущих инвесторов (можно изменить)"
+		},
+		"mentorsFund": {
+			"description": "Доля для вознаграждения менторов проекта при его продаже или релизе"
+		},
 		"platform": {
 			"description": "Платформа: комиссия за использование платформы"
 		},
-		"title": "Распределение долей"
+		"team": {
+			"description": "Доли участников команды (закреплённые или обещанные при достижении цели)"
+		},
+		"title": "Распределение долей",
+		"unallocated": {
+			"description": "Свободные доли для распределения между новыми участниками"
+		}
 	},
 	"equityPromise": {
-		"confirm": "Я подтверждаю, что обсудил условия обещания доли с участником, и он согласился с этими условиями."
+		"confirm": "Я подтверждаю, что обсудил условия обещания доли с участником, и он согласился с этими условиями.",
+		"confirm.error": "Необходимо подтвердить достоверность введённых данных",
+		"delete": {
+			"confirm": "Я подтверждаю, что обсудил удаление этого обещания доли с участником.",
+			"confirm.error": "Необходимо подтвердить, что участник уведомлён об удалении"
+		}
 	},
+	"error_sending_email": "Ошибка при отправке письма. Попробуйте ещё раз.",
 	"event": {
 		"about": "О мероприятии",
 		"bookNow": "Зарегистрироваться на мероприятие",
+		"button": {
+			"publicPage": "Перейти на страницу",
+			"publish": "Опубликовать",
+			"unpublish": "Снять с публикации"
+		},
+		"child": "Дочернее",
+		"content": {
+			"hint": "Опишите мероприятие подробно.",
+			"placeholder": "Начните вводить текст...",
+			"saveButton": "Сохранить",
+			"saveError": "Не удалось сохранить контент",
+			"saved": "Контент успешно сохранён",
+			"title": "Описание мероприятия"
+		},
+		"createLocaleVersion": {
+			"error": "Ошибка при создании языковой версии",
+			"success": "Языковая версия создана"
+		},
 		"dates": "Дата",
-		"format": "Формат",
+		"delete": "Удалить",
+		"delete.confirm": "Вы уверены, что хотите удалить это мероприятие?",
+		"delete.error": "Ошибка при удалении мероприятия",
+		"delete.success": "Мероприятие удалено",
+		"edit": "Редактировать",
+		"edit.success": "Мероприятие успешно изменено",
+		"format": {
+			"conference": "Конференция",
+			"gamejam": "Геймджем",
+			"gamelab": "Game Lab",
+			"meetup": "Митап",
+			"workshop": "Воркшоп"
+		},
+		"generateSlug": "Сгенерировать slug",
+		"generateSlug.cancel": "Отмена",
+		"generateSlug.confirm": "Вы уверены, что хотите сгенерировать slug?",
+		"generateSlug.error": "Ошибка при генерации slug",
+		"generateSlug.success": "Slug сгенерирован",
+		"loginOrRegister": "Для регистрации на мероприятие сначала войдите или зарегистрируйтесь на платформе",
+		"manage": "Управление",
+		"members": {
+			"actions": "Действия",
+			"actions.add": "Добавить участников",
+			"actions.batchAssign": "Назначить проект / куратора",
+			"actions.sendMessage": "Отправить сообщение",
+			"add": {
+				"error": "Не удалось добавить участников",
+				"skipped": "{count} пользовател(ь/я/ей) уже были участниками и были пропущены",
+				"submit": "Добавить",
+				"success": "Добавлено участников: {count}",
+				"title": "Добавить участников",
+				"users": {
+					"empty": "Пользователи не найдены",
+					"placeholder": "Поиск пользователя по имени или email",
+					"required": "Выберите хотя бы одного пользователя"
+				}
+			},
+			"batch": {
+				"empty": "Выберите проект или ментора, чтобы применить изменения",
+				"error": "Не удалось обновить участников",
+				"mentors": "Менторы",
+				"mentors.empty": "Начните вводить для поиска",
+				"mentors.hint": "Выберите одного или нескольких пользователей по их специальности. Оставьте пустым — менторы будут очищены только при явной очистке.",
+				"mentors.placeholder": "Введите имя или специальность...",
+				"noCommon": "У всех выбранных участников нет общего проекта. Вы всё равно можете назначить менторов.",
+				"noSelected": "Выберите хотя бы одного участника.",
+				"project": "Проект",
+				"project.placeholder": "Выберите проект (необязательно)",
+				"subtitle": "Изменения применяются к выбранным участникам: {count}. В списке проектов только те проекты, где все выбранные участники были членами команды. Выбор менторов ЗАМЕНЯЕТ существующих менторов у каждого выбранного участника.",
+				"success": "Выбранные участники успешно обновлены",
+				"title": "Назначить проект / менторов"
+			},
+			"certificate": "Сертификат",
+			"certificate.certificate": "Сертификат",
+			"certificate.create": "Создать сертификат",
+			"certificate.create.error": "Не удалось создать сертификат",
+			"certificate.create.success": "Сертификат создан",
+			"certificate.delete": "Удалить сертификат",
+			"certificate.delete.confirm": "Удалить сертификат?",
+			"certificate.delete.confirmDesc": "Документ также будет удалён из Documenso.",
+			"certificate.delete.error": "Не удалось удалить сертификат",
+			"certificate.delete.success": "Сертификат удалён",
+			"certificate.distribute": "Отправить на подпись",
+			"certificate.distribute.confirm": "Отправить на подпись?",
+			"certificate.distribute.confirmDesc": "Подписанты получат письмо от Documenso. После подписания сертификат будет доступен участнику",
+			"certificate.distribute.error": "Не удалось отправить на подпись",
+			"certificate.distribute.send": "Отправить",
+			"certificate.distribute.success": "Отправлено на подпись",
+			"certificate.download": "Скачать PDF",
+			"certificate.edit": "Редактировать",
+			"certificate.view": "Открыть в Documenso",
+			"createdAt": "Дата регистрации",
+			"description": "Список пользователей, зарегистрированных на это мероприятие.",
+			"edit": {
+				"email": "Email",
+				"error": "Не удалось обновить участника",
+				"mentors": "Менторы",
+				"mentors.empty": "Начните вводить для поиска",
+				"mentors.hint": "Выберите одного или нескольких пользователей по их специальности",
+				"mentors.placeholder": "Введите имя или специальность...",
+				"name": "Имя",
+				"period": "Период",
+				"position": "Должность",
+				"present": "по настоящее время",
+				"project": "Проект",
+				"project.empty": "Этот пользователь не состоит ни в одной команде",
+				"project.hint": "Показаны только проекты, где этот пользователь был участником команды",
+				"project.placeholder": "Выберите проект (необязательно)",
+				"success": "Участник успешно обновлён",
+				"title": "Изменить участника"
+			},
+			"mentors": "Менторы",
+			"message": {
+				"empty": "Введите сообщение перед отправкой.",
+				"error": "Не удалось отправить сообщение. Попробуйте позже.",
+				"noSelected": "Выберите хотя бы одного участника.",
+				"placeholder": "Введите сообщение для участников мероприятия...",
+				"subtitle": "Ваше сообщение будет отправлено всем выбранным участникам через уведомления.",
+				"success": "Сообщение успешно отправлено",
+				"title": "Отправить сообщение участникам"
+			},
+			"present": "по настоящее время",
+			"project": "Проект",
+			"status": "Статус",
+			"title": "Участники мероприятия",
+			"user": "Пользователь"
+		},
 		"modal": {
 			"cancel": "Отмена",
+			"conference": "Конференция",
 			"create": "Сохранить как черновик",
-			"description": {
-				"label": "Описание",
-				"placeholder": "Описание события"
-			},
-			"format": {
-				"label": "Формат проведения"
-			},
+			"danger": "Удалить мероприятие",
+			"danger.button": "Удалить",
+			"danger.description": "Вы уверены, что хотите удалить это мероприятие?",
+			"danger.description2": "Это действие нельзя отменить.",
+			"danger.description3": "Будут удалены все данные мероприятия, и восстановить их будет невозможно.",
+			"direction": "Направление",
+			"direction.placeholder": "Выберите направление",
+			"direction.required": "Укажите направление",
+			"edit": "Изменить мероприятие",
+			"error": "Ошибка при создании мероприятия",
+			"event": "Мероприятие",
+			"format": "Формат",
+			"format.required": "Укажите формат",
 			"gamejam": "Геймджем",
 			"gamelab": "Геймлаб",
-			"image": {
-				"add": "Добавить превью",
-				"hint": "Нажмите или перетащите картинку сюда. Формат JPG, PNG. Соотношение сторон 4:5"
-			},
+			"image": "Изображение",
+			"image.add": "Добавить превью",
+			"image.deletePopover": "Удалить изображение",
+			"image.hint": "Нажмите или перетащите картинку сюда. Формат JPG, PNG. Соотношение сторон 4:5",
 			"language": "Язык мероприятия",
-			"language.any": "Любой",
+			"language.required": "Укажите язык",
 			"link": "Ссылка на страницу регистрации",
-			"location": "Адрес или место проведения",
-			"schedule": "Расписание",
-			"schedule.add": "Добавить",
-			"schedule.hint": "Вы можете добавить один или более элементов расписания. Каждому элементу вы можете указать несколько спикеров.",
+			"link.help": "Ссылка на внешнюю страницу регистрации на мероприятие. Оставьте пустым, если хотите использовать внутреннюю регистрацию.",
+			"link.placeholder": "https://",
+			"meetup": "Митап",
+			"save": "Сохранить",
+			"schedule": {
+				"add": "Добавить",
+				"hint": "Вы можете добавить один или более элементов расписания. Каждому элементу вы можете указать несколько спикеров."
+			},
 			"shortDescription": {
 				"label": "Краткое описание",
 				"placeholder": "Краткое описание или фраза"
 			},
+			"success": "Мероприятие успешно создано",
 			"title": "Новый {eventType} ",
 			"title.label": "Заголовок",
-			"title.placeholder": "Заголовок события"
+			"title.placeholder": "Заголовок события",
+			"title.required": "Укажите название",
+			"workshop": "Воркшоп"
 		},
+		"newLocale": "Новая языковая версия",
+		"newLocaleVersion": {
+			"cancel": "Отмена",
+			"confirm": "Новая языковая версия",
+			"description": "Выберите язык для новой языковой версии",
+			"selectLanguage": "Выберите язык"
+		},
+		"noDates": "Необходимо задать расписание",
+		"noEvents": "Мероприятия не найдены",
 		"open": "Перейти",
+		"parent": "Родительское",
+		"publish": {
+			"error": "Ошибка при публикации мероприятия",
+			"success": "Мероприятие опубликовано"
+		},
 		"readMore": "Кликни, чтобы узнать больше",
 		"register": "Регистрация",
+		"register.error": "Не удалось зарегистрироваться на мероприятие. Попробуйте позже.",
+		"register.success.description": "Вы успешно зарегистрировались на мероприятие.",
+		"register.success.title": "Регистрация прошла успешно",
+		"restore": "Восстановить",
+		"restore.error": "Ошибка при восстановлении мероприятия",
+		"restore.success": "Мероприятие восстановлено",
 		"schedule": "Расписание мероприятия",
 		"schedule.dates": "Время начала и окончания (местное время)",
+		"schedule.dates.required": "Укажите даты",
 		"schedule.description": "Описание",
 		"schedule.description.placeholder": "Описание элемента",
 		"schedule.direction": "Направление",
-		"schedule.end": "Дата окончания",
+		"schedule.direction.placeholder": "Выберите направление",
+		"schedule.direction.required": "Укажите направление",
 		"schedule.format": "Формат",
+		"schedule.format.required": "Укажите формат",
+		"schedule.item.title": "Без названия",
 		"schedule.language": "Рабочий язык",
+		"schedule.language.required": "Укажите язык",
 		"schedule.link": "Ссылка",
+		"schedule.link.placeholder": "https://",
+		"schedule.modal.error": "Ошибка при сохранении пункта расписания",
 		"schedule.modal.title": "Элемент расписания",
 		"schedule.speakers": "Спикеры",
-		"schedule.start": "Дата начала",
+		"schedule.speakers.placeholder": "Выберите спикеров",
 		"schedule.title": "Заголовок",
 		"schedule.title.placeholder": "Заголовок элемента",
-		"type": "Тип",
-		"type.free": "Бесплатное",
-		"type.paid": "Платное"
+		"settings": {
+			"certification": {
+				"config": {
+					"save": {
+						"error": "Не удалось сохранить настройки организатора",
+						"success": "Настройки организатора сохранены"
+					}
+				},
+				"description": "Если включено, вы сможете выдавать сертификаты участникам мероприятия со страницы «Участники».",
+				"organizer": {
+					"description": "Отображается в левом блоке подписи на сертификате. Оставьте пустым, чтобы использовать имя из профиля создателя мероприятия и его первую специальность.",
+					"name": {
+						"label": "Имя"
+					},
+					"reset": "Сбросить по умолчанию",
+					"save": "Сохранить",
+					"title": "Подписант от организатора",
+					"title.label": "Должность"
+				},
+				"preview": "Предпросмотр PDF",
+				"preview.download": "Открыть в новой вкладке",
+				"preview.fallback": "Ваш браузер не может отобразить PDF на странице.",
+				"preview.title": "Предпросмотр сертификата",
+				"title": "Сертификация",
+				"toggle": {
+					"error": "Не удалось обновить настройку сертификации"
+				}
+			},
+			"danger": {
+				"archive": "Архивировать мероприятие",
+				"archive.button": "В архив",
+				"archive.cancel": "Нет",
+				"archive.confirm": "Вы уверены, что хотите архивировать это мероприятие?",
+				"archive.description": "Вы уверены, что хотите архивировать это мероприятие?",
+				"archive.description2": "Мероприятие переместится в архив и будет скрыто от публичного доступа.",
+				"archive.success": "Мероприятие успешно архивировано",
+				"delete": {
+					"button": "Удалить",
+					"cancel": "Нет",
+					"description": "Вы уверены, что хотите удалить это мероприятие?",
+					"success": "Мероприятие успешно удалено"
+				},
+				"restore": "Восстановить мероприятие",
+				"restore.button": "Восстановить",
+				"restore.cancel": "Нет",
+				"restore.description": "Вы уверены, что хотите восстановить это мероприятие?",
+				"restore.description2": "Мероприятие вернётся в статус черновика и будет видно в вашем списке мероприятий.",
+				"restore.success": "Мероприятие успешно восстановлено"
+			},
+			"menu": {
+				"certification": "Сертификация",
+				"danger": "Опасная зона",
+				"general": "Основное"
+			}
+		},
+		"status": {
+			"archived": "В архиве",
+			"closed": "Закрыто",
+			"draft": "Черновик",
+			"published": "Опубликовано {publishedAt}"
+		},
+		"type": {
+			"free": "Бесплатное",
+			"paid": "Платное"
+		},
+		"unpublish": "Снять с публикации",
+		"unpublish.error": "Ошибка при снятии мероприятия с публикации",
+		"unpublish.success": "Мероприятие снято с публикации",
+		"view": "Просмотр"
 	},
 	"events": {
 		"banner": {
@@ -472,29 +1054,26 @@
 	"expert-card": {
 		"details-button": "Подробнее"
 	},
+	"expert-requests": {
+		"myRequests": "Запросы на консультацию"
+	},
 	"experts": {
 		"page": {
 			"description": "На этой странице вы найдете экспертов, готовых ответить на ваши вопросы. Нажмите на карточку эксперта, чтобы связаться с ним",
-			"filter": {
-				"language": {
-					"en": "Англоговорящие эксперты",
-					"ru": "Русскоговорящие эксперты"
-				}
-			},
+			"filter": "Фильтр по направлению",
+			"filter.language": "Язык ответа",
+			"filter.language.en": "Англоговорящие эксперты",
+			"filter.language.ru": "Русскоговорящие эксперты",
+			"noResults": "По выбранному фильтру эксперты не найдены.",
 			"title": "Эксперты"
 		}
 	},
-	"fairy": "Сказочный",
-	"fantasy": "Фэнтэзи",
-	"fighting": "Борьба, сражения",
 	"firstName": "Имя",
-	"firstName.plachehloder": "Максим",
 	"form": {
 		"difficulty": {
 			"label": "Сложность игры, которую вы хотите разработать"
 		},
 		"error": "Ошибка. Проверьте, все ли данные введены правильно",
-		"error.required.text": "Это поле обязательно к заполнению",
 		"genres": {
 			"label": "Жанры игр, в разработке которых вы хотите поучаствовать"
 		},
@@ -509,34 +1088,80 @@
 			"label": "Игровой сеттинг, с которыми вы хотите работать"
 		}
 	},
-	"fps": "Шутер от первого лица (FPS)",
 	"fromTo": "с {fromDate} по {toDate} часов в неделю",
 	"fromToWithDates": "с {fromDate} по {toDate}",
-	"hard-core": "Сложные",
-	"historic": "Исторический",
 	"hours": "часов",
 	"hours a week": "часов в неделю",
+	"hours-a-week": "часов в неделю",
 	"hours/week": "часов/неделю",
 	"hub": {
-		"lectures": {
-			"text1": {
-				"part1": "Часто при решении тех или иных задач возникает множество вопросов. Этот раздел поможет вам найти ответы на них у других участников GDHub. Создайте заявку на интересующую вас тему и, если она актуальна не только для вас, мы постараемся ее выполнить.",
-				"part2": "А для тех, кто хочет поделиться своим опытом с другими, здесь вы найдете возможность сделать это. Следите за темами, которые интересуют других участников, и предложите себя в качестве лектора.",
-				"part3": "Давайте делиться знаниями, набираться мудрости ;)"
-			}
+		"activity-feed": {
+			"title": "Записи дневников разработки проектов"
+		},
+		"hot-vacancies": {
+			"title": "Вакансии"
+		},
+		"latest-events": {
+			"ongoing": "Идёт сейчас",
+			"starts": "Начало",
+			"title": "Ближайшие мероприятия",
+			"until": "до"
+		},
+		"members": {
+			"all": "Все",
+			"clear": "Очистить",
+			"direction": "Направление",
+			"done": "Готово",
+			"level": "Опыт",
+			"noResults": "По вашим фильтрам специалисты не найдены.",
+			"noResultsFor": "По запросу «{query}» специалисты не найдены.",
+			"searchPlaceholder": "Поиск по имени, роли или навыку…",
+			"subtitle": "{count} специалистов открыты к сотрудничеству"
 		},
 		"menu": {
-			"talentPool": "Кадровый резерв"
+			"administration": "Администрирование",
+			"communityChat": "Чат сообщества",
+			"courses": "Курсы",
+			"documentation": "Документация",
+			"events": "Мероприятия",
+			"experts": "Эксперты",
+			"home": "Главная",
+			"jobs": "Вакансии",
+			"my-events": "Мои мероприятия",
+			"overview": "Обзор",
+			"profile": "Профиль",
+			"projects": "Проекты",
+			"settings": "Настройки",
+			"signOut": "Выйти",
+			"talentPool": "Кадровый резерв",
+			"website": "Сайт"
 		},
-		"text1": "Привет, {userName} \uD83D\uDC4B",
-		"text1.part1": "Сегодня отличный день, чтобы поработать над игрой",
-		"text1.part2": "И не забудьте присоединиться к чату сообщества, используя"
+		"new-project": "Новый проект",
+		"text1": {
+			"part1": "Сегодня отличный день, чтобы поработать над игрой",
+			"part2": "И не забудьте присоединиться к чату сообщества, используя",
+			"part3": "Завершить регистрацию"
+		},
+		"view-all": "Смотреть все",
+		"welcome-subtitle": "Отличный день для разработки игр",
+		"welcome-title": "С возвращением, {userName} \uD83D\uDC4B"
 	},
-	"hyper-casual": "Гиперказуальные",
-	"in the form of short pitches": "в виде коротких питчей",
 	"interest": "Основной интерес",
 	"interests": "Интересы",
 	"interestsAndPreferencesDescription": "Эта информация поможет нам точнее формировать для вас рекомендации по проектам, кандидатам на проекты.",
+	"invalid_grant_error": "Недействительная авторизация. Войдите ещё раз.",
+	"inviteMemberModal": {
+		"cancel": "Отмена",
+		"email": "Email",
+		"position": "Должность",
+		"sendInvitation": "Отправить приглашение",
+		"startDate": "Дата начала",
+		"title": "Пригласить участника команды",
+		"workDirection": "Направление работы"
+	},
+	"job-card": {
+		"details-button": "Подробнее"
+	},
 	"landing": {
 		"about": {
 			"abovetitle": "Узнать о нас",
@@ -552,6 +1177,11 @@
 			"text2": "Начинай разработку игры не имея финансирования на команду",
 			"text3": "Каждый Автор может выбрать формат работы на нашем портале: в рамках инкубационной программы Gamelab или работать самостоятельно в своем темпе.",
 			"title": "ДЛЯ АВТОРОВ"
+		},
+		"devlogs": {
+			"description": "Следите за ходом разработки игр на нашей платформе. Разработчики регулярно делятся новостями своих проектов.",
+			"pretitle": "Активная разработка",
+			"title": "Свежие дневники разработки"
 		},
 		"feedback": {
 			"description0": "Геймдизайнер",
@@ -586,10 +1216,24 @@
 			"title7": "Сергей",
 			"title8": "Алексей"
 		},
-		"gameCreation": {
-			"pretitle": "Бакалаврская программа Game Creation от EHU",
-			"subtitle": "Совместно с Европейским гуманитарным университетом мы разработали бакалаврскую программу для будущих создателей игр с акцентом на авторство, искусство и реальные проекты во время обучения, которая предоставляет диплом бакалавра европейского образца.",
-			"title": "Создайте своё будущее в индустрии ВИДЕОИГР"
+		"hero": {
+			"getStartedForFree": "Начать бесплатно",
+			"noCreditCardRequired": "Банковская карта не требуется",
+			"text1": "Мы помогаем авторам новых видеоигр собрать команду гейм-дизайнеров, программистов, художников, аниматоров и других специалистов.",
+			"text2": "Мы помогаем специалистам игровой индустрии найти интересную роль, чтобы вложить своё время в разработку новых видеоигр.",
+			"title": "Платформа сообщества для создателей видеоигр"
+		},
+		"menu": {
+			"aboutUs": "О нас",
+			"contacts": "Контакты",
+			"forAuthors": "Авторам",
+			"forSpecialists": "Специалистам",
+			"goToApp": "Перейти в приложение",
+			"logIn": "Войти"
+		},
+		"seo": {
+			"description": "Game Developers Hub — платформа для разработчиков игр и специалистов игровой индустрии.",
+			"title": "Game Developers Hub"
 		},
 		"specialist": {
 			"pretitle": "в чем наши приемущества",
@@ -599,15 +1243,111 @@
 		}
 	},
 	"lastName": "Фамилия",
-	"lastName.plachehloder": "Пень",
-	"mid-core": "Средней сложности",
-	"military": "Военный",
-	"mmorpg": "Многопользовательская ролевая онлайн игра (MMORPG)",
+	"lecture": {
+		"areYouSure": "Вы уверены?",
+		"becomeALecturer": "Стать преподавателем",
+		"change": "Изменить",
+		"communityMember": "Участник сообщества",
+		"followThisLinkBeforeTheLecture": "Перед началом лекции перейдите по этой ссылке",
+		"lecturer": "Лектор",
+		"linkToStream": "Ссылка на трансляцию",
+		"markLecturesThatYouWouldBeInterestedInAttending": "Отметьте лекции, которые вам было бы интересно посетить.",
+		"myProposal": "Моё предложение",
+		"no": "Нет",
+		"notYet": "Пока нет, ждём, когда наберётся больше участников",
+		"online": "онлайн",
+		"participants": "участников",
+		"relevant": "Актуально",
+		"relevantFor": "актуально для",
+		"requestANewLecture": "Запросить новую лекцию",
+		"requestsForLectures": "Запросы на лекции",
+		"topic": "Тема лекции",
+		"wantToAttend": "Хочу посетить",
+		"whatWillHappen": "Что будет",
+		"when": "Когда",
+		"yes": "Да"
+	},
+	"lecturer": "Лектор",
+	"mainFooter": {
+		"appShortDescription": "Сообщество профессионалов игровой индустрии, участники которого объединяются в команды для разработки новых игр. Хотите получить новый опыт или разработать собственную игру? Присоединяйтесь!",
+		"blog": "Блог",
+		"cookiePolicy": "Политика использования cookie",
+		"copyright": "Game Developers Hub. Все права защищены.",
+		"documentation": "Документация",
+		"events": "Мероприятия",
+		"gameIndustryGuide": "Гид по игровой индустрии",
+		"gameProjects": "Видеоигры",
+		"legal": "Правовая информация",
+		"legalDetails": "Реквизиты",
+		"navAria": "Навигация в подвале сайта",
+		"platform": "Платформа",
+		"privacyPolicy": "Политика конфиденциальности",
+		"refundPolicy": "Политика возврата средств",
+		"termsOfUse": "Условия использования",
+		"vacancies": "Вакансии"
+	},
+	"mainHeader": {
+		"goToApp": "Перейти в приложение",
+		"logIn": "Войти",
+		"logout": "Выйти"
+	},
+	"maximum": "максимум",
+	"minimum": "минимум",
 	"modal": {
 		"confirm": {
+			"deleteInvestor": "Вы уверены, что хотите удалить информацию об инвесторе {name}?",
+			"editInvestor": "Я подтверждаю, что изменение в продаже доли уже согласовано между автором и инвестором",
 			"investor": "Я подтверждаю, что продажа доли между автором и инвестором уже завершена."
 		},
+		"create-course": {
+			"cancel": "Отмена",
+			"error": "Не удалось создать курс. Попробуйте ещё раз.",
+			"field": {
+				"agreedToTerms": "Я согласен с",
+				"agreedToTerms.error": "Необходимо согласиться с условиями платформы",
+				"agreedToTerms.link": "Соглашением о курсах и политикой выплат",
+				"authorRate": "Ваша ставка преподавания (EUR/час)",
+				"authorRate.hint": "Используется для расчёта безубыточной цены курса",
+				"direction": "Направление",
+				"direction.placeholder": "Выберите направление",
+				"language": "Язык",
+				"name": "Название курса",
+				"name.placeholder": "Например: 3D-моделирование стилизованных персонажей",
+				"shortLine": "Краткое описание",
+				"shortLine.placeholder": "Одно предложение о том, чему научатся студенты",
+				"slug": "Slug",
+				"slug.hint": "Генерируется из названия · позже можно изменить"
+			},
+			"ok": "Создать курс",
+			"subtitle": "Мы создадим черновик, который вы сможете доработать в настройках",
+			"success": "Курс создан как черновик",
+			"title": "Новый курс"
+		},
+		"create-document": {
+			"cancel-text": "Отмена",
+			"field": {
+				"description": {
+					"label": "Краткое описание",
+					"placeholder": "Этот документ о..."
+				},
+				"link": {
+					"label": "Ссылка на документ",
+					"placeholder": "https://example.com/document.pdf"
+				},
+				"name": {
+					"label": "Название",
+					"placeholder": "Название документа"
+				},
+				"type": {
+					"label": "Тип",
+					"placeholder": "Выберите тип документа"
+				}
+			},
+			"ok-text": "Добавить",
+			"title": "Добавить новый документ команды"
+		},
 		"create-project": {
+			"cancel-text": "Отмена",
 			"field": {
 				"agree": {
 					"error": "Необходимо потдвердить",
@@ -621,112 +1361,187 @@
 					"label": "Название"
 				}
 			},
+			"ok-text": "Создать",
 			"title": "Создать новый игровой проект"
+		},
+		"dev-log-post": {
+			"add-post": "Добавить запись",
+			"cancel": "Отмена",
+			"delete-confirm": "Вы уверены, что хотите удалить этот отчёт?",
+			"delete-confirm-no": "Нет",
+			"delete-confirm-yes": "Да",
+			"report-deleted": "Отчёт удалён",
+			"save": "Сохранить"
 		},
 		"devlogwall": {
 			"newpost": {
 				"label": "Что нового на проекте?",
 				"postBtn": {
 					"label": "Опубликовать"
-				}
+				},
+				"required": "Это поле обязательно"
 			}
 		},
+		"edit-devlog-post": {
+			"cancel": "Отмена",
+			"no": "Нет",
+			"save": "Сохранить",
+			"title": "Редактировать запись",
+			"yes": "Да"
+		},
 		"expert": {
+			"cancelRequest": "Отменить запрос",
+			"expertCard": "Карточка эксперта",
+			"requestSent": "Ваш запрос отправлен",
 			"sendRequest": "Отправить запрос"
 		},
-		"lectureRequest": {
-			"lecture-created-success": "Добавлен новый запрос на лекцию",
-			"lecture-name": "Тема лекции",
-			"lecture-updated-success": "Лекция изменена",
-			"wishes": "Пожелания к содержанию лекции",
-			"wishes-help": "Итак, что вы хотите узнать на этой лекции?",
-			"work-direction": "Какому направлению принадлежит эта лекция?"
+		"investor": {
+			"dealDate": "Дата сделки",
+			"formDescription": "Форма для добавления информации об инвесторах, которые вложили в ваш проект финансовые средства (купили долю)",
+			"investorName": "Наименование инвестора",
+			"share": "Доля (%)",
+			"sharePricePaid": "Уплаченная цена доли, USD"
 		},
-		"lecturerRequest": {
-			"createSuccess": "Ваше предложение о проведении лекции отправлено",
-			"curriculum": "План лекции. О чем вы планируете говорить?",
-			"direction": "Какому направлению принадлежит эта лекция?",
-			"linkToStream": "Ссылка на трансляцию",
-			"linkToStream.extra.part1": "Создайте ссылку для трансляции в",
-			"linkToStream.extra.part2": "(или на другом сервисе) и вставьте в это поле.",
-			"title": "Я хочу прочитать эту лекцию",
-			"updateSuccess": "Ваше предложение обновлено",
-			"wishes": "Пожелания к содержанию лекции"
+		"lectureDetails": {
+			"close": "Закрыть",
+			"lectureInformation": "Информация о лекции",
+			"lectureProposalInformation": "Информация о предложении лекции",
+			"lectureRequestInformation": "Информация о запросе на лекцию",
+			"registrationForTheLecture": "Регистрация на лекцию",
+			"youAreAlreadyRegistered": "Вы уже зарегистрированы"
+		},
+		"lectureRequest": {
+			"changeLectureRequest": "Изменить запрос на лекцию",
+			"close": "Закрыть",
+			"directionId": {
+				"placeholder": "Например: гейм-дизайн"
+			},
+			"lectureCreatedSuccess": "Добавлен новый запрос на лекцию",
+			"lectureTheme": "Тема лекции",
+			"lectureUpdatedSuccess": "Лекция изменена",
+			"name": {
+				"placeholder": "Например: как анализировать проект"
+			},
+			"publish": "Опубликовать",
+			"requestNewLecture": "Запросить новую лекцию",
+			"save": "Сохранить",
+			"wishes": "Пожелания к содержанию лекции",
+			"wishes.placeholder": "Например: хочу узнать, как проводить SWOT-анализ и зачем он нужен",
+			"wishesHelp": "Что вы хотите узнать на этой лекции?",
+			"workDirection": "К какому направлению относится эта лекция"
+		},
+		"lecturedetails": {
+			"communityMember": "Участник сообщества",
+			"contentsOfTheLecture": "Содержание лекции",
+			"lecturer": "Лектор",
+			"noVideoYet": "Видео пока нет",
+			"passed": "Прошла",
+			"theAuthorOfTheRequestIsInterested": "Автор запроса заинтересован",
+			"theLecturerOffers": "Лектор предлагает",
+			"theme": "Тема"
 		},
 		"memberEquityPromise": {
 			"create": {
 				"title": "Новое обещание для {memberName}"
-			}
-		},
-		"project": {
-			"audition": {
-				"label": "Аудитория"
 			},
-			"conceptLink": {
-				"label": "Ссылка на концептуальный документ (описание идеи)"
+			"delete": {
+				"description": "Вы уверены, что хотите удалить это обещание доли?",
+				"title": "Удалить обещание доли"
 			},
-			"coreMechanics": {
-				"extra": "Начните печатать. Чтобы ввести новую механику, нажмите Enter на клавиатуре и введите текст.",
-				"label": "Основная механика"
-			},
-			"coverImage": {
-				"deletePopover": "Удалить обложку проекта",
-				"hint": "Допускаются файлы в форматах jpg, png. Соотношение сторон 16/9. Например, размер 1920х1080 пикселей.",
-				"label": "Обложка для проекта",
-				"text": "Добавить обложку проекта"
-			},
-			"description": {
-				"label": "Краткое описание"
-			},
-			"errorText": "Ошибка. Проверьте, все ли данные введены правильно",
-			"gddLink": {
-				"label": "Ссылка на геймдиайн-документ"
-			},
-			"genre": {
-				"label": "Жанр"
-			},
-			"name": {
-				"label": "Название проекта"
-			},
-			"pitchdeckLink": {
-				"label": "Ссылка на презентацию (для питча)"
-			},
-			"platform": {
-				"label": "Платформа"
-			},
-			"setting": {
-				"label": "Сеттинг"
-			},
-			"videoLink": {
-				"label": "Питч-видео"
-			},
-			"visualStyle": {
-				"label": "Визуальный стиль"
+			"update": {
+				"title": "Изменить обещание для {memberName}"
 			}
 		},
 		"projectReport": {
-			"content": "Что нового по сравнению с предыдущим отчетом?"
+			"addReport": "Добавить отчёт",
+			"changeReport": "Изменить отчёт",
+			"close": "Закрыть",
+			"content": "Что нового по сравнению с предыдущим отчетом?",
+			"fieldRequired": "Это поле обязательно",
+			"reportAdded": "Добавлен новый отчёт",
+			"reportChanged": "Отчёт изменён",
+			"reportDate": "Дата отчёта",
+			"save": "Сохранить",
+			"videoReport": "Видеоотчёт"
 		},
 		"proposition-lecture": {
 			"field": {
+				"date": {
+					"label": "Дата"
+				},
+				"description": {
+					"label": "План лекции. О чём вы планируете рассказать"
+				},
+				"directionId": {
+					"label": "К какому направлению относится эта лекция",
+					"placeholder": "Например: гейм-дизайн"
+				},
+				"duration": {
+					"label": "Продолжительность лекции"
+				},
+				"lecturer": {
+					"label": "Лектор"
+				},
 				"linkToStream": {
 					"extra": {
 						"part1": "Создайте ссылку для трансляции в",
 						"part2": "(или на другом сервисе) и вставьте в это поле."
-					}
+					},
+					"label": "Ссылка на лекцию"
+				},
+				"name": {
+					"label": "Тема лекции",
+					"placeholder": "Например: как анализировать проект"
+				},
+				"time": {
+					"extra": "Часовой пояс",
+					"label": "Время"
 				}
+			},
+			"title": {
+				"change": "Изменение параметров лекции",
+				"close": "Закрыть",
+				"give": "Я хочу прочитать лекцию",
+				"publish": "Опубликовать",
+				"save": "Сохранить"
 			}
 		},
+		"roadmapChart": {
+			"clearSuccess": "Дата для этапа «{step}» очищена",
+			"updateError": "Ошибка при обновлении даты этапа",
+			"updateSuccess": "Для этапа «{step}» установлена дата {date}"
+		},
 		"section": {
+			"equityPromiseDescription": "доли проекта будет выделено при достижении требуемого этапа рабочего процесса {step}",
 			"project": "Проект",
+			"projectDescription": "Описание проекта",
 			"theVacancyIsAcuteBefore": "Данная вакансия актуальна до",
-			"vacancyDescription": "Описание вакансии"
+			"vacancyDescription": "Описание вакансии",
+			"watch": "Смотреть"
+		},
+		"setLecturer": {
+			"close": "Закрыть",
+			"createSuccess": "Ваше предложение провести лекцию отправлено",
+			"curriculum": "План лекции. О чём вы планируете рассказать",
+			"date": "Дата",
+			"direction": "К какому направлению относится эта лекция",
+			"lectureTheme": "Тема лекции",
+			"linkToStream": "Ссылка на трансляцию",
+			"linkToStream.extra.part1": "Создайте ссылку на трансляцию в",
+			"linkToStream.extra.part2": "(или в другом сервисе) и вставьте её в это поле.",
+			"offer": "Предложить",
+			"save": "Сохранить",
+			"time": "Время",
+			"timeZone": "Часовой пояс",
+			"title": "Я хочу прочитать эту лекцию",
+			"updateSuccess": "Ваше предложение обновлено",
+			"wishes": "Пожелания к содержанию лекции"
 		},
 		"speciality-select": {
 			"choose-text": "Выберите специальность, соответствующую выбранной вакансии",
-			"contact-text": "Как автору проекта связаться с вами?",
-			"okText": "Выбрать",
-			"title": "Укажите специальность"
+			"greeting-placeholder": "Привет! Я бы хотел присоединиться к вашему проекту, потому что…",
+			"greeting-text": "Добавьте короткое сообщение автору проекта (необязательно)",
+			"okText": "Выбрать"
 		},
 		"speciality": {
 			"create-update": {
@@ -738,49 +1553,62 @@
 			"form": {
 				"jobs": {
 					"extra": "Работу напишите с новой строки.Укажите в формате: Даты работы, место работы, должность.",
-					"label": "Где ты работаешь?"
+					"label": "Где ты работаешь?",
+					"placeholder": "Пример:\n2015-2020, ООО «Gamboka», Unity-разработчик\n2020 — по настоящее время, ООО «Лукоморье», звукорежиссёр"
 				},
 				"level": {
-					"label": "Уровень владения"
+					"label": "Уровень владения",
+					"placeholder": "Выберите"
 				},
 				"name": {
-					"label": "Название специальности"
+					"extra": "Заполнить из CV/резюме",
+					"label": "Название специальности",
+					"placeholder": "Пример: концепт-художник персонажей",
+					"upload": "Загрузить PDF"
 				},
 				"portfolioUrl": {
 					"label": "Ссылка на портфолио/резюме"
 				},
 				"schools": {
 					"extra": "Каждое место обучения пишите с новой строки. Укажите в формате: период обучения, место обучения, ФИО/название специальности.",
-					"label": "Где ты учился?"
+					"label": "Где ты учился?",
+					"placeholder": "Пример:\n2000-2010, средняя школа №145\n2011, курс на UDEMY «Как стать тестировщиком»"
 				},
 				"skills": {
 					"extra": "Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение",
 					"label": "Список навыков"
 				},
 				"specialization": {
-					"label": "Специализация"
+					"label": "Специализация",
+					"placeholder": "Пример: реалистичные персонажи"
 				},
 				"summary": {
 					"label": "Коротко о том, чем вы занимаетесь"
+				},
+				"tags": {
+					"placeholder": "Пример: Photoshop, Google Docs, Unity, VS Code"
 				},
 				"tools": {
 					"extra": "Укажите, какие инструменты/программное обеспечение/сервисы вы используете в своей работе.",
 					"label": "Инструменты"
 				},
 				"workDirectionId": {
-					"label": "Направление деятельности"
+					"label": "Направление деятельности",
+					"placeholder": "Выбрать"
 				}
 			},
 			"title": {
+				"close": "Закрыть",
 				"create": "Добавить специальность",
+				"save": "Сохранить",
 				"update": "Изменить специальность"
 			},
 			"update": {
 				"success": "Данные по специальности обновлены"
 			}
 		},
-		"vacancy-archive": {
-			"title": "Архив вакансий проекта {projectName}"
+		"specialitySelect": {
+			"close": "Закрыть"
 		},
 		"vacancy": {
 			"applied": "Вы уже откликнулись на эту вакансию",
@@ -788,25 +1616,29 @@
 			"applySuccess": "Ваш ответ отозван",
 			"cancelMyResponse": "Отменить мою заявку",
 			"close": "Отменить",
+			"description": "Описание вакансии",
 			"descriptionHelp": "Опишите требования/пожелания к кандидату, опишите каку работу, которую ему предстоит выполнять.",
 			"descriptionPlaceholder": "Например: Я ищу концепт-художника, который специализируется на быстром создании скетчей реалистичных персонажей",
+			"equityPromise": "Обещание доли",
 			"notAuth": "Отвечать могут только зарегистрированные пользователи. Пожалуйста, <register-link>зарегистрируйтесь</register-link> или <signin-link>войдите</signin-link>.",
-			"titleSession": "Вакансия",
+			"paymentNonRefundable": "Плата за размещение не возвращается.",
+			"paymentNotConfigured": "Оплата пока не настроена. Вакансия сохранена как черновик.",
+			"refundPolicyLink": "Политика возврата средств",
 			"vacancyCard": "Карточка вакансии",
 			"withdrawSuccess": "Ваш ответ отозван"
+		},
+		"vacancyArchive": {
+			"restore": "Восстановить",
+			"selectVacancy": "Выберите вакансию, которую хотите восстановить",
+			"title": "Архив вакансий проекта {projectName}"
 		}
 	},
-	"my-project": {
-		"list": {
-			"empty": "У вас еще нет проектов. Создайте новый или присоединитись к проектам других пользователей."
-		}
-	},
-	"needAuth": "Необходима авторизация",
-	"needAuthDescription": "Просмотр этих данных доступен только авторизованным пользователям платформы.",
 	"no": "Нет",
-	"no-projects-yet": "Проектов для этой стадии не найдено",
 	"no-user-projects": "Здесь будет отображаться список ваших проектов.",
 	"novu": {
+		"dynamic": {
+			"comment-on-post": "Комментарии к записям"
+		},
 		"inbox": {
 			"filters": {
 				"dropdownOptions": {
@@ -815,7 +1647,9 @@
 					"unread": "Непрочитанные"
 				},
 				"labels": {
-					"default": "Все"
+					"archived": "В архиве",
+					"default": "Все",
+					"unread": "Непрочитанные"
 				}
 			}
 		},
@@ -826,6 +1660,9 @@
 				},
 				"read": {
 					"tooltip": "Отметить как прочитанное"
+				},
+				"unarchive": {
+					"tooltip": "Вернуть из архива"
 				},
 				"unread": {
 					"tooltip": "Отметить как непрочитанные"
@@ -838,24 +1675,93 @@
 				"archiveRead": "Чтение архива",
 				"readAll": "Отметить все как прочитанные"
 			},
-			"emptyNotice": "Нет уведомлений"
+			"emptyNotice": "Нет уведомлений",
+			"newNotifications": "Новые уведомления"
 		},
 		"preferences": {
 			"global": "Общие",
-			"title": "Настройки"
+			"title": "Настройки",
+			"workflow": {
+				"disabled": {
+					"notice": "Этот сценарий отключён",
+					"tooltip": "Этот сценарий отключён"
+				}
+			}
 		}
+	},
+	"offerPositionModal": {
+		"loading": "Загрузка…",
+		"messagePlaceholder": "Привет! Думаю, вы отлично подойдёте на эту вакансию…",
+		"messageText": "Добавьте сообщение специалисту (необязательно)",
+		"noPositions": "У вас нет опубликованных вакансий",
+		"okText": "Предложить",
+		"positionPlaceholder": "Выберите вакансию",
+		"positionText": "Выберите одну из ваших вакансий, чтобы предложить её",
+		"success": "Предложение отправлено специалисту",
+		"title": "Предложить вакансию"
 	},
 	"onboarding": {
 		"completed": {
-			"button": "Вперед!"
+			"button": "Вперед!",
+			"description": "Добро пожаловать! Теперь вы можете изучать проекты, команды и возможности, подобранные под ваши интересы.",
+			"processingInvitation": "Обрабатываем ваше приглашение...",
+			"title": "Ваш профиль успешно заполнен!"
 		},
 		"interests": {
+			"back": "Назад",
 			"motivation": {
 				"description": "Информация о вашей мотивации и предпочтениях. Эта информация позволит платформе предложить вам наиболее подходящие проекты, вакансии или кандидатов для вашего проекта."
+			},
+			"saveAndContinue": "Сохранить и продолжить",
+			"title": "Интересы",
+			"wantToBe": {
+				"text": "Я хочу быть"
+			},
+			"youCanChangeItOrAddMoreOnesAfter": "Позже это можно изменить или дополнить"
+		},
+		"profile": {
+			"city": {
+				"placeholder": "Город"
+			},
+			"confirmUserData": "Я подтверждаю достоверность введённых данных",
+			"description": "Общая информация о новом участнике",
+			"email": {
+				"placeholder": "Email"
+			},
+			"firstName": {
+				"placeholder": "Имя"
+			},
+			"lastName": {
+				"placeholder": "Фамилия"
+			},
+			"saveAndContinue": "Сохранить и продолжить",
+			"title": "Профиль пользователя",
+			"yearOfBirth": {
+				"tooltip": "Вам должно быть не менее 16 лет"
 			}
 		},
+		"registration": {
+			"title": "Регистрация"
+		},
 		"resources": {
-			"availableForOffering": "Я открыт для предложений"
+			"additionalInformation": "Дополнительная информация",
+			"availableForOffering": "Я открыт для предложений",
+			"availableTime": "Доступное время",
+			"back": "Назад",
+			"description": "Чем вы можете быть полезны командам?",
+			"description2": "Главный ресурс — ваше время, которое вы готовы уделять участию в проектах. Вы также можете указать дополнительную информацию",
+			"save": "Сохранить",
+			"title": "Ресурсы"
+		},
+		"speciality": {
+			"back": "Назад",
+			"fill-additional-fields": "Заполнить дополнительные поля",
+			"fill-in-from-cv-resume": "Заполнить из CV/резюме",
+			"hide-additional-fields": "Скрыть дополнительные поля",
+			"information-about-your-main-speciality": "Информация о вас, как специалисте в геймдеве",
+			"save-and-continue": "Сохранить и продолжить",
+			"upload-pdf": "Загрузить PDF",
+			"you-can-change-it-or-add-more-ones-after": "Позже это можно изменить или дополнить"
 		},
 		"welcome": {
 			"button1": "Заполните профиль",
@@ -864,16 +1770,36 @@
 		}
 	},
 	"online": "Онлайн",
-	"oriental fantasy": "Азиатская фэнтэзи",
 	"other": "Другие",
 	"page": {
-		"devlog": {
-			"title": "Обновления проекта"
+		"blog": {
+			"readMore": "Читать далее",
+			"subtitle": "Свежие новости и статьи",
+			"title": "Блог"
 		},
-		"documentation": {
-			"title": "Документация"
+		"courses": {
+			"myCourses": "Мои курсы",
+			"subTitle": "Инвестируйте своё время в знания",
+			"title": "Курсы"
+		},
+		"devlog": {
+			"applauseAuthTooltip": "Оставлять аплодисменты могут только авторизованные пользователи",
+			"applauseTooltip": "Оцените работу команды",
+			"nextPost": "Следующий пост",
+			"previousPost": "Предыдущий пост",
+			"title": "Обновления проекта",
+			"untitledProject": "Игровой проект",
+			"wall": {
+				"title": "Последние обновления"
+			}
+		},
+		"error404": {
+			"backToHome": "На главную",
+			"description": "К сожалению, мы не нашли страницу, которую вы ищете.",
+			"title": "Ошибка 404"
 		},
 		"events": {
+			"allEvents": "Мероприятия",
 			"createEvent": "Создать событие",
 			"gameJamsAndExperiments": "Опыт и эксперименты",
 			"gameJamsAndExperimentsDescription": "Геймджемы для практики, экспериментов и новых знакомств.",
@@ -884,16 +1810,27 @@
 			"pastEventsDescription": "Некоторые из завершенных мероприятий платформы.",
 			"title": "События"
 		},
+		"expert": {
+			"back": "Эксперты"
+		},
 		"experts": {
 			"myExperts": "Мои запросы"
 		},
-		"hab": {
-			"projects": {
-				"subtitle": "Проекты разработанные или разрабатываемые пользователями платформы",
-				"title": "Игровые проекты"
-			}
-		},
 		"hub": {
+			"activity": "Активность",
+			"advice-from-prefix": "От",
+			"advice-requests": "Запросы на консультацию",
+			"advice-requests.accepted": "Запрос на консультацию принят. Теперь вы можете общаться в чате.",
+			"advice-to-prefix": "Кому",
+			"events": {
+				"empty": {
+					"description": "Сейчас мероприятий нет. Следите за анонсами митапов, воркшопов и геймджемов!",
+					"title": "Пока нет мероприятий"
+				}
+			},
+			"incoming-requests": "Входящие",
+			"member": "Участник",
+			"member-joined": "Недавно присоединился",
 			"members": {
 				"text1": "Любой зарегистрированный пользователь нашего портала считается участником сообщества. На сегодня нас",
 				"text2": {
@@ -902,83 +1839,216 @@
 				},
 				"text3": "Авторы инди-проектов имеют доступ к базе специалистов и могут приглашать их в свои проекты. Для этого вам необходимо создать проект и довести его до стадии рекрутинга."
 			},
+			"new-members": "Новые участники",
+			"outgoing-requests": "Исходящие",
+			"project-updates": "Обновления проектов",
+			"projects": {
+				"allProjects": "Все проекты",
+				"availableOnStores": "Доступны в магазинах",
+				"filterByStage": "Фильтр по стадии",
+				"subtitle": "Проекты, которые участники разрабатывают самостоятельно",
+				"title": "Инди-проекты"
+			},
 			"user-projects": "Мои проекты",
 			"user-projects.empty.description": "Вы еще не создали или не присоединились к какому либо проекту. Начините свой путь с создания свой игры или присоединитесь к существующим командам.",
-			"user-projects.empty.title": "Начни своё путешествие в мир разработки игр"
+			"user-projects.empty.title": "Начни своё путешествие в мир разработки игр",
+			"user-projects.load-error": "Не удалось загрузить проекты пользователя"
+		},
+		"invite": {
+			"acceptInvitation": "Принять приглашение",
+			"decline": "Отклонить",
+			"error": "Ошибка",
+			"failedToLoadInvitation": "Не удалось загрузить приглашение",
+			"goHome": "На главную",
+			"invitationAlreadyAccepted": "Приглашение уже принято",
+			"invitationAlreadyAcceptedSubtitle": "Это приглашение уже было принято.",
+			"invitationDeclined": "Приглашение отклонено",
+			"invitationDeclinedSubtitle": "Это приглашение было отклонено.",
+			"invitationExpired": "Срок приглашения истёк",
+			"invitationExpiredSubtitle": "Срок действия этого приглашения истёк.",
+			"invitationText": "{inviterName} приглашает вас в команду проекта {projectName} на позицию {position}.",
+			"startDate": "Дата начала",
+			"teamInvitation": "Приглашение в команду"
+		},
+		"my-project-devlog": {
+			"description": "Расскажите миру о ходе разработки вашего проекта",
+			"title": "Дневник разработки проекта"
+		},
+		"my": {
+			"projects": {
+				"settings": {
+					"audition": {
+						"label": "Аудитория",
+						"placeholder": "Например: люди, которые любят игры про готовку",
+						"tooltip": "Игроки, на которых вы ориентируетесь, по их интересам и вкусам — что им нравится (например, люди, которые любят готовить)."
+					},
+					"button": {
+						"save": "Сохранить"
+					},
+					"coverImage": {
+						"deletePopover": "Удалить обложку проекта",
+						"hint": "Чтобы загрузить изображение, нажмите на поле или перетащите файл в него.",
+						"label": "Обложка проекта",
+						"text": "Добавьте обложку проекта"
+					},
+					"description": {
+						"error": "Это поле обязательно",
+						"label": "Краткое описание"
+					},
+					"genre": {
+						"label": "Жанр",
+						"placeholder": "Например: аркадный idle + tower defense",
+						"tooltip": "Игровой жанр, к которому относится ваш проект. Можно комбинировать несколько."
+					},
+					"name": {
+						"label": "Название проекта",
+						"placeholder": "Например: Hitman"
+					},
+					"platform": {
+						"label": "Платформа",
+						"placeholder": "Например: PC"
+					},
+					"setting": {
+						"label": "Сеттинг игры",
+						"placeholder": "Например: постапокалипсис/зомби",
+						"tooltip": "Мир, тема и атмосфера игры (например, постапокалипсис, фэнтези)."
+					},
+					"videoLink": {
+						"deletePopover": "Удалить питч-видео",
+						"docs": "Как подготовить",
+						"error": "Вставьте корректную ссылку на видео (YouTube, Vimeo, Twitch, …)",
+						"label": "Питч или геймплейное видео",
+						"placeholder": "https://youtube.com/watch?v=…",
+						"services": "YouTube, Vimeo, Twitch, TikTok, Wistia и другие"
+					},
+					"visualStyle": {
+						"label": "Визуальный стиль",
+						"placeholder": "Например: low poly или что-то похожее на Brawl Stars",
+						"tooltip": "Художественный стиль и визуальные референсы (например, low poly, похоже на Brawl Stars)."
+					}
+				}
+			}
 		},
 		"myEvents": {
 			"title": "Мои события"
 		},
+		"onboardingError": {
+			"goToRegistration": "Перейти к регистрации",
+			"title": "Ошибка!"
+		},
 		"project": {
+			"aboutGame": "Об игре",
+			"audition": "Аудитория",
+			"author": "Автор проекта",
+			"contactTheAuthor": "Связаться с автором",
+			"developmentStage": "Стадия разработки",
 			"downloadAsImage": "Скачать картинку",
+			"genre": "Жанр",
+			"last-updates": "Последние обновления",
 			"members": {
 				"table-title": "Участники"
-			}
+			},
+			"platform": "Платформа",
+			"qrCode": "Отсканируйте QR-код",
+			"scanToShare": "Отсканируйте, чтобы поделиться проектом {projectName} на gdhub.io",
+			"setting": "Сеттинг игры",
+			"visualStyle": "Визуальный стиль"
+		},
+		"projects": {
+			"subtitle": "Проекты, которые участники и команды разрабатывают самостоятельно",
+			"title": "Видеоигры"
+		},
+		"registration": {
+			"agreeWithTermsAndPrivacy": "Регистрируясь, вы соглашаетесь с <terms>Условиями использования</terms> и <privacy>Политикой конфиденциальности</privacy>",
+			"back": "Назад",
+			"backToMain": "На главную",
+			"continueWithGoogle": "Продолжить с Google",
+			"email": {
+				"complete": "Мы отправили письмо со ссылкой для доступа на адрес {email}. Перейдите по ссылке и завершите оставшиеся шаги регистрации.",
+				"enterEmail": "Введите email",
+				"pleaseEnterEmail": "Введите email",
+				"subtitle": "Мы отправим на почту письмо со ссылкой для регистрации"
+			},
+			"iAlreadyHaveAnAccount": "У меня уже есть аккаунт",
+			"platformSubtitle": "на платформе gdhub.io",
+			"registrationWithGoogle": "Регистрация через Google",
+			"sendRegistrationLink": "Отправить ссылку для регистрации",
+			"subscribeToNewsletter": "Получать новости платформы"
 		},
 		"vacancies": {
 			"subTitle": "Открытые роли в проектах и предложения о сотрудничестве",
 			"title": "Вакансии"
 		},
 		"vacancy": {
-			"equityPromise": "Обещанная доля",
+			"aboutProject": "Об этом проекте",
+			"aboutRole": "Об этой роли",
+			"applied": "Вы уже откликнулись на эту вакансию",
+			"applyAction": "Откликнуться",
+			"applySuccess": "Ваш отклик отправлен",
+			"compensationTooltip": "Вознаграждение, которое проект выплачивает по этой вакансии.",
+			"equity": "доля",
+			"notAuth": "Откликаться на вакансии могут только зарегистрированные пользователи. Пожалуйста, <register-link>зарегистрируйтесь</register-link> или <signin-link>войдите</signin-link>.",
+			"remote": "Удалённо",
 			"section": {
 				"equityPromiseDescription": "будет выделена по завершении необходимого этапа рабочего процесса",
-				"termsOfCooperation": "Условия сотрудничества",
 				"theVacancyIsAcuteBefore": "Вакансия актуальна до"
+			},
+			"subtitle": "Вакансия проекта {project}",
+			"title": "Вакансии",
+			"withdrawSuccess": "Ваш отклик отозван"
+		},
+		"verify": {
+			"back": "Проверить другой сертификат",
+			"notFound": {
+				"subtitle": "Мы не нашли подписанный сертификат с таким номером.",
+				"title": "Сертификат не найден"
+			},
+			"number": {
+				"subtitle": "Выдан {name} {issuedAt}.",
+				"title": "Сертификат {number} подтверждён"
+			}
+		}
+	},
+	"pages": {
+		"live": {
+			"room": {
+				"reports": {
+					"dominant": "Основной",
+					"endStream": "Завершить трансляцию",
+					"grid": "Сетка",
+					"hideTitleSlate": "Скрыть",
+					"pip": "Картинка в картинке",
+					"rtmpUrl": "RTMP-адрес",
+					"showTitleSlate": "Показать",
+					"single": "Один участник",
+					"split": "Разделённый экран",
+					"startStream": "Начать трансляцию",
+					"subtitle": "Подзаголовок",
+					"title": "Заголовок"
+				}
 			}
 		}
 	},
 	"participants": "участники",
-	"pitches-will-at-date-on-our-channel": "Питчи проектов состоятся {date} года на нашем канале в",
-	"platformer": "Платформер",
 	"popup": {
 		"cookie": {
 			"accept": "Я согласен",
+			"google": "Сервисы Google (Google Tag Manager) — позволяют анализировать трафик и использование сайта, чтобы улучшить ваш опыт",
+			"manage": "Настроить cookie",
 			"more": "Подробнее",
+			"preferences": "Настройки cookie",
 			"text": "Этот веб-сайт использует файлы cookie для улучшения пользовательского опыта. Используя наш веб-сайт, вы соглашаетесь на использование всех файлов cookie в соответствии с нашей Политикой использования файлов cookie."
 		}
 	},
 	"present": "настоящее время",
-	"profile-form": {
-		"mentorship": {
-			"card": {
-				"description": "Включите, если хотите, чтобы другие участники сообщества к вам обращались за консультациями."
-			}
-		},
-		"specialities": {
-			"card": {
-				"button": {
-					"add-speciality": "Добавить специальность",
-					"change-speciality": "Изменить"
-				},
-				"description": "Специальности позволяют откликаться на вакансии из существующих проектов и проводить лекции.",
-				"no-specialities": "Вы еще не добавили ни одной специальности.",
-				"title": "Специальности"
-			}
-		}
-	},
 	"profile-forms": {
-		"connect": {
-			"card": {
-				"title": "Подключить Telegram"
-			}
-		},
 		"general": {
-			"card": {
-				"account": "Аккаунт",
-				"location": "Расположение",
-				"title": "Данные пользователя"
-			},
 			"field": {
 				"email": {
-					"title": "Электронная почта"
-				},
-				"language": "Язык на платформе",
-				"tgNickname": {
-					"extra": "Указывать без символа @",
-					"title": "Никнейм в телеграмме"
+					"tooltip": "Получено из вашего аккаунта Google"
 				}
-			}
+			},
+			"update-message": "Данные профиля обновлены"
 		},
 		"interests": {
 			"field": {
@@ -998,17 +2068,14 @@
 		},
 		"mentorship": {
 			"card": {
-				"no-specialities": "Чтобы стать ментором необходимо иметь хотя бы одну специальность уровня Опытный или Эксперт.",
-				"title": "Менторство"
+				"no-specialities": "Чтобы стать ментором необходимо иметь хотя бы одну специальность уровня Опытный или Эксперт."
 			},
 			"field": {
 				"openForQuestions": {
-					"label": "Список вопросов, по которым к вам можно обращаться"
-				},
-				"response-rate": {
-					"help": "Как быстро вы планируете реагировать на новые запросы?",
-					"label": "Частота ответов на запросы",
-					"placeholder": "Отвечаю по мере возможности"
+					"addPlaceholder": "Добавить вопрос",
+					"label": "Список вопросов, по которым к вам можно обращаться",
+					"placeholder": "Вопрос",
+					"remove": "Удалить вопрос"
 				},
 				"speciality": {
 					"label": "Ваша специальность, в который вы готовы помочь"
@@ -1018,10 +2085,12 @@
 					"label": "Частота ответа",
 					"placeholder": "Отвечаю по мере возможности"
 				}
-			}
+			},
+			"update-message": "Настройки менторства обновлены"
 		},
 		"resources": {
 			"card": {
+				"save": "Сохранить",
 				"title": "Ресурсы"
 			},
 			"field": {
@@ -1029,75 +2098,264 @@
 					"label": "Другие ресурсы"
 				},
 				"timeForWork": {
-					"title": "Доступное время"
+					"from": "От",
+					"hoursAWeek": "часов в неделю",
+					"title": "Доступное время",
+					"to": "до",
+					"tooltip": "Сколько часов в неделю вы готовы уделять участию в проектах."
+				},
+				"timeForWorkMax": {
+					"error": "Максимальное значение не может быть меньше минимального"
 				}
+			},
+			"update-message": "Данные о ресурсах обновлены"
+		},
+		"specialities": {
+			"card": {
+				"button": {
+					"add-speciality": "Добавить",
+					"change-speciality": "Изменить",
+					"delete-speciality": "Вы точно хотите удалить?",
+					"delete-speciality-no": "Нет",
+					"delete-speciality-yes": "Да"
+				},
+				"description": "Специальности позволяют откликаться на вакансии существующих проектов и проводить лекции.",
+				"no-specialities": "Вы ещё не добавили ни одной специальности.",
+				"title": "Специальности"
 			}
 		}
 	},
 	"profile": {
 		"page": {
-			"bio": {
-				"title": "О вас"
+			"actions": {
+				"settings": "Настройки"
 			},
 			"skillCapital": {
-				"activeProjects": "Активные проекты",
+				"ec": "Исполнение",
 				"help": {
-					"ec": "Execution Capital за ваш вклад как участника команды.",
-					"lc": "Leadership Capital по проектам, где вы автор.",
-					"mc": "Mentorship Capital по завершенным консультационным сессиям.",
-					"sc": "Сумма Leadership, Execution и Mentorship Capital."
+					"ec": "Исполнительный капитал, полученный благодаря вашей работе в составе команды.",
+					"lc": "Лидерский капитал, полученный в результате проектов, автором которых вы являетесь.",
+					"mc": "Наставнический капитал, полученный в результате завершенных консультационных сессий.",
+					"sc": "Итоговый Skill Capital на основе вашего участия в проектах"
 				},
-				"history": "История проектов",
-				"history.empty": "Нет истории проектов",
-				"note": "Метрики рассчитываются на основе вашей активности в проектах.",
-				"ec": "Execution",
-				"lc": "Leadership",
-				"mc": "Mentorship",
-				"sc": "Skill Capital"
+				"lc": "Лидерство",
+				"mc": "Менторство",
+				"note": "Метрики рассчитываются на основе вашей активности в проектах."
 			},
-			"specialities": {
-				"title": "Специальности"
-			}
+			"title": "Мой профиль"
 		},
 		"settings": {
+			"danger": {
+				"cancel": "Отмена",
+				"delete": {
+					"button": "Удалить аккаунт",
+					"cardDescription": "Безвозвратно обезличить ваши персональные данные. Ваши проекты и вклад сохранятся, но перестанут быть связаны с вашей личностью.",
+					"cardTitle": "Удаление аккаунта",
+					"confirm": "Удалить аккаунт",
+					"confirmEmailLabel": "Введите ваш email",
+					"confirmEmailSuffix": "для подтверждения удаления.",
+					"reasonLabel": "Причина удаления (необязательно)",
+					"reasonPlaceholder": "Расскажите, почему вы хотите удалить аккаунт...",
+					"success": "Ваш аккаунт успешно обезличен",
+					"title": "Удаление аккаунта",
+					"warning": "Это действие необратимо. Ваши персональные данные будут обезличены, и вы выйдете из аккаунта."
+				},
+				"description": "Экспортируйте свои данные или безвозвратно удалите персональную информацию.",
+				"export": {
+					"button": "Экспортировать",
+					"cardDescription": "Скачайте копию всех ваших персональных данных, хранящихся в системе.",
+					"cardTitle": "Экспорт персональных данных",
+					"confirm": "Экспортировать",
+					"description": "Скачайте машиночитаемый JSON-архив всех ваших персональных данных, хранящихся на платформе.",
+					"excludedLabel": "Что намеренно исключено",
+					"includedLabel": "Что входит в экспорт",
+					"legalBasis": "Правовое основание: ст. 15 GDPR (право доступа) и ст. 20 GDPR (право на переносимость данных)",
+					"success": "Ваши данные успешно экспортированы",
+					"title": "Экспорт персональных данных"
+				},
+				"preview": {
+					"noAnonymizeItems": "Никакие данные не будут обезличены.",
+					"noDeleteItems": "Никакие данные не будут удалены.",
+					"noDetachItems": "Никакие данные не будут отвязаны.",
+					"noKeepItems": "Никакие данные не будут сохранены.",
+					"willAnonymize": "Будет обезличено:",
+					"willAnonymizeTooltip": "Ваше имя, email и другие идентификаторы заменяются обобщёнными заглушками (например, «Удалённый пользователь»). Запись остаётся, но связать её с вами уже невозможно. GDPR считает обезличенные данные не персональными — юридически это равносильно удалению (пункт 26 преамбулы).",
+					"willDelete": "Будет удалено:",
+					"willDeleteTooltip": "Безвозвратно стирается с наших серверов — восстановить невозможно. Это ваше право на удаление по ст. 17 GDPR.",
+					"willDetach": "Будет отвязано:",
+					"willDetachTooltip": "Ваш идентификатор пользователя удаляется из этих записей (устанавливается в null). Записи остаются для целостности системы, но больше никак на вас не указывают.",
+					"willKeep": "Будет сохранено:",
+					"willKeepTooltip": "Эти записи затрагивают и права других людей — соглашения о долях, финансовые операции, юридические события. Они останутся привязаны к анонимной заглушке, а не к вашей настоящей личности. Закон позволяет сохранять общую историю даже после запроса на удаление (ст. 89 GDPR)."
+				}
+			},
 			"menu": {
 				"connections": "Подключения",
+				"danger": "Опасная зона",
 				"general": "Общие",
 				"interests": "Интересы",
 				"mentorship": "Менторство",
+				"payments": "Платежи",
 				"resources": "Ресурсы",
 				"specialities": "Специальности"
 			}
+		},
+		"specialityCreated": {
+			"viewYourSpecialities": "Посмотреть ваши специальности"
 		}
 	},
 	"project": {
-		"create": "Создать проект"
+		"archived": {
+			"banner": "Проект в архиве с {date}",
+			"banner.unknownDate": "неизвестной даты"
+		},
+		"create": "Создать проект",
+		"documents": {
+			"addDocument": "Добавить документ",
+			"description": "Описание",
+			"documentDeleted": "Документ удалён",
+			"noDocuments": "На данный момент документов нет",
+			"title": "Название",
+			"type": "Добавил",
+			"updatedAt": "Обновлён"
+		},
+		"links": {
+			"addLink": "Добавить ссылку",
+			"description": "Добавьте ссылки на ваш проект на разных площадках. Основная ссылка будет заметно отображаться на странице проекта.",
+			"invalidUrls": "Введите корректные URL для всех ссылок",
+			"maxLinks": "Можно добавить максимум 3 ссылки",
+			"noLinks": "Ссылок пока нет. Нажмите «Добавить ссылку», чтобы добавить первую.",
+			"platformRequired": "Укажите площадку",
+			"primary": "Основная",
+			"remove": "Удалить ссылку",
+			"save": "Сохранить ссылки",
+			"saveError": "Не удалось сохранить ссылки",
+			"saved": "Ссылки успешно сохранены",
+			"selectPlatform": "Выберите",
+			"urlInvalid": "Введите корректный URL",
+			"urlPlaceholder": "https://",
+			"urlRequired": "Укажите URL"
+		},
+		"openPositions": "Вакансии",
+		"settings": {
+			"danger": {
+				"archive": {
+					"button": "В архив",
+					"cardTitle": "Архивирование проекта",
+					"confirm": "Архивировать",
+					"description": "Архивация сохраняет данные проекта, но выводит его из активного оборота.",
+					"previewTitle": "Проект будет убран из активного списка, но все данные сохранятся. Вы можете восстановить проект в любой момент.",
+					"success": "Проект успешно архивирован",
+					"title": "Архивировать проект"
+				},
+				"cancel": "Отмена",
+				"delete": {
+					"blocked": "Этот проект нельзя удалить. Используйте архивирование, чтобы сохранить необходимую историю.",
+					"blockedDescription": "Проект нельзя удалить по следующим причинам:",
+					"button": "Удалить",
+					"cardTitle": "Удаление проекта",
+					"confirm": "Удалить",
+					"confirmNameLabel": "Введите название проекта",
+					"confirmNameSuffix": "для подтверждения удаления.",
+					"description": "Удаление безвозвратно стирает проект и связанные данные, если полное удаление разрешено.",
+					"success": "Проект успешно удалён",
+					"title": "Удалить проект"
+				},
+				"description": "Архивируйте или безвозвратно удалите этот проект.",
+				"preview": {
+					"noDeleteItems": "Никакие данные не будут удалены.",
+					"noUpdateItems": "Никакие данные не будут обновлены.",
+					"title": "Все данные проекта будут удалены без возможности восстановления.",
+					"willDelete": "Будет удалено:",
+					"willUpdate": "Будет обновлено перед удалением"
+				},
+				"restore": {
+					"button": "Восстановить",
+					"cardDescription": "Восстановите проект и верните его в активный оборот.",
+					"cardTitle": "Восстановление проекта",
+					"confirm": "Восстановить",
+					"description": "Проект вернётся в активный список со всеми своими данными.",
+					"success": "Проект успешно восстановлен",
+					"title": "Восстановить проект"
+				}
+			},
+			"menu": {
+				"danger-zone": "Опасная зона",
+				"general": "Основное",
+				"links": "Ссылки"
+			}
+		}
 	},
-	"projectListByStage": "Список проектов на текущей стадии",
+	"projectCandidatePreviewModal": {
+		"acceptTheTeam": "Принять в команду",
+		"close": "Закрыть",
+		"cvPortfolio": "CV/Портфолио",
+		"email": "Email",
+		"freeTime": "Свободное время",
+		"fromTo": "от {fromDate} до {toDate} часов в неделю",
+		"go": "Перейти",
+		"greeting": "Сообщение от кандидата",
+		"message": "Сообщение",
+		"motivation": "Мотивация",
+		"notPointed": "(не указано)",
+		"placeOfResidence": "Место проживания",
+		"reject": "Отклонить",
+		"telegram": "Telegram",
+		"title": "Карточка кандидата"
+	},
 	"promised equity will become actual": "обещанная доля перейдет в ваше владение",
-	"puzzle": "Пазлы",
-	"qualified specialists": "специалистов",
-	"real life": "Реальная жизнь",
-	"registration": "Регистрация",
-	"registration.email.complete": "Мы отправили письмо на адрес {email} со ссылкой для доступа. Перейдите по ссылке и выполните следующие шаги регистрации.",
-	"registration.email.extra": "Должен совпадать с электронной почтой, которую вы ввели при старте регистраци",
-	"registration.email.subtitle": "Мы отправим письмо на электронную почту со ссылкой для регистрации.",
+	"public-menu": {
+		"contacts": "Контакты",
+		"events": "Мероприятия",
+		"for-authors": "Авторам",
+		"for-specialists": "Специалистам",
+		"jobs": "Вакансии",
+		"video-games": "Видеоигры"
+	},
+	"refresh_token_expired": "Сессия истекла. Войдите ещё раз.",
 	"relevant for": "актуально для",
-	"resigration-to-demoday": "Регистрация на Demo Day",
 	"resources": "Ресурсы",
-	"rpg": "Ролевые игры (RPG)",
-	"rts": "Стратегия в реальном времени (RTS)",
-	"save": "Сохранить",
-	"saveAndContinue": "Сохранить и продолжить",
-	"sci-fi": "Научная фантастика",
-	"seasonsListDesc": "В рамках этой программы авторы игр могут подать свои идеи, а другие специалисты могут попасть в команды Разработки и превратить эти идеи в компьютерную или мобильную игру.",
-	"seasonsListEmpty": "На данный момент активных запусков инкубационной программы Gamelab нет. Следите за анонсами будущих запусков в наших чатах и социальных сетях. Вы также можете инициировать старт своего проекта вне икубационной программы Gamelab, заполнив",
+	"season-projects-section": {
+		"author": "Автор",
+		"button": {
+			"on-the-page-of-the-project": "На страницу проекта"
+		},
+		"game-setting": "Сеттинг игры",
+		"genre": "Жанр",
+		"no-project": "Проектов пока нет.",
+		"platform": "Платформа",
+		"project-suits-you": "Проект вам подходит",
+		"visual-style": "Визуальный стиль"
+	},
 	"select": "Выберите",
-	"shooter": "Шутер",
+	"settings": {
+		"payments": {
+			"column": {
+				"amount": "Сумма",
+				"date": "Дата",
+				"description": "Описание",
+				"receipt": "Чек",
+				"status": "Статус"
+			},
+			"download": "Скачать",
+			"empty": "Платежей пока нет",
+			"subtitle": "История ваших платежей на платформе.",
+			"title": "Платежи",
+			"vacancyFee": "Размещение вакансии"
+		}
+	},
 	"signin": "Войти",
+	"signin.backToMain.title": "На главную",
+	"signin.createAccount.title": "Создать новый аккаунт",
+	"signin.email.back.title": "Назад",
+	"signin.email.backToMain.title": "Вернуться на главную",
 	"signin.email.complete": "Мы отправили электронное письмо на адрес {email} со ссылкой для доступа к платформе. Переходите по данный ссылке и пользуйтесь платформой.",
+	"signin.email.label": "Введите email",
+	"signin.email.sendLink.title": "Отправить ссылку на почту",
+	"signin.email.title": "Вход по email",
+	"signin.google.title": "Войти через Google",
+	"signin.platformSubtitle": "на платформу gdhub.io",
 	"signin.subtitle": "Мы отправим письмо на электронную почту со ссылкой для входа в свой аккаунт.",
-	"simulation": "Симуляторы",
+	"signin.title": "Вход",
 	"skill": {
 		"beginner": {
 			"description": "Вы знаете, как выполнять работу, у вас уже есть некоторый опыт"
@@ -1118,57 +2376,157 @@
 	"skillList": "Список навыков",
 	"skillList.extra": "Каждый навык пишите c новой строки. Указывайте в формате: глагол + определение",
 	"skillList.plachehloder": "Например:\nрисовать концепты мультяшных персонажей\nразрабатывать диалоговые системы",
-	"specialisation": "Специализация",
-	"specialisation.plachehloder": "Я специализируюсь на...",
 	"specialist": {
 		"preview": {
-			"cardType": "Карточка специалиста"
+			"aboutMe": "О себе",
+			"active": "Активные",
+			"cardType": "Карточка специалиста",
+			"certificate": "Сертификат",
+			"certificates": "Сертификаты",
+			"comment": "Комментарий",
+			"complianceWithTheAuthor": "Соответствие автору",
+			"complianceWithTheProject": "Соответствие проекту",
+			"complianceWithTheTeam": "Соответствие команде",
+			"contacts": "Контакты",
+			"email": "Email",
+			"emailLocked": "Email станет виден после того, как специалист примет ваше предложение.",
+			"experience": "Опыт",
+			"goToChat": "Перейти в чат",
+			"iPreferGameSettings": "Сеттинги",
+			"iPreferGamesOfTheFollowingComplexity": "Сложность",
+			"iPreferGenres": "Любимые жанры",
+			"iUseItInWork": "Использую в работе",
+			"issued": "Выдан",
+			"lastUpdated": "Обновлено",
+			"links": "Ссылки",
+			"match": "совпадение",
+			"offerPosition": "Предложить вакансию",
+			"past": "Завершённые",
+			"preferencesInGames": "Предпочтения в играх",
+			"professionalInfo": "Профессиональная информация",
+			"projectMatch": "Соответствие проекту",
+			"projects": "Проекты",
+			"roleInProject": "Роль",
+			"showMore": "Показать ещё {count}",
+			"skills": "Навыки",
+			"specialization": "Специализация",
+			"summaryPortfolio": "Резюме / портфолио",
+			"verified": "Подтверждён",
+			"watchVideo": "Смотреть видео",
+			"whereIReceivedKnowledge": "Образование"
 		}
 	},
+	"speciality": "специальность",
+	"speciality-step": "Специальность",
 	"specialityLevel": "Уровень владения",
 	"specialityName": "Название специальности",
 	"specialityName.plachehloder": "Например: Unity разработчик",
 	"specialization": "Специализация",
 	"specialization.plachehloder": "Пример: специализируюсь на концептах мультяшных персонажей",
-	"specilaity": "Специальность",
-	"sport": "Спортивный",
 	"sports": "Спортивные",
-	"stage-expired": "На данный момент прием идей завершен. Наставники по игровому дизайну обсуждают представленные идеи, общаются с их авторами. По итогам обсуждения будет определен список проектов, которые пройдут дальше в стадию. Подготовка проекта.",
 	"start-and-end-dates": "c {fromDate} по {toDate} ",
-	"subscribeToNewsletter": "Получать новости платформы",
-	"survival horror": "Ужас выживания",
 	"table": {
 		"investors": {
 			"description": "Список инвесторов, их вложения и купленные доли."
+		},
+		"team": {
+			"compensation": "Вознаграждение"
 		}
 	},
-	"tbs": "Пошаговые стратегии",
-	"th from": " от",
-	"th of": " из",
-	"this form": "эта форма",
+	"team-members": {
+		"title": "Команда"
+	},
 	"to": "к",
+	"uploadcv-error-message": "Не удалось обработать файл. Введите данные вручную",
 	"user-profile": "Профиль пользователя",
-	"user": {
-		"welcome": "Привет, {userName} \uD83D\uDC4B"
-	},
 	"userProjectList": "Список ваших проектов",
-	"users-proposed-concepts-total": "Участники предложили {total} концептов игр",
 	"vacancies": {
+		"filter": {
+			"allDirections": "Все направления",
+			"type": {
+				"all": "Все",
+				"equity": "Доля",
+				"experience": "За опыт",
+				"paid": "Оплачиваемые"
+			}
+		},
 		"list": {
-			"description": "Инвестируйте свое время в успех новых игровых проектов"
+			"description": "Инвестируйте свое время в успех новых игровых проектов",
+			"noOpenVacancies": "На данный момент открытых вакансий нет",
+			"validUntil": "Актуально до"
 		}
 	},
-	"video games": "видео игры",
+	"vacancy": {
+		"details": "Подробнее",
+		"enterToSee": "Войдите, чтобы посмотреть",
+		"noOpenVacancies": "На данный момент открытых вакансий нет",
+		"payment": {
+			"status": {
+				"COMPLETED": "Оплачено",
+				"FAILED": "Ошибка",
+				"PENDING": "В обработке",
+				"REFUNDED": "Возвращено"
+			}
+		},
+		"rate": {
+			"Hourly": "в час",
+			"Monthly": "в месяц",
+			"OneTime": "разово",
+			"hourly": "/ час",
+			"monthly": "/ месяц",
+			"oneTime": "разово",
+			"short": {
+				"Hourly": "/ час",
+				"Monthly": "/ месяц",
+				"OneTime": "разово"
+			}
+		},
+		"title": "Вакансии",
+		"validUntil": "Актуально до"
+	},
+	"verify": {
+		"form": {
+			"hint": "Также можно открыть gdhub.io/verify/<NUMBER>, чтобы сразу увидеть результат.",
+			"label": "Номер сертификата",
+			"placeholder": "GDH-XXXXXX",
+			"submit": "Проверить"
+		},
+		"hero": {
+			"subtitle": "Введите номер сертификата, указанный на документе, чтобы подтвердить его подлинность и посмотреть детали.",
+			"title": "Проверка сертификата"
+		},
+		"notFound": {
+			"text": "Мы не нашли подписанный сертификат с номером {number}. Либо сертификата с таким номером не существует, либо он ещё не подписан. Проверьте код и попробуйте снова.",
+			"title": "Подписанный сертификат не найден"
+		},
+		"result": {
+			"copied": "Ссылка на сертификат скопирована",
+			"copy": "Скопировать ссылку",
+			"download": "Скачать PDF",
+			"endDate": "Дата окончания",
+			"event": "Мероприятие",
+			"mentor": "Ведущий ментор",
+			"organizer": "Организатор",
+			"project": "Проект",
+			"recipient": "Получатель",
+			"signedPdf": "Подписанный PDF",
+			"startDate": "Дата начала",
+			"viewEvent": "Открыть мероприятие",
+			"viewProject": "Открыть проект"
+		}
+	},
 	"wantToBe": {
-		"author": "Автор",
-		"author.description": "Хочу делать свои игры",
-		"mentor": "Ментор",
-		"mentor.description": "Хочу делиться моей экспертизой",
-		"specialist": "Специалист",
-		"specialist.description": "Хочу присоединиться к команде разработки",
+		"author": {
+			"description": "Хочу делать свои игры"
+		},
+		"mentor": {
+			"description": "Хочу делиться моей экспертизой"
+		},
+		"specialist": {
+			"description": "Хочу присоединиться к команде разработки"
+		},
 		"text": "Я"
 	},
-	"will present their indie projects": "представят свои инди-проекты",
 	"workDirection": "Сфера деятельности",
 	"workDirection-2d art & animation": "2D арт и анимация",
 	"workDirection-3d art & animation": "3D арт и анимация",
@@ -1229,14 +2587,38 @@
 				"name": "Завершение проекта"
 			}
 		},
-		"current-stage": "Текущий шаг",
-		"next-stage": "Следующий этап",
-		"previous-stage": "Назад",
-		"required-acitons": {
-			"title": "Необходимо сделать"
+		"all-steps": "Все этапы",
+		"create-workflow": {
+			"modal": {
+				"cancel-text": "Отмена",
+				"ok-text": "Создать",
+				"title": "Создать рабочий процесс",
+				"title-placeholder": "Название",
+				"title-required": "Укажите название"
+			}
+		},
+		"equity-transfer": {
+			"description": "При переходе к следующему этапу следующие обещания долей будут преобразованы в фактические:",
+			"title": "Подтверждение передачи долей",
+			"total": "Итого после передачи: {total}%"
+		},
+		"finish-step": "Следующий этап",
+		"next-step": "Перейти к завершению этапа",
+		"no-tasks": "Для этого этапа задач нет",
+		"previous-step": "Назад",
+		"start-step": "Перейти к следующему этапу",
+		"tasks": {
+			"gate-hint": "Обязательные задачи открывают следующий этап. Необязательные можно пропустить.",
+			"optional": "Необязательная",
+			"required": "Обязательная",
+			"required-progress": "{done} из {total} обязательных",
+			"title": "Задачи"
 		}
 	},
 	"yearOfBirth": "Год рождения",
 	"yes": "Да",
-	"zombie": "Зомби"
+	"Доля должна быть больше 0": "Доля должна быть больше 0",
+	"Недостаточно долей для передачи": "Недостаточно долей для передачи",
+	"Передача доли участнику": "Передача доли участнику",
+	"Участник": "Участник"
 }

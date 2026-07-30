@@ -1,5 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { Prisma } from "@prisma/client";
+import {
+	Prisma,
+	type ProjectWorkflowStep,
+	type ProjectWorkflowTask,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -15,9 +19,7 @@ import { prisma } from "@/services/prisma";
 function parseTaskCondition(raw: unknown) {
 	if (raw == null) return Prisma.DbNull;
 	const parsed = WorkflowTaskConditionSchema.safeParse(raw);
-	return parsed.success
-		? (parsed.data as Prisma.InputJsonValue)
-		: Prisma.DbNull;
+	return parsed.success ? parsed.data : Prisma.DbNull;
 }
 
 const UpdateProjectWorkflowSchema = z.object({
@@ -31,7 +33,7 @@ type UpdateProjectWorkflowBody = z.infer<typeof UpdateProjectWorkflowSchema>;
 async function updateStepTasks(
 	stepId: string,
 	newTasks: any[],
-	existingTasks: prismaClient.ProjectWorkflowTask[],
+	existingTasks: ProjectWorkflowTask[],
 ) {
 	const existingTasksMap = new Map(
 		existingTasks.map((task) => [task.id, task]),
@@ -87,8 +89,8 @@ async function updateStepTasks(
 async function updateWorkflowSteps(
 	workflowId: string,
 	newSteps: any[],
-	existingSteps: (prismaClient.ProjectWorkflowStep & {
-		tasks: prismaClient.ProjectWorkflowTask[];
+	existingSteps: (ProjectWorkflowStep & {
+		tasks: ProjectWorkflowTask[];
 	})[],
 ) {
 	const existingStepsMap = new Map(
@@ -150,7 +152,7 @@ async function updateWorkflowSteps(
 
 export const GET = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
@@ -233,7 +235,7 @@ export const GET = withAuth({
 
 export const PUT = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(UpdateProjectWorkflowSchema)(
 		async (_req, ctx, { user, body }) => {

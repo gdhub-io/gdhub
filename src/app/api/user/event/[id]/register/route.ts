@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { EventMemberStatus, EventStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -26,7 +26,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		return apiError.notFound("Event not found");
 	}
 
-	if (event.status !== prismaClient.$Enums.EventStatus.Published) {
+	if (event.status !== EventStatus.Published) {
 		return apiError.badRequest("Event is not open for registration");
 	}
 
@@ -35,10 +35,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			eventId: id,
 			userId: currentUser.id as string,
 			status: {
-				in: [
-					prismaClient.$Enums.EventMemberStatus.Pending,
-					prismaClient.$Enums.EventMemberStatus.Approved,
-				],
+				in: [EventMemberStatus.Pending, EventMemberStatus.Approved],
 			},
 		},
 	});
@@ -51,7 +48,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		data: {
 			eventId: id,
 			userId: currentUser.id as string,
-			status: prismaClient.$Enums.EventMemberStatus.Approved,
+			status: EventMemberStatus.Approved,
 		},
 	});
 

@@ -1,4 +1,9 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	MatchingSpecialistAndProject,
+	Profile,
+	Speciality,
+	WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import {
 	IconAward,
 	IconBriefcase,
@@ -61,18 +66,18 @@ type SpecialistCertificate = {
 	} | null;
 };
 
-type SpecialistData = prismaClient.Speciality & {
-	availableProjects: (prismaClient.MatchingSpecialistAndProject & {
+type SpecialistData = Speciality & {
+	availableProjects: (MatchingSpecialistAndProject & {
 		project: { name: string };
 	})[];
-	direction: prismaClient.WorkDirection;
+	direction: WorkDirection;
 	user: {
 		id: string;
 		name: string | null;
 		image: string | null;
 		email: string | null;
 		updatedAt: string;
-		profile: prismaClient.Profile & { [key: string]: any };
+		profile: Profile & { [key: string]: any };
 	};
 	projects: SpecialistProject[];
 	certificates: SpecialistCertificate[];

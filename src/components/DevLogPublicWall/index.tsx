@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Flex, List, Space, Typography } from "antd";
@@ -30,11 +30,12 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 	const { data: projectReports } = useQuery({
 		queryKey: ["project-reports", projectId],
 		queryFn: () =>
-			axios.get<
-				(prismaClient.ProjectReport & { author: Record<string, any> })[]
-			>("/api/project/reports", {
-				params: { projectId },
-			}),
+			axios.get<(ProjectReport & { author: Record<string, any> })[]>(
+				"/api/project/reports",
+				{
+					params: { projectId },
+				},
+			),
 		enabled: !!projectId,
 		refetchOnWindowFocus: false,
 	});
@@ -63,9 +64,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 
 	const items: ProjectReportItem = useMemo(() => {
 		const reports = projectReports?.data.map(
-			(
-				report: prismaClient.ProjectReport & { author: Record<string, any> },
-			) => {
+			(report: ProjectReport & { author: Record<string, any> }) => {
 				return {
 					id: report.id,
 					authorId: report.authorId,

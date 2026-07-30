@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+	apiError,
 	json,
 	type SessionUser,
 	withAuth,
@@ -67,6 +68,10 @@ export const GET = withAuth({ mode: "any" })(
 				_count: { select: { applicants: true } },
 			},
 		});
+
+		// Spreading a missing record would answer `200 {}`, which reads as a hit to
+		// every caller — the job page then rendered instead of returning a 404.
+		if (!data) return apiError.notFound("Vacancy not found");
 
 		let teamMember = null;
 

@@ -1,6 +1,10 @@
 "use client";
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	PaymentRateType,
+	ProjectWorkflowStep,
+	TeamVacancy,
+} from "@gdhub-io/gdhub-prisma";
 import {
 	IconArrowLeft,
 	IconCoin,
@@ -63,13 +67,13 @@ type VacancyProject = {
 };
 
 export interface JobPageProps {
-	vacancy: prismaClient.TeamVacancy & {
+	vacancy: TeamVacancy & {
 		team: { project: VacancyProject } | null;
 		promisePercentage: number;
-		promiseStep: prismaClient.ProjectWorkflowStep | null;
+		promiseStep: ProjectWorkflowStep | null;
 		myTeamMemberId?: string;
 		offeredAmount?: number | null;
-		offeredRateType?: prismaClient.PaymentRateType | null;
+		offeredRateType?: PaymentRateType | null;
 	};
 	pageCover: string | null;
 	isAuthenticated: boolean;

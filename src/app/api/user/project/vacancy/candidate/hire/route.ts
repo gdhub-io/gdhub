@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import {
@@ -44,9 +44,9 @@ export const PUT = withAuth({ mode: "user" })(
 		});
 
 		const member = await prisma.teamMember.update({
-			where: { id, status: prismaClient.TeamMemberStatus.Applicant },
+			where: { id, status: TeamMemberStatus.Applicant },
 			data: {
-				status: prismaClient.TeamMemberStatus.Hired,
+				status: TeamMemberStatus.Hired,
 				startedAt: dayjs().toISOString(),
 				enteredProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
 			},

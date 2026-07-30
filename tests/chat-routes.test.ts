@@ -1,16 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "../src/services/prisma";
 
-vi.mock("@gdhub-io/gdhub-prisma/dist/client", () => ({
-	default: {
-		TeamMemberStatus: {
-			Applicant: "Applicant",
-			Hired: "Hired",
-			Rejected: "Rejected",
-		},
-		TeamVacancyStatus: { Published: "Published", Closed: "Closed" },
-		UserRole: { Admin: "Admin" },
+vi.mock("@gdhub-io/gdhub-prisma", () => ({
+	TeamMemberStatus: {
+		Applicant: "Applicant",
+		Hired: "Hired",
+		Rejected: "Rejected",
 	},
+	TeamVacancyStatus: { Published: "Published", Closed: "Closed" },
+	UserRole: { Admin: "Admin" },
 }));
 
 vi.mock("../src/services/prisma", () => ({

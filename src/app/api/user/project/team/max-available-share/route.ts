@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -38,10 +38,7 @@ export const GET = withAuth({ mode: "user" })(
 				vacancies: {
 					where: {
 						status: {
-							in: [
-								prismaClient.TeamVacancyStatus.Published,
-								prismaClient.TeamVacancyStatus.Draft,
-							],
+							in: [TeamVacancyStatus.Published, TeamVacancyStatus.Draft],
 						},
 					},
 				},

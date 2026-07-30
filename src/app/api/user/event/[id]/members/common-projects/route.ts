@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -31,7 +31,7 @@ export const GET = withAuth({ mode: "user" })(
 
 		const { id } = (await ctx.params) as { id: string };
 		const { memberIds } = body as EventMembersCommonProjectsQuery;
-		const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 		const event = await prisma.event.findUnique({
 			where: { id },

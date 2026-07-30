@@ -1,11 +1,11 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import { json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
 export async function GET() {
 	const projects = await prisma.project.findMany({
 		where: {
-			status: prismaClient.ProjectStatus.Approved,
+			status: ProjectStatus.Approved,
 			coverImage: { not: null },
 			workflow: { currentStep: { order: { gt: 1 } } },
 		},

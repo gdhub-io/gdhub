@@ -2,7 +2,12 @@
 
 import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
 import { LoadingOutlined } from "@ant-design/icons";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Profile,
+	Project,
+	ProjectWorkflowStep,
+	User,
+} from "@gdhub-io/gdhub-prisma";
 import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
 import { IconDownload, IconQrcode } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
@@ -45,7 +50,7 @@ const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export type ProjectPageParams = {
 	project: Omit<
-		prismaClient.Project,
+		Project,
 		| "createdAt"
 		| "updatedAt"
 		| "startedAt"
@@ -64,11 +69,11 @@ export type ProjectPageParams = {
 		dormantAt: string | null;
 		statusChangedAt: string | null;
 		author: {
-			name: prismaClient.User["name"];
-			profile: { tgNickname: prismaClient.Profile["tgNickname"] } | null;
+			name: User["name"];
+			profile: { tgNickname: Profile["tgNickname"] } | null;
 		};
 		workflow: {
-			currentStep: { name: prismaClient.ProjectWorkflowStep["name"] } | null;
+			currentStep: { name: ProjectWorkflowStep["name"] } | null;
 		} | null;
 		team: { id: string } | null;
 	};

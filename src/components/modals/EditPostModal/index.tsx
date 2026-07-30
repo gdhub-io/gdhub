@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectReport } from "@gdhub-io/gdhub-prisma";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
 import { AiOutlineVideoCameraAdd } from "@react-icons/all-files/ai/AiOutlineVideoCameraAdd";
 import { IoMdClose } from "@react-icons/all-files/io/IoMdClose";
@@ -32,7 +32,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 	const { data: report, isLoading } = useQuery({
 		queryKey: ["project-report", postId],
 		queryFn: () =>
-			axios.get<prismaClient.ProjectReport>("/api/user/project/report", {
+			axios.get<ProjectReport>("/api/user/project/report", {
 				params: { id: postId },
 			}),
 		enabled: !!postId,

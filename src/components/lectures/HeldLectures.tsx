@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { LectureStage } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Grid, Spin, Table } from "antd";
@@ -24,7 +24,7 @@ export const HeldLectures = () => {
 		queryKey: ["lectures"],
 		queryFn: () =>
 			axios.get("/api/lectures", {
-				params: { stage: prismaClient.LectureStage.Held },
+				params: { stage: LectureStage.Held },
 			}),
 	});
 

@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { type Project, ProjectStatus, type User } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -18,14 +18,14 @@ import styles from "./style.module.scss";
 
 type ProjectsSectionArgs = {
 	stageId: string;
-	status?: prismaClient.ProjectStatus;
+	status?: ProjectStatus;
 };
 
 const { Title } = Typography;
 
 export const StageProjectsSection = ({
 	stageId,
-	status = prismaClient.ProjectStatus.Registered,
+	status = ProjectStatus.Registered,
 }: ProjectsSectionArgs) => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
@@ -33,12 +33,9 @@ export const StageProjectsSection = ({
 	const { data: projects, isFetching: isLoadingProjecIdeas } = useQuery({
 		queryKey: ["projects", stageId],
 		queryFn: () =>
-			axios.get<(prismaClient.Project & { author: prismaClient.User })[]>(
-				"/api/season/stage/projects",
-				{
-					params: { stageId, status },
-				},
-			),
+			axios.get<(Project & { author: User })[]>("/api/season/stage/projects", {
+				params: { stageId, status },
+			}),
 	});
 
 	if (!projects?.data.length) {

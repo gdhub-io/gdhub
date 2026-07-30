@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PrimaryInterest, UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -14,7 +14,7 @@ const UpdateInterestSchema = z.object({
 	preferredLevels: z.array(z.string()).optional(),
 	preferredSettings: z.array(z.string()).optional(),
 	primaryInterest: z
-		.enum(Object.values(prismaClient.PrimaryInterest) as [string, ...string[]])
+		.enum(Object.values(PrimaryInterest) as [string, ...string[]])
 		.optional(),
 });
 
@@ -49,19 +49,19 @@ export const PUT = withAuth({ mode: "user" })(
 			preferredSettings,
 			primaryInterest,
 		} = body as UpdateInterestBody;
-		let role: prismaClient.UserRole = prismaClient.UserRole.Guest;
+		let role: UserRole = UserRole.Guest;
 
 		switch (primaryInterest) {
-			case prismaClient.PrimaryInterest.Specialist: {
-				role = prismaClient.UserRole.Member;
+			case PrimaryInterest.Specialist: {
+				role = UserRole.Member;
 				break;
 			}
-			case prismaClient.PrimaryInterest.Author: {
-				role = prismaClient.UserRole.Author;
+			case PrimaryInterest.Author: {
+				role = UserRole.Author;
 				break;
 			}
-			case prismaClient.PrimaryInterest.Mentor: {
-				role = prismaClient.UserRole.Mentor;
+			case PrimaryInterest.Mentor: {
+				role = UserRole.Mentor;
 				break;
 			}
 		}
@@ -80,13 +80,11 @@ export const PUT = withAuth({ mode: "user" })(
 				preferredSettings: preferredSettings
 					? { set: preferredSettings?.map((v: string) => ({ id: v })) }
 					: undefined,
-				primaryInterest: primaryInterest as
-					| prismaClient.PrimaryInterest
-					| undefined,
+				primaryInterest: primaryInterest as PrimaryInterest | undefined,
 				user: {
 					update: {
 						roles: {
-							set: [prismaClient.UserRole.Member, prismaClient.UserRole.Author],
+							set: [UserRole.Member, UserRole.Author],
 						},
 					},
 				},

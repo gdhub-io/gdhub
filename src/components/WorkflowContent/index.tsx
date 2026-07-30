@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	ProjectWorkflow as PrismaProjectWorkflow,
+	ProjectWorkflowStep,
+	ProjectWorkflowTask,
+} from "@gdhub-io/gdhub-prisma";
 import { IoMdArrowBack } from "@react-icons/all-files/io/IoMdArrowBack";
 import { IoMdArrowForward } from "@react-icons/all-files/io/IoMdArrowForward";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -29,8 +33,8 @@ import WorkflowTasksPanel, {
 
 const { Text } = Typography;
 
-export type ProjectWorkflow = prismaClient.ProjectWorkflow & {
-	steps: prismaClient.ProjectWorkflowStep[];
+export type ProjectWorkflow = PrismaProjectWorkflow & {
+	steps: ProjectWorkflowStep[];
 };
 
 type EquityPromise = {
@@ -49,11 +53,11 @@ type EquityPromise = {
 };
 
 export type ProjectWorkflowWithSteps = ProjectWorkflow & {
-	steps: (prismaClient.ProjectWorkflowStep & {
+	steps: (ProjectWorkflowStep & {
 		equityPromises?: EquityPromise[];
 	})[];
-	currentStep: prismaClient.ProjectWorkflowStep & {
-		tasks: prismaClient.ProjectWorkflowTask[];
+	currentStep: ProjectWorkflowStep & {
+		tasks: ProjectWorkflowTask[];
 		equityPromises?: (EquityPromise & {
 			allocation: { owner: { name: string } };
 		})[];

@@ -19,12 +19,12 @@
  */
 
 import "dotenv/config";
-import { GdhubDatabaseService } from "@gdhub-io/gdhub-prisma";
+import { GDHubPrismaClient } from "@gdhub-io/gdhub-prisma";
 
 const DRY_RUN = process.argv.includes("--dry-run");
 const OPEN_STATUSES = new Set(["Created", "Approved"]);
 
-const prisma = GdhubDatabaseService.init().client;
+const prisma = new GDHubPrismaClient();
 
 try {
 	const adviceRequests = await prisma.adviceRequest.findMany({

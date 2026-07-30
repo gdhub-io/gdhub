@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { ProjectReport } from "@gdhub-io/gdhub-prisma";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
 import { AiOutlineVideoCameraAdd } from "@react-icons/all-files/ai/AiOutlineVideoCameraAdd";
 import { IoMdClose } from "@react-icons/all-files/io/IoMdClose";
@@ -35,7 +35,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 
 	const { mutateAsync: createProjectReport, isPending: isLoading } =
 		useMutation({
-			mutationFn: (data: Omit<Partial<prismaClient.ProjectReport>, "id">) =>
+			mutationFn: (data: Omit<Partial<ProjectReport>, "id">) =>
 				axios.post<void>("/api/user/project/report", data),
 			onSuccess: () => {
 				onCreate();

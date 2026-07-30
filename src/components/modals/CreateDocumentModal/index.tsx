@@ -1,10 +1,11 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project } from "@gdhub-io/gdhub-prisma";
 import { PiFileDuotone } from "@react-icons/all-files/pi/PiFileDuotone";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Form, Input, Modal, message, Select, Spin } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
+import { TeamDocumentType } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 
 const CreateDocumentModal = ({
@@ -23,7 +24,7 @@ const CreateDocumentModal = ({
 		isPending: isCreateProcessing,
 	} = useMutation({
 		mutationFn: (data) =>
-			axios.post<prismaClient.Project>("/api/user/project/documents", data),
+			axios.post<Project>("/api/user/project/documents", data),
 	});
 
 	useEffect(() => {
@@ -65,13 +66,13 @@ const CreateDocumentModal = ({
 
 	const renderDocumentType = (type: string) => {
 		switch (type) {
-			case prismaClient.TeamDocumentType.JDA:
+			case TeamDocumentType.JDA:
 				return "Joint Development Agreement";
-			case prismaClient.TeamDocumentType.Concept:
+			case TeamDocumentType.Concept:
 				return "Concept Document";
-			case prismaClient.TeamDocumentType.GDD:
+			case TeamDocumentType.GDD:
 				return "Game Design Document";
-			case prismaClient.TeamDocumentType.NDA:
+			case TeamDocumentType.NDA:
 				return "NDA";
 			default:
 				return "Other";
@@ -79,7 +80,7 @@ const CreateDocumentModal = ({
 	};
 
 	useEffect(() => {
-		if (selectedDocumentType === prismaClient.TeamDocumentType.Other) {
+		if (selectedDocumentType === TeamDocumentType.Other) {
 			form.setFieldsValue({ name: "" });
 		} else if (selectedDocumentType) {
 			form.setFieldsValue({ name: renderDocumentType(selectedDocumentType) });
@@ -130,18 +131,18 @@ const CreateDocumentModal = ({
 							options={[
 								{
 									label: "Joint Development Agreement",
-									value: prismaClient.TeamDocumentType.JDA,
+									value: TeamDocumentType.JDA,
 								},
 								{
 									label: "Concept Document",
-									value: prismaClient.TeamDocumentType.Concept,
+									value: TeamDocumentType.Concept,
 								},
 								{
 									label: "Game Design Document",
-									value: prismaClient.TeamDocumentType.GDD,
+									value: TeamDocumentType.GDD,
 								},
-								{ label: "NDA", value: prismaClient.TeamDocumentType.NDA },
-								{ label: "Other", value: prismaClient.TeamDocumentType.Other },
+								{ label: "NDA", value: TeamDocumentType.NDA },
+								{ label: "Other", value: TeamDocumentType.Other },
 							]}
 						/>
 					</Form.Item>
@@ -150,14 +151,11 @@ const CreateDocumentModal = ({
 						name="name"
 						rules={[
 							{
-								required:
-									selectedDocumentType === prismaClient.TeamDocumentType.Other,
+								required: selectedDocumentType === TeamDocumentType.Other,
 							},
 						]}
 						wrapperCol={{ span: 24 }}
-						hidden={
-							selectedDocumentType !== prismaClient.TeamDocumentType.Other
-						}
+						hidden={selectedDocumentType !== TeamDocumentType.Other}
 					>
 						<Input
 							placeholder={t(

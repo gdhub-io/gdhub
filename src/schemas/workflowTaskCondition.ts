@@ -1,5 +1,11 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { z } from "zod";
+import {
+	AdviceRequestStatus,
+	ApplauseActivityType,
+	TeamDocumentType,
+	TeamMemberStatus,
+	TeamVacancyStatus,
+} from "@/config/prisma-enums";
 
 /**
  * Workflow task completion is evaluated by the platform against project data,
@@ -59,7 +65,7 @@ const VacanciesCondition = z.object({
 	source: z.literal("vacancies"),
 	min: minCount,
 	scope: conditionScope,
-	status: z.nativeEnum(prismaClient.TeamVacancyStatus).optional(),
+	status: z.nativeEnum(TeamVacancyStatus).optional(),
 	directionId: z.string().optional(),
 });
 
@@ -68,7 +74,7 @@ const TeamMembersCondition = z.object({
 	source: z.literal("team_members"),
 	min: minCount,
 	scope: conditionScope,
-	status: z.nativeEnum(prismaClient.TeamMemberStatus).optional(),
+	status: z.nativeEnum(TeamMemberStatus).optional(),
 });
 
 /** Done when the team has at least `min` investors. */
@@ -81,14 +87,14 @@ const InvestorsCondition = z.object({
 const DocumentsCondition = z.object({
 	source: z.literal("documents"),
 	min: minCount,
-	type: z.nativeEnum(prismaClient.TeamDocumentType).optional(),
+	type: z.nativeEnum(TeamDocumentType).optional(),
 });
 
 /** Done when the project has at least `min` advice requests (optionally by status). */
 const AdviceRequestsCondition = z.object({
 	source: z.literal("advice_requests"),
 	min: minCount,
-	status: z.nativeEnum(prismaClient.AdviceRequestStatus).optional(),
+	status: z.nativeEnum(AdviceRequestStatus).optional(),
 });
 
 /** Done when the project has at least `min` estimations. */
@@ -107,7 +113,7 @@ const EquityAllocationsCondition = z.object({
 const ApplauseCondition = z.object({
 	source: z.literal("applause"),
 	min: minCount,
-	type: z.nativeEnum(prismaClient.ApplauseActivityType).optional(),
+	type: z.nativeEnum(ApplauseActivityType).optional(),
 });
 
 /** Done when the project has at least `min` links (Project.links array). */
@@ -180,7 +186,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			{
 				key: "status",
 				label: "Status",
-				options: enumOptions(prismaClient.TeamVacancyStatus),
+				options: enumOptions(TeamVacancyStatus),
 			},
 		],
 	},
@@ -192,7 +198,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			{
 				key: "status",
 				label: "Status",
-				options: enumOptions(prismaClient.TeamMemberStatus),
+				options: enumOptions(TeamMemberStatus),
 			},
 		],
 	},
@@ -205,7 +211,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			{
 				key: "type",
 				label: "Type",
-				options: enumOptions(prismaClient.TeamDocumentType),
+				options: enumOptions(TeamDocumentType),
 			},
 		],
 	},
@@ -217,7 +223,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			{
 				key: "status",
 				label: "Status",
-				options: enumOptions(prismaClient.AdviceRequestStatus),
+				options: enumOptions(AdviceRequestStatus),
 			},
 		],
 	},
@@ -237,7 +243,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			{
 				key: "type",
 				label: "Type",
-				options: enumOptions(prismaClient.ApplauseActivityType),
+				options: enumOptions(ApplauseActivityType),
 			},
 		],
 	},

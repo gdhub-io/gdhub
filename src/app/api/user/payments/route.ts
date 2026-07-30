@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -17,7 +17,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 	});
 
 	const vacancyIds = payments
-		.filter((p) => p.payableType === prismaClient.PayableType.VACANCY)
+		.filter((p) => p.payableType === PayableType.VACANCY)
 		.map((p) => p.payableId);
 
 	const vacancies = vacancyIds.length
@@ -34,7 +34,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 
 	const result = payments.map((p) => {
 		const vacancy =
-			p.payableType === prismaClient.PayableType.VACANCY
+			p.payableType === PayableType.VACANCY
 				? vacancyById.get(p.payableId)
 				: undefined;
 
@@ -49,8 +49,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 			completedAt: p.completedAt,
 			// A receipt is only retrievable once Paddle has settled the transaction.
 			hasInvoice:
-				p.status === prismaClient.PaymentStatus.COMPLETED &&
-				!!p.providerTransactionId,
+				p.status === PaymentStatus.COMPLETED && !!p.providerTransactionId,
 			title: vacancy?.title ?? null,
 			projectName: vacancy?.team?.project?.name ?? null,
 		};

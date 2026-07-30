@@ -1,9 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Card, Table, Tag, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import { EquityTransactionType } from "@/config/prisma-enums";
 import styles from "./EquityTransactions.module.scss";
 
 const { Title, Text } = Typography;
@@ -34,7 +34,7 @@ interface Transaction {
 		};
 	};
 	percentage: number;
-	transactionType: prismaClient.EquityTransactionType;
+	transactionType: EquityTransactionType;
 	reason?: string;
 	createdAt: string;
 	createdBy: {
@@ -75,17 +75,17 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({
 	});
 
 	// Function to render transaction type
-	const renderTransactionType = (type: prismaClient.EquityTransactionType) => {
+	const renderTransactionType = (type: EquityTransactionType) => {
 		switch (type) {
-			case prismaClient.EquityTransactionType.InitialAllocation:
+			case EquityTransactionType.InitialAllocation:
 				return <Tag color="green">{t("First allocation")}</Tag>;
-			case prismaClient.EquityTransactionType.Vesting:
+			case EquityTransactionType.Vesting:
 				return <Tag color="blue">{t("Vesting")}</Tag>;
-			case prismaClient.EquityTransactionType.Transfer:
+			case EquityTransactionType.Transfer:
 				return <Tag color="orange">{t("Transfer")}</Tag>;
-			case prismaClient.EquityTransactionType.Dilution:
+			case EquityTransactionType.Dilution:
 				return <Tag color="red">{t("Dilution")}</Tag>;
-			case prismaClient.EquityTransactionType.Increase:
+			case EquityTransactionType.Increase:
 				return <Tag color="green">{t("Increase")}</Tag>;
 			default:
 				return <Tag>{t("Other type")}</Tag>;

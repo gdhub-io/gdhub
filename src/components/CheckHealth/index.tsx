@@ -5,7 +5,7 @@ import { Alert, Button, Space } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import GdhubLogo from "@/assets/images/gdhub-beta-logo.svg";
-import { EmptyLayout } from "@/layouts/EmptyLayout";
+import { EmptyLayout } from "@/components/layouts/EmptyLayout";
 import styles from "./style.module.scss";
 
 const CheckHealth = ({ children }: any) => {

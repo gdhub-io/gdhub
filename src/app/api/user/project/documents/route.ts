@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamDocumentType } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -16,9 +16,7 @@ const TeamIdQuerySchema = z.object({
 
 const CreateTeamDocumentSchema = z.object({
 	teamId: z.string(),
-	type: z.enum(
-		Object.values(prismaClient.TeamDocumentType) as [string, ...string[]],
-	),
+	type: z.enum(Object.values(TeamDocumentType) as [string, ...string[]]),
 	name: z.string(),
 	description: z.string().optional(),
 	link: z.string(),
@@ -66,7 +64,7 @@ export const POST = withAuth({ mode: "user" })(
 
 				const document = await prisma.teamDocument.create({
 					data: {
-						type: type as prismaClient.TeamDocumentType,
+						type: type as TeamDocumentType,
 						name,
 						description,
 						link,

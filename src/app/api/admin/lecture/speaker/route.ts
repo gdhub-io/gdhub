@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -15,7 +15,7 @@ type SpeakerBody = z.infer<typeof SpeakerBodySchema>;
 
 export const GET = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(
 		SpeakerQuerySchema,
@@ -31,7 +31,7 @@ export const GET = withAuth({
 
 export const PUT = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(async (req) => {
 	const url = new URL(req.url);
 	const id = url.searchParams.get("id");
@@ -50,7 +50,7 @@ export const PUT = withAuth({
 
 export const DELETE = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(async (req) => {
 	const url = new URL(req.url);
 	const id = url.searchParams.get("id");

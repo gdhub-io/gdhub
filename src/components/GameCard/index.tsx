@@ -1,4 +1,3 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
 import { IconPacman } from "@tabler/icons-react";
 import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
 import dynamic from "next/dynamic";
@@ -6,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ProjectStatus } from "@/config/prisma-enums";
 import DefaultCover from "./DefaultCover";
 import styles from "./styles.module.scss";
 
@@ -34,7 +34,7 @@ interface GameCardProps {
 	applauseCount?: number;
 	hasOpenPositions?: boolean;
 	variant?: "default" | "hub";
-	status?: prismaClient.ProjectStatus;
+	status?: ProjectStatus;
 }
 
 const GameCard: React.FC<GameCardProps> = ({
@@ -55,7 +55,7 @@ const GameCard: React.FC<GameCardProps> = ({
 	if (variant === "hub") {
 		return (
 			<Link
-				href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`}
+				href={isUserProject ? `/user/project/${slug}` : `/project/${slug}`}
 				className={`${styles.gameCardLink} ${styles.hubLink}`}
 			>
 				<Card
@@ -79,9 +79,7 @@ const GameCard: React.FC<GameCardProps> = ({
 						<div className={styles.hubInfo}>
 							<Title level={5} className={styles.hubTitle}>
 								{title}{" "}
-								{status === prismaClient.ProjectStatus.Archived
-									? `(${status})`
-									: null}
+								{status === ProjectStatus.Archived ? `(${status})` : null}
 							</Title>
 							<div className={styles.hubMeta}>
 								<span
@@ -106,7 +104,7 @@ const GameCard: React.FC<GameCardProps> = ({
 
 	return (
 		<Link
-			href={isUserProject ? `/my/projects/${slug}` : `/project/${slug}`}
+			href={isUserProject ? `/user/project/${slug}` : `/project/${slug}`}
 			className={styles.gameCardLink}
 		>
 			<Card className={styles.gameCard} styles={{ body: { padding: 0 } }}>

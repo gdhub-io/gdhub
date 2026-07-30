@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { QueueJobStatus, QueueJobType } from "@gdhub-io/gdhub-prisma";
 import type { NextRequest } from "next/server";
 import { apiError, json, withAuth } from "@/lib/api-handlers";
 import { openAI } from "@/services/openai";
@@ -52,8 +52,8 @@ export const POST = withAuth({ mode: "api" })(async (req: NextRequest) => {
 		await prisma.queueJobLog.create({
 			data: {
 				name: jobName,
-				status: prismaClient.QueueJobStatus.Completed,
-				type: prismaClient.QueueJobType.Broker,
+				status: QueueJobStatus.Completed,
+				type: QueueJobType.Broker,
 				data: result,
 			},
 		});
@@ -63,8 +63,8 @@ export const POST = withAuth({ mode: "api" })(async (req: NextRequest) => {
 		await prisma.queueJobLog.create({
 			data: {
 				name: jobName,
-				status: prismaClient.QueueJobStatus.Failed,
-				type: prismaClient.QueueJobType.Broker,
+				status: QueueJobStatus.Failed,
+				type: QueueJobType.Broker,
 				log: (e as Error).message,
 			},
 		});

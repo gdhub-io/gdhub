@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project } from "@gdhub-io/gdhub-prisma";
 import { IconExclamationCircle } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -45,7 +45,7 @@ const DeleteProjectModal = ({
 		useMutation({
 			mutationFn: () =>
 				axios
-					.post<prismaClient.Project>("/api/user/project/lifecycle", {
+					.post<Project>("/api/user/project/lifecycle", {
 						id: project?.id,
 						action: "delete",
 					})

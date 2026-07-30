@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json } from "@/lib/api-handlers";
@@ -17,7 +17,7 @@ export async function GET() {
 			where: {
 				fromUser: { personalDataDeletedAt: null },
 				toUser: { personalDataDeletedAt: null },
-				status: prismaClient.AdviceRequestStatus.Created,
+				status: AdviceRequestStatus.Created,
 				finishedAt: { equals: null },
 				OR: reminderDiffDays.map((d) => ({
 					createdAt: {
@@ -103,7 +103,7 @@ export async function GET() {
 			where: {
 				fromUser: { personalDataDeletedAt: null },
 				toUser: { personalDataDeletedAt: null },
-				status: prismaClient.AdviceRequestStatus.Created,
+				status: AdviceRequestStatus.Created,
 				finishedAt: { equals: null },
 				createdAt: {
 					lt: dayjs().subtract(maxDaysWithoutResponse, "day").toDate(),
@@ -122,7 +122,7 @@ export async function GET() {
 					id: { in: expiredAdviceRequests.map((r: { id: string }) => r.id) },
 				},
 				data: {
-					status: prismaClient.AdviceRequestStatus.Closed,
+					status: AdviceRequestStatus.Closed,
 					finishedAt: new Date(),
 				},
 			});

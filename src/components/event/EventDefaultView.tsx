@@ -1,6 +1,11 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
 
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Event,
+	EventScheduleItem,
+	User,
+	WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { IconExternalLink, IconMeteor } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
@@ -38,10 +43,10 @@ const EventDefaultView = ({
 	workDirections,
 	schedule,
 }: {
-	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
-	workDirections: prismaClient.WorkDirection[];
-	schedule: (prismaClient.EventScheduleItem & {
-		speakers: prismaClient.User[];
+	event: Event & { schedule: EventScheduleItem[] };
+	workDirections: WorkDirection[];
+	schedule: (EventScheduleItem & {
+		speakers: User[];
 	})[];
 }) => {
 	const { t, getLanguage } = useTolgee();

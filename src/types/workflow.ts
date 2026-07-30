@@ -1,11 +1,18 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	ProjectWorkflow,
+	ProjectWorkflowStep,
+	ProjectWorkflowTask,
+	WorkflowSchema,
+} from "@gdhub-io/gdhub-prisma";
 import type { WorkflowTaskCondition } from "@/schemas/workflowTaskCondition";
 
 // Types based on Prisma schema
-export type WorkflowSchema = prismaClient.WorkflowSchema;
-export type ProjectWorkflow = prismaClient.ProjectWorkflow;
-export type ProjectWorkflowStep = prismaClient.ProjectWorkflowStep;
-export type ProjectWorkflowTask = prismaClient.ProjectWorkflowTask;
+export type {
+	ProjectWorkflow,
+	ProjectWorkflowStep,
+	ProjectWorkflowTask,
+	WorkflowSchema,
+};
 
 // JSON structure for WorkflowSchema.steps
 export interface WorkflowStepTemplate {

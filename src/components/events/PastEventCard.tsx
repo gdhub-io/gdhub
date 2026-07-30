@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
 import { useTolgee } from "@tolgee/react";
 import { Card } from "antd";
 import Image from "next/image";
@@ -10,7 +10,7 @@ export const PastEventCard = ({
 	event,
 	token,
 }: {
-	event: prismaClient.Event & { schedule: prismaClient.EventScheduleItem[] };
+	event: Event & { schedule: EventScheduleItem[] };
 	token: any;
 }) => {
 	const { getLanguage } = useTolgee();

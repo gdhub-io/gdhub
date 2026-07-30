@@ -1,7 +1,7 @@
 import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
 import { LoadingOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Project, ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Skeleton, Spin, Tooltip, Typography } from "antd";
@@ -44,8 +44,8 @@ interface DevlogPostsProps {
 }
 
 const PostCard: React.FC<{
-	post: prismaClient.ProjectReport & {
-		project: prismaClient.Project;
+	post: ProjectReport & {
+		project: Project;
 		applauseCount?: number;
 		author: {
 			image: string;
@@ -342,7 +342,7 @@ const DevlogPosts = ({
 		useInfiniteQuery({
 			queryKey: ["devlog-posts", projectId],
 			queryFn: async ({ pageParam = 1 }) => {
-				const response = await axios.get<prismaClient.ProjectReport[]>(
+				const response = await axios.get<ProjectReport[]>(
 					`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ""}`,
 				);
 
@@ -459,8 +459,8 @@ const DevlogPosts = ({
 					<div key={`post-${post.id}`} className={styles.postWrapper}>
 						<PostCard
 							post={
-								post as prismaClient.ProjectReport & {
-									project: prismaClient.Project;
+								post as ProjectReport & {
+									project: Project;
 									author: {
 										image: string;
 										name: string;

@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Profile } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -18,8 +18,8 @@ import { useEffect, useState } from "react";
 const { Text } = Typography;
 
 type ResourcesProfileFormArgs = {
-	profile: prismaClient.Profile;
-	saveProfile: (data: Partial<prismaClient.Profile>) => Promise<void>;
+	profile: Profile;
+	saveProfile: (data: Partial<Profile>) => Promise<void>;
 };
 
 const ResourcesProfileForm = ({

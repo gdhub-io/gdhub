@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { InvitationStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -49,7 +49,7 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 		if (teamInvitation) {
 			await prisma.teamInvitation.update({
 				where: { id: data.teamInvitationId },
-				data: { status: prismaClient.InvitationStatus.Accepted },
+				data: { status: InvitationStatus.Accepted },
 			});
 		}
 	}

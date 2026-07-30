@@ -22,5 +22,5 @@ Hard rules:
 - i18n: user-facing text goes through Tolgee keys, not hardcoded strings.
 - Styling: SCSS modules. Tabs, double quotes — let Biome format.
 
-After changes run `yarn lint` and `yarn type-check` and report results. Comments and
+After changes run `bun run lint` and `bun run type-check` and report results. Comments and
 identifiers in English; reply to the user in Russian.

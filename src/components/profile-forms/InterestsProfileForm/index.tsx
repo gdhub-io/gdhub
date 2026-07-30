@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	GameDifficultyLevel,
+	GameGenre,
+	GameSetting,
+	Profile,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -21,15 +26,16 @@ import { useEffect, useState } from "react";
 import InterestAuthorIcon from "@/assets/images/icons/interest-author-icon.svg";
 import InterestMentorIcon from "@/assets/images/icons/interest-mentor-icon.svg";
 import InterestSpecialistIcon from "@/assets/images/icons/interest-specialist-icon.svg";
+import { PrimaryInterest } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 type InterestsProfileFormArgs = {
-	profile: prismaClient.Profile & {
-		preferredGenres?: prismaClient.GameGenre[];
-		preferredSettings?: prismaClient.GameSetting[];
-		preferredLevels?: prismaClient.GameDifficultyLevel[];
+	profile: Profile & {
+		preferredGenres?: GameGenre[];
+		preferredSettings?: GameSetting[];
+		preferredLevels?: GameDifficultyLevel[];
 	};
-	saveProfile: (data: Partial<prismaClient.Profile>) => Promise<void>;
+	saveProfile: (data: Partial<Profile>) => Promise<void>;
 };
 
 const { Paragraph, Text } = Typography;
@@ -45,22 +51,18 @@ const InterestsProfileForm = ({
 	const [processing, setProcessing] = useState(true);
 	const { data: gameGenres } = useQuery({
 		queryKey: ["gameGenres"],
-		queryFn: () =>
-			axios.get<prismaClient.GameGenre[]>("/api/dictionary/game-genres"),
+		queryFn: () => axios.get<GameGenre[]>("/api/dictionary/game-genres"),
 		staleTime: Infinity,
 	});
 	const { data: gameSettings } = useQuery({
 		queryKey: ["gameSettings"],
-		queryFn: () =>
-			axios.get<prismaClient.GameSetting[]>("/api/dictionary/game-settings"),
+		queryFn: () => axios.get<GameSetting[]>("/api/dictionary/game-settings"),
 		staleTime: Infinity,
 	});
 	const { data: gameLevels } = useQuery({
 		queryKey: ["gameLevels"],
 		queryFn: () =>
-			axios.get<prismaClient.GameDifficultyLevel[]>(
-				"/api/dictionary/game-levels",
-			),
+			axios.get<GameDifficultyLevel[]>("/api/dictionary/game-levels"),
 		staleTime: Infinity,
 	});
 
@@ -181,7 +183,7 @@ const InterestsProfileForm = ({
 												</div>
 											</div>
 										),
-										value: prismaClient.PrimaryInterest.Author,
+										value: PrimaryInterest.Author,
 									},
 									{
 										label: (
@@ -203,7 +205,7 @@ const InterestsProfileForm = ({
 												</div>
 											</div>
 										),
-										value: prismaClient.PrimaryInterest.Specialist,
+										value: PrimaryInterest.Specialist,
 									},
 									{
 										label: (
@@ -225,7 +227,7 @@ const InterestsProfileForm = ({
 												</div>
 											</div>
 										),
-										value: prismaClient.PrimaryInterest.Mentor,
+										value: PrimaryInterest.Mentor,
 									},
 								]}
 							/>
@@ -234,15 +236,15 @@ const InterestsProfileForm = ({
 						{!screens.lg && (
 							<Radio.Group>
 								<Space orientation="vertical">
-									<Radio value={prismaClient.PrimaryInterest.Author}>
+									<Radio value={PrimaryInterest.Author}>
 										{t("wantToBe.text", "I want to be")}{" "}
 										<Text italic>{t("Author", "Author")}</Text>
 									</Radio>
-									<Radio value={prismaClient.PrimaryInterest.Specialist}>
+									<Radio value={PrimaryInterest.Specialist}>
 										{t("wantToBe.text", "I want to be")}{" "}
 										<Text italic>{t("Specialist", "Specialist")}</Text>
 									</Radio>
-									<Radio value={prismaClient.PrimaryInterest.Mentor}>
+									<Radio value={PrimaryInterest.Mentor}>
 										{t("wantToBe.text", "I want to be")}{" "}
 										<Text italic>{t("Mentor", "Mentor")}</Text>
 									</Radio>

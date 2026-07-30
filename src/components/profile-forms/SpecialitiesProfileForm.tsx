@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Speciality, TeamInvitation } from "@gdhub-io/gdhub-prisma";
 import { GiSkills } from "@react-icons/all-files/gi/GiSkills";
 import { GoPlus } from "@react-icons/all-files/go/GoPlus";
 import { GoTrash } from "@react-icons/all-files/go/GoTrash";
@@ -18,6 +18,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
+import { UserRole } from "@/config/prisma-enums";
 import SpecialityModal from "./modals/SpecialityModal";
 
 const { Text } = Typography;
@@ -37,19 +38,15 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 
 	const { data: specialities, isFetching: processing } = useQuery({
 		queryKey: ["user-specialities"],
-		queryFn: () =>
-			axios.get<prismaClient.Speciality[]>("/api/user/specialities"),
+		queryFn: () => axios.get<Speciality[]>("/api/user/specialities"),
 	});
 
 	const { data: pendingTeamInvitation } = useQuery({
 		queryKey: ["pending-invitation", pendingInvitationId],
 		queryFn: () =>
-			axios.get<prismaClient.TeamInvitation[]>(
-				"/api/user/project/team/invitation",
-				{
-					params: { teamInvitationId: pendingInvitationId },
-				},
-			),
+			axios.get<TeamInvitation[]>("/api/user/project/team/invitation", {
+				params: { teamInvitationId: pendingInvitationId },
+			}),
 		enabled: !!pendingInvitationId,
 		refetchOnWindowFocus: false,
 	});
@@ -106,7 +103,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		await queryClient.invalidateQueries({ queryKey: ["user-specialities"] });
 		// refresh session data
 		await session.update({
-			roles: session.data?.user.roles.includes(prismaClient.UserRole.Member),
+			roles: session.data?.user.roles.includes(UserRole.Member),
 		});
 	};
 
@@ -171,7 +168,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 								),
 							}}
 							dataSource={specialities.data}
-							renderItem={(speciality: prismaClient.Speciality) => (
+							renderItem={(speciality: Speciality) => (
 								<List.Item>
 									<List.Item.Meta
 										title={

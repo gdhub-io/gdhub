@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -20,6 +20,7 @@ import { useSession } from "next-auth/react";
 import qs from "qs";
 import React, { useEffect } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
+import { EventFormat, Language } from "@/config/prisma-enums";
 import type { ScheduleItemFormValues } from ".";
 
 const { RangePicker } = DatePicker;
@@ -107,7 +108,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		queryKey: ["work-directions"],
 		queryFn: () =>
 			axios
-				.get<prismaClient.WorkDirection[]>("/api/dictionary/work-directions")
+				.get<WorkDirection[]>("/api/dictionary/work-directions")
 				.then((res) => res.data),
 	});
 
@@ -179,8 +180,8 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				layout="vertical"
 				requiredMark="optional"
 				initialValues={{
-					format: prismaClient.$Enums.EventFormat.Online,
-					language: session?.user?.lang || prismaClient.$Enums.Language.en,
+					format: EventFormat.Online,
+					language: session?.user?.lang || Language.en,
 				}}
 			>
 				<Form.Item
@@ -290,12 +291,10 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 							label={t("event.schedule.format", "Format")}
 						>
 							<Select
-								options={Object.values(prismaClient.$Enums.EventFormat).map(
-									(format) => ({
-										label: format,
-										value: format,
-									}),
-								)}
+								options={Object.values(EventFormat).map((format) => ({
+									label: format,
+									value: format,
+								}))}
 							/>
 						</Form.Item>
 					</Col>
@@ -314,12 +313,10 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 							label={t("event.schedule.language", "Language")}
 						>
 							<Select
-								options={Object.values(prismaClient.$Enums.Language).map(
-									(language) => ({
-										label: language.toUpperCase(),
-										value: language,
-									}),
-								)}
+								options={Object.values(Language).map((language) => ({
+									label: language.toUpperCase(),
+									value: language,
+								}))}
 							/>
 						</Form.Item>
 					</Col>

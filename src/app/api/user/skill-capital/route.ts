@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { AdviceRequestStatus, ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import {
@@ -19,7 +19,7 @@ import { prisma } from "@/services/prisma";
 type SkillCapitalProjectItem = {
 	id: string;
 	name: string;
-	status: prismaClient.ProjectStatus;
+	status: ProjectStatus;
 	currentStepName?: string | null;
 	roles: string[];
 	leadershipCapital: number;
@@ -31,7 +31,7 @@ type SkillCapitalProjectItem = {
 type CapitalProjectAccumulator = {
 	id: string;
 	name: string;
-	status: prismaClient.ProjectStatus;
+	status: ProjectStatus;
 	currentStepName?: string | null;
 	roles: Set<string>;
 	stepsCount: number;
@@ -49,7 +49,7 @@ const ensureProjectAccumulator = ({
 	project: {
 		id: string;
 		name: string;
-		status: prismaClient.ProjectStatus;
+		status: ProjectStatus;
 		workflow?: {
 			currentStep?: { name?: string | null } | null;
 			steps?: { id: string }[];
@@ -146,10 +146,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 				where: {
 					toUserId: currentUser.id,
 					status: {
-						in: [
-							prismaClient.AdviceRequestStatus.Closed,
-							prismaClient.AdviceRequestStatus.Executed,
-						],
+						in: [AdviceRequestStatus.Closed, AdviceRequestStatus.Executed],
 					},
 					projectId: { not: null },
 					finishedAt: { not: null },
@@ -317,12 +314,11 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 	}
 
 	const releasedAsAuthor = authoredProjects.filter(
-		(project) => project.status === prismaClient.ProjectStatus.Released,
+		(project) => project.status === ProjectStatus.Released,
 	).length;
 	const startedAsAuthor = authoredProjects.length;
 	const killedWithDignityAsAuthor = authoredProjects.filter(
-		(project) =>
-			project.status === prismaClient.ProjectStatus.KilledWithDignity,
+		(project) => project.status === ProjectStatus.KilledWithDignity,
 	).length;
 	const riAuthorDenominator = Math.max(
 		startedAsAuthor - killedWithDignityAsAuthor,
@@ -375,7 +371,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 			),
 		};
 
-		if (project.status === prismaClient.ProjectStatus.Approved) {
+		if (project.status === ProjectStatus.Approved) {
 			active.push(item);
 		} else {
 			history.push(item);

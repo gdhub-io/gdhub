@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { LectureStage } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -57,11 +57,11 @@ export const POST = withAuth({ mode: "user" })(
 			data: {
 				...(other as any),
 				requestedBy:
-					other.stage === prismaClient.LectureStage.Requested
+					other.stage === LectureStage.Requested
 						? { connect: { id: currentUser.id as string } }
 						: undefined,
 				lecturer:
-					other.stage === prismaClient.LectureStage.Proposed
+					other.stage === LectureStage.Proposed
 						? { connect: { id: lecturerId } }
 						: undefined,
 				direction: { connect: { id: directionId } },

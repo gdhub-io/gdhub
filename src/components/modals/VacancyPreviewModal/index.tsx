@@ -1,4 +1,8 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	ProjectWorkflow,
+	ProjectWorkflowStep,
+	TeamVacancy,
+} from "@gdhub-io/gdhub-prisma";
 import { Markdown } from "@react-email/components";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { T, useTranslate } from "@tolgee/react";
@@ -52,8 +56,8 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		queryKey: ["vacancy", vacancyId],
 		queryFn: () =>
 			axios.get<
-				prismaClient.TeamVacancy & {
-					promiseStep: prismaClient.ProjectWorkflowStep;
+				TeamVacancy & {
+					promiseStep: ProjectWorkflowStep;
 					team: {
 						project: {
 							id: string;
@@ -62,8 +66,8 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							description: string;
 							coverImage: string;
 							videoLink: string;
-							workflow: prismaClient.ProjectWorkflow & {
-								steps: prismaClient.ProjectWorkflowStep[];
+							workflow: ProjectWorkflow & {
+								steps: ProjectWorkflowStep[];
 							};
 						};
 					};

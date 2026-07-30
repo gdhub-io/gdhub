@@ -1,4 +1,4 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { TeamDocument, User } from "@gdhub-io/gdhub-prisma";
 import { HiOutlineTrash } from "@react-icons/all-files/hi/HiOutlineTrash";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -30,8 +30,8 @@ const CreateDocumentModal = dynamic(
 	},
 );
 
-type TeamDocumentWithCreatedByUser = prismaClient.TeamDocument & {
-	createdByUser: prismaClient.User;
+type TeamDocumentWithCreatedByUser = TeamDocument & {
+	createdByUser: User;
 };
 
 const LinkPreviewText = ({ link }: { link: string }) => {

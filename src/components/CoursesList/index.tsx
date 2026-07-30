@@ -1,4 +1,10 @@
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Course,
+	CourseCurriculum,
+	CourseGroup,
+	CourseGroupSchedule,
+	WorkDirection,
+} from "@gdhub-io/gdhub-prisma";
 import { IconCurrencyEuro } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -21,11 +27,11 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 		queryKey: ["courses"],
 		queryFn: () =>
 			axios.get<
-				(prismaClient.Course & {
-					direction: prismaClient.WorkDirection;
-					groups: (prismaClient.CourseGroup & {
-						curriculum: prismaClient.CourseCurriculum;
-						schedule: prismaClient.CourseGroupSchedule[];
+				(Course & {
+					direction: WorkDirection;
+					groups: (CourseGroup & {
+						curriculum: CourseCurriculum;
+						schedule: CourseGroupSchedule[];
 					})[];
 				})[]
 			>("/api/courses"),
@@ -97,7 +103,7 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 											href={
 												location === "hub"
 													? `/hub/courses/${course.slug}`
-													: `/courses/${course.slug}`
+													: `/course/${course.slug}`
 											}
 										>
 											<Button type="primary" className="black-btn">

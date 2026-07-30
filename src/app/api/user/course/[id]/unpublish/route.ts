@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { CourseStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -10,7 +10,7 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	await prisma.course.update({
 		where: { id },
 		data: {
-			status: prismaClient.$Enums.CourseStatus.Draft,
+			status: CourseStatus.Draft,
 			publishedAt: null,
 		},
 	});

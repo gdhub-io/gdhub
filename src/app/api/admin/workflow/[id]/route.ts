@@ -1,5 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import type { Prisma } from "@prisma/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -21,7 +20,7 @@ type UpdateWorkflowBody = z.infer<typeof UpdateWorkflowSchema>;
 
 export const GET = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
@@ -36,7 +35,7 @@ export const GET = withAuth({
 
 export const PUT = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(
 	withValidation(UpdateWorkflowSchema)(async (_req, ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
@@ -50,7 +49,7 @@ export const PUT = withAuth({
 				name: name || undefined,
 				title: title || undefined,
 				description: description || undefined,
-				steps: steps as Prisma.InputJsonValue[] | undefined,
+				steps: steps as PrismaJson.WorkflowStep[] | undefined,
 			},
 		});
 
@@ -60,7 +59,7 @@ export const PUT = withAuth({
 
 export const DELETE = withAuth({
 	mode: "user",
-	roles: [prismaClient.UserRole.Admin],
+	roles: [UserRole.Admin],
 })(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();

@@ -13,6 +13,14 @@ import {
  * without it validation fails open and this test is skipped.
  */
 test.describe.serial("onboarding AI validation blocks bad input", () => {
+	// This is the one spec that needs the AI in the loop. Runs set
+	// AI_VALIDATION_ENABLED=false to keep onboarding fast and free of API calls,
+	// and with it off there is nothing here to assert.
+	test.skip(
+		process.env.AI_VALIDATION_ENABLED === "false",
+		"AI validation is disabled in this environment",
+	);
+
 	test.beforeAll(async () => {
 		await ensureOnboardingUser(ONBOARDING_AI_USER_EMAIL);
 	});
@@ -68,14 +76,15 @@ test.describe.serial("onboarding AI validation blocks bad input", () => {
 		await page.getByRole("button", { name: /save and continue/i }).click();
 
 		// --- Speciality: fill everything valid EXCEPT a gibberish name ---
-		await expect(
-			page.getByRole("heading", { level: 2, name: /speciality/i }),
-		).toBeVisible();
-
+		// "Speciality" is a label in the antd Steps bar, not a heading, so anchor
+		// on the step's own field instead.
 		const specialityName = page
 			.locator(".ant-form-item")
 			.filter({ hasText: /specialty name/i })
 			.getByRole("textbox");
+		// Saving the profile step runs AI validation, so the next step can take far
+		// longer than the default 5s expect budget to appear.
+		await expect(specialityName).toBeVisible({ timeout: 30_000 });
 		await specialityName.fill("asdfghjkl zxcvbnm qwerty");
 
 		await page

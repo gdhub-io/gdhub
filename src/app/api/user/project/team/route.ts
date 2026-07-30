@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
@@ -23,9 +23,9 @@ export const GET = withAuth({ mode: "user" })(
 					where: {
 						status: {
 							in: [
-								prismaClient.TeamMemberStatus.Founder,
-								prismaClient.TeamMemberStatus.Hired,
-								prismaClient.TeamMemberStatus.Fired,
+								TeamMemberStatus.Founder,
+								TeamMemberStatus.Hired,
+								TeamMemberStatus.Fired,
 							],
 						},
 					},

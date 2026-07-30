@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	BlogPostStatus,
+	EventStatus,
+	ProjectStatus,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import type { MetadataRoute } from "next";
 import { prisma } from "@/services/prisma";
@@ -11,9 +15,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			where: {
 				status: {
 					in: [
-						prismaClient.ProjectStatus.Approved,
-						prismaClient.ProjectStatus.Dormant,
-						prismaClient.ProjectStatus.Released,
+						ProjectStatus.Approved,
+						ProjectStatus.Dormant,
+						ProjectStatus.Released,
 					],
 				},
 				team: { vacancies: { some: {} } },
@@ -30,10 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		prisma.event.findMany({
 			where: {
 				status: {
-					in: [
-						prismaClient.EventStatus.Published,
-						prismaClient.EventStatus.Archived,
-					],
+					in: [EventStatus.Published, EventStatus.Archived],
 				},
 				schedule: { some: {} },
 			},
@@ -42,10 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		prisma.blogPost.findMany({
 			where: {
 				status: {
-					in: [
-						prismaClient.BlogPostStatus.Published,
-						prismaClient.BlogPostStatus.Archived,
-					],
+					in: [BlogPostStatus.Published, BlogPostStatus.Archived],
 				},
 			},
 			orderBy: { updatedAt: "desc" },
@@ -107,7 +105,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		entries.push({
 			url: `${websiteUrl}/event/${event.slug}`,
 			lastModified: event.updatedAt,
-			priority: event.status === prismaClient.EventStatus.Archived ? 0.3 : 0.7,
+			priority: event.status === EventStatus.Archived ? 0.3 : 0.7,
 		});
 	}
 

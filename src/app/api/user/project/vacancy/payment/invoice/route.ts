@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 
 import {
@@ -44,9 +44,9 @@ export const GET = withAuth({ mode: "user" })(
 
 		const payment = await prisma.payment.findFirst({
 			where: {
-				payableType: prismaClient.PayableType.VACANCY,
+				payableType: PayableType.VACANCY,
 				payableId: vacancyId,
-				status: prismaClient.PaymentStatus.COMPLETED,
+				status: PaymentStatus.COMPLETED,
 				providerTransactionId: { not: null },
 			},
 			orderBy: { completedAt: "desc" },

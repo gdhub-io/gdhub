@@ -9,7 +9,7 @@ import {
 import type { ICellProps } from "@svar-ui/react-grid";
 import type { IMenuOption, IMenuOptionClick } from "@svar-ui/react-menu";
 import "@svar-ui/react-gantt/all.css";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Language } from "@gdhub-io/gdhub-prisma";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { Avatar, Button, Dropdown, Space, Tag, Typography } from "antd";
 import dayjs from "dayjs";
@@ -154,7 +154,7 @@ export const EventScheduleGantt = forwardRef<
 					sort: false,
 					cell: (params: ICellProps) => {
 						const row = params.row as {
-							language?: prismaClient.$Enums.Language;
+							language?: Language;
 							text?: string;
 						};
 						return (

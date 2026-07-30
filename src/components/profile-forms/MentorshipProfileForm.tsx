@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Profile } from "@gdhub-io/gdhub-prisma";
 import { FiTrash2 } from "@react-icons/all-files/fi/FiTrash2";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -20,11 +20,12 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
+import { SkillLevel, UserRole } from "@/config/prisma-enums";
 
 const { Paragraph, Text } = Typography;
 
 type MentorshipProfileFormArgs = {
-	profile: prismaClient.Profile;
+	profile: Profile;
 	onUpdate: () => Promise<void> | void;
 };
 
@@ -53,9 +54,7 @@ const MentorshipProfileForm = ({
 
 	useEffect(() => {
 		if (session) {
-			setEnabled(
-				session.user.roles.includes(prismaClient.$Enums.UserRole.Mentor),
-			);
+			setEnabled(session.user.roles.includes(UserRole.Mentor));
 		}
 	}, [session]);
 
@@ -96,10 +95,7 @@ const MentorshipProfileForm = ({
 		queryFn: () =>
 			axios.get<any>("/api/user/specialities", {
 				params: {
-					level: [
-						prismaClient.$Enums.SkillLevel.Experienced,
-						prismaClient.$Enums.SkillLevel.Expert,
-					],
+					level: [SkillLevel.Experienced, SkillLevel.Expert],
 				},
 			}),
 		enabled,

@@ -1,4 +1,8 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type {
+	Project,
+	ProjectWorkflow,
+	ProjectWorkflowStep,
+} from "@gdhub-io/gdhub-prisma";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
 import { TbInfoCircle } from "@react-icons/all-files/tb/TbInfoCircle";
 import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
@@ -22,6 +26,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
+import { ProjectStatus } from "@/config/prisma-enums";
 import { normUploadFile } from "@/helpers/file";
 import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import styles from "./style.module.scss";
@@ -51,9 +56,9 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 		queryKey: ["project", projectSlug],
 		queryFn: () =>
 			axios.get<
-				prismaClient.Project & {
-					workflow: prismaClient.ProjectWorkflow & {
-						steps: prismaClient.ProjectWorkflowStep[];
+				Project & {
+					workflow: ProjectWorkflow & {
+						steps: ProjectWorkflowStep[];
 					};
 				}
 			>("/api/user/project", {
@@ -73,12 +78,11 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 			setVideoUrl(ReactPlayer.canPlay?.(playable) ? playable : undefined);
 		}
 	}, [project?.data]);
-	const isProjectArchived =
-		project?.data.status === prismaClient.ProjectStatus.Archived;
+	const isProjectArchived = project?.data.status === ProjectStatus.Archived;
 
 	const { mutateAsync: updateProject, isPending: isUpdating } = useMutation({
 		mutationFn: (data: any) =>
-			axios.put<prismaClient.Project>("/api/user/project", data, {
+			axios.put<Project>("/api/user/project", data, {
 				params: { id: project?.data.id },
 			}),
 	});
@@ -109,7 +113,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 				coverImage: cover ? cover : null,
 			};
 
-			if (project?.data.status === prismaClient.ProjectStatus.Approved) {
+			if (project?.data.status === ProjectStatus.Approved) {
 				payload.videoLink = videoUrl ? videoUrl : null;
 			}
 
@@ -302,7 +306,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 							</Spin>
 						)}
 					</Col>
-					{project?.data.status === prismaClient.ProjectStatus.Approved && (
+					{project?.data.status === ProjectStatus.Approved && (
 						<Col xs={24} md={12} lg={8} className={styles.mediaCol}>
 							<Flex
 								justify="space-between"

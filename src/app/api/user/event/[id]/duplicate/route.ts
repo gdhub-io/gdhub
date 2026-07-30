@@ -1,5 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import { Prisma } from "@prisma/client";
+import { EventStatus, Language, Prisma } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -11,9 +10,7 @@ import {
 import { prisma } from "@/services/prisma";
 
 const DuplicateEventSchema = z.object({
-	lang: z.enum(
-		Object.values(prismaClient.$Enums.Language) as [string, ...string[]],
-	),
+	lang: z.enum(Object.values(Language) as [string, ...string[]]),
 });
 
 type DuplicateEventBody = z.infer<typeof DuplicateEventSchema>;
@@ -58,11 +55,11 @@ export const POST = withAuth({ mode: "user" })(
 		const duplicateEvent = await prisma.event.create({
 			data: {
 				...data,
-				status: prismaClient.$Enums.EventStatus.Draft,
+				status: EventStatus.Draft,
 				publishedAt: null,
 				content: data.content === null ? Prisma.JsonNull : data.content,
 				parentId: event.id,
-				lang: lang as prismaClient.$Enums.Language,
+				lang: lang as Language,
 			},
 		});
 

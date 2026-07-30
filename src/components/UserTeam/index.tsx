@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { Team, TeamMember, User } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Grid, Space, Tag, Typography } from "antd";
@@ -9,6 +9,7 @@ import { useContext } from "react";
 import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import UserEquitySection from "@/components/UserEquitySection";
+import { TeamMemberStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
 
 const { Text } = Typography;
@@ -23,8 +24,8 @@ const UserTeam = () => {
 		queryKey: ["user-project-team", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<
-				prismaClient.Team & {
-					members: (prismaClient.TeamMember & { user: prismaClient.User })[];
+				Team & {
+					members: (TeamMember & { user: User })[];
 				}
 			>("/api/user/project/team", {
 				params: { teamId: contextProject?.team?.id },
@@ -32,9 +33,7 @@ const UserTeam = () => {
 		enabled: !!contextProject?.team?.id,
 	});
 
-	const columns: ColumnsType<
-		prismaClient.TeamMember & { user: prismaClient.User }
-	> = [
+	const columns: ColumnsType<TeamMember & { user: User }> = [
 		{
 			title: t("Member Name"),
 			key: "userName",
@@ -46,7 +45,7 @@ const UserTeam = () => {
 						</Text>
 						{!screens.md && (
 							<Text className={tableStyles.tableMemberPosition}>
-								{member.status === prismaClient.TeamMemberStatus.Founder
+								{member.status === TeamMemberStatus.Founder
 									? `${member.position} (founder)`
 									: member.position}
 							</Text>
@@ -61,7 +60,7 @@ const UserTeam = () => {
 			key: "position",
 			responsive: ["md"],
 			render: (value, member) => {
-				return member.status === prismaClient.TeamMemberStatus.Founder ? (
+				return member.status === TeamMemberStatus.Founder ? (
 					<Space>
 						<Text>{value}</Text>
 						<Tag color="gold">founder</Tag>

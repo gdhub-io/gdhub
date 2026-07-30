@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { Currency } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -15,9 +15,7 @@ const TeamInvestorUpdateSchema = z.object({
 	userId: z.string().optional(),
 	teamId: z.string().optional(),
 	share: z.number().optional(),
-	currency: z
-		.enum(Object.values(prismaClient.$Enums.Currency) as [string, ...string[]])
-		.optional(),
+	currency: z.enum(Object.values(Currency) as [string, ...string[]]).optional(),
 	value: z.number().optional(),
 	purchasedAt: z.string().optional(),
 });
@@ -52,9 +50,7 @@ export const PUT = withAuth({ mode: "user" })(
 				where: { id },
 				data: {
 					...data,
-					currency:
-						(data.currency as prismaClient.$Enums.Currency) ||
-						prismaClient.$Enums.Currency.USD,
+					currency: (data.currency as Currency) || Currency.USD,
 					purchasedAt: data.purchasedAt
 						? new Date(data.purchasedAt)
 						: undefined,

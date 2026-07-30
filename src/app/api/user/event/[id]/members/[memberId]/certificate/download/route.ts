@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { apiError, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { LegalService } from "@/services/legal";
 import { resolveMemberCertificateContext } from "../../../../_helpers";
@@ -11,7 +11,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(prismaClient.UserRole.Admin);
+	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const eventCtx = await resolveMemberCertificateContext(memberId);
 

@@ -1,11 +1,11 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import type { EventType } from "@gdhub-io/gdhub-prisma";
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, type PDFFont, rgb } from "pdf-lib";
 
 export type EventCertificateTemplateInput = {
-	eventType: prismaClient.$Enums.EventType;
+	eventType: EventType;
 	organizerName: string;
 	organizerTitle: string;
 	startDate: Date | null;
@@ -297,7 +297,7 @@ export async function renderEventCertificatePdf({
 
 	const isGameLab = eventType === "GameLab";
 
-	const eventTypeLabel: Record<prismaClient.$Enums.EventType, string> = {
+	const eventTypeLabel: Record<EventType, string> = {
 		Meetup: "meetup",
 		Workshop: "workshop",
 		GameJam: "game jam",

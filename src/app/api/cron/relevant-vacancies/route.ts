@@ -1,4 +1,9 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import {
+	type Project,
+	type TeamVacancy,
+	TeamVacancyStatus,
+	type User,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { json } from "@/lib/api-handlers";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
@@ -14,11 +19,9 @@ const vacancyWithAuthor = {
 	},
 } as const;
 
-type VacancyWithAuthor = prismaClient.TeamVacancy & {
+type VacancyWithAuthor = TeamVacancy & {
 	team?: {
-		project?:
-			| (prismaClient.Project & { author?: prismaClient.User | null })
-			| null;
+		project?: (Project & { author?: User | null }) | null;
 	} | null;
 };
 
@@ -36,7 +39,7 @@ async function notifyAuthor(
 			payload: {
 				...payload,
 				redirectUrl: projectSlug
-					? `${process.env.NEXT_PUBLIC_APP_URL}/my/projects/${projectSlug}`
+					? `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${projectSlug}`
 					: undefined,
 			},
 		});
@@ -51,7 +54,7 @@ export async function GET() {
 	const reminderDay = dayjs().add(EXPIRY_REMINDER_DAYS, "day");
 	const expiringSoon = (await prisma.teamVacancy.findMany({
 		where: {
-			status: prismaClient.TeamVacancyStatus.Published,
+			status: TeamVacancyStatus.Published,
 			finishedAt: {
 				gte: reminderDay.startOf("day").toDate(),
 				lte: reminderDay.endOf("day").toDate(),
@@ -70,7 +73,7 @@ export async function GET() {
 	// 2) Archive expired listings and notify their authors.
 	const notRelevantVacancies = (await prisma.teamVacancy.findMany({
 		where: {
-			status: prismaClient.TeamVacancyStatus.Published,
+			status: TeamVacancyStatus.Published,
 			finishedAt: { lt: dayjs().endOf("day").toDate() },
 		},
 		...vacancyWithAuthor,
@@ -82,7 +85,7 @@ export async function GET() {
 
 	const updatedVacancies = await prisma.teamVacancy.updateMany({
 		where: { id: { in: notRelevantVacancies.map((vacancy) => vacancy.id) } },
-		data: { status: prismaClient.TeamVacancyStatus.Closed },
+		data: { status: TeamVacancyStatus.Closed },
 	});
 
 	for (const vacancy of notRelevantVacancies) {

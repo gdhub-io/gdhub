@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { ChatRoomStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { getChatProvider } from "@/services/chat/providers";
 import { makeRoomReadOnly } from "@/services/matrix/admin";
@@ -64,15 +64,15 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	}
 
 	let closedRoom = room;
-	if (room.status !== prismaClient.ChatRoomStatus.Closed) {
+	if (room.status !== ChatRoomStatus.Closed) {
 		const finishedAt = new Date();
 		await prisma.chatRoom.update({
 			where: { id: room.id },
-			data: { status: prismaClient.ChatRoomStatus.Closed, finishedAt },
+			data: { status: ChatRoomStatus.Closed, finishedAt },
 		});
 		closedRoom = {
 			...room,
-			status: prismaClient.ChatRoomStatus.Closed,
+			status: ChatRoomStatus.Closed,
 			finishedAt,
 		};
 

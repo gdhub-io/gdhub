@@ -15,25 +15,35 @@ test("/registration loads", async ({ page }) => {
 	await expect(page.getByRole("button", { name: /create new account/i })).toBeVisible();
 });
 
-test("/registration/onboarding loads (welcome step for unauth visitor)", async ({
+// /registration/onboarding is listed in the proxy matcher, so it is auth-gated:
+// an anonymous visitor never sees the welcome step. The onboarding flow itself
+// is covered by the `onboarding` project, which signs in first.
+test("/registration/onboarding sends an unauthenticated visitor to sign in", async ({
 	page,
 }) => {
 	const response = await page.goto("/registration/onboarding");
 	expect(response?.status()).toBeLessThan(400);
-	await expect(page).toHaveTitle(/registration/i);
+	await expect(page).toHaveURL(/\/signin/);
 });
 
-test("/invite/<missing-token> renders error card", async ({ page }) => {
+// An invite link for a signed-out visitor goes to sign-in with a callback back
+// to the invite, so the token is only validated once there is a session. The
+// bad-token error card is asserted in team-invite.authed.spec.ts.
+test("/invite/<token> sends an unauthenticated visitor to sign in", async ({
+	page,
+}) => {
 	const response = await page.goto("/invite/__definitely-missing__");
 	expect(response?.status()).toBeLessThan(400);
-	await expect(page.getByText(/error|failed/i).first()).toBeVisible();
+	await expect(page).toHaveURL(/\/signin\?callbackUrl=.*invite/);
 });
 
 test("/signin?error=RefreshTokenExpired shows session-expired message", async ({
 	page,
 }) => {
 	await page.goto("/signin?error=RefreshTokenExpired");
-	await expect(page.getByText(/session has expired/i)).toBeVisible({
+	// `.first()`: React strict mode runs the effect twice in dev, so the toast
+	// renders twice and a bare locator trips strict mode.
+	await expect(page.getByText(/session has expired/i).first()).toBeVisible({
 		timeout: 5_000,
 	});
 });

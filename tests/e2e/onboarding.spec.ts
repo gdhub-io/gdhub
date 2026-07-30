@@ -16,7 +16,7 @@ test.describe.serial("onboarding flow for a new user", () => {
 	});
 
 	test("complete onboarding from welcome to hub", async ({ page, baseURL }) => {
-		test.setTimeout(60_000);
+		test.setTimeout(120_000);
 		// --- Sign in as the fresh (non-onboarded) user ---
 		const csrfRes = await page.request.get("/api/auth/csrf");
 		const { csrfToken } = (await csrfRes.json()) as { csrfToken: string };
@@ -70,16 +70,16 @@ test.describe.serial("onboarding flow for a new user", () => {
 		await page.getByRole("button", { name: /save and continue/i }).click();
 
 		// --- Step 2: Speciality ---
-		await expect(
-			page.getByRole("heading", { level: 2, name: /speciality/i }),
-		).toBeVisible();
-
-		// Specialty Name
-		await page
+		// "Speciality" is a label in the antd Steps bar, not a heading, so anchor
+		// on the step's own field instead.
+		const specialityName = page
 			.locator(".ant-form-item")
 			.filter({ hasText: /specialty name/i })
-			.getByRole("textbox")
-			.fill("Game Designer");
+			.getByRole("textbox");
+		// Saving the profile step runs AI validation, so the next step can take far
+		// longer than the default 5s expect budget to appear.
+		await expect(specialityName).toBeVisible({ timeout: 30_000 });
+		await specialityName.fill("Game Designer");
 
 		// Level select
 		await page
@@ -114,12 +114,13 @@ test.describe.serial("onboarding flow for a new user", () => {
 		await page.getByRole("button", { name: /save and continue/i }).click();
 
 		// --- Step 3: Interests ---
-		await expect(
-			page.getByRole("heading", { level: 2, name: /interests/i }),
-		).toBeVisible();
-
-		// Click the first interest card (Author)
-		await page.locator("[role='button']", { hasText: /author/i }).click();
+		// "Interests" is a label in the antd Steps bar, not a heading, so assert on
+		// the step's own content instead.
+		const authorCard = page
+			.locator("[role='button']", { hasText: /author/i })
+			.first();
+		await expect(authorCard).toBeVisible();
+		await authorCard.click();
 
 		await page.getByRole("button", { name: /save and continue/i }).click();
 

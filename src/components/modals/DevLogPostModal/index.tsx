@@ -1,6 +1,5 @@
 import type { OutputData } from "@editorjs/editorjs";
-import type prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
-import type { JsonObject } from "@prisma/client/runtime/library";
+import type { Prisma, ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Modal } from "antd";
@@ -34,13 +33,13 @@ export const DevLogPostModal = ({
 
 	const { mutateAsync: createProjectReport, isPending: isCreating } =
 		useMutation({
-			mutationFn: (data: Omit<Partial<prismaClient.ProjectReport>, "id">) =>
+			mutationFn: (data: Omit<Partial<ProjectReport>, "id">) =>
 				axios.post<void>("/api/user/project/report", data),
 		});
 
 	const { mutateAsync: updateProjectReport, isPending: isUpdating } =
 		useMutation({
-			mutationFn: (data: Partial<prismaClient.ProjectReport>) =>
+			mutationFn: (data: Partial<ProjectReport>) =>
 				axios.put<void>("/api/user/project/report", data),
 		});
 
@@ -51,13 +50,13 @@ export const DevLogPostModal = ({
 			await createProjectReport({
 				projectId,
 				content: "",
-				contentEditor: contentEditor as unknown as JsonObject,
+				contentEditor: contentEditor as unknown as Prisma.JsonObject,
 			});
 		} else {
 			await updateProjectReport({
 				id: postId,
 				content: "",
-				contentEditor: contentEditor as unknown as JsonObject,
+				contentEditor: contentEditor as unknown as Prisma.JsonObject,
 			});
 		}
 

@@ -6,8 +6,9 @@ const staticPages = [
 	{ path: "/cookie-policy", titleHint: /cookie/i },
 	{ path: "/privacy-policy", titleHint: /privacy/i },
 	{ path: "/events", titleHint: /event/i },
-	{ path: "/ui-test", titleHint: /.+/ },
-	{ path: "/test-seo", titleHint: /home page title/i },
+	// /ui-test and /test-seo used to live at the root. They now sit under
+	// /dev/* inside the (spaces) group, which the proxy matcher gates behind
+	// auth — so an anonymous visitor only ever gets the sign-in page.
 ];
 
 for (const { path, titleHint } of staticPages) {

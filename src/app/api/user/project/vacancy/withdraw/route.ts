@@ -1,4 +1,4 @@
-import prismaClient from "@gdhub-io/gdhub-prisma/dist/client";
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -31,7 +31,7 @@ export const PUT = withAuth({ mode: "user" })(
 				team: {
 					select: {
 						members: {
-							where: { status: prismaClient.TeamMemberStatus.Founder },
+							where: { status: TeamMemberStatus.Founder },
 							select: { userId: true, user: true },
 						},
 					},
