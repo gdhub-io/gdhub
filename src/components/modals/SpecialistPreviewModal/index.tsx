@@ -5,6 +5,7 @@ import type {
 	WorkDirection,
 } from "@gdhub-io/gdhub-prisma";
 import {
+	IconArrowUpRight,
 	IconAward,
 	IconBriefcase,
 	IconClock,
@@ -14,8 +15,9 @@ import {
 	IconLock,
 	IconMapPin,
 	IconMessageCircle,
-	IconPlayerPlay,
+	IconPlayerPlayFilled,
 	IconRosetteDiscountCheck,
+	IconShieldCheck,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -35,6 +37,8 @@ import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
 import { getWorkDirection } from "@/components/DirectionBadge";
 import OfferPositionModal from "@/components/modals/OfferPositionModal";
+import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
+import { ProjectStatus } from "@/config/prisma-enums";
 import { useMyOpenPositions } from "@/hooks/useVacancyChat";
 import styles from "./style.module.scss";
 
@@ -48,15 +52,21 @@ type SpecialistProject = {
 	description: string | null;
 	videoLink: string | null;
 	genre: string | null;
+	platform: string | null;
+	projectStatus: ProjectStatus;
+	author: { name: string | null; image: string | null } | null;
+	teamSize: number;
 	role: string | null;
 	status: string;
 	startedAt: string | null;
+	finishedAt: string | null;
 	active: boolean;
 };
 
 type SpecialistCertificate = {
 	number: string;
 	issuedAt: string;
+	mentors: string[];
 	event: {
 		title: string;
 		type: string;
@@ -99,6 +109,39 @@ const formatDate = (value?: string | null) =>
 			})
 		: "";
 
+const formatMonth = (value?: string | null) =>
+	value
+		? new Date(value).toLocaleDateString(undefined, {
+				year: "numeric",
+				month: "short",
+			})
+		: "";
+
+const toInitials = (name?: string | null) =>
+	(name || "?")
+		.split(" ")
+		.map((word: string) => word[0])
+		.slice(0, 2)
+		.join("")
+		.toUpperCase();
+
+// Project lifecycle → the badge shown on the compact project card. Everything
+// that is neither released nor shut down reads as "in development".
+const projectStatusLabel = (status: ProjectStatus, t: any) => {
+	switch (status) {
+		case ProjectStatus.Released:
+			return t("specialist.preview.statusReleased", "Released");
+		case ProjectStatus.Archived:
+			return t("specialist.preview.statusArchived", "Archived");
+		case ProjectStatus.Dormant:
+			return t("specialist.preview.statusDormant", "On hold");
+		case ProjectStatus.KilledWithDignity:
+			return t("specialist.preview.statusClosed", "Closed");
+		default:
+			return t("specialist.preview.statusInDevelopment", "In development");
+	}
+};
+
 const matchColor = (percent: number, token: any) => {
 	if (percent >= 80) return token.colorSuccess;
 	if (percent >= 60) return token.colorWarning;
@@ -108,6 +151,33 @@ const matchColor = (percent: number, token: any) => {
 // Keep the rail tidy for prolific members — active projects first, the rest
 // behind a "show more" toggle.
 const PROJECTS_LIMIT = 5;
+
+// The compact cards paint their own cover/banner edge to edge, so the popover
+// shell must not add padding of its own.
+const CARD_POPOVER_STYLES = {
+	container: { padding: 0, borderRadius: 14, overflow: "hidden" },
+	content: { padding: 0 },
+} as const;
+
+// Shared shell for the compact cards opened from the left rail. `destroyOnHidden`
+// unmounts the card on close, so a reopened one starts from a clean state.
+const CardPopover = ({
+	content,
+	children,
+}: {
+	content: React.ReactNode;
+	children: React.ReactNode;
+}) => (
+	<Popover
+		trigger="click"
+		placement="right"
+		destroyOnHidden
+		styles={CARD_POPOVER_STYLES}
+		content={content}
+	>
+		{children}
+	</Popover>
+);
 
 // A darker shade of the header's direction tint — same hue, low lightness —
 // used for the "Talent card" eyebrow so it reads as "the background, darker".
@@ -180,12 +250,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 		: null;
 	const DirIcon = direction?.icon;
 
-	const initials = (data?.user.name || data?.name || "?")
-		.split(" ")
-		.map((w: string) => w[0])
-		.slice(0, 2)
-		.join("")
-		.toUpperCase();
+	const initials = toInitials(data?.user.name || data?.name);
 
 	const timeForWork = data?.user.profile?.timeForWork;
 
@@ -698,12 +763,7 @@ const ProjectMiniCard = ({
 	project: SpecialistProject;
 	t: any;
 }) => (
-	<Popover
-		trigger="click"
-		placement="right"
-		classNames={{ root: styles.popoverRoot }}
-		content={<ProjectPreview project={project} t={t} />}
-	>
+	<CardPopover content={<ProjectPreview project={project} t={t} />}>
 		<button type="button" className={styles.miniCard}>
 			<span
 				className={styles.miniCover}
@@ -720,62 +780,133 @@ const ProjectMiniCard = ({
 				)}
 			</span>
 		</button>
-	</Popover>
+	</CardPopover>
 );
 
+// Compact project card ("Popover — Project"). Public-facing: no equity, cap
+// table or other author/scout-only data. The participation block is rendered
+// only when the viewed user actually has a role in the project.
 const ProjectPreview = ({
 	project,
 	t,
 }: {
 	project: SpecialistProject;
 	t: any;
-}) => (
-	<div className={styles.projectPop}>
-		<div
-			className={styles.ppCover}
-			style={
-				project.coverImage
-					? { backgroundImage: `url(${project.coverImage})` }
-					: undefined
-			}
-		>
-			<span className={styles.ppTitle}>{project.name}</span>
-		</div>
-		<div className={styles.ppBody}>
-			<div className={styles.ppChips}>
-				{!!project.genre && <Tag className={styles.tag}>{project.genre}</Tag>}
-				<Tag className={project.active ? styles.tagActive : styles.tag}>
-					{project.active
-						? t("specialist.preview.active", "Active")
-						: t("specialist.preview.past", "Past")}
-				</Tag>
-			</div>
-			{!!project.description && (
-				<Paragraph className={styles.ppDesc} ellipsis={{ rows: 4 }}>
-					{project.description}
-				</Paragraph>
-			)}
-			{!!project.videoLink && (
-				<Link
-					href={project.videoLink}
-					target="_blank"
-					className={styles.ppVideoBtn}
-				>
-					<IconPlayerPlay size={14} />
-					{t("specialist.preview.watchVideo", "Watch video")}
-				</Link>
-			)}
-			{!!project.role && (
-				<div className={styles.ppRole}>
-					<span className={styles.fieldLabel}>
-						{t("specialist.preview.roleInProject", "Role")}
-					</span>
-					<span className={styles.fieldValue}>{project.role}</span>
+}) => {
+	const authorName = project.author?.name;
+	const period = [
+		formatMonth(project.startedAt),
+		project.finishedAt
+			? formatMonth(project.finishedAt)
+			: t("specialist.preview.present", "Present"),
+	]
+		.filter(Boolean)
+		.join(" — ");
+
+	return (
+		<div className={styles.projectPop}>
+			<ProjectVideoCover
+				className={styles.ppCover}
+				coverImage={project.coverImage}
+				videoLink={project.videoLink}
+				alt={project.name}
+				renderPlay={(play) => (
+					<button type="button" className={styles.ppPitchBtn} onClick={play}>
+						<IconPlayerPlayFilled size={11} />
+						{t("specialist.preview.watchPitch", "Watch pitch")}
+					</button>
+				)}
+			>
+				<span className={styles.ppTitleBar}>
+					<span className={styles.ppTitle}>{project.name}</span>
+				</span>
+			</ProjectVideoCover>
+			<div className={styles.ppBody}>
+				<div className={styles.ppChips}>
+					<Tag className={styles.ppStatusTag}>
+						{projectStatusLabel(project.projectStatus, t)}
+					</Tag>
+					{!!project.genre && <Tag className={styles.tag}>{project.genre}</Tag>}
+					{!!project.platform && (
+						<Tag className={styles.tag}>{project.platform}</Tag>
+					)}
 				</div>
-			)}
+
+				{!!project.description && (
+					<Paragraph className={styles.ppDesc} ellipsis={{ rows: 6 }}>
+						{project.description}
+					</Paragraph>
+				)}
+
+				{(!!authorName || project.teamSize > 0) && (
+					<>
+						<div className={styles.ppSep} />
+						<div className={styles.ppBox}>
+							<div className={styles.ppBoxTop}>
+								<span className={styles.ppBoxLabel}>
+									{t("specialist.preview.author", "Author")}
+								</span>
+								{project.teamSize > 0 && (
+									<span className={styles.ppTeam}>
+										<span className={styles.ppTeamLabel}>
+											{t("specialist.preview.teamSize", "Team size")}
+										</span>
+										<span className={styles.ppTeamValue}>
+											{project.teamSize}
+										</span>
+									</span>
+								)}
+							</div>
+							{!!authorName && (
+								<div className={styles.ppAuthor}>
+									<span className={styles.ppAvatar}>
+										{project.author?.image ? (
+											// biome-ignore lint/performance/noImgElement: external avatar url
+											<img
+												src={project.author.image}
+												alt={authorName}
+												className={styles.ppAvatarImg}
+											/>
+										) : (
+											toInitials(authorName)
+										)}
+									</span>
+									<span className={styles.ppAuthorName}>{authorName}</span>
+								</div>
+							)}
+						</div>
+					</>
+				)}
+
+				{!!project.role && (
+					<>
+						<div className={styles.ppSep} />
+						<div className={styles.ppBox}>
+							<div className={styles.ppBoxTop}>
+								<span className={styles.ppBoxLabel}>
+									{t("specialist.preview.imThere", "I'm there")}
+								</span>
+								{!!period && <span className={styles.ppPeriod}>{period}</span>}
+							</div>
+							<span className={styles.ppRoleValue}>{project.role}</span>
+						</div>
+					</>
+				)}
+
+				{!!project.slug && (
+					<Link
+						href={`/project/${project.slug}`}
+						target="_blank"
+						className={styles.ppViewBtn}
+					>
+						{t("specialist.preview.viewProject", "View project")}
+						<IconArrowUpRight size={14} />
+					</Link>
+				)}
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 const CertificateMiniCard = ({
 	cert,
@@ -784,25 +915,8 @@ const CertificateMiniCard = ({
 	cert: SpecialistCertificate;
 	t: any;
 }) => (
-	<Tooltip
-		placement="right"
-		title={
-			<div className={styles.certTip}>
-				<div className={styles.certTipTitle}>
-					{cert.event?.title ||
-						t("specialist.preview.certificate", "Certificate")}
-				</div>
-				<div className={styles.certTipRow}>
-					{t("specialist.preview.issued", "Issued")} {formatDate(cert.issuedAt)}
-				</div>
-				{!!cert.event?.organizerName && (
-					<div className={styles.certTipRow}>{cert.event.organizerName}</div>
-				)}
-				<div className={styles.certTipCode}>№ {cert.number}</div>
-			</div>
-		}
-	>
-		<div className={styles.miniCard}>
+	<CardPopover content={<CertificatePreview cert={cert} t={t} />}>
+		<button type="button" className={styles.miniCard}>
 			<span className={styles.certThumb}>
 				<IconAward size={18} color="#B45309" />
 			</span>
@@ -817,9 +931,114 @@ const CertificateMiniCard = ({
 					{new Date(cert.issuedAt).getFullYear()}
 				</span>
 			</span>
-		</div>
-	</Tooltip>
+		</button>
+	</CardPopover>
 );
+
+// Compact certificate card ("Popover — Certificate") — registry proof plus a
+// link to the public verification page.
+const CertificatePreview = ({
+	cert,
+	t,
+}: {
+	cert: SpecialistCertificate;
+	t: any;
+}) => {
+	const title =
+		cert.event?.title || t("specialist.preview.certificate", "Certificate");
+
+	return (
+		<div className={styles.certPop}>
+			<div className={styles.certBanner}>
+				<span className={styles.certBannerIcon}>
+					<IconShieldCheck size={18} color="#16A34A" />
+				</span>
+				<span className={styles.certBannerText}>
+					<span className={styles.certBannerTitle}>
+						{t(
+							"specialist.preview.verifiedCertificate",
+							"Verified certificate",
+						)}
+					</span>
+					<span className={styles.certBannerSub}>
+						{t(
+							"specialist.preview.foundInRegistry",
+							"Found in the gdhub registry",
+						)}
+					</span>
+				</span>
+			</div>
+
+			<div className={styles.certBody}>
+				<div className={styles.certHead}>
+					<span
+						className={styles.certCover}
+						style={
+							cert.event?.image
+								? { backgroundImage: `url(${cert.event.image})` }
+								: undefined
+						}
+					>
+						{!cert.event?.image && <IconAward size={22} color="#52525B" />}
+					</span>
+					<span className={styles.certHeadText}>
+						<span className={styles.certTitle}>{title}</span>
+						{!!cert.event?.type && (
+							<span className={styles.certSub}>
+								{cert.event.type} ·{" "}
+								{t("specialist.preview.participant", "Participant")}
+							</span>
+						)}
+					</span>
+				</div>
+
+				<div className={styles.certGrid}>
+					<CertField
+						label={t("specialist.preview.issued", "Issued")}
+						value={formatDate(cert.issuedAt)}
+					/>
+					<CertField
+						label={t("specialist.preview.certificateNumber", "Certificate №")}
+						value={cert.number}
+					/>
+					<CertField
+						label={t("specialist.preview.organizer", "Organizer")}
+						value={cert.event?.organizerName}
+					/>
+					<CertField
+						label={t("specialist.preview.mentor", "Mentor")}
+						value={cert.mentors?.join(", ")}
+					/>
+				</div>
+
+				<div className={styles.ppSep} />
+
+				<Link
+					href={`/verify/${cert.number}`}
+					target="_blank"
+					className={styles.ppViewBtn}
+				>
+					{t("specialist.preview.viewCertificate", "View certificate")}
+					<IconArrowUpRight size={14} />
+				</Link>
+			</div>
+		</div>
+	);
+};
+
+const CertField = ({
+	label,
+	value,
+}: {
+	label: string;
+	value?: string | null;
+}) =>
+	value ? (
+		<div className={styles.certField}>
+			<span className={styles.certFieldLabel}>{label}</span>
+			<span className={styles.certFieldValue}>{value}</span>
+		</div>
+	) : null;
 
 const MatchCard = ({ record, t }: { record: any; t: any }) => {
 	const { token } = theme.useToken();

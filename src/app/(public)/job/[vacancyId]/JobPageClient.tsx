@@ -6,7 +6,6 @@ import type {
 	TeamVacancy,
 } from "@gdhub-io/gdhub-prisma";
 import {
-	IconArrowLeft,
 	IconCoin,
 	IconHeartHandshake,
 	IconInfoCircle,
@@ -201,13 +200,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 					{ project: project?.name ?? "" },
 				)}
 				backgroundImage={pageCover || undefined}
-				extraPosition="top"
-				extra={
-					<Link href="/jobs" className={styles.backLink}>
-						<IconArrowLeft size={16} />
-						<span>{t("page.vacancy.title", "Jobs")}</span>
-					</Link>
-				}
+				backTo={{ href: "/jobs", label: t("page.vacancy.title", "Jobs") }}
 			/>
 
 			<div className="layout-background">

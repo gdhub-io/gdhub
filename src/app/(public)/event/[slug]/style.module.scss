@@ -1,9 +1,3 @@
-.parentLink {
-  // height: auto !important;
-  font-size: 16px !important;
-  transition: padding 0.3s ease !important;
-}
-
 .eventImage {
   border-radius: 12px;
   object-fit: cover;
@@ -18,8 +12,15 @@
   padding-left: 20px;
 } 
 
+.extraSep {
+  color: #ffffff54;
+  line-height: 1;
+  font-size: 16px;
+}
+
 .extraText {
   color: #fff;
   font-size: 16px;
   font-weight: 600;
+  margin: 0;
 }

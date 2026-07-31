@@ -26,11 +26,55 @@
   }
 }
 
-.title {
-  margin: 0;
+// Row sitting above the title: the back link plus any page-specific tail.
+.extra {
+  // Layout.Header sets line-height: 64px; without resetting it the link box is
+  // 64px tall and the gap to the title reads as ~32px instead of the 8px gap.
+  line-height: 1.5;
 }
 
-.titleTop {
+// Rendered by PublicPageHeader itself (`backTo`), so every public page gets the
+// same back link instead of each one hand-rolling its own.
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  color: #ff4d4f;
+  font-size: 16px;
+  transition: padding 0.3s ease;
+
+  // The arrow is collapsed and slides out on hover.
+  svg {
+    width: 0;
+    margin-right: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: width 0.3s ease, margin-right 0.3s ease, opacity 0.3s ease;
+  }
+
+  &:hover {
+    padding: 0 8px;
+    color: #ff4d4f;
+
+    svg {
+      width: 16px;
+      margin-right: 8px;
+      opacity: 1;
+    }
+  }
+
+  // Touch devices never fire :hover, so the arrow would never appear and the
+  // link would read as plain red text. Show it upfront there.
+  @media (hover: none) {
+    svg {
+      width: 16px;
+      margin-right: 8px;
+      opacity: 1;
+    }
+  }
+}
+
+.title {
   margin: 0;
 }
 
