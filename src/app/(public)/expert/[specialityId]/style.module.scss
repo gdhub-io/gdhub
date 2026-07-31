@@ -340,30 +340,6 @@
   }
 }
 
-.backButton {
-  @media (max-width: 576px) {
-    display: none;
-  }
-}
-
-.titleContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.title {
-  color: #fff !important;
-  margin: 0 !important;
-  font-size: 48px !important;
-}
-
-.projectTitle {
-  height: auto !important;
-  font-size: 16px !important;
-  transition: padding 0.3s ease !important;
-}
-
 .content {
   position: relative;
 }

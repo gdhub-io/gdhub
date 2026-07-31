@@ -5,6 +5,7 @@ import {
 	UserRole,
 } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { getCleanTextContent } from "@/helpers/content";
 import {
 	apiError,
 	json,
@@ -23,6 +24,9 @@ const SpecialistQuerySchema = z.object({
 });
 
 type SpecialistQuery = z.infer<typeof SpecialistQuerySchema>;
+
+// The compact project card in the talent card clamps the pitch at this length.
+const DESCRIPTION_LIMIT = 500;
 
 // Confirmed memberships surface as "projects the specialist works on". An
 // applicant/rejected/fired row is not a real participation.
@@ -125,6 +129,13 @@ export const GET = withAuth({ mode: "user" })(
 								finishedAt: true,
 								team: {
 									select: {
+										_count: {
+											select: {
+												members: {
+													where: { status: { in: CONFIRMED_MEMBER_STATUSES } },
+												},
+											},
+										},
 										project: {
 											select: {
 												id: true,
@@ -134,6 +145,9 @@ export const GET = withAuth({ mode: "user" })(
 												description: true,
 												videoLink: true,
 												genre: true,
+												platform: true,
+												status: true,
+												author: { select: { name: true, image: true } },
 											},
 										},
 									},
@@ -160,6 +174,9 @@ export const GET = withAuth({ mode: "user" })(
 									},
 								},
 								certificate: { select: { number: true, issuedAt: true } },
+								mentors: {
+									select: { name: true, user: { select: { name: true } } },
+								},
 							},
 						},
 					},
@@ -195,12 +212,24 @@ export const GET = withAuth({ mode: "user" })(
 					name: project.name,
 					slug: project.slug,
 					coverImage: project.coverImage,
-					description: project.description,
+					// The compact card shows a short plain-text pitch — don't ship the
+					// whole description (or its markdown) for every membership.
+					description: project.description
+						? getCleanTextContent(project.description, DESCRIPTION_LIMIT)
+						: null,
 					videoLink: project.videoLink,
 					genre: project.genre,
+					platform: project.platform,
+					projectStatus: project.status,
+					author: project.author
+						? { name: project.author.name, image: project.author.image }
+						: null,
+					// Confirmed members only — matches the "team size" shown on the card.
+					teamSize: member.team?._count.members ?? 0,
 					role: member.position,
 					status: member.status,
 					startedAt: member.startedAt,
+					finishedAt: member.finishedAt,
 					active: !member.finishedAt,
 				};
 			})
@@ -212,6 +241,9 @@ export const GET = withAuth({ mode: "user" })(
 				return {
 					number: member.certificate.number,
 					issuedAt: member.certificate.issuedAt,
+					mentors: member.mentors
+						.map((mentor) => mentor.user?.name || mentor.name)
+						.filter(Boolean),
 					event: member.event
 						? {
 								title: member.event.title,

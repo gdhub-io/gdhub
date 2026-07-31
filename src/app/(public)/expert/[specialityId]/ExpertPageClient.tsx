@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -14,16 +13,13 @@ import {
 	Input,
 	Modal,
 	Select,
-	Space,
 	Typography,
 } from "antd";
 import axios from "axios";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { getCleanTextContent } from "@/helpers/content";
-import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
 
@@ -68,57 +64,11 @@ export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 					getCleanTextContent(expert.speciality.summary || "", 100) || undefined
 				}
 				backgroundImage={expert.image || undefined}
-				title={
-					<div className={styles.titleContainer}>
-						<Link href={`/experts`}>
-							<Button
-								type="text"
-								size="small"
-								className={styles.projectTitle}
-								onMouseEnter={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "16px";
-										arrow.style.marginRight = "8px";
-										arrow.style.opacity = "1";
-									}
-									button.style.paddingLeft = "8px";
-									button.style.paddingRight = "8px";
-								}}
-								onMouseLeave={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "0";
-										arrow.style.marginRight = "0";
-										arrow.style.opacity = "0";
-									}
-									button.style.paddingLeft = "0";
-									button.style.paddingRight = "0";
-								}}
-							>
-								<Space size={0}>
-									<ArrowLeftOutlined
-										className="arrow"
-										style={{
-											width: 0,
-											marginRight: 0,
-											opacity: 0,
-											transition: "all 0.3s ease",
-											overflow: "hidden",
-											color: "#ff4d4f",
-										}}
-									/>
-									<span style={{ color: "#ff4d4f" }}>
-										{t("page.expert.back", "Experts")}
-									</span>
-								</Space>
-							</Button>
-						</Link>
-						<Title className={styles.title}>{expert.name}</Title>
-					</div>
-				}
+				title={expert.name}
+				backTo={{
+					href: "/experts",
+					label: t("page.expert.back", "Experts"),
+				}}
 			/>
 			<div className="layout-background">
 				<div style={{ maxWidth: 740, margin: "0 auto", padding: 16 }}>

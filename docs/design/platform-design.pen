@@ -48329,94 +48329,68 @@
           "id": "gg82a",
           "name": "cover",
           "clip": true,
-          "width": 320,
-          "height": 150,
+          "width": "fill_container",
           "fill": {
             "type": "image",
             "enabled": true,
             "url": "https://images.unsplash.com/photo-1678776044674-3a65e18639f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzYyNDYxNjh8&ixlib=rb-4.1.0&q=80&w=1080",
             "mode": "fill"
           },
-          "layout": "none",
+          "layout": "vertical",
+          "justifyContent": "end",
           "children": [
             {
               "type": "frame",
-              "id": "ho49P",
-              "x": 12,
-              "y": 12,
-              "name": "posPill",
-              "height": 26,
-              "fill": "#10B981E6",
-              "cornerRadius": 16,
-              "gap": 5,
-              "padding": [
-                0,
-                10
-              ],
-              "alignItems": "center",
+              "id": "opwcK",
+              "name": "coverSpacer",
+              "width": "fill_container",
+              "height": 99,
+              "padding": 12,
+              "justifyContent": "end",
               "children": [
                 {
-                  "type": "icon",
-                  "id": "N6heOM",
-                  "width": 12,
-                  "height": 12,
-                  "icon": "briefcase",
-                  "library": "lucide",
-                  "fill": "#FFFFFF"
-                },
-                {
-                  "type": "text",
-                  "id": "vtaVb",
-                  "fill": "#FFFFFF",
-                  "content": "3 open positions",
-                  "fontFamily": "$font",
-                  "fontSize": 11,
-                  "fontWeight": "600"
+                  "type": "frame",
+                  "id": "xpxWu",
+                  "name": "pitchPill",
+                  "height": 26,
+                  "fill": "#000000A6",
+                  "cornerRadius": 16,
+                  "gap": 5,
+                  "padding": [
+                    0,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "o7Ne5Y",
+                      "name": "pitchIcon",
+                      "width": 11,
+                      "height": 11,
+                      "icon": "play",
+                      "library": "lucide",
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "text",
+                      "id": "IVAeX",
+                      "name": "pitchLabel",
+                      "fill": "#FFFFFF",
+                      "content": "Watch pitch",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
                 }
               ]
             },
             {
               "type": "frame",
-              "id": "yPAwx",
-              "x": 252,
-              "y": 12,
-              "name": "memPill",
-              "width": 56,
-              "height": 26,
-              "fill": "#000000A6",
-              "cornerRadius": 16,
-              "gap": 5,
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "GtGpi",
-                  "width": 12,
-                  "height": 12,
-                  "icon": "users",
-                  "library": "lucide",
-                  "fill": "#FFFFFF"
-                },
-                {
-                  "type": "text",
-                  "id": "ulOTr",
-                  "fill": "#FFFFFF",
-                  "content": "5",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "600"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "TYQEh",
-              "x": 0,
-              "y": 70,
-              "name": "coverGrad",
-              "width": 320,
-              "height": 80,
+              "id": "N55Xu",
+              "name": "titleBar",
+              "width": "fill_container",
               "fill": {
                 "type": "gradient",
                 "gradientType": "linear",
@@ -48435,18 +48409,27 @@
                     "position": 1
                   }
                 ]
-              }
-            },
-            {
-              "type": "text",
-              "id": "r62Om",
-              "x": 16,
-              "y": 114,
-              "fill": "#FFFFFF",
-              "content": "Starbound Saga",
-              "fontFamily": "$font",
-              "fontSize": 18,
-              "fontWeight": "700"
+              },
+              "layout": "vertical",
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "S3bKmI",
+                  "name": "title",
+                  "fill": "#FFFFFF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Starbound Saga",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
             }
           ]
         },
@@ -48461,51 +48444,86 @@
           "children": [
             {
               "type": "frame",
-              "id": "iuplj",
+              "id": "s1TUda",
+              "name": "badges",
+              "width": "fill_container",
+              "layout": "vertical",
               "gap": 8,
-              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "g8z16",
-                  "fill": "#EDE9FE",
-                  "cornerRadius": 16,
-                  "padding": [
-                    4,
-                    10
-                  ],
+                  "id": "iuplj",
+                  "name": "badgesRow",
+                  "gap": 8,
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "text",
-                      "id": "aUWZf",
-                      "fill": "#6D28D9",
-                      "content": "In development",
-                      "fontFamily": "$font",
-                      "fontSize": 12,
-                      "fontWeight": "600"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "cp1Os",
-                  "fill": "#F4F4F5",
-                  "cornerRadius": 16,
-                  "padding": [
-                    4,
-                    10
-                  ],
-                  "alignItems": "center",
-                  "children": [
+                      "type": "frame",
+                      "id": "g8z16",
+                      "fill": "#EDE9FE",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "aUWZf",
+                          "fill": "#6D28D9",
+                          "content": "In development",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
                     {
-                      "type": "text",
-                      "id": "w6GpTB",
-                      "fill": "#3F3F46",
-                      "content": "RPG",
-                      "fontFamily": "$font",
-                      "fontSize": 12,
-                      "fontWeight": "500"
+                      "type": "frame",
+                      "id": "cp1Os",
+                      "fill": "#F4F4F5",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "w6GpTB",
+                          "fill": "#3F3F46",
+                          "content": "RPG",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GjY4e",
+                      "name": "platformChip",
+                      "fill": "#F4F4F5",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "k1cdL",
+                          "name": "platformLabel",
+                          "fill": "#3F3F46",
+                          "content": "PC / Mobile",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -48524,52 +48542,187 @@
               "fontWeight": "normal"
             },
             {
-              "type": "frame",
-              "id": "LGakD",
+              "type": "rectangle",
+              "id": "qPMIS",
+              "name": "sep",
+              "fill": "$border",
               "width": "fill_container",
-              "fill": "#FAFAFA",
-              "cornerRadius": 10,
-              "padding": [
-                10,
-                12
-              ],
-              "justifyContent": "space_between",
-              "alignItems": "center",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "pX9Z3",
+              "name": "authorSection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
               "children": [
                 {
                   "type": "frame",
-                  "id": "o7wHtD",
-                  "layout": "vertical",
-                  "gap": 2,
+                  "id": "b18vV",
+                  "name": "authorTop",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "l6e1k",
+                      "name": "authorLabel",
+                      "fill": "#A1A1AA",
+                      "content": "Author",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "VR3la",
+                      "name": "team",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "PyEFl",
+                          "name": "teamLabel",
+                          "fill": "#A1A1AA",
+                          "content": "Team size",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "pTlvl",
+                          "name": "teamCount",
+                          "fill": "#8C8C8C",
+                          "content": "5",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "G2ywl",
+                  "name": "author",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Y6ROGV",
+                      "name": "avatar",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "#E4E4E7",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "T9bA2A",
+                          "name": "initials",
+                          "fill": "#52525B",
+                          "content": "OM",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "j4cgM",
+                      "name": "authorInfo",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "XLopK",
+                          "name": "authorName",
+                          "fill": "#181818",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Owen Marsh",
+                          "lineHeight": 1.3,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "id": "SB6Xc",
+              "name": "sep",
+              "fill": "$border",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "LGakD",
+              "name": "userLink (optional)",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "DFUOX",
+                  "name": "userLinkTop",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "text",
                       "id": "uAuKS",
+                      "name": "roleLabel",
                       "fill": "#A1A1AA",
-                      "content": "Your role",
+                      "content": "I'm there",
                       "fontFamily": "$font",
                       "fontSize": 11,
                       "fontWeight": "600"
                     },
                     {
                       "type": "text",
-                      "id": "qZbxt",
-                      "fill": "#181818",
-                      "content": "Game Designer",
+                      "id": "RpUok",
+                      "name": "period",
+                      "fill": "#8C8C8C",
+                      "content": "Mar 2024 — Present",
                       "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "600"
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
                 {
                   "type": "text",
-                  "id": "RpUok",
-                  "fill": "#8C8C8C",
-                  "content": "Joined 2024",
+                  "id": "qZbxt",
+                  "name": "roleValue",
+                  "fill": "#181818",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Game Designer",
+                  "lineHeight": 1.35,
                   "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "fontSize": 13,
+                  "fontWeight": "600"
                 }
               ]
             },
@@ -48925,59 +49078,38 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "OYGtp",
-                  "name": "openCert",
+                  "id": "KWISB",
+                  "name": "viewCertBtn",
                   "width": "fill_container",
-                  "fill": "$btn-black",
+                  "height": 38,
+                  "fill": "#F4F4F5",
                   "cornerRadius": 10,
+                  "stroke": "$card-border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "gap": 6,
                   "padding": [
-                    10,
+                    9,
                     12
                   ],
                   "justifyContent": "center",
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "icon",
-                      "id": "rYVK7",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "eye",
-                      "library": "lucide",
-                      "fill": "#FFFFFF"
-                    },
-                    {
                       "type": "text",
-                      "id": "XgOoY",
-                      "fill": "#FFFFFF",
+                      "id": "RNBO7",
+                      "fill": "#1F1F1F",
                       "content": "View certificate",
                       "fontFamily": "$font",
                       "fontSize": 13,
-                      "fontWeight": "500"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "AWTDp",
-                  "name": "downloadCert",
-                  "width": 40,
-                  "height": 38,
-                  "fill": "#FFFFFF",
-                  "cornerRadius": 10,
-                  "stroke": "$card-border",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
+                      "fontWeight": "600"
+                    },
                     {
                       "type": "icon",
-                      "id": "jSAlz",
-                      "width": 15,
-                      "height": 15,
-                      "icon": "download",
+                      "id": "Dz7HX",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "arrow-up-right",
                       "library": "lucide",
                       "fill": "#1F1F1F"
                     }
@@ -74941,6 +75073,912 @@
                       "fontWeight": "normal"
                     }
                   ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "wYqHh",
+      "x": 1180,
+      "y": 12707,
+      "name": "Popover — Project (no user link)",
+      "clip": true,
+      "width": 320,
+      "fill": "#FFFFFF",
+      "cornerRadius": 14,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0F0F0F26",
+        "offset": {
+          "x": 0,
+          "y": 12
+        },
+        "blur": 40
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "pEX05",
+          "name": "cover",
+          "clip": true,
+          "width": "fill_container",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "https://images.unsplash.com/photo-1678776044674-3a65e18639f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzYyNDYxNjh8&ixlib=rb-4.1.0&q=80&w=1080",
+            "mode": "fill"
+          },
+          "layout": "vertical",
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "y7ODxz",
+              "name": "coverSpacer",
+              "width": "fill_container",
+              "height": 99,
+              "padding": 12,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "q0P06N",
+                  "name": "pitchPill",
+                  "height": 26,
+                  "fill": "#000000A6",
+                  "cornerRadius": 16,
+                  "gap": 5,
+                  "padding": [
+                    0,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "z9TYyf",
+                      "name": "pitchIcon",
+                      "width": 11,
+                      "height": 11,
+                      "icon": "play",
+                      "library": "lucide",
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hopJc",
+                      "name": "pitchLabel",
+                      "fill": "#FFFFFF",
+                      "content": "Watch pitch",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "MKnZO",
+              "name": "titleBar",
+              "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 180,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#00000000",
+                    "position": 0
+                  },
+                  {
+                    "color": "#000000E6",
+                    "position": 1
+                  }
+                ]
+              },
+              "layout": "vertical",
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "d7V3A9",
+                  "name": "title",
+                  "fill": "#FFFFFF",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Starbound Saga",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "UMDNK",
+          "name": "content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "dOERC",
+              "name": "badges",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "RgJl8",
+                  "name": "badgesRow",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "FurDV",
+                      "fill": "#EDE9FE",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "D7aqH",
+                          "fill": "#6D28D9",
+                          "content": "In development",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qv0Kc",
+                      "fill": "#F4F4F5",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "vZtZp",
+                          "fill": "#3F3F46",
+                          "content": "RPG",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uN8xc",
+                      "name": "platformChip",
+                      "fill": "#F4F4F5",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "eoWHG",
+                          "name": "platformLabel",
+                          "fill": "#3F3F46",
+                          "content": "PC / Mobile",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "n1Swl",
+              "fill": "#52525B",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "A story-driven sci-fi RPG about salvaging a derelict fleet. Focused on tight economy loops and branching crew decisions.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "gnooG",
+              "name": "sep",
+              "fill": "$border",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "IcwF4",
+              "name": "authorSection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "vkq4i",
+                  "name": "authorTop",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "mnY33",
+                      "name": "authorLabel",
+                      "fill": "#A1A1AA",
+                      "content": "Author",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "aZAXc",
+                      "name": "team",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "pjSGA",
+                          "name": "teamLabel",
+                          "fill": "#A1A1AA",
+                          "content": "Team size",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "tX0f5",
+                          "name": "teamCount",
+                          "fill": "#8C8C8C",
+                          "content": "5",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cnjCq",
+                  "name": "author",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "x8cDb",
+                      "name": "avatar",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "#E4E4E7",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "e8PzI6",
+                          "name": "initials",
+                          "fill": "#52525B",
+                          "content": "OM",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "M9bD99",
+                      "name": "authorInfo",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "LOMfn",
+                          "name": "authorName",
+                          "fill": "#181818",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Owen Marsh",
+                          "lineHeight": 1.3,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Z1JeJN",
+              "name": "viewBtn",
+              "width": "fill_container",
+              "fill": "#F4F4F5",
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 6,
+              "padding": [
+                9,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "eqURO",
+                  "fill": "#1F1F1F",
+                  "content": "View project",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "zZpUN",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "#1F1F1F"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "id": "fyq1m",
+      "x": 1540,
+      "y": 12707,
+      "name": "Popover variants note",
+      "width": 320,
+      "height": 0,
+      "content": "Compact project popover — 320px wide, all blocks stretch to the card width.\n\n• Title is clamped to 2 lines, overflow is cut with an ellipsis.\n• Description is capped at 500 characters, wraps freely.\n• Author section: \"Author\" label + team size on top, avatar and author name below.\n• \"I'm there\" section (role + period) is rendered only in a user context (Talent Card). Without user data the card ends after the author section.\n• Sections are split by hairlines — no boxes, no fills.\n• Badges (status · genre · platform) wrap onto extra rows when they don't fit one line; a single badge wider than the card truncates its label with an ellipsis.\n• No equity, cap table, files, investors or other author/scout-only data.\n\nSee \"Popover — Project (long content)\" for the worst-case layout."
+    },
+    {
+      "type": "frame",
+      "id": "p3e2Ru",
+      "x": 1180,
+      "y": 13149,
+      "name": "Popover — Project (long content)",
+      "clip": true,
+      "width": 320,
+      "fill": "#FFFFFF",
+      "cornerRadius": 14,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#0F0F0F26",
+        "offset": {
+          "x": 0,
+          "y": 12
+        },
+        "blur": 40
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "m7gfN",
+          "name": "cover",
+          "clip": true,
+          "width": "fill_container",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "https://images.unsplash.com/photo-1678776044674-3a65e18639f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzYyNDYxNjh8&ixlib=rb-4.1.0&q=80&w=1080",
+            "mode": "fill"
+          },
+          "layout": "vertical",
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "fjIcV",
+              "name": "coverSpacer",
+              "width": "fill_container",
+              "height": 99,
+              "padding": 12,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "iShO8",
+                  "name": "pitchPill",
+                  "height": 26,
+                  "fill": "#000000A6",
+                  "cornerRadius": 16,
+                  "gap": 5,
+                  "padding": [
+                    0,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "kGtbd",
+                      "name": "pitchIcon",
+                      "width": 11,
+                      "height": 11,
+                      "icon": "play",
+                      "library": "lucide",
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "text",
+                      "id": "c67Jxv",
+                      "name": "pitchLabel",
+                      "fill": "#FFFFFF",
+                      "content": "Watch pitch",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "o11YJ",
+              "name": "titleBar",
+              "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 180,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#00000000",
+                    "position": 0
+                  },
+                  {
+                    "color": "#000000E6",
+                    "position": 1
+                  }
+                ]
+              },
+              "layout": "vertical",
+              "padding": [
+                14,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "kiENc",
+                  "name": "title (clamped 2 lines)",
+                  "fill": "#FFFFFF",
+                  "textGrowth": "fixed-width-height",
+                  "width": "fill_container",
+                  "height": 45,
+                  "content": "Echoes of the Hollow Tide: A Deep-Sea Adventure…",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "q5zLv2",
+          "name": "content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "WBGNB",
+              "name": "badges",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "HZAdn",
+                  "name": "badgesRow",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "yY49X",
+                      "fill": "#EDE9FE",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Hcg2s",
+                          "fill": "#6D28D9",
+                          "content": "In development · vertical slice",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rgXYy",
+                  "name": "badgesRow",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "gcHlI",
+                      "fill": "#F4F4F5",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "vZJlF",
+                          "fill": "#3F3F46",
+                          "content": "Narrative adventure / point-and-click",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "y6pTHK",
+                  "name": "badgesRow",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "mEKrO",
+                      "name": "platformChip",
+                      "fill": "#F4F4F5",
+                      "cornerRadius": 16,
+                      "padding": [
+                        4,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "BBbGf",
+                          "name": "platformLabel",
+                          "fill": "#3F3F46",
+                          "content": "PC / Mac / Linux / iOS / Android",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "fHFOR",
+              "name": "description (max 500 chars)",
+              "fill": "#52525B",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "A hand-painted underwater adventure about a lighthouse keeper who returns to the sunken town of Marrow Bay and uncovers its stories through tides, light and the debris of everyday lives. It mixes point-and-click exploration with a living tide system that reshapes every district twice per in-game day, so puzzles, routes and conversations change depending on when you arrive. A solo founder plus a small art team, working towards a vertical slice and looking for a publishing partner.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "GzIIG",
+              "name": "sep",
+              "fill": "$border",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "ZTREx",
+              "name": "authorSection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ABjya",
+                  "name": "authorTop",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LOVQs",
+                      "name": "authorLabel",
+                      "fill": "#A1A1AA",
+                      "content": "Author",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "M3AoYP",
+                      "name": "team",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "CaRoh",
+                          "name": "teamLabel",
+                          "fill": "#A1A1AA",
+                          "content": "Team size",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n10ok3",
+                          "name": "teamCount",
+                          "fill": "#8C8C8C",
+                          "content": "128",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "EXRrA",
+                  "name": "author",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "G0jol",
+                      "name": "avatar",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "#E4E4E7",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "q1lH7Z",
+                          "name": "initials",
+                          "fill": "#52525B",
+                          "content": "AV",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "e8wVC",
+                      "name": "authorInfo",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ukXzU",
+                          "name": "authorName",
+                          "fill": "#181818",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Aleksandra Konstantinovna Vasilyeva-Petrova",
+                          "lineHeight": 1.3,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "id": "Obu5k",
+              "name": "sep",
+              "fill": "$border",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "Fr9Kx",
+              "name": "userLink (optional)",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FKNpi",
+                  "name": "userLinkTop",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "spnBe",
+                      "name": "roleLabel",
+                      "fill": "#A1A1AA",
+                      "content": "I'm there",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "uGoiY",
+                      "name": "period",
+                      "fill": "#8C8C8C",
+                      "content": "Mar 2024 — Sep 2026",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "yeQtW",
+                  "name": "roleValue",
+                  "fill": "#181818",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Senior Narrative Designer & Systems Writer",
+                  "lineHeight": 1.35,
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iXLE3",
+              "name": "viewBtn",
+              "width": "fill_container",
+              "fill": "#F4F4F5",
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 6,
+              "padding": [
+                9,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "T93hsQ",
+                  "fill": "#1F1F1F",
+                  "content": "View project",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "Y3M93M",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "#1F1F1F"
                 }
               ]
             }

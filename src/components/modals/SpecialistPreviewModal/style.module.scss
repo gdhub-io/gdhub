@@ -24,7 +24,7 @@ $btn-black: #222222;
 
 .eyebrow {
 	font-size: 11px;
-	font-weight: 700;
+	font-weight: 400;
 	letter-spacing: 1.4px;
 	text-transform: uppercase;
 	color: #7c3aed;
@@ -439,16 +439,6 @@ $btn-black: #222222;
 	font-size: 12px;
 }
 
-.tagActive {
-	margin: 0;
-	border: none;
-	border-radius: 16px;
-	background: #dcfce7;
-	color: #16a34a;
-	padding: 4px 12px;
-	font-size: 12px;
-}
-
 .prefTag {
 	margin: 0;
 	border: none;
@@ -540,42 +530,60 @@ $btn-black: #222222;
 }
 
 /* ---------- Project popover ---------- */
-.popoverRoot {
-	:global(.ant-popover-inner) {
-		padding: 0 !important;
-		border-radius: 14px !important;
-		overflow: hidden;
-	}
-}
-
+/* The popover padding reset lives on the `styles` prop (CARD_POPOVER_STYLES). */
 .projectPop {
-	width: 300px;
+	width: 320px;
 }
 
-.ppCover {
-	height: 150px;
-	background-color: #1e293b;
-	background-size: cover;
-	background-position: center;
-	display: flex;
-	align-items: flex-end;
-	padding: 14px 16px;
-	position: relative;
+/* The shared ProjectVideoCover box, squared off to sit flush in the popover. */
+.projectPop .ppCover {
+	border-radius: 0;
+}
 
-	&::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.85));
+/* Gradient + title strip over the cover image (cover state only). */
+.ppTitleBar {
+	position: absolute;
+	z-index: 1;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	padding: 14px 16px;
+	background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.9));
+}
+
+.ppPitchBtn {
+	position: absolute;
+	z-index: 1;
+	top: 12px;
+	right: 12px;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	background: rgba(0, 0, 0, 0.65);
+	border: none;
+	border-radius: 16px;
+	padding: 0 10px;
+	height: 26px;
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+
+	&:hover {
+		background: rgba(0, 0, 0, 0.8);
 	}
 }
 
+/* Long project names are clamped to two lines — the cover never grows past it. */
 .ppTitle {
-	position: relative;
-	z-index: 1;
 	color: #ffffff;
 	font-size: 18px;
 	font-weight: 700;
+	line-height: 1.25;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 .ppBody {
@@ -585,10 +593,29 @@ $btn-black: #222222;
 	padding: 16px;
 }
 
+/* Chips wrap onto extra rows; a chip wider than the card truncates. */
 .ppChips {
 	display: flex;
 	gap: 8px;
 	flex-wrap: wrap;
+
+	:global(.ant-tag) {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.ppStatusTag {
+	margin: 0;
+	border: none;
+	border-radius: 16px;
+	background: #ede9fe;
+	color: #6d28d9;
+	padding: 4px 10px;
+	font-size: 12px;
+	font-weight: 600;
 }
 
 .ppDesc {
@@ -598,50 +625,233 @@ $btn-black: #222222;
 	margin: 0 !important;
 }
 
-.ppVideoBtn {
+/* Author / participation blocks share one layout, split by hairlines. */
+.ppBox {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ppSep {
+	height: 1px;
+	background: $divider;
+}
+
+.ppBoxTop {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.ppBoxLabel {
+	font-size: 11px;
+	font-weight: 600;
+	color: #a1a1aa;
+}
+
+.ppTeam {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
-	align-self: flex-start;
+	flex-shrink: 0;
+}
+
+/* Matches the participation period on the block below. */
+/* The whole "Team size N" reads like the participation period below it. */
+.ppTeamLabel,
+.ppTeamValue {
+	font-size: 12px;
+	font-weight: 400;
+	color: $text-secondary;
+}
+
+.ppAuthor {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.ppAvatar {
+	width: 28px;
+	height: 28px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: #e4e4e7;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	font-size: 11px;
+	font-weight: 600;
+	color: #52525b;
+}
+
+.ppAvatarImg {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.ppAuthorName {
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.3;
+	color: $text-primary;
+	min-width: 0;
+	word-break: break-word;
+}
+
+.ppPeriod {
+	font-size: 12px;
+	color: $text-secondary;
+	flex-shrink: 0;
+}
+
+.ppRoleValue {
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: $text-primary;
+	word-break: break-word;
+}
+
+.ppViewBtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
 	background: #f4f4f5;
 	border: 1px solid $border;
 	border-radius: 10px;
-	padding: 8px 12px;
+	padding: 9px 12px;
 	font-size: 13px;
-	font-weight: 500;
+	font-weight: 600;
 	color: #1f1f1f !important;
+
+	&:hover {
+		background: #ebebed;
+	}
 }
 
-.ppRole {
+
+/* ---------- Certificate popover ---------- */
+.certPop {
+	width: 320px;
+}
+
+.certBanner {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 14px;
+	background: #f0fdf4;
+	border-bottom: 1px solid #bbf7d0;
+}
+
+.certBannerIcon {
+	width: 32px;
+	height: 32px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: #dcfce7;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.certBannerText {
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
-	background: $rail-bg;
-	border-radius: 10px;
-	padding: 10px 12px;
+	min-width: 0;
 }
 
-/* ---------- Certificate tooltip ---------- */
-.certTip {
+.certBannerTitle {
+	font-size: 13px;
+	font-weight: 600;
+	color: #14532d;
+}
+
+.certBannerSub {
+	font-size: 12px;
+	color: #15803d;
+}
+
+.certBody {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: 16px;
+}
+
+.certHead {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+.certCover {
+	width: 48px;
+	height: 48px;
+	flex-shrink: 0;
+	border-radius: 10px;
+	background-color: #f4f4f5;
+	background-size: cover;
+	background-position: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.certHeadText {
 	display: flex;
 	flex-direction: column;
 	gap: 3px;
+	min-width: 0;
 }
 
-.certTipTitle {
-	font-size: 13px;
-	font-weight: 600;
+.certTitle {
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.3;
+	color: #0f0f0f;
 }
 
-.certTipRow {
+.certSub {
 	font-size: 12px;
-	opacity: 0.85;
+	color: #71717a;
 }
 
-.certTipCode {
+.certGrid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px 16px;
+}
+
+.certField {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+}
+
+.certFieldLabel {
 	font-size: 11px;
-	opacity: 0.7;
-	margin-top: 2px;
+	font-weight: 600;
+	letter-spacing: 0.4px;
+	text-transform: uppercase;
+	color: #a1a1aa;
+}
+
+.certFieldValue {
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.35;
+	color: $text-primary;
+	word-break: break-word;
 }
 
 /* ---------- Responsive ---------- */

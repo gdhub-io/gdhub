@@ -16,7 +16,14 @@ export function Providers({ children }: { children: ReactNode }) {
 		<TolgeeClientProvider>
 			<SessionProvider>
 				<QueryProvider>
-					<AntdRegistry>{children}</AntdRegistry>
+					{/*
+					 * `layer` puts every antd style into a CSS @layer, which always
+					 * loses to unlayered rules. Without it antd's styles land in
+					 * <head> after the app's CSS modules and win every tie on equal
+					 * specificity — that is what collapsed the page headers and
+					 * overrode titles, tabs and buttons.
+					 */}
+					<AntdRegistry layer>{children}</AntdRegistry>
 				</QueryProvider>
 			</SessionProvider>
 		</TolgeeClientProvider>

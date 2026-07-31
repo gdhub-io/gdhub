@@ -17,14 +17,12 @@ import {
 	Card,
 	Divider,
 	Flex,
-	Space,
 	Tooltip,
 	Typography,
 } from "antd";
 import axios from "axios";
 import Blocks from "editorjs-blocks-react-renderer";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import type { ComponentProps } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -41,7 +39,7 @@ import styles from "./styles.module.scss";
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 interface EditorJsBlock {
 	type: OutputBlockData["type"];
@@ -390,65 +388,18 @@ export function DevlogPostClient({ post }: PageProps) {
 	return (
 		<>
 			<PublicPageHeader
-				title={
-					<div className={styles.titleContainer}>
-						<Link href={`/project/${post.project?.slug}`}>
-							<Button
-								type="text"
-								size="small"
-								className={styles.projectTitle}
-								onMouseEnter={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "16px";
-										arrow.style.marginRight = "8px";
-										arrow.style.opacity = "1";
-									}
-									button.style.paddingLeft = "8px";
-									button.style.paddingRight = "8px";
-								}}
-								onMouseLeave={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "0";
-										arrow.style.marginRight = "0";
-										arrow.style.opacity = "0";
-									}
-									button.style.paddingLeft = "0";
-									button.style.paddingRight = "0";
-								}}
-							>
-								<Space size={0}>
-									<ArrowLeftOutlined
-										className="arrow"
-										style={{
-											width: 0,
-											marginRight: 0,
-											opacity: 0,
-											transition: "all 0.3s ease",
-											overflow: "hidden",
-											color: "#ff4d4f",
-										}}
-									/>
-									<span style={{ color: "#ff4d4f" }}>
-										{post.project?.name ||
-											t("page.devlog.untitledProject", "Game Project")}
-									</span>
-								</Space>
-							</Button>
-						</Link>
-						<Title className={styles.title}>
-							{t("page.devlog.title", "Project reports")}
-						</Title>
-					</div>
-				}
+				title={t("page.devlog.title", "Project reports")}
 				subTitle={
 					getCleanTextContent(post?.project?.description || "", 100) ||
 					undefined
 				}
 				backgroundImage={post.pageCover || undefined}
+				backTo={{
+					href: `/project/${post.project?.slug}`,
+					label:
+						post.project?.name ||
+						t("page.devlog.untitledProject", "Game Project"),
+				}}
 			/>
 			<div className="layout-background">
 				<div className={styles.container}>

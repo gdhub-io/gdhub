@@ -10,20 +10,6 @@
 
 // --- Two-column vacancy layout ---
 
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #ff4d4f;
-  font-size: 14px;
-  font-weight: 600;
-
-  &:hover {
-    color: #ff4d4f;
-    opacity: 0.85;
-  }
-}
-
 .mainCard {
   display: flex;
   flex-direction: column;
@@ -506,24 +492,6 @@
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0.3);
   }
-}
-
-.backButton {
-  @media (max-width: 576px) {
-    display: none;
-  }
-}
-
-.titleContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.title {
-  color: #fff !important;
-  margin: 0 !important;
-  font-size: 48px !important;
 }
 
 .videoContainer {

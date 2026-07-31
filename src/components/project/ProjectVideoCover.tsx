@@ -15,21 +15,31 @@ type ProjectVideoCoverProps = {
 	alt?: string | null;
 	/** Optional duration badge, e.g. "1:32" */
 	duration?: string | null;
+	/** Extra class for the cover/player box — sizing, radius, layout. */
+	className?: string;
+	/** Content painted over the cover image (title, gradient, badges). */
+	children?: React.ReactNode;
+	/** Custom play affordance. Defaults to a centered round button. */
+	renderPlay?: (play: () => void) => React.ReactNode;
 };
 
 /**
- * Project cover with an inline video. Shows the cover image with a centered
- * play affordance; clicking swaps to the player (pitch / gameplay reel).
+ * Project cover with an inline video. Shows the cover image with a play
+ * affordance; clicking swaps to the player (pitch / gameplay reel).
  *
  * Uses `react-player`, so `videoLink` may be a full URL of any supported
  * service (YouTube, Vimeo, Twitch, TikTok, …) or a legacy bare YouTube ID —
- * all play consistently. Shared between the project page and the vacancy page.
+ * all play consistently. Shared between the project page, the vacancy page and
+ * the compact project card in the talent card.
  */
 export function ProjectVideoCover({
 	coverImage,
 	videoLink,
 	alt = "Project cover",
 	duration,
+	className,
+	children,
+	renderPlay,
 }: ProjectVideoCoverProps) {
 	const [showVideo, setShowVideo] = useState(false);
 	// Keep `playing` controlled and in sync with the actual player state.
@@ -37,11 +47,17 @@ export function ProjectVideoCover({
 	// whenever the browser auto-pauses the video (e.g. on tab switch).
 	const [playing, setPlaying] = useState(false);
 
-	if (!coverImage && !videoLink) return null;
+	// Nothing to show — unless the caller paints its own overlay on the box.
+	if (!coverImage && !videoLink && !children) return null;
+
+	const play = () => {
+		setShowVideo(true);
+		setPlaying(true);
+	};
 
 	if (showVideo && videoLink) {
 		return (
-			<div className={styles.videoCover}>
+			<div className={`${styles.videoCover} ${className ?? ""}`}>
 				<ReactPlayer
 					src={toPlayableVideoUrl(videoLink)}
 					playing={playing}
@@ -60,7 +76,7 @@ export function ProjectVideoCover({
 	}
 
 	return (
-		<div className={styles.cover}>
+		<div className={`${styles.cover} ${className ?? ""}`}>
 			{coverImage && (
 				<Image
 					src={coverImage}
@@ -69,19 +85,20 @@ export function ProjectVideoCover({
 					style={{ objectFit: "cover" }}
 				/>
 			)}
-			{videoLink && (
-				<button
-					type="button"
-					className={styles.playButton}
-					onClick={() => {
-						setShowVideo(true);
-						setPlaying(true);
-					}}
-					aria-label="Play video"
-				>
-					<IconPlayerPlayFilled size={22} />
-				</button>
-			)}
+			{children}
+			{videoLink &&
+				(renderPlay ? (
+					renderPlay(play)
+				) : (
+					<button
+						type="button"
+						className={styles.playButton}
+						onClick={play}
+						aria-label="Play video"
+					>
+						<IconPlayerPlayFilled size={22} />
+					</button>
+				))}
 			{duration && <span className={styles.duration}>{duration}</span>}
 		</div>
 	);

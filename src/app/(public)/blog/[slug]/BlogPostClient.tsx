@@ -1,16 +1,15 @@
 "use client";
 
-import { ArrowLeftOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined } from "@ant-design/icons";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Card, Flex, Space, Typography } from "antd";
+import { Avatar, Card, Flex, Typography } from "antd";
 import Blocks from "editorjs-blocks-react-renderer";
-import Link from "next/link";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { PageViews } from "@/components/PageViews";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import styles from "./style.module.scss";
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 export interface BlogPost {
 	id: string;
@@ -42,58 +41,9 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
 	return (
 		<>
 			<PublicPageHeader
-				title={
-					<div className={styles.titleContainer}>
-						<Link href={`/blog`}>
-							<Button
-								type="text"
-								size="small"
-								className={styles.projectTitle}
-								onMouseEnter={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "16px";
-										arrow.style.marginRight = "8px";
-										arrow.style.opacity = "1";
-									}
-									button.style.paddingLeft = "8px";
-									button.style.paddingRight = "8px";
-								}}
-								onMouseLeave={(e) => {
-									const button = e.currentTarget;
-									const arrow = button.querySelector(".arrow") as HTMLElement;
-									if (arrow) {
-										arrow.style.width = "0";
-										arrow.style.marginRight = "0";
-										arrow.style.opacity = "0";
-									}
-									button.style.paddingLeft = "0";
-									button.style.paddingRight = "0";
-								}}
-							>
-								<Space size={0}>
-									<ArrowLeftOutlined
-										className="arrow"
-										style={{
-											width: 0,
-											marginRight: 0,
-											opacity: 0,
-											transition: "all 0.3s ease",
-											overflow: "hidden",
-											color: "#ff4d4f",
-										}}
-									/>
-									<span style={{ color: "#ff4d4f" }}>
-										{t("page.blog.title", "Blog")}
-									</span>
-								</Space>
-							</Button>
-						</Link>
-						<Title className={styles.title}>{post.title}</Title>
-					</div>
-				}
+				title={post.title}
 				backgroundImage={post.coverImage || undefined}
+				backTo={{ href: "/blog", label: t("page.blog.title", "Blog") }}
 			/>
 			<div className="layout-background">
 				<div className={styles.container}>
