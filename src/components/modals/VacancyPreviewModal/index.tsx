@@ -10,7 +10,6 @@ import {
 	Alert,
 	Button,
 	Col,
-	Form,
 	Modal,
 	message,
 	Row,
@@ -40,7 +39,6 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	const { t } = useTranslate();
 	const router = useRouter();
 	const pathname = usePathname();
-	const [form] = Form.useForm();
 	const [showSpecialitySelectModal, setShowSpecialitySelectModal] =
 		useState(false);
 	const [showPitchVideo, setShowPitchVideo] = useState(false);
@@ -102,7 +100,6 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 	}, [open]);
 
 	const handleCancel = () => {
-		form.resetFields();
 		onCancel();
 	};
 
@@ -336,7 +333,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 								!!vacancy.data.promiseStep?.name && (
 									<Alert
 										type="success"
-										message={`${t("modal.vacancy.equityPromise", "Equity Promise")}: ${vacancy.data.promisePercentage}% ${t(
+										title={`${t("modal.vacancy.equityPromise", "Equity Promise")}: ${vacancy.data.promisePercentage}% ${t(
 											"modal.section.equityPromiseDescription",
 											"of project equity will be allocated upon reaching the required workflow step {step}",
 											{ step: vacancy.data.promiseStep.name },
@@ -348,7 +345,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							{vacancy.data.myTeamMemberId ? (
 								<Alert
 									type="success"
-									message={t(
+									title={t(
 										"modal.vacancy.applied",
 										"You have already responded to this position",
 									)}
@@ -358,7 +355,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							{!session?.data?.user && (
 								<Alert
 									type="error"
-									message={
+									title={
 										<T
 											keyName="modal.vacancy.notAuth"
 											defaultValue="Only registered users can respond to this position. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>."

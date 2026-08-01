@@ -93,7 +93,7 @@ export default function NewChatModal({ open, onClose }: NewChatModalProps) {
 			okText="Create chat"
 			confirmLoading={creating}
 			okButtonProps={{ disabled: !selected }}
-			destroyOnClose
+			destroyOnHidden
 		>
 			<Select
 				showSearch

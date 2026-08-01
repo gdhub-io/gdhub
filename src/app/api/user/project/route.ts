@@ -177,6 +177,7 @@ export const POST = withAuth({ mode: "user" })(
 				reports: {
 					create: {
 						content: PROJECT_REGISTERED_DEVLOG_CONTENT,
+						isSystem: true,
 						publishedAt: dayjs().toISOString(),
 						authorId: currentUser.id,
 					},

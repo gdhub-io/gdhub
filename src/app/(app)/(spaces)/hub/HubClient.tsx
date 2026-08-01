@@ -131,7 +131,7 @@ export default function HubClient() {
 								<HubSectionBody>
 									<Alert
 										type="warning"
-										message={
+										title={
 											<Space orientation="vertical">
 												<div>
 													{t(

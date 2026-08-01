@@ -44,9 +44,14 @@ const loadPost = (id: string) =>
 			id: true,
 			content: true,
 			contentEditor: true,
+			isSystem: true,
 			project: { select: { name: true, coverImage: true } },
 		},
 	});
+
+// Generated posts carry no editorial content and have no public page to link
+// to, so they are never announced — only devlogs written by users are.
+const SYSTEM_POST_ERROR = "Generated posts are not announced";
 
 // Preview: return the message that would be posted, without sending anything.
 export const GET = withAuth({
@@ -65,6 +70,7 @@ export const GET = withAuth({
 
 		const post = await loadPost(id);
 		if (!post) return apiError.notFound("DevLog post not found");
+		if (post.isSystem) return apiError.badRequest(SYSTEM_POST_ERROR);
 
 		return json({
 			channel,
@@ -88,6 +94,7 @@ export const POST = withAuth({
 
 		const post = await loadPost(id);
 		if (!post) return apiError.notFound("DevLog post not found");
+		if (post.isSystem) return apiError.badRequest(SYSTEM_POST_ERROR);
 
 		if (channel === "telegram") {
 			if (!process.env.TELEGRAM_BOT_TOKEN) {

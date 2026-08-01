@@ -364,7 +364,7 @@ const MyEventsClient = () => {
 					</Flex>
 				) : events.length === 0 ? (
 					<Alert
-						message={t("event.noEvents", "No events found")}
+						title={t("event.noEvents", "No events found")}
 						type="info"
 						showIcon
 					/>
@@ -484,7 +484,7 @@ const MyEventsClient = () => {
 														</Text>
 													) : (
 														<Alert
-															message={t(
+															title={t(
 																"event.noDates",
 																"You need to set a schedule",
 															)}

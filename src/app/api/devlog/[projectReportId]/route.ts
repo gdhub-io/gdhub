@@ -35,6 +35,13 @@ export async function GET(_req: Request, { params }: { params: Params }) {
 			return apiError.notFound("Project report not found");
 		}
 
+		// Generated posts have no public page: they carry no content worth an
+		// indexable URL and only pollute analytics. They stay visible inside the
+		// project's own feed, where they are rendered without a link.
+		if (report.isSystem) {
+			return apiError.notFound("Project report not found");
+		}
+
 		const applauseCount = await prisma.projectReport.getApplauseCount({
 			projectReportId: report.id,
 		});

@@ -104,15 +104,13 @@ export const getWorkedProjects = async () => {
 		),
 	);
 
-	return await Promise.all(
-		projects.map(async (project) => ({
-			...project,
-			applauseCount: await prisma.project.getApplauseCount({
-				projectId: project.id,
-			}),
-			hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
-		})),
-	);
+	const applauseCounts = await prisma.project.getApplauseCounts({ projectIds });
+
+	return projects.map((project) => ({
+		...project,
+		applauseCount: applauseCounts.get(project.id) ?? 0,
+		hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
+	}));
 };
 
 export const getPublishedStoreProjects = async () => {
@@ -183,41 +181,38 @@ export const getPublishedStoreProjects = async () => {
 		),
 	);
 
-	return await Promise.all(
-		projects.map(async (project) => {
-			const storeLinks = getStoreLinks(project.links);
-			const workflow = workflowByProjectId.get(project.id);
+	const eligible = projects.flatMap((project) => {
+		const workflow = workflowByProjectId.get(project.id);
 
-			if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
-				return null;
-			}
+		if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
+			return [];
+		}
 
-			const currentStep = workflow?.currentStep;
+		const currentStep = workflow?.currentStep;
 
-			if (!currentStep) {
-				return null;
-			}
+		return currentStep ? [{ project, currentStep }] : [];
+	});
 
-			return {
-				id: project.id,
-				name: project.name,
-				slug: project.slug,
-				description: project.description,
-				genre: project.genre,
-				platform: project.platform,
-				coverImage: project.coverImage,
-				applauseCount: await prisma.project.getApplauseCount({
-					projectId: project.id,
-				}),
-				hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
-				storeLinks,
-				workflow: {
-					currentStep: {
-						name: currentStep.name,
-						order: currentStep.order,
-					},
-				},
-			};
-		}),
-	).then((items) => items.filter((project) => project !== null));
+	const applauseCounts = await prisma.project.getApplauseCounts({
+		projectIds: eligible.map(({ project }) => project.id),
+	});
+
+	return eligible.map(({ project, currentStep }) => ({
+		id: project.id,
+		name: project.name,
+		slug: project.slug,
+		description: project.description,
+		genre: project.genre,
+		platform: project.platform,
+		coverImage: project.coverImage,
+		applauseCount: applauseCounts.get(project.id) ?? 0,
+		hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
+		storeLinks: getStoreLinks(project.links),
+		workflow: {
+			currentStep: {
+				name: currentStep.name,
+				order: currentStep.order,
+			},
+		},
+	}));
 };

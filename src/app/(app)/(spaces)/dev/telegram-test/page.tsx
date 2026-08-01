@@ -192,7 +192,7 @@ export default function DevTelegramTestPage() {
 					{result && (
 						<Alert
 							type={result.type}
-							message={result.message}
+							title={result.message}
 							description={
 								result.details ? (
 									<pre

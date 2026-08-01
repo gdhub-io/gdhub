@@ -292,7 +292,7 @@ const MentorshipProfileForm = ({
 
 				{enabled && !specialities?.data.length && (
 					<Alert
-						message={t(
+						title={t(
 							"profile-forms.mentorship.card.no-specialities",
 							"To become a mentor, you must have at least one specialty of the Experienced or Expert level",
 						)}

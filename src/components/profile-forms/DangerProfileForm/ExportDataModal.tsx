@@ -101,7 +101,7 @@ const ExportDataModal = ({ open, onClose }: ExportDataModalProps) => {
 				<Alert
 					type="info"
 					showIcon
-					message={t(
+					title={t(
 						"profile.settings.danger.export.legalBasis",
 						"Legal basis: GDPR Art. 15 (Right of access) & Art. 20 (Right to data portability)",
 					)}

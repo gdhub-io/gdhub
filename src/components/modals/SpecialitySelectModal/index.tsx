@@ -2,12 +2,11 @@ import type { Speciality } from "@gdhub-io/gdhub-prisma";
 import { BsCheckLg } from "@react-icons/all-files/bs/BsCheckLg";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Form, Input, List, Modal, Spin } from "antd";
+import { Input, List, Modal, Spin } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
-	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [processing, setProcessing] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<string>();
@@ -30,7 +29,6 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 	}, [open]);
 
 	const handleCancel = () => {
-		form.resetFields();
 		onCancel();
 	};
 

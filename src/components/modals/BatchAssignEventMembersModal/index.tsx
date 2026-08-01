@@ -171,7 +171,7 @@ const BatchAssignEventMembersModal: React.FC<
 					type="info"
 					showIcon
 					style={{ marginBottom: 16 }}
-					message={t(
+					title={t(
 						"event.members.batch.noCommon",
 						"No project is shared by all selected members. You can still assign mentors.",
 					)}

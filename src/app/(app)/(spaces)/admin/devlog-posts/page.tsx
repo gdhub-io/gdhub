@@ -205,25 +205,32 @@ export default function DevlogPostsAdminPage() {
 			title: "Views",
 			dataIndex: "id",
 			key: "views",
-			render: (id, record) => (
-				<PageViews
-					path={`/devlog/${id}`}
-					startDate={dayjs(record.publishedAt).format("YYYY-MM-DD")}
-					minViews={0}
-				/>
-			),
+			render: (id, record) =>
+				record.isSystem ? (
+					<Text type="secondary">—</Text>
+				) : (
+					<PageViews
+						path={`/devlog/${id}`}
+						startDate={dayjs(record.publishedAt).format("YYYY-MM-DD")}
+						minViews={0}
+					/>
+				),
 		},
 		{
 			title: "Post",
 			dataIndex: "id",
 			key: "post",
-			render: (id) => (
-				<Link href={`/devlog/${id}`} target="_blank">
-					<Button type="link" icon={<EyeOutlined />}>
-						Open
-					</Button>
-				</Link>
-			),
+			// Generated posts have no public page — nothing to open or announce.
+			render: (id, record) =>
+				record.isSystem ? (
+					<Text type="secondary">Generated</Text>
+				) : (
+					<Link href={`/devlog/${id}`} target="_blank">
+						<Button type="link" icon={<EyeOutlined />}>
+							Open
+						</Button>
+					</Link>
+				),
 		},
 		{
 			key: "actions",
@@ -231,31 +238,37 @@ export default function DevlogPostsAdminPage() {
 			align: "right",
 			render: (_, record) => {
 				const items: MenuProps["items"] = [
-					{
-						key: "open",
-						label: (
-							<Link href={`/devlog/${record.id}`} target="_blank">
-								Open post
-							</Link>
-						),
-					},
-					{ type: "divider" },
-					{
-						key: "linkedin",
-						label: "Post to LinkedIn",
-						icon: <FaLinkedinIn />,
-					},
-					{
-						key: "discord",
-						label: "Post to Discord",
-						icon: <FaDiscord />,
-					},
-					{
-						key: "telegram",
-						label: "Post to Telegram",
-						icon: <FaTelegramPlane />,
-					},
-					{ type: "divider" },
+					// A generated post has no public page and is never announced to
+					// social networks, so it only keeps the destructive action.
+					...(record.isSystem
+						? []
+						: ([
+								{
+									key: "open",
+									label: (
+										<Link href={`/devlog/${record.id}`} target="_blank">
+											Open post
+										</Link>
+									),
+								},
+								{ type: "divider" },
+								{
+									key: "linkedin",
+									label: "Post to LinkedIn",
+									icon: <FaLinkedinIn />,
+								},
+								{
+									key: "discord",
+									label: "Post to Discord",
+									icon: <FaDiscord />,
+								},
+								{
+									key: "telegram",
+									label: "Post to Telegram",
+									icon: <FaTelegramPlane />,
+								},
+								{ type: "divider" },
+							] satisfies MenuProps["items"])),
 					{
 						key: "delete",
 						label: "Delete",

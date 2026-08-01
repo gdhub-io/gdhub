@@ -45,4 +45,32 @@ describe("GET /api/devlog/[projectReportId]", () => {
 		const json = await response.json();
 		expect(json.id).toBe("post1");
 	});
+
+	it("hides generated posts — they have no public page", async () => {
+		(prisma.projectReport.findUnique as any).mockResolvedValue({
+			id: "system1",
+			content: "Registration of the project on the service",
+			isSystem: true,
+			publishedAt: "2024-01-01",
+			video: null,
+			project: {
+				name: "Project",
+				slug: "project",
+				description: "desc",
+				coverImage: null,
+			},
+			author: { name: "Author", image: null },
+		});
+
+		const { GET } = await import(
+			"../src/app/api/devlog/[projectReportId]/route"
+		);
+
+		const response = await (GET as any)(
+			new Request("http://test/api/devlog/system1"),
+			{ params: Promise.resolve({ projectReportId: "system1" }) },
+		);
+
+		expect(response.status).toBe(404);
+	});
 });

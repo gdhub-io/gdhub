@@ -6,13 +6,14 @@ import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useMemo, useState } from "react";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { DevlogPostLink } from "@/components/DevlogPostLink";
 import { PageViews } from "@/components/PageViews";
 import { getPageCover } from "@/helpers/content";
+import type { DevlogFeedPage } from "@/types/devlog";
 import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
@@ -25,6 +26,7 @@ interface DevlogPost {
 	coverImage?: string;
 	publishedAt: string;
 	applauseCount?: number;
+	isSystem?: boolean;
 	video: string | null;
 	project?: {
 		name: string;
@@ -89,7 +91,7 @@ const PostCard: React.FC<{
 	);
 
 	return (
-		<Link href={`/devlog/${post.id}`}>
+		<DevlogPostLink post={post}>
 			<div
 				role="button"
 				tabIndex={0}
@@ -146,15 +148,17 @@ const PostCard: React.FC<{
 									{post.applauseCount}
 								</span>
 							) : null}
-							<PageViews
-								path={`/devlog/${post.id}`}
-								startDate={post.publishedAt}
-							/>
+							{!post.isSystem && (
+								<PageViews
+									path={`/devlog/${post.id}`}
+									startDate={post.publishedAt}
+								/>
+							)}
 						</div>
 					</div>
 				</div>
 			</div>
-		</Link>
+		</DevlogPostLink>
 	);
 };
 
@@ -194,8 +198,8 @@ const PublicDevlogPosts = ({ projectId }: PublicDevlogPostsProps) => {
 		queryKey: ["public-devlog-posts", projectId],
 		queryFn: async () => {
 			const url = `/api/devlogs?limit=${limit}${projectId ? `&projectId=${projectId}` : ""}`;
-			const response = await axios.get<DevlogPost[]>(url);
-			return response.data.slice(0, limit);
+			const response = await axios.get<DevlogFeedPage<DevlogPost>>(url);
+			return response.data.items;
 		},
 		enabled: true,
 		refetchOnWindowFocus: false,

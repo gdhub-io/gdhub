@@ -125,7 +125,7 @@ const DeleteAccountModal = ({
 						type="warning"
 						showIcon
 						icon={<IconExclamationCircle size={24} />}
-						message={t(
+						title={t(
 							"profile.settings.danger.delete.warning",
 							"This action is irreversible. Your personal data will be anonymized and you will be signed out.",
 						)}

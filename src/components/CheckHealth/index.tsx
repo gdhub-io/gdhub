@@ -34,7 +34,7 @@ const CheckHealth = ({ children }: any) => {
 						</p>
 						<Alert
 							type="error"
-							message={t(
+							title={t(
 								"checkhealth.error_no_connection",
 								"No connection. Try later.",
 							)}
