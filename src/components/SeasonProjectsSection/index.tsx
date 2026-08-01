@@ -123,7 +123,7 @@ export const SeasonProjectsSection = ({
 										<Alert
 											showIcon
 											type="success"
-											message={`${t("season-projects-section.project-suits-you", "The project suits you")} ${project.availableSpecialists[0]?.avgScore}%`}
+											title={`${t("season-projects-section.project-suits-you", "The project suits you")} ${project.availableSpecialists[0]?.avgScore}%`}
 											style={{ marginTop: 16 }}
 										/>
 									)}

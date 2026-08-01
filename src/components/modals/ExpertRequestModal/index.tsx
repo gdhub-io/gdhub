@@ -320,14 +320,14 @@ export default function ExpertRequestModal({
 							{/* Time for mentoring */}
 							<Alert
 								banner
-								message={
+								title={
 									expert?.specialities?.[0]?.timeForMentoring ||
 									"I will respond as soon as possible."
 								}
 							/>
 						</>
 					) : (
-						<Alert message="You should have at least one project to ask a question" />
+						<Alert title="You should have at least one project to ask a question" />
 					)}
 				</Space>
 			</Spin>

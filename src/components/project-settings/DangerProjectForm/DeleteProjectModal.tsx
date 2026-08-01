@@ -112,7 +112,7 @@ const DeleteProjectModal = ({
 							type="error"
 							showIcon
 							icon={<IconExclamationCircle size={24} />}
-							message={t(
+							title={t(
 								"project.settings.danger.delete.blocked",
 								"This project cannot be deleted. Use Archive Project instead to preserve required history.",
 							)}

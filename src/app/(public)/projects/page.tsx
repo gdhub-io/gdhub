@@ -23,8 +23,10 @@ const serializeDate = (d: Date | null | undefined) =>
 	d ? d.toISOString() : null;
 
 export default async function ProjectsPage() {
-	const projects = await getWorkedProjects();
-	const publishedProjects = await getPublishedStoreProjects();
+	const [projects, publishedProjects] = await Promise.all([
+		getWorkedProjects(),
+		getPublishedStoreProjects(),
+	]);
 
 	const serializedProjects = projects.map((p) => ({
 		...p,

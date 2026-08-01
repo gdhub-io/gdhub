@@ -1,16 +1,7 @@
 import type { Profile, User } from "@gdhub-io/gdhub-prisma";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import {
-	Button,
-	Card,
-	Divider,
-	Flex,
-	Form,
-	message,
-	Spin,
-	Typography,
-} from "antd";
+import { Button, Card, Divider, Flex, message, Spin, Typography } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -30,7 +21,6 @@ const ConnectProfileForm = ({
 	profile,
 	saveProfile,
 }: ConnectProfileFormArgs) => {
-	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const [processing, setProcessing] = useState(false);
 	const { data: session, update: sessionUpdate } = useSession();

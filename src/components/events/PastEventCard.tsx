@@ -27,19 +27,31 @@ export const PastEventCard = ({
 						position: "relative",
 					}}
 				>
-					<Image
-						src={event.image || ""}
-						alt={event.title}
-						fill
-						style={{
-							width: "100%",
-							height: "100%",
-							objectFit: "cover",
-							aspectRatio: "1/1.1",
-							filter: "grayscale(1)",
-						}}
-						sizes="(max-width: 600px) 100vw, 33vw"
-					/>
+					{event.image ? (
+						<Image
+							src={event.image}
+							alt={event.title}
+							fill
+							style={{
+								width: "100%",
+								height: "100%",
+								objectFit: "cover",
+								aspectRatio: "1/1.1",
+								filter: "grayscale(1)",
+							}}
+							sizes="(max-width: 600px) 100vw, 33vw"
+						/>
+					) : (
+						// Events without a cover still need the tinted backdrop the
+						// title gradient sits on.
+						<div
+							style={{
+								width: "100%",
+								height: "100%",
+								background: token.colorFillSecondary,
+							}}
+						/>
+					)}
 					<div
 						className={styles["event-details"]}
 						style={{

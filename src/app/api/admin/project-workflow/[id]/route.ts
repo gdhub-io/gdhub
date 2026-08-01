@@ -76,12 +76,13 @@ async function updateStepTasks(
 		}
 	}
 
-	const tasksToDelete = existingTasks.filter(
-		(task) => !processedTaskIds.has(task.id),
-	);
-	for (const task of tasksToDelete) {
-		await prisma.projectWorkflowTask.delete({
-			where: { id: task.id },
+	const taskIdsToDelete = existingTasks
+		.filter((task) => !processedTaskIds.has(task.id))
+		.map((task) => task.id);
+
+	if (taskIdsToDelete.length) {
+		await prisma.projectWorkflowTask.deleteMany({
+			where: { id: { in: taskIdsToDelete } },
 		});
 	}
 }
@@ -140,12 +141,13 @@ async function updateWorkflowSteps(
 		}
 	}
 
-	const stepsToDelete = existingSteps.filter(
-		(step) => !processedStepIds.has(step.id),
-	);
-	for (const step of stepsToDelete) {
-		await prisma.projectWorkflowStep.delete({
-			where: { id: step.id },
+	const stepIdsToDelete = existingSteps
+		.filter((step) => !processedStepIds.has(step.id))
+		.map((step) => step.id);
+
+	if (stepIdsToDelete.length) {
+		await prisma.projectWorkflowStep.deleteMany({
+			where: { id: { in: stepIdsToDelete } },
 		});
 	}
 }

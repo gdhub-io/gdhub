@@ -483,9 +483,15 @@ export function DevlogPostClient({ post }: PageProps) {
 													node?.position?.end?.offset ?? 0,
 												) !== "\n";
 
+											// A markdown image without a usable src would render an
+											// <img src=""> and make the browser refetch the page.
+											if (typeof props.src !== "string" || !props.src) {
+												return null;
+											}
+
 											return (
 												<MarkdownImage
-													src={typeof props.src === "string" ? props.src : ""}
+													src={props.src}
 													alt={props.alt || ""}
 													width={props.width as string}
 													height={props.height as string}

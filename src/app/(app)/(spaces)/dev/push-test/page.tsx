@@ -98,7 +98,7 @@ export default function DevPushTestPage() {
 							<Alert
 								type="error"
 								showIcon
-								message="Не удалось получить FCM токен"
+								title="Не удалось получить FCM токен"
 								description={error.message}
 							/>
 						)}
@@ -143,7 +143,7 @@ export default function DevPushTestPage() {
 					{result && (
 						<Alert
 							type={result.type}
-							message={result.message}
+							title={result.message}
 							description={
 								result.details ? (
 									<pre

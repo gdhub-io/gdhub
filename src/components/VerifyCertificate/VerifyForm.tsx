@@ -69,7 +69,7 @@ export const VerifyForm = ({
 					type="info"
 					icon={<IconInfoCircle size={16} />}
 					showIcon
-					message={t(
+					title={t(
 						"verify.form.hint",
 						"You can also open gdhub.io/verify/<NUMBER> to see the result directly.",
 					)}

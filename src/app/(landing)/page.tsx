@@ -19,17 +19,18 @@ export default async function HomePage() {
 	}
 
 	try {
-		stats.usersCount = await prisma.user.count();
-		stats.specialitiesCount = await prisma.speciality.count();
-		stats.projectsCount = await prisma.project.count({
-			where: { status: "Approved" },
-		});
-		stats.vacanciesCount = await prisma.teamVacancy.count({
-			where: { status: "Published" },
-		});
-
-		const timeForWork: { sum_min: number; sum_max: number }[] =
-			await prisma.$queryRaw`
+		const [
+			usersCount,
+			specialitiesCount,
+			projectsCount,
+			vacanciesCount,
+			timeForWork,
+		] = await Promise.all([
+			prisma.user.count(),
+			prisma.speciality.count(),
+			prisma.project.count({ where: { status: "Approved" } }),
+			prisma.teamVacancy.count({ where: { status: "Published" } }),
+			prisma.$queryRaw<{ sum_min: number; sum_max: number }[]>`
 			SELECT
 				COUNT(p.*)::integer as count,
 				SUM(p."timeForWork"[1])::integer as sum_min,
@@ -37,7 +38,13 @@ export default async function HomePage() {
 			FROM "Profile" p
 			LEFT JOIN "User" u ON u.id = p."userId"
 			WHERE p."timeForWork" IS NOT NULL AND u."onboardingDone" = TRUE
-		`;
+		`,
+		]);
+
+		stats.usersCount = usersCount;
+		stats.specialitiesCount = specialitiesCount;
+		stats.projectsCount = projectsCount;
+		stats.vacanciesCount = vacanciesCount;
 
 		const avgRate = 15;
 		stats.investmentAmount = timeForWork?.length

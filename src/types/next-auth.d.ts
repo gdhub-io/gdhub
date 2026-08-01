@@ -10,6 +10,10 @@ declare module "next-auth/jwt" {
 		error?: "RefreshAccessTokenError" | "InvalidGrantError";
 		activeSubscription?: string;
 		telegramId?: string;
+		/** Epoch ms of the last database sync of the user snapshot. */
+		syncedAt?: number;
+		/** Cached `Account.expires_at` of the Google account, if any. */
+		googleTokenExpiresAt?: number | null;
 	}
 }
 

@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { nonSystemDevlogFilter } from "../src/config/devlog";
 import { prisma } from "../src/services/prisma";
 import {
 	feedVisibleProjectFilter,
@@ -11,7 +10,10 @@ vi.mock("../src/services/prisma", () => ({
 	prisma: {
 		projectReport: {
 			findMany: vi.fn().mockResolvedValue([]),
-			getApplauseCount: vi.fn().mockResolvedValue(0),
+			getFeedPage: vi
+				.fn()
+				.mockResolvedValue({ items: [], nextCursor: null, hasMore: false }),
+			getApplauseCounts: vi.fn().mockResolvedValue(new Map()),
 		},
 	},
 }));
@@ -38,7 +40,7 @@ describe("GET /api/landing/project-reports", () => {
 		expect(response.status).toBe(200);
 		expect(prisma.projectReport.findMany).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: expect.objectContaining(nonSystemDevlogFilter),
+				where: expect.objectContaining({ isSystem: false }),
 			}),
 		);
 	});
@@ -47,20 +49,23 @@ describe("GET /api/landing/project-reports", () => {
 describe("GET /api/devlogs", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(prisma.projectReport.findMany as any).mockResolvedValue([]);
-		(prisma.projectReport.getApplauseCount as any).mockResolvedValue(0);
+		(prisma.projectReport.getFeedPage as any).mockResolvedValue({
+			items: [],
+			nextCursor: null,
+			hasMore: false,
+		});
+		(prisma.projectReport.getApplauseCounts as any).mockResolvedValue(new Map());
 	});
 
 	it("keeps early-stage projects and generated posts out of the global feed", async () => {
 		const response = await callGet("http://test/api/devlogs");
 
 		expect(response.status).toBe(200);
-		expect(prisma.projectReport.findMany).toHaveBeenCalledWith(
+		expect(prisma.projectReport.getFeedPage).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: {
-					project: feedVisibleProjectFilter,
-					...nonSystemDevlogFilter,
-				},
+				where: { project: feedVisibleProjectFilter },
+				// Generated posts are hidden by the package, not by a where clause.
+				includeSystem: false,
 			}),
 		);
 		expect(MINIMUM_FEED_STAGE_ORDER).toBe(WorkflowStageOrder.Ideation);
@@ -73,8 +78,30 @@ describe("GET /api/devlogs", () => {
 		const response = await callGet("http://test/api/devlogs?projectId=p3");
 
 		expect(response.status).toBe(200);
-		expect(prisma.projectReport.findMany).toHaveBeenCalledWith(
-			expect.objectContaining({ where: { projectId: "p3" } }),
+		expect(prisma.projectReport.getFeedPage).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: { projectId: "p3" },
+				// A project's own devlog keeps its generated registration post.
+				includeSystem: true,
+			}),
 		);
+	});
+
+	it("passes the client cursor through and returns the next one", async () => {
+		(prisma.projectReport.getFeedPage as any).mockResolvedValue({
+			items: [{ id: "r1" }],
+			nextCursor: "cursor-2",
+			hasMore: true,
+		});
+
+		const response = await callGet("http://test/api/devlogs?after=cursor-1");
+		const body = await response.json();
+
+		expect(prisma.projectReport.getFeedPage).toHaveBeenCalledWith(
+			expect.objectContaining({ after: "cursor-1" }),
+		);
+		expect(body.nextCursor).toBe("cursor-2");
+		expect(body.hasMore).toBe(true);
+		expect(body.items[0].applauseCount).toBe(0);
 	});
 });

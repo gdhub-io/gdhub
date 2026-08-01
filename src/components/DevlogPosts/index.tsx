@@ -9,13 +9,13 @@ import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactNiceAvatar from "react-nice-avatar";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { DevlogPostLink } from "@/components/DevlogPostLink";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
@@ -28,6 +28,7 @@ import {
 	getPageCover,
 } from "@/helpers/content";
 import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
+import type { DevlogFeedPage } from "@/types/devlog";
 import styles from "./styles.module.scss";
 
 const { Title } = Typography;
@@ -167,9 +168,11 @@ const PostCard: React.FC<{
 			: null;
 	}, [post.contentEditor]);
 
+	const postCover = pageCoverFromEditorjs || pageCoverFromContent;
+
 	return (
-		<Link
-			href={`/devlog/${post.id}`}
+		<DevlogPostLink
+			post={post}
 			style={{
 				textDecoration: "none",
 				color: "var(--ant-color-text-secondary)",
@@ -186,7 +189,7 @@ const PostCard: React.FC<{
 						{/* author avatar */}
 						{post.author?.image ? (
 							<Image
-								src={post.author?.image || ""}
+								src={post.author.image}
 								alt={post.author?.name || ""}
 								width={24}
 								height={24}
@@ -225,10 +228,10 @@ const PostCard: React.FC<{
 						<p className={styles.postExcerpt}>{getPreviewText()}</p>
 					</div>
 
-					{pageCoverFromEditorjs || pageCoverFromContent ? (
+					{postCover ? (
 						<div className={styles.postImage}>
 							<Image
-								src={pageCoverFromEditorjs || pageCoverFromContent || ""}
+								src={postCover}
 								alt={post.project?.name || ""}
 								width={240}
 								height={240}
@@ -292,14 +295,16 @@ const PostCard: React.FC<{
 								</HappyProvider>
 							</span>
 						</Tooltip>
-						<PageViews
-							path={`/devlog/${post.id}`}
-							startDate={post.publishedAt.toString()}
-						/>
+						{!post.isSystem && (
+							<PageViews
+								path={`/devlog/${post.id}`}
+								startDate={post.publishedAt.toString()}
+							/>
+						)}
 					</div>
 				</div>
 			</div>
-		</Link>
+		</DevlogPostLink>
 	);
 };
 
@@ -341,32 +346,22 @@ const DevlogPosts = ({
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useInfiniteQuery({
 			queryKey: ["devlog-posts", projectId],
-			queryFn: async ({ pageParam = 1 }) => {
-				const response = await axios.get<ProjectReport[]>(
-					`/api/devlogs?page=${pageParam}&limit=${limit}${projectId ? `&projectId=${projectId}` : ""}`,
+			queryFn: async ({ pageParam }) => {
+				const params = new URLSearchParams({ limit: String(limit) });
+				if (projectId) params.set("projectId", projectId);
+				if (pageParam) params.set("after", pageParam);
+
+				const response = await axios.get<DevlogFeedPage<ProjectReport>>(
+					`/api/devlogs?${params}`,
 				);
 
-				// Если это первая страница, возвращаем только первые 5 постов
-				if (pageParam === 1) {
-					return {
-						posts: response.data.slice(0, limit) || [],
-						nextPage: response.data.length > limit ? 2 : undefined,
-					};
-				}
-
-				// Для последующих страниц возвращаем следующие 5 постов
-				const startIndex = (pageParam - 1) * limit;
-				const endIndex = startIndex + limit;
-				return {
-					posts: response.data.slice(startIndex, endIndex) || [],
-					nextPage: endIndex < response.data.length ? pageParam + 1 : undefined,
-				};
+				return response.data;
 			},
-			getNextPageParam: (lastPage) => lastPage.nextPage,
-			initialPageParam: 1,
+			getNextPageParam: (lastPage) => lastPage.nextCursor,
+			initialPageParam: null as string | null,
 		});
 
-	const posts = data?.pages.flatMap((page) => page.posts || []) || [];
+	const posts = data?.pages.flatMap((page) => page.items || []) || [];
 
 	useEffect(() => {
 		const handleScroll = () => {

@@ -53,15 +53,15 @@ export const GET = withAuth({ mode: "user" })(
 				),
 			);
 
-			const enriched = await Promise.all(
-				projects.map(async (project) => ({
-					...project,
-					applauseCount: await prisma.project.getApplauseCount({
-						projectId: project.id,
-					}),
-					hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
-				})),
-			);
+			const applauseCounts = await prisma.project.getApplauseCounts({
+				projectIds,
+			});
+
+			const enriched = projects.map((project) => ({
+				...project,
+				applauseCount: applauseCounts.get(project.id) ?? 0,
+				hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
+			}));
 
 			return json(enriched);
 		} catch (error) {

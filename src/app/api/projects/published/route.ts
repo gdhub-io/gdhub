@@ -84,43 +84,44 @@ export const GET = withAuth({ mode: "user" })(async () => {
 			),
 		);
 
-		const result = await Promise.all(
-			projects.map(async (project) => {
-				const storeLinks = getStoreLinks(project.links);
+		// Filter and cut to the page size *before* counting applause, so the
+		// counter query only touches the projects that are actually returned.
+		const eligible = projects
+			.flatMap((project) => {
 				const workflow = workflowByProjectId.get(project.id);
 
 				if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
-					return null;
+					return [];
 				}
 
 				const currentStep = workflow?.currentStep;
 
-				if (!currentStep) {
-					return null;
-				}
+				return currentStep ? [{ project, currentStep }] : [];
+			})
+			.slice(0, 4);
 
-				return {
-					id: project.id,
-					name: project.name,
-					slug: project.slug,
-					description: project.description,
-					genre: project.genre,
-					platform: project.platform,
-					coverImage: project.coverImage,
-					applauseCount: await prisma.project.getApplauseCount({
-						projectId: project.id,
-					}),
-					hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
-					storeLinks,
-					workflow: {
-						currentStep: {
-							name: currentStep.name,
-							order: currentStep.order,
-						},
-					},
-				};
-			}),
-		).then((items) => items.filter((project) => project !== null).slice(0, 4));
+		const applauseCounts = await prisma.project.getApplauseCounts({
+			projectIds: eligible.map(({ project }) => project.id),
+		});
+
+		const result = eligible.map(({ project, currentStep }) => ({
+			id: project.id,
+			name: project.name,
+			slug: project.slug,
+			description: project.description,
+			genre: project.genre,
+			platform: project.platform,
+			coverImage: project.coverImage,
+			applauseCount: applauseCounts.get(project.id) ?? 0,
+			hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
+			storeLinks: getStoreLinks(project.links),
+			workflow: {
+				currentStep: {
+					name: currentStep.name,
+					order: currentStep.order,
+				},
+			},
+		}));
 
 		return json(result);
 	} catch (error) {

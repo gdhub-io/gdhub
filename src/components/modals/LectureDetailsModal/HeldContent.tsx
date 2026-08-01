@@ -43,7 +43,7 @@ export const HeldContent = ({
 			) : (
 				<Alert
 					type="warning"
-					message={t("modal.lecturedetails.noVideoYet", "No video yet")}
+					title={t("modal.lecturedetails.noVideoYet", "No video yet")}
 					style={{ marginBottom: 16 }}
 				/>
 			)}

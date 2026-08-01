@@ -199,7 +199,7 @@ export const AiValidationTester = ({
 				<Alert
 					type={summary.type}
 					showIcon
-					message={summary.text}
+					title={summary.text}
 					description={
 						result && (
 							<Paragraph style={{ margin: 0 }} type="secondary">

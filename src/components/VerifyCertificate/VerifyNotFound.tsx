@@ -14,7 +14,7 @@ export const VerifyNotFound = ({ number }: VerifyNotFoundProps) => {
 			type="error"
 			icon={<IconSearch size={20} />}
 			showIcon
-			message={t("verify.notFound.title", "No signed certificate found")}
+			title={t("verify.notFound.title", "No signed certificate found")}
 			description={t(
 				"verify.notFound.text",
 				"We couldn't find a signed certificate with number {number}. Either no certificate exists with this number, or it has not been signed yet. Double-check the code and try again.",

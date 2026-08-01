@@ -99,9 +99,11 @@ export default function MyProjectDevlogPage() {
 								)
 							: getPageCover(record)) || record.project.coverImage;
 
+					if (!coverSrc) return null;
+
 					return (
 						<Image
-							src={coverSrc || ""}
+							src={coverSrc}
 							alt="Cover"
 							width={80}
 							height={45}
@@ -146,13 +148,14 @@ export default function MyProjectDevlogPage() {
 				title: "Views",
 				dataIndex: "id",
 				key: "views",
-				render: (id, record) => (
-					<PageViews
-						path={`/devlog/${id}`}
-						startDate={dayjs(record.publishedAt).format("YYYY-MM-DD")}
-						minViews={0}
-					/>
-				),
+				render: (id, record) =>
+					record.isSystem ? null : (
+						<PageViews
+							path={`/devlog/${id}`}
+							startDate={dayjs(record.publishedAt).format("YYYY-MM-DD")}
+							minViews={0}
+						/>
+					),
 			},
 			{
 				title: "Actions",
@@ -161,15 +164,18 @@ export default function MyProjectDevlogPage() {
 				align: "right",
 				render: (id, record) => (
 					<Space>
-						<Button
-							type="link"
-							size="small"
-							href={`/devlog/${id}`}
-							target="_blank"
-							icon={<IconEye size={16} />}
-						>
-							View
-						</Button>
+						{/* Generated posts have no public page to open. */}
+						{!record.isSystem && (
+							<Button
+								type="link"
+								size="small"
+								href={`/devlog/${id}`}
+								target="_blank"
+								icon={<IconEye size={16} />}
+							>
+								View
+							</Button>
+						)}
 						{!isProjectArchived && !!record.contentEditor && (
 							<Button
 								type="link"

@@ -322,7 +322,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 									{vacancy.myTeamMemberId && (
 										<Alert
 											type="warning"
-											message={t(
+											title={t(
 												"page.vacancy.applied",
 												"You have already responded to this position",
 											)}
@@ -332,7 +332,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 									{!session?.user && (
 										<Alert
 											type="error"
-											message={
+											title={
 												<T
 													keyName="page.vacancy.notAuth"
 													defaultValue={t(

@@ -336,7 +336,7 @@ const EventDefaultView = ({
 										</Button>
 									</Space>
 								}
-								message={t(
+								title={t(
 									"event.loginOrRegister",
 									"You are not registered on the platform",
 								)}

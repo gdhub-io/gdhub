@@ -43,6 +43,11 @@ const e2eCredentialsProvider = CredentialsProvider({
 	},
 });
 
+// How long the user snapshot inside the JWT is trusted before it is re-read
+// from the database. Anything that must be visible immediately (onboarding,
+// profile edits) calls `useSession().update()`, which bypasses this.
+const USER_SYNC_INTERVAL_MS = 5 * 60 * 1000;
+
 export const authConfig: NextAuthConfig = {
 	adapter: PrismaAdapter(prisma),
 	secret: env("NEXTAUTH_SECRET"),
@@ -119,8 +124,22 @@ export const authConfig: NextAuthConfig = {
 		}),
 	],
 	callbacks: {
-		async jwt({ token }) {
+		async jwt({ token, trigger }) {
 			if (!token.email) return token;
+
+			// The JWT already carries the whole user record, and this callback runs
+			// on *every* request that touches `auth()` — the proxy, every server
+			// component, every API route. Re-reading the user from Postgres each
+			// time costs 3 queries per request, so the row is only re-synced once
+			// per interval. `updateSession()` (trigger === "update") always syncs,
+			// which is what onboarding and profile forms rely on.
+			const syncedAt = typeof token.syncedAt === "number" ? token.syncedAt : 0;
+			if (
+				trigger !== "update" &&
+				Date.now() - syncedAt < USER_SYNC_INTERVAL_MS
+			) {
+				return token;
+			}
 
 			const user = await prisma.user.findUnique({
 				where: { email: token.email },
@@ -144,7 +163,15 @@ export const authConfig: NextAuthConfig = {
 				}
 			}
 
-			const activeSubscription = await prisma.user.activeSubscription(user.id);
+			const [activeSubscription, googleAccount] = await Promise.all([
+				prisma.user.activeSubscription(user.id),
+				// Cached in the token so the session callback can skip its own
+				// lookup while the Google access token is still valid.
+				prisma.account.findFirst({
+					where: { userId: user.id, provider: "google" },
+					select: { expires_at: true },
+				}),
+			]);
 
 			// Auth.js v5 encodes the JWT via jose, which calls `structuredClone`
 			// on the payload. Prisma rows can contain values that don't clone
@@ -155,12 +182,25 @@ export const authConfig: NextAuthConfig = {
 				...token,
 				...safeUser,
 				activeSubscription: activeSubscription?.id,
+				googleTokenExpiresAt: googleAccount?.expires_at ?? null,
+				syncedAt: Date.now(),
 			} as any;
 		},
 		async session({ session, token }) {
 			if (!token) return { ...session, error: "InvalidGrantError" } as any;
 
 			session.user = token as any;
+
+			// Only hit the database when the cached expiry says the Google token
+			// has run out; users without a Google account never do.
+			const googleTokenExpiresAt = (token as any).googleTokenExpiresAt as
+				| number
+				| null
+				| undefined;
+
+			if (!googleTokenExpiresAt || googleTokenExpiresAt * 1000 >= Date.now()) {
+				return session;
+			}
 
 			const [google] = await prisma.account.findMany({
 				where: { userId: (token as any).id, provider: "google" },

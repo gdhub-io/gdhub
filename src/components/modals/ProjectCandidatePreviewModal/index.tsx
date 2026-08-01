@@ -18,7 +18,6 @@ import {
 	Button,
 	Col,
 	Descriptions,
-	Form,
 	Modal,
 	message,
 	Row,
@@ -50,7 +49,6 @@ const ProjectCandidatePreviewModal = ({
 }: any) => {
 	const queryClient = useQueryClient();
 	const { t } = useTranslate();
-	const [form] = Form.useForm();
 	const { getGameGenreName } = useGameGenres();
 	const { getGameSettingName } = useGameSettings();
 	const { getGameDifficultyName } = useGameDifficulties();
@@ -137,7 +135,6 @@ const ProjectCandidatePreviewModal = ({
 	}, [open]);
 
 	const handleCancel = () => {
-		form.resetFields();
 		onCancel();
 	};
 

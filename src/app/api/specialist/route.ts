@@ -59,17 +59,30 @@ async function resolveAcceptedOfferRoom(
 		select: { matrixRoomId: true, context: true },
 	});
 
-	for (const room of rooms) {
+	const candidates = rooms.flatMap((room) => {
 		const vacancyId = (room.context as { vacancyId?: string } | null)
 			?.vacancyId;
-		if (!vacancyId || !room.matrixRoomId) continue;
+		return vacancyId && room.matrixRoomId
+			? [{ matrixRoomId: room.matrixRoomId, vacancyId }]
+			: [];
+	});
 
-		// Only offers the CURRENT viewer sent (they own the vacancy's project).
-		const vacancy = await prisma.teamVacancy.findUnique({
-			where: { id: vacancyId },
-			select: { team: { select: { project: { select: { authorId: true } } } } },
-		});
-		if (vacancy?.team?.project?.authorId !== authorId) continue;
+	if (!candidates.length) return null;
+
+	// Only offers the CURRENT viewer sent (they own the vacancy's project).
+	// Resolved in one query — the Matrix membership calls below are already
+	// expensive enough without a database round-trip per room.
+	const ownedVacancies = await prisma.teamVacancy.findMany({
+		where: {
+			id: { in: candidates.map((candidate) => candidate.vacancyId) },
+			team: { project: { authorId } },
+		},
+		select: { id: true },
+	});
+	const ownedVacancyIds = new Set(ownedVacancies.map((vacancy) => vacancy.id));
+
+	for (const room of candidates) {
+		if (!ownedVacancyIds.has(room.vacancyId)) continue;
 
 		try {
 			const memberIds = await getRoomMemberIds(room.matrixRoomId);

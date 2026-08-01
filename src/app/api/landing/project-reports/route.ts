@@ -1,4 +1,3 @@
-import { nonSystemDevlogFilter } from "@/config/devlog";
 import { json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -13,7 +12,7 @@ export async function GET() {
 				status: "Approved",
 				coverImage: { not: null },
 			},
-			...nonSystemDevlogFilter,
+			isSystem: false,
 		},
 		include: {
 			author: {
