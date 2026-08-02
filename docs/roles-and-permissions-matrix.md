@@ -129,6 +129,9 @@ Entering a space is not guarded by a permission — any role gets you in
 | `admin.users.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.users.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
+| `admin.roles.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `admin.roles.manage` | ✅ | ✅ | — | — | manage |
+| | | | | | |
 | `admin.posts.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.posts.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
@@ -137,9 +140,6 @@ Entering a space is not guarded by a permission — any role gets you in
 | | | | | | |
 | `admin.projects.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.projects.manage` | ✅ | ✅ | — | — | manage |
-| | | | | | |
-| `admin.lectures.view` | ✅ | ✅ | ✅ | — | read & take part |
-| `admin.lectures.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
 | `admin.workflow.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.workflow.manage` | ✅ | ✅ | — | — | manage |

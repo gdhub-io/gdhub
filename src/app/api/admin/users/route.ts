@@ -1,10 +1,7 @@
-import {
-	AdviceRequestStatus,
-	ProjectStatus,
-	UserRole,
-} from "@gdhub-io/gdhub-prisma";
+import { AdviceRequestStatus, ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
+import type { SpaceRole } from "@/config/permissions/roles";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import {
 	ADVISOR_ROLE_COEF,
@@ -29,6 +26,13 @@ type SkillCapitalSummary = {
 	mentorshipCapital: number;
 };
 
+/** Membership chips: one per (space type, role), with how many spaces it covers. */
+type MembershipSummary = {
+	spaceType: string;
+	role: SpaceRole;
+	count: number;
+};
+
 type AdminUserListItem = {
 	id: string;
 	image: string | null;
@@ -38,6 +42,7 @@ type AdminUserListItem = {
 	lastModifiedAt: Date;
 	specializations: string[];
 	skillCapital: SkillCapitalSummary;
+	memberships: MembershipSummary[];
 };
 
 type PaginatedAdminUsersResponse = {
@@ -519,6 +524,75 @@ const computeSkillCapitalForUsers = async (
 	return result;
 };
 
+const EMPTY_CAPITAL: SkillCapitalSummary = {
+	scTotal: 0,
+	leadershipCapital: 0,
+	executionCapital: 0,
+	mentorshipCapital: 0,
+};
+
+/** Membership chips for a page of users, in one query. */
+const loadMemberships = async (
+	userIds: string[],
+): Promise<Map<string, MembershipSummary[]>> => {
+	if (userIds.length === 0) return new Map();
+
+	const grouped = await prisma.spaceMember.groupBy({
+		by: ["userId", "spaceType", "role"],
+		where: { userId: { in: userIds }, revokedAt: null },
+		_count: { _all: true },
+	});
+
+	const byUserId = new Map<string, MembershipSummary[]>();
+
+	for (const row of grouped) {
+		const list = byUserId.get(row.userId) ?? [];
+
+		list.push({
+			spaceType: row.spaceType,
+			role: row.role,
+			count: row._count._all,
+		});
+		byUserId.set(row.userId, list);
+	}
+
+	return byUserId;
+};
+
+type UserRecord = {
+	id: string;
+	name: string | null;
+	email: string | null;
+	image: string | null;
+	createdAt: Date;
+	updatedAt: Date;
+	profile: { name: string; updatedAt: Date | string } | null;
+	specialities: { name: string; updatedAt: Date | string }[];
+};
+
+const toListItem = (
+	user: UserRecord,
+	skillCapital: Map<string, SkillCapitalSummary>,
+	memberships: Map<string, MembershipSummary[]>,
+): AdminUserListItem => ({
+	id: user.id,
+	image: user.image,
+	name: toDisplayName(user),
+	email: user.email,
+	createdAt: user.createdAt,
+	lastModifiedAt: toLastModifiedAt(user),
+	specializations: user.specialities.map((speciality) => speciality.name),
+	skillCapital: skillCapital.get(user.id) || EMPTY_CAPITAL,
+	memberships: memberships.get(user.id) || [],
+});
+
+/** Skill capital and memberships for one page, together. */
+const loadPageData = async (users: UserRecord[]) =>
+	Promise.all([
+		computeSkillCapitalForUsers(users.map((user) => user.id)),
+		loadMemberships(users.map((user) => user.id)),
+	]);
+
 export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "admin.users.view" }),
@@ -558,28 +632,10 @@ export const GET = pipe(
 					includePageCount: true,
 				});
 
-			const skillCapitalByUserId = await computeSkillCapitalForUsers(
-				users.map((user) => user.id),
-			);
+			const [capital, memberships] = await loadPageData(users);
 
 			const response: PaginatedAdminUsersResponse = {
-				data: users.map((user) => ({
-					id: user.id,
-					image: user.image,
-					name: toDisplayName(user),
-					email: user.email,
-					createdAt: user.createdAt,
-					lastModifiedAt: toLastModifiedAt(user),
-					specializations: user.specialities.map(
-						(speciality) => speciality.name,
-					),
-					skillCapital: skillCapitalByUserId.get(user.id) || {
-						scTotal: 0,
-						leadershipCapital: 0,
-						executionCapital: 0,
-						mentorshipCapital: 0,
-					},
-				})),
+				data: users.map((user) => toListItem(user, capital, memberships)),
 				meta,
 			};
 			return json(response);
@@ -615,28 +671,10 @@ export const GET = pipe(
 			const safePage = clamp(page, 1, pageCount);
 			const start = (safePage - 1) * limit;
 			const pagedUsers = sortedUsers.slice(start, start + limit);
-			const skillCapitalByUserId = await computeSkillCapitalForUsers(
-				pagedUsers.map((user) => user.id),
-			);
+			const [capital, memberships] = await loadPageData(pagedUsers);
 
 			const response: PaginatedAdminUsersResponse = {
-				data: pagedUsers.map((user) => ({
-					id: user.id,
-					image: user.image,
-					name: toDisplayName(user),
-					email: user.email,
-					createdAt: user.createdAt,
-					lastModifiedAt: toLastModifiedAt(user),
-					specializations: user.specialities.map(
-						(speciality) => speciality.name,
-					),
-					skillCapital: skillCapitalByUserId.get(user.id) || {
-						scTotal: 0,
-						leadershipCapital: 0,
-						executionCapital: 0,
-						mentorshipCapital: 0,
-					},
-				})),
+				data: pagedUsers.map((user) => toListItem(user, capital, memberships)),
 				meta: {
 					currentPage: safePage,
 					isFirstPage: safePage === 1,
@@ -665,23 +703,14 @@ export const GET = pipe(
 		const safePage = clamp(page, 1, pageCount);
 		const start = (safePage - 1) * limit;
 		const pagedUsers = sortedUsers.slice(start, start + limit);
+		const memberships = await loadMemberships(
+			pagedUsers.map((user) => user.id),
+		);
 
 		const response: PaginatedAdminUsersResponse = {
-			data: pagedUsers.map((user) => ({
-				id: user.id,
-				image: user.image,
-				name: toDisplayName(user),
-				email: user.email,
-				createdAt: user.createdAt,
-				lastModifiedAt: toLastModifiedAt(user),
-				specializations: user.specialities.map((speciality) => speciality.name),
-				skillCapital: skillCapitalByUserId.get(user.id) || {
-					scTotal: 0,
-					leadershipCapital: 0,
-					executionCapital: 0,
-					mentorshipCapital: 0,
-				},
-			})),
+			data: pagedUsers.map((user) =>
+				toListItem(user, skillCapitalByUserId, memberships),
+			),
 			meta: {
 				currentPage: safePage,
 				isFirstPage: safePage === 1,
@@ -715,26 +744,10 @@ export const GET = pipe(
 			includePageCount: true,
 		});
 
-	const skillCapitalByUserId = await computeSkillCapitalForUsers(
-		users.map((user) => user.id),
-	);
+	const [capital, memberships] = await loadPageData(users);
 
 	const response: PaginatedAdminUsersResponse = {
-		data: users.map((user) => ({
-			id: user.id,
-			image: user.image,
-			name: toDisplayName(user),
-			email: user.email,
-			createdAt: user.createdAt,
-			lastModifiedAt: toLastModifiedAt(user),
-			specializations: user.specialities.map((speciality) => speciality.name),
-			skillCapital: skillCapitalByUserId.get(user.id) || {
-				scTotal: 0,
-				leadershipCapital: 0,
-				executionCapital: 0,
-				mentorshipCapital: 0,
-			},
-		})),
+		data: users.map((user) => toListItem(user, capital, memberships)),
 		meta,
 	};
 	return json(response);

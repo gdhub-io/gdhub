@@ -83,6 +83,43 @@ export const logAccessDenied = async (event: AccessEvent): Promise<void> => {
 };
 
 /**
+ * A change to the access rules themselves: the permission matrix, a custom role,
+ * someone's membership.
+ *
+ * Written by hand rather than by the audit extension in the Prisma package,
+ * which only covers the domain models. A row per intent ("admin lost
+ * admin.users.manage") is also more useful here than a row per write — the same
+ * save touches every permission of the role.
+ */
+type RbacChangeEvent = {
+	entity: "space_role" | "space_custom_role" | "space_membership";
+	entityId: string;
+	action: (typeof AuditAction)[keyof typeof AuditAction];
+	actorUserId: string;
+	subjectUserId?: string;
+	changes?: Record<string, unknown>;
+	meta?: Record<string, unknown>;
+};
+
+export const logRbacChange = async (event: RbacChangeEvent): Promise<void> => {
+	try {
+		await prisma.auditLog.create({
+			data: {
+				actorUserId: event.actorUserId,
+				subjectUserId: event.subjectUserId ?? null,
+				entity: event.entity,
+				entityId: event.entityId,
+				action: event.action,
+				changes: event.changes ?? {},
+				meta: { source: "admin", ...event.meta },
+			},
+		});
+	} catch (error) {
+		console.error("[rbac] failed to write the audit entry", error);
+	}
+};
+
+/**
  * The break-glass flag was used. Rare by design and the single most important
  * thing to be able to find later, so it is never throttled and is logged at
  * error level — not because something broke, but because it must not scroll past

@@ -10,10 +10,12 @@ export const adminSpace = defineSpace({
 	type: "admin",
 	features: {
 		users: ["view", "manage"],
+		// The permission matrix itself. `manage` is the most dangerous permission
+		// on the platform: it is the one that can take permissions away.
+		roles: ["view", "manage"],
 		posts: ["view", "manage"],
 		devlog_posts: ["view", "manage"],
 		projects: ["view", "manage"],
-		lectures: ["view", "manage"],
 		// Workflow from the platform side: the template library and editing any
 		// project's process. Not to be confused with `project.workflow` (§3.4).
 		workflow: ["view", "manage"],

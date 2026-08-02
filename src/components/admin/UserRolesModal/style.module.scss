@@ -1,0 +1,42 @@
+.body {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding-top: 8px;
+}
+
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.sectionHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.hint {
+	font-size: 12px;
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 0;
+	border-top: 1px solid var(--ant-color-border-secondary);
+}
+
+.info {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+	min-width: 0;
+}
+
+.select {
+	width: 140px;
+}

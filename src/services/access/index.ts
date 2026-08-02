@@ -6,8 +6,13 @@ import {
 import { SPACES, type SpaceType } from "@/config/spaces";
 import { permissionsOf } from "@/config/spaces/define-space";
 import { SPACE_ADAPTERS } from "./adapters";
-import { permissionsForRole } from "./matrix-source";
-import { storedRole } from "./stored-role";
+import { customRolePermissions } from "./custom-roles";
+import { type PermissionState, permissionsForRole } from "./matrix-source";
+import {
+	type StoredMembership,
+	storedMembership,
+	storedRole,
+} from "./stored-role";
 import {
 	DEFAULT_SPACE_ID,
 	type MaybeAccessUser,
@@ -40,6 +45,45 @@ const noAccess = (type: SpaceType, id: string): SpaceAccess => ({
  * Enforcing is the default: forgetting to flip a flag must fail closed.
  */
 export const isEnforcing = (): boolean => process.env.RBAC_ENFORCE !== "false";
+
+/**
+ * Where a membership's permissions come from.
+ *
+ * A custom role narrows its base role, so it only applies while nothing else
+ * gives the user more: a hub admin who also holds a `marketer` membership in the
+ * admin space keeps the admin permissions they inherit. An equal role from
+ * another source loses to the custom one — the explicit assignment is the more
+ * recent decision about that person.
+ *
+ * A key that resolves to nothing grants nothing: the role was deleted, and
+ * falling back to the broader base role would be a silent promotion.
+ */
+const grantedPermissions = async ({
+	type,
+	spaceId,
+	role,
+	membership,
+}: {
+	type: SpaceType;
+	spaceId: string;
+	role: SpaceRole;
+	membership: StoredMembership | null;
+}): Promise<Map<string, PermissionState>> => {
+	const custom = membership?.customRoleKey;
+
+	if (!custom || membership?.role !== role) {
+		return permissionsForRole(type, role);
+	}
+
+	const permissions = await customRolePermissions(type, spaceId, custom);
+
+	return new Map(
+		(permissions ?? []).map((permission) => [
+			permission,
+			{ allowed: true, scope: null },
+		]),
+	);
+};
 
 /** The hub role is also the platform role, so it is resolved on its own. */
 const resolveHubRole = async (
@@ -103,7 +147,8 @@ export async function getSpaceAccess(
 
 	// Membership is the source of truth; the adapter is what is left of the old
 	// domain-table checks and disappears once the backfill has run everywhere.
-	const memberRole = await storedRole(type, spaceId, user.id);
+	const membership = await storedMembership(type, spaceId, user.id);
+	const memberRole = membership?.role ?? null;
 
 	// A space may take its role from another one: `admin` and `dev` are run by
 	// platform staff from the hub.
@@ -128,7 +173,7 @@ export async function getSpaceAccess(
 
 	if (!role) return noAccess(type, spaceId);
 
-	const granted = await permissionsForRole(type, role);
+	const granted = await grantedPermissions({ type, spaceId, role, membership });
 	const revoked = adapter?.revoked ? await adapter.revoked(spaceId) : [];
 
 	const permissions = new Set<string>();
