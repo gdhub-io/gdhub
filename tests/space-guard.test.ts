@@ -29,6 +29,9 @@ vi.mock("@/services/prisma", () => ({
 			findUnique: (...args: unknown[]) => projectFindUnique(...args),
 		},
 		auditLog: { create: (...args: unknown[]) => auditCreate(...args) },
+		// No membership rows in these fixtures: roles come from the project table
+		// through the adapter.
+		spaceMember: { findUnique: async () => null },
 	},
 }));
 

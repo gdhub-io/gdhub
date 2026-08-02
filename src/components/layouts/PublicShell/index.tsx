@@ -23,7 +23,6 @@ import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { MainFooter } from "@/components/MainFooter";
 import { UserRole } from "@/config/prisma-enums";
 import { publicThemeConfig } from "@/config/theme";
-import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
@@ -180,7 +179,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
 	const dropdownMenuItems: MenuProps["items"] = useMemo(() => {
 		let menu: MenuProps["items"] = [];
 
-		if (hasRole(UserRole.Admin, { data: session })) {
+		// The public shell lives outside the authenticated app, so there is no
+		// access context here; the session carries a staff flag resolved from hub
+		// membership on the server.
+		if ((session?.user as { isStaff?: boolean } | undefined)?.isStaff) {
 			menu.push({
 				label: (
 					<Link href="/admin/seasons">

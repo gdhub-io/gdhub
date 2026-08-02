@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import slugify from "voca/slugify";
 import { z } from "zod";
 import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
+import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
 	json,
@@ -16,6 +17,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
@@ -199,6 +201,15 @@ export const POST = withAuth({ mode: "user" })(
 			},
 		});
 
+		// Membership is what the space gates read; a project without its owner row
+		// would be unreachable for its own author.
+		await joinSpace({
+			type: "project",
+			spaceId: project.id,
+			userId: currentUser.id,
+			role: SpaceRole.Owner,
+		});
+
 		if (!project.author.roles.includes(UserRole.Author)) {
 			await prisma.user.update({
 				where: { id: currentUser.id },
@@ -285,6 +296,10 @@ export const DELETE = withAuth({ mode: "user" })(
 			projectId: id,
 			authorId: currentUser.id,
 		});
+
+		// No foreign key cascades here: the link from a space to its entity is
+		// polymorphic, so the membership rows have to go explicitly.
+		await deleteSpaceMembership("project", id);
 
 		// Deleting the project takes its vacancies away — end their chats too.
 		try {

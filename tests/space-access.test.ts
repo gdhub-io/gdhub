@@ -8,6 +8,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const projectFindFirst = vi.fn();
+const spaceMemberFindUnique = vi.fn();
 const projectFindUnique = vi.fn();
 const eventFindUnique = vi.fn();
 const courseFindFirst = vi.fn();
@@ -20,6 +21,9 @@ vi.mock("@/services/prisma", () => ({
 		},
 		event: { findUnique: (...args: unknown[]) => eventFindUnique(...args) },
 		course: { findFirst: (...args: unknown[]) => courseFindFirst(...args) },
+		spaceMember: {
+			findUnique: (...args: unknown[]) => spaceMemberFindUnique(...args),
+		},
 	},
 }));
 
@@ -59,6 +63,10 @@ beforeEach(() => {
 	// These tests are about roles and permissions, not about where the matrix is
 	// stored: take it from the registry instead of the (mocked away) database.
 	setMatrixSource(codeSource);
+	spaceMemberFindUnique.mockReset();
+	// No membership rows yet: the roles below still come from the domain tables
+	// through the adapters. The backfill is what fills this in.
+	spaceMemberFindUnique.mockResolvedValue(null);
 	projectFindFirst.mockReset();
 	projectFindUnique.mockReset();
 	eventFindUnique.mockReset();
@@ -401,4 +409,45 @@ describe("statuses that must never open a space", () => {
 			expect((await getSpaceAccess("event", "e1", member)).role).toBe("none");
 		},
 	);
+});
+
+describe("membership takes precedence over the domain tables", () => {
+	it("grants the stored role even when the domain says nothing", async () => {
+		projectWith();
+		spaceMemberFindUnique.mockImplementation(
+			async ({ where }: { where: { spaceType_spaceId_userId: { spaceType: string } } }) =>
+				where.spaceType_spaceId_userId.spaceType === "project"
+					? { role: SpaceRole.Admin, revokedAt: null }
+					: null,
+		);
+
+		const access = await getSpaceAccess("project", "slug", member);
+
+		// This is how an invited manager gets in: no team row, just membership.
+		expect(access.role).toBe(SpaceRole.Admin);
+		expect(can(access, "project.members.invite")).toBe(true);
+	});
+
+	it("keeps the stronger of the two", async () => {
+		projectWith({ authorId: member.id });
+		spaceMemberFindUnique.mockResolvedValue({
+			role: SpaceRole.Member,
+			revokedAt: null,
+		});
+
+		// The author owns the project; a weaker membership row must not demote them.
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe(
+			SpaceRole.Owner,
+		);
+	});
+
+	it("ignores a revoked membership", async () => {
+		projectWith();
+		spaceMemberFindUnique.mockResolvedValue({
+			role: SpaceRole.Admin,
+			revokedAt: new Date(),
+		});
+
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");
+	});
 });

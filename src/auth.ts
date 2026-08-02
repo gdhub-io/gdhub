@@ -163,24 +163,43 @@ export const authConfig: NextAuthConfig = {
 				}
 			}
 
-			const [activeSubscription, googleAccount] = await Promise.all([
-				prisma.user.activeSubscription(user.id),
-				// Cached in the token so the session callback can skip its own
-				// lookup while the Google access token is still valid.
-				prisma.account.findFirst({
-					where: { userId: user.id, provider: "google" },
-					select: { expires_at: true },
-				}),
-			]);
+			const [activeSubscription, googleAccount, hubMembership] =
+				await Promise.all([
+					prisma.user.activeSubscription(user.id),
+					// Cached in the token so the session callback can skip its own
+					// lookup while the Google access token is still valid.
+					prisma.account.findFirst({
+						where: { userId: user.id, provider: "google" },
+						select: { expires_at: true },
+					}),
+					// Platform staff. Read here so components outside the authenticated
+					// app — the public shell, which has no access context — can tell
+					// without falling back to the legacy `roles` array.
+					prisma.spaceMember.findUnique({
+						where: {
+							spaceType_spaceId_userId: {
+								spaceType: "hub",
+								spaceId: "default",
+								userId: user.id,
+							},
+						},
+						select: { role: true, revokedAt: true },
+					}),
+				]);
 
 			// Auth.js v5 encodes the JWT via jose, which calls `structuredClone`
 			// on the payload. Prisma rows can contain values that don't clone
 			// (Decimal, BigInt, etc.), so flatten the user through JSON first.
 			const safeUser = JSON.parse(JSON.stringify(user));
 
+			const isStaff =
+				!hubMembership?.revokedAt &&
+				(hubMembership?.role === "Admin" || hubMembership?.role === "Owner");
+
 			return {
 				...token,
 				...safeUser,
+				isStaff,
 				activeSubscription: activeSubscription?.id,
 				googleTokenExpiresAt: googleAccount?.expires_at ?? null,
 				syncedAt: Date.now(),

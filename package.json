@@ -34,7 +34,8 @@
 		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs",
 		"queues:clean": "dotenv -- node scripts/clean-queues.mjs",
 		"rbac:seed-matrix": "dotenv -- bun run scripts/rbac-seed-matrix.ts",
-		"rbac:matrix-doc": "bun run scripts/rbac-matrix-doc.ts"
+		"rbac:matrix-doc": "bun run scripts/rbac-matrix-doc.ts",
+		"rbac:backfill": "dotenv -- bun run scripts/rbac-backfill.ts"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",

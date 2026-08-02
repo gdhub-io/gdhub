@@ -31,6 +31,8 @@ vi.mock("../src/services/prisma", () => ({
 		user: { findUnique: vi.fn() },
 		team: { findUnique: vi.fn() },
 		project: { findFirst: vi.fn(), findUnique: vi.fn() },
+		spaceMember: { findUnique: vi.fn() },
+		auditLog: { create: vi.fn() },
 	},
 }));
 

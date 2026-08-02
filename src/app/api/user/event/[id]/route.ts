@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { deleteSpaceMembership } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
 
 const UserEventUpdateSchema = z.object({
@@ -102,6 +103,8 @@ export const DELETE = withAuth({ mode: "user" })(
 				id,
 			},
 		});
+
+		await deleteSpaceMembership("event", id);
 
 		return json({ success: true });
 	},

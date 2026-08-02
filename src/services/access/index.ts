@@ -7,6 +7,7 @@ import { SPACES, type SpaceType } from "@/config/spaces";
 import { permissionsOf } from "@/config/spaces/define-space";
 import { SPACE_ADAPTERS } from "./adapters";
 import { permissionsForRole } from "./matrix-source";
+import { storedRole } from "./stored-role";
 import {
 	DEFAULT_SPACE_ID,
 	type MaybeAccessUser,
@@ -44,9 +45,12 @@ export const isEnforcing = (): boolean => process.env.RBAC_ENFORCE !== "false";
 const resolveHubRole = async (
 	user: NonNullable<MaybeAccessUser>,
 ): Promise<SpaceRole | null> => {
-	const resolved = await SPACE_ADAPTERS.hub?.resolve?.(DEFAULT_SPACE_ID, user);
+	const [stored, resolved] = await Promise.all([
+		storedRole("hub", DEFAULT_SPACE_ID, user.id),
+		SPACE_ADAPTERS.hub?.resolve?.(DEFAULT_SPACE_ID, user),
+	]);
 
-	return resolved?.role ?? null;
+	return strongestRole([stored, resolved?.role]);
 };
 
 /**
@@ -97,6 +101,10 @@ export async function getSpaceAccess(
 
 	const spaceId = resolved?.spaceId ?? fallbackId;
 
+	// Membership is the source of truth; the adapter is what is left of the old
+	// domain-table checks and disappears once the backfill has run everywhere.
+	const memberRole = await storedRole(type, spaceId, user.id);
+
 	// A space may take its role from another one: `admin` and `dev` are run by
 	// platform staff from the hub.
 	//
@@ -116,7 +124,7 @@ export async function getSpaceAccess(
 			})()
 		: null;
 
-	const role = strongestRole([resolved?.role, inheritedRole]);
+	const role = strongestRole([memberRole, resolved?.role, inheritedRole]);
 
 	if (!role) return noAccess(type, spaceId);
 
