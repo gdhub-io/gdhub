@@ -5,7 +5,7 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
-import { json, withAuth, withValidation } from "@/lib/api-handlers";
+import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import {
 	ADVISOR_ROLE_COEF,
 	ADVISOR_SESSION_TO_DAY_EQUIVALENT,
@@ -19,6 +19,7 @@ import {
 	LEADERSHIP_ROLE_COEF,
 	STAGE_DEPTH_BONUS_WEIGHT,
 } from "@/lib/skill-capital";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
 type SkillCapitalSummary = {
@@ -518,155 +519,105 @@ const computeSkillCapitalForUsers = async (
 	return result;
 };
 
-export const GET = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(
-	withValidation(
-		AdminUsersQuerySchema,
-		"query",
-	)(async (_req, _ctx, { body }) => {
-		const {
-			page: pageQuery,
-			limit: limitQuery,
-			sortField: sortFieldQuery,
-			sortOrder: sortOrderQuery,
-		} = body as AdminUsersQuery;
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.users.view" }),
+	withValidation(AdminUsersQuerySchema, "query"),
+)(async (_req, _ctx, { body }) => {
+	const {
+		page: pageQuery,
+		limit: limitQuery,
+		sortField: sortFieldQuery,
+		sortOrder: sortOrderQuery,
+	} = body as AdminUsersQuery;
 
-		const page = toPositiveInt(pageQuery, 1);
-		const limit = clamp(toPositiveInt(limitQuery, 20), 1, 100);
-		const sortField = isSortField(sortFieldQuery) ? sortFieldQuery : undefined;
-		const sortOrder = isSortOrder(sortOrderQuery) ? sortOrderQuery : undefined;
+	const page = toPositiveInt(pageQuery, 1);
+	const limit = clamp(toPositiveInt(limitQuery, 20), 1, 100);
+	const sortField = isSortField(sortFieldQuery) ? sortFieldQuery : undefined;
+	const sortOrder = isSortOrder(sortOrderQuery) ? sortOrderQuery : undefined;
 
-		if (sortField && sortOrder) {
-			if (sortField === "createdAt") {
-				const [users, meta] = await prisma.user
-					.paginate({
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							image: true,
-							createdAt: true,
-							updatedAt: true,
-							profile: { select: { name: true, updatedAt: true } },
-							specialities: { select: { name: true, updatedAt: true } },
-						},
-						orderBy: { createdAt: sortOrder === "ascend" ? "asc" : "desc" },
-					})
-					.withPages({
-						page,
-						limit,
-						includePageCount: true,
-					});
-
-				const skillCapitalByUserId = await computeSkillCapitalForUsers(
-					users.map((user) => user.id),
-				);
-
-				const response: PaginatedAdminUsersResponse = {
-					data: users.map((user) => ({
-						id: user.id,
-						image: user.image,
-						name: toDisplayName(user),
-						email: user.email,
-						createdAt: user.createdAt,
-						lastModifiedAt: toLastModifiedAt(user),
-						specializations: user.specialities.map(
-							(speciality) => speciality.name,
-						),
-						skillCapital: skillCapitalByUserId.get(user.id) || {
-							scTotal: 0,
-							leadershipCapital: 0,
-							executionCapital: 0,
-							mentorshipCapital: 0,
-						},
-					})),
-					meta,
-				};
-				return json(response);
-			}
-
-			const allUsers = await prisma.user.findMany({
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-					profile: { select: { name: true, updatedAt: true } },
-					specialities: { select: { name: true, updatedAt: true } },
-				},
-				orderBy: { createdAt: "desc" },
-			});
-
-			const sortedUsers = [...allUsers];
-			const direction = sortOrder === "ascend" ? 1 : -1;
-
-			if (sortField === "name") {
-				sortedUsers.sort(
-					(a, b) =>
-						toDisplayName(a).localeCompare(toDisplayName(b), undefined, {
-							sensitivity: "base",
-						}) * direction,
-				);
-
-				const totalCount = sortedUsers.length;
-				const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
-				const safePage = clamp(page, 1, pageCount);
-				const start = (safePage - 1) * limit;
-				const pagedUsers = sortedUsers.slice(start, start + limit);
-				const skillCapitalByUserId = await computeSkillCapitalForUsers(
-					pagedUsers.map((user) => user.id),
-				);
-
-				const response: PaginatedAdminUsersResponse = {
-					data: pagedUsers.map((user) => ({
-						id: user.id,
-						image: user.image,
-						name: toDisplayName(user),
-						email: user.email,
-						createdAt: user.createdAt,
-						lastModifiedAt: toLastModifiedAt(user),
-						specializations: user.specialities.map(
-							(speciality) => speciality.name,
-						),
-						skillCapital: skillCapitalByUserId.get(user.id) || {
-							scTotal: 0,
-							leadershipCapital: 0,
-							executionCapital: 0,
-							mentorshipCapital: 0,
-						},
-					})),
-					meta: {
-						currentPage: safePage,
-						isFirstPage: safePage === 1,
-						isLastPage: safePage >= pageCount,
-						previousPage: safePage > 1 ? safePage - 1 : null,
-						nextPage: safePage < pageCount ? safePage + 1 : null,
-						pageCount,
-						totalCount,
+	if (sortField && sortOrder) {
+		if (sortField === "createdAt") {
+			const [users, meta] = await prisma.user
+				.paginate({
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+						createdAt: true,
+						updatedAt: true,
+						profile: { select: { name: true, updatedAt: true } },
+						specialities: { select: { name: true, updatedAt: true } },
 					},
-				};
-				return json(response);
-			}
+					orderBy: { createdAt: sortOrder === "ascend" ? "asc" : "desc" },
+				})
+				.withPages({
+					page,
+					limit,
+					includePageCount: true,
+				});
 
 			const skillCapitalByUserId = await computeSkillCapitalForUsers(
-				allUsers.map((user) => user.id),
+				users.map((user) => user.id),
 			);
 
-			sortedUsers.sort((a, b) => {
-				const aValue = skillCapitalByUserId.get(a.id)?.[sortField] || 0;
-				const bValue = skillCapitalByUserId.get(b.id)?.[sortField] || 0;
-				return (aValue - bValue) * direction;
-			});
+			const response: PaginatedAdminUsersResponse = {
+				data: users.map((user) => ({
+					id: user.id,
+					image: user.image,
+					name: toDisplayName(user),
+					email: user.email,
+					createdAt: user.createdAt,
+					lastModifiedAt: toLastModifiedAt(user),
+					specializations: user.specialities.map(
+						(speciality) => speciality.name,
+					),
+					skillCapital: skillCapitalByUserId.get(user.id) || {
+						scTotal: 0,
+						leadershipCapital: 0,
+						executionCapital: 0,
+						mentorshipCapital: 0,
+					},
+				})),
+				meta,
+			};
+			return json(response);
+		}
+
+		const allUsers = await prisma.user.findMany({
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+				createdAt: true,
+				updatedAt: true,
+				profile: { select: { name: true, updatedAt: true } },
+				specialities: { select: { name: true, updatedAt: true } },
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		const sortedUsers = [...allUsers];
+		const direction = sortOrder === "ascend" ? 1 : -1;
+
+		if (sortField === "name") {
+			sortedUsers.sort(
+				(a, b) =>
+					toDisplayName(a).localeCompare(toDisplayName(b), undefined, {
+						sensitivity: "base",
+					}) * direction,
+			);
 
 			const totalCount = sortedUsers.length;
 			const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
 			const safePage = clamp(page, 1, pageCount);
 			const start = (safePage - 1) * limit;
 			const pagedUsers = sortedUsers.slice(start, start + limit);
+			const skillCapitalByUserId = await computeSkillCapitalForUsers(
+				pagedUsers.map((user) => user.id),
+			);
 
 			const response: PaginatedAdminUsersResponse = {
 				data: pagedUsers.map((user) => ({
@@ -699,32 +650,24 @@ export const GET = withAuth({
 			return json(response);
 		}
 
-		const [users, meta] = await prisma.user
-			.paginate({
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-					profile: { select: { name: true, updatedAt: true } },
-					specialities: { select: { name: true, updatedAt: true } },
-				},
-				orderBy: { createdAt: "desc" },
-			})
-			.withPages({
-				page,
-				limit,
-				includePageCount: true,
-			});
-
 		const skillCapitalByUserId = await computeSkillCapitalForUsers(
-			users.map((user) => user.id),
+			allUsers.map((user) => user.id),
 		);
 
+		sortedUsers.sort((a, b) => {
+			const aValue = skillCapitalByUserId.get(a.id)?.[sortField] || 0;
+			const bValue = skillCapitalByUserId.get(b.id)?.[sortField] || 0;
+			return (aValue - bValue) * direction;
+		});
+
+		const totalCount = sortedUsers.length;
+		const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
+		const safePage = clamp(page, 1, pageCount);
+		const start = (safePage - 1) * limit;
+		const pagedUsers = sortedUsers.slice(start, start + limit);
+
 		const response: PaginatedAdminUsersResponse = {
-			data: users.map((user) => ({
+			data: pagedUsers.map((user) => ({
 				id: user.id,
 				image: user.image,
 				name: toDisplayName(user),
@@ -739,8 +682,60 @@ export const GET = withAuth({
 					mentorshipCapital: 0,
 				},
 			})),
-			meta,
+			meta: {
+				currentPage: safePage,
+				isFirstPage: safePage === 1,
+				isLastPage: safePage >= pageCount,
+				previousPage: safePage > 1 ? safePage - 1 : null,
+				nextPage: safePage < pageCount ? safePage + 1 : null,
+				pageCount,
+				totalCount,
+			},
 		};
 		return json(response);
-	}),
-);
+	}
+
+	const [users, meta] = await prisma.user
+		.paginate({
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+				createdAt: true,
+				updatedAt: true,
+				profile: { select: { name: true, updatedAt: true } },
+				specialities: { select: { name: true, updatedAt: true } },
+			},
+			orderBy: { createdAt: "desc" },
+		})
+		.withPages({
+			page,
+			limit,
+			includePageCount: true,
+		});
+
+	const skillCapitalByUserId = await computeSkillCapitalForUsers(
+		users.map((user) => user.id),
+	);
+
+	const response: PaginatedAdminUsersResponse = {
+		data: users.map((user) => ({
+			id: user.id,
+			image: user.image,
+			name: toDisplayName(user),
+			email: user.email,
+			createdAt: user.createdAt,
+			lastModifiedAt: toLastModifiedAt(user),
+			specializations: user.specialities.map((speciality) => speciality.name),
+			skillCapital: skillCapitalByUserId.get(user.id) || {
+				scTotal: 0,
+				leadershipCapital: 0,
+				executionCapital: 0,
+				mentorshipCapital: 0,
+			},
+		})),
+		meta,
+	};
+	return json(response);
+});

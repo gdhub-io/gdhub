@@ -1,6 +1,13 @@
 import { randomBytes } from "node:crypto";
 import { EventType, Prisma, UserRole } from "@gdhub-io/gdhub-prisma";
-import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import {
 	LegalService,
 	MENTOR_SIGNATURE_FIELD,
@@ -21,7 +28,13 @@ function generateCertificateNumber(): string {
 	return `GDH-${suffix}`;
 }
 
-export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.issue",
+		idFrom: "params.id",
+	}),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
@@ -35,12 +48,6 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 	if (!eventCtx || eventCtx.event.id !== id) {
 		return apiError.notFound("Member not found");
-	}
-
-	if (!isAdmin && eventCtx.event.createdById !== currentUser.id) {
-		return apiError.forbidden(
-			"You are not allowed to manage certificates for this event",
-		);
 	}
 
 	if (!eventCtx.event.certificationEnabled) {
@@ -176,7 +183,13 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	}
 });
 
-export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.view",
+		idFrom: "params.id",
+	}),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
@@ -197,12 +210,6 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 	if (!member || member.eventId !== id) {
 		return apiError.notFound("Member not found");
-	}
-
-	if (!isAdmin && member.event.createdById !== currentUser.id) {
-		return apiError.forbidden(
-			"You are not allowed to view certificates for this event",
-		);
 	}
 
 	if (!member.certificate) return json(null);
@@ -227,75 +234,73 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	});
 });
 
-export const DELETE = withAuth({ mode: "user" })(
-	async (_req, ctx, { user }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
+export const DELETE = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.issue",
+		idFrom: "params.id",
+	}),
+)(async (_req, ctx, { user }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 
-		const { id, memberId } = (await ctx.params) as {
-			id: string;
-			memberId: string;
-		};
-		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
+	const { id, memberId } = (await ctx.params) as {
+		id: string;
+		memberId: string;
+	};
+	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
-		const member = await prisma.eventMember.findUnique({
-			where: { id: memberId },
-			select: {
-				eventId: true,
-				event: { select: { createdById: true } },
-				certificate: true,
-			},
-		});
+	const member = await prisma.eventMember.findUnique({
+		where: { id: memberId },
+		select: {
+			eventId: true,
+			event: { select: { createdById: true } },
+			certificate: true,
+		},
+	});
 
-		if (!member || member.eventId !== id) {
-			return apiError.notFound("Member not found");
-		}
+	if (!member || member.eventId !== id) {
+		return apiError.notFound("Member not found");
+	}
 
-		if (!isAdmin && member.event.createdById !== currentUser.id) {
-			return apiError.forbidden(
-				"You are not allowed to manage certificates for this event",
-			);
-		}
+	if (!member.certificate) {
+		return json({ ok: true });
+	}
 
-		if (!member.certificate) {
-			return json({ ok: true });
-		}
-
-		// Try to delete the envelope in Documenso. Skip the call if the stored
-		// externalId is still a `pending:` placeholder (never uploaded), or if
-		// Documenso returns 404 — we still want to clean up the DB row.
-		const externalId = member.certificate.externalId;
-		const legalService = new LegalService();
-		if (!externalId.startsWith("pending:")) {
-			if (!isAdmin) {
-				try {
-					const envelope = await legalService.getEnvelope(externalId);
-					if (envelope.status === "COMPLETED") {
-						return apiError.forbidden(
-							"Only administrators can delete a signed certificate",
-						);
-					}
-				} catch (error) {
-					console.error(
-						"Failed to fetch envelope status before delete; proceeding",
-						error,
+	// Try to delete the envelope in Documenso. Skip the call if the stored
+	// externalId is still a `pending:` placeholder (never uploaded), or if
+	// Documenso returns 404 — we still want to clean up the DB row.
+	const externalId = member.certificate.externalId;
+	const legalService = new LegalService();
+	if (!externalId.startsWith("pending:")) {
+		if (!isAdmin) {
+			try {
+				const envelope = await legalService.getEnvelope(externalId);
+				if (envelope.status === "COMPLETED") {
+					return apiError.forbidden(
+						"Only administrators can delete a signed certificate",
 					);
 				}
-			}
-			try {
-				await legalService.deleteEnvelope(externalId);
 			} catch (error) {
 				console.error(
-					"Failed to delete envelope in Documenso, removing local row anyway",
+					"Failed to fetch envelope status before delete; proceeding",
 					error,
 				);
 			}
 		}
+		try {
+			await legalService.deleteEnvelope(externalId);
+		} catch (error) {
+			console.error(
+				"Failed to delete envelope in Documenso, removing local row anyway",
+				error,
+			);
+		}
+	}
 
-		await prisma.eventCertificate.delete({
-			where: { id: member.certificate.id },
-		});
+	await prisma.eventCertificate.delete({
+		where: { id: member.certificate.id },
+	});
 
-		return json({ ok: true });
-	},
-);
+	return json({ ok: true });
+});

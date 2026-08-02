@@ -1,11 +1,17 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
-import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
-export const DELETE = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(async (_req, ctx, { user }) => {
+export const DELETE = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.devlog_posts.manage" }),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };

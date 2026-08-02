@@ -32,7 +32,9 @@
 		"test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
 		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test",
 		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs",
-		"queues:clean": "dotenv -- node scripts/clean-queues.mjs"
+		"queues:clean": "dotenv -- node scripts/clean-queues.mjs",
+		"rbac:seed-matrix": "dotenv -- bun run scripts/rbac-seed-matrix.ts",
+		"rbac:matrix-doc": "bun run scripts/rbac-matrix-doc.ts"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",
@@ -70,7 +72,7 @@
 		"@editorjs/table": "^2.4.5",
 		"@firebase/app": "^0.14.6",
 		"@firebase/messaging": "^0.12.23",
-		"@gdhub-io/gdhub-prisma": "2.0.0-beta.39",
+		"@gdhub-io/gdhub-prisma": "2.0.0-beta.41",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@google-analytics/data": "^5.1.0",
 		"@hello-pangea/dnd": "^18.0.1",

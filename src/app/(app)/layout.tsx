@@ -11,8 +11,8 @@ import { requireSession } from "@/helpers/require-session";
  * dev). Spaces publish their own breadcrumbs/navigation into that single header
  * via SpaceHeader.
  *
- * Per-space access checks live in the space's own layout (see
- * `resolveSpaceAccess`), not here.
+ * Per-space access checks live in the space's own layout via
+ * `createSpaceGate`, not here.
  */
 export default async function AppLayout({ children }: { children: ReactNode }) {
 	await requireSession();

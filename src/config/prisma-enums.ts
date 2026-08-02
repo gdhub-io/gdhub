@@ -35,6 +35,7 @@ import type {
 	QueueJobStatus as QueueJobStatusType,
 	QueueJobType as QueueJobTypeType,
 	SkillLevel as SkillLevelType,
+	SpaceRole as SpaceRoleType,
 	SubscriptionStatus as SubscriptionStatusType,
 	TeamDocumentType as TeamDocumentTypeType,
 	TeamMemberStatus as TeamMemberStatusType,
@@ -94,6 +95,8 @@ export const AuditAction = {
 	CREATE_MANY: "CREATE_MANY",
 	UPDATE_MANY: "UPDATE_MANY",
 	DELETE_MANY: "DELETE_MANY",
+	ACCESS_DENIED: "ACCESS_DENIED",
+	ACCESS_OVERRIDE: "ACCESS_OVERRIDE",
 } as const satisfies Record<AuditActionType, AuditActionType>;
 export type AuditAction = AuditActionType;
 
@@ -360,6 +363,14 @@ export const SkillLevel = {
 	Expert: "Expert",
 } as const satisfies Record<SkillLevelType, SkillLevelType>;
 export type SkillLevel = SkillLevelType;
+
+export const SpaceRole = {
+	Owner: "Owner",
+	Admin: "Admin",
+	Member: "Member",
+	Guest: "Guest",
+} as const satisfies Record<SpaceRoleType, SpaceRoleType>;
+export type SpaceRole = SpaceRoleType;
 
 export const SubscriptionStatus = {
 	Active: "Active",

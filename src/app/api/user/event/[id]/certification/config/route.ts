@@ -1,12 +1,13 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 import { resolveEventCertificationContext } from "../../_helpers";
 
@@ -17,23 +18,22 @@ const CertificationConfigSchema = z.object({
 
 type CertificationConfigBody = z.infer<typeof CertificationConfigSchema>;
 
-export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.view",
+		idFrom: "params.id",
+	}),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const eventCtx = await resolveEventCertificationContext(id);
 
 	if (!eventCtx) {
 		return apiError.notFound("Event not found");
-	}
-
-	if (!isAdmin && eventCtx.createdById !== currentUser.id) {
-		return apiError.forbidden(
-			"You are not allowed to view certification for this event",
-		);
 	}
 
 	return json({
@@ -46,47 +46,43 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	});
 });
 
-export const PUT = withAuth({ mode: "user" })(
-	withValidation(CertificationConfigSchema)(
-		async (_req, ctx, { user, body }) => {
-			const currentUser = user as SessionUser | undefined;
-			if (!currentUser) return apiError.unauthorized();
+export const PUT = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.issue",
+		idFrom: "params.id",
+	}),
+	withValidation(CertificationConfigSchema),
+)(async (_req, ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 
-			const { id } = (await ctx.params) as { id: string };
-			const data = body as CertificationConfigBody;
-			const isAdmin = currentUser.roles?.includes(UserRole.Admin);
+	const { id } = (await ctx.params) as { id: string };
+	const data = body as CertificationConfigBody;
 
-			const event = await prisma.event.findUnique({
-				where: { id },
-				select: { createdById: true },
-			});
+	const event = await prisma.event.findUnique({
+		where: { id },
+		select: { createdById: true },
+	});
 
-			if (!event) {
-				return apiError.notFound("Event not found");
-			}
+	if (!event) {
+		return apiError.notFound("Event not found");
+	}
 
-			if (!isAdmin && event.createdById !== currentUser.id) {
-				return apiError.forbidden(
-					"You are not allowed to manage certification for this event",
-				);
-			}
+	const normalize = (v: string | null | undefined) => {
+		if (v === undefined) return undefined;
+		if (v === null) return null;
+		const trimmed = v.trim();
+		return trimmed === "" ? null : trimmed;
+	};
 
-			const normalize = (v: string | null | undefined) => {
-				if (v === undefined) return undefined;
-				if (v === null) return null;
-				const trimmed = v.trim();
-				return trimmed === "" ? null : trimmed;
-			};
-
-			await prisma.event.update({
-				where: { id },
-				data: {
-					certificationOrganizerName: normalize(data.organizerName),
-					certificationOrganizerTitle: normalize(data.organizerTitle),
-				},
-			});
-
-			return json({ ok: true });
+	await prisma.event.update({
+		where: { id },
+		data: {
+			certificationOrganizerName: normalize(data.organizerName),
+			certificationOrganizerTitle: normalize(data.organizerTitle),
 		},
-	),
-);
+	});
+
+	return json({ ok: true });
+});

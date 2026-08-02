@@ -1,21 +1,25 @@
-import { EventMemberStatus, UserRole } from "@gdhub-io/gdhub-prisma";
+import { EventMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { LegalService } from "@/services/legal";
 import { prisma } from "@/services/prisma";
 
-export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "event.members.view", idFrom: "params.id" }),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const event = await prisma.event.findUnique({
 		where: { id },
@@ -24,10 +28,6 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 	if (!event) {
 		return apiError.notFound("Event not found");
-	}
-
-	if (!isAdmin && event.createdById !== currentUser.id) {
-		return apiError.forbidden("You are not allowed to view members");
 	}
 
 	const members = await prisma.eventMember.findMany({
@@ -141,68 +141,65 @@ type AddEventMembersBody = z.infer<typeof AddEventMembersSchema>;
  * registered themselves (e.g. the registration form is already closed) and
  * still need a certificate.
  */
-export const POST = withAuth({ mode: "user" })(
-	withValidation(AddEventMembersSchema)(async (_req, ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "event.members.manage", idFrom: "params.id" }),
+	withValidation(AddEventMembersSchema),
+)(async (_req, ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 
-		const { id } = (await ctx.params) as { id: string };
-		const { userIds } = body as AddEventMembersBody;
-		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
+	const { id } = (await ctx.params) as { id: string };
+	const { userIds } = body as AddEventMembersBody;
 
-		const event = await prisma.event.findUnique({
-			where: { id },
-			select: { createdById: true },
-		});
+	const event = await prisma.event.findUnique({
+		where: { id },
+		select: { createdById: true },
+	});
 
-		if (!event) {
-			return apiError.notFound("Event not found");
-		}
+	if (!event) {
+		return apiError.notFound("Event not found");
+	}
 
-		if (!isAdmin && event.createdById !== currentUser.id) {
-			return apiError.forbidden("You are not allowed to add members");
-		}
+	const uniqueUserIds = [...new Set(userIds)];
 
-		const uniqueUserIds = [...new Set(userIds)];
+	const foundUsers = await prisma.user.findMany({
+		where: { id: { in: uniqueUserIds } },
+		select: { id: true },
+	});
 
-		const foundUsers = await prisma.user.findMany({
-			where: { id: { in: uniqueUserIds } },
-			select: { id: true },
-		});
+	if (foundUsers.length !== uniqueUserIds.length) {
+		return apiError.badRequest("Some users were not found");
+	}
 
-		if (foundUsers.length !== uniqueUserIds.length) {
-			return apiError.badRequest("Some users were not found");
-		}
-
-		// EventMember has no unique constraint on (eventId, userId) — dedup here.
-		const existing = await prisma.eventMember.findMany({
-			where: {
-				eventId: id,
-				userId: { in: uniqueUserIds },
-				status: {
-					in: [EventMemberStatus.Pending, EventMemberStatus.Approved],
-				},
+	// EventMember has no unique constraint on (eventId, userId) — dedup here.
+	const existing = await prisma.eventMember.findMany({
+		where: {
+			eventId: id,
+			userId: { in: uniqueUserIds },
+			status: {
+				in: [EventMemberStatus.Pending, EventMemberStatus.Approved],
 			},
-			select: { userId: true },
+		},
+		select: { userId: true },
+	});
+
+	const existingUserIds = new Set(existing.map((m) => m.userId));
+	const newUserIds = uniqueUserIds.filter((uid) => !existingUserIds.has(uid));
+
+	if (newUserIds.length) {
+		await prisma.eventMember.createMany({
+			data: newUserIds.map((userId) => ({
+				eventId: id,
+				userId,
+				status: EventMemberStatus.Approved,
+			})),
 		});
+	}
 
-		const existingUserIds = new Set(existing.map((m) => m.userId));
-		const newUserIds = uniqueUserIds.filter((uid) => !existingUserIds.has(uid));
-
-		if (newUserIds.length) {
-			await prisma.eventMember.createMany({
-				data: newUserIds.map((userId) => ({
-					eventId: id,
-					userId,
-					status: EventMemberStatus.Approved,
-				})),
-			});
-		}
-
-		return json({
-			success: true,
-			added: newUserIds.length,
-			skipped: existingUserIds.size,
-		});
-	}),
-);
+	return json({
+		success: true,
+		added: newUserIds.length,
+		skipped: existingUserIds.size,
+	});
+});

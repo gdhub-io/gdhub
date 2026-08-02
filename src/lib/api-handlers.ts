@@ -69,6 +69,9 @@ export const apiError = {
 		NextResponse.json({ error: msg, statusCode: 404 }, { status: 404 }),
 	internal: (msg = "Internal server error") =>
 		NextResponse.json({ error: msg, statusCode: 500 }, { status: 500 }),
+	/** The answer is unknown right now — a dependency is degraded, not the caller. */
+	unavailable: (msg = "Service temporarily unavailable") =>
+		NextResponse.json({ error: msg, statusCode: 503 }, { status: 503 }),
 };
 
 export type AuthMode =

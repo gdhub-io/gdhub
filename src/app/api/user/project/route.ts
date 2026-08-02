@@ -10,10 +10,12 @@ import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { aiValidation } from "@/services/ai-validation";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
@@ -210,50 +212,54 @@ export const POST = withAuth({ mode: "user" })(
 	}),
 );
 
-export const PUT = withAuth({ mode: "user" })(
-	withValidation(UpdateProjectSchema)(async (req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
+export const PUT = pipe(
+	withAuth({ mode: "user" }),
+	// Until this guard existed, any signed-in user could update any project by
+	// id — including its status and, through `authorId`, its owner.
+	withSpaceGuard({ permission: "project.info.edit", idFrom: "query.id" }),
+	withValidation(UpdateProjectSchema),
+)(async (req, _ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 
-		const url = new URL(req.url);
-		const id = url.searchParams.get("id");
-		if (!id) return apiError.badRequest("id is required");
+	const url = new URL(req.url);
+	const id = url.searchParams.get("id");
+	if (!id) return apiError.badRequest("id is required");
 
-		const { authorId, ...data } = body as UpdateProjectBody;
+	const { authorId, ...data } = body as UpdateProjectBody;
 
-		const project = await prisma.project.update({
-			where: { id },
-			data: {
-				...data,
-				status: data.status as ProjectStatus | undefined,
-				author: authorId ? { connect: { id: authorId } } : undefined,
-			},
-			include: {
-				team: { select: { id: true } },
-				author: {
-					select: {
-						name: true,
-						image: true,
-						id: true,
-						roles: true,
-						profile: { select: { id: true } },
-					},
+	const project = await prisma.project.update({
+		where: { id },
+		data: {
+			...data,
+			status: data.status as ProjectStatus | undefined,
+			author: authorId ? { connect: { id: authorId } } : undefined,
+		},
+		include: {
+			team: { select: { id: true } },
+			author: {
+				select: {
+					name: true,
+					image: true,
+					id: true,
+					roles: true,
+					profile: { select: { id: true } },
 				},
+			},
+		},
+	});
+
+	if (!project.author.roles.includes(UserRole.Author)) {
+		await prisma.user.update({
+			where: { id: currentUser.id },
+			data: {
+				roles: [...project.author.roles, UserRole.Author],
 			},
 		});
+	}
 
-		if (!project.author.roles.includes(UserRole.Author)) {
-			await prisma.user.update({
-				where: { id: currentUser.id },
-				data: {
-					roles: [...project.author.roles, UserRole.Author],
-				},
-			});
-		}
-
-		return json(project);
-	}),
-);
+	return json(project);
+});
 
 export const DELETE = withAuth({ mode: "user" })(
 	async (req, _ctx, { user }) => {

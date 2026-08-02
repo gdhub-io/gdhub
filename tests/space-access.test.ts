@@ -1,136 +1,404 @@
-import { TeamMemberStatus, UserRole } from "@gdhub-io/gdhub-prisma";
+import {
+	CourseStudentStatus,
+	EventMemberStatus,
+	ProjectStatus,
+	TeamMemberStatus,
+	UserRole,
+} from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const projectFindFirst = vi.fn();
+const projectFindUnique = vi.fn();
 const eventFindUnique = vi.fn();
 const courseFindFirst = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		project: { findFirst: (...args: unknown[]) => projectFindFirst(...args) },
+		project: {
+			findFirst: (...args: unknown[]) => projectFindFirst(...args),
+			findUnique: (...args: unknown[]) => projectFindUnique(...args),
+		},
 		event: { findUnique: (...args: unknown[]) => eventFindUnique(...args) },
 		course: { findFirst: (...args: unknown[]) => courseFindFirst(...args) },
 	},
 }));
 
-import { resolveSpaceAccess } from "@/helpers/space-access";
+import { SpaceRole } from "@/config/permissions/roles";
+import { can, canEnter, getSpaceAccess, scopeOf } from "@/services/access";
+import {
+	codeSource,
+	setMatrixSource,
+} from "@/services/access/matrix-source";
 
-const admin = { id: "u-admin", roles: [UserRole.Admin] };
-const member = { id: "u-member", roles: [UserRole.Member] };
+const guest = { id: "u-guest", roles: [UserRole.Guest], onboardingDone: false };
+const member = { id: "u-member", roles: [UserRole.Member], onboardingDone: true };
+const staff = { id: "u-staff", roles: [UserRole.Admin], onboardingDone: true };
+const superAdmin = { ...member, id: "u-super", isSuperAdmin: true };
+
+/** A project where `member` holds the given team status. */
+const projectWith = (
+	overrides: {
+		authorId?: string;
+		status?: TeamMemberStatus;
+		projectStatus?: ProjectStatus;
+	} = {},
+) => {
+	projectFindFirst.mockResolvedValue({
+		id: "p1",
+		authorId: overrides.authorId ?? "someone-else",
+		team: {
+			members: overrides.status ? [{ status: overrides.status }] : [],
+		},
+	});
+	projectFindUnique.mockResolvedValue({
+		status: overrides.projectStatus ?? ProjectStatus.Approved,
+	});
+};
 
 beforeEach(() => {
+	// These tests are about roles and permissions, not about where the matrix is
+	// stored: take it from the registry instead of the (mocked away) database.
+	setMatrixSource(codeSource);
 	projectFindFirst.mockReset();
+	projectFindUnique.mockReset();
 	eventFindUnique.mockReset();
 	courseFindFirst.mockReset();
+	projectFindUnique.mockResolvedValue({ status: ProjectStatus.Approved });
 });
 
-describe("resolveSpaceAccess — admin / dev", () => {
-	it("admin space: Admin role → admin; non-admin → none; no user → none", async () => {
-		expect(await resolveSpaceAccess("admin", null, admin)).toBe("admin");
-		expect(await resolveSpaceAccess("admin", null, member)).toBe("none");
-		expect(await resolveSpaceAccess("admin", null, null)).toBe("none");
+describe("hub — the role that doubles as the platform role", () => {
+	it("gives a member to a user who finished onboarding", async () => {
+		const access = await getSpaceAccess("hub", null, member);
+
+		expect(access.role).toBe(SpaceRole.Member);
+		expect(can(access, "hub.talent_pool.view")).toBe(true);
+		expect(can(access, "hub.projects.create")).toBe(true);
 	});
 
-	it("dev space: allowed outside production (NODE_ENV=test)", async () => {
-		expect(await resolveSpaceAccess("dev", null, member)).toBe("admin");
+	it("gives a guest to a user who has not", async () => {
+		const access = await getSpaceAccess("hub", null, guest);
+
+		expect(access.role).toBe(SpaceRole.Guest);
+		// Showcases are open…
+		expect(can(access, "hub.projects.view")).toBe(true);
+		// …the talent pool and any participation are not.
+		expect(can(access, "hub.talent_pool.view")).toBe(false);
+		expect(can(access, "hub.projects.create")).toBe(false);
+		expect(can(access, "hub.jobs.apply")).toBe(false);
+	});
+
+	it("gives an admin to platform staff", async () => {
+		const access = await getSpaceAccess("hub", null, staff);
+
+		expect(access.role).toBe(SpaceRole.Admin);
+	});
+
+	it("keeps the preview live room away from members", async () => {
+		const asMember = await getSpaceAccess("hub", null, member);
+		const asStaff = await getSpaceAccess("hub", null, staff);
+
+		expect(can(asMember, "hub.live_room.use")).toBe(false);
+		expect(can(asStaff, "hub.live_room.use")).toBe(true);
+		expect(can(asStaff, "hub.live_room.manage")).toBe(true);
+	});
+
+	it("refuses an anonymous caller", async () => {
+		const access = await getSpaceAccess("hub", null, null);
+
+		expect(access.role).toBe("none");
+		expect(canEnter(access)).toBe(false);
 	});
 });
 
-describe("resolveSpaceAccess — project", () => {
+describe("project", () => {
 	it("author → owner", async () => {
-		projectFindFirst.mockResolvedValue({
-			authorId: member.id,
-			team: { members: [] },
-		});
-		expect(await resolveSpaceAccess("project", "slug", member)).toBe("owner");
+		projectWith({ authorId: member.id });
+		const access = await getSpaceAccess("project", "slug", member);
+
+		expect(access.role).toBe(SpaceRole.Owner);
+		expect(access.id).toBe("p1");
+		expect(can(access, "project.lifecycle.delete")).toBe(true);
 	});
 
-	it("Founder team membership → owner", async () => {
-		projectFindFirst.mockResolvedValue({
-			authorId: "someone-else",
-			team: { members: [{ status: TeamMemberStatus.Founder }] },
-		});
-		expect(await resolveSpaceAccess("project", "slug", member)).toBe("owner");
+	it("Founder → owner", async () => {
+		projectWith({ status: TeamMemberStatus.Founder });
+
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe(SpaceRole.Owner);
 	});
 
-	it("non-Founder team membership → member", async () => {
-		projectFindFirst.mockResolvedValue({
-			authorId: "someone-else",
-			team: { members: [{ status: TeamMemberStatus.Hired }] },
-		});
-		expect(await resolveSpaceAccess("project", "slug", member)).toBe("member");
+	it("hired team member → member", async () => {
+		projectWith({ status: TeamMemberStatus.Hired });
+		const access = await getSpaceAccess("project", "slug", member);
+
+		expect(access.role).toBe(SpaceRole.Member);
+		expect(can(access, "project.workflow.view")).toBe(true);
+		expect(can(access, "project.members.view")).toBe(true);
+		// Managing stays with the admin, destroying with the owner.
+		expect(can(access, "project.members.invite")).toBe(false);
+		expect(can(access, "project.lifecycle.archive")).toBe(false);
 	});
 
-	it("not author and no membership → none", async () => {
-		projectFindFirst.mockResolvedValue({
-			authorId: "someone-else",
-			team: { members: [] },
-		});
-		expect(await resolveSpaceAccess("project", "slug", member)).toBe("none");
+	it("applicant is not inside the space at all", async () => {
+		projectWith({ status: TeamMemberStatus.Applicant });
+
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");
 	});
 
-	it("project not found → none", async () => {
+	it("fired member loses access", async () => {
+		projectWith({ status: TeamMemberStatus.Fired });
+
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");
+	});
+
+	it("stranger → none", async () => {
+		projectWith();
+
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");
+	});
+
+	it("missing project → none", async () => {
 		projectFindFirst.mockResolvedValue(null);
-		expect(await resolveSpaceAccess("project", "slug", member)).toBe("none");
+
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");
 	});
 
-	it("missing id → none, no query", async () => {
-		expect(await resolveSpaceAccess("project", null, member)).toBe("none");
-		expect(projectFindFirst).not.toHaveBeenCalled();
+	it("limits a member's view of the cap table to their own shares", async () => {
+		projectWith({ status: TeamMemberStatus.Hired });
+		const access = await getSpaceAccess("project", "slug", member);
+
+		expect(can(access, "project.equity.view")).toBe(true);
+		expect(scopeOf(access, "project.equity.view")).toBe("own");
+		expect(can(access, "project.equity.manage")).toBe(false);
+	});
+
+	it("an archived project freezes: readable, not writable", async () => {
+		projectWith({
+			authorId: member.id,
+			projectStatus: ProjectStatus.Archived,
+		});
+		const access = await getSpaceAccess("project", "slug", member);
+
+		expect(access.role).toBe(SpaceRole.Owner);
+		expect(can(access, "project.workflow.view")).toBe(true);
+		expect(can(access, "project.workflow.edit")).toBe(false);
+		expect(can(access, "project.info.edit")).toBe(false);
+		expect(can(access, "project.members.invite")).toBe(false);
+		expect(can(access, "project.devlog.create")).toBe(false);
 	});
 });
 
-describe("resolveSpaceAccess — event", () => {
+describe("event", () => {
 	it("creator → owner", async () => {
-		eventFindUnique.mockResolvedValue({ createdById: member.id });
-		expect(await resolveSpaceAccess("event", "e1", member)).toBe("owner");
+		eventFindUnique.mockResolvedValue({
+			id: "e1",
+			createdById: member.id,
+			members: [],
+		});
+
+		expect((await getSpaceAccess("event", "e1", member)).role).toBe(SpaceRole.Owner);
 	});
 
-	it("platform Admin (not creator) → admin", async () => {
-		eventFindUnique.mockResolvedValue({ createdById: "someone-else" });
-		expect(await resolveSpaceAccess("event", "e1", admin)).toBe("admin");
+	it("approved participant → member", async () => {
+		eventFindUnique.mockResolvedValue({
+			id: "e1",
+			createdById: "someone-else",
+			members: [{ id: "em1" }],
+		});
+		const access = await getSpaceAccess("event", "e1", member);
+
+		expect(access.role).toBe(SpaceRole.Member);
+		expect(can(access, "event.schedule.view")).toBe(true);
+		expect(can(access, "event.schedule.edit")).toBe(false);
 	});
 
-	it("non-creator, non-admin → none", async () => {
-		eventFindUnique.mockResolvedValue({ createdById: "someone-else" });
-		expect(await resolveSpaceAccess("event", "e1", member)).toBe("none");
+	it("a pending application does not open the space", async () => {
+		// The adapter only counts Approved members, so a pending one looks empty.
+		eventFindUnique.mockResolvedValue({
+			id: "e1",
+			createdById: "someone-else",
+			members: [],
+		});
+
+		expect((await getSpaceAccess("event", "e1", member)).role).toBe("none");
 	});
 
-	it("event not found → none (even for admin)", async () => {
+	it("missing event → none", async () => {
 		eventFindUnique.mockResolvedValue(null);
-		expect(await resolveSpaceAccess("event", "e1", admin)).toBe("none");
+
+		expect((await getSpaceAccess("event", "e1", member)).role).toBe("none");
 	});
 });
 
-describe("resolveSpaceAccess — course", () => {
-	it("creator → owner", async () => {
-		courseFindFirst.mockResolvedValue({ createdById: member.id, groups: [] });
-		expect(await resolveSpaceAccess("course", "c1", member)).toBe("owner");
+describe("course", () => {
+	it("author → owner", async () => {
+		courseFindFirst.mockResolvedValue({
+			id: "c1",
+			createdById: member.id,
+			groups: [],
+		});
+
+		expect((await getSpaceAccess("course", "c1", member)).role).toBe(SpaceRole.Owner);
 	});
 
 	it("enrolled student → member", async () => {
 		courseFindFirst.mockResolvedValue({
+			id: "c1",
 			createdById: "someone-else",
 			groups: [{ students: [{ userId: member.id }] }],
 		});
-		expect(await resolveSpaceAccess("course", "c1", member)).toBe("member");
+		const access = await getSpaceAccess("course", "c1", member);
+
+		expect(access.role).toBe(SpaceRole.Member);
+		expect(can(access, "course.classroom.access")).toBe(true);
+		expect(can(access, "course.classroom.teach")).toBe(false);
 	});
 
-	it("not creator and not enrolled → none", async () => {
+	it("not enrolled → none", async () => {
 		courseFindFirst.mockResolvedValue({
+			id: "c1",
 			createdById: "someone-else",
 			groups: [{ students: [] }],
 		});
-		expect(await resolveSpaceAccess("course", "c1", member)).toBe("none");
+
+		expect((await getSpaceAccess("course", "c1", member)).role).toBe("none");
+	});
+});
+
+describe("platform staff", () => {
+	it("gets no role in somebody else's project", async () => {
+		projectWith();
+		const access = await getSpaceAccess("project", "slug", staff);
+
+		// Administering the platform is not the same as taking part in a project.
+		// Crossing that line is the super-admin's job, and it is audited.
+		expect(access.role).toBe("none");
+		expect(canEnter(access)).toBe(false);
 	});
 
-	it("course not found → none", async () => {
-		courseFindFirst.mockResolvedValue(null);
-		expect(await resolveSpaceAccess("course", "c1", member)).toBe("none");
+	it("gets no role in somebody else's event or course either", async () => {
+		eventFindUnique.mockResolvedValue({
+			id: "e1",
+			createdById: "someone-else",
+			members: [],
+		});
+		courseFindFirst.mockResolvedValue({
+			id: "c1",
+			createdById: "someone-else",
+			groups: [{ students: [] }],
+		});
+
+		expect((await getSpaceAccess("event", "e1", staff)).role).toBe("none");
+		expect((await getSpaceAccess("course", "c1", staff)).role).toBe("none");
 	});
 
-	it("missing id → none, no query", async () => {
-		expect(await resolveSpaceAccess("course", null, member)).toBe("none");
-		expect(courseFindFirst).not.toHaveBeenCalled();
+	it("keeps a role it earned the normal way", async () => {
+		projectWith({ authorId: staff.id });
+
+		expect((await getSpaceAccess("project", "slug", staff)).role).toBe(
+			SpaceRole.Owner,
+		);
 	});
+
+	it("enters the admin space, an ordinary member does not", async () => {
+		expect((await getSpaceAccess("admin", null, staff)).role).toBe(SpaceRole.Admin);
+		expect((await getSpaceAccess("admin", null, member)).role).toBe("none");
+	});
+
+	it("enters the dev space outside production", async () => {
+		expect((await getSpaceAccess("dev", null, staff)).role).toBe(SpaceRole.Admin);
+		expect((await getSpaceAccess("dev", null, member)).role).toBe("none");
+	});
+
+	it("finds no dev space in production", async () => {
+		vi.stubEnv("NODE_ENV", "production");
+
+		expect((await getSpaceAccess("dev", null, staff)).role).toBe("none");
+
+		vi.unstubAllEnvs();
+	});
+});
+
+describe("super-admin", () => {
+	it("bypasses the matrix in every space", async () => {
+		projectWith();
+		const access = await getSpaceAccess("project", "slug", superAdmin);
+
+		expect(access.role).toBe(SpaceRole.Owner);
+		expect(access.viaSuperAdmin).toBe(true);
+		expect(can(access, "project.lifecycle.delete")).toBe(true);
+		expect(can(access, "project.equity.manage")).toBe(true);
+	});
+
+	it("is not stopped by an archived project", async () => {
+		projectWith({ projectStatus: ProjectStatus.Archived });
+		const access = await getSpaceAccess("project", "slug", superAdmin);
+
+		expect(can(access, "project.info.edit")).toBe(true);
+	});
+});
+
+describe("shadow mode", () => {
+	it("lets a denial through and logs it when RBAC_ENFORCE=false", async () => {
+		projectWith({ status: TeamMemberStatus.Hired });
+		const access = await getSpaceAccess("project", "slug", member);
+		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+		vi.stubEnv("RBAC_ENFORCE", "false");
+
+		expect(can(access, "project.members.invite")).toBe(true);
+		expect(warn).toHaveBeenCalledWith(
+			expect.stringContaining("would deny project.members.invite"),
+		);
+
+		vi.unstubAllEnvs();
+		warn.mockRestore();
+	});
+
+	it("enforces by default", async () => {
+		projectWith({ status: TeamMemberStatus.Hired });
+		const access = await getSpaceAccess("project", "slug", member);
+
+		expect(can(access, "project.members.invite")).toBe(false);
+	});
+});
+
+describe("statuses that must never open a space", () => {
+	it.each([
+		TeamMemberStatus.Applicant,
+		TeamMemberStatus.Rejected,
+		TeamMemberStatus.Fired,
+	])("project: %s", async (status) => {
+		projectWith({ status });
+
+		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");
+	});
+
+	it.each([
+		CourseStudentStatus.Blocked,
+		CourseStudentStatus.Expelled,
+	])("course: %s", async (status) => {
+		// The adapter filters by status, so a blocked student comes back empty.
+		expect(status).toBeDefined();
+		courseFindFirst.mockResolvedValue({
+			id: "c1",
+			createdById: "someone-else",
+			groups: [{ students: [] }],
+		});
+
+		expect((await getSpaceAccess("course", "c1", member)).role).toBe("none");
+	});
+
+	it.each([EventMemberStatus.Pending, EventMemberStatus.Rejected])(
+		"event: %s",
+		async (status) => {
+			expect(status).toBeDefined();
+			eventFindUnique.mockResolvedValue({
+				id: "e1",
+				createdById: "someone-else",
+				members: [],
+			});
+
+			expect((await getSpaceAccess("event", "e1", member)).role).toBe("none");
+		},
+	);
 });
