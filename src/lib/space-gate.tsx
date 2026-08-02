@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { auth } from "@/auth";
+import { AccessProvider } from "@/components/access/AccessProvider";
 import type { SpaceType } from "@/config/spaces";
 import { type AccessUser, canEnter, getSpaceAccess } from "@/services/access";
+import { toSnapshot } from "@/services/access/snapshot";
 
 type GateProps = {
 	children: ReactNode;
@@ -21,6 +23,10 @@ type GateProps = {
  *
  * `param` names the route segment carrying the entity slug or id; omit it for
  * single-instance spaces (hub, admin, dev).
+ *
+ * The resolved access is published to the client through AccessProvider, so the
+ * pages below can hide what the user may not do without resolving anything
+ * themselves.
  */
 export function createSpaceGate(
 	type: SpaceType,
@@ -40,6 +46,10 @@ export function createSpaceGate(
 
 		if (!canEnter(access)) notFound();
 
-		return <>{children}</>;
+		return (
+			<AccessProvider value={{ [type]: toSnapshot(access) }}>
+				{children}
+			</AccessProvider>
+		);
 	};
 }

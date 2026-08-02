@@ -38,6 +38,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useCallback, useContext, useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import EquityShareModal from "@/components/modals/EquityShareModal";
@@ -68,6 +69,7 @@ const MyTeam = () => {
 	const { t } = useTranslate();
 	const [modal, contextHolder] = Modal.useModal();
 	const contextProject = useContext(ProjectContext)?.contextProject;
+	const { can } = useAccess();
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 	const [isEquityModalOpen, setIsEquityModalOpen] = useState(false);
 	const [isMemberEquityPromiseModalOpen, setIsMemberEquityPromiseModalOpen] =
@@ -117,7 +119,7 @@ const MyTeam = () => {
 					params: { teamId: contextProject?.team?.id },
 				},
 			),
-		enabled: !!contextProject?.team?.id && !!contextProject?.isProjectAuthor,
+		enabled: !!contextProject?.team?.id && can("project.equity.view"),
 	});
 
 	const {
@@ -537,7 +539,7 @@ const MyTeam = () => {
 			key: "actions",
 			render: (_, member) => {
 				if (
-					!contextProject?.isProjectAuthor ||
+					!can("project.members.remove") ||
 					member.status === TeamMemberStatus.Fired
 				)
 					return null;
@@ -703,7 +705,7 @@ const MyTeam = () => {
 						{t("New request")}
 						<GoLinkExternal style={{ marginLeft: 8 }} />
 					</Button>
-					{contextProject?.isProjectAuthor && (
+					{can("project.members.remove") && (
 						<Button
 							type="text"
 							style={{ marginLeft: 8 }}
@@ -717,7 +719,7 @@ const MyTeam = () => {
 		},
 	];
 
-	const advisorsColumns = contextProject?.isProjectAuthor
+	const advisorsColumns = can("project.equity.view")
 		? advisorsColumnsBase
 		: advisorsColumnsBase.filter(
 				(col) => col.key === "name" || col.key === "actions",
@@ -851,7 +853,7 @@ const MyTeam = () => {
 			{projectEquity?.data && contextProject?.id && (
 				<EquitySection
 					projectId={contextProject.id}
-					isProjectAuthor={contextProject.isProjectAuthor || false}
+					canManageEquity={can("project.equity.manage")}
 					equityData={projectEquity.data}
 					teamMembers={team?.data.members || []}
 					onManageEquity={handleOpenEquityModal}
@@ -865,7 +867,7 @@ const MyTeam = () => {
 				tabBarExtraContent={{
 					right: (
 						<div style={{ marginTop: -4 }}>
-							{contextProject?.isProjectAuthor &&
+							{can("project.members.invite") &&
 								(activeTab === "members" ||
 								activeTab === "pending-invitations" ? (
 									screens.xs ? (
@@ -975,7 +977,7 @@ const MyTeam = () => {
 						pagination={false}
 					/>
 				</Tabs.TabPane>
-				{contextProject?.isProjectAuthor &&
+				{can("project.members.invite") &&
 					pendingInvitations?.data &&
 					pendingInvitations.data.length > 0 && (
 						<Tabs.TabPane
@@ -1026,7 +1028,7 @@ const MyTeam = () => {
 						/>
 					)}
 				</Tabs.TabPane>
-				{contextProject?.isProjectAuthor && (
+				{can("project.equity.view") && (
 					<Tabs.TabPane tab={t("Investors")} key="investors">
 						{isFetchedInvestors && investors?.data?.length ? (
 							<>

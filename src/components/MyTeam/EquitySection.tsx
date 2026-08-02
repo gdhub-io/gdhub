@@ -14,7 +14,8 @@ const { Title } = Typography;
 
 interface EquitySectionProps {
 	projectId: string;
-	isProjectAuthor: boolean;
+	/** Whether the viewer may manage the cap table (project.equity.manage). */
+	canManageEquity: boolean;
 	equityData: any;
 	teamMembers: any[];
 	onManageEquity: () => void;
@@ -22,7 +23,7 @@ interface EquitySectionProps {
 
 const EquitySection: React.FC<EquitySectionProps> = ({
 	projectId,
-	isProjectAuthor,
+	canManageEquity,
 	equityData,
 	teamMembers,
 	onManageEquity,
@@ -104,7 +105,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 						</Popover>
 					</Space>
 					<Space>
-						{hasUserEquity && !isProjectAuthor && (
+						{hasUserEquity && !canManageEquity && (
 							<Button
 								onClick={() => setTransferModalVisible(true)}
 								type="default"
@@ -118,7 +119,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 							onClick={() => setTransactionsModalVisible(true)}
 							type="text"
 						></Button>
-						{isProjectAuthor &&
+						{canManageEquity &&
 							(screen.xs ? (
 								<Button onClick={onManageEquity} icon={<AiOutlineSetting />} />
 							) : (

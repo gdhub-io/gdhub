@@ -11,9 +11,9 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import qs from "qs";
 import React, { useCallback } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import EventModal from "@/components/modals/EventModal";
-import { EventType, SkillLevel, UserRole } from "@/config/prisma-enums";
-import { hasRole } from "@/helpers/user";
+import { EventType, SkillLevel } from "@/config/prisma-enums";
 
 function getTypeIcon(type: EventType, args: { size: number; color: string }) {
 	switch (type) {
@@ -38,9 +38,11 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 	const { data: session } = useSession();
 	const { t } = useTranslate();
 	const { token } = theme.useToken();
-	const isAdmin = hasRole(UserRole.Admin, {
-		data: session,
-	});
+	const { isIn } = useAccess();
+	// Staff-only event kinds and the relaxed requirement below are a platform
+	// privilege, not a permission on a particular event — being able to enter the
+	// admin space is exactly what "staff" means now.
+	const isStaff = isIn("admin");
 
 	const [modalOpen, setModalOpen] = React.useState(false);
 	const [eventType, setEventType] = React.useState<EventType | undefined>(
@@ -63,7 +65,7 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 	});
 
 	const canCreateMeetupOrWorkshop =
-		isAdmin || (Array.isArray(specialityLevels) && specialityLevels.length > 0);
+		isStaff || (Array.isArray(specialityLevels) && specialityLevels.length > 0);
 
 	const eventLabel = useCallback(
 		(eventType: EventType) => {
@@ -99,21 +101,21 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 			key: EventType.Workshop,
 			icon: null,
 		},
-		isAdmin
+		isStaff
 			? {
 					label: eventLabel(EventType.GameJam),
 					key: EventType.GameJam,
 					icon: null,
 				}
 			: null,
-		isAdmin
+		isStaff
 			? {
 					label: eventLabel(EventType.GameLab),
 					key: EventType.GameLab,
 					icon: null,
 				}
 			: null,
-		isAdmin
+		isStaff
 			? {
 					label: eventLabel(EventType.Conference),
 					key: EventType.Conference,
