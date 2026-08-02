@@ -142,6 +142,43 @@ app (фаза 2), потому что источник истины — реес
 - 6 роутов `api/cron/*` без гейта — отдельная задача, не RBAC-каталог.
 - Убрать `resolveRole` из адаптеров — **только после** прогона бэкфилла в проде.
 - E2E на матрицу («снял галочку — право пропало») — нужна докерная БД.
+- Вынести лекции целиком — см. следующий раздел.
+
+## Убрать лекции целиком
+
+Отдельных лекций не будет: занятия живут внутри курсов, разовые выступления —
+это события. В фазе 6 из каталога ушла фича `admin.lectures` и вместе с ней
+`api/admin/lecture/**`; остальное ждёт своей задачи.
+
+Весь UI лекций **уже мёртвый** — ни один экран не импортирует ни компоненты, ни
+модалки, они остались висеть после какого-то прошлого редизайна. То есть
+удаление кода ничего не ломает; работа не в нём, а в данных.
+
+**1. Код приложения** (удаляется как есть):
+
+- `src/components/lectures/` — `HeldLectures`, `ReadyLectures`, `RequestedLectures`;
+- `src/components/modals/LectureDetailsModal/`, `LectureRequestModal/`,
+  `PropositionLectureModal/`, `SetLecturerModal/`;
+- `src/app/api/user/lecture/**` — 6 роутов: `route.ts`, `listener/`,
+  `[id]/show/`, `[id]/registration/`, `[id]/lecturer/`, `[id]/lecturer/[requestId]/`;
+- `LectureStage` в [prisma-enums.ts](../src/config/prisma-enums.ts) — убирать
+  вместе с enum в пакете, иначе `satisfies` перестанет компилироваться;
+- строки про лекции в `SpecialitiesProfileForm` и `ExportDataModal` — заменить на
+  курсы и события.
+
+**2. Данные — сначала, до схемы.** Решить, что делать с существующими
+`Lecture` / `LecturerRequest` / `LectureListener`: перенести в `Event` (у лекции
+есть `directionId`, `stage`, слушатели и заявки лекторов — это почти событие) или
+выгрузить и удалить. Пока не решено, схему трогать нельзя.
+
+**3. Пакет `@gdhub-io/gdhub-prisma`** (после миграции данных):
+
+- удалить модели `Lecture`, `LecturerRequest`, `LectureListener` и enum
+  `LectureStage`;
+- убрать обратные связи в `User` (`requestedLectures`, `listener`,
+  `lecturerRequests`) и в `WorkDirection` (`Lecture[]`);
+- проверить `user.ts`-расширение: `deleteAccount` и подсчёт связанных записей
+  ходят в `lectureRequests` / `lectureListeners` / `lecturerRequests`.
 
 ## Фазы
 
