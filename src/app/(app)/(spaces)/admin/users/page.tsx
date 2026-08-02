@@ -87,7 +87,7 @@ export default function UsersAdminPage() {
 	const columns: ColumnsType<AdminUserRow> = useMemo(
 		() => [
 			{
-				title: "Фото",
+				title: "Photo",
 				dataIndex: "image",
 				key: "image",
 				width: 70,
@@ -98,7 +98,7 @@ export default function UsersAdminPage() {
 				),
 			},
 			{
-				title: "Имя",
+				title: "Name",
 				dataIndex: "name",
 				key: "name" as SortField,
 				sorter: true,
@@ -129,7 +129,7 @@ export default function UsersAdminPage() {
 					),
 			},
 			{
-				title: "Специализации",
+				title: "Specializations",
 				dataIndex: "specializations",
 				key: "specializations",
 				render: (specializations: string[]) =>

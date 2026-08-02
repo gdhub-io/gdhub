@@ -90,7 +90,6 @@ export type AuthMode =
 
 export interface AuthOptions {
 	mode?: AuthMode;
-	roles?: UserRole[];
 }
 
 function bearerMatches(req: NextRequest, expected: string) {
@@ -100,7 +99,6 @@ function bearerMatches(req: NextRequest, expected: string) {
 
 export function withAuth(opts: AuthOptions = {}) {
 	const mode: AuthMode = opts.mode ?? "user";
-	const roles = opts.roles;
 
 	return function wrap<L extends Locals>(
 		handler: Handler<L & { user: SessionUser }>,
@@ -118,9 +116,6 @@ export function withAuth(opts: AuthOptions = {}) {
 				}
 
 				if (!user) return apiError.unauthorized();
-				if (roles && !roles.some((r) => user.roles.includes(r))) {
-					return apiError.unauthorized();
-				}
 
 				return handler(req, ctx, { ...locals, user } as L & {
 					user: SessionUser;

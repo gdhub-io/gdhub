@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { NextSeo, type NextSeoProps } from "next-seo";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { Error404 } from "@/components/Error404";
@@ -19,6 +18,7 @@ import {
 import { ProjectStatus } from "@/config/prisma-enums";
 import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
 import { useCurrentProject } from "@/hooks/project";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -34,13 +34,11 @@ const { Title, Text } = Typography;
 export const ProjectSpace = ({
 	title,
 	description,
-	seo,
 	children,
 	actions,
 }: {
 	title?: string;
 	description?: string;
-	seo?: NextSeoProps;
 	children: ReactNode;
 	actions?: ReactNode;
 }) => {
@@ -82,14 +80,9 @@ export const ProjectSpace = ({
 		});
 	}, [project, isProjectAuthor, isProjectArchived]);
 
-	const seoSettings: NextSeoProps = {
-		title: title || "Project",
-		canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
-		nofollow: true,
-		noindex: true,
-		description,
-		...seo,
-	};
+	useDocumentTitle(
+		title ? `${title} · ${project?.name ?? "Project"}` : project?.name,
+	);
 
 	const spaceHeader: SpaceHeaderConfig = useMemo(() => {
 		const menuItems: (ItemType & { disabled?: boolean })[] = [
@@ -182,15 +175,12 @@ export const ProjectSpace = ({
 
 	if (isFetched && !project) {
 		return (
-			<>
-				<NextSeo title="Error 404" nofollow noindex />
-				<Error404
-					callbackUrl={"/hub"}
-					textBackButton="Back to Hub"
-					theme="light"
-					containerStyle={{ height: "50vh" }}
-				/>
-			</>
+			<Error404
+				callbackUrl={"/hub"}
+				textBackButton="Back to Hub"
+				theme="light"
+				containerStyle={{ height: "50vh" }}
+			/>
 		);
 	}
 
@@ -198,7 +188,6 @@ export const ProjectSpace = ({
 		<ProjectContext.Provider
 			value={{ contextProject, isLoaded: isFetched, setContextProject }}
 		>
-			<NextSeo {...seoSettings} />
 			{isProjectArchived && (
 				<div className={styles.archivedBanner}>
 					{t("project.archived.banner", "Project archived since {date}", {

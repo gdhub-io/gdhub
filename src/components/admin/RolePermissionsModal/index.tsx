@@ -171,7 +171,7 @@ export const RolePermissionsModal = ({
 					<Alert
 						type="warning"
 						showIcon
-						message="The admin role in the admin space. Unchecking here locks every staff member out of the admin area — getting back in would take SQL or the super-admin."
+						title="The admin role in the admin space. Unchecking here locks every staff member out of the admin area — getting back in would take SQL or the super-admin."
 					/>
 				) : null}
 

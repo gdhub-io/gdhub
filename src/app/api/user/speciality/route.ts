@@ -54,26 +54,9 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 		}
 	}
 
-	const specialitiesCount = await prisma.speciality.count({
-		where: { userId: currentUser.id },
-	});
-
-	// set role Member
-	if (specialitiesCount === 1) {
-		const userNotMember = await prisma.user.findFirst({
-			where: {
-				AND: [{ id: currentUser.id }, { NOT: { roles: { has: "Member" } } }],
-			},
-		});
-
-		if (userNotMember) {
-			await prisma.user.update({
-				where: { id: userNotMember.id },
-				data: { roles: { push: "Member" } },
-			});
-		}
-	}
-
+	// Adding a speciality used to push `UserRole.Member`. Hub membership is
+	// written when onboarding completes; having a speciality is not what makes
+	// someone a member.
 	return json(null);
 });
 

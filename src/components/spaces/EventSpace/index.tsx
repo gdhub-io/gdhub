@@ -9,7 +9,6 @@ import axios from "axios";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { NextSeo, type NextSeoProps } from "next-seo";
 import type { CSSProperties } from "react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
@@ -21,6 +20,7 @@ import {
 import { EventStatus } from "@/config/prisma-enums";
 import { type ContextEvent, EventContext } from "@/contexts/EventContext";
 import { useCurrentEvent } from "@/hooks/event";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -36,14 +36,12 @@ const { Title, Text } = Typography;
 export const EventSpace = ({
 	title,
 	description,
-	seo,
 	children,
 	actions,
 	customStyles,
 }: {
 	title?: string;
 	description?: string;
-	seo?: NextSeoProps;
 	children: ReactNode;
 	actions?: ReactNode;
 	customStyles?: {
@@ -78,14 +76,9 @@ export const EventSpace = ({
 		});
 	}, [event, isEventAuthor]);
 
-	const seoSettings: NextSeoProps = {
-		title: title || "Event",
-		canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
-		nofollow: true,
-		noindex: true,
-		description,
-		...seo,
-	};
+	useDocumentTitle(
+		title ? `${title} · ${event?.title ?? "Event"}` : event?.title,
+	);
 
 	const { mutateAsync: publishEvent, isPending: isPublishingEvent } =
 		useMutation({
@@ -235,15 +228,12 @@ export const EventSpace = ({
 
 	if (isFetched && !event) {
 		return (
-			<>
-				<NextSeo title="Error 404" nofollow noindex />
-				<Error404
-					callbackUrl={"/hub"}
-					textBackButton="Back to Hub"
-					theme="light"
-					containerStyle={{ height: "50vh" }}
-				/>
-			</>
+			<Error404
+				callbackUrl={"/hub"}
+				textBackButton="Back to Hub"
+				theme="light"
+				containerStyle={{ height: "50vh" }}
+			/>
 		);
 	}
 
@@ -252,7 +242,6 @@ export const EventSpace = ({
 			value={{ contextEvent, isLoaded: isFetched, setContextEvent }}
 		>
 			{messageContextHolder}
-			<NextSeo {...seoSettings} />
 			<div style={customStyles?.contentContainer}>
 				<div style={customStyles?.content}>
 					<Flex

@@ -9,6 +9,13 @@
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+
+	// A segmented control sizes itself to its options. Without this it inherits
+	// the column's stretch and spreads across the whole modal, leaving the track
+	// half empty.
+	:global(.ant-segmented) {
+		align-self: flex-start;
+	}
 }
 
 .sectionHeader {

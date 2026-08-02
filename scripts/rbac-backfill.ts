@@ -26,6 +26,7 @@ import {
 import { joinSpace } from "@/services/access/membership";
 import { DEFAULT_SPACE_ID } from "@/services/access/types";
 import { prisma } from "@/services/prisma";
+import { announceDbTarget } from "./_db-target";
 
 async function collect(): Promise<Candidate[]> {
 	const candidates: Candidate[] = [];
@@ -166,6 +167,8 @@ async function collect(): Promise<Candidate[]> {
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
+
+	announceDbTarget(dryRun ? "Reading memberships from" : "Writing memberships to");
 
 	const candidates = await collect();
 	const memberships = mergeMemberships(candidates);

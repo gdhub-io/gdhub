@@ -18,7 +18,6 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
-import { UserRole } from "@/config/prisma-enums";
 import SpecialityModal from "./modals/SpecialityModal";
 
 const { Text } = Typography;
@@ -102,9 +101,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		// update speciality list
 		await queryClient.invalidateQueries({ queryKey: ["user-specialities"] });
 		// refresh session data
-		await session.update({
-			roles: session.data?.user.roles.includes(UserRole.Member),
-		});
+		await session.update();
 	};
 
 	const handleCancel = () => {

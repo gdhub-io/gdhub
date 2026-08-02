@@ -66,6 +66,9 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 	const memberships = data?.memberships ?? [];
 	const hub = memberships.find((row) => row.spaceType === HUB);
 	const hubRole = edited.get(`${HUB}:default`) ?? hub?.role ?? null;
+	// The hub has its own section above; this list and its counter are about the
+	// spaces the user joined.
+	const spaces = memberships.filter((row) => row.spaceType !== HUB);
 
 	const save = useMutation({
 		mutationFn: async () => {
@@ -140,8 +143,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 							<div className={styles.sectionHeader}>
 								<Text strong>Space membership</Text>
 								<Text type="secondary">
-									{memberships.length} space
-									{memberships.length === 1 ? "" : "s"}
+									{spaces.length} space{spaces.length === 1 ? "" : "s"}
 								</Text>
 							</div>
 
@@ -149,51 +151,46 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 								<Alert
 									type="info"
 									showIcon
-									message="Project, event and course membership is read-only here — administering the platform is not the same as joining someone's space. Only the super-admin changes those."
+									title="Project, event and course membership is read-only here — administering the platform is not the same as joining someone's space. Only the super-admin changes those."
 								/>
 							) : null}
 
-							{memberships
-								.filter((membership) => membership.spaceType !== HUB)
-								.map((membership) => {
-									const id = key(membership);
-									const role = edited.has(id)
-										? edited.get(id)
-										: membership.role;
+							{spaces.map((membership) => {
+								const id = key(membership);
+								const role = edited.has(id) ? edited.get(id) : membership.role;
 
-									return (
-										<div key={id} className={styles.row}>
-											<div className={styles.info}>
-												<Text>{membership.title}</Text>
-												<Tag>{membership.spaceType}</Tag>
-												{membership.customRoleKey ? (
-													<Tag color="blue">{membership.customRoleKey}</Tag>
-												) : null}
-											</div>
-											<Select
-												value={role ?? "removed"}
-												disabled={!membership.editable}
-												className={styles.select}
-												onChange={(value) =>
-													change(
-														id,
-														value === "removed" ? null : (value as SpaceRole),
-													)
-												}
-												options={[
-													...SPACE_ROLES.map((candidate) => ({
-														label: candidate.toLowerCase(),
-														value: candidate,
-													})),
-													{ label: "remove", value: "removed" },
-												]}
-											/>
+								return (
+									<div key={id} className={styles.row}>
+										<div className={styles.info}>
+											<Text>{membership.title}</Text>
+											<Tag>{membership.spaceType}</Tag>
+											{membership.customRoleKey ? (
+												<Tag color="blue">{membership.customRoleKey}</Tag>
+											) : null}
 										</div>
-									);
-								})}
+										<Select
+											value={role ?? "removed"}
+											disabled={!membership.editable}
+											className={styles.select}
+											onChange={(value) =>
+												change(
+													id,
+													value === "removed" ? null : (value as SpaceRole),
+												)
+											}
+											options={[
+												...SPACE_ROLES.map((candidate) => ({
+													label: candidate.toLowerCase(),
+													value: candidate,
+												})),
+												{ label: "remove", value: "removed" },
+											]}
+										/>
+									</div>
+								);
+							})}
 
-							{memberships.filter((row) => row.spaceType !== HUB).length ===
-							0 ? (
+							{spaces.length === 0 ? (
 								<Text type="secondary">No other space membership</Text>
 							) : null}
 						</div>

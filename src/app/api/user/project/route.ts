@@ -1,8 +1,4 @@
-import {
-	ProjectStatus,
-	TeamMemberStatus,
-	UserRole,
-} from "@gdhub-io/gdhub-prisma";
+import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "voca/slugify";
 import { z } from "zod";
@@ -194,7 +190,6 @@ export const POST = withAuth({ mode: "user" })(
 						name: true,
 						image: true,
 						id: true,
-						roles: true,
 						profile: { select: { id: true } },
 					},
 				},
@@ -210,15 +205,9 @@ export const POST = withAuth({ mode: "user" })(
 			role: SpaceRole.Owner,
 		});
 
-		if (!project.author.roles.includes(UserRole.Author)) {
-			await prisma.user.update({
-				where: { id: currentUser.id },
-				data: {
-					roles: [...project.author.roles, UserRole.Author],
-				},
-			});
-		}
-
+		// `UserRole.Author` used to be stamped on the user here. Owning a project
+		// is the `SpaceMember(project, Owner)` row written just above — a fact,
+		// not a label that has to be kept in sync.
 		return json({ ...project, validation });
 	}),
 );
@@ -253,21 +242,11 @@ export const PUT = pipe(
 					name: true,
 					image: true,
 					id: true,
-					roles: true,
 					profile: { select: { id: true } },
 				},
 			},
 		},
 	});
-
-	if (!project.author.roles.includes(UserRole.Author)) {
-		await prisma.user.update({
-			where: { id: currentUser.id },
-			data: {
-				roles: [...project.author.roles, UserRole.Author],
-			},
-		});
-	}
 
 	return json(project);
 });

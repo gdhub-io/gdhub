@@ -16,10 +16,13 @@ import { buildPermissionMatrix } from "@/config/permissions/matrix";
 import { spaceList } from "@/config/spaces";
 import { planMatrixSync } from "@/services/access/matrix-sync";
 import { prisma } from "@/services/prisma";
+import { announceDbTarget } from "./_db-target";
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
 	const force = process.argv.includes("--force");
+
+	announceDbTarget(dryRun ? "Reading matrix from" : "Seeding matrix into");
 
 	const desired = buildPermissionMatrix(spaceList());
 	const existing = await prisma.spaceRolePermission.findMany();
