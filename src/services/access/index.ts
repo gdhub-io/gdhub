@@ -217,3 +217,13 @@ export const scopeOf = (
 /** True when the user may enter the space at all — any role beats `none`. */
 export const canEnter = (access: SpaceAccess): boolean =>
 	access.role !== "none";
+
+/**
+ * Platform staff: `admin` or above in the hub.
+ *
+ * For the handful of rules that are about seniority rather than about a feature
+ * — a paywall staff are not subject to, a product rule they sit outside of.
+ * Anything that guards a feature belongs in the matrix instead, as a permission.
+ */
+export const isStaff = (access: SpaceAccess): boolean =>
+	access.role !== "none" && roleAtLeast(access.role, SpaceRole.Admin);

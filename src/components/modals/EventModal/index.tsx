@@ -28,12 +28,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { DirectionSelect } from "@/components/DirectionSelect";
-import {
-	EventFormat,
-	EventType,
-	Language,
-	UserRole,
-} from "@/config/prisma-enums";
+import { EventFormat, EventType, Language } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const { RangePicker } = DatePicker;

@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
-import { EventType, Prisma, UserRole } from "@gdhub-io/gdhub-prisma";
+import { EventType, Prisma } from "@gdhub-io/gdhub-prisma";
+import { roleAtLeast, SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
 	json,
@@ -42,7 +43,6 @@ export const POST = pipe(
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const eventCtx = await resolveMemberCertificateContext(memberId);
 
@@ -197,7 +197,6 @@ export const GET = pipe(
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const member = await prisma.eventMember.findUnique({
 		where: { id: memberId },
@@ -240,15 +239,19 @@ export const DELETE = pipe(
 		permission: "event.certificates.issue",
 		idFrom: "params.id",
 	}),
-)(async (_req, ctx, { user }) => {
+)(async (_req, ctx, { user, access }) => {
 	const currentUser = user as SessionUser | undefined;
-	if (!currentUser) return apiError.unauthorized();
+	if (!currentUser || !access) return apiError.unauthorized();
 
 	const { id, memberId } = (await ctx.params) as {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
+
+	// Issuing a certificate is one thing; withdrawing one somebody already
+	// signed is another, and stays with the people who run the event.
+	const mayDeleteSigned =
+		access.role !== "none" && roleAtLeast(access.role, SpaceRole.Admin);
 
 	const member = await prisma.eventMember.findUnique({
 		where: { id: memberId },
@@ -273,7 +276,7 @@ export const DELETE = pipe(
 	const externalId = member.certificate.externalId;
 	const legalService = new LegalService();
 	if (!externalId.startsWith("pending:")) {
-		if (!isAdmin) {
+		if (!mayDeleteSigned) {
 			try {
 				const envelope = await legalService.getEnvelope(externalId);
 				if (envelope.status === "COMPLETED") {

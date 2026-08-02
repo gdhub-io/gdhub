@@ -21,7 +21,6 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { MainFooter } from "@/components/MainFooter";
-import { UserRole } from "@/config/prisma-enums";
 import { publicThemeConfig } from "@/config/theme";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
@@ -149,11 +148,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
 			telegramMenuItem,
 		];
 
+		// The talent pool link, for anyone past onboarding — which is exactly what
+		// the old `UserRole.Member` marked. The page itself is gated on the server.
 		if (
-			!!session &&
-			(session as { user?: { roles?: string[] } })?.user?.roles?.includes(
-				UserRole.Member,
-			)
+			(session as { user?: { onboardingDone?: boolean } })?.user?.onboardingDone
 		) {
 			menu = [
 				menu[0],

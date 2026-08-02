@@ -20,6 +20,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { ZodSchema, z } from "zod";
 import { auth } from "@/auth";
 import { env } from "@/helpers/env";
+import type { SpaceAccess } from "@/services/access/types";
 import { prisma } from "@/services/prisma";
 
 export type SessionUser = {
@@ -40,6 +41,11 @@ export type Locals = {
 	team?: Team;
 	body?: unknown;
 	query?: unknown;
+	/**
+	 * Injected by `withSpaceGuard`. Optional here because `pipe` erases the
+	 * wrappers' types: a handler that reads it must have the guard above it.
+	 */
+	access?: SpaceAccess;
 };
 
 export type RouteContext<P = Record<string, string | string[]>> = {
