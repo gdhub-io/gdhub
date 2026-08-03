@@ -1,5 +1,9 @@
 import { AuditAction } from "@gdhub-io/gdhub-prisma";
-import { roleAtLeast, type SpaceRole } from "@/config/permissions/roles";
+import {
+	ROLE_SENIORITY,
+	roleAtLeast,
+	type SpaceRole,
+} from "@/config/permissions/roles";
 import { isSpaceType, type SpaceType } from "@/config/spaces";
 import { prisma } from "@/services/prisma";
 import { logRbacChange } from "./audit";
@@ -26,6 +30,39 @@ export type UserMembershipView = {
  * only identity that crosses that line is the super-admin (§2.2).
  */
 const STAFF_EDITABLE: readonly SpaceType[] = ["hub", "admin", "dev"];
+
+/** Strictly stronger, not merely equal: Owner > Admin > Member > Guest. */
+const outranks = (actor: SpaceRole, target: SpaceRole): boolean =>
+	ROLE_SENIORITY.indexOf(actor) < ROLE_SENIORITY.indexOf(target);
+
+/**
+ * Where the person being edited stands. Read here rather than passed in: this is
+ * the check that stops an administrator from unseating their peers, and a caller
+ * that forgot to supply it would silently disable it.
+ */
+const standingOf = async (userId: string) => {
+	const [user, hub] = await Promise.all([
+		prisma.user.findUnique({
+			where: { id: userId },
+			select: { isSuperAdmin: true },
+		}),
+		prisma.spaceMember.findUnique({
+			where: {
+				spaceType_spaceId_userId: {
+					spaceType: "hub",
+					spaceId: DEFAULT_SPACE_ID,
+					userId,
+				},
+			},
+			select: { role: true, revokedAt: true },
+		}),
+	]);
+
+	return {
+		isSuperAdmin: Boolean(user?.isSuperAdmin),
+		hubRole: hub && !hub.revokedAt ? hub.role : null,
+	};
+};
 
 const titleOf = async (
 	rows: { spaceType: string; spaceId: string }[],
@@ -90,6 +127,34 @@ export const readUserMemberships = async (
 	});
 };
 
+/**
+ * Whether the actor may edit this person's roles at all. The same rule the write
+ * path enforces — exported so the UI can grey the controls out instead of
+ * offering an action that will be refused.
+ */
+export const canActorEditUser = async (
+	userId: string,
+	{
+		actorUserId,
+		actorHubRole,
+		actorIsSuperAdmin,
+	}: {
+		actorUserId: string;
+		actorHubRole: SpaceRole | null;
+		actorIsSuperAdmin: boolean;
+	},
+): Promise<boolean> => {
+	if (actorIsSuperAdmin) return true;
+	if (userId === actorUserId) return false;
+
+	const target = await standingOf(userId);
+
+	if (target.isSuperAdmin) return false;
+	if (!target.hubRole) return true;
+
+	return Boolean(actorHubRole && outranks(actorHubRole, target.hubRole));
+};
+
 export class MembershipDeniedError extends Error {
 	constructor(message: string) {
 		super(message);
@@ -108,10 +173,14 @@ type MembershipChange = {
 /**
  * Applies membership changes on behalf of an administrator.
  *
- * Two rules, both enforced here rather than in the UI:
+ * Four rules, all enforced here rather than in the UI:
  *  - nobody hands out a role stronger than their own in the hub, which is where
  *    platform power lives — otherwise `admin.users.manage` is a promotion to
  *    owner in one request;
+ *  - nobody edits their own roles;
+ *  - nobody edits someone who does not rank below them, and nobody but a
+ *    super-admin edits a super-admin: administrators are peers, and peers do not
+ *    unseat each other;
  *  - only a super-admin touches project / event / course membership.
  */
 export const applyMembershipChanges = async ({
@@ -147,6 +216,31 @@ export const applyMembershipChanges = async ({
 
 	if (userId === actorUserId && !actorIsSuperAdmin) {
 		throw new MembershipDeniedError("Cannot change your own roles");
+	}
+
+	// Hands off anyone who is not below you.
+	//
+	// The rule above only limits what may be *granted*, and removal carries no
+	// role at all — so without this an administrator could revoke every other
+	// administrator, and the owner too. Demotion is how a takeover would be done,
+	// and it needs the same ceiling as promotion.
+	if (!actorIsSuperAdmin) {
+		const target = await standingOf(userId);
+
+		if (target.isSuperAdmin) {
+			throw new MembershipDeniedError(
+				"Only a super-admin changes a super-admin's roles",
+			);
+		}
+
+		if (
+			target.hubRole &&
+			(!actorHubRole || !outranks(actorHubRole, target.hubRole))
+		) {
+			throw new MembershipDeniedError(
+				`Cannot change the roles of a hub ${target.hubRole.toLowerCase()} — they do not rank below you`,
+			);
+		}
 	}
 
 	for (const change of changes) {

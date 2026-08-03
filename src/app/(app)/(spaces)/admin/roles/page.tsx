@@ -42,6 +42,9 @@ type CustomRoleRow = {
 	permissions: string[];
 };
 
+/** Popconfirm has no width of its own; a long description would span the page. */
+const CONFIRM_STYLES = { root: { maxWidth: 380 } };
+
 type RolesResponse = {
 	spaceType: string;
 	features: PermissionFeature[];
@@ -150,6 +153,7 @@ export default function RolesAdminPage() {
 						</Text>
 					</div>
 					<Popconfirm
+						styles={CONFIRM_STYLES}
 						title={`Reset every role in the ${space} space?`}
 						description="All four base roles go back to what the permission registry generates. Edits made here are lost; custom roles are untouched."
 						okText="Reset"
@@ -235,6 +239,7 @@ export default function RolesAdminPage() {
 											<Tag>custom</Tag>,
 										)}
 										<Popconfirm
+											styles={CONFIRM_STYLES}
 											title={`Delete the role "${row.title}"?`}
 											description="Memberships that use this role lose it and are revoked — they will not silently fall back to the broader base role."
 											okText="Delete"

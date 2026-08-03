@@ -42,6 +42,9 @@ type Props = {
  * Removing a permission from the `admin` role of the `admin` space is the one
  * edit that can lock every staff member out at once, so it asks twice.
  */
+/** Popconfirm has no width of its own; a long description would span the page. */
+const CONFIRM_STYLES = { root: { maxWidth: 380 } };
+
 const isSelfLockout = (space: string, target: RoleTarget | null) =>
 	space === "admin" &&
 	target?.kind === "base" &&
@@ -165,6 +168,7 @@ export const RolePermissionsModal = ({
 					<Button onClick={onClose}>Cancel</Button>
 					<Popconfirm
 						disabled={changeCount === 0}
+						styles={CONFIRM_STYLES}
 						title={
 							lockout
 								? "Remove permissions from the admin role?"
@@ -212,6 +216,7 @@ export const RolePermissionsModal = ({
 							</Text>
 							{defaults ? (
 								<Popconfirm
+									styles={CONFIRM_STYLES}
 									title="Reset to defaults?"
 									description="Every tick in this list is replaced by what the permission registry generates for this role. Unsaved changes are lost."
 									okText="Reset"

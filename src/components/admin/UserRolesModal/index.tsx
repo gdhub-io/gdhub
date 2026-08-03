@@ -30,7 +30,12 @@ type Membership = {
 	editable: boolean;
 };
 
-type Response = { memberships: Membership[]; canEditAnySpace: boolean };
+type Response = {
+	memberships: Membership[];
+	canEditAnySpace: boolean;
+	/** False for peers, seniors and super-admins — and for yourself. */
+	canEditUser: boolean;
+};
 
 type SpaceOption = { id: string; title: string };
 
@@ -120,6 +125,9 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 	const memberships = data?.memberships ?? [];
 	const hub = memberships.find((row) => row.spaceType === HUB);
 	const hubRole = edited.get(HUB_KEY) ?? hub?.role ?? null;
+	// Peers, seniors and super-admins are visible but not editable. The server
+	// refuses these edits anyway; this only stops the UI offering them.
+	const readOnly = Boolean(data) && !data?.canEditUser;
 	// The hub has its own section above; this list and its counter are about the
 	// spaces the user joined. A row edited down to `null` is a pending removal and
 	// leaves the list right away.
@@ -239,7 +247,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 					<Button onClick={onClose}>Cancel</Button>
 					<Button
 						type="primary"
-						disabled={changes.length === 0}
+						disabled={readOnly || changes.length === 0}
 						loading={save.isPending}
 						onClick={() => save.mutate()}
 					>
@@ -252,6 +260,14 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 				<Skeleton active />
 			) : (
 				<div className={styles.body}>
+					{readOnly ? (
+						<Alert
+							type="info"
+							showIcon
+							title="These roles are read-only for you. Administrators do not change each other's roles — only someone ranking above them, or the super-admin, can."
+						/>
+					) : null}
+
 					<div className={styles.section}>
 						<Text strong className={styles.sectionTitle}>
 							Hub role
@@ -261,6 +277,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 							placeholder="No hub membership"
 							className={styles.roleSelect}
 							options={roleOptions(HUB_ROLES)}
+							disabled={readOnly}
 							onChange={(value) => change(HUB_KEY, value)}
 						/>
 						<Text type="secondary" className={styles.hint}>
@@ -312,7 +329,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 											</div>
 											<Select
 												value={role ?? undefined}
-												disabled={!membership.editable}
+												disabled={readOnly || !membership.editable}
 												className={styles.roleSelect}
 												options={membershipRoleOptions(
 													membership.customRoleKey,
@@ -326,7 +343,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 											<Button
 												type="text"
 												className={styles.remove}
-												disabled={!membership.editable}
+												disabled={readOnly || !membership.editable}
 												aria-label={`Remove from ${membership.title}`}
 												icon={<IconTrash size={16} />}
 												onClick={() => change(id, null)}
@@ -356,6 +373,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 						<Button
 							block
 							className={styles.add}
+							disabled={readOnly}
 							icon={<IconPlus size={14} />}
 							onClick={() =>
 								setDrafts((current) => [
