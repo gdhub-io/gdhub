@@ -21,6 +21,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { useContext, useEffect, useMemo, useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { capitalize } from "@/helpers/text";
@@ -82,10 +83,10 @@ const WorkflowContent = ({
 	const [equityTransferModalVisible, setEquityTransferModalVisible] =
 		useState(false);
 	const { t } = useTranslate();
-	const isAuthor = useMemo(
-		() => projectContext?.isProjectAuthor && !projectContext?.isProjectArchived,
-		[projectContext],
-	);
+	const { can } = useAccess();
+	// Editing the workflow is a permission, and an archived project has it
+	// revoked server-side — no separate archive check needed here.
+	const isAuthor = can("project.workflow.edit");
 	const isProjectArchived =
 		!projectContext || !!projectContext.isProjectArchived;
 

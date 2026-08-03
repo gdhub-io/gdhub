@@ -1,14 +1,7 @@
-import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
+import { createSpaceGate } from "@/lib/space-gate";
 
 /**
- * Dev-tools space — non-production gate. Auth is enforced by the parent (app)
- * layout; here we additionally hide the whole area in production so
- * dev pages (ai-validation, telegram-test, push-test) are unreachable there.
+ * Dev tools gate: the space does not exist in production at all, and outside it
+ * requires platform staff (role `admin` or above in the hub).
  */
-export default function DevSpaceLayout({ children }: { children: ReactNode }) {
-	if (process.env.NODE_ENV === "production") {
-		notFound();
-	}
-	return <>{children}</>;
-}
+export default createSpaceGate("dev");

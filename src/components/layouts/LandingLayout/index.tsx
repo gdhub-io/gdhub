@@ -17,7 +17,6 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { NextSeo, type NextSeoProps } from "next-seo";
 import { useEffect, useMemo, useState } from "react";
 import { MainFooter } from "@/components/MainFooter";
 import { MainHeader } from "@/components/MainHeader";
@@ -48,24 +47,6 @@ export const LandingLayout = ({ children }: any) => {
 	const [scrollY, setScrollY] = useState(0);
 	const screens = Grid.useBreakpoint();
 	const { data: session, status: authStatus }: any = useSession();
-
-	const seoSettings: NextSeoProps = {
-		title: t("landing.seo.title", "Game Developers Hub"),
-		description: t(
-			"landing.seo.description",
-			"Game Developers Hub is a platform for game developers and specialists.",
-		),
-		canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
-		openGraph: {
-			title: t("landing.seo.title", "Game Developers Hub"),
-			description: t(
-				"landing.seo.description",
-				"Game Developers Hub is a platform for game developers and specialists.",
-			),
-			type: "website",
-			url: process.env.NEXT_PUBLIC_APP_URL + pathname,
-		},
-	};
 
 	useEffect(() => {
 		if (document.location.hash) {
@@ -185,7 +166,6 @@ export const LandingLayout = ({ children }: any) => {
 
 	return (
 		<>
-			<NextSeo {...seoSettings} />
 			<ConfigProvider theme={landingThemeConfig}>
 				<Layout className={styles.container}>
 					<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>

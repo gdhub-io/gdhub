@@ -1,8 +1,4 @@
-import {
-	type Language,
-	PrimaryInterest,
-	UserRole,
-} from "@gdhub-io/gdhub-prisma";
+import { type Language, PrimaryInterest } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { AvailableLocales } from "@/config/locale";
 import {
@@ -82,8 +78,6 @@ export const PUT = withAuth({ mode: "user" })(
 			where: { userId: currentUser.id! },
 			include: { user: true },
 		});
-		let updatedRoles = (profile?.user.roles as UserRole[]) || [];
-
 		if (!profile) {
 			profile = await prisma.profile.create({
 				data: { name: name!, userId: currentUser.id! },
@@ -109,48 +103,8 @@ export const PUT = withAuth({ mode: "user" })(
 		if (needSubscribeToNewsletter)
 			agreements.needSubscribeToNewsletter = needSubscribeToNewsletter;
 
-		// on  onboarding
-		if (onboardingDone) {
-			updatedRoles = [UserRole.Member];
-		}
-		// on  save profile
-		if (primaryInterest && primaryInterest === PrimaryInterest.Specialist) {
-			const idxMentor = updatedRoles.findIndex((v) => v === UserRole.Mentor);
-			const idxAuthor = updatedRoles.findIndex((v) => v === UserRole.Author);
-
-			if (idxMentor !== -1) {
-				updatedRoles.splice(idxMentor, 1);
-			}
-			if (idxAuthor !== -1) {
-				updatedRoles.splice(idxAuthor, 1);
-			}
-		}
-		if (
-			primaryInterest &&
-			primaryInterest === PrimaryInterest.Author &&
-			!updatedRoles.includes(UserRole.Author)
-		) {
-			const idx = updatedRoles.findIndex((v) => v === UserRole.Mentor);
-
-			if (idx !== -1) {
-				updatedRoles.splice(idx, 1);
-			}
-			updatedRoles.push(UserRole.Author);
-		}
-		if (
-			primaryInterest &&
-			primaryInterest === PrimaryInterest.Mentor &&
-			!updatedRoles.includes(UserRole.Mentor)
-		) {
-			const idx = updatedRoles.findIndex((v) => v === UserRole.Author);
-
-			if (idx !== -1) {
-				updatedRoles.splice(idx, 1);
-			}
-
-			updatedRoles.push(UserRole.Mentor);
-		}
-
+		// `primaryInterest` used to be mirrored into `User.roles` here. It is a
+		// wish, not a role — nothing is derived from it any more.
 		await prisma.profile.update({
 			where: { userId: currentUser.id },
 			data: {
@@ -172,7 +126,6 @@ export const PUT = withAuth({ mode: "user" })(
 					update: {
 						lang: lang as Language | undefined,
 						onboardingDone,
-						roles: updatedRoles,
 						agreements: agreementsChanged ? agreements : undefined,
 					},
 				},

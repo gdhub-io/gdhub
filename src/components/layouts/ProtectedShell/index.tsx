@@ -23,14 +23,13 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { genConfig } from "react-nice-avatar";
+import { useAccess } from "@/components/access/AccessProvider";
 import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { isAvailableLocale } from "@/config/locale";
-import { UserRole } from "@/config/prisma-enums";
 import { appThemeConfig } from "@/config/theme";
-import { hasRole } from "@/helpers/user";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
@@ -61,11 +60,11 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();
 	const { setOpenChatModal } = useChat();
 	const spaceHeader = useSpaceHeader();
+	const { can } = useAccess();
 
-	const isAdmin = useMemo(() => {
-		if (!session) return false;
-		return hasRole(UserRole.Admin, { data: session });
-	}, [session]);
+	// Drawn from a permission, not from a role: whoever may look at the user list
+	// gets the link, including the narrower staff roles added later.
+	const showAdministration = can("admin.users.view");
 
 	/** Fallback avatar for users without an uploaded image. */
 	const avatarConfig = useMemo(() => {
@@ -159,7 +158,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const dropdownMenuItems: MenuProps["items"] = useMemo(() => {
 		let menu: MenuProps["items"] = [];
 
-		if (isAdmin) {
+		if (showAdministration) {
 			menu.push({
 				label: (
 					<Link href="/admin/users">
@@ -220,7 +219,14 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		return screens.lg
 			? menu
 			: [...inlineMenuItems, { key: "divider1", type: "divider" }, ...menu];
-	}, [isAdmin, isOpenedInTelegram, screens, t, inlineMenuItems, linkToChat]);
+	}, [
+		showAdministration,
+		isOpenedInTelegram,
+		screens,
+		t,
+		inlineMenuItems,
+		linkToChat,
+	]);
 
 	const menuItems: MenuProps["items"] = [
 		{
@@ -353,7 +359,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				) : null}
 
 				{/* agent drawer */}
-				{/* {isAdmin && (
+				{/* {showAdministration && (
 					<>
 						<FloatButton
 							style={{ insetInlineEnd: 22, insetBlockEnd: 90 }}

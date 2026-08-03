@@ -20,6 +20,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { ZodSchema, z } from "zod";
 import { auth } from "@/auth";
 import { env } from "@/helpers/env";
+import type { SpaceAccess } from "@/services/access/types";
 import { prisma } from "@/services/prisma";
 
 export type SessionUser = {
@@ -40,6 +41,11 @@ export type Locals = {
 	team?: Team;
 	body?: unknown;
 	query?: unknown;
+	/**
+	 * Injected by `withSpaceGuard`. Optional here because `pipe` erases the
+	 * wrappers' types: a handler that reads it must have the guard above it.
+	 */
+	access?: SpaceAccess;
 };
 
 export type RouteContext<P = Record<string, string | string[]>> = {
@@ -69,6 +75,9 @@ export const apiError = {
 		NextResponse.json({ error: msg, statusCode: 404 }, { status: 404 }),
 	internal: (msg = "Internal server error") =>
 		NextResponse.json({ error: msg, statusCode: 500 }, { status: 500 }),
+	/** The answer is unknown right now — a dependency is degraded, not the caller. */
+	unavailable: (msg = "Service temporarily unavailable") =>
+		NextResponse.json({ error: msg, statusCode: 503 }, { status: 503 }),
 };
 
 export type AuthMode =
@@ -81,7 +90,6 @@ export type AuthMode =
 
 export interface AuthOptions {
 	mode?: AuthMode;
-	roles?: UserRole[];
 }
 
 function bearerMatches(req: NextRequest, expected: string) {
@@ -91,7 +99,6 @@ function bearerMatches(req: NextRequest, expected: string) {
 
 export function withAuth(opts: AuthOptions = {}) {
 	const mode: AuthMode = opts.mode ?? "user";
-	const roles = opts.roles;
 
 	return function wrap<L extends Locals>(
 		handler: Handler<L & { user: SessionUser }>,
@@ -109,9 +116,6 @@ export function withAuth(opts: AuthOptions = {}) {
 				}
 
 				if (!user) return apiError.unauthorized();
-				if (roles && !roles.some((r) => user.roles.includes(r))) {
-					return apiError.unauthorized();
-				}
 
 				return handler(req, ctx, { ...locals, user } as L & {
 					user: SessionUser;

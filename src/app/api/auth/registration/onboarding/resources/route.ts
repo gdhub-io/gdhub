@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
 	json,
@@ -6,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { joinSpace } from "@/services/access/membership";
 import { brevoApi } from "@/services/brevo";
 import { prisma } from "@/services/prisma";
 
@@ -57,6 +59,15 @@ export const PUT = withAuth({ mode: "user" })(
 					select: { agreements: true, name: true, email: true, lang: true },
 				},
 			},
+		});
+
+		// Finishing onboarding is what turns a hub guest into a hub member. Until
+		// now the adapter derived that from `onboardingDone` on every request;
+		// writing it down is what lets that bridge go away.
+		await joinSpace({
+			type: "hub",
+			userId: currentUser.id,
+			role: SpaceRole.Member,
 		});
 
 		try {

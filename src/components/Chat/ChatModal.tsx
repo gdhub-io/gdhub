@@ -15,8 +15,7 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { UserRole } from "@/config/prisma-enums";
-import { hasRole } from "@/helpers/user";
+import { useAccess } from "@/components/access/AccessProvider";
 import styles from "./ChatModal.module.scss";
 import ChatTopic from "./ChatTopic";
 import NewChatModal from "./NewChatModal";
@@ -37,7 +36,9 @@ export const ChatModal = () => {
 	const [hasRooms, setHasRooms] = useState<boolean | null>(null);
 	const [openNewChat, setOpenNewChat] = useState(false);
 	const { data: session } = useSession();
-	const isAdmin = hasRole(UserRole.Admin, { data: session });
+	const { can, isIn } = useAccess();
+	// The button opens POST /api/chat/rooms/direct, which is guarded by this.
+	const canStartDirectChat = can("admin.users.manage");
 	const {
 		setChatContext,
 		selectedRoomId,
@@ -88,7 +89,7 @@ export const ChatModal = () => {
 				title={<ChatTitle />}
 				extra={
 					<Space size={4}>
-						{isAdmin && (
+						{canStartDirectChat && (
 							<Button
 								type="text"
 								icon={<IconPlus size={16} />}
@@ -107,7 +108,7 @@ export const ChatModal = () => {
 										accessible only to the conversation participants.
 									</span>
 									<span>Chat is powered by Matrix.</span>
-									{isAdmin && <ChatPushStatus />}
+									{isIn("admin") && <ChatPushStatus />}
 								</Flex>
 							}
 						>

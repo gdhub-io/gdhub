@@ -350,7 +350,17 @@
 		}
 	}
 
-	body:has(.ant-modal-root, .ant-drawer-open) {
+	// Locks the page behind an open overlay.
+	//
+	// Matched on `.ant-modal-wrap` rather than `.ant-modal-root`: the root is the
+	// portal node and stays in the DOM after the modal closes, so it meant "a
+	// modal was opened at some point", not "a modal is open" — the page stayed
+	// unscrollable until a reload. antd hides the wrap with `display: none` on
+	// close, which is the state this needs.
+	body:has(
+			.ant-modal-wrap:not([style*="display: none"]),
+			.ant-drawer-open
+		) {
 		overflow: hidden !important;
 	}
 

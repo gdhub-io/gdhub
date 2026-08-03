@@ -1,11 +1,8 @@
-import {
-	AdviceRequestStatus,
-	ProjectStatus,
-	UserRole,
-} from "@gdhub-io/gdhub-prisma";
+import { AdviceRequestStatus, ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
-import { json, withAuth, withValidation } from "@/lib/api-handlers";
+import type { SpaceRole } from "@/config/permissions/roles";
+import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import {
 	ADVISOR_ROLE_COEF,
 	ADVISOR_SESSION_TO_DAY_EQUIVALENT,
@@ -19,6 +16,7 @@ import {
 	LEADERSHIP_ROLE_COEF,
 	STAGE_DEPTH_BONUS_WEIGHT,
 } from "@/lib/skill-capital";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
 type SkillCapitalSummary = {
@@ -26,6 +24,13 @@ type SkillCapitalSummary = {
 	leadershipCapital: number;
 	executionCapital: number;
 	mentorshipCapital: number;
+};
+
+/** Membership chips: one per (space type, role), with how many spaces it covers. */
+type MembershipSummary = {
+	spaceType: string;
+	role: SpaceRole;
+	count: number;
 };
 
 type AdminUserListItem = {
@@ -37,6 +42,7 @@ type AdminUserListItem = {
 	lastModifiedAt: Date;
 	specializations: string[];
 	skillCapital: SkillCapitalSummary;
+	memberships: MembershipSummary[];
 };
 
 type PaginatedAdminUsersResponse = {
@@ -518,174 +524,157 @@ const computeSkillCapitalForUsers = async (
 	return result;
 };
 
-export const GET = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(
-	withValidation(
-		AdminUsersQuerySchema,
-		"query",
-	)(async (_req, _ctx, { body }) => {
-		const {
-			page: pageQuery,
-			limit: limitQuery,
-			sortField: sortFieldQuery,
-			sortOrder: sortOrderQuery,
-		} = body as AdminUsersQuery;
+const EMPTY_CAPITAL: SkillCapitalSummary = {
+	scTotal: 0,
+	leadershipCapital: 0,
+	executionCapital: 0,
+	mentorshipCapital: 0,
+};
 
-		const page = toPositiveInt(pageQuery, 1);
-		const limit = clamp(toPositiveInt(limitQuery, 20), 1, 100);
-		const sortField = isSortField(sortFieldQuery) ? sortFieldQuery : undefined;
-		const sortOrder = isSortOrder(sortOrderQuery) ? sortOrderQuery : undefined;
+/** Membership chips for a page of users, in one query. */
+const loadMemberships = async (
+	userIds: string[],
+): Promise<Map<string, MembershipSummary[]>> => {
+	if (userIds.length === 0) return new Map();
 
-		if (sortField && sortOrder) {
-			if (sortField === "createdAt") {
-				const [users, meta] = await prisma.user
-					.paginate({
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							image: true,
-							createdAt: true,
-							updatedAt: true,
-							profile: { select: { name: true, updatedAt: true } },
-							specialities: { select: { name: true, updatedAt: true } },
-						},
-						orderBy: { createdAt: sortOrder === "ascend" ? "asc" : "desc" },
-					})
-					.withPages({
-						page,
-						limit,
-						includePageCount: true,
-					});
+	const grouped = await prisma.spaceMember.groupBy({
+		by: ["userId", "spaceType", "role"],
+		where: { userId: { in: userIds }, revokedAt: null },
+		_count: { _all: true },
+	});
 
-				const skillCapitalByUserId = await computeSkillCapitalForUsers(
-					users.map((user) => user.id),
-				);
+	const byUserId = new Map<string, MembershipSummary[]>();
 
-				const response: PaginatedAdminUsersResponse = {
-					data: users.map((user) => ({
-						id: user.id,
-						image: user.image,
-						name: toDisplayName(user),
-						email: user.email,
-						createdAt: user.createdAt,
-						lastModifiedAt: toLastModifiedAt(user),
-						specializations: user.specialities.map(
-							(speciality) => speciality.name,
-						),
-						skillCapital: skillCapitalByUserId.get(user.id) || {
-							scTotal: 0,
-							leadershipCapital: 0,
-							executionCapital: 0,
-							mentorshipCapital: 0,
-						},
-					})),
-					meta,
-				};
-				return json(response);
-			}
+	for (const row of grouped) {
+		const list = byUserId.get(row.userId) ?? [];
 
-			const allUsers = await prisma.user.findMany({
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-					profile: { select: { name: true, updatedAt: true } },
-					specialities: { select: { name: true, updatedAt: true } },
-				},
-				orderBy: { createdAt: "desc" },
-			});
+		list.push({
+			spaceType: row.spaceType,
+			role: row.role,
+			count: row._count._all,
+		});
+		byUserId.set(row.userId, list);
+	}
 
-			const sortedUsers = [...allUsers];
-			const direction = sortOrder === "ascend" ? 1 : -1;
+	return byUserId;
+};
 
-			if (sortField === "name") {
-				sortedUsers.sort(
-					(a, b) =>
-						toDisplayName(a).localeCompare(toDisplayName(b), undefined, {
-							sensitivity: "base",
-						}) * direction,
-				);
+type UserRecord = {
+	id: string;
+	name: string | null;
+	email: string | null;
+	image: string | null;
+	createdAt: Date;
+	updatedAt: Date;
+	profile: { name: string; updatedAt: Date | string } | null;
+	specialities: { name: string; updatedAt: Date | string }[];
+};
 
-				const totalCount = sortedUsers.length;
-				const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
-				const safePage = clamp(page, 1, pageCount);
-				const start = (safePage - 1) * limit;
-				const pagedUsers = sortedUsers.slice(start, start + limit);
-				const skillCapitalByUserId = await computeSkillCapitalForUsers(
-					pagedUsers.map((user) => user.id),
-				);
+const toListItem = (
+	user: UserRecord,
+	skillCapital: Map<string, SkillCapitalSummary>,
+	memberships: Map<string, MembershipSummary[]>,
+): AdminUserListItem => ({
+	id: user.id,
+	image: user.image,
+	name: toDisplayName(user),
+	email: user.email,
+	createdAt: user.createdAt,
+	lastModifiedAt: toLastModifiedAt(user),
+	specializations: user.specialities.map((speciality) => speciality.name),
+	skillCapital: skillCapital.get(user.id) || EMPTY_CAPITAL,
+	memberships: memberships.get(user.id) || [],
+});
 
-				const response: PaginatedAdminUsersResponse = {
-					data: pagedUsers.map((user) => ({
-						id: user.id,
-						image: user.image,
-						name: toDisplayName(user),
-						email: user.email,
-						createdAt: user.createdAt,
-						lastModifiedAt: toLastModifiedAt(user),
-						specializations: user.specialities.map(
-							(speciality) => speciality.name,
-						),
-						skillCapital: skillCapitalByUserId.get(user.id) || {
-							scTotal: 0,
-							leadershipCapital: 0,
-							executionCapital: 0,
-							mentorshipCapital: 0,
-						},
-					})),
-					meta: {
-						currentPage: safePage,
-						isFirstPage: safePage === 1,
-						isLastPage: safePage >= pageCount,
-						previousPage: safePage > 1 ? safePage - 1 : null,
-						nextPage: safePage < pageCount ? safePage + 1 : null,
-						pageCount,
-						totalCount,
+/** Skill capital and memberships for one page, together. */
+const loadPageData = async (users: UserRecord[]) =>
+	Promise.all([
+		computeSkillCapitalForUsers(users.map((user) => user.id)),
+		loadMemberships(users.map((user) => user.id)),
+	]);
+
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.users.view" }),
+	withValidation(AdminUsersQuerySchema, "query"),
+)(async (_req, _ctx, { body }) => {
+	const {
+		page: pageQuery,
+		limit: limitQuery,
+		sortField: sortFieldQuery,
+		sortOrder: sortOrderQuery,
+	} = body as AdminUsersQuery;
+
+	const page = toPositiveInt(pageQuery, 1);
+	const limit = clamp(toPositiveInt(limitQuery, 20), 1, 100);
+	const sortField = isSortField(sortFieldQuery) ? sortFieldQuery : undefined;
+	const sortOrder = isSortOrder(sortOrderQuery) ? sortOrderQuery : undefined;
+
+	if (sortField && sortOrder) {
+		if (sortField === "createdAt") {
+			const [users, meta] = await prisma.user
+				.paginate({
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+						createdAt: true,
+						updatedAt: true,
+						profile: { select: { name: true, updatedAt: true } },
+						specialities: { select: { name: true, updatedAt: true } },
 					},
-				};
-				return json(response);
-			}
+					orderBy: { createdAt: sortOrder === "ascend" ? "asc" : "desc" },
+				})
+				.withPages({
+					page,
+					limit,
+					includePageCount: true,
+				});
 
-			const skillCapitalByUserId = await computeSkillCapitalForUsers(
-				allUsers.map((user) => user.id),
+			const [capital, memberships] = await loadPageData(users);
+
+			const response: PaginatedAdminUsersResponse = {
+				data: users.map((user) => toListItem(user, capital, memberships)),
+				meta,
+			};
+			return json(response);
+		}
+
+		const allUsers = await prisma.user.findMany({
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+				createdAt: true,
+				updatedAt: true,
+				profile: { select: { name: true, updatedAt: true } },
+				specialities: { select: { name: true, updatedAt: true } },
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		const sortedUsers = [...allUsers];
+		const direction = sortOrder === "ascend" ? 1 : -1;
+
+		if (sortField === "name") {
+			sortedUsers.sort(
+				(a, b) =>
+					toDisplayName(a).localeCompare(toDisplayName(b), undefined, {
+						sensitivity: "base",
+					}) * direction,
 			);
-
-			sortedUsers.sort((a, b) => {
-				const aValue = skillCapitalByUserId.get(a.id)?.[sortField] || 0;
-				const bValue = skillCapitalByUserId.get(b.id)?.[sortField] || 0;
-				return (aValue - bValue) * direction;
-			});
 
 			const totalCount = sortedUsers.length;
 			const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
 			const safePage = clamp(page, 1, pageCount);
 			const start = (safePage - 1) * limit;
 			const pagedUsers = sortedUsers.slice(start, start + limit);
+			const [capital, memberships] = await loadPageData(pagedUsers);
 
 			const response: PaginatedAdminUsersResponse = {
-				data: pagedUsers.map((user) => ({
-					id: user.id,
-					image: user.image,
-					name: toDisplayName(user),
-					email: user.email,
-					createdAt: user.createdAt,
-					lastModifiedAt: toLastModifiedAt(user),
-					specializations: user.specialities.map(
-						(speciality) => speciality.name,
-					),
-					skillCapital: skillCapitalByUserId.get(user.id) || {
-						scTotal: 0,
-						leadershipCapital: 0,
-						executionCapital: 0,
-						mentorshipCapital: 0,
-					},
-				})),
+				data: pagedUsers.map((user) => toListItem(user, capital, memberships)),
 				meta: {
 					currentPage: safePage,
 					isFirstPage: safePage === 1,
@@ -699,48 +688,67 @@ export const GET = withAuth({
 			return json(response);
 		}
 
-		const [users, meta] = await prisma.user
-			.paginate({
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-					profile: { select: { name: true, updatedAt: true } },
-					specialities: { select: { name: true, updatedAt: true } },
-				},
-				orderBy: { createdAt: "desc" },
-			})
-			.withPages({
-				page,
-				limit,
-				includePageCount: true,
-			});
-
 		const skillCapitalByUserId = await computeSkillCapitalForUsers(
-			users.map((user) => user.id),
+			allUsers.map((user) => user.id),
+		);
+
+		sortedUsers.sort((a, b) => {
+			const aValue = skillCapitalByUserId.get(a.id)?.[sortField] || 0;
+			const bValue = skillCapitalByUserId.get(b.id)?.[sortField] || 0;
+			return (aValue - bValue) * direction;
+		});
+
+		const totalCount = sortedUsers.length;
+		const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
+		const safePage = clamp(page, 1, pageCount);
+		const start = (safePage - 1) * limit;
+		const pagedUsers = sortedUsers.slice(start, start + limit);
+		const memberships = await loadMemberships(
+			pagedUsers.map((user) => user.id),
 		);
 
 		const response: PaginatedAdminUsersResponse = {
-			data: users.map((user) => ({
-				id: user.id,
-				image: user.image,
-				name: toDisplayName(user),
-				email: user.email,
-				createdAt: user.createdAt,
-				lastModifiedAt: toLastModifiedAt(user),
-				specializations: user.specialities.map((speciality) => speciality.name),
-				skillCapital: skillCapitalByUserId.get(user.id) || {
-					scTotal: 0,
-					leadershipCapital: 0,
-					executionCapital: 0,
-					mentorshipCapital: 0,
-				},
-			})),
-			meta,
+			data: pagedUsers.map((user) =>
+				toListItem(user, skillCapitalByUserId, memberships),
+			),
+			meta: {
+				currentPage: safePage,
+				isFirstPage: safePage === 1,
+				isLastPage: safePage >= pageCount,
+				previousPage: safePage > 1 ? safePage - 1 : null,
+				nextPage: safePage < pageCount ? safePage + 1 : null,
+				pageCount,
+				totalCount,
+			},
 		};
 		return json(response);
-	}),
-);
+	}
+
+	const [users, meta] = await prisma.user
+		.paginate({
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+				createdAt: true,
+				updatedAt: true,
+				profile: { select: { name: true, updatedAt: true } },
+				specialities: { select: { name: true, updatedAt: true } },
+			},
+			orderBy: { createdAt: "desc" },
+		})
+		.withPages({
+			page,
+			limit,
+			includePageCount: true,
+		});
+
+	const [capital, memberships] = await loadPageData(users);
+
+	const response: PaginatedAdminUsersResponse = {
+		data: users.map((user) => toListItem(user, capital, memberships)),
+		meta,
+	};
+	return json(response);
+});

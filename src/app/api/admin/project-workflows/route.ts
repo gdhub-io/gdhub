@@ -1,11 +1,11 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
-import { json, withAuth } from "@/lib/api-handlers";
+import { json, pipe, withAuth } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
-export const GET = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(async () => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.workflow.view" }),
+)(async () => {
 	const projectWorkflows = await prisma.projectWorkflow.findMany({
 		include: {
 			project: {

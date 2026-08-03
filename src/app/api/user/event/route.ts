@@ -3,6 +3,7 @@ import { EventFormat, EventType, Language } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "slugify";
 import { z } from "zod";
+import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
 	json,
@@ -10,6 +11,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { joinSpace } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
 
 const UserEventScheduleItemSchema = z.object({
@@ -75,6 +77,13 @@ export const POST = withAuth({ mode: "user" })(
 						"-" +
 						randomUUID().slice(-6),
 			},
+		});
+
+		await joinSpace({
+			type: "event",
+			spaceId: event.id,
+			userId: currentUser.id,
+			role: SpaceRole.Owner,
 		});
 
 		if (data.startDate && data.endDate) {
