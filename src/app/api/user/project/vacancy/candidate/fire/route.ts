@@ -4,10 +4,13 @@ import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfTeamMember } from "@/lib/space-ids";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -17,69 +20,76 @@ const IdSchema = z.object({
 
 type IdBody = z.infer<typeof IdSchema>;
 
-export const PUT = withAuth({ mode: "user" })(
-	withValidation(IdSchema)(async (_req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-		const { id } = body as IdBody;
+export const PUT = pipe(
+	withAuth({ mode: "user" }),
+	// Without this guard any signed-in user could remove anyone from any team
+	// by passing a member id.
+	withSpaceGuard({
+		permission: "project.vacancies.review",
+		idFrom: projectOfTeamMember,
+	}),
+	withValidation(IdSchema),
+)(async (_req, _ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+	const { id } = body as IdBody;
 
-		const vacancy = await prisma.teamVacancy.findUnique({
-			where: { id },
-			include: {
-				team: {
-					select: {
-						project: {
-							include: {
-								workflow: {
-									select: {
-										currentStepId: true,
-									},
+	const vacancy = await prisma.teamVacancy.findUnique({
+		where: { id },
+		include: {
+			team: {
+				select: {
+					project: {
+						include: {
+							workflow: {
+								select: {
+									currentStepId: true,
 								},
 							},
 						},
 					},
 				},
 			},
-		});
+		},
+	});
 
-		const firedMember = await prisma.teamMember.update({
-			where: { id, status: TeamMemberStatus.Hired },
-			data: {
-				status: TeamMemberStatus.Fired,
-				finishedAt: dayjs().toISOString(),
-				leftProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
+	const firedMember = await prisma.teamMember.update({
+		where: { id, status: TeamMemberStatus.Hired },
+		data: {
+			status: TeamMemberStatus.Fired,
+			finishedAt: dayjs().toISOString(),
+			leftProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
+		},
+		select: { user: true, team: true },
+	});
+
+	// Delete all equity allocations for the fired member
+	await prisma.equityPromise.deleteMany({
+		where: { allocation: { teamMemberId: id } },
+	});
+	await prisma.equityAllocation.updateMany({
+		where: { teamMemberId: id },
+		data: { teamMemberId: { set: null } },
+	});
+
+	try {
+		await NovuService.send({
+			template: "default-message",
+			to: {
+				subscriberId: firedMember.user.id,
+				// biome-ignore lint/style/noNonNullAssertion: original semantics
+				email: firedMember.user.email!,
 			},
-			select: { user: true, team: true },
+			payload: {
+				title: "Candidate fired",
+				message: `You have been kicked off the team ${firedMember.team.name}`,
+			},
 		});
 
-		// Delete all equity allocations for the fired member
-		await prisma.equityPromise.deleteMany({
-			where: { allocation: { teamMemberId: id } },
-		});
-		await prisma.equityAllocation.updateMany({
-			where: { teamMemberId: id },
-			data: { teamMemberId: { set: null } },
-		});
+		console.info(`New notification was sent to ${firedMember.user.id}`);
+	} catch (e) {
+		console.error("[NovuService]", e);
+	}
 
-		try {
-			await NovuService.send({
-				template: "default-message",
-				to: {
-					subscriberId: firedMember.user.id,
-					// biome-ignore lint/style/noNonNullAssertion: original semantics
-					email: firedMember.user.email!,
-				},
-				payload: {
-					title: "Candidate fired",
-					message: `You have been kicked off the team ${firedMember.team.name}`,
-				},
-			});
-
-			console.info(`New notification was sent to ${firedMember.user.id}`);
-		} catch (e) {
-			console.error("[NovuService]", e);
-		}
-
-		return json({ success: true });
-	}),
-);
+	return json({ success: true });
+});

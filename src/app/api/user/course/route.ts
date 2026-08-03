@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { CourseStatus, Language } from "@gdhub-io/gdhub-prisma";
 import slugify from "slugify";
 import { z } from "zod";
+import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
 	json,
@@ -9,6 +10,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
 
 const CreateCourseSchema = z.object({
@@ -56,6 +58,13 @@ export const POST = withAuth({ mode: "user" })(
 			},
 		});
 
+		await joinSpace({
+			type: "course",
+			spaceId: course.id,
+			userId: currentUser.id as string,
+			role: SpaceRole.Owner,
+		});
+
 		// TODO(prisma): persist the author rate once the CourseTeacher model is
 		// added to the @gdhub-io/gdhub-prisma package (see proposal at the
 		// bottom of this PR description). Until then, the rate is accepted by
@@ -78,6 +87,8 @@ export const DELETE = withAuth({ mode: "user" })(
 		await prisma.course.delete({
 			where: { id },
 		});
+
+		await deleteSpaceMembership("course", id);
 
 		return json({ success: true });
 	}),

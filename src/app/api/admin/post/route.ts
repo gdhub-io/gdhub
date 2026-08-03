@@ -1,13 +1,14 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
 import slugify from "slugify";
 import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
 const CreateBlogPostSchema = z.object({
@@ -19,33 +20,32 @@ const CreateBlogPostSchema = z.object({
 
 type CreateBlogPostBody = z.infer<typeof CreateBlogPostSchema>;
 
-export const POST = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(
-	withValidation(CreateBlogPostSchema)(async (_req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-		const { title, content, slug, authors } = body as CreateBlogPostBody;
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.posts.manage" }),
+	withValidation(CreateBlogPostSchema),
+)(async (_req, _ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+	const { title, content, slug, authors } = body as CreateBlogPostBody;
 
-		const coverImage = (content as any)?.blocks?.find(
-			(block: any) => block.type === "image",
-		)?.data?.file?.url as string;
+	const coverImage = (content as any)?.blocks?.find(
+		(block: any) => block.type === "image",
+	)?.data?.file?.url as string;
 
-		const post = await prisma.blogPost.create({
-			data: {
-				title,
-				content: content || {},
-				image: coverImage || undefined,
-				slug: slug || slugify(title, { lower: true, strict: true }),
-				authors: {
-					connect: authors?.map((author) => ({ id: author.id })) || [
-						{ id: currentUser.id },
-					],
-				},
+	const post = await prisma.blogPost.create({
+		data: {
+			title,
+			content: content || {},
+			image: coverImage || undefined,
+			slug: slug || slugify(title, { lower: true, strict: true }),
+			authors: {
+				connect: authors?.map((author) => ({ id: author.id })) || [
+					{ id: currentUser.id },
+				],
 			},
-		});
+		},
+	});
 
-		return json({ id: post.id });
-	}),
-);
+	return json({ id: post.id });
+});

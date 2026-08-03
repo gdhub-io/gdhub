@@ -17,8 +17,8 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useAccess } from "@/components/access/AccessProvider";
 import { pipLayout } from "@/config/daily";
-import { UserRole } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const dailyCallOptions: DailyCallOptions = {
@@ -36,6 +36,7 @@ const dailyCallOptions: DailyCallOptions = {
 
 const ReportsClient = () => {
 	const { data: session } = useSession();
+	const { can } = useAccess();
 	const { t } = useTranslate();
 	const uuid = uuidv4();
 	const callRef = useRef(null);
@@ -164,7 +165,7 @@ const ReportsClient = () => {
 		<div className="layout-background">
 			<DailyProvider callObject={callFrame}>
 				<main className="container">
-					{session?.user.roles.includes(UserRole.Admin) && (
+					{can("hub.live_room.manage") && (
 						<>
 							<Space align="start">
 								<Form

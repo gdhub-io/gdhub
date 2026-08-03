@@ -2,10 +2,12 @@ import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
 const ProjectLinkSchema = z.object({
@@ -21,25 +23,28 @@ const UserProjectLinksSchema = z.object({
 
 type UserProjectLinksBody = z.infer<typeof UserProjectLinksSchema>;
 
-export const PUT = withAuth({ mode: "user" })(
-	withValidation(UserProjectLinksSchema)(async (_req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-		const { id, links } = body as UserProjectLinksBody;
+export const PUT = pipe(
+	withAuth({ mode: "user" }),
+	// Without this guard any signed-in user could rewrite any project's links.
+	withSpaceGuard({ permission: "project.info.edit", idFrom: "body.id" }),
+	withValidation(UserProjectLinksSchema),
+)(async (_req, _ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+	const { id, links } = body as UserProjectLinksBody;
 
-		const data = await prisma.project.update({
-			where: { id },
-			data: { links },
-		});
+	const data = await prisma.project.update({
+		where: { id },
+		data: { links },
+	});
 
-		// Return the updated links in the expected format
-		const updatedLinks = (data.links as any[]) || [];
-		return json(
-			updatedLinks.map((link: any) => ({
-				platform: link.platform || "",
-				link: link.link || "",
-				isPrimary: link.isPrimary || false,
-			})),
-		);
-	}),
-);
+	// Return the updated links in the expected format
+	const updatedLinks = (data.links as any[]) || [];
+	return json(
+		updatedLinks.map((link: any) => ({
+			platform: link.platform || "",
+			link: link.link || "",
+			isPrimary: link.isPrimary || false,
+		})),
+	);
+});

@@ -1,5 +1,45 @@
+import type { Metadata } from "next";
+import HeroBgImage from "@/assets/images/landing/hero-bg.png";
 import { prisma } from "@/services/prisma";
 import { HomeClient, type HomeStats } from "./HomeClient";
+
+const TITLE = "Game Developers Hub";
+const DESCRIPTION =
+	"Game Developers Hub is a platform for game developers and specialists.";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "";
+const OG_IMAGE =
+	`${APP_URL}/api/og?t=${encodeURIComponent(TITLE)}` +
+	`&st=${encodeURIComponent("for everyone who wants to make video games")}` +
+	`&img=${encodeURIComponent(APP_URL + HeroBgImage.src)}`;
+
+/**
+ * The landing is the one page that is actually meant to be indexed, so its tags
+ * are built here rather than in the client shell: metadata has to be in the
+ * server response for a crawler to see it.
+ *
+ * `title.absolute` skips the `%s · GDHub` template from the root layout — the
+ * home page is the site, not a page within it.
+ */
+export const metadata: Metadata = {
+	title: { absolute: TITLE },
+	description: DESCRIPTION,
+	alternates: { canonical: "/" },
+	openGraph: {
+		type: "website",
+		url: "/",
+		title: TITLE,
+		description: DESCRIPTION,
+		images: [
+			{
+				url: OG_IMAGE,
+				width: 1200,
+				height: 360,
+				alt: "Game Developers Hub cover",
+			},
+		],
+	},
+};
 
 export const revalidate = 360;
 

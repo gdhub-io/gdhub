@@ -26,14 +26,9 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import { DirectionSelect } from "@/components/DirectionSelect";
-import {
-	EventFormat,
-	EventType,
-	Language,
-	UserRole,
-} from "@/config/prisma-enums";
-import { hasRole } from "@/helpers/user";
+import { EventFormat, EventType, Language } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const { RangePicker } = DatePicker;
@@ -73,7 +68,9 @@ const EventModal: React.FC<EventModalProps> = ({
 		initialValues?.image,
 	);
 	const { data: session } = useSession();
-	const isAdmin = hasRole(UserRole.Admin, { data: session });
+	const { isIn } = useAccess();
+	// Staff may backdate an event; everyone else is limited to future dates.
+	const isStaff = isIn("admin");
 	const isBigEvent =
 		eventType === EventType.GameLab || eventType === EventType.Conference;
 	const [imageProcessing, setImageProcessing] = useState(false);
@@ -472,7 +469,7 @@ const EventModal: React.FC<EventModalProps> = ({
 									end: "endDate",
 								}}
 								disabledTime={(date) => {
-									if (!date || isAdmin) return {};
+									if (!date || isStaff) return {};
 
 									const now = dayjs();
 
@@ -501,7 +498,7 @@ const EventModal: React.FC<EventModalProps> = ({
 									};
 								}}
 								disabledDate={(current) =>
-									current && !isAdmin && current < dayjs().startOf("day")
+									current && !isStaff && current < dayjs().startOf("day")
 								}
 							/>
 						</Form.Item>

@@ -4,10 +4,13 @@ import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfVacancy } from "@/lib/space-ids";
 import { prisma } from "@/services/prisma";
 
 const PaymentInitSchema = z.object({
@@ -47,83 +50,92 @@ async function authorizeVacancy(
 	return null;
 }
 
-export const POST = withAuth({ mode: "user" })(
-	withValidation(PaymentInitSchema)(async (_req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-
-		const { vacancyId } = body as PaymentInitBody;
-
-		try {
-			const authError = await authorizeVacancy(vacancyId, currentUser.id);
-			if (authError) return authError;
-
-			// This payment represents the listing FEE (not the offered salary, which
-			// lives on the vacancy). Reuse the latest one so repeated saves don't pile
-			// up duplicates; status/amount of a completed fee stay untouched.
-			const existing = await prisma.payment.findFirst({
-				where: {
-					payableType: PayableType.VACANCY,
-					payableId: vacancyId,
-				},
-				orderBy: { createdAt: "desc" },
-			});
-
-			const providerPriceId =
-				process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID || null;
-
-			const payment = existing
-				? await prisma.payment.update({
-						where: { id: existing.id },
-						data: { payerId: currentUser.id, providerPriceId },
-					})
-				: await prisma.payment.create({
-						data: {
-							amount: LISTING_FEE_CENTS,
-							currency: "EUR",
-							status: PaymentStatus.PENDING,
-							payableType: PayableType.VACANCY,
-							payableId: vacancyId,
-							payerId: currentUser.id,
-							providerPriceId,
-						},
-					});
-
-			return json(payment);
-		} catch (error) {
-			console.error("[vacancy.payment]", error);
-			throw error;
-		}
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.vacancies.manage",
+		idFrom: projectOfVacancy,
 	}),
-);
+	withValidation(PaymentInitSchema),
+)(async (_req, _ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 
-export const DELETE = withAuth({ mode: "user" })(
-	async (req, _ctx, { user }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
+	const { vacancyId } = body as PaymentInitBody;
 
-		const url = new URL(req.url);
-		const vacancyId = url.searchParams.get("vacancyId");
-		if (!vacancyId) return apiError.badRequest("vacancyId is required");
+	try {
+		const authError = await authorizeVacancy(vacancyId, currentUser.id);
+		if (authError) return authError;
 
-		try {
-			const authError = await authorizeVacancy(vacancyId, currentUser.id);
-			if (authError) return authError;
+		// This payment represents the listing FEE (not the offered salary, which
+		// lives on the vacancy). Reuse the latest one so repeated saves don't pile
+		// up duplicates; status/amount of a completed fee stay untouched.
+		const existing = await prisma.payment.findFirst({
+			where: {
+				payableType: PayableType.VACANCY,
+				payableId: vacancyId,
+			},
+			orderBy: { createdAt: "desc" },
+		});
 
-			// Only remove payments that haven't been completed — a paid listing fee
-			// must never be deleted from history.
-			await prisma.payment.deleteMany({
-				where: {
-					payableType: PayableType.VACANCY,
-					payableId: vacancyId,
-					status: { not: PaymentStatus.COMPLETED },
-				},
-			});
+		const providerPriceId =
+			process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID || null;
 
-			return json({ success: true });
-		} catch (error) {
-			console.error("[vacancy.payment.delete]", error);
-			throw error;
-		}
-	},
-);
+		const payment = existing
+			? await prisma.payment.update({
+					where: { id: existing.id },
+					data: { payerId: currentUser.id, providerPriceId },
+				})
+			: await prisma.payment.create({
+					data: {
+						amount: LISTING_FEE_CENTS,
+						currency: "EUR",
+						status: PaymentStatus.PENDING,
+						payableType: PayableType.VACANCY,
+						payableId: vacancyId,
+						payerId: currentUser.id,
+						providerPriceId,
+					},
+				});
+
+		return json(payment);
+	} catch (error) {
+		console.error("[vacancy.payment]", error);
+		throw error;
+	}
+});
+
+export const DELETE = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.vacancies.manage",
+		idFrom: projectOfVacancy,
+	}),
+)(async (req, _ctx, { user }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+
+	const url = new URL(req.url);
+	const vacancyId = url.searchParams.get("vacancyId");
+	if (!vacancyId) return apiError.badRequest("vacancyId is required");
+
+	try {
+		const authError = await authorizeVacancy(vacancyId, currentUser.id);
+		if (authError) return authError;
+
+		// Only remove payments that haven't been completed — a paid listing fee
+		// must never be deleted from history.
+		await prisma.payment.deleteMany({
+			where: {
+				payableType: PayableType.VACANCY,
+				payableId: vacancyId,
+				status: { not: PaymentStatus.COMPLETED },
+			},
+		});
+
+		return json({ success: true });
+	} catch (error) {
+		console.error("[vacancy.payment.delete]", error);
+		throw error;
+	}
+});

@@ -20,7 +20,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
-import { SkillLevel, UserRole } from "@/config/prisma-enums";
+import { SkillLevel } from "@/config/prisma-enums";
 
 const { Paragraph, Text } = Typography;
 
@@ -35,28 +35,38 @@ const MentorshipProfileForm = ({
 }: MentorshipProfileFormArgs) => {
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
-	const [enabled, setEnabled] = useState(false);
 	const [selectedSpecialityId, setSelectedSpecialityId] = useState<
 		string | null
 	>(null);
-	const { data: session, update: refreshSession } = useSession();
+	const { update: refreshSession } = useSession();
 	const maxQuestions = 5;
 	const openForQuestions =
 		Form.useWatch<string[]>("openForQuestions", form) ?? [];
 
-	const { mutateAsync: switchMentorship, isPending: isSwitching } = useMutation(
-		{
-			mutationFn: ({ enabled }: { enabled: boolean }) =>
-				axios.put<any>("/api/user/profile/mentorship", { enabled }),
-			onSuccess: ({ data }) => setEnabled(data.enabled),
-		},
-	);
+	/**
+	 * The switch is a draft until the form is saved: turning mentorship on
+	 * without saying what you can help with is not an offer of anything, so it
+	 * must not reach the server on its own.
+	 *
+	 * `null` means untouched — the switch shows what the server has. Once the
+	 * user flips it, their choice wins until they save, and syncing from the
+	 * session cannot flip it back under their hands.
+	 */
+	const [draftEnabled, setDraftEnabled] = useState<boolean | null>(null);
+	const [isDirty, setIsDirty] = useState(false);
 
-	useEffect(() => {
-		if (session) {
-			setEnabled(session.user.roles.includes(UserRole.Mentor));
-		}
-	}, [session]);
+	// Read from the server, not from the session: the JWT lags by minutes, so a
+	// switch driven by it shows the previous answer after a save or a reload.
+	const { data: mentorship, refetch: refetchMentorship } = useQuery({
+		queryKey: ["user-mentorship"],
+		queryFn: () =>
+			axios
+				.get<{ enabled: boolean }>("/api/user/profile/mentorship")
+				.then((response) => response.data),
+	});
+
+	const savedEnabled = mentorship?.enabled ?? false;
+	const enabled = draftEnabled ?? savedEnabled;
 
 	useEffect(() => {
 		if (selectedSpecialityId) {
@@ -76,9 +86,10 @@ const MentorshipProfileForm = ({
 	const { mutateAsync: saveMentorshipSetting, isPending: isSaving } =
 		useMutation({
 			mutationFn: (data: {
-				specialityId: string;
-				timeForMentoring: string;
-				openForQuestions: string[];
+				enabled: boolean;
+				specialityId?: string;
+				timeForMentoring?: string;
+				openForQuestions?: string[];
 			}) => axios.put<any>("/api/user/profile/mentorship", data),
 			onSuccess: async () => {
 				await refetchSpecialityList();
@@ -113,9 +124,19 @@ const MentorshipProfileForm = ({
 
 	const handleForm = async () => {
 		try {
-			const data = await form.validateFields();
+			// Turning mentorship off is a valid save on its own — there is nothing to
+			// fill in, so the fields are only validated when it stays on.
+			const data = enabled ? await form.validateFields() : {};
 
-			await saveMentorshipSetting(data);
+			await saveMentorshipSetting({ ...data, enabled });
+			// The draft stays as the source of truth for the switch. `update()`
+			// returns before the session object in the hook is replaced, so falling
+			// back to the session here would show the pre-save value for a moment —
+			// which is exactly what looked like the switch turning itself back on.
+			setIsDirty(false);
+			await refetchMentorship();
+			// Other parts of the app still read the role from the session.
+			await refreshSession();
 			await onUpdate();
 
 			message.success(
@@ -127,9 +148,9 @@ const MentorshipProfileForm = ({
 		} catch {}
 	};
 
-	const switchMentorshipStatus = async (checked: boolean) => {
-		await switchMentorship({ enabled: checked });
-		await refreshSession();
+	const switchMentorshipStatus = (checked: boolean) => {
+		setDraftEnabled(checked);
+		setIsDirty(true);
 
 		if (!checked) {
 			form.resetFields();
@@ -159,7 +180,7 @@ const MentorshipProfileForm = ({
 				>
 					<Switch
 						checked={enabled}
-						loading={isSwitching}
+						loading={isSaving}
 						onChange={switchMentorshipStatus}
 					/>
 				</Tooltip>
@@ -297,6 +318,19 @@ const MentorshipProfileForm = ({
 							"To become a mentor, you must have at least one specialty of the Experienced or Expert level",
 						)}
 					/>
+				)}
+
+				{/* Switching off hides the form, and with it the Save button — the
+				    choice still has to be confirmed, so it gets its own. */}
+				{!enabled && isDirty && (
+					<Button
+						type="primary"
+						style={{ marginTop: 16 }}
+						onClick={handleForm}
+						loading={isSaving}
+					>
+						{t("components.profile-forms.mentorship.card.save", "Save")}
+					</Button>
 				)}
 			</Spin>
 		</Card>

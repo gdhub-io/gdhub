@@ -1,6 +1,8 @@
 "use client";
 
+import { StyleProvider } from "@ant-design/cssinjs";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
 import { setupDayjs } from "@/config/dayjs-setup";
@@ -10,6 +12,20 @@ import { TolgeeClientProvider } from "./TolgeeClientProvider";
 
 setupDayjs();
 installAbortErrorSuppressor();
+
+/**
+ * Static `message` / `Modal.confirm` / `notification` mount their own React root,
+ * outside `AntdRegistry` — so their styles were injected *without* the CSS layer
+ * the registry applies. Unlayered rules beat every `@layer`, so the first toast
+ * on a page silently promoted antd's `a { color: … }` reset above the menu's own
+ * `a { color: inherit }`, and the header turned red.
+ *
+ * `holderRender` is antd's hook for exactly this: it wraps the detached root, so
+ * those styles land in the same layer as the rest.
+ */
+ConfigProvider.config({
+	holderRender: (children) => <StyleProvider layer>{children}</StyleProvider>,
+});
 
 export function Providers({ children }: { children: ReactNode }) {
 	return (

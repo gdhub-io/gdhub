@@ -17,6 +17,8 @@ vi.mock("../src/services/prisma", () => ({
 	prisma: {
 		user: { findUnique: vi.fn(), update: vi.fn() },
 		project: { findUnique: vi.fn(), create: vi.fn() },
+		// Creating a project now also records its owner in SpaceMember.
+		spaceMember: { upsert: vi.fn(), findUnique: vi.fn() },
 	},
 }));
 

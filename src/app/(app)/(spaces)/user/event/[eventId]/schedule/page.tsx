@@ -9,14 +9,13 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import {
 	EventScheduleGantt,
 	type EventScheduleGanttRef,
 } from "@/components/event/EventScheduleGantt";
 import type { ScheduleItemFormValues } from "@/components/modals/EventModal";
 import { EventSpace } from "@/components/spaces/EventSpace";
-import { UserRole } from "@/config/prisma-enums";
-import { hasRole } from "@/helpers/user";
 
 interface EventScheduleItem {
 	id: string;
@@ -49,7 +48,8 @@ export default function EventSchedulePage() {
 	const [schedule, setSchedule] = useState<ScheduleItemFormValues[]>([]);
 	const ganttRef = useRef<EventScheduleGanttRef>(null);
 
-	const isAdmin = hasRole(UserRole.Admin, { data: session });
+	const { can } = useAccess();
+	const canEditSchedule = can("event.schedule.edit");
 
 	const { data: event, refetch: refetchEvent } = useQuery({
 		queryKey: ["event", eventId],
@@ -170,7 +170,7 @@ export default function EventSchedulePage() {
 				onScheduleUpdate={handleScheduleUpdate}
 				onScheduleCreate={handleScheduleCreate}
 				onScheduleDelete={handleScheduleDelete}
-				isAdmin={isAdmin}
+				isAdmin={canEditSchedule}
 			/>
 		</EventSpace>
 	);

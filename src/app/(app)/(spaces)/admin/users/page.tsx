@@ -1,16 +1,19 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Avatar, Popover, Row, Space, Tag, Typography } from "antd";
+import { Avatar, Button, Popover, Row, Space, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { SortOrder } from "antd/es/table/interface";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
+import { UserRolesModal } from "@/components/admin/UserRolesModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
+
+type MembershipSummary = { spaceType: string; role: string; count: number };
 
 type AdminUserRow = {
 	id: string;
@@ -26,6 +29,7 @@ type AdminUserRow = {
 		executionCapital: number;
 		mentorshipCapital: number;
 	};
+	memberships: MembershipSummary[];
 };
 
 type AdminUsersResponse = {
@@ -62,6 +66,7 @@ export default function UsersAdminPage() {
 		"createdAt",
 	);
 	const [sortOrder, setSortOrder] = useState<SortOrder>("descend");
+	const [editing, setEditing] = useState<AdminUserRow | null>(null);
 
 	const { data: response, isFetching } = useQuery({
 		queryKey: ["admin", "users", page, pageSize, sortField, sortOrder],
@@ -82,7 +87,7 @@ export default function UsersAdminPage() {
 	const columns: ColumnsType<AdminUserRow> = useMemo(
 		() => [
 			{
-				title: "Фото",
+				title: "Photo",
 				dataIndex: "image",
 				key: "image",
 				width: 70,
@@ -93,7 +98,7 @@ export default function UsersAdminPage() {
 				),
 			},
 			{
-				title: "Имя",
+				title: "Name",
 				dataIndex: "name",
 				key: "name" as SortField,
 				sorter: true,
@@ -106,7 +111,25 @@ export default function UsersAdminPage() {
 				),
 			},
 			{
-				title: "Специализации",
+				title: "Roles",
+				dataIndex: "memberships",
+				key: "memberships",
+				render: (memberships: MembershipSummary[]) =>
+					memberships.length ? (
+						<Space size={[4, 4]} wrap>
+							{memberships.map((membership) => (
+								<Tag key={`${membership.spaceType}:${membership.role}`}>
+									{membership.spaceType} · {membership.role.toLowerCase()}
+									{membership.count > 1 ? ` ×${membership.count}` : ""}
+								</Tag>
+							))}
+						</Space>
+					) : (
+						<Text type="secondary">—</Text>
+					),
+			},
+			{
+				title: "Specializations",
 				dataIndex: "specializations",
 				key: "specializations",
 				render: (specializations: string[]) =>
@@ -174,6 +197,17 @@ export default function UsersAdminPage() {
 					</Popover>
 				),
 			},
+			{
+				title: "",
+				key: "actions",
+				width: 100,
+				align: "right",
+				render: (_, record) => (
+					<Button size="small" onClick={() => setEditing(record)}>
+						Roles
+					</Button>
+				),
+			},
 		],
 		[sortField, sortOrder],
 	);
@@ -224,6 +258,13 @@ export default function UsersAdminPage() {
 					}}
 				/>
 			</div>
+
+			{/* Keyed by user: a fresh modal per person, so unsaved edits never leak. */}
+			<UserRolesModal
+				key={editing?.id}
+				user={editing}
+				onClose={() => setEditing(null)}
+			/>
 		</AdminSpace>
 	);
 }

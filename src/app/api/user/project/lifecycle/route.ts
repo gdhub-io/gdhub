@@ -6,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { deleteSpaceMembership } from "@/services/access/membership";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
 import {
@@ -71,6 +72,10 @@ export const POST = withAuth({ mode: "user" })(
 				});
 
 				const project = await prisma.project.deleteProject(params);
+
+				// No foreign key cascades here: the link from a space to its entity is
+				// polymorphic, so the membership rows have to go explicitly.
+				await deleteSpaceMembership("project", projectId);
 
 				// Deleting the project takes its vacancies away — end their chats too.
 				try {
