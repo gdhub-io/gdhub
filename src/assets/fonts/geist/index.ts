@@ -10,7 +10,7 @@ export const geistFont = localFont({
 		{
 			path: "./Geist-Bold.ttf",
 			weight: "700",
-			style: "italic",
+			style: "normal",
 		},
 		{
 			path: "./Geist-ExtraBold.ttf",
@@ -20,7 +20,7 @@ export const geistFont = localFont({
 		{
 			path: "./Geist-ExtraLight.ttf",
 			weight: "200",
-			style: "italic",
+			style: "normal",
 		},
 		{
 			path: "./Geist-Light.ttf",
@@ -52,4 +52,6 @@ export const geistFont = localFont({
 			style: "normal",
 		},
 	],
+	display: "swap",
+	variable: "--gd-font-ui",
 });
