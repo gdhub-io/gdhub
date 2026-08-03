@@ -15,6 +15,10 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 					level: {
 						in: [SkillLevel.Experienced, SkillLevel.Expert],
 					},
+					// `isOpenForMentoring` is the switch in the profile; a speciality
+					// with no questions has nothing to show on a card, and the
+					// migration flagged specialities that never had any.
+					isOpenForMentoring: true,
 					openForQuestions: { isEmpty: false },
 				},
 			},
@@ -47,6 +51,10 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 					level: {
 						in: [SkillLevel.Experienced, SkillLevel.Expert],
 					},
+					// `isOpenForMentoring` is the switch in the profile; a speciality
+					// with no questions has nothing to show on a card, and the
+					// migration flagged specialities that never had any.
+					isOpenForMentoring: true,
 					openForQuestions: { isEmpty: false },
 				},
 				select: {
