@@ -4,11 +4,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Button,
 	Card,
-	Modal,
 	message,
-	Segmented,
+	Popconfirm,
 	Skeleton,
 	Space,
+	Tabs,
 	Tag,
 	Typography,
 } from "antd";
@@ -41,6 +41,9 @@ type CustomRoleRow = {
 	spaceId: string | null;
 	permissions: string[];
 };
+
+/** Popconfirm has no width of its own; a long description would span the page. */
+const CONFIRM_STYLES = { root: { maxWidth: 380 } };
 
 type RolesResponse = {
 	spaceType: string;
@@ -107,16 +110,6 @@ export default function RolesAdminPage() {
 		return { permissions: row?.permissions ?? [], defaults: undefined };
 	}, [target, data]);
 
-	const confirmDelete = (role: CustomRoleRow) =>
-		Modal.confirm({
-			title: `Delete the role "${role.title}"?`,
-			content:
-				"Memberships that use this role lose it and are revoked — they will not silently fall back to the broader base role.",
-			okText: "Delete",
-			okButtonProps: { danger: true },
-			onOk: () => remove.mutateAsync(role.id),
-		});
-
 	const roleRow = (
 		key: string,
 		title: string,
@@ -159,15 +152,27 @@ export default function RolesAdminPage() {
 							exist; custom ones cover narrow jobs — marketer, HR, moderator.
 						</Text>
 					</div>
-					<Button loading={reset.isPending} onClick={() => reset.mutate()}>
-						Reset to defaults
-					</Button>
+					<Popconfirm
+						styles={CONFIRM_STYLES}
+						title={`Reset every role in the ${space} space?`}
+						description="All four base roles go back to what the permission registry generates. Edits made here are lost; custom roles are untouched."
+						okText="Reset"
+						okButtonProps={{ danger: true }}
+						cancelText="Cancel"
+						onConfirm={() => reset.mutate()}
+					>
+						<Button loading={reset.isPending}>Reset to defaults</Button>
+					</Popconfirm>
 				</div>
 
-				<Segmented
-					value={space}
-					options={data?.spaces ?? [space]}
-					onChange={(value) => setSpace(String(value))}
+				<Tabs
+					activeKey={space}
+					className={styles.spaceTabs}
+					items={(data?.spaces ?? [space]).map((value) => ({
+						key: value,
+						label: value,
+					}))}
+					onChange={setSpace}
 				/>
 
 				{isLoading || !data ? (
@@ -233,13 +238,25 @@ export default function RolesAdminPage() {
 												}),
 											<Tag>custom</Tag>,
 										)}
-										<Button
-											danger
-											type="text"
-											onClick={() => confirmDelete(row)}
+										<Popconfirm
+											styles={CONFIRM_STYLES}
+											title={`Delete the role "${row.title}"?`}
+											description="Memberships that use this role lose it and are revoked — they will not silently fall back to the broader base role."
+											okText="Delete"
+											okButtonProps={{ danger: true }}
+											cancelText="Cancel"
+											onConfirm={() => remove.mutate(row.id)}
 										>
-											Delete
-										</Button>
+											<Button
+												danger
+												type="text"
+												loading={
+													remove.isPending && remove.variables === row.id
+												}
+											>
+												Delete
+											</Button>
+										</Popconfirm>
 									</div>
 								))
 							)}

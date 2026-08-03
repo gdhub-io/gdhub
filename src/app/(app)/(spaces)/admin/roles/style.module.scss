@@ -3,11 +3,12 @@
 	flex-direction: column;
 	gap: 16px;
 	padding: 24px 0;
+}
 
-	// Same as in the roles modal: the space filter sizes itself to its options
-	// instead of stretching across the page.
-	> :global(.ant-segmented) {
-		align-self: flex-start;
+// The tab bar is the whole component here — there are no panes to space out.
+.spaceTabs {
+	:global(.ant-tabs-nav) {
+		margin: 0;
 	}
 }
 

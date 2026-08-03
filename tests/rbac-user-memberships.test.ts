@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const spaceMemberUpsert = vi.fn();
 const spaceMemberUpdateMany = vi.fn();
 const spaceMemberUpdate = vi.fn();
+const spaceMemberFindUnique = vi.fn();
+const userFindUnique = vi.fn();
 const auditLogCreate = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
@@ -11,8 +13,10 @@ vi.mock("@/services/prisma", () => ({
 			upsert: (...args: unknown[]) => spaceMemberUpsert(...args),
 			updateMany: (...args: unknown[]) => spaceMemberUpdateMany(...args),
 			update: (...args: unknown[]) => spaceMemberUpdate(...args),
+			findUnique: (...args: unknown[]) => spaceMemberFindUnique(...args),
 			findMany: vi.fn().mockResolvedValue([]),
 		},
+		user: { findUnique: (...args: unknown[]) => userFindUnique(...args) },
 		auditLog: { create: (...args: unknown[]) => auditLogCreate(...args) },
 		project: { findMany: vi.fn().mockResolvedValue([]) },
 		event: { findMany: vi.fn().mockResolvedValue([]) },
@@ -33,11 +37,26 @@ const admin = {
 	actorIsSuperAdmin: false,
 };
 
+/** What the person being edited currently is. */
+const target = (
+	hubRole: SpaceRole | null,
+	{ isSuperAdmin = false }: { isSuperAdmin?: boolean } = {},
+) => {
+	spaceMemberFindUnique.mockResolvedValue(
+		hubRole ? { role: hubRole, revokedAt: null } : null,
+	);
+	userFindUnique.mockResolvedValue({ isSuperAdmin });
+};
+
 beforeEach(() => {
 	spaceMemberUpsert.mockReset().mockResolvedValue({});
 	spaceMemberUpdateMany.mockReset().mockResolvedValue({ count: 1 });
 	spaceMemberUpdate.mockReset().mockResolvedValue({});
 	auditLogCreate.mockReset().mockResolvedValue({});
+	spaceMemberFindUnique.mockReset();
+	userFindUnique.mockReset();
+	// By default the target is an ordinary member — someone an admin may edit.
+	target(SpaceRole.Member);
 });
 
 describe("applyMembershipChanges", () => {
@@ -129,6 +148,104 @@ describe("applyMembershipChanges", () => {
 			subjectUserId: "target",
 			entity: "space_membership",
 		});
+	});
+
+	it("does not let an admin demote another admin", async () => {
+		target(SpaceRole.Admin);
+
+		await expect(
+			applyMembershipChanges({
+				...admin,
+				changes: [{ spaceType: "hub", role: SpaceRole.Guest }],
+			}),
+		).rejects.toBeInstanceOf(MembershipDeniedError);
+
+		expect(spaceMemberUpsert).not.toHaveBeenCalled();
+	});
+
+	it("does not let an admin revoke another admin — removal carries no role", async () => {
+		target(SpaceRole.Admin);
+
+		await expect(
+			applyMembershipChanges({
+				...admin,
+				changes: [{ spaceType: "hub", role: null }],
+			}),
+		).rejects.toBeInstanceOf(MembershipDeniedError);
+
+		expect(spaceMemberUpdateMany).not.toHaveBeenCalled();
+	});
+
+	it("does not let an admin touch the owner", async () => {
+		target(SpaceRole.Owner);
+
+		await expect(
+			applyMembershipChanges({
+				...admin,
+				changes: [{ spaceType: "hub", role: SpaceRole.Member }],
+			}),
+		).rejects.toBeInstanceOf(MembershipDeniedError);
+	});
+
+	it("does not let an admin touch a super-admin", async () => {
+		target(SpaceRole.Member, { isSuperAdmin: true });
+
+		await expect(
+			applyMembershipChanges({
+				...admin,
+				changes: [{ spaceType: "hub", role: SpaceRole.Guest }],
+			}),
+		).rejects.toBeInstanceOf(MembershipDeniedError);
+	});
+
+	it("lets the owner demote an admin", async () => {
+		target(SpaceRole.Admin);
+
+		const result = await applyMembershipChanges({
+			...admin,
+			actorHubRole: SpaceRole.Owner,
+			changes: [{ spaceType: "hub", role: SpaceRole.Member }],
+		});
+
+		expect(result.applied).toBe(1);
+	});
+
+	it("lets the super-admin touch anyone", async () => {
+		target(SpaceRole.Owner, { isSuperAdmin: true });
+
+		const result = await applyMembershipChanges({
+			...admin,
+			actorIsSuperAdmin: true,
+			changes: [{ spaceType: "hub", role: SpaceRole.Guest }],
+		});
+
+		expect(result.applied).toBe(1);
+	});
+
+	it("lets an admin staff someone who has no hub membership yet", async () => {
+		target(null);
+
+		const result = await applyMembershipChanges({
+			...admin,
+			changes: [{ spaceType: "hub", role: SpaceRole.Member }],
+		});
+
+		expect(result.applied).toBe(1);
+	});
+
+	it("treats a revoked membership as no rank at all", async () => {
+		spaceMemberFindUnique.mockResolvedValue({
+			role: SpaceRole.Admin,
+			revokedAt: new Date(),
+		});
+		userFindUnique.mockResolvedValue({ isSuperAdmin: false });
+
+		const result = await applyMembershipChanges({
+			...admin,
+			changes: [{ spaceType: "hub", role: SpaceRole.Member }],
+		});
+
+		expect(result.applied).toBe(1);
 	});
 
 	it("refuses everything when the actor has no hub role at all", async () => {

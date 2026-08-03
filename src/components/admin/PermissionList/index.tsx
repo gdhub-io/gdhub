@@ -18,6 +18,8 @@ type Props = {
 	/** Permissions that were on when the modal opened, to mark what changed. */
 	initial?: Set<string>;
 	disabled?: boolean;
+	/** Added to the scroll box — use it to override how tall the list may grow. */
+	className?: string;
 };
 
 /**
@@ -25,6 +27,9 @@ type Props = {
  * `space.feature.action` string stays visible next to every checkbox — it is
  * what the code checks and what ends up in the audit log, so the person ticking
  * the box should be looking at the same string.
+ *
+ * The list scrolls inside its own box: a space catalogue easily outgrows any
+ * modal, and the counter, the reset link and the footer have to stay reachable.
  */
 export const PermissionList = ({
 	features,
@@ -32,11 +37,12 @@ export const PermissionList = ({
 	onToggle,
 	initial,
 	disabled,
+	className,
 }: Props) => (
-	<div className={styles.list}>
+	<div className={className ? `${styles.list} ${className}` : styles.list}>
 		{features.map(({ feature, permissions }) => (
-			<div key={feature}>
-				<div className={styles.group}>
+			<div key={feature} className={styles.group}>
+				<div className={styles.groupHeader}>
 					<Text strong className={styles.feature}>
 						{feature}
 					</Text>
@@ -51,7 +57,9 @@ export const PermissionList = ({
 					return (
 						<Checkbox
 							key={permission}
-							className={styles.row}
+							className={
+								changed ? `${styles.row} ${styles.rowChanged}` : styles.row
+							}
 							checked={checked}
 							disabled={disabled}
 							onChange={(event) => onToggle(permission, event.target.checked)}
@@ -61,9 +69,9 @@ export const PermissionList = ({
 								{permission}
 							</Text>
 							{changed ? (
-								<Text type="warning" className={styles.changed}>
+								<span className={styles.changed}>
 									{checked ? "added" : "removed"}
-								</Text>
+								</span>
 							) : null}
 						</Checkbox>
 					);

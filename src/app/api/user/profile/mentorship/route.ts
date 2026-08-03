@@ -1,4 +1,3 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -14,10 +13,10 @@ import { prisma } from "@/services/prisma";
  * needs. Turning it on without saying what you can help with is not an offer of
  * anything, so the switch alone was never a state worth storing.
  *
- * The flag still lives in `User.roles`. It moves to
- * `Speciality.isOpenForMentoring` once the package carries that column — that is
- * also what makes switching off remove the person from the experts showcase,
- * which today filters on `openForQuestions` instead.
+ * The state lives on the speciality — next to the questions and the response
+ * time it belongs with — and no longer in `User.roles`. That is also what makes
+ * switching off remove the person from the experts showcase: the showcase reads
+ * the same flag.
  */
 const MentorshipSchema = z.object({
 	enabled: z.boolean(),
@@ -31,20 +30,19 @@ type MentorshipBody = z.infer<typeof MentorshipSchema>;
 /**
  * Current state, read from the database.
  *
- * The form must not take this from the session: the JWT is re-synced only every
- * few minutes, so right after saving — and for a while after a reload — it still
- * reports the previous answer. That is what made the switch look stuck on.
+ * Never from the session: the JWT is re-synced only every few minutes, so right
+ * after saving — and for a while after a reload — it reports the previous
+ * answer. That is what made the switch look stuck on.
  */
 export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
-	const stored = await prisma.user.findUnique({
-		where: { id: currentUser.id },
-		select: { roles: true },
+	const open = await prisma.speciality.count({
+		where: { userId: currentUser.id, isOpenForMentoring: true },
 	});
 
-	return json({ enabled: Boolean(stored?.roles.includes(UserRole.Mentor)) });
+	return json({ enabled: open > 0 });
 });
 
 export const PUT = withAuth({ mode: "user" })(
@@ -55,42 +53,39 @@ export const PUT = withAuth({ mode: "user" })(
 		const { enabled, specialityId, timeForMentoring, openForQuestions } =
 			body as MentorshipBody;
 
-		// Roles come from the database, not from the session. The JWT is re-synced
-		// at most once every few minutes, so writing back a mutated copy of it
-		// resurrected whatever the token still remembered — which is why switching
-		// mentorship off came back on by itself.
-		const stored = await prisma.user.findUnique({
-			where: { id: currentUser.id },
-			select: { roles: true },
-		});
-
-		if (!stored) return apiError.notFound("User not found");
-
-		const roles = new Set(stored.roles);
-
-		if (enabled) roles.add(UserRole.Mentor);
-		else roles.delete(UserRole.Mentor);
-
-		await prisma.user.update({
-			where: { id: currentUser.id },
-			data: { roles: { set: [...roles] } },
-		});
-
-		// The details stay on the speciality and are left alone when mentorship is
-		// switched off: turning it back on should not mean filling in the questions
-		// again.
-		if (enabled && specialityId) {
-			await prisma.speciality.update({
-				where: { id: specialityId },
-				data: {
-					timeForMentoring: timeForMentoring || null,
-					...(openForQuestions
-						? { openForQuestions: { set: openForQuestions } }
-						: {}),
-				},
+		if (!enabled) {
+			// Switching off closes every speciality, because the switch is one for
+			// the whole profile. The questions and the response time stay: turning
+			// mentorship back on should not mean filling them in again.
+			await prisma.speciality.updateMany({
+				where: { userId: currentUser.id, isOpenForMentoring: true },
+				data: { isOpenForMentoring: false },
 			});
+
+			return json({ enabled: false });
 		}
 
-		return json({ enabled });
+		if (!specialityId) {
+			return apiError.badRequest(
+				"A speciality is required to offer mentorship",
+			);
+		}
+
+		// Scoped by `userId` as well as by id: without it this endpoint would let
+		// anyone flip the mentorship flag on somebody else's speciality.
+		const updated = await prisma.speciality.updateMany({
+			where: { id: specialityId, userId: currentUser.id },
+			data: {
+				isOpenForMentoring: true,
+				timeForMentoring: timeForMentoring || null,
+				...(openForQuestions
+					? { openForQuestions: { set: openForQuestions } }
+					: {}),
+			},
+		});
+
+		if (updated.count === 0) return apiError.notFound("Speciality not found");
+
+		return json({ enabled: true });
 	}),
 );

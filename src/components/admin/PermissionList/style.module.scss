@@ -1,22 +1,35 @@
 .list {
-	border: 1px solid var(--ant-color-border-secondary);
-	border-radius: 8px;
-	overflow: hidden;
+	// The box scrolls, not the modal body: the section header above it carries
+	// the counter and the reset link and has to stay put. Consumers retune the
+	// height through the custom property rather than by overriding this rule —
+	// two same-specificity classes on one element would race on bundle order.
+	max-height: var(--permission-list-max-height, 42vh);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	border: 1px solid #ededed;
+	border-radius: 10px;
 }
 
-.group {
+.group:last-child .row:last-child {
+	border-bottom: none;
+}
+
+.groupHeader {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	padding: 8px 14px;
-	background: var(--ant-color-fill-quaternary);
-	border-bottom: 1px solid var(--ant-color-border-secondary);
+	// Sticky so the feature a permission belongs to stays readable while the
+	// catalogue scrolls past it.
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	min-height: 34px;
+	padding: 0 14px;
+	background: #fafafa;
+	border-bottom: 1px solid #f0f0f0;
 }
 
-.feature {
-	font-size: 12px;
-}
-
+.feature,
 .featureHint {
 	font-size: 12px;
 }
@@ -24,12 +37,16 @@
 .row {
 	display: flex;
 	align-items: center;
+	gap: 10px;
 	width: 100%;
-	padding: 9px 14px;
-	border-bottom: 1px solid var(--ant-color-border-secondary);
+	min-height: 40px;
+	padding: 0 14px;
+	border-bottom: 1px solid #f5f5f5;
 
-	&:last-child {
-		border-bottom: none;
+	// antd aligns the box to the label's baseline, which in a 40px row leaves it
+	// floating ~9px above the text it belongs to.
+	:global(.ant-checkbox) {
+		align-self: center;
 	}
 
 	// The label body is a flex row of its own: action, full permission, marker.
@@ -38,18 +55,32 @@
 		align-items: center;
 		gap: 10px;
 		width: 100%;
+		padding-inline: 0;
 	}
+}
+
+.rowChanged {
+	background: #fffbf2;
 }
 
 .action {
 	font-size: 14px;
+	color: #1f1f1f;
 }
 
 .full {
 	font-size: 12px;
+	color: #b5b5b5;
 }
 
 .changed {
+	flex: none;
 	margin-left: auto;
-	font-size: 12px;
+	padding: 0 7px;
+	font-size: 11px;
+	line-height: 18px;
+	color: #8a6116;
+	background: #fff7e6;
+	border: 1px solid #f5e0b8;
+	border-radius: 4px;
 }

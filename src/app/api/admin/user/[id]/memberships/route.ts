@@ -12,6 +12,7 @@ import { withSpaceGuard } from "@/lib/space-guard";
 import { getSpaceAccess } from "@/services/access";
 import {
 	applyMembershipChanges,
+	canActorEditUser,
 	MembershipDeniedError,
 	readUserMemberships,
 } from "@/services/access/user-memberships";
@@ -55,11 +56,21 @@ export const GET = pipe(
 
 	const actor = await actorHubContext(user.id);
 
-	return json({
-		memberships: await readUserMemberships(id, {
+	const [memberships, canEditUser] = await Promise.all([
+		readUserMemberships(id, {
 			canEditAnySpace: Boolean(actor?.isSuperAdmin),
 		}),
+		canActorEditUser(id, {
+			actorUserId: user.id,
+			actorHubRole: actor?.hubRole ?? null,
+			actorIsSuperAdmin: Boolean(actor?.isSuperAdmin),
+		}),
+	]);
+
+	return json({
+		memberships,
 		canEditAnySpace: Boolean(actor?.isSuperAdmin),
+		canEditUser,
 	});
 });
 

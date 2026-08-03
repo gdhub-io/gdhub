@@ -2,7 +2,18 @@ import { getGDHubPrismaClient } from "@gdhub-io/gdhub-prisma";
 
 // Queries slower than this are logged. `0` logs every query.
 const SLOW_QUERY_MS = Number(process.env.DB_SLOW_QUERY_MS ?? 300);
-const LOGGING_ENABLED = process.env.DB_QUERY_LOG !== "0";
+
+/**
+ * Slow-query logging is a development aid, so it is on locally and off in
+ * production: there it prints query text from every instance at once, which
+ * buries the logs that matter and costs money to keep.
+ *
+ * `DB_QUERY_LOG=1` turns it on deliberately when chasing something in a
+ * deployed environment; `DB_QUERY_LOG=0` silences it locally.
+ */
+const LOGGING_ENABLED =
+	process.env.DB_QUERY_LOG === "1" ||
+	(process.env.NODE_ENV !== "production" && process.env.DB_QUERY_LOG !== "0");
 
 // The package caches the client on globalThis, so `next dev` hot reloads reuse a
 // single connection pool instead of opening a new one on every reload.
