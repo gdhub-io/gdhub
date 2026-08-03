@@ -27,6 +27,7 @@ import InterestAuthorIcon from "@/assets/images/icons/interest-author-icon.svg";
 import InterestMentorIcon from "@/assets/images/icons/interest-mentor-icon.svg";
 import InterestSpecialistIcon from "@/assets/images/icons/interest-specialist-icon.svg";
 import { PrimaryInterest } from "@/config/prisma-enums";
+import { resyncSession } from "@/helpers/session";
 import styles from "./style.module.scss";
 
 type InterestsProfileFormArgs = {
@@ -80,7 +81,7 @@ const InterestsProfileForm = ({
 			await saveProfile(formData);
 			// Used to write `primaryInterest` into the session's `roles` — a wish
 			// stored in the field that decided access. Just refresh the session.
-			await updateSession();
+			await resyncSession(updateSession);
 			setProcessing(false);
 
 			message.success(

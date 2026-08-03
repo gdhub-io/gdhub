@@ -1,0 +1,36 @@
+.pageTitle {
+  margin: 0 !important;
+}
+
+.searchInput {
+  width: 360px;
+  max-width: 100%;
+}
+
+.capitalBreakdown {
+  font-size: 12px;
+}
+
+.filtersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.filtersPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 280px;
+}
+
+.filtersField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  :global(.ant-select) {
+    width: 100%;
+  }
+}

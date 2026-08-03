@@ -21,6 +21,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
 import { SkillLevel } from "@/config/prisma-enums";
+import { resyncSession } from "@/helpers/session";
 
 const { Paragraph, Text } = Typography;
 
@@ -136,7 +137,7 @@ const MentorshipProfileForm = ({
 			setIsDirty(false);
 			await refetchMentorship();
 			// Other parts of the app still read the role from the session.
-			await refreshSession();
+			await resyncSession(refreshSession);
 			await onUpdate();
 
 			message.success(

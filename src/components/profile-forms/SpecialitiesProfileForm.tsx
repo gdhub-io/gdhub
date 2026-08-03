@@ -18,6 +18,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
+import { resyncSession } from "@/helpers/session";
 import SpecialityModal from "./modals/SpecialityModal";
 
 const { Text } = Typography;
@@ -101,7 +102,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 		// update speciality list
 		await queryClient.invalidateQueries({ queryKey: ["user-specialities"] });
 		// refresh session data
-		await session.update();
+		await resyncSession(session.update);
 	};
 
 	const handleCancel = () => {

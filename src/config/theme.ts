@@ -276,7 +276,12 @@ export const appThemeConfig: ThemeConfig = {
 		colorBgLayout: "#FFFDFC",
 		colorBorder: "#222222",
 		colorLink: "#ff4d4f",
+		// The seed is a near-black grey, so antd would derive `colorPrimaryBg` /
+		// `colorPrimaryBgHover` as dark greys and paint selected + hovered list
+		// items (Select options, menu items) dark under dark text. Both shades are
+		// pinned to light values instead.
 		colorPrimaryBg: "#d7d7d7",
+		colorPrimaryBgHover: "#c9c9c9",
 		fontWeightStrong: 300,
 		colorBgSpotlight: "#ffffffff",
 		fontSizeHeading1: 24,
@@ -320,6 +325,17 @@ export const appThemeConfig: ThemeConfig = {
 		Select: {
 			fontSizeIcon: 16,
 			controlHeight: 48,
+			// Option metrics default to `controlHeight`, which would make every
+			// dropdown row 48px tall. The list stays compact regardless of how tall
+			// the closed control is.
+			optionHeight: 32,
+			optionPadding: "5px 12px",
+			optionFontSize: 14,
+			optionLineHeight: 1.5,
+			optionSelectedBg: "#F5F5F5",
+			optionActiveBg: "#F5F5F5",
+			optionSelectedColor: "#1F1F1F",
+			optionSelectedFontWeight: 500,
 		},
 		Typography: {
 			colorTextSecondary: "rgb(5, 5, 5, 0.8)",

@@ -134,6 +134,7 @@ export const CustomRoleModal = ({ open, space, features, onClose }: Props) => {
 				</div>
 
 				<PermissionList
+					className={styles.permissions}
 					features={features}
 					selected={selected}
 					onToggle={toggle}

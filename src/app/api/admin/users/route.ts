@@ -1,4 +1,8 @@
-import { AdviceRequestStatus, ProjectStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	AdviceRequestStatus,
+	type Prisma,
+	ProjectStatus,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import type { SpaceRole } from "@/config/permissions/roles";
@@ -17,6 +21,11 @@ import {
 	STAGE_DEPTH_BONUS_WEIGHT,
 } from "@/lib/skill-capital";
 import { withSpaceGuard } from "@/lib/space-guard";
+import {
+	buildAdminUsersWhere,
+	parseAdminUsersFilters,
+	resolvePermissionGrants,
+} from "@/repositories/admin-users.repository";
 import { prisma } from "@/services/prisma";
 
 type SkillCapitalSummary = {
@@ -109,6 +118,10 @@ const AdminUsersQuerySchema = z.object({
 	limit: z.string().optional(),
 	sortField: z.string().optional(),
 	sortOrder: z.string().optional(),
+	search: z.string().optional(),
+	spaceType: z.string().optional(),
+	role: z.string().optional(),
+	permission: z.string().optional(),
 });
 
 type AdminUsersQuery = z.infer<typeof AdminUsersQuerySchema>;
@@ -134,6 +147,17 @@ const isSortField = (value?: string): value is AdminUsersSortField =>
 
 const isSortOrder = (value?: string): value is AdminUsersSortOrder =>
 	value === "ascend" || value === "descend";
+
+const USER_LIST_SELECT = {
+	id: true,
+	name: true,
+	email: true,
+	image: true,
+	createdAt: true,
+	updatedAt: true,
+	profile: { select: { name: true, updatedAt: true } },
+	specialities: { select: { name: true, updatedAt: true } },
+} satisfies Prisma.UserSelect;
 
 const toDisplayName = (user: {
 	profile: { name: string } | null;
@@ -603,27 +627,34 @@ export const GET = pipe(
 		limit: limitQuery,
 		sortField: sortFieldQuery,
 		sortOrder: sortOrderQuery,
+		search: searchQuery,
+		spaceType: spaceTypeQuery,
+		role: roleQuery,
+		permission: permissionQuery,
 	} = body as AdminUsersQuery;
 
 	const page = toPositiveInt(pageQuery, 1);
 	const limit = clamp(toPositiveInt(limitQuery, 20), 1, 100);
 	const sortField = isSortField(sortFieldQuery) ? sortFieldQuery : undefined;
 	const sortOrder = isSortOrder(sortOrderQuery) ? sortOrderQuery : undefined;
+	const permission = permissionQuery?.trim() || undefined;
+	const where = buildAdminUsersWhere({
+		...parseAdminUsersFilters({
+			search: searchQuery,
+			spaceType: spaceTypeQuery,
+			role: roleQuery,
+		}),
+		permissionGrants: permission
+			? await resolvePermissionGrants(permission)
+			: undefined,
+	});
 
 	if (sortField && sortOrder) {
 		if (sortField === "createdAt") {
 			const [users, meta] = await prisma.user
 				.paginate({
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						image: true,
-						createdAt: true,
-						updatedAt: true,
-						profile: { select: { name: true, updatedAt: true } },
-						specialities: { select: { name: true, updatedAt: true } },
-					},
+					where,
+					select: USER_LIST_SELECT,
 					orderBy: { createdAt: sortOrder === "ascend" ? "asc" : "desc" },
 				})
 				.withPages({
@@ -642,16 +673,8 @@ export const GET = pipe(
 		}
 
 		const allUsers = await prisma.user.findMany({
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				image: true,
-				createdAt: true,
-				updatedAt: true,
-				profile: { select: { name: true, updatedAt: true } },
-				specialities: { select: { name: true, updatedAt: true } },
-			},
+			where,
+			select: USER_LIST_SELECT,
 			orderBy: { createdAt: "desc" },
 		});
 
@@ -726,16 +749,8 @@ export const GET = pipe(
 
 	const [users, meta] = await prisma.user
 		.paginate({
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				image: true,
-				createdAt: true,
-				updatedAt: true,
-				profile: { select: { name: true, updatedAt: true } },
-				specialities: { select: { name: true, updatedAt: true } },
-			},
+			where,
+			select: USER_LIST_SELECT,
 			orderBy: { createdAt: "desc" },
 		})
 		.withPages({

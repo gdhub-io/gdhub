@@ -1,14 +1,31 @@
 "use client";
+import { IconFilter, IconSearch, IconShieldCheck } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { Avatar, Button, Popover, Row, Space, Tag, Typography } from "antd";
+import {
+	Avatar,
+	Badge,
+	Button,
+	Input,
+	Popover,
+	Row,
+	Select,
+	Space,
+	Tag,
+	Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { SortOrder } from "antd/es/table/interface";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import debounce from "lodash/debounce";
+import { useEffect, useMemo, useState } from "react";
 import { UserRolesModal } from "@/components/admin/UserRolesModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { ROLE_META } from "@/config/permissions/role-meta";
+import { SPACE_ROLES, type SpaceRole } from "@/config/permissions/roles";
+import { SPACE_TYPES, type SpaceType } from "@/config/spaces";
+import { permissionCatalog } from "@/services/access/role-catalog";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -67,9 +84,63 @@ export default function UsersAdminPage() {
 	);
 	const [sortOrder, setSortOrder] = useState<SortOrder>("descend");
 	const [editing, setEditing] = useState<AdminUserRow | null>(null);
+	const [searchInput, setSearchInput] = useState("");
+	const [search, setSearch] = useState("");
+	const [spaceType, setSpaceType] = useState<SpaceType>();
+	const [role, setRole] = useState<SpaceRole>();
+	const [permission, setPermission] = useState<string>();
+
+	const activeFilters = [spaceType, role, permission].filter(Boolean).length;
+
+	const permissionOptions = useMemo(
+		() =>
+			SPACE_TYPES.map((type) => ({
+				label: type,
+				options: permissionCatalog(type).map((value) => ({
+					value,
+					label: value,
+				})),
+			})),
+		[],
+	);
+
+	// Filtering narrows the result set, so the current page may no longer exist.
+	const applySearch = useMemo(
+		() =>
+			debounce((value: string) => {
+				setSearch(value.trim());
+				setPage(1);
+			}, 400),
+		[],
+	);
+
+	useEffect(() => () => applySearch.cancel(), [applySearch]);
+
+	const applyFilter = (change: () => void) => {
+		change();
+		setPage(1);
+	};
+
+	const resetFilters = () =>
+		applyFilter(() => {
+			setSpaceType(undefined);
+			setRole(undefined);
+			setPermission(undefined);
+		});
 
 	const { data: response, isFetching } = useQuery({
-		queryKey: ["admin", "users", page, pageSize, sortField, sortOrder],
+		queryKey: [
+			"admin",
+			"users",
+			page,
+			pageSize,
+			sortField,
+			sortOrder,
+			search,
+			spaceType,
+			role,
+			permission,
+		],
 		queryFn: () =>
 			axios
 				.get<AdminUsersResponse>("/api/admin/users", {
@@ -78,6 +149,10 @@ export default function UsersAdminPage() {
 						limit: pageSize,
 						sortField,
 						sortOrder: sortOrder || undefined,
+						search: search || undefined,
+						spaceType,
+						role,
+						permission,
 					},
 				})
 				.then((r) => r.data),
@@ -105,8 +180,8 @@ export default function UsersAdminPage() {
 				sortOrder: sortField === "name" ? sortOrder : null,
 				render: (value, record) => (
 					<Space orientation="vertical" size={0}>
-						<Text strong>{value}</Text>
-						<Text type="secondary">{record.email || "-"}</Text>
+						<Text>{value}</Text>
+						<Text type="secondary">{record.email || "—"}</Text>
 					</Space>
 				),
 			},
@@ -144,32 +219,20 @@ export default function UsersAdminPage() {
 					),
 			},
 			{
-				title: "SC Total",
+				title: "Skill Capital",
 				dataIndex: ["skillCapital", "scTotal"],
 				key: "scTotal" as SortField,
+				width: 180,
 				sorter: true,
 				sortOrder: sortField === "scTotal" ? sortOrder : null,
-			},
-			{
-				title: "Leadership",
-				dataIndex: ["skillCapital", "leadershipCapital"],
-				key: "leadershipCapital" as SortField,
-				sorter: true,
-				sortOrder: sortField === "leadershipCapital" ? sortOrder : null,
-			},
-			{
-				title: "Execution",
-				dataIndex: ["skillCapital", "executionCapital"],
-				key: "executionCapital" as SortField,
-				sorter: true,
-				sortOrder: sortField === "executionCapital" ? sortOrder : null,
-			},
-			{
-				title: "Mentorship",
-				dataIndex: ["skillCapital", "mentorshipCapital"],
-				key: "mentorshipCapital" as SortField,
-				sorter: true,
-				sortOrder: sortField === "mentorshipCapital" ? sortOrder : null,
+				render: (_, record) => (
+					<Space orientation="vertical" size={0}>
+						<Text>{record.skillCapital.scTotal}</Text>
+						<Text type="secondary" className={styles.capitalBreakdown}>
+							{`L ${record.skillCapital.leadershipCapital} · E ${record.skillCapital.executionCapital} · M ${record.skillCapital.mentorshipCapital}`}
+						</Text>
+					</Space>
+				),
 			},
 			{
 				title: "Created",
@@ -203,7 +266,11 @@ export default function UsersAdminPage() {
 				width: 100,
 				align: "right",
 				render: (_, record) => (
-					<Button size="small" onClick={() => setEditing(record)}>
+					<Button
+						size="small"
+						icon={<IconShieldCheck size={14} />}
+						onClick={() => setEditing(record)}
+					>
 						Roles
 					</Button>
 				),
@@ -215,8 +282,96 @@ export default function UsersAdminPage() {
 	return (
 		<AdminSpace>
 			<div className={styles.main}>
-				<Row justify="space-between" align="middle">
-					<Title level={2}>Users</Title>
+				<Row justify="space-between" align="middle" gutter={[16, 16]} wrap>
+					<Title level={2} className={styles.pageTitle}>
+						Users
+					</Title>
+					<Space size={12} wrap>
+						<Input
+							allowClear
+							variant="filled"
+							prefix={<IconSearch size={16} />}
+							placeholder="Search by name, email or specialization"
+							className={styles.searchInput}
+							value={searchInput}
+							onChange={(event) => {
+								setSearchInput(event.target.value);
+								applySearch(event.target.value);
+							}}
+						/>
+						<Popover
+							trigger="click"
+							placement="bottomRight"
+							title={
+								<div className={styles.filtersHeader}>
+									<Text strong>Filters</Text>
+									<Button
+										type="link"
+										size="small"
+										disabled={!activeFilters}
+										onClick={resetFilters}
+									>
+										Reset
+									</Button>
+								</div>
+							}
+							content={
+								<div className={styles.filtersPanel}>
+									<div className={styles.filtersField}>
+										<Text type="secondary">Space type</Text>
+										<Select
+											allowClear
+											variant="filled"
+											placeholder="All space types"
+											value={spaceType}
+											options={SPACE_TYPES.map((type) => ({
+												value: type,
+												label: type,
+											}))}
+											onChange={(value) =>
+												applyFilter(() => setSpaceType(value))
+											}
+										/>
+									</div>
+									<div className={styles.filtersField}>
+										<Text type="secondary">Role</Text>
+										<Select
+											allowClear
+											variant="filled"
+											placeholder="Any role"
+											value={role}
+											options={SPACE_ROLES.map((value) => ({
+												value,
+												label: ROLE_META[value]?.title || value,
+											}))}
+											onChange={(value) => applyFilter(() => setRole(value))}
+										/>
+									</div>
+									<div className={styles.filtersField}>
+										<Text type="secondary">Permission</Text>
+										<Select
+											allowClear
+											showSearch
+											variant="filled"
+											placeholder="Any permission"
+											value={permission}
+											options={permissionOptions}
+											onChange={(value) =>
+												applyFilter(() => setPermission(value))
+											}
+										/>
+									</div>
+								</div>
+							}
+						>
+							<Button icon={<IconFilter size={16} />}>
+								Filters
+								{activeFilters ? (
+									<Badge count={activeFilters} size="small" color="#222222" />
+								) : null}
+							</Button>
+						</Popover>
+					</Space>
 				</Row>
 				<ModernTable
 					loading={isFetching}

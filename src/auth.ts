@@ -45,7 +45,10 @@ const e2eCredentialsProvider = CredentialsProvider({
 
 // How long the user snapshot inside the JWT is trusted before it is re-read
 // from the database. Anything that must be visible immediately (onboarding,
-// profile edits) calls `useSession().update()`, which bypasses this.
+// profile edits) calls `resyncSession()` from `@/helpers/session`, which
+// bypasses this. Note that a bare `useSession().update()` does not: without an
+// argument it is a plain GET that never reaches the `trigger === "update"`
+// branch below.
 const USER_SYNC_INTERVAL_MS = 5 * 60 * 1000;
 
 export const authConfig: NextAuthConfig = {
@@ -131,7 +134,7 @@ export const authConfig: NextAuthConfig = {
 			// on *every* request that touches `auth()` — the proxy, every server
 			// component, every API route. Re-reading the user from Postgres each
 			// time costs 3 queries per request, so the row is only re-synced once
-			// per interval. `updateSession()` (trigger === "update") always syncs,
+			// per interval. `resyncSession()` (trigger === "update") always syncs,
 			// which is what onboarding and profile forms rely on.
 			const syncedAt = typeof token.syncedAt === "number" ? token.syncedAt : 0;
 			if (

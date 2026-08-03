@@ -1,7 +1,16 @@
 "use client";
 
+import { IconRestore } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Alert, Button, Modal, message, Tag, Typography } from "antd";
+import {
+	Alert,
+	Button,
+	Modal,
+	message,
+	Popconfirm,
+	Tag,
+	Typography,
+} from "antd";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -103,23 +112,6 @@ export const RolePermissionsModal = ({
 		},
 	});
 
-	const submit = () => {
-		if (isSelfLockout(space, target) && changes.removed.length > 0) {
-			Modal.confirm({
-				title: `Remove ${changes.removed.join(", ")} from the admin role?`,
-				content:
-					"This is the admin space. Removing permissions from the admin role can lock out every staff member at once — restoring access would take SQL or the super-admin.",
-				okText: "Remove anyway",
-				okButtonProps: { danger: true },
-				cancelText: "Cancel",
-				onOk: () => save.mutate(),
-			});
-			return;
-		}
-
-		save.mutate();
-	};
-
 	const toggle = (permission: string, checked: boolean) =>
 		setSelected((current) => {
 			const next = new Set(current);
@@ -131,74 +123,121 @@ export const RolePermissionsModal = ({
 		});
 
 	const meta = target?.kind === "base" ? ROLE_META[target.role] : null;
-	const title = target?.kind === "custom" ? target.title : meta?.title;
+	const roleKey =
+		target?.kind === "custom" ? target.key : target?.role.toLowerCase();
+	const subtitle = meta
+		? `${meta.title} · ${meta.hint}`
+		: target?.kind === "custom"
+			? `${target.title} · custom role in the ${space} space`
+			: null;
+
+	/** The save that can lock the whole staff out — it is worded differently. */
+	const lockout = isSelfLockout(space, target) && changes.removed.length > 0;
 
 	return (
 		<Modal
 			open={Boolean(target)}
 			onCancel={onClose}
 			width={720}
+			className={styles.modal}
 			title={
 				<div className={styles.title}>
-					<span>Role permissions · {title}</span>
-					<Tag>{space} space</Tag>
+					<div className={styles.titleRow}>
+						<span className={styles.titleText}>
+							Role permissions · {roleKey}
+						</span>
+						<Tag className={styles.chip}>{space} space</Tag>
+					</div>
+					{subtitle ? (
+						<Text type="secondary" className={styles.subtitle}>
+							{subtitle}
+						</Text>
+					) : null}
 				</div>
 			}
-			footer={[
-				<Text key="changes" type="secondary" className={styles.changes}>
-					{changeCount === 0
-						? "No changes"
-						: `${changeCount} change${changeCount === 1 ? "" : "s"} · written to the AuditLog`}
-				</Text>,
-				<Button key="cancel" onClick={onClose}>
-					Cancel
-				</Button>,
-				<Button
-					key="save"
-					type="primary"
-					loading={save.isPending}
-					disabled={changeCount === 0}
-					onClick={submit}
-				>
-					Save
-				</Button>,
-			]}
+			footer={
+				<>
+					<Text type="secondary" className={styles.changes}>
+						{changeCount === 0
+							? "No changes"
+							: `${changeCount} change${changeCount === 1 ? "" : "s"} · written to the AuditLog`}
+					</Text>
+					<Button onClick={onClose}>Cancel</Button>
+					<Popconfirm
+						disabled={changeCount === 0}
+						title={
+							lockout
+								? "Remove permissions from the admin role?"
+								: "Save the permission changes?"
+						}
+						description={
+							lockout
+								? `Removing ${changes.removed.join(", ")} in the admin space can lock out every staff member at once — restoring access would take SQL or the super-admin.`
+								: `${changes.added.length} added, ${changes.removed.length} removed. The change is written to the AuditLog.`
+						}
+						okText={lockout ? "Remove anyway" : "Save"}
+						okButtonProps={{ danger: lockout }}
+						cancelText="Cancel"
+						onConfirm={() => save.mutate()}
+					>
+						<Button
+							type="primary"
+							loading={save.isPending}
+							disabled={changeCount === 0}
+						>
+							Save
+						</Button>
+					</Popconfirm>
+				</>
+			}
 		>
 			<div className={styles.body}>
-				{meta ? <Text type="secondary">{meta.hint}</Text> : null}
-
 				{isSelfLockout(space, target) ? (
 					<Alert
 						type="warning"
 						showIcon
+						className={styles.warning}
 						title="The admin role in the admin space. Unchecking here locks every staff member out of the admin area — getting back in would take SQL or the super-admin."
 					/>
 				) : null}
 
-				<div className={styles.sectionHeader}>
-					<Text strong>Permissions</Text>
-					<div className={styles.actions}>
-						<Text type="secondary">
-							{selected.size} of {total} selected
+				<div className={styles.section}>
+					<div className={styles.sectionHeader}>
+						<Text strong className={styles.sectionTitle}>
+							Permissions
 						</Text>
-						{defaults ? (
-							<Button
-								type="link"
-								size="small"
-								onClick={() => setSelected(new Set(defaults))}
-							>
-								Reset to defaults
-							</Button>
-						) : null}
+						<div className={styles.actions}>
+							<Text type="secondary" className={styles.counter}>
+								{selected.size} of {total} selected
+							</Text>
+							{defaults ? (
+								<Popconfirm
+									title="Reset to defaults?"
+									description="Every tick in this list is replaced by what the permission registry generates for this role. Unsaved changes are lost."
+									okText="Reset"
+									cancelText="Cancel"
+									onConfirm={() => setSelected(new Set(defaults))}
+								>
+									<Button
+										type="link"
+										size="small"
+										className={styles.reset}
+										icon={<IconRestore size={13} />}
+									>
+										Reset to defaults
+									</Button>
+								</Popconfirm>
+							) : null}
+						</div>
 					</div>
-				</div>
 
-				<PermissionList
-					features={features}
-					selected={selected}
-					initial={initial}
-					onToggle={toggle}
-				/>
+					<PermissionList
+						features={features}
+						selected={selected}
+						initial={initial}
+						onToggle={toggle}
+					/>
+				</div>
 			</div>
 		</Modal>
 	);

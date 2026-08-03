@@ -2,13 +2,16 @@
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
-	max-height: 60vh;
-	overflow-y: auto;
-	padding-right: 4px;
 }
 
 .sectionHeader {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+}
+
+// The key/title form sits above the catalogue here, so the scroll box gets less
+// room than in the permissions modal.
+.permissions {
+	--permission-list-max-height: 30vh;
 }

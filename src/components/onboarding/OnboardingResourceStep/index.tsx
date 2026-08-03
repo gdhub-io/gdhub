@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { resyncSession } from "@/helpers/session";
 import styles from "./style.module.scss";
 
 const { Paragraph, Title, Text } = Typography;
@@ -79,7 +80,9 @@ export const OnboardingResourceStep = ({
 						: undefined,
 			});
 
-			await updateSession();
+			// The proxy gates the whole app on `onboardingDone` in the JWT, so the
+			// token has to be re-read before leaving this step.
+			await resyncSession(updateSession);
 
 			onSave();
 		} catch (error: any) {
