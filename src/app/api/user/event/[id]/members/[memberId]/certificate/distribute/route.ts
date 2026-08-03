@@ -1,9 +1,21 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
-import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { LegalService } from "@/services/legal";
 import { prisma } from "@/services/prisma";
 
-export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.issue",
+		idFrom: "params.id",
+	}),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
@@ -11,7 +23,6 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const member = await prisma.eventMember.findUnique({
 		where: { id: memberId },
@@ -24,12 +35,6 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 	if (!member || member.eventId !== id) {
 		return apiError.notFound("Member not found");
-	}
-
-	if (!isAdmin && member.event.createdById !== currentUser.id) {
-		return apiError.forbidden(
-			"You are not allowed to manage certificates for this event",
-		);
 	}
 
 	if (!member.certificate) {

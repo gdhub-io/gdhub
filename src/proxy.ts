@@ -1,4 +1,3 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
@@ -24,7 +23,7 @@ export default auth((req) => {
 		return NextResponse.redirect(signInUrl);
 	}
 
-	const { onboardingDone, roles } = session.user;
+	const { onboardingDone } = session.user;
 
 	if (
 		!onboardingDone &&
@@ -40,16 +39,9 @@ export default auth((req) => {
 		return NextResponse.redirect(new URL("/hub", req.url));
 	}
 
-	if (
-		req.nextUrl.pathname.startsWith("/live/room/reports") &&
-		Array.isArray(roles) &&
-		!roles.includes(UserRole.Author) &&
-		!roles.includes(UserRole.Member) &&
-		!roles.includes(UserRole.Admin) &&
-		!roles.includes(UserRole.Mentor)
-	) {
-		return NextResponse.redirect(new URL("/hub", req.url));
-	}
+	// Permission checks do not belong here: middleware runs on the edge, with no
+	// database and therefore no permission matrix. `/live/room/reports` is gated
+	// by `hub.live_room.use` in its own layout.
 
 	if (req.nextUrl.pathname === "/user/settings") {
 		return NextResponse.redirect(new URL("/user/settings/general", req.url));

@@ -2,16 +2,17 @@ import {
 	Prisma,
 	type ProjectWorkflowStep,
 	type ProjectWorkflowTask,
-	UserRole,
 } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { WorkflowTaskConditionSchema } from "@/schemas/workflowTaskCondition";
 import { prisma } from "@/services/prisma";
 
@@ -152,10 +153,10 @@ async function updateWorkflowSteps(
 	}
 }
 
-export const GET = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.workflow.view" }),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };
@@ -235,53 +236,50 @@ export const GET = withAuth({
 	return json(workflowWithAnalytics);
 });
 
-export const PUT = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(
-	withValidation(UpdateProjectWorkflowSchema)(
-		async (_req, ctx, { user, body }) => {
-			const currentUser = user as SessionUser | undefined;
-			if (!currentUser) return apiError.unauthorized();
-			const { id } = (await ctx.params) as { id: string };
-			const { title, steps, currentStepId } = body as UpdateProjectWorkflowBody;
+export const PUT = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.workflow.manage" }),
+	withValidation(UpdateProjectWorkflowSchema),
+)(async (_req, ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+	const { id } = (await ctx.params) as { id: string };
+	const { title, steps, currentStepId } = body as UpdateProjectWorkflowBody;
 
-			const data: Prisma.ProjectWorkflowUpdateInput = {};
+	const data: Prisma.ProjectWorkflowUpdateInput = {};
 
-			if (title !== undefined) {
-				data.title = title;
-			}
+	if (title !== undefined) {
+		data.title = title;
+	}
 
-			if (currentStepId !== undefined) {
-				data.currentStep = { connect: { id: currentStepId } };
-			}
+	if (currentStepId !== undefined) {
+		data.currentStep = { connect: { id: currentStepId } };
+	}
 
-			if (steps) {
-				const existingWorkflow = await prisma.projectWorkflow.findUnique({
-					where: { id },
+	if (steps) {
+		const existingWorkflow = await prisma.projectWorkflow.findUnique({
+			where: { id },
+			include: {
+				steps: {
 					include: {
-						steps: {
-							include: {
-								tasks: true,
-							},
-							orderBy: {
-								order: "asc",
-							},
-						},
+						tasks: true,
 					},
-				});
+					orderBy: {
+						order: "asc",
+					},
+				},
+			},
+		});
 
-				if (existingWorkflow) {
-					await updateWorkflowSteps(id, steps as any[], existingWorkflow.steps);
-				}
-			}
+		if (existingWorkflow) {
+			await updateWorkflowSteps(id, steps as any[], existingWorkflow.steps);
+		}
+	}
 
-			const projectWorkflow = await prisma.projectWorkflow.update({
-				where: { id },
-				data,
-			});
+	const projectWorkflow = await prisma.projectWorkflow.update({
+		where: { id },
+		data,
+	});
 
-			return json(projectWorkflow);
-		},
-	),
-);
+	return json(projectWorkflow);
+});

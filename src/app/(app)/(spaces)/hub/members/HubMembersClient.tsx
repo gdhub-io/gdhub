@@ -29,10 +29,9 @@ import {
 	useSearchBox,
 	useStats,
 } from "react-instantsearch";
+import { useAccess } from "@/components/access/AccessProvider";
 import { getWorkDirection } from "@/components/DirectionBadge";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
-import { UserRole } from "@/config/prisma-enums";
-import { hasRole } from "@/helpers/user";
 import styles from "./style.module.scss";
 
 const SpecialistPreviewModal = dynamic(
@@ -61,6 +60,7 @@ export function HubMembersClient({
 }) {
 	const session = useSession();
 	const { t } = useTranslate();
+	const { can } = useAccess();
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<
 		string | undefined
 	>();
@@ -85,7 +85,10 @@ export function HubMembersClient({
 		[],
 	);
 
-	if (!hasRole(UserRole.Author, session) || !hasApprovedProjects) {
+	// `hasApprovedProjects` is the product rule and stays: the talent pool opens
+	// to people who actually run a project. The legacy `Author` role said the
+	// same thing less reliably.
+	if (!can("hub.talent_pool.view") || !hasApprovedProjects) {
 		return (
 			<div className="layout-background">
 				<ProtectedPageHeader title={t("Community Members")} />

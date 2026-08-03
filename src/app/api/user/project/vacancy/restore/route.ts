@@ -1,7 +1,15 @@
 import { TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 
 import { DEFAULT_FINISH_DAYS, LISTING_WINDOW_DAYS } from "@/config/vacancy";
-import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfVacancy } from "@/lib/space-ids";
 import { prisma } from "@/services/prisma";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -10,7 +18,13 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // listing is bought for a single window. Instead we duplicate the data into a
 // fresh Draft (no payment, new window anchor); the archived one stays Closed and
 // the user pays again to publish.
-export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.vacancies.manage",
+		idFrom: projectOfVacancy,
+	}),
+)(async (req, _ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 

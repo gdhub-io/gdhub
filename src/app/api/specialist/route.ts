@@ -2,7 +2,6 @@ import {
 	ChatRoomKind,
 	ChatRoomStatus,
 	TeamMemberStatus,
-	UserRole,
 } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { getCleanTextContent } from "@/helpers/content";
@@ -13,6 +12,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { getSpaceAccess, isStaff } from "@/services/access";
 import { getRoomMemberIds, matrixIdToUserId } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 
@@ -109,10 +109,13 @@ export const GET = withAuth({ mode: "user" })(
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
 
-		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
-		const activeSubscription = await prisma.user.activeSubscription(
-			currentUser.id,
-		);
+		const [hubAccess, activeSubscription] = await Promise.all([
+			getSpaceAccess("hub", null, currentUser),
+			prisma.user.activeSubscription(currentUser.id),
+		]);
+
+		// Staff see every project a specialist is available for, not just their own.
+		const seesEveryProject = isStaff(hubAccess);
 
 		const specialist = await prisma.speciality.findFirst({
 			where: { id },
@@ -197,9 +200,9 @@ export const GET = withAuth({ mode: "user" })(
 				direction: true,
 				availableProjects: activeSubscription
 					? {
-							where: !isAdmin
-								? { project: { authorId: currentUser.id } }
-								: undefined,
+							where: seesEveryProject
+								? undefined
+								: { project: { authorId: currentUser.id } },
 							include: { project: { select: { name: true } } },
 						}
 					: undefined,

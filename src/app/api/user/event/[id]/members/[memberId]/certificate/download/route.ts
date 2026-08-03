@@ -1,9 +1,15 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
-import { apiError, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { apiError, pipe, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { LegalService } from "@/services/legal";
 import { resolveMemberCertificateContext } from "../../../../_helpers";
 
-export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.view",
+		idFrom: "params.id",
+	}),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
@@ -11,18 +17,11 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const eventCtx = await resolveMemberCertificateContext(memberId);
 
 	if (!eventCtx || eventCtx.event.id !== id) {
 		return apiError.notFound("Member not found");
-	}
-
-	if (!isAdmin && eventCtx.event.createdById !== currentUser.id) {
-		return apiError.forbidden(
-			"You are not allowed to view certificates for this event",
-		);
 	}
 
 	if (!eventCtx.member.certificate) {

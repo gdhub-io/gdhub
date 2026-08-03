@@ -1,12 +1,13 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
 const UpdateWorkflowSchema = z.object({
@@ -18,10 +19,10 @@ const UpdateWorkflowSchema = z.object({
 
 type UpdateWorkflowBody = z.infer<typeof UpdateWorkflowSchema>;
 
-export const GET = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.workflow.view" }),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };
@@ -33,34 +34,33 @@ export const GET = withAuth({
 	return json(workflow);
 });
 
-export const PUT = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(
-	withValidation(UpdateWorkflowSchema)(async (_req, ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-		const { id } = (await ctx.params) as { id: string };
-		const { name, title, description, steps } = body as UpdateWorkflowBody;
+export const PUT = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.workflow.manage" }),
+	withValidation(UpdateWorkflowSchema),
+)(async (_req, ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+	const { id } = (await ctx.params) as { id: string };
+	const { name, title, description, steps } = body as UpdateWorkflowBody;
 
-		const workflow = await prisma.workflowSchema.update({
-			where: { id },
-			data: {
-				name: name || undefined,
-				title: title || undefined,
-				description: description || undefined,
-				steps: steps as PrismaJson.WorkflowStep[] | undefined,
-			},
-		});
+	const workflow = await prisma.workflowSchema.update({
+		where: { id },
+		data: {
+			name: name || undefined,
+			title: title || undefined,
+			description: description || undefined,
+			steps: steps as PrismaJson.WorkflowStep[] | undefined,
+		},
+	});
 
-		return json(workflow);
-	}),
-);
+	return json(workflow);
+});
 
-export const DELETE = withAuth({
-	mode: "user",
-	roles: [UserRole.Admin],
-})(async (_req, ctx, { user }) => {
+export const DELETE = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.workflow.manage" }),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };

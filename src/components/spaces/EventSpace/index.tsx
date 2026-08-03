@@ -9,9 +9,9 @@ import axios from "axios";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { NextSeo, type NextSeoProps } from "next-seo";
 import type { CSSProperties } from "react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import { Error404 } from "@/components/Error404";
 import {
 	type SpaceHeaderConfig,
@@ -20,6 +20,7 @@ import {
 import { EventStatus } from "@/config/prisma-enums";
 import { type ContextEvent, EventContext } from "@/contexts/EventContext";
 import { useCurrentEvent } from "@/hooks/event";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -35,14 +36,12 @@ const { Title, Text } = Typography;
 export const EventSpace = ({
 	title,
 	description,
-	seo,
 	children,
 	actions,
 	customStyles,
 }: {
 	title?: string;
 	description?: string;
-	seo?: NextSeoProps;
 	children: ReactNode;
 	actions?: ReactNode;
 	customStyles?: {
@@ -59,6 +58,7 @@ export const EventSpace = ({
 	const [contextEvent, setContextEvent] = useState<ContextEvent>();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
+	const { can } = useAccess();
 
 	const { event, isFetched } = useCurrentEvent();
 	const isEventAuthor = useMemo(
@@ -76,14 +76,9 @@ export const EventSpace = ({
 		});
 	}, [event, isEventAuthor]);
 
-	const seoSettings: NextSeoProps = {
-		title: title || "Event",
-		canonical: process.env.NEXT_PUBLIC_APP_URL + pathname,
-		nofollow: true,
-		noindex: true,
-		description,
-		...seo,
-	};
+	useDocumentTitle(
+		title ? `${title} · ${event?.title ?? "Event"}` : event?.title,
+	);
 
 	const { mutateAsync: publishEvent, isPending: isPublishingEvent } =
 		useMutation({
@@ -137,7 +132,7 @@ export const EventSpace = ({
 			},
 			{
 				key: `/user/event/${eventId}/settings/general`,
-				disabled: !isEventAuthor,
+				disabled: !can("event.info.edit"),
 				label: (
 					<Link href={`/user/event/${eventId}/settings/general`}>
 						{t("app.user.menu.settings", "Settings")}
@@ -149,19 +144,20 @@ export const EventSpace = ({
 				className: styles.publicPageMenuItem,
 				label: (
 					<Space wrap={true}>
-						{event?.status === EventStatus.Draft && (
-							<Space wrap={true}>
-								<Text type="secondary">The event is not published yet</Text>
-								<Button
-									type="primary"
-									size="small"
-									onClick={() => publishEvent(eventId)}
-									loading={isPublishingEvent}
-								>
-									{t("event.button.publish", "Publish")}
-								</Button>
-							</Space>
-						)}
+						{event?.status === EventStatus.Draft &&
+							can("event.lifecycle.publish") && (
+								<Space wrap={true}>
+									<Text type="secondary">The event is not published yet</Text>
+									<Button
+										type="primary"
+										size="small"
+										onClick={() => publishEvent(eventId)}
+										loading={isPublishingEvent}
+									>
+										{t("event.button.publish", "Publish")}
+									</Button>
+								</Space>
+							)}
 
 						<Button
 							type="text"
@@ -173,16 +169,17 @@ export const EventSpace = ({
 							<GoLinkExternal size={12} color="gray" />
 						</Button>
 
-						{event?.status === EventStatus.Published && (
-							<Button
-								type="default"
-								size="small"
-								onClick={() => unpublishEvent(eventId)}
-								loading={isUnpublishingEvent}
-							>
-								{t("event.button.unpublish", "Unpublish")}
-							</Button>
-						)}
+						{event?.status === EventStatus.Published &&
+							can("event.lifecycle.publish") && (
+								<Button
+									type="default"
+									size="small"
+									onClick={() => unpublishEvent(eventId)}
+									loading={isUnpublishingEvent}
+								>
+									{t("event.button.unpublish", "Unpublish")}
+								</Button>
+							)}
 					</Space>
 				),
 			},
@@ -211,6 +208,7 @@ export const EventSpace = ({
 			menuSelectedKeys: [pathname],
 		};
 	}, [
+		can,
 		eventId,
 		event?.slug,
 		event?.status,
@@ -230,15 +228,12 @@ export const EventSpace = ({
 
 	if (isFetched && !event) {
 		return (
-			<>
-				<NextSeo title="Error 404" nofollow noindex />
-				<Error404
-					callbackUrl={"/hub"}
-					textBackButton="Back to Hub"
-					theme="light"
-					containerStyle={{ height: "50vh" }}
-				/>
-			</>
+			<Error404
+				callbackUrl={"/hub"}
+				textBackButton="Back to Hub"
+				theme="light"
+				containerStyle={{ height: "50vh" }}
+			/>
 		);
 	}
 
@@ -247,7 +242,6 @@ export const EventSpace = ({
 			value={{ contextEvent, isLoaded: isFetched, setContextEvent }}
 		>
 			{messageContextHolder}
-			<NextSeo {...seoSettings} />
 			<div style={customStyles?.contentContainer}>
 				<div style={customStyles?.content}>
 					<Flex

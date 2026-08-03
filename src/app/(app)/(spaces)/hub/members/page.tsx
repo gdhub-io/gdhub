@@ -1,6 +1,7 @@
-import { ProjectStatus, UserRole } from "@gdhub-io/gdhub-prisma";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
+import { type AccessUser, getSpaceAccess, isStaff } from "@/services/access";
 import { prisma } from "@/services/prisma";
 import { HubMembersClient } from "./HubMembersClient";
 
@@ -13,8 +14,11 @@ export const metadata: Metadata = {
 
 export default async function HubMembersPage() {
 	const session = await auth();
-	const [usersCount, specialitiesCount, hasApprovedProjects] =
+	const user = (session?.user ?? null) as AccessUser;
+
+	const [access, usersCount, specialitiesCount, ownApprovedProjects] =
 		await Promise.all([
+			getSpaceAccess("hub", null, user),
 			prisma.user.count(),
 			prisma.speciality.count(),
 			prisma.project.count({
@@ -29,10 +33,9 @@ export default async function HubMembersPage() {
 		<HubMembersClient
 			usersCount={usersCount}
 			specialitiesCount={specialitiesCount}
-			hasApprovedProjects={
-				hasApprovedProjects !== 0 ||
-				!!session?.user?.roles?.includes(UserRole.Admin)
-			}
+			// The talent pool opens once you have an approved project. Staff are not
+			// subject to that rule — they are not here to recruit.
+			hasApprovedProjects={ownApprovedProjects !== 0 || isStaff(access)}
 		/>
 	);
 }

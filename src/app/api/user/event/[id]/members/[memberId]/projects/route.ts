@@ -1,8 +1,17 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
-import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
-export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "event.members.view", idFrom: "params.id" }),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
@@ -10,7 +19,6 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		id: string;
 		memberId: string;
 	};
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const event = await prisma.event.findUnique({
 		where: { id },
@@ -19,10 +27,6 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 	if (!event) {
 		return apiError.notFound("Event not found");
-	}
-
-	if (!isAdmin && event.createdById !== currentUser.id) {
-		return apiError.forbidden("You are not allowed to view members");
 	}
 
 	const member = await prisma.eventMember.findFirst({

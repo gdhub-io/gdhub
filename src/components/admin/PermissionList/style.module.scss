@@ -1,0 +1,55 @@
+.list {
+	border: 1px solid var(--ant-color-border-secondary);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 14px;
+	background: var(--ant-color-fill-quaternary);
+	border-bottom: 1px solid var(--ant-color-border-secondary);
+}
+
+.feature {
+	font-size: 12px;
+}
+
+.featureHint {
+	font-size: 12px;
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: 9px 14px;
+	border-bottom: 1px solid var(--ant-color-border-secondary);
+
+	&:last-child {
+		border-bottom: none;
+	}
+
+	// The label body is a flex row of its own: action, full permission, marker.
+	:global(.ant-checkbox + span) {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+	}
+}
+
+.action {
+	font-size: 14px;
+}
+
+.full {
+	font-size: 12px;
+}
+
+.changed {
+	margin-left: auto;
+	font-size: 12px;
+}

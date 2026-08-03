@@ -78,7 +78,9 @@ const InterestsProfileForm = ({
 
 			setProcessing(true);
 			await saveProfile(formData);
-			await updateSession({ user: { roles: [formData.primaryInterest] } });
+			// Used to write `primaryInterest` into the session's `roles` — a wish
+			// stored in the field that decided access. Just refresh the session.
+			await updateSession();
 			setProcessing(false);
 
 			message.success(

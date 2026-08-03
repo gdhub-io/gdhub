@@ -1,19 +1,19 @@
-import {
-	ProjectStatus,
-	TeamMemberStatus,
-	UserRole,
-} from "@gdhub-io/gdhub-prisma";
+import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "voca/slugify";
 import { z } from "zod";
 import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
+import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
@@ -190,70 +190,66 @@ export const POST = withAuth({ mode: "user" })(
 						name: true,
 						image: true,
 						id: true,
-						roles: true,
 						profile: { select: { id: true } },
 					},
 				},
 			},
 		});
 
-		if (!project.author.roles.includes(UserRole.Author)) {
-			await prisma.user.update({
-				where: { id: currentUser.id },
-				data: {
-					roles: [...project.author.roles, UserRole.Author],
-				},
-			});
-		}
+		// Membership is what the space gates read; a project without its owner row
+		// would be unreachable for its own author.
+		await joinSpace({
+			type: "project",
+			spaceId: project.id,
+			userId: currentUser.id,
+			role: SpaceRole.Owner,
+		});
 
+		// `UserRole.Author` used to be stamped on the user here. Owning a project
+		// is the `SpaceMember(project, Owner)` row written just above — a fact,
+		// not a label that has to be kept in sync.
 		return json({ ...project, validation });
 	}),
 );
 
-export const PUT = withAuth({ mode: "user" })(
-	withValidation(UpdateProjectSchema)(async (req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
+export const PUT = pipe(
+	withAuth({ mode: "user" }),
+	// Until this guard existed, any signed-in user could update any project by
+	// id — including its status and, through `authorId`, its owner.
+	withSpaceGuard({ permission: "project.info.edit", idFrom: "query.id" }),
+	withValidation(UpdateProjectSchema),
+)(async (req, _ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 
-		const url = new URL(req.url);
-		const id = url.searchParams.get("id");
-		if (!id) return apiError.badRequest("id is required");
+	const url = new URL(req.url);
+	const id = url.searchParams.get("id");
+	if (!id) return apiError.badRequest("id is required");
 
-		const { authorId, ...data } = body as UpdateProjectBody;
+	const { authorId, ...data } = body as UpdateProjectBody;
 
-		const project = await prisma.project.update({
-			where: { id },
-			data: {
-				...data,
-				status: data.status as ProjectStatus | undefined,
-				author: authorId ? { connect: { id: authorId } } : undefined,
-			},
-			include: {
-				team: { select: { id: true } },
-				author: {
-					select: {
-						name: true,
-						image: true,
-						id: true,
-						roles: true,
-						profile: { select: { id: true } },
-					},
+	const project = await prisma.project.update({
+		where: { id },
+		data: {
+			...data,
+			status: data.status as ProjectStatus | undefined,
+			author: authorId ? { connect: { id: authorId } } : undefined,
+		},
+		include: {
+			team: { select: { id: true } },
+			author: {
+				select: {
+					name: true,
+					image: true,
+					id: true,
+					profile: { select: { id: true } },
 				},
 			},
-		});
+		},
+	});
 
-		if (!project.author.roles.includes(UserRole.Author)) {
-			await prisma.user.update({
-				where: { id: currentUser.id },
-				data: {
-					roles: [...project.author.roles, UserRole.Author],
-				},
-			});
-		}
-
-		return json(project);
-	}),
-);
+	return json(project);
+});
 
 export const DELETE = withAuth({ mode: "user" })(
 	async (req, _ctx, { user }) => {
@@ -279,6 +275,10 @@ export const DELETE = withAuth({ mode: "user" })(
 			projectId: id,
 			authorId: currentUser.id,
 		});
+
+		// No foreign key cascades here: the link from a space to its entity is
+		// polymorphic, so the membership rows have to go explicitly.
+		await deleteSpaceMembership("project", id);
 
 		// Deleting the project takes its vacancies away — end their chats too.
 		try {

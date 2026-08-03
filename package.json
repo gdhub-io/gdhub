@@ -32,7 +32,14 @@
 		"test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
 		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test",
 		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs",
-		"queues:clean": "dotenv -- node scripts/clean-queues.mjs"
+		"queues:clean": "dotenv -- node scripts/clean-queues.mjs",
+		"rbac:seed-matrix": "dotenv -- bun run scripts/rbac-seed-matrix.ts",
+		"rbac:matrix-doc": "bun run scripts/rbac-matrix-doc.ts",
+		"rbac:backfill": "dotenv -- bun run scripts/rbac-backfill.ts",
+		"rbac:seed-matrix:staging": "dotenv -e .env.staging -- bun run scripts/rbac-seed-matrix.ts",
+		"rbac:backfill:staging": "dotenv -e .env.staging -- bun run scripts/rbac-backfill.ts",
+		"rbac:seed-matrix:prod": "dotenv -e .env.production -- bun run scripts/rbac-seed-matrix.ts",
+		"rbac:backfill:prod": "dotenv -e .env.production -- bun run scripts/rbac-backfill.ts"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",
@@ -70,7 +77,7 @@
 		"@editorjs/table": "^2.4.5",
 		"@firebase/app": "^0.14.6",
 		"@firebase/messaging": "^0.12.23",
-		"@gdhub-io/gdhub-prisma": "2.0.0-beta.39",
+		"@gdhub-io/gdhub-prisma": "2.0.0-beta.41",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@google-analytics/data": "^5.1.0",
 		"@hello-pangea/dnd": "^18.0.1",
@@ -117,7 +124,6 @@
 		"natural-cron": "^1.0.1",
 		"next": "16.2.6",
 		"next-auth": "^5.0.0-beta.31",
-		"next-seo": "^6.5",
 		"node-fetch": "^3.2.10",
 		"nodemailer": "^6.9.15",
 		"open-graph-scraper": "^6.11.0",

@@ -1,0 +1,68 @@
+.main {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 24px 0;
+
+	// Same as in the roles modal: the space filter sizes itself to its options
+	// instead of stretching across the page.
+	> :global(.ant-segmented) {
+		align-self: flex-start;
+	}
+}
+
+.pageHeader {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+}
+
+.sections {
+	width: 100%;
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 14px 0;
+	border-top: 1px solid var(--ant-color-border-secondary);
+	flex: 1;
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1;
+	min-width: 0;
+}
+
+.titleRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.hint {
+	font-size: 12px;
+}
+
+.count {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	white-space: nowrap;
+}
+
+.customRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.empty {
+	padding: 24px 0;
+	text-align: center;
+}

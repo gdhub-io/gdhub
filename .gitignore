@@ -61,6 +61,8 @@ backup-tolgee
 .env.client
 .env.docker
 .env.test
+.env.staging
+.env.production
 
 # Keep examples in git
 !.env.example

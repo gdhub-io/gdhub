@@ -114,11 +114,6 @@ export const POST = withAuth({ mode: "user" })(
 			include: { direction: true },
 		});
 
-		await prisma.user.update({
-			where: { id: currentUser.id },
-			data: { roles: { push: "Member" } },
-		});
-
 		return json({ ...speciality, validation });
 	}),
 );

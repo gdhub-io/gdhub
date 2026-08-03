@@ -6,17 +6,33 @@ vi.mock("@gdhub-io/gdhub-prisma", () => ({
 		Applicant: "Applicant",
 		Hired: "Hired",
 		Rejected: "Rejected",
+		Fired: "Fired",
+		Founder: "Founder",
 	},
 	TeamVacancyStatus: { Published: "Published", Closed: "Closed" },
 	UserRole: { Admin: "Admin" },
+	ProjectStatus: { Approved: "Approved", Archived: "Archived" },
+	// The space guard runs handlers inside the audit context.
+	withAuditContext: (_context: unknown, callback: () => unknown) => callback(),
+	SpaceRole: {
+		Owner: "Owner",
+		Admin: "Admin",
+		Member: "Member",
+		Guest: "Guest",
+	},
 }));
 
 vi.mock("../src/services/prisma", () => ({
 	prisma: {
 		teamVacancy: { findUnique: vi.fn() },
-		teamMember: { findFirst: vi.fn(), update: vi.fn() },
+		// `findUnique` is used by the space guard to find the owning project of a
+		// team member before checking access.
+		teamMember: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
 		user: { findUnique: vi.fn() },
 		team: { findUnique: vi.fn() },
+		project: { findFirst: vi.fn(), findUnique: vi.fn() },
+		spaceMember: { findUnique: vi.fn() },
+		auditLog: { create: vi.fn() },
 	},
 }));
 
@@ -43,6 +59,9 @@ const sessionUser = {
 	email: "author@example.com",
 	name: "Author",
 	roles: ["Author"],
+	// The hub role comes from this flag: without it the caller is a guest, and a
+	// guest may not reach out to people from the talent pool.
+	onboardingDone: true,
 };
 
 vi.mock("next-auth/next", () => ({
@@ -53,6 +72,10 @@ vi.mock("@/auth", () => ({
 	auth: vi.fn(() => Promise.resolve({ user: sessionUser })),
 }));
 
+import {
+	codeSource,
+	setMatrixSource,
+} from "../src/services/access/matrix-source";
 import { closeVacancyChats } from "../src/services/chat/vacancy-keys";
 import { ensureVacancyOfferChat } from "../src/services/chat/vacancy-offer";
 import { sendRoomMessageAs } from "../src/services/matrix/admin";
@@ -78,6 +101,19 @@ async function callRoute(
 
 beforeEach(() => {
 	vi.clearAllMocks();
+
+	// The route is now behind a space guard: take the matrix from the registry
+	// (the database is mocked away) and make the caller own the project.
+	setMatrixSource(codeSource);
+	(prisma.teamMember.findUnique as any).mockResolvedValue({
+		team: { project: { id: "p1" } },
+	});
+	(prisma.project.findFirst as any).mockResolvedValue({
+		id: "p1",
+		authorId: sessionUser.id,
+		team: { members: [] },
+	});
+	(prisma.project.findUnique as any).mockResolvedValue({ status: "Approved" });
 });
 
 describe("PUT /api/user/project/vacancy/candidate/hire", () => {
@@ -118,7 +154,9 @@ describe("PUT /api/user/project/vacancy/candidate/hire", () => {
 describe("POST /api/chat/rooms/vacancy", () => {
 	const vacancy = {
 		id: "vac1",
-		team: { project: { authorId: "author1" } },
+		// `project.authorId` is what the handler reads, `projectId` is what the
+		// space guard resolves the project from.
+		team: { projectId: "p1", project: { authorId: "author1" } },
 	};
 	const candidate = {
 		id: "cand1",
@@ -234,10 +272,15 @@ describe("POST /api/chat/rooms/vacancy", () => {
 		expect(NovuService.send).not.toHaveBeenCalled();
 	});
 
-	it("rejects a caller who is not the project author", async () => {
+	it("rejects a caller with no role in the vacancy's project", async () => {
 		(prisma.teamVacancy.findUnique as any).mockResolvedValue({
 			id: "vac1",
-			team: { project: { authorId: "someone-else" } },
+			team: { projectId: "p-someone-else", project: { authorId: "someone-else" } },
+		});
+		(prisma.project.findFirst as any).mockResolvedValue({
+			id: "p-someone-else",
+			authorId: "someone-else",
+			team: { members: [] },
 		});
 
 		const response = await post({
@@ -245,7 +288,9 @@ describe("POST /api/chat/rooms/vacancy", () => {
 			candidateUserId: "cand1",
 		});
 
-		expect(response.status).toBe(403);
+		// 404, not 403: someone with no role in that project must not be able to
+		// tell "this vacancy is not yours" from "no such vacancy".
+		expect(response.status).toBe(404);
 		expect(ensureVacancyOfferChat).not.toHaveBeenCalled();
 	});
 });

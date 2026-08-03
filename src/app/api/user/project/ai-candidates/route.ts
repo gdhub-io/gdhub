@@ -1,4 +1,3 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -7,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { getSpaceAccess, isStaff } from "@/services/access";
 import { prisma } from "@/services/prisma";
 
 const AiCandidatesQuerySchema = z.object({
@@ -24,12 +24,13 @@ export const GET = withAuth({ mode: "user" })(
 		if (!currentUser) return apiError.unauthorized();
 		const { projectId } = body as AiCandidatesQuery;
 
-		const isAdmin = currentUser.roles?.includes(UserRole.Admin);
-		const hasActiveSubscription = await prisma.user.activeSubscription(
-			currentUser.id,
-		);
+		const [hubAccess, hasActiveSubscription] = await Promise.all([
+			getSpaceAccess("hub", null, currentUser),
+			prisma.user.activeSubscription(currentUser.id),
+		]);
 
-		if (!hasActiveSubscription && !isAdmin) return json(null);
+		// Staff are not subject to the paywall.
+		if (!hasActiveSubscription && !isStaff(hubAccess)) return json(null);
 
 		const specialists = await prisma.matchingSpecialistAndProject.findMany({
 			where: {

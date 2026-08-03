@@ -1,4 +1,4 @@
-import { PrimaryInterest, UserRole } from "@gdhub-io/gdhub-prisma";
+import { PrimaryInterest } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -49,23 +49,10 @@ export const PUT = withAuth({ mode: "user" })(
 			preferredSettings,
 			primaryInterest,
 		} = body as UpdateInterestBody;
-		let role: UserRole = UserRole.Guest;
 
-		switch (primaryInterest) {
-			case PrimaryInterest.Specialist: {
-				role = UserRole.Member;
-				break;
-			}
-			case PrimaryInterest.Author: {
-				role = UserRole.Author;
-				break;
-			}
-			case PrimaryInterest.Mentor: {
-				role = UserRole.Mentor;
-				break;
-			}
-		}
-
+		// `primaryInterest` is a wish, not a role: it says what the person would
+		// like to do here, and the only thing that reads it is the first screen
+		// and the matching job. What they may do comes from their membership.
 		await prisma.profile.update({
 			where: { userId: currentUser.id },
 			data: {
@@ -81,14 +68,7 @@ export const PUT = withAuth({ mode: "user" })(
 					? { set: preferredSettings?.map((v: string) => ({ id: v })) }
 					: undefined,
 				primaryInterest: primaryInterest as PrimaryInterest | undefined,
-				user: {
-					update: {
-						roles: {
-							set: [UserRole.Member, UserRole.Author],
-						},
-					},
-				},
-			} as any,
+			},
 		});
 
 		return json({ ok: true });

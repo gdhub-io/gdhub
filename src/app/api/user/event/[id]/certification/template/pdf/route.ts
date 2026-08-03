@@ -1,25 +1,24 @@
-import { UserRole } from "@gdhub-io/gdhub-prisma";
-import { apiError, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { apiError, pipe, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { LegalService } from "@/services/legal";
 import { resolveEventCertificationContext } from "../../../_helpers";
 
-export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "event.certificates.view",
+		idFrom: "params.id",
+	}),
+)(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const isAdmin = currentUser.roles?.includes(UserRole.Admin);
 
 	const eventCtx = await resolveEventCertificationContext(id);
 
 	if (!eventCtx) {
 		return apiError.notFound("Event not found");
-	}
-
-	if (!isAdmin && eventCtx.createdById !== currentUser.id) {
-		return apiError.forbidden(
-			"You are not allowed to view certification for this event",
-		);
 	}
 
 	const legalService = new LegalService();

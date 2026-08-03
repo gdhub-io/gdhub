@@ -14,6 +14,7 @@ const resolveSelectedMenuKey = (pathname: string) => {
 	if (pathname.startsWith("/admin/workflow/")) return "/admin/workflows";
 	if (pathname.startsWith("/admin/project-workflow/"))
 		return "/admin/workflows";
+	if (pathname.startsWith("/admin/roles")) return "/admin/roles";
 	if (pathname.startsWith("/admin/audit-logs")) return "/admin/audit-logs";
 	if (pathname.startsWith("/admin/devlog-posts")) return "/admin/devlog-posts";
 	if (pathname.startsWith("/admin/posts")) return "/admin/posts";
@@ -23,6 +24,7 @@ const resolveSelectedMenuKey = (pathname: string) => {
 
 const MENU_ITEMS: MenuProps["items"] = [
 	{ key: "/admin/users", label: <Link href="/admin/users">Users</Link> },
+	{ key: "/admin/roles", label: <Link href="/admin/roles">Roles</Link> },
 	{ key: "/admin/posts", label: <Link href="/admin/posts">Posts</Link> },
 	{
 		key: "/admin/devlog-posts",

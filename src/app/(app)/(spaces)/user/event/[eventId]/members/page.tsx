@@ -29,13 +29,12 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useCallback, useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import ModernTable from "@/components/ModernTable";
 import AddEventMembersModal from "@/components/modals/AddEventMembersModal";
 import BatchAssignEventMembersModal from "@/components/modals/BatchAssignEventMembersModal";
 import EditEventMemberModal from "@/components/modals/EditEventMemberModal";
 import { EventSpace } from "@/components/spaces/EventSpace";
-import { UserRole } from "@/config/prisma-enums";
-import { hasRole } from "@/helpers/user";
 
 const { Text } = Typography;
 
@@ -137,7 +136,9 @@ export default function EventMembersPage() {
 	const { t } = useTranslate();
 	const params = useParams<{ eventId?: string }>();
 	const session = useSession();
-	const isAdmin = hasRole(UserRole.Admin, session);
+	const { can } = useAccess();
+	// Certificates are re-issued by whoever manages them, not by a platform role.
+	const canIssueCertificates = can("event.certificates.issue");
 	const eventId = params?.eventId as string;
 	const [confirmModal, confirmModalContextHolder] = Modal.useModal();
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -415,7 +416,7 @@ export default function EventMembersPage() {
 					label: t("event.members.certificate.delete", "Delete certificate"),
 					icon: <IconTrash />,
 					danger: true,
-					disabled: !(isDraft || (isCompleted && isAdmin)),
+					disabled: !(isDraft || (isCompleted && canIssueCertificates)),
 					onClick: () =>
 						confirmModal.confirm({
 							title: t(
@@ -446,7 +447,7 @@ export default function EventMembersPage() {
 		[
 			t,
 			certificationEnabled,
-			isAdmin,
+			canIssueCertificates,
 			eventId,
 			confirmModal,
 			createCertificate,
@@ -464,7 +465,7 @@ export default function EventMembersPage() {
 			)}
 			actions={
 				<Space>
-					{isAdmin && (
+					{canIssueCertificates && (
 						<Button onClick={() => setIsAddModalOpen(true)}>
 							{t("event.members.actions.add", "Add members")}
 						</Button>
