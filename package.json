@@ -36,10 +36,10 @@
 		"rbac:seed-matrix": "dotenv -- bun run scripts/rbac-seed-matrix.ts",
 		"rbac:matrix-doc": "bun run scripts/rbac-matrix-doc.ts",
 		"rbac:backfill": "dotenv -- bun run scripts/rbac-backfill.ts",
-		"rbac:seed-matrix:staging": "dotenv -e .env.staging -- bun run scripts/rbac-seed-matrix.ts",
-		"rbac:backfill:staging": "dotenv -e .env.staging -- bun run scripts/rbac-backfill.ts",
-		"rbac:seed-matrix:prod": "dotenv -e .env.production -- bun run scripts/rbac-seed-matrix.ts",
-		"rbac:backfill:prod": "dotenv -e .env.production -- bun run scripts/rbac-backfill.ts"
+		"rbac:seed-matrix:staging": "dotenv -e .env.staging.local -- bun run scripts/rbac-seed-matrix.ts",
+		"rbac:backfill:staging": "dotenv -e .env.staging.local -- bun run scripts/rbac-backfill.ts",
+		"rbac:seed-matrix:prod": "dotenv -e .env.prod.local -- bun run scripts/rbac-seed-matrix.ts",
+		"rbac:backfill:prod": "dotenv -e .env.prod.local -- bun run scripts/rbac-backfill.ts"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",
@@ -204,7 +204,8 @@
 		"vitest": "^1.5.0"
 	},
 	"resolutions": {
-		"@babel/runtime": "^7.24.6"
+		"@babel/runtime": "^7.24.6",
+		"@prisma/client": "7.9.1"
 	},
 	"trustedDependencies": [
 		"@firebase/util",
