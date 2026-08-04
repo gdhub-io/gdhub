@@ -72,13 +72,13 @@ const RenderIndex: BubbleProps["contentRender"] = (content) => (
 const renderMessageStatus = (status?: MessageStatus) => {
 	switch (status) {
 		case "sending":
-			return <IconClock size={13} color="#cccccc" />;
+			return <IconClock size={13} color="var(--gd-color-border-strong)" />;
 		case "sent":
-			return <IconCheck size={13} color="#9c9a9a" />;
+			return <IconCheck size={13} color="var(--gd-color-text-secondary)" />;
 		case "read":
-			return <IconChecks size={13} color="#4096ff" />;
+			return <IconChecks size={13} color="var(--gd-info-solid)" />;
 		case "failed":
-			return <IconAlertCircle size={13} color="#ff4d4f" />;
+			return <IconAlertCircle size={13} color="var(--gd-danger-solid)" />;
 		default:
 			return null;
 	}
@@ -368,7 +368,11 @@ export default function ChatMessages() {
 			return {
 				placement: "start" as const,
 				header: (
-					<div style={{ fontSize: 12, color: "#9c9a9a" }}>{extra.title}</div>
+					<div
+						style={{ fontSize: 12, color: "var(--gd-color-text-secondary)" }}
+					>
+						{extra.title}
+					</div>
 				),
 				avatar: (
 					<MatrixAvatar
@@ -380,7 +384,9 @@ export default function ChatMessages() {
 				),
 				typing: { step: 5, interval: 20 },
 				footer: (
-					<div style={{ fontSize: 10, color: "#cccccc" }}>{extra.time}</div>
+					<div style={{ fontSize: 10, color: "var(--gd-color-border-strong)" }}>
+						{extra.time}
+					</div>
 				),
 				contentRender: RenderIndex,
 			};
@@ -390,7 +396,11 @@ export default function ChatMessages() {
 			return {
 				placement: "end" as const,
 				header: (
-					<div style={{ fontSize: 12, color: "#9c9a9a" }}>{extra.title}</div>
+					<div
+						style={{ fontSize: 12, color: "var(--gd-color-text-secondary)" }}
+					>
+						{extra.title}
+					</div>
 				),
 				avatar: (
 					<MatrixAvatar
@@ -404,7 +414,7 @@ export default function ChatMessages() {
 					<Flex
 						align="center"
 						gap={4}
-						style={{ fontSize: 10, color: "#cccccc" }}
+						style={{ fontSize: 10, color: "var(--gd-color-border-strong)" }}
 					>
 						<span>{extra.time}</span>
 						{renderMessageStatus(extra.status)}
@@ -425,7 +435,7 @@ export default function ChatMessages() {
 					<div
 						style={{
 							fontSize: 12,
-							color: "#9c9a9a",
+							color: "var(--gd-color-text-secondary)",
 							width: "100%",
 							textAlign: "center",
 						}}
@@ -439,7 +449,7 @@ export default function ChatMessages() {
 					<div
 						style={{
 							fontSize: 10,
-							color: "#cccccc",
+							color: "var(--gd-color-border-strong)",
 							textAlign: "center",
 							width: "100%",
 						}}

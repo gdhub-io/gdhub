@@ -109,7 +109,12 @@ const VacancyArchiveModal = ({
 							onClick={() => setSelectedItem(vacancy.id)}
 							actions={
 								selectedItem == vacancy.id
-									? [<BsCheckLg color="#000" key="icon-check-speciality" />]
+									? [
+											<BsCheckLg
+												color="var(--gd-neutral-950)"
+												key="icon-check-speciality"
+											/>,
+										]
 									: []
 							}
 						>

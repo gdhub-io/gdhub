@@ -169,7 +169,7 @@ const PropositionLectureModal = ({ lectureId, open, onOk, onCancel }: any) => {
 						wrapperCol={{ span: 24 }}
 					>
 						<Input
-							style={{ color: "#666" }}
+							style={{ color: "var(--gd-color-text-secondary)" }}
 							width={"100%"}
 							readOnly
 							disabled

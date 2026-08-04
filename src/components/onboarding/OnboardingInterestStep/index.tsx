@@ -166,7 +166,7 @@ export const OnboardingInterestStep = ({
 						<Flex align="center" gap={4}>
 							<PiWarningCircleLight
 								size={20}
-								color="#05050573"
+								color="var(--gd-color-text-secondary)"
 								style={{ height: 20 }}
 							/>
 							<Text type="secondary" italic>

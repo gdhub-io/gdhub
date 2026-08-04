@@ -457,28 +457,44 @@ const getStatusIcon = (status: string) => {
 			return (
 				<IconCheck
 					size={18}
-					style={{ color: "#52c41a", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-success-solid)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 		case "Rejected":
 			return (
 				<IconCancel
 					size={18}
-					style={{ color: "#ff4d4f", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-danger-solid)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 		case "Closed":
 			return (
 				<IconBan
 					size={18}
-					style={{ color: "#888", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-color-text-secondary)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 		default:
 			return (
 				<IconClock
 					size={18}
-					style={{ color: "#1890ff", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-info-solid)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 	}

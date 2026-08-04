@@ -45,7 +45,9 @@ export function ProtectedPageHeader({
 		<div className={styles.pageHeader}>
 			{breadcrumbs?.length ? (
 				<Breadcrumb
-					separator={<span style={{ color: "#00000033" }}>/</span>}
+					separator={
+						<span style={{ color: "var(--gd-color-text-tertiary)" }}>/</span>
+					}
 					items={breadcrumbs}
 					className={styles.breadcrumb}
 				/>

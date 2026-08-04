@@ -12,7 +12,12 @@ import {
 } from "@/components/hub/HubSection";
 import styles from "./styles.module.scss";
 
-const VACANCY_DOT_COLORS = ["#3B82F6", "#8B5CF6", "#EC4899", "#F59E0B"];
+const VACANCY_DOT_COLORS = [
+	"var(--gd-color-accent)",
+	"var(--gd-neutral-800)",
+	"var(--gd-neutral-500)",
+	"var(--gd-neutral-300)",
+];
 
 interface HotVacancyItem {
 	id: string;

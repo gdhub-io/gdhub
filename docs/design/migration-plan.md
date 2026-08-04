@@ -17,7 +17,7 @@ component does not fight them. Six of the nine SCSS zones are now on tokens too.
 | SCSS modules reading `--gd-*` | 8 of 292 | **97** |
 | Hardcoded hexes in SCSS | 813 in 112 files | **8 in 1** |
 | `!important` in SCSS | 397 | 365 |
-| Hardcoded hexes in TSX | 262 in 48 files | ~250 |
+| Hardcoded hexes in TSX | 262 in 48 files | **35 in 11** |
 | Files using a `ui` primitive | 1 | 12 |
 
 The eight survivors are the Steam / itch / Google Play / Epic badges. Those are
@@ -148,15 +148,25 @@ Two decisions worth revisiting, both made while clearing these zones:
   `EquityPlot.tsx` in D3 with its own inline palette. The dead CSS is gone; the
   live palette is an open question for stage 5.
 
-### 5. Inline hexes in TSX
+### 5. Inline hexes in TSX ✅ done
 
-48 files, 262 occurrences. Two different problems:
+Role-bearing colours became `var(--gd-*)`. Two groups needed a different fix,
+both because the value never reaches CSS:
 
-- Ordinary components (`ProfileClient`, `ChatMessages`, `SkillCapitalIcon`, …) —
-  replace with `var(--gd-*)` or a `@/config/design` import.
-- The five OG image routes (`api/og*`) hold **113 of the 262**. Satori does not
-  resolve CSS variables, so these must import values from `tokens.ts` directly.
-  Different fix, same goal — one source of truth.
+- The five OG routes are rendered by Satori, which does not resolve custom
+  properties. They now import `ogPalette` (`src/helpers/og-palette.ts`), which is
+  built from the tokens — one source of truth, resolved at build time. The two
+  deep reds in the share-card gradient live there too: they sit below the end of
+  the brand ramp because the cards need more contrast behind white type, and they
+  exist nowhere else.
+- `EquityPlot` writes colours into SVG attributes via D3, where `var()` is not
+  resolved either, so it imports `neutral` directly.
+
+**What deliberately keeps its own colours** — 35 hexes in 11 files, all content
+rather than chrome: avatar skin tones and placeholder fills, the Skill Capital
+mark's brand gradient, the five-step skill-level scale, default cover art
+gradients, and the store badges. A role would not improve any of them, and
+`skillLevel.tsx` now says so in a comment so the next sweep leaves it alone.
 
 ### 6. Delete the dead
 

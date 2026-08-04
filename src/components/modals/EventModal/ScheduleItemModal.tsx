@@ -265,7 +265,12 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 									</Avatar>
 									<div>
 										<div>{label}</div>
-										<div style={{ fontSize: 12, color: "#888" }}>
+										<div
+											style={{
+												fontSize: 12,
+												color: "var(--gd-color-text-secondary)",
+											}}
+										>
 											{speciality || "No speciality"}
 										</div>
 									</div>

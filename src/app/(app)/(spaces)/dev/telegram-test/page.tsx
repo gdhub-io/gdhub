@@ -103,7 +103,7 @@ export default function DevTelegramTestPage() {
 		<main
 			style={{
 				minHeight: "100vh",
-				background: "#f5f5f5",
+				background: "var(--gd-color-surface-sunken)",
 				padding: "40px 16px",
 				display: "flex",
 				justifyContent: "center",
@@ -134,7 +134,10 @@ export default function DevTelegramTestPage() {
 									API mode:{" "}
 									<strong
 										style={{
-											color: botHealth.mode === "test" ? "#faad14" : "#52c41a",
+											color:
+												botHealth.mode === "test"
+													? "var(--gd-warning-solid)"
+													: "var(--gd-success-solid)",
 										}}
 									>
 										{botHealth.mode.toUpperCase()}

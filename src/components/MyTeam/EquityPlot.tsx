@@ -2,6 +2,7 @@ import * as Plot from "@observablehq/plot";
 import * as d3 from "d3";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { neutral } from "@/config/design/tokens";
 import styles from "./EquityPlot.module.scss";
 
 interface EquityShare {
@@ -120,21 +121,21 @@ const EquityPlot: React.FC<EquityPlotProps> = ({
 		data.push({
 			category: "Platform",
 			value: platformShare,
-			color: "#9E9E9E",
+			color: neutral[400],
 			type: "system",
 		});
 		// Mentors - can only change the total share, has a minimum - limited ability to change
 		data.push({
 			category: "Mentor Fund",
 			value: mentorFundShare,
-			color: "#78909C",
+			color: neutral[500],
 			type: "system",
 		});
 		// Investment Reserve - more flexible, but also a system constraint
 		data.push({
 			category: "Investment Reserve",
 			value: investmentReserve,
-			color: "#4f7487",
+			color: neutral[700],
 			type: "system",
 		});
 
@@ -420,7 +421,7 @@ const EquityPlot: React.FC<EquityPlotProps> = ({
 								width: 8,
 								height: 8,
 								borderRadius: "50%",
-								backgroundColor: "#9E9E9E",
+								backgroundColor: neutral[400],
 							}}
 						/>
 						<span
@@ -439,7 +440,7 @@ const EquityPlot: React.FC<EquityPlotProps> = ({
 								width: 8,
 								height: 8,
 								borderRadius: "50%",
-								backgroundColor: "#78909C",
+								backgroundColor: neutral[500],
 							}}
 						/>
 						<span
@@ -458,7 +459,7 @@ const EquityPlot: React.FC<EquityPlotProps> = ({
 								width: 8,
 								height: 8,
 								borderRadius: "50%",
-								backgroundColor: "#4f7487",
+								backgroundColor: neutral[700],
 							}}
 						/>
 						<span

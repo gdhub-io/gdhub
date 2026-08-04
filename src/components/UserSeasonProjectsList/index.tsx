@@ -114,7 +114,12 @@ export const UserSeasonProjectsList = ({
 						<Space>
 							{screens.md && !!userProject.conceptLink && (
 								<Badge
-									count={<GoLinkExternal size={12} color="#afafaf" />}
+									count={
+										<GoLinkExternal
+											size={12}
+											color="var(--gd-color-text-tertiary)"
+										/>
+									}
 									offset={[-32, 4]}
 								>
 									<Link

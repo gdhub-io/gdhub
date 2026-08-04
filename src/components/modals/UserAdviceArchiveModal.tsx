@@ -55,11 +55,19 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 				let text = "";
 				switch (status) {
 					case "Approved":
-						icon = <IconCheck style={{ color: "#52c41a", fontSize: 22 }} />;
+						icon = (
+							<IconCheck
+								style={{ color: "var(--gd-success-solid)", fontSize: 22 }}
+							/>
+						);
 						text = t("Approved");
 						break;
 					case "Rejected":
-						icon = <IconCancel style={{ color: "#ff4d4f", fontSize: 22 }} />;
+						icon = (
+							<IconCancel
+								style={{ color: "var(--gd-danger-solid)", fontSize: 22 }}
+							/>
+						);
 						text = t("Rejected");
 						break;
 					case "Closed":
@@ -72,7 +80,11 @@ const UserAdviceArchiveModal: React.FC<UserAdviceArchiveModalProps> = ({
 						break;
 					case "Created":
 					default:
-						icon = <IconClock style={{ color: "#1890ff", fontSize: 8 }} />;
+						icon = (
+							<IconClock
+								style={{ color: "var(--gd-info-solid)", fontSize: 8 }}
+							/>
+						);
 						text = t("Created");
 						break;
 				}

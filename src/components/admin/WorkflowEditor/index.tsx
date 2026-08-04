@@ -664,7 +664,8 @@ export const WorkflowEditor = ({
 																						justifyContent: "space-between",
 																						marginBottom: 4,
 																						padding: "4px 8px",
-																						backgroundColor: "#f8f9fa",
+																						backgroundColor:
+																							"var(--gd-color-surface-sunken)",
 																						borderRadius: "4px",
 																					}}
 																				>
@@ -693,7 +694,7 @@ export const WorkflowEditor = ({
 																											? "line-through"
 																											: "none",
 																										color: task.done
-																											? "#999"
+																											? "var(--gd-color-text-tertiary)"
 																											: "inherit",
 																									}}
 																								>

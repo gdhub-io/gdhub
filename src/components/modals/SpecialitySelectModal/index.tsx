@@ -82,7 +82,12 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 								onClick={() => setSelectedItem(speciality.id)}
 								actions={
 									selectedItem == speciality.id
-										? [<BsCheckLg color="#000" key="icon-check-speciality" />]
+										? [
+												<BsCheckLg
+													color="var(--gd-neutral-950)"
+													key="icon-check-speciality"
+												/>,
+											]
 										: []
 								}
 							>

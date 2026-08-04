@@ -204,7 +204,7 @@ export const EventScheduleGantt = forwardRef<
 								{row.speakers?.map((speaker) => (
 									<Avatar
 										key={speaker.id}
-										style={{ backgroundColor: "#1677ff" }}
+										style={{ backgroundColor: "var(--gd-info-solid)" }}
 										src={speaker.image}
 									>
 										{speaker.image ? null : speaker.name?.charAt(0)}

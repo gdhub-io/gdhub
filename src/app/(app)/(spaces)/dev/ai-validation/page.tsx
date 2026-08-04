@@ -70,7 +70,7 @@ export default function DevAiValidationPage() {
 		<main
 			style={{
 				minHeight: "100vh",
-				background: "#f5f5f5",
+				background: "var(--gd-color-surface-sunken)",
 				padding: "40px 16px",
 				display: "flex",
 				justifyContent: "center",

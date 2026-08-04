@@ -60,11 +60,19 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 				let text = "";
 				switch (status) {
 					case "Approved":
-						icon = <MdCheckCircle style={{ color: "#52c41a", fontSize: 22 }} />;
+						icon = (
+							<MdCheckCircle
+								style={{ color: "var(--gd-success-solid)", fontSize: 22 }}
+							/>
+						);
 						text = t("Approved");
 						break;
 					case "Rejected":
-						icon = <MdCancel style={{ color: "#ff4d4f", fontSize: 22 }} />;
+						icon = (
+							<MdCancel
+								style={{ color: "var(--gd-danger-solid)", fontSize: 22 }}
+							/>
+						);
 						text = t("Rejected");
 						break;
 					case "Closed":
@@ -77,7 +85,9 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 						break;
 					default:
 						icon = (
-							<MdFiberManualRecord style={{ color: "#1890ff", fontSize: 8 }} />
+							<MdFiberManualRecord
+								style={{ color: "var(--gd-info-solid)", fontSize: 8 }}
+							/>
 						);
 						text = t("Created");
 						break;

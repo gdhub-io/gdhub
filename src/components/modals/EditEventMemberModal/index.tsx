@@ -337,7 +337,12 @@ const EditEventMemberModal: React.FC<EditEventMemberModalProps> = ({
 									</Avatar>
 									<div>
 										<div>{data.label}</div>
-										<div style={{ fontSize: 12, color: "#888" }}>
+										<div
+											style={{
+												fontSize: 12,
+												color: "var(--gd-color-text-secondary)",
+											}}
+										>
 											{data.speciality || data.direction || "—"}
 										</div>
 									</div>

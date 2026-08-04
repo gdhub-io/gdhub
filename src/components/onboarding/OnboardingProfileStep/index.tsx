@@ -244,7 +244,12 @@ export const OnboardingProfileStep = ({
 										<AutoComplete
 											allowClear
 											placeholder={t("country.placeholder", "Select country")}
-											suffixIcon={<FiChevronDown size={24} color="#afafaf" />}
+											suffixIcon={
+												<FiChevronDown
+													size={24}
+													color="var(--gd-color-text-tertiary)"
+												/>
+											}
 											filterOption={(inputValue, option) =>
 												option?.title
 													?.toLowerCase()

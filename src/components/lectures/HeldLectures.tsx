@@ -107,7 +107,7 @@ export const HeldLectures = () => {
 					<Spin spinning={isLoading}>
 						<Table
 							style={{
-								border: "1px solid #aaa",
+								border: "1px solid var(--gd-color-text-tertiary)",
 								borderRadius: "16px",
 								padding: "8px",
 							}}

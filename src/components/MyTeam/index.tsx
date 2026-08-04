@@ -1047,7 +1047,9 @@ const MyTeam = () => {
 											totalShare += inv.share || 0;
 										});
 										return (
-											<Table.Summary.Row style={{ background: "#eee" }}>
+											<Table.Summary.Row
+												style={{ background: "var(--gd-color-border)" }}
+											>
 												<Table.Summary.Cell
 													index={(investors?.data?.length || 0) + 1}
 												>

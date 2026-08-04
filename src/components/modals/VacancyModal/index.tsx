@@ -499,7 +499,7 @@ const VacancyModal = ({
 							<div
 								style={{
 									fontSize: 12,
-									color: "#8c8c8c",
+									color: "var(--gd-color-text-secondary)",
 									marginBottom: 16,
 								}}
 							>
@@ -608,7 +608,11 @@ const VacancyModal = ({
 									</Form.Item>
 									{adjustedMaxAvailableShare > 0 && (
 										<div
-											style={{ fontSize: 12, color: "#8c8c8c", marginTop: 4 }}
+											style={{
+												fontSize: 12,
+												color: "var(--gd-color-text-secondary)",
+												marginTop: 4,
+											}}
 										>
 											{t("Maximum available equity")}:{" "}
 											{adjustedMaxAvailableShare.toFixed(2)}%

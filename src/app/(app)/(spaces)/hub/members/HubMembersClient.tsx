@@ -228,7 +228,9 @@ function FilterDropdown({
 									item.isRefined ? styles.checkboxOn : ""
 								}`}
 							>
-								{item.isRefined && <IconCheck size={12} color="#fff" />}
+								{item.isRefined && (
+									<IconCheck size={12} color="var(--gd-color-surface)" />
+								)}
 							</span>
 							{variant === "direction" ? (
 								<DirectionChip name={item.label} />

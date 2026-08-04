@@ -8,9 +8,9 @@ function Row({ ok, label }: { ok: boolean; label: string }) {
 	return (
 		<Flex align="center" gap={6}>
 			{ok ? (
-				<IconCircleCheck size={14} color="#52c41a" />
+				<IconCircleCheck size={14} color="var(--gd-success-solid)" />
 			) : (
-				<IconCircleX size={14} color="#ff4d4f" />
+				<IconCircleX size={14} color="var(--gd-danger-solid)" />
 			)}
 			<Text style={{ fontSize: 12 }}>{label}</Text>
 		</Flex>
