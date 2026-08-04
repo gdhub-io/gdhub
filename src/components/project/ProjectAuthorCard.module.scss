@@ -14,8 +14,8 @@
 	height: 48px;
 	border-radius: 50%;
 	overflow: hidden;
-	background: #f4f4f5;
-	color: #8c8c8c;
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-secondary);
 	font-size: 15px;
 	font-weight: 600;
 }
@@ -30,7 +30,7 @@
 .name {
 	font-size: 15px;
 	font-weight: 600;
-	color: #18181b;
+	color: var(--gd-color-text);
 }
 
 .position {
@@ -47,12 +47,12 @@
 .quoteIcon {
 	flex-shrink: 0;
 	margin-top: 2px;
-	color: #d4d4d8;
+	color: var(--gd-color-border-strong);
 }
 
 .motivationText {
 	font-size: 13px;
 	font-style: italic;
 	line-height: 1.55;
-	color: #52525b;
+	color: var(--gd-neutral-600);
 }

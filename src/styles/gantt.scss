@@ -1,41 +1,41 @@
 @mixin customGanttTheme() {
 
   :global(.wx-willow-theme) {
-    --wx-color-primary: #282828;
+    --wx-color-primary: var(--gd-neutral-800);
 
-    --wx-gantt-border: 1px solid #ededed;
+    --wx-gantt-border: 1px solid var(--gd-color-border);
     --wx-gantt-form-header-border: none;
-    --wx-gantt-icon-color: #9fa1ae;
+    --wx-gantt-icon-color: var(--gd-color-text-tertiary);
 
     /* bars */
     --wx-gantt-bar-font: var(--wx-font-weight) var(--wx-font-size) var(--wx-font-family);
     --wx-gantt-bar-border-radius: 8px;
     --wx-gantt-milestone-border-radius: 8px;
 
-    --wx-gantt-task-color: #282828;
-    --wx-gantt-task-font-color: #fff;
-    --wx-gantt-task-fill-color: #282828;
-    --wx-gantt-task-border-color: #1f6bd9;
+    --wx-gantt-task-color: var(--gd-neutral-800);
+    --wx-gantt-task-font-color: var(--gd-color-text-inverse);
+    --wx-gantt-task-fill-color: var(--gd-neutral-800);
+    --wx-gantt-task-border-color: var(--gd-info-solid);
     --wx-gantt-task-border: 1px solid transparent;
 
-    --wx-gantt-project-color: #00ba94;
-    --wx-gantt-project-font-color: #ffffff;
-    --wx-gantt-project-fill-color: #099f81;
-    --wx-gantt-project-border-color: #099f81;
+    --wx-gantt-project-color: var(--gd-success-solid);
+    --wx-gantt-project-font-color: var(--gd-color-text-inverse);
+    --wx-gantt-project-fill-color: var(--gd-success-on-tint);
+    --wx-gantt-project-border-color: var(--gd-success-on-tint);
     --wx-gantt-project-border: 1px solid transparent;
 
-    --wx-gantt-milestone-color: #ad44ab;
+    --wx-gantt-milestone-color: var(--gd-color-link);
 
-    --wx-gantt-select-color: #eaedf5;
-    --wx-gantt-link-color: #9fa1ae;
-    --wx-gantt-link-marker-background: #eaedf5;
-    --wx-gantt-link-marker-color: #9fa1ae;
+    --wx-gantt-select-color: var(--gd-color-border);
+    --wx-gantt-link-color: var(--gd-color-text-tertiary);
+    --wx-gantt-link-marker-background: var(--gd-color-border);
+    --wx-gantt-link-marker-color: var(--gd-color-text-tertiary);
 
     --wx-gantt-bar-shadow: 0px 1px 2px rgba(44, 47, 60, 0.06),
       0px 3px 10px rgba(44, 47, 60, 0.12);
 
     --wx-gantt-progress-marker-height: 26px;
-    --wx-gantt-progress-border-color: #c0c3ce;
+    --wx-gantt-progress-border-color: var(--gd-color-border-strong);
 
     --wx-gantt-baseline-border-radius: 4px;
 
@@ -58,21 +58,21 @@
     --wx-timescale-border: var(--wx-gantt-border);
 
     /* grid and timescale */
-    --wx-gantt-holiday-background: #f0f6fa;
-    --wx-gantt-holiday-color: #9fa1ae;
+    --wx-gantt-holiday-background: var(--gd-info-tint);
+    --wx-gantt-holiday-color: var(--gd-color-text-tertiary);
 
     /* markers */
     --wx-gantt-marker-font: var(--wx-font-weight-md) var(--wx-font-size-sm) var(--wx-font-family);
-    --wx-gantt-marker-font-color: #fff;
+    --wx-gantt-marker-font-color: var(--gd-color-text-inverse);
     --wx-gantt-marker-color: rgba(6, 189, 248, 0.77);
 
     /* tooltips */
     --wx-tooltip-font: var(--wx-font-weight) var(--wx-font-size) var(--wx-font-family);
-    --wx-tooltip-font-color: #e6e6e6;
-    --wx-tooltip-background: #4f525a;
+    --wx-tooltip-font-color: var(--gd-color-border);
+    --wx-tooltip-background: var(--gd-neutral-600);
 
     /* sidebar */
-    --wx-sidebar-close-icon: #c0c3ce;
+    --wx-sidebar-close-icon: var(--gd-color-border-strong);
   }
 
 }

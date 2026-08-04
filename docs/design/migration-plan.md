@@ -14,11 +14,15 @@ component does not fight them. Six of the nine SCSS zones are now on tokens too.
 
 | | at start | now |
 |---|---|---|
-| SCSS modules reading `--gd-*` | 8 of 292 | **62** |
-| Hardcoded hexes in SCSS | 813 in 112 files | **281 in 56** |
+| SCSS modules reading `--gd-*` | 8 of 292 | **97** |
+| Hardcoded hexes in SCSS | 813 in 112 files | **8 in 1** |
 | `!important` in SCSS | 397 | 365 |
 | Hardcoded hexes in TSX | 262 in 48 files | ~250 |
 | Files using a `ui` primitive | 1 | 12 |
+
+The eight survivors are the Steam / itch / Google Play / Epic badges. Those are
+other companies' brand colours and repainting them in our palette would
+misidentify the store, so they are marked in place and stay.
 
 Stages 1–2 moved the SCSS numbers barely at all, and that was expected: they
 removed the *themes* and the *overrides*, which is what made the per-file work
@@ -95,10 +99,9 @@ Done:
 Still to do:
 - Coloured avatar and icon squares → `IconTile` (1 adopted outside stories).
 
-### 4. SCSS, by zone
+### 4. SCSS, by zone ✅ done
 
-Hex debt, largest first. Product surfaces come before marketing ones because they
-are seen daily and are already on the token theme.
+Every zone is clear. What follows is the record of what was in them.
 
 | Zone | Hexes | Files |
 |---|---|---|

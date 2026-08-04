@@ -1,7 +1,7 @@
 @use "sass:meta";
 .content {
   :global(.ant-segmented-item) {
-    border: 1px solid #A2A1AB;
+    border: 1px solid var(--gd-color-text-tertiary);
 
     &:not(:last-child) {
       margin-right: 24px;
@@ -9,22 +9,22 @@
   }
 
   :global(.ant-segmented-item-selected) {
-    background-color: #F33921;
-    color: #fff;
-    border-color: #F33921;
+    background-color: var(--gd-color-accent-hover);
+    color: var(--gd-color-surface);
+    border-color: var(--gd-color-accent-hover);
 
     .segmented-option-content {
       .ant-typography {
-        color: #fff !important;
+        color: var(--gd-color-surface) !important;
       }
     }
 
     .segmented-option-footer {
-      border-top-color: #F33921 !important;
-      background-color: #fff;
+      border-top-color: var(--gd-color-accent-hover) !important;
+      background-color: var(--gd-color-surface);
 
       .ant-typography {
-        color: #F33921;
+        color: var(--gd-color-accent-hover);
         font-weight: 600 !important;
       }
     }
@@ -45,7 +45,7 @@
 
     :global(.segmented-option-footer) {
       padding: 8px 0;
-      border-top: 1px solid #A2A1AB;
+      border-top: 1px solid var(--gd-color-text-tertiary);
 
       .ant-typography {
         font-size: 14px;

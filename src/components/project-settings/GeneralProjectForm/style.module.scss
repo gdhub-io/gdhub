@@ -1,10 +1,10 @@
 .cover {
-	background-color: #161616;
+	background-color: var(--gd-color-text);
 	width: 100%;
 	// padding-top: 56.25%; /* 16:9 Aspect Ratio */
 	position: relative;
 	aspect-ratio: 16 / 9;
-	border: 1px solid #000;
+	border: 1px solid var(--gd-neutral-950);
 	border-radius: 8px;
 	overflow: hidden;
 
@@ -22,7 +22,7 @@
 .form {
 	:global(.ant-form-item-has-error) {
 		.mdxeditor {
-			border-color: #f15541 !important;
+			border-color: var(--gd-color-accent) !important;
 			box-shadow: 0 0 0 2px rgba(255, 73, 12, 0.05);
 			outline: 0;
 		}
@@ -51,7 +51,7 @@
 	width: 100%;
 	flex: 1 1 auto;
 	min-height: 0;
-	border: 1px dashed #222222;
+	border: 1px dashed var(--gd-color-text);
 	border-radius: 8px;
 	background-color: rgba(0, 0, 0, 0.02);
 	padding: 16px;
@@ -66,8 +66,8 @@
 .videoBoxFilled {
 	flex: 0 0 auto;
 	border-style: solid;
-	border-color: #000;
-	background-color: #161616;
+	border-color: var(--gd-neutral-950);
+	background-color: var(--gd-color-text);
 	padding: 0;
 	overflow: hidden;
 }

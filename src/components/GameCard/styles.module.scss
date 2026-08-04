@@ -18,7 +18,7 @@
 
   &:hover .hubCard,
   &:focus-visible .hubCard {
-    border-color: #d4d4d8 !important;
+    border-color: var(--gd-color-border-strong) !important;
   }
 
   &:focus-visible {
@@ -34,11 +34,11 @@
   height: 100%;
   position: relative;
   background-color: white;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--gd-color-border);
 }
 
 .hubCard {
-  border: 1px solid #f4f4f5;
+  border: 1px solid var(--gd-color-surface-sunken);
   border-radius: 10px;
   box-shadow: none;
   transition:
@@ -47,7 +47,7 @@
 
   &:global(.ant-card) {
     border-radius: 10px;
-    background: #fff !important;
+    background: var(--gd-color-surface) !important;
   }
 }
 
@@ -85,7 +85,7 @@
 
 .hubTitle {
   margin: 0 !important;
-  color: #1f1f1f !important;
+  color: var(--gd-color-text) !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   line-height: 1.35 !important;
@@ -98,7 +98,7 @@
   margin-top: 2px;
   min-width: 0;
   font-size: 11px;
-  color: #a1a1aa;
+  color: var(--gd-color-text-tertiary);
 }
 
 .hubStageDot {
@@ -158,7 +158,7 @@
     height: 32px;
     font-size: 16px;
     line-height: 32px;
-    background-color: #1890ff;
+    background-color: var(--gd-info-solid);
   }
 }
 
@@ -199,8 +199,8 @@
   gap: 4px;
   padding: 4px 8px;
   border-radius: 999px;
-  background-color: #ff4d4f44;
-  color: #fff;
+  background-color: color-mix(in srgb, var(--gd-color-accent) 27%, transparent);
+  color: var(--gd-color-text-inverse);
   backdrop-filter: blur(4px);
   font-size: 14px;
   font-weight: 600;
@@ -361,7 +361,7 @@
 
 .gameCardSkeleton {
   overflow: hidden;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--gd-color-border);
   border-radius: 12px;
   background-color: white;
 }

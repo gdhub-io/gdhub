@@ -14,8 +14,8 @@
 .createBtn {
 	padding: 10px 24px;
 	font-weight: 600;
-	background: #07ad92;
-	color: #fff;
+	background: var(--gd-color-action);
+	color: var(--gd-color-surface);
 	border: none;
 	border-radius: 8px;
 	cursor: pointer;
@@ -24,11 +24,11 @@
 }
 
 .createBtn:hover {
-	background: #008775;
+	background: var(--gd-color-action-hover);
 }
 
 .mainEventBlock {
-	background: linear-gradient(90deg, #e0f7fa 0%, #b2ebf2 100%);
+	background: linear-gradient(90deg, var(--gd-info-tint) 0%, var(--gd-info-tint) 100%);
 	border-radius: 16px;
 	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 	padding: 40px 32px 32px 32px;
@@ -41,7 +41,7 @@
 .mainEventType {
 	font-size: 18px;
 	font-weight: 700;
-	color: #0288d1;
+	color: var(--gd-info-solid);
 	margin-bottom: 8px;
 }
 
@@ -49,18 +49,18 @@
 	font-size: 32px;
 	font-weight: 800;
 	margin-bottom: 12px;
-	color: #222;
+	color: var(--gd-color-text);
 }
 
 .mainEventDates {
 	font-size: 16px;
-	color: #555;
+	color: var(--gd-neutral-600);
 	margin-bottom: 16px;
 }
 
 .mainEventDesc {
 	font-size: 18px;
-	color: #333;
+	color: var(--gd-color-text);
 	line-height: 1.5;
 }
 
@@ -72,7 +72,7 @@
 	margin-bottom: 16px;
 	font-size: 22px;
 	font-weight: 700;
-	color: #222;
+	color: var(--gd-color-text);
 }
 
 .eventsList {
@@ -82,10 +82,10 @@
 }
 
 .eventCard {
-	border: 1px solid #eee;
+	border: 1px solid var(--gd-color-border);
 	border-radius: 8px;
 	padding: 18px 20px;
-	background: #fff;
+	background: var(--gd-color-surface);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 	display: flex;
 	flex-direction: column;
@@ -105,11 +105,11 @@
 
 .eventType {
 	font-weight: 700;
-	color: #ffffff;
+	color: var(--gd-color-surface);
 }
 
 .eventDates {
-	color: #888;
+	color: var(--gd-color-text-secondary);
 	font-size: 15px;
 }
 
@@ -121,7 +121,7 @@
 	padding: 20px;
 	background: linear-gradient(9deg, rgba(0, 0, 0, 0.75) 50%, rgba(0, 0, 0, 0.1) 70%, rgba(0, 0, 0, 0) 80%);
 ;
-	color: #fff;
+	color: var(--gd-color-surface);
 	z-index: 2;
 	display: flex;
 	flex-direction: column;
@@ -132,7 +132,7 @@
 	color: rgb(255, 255, 255);
 	font-size: 18px;
 	line-height: 1.2;
-	text-shadow: 0 0 6px #000000;
+	text-shadow: 0 0 6px var(--gd-neutral-950);
 }
 
 .eventDesc {

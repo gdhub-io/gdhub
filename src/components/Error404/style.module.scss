@@ -7,11 +7,11 @@
   justify-content: center;
 
   &.theme-light {
-    color: #111;
+    color: var(--gd-color-text);
   }
 
   &.theme-dark {
-    color: #fff;
+    color: var(--gd-color-surface);
   }
 }
 
@@ -28,7 +28,7 @@
 
   @keyframes type {
     from {
-      box-shadow: inset -3px 0px 0px #888;
+      box-shadow: inset -3px 0px 0px var(--gd-color-text-secondary);
     }
 
     to {
