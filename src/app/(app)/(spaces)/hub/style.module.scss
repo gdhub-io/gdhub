@@ -12,7 +12,7 @@
 .mainSectionsBundle {
 	min-width: 0;
 	overflow: hidden;
-	border: 1px solid #e4e4e7;
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: 16px;
 	background: transparent;
 }
@@ -46,7 +46,7 @@
 
 .welcomeTitle {
 	margin: 0 !important;
-	color: #1f1f1f !important;
+	color: var(--gd-color-text) !important;
 	font-size: 22px !important;
 	font-weight: 700 !important;
 	line-height: 1.25 !important;
@@ -56,7 +56,7 @@
 	display: block;
 	max-width: 520px;
 	margin: 0 !important;
-	color: #71717a !important;
+	color: var(--gd-color-text-secondary) !important;
 	font-size: 15px !important;
 	line-height: 1.5 !important;
 }

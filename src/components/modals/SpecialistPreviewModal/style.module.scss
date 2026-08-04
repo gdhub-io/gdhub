@@ -1,12 +1,12 @@
 /* Talent card — matches the Pencil "Talent Card Modal — Redesign" layout. */
 
-$text-primary: #181818;
-$text-secondary: #8c8c8c;
-$border: #e4e4e7;
-$divider: #ededed;
-$surface: #ffffff;
-$rail-bg: #fafafa;
-$btn-black: #222222;
+$text-primary: var(--gd-color-text);
+$text-secondary: var(--gd-color-text-secondary);
+$border: var(--gd-color-border-strong);
+$divider: var(--gd-color-border);
+$surface: var(--gd-color-surface);
+$rail-bg: var(--gd-neutral-25);
+$btn-black: var(--gd-color-text);
 
 .card {
 	display: flex;
@@ -27,7 +27,7 @@ $btn-black: #222222;
 	font-weight: 400;
 	letter-spacing: 1.4px;
 	text-transform: uppercase;
-	color: #7c3aed;
+	color: var(--gd-color-link);
 }
 
 .identity {
@@ -79,7 +79,7 @@ $btn-black: #222222;
 
 .levelBadge {
 	background: $surface;
-	color: #6d28d9;
+	color: var(--gd-color-link);
 	border-radius: 20px;
 	padding: 4px 12px;
 	font-size: 12px;
@@ -108,7 +108,7 @@ $btn-black: #222222;
 .role {
 	font-size: 14px;
 	font-weight: 500;
-	color: #3f3f46;
+	color: var(--gd-neutral-700);
 	text-transform: capitalize;
 }
 
@@ -142,11 +142,11 @@ $btn-black: #222222;
 	padding: 6px 12px;
 	font-size: 12px;
 	font-weight: 500;
-	color: #3f3f46;
+	color: var(--gd-neutral-700);
 }
 
 .pillIcon {
-	color: #7c3aed;
+	color: var(--gd-color-link);
 }
 
 .offerBtn {
@@ -156,7 +156,7 @@ $btn-black: #222222;
 	border: none;
 	cursor: pointer;
 	background: $btn-black;
-	color: #ffffff;
+	color: var(--gd-color-surface);
 	border-radius: 8px;
 	padding: 10px 18px;
 	font-size: 13px;
@@ -256,7 +256,7 @@ $btn-black: #222222;
 	justify-content: center;
 	gap: 8px;
 	background: $surface;
-	border: 1px solid #d4d4d8;
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: 8px;
 	padding: 10px 16px;
 	font-size: 13px;
@@ -276,7 +276,7 @@ $btn-black: #222222;
 	padding: 2px 0;
 	font-size: 12px;
 	font-weight: 600;
-	color: #6d28d9;
+	color: var(--gd-color-link);
 
 	&:hover {
 		text-decoration: underline;
@@ -310,7 +310,7 @@ $btn-black: #222222;
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
 	&:hover {
-		border-color: #d4d4d8;
+		border-color: var(--gd-color-border-strong);
 		box-shadow: 0 2px 8px rgba(15, 15, 15, 0.06);
 	}
 }
@@ -320,7 +320,7 @@ $btn-black: #222222;
 	height: 40px;
 	border-radius: 8px;
 	flex-shrink: 0;
-	background-color: #ede9fe;
+	background-color: var(--gd-color-accent-subtle);
 	background-size: cover;
 	background-position: center;
 }
@@ -330,7 +330,7 @@ $btn-black: #222222;
 	height: 36px;
 	border-radius: 8px;
 	flex-shrink: 0;
-	background: #fef3c7;
+	background: var(--gd-warning-tint);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -394,7 +394,7 @@ $btn-black: #222222;
 .para {
 	font-size: 13px;
 	line-height: 1.5;
-	color: #3f3f46;
+	color: var(--gd-neutral-700);
 	margin: 0 !important;
 }
 
@@ -433,8 +433,8 @@ $btn-black: #222222;
 	margin: 0;
 	border: none;
 	border-radius: 16px;
-	background: #f4f4f5;
-	color: #3f3f46;
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-neutral-700);
 	padding: 4px 12px;
 	font-size: 12px;
 }
@@ -443,8 +443,8 @@ $btn-black: #222222;
 	margin: 0;
 	border: none;
 	border-radius: 16px;
-	background: #ede9fe;
-	color: #6d28d9;
+	background: var(--gd-color-accent-subtle);
+	color: var(--gd-color-link);
 	padding: 4px 12px;
 	font-size: 12px;
 }
@@ -484,7 +484,7 @@ $btn-black: #222222;
 
 .barLabel {
 	font-size: 12px;
-	color: #3f3f46;
+	color: var(--gd-neutral-700);
 }
 
 .barValue {
@@ -526,7 +526,7 @@ $btn-black: #222222;
 	align-items: center;
 	gap: 6px;
 	font-size: 12px;
-	color: #a1a1aa;
+	color: var(--gd-color-text-tertiary);
 }
 
 /* ---------- Project popover ---------- */
@@ -564,7 +564,7 @@ $btn-black: #222222;
 	border-radius: 16px;
 	padding: 0 10px;
 	height: 26px;
-	color: #ffffff;
+	color: var(--gd-color-surface);
 	font-size: 11px;
 	font-weight: 600;
 	cursor: pointer;
@@ -576,7 +576,7 @@ $btn-black: #222222;
 
 /* Long project names are clamped to two lines — the cover never grows past it. */
 .ppTitle {
-	color: #ffffff;
+	color: var(--gd-color-surface);
 	font-size: 18px;
 	font-weight: 700;
 	line-height: 1.25;
@@ -611,8 +611,8 @@ $btn-black: #222222;
 	margin: 0;
 	border: none;
 	border-radius: 16px;
-	background: #ede9fe;
-	color: #6d28d9;
+	background: var(--gd-color-accent-subtle);
+	color: var(--gd-color-link);
 	padding: 4px 10px;
 	font-size: 12px;
 	font-weight: 600;
@@ -621,7 +621,7 @@ $btn-black: #222222;
 .ppDesc {
 	font-size: 13px;
 	line-height: 1.5;
-	color: #52525b;
+	color: var(--gd-neutral-600);
 	margin: 0 !important;
 }
 
@@ -647,7 +647,7 @@ $btn-black: #222222;
 .ppBoxLabel {
 	font-size: 11px;
 	font-weight: 600;
-	color: #a1a1aa;
+	color: var(--gd-color-text-tertiary);
 }
 
 .ppTeam {
@@ -678,14 +678,14 @@ $btn-black: #222222;
 	height: 28px;
 	flex-shrink: 0;
 	border-radius: 50%;
-	background: #e4e4e7;
+	background: var(--gd-color-border-strong);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
 	font-size: 11px;
 	font-weight: 600;
-	color: #52525b;
+	color: var(--gd-neutral-600);
 }
 
 .ppAvatarImg {
@@ -722,16 +722,16 @@ $btn-black: #222222;
 	align-items: center;
 	justify-content: center;
 	gap: 6px;
-	background: #f4f4f5;
+	background: var(--gd-color-surface-sunken);
 	border: 1px solid $border;
 	border-radius: 10px;
 	padding: 9px 12px;
 	font-size: 13px;
 	font-weight: 600;
-	color: #1f1f1f !important;
+	color: var(--gd-color-text) !important;
 
 	&:hover {
-		background: #ebebed;
+		background: var(--gd-color-border);
 	}
 }
 
@@ -746,8 +746,8 @@ $btn-black: #222222;
 	align-items: center;
 	gap: 10px;
 	padding: 14px;
-	background: #f0fdf4;
-	border-bottom: 1px solid #bbf7d0;
+	background: var(--gd-success-tint);
+	border-bottom: 1px solid var(--gd-success-tint);
 }
 
 .certBannerIcon {
@@ -755,7 +755,7 @@ $btn-black: #222222;
 	height: 32px;
 	flex-shrink: 0;
 	border-radius: 50%;
-	background: #dcfce7;
+	background: var(--gd-success-tint);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -771,12 +771,12 @@ $btn-black: #222222;
 .certBannerTitle {
 	font-size: 13px;
 	font-weight: 600;
-	color: #14532d;
+	color: var(--gd-success-on-tint);
 }
 
 .certBannerSub {
 	font-size: 12px;
-	color: #15803d;
+	color: var(--gd-success-on-tint);
 }
 
 .certBody {
@@ -798,7 +798,7 @@ $btn-black: #222222;
 	height: 48px;
 	flex-shrink: 0;
 	border-radius: 10px;
-	background-color: #f4f4f5;
+	background-color: var(--gd-color-surface-sunken);
 	background-size: cover;
 	background-position: center;
 	display: inline-flex;
@@ -817,12 +817,12 @@ $btn-black: #222222;
 	font-size: 16px;
 	font-weight: 700;
 	line-height: 1.3;
-	color: #0f0f0f;
+	color: var(--gd-color-text);
 }
 
 .certSub {
 	font-size: 12px;
-	color: #71717a;
+	color: var(--gd-color-text-secondary);
 }
 
 .certGrid {
@@ -843,7 +843,7 @@ $btn-black: #222222;
 	font-weight: 600;
 	letter-spacing: 0.4px;
 	text-transform: uppercase;
-	color: #a1a1aa;
+	color: var(--gd-color-text-tertiary);
 }
 
 .certFieldValue {

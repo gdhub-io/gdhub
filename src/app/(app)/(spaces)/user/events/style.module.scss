@@ -2,9 +2,9 @@
 	width: 100%;
 
 	:global(.ant-card) {
-		background: #fff;
+		background: var(--gd-color-surface);
 		border-radius: 12px;
-		border: 1px solid #d1d1d1;
+		border: 1px solid var(--gd-color-border-strong);
 		height: 100%;
 		display: flex;
 		flex-direction: column;
@@ -39,7 +39,7 @@
 	}
 
 	:global(.ant-card-actions) {
-		border-top: 1px solid #f0f0f0;
+		border-top: 1px solid var(--gd-color-border);
 
 		li {
 			margin: 0;
@@ -63,7 +63,7 @@
 	}
 
 	.hoveredCard {
-		border: 1px solid #bcbcbc !important;
+		border: 1px solid var(--gd-color-border-strong) !important;
 		// box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3) !important;
 		// transform: translateY(-2px);
 		z-index: 10;
@@ -71,7 +71,7 @@
 	}
 
 	.relatedCard {
-		border: 1px solid #bcbcbc !important;
+		border: 1px solid var(--gd-color-border-strong) !important;
 		// box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2) !important;
 		opacity: 0.95;
 		position: relative;
@@ -83,8 +83,8 @@
 			position: absolute;
 			top: 0px;
 			left: 12px;
-			background: #1890ff;
-			color: #fff;
+			background: var(--gd-info-solid);
+			color: var(--gd-color-on-action);
 			padding: 2px 8px;
 			font-size: 11px;
 			font-weight: 500;
@@ -102,8 +102,8 @@
 			position: absolute;
 			top: 0px;
 			left: 12px;
-			background: #52c41a;
-			color: #fff;
+			background: var(--gd-success-solid);
+			color: var(--gd-color-on-action);
 			padding: 2px 8px;
 			font-size: 11px;
 			font-weight: 500;

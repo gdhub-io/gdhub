@@ -313,7 +313,10 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 						{/* ---------- Header ---------- */}
 						<div
 							className={styles.header}
-							style={{ background: direction?.color || "#F4F4F5" }}
+							style={{
+								background:
+									direction?.color || "var(--gd-color-surface-sunken)",
+							}}
 						>
 							<div
 								className={styles.eyebrow}
@@ -678,7 +681,10 @@ const skInput = (width: number, height: number, block?: boolean) => (
 
 const TalentCardSkeleton = () => (
 	<div className={styles.card}>
-		<div className={styles.header} style={{ background: "#F4F4F5" }}>
+		<div
+			className={styles.header}
+			style={{ background: "var(--gd-color-surface-sunken)" }}
+		>
 			{skInput(90, 12)}
 			<div className={styles.identity}>
 				<Skeleton.Avatar
@@ -918,7 +924,7 @@ const CertificateMiniCard = ({
 	<CardPopover content={<CertificatePreview cert={cert} t={t} />}>
 		<button type="button" className={styles.miniCard}>
 			<span className={styles.certThumb}>
-				<IconAward size={18} color="#B45309" />
+				<IconAward size={18} color="var(--gd-warning-solid)" />
 			</span>
 			<span className={styles.miniText}>
 				<span className={styles.miniTitle}>
@@ -926,7 +932,7 @@ const CertificateMiniCard = ({
 						t("specialist.preview.certificate", "Certificate")}
 				</span>
 				<span className={styles.miniSubVerified}>
-					<IconRosetteDiscountCheck size={13} color="#16A34A" />
+					<IconRosetteDiscountCheck size={13} color="var(--gd-success-solid)" />
 					{t("specialist.preview.verified", "Verified")} ·{" "}
 					{new Date(cert.issuedAt).getFullYear()}
 				</span>
@@ -951,7 +957,7 @@ const CertificatePreview = ({
 		<div className={styles.certPop}>
 			<div className={styles.certBanner}>
 				<span className={styles.certBannerIcon}>
-					<IconShieldCheck size={18} color="#16A34A" />
+					<IconShieldCheck size={18} color="var(--gd-success-solid)" />
 				</span>
 				<span className={styles.certBannerText}>
 					<span className={styles.certBannerTitle}>
@@ -979,7 +985,9 @@ const CertificatePreview = ({
 								: undefined
 						}
 					>
-						{!cert.event?.image && <IconAward size={22} color="#52525B" />}
+						{!cert.event?.image && (
+							<IconAward size={22} color="var(--gd-neutral-600)" />
+						)}
 					</span>
 					<span className={styles.certHeadText}>
 						<span className={styles.certTitle}>{title}</span>

@@ -1,14 +1,14 @@
 .vacancyDescription {
 	:global(.ant-descriptions-item-content) {
 		display: block !important;
-		background-color: #fbfbfb;
-		border: 1px solid #e9e8e8;
+		background-color: var(--gd-neutral-25);
+		border: 1px solid var(--gd-color-border);
 		border-radius: 8px;
 		padding: 16px;
 	}
 
 	:global(a) {
-		color: #bf1313;
+		color: var(--gd-color-link);
 	}
 }
 
@@ -39,7 +39,7 @@
 	margin-bottom: 16px;
 	overflow: hidden;
 	transition: all 0.3s ease;
-	background-color: #ffffff;
+	background-color: var(--gd-color-surface);
 	border: none;
 	box-shadow: none;
 }
@@ -66,7 +66,7 @@
 	margin-top: 8px;
 	margin-bottom: 16px;
 	padding-top: 16px;
-	border-top: 1px solid #f0f0f0;
+	border-top: 1px solid var(--gd-color-border);
 }
 
 .projectCover {
@@ -91,7 +91,7 @@
 	aspect-ratio: 16 / 9;
 	border-radius: 8px;
 	overflow: hidden;
-	background: #000;
+	background: var(--gd-color-text);
 
 	// react-player v3 renders its media element directly; pin it to the 16/9
 	// box so the video fits (letterboxes) instead of overflowing and cropping.

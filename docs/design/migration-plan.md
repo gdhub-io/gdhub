@@ -105,8 +105,8 @@ are seen daily and are already on the token theme.
 | Zone | Hexes | Files |
 |---|---|---|
 | `components/admin` | 92 | 4 |
-| `app/(app)` | 79 | 6 |
-| `components/modals` | 70 | 10 |
+| ~~`app/(app)`~~ | ~~79~~ **0** ✅ | 6 |
+| ~~`components/modals`~~ | ~~70~~ **0** ✅ | 10 |
 | `components/onboarding` | 18 | 1 |
 | `components/layouts` | 15 | 6 |
 | `components/event` | 9 | 3 |
@@ -117,8 +117,20 @@ are seen daily and are already on the token theme.
 Suggested order: `(app)` → `modals` → `layouts` → `admin` → `onboarding` →
 `(auth)` → `(public)` → `landing`.
 
-Worst single files: `admin/WorkflowEditor` (65), `modals/SpecialistPreviewModal`
-(45), `hub/members` (34).
+Worst remaining file: `admin/WorkflowEditor` (65).
+
+Two decisions worth revisiting, both made while clearing these zones:
+
+- **The specialist modal's violet accent** (`#7c3aed` / `#6d28d9` / `#ede9fe`)
+  had no counterpart in the system. Brand took over, since the product has one
+  accent. Its card *header* was already correct — it paints itself with the
+  specialist's direction tint, which is exactly what "colour belongs to content"
+  means.
+- **The equity stacked bar** used red/amber/violet/blue for platform, mentor,
+  investment and member shares — status colours on a chart that shows ownership,
+  not health. It turned out those classes were dead: the real chart is drawn by
+  `EquityPlot.tsx` in D3 with its own inline palette. The dead CSS is gone; the
+  live palette is an open question for stage 5.
 
 ### 5. Inline hexes in TSX
 
