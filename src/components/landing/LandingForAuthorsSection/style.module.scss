@@ -3,7 +3,7 @@
 
 .section {
   position: relative;
-  background-color: #0b0b0d;
+  background-color: var(--gd-color-bg);
   background-repeat: no-repeat;
   background-size: 50%;
   padding: 64px 165px;
@@ -16,7 +16,7 @@
   text-align: left;
 
   .preTitle {
-    color: #FFBB55;
+    color: var(--gd-color-accent-alt);
     font-size: 16px;
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -39,14 +39,14 @@
       width: 74px;
       height: 74px;
       border: 2px solid rgb(255, 255, 255);
-      border-image: linear-gradient(45deg, #F8442C, #811812) 1;
+      border-image: linear-gradient(45deg, var(--gd-color-accent-hover), var(--gd-amber-800)) 1;
       box-shadow:
         0 0 50px rgba(186, 54, 21, 0.2),
         inset 0 0 50px rgba(186, 54, 21, 0.2);
 
       svg {
         padding: 18px;
-        fill: #F15541;
+        fill: var(--gd-color-accent);
       }
     }
 
@@ -56,22 +56,22 @@
     }
 
     .heroButton {
-      color: #fff;
-      border-color: #F15541;
-      background-color: #F15541;
+      color: var(--gd-color-text);
+      border-color: var(--gd-color-accent);
+      background-color: var(--gd-color-accent);
       padding: 24px 62px;
       width: 100%;
       max-width: 236px;
       margin-top: 34px;
       height: auto;
       font-size: 20px;
-      outline: 0px solid #333;
+      outline: 0px solid var(--gd-color-text-secondary);
   
       &:hover,
       &:active,
       &:focus {
-        background-color: #F15541 !important;
-        outline: 1px solid #F15541;
+        background-color: var(--gd-color-accent) !important;
+        outline: 1px solid var(--gd-color-accent);
         outline-offset: 3px;
       }
     }
@@ -112,7 +112,7 @@
 
       .specialistName {
         font-weight: 600;
-        color: #fff;
+        color: var(--gd-color-text);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

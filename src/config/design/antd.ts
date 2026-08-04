@@ -171,8 +171,11 @@ export function buildAntdTheme({
 				horizontalItemSelectedBg: r.surfaceSunken,
 				activeBarHeight: 0,
 			},
+			// Same argument as the nav above: the current tab is told apart by
+			// weight and a bar, not by colour. The ink bar stays — a tab strip
+			// needs the underline to read as one — but it is graphite.
 			Tabs: {
-				inkBarColor: r.accent,
+				inkBarColor: r.text,
 				itemColor: r.textSecondary,
 				itemHoverColor: r.text,
 				itemSelectedColor: r.text,

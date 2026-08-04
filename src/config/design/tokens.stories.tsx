@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { WORK_DIRECTIONS } from "@/components/DirectionBadge";
 import { type DesignMode, densities, roles } from "./roles";
 import {
+	amber,
 	brand,
 	directionColors,
 	elevation,
@@ -120,6 +121,13 @@ export const Colour: StoryObj = {
 			</Section>
 
 			<Section
+				title="Amber — marketing only"
+				description="The landing addresses two audiences and separates them by colour: authors get the brand, specialists get this. Far enough from the brand in hue to read as a different invitation. It has no job inside the product."
+			>
+				<Ramp scale={amber} />
+			</Section>
+
+			<Section
 				title="Semantic"
 				description="Each meaning is a trio: solid for icons and dots, tint for banners and rows, on-tint for the text drawn on it."
 			>
@@ -229,6 +237,7 @@ const roleGroups: [string, (keyof (typeof roles)["light"])[]][] = [
 	["Text", ["text", "textSecondary", "textTertiary", "textInverse"]],
 	["Action", ["action", "actionHover", "onAction"]],
 	["Accent", ["accent", "accentHover", "accentSubtle", "link"]],
+	["Accent — marketing", ["accentAlt", "accentAltHover", "onAccentAlt"]],
 ];
 
 function RoleTable({ mode }: { mode: DesignMode }) {

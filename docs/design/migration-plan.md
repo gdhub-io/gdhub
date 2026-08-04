@@ -10,21 +10,19 @@ are meant to be re-measured, not trusted forever.
 
 The token layer is built and the antd theme is wired, which quietly fixes a lot —
 control heights, radii, focus rings and text colours arrive for free anywhere a
-component does not fight them. The SCSS layer is almost untouched.
+component does not fight them. Six of the nine SCSS zones are now on tokens too.
 
-| | |
-|---|---|
-| | at start | after stages 1–2 |
+| | at start | now |
 |---|---|---|
-| SCSS modules reading `--gd-*` | 8 of 292 | **10** |
-| Hardcoded hexes in SCSS | 813 in 112 files | **781 in 111** |
-| `!important` in SCSS | 397 | **379** |
-| Hardcoded hexes in TSX | 262 in 48 files | 262 |
-| Files using a `ui` primitive | 1 | **10** (StatusDot 4, EmptyState 4, InverseBand 2) |
+| SCSS modules reading `--gd-*` | 8 of 292 | **62** |
+| Hardcoded hexes in SCSS | 813 in 112 files | **281 in 56** |
+| `!important` in SCSS | 397 | 365 |
+| Hardcoded hexes in TSX | 262 in 48 files | ~250 |
+| Files using a `ui` primitive | 1 | 12 |
 
-The SCSS numbers barely moved, and that is expected: stages 1–2 removed the
-*themes* and the *overrides*, which is what makes the remaining per-file work
-worth doing at all.
+Stages 1–2 moved the SCSS numbers barely at all, and that was expected: they
+removed the *themes* and the *overrides*, which is what made the per-file work
+worth doing. Stage 4 is where the count actually falls.
 
 Done so far: tokens / roles / themes / CSS variables / fonts, the five `ui`
 primitives, direction colours, `ProtectedShell` on `productTheme`, neutral
@@ -104,20 +102,35 @@ are seen daily and are already on the token theme.
 
 | Zone | Hexes | Files |
 |---|---|---|
-| `components/admin` | 92 | 4 |
+| ~~`components/admin`~~ | ~~92~~ **0** ✅ | 4 |
 | ~~`app/(app)`~~ | ~~79~~ **0** ✅ | 6 |
 | ~~`components/modals`~~ | ~~70~~ **0** ✅ | 10 |
-| `components/onboarding` | 18 | 1 |
-| `components/layouts` | 15 | 6 |
+| ~~`components/onboarding`~~ | ~~18~~ **0** ✅ | 1 |
+| ~~`components/layouts`~~ | ~~15~~ **0** ✅ | 6 |
 | `components/event` | 9 | 3 |
-| `app/(auth)` | 18 | 5 |
-| `app/(public)` | 80 | 10 |
-| `components/landing` | 98 | 10 |
+| ~~`app/(auth)`~~ | ~~18~~ **0** ✅ | 5 |
+| ~~`app/(public)`~~ | ~~80~~ **0** ✅ | 10 |
+| ~~`components/landing`~~ | ~~98~~ **0** ✅ | 10 |
 
 Suggested order: `(app)` → `modals` → `layouts` → `admin` → `onboarding` →
 `(auth)` → `(public)` → `landing`.
 
-Worst remaining file: `admin/WorkflowEditor` (65).
+`admin/WorkflowEditor` was the worst file in the tree at 65 hexes, and almost all
+of it was a second theme: button heights, radii, a tailwind-blue primary, input
+borders, focus rings. None of it ever applied — nested `.ant-*` selectors in a
+CSS module get hashed and match nothing. Nine classes are actually rendered; the
+file is now those nine.
+
+**Resolved — antd `Tabs`.** In-page tab bars now draw a graphite ink bar, same
+argument as the shell nav. The bar stays (a tab strip needs an underline to read
+as one) but it is not brand. `design-system.test.ts` encoded the old rule and was
+updated with it.
+
+**New role — `accentAlt`.** The landing was carrying an amber accent in 20 places
+(`#FFBB55`) that the system had no name for. It is not noise: the page addresses
+two audiences and separates them by colour — authors brand, specialists amber. So
+it became a role rather than being flattened into the brand. It is barred from
+the product, where one accent is the whole point.
 
 Two decisions worth revisiting, both made while clearing these zones:
 

@@ -107,9 +107,24 @@ describe("antd theme", () => {
 
 	it("orients with the brand instead of filling with it", () => {
 		const theme = buildAntdTheme();
-		expect(theme.components?.Tabs?.inkBarColor).toBe(roles.light.accent);
 		expect(theme.components?.Table?.rowSelectedBg).toBe(
 			roles.light.accentSubtle,
+		);
+	});
+
+	/**
+	 * Navigation is the one place the brand is barred from: a coloured tab on a
+	 * bar the user reads all day stops meaning "you are here" and starts meaning
+	 * "something is wrong". Both the shell nav and in-page tabs are neutral.
+	 */
+	it("keeps navigation neutral", () => {
+		const theme = buildAntdTheme();
+		expect(theme.components?.Tabs?.inkBarColor).toBe(roles.light.text);
+		expect(theme.components?.Menu?.horizontalItemSelectedColor).toBe(
+			roles.light.text,
+		);
+		expect(theme.components?.Menu?.itemSelectedBg).toBe(
+			roles.light.surfaceSunken,
 		);
 	});
 

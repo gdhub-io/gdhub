@@ -3,8 +3,8 @@
 
 .header {
 	height: auto;
-	border-bottom: 1px solid #ededed;
-	background: #fff;
+	border-bottom: 1px solid var(--gd-color-border);
+	background: var(--gd-color-surface);
 	line-height: normal;
 	// The shell owns the viewport (see `.container`), so the header simply keeps
 	// its natural height and never scrolls away.
@@ -127,7 +127,7 @@
 	outline-offset: 3px !important;
 
 	&:hover {
-		outline-color: #2b2b2b !important;
+		outline-color: var(--gd-color-border-focus) !important;
 	}
 
 	:global(.ant-float-btn-content) {

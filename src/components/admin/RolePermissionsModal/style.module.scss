@@ -11,7 +11,7 @@
 	:global(.ant-modal-header) {
 		margin: 0;
 		padding: 20px 24px;
-		border-bottom: 1px solid #ededed;
+		border-bottom: 1px solid var(--gd-color-border);
 	}
 
 	:global(.ant-modal-body) {
@@ -24,7 +24,7 @@
 		gap: 12px;
 		margin: 0;
 		padding: 16px 24px;
-		border-top: 1px solid #ededed;
+		border-top: 1px solid var(--gd-color-border);
 	}
 
 	:global(.ant-modal-close) {
@@ -56,8 +56,8 @@
 	font-size: 12px;
 	font-weight: 400;
 	line-height: 22px;
-	color: #6b6b6b;
-	background: #f4f3f3;
+	color: var(--gd-color-text-secondary);
+	background: var(--gd-color-surface-sunken);
 	border-radius: 4px;
 }
 
@@ -108,7 +108,7 @@
 	padding: 0;
 	height: auto;
 	font-size: 13px;
-	color: #6b6b6b;
+	color: var(--gd-color-text-secondary);
 }
 
 .changes {

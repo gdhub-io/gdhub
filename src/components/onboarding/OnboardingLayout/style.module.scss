@@ -54,7 +54,7 @@
 .headerTitle {
   font-size: 42px !important;
   font-weight: bold !important;
-  color: #17132c !important;
+  color: var(--gd-color-text) !important;
   margin: 0 0 16px !important;
   line-height: 1.2 !important;
 }
@@ -86,12 +86,12 @@
   flex: 1;
   height: 4px;
   border-radius: 2px;
-  background: #e8e8e8;
+  background: var(--gd-color-border);
   transition: background 0.2s;
 }
 
 .progressActive {
-  background: #f33921;
+  background: var(--gd-color-accent-hover);
 }
 
 .content {
@@ -110,10 +110,10 @@
   :global(.onboarding-footer) {
     position: sticky;
     bottom: 0;
-    background: #ffffff;
+    background: var(--gd-color-surface);
     margin-top: 32px;
     padding: 16px 0;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--gd-color-border);
     display: flex;
     justify-content: space-between;
     align-items: center;

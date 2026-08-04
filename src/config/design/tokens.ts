@@ -42,6 +42,23 @@ export const brand = {
 	900: "#6E1D17",
 } as const;
 
+/**
+ * The marketing second accent. The landing splits its audiences by colour —
+ * authors get the brand, specialists get this amber — and the two sit far enough
+ * apart in hue to read as different invitations rather than two shades of one.
+ *
+ * It stays out of the product: inside the app a single accent is what keeps the
+ * brand meaningful.
+ */
+export const amber = {
+	100: "#FFF0D6",
+	200: "#FFE0AE",
+	400: "#FFBB55",
+	600: "#C66C19",
+	800: "#811812",
+	900: "#33170D",
+} as const;
+
 export type SemanticColor = {
 	/** Icons, dots, borders, filled destructive buttons. */
 	solid: string;

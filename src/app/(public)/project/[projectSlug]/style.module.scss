@@ -14,7 +14,7 @@
 	aspect-ratio: 16 / 9;
 	border-radius: 12px;
 	overflow: hidden;
-	background: #000;
+	background: var(--gd-color-text);
 
 	// react-player v3 renders its player/preview element directly (and in
 	// `light` mode the preview doesn't accept className), so we wrap it and pin
@@ -51,7 +51,7 @@
 	}
 
 	:global(.project-author) {
-		color: #444;
+		color: var(--gd-neutral-700);
 
 		span {
 			// margin-right: 10px;
@@ -164,7 +164,7 @@
 
 .projectApplauseButtonActive {
 	&:global(.ant-btn) {
-		color: #ff4d4f !important;
+		color: var(--gd-color-accent) !important;
 		background: transparent !important;
 		box-shadow: none !important;
 		border-color: transparent !important;
@@ -176,7 +176,7 @@
 	&:global(.ant-btn:hover),
 	&:global(.ant-btn:focus),
 	&:global(.ant-btn:active) {
-		color: #ff4d4f !important;
+		color: var(--gd-color-accent) !important;
 		background: transparent !important;
 		box-shadow: none !important;
 		border-color: transparent !important;

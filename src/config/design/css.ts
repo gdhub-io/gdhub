@@ -1,5 +1,6 @@
 import { type DesignDensity, type DesignMode, densities, roles } from "./roles";
 import {
+	amber,
 	brand,
 	directionColors,
 	elevation,
@@ -39,6 +40,9 @@ export function designCssVariables(
 	}
 	for (const [step, value] of Object.entries(brand)) {
 		vars[`--gd-brand-${step}`] = value;
+	}
+	for (const [step, value] of Object.entries(amber)) {
+		vars[`--gd-amber-${step}`] = value;
 	}
 	for (const [name, value] of Object.entries(semantic)) {
 		vars[`--gd-${name}-solid`] = value.solid;

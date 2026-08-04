@@ -1,4 +1,4 @@
-import { brand, neutral } from "./tokens";
+import { amber, brand, neutral } from "./tokens";
 
 /**
  * Surface mode. The three historical themes (landing / public / app) differ in
@@ -33,6 +33,15 @@ export type DesignRoles = {
 	accent: string;
 	accentHover: string;
 	accentSubtle: string;
+	/**
+	 * The marketing second voice. The landing addresses two audiences and tells
+	 * them apart by colour — authors get the brand, specialists get this. It has
+	 * no job inside the product, where a single accent is the whole point.
+	 */
+	accentAlt: string;
+	accentAltHover: string;
+	/** Label drawn on `accentAlt`; the amber is too light to carry white. */
+	onAccentAlt: string;
 	link: string;
 };
 
@@ -55,6 +64,9 @@ export const roles: Record<DesignMode, DesignRoles> = {
 		accent: brand[500],
 		accentHover: brand[600],
 		accentSubtle: brand[50],
+		accentAlt: amber[400],
+		accentAltHover: amber[600],
+		onAccentAlt: neutral[950],
 		link: brand[700],
 	},
 	inverse: {
@@ -79,6 +91,9 @@ export const roles: Record<DesignMode, DesignRoles> = {
 		accent: brand[500],
 		accentHover: brand[400],
 		accentSubtle: "#F1554124",
+		accentAlt: amber[400],
+		accentAltHover: amber[600],
+		onAccentAlt: neutral[950],
 		link: brand[400],
 	},
 };

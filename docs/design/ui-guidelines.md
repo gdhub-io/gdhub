@@ -24,6 +24,11 @@ A wall of brand-coloured buttons reads as errors, which is why the split exists.
 Filled brand is allowed on marketing surfaces (`inverse` mode) — there it carries
 an ink label, not a white one.
 
+**Marketing has a second accent.** The landing speaks to two audiences and tells
+them apart by colour: authors get the brand, specialists get amber
+(`--gd-color-accent-alt`, ink label). It exists only out there — inside the
+product a single accent is the whole point of the rule above.
+
 **Craft colour is the palette.** The eighteen work directions are double-encoded,
 colour *and* icon. Colour belongs to content — tiles, card hero panels, group
 headers — while the chrome stays neutral. Never hard-code a direction hex: use

@@ -13,7 +13,7 @@
 .mainCard {
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--gd-color-surface);
   border: 1px solid rgba(5, 5, 5, 0.08);
   border-radius: 18px;
   overflow: hidden;
@@ -50,8 +50,8 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #f15541;
-  color: #fff;
+  background: var(--gd-color-accent);
+  color: var(--gd-color-surface);
   font-size: 18px;
   font-weight: 700;
 }
@@ -65,25 +65,25 @@
 }
 
 .projName {
-  color: #f15541;
+  color: var(--gd-color-accent);
   font-size: 15px;
   font-weight: 600;
 
   &:hover {
-    color: #f15541;
+    color: var(--gd-color-accent);
     text-decoration: underline;
   }
 }
 
 .metaDot {
-  color: #a1a1aa;
+  color: var(--gd-color-text-tertiary);
 }
 
 .location {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #71717a;
+  color: var(--gd-color-text-secondary);
 }
 
 .badges {
@@ -104,15 +104,15 @@
 }
 
 .badgeBlue {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #1d4ed8;
+  background: var(--gd-info-tint);
+  border: 1px solid var(--gd-info-tint);
+  color: var(--gd-info-on-tint);
 }
 
 .badgeGreen {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
+  background: var(--gd-success-tint);
+  border: 1px solid var(--gd-success-tint);
+  color: var(--gd-success-on-tint);
 }
 
 .badgeInfo {
@@ -142,13 +142,13 @@
   margin: 0;
   font-size: 17px;
   font-weight: 700;
-  color: #0f0f0f;
+  color: var(--gd-color-text);
 }
 
 .prose {
   font-size: 14px;
   line-height: 1.65;
-  color: #3f3f46;
+  color: var(--gd-neutral-700);
 
   :global(p) {
     margin-bottom: 12px;
@@ -162,7 +162,7 @@
 .proseRaw {
   font-size: 14px;
   line-height: 1.65;
-  color: #3f3f46;
+  color: var(--gd-neutral-700);
   white-space: pre-wrap;
 }
 
@@ -201,7 +201,7 @@
 }
 
 .postCard {
-  background: #fff;
+  background: var(--gd-color-surface);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -313,7 +313,7 @@
   :global(blockquote) {
     margin: 16px 0;
     padding: 16px 24px;
-    border-left: 4px solid #1890ff;
+    border-left: 4px solid var(--gd-info-solid);
     background: rgba(24, 144, 255, 0.05);
     border-radius: 4px;
   }
@@ -339,7 +339,7 @@
   }
 
   :global(a) {
-    color: #1890ff;
+    color: var(--gd-info-solid);
     text-decoration: none;
 
     &:hover {
@@ -401,7 +401,7 @@
   width: 100%;
   aspect-ratio: 16/9;
   position: relative;
-  background: #000;
+  background: var(--gd-color-text);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 24px;
@@ -416,7 +416,7 @@
 .defaultCover {
   width: 100%;
   height: 300px;
-  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  background: linear-gradient(135deg, var(--gd-info-solid) 0%, var(--gd-color-link) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -469,7 +469,7 @@
 
     .anticon {
       font-size: 24px;
-      color: #fff;
+      color: var(--gd-color-surface);
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       opacity: 0;
       transition: opacity 0.3s;
@@ -500,7 +500,7 @@
 	aspect-ratio: 16 / 9;
 	border-radius: 8px;
 	overflow: hidden;
-	background: #000;
+	background: var(--gd-color-text);
 
 	// react-player v3 renders its media element directly; pin it to the 16/9
 	// box so the video fits (letterboxes) instead of overflowing and cropping.
