@@ -584,11 +584,7 @@ const MyTeam = () => {
 						}}
 						trigger={["click"]}
 					>
-						<Button
-							icon={<TbDotsVertical />}
-							type="text"
-							className="light-gray-text-btn"
-						/>
+						<Button icon={<TbDotsVertical />} type="text" />
 					</Dropdown>
 				);
 			},
@@ -803,11 +799,7 @@ const MyTeam = () => {
 						}}
 						trigger={["click"]}
 					>
-						<Button
-							icon={<TbDotsVertical />}
-							type="text"
-							className="light-gray-text-btn"
-						/>
+						<Button icon={<TbDotsVertical />} type="text" />
 					</Dropdown>
 				);
 			},

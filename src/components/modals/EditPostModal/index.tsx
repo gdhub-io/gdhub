@@ -188,7 +188,6 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 						{!showAddVideoInput && (
 							<Tooltip title={t("devlogwall.form.add-video", "Add video")}>
 								<Button
-									className="gray-text-btn"
 									onClick={() => setShowAddVideoInput(true)}
 									icon={<AiOutlineVideoCameraAdd size={24} />}
 									type="text"

@@ -326,7 +326,7 @@ const EventConferenceOrGamelabView = ({
 												<Button
 													href={item.url}
 													target="_blank"
-													className="black-btn"
+													type="primary"
 													icon={
 														<IconExternalLink
 															size={18}

@@ -35,18 +35,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
-		<html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
-			{/* The `--gd-*` design tokens are emitted here so SCSS modules and the antd
-			    themes read the same values; an inverse band re-declares them on its
-			    own subtree. `data-gd-theme` sits here rather than on a shell because
-			    antd portals its overlays to the end of <body> — a flag set deeper
-			    never reaches a modal or a dropdown. */}
-			<body
-				className={fontClassName}
-				data-gd-theme="product"
-				style={designCssVariables() as CSSProperties}
-				suppressHydrationWarning
-			>
+		// The `--gd-*` tokens and both font variables sit on <html>, not on <body>:
+		// `:root` rules in globals.scss have to resolve them, and antd portals its
+		// overlays to the end of <body>, so anything declared deeper never reaches a
+		// modal or a dropdown. An inverse band re-declares the roles on its subtree.
+		<html
+			lang="en"
+			className={fontClassName}
+			data-scroll-behavior="smooth"
+			data-gd-theme="product"
+			style={designCssVariables() as CSSProperties}
+			suppressHydrationWarning
+		>
+			<body suppressHydrationWarning>
 				{process.env.NODE_ENV === "production" && (
 					<noscript
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: GTM noscript container, filled on consent

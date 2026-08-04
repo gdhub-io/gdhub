@@ -14,11 +14,17 @@ component does not fight them. The SCSS layer is almost untouched.
 
 | | |
 |---|---|
-| SCSS modules reading `--gd-*` | **8 of 292** (5 of those are the `ui` primitives themselves) |
-| Hardcoded hexes in SCSS | **813** across **112 files** |
-| `!important` in SCSS | **397** across the tree |
-| Hardcoded hexes in TSX | **262** across **48 files** |
-| `ui` primitives used outside their own stories | **1** (`EmptyState` in `ChatModal`) |
+| | at start | after stages 1–2 |
+|---|---|---|
+| SCSS modules reading `--gd-*` | 8 of 292 | **10** |
+| Hardcoded hexes in SCSS | 813 in 112 files | **781 in 111** |
+| `!important` in SCSS | 397 | **379** |
+| Hardcoded hexes in TSX | 262 in 48 files | 262 |
+| `ui` primitives used outside their own stories | 1 | 2 (`InverseBand`) |
+
+The SCSS numbers barely moved, and that is expected: stages 1–2 removed the
+*themes* and the *overrides*, which is what makes the remaining per-file work
+worth doing at all.
 
 Done so far: tokens / roles / themes / CSS variables / fonts, the five `ui`
 primitives, direction colours, `ProtectedShell` on `productTheme`, neutral
@@ -56,15 +62,16 @@ Every surface now runs a token theme and `src/config/theme.ts` is gone.
   now. Mulish stays in `src/assets/fonts/mulish` only because the certificate PDF
   service reads those files from disk.
 
-### 2. Strip what overrides the theme
+### 2. Strip what overrides the theme ✅ done
 
-These do not merely differ from the design system — they defeat it.
+All five legacy button classes are gone, along with their call sites. Nearly
+every one turned out to be redundant: the buttons already carried the right antd
+type and the class only restated it in hexes, so removing it changed nothing but
+the colour source. Two buttons in the event views had no type at all and became
+`type="primary"`.
 
-- Legacy button classes `black-btn`, `gray-btn`, `tertiary-blue-btn`,
-  `light-gray-text-btn`: defined in `globals.scss`, applied across **9 files**
-  (VacancyCard, ExpertList, CoursesList, MyTeam, BlogClient, CourseClient, two
-  event views, dev/ui-test). Remove one class at a time, checking its call sites.
-- The 31 `!important` rules in `globals.scss`.
+`globals.scss` now holds **zero hardcoded hexes** (was 32) and 13 `!important`
+(was 31) — the survivors are layout fixes, not colour overrides.
 
 ### 3. Use the primitives that already exist
 

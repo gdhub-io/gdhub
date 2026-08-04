@@ -407,7 +407,7 @@ const CourseClient = () => {
 								type="primary"
 								size="large"
 								block
-								className={["black-btn", styles.enrollBtn].join(" ")}
+								className={styles.enrollBtn}
 								icon={<IconSchool size={16} stroke={1.5} />}
 							>
 								{t("course.enroll", "Enroll a course")}

@@ -93,11 +93,7 @@ export function BlogClient({ posts }: { posts: BlogPost[] }) {
 											</Text>
 										)}
 										<Link href={`/blog/${post.slug}`}>
-											<Button
-												type="default"
-												className="gray-btn"
-												style={{ width: "100%" }}
-											>
+											<Button type="default" style={{ width: "100%" }}>
 												{t("page.blog.readMore", "Read More")}
 											</Button>
 										</Link>

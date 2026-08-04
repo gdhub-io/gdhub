@@ -11,7 +11,7 @@
 		// src/app/HomeClient.tsx). Keeping the default light stops the dark
 		// background from bleeding into in-app routes that render before/without
 		// a theme layer on the persistent <html>/<body>.
-		--background-color: #fafafa;
+		--background-color: var(--gd-color-bg);
 	}
 
 	// Work direction tints. The values live in src/config/design/tokens.ts and
@@ -50,11 +50,11 @@
 	}
 
 	a.text-link {
-		border-bottom: 1px solid #afafaf;
+		border-bottom: 1px solid var(--gd-color-border-strong);
 		transition: border-color 0.5s;
 
 		&:hover {
-			border-color: #000;
+			border-color: var(--gd-color-text);
 		}
 	}
 
@@ -138,7 +138,7 @@
 		}
 
 		.rnr-callout {
-			background-color: #C9EBFF;
+			background-color: var(--gd-info-tint);
 			padding: 16px;
 			margin-bottom: 16px;
 			display: flex;
@@ -158,19 +158,6 @@
 		justify-content: center !important;
 
 
-		// &.ant-btn-sm {
-		// 	padding-inline: 8px !important;
-		// }
-
-		// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
-		// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active,
-		// &:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
-		// &:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active {
-		// 	background-color: #F33921;
-		// 	border-color: transparent;
-		// 	color: #FFFDFC;
-		// }
-
 		&:not(.ant-btn-icon-only)>.ant-btn-icon:not(:last-child) {
 			margin-inline-end: 4px;
 		}
@@ -189,85 +176,17 @@
 			background-color: transparent;
 		}
 
-		&.tertiary-blue-btn {
-			background-color: #031321;
-			color: #FFFDFC;
-
-			&:hover,
-			&:active {
-				background-color: #01101d !important;
-				color: #FFFDFC !important;
-				border-color: #fffdfc22;
-			}
-		}
-
-		&.black-btn {
-			height: 36px !important;
-			padding-inline: 16px !important;
-			background-color: #222222 !important;
-			border-color: #fffdfc22 !important;
-			color: #fffdfc !important;
-
-			&:hover,
-			&:active {
-				background-color: #222222 !important;
-				color: #fffdfc !important;
-				border-color: #fffdfc22 !important;
-			}
-		}
-
-		&.gray-btn {
-			background-color: transparent;
-			border-color: #031625;
-			color: #031625;
-
-			&:hover,
-			&:active {
-				background-color: #031625 !important;
-				color: #FFFDFC !important;
-				border-color: #031625 !important;
-			}
-		}
-
-		&.gray-text-btn {
-			border-color: transparent;
-			color: #031625;
-
-			&:hover,
-			&:active {
-				background-color: #031625 !important;
-				color: #FFFDFC !important;
-			}
-		}
-
-		&.light-gray-text-btn {
-			border-color: transparent;
-			color: #202020;
-
-			&:hover,
-			&:active {
-				background-color: #03162517 !important;
-				color: #202020 !important;
-			}
-		}
-
 		&>span {
 			line-height: 16px;
 		}
 
 		>svg {
 			position: unset;
-			// margin-right: 4px;
 		}
-
-		// &.btn-default-on-white {
-		// 	color: #F15541;
-		// }
 	}
 
 	// Headings take the display family; everything functional stays on the UI
-	// font. Scoped to the shells that already run the token theme — portalled
-	// nodes (modals, dropdowns) are outside this subtree and follow later.
+	// font.
 	[data-gd-theme] {
 
 		h1,
@@ -285,12 +204,12 @@
 
 	.bright-container {
 		input {
-			background-color: #fff;
-			color: #333;
+			background-color: var(--gd-color-surface);
+			color: var(--gd-color-text);
 		}
 
 		.ant-form-item .ant-form-item-label>label {
-			color: #333;
+			color: var(--gd-color-text);
 		}
 	}
 

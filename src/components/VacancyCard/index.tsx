@@ -102,12 +102,7 @@ export function VacancyCard({
 					{compensation}
 					<Text type="secondary">terms of cooperation</Text>
 				</div>
-				<Button
-					type="primary"
-					href={detailsHref}
-					onClick={onDetails}
-					className="black-btn"
-				>
+				<Button type="primary" href={detailsHref} onClick={onDetails}>
 					{detailsLabel}
 				</Button>
 			</div>

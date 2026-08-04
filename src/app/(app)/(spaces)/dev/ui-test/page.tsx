@@ -12,9 +12,7 @@ export default function UITestPage() {
 				</Button>
 				<Button>Default</Button>
 				<Button type="primary">Tertiary</Button>
-				<Button type="primary" className="tertiary-blue-btn">
-					Tertiary
-				</Button>
+				<Button type="primary">Tertiary</Button>
 				<Button type="primary" icon={<AiOutlineGoogle rev="span" />}>
 					With Icon
 				</Button>

@@ -134,7 +134,6 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 						<Flex justify="space-between">
 							<Tooltip title={t("devlogwall.form.add-video", "Add video")}>
 								<Button
-									className="gray-text-btn"
 									onClick={() => setShowAddVideoInput(true)}
 									icon={<AiOutlineVideoCameraAdd size={24} />}
 									type="text"

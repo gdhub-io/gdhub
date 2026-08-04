@@ -114,7 +114,6 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 							</Button>
 						)}
 						<Button
-							className="gray-text-btn"
 							icon={<AiOutlineHistory />}
 							onClick={() => setTransactionsModalVisible(true)}
 							type="text"
