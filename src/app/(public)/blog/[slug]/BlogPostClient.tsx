@@ -1,6 +1,6 @@
 "use client";
 
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { IconClock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Card, Flex, Typography } from "antd";
 import Blocks from "editorjs-blocks-react-renderer";
@@ -63,7 +63,7 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
 							</Flex>
 							<Flex align="center" gap={16}>
 								<Flex align="center" gap={8}>
-									<ClockCircleOutlined style={{ fontSize: "12px" }} />
+									<IconClock style={{ fontSize: "12px" }} />
 									<Text type="secondary" style={{ fontSize: "12px" }}>
 										{post?.publishedAt ? formatDate(post.publishedAt) : ""}
 									</Text>

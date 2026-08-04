@@ -1,6 +1,6 @@
 @use "sass:meta";
 .container {
-  color: #fff;
+  color: var(--gd-color-text);
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -16,12 +16,12 @@
 
     :global(span.ant-typography) {
       font-size: 14px;
-      color: #ffffff80;
+      color: var(--gd-color-text-secondary);
       line-height: 1.2;
     }
 
     :global(span.ant-typography>strong) {
-      color: #ffffff;
+      color: var(--gd-color-text);
       font-size: 48px;
     }
 
@@ -38,17 +38,17 @@
       word-wrap: normal;
       text-wrap: wrap;
       font-size: 14px;
-      color: #ffffff80;
+      color: var(--gd-color-text-secondary);
     }
 
     :global(span.ant-typography>strong) {
-      color: #ffffff;
+      color: var(--gd-color-text);
       font-size: 48px;
     }
   }
 
   :global(.ant-divider) {
-    border-color: #6d6d6d;
+    border-color: var(--gd-color-text-secondary);
   }
 
   :global(.ant-space-item:has(.divider)) {

@@ -2,7 +2,7 @@
 	width: 100%;
 	position: relative;
 	border-radius: 8px;
-	border: 1px solid #ffffff1a;
+	border: 1px solid var(--gd-color-border);
 	overflow: hidden;
 
 	display: flex;
@@ -18,17 +18,17 @@
 		top: 5px;
 		right: 5px;
 		box-shadow: none !important;
-		background: #222;
+		background: var(--gd-color-text);
 
 		&:hover,
 		&:focus {
 			box-shadow: none !important;
-			background: #222;
+			background: var(--gd-color-text);
 		}
 	}
 }
 
 .addItemButton {
-	background: #efefef66;
-	color: #222;
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text);
 }

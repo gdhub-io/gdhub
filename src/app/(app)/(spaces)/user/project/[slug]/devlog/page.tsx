@@ -1,13 +1,12 @@
 "use client";
 
-import { PlusOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
 import type {
 	Project,
 	ProjectReport,
 	ProjectStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
+import { IconEdit, IconEye, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { T, useTranslate } from "@tolgee/react";
 import { Button, Modal, message, Space, Typography } from "antd";
@@ -217,7 +216,7 @@ export default function MyProjectDevlogPage() {
 				!isProjectArchived ? (
 					<Button
 						type="primary"
-						icon={<PlusOutlined />}
+						icon={<IconPlus />}
 						onClick={() => {
 							setOpenDevlogPostModal(true);
 						}}

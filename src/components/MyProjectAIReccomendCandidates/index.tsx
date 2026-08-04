@@ -180,7 +180,7 @@ const MyProjectAIReccomendCandidates = ({
 					<Table
 						loading={isLoadingAICandidates}
 						style={{
-							border: "1px solid #aaa",
+							border: "1px solid var(--gd-color-text-tertiary)",
 							overflow: "hidden",
 							borderRadius: 16,
 							marginTop: 16,

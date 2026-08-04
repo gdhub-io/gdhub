@@ -15,6 +15,7 @@ export const GET = withAuth({ mode: "user" })(async () => {
 			id: true,
 			title: true,
 			finishedAt: true,
+			direction: { select: { name: true } },
 			team: {
 				select: {
 					project: {
@@ -33,6 +34,7 @@ export const GET = withAuth({ mode: "user" })(async () => {
 		id: v.id,
 		title: v.title,
 		finishedAt: v.finishedAt?.toISOString?.() ?? String(v.finishedAt),
+		direction: v.direction?.name ?? null,
 		project: {
 			name: v.team?.project?.name ?? "",
 			slug: v.team?.project?.slug ?? "",

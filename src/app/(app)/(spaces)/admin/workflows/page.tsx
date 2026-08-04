@@ -1,7 +1,7 @@
 "use client";
 
 import type { WorkflowSchema } from "@gdhub-io/gdhub-prisma";
-import { GoTrash } from "@react-icons/all-files/go/GoTrash";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	Button,
@@ -101,7 +101,7 @@ export default function WorkflowsAdminPage() {
 							title="Are you sure you want to delete this entry?"
 							onConfirm={() => handleDelete(record.id)}
 						>
-							<Button type="text" danger icon={<GoTrash />} />
+							<Button type="text" danger icon={<IconTrash />} />
 						</Popconfirm>
 					</Space>
 				);
@@ -135,7 +135,7 @@ export default function WorkflowsAdminPage() {
 			width: "15%",
 			render: (_, record) => (
 				<div>
-					<div style={{ fontWeight: "bold", color: "#1890ff" }}>
+					<div style={{ fontWeight: "bold", color: "var(--gd-info-solid)" }}>
 						{record.analytics?.currentStepName || "Not started"}
 					</div>
 					<Text type="secondary" style={{ fontSize: "12px" }}>
@@ -162,10 +162,10 @@ export default function WorkflowsAdminPage() {
 								fontWeight: "bold",
 								color:
 									percentage >= 80
-										? "#52c41a"
+										? "var(--gd-success-solid)"
 										: percentage >= 50
-											? "#faad14"
-											: "#ff4d4f",
+											? "var(--gd-warning-solid)"
+											: "var(--gd-danger-solid)",
 							}}
 						>
 							{completed}/{total}
@@ -186,7 +186,11 @@ export default function WorkflowsAdminPage() {
 				return (
 					<div style={{ textAlign: "center" }}>
 						<div
-							style={{ fontSize: "18px", fontWeight: "bold", color: "#722ed1" }}
+							style={{
+								fontSize: "18px",
+								fontWeight: "bold",
+								color: "var(--gd-color-link)",
+							}}
 						>
 							{days}
 						</div>

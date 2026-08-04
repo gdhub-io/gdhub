@@ -1,5 +1,5 @@
 import type { Profile } from "@gdhub-io/gdhub-prisma";
-import { FiTrash2 } from "@react-icons/all-files/fi/FiTrash2";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -271,7 +271,7 @@ const MentorshipProfileForm = ({
 														"profile-forms.mentorship.field.openForQuestions.remove",
 														"Remove question",
 													)}
-													icon={<FiTrash2 />}
+													icon={<IconTrash />}
 													onClick={remove}
 												/>
 											</Flex>

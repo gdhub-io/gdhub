@@ -1,11 +1,11 @@
 "use client";
 
 import {
-	QuestionCircleOutlined,
-	TrophyOutlined,
-	UserOutlined,
-} from "@ant-design/icons";
-import { IconTool } from "@tabler/icons-react";
+	IconHelpCircle,
+	IconTool,
+	IconTrophy,
+	IconUser,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -62,8 +62,8 @@ const StatTile = ({
 			padding: "10px 8px",
 			minHeight: 104,
 			borderRadius: 12,
-			background: disabled ? "#f8fafc" : "#ffffff",
-			border: "1px solid #eef2f7",
+			background: disabled ? "var(--gd-neutral-25)" : "var(--gd-color-surface)",
+			border: "1px solid var(--gd-color-border)",
 			height: "100%",
 		}}
 	>
@@ -71,16 +71,33 @@ const StatTile = ({
 			{icon}
 			<Title
 				level={3}
-				style={{ margin: 0, color: disabled ? "#94a3b8" : "#111827" }}
+				style={{
+					margin: 0,
+					color: disabled
+						? "var(--gd-color-text-tertiary)"
+						: "var(--gd-color-text)",
+				}}
 			>
 				{value}
 			</Title>
 		</Space>
 		<Space size={4} align="center">
-			<Text style={{ color: disabled ? "#94a3b8" : "#6b7280" }}>{label}</Text>
+			<Text
+				style={{
+					color: disabled
+						? "var(--gd-color-text-tertiary)"
+						: "var(--gd-color-text-secondary)",
+				}}
+			>
+				{label}
+			</Text>
 			<Tooltip title={helpText}>
-				<QuestionCircleOutlined
-					style={{ color: disabled ? "#94a3b8" : "#9ca3af" }}
+				<IconHelpCircle
+					style={{
+						color: disabled
+							? "var(--gd-color-text-tertiary)"
+							: "var(--gd-color-text-tertiary)",
+					}}
 				/>
 			</Tooltip>
 		</Space>
@@ -153,9 +170,9 @@ const ProfileClient = () => {
 						bordered={false}
 						style={{
 							borderRadius: 22,
-							border: "1px solid #eef2f7",
+							border: "1px solid var(--gd-color-border)",
 							background:
-								"radial-gradient(circle at 20% 20%, #f6f9ff 0%, #ffffff 45%), radial-gradient(circle at 80% 70%, #fff7ed 0%, #ffffff 50%)",
+								"radial-gradient(circle at 20% 20%, var(--gd-neutral-25) 0%, var(--gd-color-surface) 45%), radial-gradient(circle at 80% 70%, var(--gd-neutral-25) 0%, var(--gd-color-surface) 50%)",
 						}}
 					>
 						<Flex vertical align="center" gap={8} style={{ paddingTop: 10 }}>
@@ -176,7 +193,7 @@ const ProfileClient = () => {
 								)}
 							>
 								<Text type="secondary" style={{ textAlign: "center" }}>
-									<QuestionCircleOutlined style={{ marginRight: 6 }} />
+									<IconHelpCircle style={{ marginRight: 6 }} />
 									{t(
 										"profile.page.skillCapital.note",
 										"Metrics are calculated from your project activity and will evolve.",
@@ -192,8 +209,8 @@ const ProfileClient = () => {
 							bordered={false}
 							style={{
 								borderRadius: 16,
-								background: "#f8fafc",
-								border: "1px solid #eef2f7",
+								background: "var(--gd-neutral-25)",
+								border: "1px solid var(--gd-color-border)",
 							}}
 							title={
 								<Flex justify="center">
@@ -206,7 +223,11 @@ const ProfileClient = () => {
 									<StatTile
 										label={t("profile.page.skillCapital.lc", "Leadership")}
 										value={formatNumber(skillCapital?.leadershipCapital ?? 0)}
-										icon={<TrophyOutlined style={{ color: "#f59e0b" }} />}
+										icon={
+											<IconTrophy
+												style={{ color: "var(--gd-warning-solid)" }}
+											/>
+										}
 										helpText={t(
 											"profile.page.skillCapital.help.lc",
 											"Leadership Capital from projects where you are the author.",
@@ -217,7 +238,11 @@ const ProfileClient = () => {
 									<StatTile
 										label={t("profile.page.skillCapital.ec", "Execution")}
 										value={formatNumber(skillCapital?.executionCapital ?? 0)}
-										icon={<TrophyOutlined style={{ color: "#22c55e" }} />}
+										icon={
+											<IconTrophy
+												style={{ color: "var(--gd-success-solid)" }}
+											/>
+										}
 										helpText={t(
 											"profile.page.skillCapital.help.ec",
 											"Execution Capital from your work as a team member.",
@@ -228,7 +253,9 @@ const ProfileClient = () => {
 									<StatTile
 										label={t("profile.page.skillCapital.mc", "Mentorship")}
 										value={formatNumber(skillCapital?.mentorshipCapital ?? 0)}
-										icon={<TrophyOutlined style={{ color: "#3b82f6" }} />}
+										icon={
+											<IconTrophy style={{ color: "var(--gd-info-solid)" }} />
+										}
 										helpText={t(
 											"profile.page.skillCapital.help.mc",
 											"Mentorship Capital from completed advisory sessions.",
@@ -240,7 +267,11 @@ const ProfileClient = () => {
 										label="Investor"
 										value="--"
 										disabled
-										icon={<UserOutlined style={{ color: "#9ca3af" }} />}
+										icon={
+											<IconUser
+												style={{ color: "var(--gd-color-text-tertiary)" }}
+											/>
+										}
 										helpText="Investor Capital will be added in future releases."
 									/>
 								</Col>
@@ -252,7 +283,7 @@ const ProfileClient = () => {
 								marginTop: 16,
 								marginBottom: 0,
 								fontSize: 15,
-								color: "#374151",
+								color: "var(--gd-neutral-700)",
 							}}
 						>
 							Your Skill Capital reflects your leadership, execution, and

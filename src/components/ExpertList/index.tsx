@@ -118,7 +118,6 @@ const ExpertList = ({
 											onClick={() => {
 												onClick?.(expert.id);
 											}}
-											className="black-btn"
 										>
 											{t("expert-card.details-button", "Details")}
 										</Button>

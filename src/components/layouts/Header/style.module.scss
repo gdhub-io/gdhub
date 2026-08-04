@@ -1,7 +1,7 @@
 .header {
 	height: auto;
-	border-bottom: 1px solid #ededed;
-	background: #fff;
+	border-bottom: 1px solid var(--gd-color-border);
+	background: var(--gd-color-surface);
 	line-height: normal;
 
 	:global(.ant-breadcrumb) {
@@ -67,5 +67,5 @@
 }
 
 .separator {
-	color: #00000033;
+	color: var(--gd-color-text-tertiary);
 }

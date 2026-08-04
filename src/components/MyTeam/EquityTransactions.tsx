@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Card, Table, Tag, Typography } from "antd";
+import { Avatar, Card, Table, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import { StatusDot } from "@/components/ui";
 import { EquityTransactionType } from "@/config/prisma-enums";
 import styles from "./EquityTransactions.module.scss";
 
@@ -78,17 +79,17 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({
 	const renderTransactionType = (type: EquityTransactionType) => {
 		switch (type) {
 			case EquityTransactionType.InitialAllocation:
-				return <Tag color="green">{t("First allocation")}</Tag>;
+				return <StatusDot tone="success" label={t("First allocation")} />;
 			case EquityTransactionType.Vesting:
-				return <Tag color="blue">{t("Vesting")}</Tag>;
+				return <StatusDot tone="info" label={t("Vesting")} />;
 			case EquityTransactionType.Transfer:
-				return <Tag color="orange">{t("Transfer")}</Tag>;
+				return <StatusDot tone="warning" label={t("Transfer")} />;
 			case EquityTransactionType.Dilution:
-				return <Tag color="red">{t("Dilution")}</Tag>;
+				return <StatusDot tone="danger" label={t("Dilution")} />;
 			case EquityTransactionType.Increase:
-				return <Tag color="green">{t("Increase")}</Tag>;
+				return <StatusDot tone="success" label={t("Increase")} />;
 			default:
-				return <Tag>{t("Other type")}</Tag>;
+				return <StatusDot tone="neutral" label={t("Other type")} />;
 		}
 	};
 

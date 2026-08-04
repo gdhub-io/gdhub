@@ -11,33 +11,14 @@
 		// src/app/HomeClient.tsx). Keeping the default light stops the dark
 		// background from bleeding into in-app routes that render before/without
 		// a theme layer on the persistent <html>/<body>.
-		--background-color: #fafafa;
-
-		// work direction colors — light backgrounds, paired with black icons.
-		// Chosen by association; reused on vacancy cards and DirectionBadge.
-		--bg-direc-development: #E5F1FF;
-		--bg-direc-web-development: #D3F7FF;
-		--bg-direc-game-design: #EDE9FE;
-		--bg-direc-2d-art-animation: #FFEBEB;
-		--bg-direc-3d-art-animation: #FFE6CC;
-		--bg-direc-management: #E9EEF5;
-		--bg-direc-game-writer: #FDFEC8;
-		--bg-direc-learning: #DCFFF9;
-		--bg-direc-technical-art: #F2FEE6;
-		--bg-direc-music-sound: #C9EBFF;
-		--bg-direc-marketing: #FFD5C8;
-		--bg-direc-vfx: #F3E8FF;
-		--bg-direc-qa: #E3F7EA;
-		--bg-direc-hr: #FFE2F0;
-		--bg-direc-video-editing: #FFEDFB;
-		--bg-direc-backend-development: #E6EAFB;
-		--bg-direc-investment: #D9F2DF;
-		--bg-direc-other: #eeeeee;
+		--background-color: var(--gd-color-bg);
 	}
 
+	// Work direction tints. The values live in src/config/design/tokens.ts and
+	// reach the page as `--gd-direction-*` on <body>.
 	@each $work-direction in $work-directions {
 		.bg-direc-#{$work-direction} {
-			background-color: var(--bg-direc-#{$work-direction});
+			background-color: var(--gd-direction-#{$work-direction}-tint);
 		}
 	}
 
@@ -69,11 +50,11 @@
 	}
 
 	a.text-link {
-		border-bottom: 1px solid #afafaf;
+		border-bottom: 1px solid var(--gd-color-border-strong);
 		transition: border-color 0.5s;
 
 		&:hover {
-			border-color: #000;
+			border-color: var(--gd-color-text);
 		}
 	}
 
@@ -157,7 +138,7 @@
 		}
 
 		.rnr-callout {
-			background-color: #C9EBFF;
+			background-color: var(--gd-info-tint);
 			padding: 16px;
 			margin-bottom: 16px;
 			display: flex;
@@ -177,19 +158,6 @@
 		justify-content: center !important;
 
 
-		// &.ant-btn-sm {
-		// 	padding-inline: 8px !important;
-		// }
-
-		// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
-		// &-primary:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active,
-		// &:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):hover,
-		// &:not(:disabled):not(.ant-btn-disabled):not(.tertiary-blue-btn):active {
-		// 	background-color: #F33921;
-		// 	border-color: transparent;
-		// 	color: #FFFDFC;
-		// }
-
 		&:not(.ant-btn-icon-only)>.ant-btn-icon:not(:last-child) {
 			margin-inline-end: 4px;
 		}
@@ -208,99 +176,46 @@
 			background-color: transparent;
 		}
 
-		&.tertiary-blue-btn {
-			background-color: #031321;
-			color: #FFFDFC;
-
-			&:hover,
-			&:active {
-				background-color: #01101d !important;
-				color: #FFFDFC !important;
-				border-color: #fffdfc22;
-			}
-		}
-
-		&.black-btn {
-			height: 36px !important;
-			padding-inline: 16px !important;
-			background-color: #222222 !important;
-			border-color: #fffdfc22 !important;
-			color: #fffdfc !important;
-
-			&:hover,
-			&:active {
-				background-color: #222222 !important;
-				color: #fffdfc !important;
-				border-color: #fffdfc22 !important;
-			}
-		}
-
-		&.gray-btn {
-			background-color: transparent;
-			border-color: #031625;
-			color: #031625;
-
-			&:hover,
-			&:active {
-				background-color: #031625 !important;
-				color: #FFFDFC !important;
-				border-color: #031625 !important;
-			}
-		}
-
-		&.gray-text-btn {
-			border-color: transparent;
-			color: #031625;
-
-			&:hover,
-			&:active {
-				background-color: #031625 !important;
-				color: #FFFDFC !important;
-			}
-		}
-
-		&.light-gray-text-btn {
-			border-color: transparent;
-			color: #202020;
-
-			&:hover,
-			&:active {
-				background-color: #03162517 !important;
-				color: #202020 !important;
-			}
-		}
-
 		&>span {
 			line-height: 16px;
 		}
 
 		>svg {
 			position: unset;
-			// margin-right: 4px;
 		}
-
-		// &.btn-default-on-white {
-		// 	color: #F15541;
-		// }
 	}
 
-	.ant-typography {
-		// font-size: 16px;
-		font-weight: 200;
+	// Headings take the display family; everything functional stays on the UI
+	// font.
+	[data-gd-theme] {
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5 {
+			font-family: var(--gd-font-display), var(--gd-font-ui), system-ui, sans-serif;
+			letter-spacing: -0.02em;
+		}
 	}
 
 
 
 
+	// Registration used to sit on artwork and needed its inputs forced light.
+	// The page is light now, so pinning them to white made the only field on it
+	// invisible and overrode the `filled` variant the form asks for. Keeping the
+	// label rule, dropping the fill.
 	.bright-container {
-		input {
-			background-color: #fff;
-			color: #333;
-		}
-
 		.ant-form-item .ant-form-item-label>label {
-			color: #333;
+			color: var(--gd-color-text);
 		}
+	}
+
+	// antd leaves the title sitting almost on top of the first field, so a modal
+	// reads as one block of text instead of a heading and its content.
+	.ant-modal-header {
+		margin-bottom: 20px;
 	}
 
 	.ant-modal-confirm {
@@ -370,9 +285,20 @@
 		}
 	}
 
+	// antd centres the box against the whole label, so a two-line consent line
+	// leaves it floating between the lines. `baseline` was the earlier attempt and
+	// sat it slightly too high. Align to the top and nudge it onto the centre of
+	// the first line instead.
 	.ant-checkbox-wrapper {
+		align-items: flex-start;
+
 		.ant-checkbox {
-			align-self: baseline;
+			align-self: auto;
+			top: calc((1.5em - 16px) / 2);
+		}
+
+		>span:last-child {
+			line-height: 1.5;
 		}
 	}
 

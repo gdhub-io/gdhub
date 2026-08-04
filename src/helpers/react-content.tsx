@@ -1,5 +1,5 @@
-import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
 import {
+	IconBrandAppgallery,
 	IconBrandApple,
 	IconBrandDiscord,
 	IconBrandFacebook,
@@ -66,7 +66,11 @@ export const renderContentWithImageUrl = (content: string) => {
 export const platformOptions = [
 	{ value: "steam", label: "Steam", icon: <IconBrandSteam /> },
 	{ value: "google-play", label: "Google Play", icon: <IconBrandGooglePlay /> },
-	{ value: "epic-store", label: "Epic Store", icon: <SiEpicgames size={20} /> },
+	{
+		value: "epic-store",
+		label: "Epic Store",
+		icon: <IconBrandAppgallery size={20} />,
+	},
 	{ value: "itch-io", label: "itch.io", icon: <IconBrandItch /> },
 	{ value: "app-store", label: "App Store", icon: <IconBrandApple /> },
 	{ value: "youtube", label: "YouTube", icon: <IconBrandYoutube /> },

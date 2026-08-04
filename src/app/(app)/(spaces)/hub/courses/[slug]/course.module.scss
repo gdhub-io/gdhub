@@ -23,7 +23,7 @@
 	gap: 6px;
 	padding: 6px 10px;
 	border-radius: 8px;
-	background: #ffffff;
+	background: var(--gd-color-surface);
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
@@ -48,7 +48,7 @@
 
 .authorAvatarGroup {
 	:global(.ant-avatar) {
-		border: 2px solid #FAFAFA;
+		border: 2px solid var(--gd-neutral-25);
 		font-size: 10px;
 		font-weight: 600;
 	}
@@ -62,7 +62,7 @@
 	display: flex;
 	flex-direction: column;
 	border-radius: 12px;
-	border: 1px solid #e4e4e7;
+	border: 1px solid var(--gd-color-border-strong);
 	overflow: hidden;
 }
 
@@ -73,7 +73,7 @@
 	align-items: center;
 
 	& + & {
-		border-top: 1px solid #e4e4e7;
+		border-top: 1px solid var(--gd-color-border-strong);
 	}
 }
 
@@ -87,7 +87,7 @@
 .teacherName {
 	font-size: 15px;
 	font-weight: 600;
-	color: #0f0f0f;
+	color: var(--gd-color-text);
 }
 
 .title {
@@ -99,14 +99,14 @@
 
 .shortLine {
 	font-size: 16px;
-	color: #3f3f46;
+	color: var(--gd-neutral-700);
 	margin-bottom: 12px !important;
 }
 
 .description {
 	font-size: 14px;
 	line-height: 1.65;
-	color: #3f3f46;
+	color: var(--gd-neutral-700);
 	white-space: pre-wrap;
 }
 
@@ -116,7 +116,7 @@
 	font-weight: 500;
 	letter-spacing: 1px;
 	text-transform: uppercase;
-	color: #71717a;
+	color: var(--gd-color-text-secondary);
 	margin-bottom: 12px;
 }
 
@@ -136,10 +136,10 @@
 	:global(.ant-collapse-header) {
 		padding: 16px 20px !important;
 		align-items: center !important;
-		font-family: var(--main-font-family, "Inter"), sans-serif;
+		font-family: var(--gd-font-display), var(--gd-font-ui), sans-serif;
 		font-size: 15px !important;
 		font-weight: 500 !important;
-		color: #0f0f0f !important;
+		color: var(--gd-color-text) !important;
 	}
 
 	:global(.ant-collapse-item-active .ant-collapse-header) {
@@ -163,7 +163,7 @@
 		padding: 0 20px 16px !important;
 		font-size: 13px;
 		line-height: 1.6;
-		color: #52525b;
+		color: var(--gd-neutral-600);
 	}
 }
 
@@ -190,8 +190,8 @@
 	gap: 10px;
 	padding: 10px 14px;
 	border-radius: 10px;
-	border: 1px solid #e4e4e7;
-	background: #ffffff;
+	border: 1px solid var(--gd-color-border-strong);
+	background: var(--gd-color-surface);
 
 	div {
 		display: flex;
@@ -206,13 +206,13 @@
 	font-weight: 500;
 	letter-spacing: 0.8px;
 	text-transform: uppercase;
-	color: #71717a;
+	color: var(--gd-color-text-secondary);
 }
 
 .metaValue {
 	font-size: 14px;
 	font-weight: 500;
-	color: #0f0f0f;
+	color: var(--gd-color-text);
 }
 
 .infoList {
@@ -230,7 +230,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	color: #52525b;
+	color: var(--gd-neutral-600);
 	margin-top: 2px;
 }
 
@@ -255,7 +255,7 @@
 .sidebarBody {
 	font-size: 13px;
 	line-height: 1.6;
-	color: #3f3f46;
+	color: var(--gd-neutral-700);
 	margin-bottom: 0 !important;
 }
 

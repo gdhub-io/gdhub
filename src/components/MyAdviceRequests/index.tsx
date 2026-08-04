@@ -4,9 +4,14 @@ import type {
 	Project,
 	User,
 } from "@gdhub-io/gdhub-prisma";
-import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
-import { MdOutlineSupportAgent } from "@react-icons/all-files/md/MdOutlineSupportAgent";
-import { IconBan, IconCancel, IconCheck, IconClock } from "@tabler/icons-react";
+import {
+	IconBan,
+	IconCancel,
+	IconCheck,
+	IconChevronRight,
+	IconClock,
+	IconHeadset,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Button, Flex, message, Space, Spin, Typography } from "antd";
@@ -22,6 +27,7 @@ import {
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
 import hubSection from "@/components/hub/hubSection.module.scss";
+import { ViewAllLink } from "@/components/ui";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 import { useChat } from "../Chat/useChat";
 import ExpertRequestModal from "../modals/ExpertRequestModal";
@@ -290,15 +296,10 @@ const MyAdviceRequests: React.FC<{
 					title={t("page.hub.advice-requests", "Advice Requests")}
 				>
 					{isHubLayout && (
-						<Link
+						<ViewAllLink
 							href="/user/advice-requests"
-							className={hubSection.sectionHeadLink}
-						>
-							<Text type="secondary">
-								{t("hub.view-all", "View all")}
-								{" →"}
-							</Text>
-						</Link>
+							label={t("hub.view-all", "View all")}
+						/>
 					)}
 				</HubSectionHeader>
 			)}
@@ -326,7 +327,7 @@ const MyAdviceRequests: React.FC<{
 				<Flex justify="space-between" align="center" wrap>
 					{showTitle && (
 						<Space>
-							<MdOutlineSupportAgent size={36} />
+							<IconHeadset size={36} />
 							<Title level={2}>
 								{t("page.hub.advice-requests", "Advice Requests")}
 							</Title>
@@ -450,7 +451,7 @@ const AdviceHubListRow: React.FC<{
 			onClick={handleRowActivate}
 		>
 			{main}
-			<FaChevronRight className={styles.hubItemIcon} aria-hidden />
+			<IconChevronRight className={styles.hubItemIcon} aria-hidden />
 		</button>
 	);
 };
@@ -461,28 +462,44 @@ const getStatusIcon = (status: string) => {
 			return (
 				<IconCheck
 					size={18}
-					style={{ color: "#52c41a", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-success-solid)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 		case "Rejected":
 			return (
 				<IconCancel
 					size={18}
-					style={{ color: "#ff4d4f", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-danger-solid)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 		case "Closed":
 			return (
 				<IconBan
 					size={18}
-					style={{ color: "#888", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-color-text-secondary)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 		default:
 			return (
 				<IconClock
 					size={18}
-					style={{ color: "#1890ff", background: "#fff", borderRadius: "50%" }}
+					style={{
+						color: "var(--gd-info-solid)",
+						background: "var(--gd-color-surface)",
+						borderRadius: "50%",
+					}}
 				/>
 			);
 	}

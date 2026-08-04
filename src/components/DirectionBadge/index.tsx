@@ -29,7 +29,7 @@ export function DirectionBadge({
 	size = 28,
 	className,
 }: DirectionBadgeProps) {
-	const { slug, icon: Icon } = getWorkDirection(name);
+	const { slug, icon: Icon, ink } = getWorkDirection(name);
 
 	const chip = (
 		<span
@@ -40,7 +40,7 @@ export function DirectionBadge({
 				borderRadius: Math.round(size * 0.29),
 			}}
 		>
-			<Icon size={Math.round(size * 0.57)} stroke={2} color="#18181B" />
+			<Icon size={Math.round(size * 0.57)} stroke={2} color={ink} />
 		</span>
 	);
 

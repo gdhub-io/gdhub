@@ -1,9 +1,11 @@
-import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
-import { TbClock } from "@react-icons/all-files/tb/TbClock";
-import { TbFileText } from "@react-icons/all-files/tb/TbFileText";
-import { TbMail } from "@react-icons/all-files/tb/TbMail";
-import { TbMapPin } from "@react-icons/all-files/tb/TbMapPin";
-import { TbQuote } from "@react-icons/all-files/tb/TbQuote";
+import {
+	IconBrandTelegram,
+	IconClock,
+	IconFileText,
+	IconMail,
+	IconMapPin,
+	IconQuote,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -116,7 +118,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 													{!!member.data.user.profile.country && (
 														<Col xs={24} sm={12}>
 															<Space>
-																<TbMapPin
+																<IconMapPin
 																	size={18}
 																	style={{ color: token.colorPrimary }}
 																/>
@@ -131,7 +133,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 													)}
 													<Col xs={24} sm={12}>
 														<Space>
-															<TbClock
+															<IconClock
 																size={18}
 																style={{ color: token.colorPrimary }}
 															/>
@@ -152,7 +154,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 													{!!member.data.speciality.portfolioUrl && (
 														<Col span={24}>
 															<Space>
-																<TbFileText
+																<IconFileText
 																	size={18}
 																	style={{ color: token.colorPrimary }}
 																/>
@@ -173,7 +175,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 													{!!member.data.user.profile.tgNickname && (
 														<Col span={24}>
 															<div className={styles.contactItem}>
-																<TbBrandTelegram
+																<IconBrandTelegram
 																	size={18}
 																	style={{ color: token.colorPrimary }}
 																/>
@@ -191,7 +193,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 														!!member.data.user.email && (
 															<Col span={24}>
 																<div className={styles.contactItem}>
-																	<TbMail
+																	<IconMail
 																		size={18}
 																		style={{ color: token.colorPrimary }}
 																	/>
@@ -231,7 +233,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 								<Row>
 									<Col span={24}>
 										<div className={styles.quoteBlock}>
-											<TbQuote
+											<IconQuote
 												size={24}
 												style={{ color: token.colorPrimary, marginRight: 8 }}
 											/>

@@ -58,7 +58,9 @@ export const GET = withValidation(
 				...report,
 				applauseCount: applauseCounts.get(report.id) ?? 0,
 			})),
-			nextCursor: page.nextCursor,
+			// The cursor used to survive the last full page, so the client spent a
+			// round trip discovering an empty one. `hasMore` already knows.
+			nextCursor: page.hasMore ? page.nextCursor : null,
 			hasMore: page.hasMore,
 		});
 	} catch (error) {

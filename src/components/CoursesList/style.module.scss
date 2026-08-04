@@ -8,10 +8,10 @@
 }
 
 .card {
-  background: #fff;
+  background: var(--gd-color-surface);
   padding: 8px;
   border-radius: 12px;
-  border: 1px solid #d1d1d1;
+  border: 1px solid var(--gd-color-border-strong);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -33,7 +33,7 @@
 
     .cardDate {
       display: block;
-      background-color: #ffffff;
+      background-color: var(--gd-color-surface);
       border-radius: 8px;
       padding: 8px;
       font-size: 12px;

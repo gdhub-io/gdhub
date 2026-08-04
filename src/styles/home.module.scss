@@ -11,7 +11,7 @@
 	max-width: variables.$wrapper-width;
 
 	p {
-		color: #333;
+		color: var(--gd-color-text);
 		text-align: center;
 		font-size: 16px;
 		max-width: 600px;

@@ -116,7 +116,7 @@ export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 													padding: "12px 0",
 													borderBottom:
 														idx !== expert.speciality.questions.length - 1
-															? "1px solid #f0f0f0"
+															? "1px solid var(--gd-color-border)"
 															: "none",
 													fontSize: 18,
 												}}
@@ -148,7 +148,11 @@ export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 							<Descriptions
 								column={1}
 								size="small"
-								labelStyle={{ color: "#888", fontWeight: 400, fontSize: 14 }}
+								labelStyle={{
+									color: "var(--gd-color-text-secondary)",
+									fontWeight: 400,
+									fontSize: 14,
+								}}
 								contentStyle={{ fontSize: 16, fontWeight: 500 }}
 							>
 								<Descriptions.Item label="Summary">

@@ -3,7 +3,7 @@
 	align-items: center;
 	gap: 12px;
 	padding: 14px 16px;
-	border-bottom: 1px solid #ededed;
+	border-bottom: 1px solid var(--gd-color-border);
 
 	&:last-child {
 		border-bottom: none;
@@ -14,16 +14,16 @@
 	width: 18px;
 	height: 18px;
 	border-radius: 50%;
-	border: 1.5px solid #d4d4d4;
+	border: 1.5px solid var(--gd-color-border-strong);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
-	color: #fff;
+	color: var(--gd-color-surface);
 
 	&.checkDone {
-		background-color: #181818;
-		border-color: #181818;
+		background-color: var(--gd-color-text);
+		border-color: var(--gd-color-text);
 	}
 }
 
@@ -38,10 +38,10 @@
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 1.45;
-	color: #181818;
+	color: var(--gd-color-text);
 
 	&.labelDone {
-		color: #8c8c8c;
+		color: var(--gd-color-text-secondary);
 		text-decoration: line-through;
 	}
 }
@@ -49,7 +49,7 @@
 .description {
 	font-size: 12px;
 	line-height: 1.4;
-	color: #8c8c8c;
+	color: var(--gd-color-text-secondary);
 }
 
 .pill {
@@ -63,12 +63,12 @@
 	letter-spacing: 0.3px;
 
 	&.required {
-		background-color: #fcebeb;
-		color: #c0362c;
+		background-color: var(--gd-danger-tint);
+		color: var(--gd-danger-solid);
 	}
 
 	&.optional {
-		background-color: #f0f0f0;
-		color: #6b7280;
+		background-color: var(--gd-color-border);
+		color: var(--gd-color-text-secondary);
 	}
 }

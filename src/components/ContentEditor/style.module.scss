@@ -1,20 +1,20 @@
 .editor:global(.mdxeditor) {
-  background-color: #f0f0f0;
+  background-color: var(--gd-color-border);
   border-color: transparent !important;
   border-radius: 4px;
 
   &:hover {
-    background-color: #fffdfc;
-    border-color: #f15541 !important;
+    background-color: var(--gd-color-surface);
+    border-color: var(--gd-color-accent) !important;
   }
 
   &:not(:global(.mdxeditor-popup-container)) {
-    border: 1px solid #adadad;
+    border: 1px solid var(--gd-color-text-tertiary);
     z-index: 1000 !important;
   }
 
   :global(.mdxeditor-toolbar) {
-    background: #e7e7e7;
+    background: var(--gd-color-border);
     border-bottom: 0;
     border-radius: 4px 4px 0 0;
   }

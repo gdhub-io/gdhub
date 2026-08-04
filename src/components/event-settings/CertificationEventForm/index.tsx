@@ -271,7 +271,11 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 					data={previewOpen ? previewPdfUrl : undefined}
 					type="application/pdf"
 					width="100%"
-					style={{ height: "70vh", border: "1px solid #eee", borderRadius: 4 }}
+					style={{
+						height: "70vh",
+						border: "1px solid var(--gd-color-border)",
+						borderRadius: 4,
+					}}
 				>
 					<Typography.Paragraph>
 						{t(

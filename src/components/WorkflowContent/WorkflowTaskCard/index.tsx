@@ -1,4 +1,4 @@
-import { AiOutlineCheck } from "@react-icons/all-files/ai/AiOutlineCheck";
+import { IconCheck } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import type React from "react";
 import styles from "./style.module.scss";
@@ -29,7 +29,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 				className={`${styles.check} ${completed ? styles.checkDone : ""}`}
 				aria-hidden
 			>
-				{completed && <AiOutlineCheck size={12} />}
+				{completed && <IconCheck size={12} />}
 			</div>
 			<div className={styles.texts}>
 				<div className={`${styles.label} ${completed ? styles.labelDone : ""}`}>

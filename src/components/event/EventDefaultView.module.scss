@@ -5,7 +5,7 @@
 
   h2 {
     font-size: 18px;
-    color: #888;
+    color: var(--gd-color-text-secondary);
     font-weight: lighter;
   }
 
@@ -40,7 +40,7 @@
 
         &::marker {
           content: '•';
-          color: #888;
+          color: var(--gd-color-text-secondary);
           font-size: 16px;
           font-weight: bold;
           margin-right: 10px;
@@ -131,7 +131,7 @@
     :global(blockquote) {
       margin: 16px 0;
       padding: 16px 24px;
-      border-left: 4px solid #1890ff;
+      border-left: 4px solid var(--gd-info-solid);
       background: rgba(24, 144, 255, 0.05);
       border-radius: 4px;
     }
@@ -157,7 +157,7 @@
     }
 
     :global(a) {
-      color: #1890ff;
+      color: var(--gd-info-solid);
       text-decoration: none;
 
       &:hover {

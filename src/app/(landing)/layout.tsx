@@ -16,7 +16,7 @@ export default function LandingGroupLayout({
 }) {
 	return (
 		<>
-			<style>{`:root{--background-color:#050505}`}</style>
+			<style>{`:root{--background-color:var(--gd-neutral-950)}`}</style>
 			{children}
 		</>
 	);

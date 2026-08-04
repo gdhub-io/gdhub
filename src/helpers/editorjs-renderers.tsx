@@ -23,8 +23,8 @@ const DefaultLinkImage = () => (
 		style={{
 			width: "100%",
 			height: "100%",
-			backgroundColor: "#f0f0f0",
-			color: "#999",
+			backgroundColor: "var(--gd-color-border)",
+			color: "var(--gd-color-text-tertiary)",
 		}}
 	>
 		<svg

@@ -104,7 +104,7 @@ const EventConferenceOrGamelabView = ({
 							width: screens.xs ? "90vw" : "100%",
 							maxWidth: "100%",
 							aspectRatio: "16/9",
-							boxShadow: "0 4px 32px #0002",
+							boxShadow: "var(--gd-elevation-e3)",
 							borderRadius: 18,
 							overflow: "hidden",
 						}}
@@ -125,7 +125,9 @@ const EventConferenceOrGamelabView = ({
 					{event.title}
 				</Title>
 				{event.shortDescription && (
-					<Text style={{ fontSize: 16, color: "#666" }}>
+					<Text
+						style={{ fontSize: 16, color: "var(--gd-color-text-secondary)" }}
+					>
 						{event.shortDescription}
 					</Text>
 				)}
@@ -195,7 +197,7 @@ const EventConferenceOrGamelabView = ({
 							<div
 								key={item.id || idx}
 								style={{
-									background: "#fdfdfd",
+									background: "var(--gd-color-surface)",
 									paddingInline: 16,
 									borderRadius: 8,
 									paddingBlock: 16,
@@ -217,7 +219,7 @@ const EventConferenceOrGamelabView = ({
 												style={{
 													fontWeight: 600,
 													fontSize: 18,
-													color: "#222",
+													color: "var(--gd-color-text)",
 												}}
 											>
 												{item.title ||
@@ -228,7 +230,7 @@ const EventConferenceOrGamelabView = ({
 												style={{
 													fontWeight: 600,
 													fontSize: 15,
-													color: "#222",
+													color: "var(--gd-color-text)",
 													whiteSpace: "nowrap",
 												}}
 											>
@@ -274,8 +276,8 @@ const EventConferenceOrGamelabView = ({
 																src={speakerAvatar}
 																style={{
 																	minWidth: 64,
-																	background: "#eee",
-																	color: "#222",
+																	background: "var(--gd-color-border)",
+																	color: "var(--gd-color-text)",
 																	fontSize: 18,
 																}}
 															>
@@ -299,7 +301,12 @@ const EventConferenceOrGamelabView = ({
 																	</span>
 																)}
 																{speakerSummary && (
-																	<span style={{ fontSize: 13, color: "#888" }}>
+																	<span
+																		style={{
+																			fontSize: 13,
+																			color: "var(--gd-color-text-secondary)",
+																		}}
+																	>
 																		{speakerSummary}
 																	</span>
 																)}
@@ -311,7 +318,7 @@ const EventConferenceOrGamelabView = ({
 													<span
 														style={{
 															marginLeft: 8,
-															color: "#888",
+															color: "var(--gd-color-text-secondary)",
 															fontSize: 13,
 														}}
 													>
@@ -326,7 +333,7 @@ const EventConferenceOrGamelabView = ({
 												<Button
 													href={item.url}
 													target="_blank"
-													className="black-btn"
+													type="primary"
 													icon={
 														<IconExternalLink
 															size={18}

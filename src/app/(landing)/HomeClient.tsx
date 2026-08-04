@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import { LandingContactsSection } from "@/components/landing/LandingContactsSection";
 import { LandingFeedbackSection } from "@/components/landing/LandingFeedbackSection";
 import { LandingWhoWeAreSection } from "@/components/landing/LandingWhoWeAreSection";
-import { publicThemeConfig } from "@/config/theme";
+import { publicTheme } from "@/config/design";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./home.module.scss";
 
@@ -97,7 +97,7 @@ export function HomeClient({ stats }: { stats: HomeStats }) {
 
 	return (
 		<ConfigProvider
-			theme={publicThemeConfig}
+			theme={publicTheme}
 			locale={getLanguage() === "en" ? enLocale : ruLocale}
 		>
 			<LandingLayout className={styles.container}>

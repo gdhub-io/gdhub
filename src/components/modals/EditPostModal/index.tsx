@@ -1,8 +1,6 @@
 import type { ProjectReport } from "@gdhub-io/gdhub-prisma";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
-import { AiOutlineVideoCameraAdd } from "@react-icons/all-files/ai/AiOutlineVideoCameraAdd";
-import { IoMdClose } from "@react-icons/all-files/io/IoMdClose";
-import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
+import { IconTrash, IconVideoPlus, IconX } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -119,7 +117,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 						onConfirm={() => handleDeleteReport(postId)}
 					>
 						<Button
-							icon={<TbTrash size={24} />}
+							icon={<IconTrash size={24} />}
 							type="text"
 							danger
 							style={{ lineHeight: "initial" }}
@@ -188,9 +186,8 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 						{!showAddVideoInput && (
 							<Tooltip title={t("devlogwall.form.add-video", "Add video")}>
 								<Button
-									className="gray-text-btn"
 									onClick={() => setShowAddVideoInput(true)}
-									icon={<AiOutlineVideoCameraAdd size={24} />}
+									icon={<IconVideoPlus size={24} />}
 									type="text"
 								></Button>
 							</Tooltip>
@@ -211,7 +208,7 @@ const EditPostModal = ({ open, postId, onUpdate, onCancel }: any) => {
 										onClick={() => setShowAddVideoInput(false)}
 										style={{ paddingInline: 8 }}
 									>
-										<IoMdClose />
+										<IconX />
 									</Button>
 								</Flex>
 							</>

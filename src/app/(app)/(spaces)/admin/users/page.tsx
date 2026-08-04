@@ -367,7 +367,11 @@ export default function UsersAdminPage() {
 							<Button icon={<IconFilter size={16} />}>
 								Filters
 								{activeFilters ? (
-									<Badge count={activeFilters} size="small" color="#222222" />
+									<Badge
+										count={activeFilters}
+										size="small"
+										color="var(--gd-color-text)"
+									/>
 								) : null}
 							</Button>
 						</Popover>

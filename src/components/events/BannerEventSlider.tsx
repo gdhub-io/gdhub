@@ -81,7 +81,7 @@ const SlideProgressCircle = ({
 					cx={size / 2}
 					cy={size / 2}
 					r={radius}
-					stroke="#111"
+					stroke="var(--gd-color-text)"
 					opacity={0.5}
 					strokeWidth={stroke}
 					fill="none"
@@ -101,7 +101,7 @@ const SlideProgressCircle = ({
 					zIndex: 2,
 					fontWeight: 800,
 					fontSize: 18,
-					color: "#111",
+					color: "var(--gd-color-text)",
 					userSelect: "none",
 				}}
 			>
@@ -261,7 +261,7 @@ export const BannerEventSlider = () => {
 					borderRadius: 16,
 					minHeight: 480,
 					overflow: "hidden",
-					background: "#161616",
+					background: "var(--gd-neutral-900)",
 				}}
 			>
 				{/* Previous image (underneath) */}
@@ -306,7 +306,8 @@ export const BannerEventSlider = () => {
 					style={{
 						position: "absolute",
 						inset: 0,
-						background: "#00000022",
+						background:
+							"color-mix(in srgb, var(--gd-neutral-950) 13%, transparent)",
 						zIndex: 3,
 					}}
 				/>

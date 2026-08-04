@@ -1,10 +1,7 @@
-import { Typography } from "antd";
 import classNames from "classnames";
-import Link from "next/link";
 import type React from "react";
+import { SectionHeading, ViewAllLink } from "@/components/ui";
 import styles from "./hubSection.module.scss";
-
-const { Text } = Typography;
 
 export type HubSectionShell = "main" | "inset" | "sidebar";
 
@@ -21,29 +18,55 @@ export function getHubSectionShellClass(shell: HubSectionShell) {
 
 type HubSectionHeaderProps = {
 	title: React.ReactNode;
+	/** Card headers sit a rank below page sections. */
+	level?: 3 | 4;
 	linkHref?: string;
 	linkLabel?: React.ReactNode;
 	className?: string;
 	children?: React.ReactNode;
 };
 
+/**
+ * Card header for a hub panel.
+ *
+ * It delegates to `<SectionHeading>` and `<ViewAllLink>` rather than styling a
+ * title of its own — this used to be a 14px span with a grey link, which is a
+ * second answer to a question the design system had already answered.
+ *
+ * `title` and `linkLabel` stay `ReactNode` because callers pass translated
+ * fragments; the primitives want strings, so anything richer than a string keeps
+ * the old markup path.
+ */
 export function HubSectionHeader({
 	title,
+	level = 4,
 	linkHref,
 	linkLabel,
 	className,
 	children,
 }: HubSectionHeaderProps) {
+	const action =
+		children ??
+		(linkHref && typeof linkLabel === "string" ? (
+			<ViewAllLink href={linkHref} label={linkLabel} />
+		) : null);
+
+	if (typeof title !== "string") {
+		return (
+			<div className={classNames(styles.sectionHead, className)}>
+				<span className={styles.sectionTitle}>{title}</span>
+				{action}
+			</div>
+		);
+	}
+
 	return (
-		<div className={classNames(styles.sectionHead, className)}>
-			<span className={styles.sectionTitle}>{title}</span>
-			{children ??
-				(linkHref && linkLabel ? (
-					<Link href={linkHref} className={styles.sectionHeadLink}>
-						<Text type="secondary">{linkLabel}</Text>
-					</Link>
-				) : null)}
-		</div>
+		<SectionHeading
+			level={level}
+			title={title}
+			action={action}
+			className={classNames(styles.sectionHead, className)}
+		/>
 	);
 }
 

@@ -1,4 +1,4 @@
-import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Grid, message, Popconfirm, Space, Table } from "antd";
@@ -62,7 +62,7 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 						onConfirm={() => handleDeleteReport(record.id)}
 					>
 						<Button
-							icon={<TbTrash />}
+							icon={<IconTrash />}
 							type="text"
 							danger
 							style={{ lineHeight: "initial" }}
@@ -114,7 +114,7 @@ const MyProjectReports = ({ project }: MyProjectReportsArgs) => {
 					<Table
 						loading={isLoadingMyProjectReports}
 						style={{
-							border: "1px solid #aaa",
+							border: "1px solid var(--gd-color-text-tertiary)",
 							overflow: "hidden",
 							borderRadius: 16,
 							marginTop: 16,

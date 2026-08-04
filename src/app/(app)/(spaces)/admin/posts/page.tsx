@@ -1,11 +1,13 @@
 "use client";
 
-import { EllipsisOutlined } from "@ant-design/icons";
 import type { BlogPost } from "@gdhub-io/gdhub-prisma";
-import { FaDiscord } from "@react-icons/all-files/fa/FaDiscord";
-import { FaLinkedinIn } from "@react-icons/all-files/fa/FaLinkedinIn";
-import { FaTelegramPlane } from "@react-icons/all-files/fa/FaTelegramPlane";
-import { IconTrash } from "@tabler/icons-react";
+import {
+	IconBrandDiscord,
+	IconBrandLinkedin,
+	IconBrandTelegram,
+	IconDots,
+	IconTrash,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { MenuProps } from "antd";
 import { Button, Dropdown, Modal, Popover, Row, Typography } from "antd";
@@ -138,19 +140,19 @@ export default function BlogPostsAdminPage() {
 					{
 						key: "linkedin",
 						label: "Post to LinkedIn",
-						icon: <FaLinkedinIn />,
+						icon: <IconBrandLinkedin />,
 						disabled: !isPublished || !record.slug,
 					},
 					{
 						key: "discord",
 						label: "Post to Discord",
-						icon: <FaDiscord />,
+						icon: <IconBrandDiscord />,
 						disabled: !isPublished || !record.slug,
 					},
 					{
 						key: "telegram",
 						label: "Post to Telegram",
-						icon: <FaTelegramPlane />,
+						icon: <IconBrandTelegram />,
 						disabled: !isPublished || !record.slug,
 					},
 					{ type: "divider" },
@@ -184,7 +186,7 @@ export default function BlogPostsAdminPage() {
 							},
 						}}
 					>
-						<Button type="text" icon={<EllipsisOutlined />} />
+						<Button type="text" icon={<IconDots />} />
 					</Dropdown>
 				);
 			},

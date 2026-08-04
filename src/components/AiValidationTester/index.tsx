@@ -2,6 +2,7 @@
 
 import { Alert, Button, Input, Space, Tag, Typography } from "antd";
 import { useState } from "react";
+import { StatusDot } from "@/components/ui";
 import type {
 	FieldInput,
 	FieldKind,
@@ -170,17 +171,17 @@ export const AiValidationTester = ({
 							{status && (
 								<div style={{ marginTop: 6 }}>
 									{status.state === "passed" && (
-										<Tag color="success">✓ Passed</Tag>
+										<StatusDot tone="success" label="Passed" />
 									)}
 									{status.state === "warning" && (
 										<Space size={8} wrap>
-											<Tag color="gold">⚠ Warning</Tag>
+											<StatusDot tone="warning" label="Warning" />
 											<Text type="secondary">{status.message}</Text>
 										</Space>
 									)}
 									{status.state === "error" && (
 										<Space size={8} wrap>
-											<Tag color="error">✕ Error</Tag>
+											<StatusDot tone="danger" label="Error" />
 											<Text type="danger">{status.message}</Text>
 										</Space>
 									)}

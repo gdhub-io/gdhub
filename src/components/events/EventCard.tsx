@@ -1,9 +1,11 @@
 import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
-import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
-import { FaMicroscope } from "@react-icons/all-files/fa/FaMicroscope";
-import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
-import { FaUsers } from "@react-icons/all-files/fa/FaUsers";
-import { GiGamepad } from "@react-icons/all-files/gi/GiGamepad";
+import {
+	IconCalendarCheck,
+	IconDeviceGamepad2,
+	IconMicroscope,
+	IconPresentation,
+	IconUsers,
+} from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import { Card, Tag } from "antd";
 import Image from "next/image";
@@ -16,15 +18,15 @@ import styles from "./style.module.scss";
 function getTypeIcon(type: EventType) {
 	switch (type) {
 		case EventType.Meetup:
-			return <FaUsers size={28} />;
+			return <IconUsers size={28} />;
 		case EventType.GameJam:
-			return <GiGamepad size={28} />;
+			return <IconDeviceGamepad2 size={28} />;
 		case EventType.Workshop:
-			return <FaChalkboardTeacher size={28} />;
+			return <IconPresentation size={28} />;
 		case EventType.GameLab:
-			return <FaMicroscope size={28} />;
+			return <IconMicroscope size={28} />;
 		case EventType.Conference:
-			return <FaRegCalendarCheck size={28} />;
+			return <IconCalendarCheck size={28} />;
 		default:
 			return null;
 	}

@@ -8,8 +8,11 @@ import type {
 	ProjectWorkflowStep,
 	User,
 } from "@gdhub-io/gdhub-prisma";
-import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
-import { IconDownload, IconQrcode } from "@tabler/icons-react";
+import {
+	IconBrandTelegram,
+	IconDownload,
+	IconQrcode,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -408,7 +411,7 @@ export function ProjectPageClient({
 											type="dashed"
 											className={styles.writeToAuthorButton}
 										>
-											<TbBrandTelegram size={16} />{" "}
+											<IconBrandTelegram size={16} />{" "}
 											{t("page.project.contactTheAuthor", "Contact the author")}
 										</Button>
 									</Link>

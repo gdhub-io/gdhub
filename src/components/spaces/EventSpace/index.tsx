@@ -1,6 +1,6 @@
 "use client";
 
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { IconExternalLink } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Grid, message, Space, Typography } from "antd";
@@ -166,7 +166,7 @@ export const EventSpace = ({
 							target="_blank"
 						>
 							{t("event.button.publicPage", "Go to page")}
-							<GoLinkExternal size={12} color="gray" />
+							<IconExternalLink size={12} color="gray" />
 						</Button>
 
 						{event?.status === EventStatus.Published &&

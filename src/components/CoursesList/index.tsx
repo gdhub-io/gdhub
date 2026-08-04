@@ -106,7 +106,7 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 													: `/course/${course.slug}`
 											}
 										>
-											<Button type="primary" className="black-btn">
+											<Button type="primary">
 												{t("course-card.details-button", "Details")}
 											</Button>
 										</Link>

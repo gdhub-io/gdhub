@@ -57,7 +57,12 @@ export const DirectionMap: StoryObj = {
 			{WORK_DIRECTIONS.map((d) => (
 				<div key={d.slug} style={{ display: "contents" }}>
 					<DirectionBadge name={d.label} />
-					<span style={{ color: "#71717a", fontFamily: "monospace" }}>
+					<span
+						style={{
+							color: "var(--gd-color-text-secondary)",
+							fontFamily: "monospace",
+						}}
+					>
 						{d.slug}
 					</span>
 					<span
@@ -72,7 +77,12 @@ export const DirectionMap: StoryObj = {
 								border: "1px solid rgba(0,0,0,0.08)",
 							}}
 						/>
-						<span style={{ color: "#71717a", fontFamily: "monospace" }}>
+						<span
+							style={{
+								color: "var(--gd-color-text-secondary)",
+								fontFamily: "monospace",
+							}}
+						>
 							{d.color}
 						</span>
 					</span>

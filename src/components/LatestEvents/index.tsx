@@ -1,17 +1,16 @@
 import type { Event } from "@gdhub-io/gdhub-prisma";
-import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Skeleton } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import Link from "next/link";
 import {
 	getHubSectionShellClass,
 	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { HubSectionRow } from "@/components/hub/HubSectionRow";
 import styles from "./styles.module.scss";
 
 type LatestEvent = Event & {
@@ -124,57 +123,33 @@ export default function LatestEvents() {
 				<HubSectionHeader
 					title={t("hub.latest-events.title", "Upcoming events")}
 					linkHref="/hub/events"
-					linkLabel={`${t("hub.view-all", "View all")} →`}
+					linkLabel={t("hub.view-all", "View all")}
 				/>
 
-				<HubSectionBody>
-					<HubSectionBleed className={styles.list}>
-						{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
-							<Link
-								key={e.id}
-								href={`${e.lang ? `/${e.lang}` : ""}/event/${e.slug}`}
-								target="_blank"
-								className={styles.item}
-							>
-								<div className={styles.itemLeft}>
-									<Avatar
-										src={e.image ?? undefined}
-										size={40}
-										className={styles.avatar}
-									>
-										{e.title?.charAt(0)?.toUpperCase()}
-									</Avatar>
-									<div className={styles.textWrap}>
-										<div className={styles.primary} title={e.title}>
-											{e.title}
-										</div>
-										<div
-											className={styles.secondary}
-											title={
-												isOngoing
-													? dayjs(nearestEnd).format("LL")
-													: dayjs(nextStart).format("LL")
-											}
-										>
-											{isOngoing ? (
-												<>
-													{t("hub.latest-events.ongoing", "Ongoing")} ·{" "}
-													{t("hub.latest-events.until", "until")}{" "}
-													{dayjs(nearestEnd).format("ll")}
-												</>
-											) : (
-												<>
-													{t("hub.latest-events.starts", "Starts")}:{" "}
-													{dayjs(nextStart).format("ll")}
-												</>
-											)}
-										</div>
-									</div>
-								</div>
-								<FaChevronRight className={styles.itemIcon} />
-							</Link>
-						))}
-					</HubSectionBleed>
+				<HubSectionBody flush>
+					{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
+						<HubSectionRow
+							key={e.id}
+							href={`${e.lang ? `/${e.lang}` : ""}/event/${e.slug}`}
+							target="_blank"
+							title={e.title}
+							subtitle={
+								isOngoing
+									? `${t("hub.latest-events.ongoing", "Ongoing")} · ${t("hub.latest-events.until", "until")} ${dayjs(nearestEnd).format("ll")}`
+									: `${t("hub.latest-events.starts", "Starts")}: ${dayjs(nextStart).format("ll")}`
+							}
+							media={
+								<Avatar
+									src={e.image ?? undefined}
+									size={32}
+									shape="square"
+									className={styles.avatar}
+								>
+									{e.title?.charAt(0)?.toUpperCase()}
+								</Avatar>
+							}
+						/>
+					))}
 				</HubSectionBody>
 			</section>
 		</Skeleton>

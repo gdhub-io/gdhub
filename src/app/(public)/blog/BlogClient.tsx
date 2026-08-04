@@ -1,6 +1,6 @@
 "use client";
 
-import { UserOutlined } from "@ant-design/icons";
+import { IconUser } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Typography } from "antd";
 import Image from "next/image";
@@ -80,7 +80,7 @@ export function BlogClient({ posts }: { posts: BlogPost[] }) {
 														style={{ borderRadius: "50%" }}
 													/>
 												) : (
-													<UserOutlined style={{ fontSize: "20px" }} />
+													<IconUser style={{ fontSize: "20px" }} />
 												)}
 											</div>
 										</div>
@@ -93,11 +93,7 @@ export function BlogClient({ posts }: { posts: BlogPost[] }) {
 											</Text>
 										)}
 										<Link href={`/blog/${post.slug}`}>
-											<Button
-												type="default"
-												className="gray-btn"
-												style={{ width: "100%" }}
-											>
+											<Button type="default" style={{ width: "100%" }}>
 												{t("page.blog.readMore", "Read More")}
 											</Button>
 										</Link>

@@ -5,11 +5,12 @@ import { Alert, Button, Col, Flex, Grid, Row, Space, Typography } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
 } from "@/components/hub/HubSection";
+import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import styles from "./style.module.scss";
 
 const DevlogPosts = dynamic(() => import("@/components/DevlogPosts"), {
@@ -46,6 +47,12 @@ export default function HubClient() {
 	const showMainFeed = isAuthenticated && isOnboardingDone;
 	const showOnboardingAlert = isAuthenticated && !isOnboardingDone;
 
+	// The sidebar is taller than the viewport, so it follows the reading
+	// direction: down until its last card meets the bottom edge, back up until
+	// its first meets the top. 36px matches the content padding.
+	const sidebarRef = useRef<HTMLDivElement>(null);
+	useScrollAwareSticky(sidebarRef, { offset: 36, enabled: showSidebar });
+
 	const linkToChat = useMemo(() => {
 		switch (getLanguage()) {
 			case "en":
@@ -58,7 +65,10 @@ export default function HubClient() {
 	}, [getLanguage]);
 
 	return (
-		<Row gutter={[24, 24]} className={styles.container}>
+		/* `stretch` gives the sidebar column the full row height — without it the
+		   column is only as tall as its own cards and the sticky sidebar would
+		   have no room to travel. */
+		<Row gutter={[24, 24]} align="stretch" className={styles.container}>
 			<Col xs={24} md={16} lg={17}>
 				<div className={styles.mainFeedColumn}>
 					<div className={styles.mainSectionsBundle}>
@@ -117,12 +127,6 @@ export default function HubClient() {
 								</div>
 							</HubSectionBody>
 						</section>
-
-						{showMainFeed && (
-							<div className={styles.mainBundleSlot}>
-								<MyProjectList variant="hub" bundleInset />
-							</div>
-						)}
 
 						{showOnboardingAlert && (
 							<div
@@ -187,8 +191,9 @@ export default function HubClient() {
 			</Col>
 			{showSidebar && (
 				<Col xs={24} md={8} lg={7}>
-					<div className={styles.sidebar}>
+					<div className={styles.sidebar} ref={sidebarRef}>
 						<Flex vertical gap={16}>
+							{showMainFeed && <MyProjectList variant="hubSidebar" />}
 							<MyAdviceRequests variant="hubSidebar" />
 							<HotTeamVacancies />
 							<LatestEvents />

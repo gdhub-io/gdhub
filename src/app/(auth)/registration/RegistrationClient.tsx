@@ -1,6 +1,6 @@
 "use client";
 
-import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
+import { IconBrandGoogle } from "@tabler/icons-react";
 import { T, useTolgee } from "@tolgee/react";
 import {
 	Button,
@@ -38,8 +38,16 @@ export function RegistrationClient() {
 	const forParam = searchParams?.get("for") || "";
 
 	const handleSendWithEmail = async () => {
+		let values: Awaited<ReturnType<typeof formRegEmail.validateFields>>;
+		try {
+			values = await formRegEmail.validateFields();
+		} catch {
+			// The form renders the messages; the button just stops here.
+			return;
+		}
+
 		const { email, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
-			await formRegEmail.validateFields();
+			values;
 
 		setIsRegistration(true);
 
@@ -72,8 +80,14 @@ export function RegistrationClient() {
 	};
 
 	const handleSendWithGoogle = async () => {
-		const { agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
-			await formRegGoogle.validateFields();
+		let values: Awaited<ReturnType<typeof formRegGoogle.validateFields>>;
+		try {
+			values = await formRegGoogle.validateFields();
+		} catch {
+			return;
+		}
+
+		const { agreeWithTermsAndPrivacy, needSubscribeToNewsletter } = values;
 
 		setIsRegistration(true);
 
@@ -137,7 +151,7 @@ export function RegistrationClient() {
 							<Button
 								type="primary"
 								style={{ width: "100%" }}
-								icon={<FaGoogle size={16} />}
+								icon={<IconBrandGoogle size={16} />}
 								onClick={() =>
 									setRegistrationStep({ step: 2, provider: "google" })
 								}
@@ -283,7 +297,7 @@ export function RegistrationClient() {
 											},
 										]}
 									>
-										<Input />
+										<Input variant="filled" autoComplete="email" />
 									</Form.Item>
 
 									<Flex vertical gap={12}>

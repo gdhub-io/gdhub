@@ -3,7 +3,7 @@
 
 .section {
   position: relative;
-  background-color: #0b0b0d;
+  background-color: var(--gd-color-bg);
   padding: 64px 165px;
   background-position-x: left;
   background-repeat: no-repeat;
@@ -14,7 +14,7 @@
   max-width: variables.$wrapper-width;
 
   .preTitle {
-    color: #FFBB55;
+    color: var(--gd-color-accent-alt);
     font-size: 16px;
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -36,15 +36,15 @@
     .star {
       width: 74px;
       height: 74px;
-      border: 2px solid #FFBB55;
-      border-image: linear-gradient(45deg, #FFBB55, #C66C19) 1;
+      border: 2px solid var(--gd-color-accent-alt);
+      border-image: linear-gradient(45deg, var(--gd-color-accent-alt), var(--gd-color-accent-alt-hover)) 1;
       box-shadow:
         0 0 50px rgba(255, 187, 85, 0.2),
         inset 0 0 50px rgba(255, 187, 85, 0.2);
 
       svg {
         padding: 18px;
-        fill: #FFBB55;
+        fill: var(--gd-color-accent-alt);
       }
     }
 
@@ -54,8 +54,8 @@
     }
 
     // .heroButton {
-    //   color: #fff;
-    //   border-color: #FFBB55;
+    //   color: var(--gd-color-text);
+    //   border-color: var(--gd-color-accent-alt);
     //   padding: 24px 104px 24px 32px;
     //   height: auto;
     //   font-size: 20px;
@@ -64,9 +64,9 @@
     //   &:hover,
     //   &:active,
     //   &:focus {
-    //     color: #fff !important;
-    //     background-color: #FFBB55;
-    //     border-color: #FFBB55 !important;
+    //     color: var(--gd-color-text) !important;
+    //     background-color: var(--gd-color-accent-alt);
+    //     border-color: var(--gd-color-accent-alt) !important;
     //   }
 
     //   :global {
@@ -76,30 +76,30 @@
     //       right: 0;
     //       height: 100%;
     //       padding: 24px;
-    //       background-color: #FFBB55;
+    //       background-color: var(--gd-color-accent-alt);
 
     //     }
     //   }
     // }
 
     .heroButton {
-      color: #111;
-      border-color: #FFBB55;
-      background-color: #FFBB55;
+      color: var(--gd-color-text-inverse);
+      border-color: var(--gd-color-accent-alt);
+      background-color: var(--gd-color-accent-alt);
       padding: 24px 62px;
       width: 100%;
       margin-top: 34px;
       max-width: 236px;
       height: auto;
       font-size: 20px;
-      outline: 0px solid #333;
+      outline: 0px solid var(--gd-color-text-secondary);
   
       &:hover,
       &:active,
       &:focus {
-        color: #111 !important;
-        background-color: #FFBB55 !important;
-        outline: 1px solid #FFBB55;
+        color: var(--gd-color-text-inverse) !important;
+        background-color: var(--gd-color-accent-alt) !important;
+        outline: 1px solid var(--gd-color-accent-alt);
         outline-offset: 3px;
       }
     }
@@ -165,7 +165,7 @@
 
       .projectName {
         font-weight: 600;
-        color: #fff;
+        color: var(--gd-color-text);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

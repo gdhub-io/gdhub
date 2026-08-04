@@ -363,20 +363,25 @@ const DevlogPosts = ({
 
 	const posts = data?.pages.flatMap((page) => page.items || []) || [];
 
+	// The feed used to listen on `window` and measure `document.scrollHeight`,
+	// but the product shell scrolls an inner element and keeps `body` at
+	// `overflow: hidden` — so `window` never fired and the next page never
+	// loaded. A sentinel does not care which element scrolls.
+	const sentinelRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
-		const handleScroll = () => {
-			if (
-				window.innerHeight + window.scrollY >=
-				document.documentElement.scrollHeight - 100
-			) {
-				if (hasNextPage && !isFetchingNextPage) {
-					fetchNextPage();
-				}
-			}
-		};
+		const node = sentinelRef.current;
+		if (!node || !hasNextPage) return;
 
-		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage();
+			},
+			// Fetch a screenful early, so the next posts are already in place by the
+			// time the reader gets there instead of hitting the bottom and waiting.
+			{ rootMargin: "800px" },
+		);
+		observer.observe(node);
+		return () => observer.disconnect();
 	}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
 	const hubShell =
@@ -468,10 +473,16 @@ const DevlogPosts = ({
 				))}
 			</div>
 
-			{hasNextPage && (
-				<div className={styles.loadMore}>
+			{hasNextPage ? (
+				<div className={styles.loadMore} ref={sentinelRef}>
 					<Spin spinning={isFetchingNextPage} />
 				</div>
+			) : (
+				posts.length > 0 && (
+					<div className={styles.feedEnd}>
+						{t("page.devlog.feed-end", "You've reached the end of the feed")}
+					</div>
+				)
 			)}
 		</>
 	);

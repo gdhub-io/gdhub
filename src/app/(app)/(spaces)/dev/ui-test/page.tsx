@@ -1,6 +1,6 @@
 "use client";
 
-import { AiOutlineGoogle } from "@react-icons/all-files/ai/AiOutlineGoogle";
+import { IconBrandGoogle } from "@tabler/icons-react";
 import { Button, Space } from "antd";
 
 export default function UITestPage() {
@@ -12,10 +12,8 @@ export default function UITestPage() {
 				</Button>
 				<Button>Default</Button>
 				<Button type="primary">Tertiary</Button>
-				<Button type="primary" className="tertiary-blue-btn">
-					Tertiary
-				</Button>
-				<Button type="primary" icon={<AiOutlineGoogle rev="span" />}>
+				<Button type="primary">Tertiary</Button>
+				<Button type="primary" icon={<IconBrandGoogle size={16} />}>
 					With Icon
 				</Button>
 			</Space>

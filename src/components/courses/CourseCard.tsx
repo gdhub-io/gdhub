@@ -1,7 +1,9 @@
-import { FaBook } from "@react-icons/all-files/fa/FaBook";
-import { FaCode } from "@react-icons/all-files/fa/FaCode";
-import { FaGamepad } from "@react-icons/all-files/fa/FaGamepad";
-import { FaPaintBrush } from "@react-icons/all-files/fa/FaPaintBrush";
+import {
+	IconBook,
+	IconBrush,
+	IconCode,
+	IconDeviceGamepad2,
+} from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import { Card, Tag } from "antd";
 import Image from "next/image";
@@ -13,16 +15,16 @@ function getCourseIcon(category: string) {
 	switch (category.toLowerCase()) {
 		case "programming":
 		case "development":
-			return <FaCode size={28} />;
+			return <IconCode size={28} />;
 		case "game design":
 		case "design":
-			return <FaGamepad size={28} />;
+			return <IconDeviceGamepad2 size={28} />;
 		case "art":
 		case "graphics":
-			return <FaPaintBrush size={28} />;
+			return <IconBrush size={28} />;
 		case "general":
 		default:
-			return <FaBook size={28} />;
+			return <IconBook size={28} />;
 	}
 }
 

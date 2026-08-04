@@ -5,8 +5,8 @@
 }
 
 .panel {
-	background-color: #fff;
-	border: 1px solid #d9d9d9;
+	background-color: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: 10px;
 	overflow: hidden;
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
@@ -17,19 +17,19 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 13px 16px;
-	border-bottom: 1px solid #ededed;
+	border-bottom: 1px solid var(--gd-color-border);
 }
 
 .title {
 	font-size: 15px;
 	font-weight: 600;
-	color: #181818;
+	color: var(--gd-color-text);
 }
 
 .progress {
 	font-size: 12px;
 	font-weight: 500;
-	color: #8c8c8c;
+	color: var(--gd-color-text-secondary);
 }
 
 .hint {

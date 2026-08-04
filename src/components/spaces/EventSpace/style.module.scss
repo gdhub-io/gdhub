@@ -5,7 +5,7 @@
 			align-items: center;
 			justify-content: space-between;
 			gap: 8px;
-			color: #ff4d4f !important;
+			color: var(--gd-danger-solid) !important;
 			font-weight: 500;
 		}
 	}
@@ -17,7 +17,7 @@
 		cursor: default !important;
 
 		:global(.ant-menu-title-content a) {
-			color: #ff7875 !important;
+			color: var(--gd-danger-solid) !important;
 		}
 	}
 }

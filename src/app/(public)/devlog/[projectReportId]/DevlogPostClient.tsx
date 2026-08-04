@@ -3,13 +3,9 @@
 "use client";
 
 import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
-import {
-	ArrowLeftOutlined,
-	ArrowRightOutlined,
-	ClockCircleOutlined,
-	LoadingOutlined,
-} from "@ant-design/icons";
+import { LoadingOutlined } from "@ant-design/icons";
 import type { OutputBlockData, OutputData } from "@editorjs/editorjs";
+import { IconArrowLeft, IconArrowRight, IconClock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Image as AntImage,
@@ -438,7 +434,7 @@ export function DevlogPostClient({ post }: PageProps) {
 									</span>
 								</Tooltip>
 								<Flex align="center" gap={8}>
-									<ClockCircleOutlined style={{ fontSize: "12px" }} />
+									<IconClock style={{ fontSize: "12px" }} />
 									<Text type="secondary" style={{ fontSize: "12px" }}>
 										{post?.createdAt ? formatDate(post.createdAt) : ""}
 									</Text>
@@ -552,7 +548,7 @@ export function DevlogPostClient({ post }: PageProps) {
 									<Button
 										type="link"
 										href={`/devlog/${post.previousPost.id}`}
-										icon={<ArrowLeftOutlined />}
+										icon={<IconArrowLeft />}
 									>
 										{t("page.devlog.previousPost", "Previous post")}
 									</Button>
@@ -566,7 +562,7 @@ export function DevlogPostClient({ post }: PageProps) {
 										type="link"
 										href={`/devlog/${post.nextPost.id}`}
 										iconPosition="end"
-										icon={<ArrowRightOutlined />}
+										icon={<IconArrowRight />}
 									>
 										{t("page.devlog.nextPost", "Next post")}
 									</Button>

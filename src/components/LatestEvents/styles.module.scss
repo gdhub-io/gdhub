@@ -37,9 +37,14 @@
   flex: 1;
 }
 
+// Same 32px box and radius as IconTile "sm", so every square in the sidebar
+// lines up regardless of which card it belongs to.
 .avatar {
   flex-shrink: 0;
-  background: rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  background: var(--gd-color-surface-sunken);
+  color: var(--gd-neutral-700);
+  font-weight: 600;
 }
 
 .textWrap {

@@ -9,9 +9,7 @@ import type {
 	TeamVacancy,
 	User,
 } from "@gdhub-io/gdhub-prisma";
-import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
-import { TbMail } from "@react-icons/all-files/tb/TbMail";
-import { IconCopy } from "@tabler/icons-react";
+import { IconBrandTelegram, IconCopy, IconMail } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {

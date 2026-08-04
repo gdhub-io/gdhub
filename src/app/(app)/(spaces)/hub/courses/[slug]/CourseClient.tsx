@@ -200,7 +200,7 @@ const CourseClient = () => {
 							) : null}
 
 							{/* <div className={styles.reviewsBadge}>
-								<IconStarFilled size={14} color="#F5A524" />
+								<IconStarFilled size={14} color="var(--gd-warning-solid)" />
 								<Text strong style={{ fontSize: 13 }}>
 									4.8
 								</Text>
@@ -218,8 +218,8 @@ const CourseClient = () => {
 										max={{
 											count: 3,
 											style: {
-												color: "#FFFFFF",
-												backgroundColor: "#fff",
+												color: "var(--gd-color-surface)",
+												backgroundColor: "var(--gd-color-surface)",
 												fontSize: 10,
 											},
 										}}
@@ -229,7 +229,7 @@ const CourseClient = () => {
 											<Avatar
 												key={tch.id}
 												src={tch.image ?? undefined}
-												style={{ backgroundColor: "#fff" }}
+												style={{ backgroundColor: "var(--gd-color-surface)" }}
 											>
 												{tch.name?.[0]}
 											</Avatar>
@@ -300,9 +300,17 @@ const CourseClient = () => {
 									expandIconPosition="end"
 									expandIcon={({ isActive }) =>
 										isActive ? (
-											<IconX size={18} stroke={1.5} color="#71717A" />
+											<IconX
+												size={18}
+												stroke={1.5}
+												color="var(--gd-color-text-secondary)"
+											/>
 										) : (
-											<IconPlus size={18} stroke={1.5} color="#71717A" />
+											<IconPlus
+												size={18}
+												stroke={1.5}
+												color="var(--gd-color-text-secondary)"
+											/>
 										)
 									}
 									bordered
@@ -407,7 +415,7 @@ const CourseClient = () => {
 								type="primary"
 								size="large"
 								block
-								className={["black-btn", styles.enrollBtn].join(" ")}
+								className={styles.enrollBtn}
 								icon={<IconSchool size={16} stroke={1.5} />}
 							>
 								{t("course.enroll", "Enroll a course")}

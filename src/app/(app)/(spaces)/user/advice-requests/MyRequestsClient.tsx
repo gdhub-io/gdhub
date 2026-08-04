@@ -1,6 +1,6 @@
 "use client";
 
-import { AiOutlineHistory } from "@react-icons/all-files/ai/AiOutlineHistory";
+import { IconHistory } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button } from "antd";
 import dynamic from "next/dynamic";
@@ -30,7 +30,7 @@ export default function MyRequestsClient() {
 				extra={
 					<Button
 						type="text"
-						icon={<AiOutlineHistory />}
+						icon={<IconHistory />}
 						onClick={() => setShowArchive(true)}
 						aria-label="Archive"
 						title={t("Archive")}

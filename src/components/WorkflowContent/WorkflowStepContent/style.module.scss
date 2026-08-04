@@ -1,6 +1,6 @@
 .container {
 	:global(.additional-info) {
-		color: #8c8c8c;
+		color: var(--gd-color-text-secondary);
 	}
 
 	:global(.rnr-paragraph), :global(.rnr-bulleted_list_item) {
@@ -9,7 +9,7 @@
 }
 
 .card {
-	border: 1px solid #cdcdcd;
+	border: 1px solid var(--gd-color-border-strong);
 
 	:global(.ant-card-cover) {
 		width: 100%;
@@ -28,7 +28,7 @@
 
 	:global(.ant-descriptions-item-label) {
 		font-size: 12px;
-		color: #666;
+		color: var(--gd-color-text-secondary);
 	}
 
 	:global(.ant-descriptions-item-content) {

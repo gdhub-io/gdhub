@@ -5,7 +5,7 @@
 	height: 100%;
 	overflow: hidden;
 	border-radius: 14px;
-	background: #111827;
+	background: var(--gd-color-text);
 	box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
 	position: relative;
 }
@@ -19,7 +19,7 @@
 	position: relative;
 	height: 100%;
 	min-height: 160px;
-	background: #172033;
+	background: var(--gd-neutral-900);
 }
 
 .coverImage {
@@ -82,8 +82,8 @@
 	gap: 4px;
 	padding: 4px 8px;
 	border-radius: 999px;
-	background-color: #ff4d4f44;
-	color: #fff;
+	background-color: color-mix(in srgb, var(--gd-color-accent) 27%, transparent);
+	color: var(--gd-color-text-inverse);
 	backdrop-filter: blur(4px);
 	font-size: 14px;
 	font-weight: 600;
@@ -134,13 +134,13 @@
 
 .projectTitle {
 	margin: 0 !important;
-	color: #fff !important;
+	color: var(--gd-color-surface) !important;
 	font-weight: 600 !important;
 }
 
 .description {
 	margin: 6px 0 0 !important;
-	color: #a1a1aa;
+	color: var(--gd-color-text-tertiary);
 }
 
 .meta {
@@ -160,7 +160,7 @@
 
 .genreTag {
 	background: rgba(255, 255, 255, 0.1);
-	color: #d4d4d8;
+	color: var(--gd-color-border-strong);
 }
 
 .platformTag {
@@ -195,6 +195,8 @@
 	text-decoration: none;
 }
 
+// Store badges carry each platform's own brand colours on purpose — repainting
+// them in our palette would misidentify the store.
 .steamBadge {
 	background: #1b2838;
 	color: #66c0f4;
@@ -206,8 +208,8 @@
 }
 
 .epicBadge {
-	background: #2a2a2a;
-	color: #f5f5f5;
+	background: var(--gd-neutral-800);
+	color: var(--gd-color-surface-sunken);
 }
 
 .googlePlayBadge {
@@ -225,7 +227,7 @@
 	align-items: center;
 	gap: 4px;
 	font-weight: 500;
-	color: #a1a1aa;
+	color: var(--gd-color-text-tertiary);
 	text-decoration: none;
 }
 

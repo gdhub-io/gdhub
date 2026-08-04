@@ -1,7 +1,6 @@
 "use client";
 
-import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { IconExternalLink, IconX } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
@@ -21,15 +20,15 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { genConfig } from "react-nice-avatar";
 import { useAccess } from "@/components/access/AccessProvider";
 import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
+import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
-import { appThemeConfig } from "@/config/theme";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
@@ -61,6 +60,8 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const { setOpenChatModal } = useChat();
 	const spaceHeader = useSpaceHeader();
 	const { can } = useAccess();
+	const contentRef = useRef<HTMLElement>(null);
+	const shellRef = useRef<HTMLElement>(null);
 
 	// Drawn from a permission, not from a role: whoever may look at the user list
 	// gets the link, including the narrower staff roles added later.
@@ -76,15 +77,32 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		return config;
 	}, [session?.user.email]);
 
+	// The scroll container is the shell's own content, not the document, so route
+	// changes no longer reset the scroll position by themselves.
 	useEffect(() => {
-		const unsetOverflow = () => {
-			if (typeof window !== "undefined") {
-				const body = document?.querySelector("body");
-				body?.style.setProperty("overflow", "unset");
-			}
-		};
+		contentRef.current?.scrollTo({ top: 0 });
+	}, [pathname]);
 
-		unsetOverflow();
+	// Publishes the header's real height as `--gd-app-header-height`. Pages need
+	// it to size sticky panels against the visible part of the scroll area, and
+	// the header grows or shrinks with the space menu, so it is measured rather
+	// than hardcoded.
+	useEffect(() => {
+		const shell = shellRef.current;
+		const header = shell?.querySelector("header");
+
+		if (!shell || !header) return;
+
+		const observer = new ResizeObserver(() => {
+			shell.style.setProperty(
+				"--gd-app-header-height",
+				`${header.offsetHeight}px`,
+			);
+		});
+
+		observer.observe(header);
+
+		return () => observer.disconnect();
 	}, []);
 
 	useEffect(() => {
@@ -190,7 +208,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 					<Link href={linkToChat} target="_blank" title={t("Community Chat")}>
 						<Space align="center" size={16}>
 							<Text>{t("hub.menu.communityChat", "Community Chat")}</Text>
-							<GoLinkExternal size={12} color="gray" />
+							<IconExternalLink size={12} color="gray" />
 						</Space>
 					</Link>
 				),
@@ -201,7 +219,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 					<Link href="https://gdhub.io" target="_blank" title="Website">
 						<Space align="center" size={16}>
 							<Text>{t("hub.menu.website", "Website")}</Text>
-							<GoLinkExternal size={12} color="gray" />
+							<IconExternalLink size={12} color="gray" />
 						</Space>
 					</Link>
 				),
@@ -277,14 +295,21 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		<>
 			<style jsx global>{`
 				:root {
-					--background-color: #fafafa;
+					--background-color: var(--gd-color-bg);
+				}
+				/* Scoped to the authenticated app by this component's lifetime:
+				   public pages and the landing keep the normal document scroll. */
+				html,
+				body {
+					overflow: hidden;
+					overscroll-behavior: none;
 				}
 			`}</style>
 			<ConfigProvider
-				theme={appThemeConfig}
+				theme={productTheme}
 				locale={getLanguage() === "en" ? enLocale : ruLocale}
 			>
-				<Layout className={styles.container}>
+				<Layout ref={shellRef} className={styles.container}>
 					<AppHeader
 						className={styles.header}
 						breadcrumbItems={
@@ -321,7 +346,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 							/>
 						}
 					/>
-					<Content className={styles.contentContainer}>
+					<Content ref={contentRef} className={styles.contentContainer}>
 						<div className="layout-background">{children}</div>
 					</Content>
 				</Layout>
@@ -347,7 +372,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 								onClick={() => setOpenMobileMenu(false)}
 								type="text"
 							>
-								<AiOutlineClose />
+								<IconX />
 							</Button>
 						}
 					>

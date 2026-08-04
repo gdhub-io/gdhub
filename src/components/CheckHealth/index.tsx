@@ -1,4 +1,4 @@
-import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
+import { IconBrandTelegram } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { Alert, Button, Space } from "antd";
@@ -51,7 +51,7 @@ const CheckHealth = ({ children }: any) => {
 							<Button
 								style={{ marginTop: 32 }}
 								icon={
-									<TbBrandTelegram
+									<IconBrandTelegram
 										size={24}
 										style={{ position: "relative", marginRight: 5 }}
 									/>

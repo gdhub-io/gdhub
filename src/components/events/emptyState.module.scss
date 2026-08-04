@@ -32,7 +32,7 @@
 }
 
 .createButton {
-  background: linear-gradient(90deg, #1677ff 0%, #4096ff 100%);
+  background: linear-gradient(90deg, var(--gd-info-solid) 0%, var(--gd-info-solid) 100%);
   border: none;
   box-shadow: 0 4px 12px rgba(22, 119, 255, 0.2);
   transition: all 0.3s ease;
@@ -44,8 +44,8 @@
 }
 
 .joinButton {
-  border: 1px solid #1677ff;
-  color: #1677ff;
+  border: 1px solid var(--gd-info-solid);
+  color: var(--gd-info-solid);
   background: transparent;
   transition: all 0.3s ease;
 
@@ -58,8 +58,8 @@
 .infoBox {
   display: flex;
   align-items: flex-start;
-  background-color: #e6f7ff;
-  border: 1px solid #91d5ff;
+  background-color: var(--gd-info-tint);
+  border: 1px solid var(--gd-info-tint);
   border-radius: 8px;
   padding: 16px;
   max-width: 500px;
@@ -67,14 +67,14 @@
 
 .infoIcon {
   font-size: 24px;
-  color: #1677ff;
+  color: var(--gd-info-solid);
   margin-right: 12px;
   margin-top: 2px;
 }
 
 .infoText {
   margin-bottom: 0 !important;
-  color: #0050b3;
+  color: var(--gd-info-on-tint);
   font-size: 14px;
   text-align: left;
 } 

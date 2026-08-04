@@ -1,4 +1,4 @@
-import { HiOutlineTrash } from "@react-icons/all-files/hi/HiOutlineTrash";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -273,12 +273,7 @@ const MemberEquityPromiseModal = ({
 								cancelText={t("Cancel")}
 								okButtonProps={{ danger: true, loading: isDeleting }}
 							>
-								<Button
-									key="delete"
-									icon={<HiOutlineTrash />}
-									danger
-									type="text"
-								/>
+								<Button key="delete" icon={<IconTrash />} danger type="text" />
 							</Popconfirm>
 						)}
 					</div>

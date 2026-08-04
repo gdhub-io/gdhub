@@ -5,15 +5,16 @@ import { ConfigProvider, Layout } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import type { ReactNode } from "react";
-import { publicThemeConfig } from "@/config/theme";
+import { productTheme } from "@/config/design";
 import styles from "./style.module.scss";
 
+/** Sign-in and registration are the way into the product, so they run its density. */
 export function AuthShell({ children }: { children: ReactNode }) {
 	const { getLanguage } = useTolgee();
 
 	return (
 		<ConfigProvider
-			theme={publicThemeConfig}
+			theme={productTheme}
 			locale={getLanguage() === "en" ? enLocale : ruLocale}
 		>
 			<Layout className={styles.shell}>{children}</Layout>

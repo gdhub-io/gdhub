@@ -29,7 +29,7 @@ export const HeroStats = ({
 			<div className={styles.component} style={{ position: "relative" }}>
 				<div
 					style={{
-						background: "#0b0b0d",
+						background: "var(--gd-neutral-950)",
 						width: "calc(100% + 32px)",
 						height: "calc(100% + 32px)",
 						position: "absolute",

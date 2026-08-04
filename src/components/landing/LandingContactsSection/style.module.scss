@@ -8,7 +8,7 @@
   background-position: center bottom;
   background-size: contain;
   background-repeat: no-repeat;
-  background-color: #0b0107;
+  background-color: var(--gd-color-bg);
   background-blend-mode: luminosity;
 }
 
@@ -16,7 +16,7 @@
   max-width: variables.$wrapper-width;
 
   .preTitle {
-    color: #FFBB55;
+    color: var(--gd-color-accent-alt);
     font-size: 16px;
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -29,7 +29,7 @@
   }
 
   .subTitle {
-    color: #FFFDFC;
+    color: var(--gd-color-text);
     font-family: var(--second-font-family);
     font-style: italic;
     font-size: 18px;
@@ -58,15 +58,15 @@
       .contactIcon {
         width: 96px;
         height: 96px;
-        border: 2px solid #FFBB55;
+        border: 2px solid var(--gd-color-accent-alt);
         background-image: linear-gradient(180deg, rgba(46, 30, 53, 0.17), rgba(15, 3, 4, 0.65));
-        border-image: linear-gradient(45deg, #FFBB55, #C66C19) 1;
+        border-image: linear-gradient(45deg, var(--gd-color-accent-alt), var(--gd-color-accent-alt-hover)) 1;
         display: flex;
         transition: box-shadow 0.3s;
 
         svg {
           padding: 24px;
-          fill: #FFBB55;
+          fill: var(--gd-color-accent-alt);
         }
       }
 
