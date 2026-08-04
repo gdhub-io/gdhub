@@ -124,7 +124,7 @@ export default function LatestEvents() {
 				<HubSectionHeader
 					title={t("hub.latest-events.title", "Upcoming events")}
 					linkHref="/hub/events"
-					linkLabel={`${t("hub.view-all", "View all")} →`}
+					linkLabel={t("hub.view-all", "View all")}
 				/>
 
 				<HubSectionBody>

@@ -87,10 +87,15 @@ Done:
   workflow stage, course category, free/paid, "founder", language, and the
   count badges are labels or metrics, not states. Tags are correct there.
 
+- `HubSectionHeader` now delegates to `SectionHeading` + `ViewAllLink` instead of
+  styling a 14px title and a grey link of its own. That was a second answer to a
+  question the system had already answered, and routing it through the primitives
+  gave ten hub screens the heading scale and the brand link in one edit — no
+  per-screen rewrite. Three callers were passing `"View all →"` with a literal
+  arrow, which doubled up against the chevron; the arrows are gone.
+
 Still to do:
-- Section titles and "view all" affordances → `SectionHeading` / `ViewAllLink`
-  (0 adopted).
-- Coloured avatar and icon squares → `IconTile` (0 adopted outside stories).
+- Coloured avatar and icon squares → `IconTile` (1 adopted outside stories).
 
 ### 4. SCSS, by zone
 

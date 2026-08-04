@@ -22,6 +22,7 @@ import {
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
 import hubSection from "@/components/hub/hubSection.module.scss";
+import { ViewAllLink } from "@/components/ui";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 import { useChat } from "../Chat/useChat";
 import ExpertRequestModal from "../modals/ExpertRequestModal";
@@ -290,15 +291,10 @@ const MyAdviceRequests: React.FC<{
 					title={t("page.hub.advice-requests", "Advice Requests")}
 				>
 					{isHubLayout && (
-						<Link
+						<ViewAllLink
 							href="/user/advice-requests"
-							className={hubSection.sectionHeadLink}
-						>
-							<Text type="secondary">
-								{t("hub.view-all", "View all")}
-								{" →"}
-							</Text>
-						</Link>
+							label={t("hub.view-all", "View all")}
+						/>
 					)}
 				</HubSectionHeader>
 			)}

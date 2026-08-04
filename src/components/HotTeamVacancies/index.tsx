@@ -49,7 +49,7 @@ export default function HotTeamVacancies() {
 				<HubSectionHeader
 					title={t("hub.hot-vacancies.title", "Open positions")}
 					linkHref="/hub/jobs"
-					linkLabel={`${t("hub.view-all", "View all")} →`}
+					linkLabel={t("hub.view-all", "View all")}
 				/>
 
 				<HubSectionBody>

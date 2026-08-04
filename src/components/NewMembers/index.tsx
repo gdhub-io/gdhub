@@ -39,7 +39,7 @@ export default function NewMembers() {
 			<HubSectionHeader
 				title={t("page.hub.new-members", "New members")}
 				linkHref="/hub/members"
-				linkLabel={`${t("hub.view-all", "View all")} →`}
+				linkLabel={t("hub.view-all", "View all")}
 			/>
 
 			<HubSectionBody>
