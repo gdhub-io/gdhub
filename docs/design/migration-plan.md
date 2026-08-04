@@ -193,12 +193,22 @@ something specific.
 Next candidates by reuse: `ContentEditor` (5), `GameCard` (4),
 `DevlogPostLink` (3).
 
-### 8. Put up a fence
+### 8. Put up a fence ✅ done
 
-Without one, the debt refills faster than it drains. Add a check that fails on a
-new hardcoded hex in an SCSS module outside `src/config/design` — a Biome rule if
-one fits, otherwise a Vitest test that greps the tree. Existing violations get an
-allowlist that only ever shrinks.
+`tests/design-tokens-guard.test.ts` fails on any hardcoded colour in `src/`,
+outside a named allowlist. Two tests, because a fence with a gate that never
+closes is not a fence:
+
+1. **No hardcoded colours.** The failure message names the file, the colours, and
+   how to fix it — `var(--gd-*)` in SCSS, a token import where CSS never runs.
+2. **No stale allowlist entries.** If an allowlisted file loses its last hex, the
+   test fails until the entry is removed. The list can only shrink.
+
+Every entry carries the reason it is there — third-party brand colours, avatar
+skin tones, the skill-level scale, the print certificate. Fixtures under
+`src/mocks/` are out of scope: they are sample payloads, not interface.
+
+Verified by planting a hex in `StatusDot` and watching it fail, then removing it.
 
 ## How to measure progress
 

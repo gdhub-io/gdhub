@@ -38,6 +38,11 @@ headers — while the chrome stays neutral. Never hard-code a direction hex: use
 or an import from `@/config/design` in TS. A raw hex is a bug report waiting to
 be filed — the audit found 20+ greys and five blues that got there this way.
 
+`tests/design-tokens-guard.test.ts` enforces this. If a colour is genuinely
+content — an illustration, a third-party brand, a scale the system has no role
+for — add the file to that test's allowlist with the reason. Everything else
+belongs to a token.
+
 ## Layout
 
 1. **Separate by fill, not by border.** The page sits on `--gd-color-bg`; cards

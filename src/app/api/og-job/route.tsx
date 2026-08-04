@@ -274,10 +274,7 @@ export async function GET(request: NextRequest) {
 							color: ogPalette.surface,
 							fontSize: 24,
 							fontWeight: 500,
-							// background: '#000',
-							// borderRadius: 12,
 							padding: "6px 20px",
-							// boxShadow: '0 2px 12px #0002',
 						}}
 					>
 						{terms && terms !== "0"
