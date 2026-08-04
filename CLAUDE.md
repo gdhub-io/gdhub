@@ -124,6 +124,11 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
 
 ## Conventions
 
+- **UI & design system:** read [docs/design/ui-guidelines.md](docs/design/ui-guidelines.md)
+  before building a screen. Design tokens live in `src/config/design` (build themes with
+  `buildAntdTheme`, never hand-write a `ThemeConfig`); shared primitives — `IconTile`,
+  `StatusDot`, `EmptyState`, `SectionHeading`, `ViewAllLink` — in `src/components/ui`.
+  Never hard-code a colour, radius or control height: use a token or `var(--gd-*)`.
 - **Frontend data calls:** TanStack Query + axios. Don't call `fetch` ad-hoc in components.
 - **Backend input validation:** always Zod via `withValidation`. Never trust raw body/query.
 - **Env vars:** read through the `env()` helper from `@/helpers/env` — it throws on missing

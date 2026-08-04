@@ -71,29 +71,33 @@ export type DirectionColor = {
 
 /**
  * Work directions are double-encoded — colour *and* icon (icons live in
- * `@/components/DirectionBadge/directions`). Tints are harmonised to a common
- * lightness so the eighteen stop competing, and each carries a paired ink so
- * the colour encodes information rather than decorating a black label.
+ * `@/components/DirectionBadge/directions`). Tints share a lightness (L≈93) so
+ * the eighteen stop competing, but keep real chroma: a chip has to read as
+ * coloured, not as grey.
+ *
+ * Ink sits near L≈25. It is the tint's own hue pulled dark, which ties the icon
+ * to its chip while keeping it crisp — a mid-dark ink measured only ~6:1 against
+ * its tint and washed out at 16px.
  */
 export const directionColors = {
-	development: { tint: "#E7EFFB", ink: "#1F4B8F" },
-	"web-development": { tint: "#E1F1F7", ink: "#14566B" },
-	"game-design": { tint: "#ECE9FB", ink: "#4B3B9C" },
-	"2d-art-animation": { tint: "#FCE9E8", ink: "#98393A" },
-	"3d-art-animation": { tint: "#FBEBDD", ink: "#8A4E1B" },
-	management: { tint: "#EAEEF4", ink: "#41536B" },
-	"game-writer": { tint: "#F6F1D9", ink: "#6B5C17" },
-	learning: { tint: "#E0F2EC", ink: "#1C5F51" },
-	"technical-art": { tint: "#EBF3DC", ink: "#4C6A22" },
-	"music-sound": { tint: "#E2F0FA", ink: "#1A5478" },
-	marketing: { tint: "#FBE8E0", ink: "#96452C" },
-	vfx: { tint: "#F1E9F9", ink: "#6A3B93" },
-	qa: { tint: "#E3F2E7", ink: "#2C6A3E" },
-	hr: { tint: "#FAE8F0", ink: "#8D3A61" },
-	"video-editing": { tint: "#F6E9F6", ink: "#7A3A72" },
-	"backend-development": { tint: "#E8EAF8", ink: "#3A448C" },
-	investment: { tint: "#E1F1E6", ink: "#276244" },
-	other: { tint: "#EDECEA", ink: "#5A5955" },
+	development: { tint: "#DCE9FB", ink: "#163A6E" },
+	"web-development": { tint: "#D6EEF6", ink: "#0E4354" },
+	"game-design": { tint: "#E5DFFA", ink: "#382A7A" },
+	"2d-art-animation": { tint: "#FBDEDC", ink: "#7A2A28" },
+	"3d-art-animation": { tint: "#FBE3D0", ink: "#6E3C12" },
+	management: { tint: "#DDE6F3", ink: "#2F3F55" },
+	"game-writer": { tint: "#F5EEC6", ink: "#55480F" },
+	learning: { tint: "#D5EEE6", ink: "#10493E" },
+	"technical-art": { tint: "#E4F0CE", ink: "#3A5418" },
+	"music-sound": { tint: "#D7EAF8", ink: "#114059" },
+	marketing: { tint: "#FBDFD2", ink: "#78341F" },
+	vfx: { tint: "#EDE0F7", ink: "#532C74" },
+	qa: { tint: "#D9EDDF", ink: "#1F5330" },
+	hr: { tint: "#F9DEEB", ink: "#6E2B4B" },
+	"video-editing": { tint: "#F4DEF2", ink: "#5E2B57" },
+	"backend-development": { tint: "#DFE3F5", ink: "#2A3370" },
+	investment: { tint: "#D8ECDF", ink: "#1B4C33" },
+	other: { tint: "#E9E7E4", ink: "#44433F" },
 } as const satisfies Record<string, DirectionColor>;
 
 export type DirectionSlug = keyof typeof directionColors;

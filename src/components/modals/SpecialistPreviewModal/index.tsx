@@ -350,7 +350,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 									<div className={styles.roleRow}>
 										{DirIcon && (
 											<span className={styles.dirChip}>
-												<DirIcon size={14} stroke={2} color="#18181B" />
+												<DirIcon size={14} stroke={2} color={direction?.ink} />
 											</span>
 										)}
 										<span className={styles.role}>{data.name}</span>

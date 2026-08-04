@@ -1,9 +1,11 @@
 import "@/styles/globals.scss";
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { CookieConsent } from "@/components/CookieConsent";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { setupDayjs } from "@/config/dayjs-setup";
+import { designCssVariables } from "@/config/design/css";
+import { fontClassName } from "@/config/design/fonts";
 import { Providers } from "./providers";
 
 setupDayjs();
@@ -34,7 +36,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
-			<body suppressHydrationWarning>
+			{/* The `--gd-*` design tokens are emitted here so SCSS modules and the antd
+			    themes read the same values; an inverse band re-declares them on its
+			    own subtree. */}
+			<body
+				className={fontClassName}
+				style={designCssVariables() as CSSProperties}
+				suppressHydrationWarning
+			>
 				{process.env.NODE_ENV === "production" && (
 					<noscript
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: GTM noscript container, filled on consent

@@ -1,20 +1,27 @@
-import { Manrope } from "next/font/google";
-import { geistFont } from "@/assets/fonts/geist";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 /**
  * Font loaders, kept apart from `tokens.ts` so a module that only needs a value
  * does not pull `next/font` into its bundle.
  *
- * Two families with strict jobs: Geist runs every functional surface, Manrope
- * takes page and section titles. `tokens.fontFamily` resolves both through the
- * CSS variables these loaders bind, so `fontClassName` has to be on an ancestor
- * of anything the theme styles.
+ * One family carries both roles. Plus Jakarta Sans is neutral enough to run a
+ * dense list row and has enough character at 32px to head a page, so the split
+ * between UI and display is a matter of weight and tracking rather than a second
+ * typeface — one family means one set of metrics and nothing to keep in tune.
+ *
+ * Two loaders because `next/font` binds a single CSS variable per call; the
+ * options match, so both resolve to the same files and the browser fetches them
+ * once. `tokens.fontFamily` reads these variables, which is why `fontClassName`
+ * has to sit on an ancestor of anything the theme styles.
  */
-export const uiFont = geistFont;
+export const uiFont = Plus_Jakarta_Sans({
+	subsets: ["latin"],
+	display: "swap",
+	variable: "--gd-font-ui",
+});
 
-export const displayFont = Manrope({
-	subsets: ["latin", "cyrillic"],
-	weight: ["500", "600", "700"],
+export const displayFont = Plus_Jakarta_Sans({
+	subsets: ["latin"],
 	display: "swap",
 	variable: "--gd-font-display",
 });

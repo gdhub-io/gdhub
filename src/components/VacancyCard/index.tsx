@@ -58,7 +58,7 @@ export function VacancyCard({
 	detailsHref,
 	onDetails,
 }: VacancyCardProps) {
-	const { slug, icon: Icon } = getWorkDirection(directionName);
+	const { slug, icon: Icon, ink } = getWorkDirection(directionName);
 
 	const isPaid = offeredAmount != null && offeredRateType != null;
 	const isEquity = !isPaid && !!promisePercentage;
@@ -78,7 +78,7 @@ export function VacancyCard({
 			<div className={`${styles.jobCardContent} bg-direc-${slug}`}>
 				<div className={styles.jobCardHeader}>
 					<span className={styles.dirChip}>
-						<Icon size={18} stroke={2} color="#18181B" />
+						<Icon size={18} stroke={2} color={ink} />
 					</span>
 					{finishedAt && (
 						<div className={styles.jobCardDate}>

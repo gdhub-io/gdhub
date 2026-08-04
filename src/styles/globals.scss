@@ -12,32 +12,15 @@
 		// background from bleeding into in-app routes that render before/without
 		// a theme layer on the persistent <html>/<body>.
 		--background-color: #fafafa;
-
-		// work direction colors — light backgrounds, paired with black icons.
-		// Chosen by association; reused on vacancy cards and DirectionBadge.
-		--bg-direc-development: #E5F1FF;
-		--bg-direc-web-development: #D3F7FF;
-		--bg-direc-game-design: #EDE9FE;
-		--bg-direc-2d-art-animation: #FFEBEB;
-		--bg-direc-3d-art-animation: #FFE6CC;
-		--bg-direc-management: #E9EEF5;
-		--bg-direc-game-writer: #FDFEC8;
-		--bg-direc-learning: #DCFFF9;
-		--bg-direc-technical-art: #F2FEE6;
-		--bg-direc-music-sound: #C9EBFF;
-		--bg-direc-marketing: #FFD5C8;
-		--bg-direc-vfx: #F3E8FF;
-		--bg-direc-qa: #E3F7EA;
-		--bg-direc-hr: #FFE2F0;
-		--bg-direc-video-editing: #FFEDFB;
-		--bg-direc-backend-development: #E6EAFB;
-		--bg-direc-investment: #D9F2DF;
-		--bg-direc-other: #eeeeee;
 	}
 
+	// Work direction tints. The values live in src/config/design/tokens.ts and
+	// reach the page as `--gd-direction-*` on <body>; the aliases below keep the
+	// older `--bg-direc-*` name working for anything still reading it.
 	@each $work-direction in $work-directions {
 		.bg-direc-#{$work-direction} {
-			background-color: var(--bg-direc-#{$work-direction});
+			--bg-direc-#{$work-direction}: var(--gd-direction-#{$work-direction}-tint);
+			background-color: var(--gd-direction-#{$work-direction}-tint);
 		}
 	}
 
@@ -284,9 +267,19 @@
 		// }
 	}
 
-	.ant-typography {
-		// font-size: 16px;
-		font-weight: 200;
+	// Headings take the display family; everything functional stays on the UI
+	// font. Scoped to the shells that already run the token theme — portalled
+	// nodes (modals, dropdowns) are outside this subtree and follow later.
+	[data-gd-theme] {
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5 {
+			font-family: var(--gd-font-display), var(--gd-font-ui), system-ui, sans-serif;
+			letter-spacing: -0.02em;
+		}
 	}
 
 

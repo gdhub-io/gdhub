@@ -162,11 +162,14 @@ export function buildAntdTheme({
 				itemColor: r.textSecondary,
 				itemHoverColor: r.text,
 				itemHoverBg: r.surfaceSunken,
+				// Navigation is not a brand surface. Colouring the current tab
+				// orange reads as an alert on a bar the user looks at all day, so
+				// "you are here" is carried by a neutral fill and extra weight.
 				itemSelectedColor: r.text,
-				itemSelectedBg: r.accentSubtle,
-				horizontalItemSelectedColor: r.accent,
-				horizontalItemSelectedBg: "transparent",
-				activeBarHeight: 2,
+				itemSelectedBg: r.surfaceSunken,
+				horizontalItemSelectedColor: r.text,
+				horizontalItemSelectedBg: r.surfaceSunken,
+				activeBarHeight: 0,
 			},
 			Tabs: {
 				inkBarColor: r.accent,

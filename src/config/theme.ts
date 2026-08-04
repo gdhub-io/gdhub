@@ -1,6 +1,6 @@
 import { type ThemeConfig, theme } from "antd";
 import { Mulish as LandingFont, Lora } from "next/font/google";
-import { geistFont as appFont } from "@/assets/fonts/geist";
+import { fontFamily } from "@/config/design/tokens";
 
 export const mainLandingFont = LandingFont({
 	subsets: ["latin", "cyrillic"],
@@ -78,7 +78,7 @@ export const publicThemeConfig: ThemeConfig = {
 	// stays off cssVar (hashed styles), so it never writes tokens to :root.
 	cssVar: { key: "public" },
 	token: {
-		fontFamily: mainLandingFont.style.fontFamily,
+		fontFamily: fontFamily.ui,
 		colorPrimary: "#f15541",
 		colorInfo: "#f15541",
 		colorSuccess: "#67bf31",
@@ -101,7 +101,7 @@ export const publicThemeConfig: ThemeConfig = {
 	},
 	components: {
 		Button: {
-			fontFamily: mainLandingFont.style.fontFamily,
+			fontFamily: fontFamily.ui,
 			controlHeight: 52,
 			controlHeightLG: 52,
 			paddingInline: 24,
@@ -265,7 +265,7 @@ export const publicThemeConfig: ThemeConfig = {
 
 export const appThemeConfig: ThemeConfig = {
 	token: {
-		fontFamily: appFont.style.fontFamily,
+		fontFamily: fontFamily.ui,
 		colorPrimary: "#222222",
 		colorBgBase: "#FFFDFC",
 		colorWhite: "#FFFDFC",

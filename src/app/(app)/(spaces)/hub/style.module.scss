@@ -1,6 +1,5 @@
 .container {
 	width: 100%;
-	align-items: flex-start;
 }
 
 .mainFeedColumn {
@@ -136,6 +135,13 @@
 	width: 100%;
 	max-width: 320px;
 	margin-left: auto;
+	// The sidebar is usually taller than the viewport, and a pinned element
+	// taller than the viewport can never be scrolled to its end. Cap it to what
+	// is visible under the app header and give it its own scroll instead.
+	max-height: calc(100dvh - var(--gd-app-header-height, 105px) - 48px);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
 }
 
 @media (max-width: 991px) {

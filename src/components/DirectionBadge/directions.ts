@@ -19,109 +19,68 @@ import {
 	IconWand,
 	IconWorld,
 } from "@tabler/icons-react";
+import { type DirectionSlug, directionColors } from "@/config/design/tokens";
 
-/** A single work direction with its visual identity (icon + light background color). */
+/** A single work direction with its visual identity (icon + colour pair). */
 export type WorkDirectionMeta = {
 	/** Slug used for the `bg-direc-*` class and lookups, e.g. "3d-art-animation". */
-	slug: string;
+	slug: DirectionSlug;
 	/** Human-readable name, e.g. "3d art & animation". */
 	label: string;
-	/** Light background color. Mirrors the `--bg-direc-*` CSS variables in globals.scss. */
+	/** Light background tint. Mirrors `--gd-direction-*-tint`. */
 	color: string;
+	/** Label and icon colour for content drawn on `color`. */
+	ink: string;
 	/** Associated tabler icon. */
 	icon: Icon;
 };
 
 /**
- * Single source of truth mapping work directions to their icon and color.
- * The order matches the seed list in the database and the `--bg-direc-*`
- * variables in `src/styles/globals.scss`.
+ * Icon and label per direction. Colours are not repeated here — they come from
+ * the design tokens, so the palette has one owner. Typing the slug as
+ * `DirectionSlug` makes a direction without a colour pair a compile error.
+ *
+ * The order matches the seed list in the database.
  */
-export const WORK_DIRECTIONS: WorkDirectionMeta[] = [
-	{
-		slug: "development",
-		label: "development",
-		color: "#E5F1FF",
-		icon: IconCode,
-	},
-	{
-		slug: "web-development",
-		label: "web development",
-		color: "#D3F7FF",
-		icon: IconWorld,
-	},
-	{
-		slug: "game-design",
-		label: "game design",
-		color: "#EDE9FE",
-		icon: IconDeviceGamepad2,
-	},
-	{
-		slug: "2d-art-animation",
-		label: "2d art & animation",
-		color: "#FFEBEB",
-		icon: IconPalette,
-	},
-	{
-		slug: "3d-art-animation",
-		label: "3d art & animation",
-		color: "#FFE6CC",
-		icon: IconBox,
-	},
-	{
-		slug: "management",
-		label: "management",
-		color: "#E9EEF5",
-		icon: IconClipboardList,
-	},
-	{
-		slug: "game-writer",
-		label: "game writer",
-		color: "#FDFEC8",
-		icon: IconPencil,
-	},
-	{ slug: "learning", label: "learning", color: "#DCFFF9", icon: IconSchool },
-	{
-		slug: "technical-art",
-		label: "technical art",
-		color: "#F2FEE6",
-		icon: IconWand,
-	},
-	{
-		slug: "music-sound",
-		label: "music & sound",
-		color: "#C9EBFF",
-		icon: IconMusic,
-	},
-	{
-		slug: "marketing",
-		label: "marketing",
-		color: "#FFD5C8",
-		icon: IconSpeakerphone,
-	},
-	{ slug: "vfx", label: "vfx", color: "#F3E8FF", icon: IconSparkles },
-	{ slug: "qa", label: "qa", color: "#E3F7EA", icon: IconBug },
-	{ slug: "hr", label: "hr", color: "#FFE2F0", icon: IconUsers },
-	{
-		slug: "video-editing",
-		label: "video editing",
-		color: "#FFEDFB",
-		icon: IconMovie,
-	},
+const DIRECTION_IDENTITY: {
+	slug: DirectionSlug;
+	label: string;
+	icon: Icon;
+}[] = [
+	{ slug: "development", label: "development", icon: IconCode },
+	{ slug: "web-development", label: "web development", icon: IconWorld },
+	{ slug: "game-design", label: "game design", icon: IconDeviceGamepad2 },
+	{ slug: "2d-art-animation", label: "2d art & animation", icon: IconPalette },
+	{ slug: "3d-art-animation", label: "3d art & animation", icon: IconBox },
+	{ slug: "management", label: "management", icon: IconClipboardList },
+	{ slug: "game-writer", label: "game writer", icon: IconPencil },
+	{ slug: "learning", label: "learning", icon: IconSchool },
+	{ slug: "technical-art", label: "technical art", icon: IconWand },
+	{ slug: "music-sound", label: "music & sound", icon: IconMusic },
+	{ slug: "marketing", label: "marketing", icon: IconSpeakerphone },
+	{ slug: "vfx", label: "vfx", icon: IconSparkles },
+	{ slug: "qa", label: "qa", icon: IconBug },
+	{ slug: "hr", label: "hr", icon: IconUsers },
+	{ slug: "video-editing", label: "video editing", icon: IconMovie },
 	{
 		slug: "backend-development",
 		label: "backend development",
-		color: "#E6EAFB",
 		icon: IconServer,
 	},
-	{
-		slug: "investment",
-		label: "investment",
-		color: "#D9F2DF",
-		icon: IconTrendingUp,
-	},
-	{ slug: "other", label: "other", color: "#EEEEEE", icon: IconShape },
+	{ slug: "investment", label: "investment", icon: IconTrendingUp },
+	{ slug: "other", label: "other", icon: IconShape },
 ];
+
+/** Single source of truth mapping work directions to their icon and colours. */
+export const WORK_DIRECTIONS: WorkDirectionMeta[] = DIRECTION_IDENTITY.map(
+	({ slug, label, icon }) => ({
+		slug,
+		label,
+		icon,
+		color: directionColors[slug].tint,
+		ink: directionColors[slug].ink,
+	}),
+);
 
 /** Lookup by slug. */
 export const WORK_DIRECTIONS_BY_SLUG: Record<string, WorkDirectionMeta> =

@@ -34,9 +34,30 @@ describe("direction palette", () => {
 		);
 	});
 
-	it("keeps every ink readable on its own tint", () => {
+	it("is the only owner of the colours the badge renders", () => {
+		for (const d of WORK_DIRECTIONS) {
+			expect(d.color, d.slug).toBe(directionColors[d.slug].tint);
+			expect(d.ink, d.slug).toBe(directionColors[d.slug].ink);
+		}
+	});
+
+	// 7:1, not the 4.5:1 minimum: these pairs carry a 16px icon at 2px stroke,
+	// and a merely "readable" ink renders it washed out at that size.
+	it("keeps every ink crisp on its own tint", () => {
 		for (const [slug, { tint, ink }] of Object.entries(directionColors)) {
-			expect(contrast(ink, tint), slug).toBeGreaterThanOrEqual(4.5);
+			expect(contrast(ink, tint), slug).toBeGreaterThanOrEqual(7);
+		}
+	});
+
+	it("keeps every tint visibly coloured rather than grey", () => {
+		for (const [slug, { tint }] of Object.entries(directionColors)) {
+			if (slug === "other") continue;
+			const value = tint.replace("#", "");
+			const channels = [0, 2, 4].map((i) =>
+				Number.parseInt(value.slice(i, i + 2), 16),
+			);
+			const spread = Math.max(...channels) - Math.min(...channels);
+			expect(spread, slug).toBeGreaterThanOrEqual(20);
 		}
 	});
 });

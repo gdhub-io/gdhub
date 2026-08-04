@@ -102805,7 +102805,8 @@
                   "content": "Body copy — the default token.fontSize of the product theme.",
                   "lineHeight": 1.35,
                   "fontFamily": "Geist",
-                  "fontSize": 15
+                  "fontSize": 15,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -102866,7 +102867,8 @@
                   "content": "Table cells, form labels, most of the UI in practice.",
                   "lineHeight": 1.35,
                   "fontFamily": "Geist",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -102927,7 +102929,8 @@
                   "content": "Secondary card text, timestamps.",
                   "lineHeight": 1.35,
                   "fontFamily": "Geist",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -102988,7 +102991,8 @@
                   "content": "Tags, badges, helper text.",
                   "lineHeight": 1.35,
                   "fontFamily": "Geist",
-                  "fontSize": 12
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -103049,7 +103053,8 @@
                   "content": "Pills and status chips.",
                   "lineHeight": 1.35,
                   "fontFamily": "Geist",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -103464,7 +103469,8 @@
                   "content": "An italic Lora line that currently renders in Mulish.",
                   "lineHeight": 1.35,
                   "fontFamily": "Mulish",
-                  "fontSize": 18
+                  "fontSize": 18,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -103525,7 +103531,8 @@
                   "content": "Public page body copy.",
                   "lineHeight": 1.35,
                   "fontFamily": "Mulish",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -103693,7 +103700,8 @@
                       "content": "Ag",
                       "lineHeight": 1.1,
                       "fontFamily": "Geist",
-                      "fontSize": 32
+                      "fontSize": 32,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -110171,7 +110179,8 @@
                                   "fill": "$text-primary",
                                   "content": "Level Design",
                                   "fontFamily": "$font",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -110196,7 +110205,8 @@
                                   "fill": "$text-primary",
                                   "content": "Narrative",
                                   "fontFamily": "$font",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -110631,7 +110641,8 @@
                                   "fill": "$text-primary",
                                   "content": "Open",
                                   "fontFamily": "$font",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -110656,7 +110667,8 @@
                                   "fill": "$text-primary",
                                   "content": "Archived",
                                   "fontFamily": "$font",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -112605,7 +112617,8 @@
                           "width": "fill_container",
                           "content": "Starbound Saga",
                           "fontFamily": "$font",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -112671,7 +112684,8 @@
                           "width": "fill_container",
                           "content": "12",
                           "fontFamily": "$font",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -112761,7 +112775,8 @@
                           "width": "fill_container",
                           "content": "Hollow Tide",
                           "fontFamily": "$font",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -112827,7 +112842,8 @@
                           "width": "fill_container",
                           "content": "4",
                           "fontFamily": "$font",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -112917,7 +112933,8 @@
                           "width": "fill_container",
                           "content": "Moonfall",
                           "fontFamily": "$font",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -112983,7 +113000,8 @@
                           "width": "fill_container",
                           "content": "9",
                           "fontFamily": "$font",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -115044,6 +115062,19 @@
               "fontFamily": "$font",
               "fontSize": 15,
               "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "wKJrg",
+              "name": "Status",
+              "fill": "#12854B",
+              "textGrowth": "fixed-width",
+              "width": 1000,
+              "content": "Implemented in src/config/design/ — tokens.ts · roles.ts · antd.ts · css.ts · fonts.ts, guarded by tests/design-system.test.ts. Wired: --gd-* variables and both fonts on <body>, productTheme in ProtectedShell, and the direction tint+ink pairs now feed DirectionBadge, VacancyCard, the talent pool and the specialist modal. Landing, public and auth shells still run the old themes.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "500"
             }
           ]
         },
@@ -116070,7 +116101,7 @@
                                   "type": "text",
                                   "id": "qq90L",
                                   "name": "L",
-                                  "fill": "#FFFFFF",
+                                  "fill": "#0F0F0E",
                                   "content": "Apply",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -116118,6 +116149,19 @@
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
                       "content": "Landing, plus the dark header and footer bands on public pages. Same components, same radii, same type — only the four role values flip. This is the only place the brand orange fills a button.",
+                      "lineHeight": 1.45,
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "oSs3f",
+                      "name": "CTA note",
+                      "fill": "#9A9A97",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "The brand CTA carries an ink label, not a white one: white on brand-500 measures 3.4:1 and fails at label sizes, the dark ink reads at 5.5:1.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 11,
@@ -116331,7 +116375,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Neutrals carry a hint of warmth so they sit under the warm brand without going blue. Every current grey maps onto one of these eleven steps.",
+                  "content": "Neutrals hold a constant warm hue (~40°) with chroma tapering into the darks, so they sit under the warm brand without drifting blue. Every current grey maps onto one of these thirteen steps. Values below are the ones now shipping in src/config/design/tokens.ts.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font",
                   "fontSize": 12,
@@ -116448,7 +116492,7 @@
                       "name": "50",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#F5F5F4",
+                      "fill": "#F5F4F2",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116469,7 +116513,7 @@
                           "id": "Ilz61",
                           "name": "Hex",
                           "fill": "#18181B",
-                          "content": "#F5F5F4",
+                          "content": "#F5F4F2",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116482,7 +116526,7 @@
                       "name": "100",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#ECECEA",
+                      "fill": "#EBEAE8",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116503,7 +116547,7 @@
                           "id": "jYyyV",
                           "name": "Hex",
                           "fill": "#18181B",
-                          "content": "#ECECEA",
+                          "content": "#EBEAE8",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116516,7 +116560,7 @@
                       "name": "200",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#DEDEDC",
+                      "fill": "#DCDBD8",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116537,7 +116581,7 @@
                           "id": "uOj07",
                           "name": "Hex",
                           "fill": "#18181B",
-                          "content": "#DEDEDC",
+                          "content": "#DCDBD8",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116550,7 +116594,7 @@
                       "name": "300",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#C6C6C3",
+                      "fill": "#C5C4C0",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116571,7 +116615,7 @@
                           "id": "yYsTz",
                           "name": "Hex",
                           "fill": "#18181B",
-                          "content": "#C6C6C3",
+                          "content": "#C5C4C0",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116584,7 +116628,7 @@
                       "name": "400",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#9A9A97",
+                      "fill": "#9C9B97",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116605,7 +116649,7 @@
                           "id": "OP3SS",
                           "name": "Hex",
                           "fill": "#18181B",
-                          "content": "#9A9A97",
+                          "content": "#9C9B97",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116618,7 +116662,7 @@
                       "name": "500",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#74746F",
+                      "fill": "#76756F",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116639,7 +116683,7 @@
                           "id": "u4SXWh",
                           "name": "Hex",
                           "fill": "#FFFFFF",
-                          "content": "#74746F",
+                          "content": "#76756F",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116652,7 +116696,7 @@
                       "name": "600",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#57575A",
+                      "fill": "#5A5955",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116673,7 +116717,7 @@
                           "id": "S8MZM",
                           "name": "Hex",
                           "fill": "#FFFFFF",
-                          "content": "#57575A",
+                          "content": "#5A5955",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116686,7 +116730,7 @@
                       "name": "700",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#3A3A3D",
+                      "fill": "#3C3B38",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116707,7 +116751,7 @@
                           "id": "V1yYCz",
                           "name": "Hex",
                           "fill": "#FFFFFF",
-                          "content": "#3A3A3D",
+                          "content": "#3C3B38",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116720,7 +116764,7 @@
                       "name": "800",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#26262A",
+                      "fill": "#272624",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116741,7 +116785,7 @@
                           "id": "UxNue",
                           "name": "Hex",
                           "fill": "#FFFFFF",
-                          "content": "#26262A",
+                          "content": "#272624",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116754,7 +116798,7 @@
                       "name": "900",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#18181B",
+                      "fill": "#1A1917",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116775,7 +116819,7 @@
                           "id": "jlOF3",
                           "name": "Hex",
                           "fill": "#FFFFFF",
-                          "content": "#18181B",
+                          "content": "#1A1917",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -116788,7 +116832,7 @@
                       "name": "950",
                       "width": "fill_container",
                       "height": 76,
-                      "fill": "#0E0E11",
+                      "fill": "#0F0F0E",
                       "layout": "vertical",
                       "gap": 1,
                       "padding": 8,
@@ -116809,7 +116853,7 @@
                           "id": "h9bIJk",
                           "name": "Hex",
                           "fill": "#FFFFFF",
-                          "content": "#0E0E11",
+                          "content": "#0F0F0E",
                           "fontFamily": "$font",
                           "fontSize": 9,
                           "fontWeight": "normal"
@@ -117171,9 +117215,9 @@
                       "id": "ObRZ7",
                       "name": "Name",
                       "fill": "$text-primary",
-                      "content": "Success  #12854B / #E8F5EE",
+                      "content": "Success  #12854B · tint #E8F5EE · on-tint #0E6B3D",
                       "fontFamily": "$font",
-                      "fontSize": 11,
+                      "fontSize": 10,
                       "fontWeight": "600"
                     },
                     {
@@ -117230,9 +117274,9 @@
                       "id": "uQvGZ",
                       "name": "Name",
                       "fill": "$text-primary",
-                      "content": "Warning  #B4690E / #FDF3E3",
+                      "content": "Warning  #B4690E · tint #FDF3E3 · on-tint #8A4F09",
                       "fontFamily": "$font",
-                      "fontSize": 11,
+                      "fontSize": 10,
                       "fontWeight": "600"
                     },
                     {
@@ -117289,9 +117333,9 @@
                       "id": "jmzve",
                       "name": "Name",
                       "fill": "$text-primary",
-                      "content": "Danger  #B42318 / #FCEBEB",
+                      "content": "Danger  #B42318 · tint #FCEBEB · on-tint #B42318",
                       "fontFamily": "$font",
-                      "fontSize": 11,
+                      "fontSize": 10,
                       "fontWeight": "600"
                     },
                     {
@@ -117348,9 +117392,9 @@
                       "id": "qQ9G0",
                       "name": "Name",
                       "fill": "$text-primary",
-                      "content": "Info  #2A5BD7 / #EAF0FD",
+                      "content": "Info  #2A5BD7 · tint #EAF0FD · on-tint #2A5BD7",
                       "fontFamily": "$font",
-                      "fontSize": 11,
+                      "fontSize": 10,
                       "fontWeight": "600"
                     },
                     {
@@ -117369,6 +117413,19 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "text",
+              "id": "S0ZjrB",
+              "name": "Semantic note",
+              "fill": "#74746F",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Each state ships three values, not two: solid for icons and dots, tint for backgrounds, and on-tint for the text drawn on that tint. The pair is verified at ≥ 4.5:1 by a unit test.",
+              "lineHeight": 1.45,
+              "fontFamily": "$font",
+              "fontSize": 11,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -117454,7 +117511,7 @@
                       "fill": "#74746F",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Same 18 hues, pulled to a common lightness (L≈94) and given an ink at L≈38 of the same hue. Every chip then reads at 5:1 or better, and the tints stop fighting each other. Bottom strip shows today's value for comparison.",
+                      "content": "Same 18 hues, pulled to a common lightness (L≈93) but keeping real chroma — a chip has to read as coloured, not grey. Ink is the tint's own hue at L≈25, which ties the icon to its chip while staying crisp: the pairs measure 7.2–9.2:1, where a mid-dark ink measured ~6:1 and washed out at 16px. Bottom strip shows today's value for comparison.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 11,
@@ -117482,7 +117539,7 @@
                           "id": "awXOC",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#E7EFFB",
+                          "fill": "#DCE9FB",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -117499,13 +117556,13 @@
                               "height": 15,
                               "icon": "code",
                               "library": "lucide",
-                              "fill": "#1F4B8F"
+                              "fill": "#163A6E"
                             },
                             {
                               "type": "text",
                               "id": "fhuoq",
                               "name": "L",
-                              "fill": "#1F4B8F",
+                              "fill": "#163A6E",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "development",
@@ -117532,7 +117589,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#E7EFFB / #1F4B8F",
+                          "content": "#DCE9FB / #163A6E",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -117553,7 +117610,7 @@
                           "id": "d023nU",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#E1F1F7",
+                          "fill": "#D6EEF6",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -117570,13 +117627,13 @@
                               "height": 15,
                               "icon": "globe",
                               "library": "lucide",
-                              "fill": "#14566B"
+                              "fill": "#0E4354"
                             },
                             {
                               "type": "text",
                               "id": "g1Gf5",
                               "name": "L",
-                              "fill": "#14566B",
+                              "fill": "#0E4354",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "web development",
@@ -117603,7 +117660,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#E1F1F7 / #14566B",
+                          "content": "#D6EEF6 / #0E4354",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -117624,7 +117681,7 @@
                           "id": "B2akhG",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#ECE9FB",
+                          "fill": "#E5DFFA",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -117641,13 +117698,13 @@
                               "height": 15,
                               "icon": "gamepad-2",
                               "library": "lucide",
-                              "fill": "#4B3B9C"
+                              "fill": "#382A7A"
                             },
                             {
                               "type": "text",
                               "id": "AbADK",
                               "name": "L",
-                              "fill": "#4B3B9C",
+                              "fill": "#382A7A",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "game design",
@@ -117674,7 +117731,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#ECE9FB / #4B3B9C",
+                          "content": "#E5DFFA / #382A7A",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -117695,7 +117752,7 @@
                           "id": "jVZPs",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#FCE9E8",
+                          "fill": "#FBDEDC",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -117712,13 +117769,13 @@
                               "height": 15,
                               "icon": "palette",
                               "library": "lucide",
-                              "fill": "#98393A"
+                              "fill": "#7A2A28"
                             },
                             {
                               "type": "text",
                               "id": "IGnlm",
                               "name": "L",
-                              "fill": "#98393A",
+                              "fill": "#7A2A28",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "2d art animation",
@@ -117745,7 +117802,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#FCE9E8 / #98393A",
+                          "content": "#FBDEDC / #7A2A28",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -117766,7 +117823,7 @@
                           "id": "MxiYZ",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#FBEBDD",
+                          "fill": "#FBE3D0",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -117783,13 +117840,13 @@
                               "height": 15,
                               "icon": "box",
                               "library": "lucide",
-                              "fill": "#8A4E1B"
+                              "fill": "#6E3C12"
                             },
                             {
                               "type": "text",
                               "id": "g071xj",
                               "name": "L",
-                              "fill": "#8A4E1B",
+                              "fill": "#6E3C12",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "3d art animation",
@@ -117816,7 +117873,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#FBEBDD / #8A4E1B",
+                          "content": "#FBE3D0 / #6E3C12",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -117837,7 +117894,7 @@
                           "id": "AAGBQ",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#EAEEF4",
+                          "fill": "#DDE6F3",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -117854,13 +117911,13 @@
                               "height": 15,
                               "icon": "clipboard-list",
                               "library": "lucide",
-                              "fill": "#41536B"
+                              "fill": "#2F3F55"
                             },
                             {
                               "type": "text",
                               "id": "pjrbr",
                               "name": "L",
-                              "fill": "#41536B",
+                              "fill": "#2F3F55",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "management",
@@ -117887,7 +117944,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#EAEEF4 / #41536B",
+                          "content": "#DDE6F3 / #2F3F55",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -117917,7 +117974,7 @@
                           "id": "I14zdG",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#F6F1D9",
+                          "fill": "#F5EEC6",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -117934,13 +117991,13 @@
                               "height": 15,
                               "icon": "pen-tool",
                               "library": "lucide",
-                              "fill": "#6B5C17"
+                              "fill": "#55480F"
                             },
                             {
                               "type": "text",
                               "id": "iw42s",
                               "name": "L",
-                              "fill": "#6B5C17",
+                              "fill": "#55480F",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "game writer",
@@ -117967,7 +118024,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#F6F1D9 / #6B5C17",
+                          "content": "#F5EEC6 / #55480F",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -117988,7 +118045,7 @@
                           "id": "ELXsy",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#E0F2EC",
+                          "fill": "#D5EEE6",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118005,13 +118062,13 @@
                               "height": 15,
                               "icon": "graduation-cap",
                               "library": "lucide",
-                              "fill": "#1C5F51"
+                              "fill": "#10493E"
                             },
                             {
                               "type": "text",
                               "id": "AXr0K",
                               "name": "L",
-                              "fill": "#1C5F51",
+                              "fill": "#10493E",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "learning",
@@ -118038,7 +118095,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#E0F2EC / #1C5F51",
+                          "content": "#D5EEE6 / #10493E",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118059,7 +118116,7 @@
                           "id": "rglms",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#EBF3DC",
+                          "fill": "#E4F0CE",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118076,13 +118133,13 @@
                               "height": 15,
                               "icon": "wand-sparkles",
                               "library": "lucide",
-                              "fill": "#4C6A22"
+                              "fill": "#3A5418"
                             },
                             {
                               "type": "text",
                               "id": "TA8zZ",
                               "name": "L",
-                              "fill": "#4C6A22",
+                              "fill": "#3A5418",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "technical art",
@@ -118109,7 +118166,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#EBF3DC / #4C6A22",
+                          "content": "#E4F0CE / #3A5418",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118130,7 +118187,7 @@
                           "id": "Rb3zU",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#E2F0FA",
+                          "fill": "#D7EAF8",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118147,13 +118204,13 @@
                               "height": 15,
                               "icon": "music",
                               "library": "lucide",
-                              "fill": "#1A5478"
+                              "fill": "#114059"
                             },
                             {
                               "type": "text",
                               "id": "kWFU3",
                               "name": "L",
-                              "fill": "#1A5478",
+                              "fill": "#114059",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "music sound",
@@ -118180,7 +118237,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#E2F0FA / #1A5478",
+                          "content": "#D7EAF8 / #114059",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118201,7 +118258,7 @@
                           "id": "aiOGv",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#FBE8E0",
+                          "fill": "#FBDFD2",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118218,13 +118275,13 @@
                               "height": 15,
                               "icon": "megaphone",
                               "library": "lucide",
-                              "fill": "#96452C"
+                              "fill": "#78341F"
                             },
                             {
                               "type": "text",
                               "id": "HdU48",
                               "name": "L",
-                              "fill": "#96452C",
+                              "fill": "#78341F",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "marketing",
@@ -118251,7 +118308,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#FBE8E0 / #96452C",
+                          "content": "#FBDFD2 / #78341F",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118272,7 +118329,7 @@
                           "id": "QUSRe",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#F1E9F9",
+                          "fill": "#EDE0F7",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118289,13 +118346,13 @@
                               "height": 15,
                               "icon": "sparkles",
                               "library": "lucide",
-                              "fill": "#6A3B93"
+                              "fill": "#532C74"
                             },
                             {
                               "type": "text",
                               "id": "n91EH",
                               "name": "L",
-                              "fill": "#6A3B93",
+                              "fill": "#532C74",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "vfx",
@@ -118322,7 +118379,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#F1E9F9 / #6A3B93",
+                          "content": "#EDE0F7 / #532C74",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118352,7 +118409,7 @@
                           "id": "zUegG",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#E3F2E7",
+                          "fill": "#D9EDDF",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118369,13 +118426,13 @@
                               "height": 15,
                               "icon": "bug",
                               "library": "lucide",
-                              "fill": "#2C6A3E"
+                              "fill": "#1F5330"
                             },
                             {
                               "type": "text",
                               "id": "C3KbPH",
                               "name": "L",
-                              "fill": "#2C6A3E",
+                              "fill": "#1F5330",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "qa",
@@ -118402,7 +118459,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#E3F2E7 / #2C6A3E",
+                          "content": "#D9EDDF / #1F5330",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118423,7 +118480,7 @@
                           "id": "TqQqn",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#FAE8F0",
+                          "fill": "#F9DEEB",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118440,13 +118497,13 @@
                               "height": 15,
                               "icon": "users",
                               "library": "lucide",
-                              "fill": "#8D3A61"
+                              "fill": "#6E2B4B"
                             },
                             {
                               "type": "text",
                               "id": "Z5UPYn",
                               "name": "L",
-                              "fill": "#8D3A61",
+                              "fill": "#6E2B4B",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "hr",
@@ -118473,7 +118530,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#FAE8F0 / #8D3A61",
+                          "content": "#F9DEEB / #6E2B4B",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118494,7 +118551,7 @@
                           "id": "F2dSjh",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#F6E9F6",
+                          "fill": "#F4DEF2",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118511,13 +118568,13 @@
                               "height": 15,
                               "icon": "clapperboard",
                               "library": "lucide",
-                              "fill": "#7A3A72"
+                              "fill": "#5E2B57"
                             },
                             {
                               "type": "text",
                               "id": "uEN6j",
                               "name": "L",
-                              "fill": "#7A3A72",
+                              "fill": "#5E2B57",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "video editing",
@@ -118544,7 +118601,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#F6E9F6 / #7A3A72",
+                          "content": "#F4DEF2 / #5E2B57",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118565,7 +118622,7 @@
                           "id": "h2WJb",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#E8EAF8",
+                          "fill": "#DFE3F5",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118582,13 +118639,13 @@
                               "height": 15,
                               "icon": "server",
                               "library": "lucide",
-                              "fill": "#3A448C"
+                              "fill": "#2A3370"
                             },
                             {
                               "type": "text",
                               "id": "EdAN0",
                               "name": "L",
-                              "fill": "#3A448C",
+                              "fill": "#2A3370",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "backend development",
@@ -118615,7 +118672,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#E8EAF8 / #3A448C",
+                          "content": "#DFE3F5 / #2A3370",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118636,7 +118693,7 @@
                           "id": "FvR4b",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#E1F1E6",
+                          "fill": "#D8ECDF",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118653,13 +118710,13 @@
                               "height": 15,
                               "icon": "trending-up",
                               "library": "lucide",
-                              "fill": "#276244"
+                              "fill": "#1B4C33"
                             },
                             {
                               "type": "text",
                               "id": "qq8qZ",
                               "name": "L",
-                              "fill": "#276244",
+                              "fill": "#1B4C33",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "investment",
@@ -118686,7 +118743,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#E1F1E6 / #276244",
+                          "content": "#D8ECDF / #1B4C33",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -118707,7 +118764,7 @@
                           "id": "MvcjY",
                           "name": "Chip",
                           "width": "fill_container",
-                          "fill": "#EDECEA",
+                          "fill": "#E9E7E4",
                           "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
@@ -118724,13 +118781,13 @@
                               "height": 15,
                               "icon": "shapes",
                               "library": "lucide",
-                              "fill": "#57575A"
+                              "fill": "#44433F"
                             },
                             {
                               "type": "text",
                               "id": "Z572o",
                               "name": "L",
-                              "fill": "#57575A",
+                              "fill": "#44433F",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "other",
@@ -118757,7 +118814,7 @@
                           "fill": "#9A9A97",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "#EDECEA / #57575A",
+                          "content": "#E9E7E4 / #44433F",
                           "lineHeight": 1.3,
                           "fontFamily": "$font",
                           "fontSize": 9,
@@ -119291,7 +119348,7 @@
                           "fill": "$text-secondary",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "meta, placeholders",
+                          "content": "placeholders and disabled only — under 4.5:1 on surface",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
                           "fontSize": 11,
@@ -119836,7 +119893,8 @@
                               "fill": "#74746F",
                               "content": "Team",
                               "fontFamily": "$font",
-                              "fontSize": 14
+                              "fontSize": 14,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "rectangle",
@@ -119863,7 +119921,8 @@
                               "fill": "#74746F",
                               "content": "Jobs",
                               "fontFamily": "$font",
-                              "fontSize": 14
+                              "fontSize": 14,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "rectangle",
@@ -120738,7 +120797,8 @@
                           "width": "fill_container",
                           "content": "40px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120757,7 +120817,8 @@
                           "width": "fill_container",
                           "content": "700",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120776,7 +120837,8 @@
                           "width": "fill_container",
                           "content": "-0.03em",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120795,7 +120857,8 @@
                           "width": "fill_container",
                           "content": "1.1",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120862,7 +120925,8 @@
                           "width": "fill_container",
                           "content": "32px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120881,7 +120945,8 @@
                           "width": "fill_container",
                           "content": "600",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120900,7 +120965,8 @@
                           "width": "fill_container",
                           "content": "-0.02em",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120919,7 +120985,8 @@
                           "width": "fill_container",
                           "content": "1.2",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -120986,7 +121053,8 @@
                           "width": "fill_container",
                           "content": "24px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121005,7 +121073,8 @@
                           "width": "fill_container",
                           "content": "600",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121024,7 +121093,8 @@
                           "width": "fill_container",
                           "content": "-0.02em",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121043,7 +121113,8 @@
                           "width": "fill_container",
                           "content": "1.25",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121110,7 +121181,8 @@
                           "width": "fill_container",
                           "content": "20px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121129,7 +121201,8 @@
                           "width": "fill_container",
                           "content": "600",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121148,7 +121221,8 @@
                           "width": "fill_container",
                           "content": "-0.01em",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121167,7 +121241,8 @@
                           "width": "fill_container",
                           "content": "1.3",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121234,7 +121309,8 @@
                           "width": "fill_container",
                           "content": "16px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121253,7 +121329,8 @@
                           "width": "fill_container",
                           "content": "600",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121272,7 +121349,8 @@
                           "width": "fill_container",
                           "content": "0",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121291,7 +121369,8 @@
                           "width": "fill_container",
                           "content": "1.4",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121358,7 +121437,8 @@
                           "width": "fill_container",
                           "content": "16px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121377,7 +121457,8 @@
                           "width": "fill_container",
                           "content": "400",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121396,7 +121477,8 @@
                           "width": "fill_container",
                           "content": "0",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121415,7 +121497,8 @@
                           "width": "fill_container",
                           "content": "1.6",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121429,7 +121512,8 @@
                       "content": "Marketing body, long-form",
                       "lineHeight": 1.6,
                       "fontFamily": "Geist",
-                      "fontSize": 16
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -121481,7 +121565,8 @@
                           "width": "fill_container",
                           "content": "14px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121500,7 +121585,8 @@
                           "width": "fill_container",
                           "content": "400",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121519,7 +121605,8 @@
                           "width": "fill_container",
                           "content": "0",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121538,7 +121625,8 @@
                           "width": "fill_container",
                           "content": "1.5",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121552,7 +121640,8 @@
                       "content": "Product default",
                       "lineHeight": 1.5,
                       "fontFamily": "Geist",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -121604,7 +121693,8 @@
                           "width": "fill_container",
                           "content": "13px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121623,7 +121713,8 @@
                           "width": "fill_container",
                           "content": "400",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121642,7 +121733,8 @@
                           "width": "fill_container",
                           "content": "0",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121661,7 +121753,8 @@
                           "width": "fill_container",
                           "content": "1.5",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121675,7 +121768,8 @@
                       "content": "Dense tables, meta",
                       "lineHeight": 1.5,
                       "fontFamily": "Geist",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -121727,7 +121821,8 @@
                           "width": "fill_container",
                           "content": "12px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121746,7 +121841,8 @@
                           "width": "fill_container",
                           "content": "400",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121765,7 +121861,8 @@
                           "width": "fill_container",
                           "content": "0",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121784,7 +121881,8 @@
                           "width": "fill_container",
                           "content": "1.45",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121798,7 +121896,8 @@
                       "content": "Helper text, timestamps",
                       "lineHeight": 1.45,
                       "fontFamily": "Geist",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -121850,7 +121949,8 @@
                           "width": "fill_container",
                           "content": "11px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121869,7 +121969,8 @@
                           "width": "fill_container",
                           "content": "600",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121888,7 +121989,8 @@
                           "width": "fill_container",
                           "content": "+0.06em",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121907,7 +122009,8 @@
                           "width": "fill_container",
                           "content": "1.4",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121974,7 +122077,8 @@
                           "width": "fill_container",
                           "content": "13px",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -121993,7 +122097,8 @@
                           "width": "fill_container",
                           "content": "400",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -122012,7 +122117,8 @@
                           "width": "fill_container",
                           "content": "0",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -122031,7 +122137,8 @@
                           "width": "fill_container",
                           "content": "1.5",
                           "fontFamily": "$font",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -122045,7 +122152,8 @@
                       "content": "5.0%  ·  12  ·  29 Apr 2025",
                       "lineHeight": 1.5,
                       "fontFamily": "Geist",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -122235,7 +122343,7 @@
                           "id": "XgtYO",
                           "name": "L",
                           "fill": "#12854B",
-                          "content": "RECOMMENDED",
+                          "content": "CHOSEN · SHIPPED",
                           "fontFamily": "$font",
                           "fontSize": 10,
                           "fontWeight": "700",
@@ -125787,7 +125895,8 @@
                                   "width": "fill_container",
                                   "content": "Search vacancies",
                                   "fontFamily": "$font",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -125904,7 +126013,8 @@
                                       "fill": "#74746F",
                                       "content": "Starbound Saga",
                                       "fontFamily": "$font",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     },
                                     {
                                       "type": "text",
@@ -125978,7 +126088,8 @@
                                       "fill": "#74746F",
                                       "content": "Equity",
                                       "fontFamily": "$font",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     },
                                     {
                                       "type": "text",
@@ -126006,7 +126117,8 @@
                                       "fill": "#74746F",
                                       "content": "Applicants",
                                       "fontFamily": "$font",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     },
                                     {
                                       "type": "text",
@@ -126034,7 +126146,8 @@
                                       "fill": "#74746F",
                                       "content": "Posted",
                                       "fontFamily": "$font",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     },
                                     {
                                       "type": "text",
@@ -126098,7 +126211,8 @@
                                   "fill": "#74746F",
                                   "content": "4",
                                   "fontFamily": "Geist",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 },
                                 {
                                   "type": "frame",
@@ -126154,7 +126268,8 @@
                                   "fill": "#74746F",
                                   "content": "4",
                                   "fontFamily": "Geist",
-                                  "fontSize": 14
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 },
                                 {
                                   "type": "frame",

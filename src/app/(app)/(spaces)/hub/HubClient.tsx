@@ -58,7 +58,10 @@ export default function HubClient() {
 	}, [getLanguage]);
 
 	return (
-		<Row gutter={[24, 24]} className={styles.container}>
+		/* `stretch` gives the sidebar column the full row height — without it the
+		   column is only as tall as its own cards and the sticky sidebar would
+		   have no room to travel. */
+		<Row gutter={[24, 24]} align="stretch" className={styles.container}>
 			<Col xs={24} md={16} lg={17}>
 				<div className={styles.mainFeedColumn}>
 					<div className={styles.mainSectionsBundle}>
