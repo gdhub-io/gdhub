@@ -3,7 +3,6 @@ import { useTranslate } from "@tolgee/react";
 import {
 	Avatar,
 	Button,
-	ConfigProvider,
 	Drawer,
 	Flex,
 	Grid,
@@ -20,7 +19,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { MainFooter } from "@/components/MainFooter";
 import { MainHeader } from "@/components/MainHeader";
-import { landingThemeConfig } from "@/config/theme";
+import { InverseBand } from "@/components/ui/InverseBand";
 import styles from "./style.module.scss";
 
 const { Header, Footer, Content } = Layout;
@@ -166,7 +165,8 @@ export const LandingLayout = ({ children }: any) => {
 
 	return (
 		<>
-			<ConfigProvider theme={landingThemeConfig}>
+			{/* The landing is dark end to end, so the whole shell is the band. */}
+			<InverseBand>
 				<Layout className={styles.container}>
 					<Header className={scrollY > 0 ? styles.fixedHeader : styles.header}>
 						<MainHeader />
@@ -211,7 +211,7 @@ export const LandingLayout = ({ children }: any) => {
 						</Space>
 					</Drawer>
 				)}
-			</ConfigProvider>
+			</InverseBand>
 		</>
 	);
 };

@@ -38,9 +38,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 		<html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
 			{/* The `--gd-*` design tokens are emitted here so SCSS modules and the antd
 			    themes read the same values; an inverse band re-declares them on its
-			    own subtree. */}
+			    own subtree. `data-gd-theme` sits here rather than on a shell because
+			    antd portals its overlays to the end of <body> — a flag set deeper
+			    never reaches a modal or a dropdown. */}
 			<body
 				className={fontClassName}
+				data-gd-theme="product"
 				style={designCssVariables() as CSSProperties}
 				suppressHydrationWarning
 			>

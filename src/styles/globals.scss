@@ -15,11 +15,9 @@
 	}
 
 	// Work direction tints. The values live in src/config/design/tokens.ts and
-	// reach the page as `--gd-direction-*` on <body>; the aliases below keep the
-	// older `--bg-direc-*` name working for anything still reading it.
+	// reach the page as `--gd-direction-*` on <body>.
 	@each $work-direction in $work-directions {
 		.bg-direc-#{$work-direction} {
-			--bg-direc-#{$work-direction}: var(--gd-direction-#{$work-direction}-tint);
 			background-color: var(--gd-direction-#{$work-direction}-tint);
 		}
 	}

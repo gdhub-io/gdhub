@@ -21,7 +21,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { MainFooter } from "@/components/MainFooter";
-import { publicThemeConfig } from "@/config/theme";
+import { publicTheme } from "@/config/design";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
@@ -213,12 +213,12 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
 	return (
 		<ConfigProvider
-			theme={publicThemeConfig}
+			theme={publicTheme}
 			locale={getLanguage() === "en" ? enLocale : ruLocale}
 		>
 			<style jsx global>{`
 				:root {
-					--background-color: #f2f4f7;
+					--background-color: var(--gd-color-bg);
 				}
 			`}</style>
 			<Layout className={styles.container}>

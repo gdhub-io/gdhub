@@ -136,7 +136,7 @@
 	:global(.ant-collapse-header) {
 		padding: 16px 20px !important;
 		align-items: center !important;
-		font-family: var(--main-font-family, "Inter"), sans-serif;
+		font-family: var(--gd-font-display), var(--gd-font-ui), sans-serif;
 		font-size: 15px !important;
 		font-weight: 500 !important;
 		color: #0f0f0f !important;

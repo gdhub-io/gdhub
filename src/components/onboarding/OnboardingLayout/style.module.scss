@@ -19,7 +19,7 @@
   :global(h1) {
     font-size: 40px;
     font-weight: 800;
-    font-family: var(--main-font-family);
+    font-family: var(--gd-font-display), var(--gd-font-ui), sans-serif;
   }
 
   :global(h2) {

@@ -310,11 +310,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				theme={productTheme}
 				locale={getLanguage() === "en" ? enLocale : ruLocale}
 			>
-				<Layout
-					ref={shellRef}
-					className={styles.container}
-					data-gd-theme="product"
-				>
+				<Layout ref={shellRef} className={styles.container}>
 					<AppHeader
 						className={styles.header}
 						breadcrumbItems={

@@ -84,8 +84,15 @@ on a specimen sheet.
 
 One token layer, two modes (`light` / `inverse`), two densities (`product` /
 `marketing`). Build a theme with `buildAntdTheme({ mode, density })` — do not
-write a new `ThemeConfig` by hand. A dark header or footer is an inverse *band*
-applied to a subtree, not a theme of its own.
+write a new `ThemeConfig` by hand.
+
+Three themes are already built: `productTheme` (hub, my, admin, auth),
+`publicTheme` (light marketing pages) and `inverseTheme` (the landing and dark
+bands). A dark header or footer is a `<InverseBand>` applied to a subtree, not a
+theme of its own — it re-declares the roles *and* swaps the antd theme, which is
+what stops a dark header from serving a button with dark text on a dark
+background. Pass `transparent` when the band sits on artwork that supplies its
+own background.
 
 ## Text
 

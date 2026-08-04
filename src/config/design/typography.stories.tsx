@@ -13,7 +13,6 @@ import {
 	Wix_Madefor_Text,
 } from "next/font/google";
 import type { CSSProperties } from "react";
-import { geistFont } from "@/assets/fonts/geist";
 import { IconTile } from "@/components/ui/IconTile";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { StatusDot } from "@/components/ui/StatusDot";
@@ -67,10 +66,10 @@ const pairs: FontPair[] = [
 		display: jakarta.style.fontFamily,
 	},
 	{
-		id: "geist-manrope",
-		name: "Geist + Manrope",
-		note: "Previous. Neutral UI under rounded-humanist headings.",
-		ui: geistFont.style.fontFamily,
+		id: "inter-manrope",
+		name: "Inter + Manrope",
+		note: "The previous shape of the system: a neutral UI face under a separate display one.",
+		ui: inter.style.fontFamily,
 		display: manrope.style.fontFamily,
 	},
 	{
@@ -81,10 +80,10 @@ const pairs: FontPair[] = [
 		display: bricolage.style.fontFamily,
 	},
 	{
-		id: "geist-space",
-		name: "Geist + Space Grotesk",
-		note: "Keeps today's UI, swaps in a technical display — the games tone.",
-		ui: geistFont.style.fontFamily,
+		id: "inter-space",
+		name: "Inter + Space Grotesk",
+		note: "A technical display face — the games tone, if the product ever wants it.",
+		ui: inter.style.fontFamily,
 		display: spaceGrotesk.style.fontFamily,
 	},
 	{

@@ -1,5 +1,6 @@
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
 export { IconTile, type IconTileProps } from "./IconTile";
+export { InverseBand, type InverseBandProps } from "./InverseBand";
 export {
 	SectionHeading,
 	type SectionHeadingProps,

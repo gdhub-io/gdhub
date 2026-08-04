@@ -22,7 +22,6 @@ import {
 } from "react";
 import type { ScheduleItemFormValues } from "@/components/modals/EventModal";
 import ScheduleItemModal from "@/components/modals/EventModal/ScheduleItemModal";
-import { appThemeConfig } from "@/config/theme";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./EventScheduleGantt.module.scss";
 
@@ -339,7 +338,7 @@ export const EventScheduleGantt = forwardRef<
 			<div className={styles.ganttContainer}>
 				<style jsx global>{`
 					:root {
-						--wx-font-family: ${appThemeConfig?.token?.fontFamily}, sans-serif;
+						--wx-font-family: var(--gd-font-ui), sans-serif;
 					}
 				`}</style>
 				<Willow fonts={false}>

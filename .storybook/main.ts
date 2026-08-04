@@ -7,13 +7,7 @@ const config: StorybookConfig = {
 		name: "@storybook/nextjs",
 		options: {},
 	},
-	// `next/font/local` (Geist) emits @font-face rules that point at the raw
-	// source path (/src/assets/fonts/…) under @storybook/nextjs, so serve that
-	// folder statically at the same path or the font 404s and text falls back.
-	staticDirs: [
-		"../public",
-		{ from: "../src/assets/fonts", to: "/src/assets/fonts" },
-	],
+	staticDirs: ["../public"],
 	webpackFinal: async (config) => {
 		// Mirror next.config.js: import `*.svg` as React components via SVGR.
 		// @storybook/nextjs treats svg as a static asset by default, so we
