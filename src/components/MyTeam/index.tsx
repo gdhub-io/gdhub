@@ -12,16 +12,14 @@ import { AiOutlinePlus } from "@react-icons/all-files/ai/AiOutlinePlus";
 import { BiTrash } from "@react-icons/all-files/bi/BiTrash";
 import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
 import { MdOutlineHandshake } from "@react-icons/all-files/md/MdOutlineHandshake";
-import { MdOutlineMonetizationOn } from "@react-icons/all-files/md/MdOutlineMonetizationOn";
-import { MdOutlineSupportAgent } from "@react-icons/all-files/md/MdOutlineSupportAgent";
 import { TbDotsVertical } from "@react-icons/all-files/tb/TbDotsVertical";
+import { IconCoin, IconUserSearch } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Avatar,
 	Button,
 	Dropdown,
-	Empty,
 	Flex,
 	Grid,
 	Modal,
@@ -45,6 +43,7 @@ import EquityShareModal from "@/components/modals/EquityShareModal";
 import InviteMemberModal from "@/components/modals/InviteMemberModal";
 import MemberEquityPromiseModal from "@/components/modals/MemberEquityPromiseModal";
 import TeamMemberCard from "@/components/TeamMemberCard";
+import { EmptyState } from "@/components/ui";
 import { TeamMemberStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { gtmEventTrigger } from "@/helpers/gtm";
@@ -1003,19 +1002,16 @@ const MyTeam = () => {
 							pagination={false}
 						/>
 					) : (
-						<Empty
-							style={{ marginTop: 32 }}
-							image={<MdOutlineSupportAgent size={64} color="#bfbfbf" />}
-							description={
-								<span>
-									{t("Does not have any advisors yet.")}
-									<br />
-									{t(
-										"If you need one, you can find experts or mentors on the ",
-									)}
-									<Link href="/hub/experts">Experts page</Link>
-									{t(" and send a consultation request.")}
-								</span>
+						<EmptyState
+							icon={IconUserSearch}
+							title={t("Does not have any advisors yet.")}
+							description={t(
+								"Find an expert or a mentor on the Experts page and send a consultation request.",
+							)}
+							action={
+								<Link href="/hub/experts">
+									<Button>{t("Browse experts")}</Button>
+								</Link>
 							}
 						/>
 					)}
@@ -1082,10 +1078,12 @@ const MyTeam = () => {
 								/>
 							</>
 						) : (
-							<Empty
-								style={{ marginTop: 32 }}
-								image={<MdOutlineMonetizationOn size={64} color="#bfbfbf" />}
-								description={t("Does not have any investors yet")}
+							<EmptyState
+								icon={IconCoin}
+								title={t("Does not have any investors yet")}
+								description={t(
+									"Investors who back this project will be listed here.",
+								)}
 							/>
 						)}
 					</Tabs.TabPane>

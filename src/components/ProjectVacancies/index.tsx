@@ -2,7 +2,7 @@ import type { TeamVacancy, WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { GoArrowDownRight } from "@react-icons/all-files/go/GoArrowDownRight";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Row, Space, Tag, Typography } from "antd";
+import { Button, Col, Row, Space, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import VacancyPreviewModal from "@/components/modals/VacancyPreviewModal";
+import { StatusDot } from "@/components/ui";
 import styles from "./style.module.scss";
 
 const { Title } = Typography;
@@ -83,9 +84,10 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 							{value}
 						</span>{" "}
 						{record.status == "draft" && (
-							<Tag color="lime">
-								{t(`vacancy.status.${record.status}`, record.status)}
-							</Tag>
+							<StatusDot
+								tone="neutral"
+								label={t(`vacancy.status.${record.status}`, record.status)}
+							/>
 						)}
 					</>
 				) : (

@@ -1,9 +1,13 @@
 import type { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import { IoAdd } from "@react-icons/all-files/io5/IoAdd";
-import { IconBriefcase, IconPlus } from "@tabler/icons-react";
+import {
+	IconAlertTriangle,
+	IconBriefcase,
+	IconPlus,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Empty, Flex, Row, Space, Spin, Typography } from "antd";
+import { Button, Col, Flex, Row, Space, Spin, Typography } from "antd";
 import axios from "axios";
 import type React from "react";
 import { useState } from "react";
@@ -12,6 +16,7 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { EmptyState } from "@/components/ui";
 import GameCard from "../GameCard";
 import CreateProjectModal from "../modals/CreateProjectModal";
 import EmptyProjectsState from "./EmptyProjectsState";
@@ -142,11 +147,18 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 			) : undefined}
 
 			{error ? (
-				<Empty
-					description={t(
+				<EmptyState
+					icon={IconAlertTriangle}
+					title={t(
 						"page.hub.user-projects.load-error",
 						"Failed to load user projects",
 					)}
+					description={t(
+						"page.hub.user-projects.load-error-hint",
+						"Reload the page — if it keeps failing, the service may be down.",
+					)}
+					tint="var(--gd-danger-tint)"
+					ink="var(--gd-danger-on-tint)"
 				/>
 			) : undefined}
 

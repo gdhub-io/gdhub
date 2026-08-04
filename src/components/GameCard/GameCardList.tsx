@@ -1,6 +1,8 @@
 import type { Project } from "@gdhub-io/gdhub-prisma";
-import { Col, Empty, Row, Skeleton } from "antd";
+import { IconDeviceGamepad2 } from "@tabler/icons-react";
+import { Col, Row, Skeleton } from "antd";
 import type React from "react";
+import { EmptyState } from "@/components/ui";
 import GameCard from "./index";
 import styles from "./styles.module.scss";
 
@@ -60,7 +62,13 @@ const GameCardList: React.FC<GameCardListProps> = ({ games, loading }) => {
 	}
 
 	if (!games || games.length === 0) {
-		return <Empty description="No games found" />;
+		return (
+			<EmptyState
+				icon={IconDeviceGamepad2}
+				title="No games found"
+				description="Projects matching your filters will appear here."
+			/>
+		);
 	}
 
 	return (

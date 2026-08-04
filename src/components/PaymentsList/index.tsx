@@ -3,10 +3,11 @@
 import type { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Table, type TableProps, Tag, Typography } from "antd";
+import { Button, Table, type TableProps, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { StatusDot, type StatusTone } from "@/components/ui";
 
 const { Title, Text } = Typography;
 
@@ -24,15 +25,15 @@ type UserPayment = {
 	projectName: string | null;
 };
 
-const STATUS_COLORS: Record<string, string> = {
-	COMPLETED: "green",
-	PENDING: "orange",
-	PROCESSING: "orange",
-	FAILED: "red",
-	CANCELED: "default",
-	REFUNDED: "default",
-	PARTIALLY_REFUNDED: "default",
-	DISPUTED: "volcano",
+const STATUS_TONES: Record<string, StatusTone> = {
+	COMPLETED: "success",
+	PENDING: "warning",
+	PROCESSING: "warning",
+	FAILED: "danger",
+	CANCELED: "neutral",
+	REFUNDED: "neutral",
+	PARTIALLY_REFUNDED: "neutral",
+	DISPUTED: "danger",
 };
 
 function formatAmount(amountMinor: number, currency: string) {
@@ -103,9 +104,10 @@ export default function PaymentsList() {
 			title: t("settings.payments.column.status", "Status"),
 			key: "status",
 			render: (_v, r) => (
-				<Tag color={STATUS_COLORS[r.status] ?? "default"}>
-					{t(`vacancy.payment.status.${r.status}`, r.status)}
-				</Tag>
+				<StatusDot
+					tone={STATUS_TONES[r.status] ?? "neutral"}
+					label={t(`vacancy.payment.status.${r.status}`, r.status)}
+				/>
 			),
 		},
 		{

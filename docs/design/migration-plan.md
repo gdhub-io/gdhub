@@ -20,7 +20,7 @@ component does not fight them. The SCSS layer is almost untouched.
 | Hardcoded hexes in SCSS | 813 in 112 files | **781 in 111** |
 | `!important` in SCSS | 397 | **379** |
 | Hardcoded hexes in TSX | 262 in 48 files | 262 |
-| `ui` primitives used outside their own stories | 1 | 2 (`InverseBand`) |
+| Files using a `ui` primitive | 1 | **10** (StatusDot 4, EmptyState 4, InverseBand 2) |
 
 The SCSS numbers barely moved, and that is expected: stages 1–2 removed the
 *themes* and the *overrides*, which is what makes the remaining per-file work
@@ -73,17 +73,24 @@ the colour source. Two buttons in the event views had no type at all and became
 `globals.scss` now holds **zero hardcoded hexes** (was 32) and 13 `!important`
 (was 31) — the survivors are layout fixes, not colour overrides.
 
-### 3. Use the primitives that already exist
+### 3. Use the primitives that already exist — partly done
 
-They were built and then not adopted. Each one replaces a pattern that currently
-gets reinvented per screen.
+`Tag` and `Empty` are sorted; the layout primitives are not.
 
-- `Tag` appears in **14 files**. Where it carries a *status*, it should be a
-  `StatusDot`; where it is genuinely a label (skills, categories) it stays a tag.
-  Judge per call site.
-- antd `Empty` in **2 files** → `EmptyState`.
-- Section titles and "view all" affordances → `SectionHeading` / `ViewAllLink`.
-- Coloured avatar and icon squares → `IconTile`.
+Done:
+- Every antd `<Empty>` is now an `EmptyState` — team advisors and investors,
+  the game list, and the project load error (which gets the danger tint, since
+  a failure is not an empty state).
+- Status-carrying `Tag`s became `StatusDot`: payment status, vacancy draft
+  state, equity transaction types, AI validation verdicts.
+- The other ten `Tag` call sites were judged and **kept**: genre, platform,
+  workflow stage, course category, free/paid, "founder", language, and the
+  count badges are labels or metrics, not states. Tags are correct there.
+
+Still to do:
+- Section titles and "view all" affordances → `SectionHeading` / `ViewAllLink`
+  (0 adopted).
+- Coloured avatar and icon squares → `IconTile` (0 adopted outside stories).
 
 ### 4. SCSS, by zone
 
@@ -128,7 +135,22 @@ the Storybook `staticDirs` entry that only existed to serve Geist.
 Still to check once the stages above land: `--main-font-family` is gone, but
 sweep for other orphaned CSS variables the deleted loaders used to declare.
 
-### 7. Put up a fence
+### 7. A story for anything reused
+
+A component rendered on many screens is part of the design system whether or not
+it lives in `components/ui`, and it needs a story for the same reason the
+primitives do — it is the only place its states get looked at side by side.
+
+Done: `ModernTable` (13 screens) and `HubSection` (10). Writing the first one
+immediately found a bug no screen had surfaced: an empty `ModernTable` fell
+through to antd's grey "No data" illustration, which the guidelines rule out.
+It now renders an `EmptyState`, and callers can pass `emptyState` to say
+something specific.
+
+Next candidates by reuse: `ContentEditor` (5), `GameCard` (4),
+`DevlogPostLink` (3).
+
+### 8. Put up a fence
 
 Without one, the debt refills faster than it drains. Add a check that fails on a
 new hardcoded hex in an SCSS module outside `src/config/design` — a Biome rule if
