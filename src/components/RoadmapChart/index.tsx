@@ -1,5 +1,4 @@
-import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { MdBeenhere } from "@react-icons/all-files/md/MdBeenhere";
+import { IconRosetteDiscountCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -197,7 +196,7 @@ export const RoadmapChart = ({
 					<div className={styles.currentTime}>
 						<span className={styles.currentTimeText}>
 							You&apos;re here
-							<MdBeenhere />
+							<IconRosetteDiscountCheck />
 						</span>
 					</div>
 				</div>
@@ -225,9 +224,7 @@ export const RoadmapChart = ({
 									placement="topLeft"
 									suffixIcon={null}
 									format="ll"
-									allowClear={
-										idx > 0 ? { clearIcon: <AiOutlineClose /> } : false
-									}
+									allowClear={idx > 0 ? { clearIcon: <IconX /> } : false}
 									variant="borderless"
 									placeholder="set date"
 									onChange={(date) => {

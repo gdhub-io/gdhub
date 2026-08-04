@@ -228,7 +228,9 @@ function FilterDropdown({
 									item.isRefined ? styles.checkboxOn : ""
 								}`}
 							>
-								{item.isRefined && <IconCheck size={12} color="#fff" />}
+								{item.isRefined && (
+									<IconCheck size={12} color="var(--gd-color-surface)" />
+								)}
 							</span>
 							{variant === "direction" ? (
 								<DirectionChip name={item.label} />
@@ -286,10 +288,10 @@ function FilterDropdown({
 }
 
 function DirectionChip({ name }: { name: string }) {
-	const { icon: Icon, color } = getWorkDirection(name);
+	const { icon: Icon, color, ink } = getWorkDirection(name);
 	return (
 		<span className={styles.dirChip} style={{ background: color }}>
-			<Icon size={13} stroke={2} color="#181818" />
+			<Icon size={13} stroke={2} color={ink} />
 		</span>
 	);
 }
@@ -368,7 +370,7 @@ function Results({ onSelect }: { onSelect: (id: string) => void }) {
 }
 
 function HitCard({ hit, onClick }: { hit: any; onClick: () => void }) {
-	const { icon: Icon, color } = getWorkDirection(hit.direction || "other");
+	const { icon: Icon, color, ink } = getWorkDirection(hit.direction || "other");
 	const isNew =
 		typeof hit.createdAt === "number" &&
 		Date.now() / 1000 - hit.createdAt < NEW_WINDOW_DAYS * 86400;
@@ -384,7 +386,7 @@ function HitCard({ hit, onClick }: { hit: any; onClick: () => void }) {
 		<button type="button" className={styles.card} onClick={onClick}>
 			<div className={styles.cardTop}>
 				<span className={styles.avatar} style={{ background: color }}>
-					<Icon size={22} stroke={2} color="#181818" />
+					<Icon size={22} stroke={2} color={ink} />
 				</span>
 				<div className={styles.cardCol}>
 					<div className={styles.badgeRow}>

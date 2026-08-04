@@ -12,11 +12,13 @@ import styles from "./styles.module.scss";
 const { Title } = Typography;
 
 function accentForWorkflowStage(stage?: string): string {
-	if (!stage) return "#A1A1AA";
+	if (!stage) return "var(--gd-color-text-tertiary)";
 	const s = stage.toLowerCase();
-	if (/active|live|release|done|published|complete/.test(s)) return "#22C55E";
-	if (/draft|progress|planned|pause|hold|wip/.test(s)) return "#F59E0B";
-	return "#6366F1";
+	if (/active|live|release|done|published|complete/.test(s))
+		return "var(--gd-success-solid)";
+	if (/draft|progress|planned|pause|hold|wip/.test(s))
+		return "var(--gd-warning-solid)";
+	return "var(--gd-info-solid)";
 }
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 

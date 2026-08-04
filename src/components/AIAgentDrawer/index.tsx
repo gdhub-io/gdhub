@@ -1,6 +1,4 @@
-import { MenuOutlined } from "@ant-design/icons";
-import { LuArrowUp } from "@react-icons/all-files/lu/LuArrowUp";
-import { LuPlus } from "@react-icons/all-files/lu/LuPlus";
+import { IconArrowUp, IconMenu2, IconPlus } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Button,
@@ -222,7 +220,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 					<Button
 						size="small"
 						type="text"
-						icon={<LuPlus />}
+						icon={<IconPlus />}
 						onClick={handleNewChat}
 					>
 						New chat
@@ -235,7 +233,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 						}}
 						trigger={["click"]}
 					>
-						<Button size="small" type="text" icon={<MenuOutlined />}></Button>
+						<Button size="small" type="text" icon={<IconMenu2 />}></Button>
 					</Dropdown>
 				</Space>
 			}
@@ -265,7 +263,7 @@ export const AIAgentDrawer = ({ open, onClose }: AIAgentDrawerProps) => {
 					<Button
 						type="primary"
 						shape="circle"
-						icon={<LuArrowUp />}
+						icon={<IconArrowUp />}
 						className={styles.agentDrawerInputButton}
 						disabled={!input.trim() || sendMessageMutation.isPending}
 						onClick={() => {

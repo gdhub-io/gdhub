@@ -210,7 +210,11 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 							width={"100%"}
 							readOnly
 							disabled
-							style={{ color: "#000", padding: 0, fontWeight: "bold" }}
+							style={{
+								color: "var(--gd-neutral-950)",
+								padding: 0,
+								fontWeight: "bold",
+							}}
 							bordered={false}
 						/>
 					</Form.Item>
@@ -228,7 +232,7 @@ const SetLecturerModal = ({ lectureId, open, onOk, onCancel }: any) => {
 							rows={4}
 							disabled
 							readOnly
-							style={{ color: "#000" }}
+							style={{ color: "var(--gd-neutral-950)" }}
 						/>
 					</Form.Item>
 

@@ -3,8 +3,7 @@ import type {
 	ProjectWorkflowStep,
 	ProjectWorkflowTask,
 } from "@gdhub-io/gdhub-prisma";
-import { IoMdArrowBack } from "@react-icons/all-files/io/IoMdArrowBack";
-import { IoMdArrowForward } from "@react-icons/all-files/io/IoMdArrowForward";
+import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -242,7 +241,7 @@ const WorkflowContent = ({
 								>
 									<Space size={8}>
 										{t("workflow.start-step", "Go to the next step")}
-										<IoMdArrowForward style={{ display: "block" }} />
+										<IconArrowRight style={{ display: "block" }} />
 									</Space>
 								</Button>
 							)}
@@ -285,7 +284,7 @@ const WorkflowContent = ({
 									type="text"
 								>
 									<Space size={8}>
-										<IoMdArrowBack style={{ display: "block" }} />
+										<IconArrowLeft style={{ display: "block" }} />
 										{t("workflow.previous-step", "Return to the previous step")}
 									</Space>
 								</Button>

@@ -83,7 +83,11 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 				<Flex vertical gap={16}>
 					<Card styles={{ body: cardBody }}>
 						<Flex vertical gap={16}>
-							<SectionLabel icon={<IconUser size={14} color="#a1a1aa" />}>
+							<SectionLabel
+								icon={
+									<IconUser size={14} color="var(--gd-color-text-tertiary)" />
+								}
+							>
 								{t("verify.result.recipient", "Recipient")}
 							</SectionLabel>
 							<Flex gap={14} align="center">
@@ -114,7 +118,14 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 					{data.project && (
 						<Card styles={{ body: cardBody }}>
 							<Flex vertical gap={16}>
-								<SectionLabel icon={<IconFolder size={14} color="#a1a1aa" />}>
+								<SectionLabel
+									icon={
+										<IconFolder
+											size={14}
+											color="var(--gd-color-text-tertiary)"
+										/>
+									}
+								>
 									{t("verify.result.project", "Project")}
 								</SectionLabel>
 								<Flex gap={14} align="center">
@@ -128,8 +139,8 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 											borderRadius: 10,
 											background: data.project.coverImage
 												? `url("${data.project.coverImage}") center/cover`
-												: "#f4f4f5",
-											color: "#52525b",
+												: "var(--gd-color-surface-sunken)",
+											color: "var(--gd-neutral-600)",
 										}}
 									>
 										{!data.project.coverImage && <IconFolder size={24} />}
@@ -175,7 +186,12 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 					<Card styles={{ body: cardBody }}>
 						<Flex vertical gap={16}>
 							<SectionLabel
-								icon={<IconCalendarEvent size={14} color="#a1a1aa" />}
+								icon={
+									<IconCalendarEvent
+										size={14}
+										color="var(--gd-color-text-tertiary)"
+									/>
+								}
 							>
 								{t("verify.result.event", "Event")}
 							</SectionLabel>
@@ -188,8 +204,8 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 										width: 48,
 										height: 48,
 										borderRadius: 10,
-										background: "#f4f4f5",
-										color: "#52525b",
+										background: "var(--gd-color-surface-sunken)",
+										color: "var(--gd-neutral-600)",
 									}}
 								>
 									<IconCalendarEvent size={24} />
@@ -283,8 +299,8 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									width: 32,
 									height: 32,
 									borderRadius: 8,
-									background: "#fef2f2",
-									color: "#e53e3e",
+									background: "var(--gd-danger-tint)",
+									color: "var(--gd-danger-solid)",
 								}}
 							>
 								<IconFileText size={16} />

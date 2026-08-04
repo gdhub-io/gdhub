@@ -1,6 +1,6 @@
 .archivedBanner {
-	background: #fff5e6;
-	color: #d98d09;
+	background: var(--gd-warning-tint);
+	color: var(--gd-warning-solid);
 	font-size: 14px;
 	line-height: 20px;
 	padding: 10px 50px;
@@ -15,14 +15,14 @@
 			align-items: center;
 			justify-content: space-between;
 			gap: 8px;
-			color: #ff4d4f !important;
+			color: var(--gd-danger-solid) !important;
 			font-weight: 500;
 		}
 	}
 
 	&:hover {
 		:global(.ant-menu-title-content a) {
-			color: #ff7875 !important;
+			color: var(--gd-danger-solid) !important;
 		}
 	}
 }

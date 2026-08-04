@@ -127,7 +127,7 @@ const InviteMemberModal = ({
 						},
 					]}
 				>
-					<Input placeholder={t("Enter email address")} />
+					<Input variant="filled" placeholder={t("Enter email address")} />
 				</Form.Item>
 
 				<Form.Item

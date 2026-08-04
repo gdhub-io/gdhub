@@ -6,12 +6,14 @@ import {
 	type User,
 	type WorkDirection,
 } from "@gdhub-io/gdhub-prisma";
-import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
-import { HiOutlineTrash } from "@react-icons/all-files/hi/HiOutlineTrash";
-import { HiOutlineX } from "@react-icons/all-files/hi/HiOutlineX";
-import { TbDotsVertical } from "@react-icons/all-files/tb/TbDotsVertical";
-import { TbHeart } from "@react-icons/all-files/tb/TbHeart";
-import { TbHeartOff } from "@react-icons/all-files/tb/TbHeartOff";
+import {
+	IconDotsVertical,
+	IconHeart,
+	IconHeartOff,
+	IconPresentation,
+	IconTrash,
+	IconX,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -216,7 +218,7 @@ export const RequestedLectures = ({
 										}}
 									>
 										<Space align="center">
-											<FaChalkboardTeacher
+											<IconPresentation
 												style={{ position: "relative", top: "2px" }}
 											/>{" "}
 											{t("lecture.myProposal", "My Proposal")}
@@ -234,7 +236,7 @@ export const RequestedLectures = ({
 										}
 									>
 										<Tooltip title={t("Don't want to be a lecturer")}>
-											<Button type="text" icon={<HiOutlineX />} />
+											<Button type="text" icon={<IconX />} />
 										</Tooltip>
 									</Popconfirm>
 								</Space>
@@ -244,7 +246,7 @@ export const RequestedLectures = ({
 									onClick={() => handleSetLecturer(lecture?.id)}
 								>
 									<Space align="center">
-										<FaChalkboardTeacher
+										<IconPresentation
 											style={{ position: "relative", top: "2px" }}
 										/>{" "}
 										{t("lecture.becomeALecturer", "Become a Lecturer")}
@@ -276,7 +278,9 @@ export const RequestedLectures = ({
 									type="text"
 									onClick={() => handleSetRelevantForMe(lecture.id, false)}
 									icon={
-										<TbHeartOff style={{ position: "relative", top: "2px" }} />
+										<IconHeartOff
+											style={{ position: "relative", top: "2px" }}
+										/>
 									}
 								/>
 							</Tooltip>
@@ -287,7 +291,7 @@ export const RequestedLectures = ({
 							onClick={() => handleSetRelevantForMe(lecture.id, true)}
 						>
 							<Space align="center">
-								<TbHeart style={{ position: "relative", top: "2px" }} />{" "}
+								<IconHeart style={{ position: "relative", top: "2px" }} />{" "}
 								{t("lecture.wantToAttend", "Want to attend")}
 							</Space>
 						</Button>
@@ -307,7 +311,7 @@ export const RequestedLectures = ({
 			render: (_, lecture) =>
 				!screens.md ? (
 					<Dropdown menu={{ items: mobileMenu }} trigger={["click"]}>
-						<TbDotsVertical
+						<IconDotsVertical
 							size={16}
 							style={{ position: "relative", top: 2 }}
 						/>
@@ -326,7 +330,7 @@ export const RequestedLectures = ({
 							onConfirm={() => handleDeleteLectureRequest(lecture.id)}
 						>
 							<Button type="text" danger>
-								<HiOutlineTrash />
+								<IconTrash />
 							</Button>
 						</Popconfirm>
 					</Space>
@@ -424,7 +428,7 @@ export const RequestedLectures = ({
 						<Spin spinning={isLoading}>
 							<Table
 								style={{
-									border: "1px solid #aaa",
+									border: "1px solid var(--gd-color-text-tertiary)",
 									borderRadius: "16px",
 									padding: "8px",
 									marginTop: 16,

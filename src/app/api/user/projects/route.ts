@@ -50,6 +50,7 @@ export const GET = withAuth({ mode: "user" })(
 				description: true,
 				status: true,
 				coverImage: true,
+				authorId: true,
 				author: { select: { name: true, image: true } },
 				workflow: {
 					select: {

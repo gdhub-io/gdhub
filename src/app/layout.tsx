@@ -1,9 +1,11 @@
 import "@/styles/globals.scss";
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { CookieConsent } from "@/components/CookieConsent";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { setupDayjs } from "@/config/dayjs-setup";
+import { designCssVariables } from "@/config/design/css";
+import { fontClassName } from "@/config/design/fonts";
 import { Providers } from "./providers";
 
 setupDayjs();
@@ -33,7 +35,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
-		<html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+		// The `--gd-*` tokens and both font variables sit on <html>, not on <body>:
+		// `:root` rules in globals.scss have to resolve them, and antd portals its
+		// overlays to the end of <body>, so anything declared deeper never reaches a
+		// modal or a dropdown. An inverse band re-declares the roles on its subtree.
+		<html
+			lang="en"
+			className={fontClassName}
+			data-scroll-behavior="smooth"
+			data-gd-theme="product"
+			style={designCssVariables() as CSSProperties}
+			suppressHydrationWarning
+		>
 			<body suppressHydrationWarning>
 				{process.env.NODE_ENV === "production" && (
 					<noscript

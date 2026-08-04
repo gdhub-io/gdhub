@@ -1096,7 +1096,7 @@
 	"hours/week": "hours/week",
 	"hub": {
 		"activity-feed": {
-			"title": "Devlog posts from projects"
+			"title": "Activity Feed"
 		},
 		"hot-vacancies": {
 			"title": "Open positions"
@@ -1219,9 +1219,9 @@
 		"hero": {
 			"getStartedForFree": "Get started for free",
 			"noCreditCardRequired": "No credit card required",
-			"text1": "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc.",
-			"text2": "We help game industry professionals find an interesting role for investing their time in developing new video games.",
-			"title": "Community-driven platform for video game creators"
+			"text1": "Create your video game — find the people it is missing, or join a project that needs your craft.",
+			"text2": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
+			"title": "Ecosystem for video game creators"
 		},
 		"menu": {
 			"aboutUs": "About us",

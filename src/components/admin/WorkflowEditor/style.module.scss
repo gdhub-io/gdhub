@@ -1,442 +1,119 @@
+// Only the nine classes the editor actually renders survive here. The rest of
+// this file was a second theme — button heights, radii, primary blue, input
+// borders, focus rings — restating what productTheme already decides, and it
+// never applied anyway: nested `.ant-*` selectors in a CSS module get hashed, so
+// they matched nothing in the DOM.
+
 .container {
-  padding: 32px;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: calc(100vh - 80px);
-  background: #fafbfc;
+	padding: 32px;
+	max-width: 1200px;
+	margin: 0 auto;
+	min-height: calc(100vh - 80px);
+	background: var(--gd-color-bg);
 }
 
 .workflowTitle {
-  margin: 0 0 4px 0;
-  color: #0f172a;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  
-  .ant-typography-edit-content {
-    padding: 12px 16px;
-    border-radius: 8px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    font-weight: 700;
-  }
+	margin: 0 0 4px 0;
+	color: var(--gd-color-text);
+	font-weight: 700;
+	letter-spacing: -0.025em;
 }
 
 .workflowSubtitle {
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  color: #64748b;
-  margin: 0 0 32px 0;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--gd-color-text-secondary);
+	margin: 0 0 32px 0;
 }
 
 .stepCard {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  &:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transform: translateY(-1px);
-  }
-  
-  .ant-card {
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    border-radius: 12px;
-    
-    .ant-card-head {
-      background: transparent;
-      border-bottom: 1px solid #f1f5f9;
-      padding: 20px 24px 16px 24px;
-      border-radius: 12px 12px 0 0;
-      min-height: auto;
-      
-      .ant-card-head-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #0f172a;
-        padding: 0;
-      }
-    }
-    
-    .ant-card-body {
-      padding: 16px 24px 20px 24px;
-    }
-  }
+	margin-bottom: 16px;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border-strong);
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+	&:hover {
+		border-color: var(--gd-color-accent);
+		box-shadow: var(--gd-elevation-e2);
+		transform: translateY(-1px);
+	}
 }
 
 .stepHeader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  
-  span {
-    flex: 1;
-    font-weight: 600;
-    font-size: 15px;
-    color: #0f172a;
-    line-height: 1.4;
-  }
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	span {
+		flex: 1;
+		font-weight: 600;
+		font-size: 15px;
+		color: var(--gd-color-text);
+		line-height: 1.4;
+	}
 }
 
 .stepActions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  
-  .ant-btn {
-    height: 32px;
-    padding: 0 12px;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: 6px;
-    transition: all 0.15s ease;
-    
-    &:hover {
-      transform: none;
-      box-shadow: none;
-    }
-  }
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .dragHandle {
-  cursor: grab;
-  padding: 6px;
-  border-radius: 6px;
-  color: #94a3b8;
-  transition: all 0.15s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    background: #f1f5f9;
-    color: #475569;
-  }
-  
-  &:active {
-    cursor: grabbing;
-    background: #e2e8f0;
-  }
+	cursor: grab;
+	padding: 6px;
+	border-radius: var(--gd-radius-chip);
+	color: var(--gd-color-text-tertiary);
+	transition: all 0.15s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	&:hover {
+		background: var(--gd-color-surface-sunken);
+		color: var(--gd-neutral-600);
+	}
+
+	&:active {
+		cursor: grabbing;
+		background: var(--gd-color-border-strong);
+	}
 }
 
-// Main card styling
-.mainCard {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
-  
-  .ant-card-head {
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 20px 24px;
-    border-radius: 12px 12px 0 0;
-    
-    .ant-card-head-title {
-      color: #0f172a;
-      font-weight: 600;
-      font-size: 16px;
-    }
-    
-    .ant-card-extra {
-      .ant-btn {
-        height: 36px;
-        padding: 0 16px;
-        font-weight: 500;
-        border-radius: 8px;
-        
-        &.ant-btn-primary {
-          background: #3b82f6;
-          border-color: #3b82f6;
-          box-shadow: none;
-          
-          &:hover {
-            background: #2563eb;
-            border-color: #2563eb;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-          }
-        }
-      }
-    }
-  }
-  
-  .ant-card-body {
-    padding: 24px;
-  }
-}
-
-// Task cards for modals
-.taskCard {
-  margin-bottom: 12px;
-  border-radius: 8px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  transition: all 0.15s ease;
-  
-  &:hover {
-    border-color: #10b981;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  }
-  
-  .ant-card {
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    
-    .ant-card-head {
-      background: transparent;
-      border-bottom: 1px solid #f1f5f9;
-      padding: 12px 16px;
-      min-height: auto;
-    }
-    
-    .ant-card-body {
-      padding: 12px 16px;
-    }
-  }
-}
-
-// Enhanced button styles
-.ant-btn {
-  font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.15s ease;
-  height: 40px;
-  padding: 0 16px;
-  
-  &-primary {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    box-shadow: none;
-    
-    &:hover {
-      background: #2563eb;
-      border-color: #2563eb;
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      transform: none;
-    }
-    
-    &:active {
-      background: #1d4ed8;
-      border-color: #1d4ed8;
-    }
-    
-    &:disabled {
-      background: #94a3b8;
-      border-color: #94a3b8;
-      opacity: 1;
-    }
-  }
-  
-  &-default {
-    background: #ffffff;
-    border-color: #d1d5db;
-    color: #374151;
-    
-    &:hover {
-      border-color: #9ca3af;
-      color: #111827;
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    }
-  }
-  
-  &-text {
-    color: #6b7280;
-    
-    &:hover {
-      background: #f9fafb;
-      color: #374151;
-    }
-    
-    &.ant-btn-dangerous {
-      color: #dc2626;
-      
-      &:hover {
-        background: #fef2f2;
-        color: #b91c1c;
-      }
-    }
-  }
-  
-  // Icon buttons
-  &.ant-btn-icon-only {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  // Small buttons
-  &.ant-btn-sm {
-    height: 32px;
-    padding: 0 12px;
-    font-size: 13px;
-  }
-}
-
-// Dragging states
-.react-beautiful-dnd-dragging {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-  transform: rotate(1deg) !important;
-  border-color: #3b82f6 !important;
-  background: #ffffff !important;
-}
-
-.react-beautiful-dnd-drag-disabled {
-  cursor: not-allowed !important;
-  opacity: 0.5 !important;
-}
-
-// Loading state
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  font-size: 15px;
-  color: #6b7280;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  
-  &::before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    border: 2px solid #e5e7eb;
-    border-top: 2px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: 12px;
-  }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-// Header actions styling
 .headerActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  
-  .ant-btn {
-    height: 40px;
-    
-    &:not(.ant-btn-primary) {
-      background: #ffffff;
-      border-color: #d1d5db;
-      color: #374151;
-      
-      &:hover {
-        border-color: #9ca3af;
-        color: #111827;
-      }
-    }
-  }
+	display: flex;
+	align-items: center;
+	gap: 12px;
 }
 
-// Typography improvements
 .stepDescription {
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.5;
-  margin: 0;
+	color: var(--gd-color-text-secondary);
+	font-size: 14px;
+	line-height: 1.5;
+	margin: 0;
 }
 
-.stepTaskCount {
-  color: #9ca3af;
-  font-size: 12px;
-  font-weight: 500;
-  margin-top: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-// Mobile responsiveness
 @media (max-width: 768px) {
-  .container {
-    padding: 16px;
-  }
-  
-  .stepCard {
-    margin-bottom: 12px;
-    
-    .ant-card-head {
-      padding: 16px 20px 12px 20px;
-    }
-    
-    .ant-card-body {
-      padding: 12px 20px 16px 20px;
-    }
-  }
-  
-  .stepHeader {
-    flex-wrap: wrap;
-    gap: 8px;
-    
-    span {
-      font-size: 14px;
-    }
-  }
-  
-  .stepActions {
-    .ant-btn {
-      height: 28px;
-      padding: 0 8px;
-      font-size: 12px;
-    }
-  }
-  
-  .workflowTitle {
-    font-size: 24px;
-  }
+	.container {
+		padding: 16px;
+	}
+
+	.stepCard {
+		margin-bottom: 12px;
+	}
+
+	.stepHeader {
+		flex-wrap: wrap;
+		gap: 8px;
+
+		span {
+			font-size: 14px;
+		}
+	}
+
+	.workflowTitle {
+		font-size: 24px;
+	}
 }
-
-// Form improvements
-.formSection {
-  .ant-form-item {
-    margin-bottom: 20px;
-    
-    .ant-form-item-label {
-      margin-bottom: 6px;
-      
-      label {
-        color: #374151;
-        font-weight: 500;
-        font-size: 14px;
-      }
-    }
-    
-    .ant-input,
-    .ant-input-affix-wrapper,
-    .ant-select .ant-select-selector {
-      border-radius: 8px;
-      border-color: #d1d5db;
-      
-      &:hover {
-        border-color: #9ca3af;
-      }
-      
-      &:focus,
-      &.ant-input-affix-wrapper-focused,
-      &.ant-select-focused .ant-select-selector {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-    }
-  }
-}
-
-

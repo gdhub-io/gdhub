@@ -1,13 +1,16 @@
 "use client";
 
-import { MoreOutlined, SettingOutlined } from "@ant-design/icons";
 import type { Language } from "@gdhub-io/gdhub-prisma";
-import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
-import { FaMicroscope } from "@react-icons/all-files/fa/FaMicroscope";
-import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
-import { FaUsers } from "@react-icons/all-files/fa/FaUsers";
-import { GiGamepad } from "@react-icons/all-files/gi/GiGamepad";
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import {
+	IconCalendarCheck,
+	IconDeviceGamepad2,
+	IconDotsVertical,
+	IconExternalLink,
+	IconMicroscope,
+	IconPresentation,
+	IconSettings,
+	IconUsers,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
@@ -62,15 +65,15 @@ const { Text } = Typography;
 function getTypeIcon(type: string, size = 20) {
 	switch (type) {
 		case "MEETUP":
-			return <FaUsers size={size} />;
+			return <IconUsers size={size} />;
 		case "GAMEJAM":
-			return <GiGamepad size={size} />;
+			return <IconDeviceGamepad2 size={size} />;
 		case "WORKSHOP":
-			return <FaChalkboardTeacher size={size} />;
+			return <IconPresentation size={size} />;
 		case "GAMELAB":
-			return <FaMicroscope size={size} />;
+			return <IconMicroscope size={size} />;
 		case "CONFERENCE":
-			return <FaRegCalendarCheck size={size} />;
+			return <IconCalendarCheck size={size} />;
 		default:
 			return null;
 	}
@@ -422,7 +425,7 @@ const MyEventsClient = () => {
 											<Button
 												key="manage"
 												type="text"
-												icon={<SettingOutlined />}
+												icon={<IconSettings />}
 												href={`/user/event/${event.id}`}
 												title={t("event.manage", "Manage")}
 											/>,
@@ -430,7 +433,7 @@ const MyEventsClient = () => {
 												<Button
 													key="view"
 													type="text"
-													icon={<GoLinkExternal />}
+													icon={<IconExternalLink />}
 													href={`${event.lang ? `/${event.lang}` : ""}/event/${event.slug}`}
 													target="_blank"
 													title={t("event.view", "View")}
@@ -439,7 +442,7 @@ const MyEventsClient = () => {
 												<Button
 													key="view"
 													type="text"
-													icon={<GoLinkExternal />}
+													icon={<IconExternalLink />}
 													disabled
 													title={t("event.view", "View")}
 												/>
@@ -449,7 +452,7 @@ const MyEventsClient = () => {
 												menu={{ items: getEventMenu(event) }}
 												trigger={["click"]}
 											>
-												<Button type="text" block icon={<MoreOutlined />} />
+												<Button type="text" block icon={<IconDotsVertical />} />
 											</Dropdown>,
 										]}
 									>

@@ -25,7 +25,7 @@ const SectionSkeleton: React.FC<SectionSkeletonProps> = ({
 						width: 320,
 						height: 370,
 						borderRadius: 20,
-						background: "#fff",
+						background: "var(--gd-color-surface)",
 						display: "flex",
 						flexDirection: "column",
 						padding: 0,

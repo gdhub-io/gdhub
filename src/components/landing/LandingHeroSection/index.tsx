@@ -46,10 +46,7 @@ export const LandingHeroSection = ({
 							className={styles.heroMain}
 						>
 							<Title>
-								{t(
-									"landing.hero.title",
-									"Community-driven platform for video game creators",
-								)}
+								{t("landing.hero.title", "Ecosystem for video game creators")}
 							</Title>
 
 							<ul>
@@ -62,7 +59,7 @@ export const LandingHeroSection = ({
 										<Text>
 											{t(
 												"landing.hero.text1",
-												"We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc.",
+												"Make your game — find the people it is missing, or join a project that needs your craft.",
 											)}
 										</Text>
 									</Space>
@@ -76,7 +73,7 @@ export const LandingHeroSection = ({
 										<Text>
 											{t(
 												"landing.hero.text2",
-												"We help game industry professionals find an interesting role for investing their time in developing new video games.",
+												"Share what you know and help others — the experts here are members like you, answering from their own practice.",
 											)}
 										</Text>
 									</Space>

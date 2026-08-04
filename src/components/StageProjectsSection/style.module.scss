@@ -1,5 +1,5 @@
 .card {
-	border: 1px solid #cdcdcd;
+	border: 1px solid var(--gd-color-border-strong);
 
 	:global(.ant-card-cover) {
 		width: 100%;

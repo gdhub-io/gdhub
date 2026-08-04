@@ -1,5 +1,4 @@
-import { BiLogoLinkedin } from "@react-icons/all-files/bi/BiLogoLinkedin";
-import { BiLogoYoutube } from "@react-icons/all-files/bi/BiLogoYoutube";
+import { IconBrandLinkedin, IconBrandYoutube } from "@tabler/icons-react";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import { Col, Grid, Row, Space, Typography } from "antd";
 import Link from "next/link";
@@ -87,7 +86,7 @@ export const LandingContactsSection = () => {
 									>
 										<Space orientation="vertical" size={32}>
 											<div className={styles.contactIcon}>
-												<BiLogoYoutube
+												<IconBrandYoutube
 													size={100}
 													style={{ width: "initial", height: "initial" }}
 												/>
@@ -103,7 +102,7 @@ export const LandingContactsSection = () => {
 									>
 										<Space orientation="vertical" size={32}>
 											<div className={styles.contactIcon}>
-												<BiLogoLinkedin
+												<IconBrandLinkedin
 													size={100}
 													style={{ width: "initial", height: "initial" }}
 												/>

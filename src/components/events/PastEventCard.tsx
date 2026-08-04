@@ -62,7 +62,7 @@ export const PastEventCard = ({
 							padding: 16,
 							background:
 								"linear-gradient(0deg, rgba(30,30,30,0.85) 80%, rgba(30,30,30,0.1) 100%, rgba(0,0,0,0) 100%)",
-							color: "#fff",
+							color: "var(--gd-color-surface)",
 							zIndex: 2,
 							display: "flex",
 							flexDirection: "column",

@@ -8,6 +8,8 @@ import SkillNoviceIcon from "@/assets/images/skills/novice.svg";
 import SkillSkillfulIcon from "@/assets/images/skills/skillful.svg";
 import { SkillLevel } from "@/config/prisma-enums";
 
+// The level scale is content, not chrome: five steps that have to stay
+// distinguishable from each other, which no role in the system provides.
 export const skillLevelsList: {
 	index: number;
 	value: string;

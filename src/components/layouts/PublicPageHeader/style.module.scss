@@ -6,7 +6,7 @@
   padding: 0 variables.$public-padding;
   background-position: right;
   background-size: cover;
-  background-color: #07010C;
+  background-color: var(--gd-neutral-950);
   position: relative;
 }
 
@@ -17,7 +17,7 @@
 
   :global(h1) {
     font-size: 48px;
-    color: #fff;
+    color: var(--gd-color-text);
     margin-bottom: 0;
   }
 
@@ -39,7 +39,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0;
-  color: #ff4d4f;
+  color: var(--gd-color-accent);
   font-size: 16px;
   transition: padding 0.3s ease;
 
@@ -54,7 +54,7 @@
 
   &:hover {
     padding: 0 8px;
-    color: #ff4d4f;
+    color: var(--gd-color-accent);
 
     svg {
       width: 16px;

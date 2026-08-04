@@ -34,7 +34,7 @@
 .courseDescription {
 	font-size: 16px;
 	line-height: 1.6;
-	color: #666;
+	color: var(--gd-color-text-secondary);
 }
 
 @media (max-width: 768px) {

@@ -138,10 +138,10 @@ export const ReadyLectures = () => {
 						<Spin spinning={isLoadingReadyLectures}>
 							<Table
 								style={{
-									border: "1px solid #aaa",
+									border: "1px solid var(--gd-color-text-tertiary)",
 									borderRadius: "16px",
 									padding: "8px",
-									background: "#c1e994",
+									background: "var(--gd-success-tint)",
 								}}
 								columns={columns}
 								dataSource={readyLectures.data.map((l) => ({

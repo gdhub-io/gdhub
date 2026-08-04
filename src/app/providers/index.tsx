@@ -6,6 +6,7 @@ import { ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
 import { setupDayjs } from "@/config/dayjs-setup";
+import { productTheme } from "@/config/design";
 import { installAbortErrorSuppressor } from "@/services/matrix/suppress-abort-errors";
 import { QueryProvider } from "./QueryProvider";
 import { TolgeeClientProvider } from "./TolgeeClientProvider";
@@ -39,7 +40,17 @@ export function Providers({ children }: { children: ReactNode }) {
 					 * specificity — that is what collapsed the page headers and
 					 * overrode titles, tabs and buttons.
 					 */}
-					<AntdRegistry layer>{children}</AntdRegistry>
+					<AntdRegistry layer>
+						{/*
+						 * The baseline theme for everything that renders outside a
+						 * shell — the cookie banner, error screens, static `message`
+						 * and `Modal.confirm` popups. Without it antd falls back to
+						 * its own defaults and those surfaces show up in antd blue
+						 * on a graphite product. Shells still override with their
+						 * own mode and density.
+						 */}
+						<ConfigProvider theme={productTheme}>{children}</ConfigProvider>
+					</AntdRegistry>
 				</QueryProvider>
 			</SessionProvider>
 		</TolgeeClientProvider>

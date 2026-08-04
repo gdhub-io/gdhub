@@ -1,0 +1,9 @@
+.tile {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	// Fallback pair for tiles with no direction and no explicit colours.
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-secondary);
+}

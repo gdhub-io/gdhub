@@ -3,9 +3,13 @@
 
 .header {
 	height: auto;
-	border-bottom: 1px solid #ededed;
-	background: #fff;
+	border-bottom: 1px solid var(--gd-color-border);
+	background: var(--gd-color-surface);
 	line-height: normal;
+	// The shell owns the viewport (see `.container`), so the header simply keeps
+	// its natural height and never scrolls away.
+	flex: 0 0 auto;
+	z-index: 1;
 
 	:global(.ant-breadcrumb) {
 		display: inline-flex;
@@ -32,6 +36,14 @@
 
 .contentContainer {
 	padding-bottom: 16px;
+	// The only scroll area of the app: takes the space left under the header and
+	// scrolls its own content. `min-height: 0` is what lets a flex child actually
+	// shrink below its content height instead of pushing the shell taller.
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
 
 	:global(.layout-background) {
 		padding: 36px 50px 0;
@@ -41,6 +53,11 @@
 }
 
 .container {
+	// The authenticated shell is exactly one viewport tall: header pinned at the
+	// top, content scrolling underneath it. The document itself never scrolls.
+	height: 100dvh;
+	overflow: hidden;
+
 	:global(.logo) {
 		font-weight: bold;
 		display: flex;
@@ -83,47 +100,21 @@
 
 .appMenu {
 	line-height: 32px !important;
-	margin-left: -16px;
-	margin-right: -16px;
-	margin-bottom: 4px;
-	margin-top: 4px;
+	// Pulls the first item's padding back to the header's left edge, so the nav
+	// lines up with the logo above it in every space.
+	margin: 0 -6px 6px;
 	font-size: 14px;
 
 	:global(.ant-menu-item) {
 		margin-inline: 2px;
 	}
 
-	:global(.ant-menu-item:not(.ant-menu-item-disabled)) {
-		border-radius: 4px;
-		background: transparent;
-
-		.ant-menu-title-content {
-			color: #777;
-		}
-
-		&::after {
-			border-width: 0px !important;
-		}
-	}
-
-	:global(.ant-menu-item-active) {
-		background: #efefef !important;
-
-		&::before {
-			border-color: #181818 !important;
-		}
-	}
-
+	// Colours and fills come from the theme's Menu tokens. What stays here is
+	// the one thing antd has no token for: the current tab is a little heavier
+	// than its neighbours, which is what tells it apart now that nothing on this
+	// bar is coloured.
 	:global(.ant-menu-item-selected) {
-		background: #efefef !important;
-
-		.ant-menu-title-content {
-			color: #181818;
-		}
-
-		&::before {
-			border-color: #181818 !important;
-		}
+		font-weight: 500;
 	}
 }
 
@@ -135,7 +126,7 @@
 	outline-offset: 3px !important;
 
 	&:hover {
-		outline-color: #2b2b2b !important;
+		outline-color: var(--gd-color-border-focus) !important;
 	}
 
 	:global(.ant-float-btn-content) {

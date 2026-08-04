@@ -1,6 +1,4 @@
-import { LogoutOutlined } from "@ant-design/icons";
-import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
+import { IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -217,7 +215,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		if (authStatus === "authenticated") {
 			return (
 				<Button type="text" size="small" onClick={() => signOut()}>
-					<LogoutOutlined /> {t("mainHeader.logout", "Logout")}
+					<IconLogout /> {t("mainHeader.logout", "Logout")}
 				</Button>
 			);
 		}
@@ -255,7 +253,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 						className={styles.mobileMenuBtn}
 						onClick={() => setOpenMobileMenu(true)}
 					>
-						<AiOutlineMenu size={24} />
+						<IconMenu2 size={24} />
 					</Button>
 				)}
 			</Flex>
@@ -264,7 +262,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				<Drawer
 					className={styles.mobileMenuDrawer}
 					afterOpenChange={handleOpenMobileMenu}
-					closeIcon={<AiOutlineClose size={24} />}
+					closeIcon={<IconX size={24} />}
 					title={
 						<Flex justify="end" align="center" gap={16}>
 							{logoutButton}

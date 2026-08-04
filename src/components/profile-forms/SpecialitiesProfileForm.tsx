@@ -1,7 +1,5 @@
 import type { Speciality, TeamInvitation } from "@gdhub-io/gdhub-prisma";
-import { GiSkills } from "@react-icons/all-files/gi/GiSkills";
-import { GoPlus } from "@react-icons/all-files/go/GoPlus";
-import { GoTrash } from "@react-icons/all-files/go/GoTrash";
+import { IconChartBar, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -145,7 +143,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 							locale={{
 								emptyText: (
 									<Space orientation="vertical">
-										<GiSkills size={24} />
+										<IconChartBar size={24} />
 										<span>
 											{t(
 												"profile-forms.specialities.card.no-specialities",
@@ -154,7 +152,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 										</span>
 										<Button
 											type="primary"
-											icon={<GoPlus />}
+											icon={<IconPlus />}
 											onClick={showModal}
 										>
 											{t(
@@ -201,7 +199,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 											)}
 											onConfirm={() => handleDeleteSpeciality(speciality.id)}
 										>
-											<Button type="text" danger icon={<GoTrash />} />
+											<Button type="text" danger icon={<IconTrash />} />
 										</Popconfirm>
 									</Space>
 								</List.Item>

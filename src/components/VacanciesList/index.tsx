@@ -91,7 +91,7 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 						components: {
 							Segmented: {
 								trackBg: "rgba(0, 0, 0, 0.04)",
-								itemSelectedBg: "#ffffff",
+								itemSelectedBg: "var(--gd-color-surface)",
 								itemColor: "rgba(0, 0, 0, 0.65)",
 								itemSelectedColor: "rgba(0, 0, 0, 0.88)",
 								itemHoverColor: "rgba(0, 0, 0, 0.88)",

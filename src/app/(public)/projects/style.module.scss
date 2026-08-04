@@ -1,5 +1,5 @@
 .card {
-	border: 1px solid #cdcdcd;
+	border: 1px solid var(--gd-color-border-strong);
 
 	:global(.ant-card-cover) {
 		width: 100%;
@@ -22,7 +22,7 @@
 
 	:global(.ant-descriptions-item-label) {
 		font-size: 12px;
-		color: #666;
+		color: var(--gd-color-text-secondary);
 	}
 
 	:global(.ant-descriptions-item-content) {
@@ -32,7 +32,7 @@
 
 .seasonDetails {
   font-size: 11px;
-  color: #999;
+  color: var(--gd-color-text-tertiary);
   font-weight: normal;
 }
 
@@ -50,7 +50,7 @@
 
 .sectionTitle {
 	margin: 0 !important;
-	color: #1f1f1f !important;
+	color: var(--gd-color-text) !important;
 	font-weight: 600 !important;
 }
 

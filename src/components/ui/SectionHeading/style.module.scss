@@ -1,0 +1,41 @@
+.heading {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	width: 100%;
+}
+
+.text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.title {
+	margin: 0;
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--gd-color-text);
+
+	&[data-level="2"] {
+		font-size: var(--gd-font-size-h2);
+	}
+
+	&[data-level="3"] {
+		font-size: var(--gd-font-size-h3);
+	}
+
+	// Card headers: a step down, so a narrow sidebar card is not all title.
+	&[data-level="4"] {
+		font-size: var(--gd-font-size-h4);
+	}
+}
+
+.description {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--gd-color-text-secondary);
+}

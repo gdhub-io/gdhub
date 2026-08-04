@@ -1,81 +1,168 @@
-@use "sass:color";
-@use "sass:meta";
-.cookieContainer {
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  background-color: #0b0b0bee;
-  backdrop-filter: blur(8px) saturate(200%);
-  border-top: 2px solid #232323;
-  width: 100%;
-  padding: 45px 165px;
-  z-index: 1000;
-
-  :global(.ant-typography) {
-    font-weight: 300;
-    color: #fff;
-  }
-
-  // Style for regular button (Details)
-  :global(.ant-btn) {
-    background-color: transparent;
-    border-color: #ffffff;
-    color: #ffffff;
-    transition: all 0.3s ease;
-
-    &:hover {
-      border-color: #f15541;
-      color: #f15541;
-    }
-  }
-  
-  // Style for primary button (I agree)
-  :global(.ant-btn-primary) {
-    background-color: #f15541;
-    border-color: #f15541;
-    color: #ffffff;
-
-    &:hover {
-      background-color: color.adjust(#f15541, $lightness: 5%);
-      border-color: color.adjust(#f15541, $lightness: 5%);
-    }
-
-    &:active {
-      background-color: color.adjust(#f15541, $lightness: -5%);
-      border-color: color.adjust(#f15541, $lightness: -5%);
-    }
-  }
-  
-  :global(.ant-checkbox-wrapper) {
-    color: #fff;
-    
-    .ant-checkbox-checked .ant-checkbox-inner {
-      background-color: #f15541;
-      border-color: #f15541;
-    }
-    
-    &:hover .ant-checkbox-inner {
-      border-color: #f15541;
-    }
-  }
+.root {
+	position: fixed;
+	z-index: 1000;
+	bottom: var(--gd-space-6);
+	left: var(--gd-space-6);
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	width: 400px;
+	max-width: calc(100vw - var(--gd-space-12));
+	padding: var(--gd-card-padding);
+	// Mounted outside every shell, so the family has to be named here rather than
+	// inherited from a themed subtree.
+	font-family: var(--gd-font-ui), system-ui, -apple-system, sans-serif;
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	// The one place a shadow is right: the banner floats above the page.
+	box-shadow: var(--gd-elevation-e3);
+	animation: rise 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.detailsContainer {
-  background-color: #1a1a1a;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 10px;
-  border: 1px solid #333;
-  
-  h5.ant-typography {
-    margin-bottom: 16px;
-    color: #fff;
-  }
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
 }
 
-@include meta.load-css('styles/xs.scss'); // screen < 576px
-@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
-@include meta.load-css('styles/md.scss'); // screen ≥ 768px
-@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
-@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
-@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px
+@media (prefers-reduced-motion: reduce) {
+	.root {
+		animation: none;
+	}
+}
+
+.head {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+}
+
+.text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.title {
+	margin: 0;
+	font-size: var(--gd-font-size-h4);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: var(--gd-line-height-heading);
+	color: var(--gd-color-text);
+}
+
+.description {
+	margin: 0;
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-relaxed);
+	color: var(--gd-color-text-secondary);
+}
+
+.categories {
+	padding: var(--gd-space-1);
+	background: var(--gd-color-bg);
+	border-radius: var(--gd-radius-card);
+}
+
+.category {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3);
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border);
+	}
+
+	.text {
+		flex: 1;
+	}
+}
+
+.categoryTitle {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	margin: 0;
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.categoryDescription {
+	margin: 0;
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-body);
+	color: var(--gd-color-text-secondary);
+}
+
+.chip {
+	padding: 2px 6px;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	color: var(--gd-neutral-600);
+	background: var(--gd-neutral-100);
+	border-radius: var(--gd-radius-chip);
+}
+
+.actions {
+	display: flex;
+	gap: var(--gd-space-2);
+
+	:global(.ant-btn) {
+		flex: 1;
+	}
+}
+
+.footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+}
+
+.link {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding: 0;
+	font-family: inherit;
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+	color: var(--gd-color-text-secondary);
+	background: none;
+	border: 0;
+	cursor: pointer;
+	transition: color 0.2s ease;
+
+	&:hover {
+		color: var(--gd-color-text);
+	}
+}
+
+.policyLink {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+	color: var(--gd-color-link);
+	text-decoration: none;
+
+	&:hover {
+		color: var(--gd-color-accent);
+		text-decoration: underline;
+	}
+}
+
+@media screen and (max-width: 575px) {
+	.root {
+		right: var(--gd-space-3);
+		bottom: var(--gd-space-3);
+		left: var(--gd-space-3);
+		width: auto;
+		max-width: none;
+	}
+}

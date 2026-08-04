@@ -63,7 +63,7 @@ export const CourseSection = ({
 						marginBottom: 12,
 						fontSize: 22,
 						fontWeight: 700,
-						color: "#222",
+						color: "var(--gd-color-text)",
 					}}
 				>
 					{title}

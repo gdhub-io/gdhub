@@ -3,7 +3,7 @@
 }
 
 .stepContent {
-  background-color: #fff;
+  background-color: var(--gd-color-surface);
   position: relative;
   // min-height: 500px;
   padding: 32px 64px;
@@ -15,7 +15,7 @@
 .stepHeader {
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--gd-color-border);
   
   @media (max-width: 768px) {
     flex-direction: column;
@@ -32,7 +32,7 @@
 
 .stepName {
   font-size: 18px;
-  color: #1890ff;
+  color: var(--gd-info-solid);
   margin-top: 0px !important;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .stepContent {
-  background-color: #fff;
+  background-color: var(--gd-color-surface);
   position: relative;
   padding: 24px 32px;
   line-height: 150%;

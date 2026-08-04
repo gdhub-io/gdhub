@@ -9,8 +9,10 @@ import styles from "./style.module.scss";
 export default function SettingsLayout({ children }: { children: ReactNode }) {
 	return (
 		<>
-			<ProtectedPageHeader title="Settings" />
+			{/* Inside `layout-background`, like every other page: outside it the
+			    header misses the content gutter and max-width and drifts left. */}
 			<div className="layout-background">
+				<ProtectedPageHeader title="Settings" />
 				<Layout>
 					<SettingsSider />
 					<Layout.Content className={styles.content}>{children}</Layout.Content>

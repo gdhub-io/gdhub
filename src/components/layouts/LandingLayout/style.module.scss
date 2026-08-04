@@ -32,7 +32,7 @@
 }
 
 .fixedHeader {
-  background-color: #0b0b0dee;
+  background-color: color-mix(in srgb, var(--gd-color-bg) 93%, transparent);
   backdrop-filter: blur(8px) saturate(200%);
 }
 
@@ -62,14 +62,14 @@
       font-weight: 700;
 
       &:hover {
-        border-color: #F15541;
+        border-color: var(--gd-color-accent);
       }
     }
   }
 
   :global(.ant-menu-item-selected) {
     a {
-      border-color: #F15541;
+      border-color: var(--gd-color-accent);
     }
   }
 }

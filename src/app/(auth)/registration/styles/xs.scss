@@ -1,6 +1,6 @@
 @media screen and (max-width: 575px) {
 	.container {
-		background-color: #fff;
+		background-color: var(--gd-color-surface);
 
 		:global(.login-box) {
 			background-color: unset;

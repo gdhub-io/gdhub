@@ -3,7 +3,7 @@
 
 .section {
   position: relative;
-  background-color: #0b0b0d;
+  background-color: var(--gd-color-bg);
   padding: calc(variables.$landing-header-height + 96px) 165px 96px;
   background-repeat: no-repeat;
   background-position-x: right;
@@ -18,21 +18,21 @@
 
 .heroMain {
   .heroButton {
-    color: #fff;
-    border-color: #F15541;
-    background-color: #F15541;
+    color: var(--gd-color-text);
+    border-color: var(--gd-color-accent);
+    background-color: var(--gd-color-accent);
     padding: 24px 62px;
     width: 100%;
     max-width: 236px;
     height: auto;
     font-size: 20px;
-    outline: 0px solid #333;
+    outline: 0px solid var(--gd-color-text-secondary);
 
     &:hover,
     &:active,
     &:focus {
-      background-color: #F15541 !important;
-      outline: 1px solid #F15541;
+      background-color: var(--gd-color-accent) !important;
+      outline: 1px solid var(--gd-color-accent);
       outline-offset: 3px;
     }
   }

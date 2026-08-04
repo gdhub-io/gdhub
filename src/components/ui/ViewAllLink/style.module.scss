@@ -1,0 +1,13 @@
+.link {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--gd-color-link);
+	white-space: nowrap;
+
+	&:hover {
+		color: var(--gd-color-accent-hover);
+	}
+}

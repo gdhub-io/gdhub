@@ -6,7 +6,7 @@
   }
 
   #nprogress .bar {
-    background: #F33921;
+    background: var(--gd-color-accent-hover);
 
     position: fixed;
     z-index: 1031;
@@ -45,8 +45,8 @@
     box-sizing: border-box;
 
     border: solid 2px transparent;
-    border-top-color: #F33921;
-    border-left-color: #F33921;
+    border-top-color: var(--gd-color-accent-hover);
+    border-left-color: var(--gd-color-accent-hover);
     border-radius: 50%;
 
     -webkit-animation: nprogress-spinner 400ms linear infinite;

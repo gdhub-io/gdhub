@@ -23,16 +23,44 @@ export const EmptyDevLog = ({ projectName }: { projectName?: string }) => {
 						width="120"
 						height="80"
 						rx="4"
-						fill="#f0f0f0"
-						stroke="#d9d9d9"
+						fill="var(--gd-color-border)"
+						stroke="var(--gd-color-border-strong)"
 						strokeWidth="2"
 					/>
-					<rect x="50" y="50" width="100" height="10" rx="2" fill="#d9d9d9" />
-					<rect x="50" y="70" width="80" height="6" rx="2" fill="#d9d9d9" />
-					<rect x="50" y="85" width="60" height="6" rx="2" fill="#d9d9d9" />
-					<rect x="50" y="100" width="40" height="6" rx="2" fill="#d9d9d9" />
-					<path d="M100 140 L110 130 L90 130 Z" fill="#1890ff" />
-					<circle cx="100" cy="150" r="10" fill="#1890ff" />
+					<rect
+						x="50"
+						y="50"
+						width="100"
+						height="10"
+						rx="2"
+						fill="var(--gd-color-border-strong)"
+					/>
+					<rect
+						x="50"
+						y="70"
+						width="80"
+						height="6"
+						rx="2"
+						fill="var(--gd-color-border-strong)"
+					/>
+					<rect
+						x="50"
+						y="85"
+						width="60"
+						height="6"
+						rx="2"
+						fill="var(--gd-color-border-strong)"
+					/>
+					<rect
+						x="50"
+						y="100"
+						width="40"
+						height="6"
+						rx="2"
+						fill="var(--gd-color-border-strong)"
+					/>
+					<path d="M100 140 L110 130 L90 130 Z" fill="var(--gd-info-solid)" />
+					<circle cx="100" cy="150" r="10" fill="var(--gd-info-solid)" />
 				</svg>
 			</div>
 			<Typography.Title level={4}>

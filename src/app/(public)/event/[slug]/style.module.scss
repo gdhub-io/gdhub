@@ -13,13 +13,13 @@
 } 
 
 .extraSep {
-  color: #ffffff54;
+  color: var(--gd-color-border);
   line-height: 1;
   font-size: 16px;
 }
 
 .extraText {
-  color: #fff;
+  color: var(--gd-color-surface);
   font-size: 16px;
   font-weight: 600;
   margin: 0;

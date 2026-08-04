@@ -88,7 +88,7 @@
   :global(blockquote) {
     margin: 16px 0;
     padding: 16px 24px;
-    border-left: 4px solid #1890ff;
+    border-left: 4px solid var(--gd-info-solid);
     background: rgba(24, 144, 255, 0.05);
     border-radius: 4px;
   }
@@ -114,7 +114,7 @@
   }
 
   :global(a) {
-    color: #1890ff;
+    color: var(--gd-info-solid);
     text-decoration: none;
 
     &:hover {

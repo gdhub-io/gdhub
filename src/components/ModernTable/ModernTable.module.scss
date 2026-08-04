@@ -45,22 +45,22 @@
 
   :global(.ant-table-tfoot > tr > td),
   :global(.ant-table-tfoot > tr > th) {
-    background: #eeeeee !important;
+    background: var(--gd-color-border) !important;
   }
 
   // Отключаем hover-эффекты для tfoot
   :global(.ant-table-tfoot > tr:hover > td),
   :global(.ant-table-tfoot > tr:hover > th) {
-    background: #eeeeee !important;
+    background: var(--gd-color-border) !important;
   }
 
   :global(.ant-table-tfoot .summary-row > td),
   :global(.ant-table-tfoot .summary-row > th) {
-    background: #eeeeee !important;
+    background: var(--gd-color-border) !important;
   }
   :global(.ant-table-tfoot .summary-row:hover > td),
   :global(.ant-table-tfoot .summary-row:hover > th) {
-    background: #eeeeee !important;
+    background: var(--gd-color-border) !important;
   }
 }
 

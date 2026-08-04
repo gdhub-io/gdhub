@@ -1,10 +1,17 @@
 import type { ProjectStatus } from "@gdhub-io/gdhub-prisma";
-import { IoAdd } from "@react-icons/all-files/io5/IoAdd";
-import { IconBriefcase, IconPlus } from "@tabler/icons-react";
+import {
+	IconAlertTriangle,
+	IconBriefcase,
+	IconChevronRight,
+	IconDeviceGamepad2,
+	IconPlus,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Empty, Flex, Row, Space, Spin, Typography } from "antd";
+import { Button, Col, Flex, Row, Space, Spin, Typography } from "antd";
 import axios from "axios";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 import type React from "react";
 import { useState } from "react";
 import {
@@ -12,14 +19,18 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { HubSectionRow } from "@/components/hub/HubSectionRow";
+import { EmptyState } from "@/components/ui";
 import GameCard from "../GameCard";
 import CreateProjectModal from "../modals/CreateProjectModal";
 import EmptyProjectsState from "./EmptyProjectsState";
+import sidebarStyles from "./sidebar.module.scss";
 import styles from "./styles.module.scss";
 
 const { Title } = Typography;
 
 type UserProjectCard = {
+	authorId?: string;
 	id: string;
 	name: string;
 	status: ProjectStatus;
@@ -37,7 +48,7 @@ type UserProjectCard = {
 };
 
 type MyProjectListProps = {
-	variant?: "default" | "hub";
+	variant?: "default" | "hub" | "hubSidebar";
 	/** Strip outer frame — used inside hub `mainSectionsBundle` */
 	bundleInset?: boolean;
 };
@@ -48,6 +59,13 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 }) => {
 	const [openCreateProjectModal, setOpenCreateProjectModal] = useState(false);
 	const { t } = useTranslate();
+	const currentUserId = useSession().data?.user?.id;
+
+	const authorLine = (project: UserProjectCard) => {
+		if (currentUserId && project.authorId === currentUserId)
+			return t("hub.my-projects.author-me", "Me");
+		return project.author?.name ?? null;
+	};
 
 	const {
 		data: projects,
@@ -97,10 +115,9 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 					</Button>
 					<Button
 						type="primary"
-						icon={<IconPlus size={16} aria-hidden />}
 						onClick={() => setOpenCreateProjectModal(true)}
 					>
-						{t("hub.new-project", "New Project")}
+						{t("hub.new-project", "New project")}
 					</Button>
 				</Space>
 			</HubSectionHeader>
@@ -142,11 +159,18 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 			) : undefined}
 
 			{error ? (
-				<Empty
-					description={t(
+				<EmptyState
+					icon={IconAlertTriangle}
+					title={t(
 						"page.hub.user-projects.load-error",
 						"Failed to load user projects",
 					)}
+					description={t(
+						"page.hub.user-projects.load-error-hint",
+						"Reload the page — if it keeps failing, the service may be down.",
+					)}
+					tint="var(--gd-danger-tint)"
+					ink="var(--gd-danger-on-tint)"
 				/>
 			) : undefined}
 
@@ -165,7 +189,7 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 							authorAvatar={project.author?.image ?? undefined}
 							status={project.status ?? undefined}
 							isUserProject={true}
-							variant={variant}
+							variant={variant === "hub" ? "hub" : "default"}
 						/>
 					</Col>
 				))}
@@ -177,6 +201,66 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 			/>
 		</>
 	);
+
+	if (variant === "hubSidebar") {
+		const rows = projects?.data ?? [];
+		return (
+			<section className={getHubSectionShellClass("sidebar")}>
+				<HubSectionHeader title={t("page.hub.user-projects", "My projects")}>
+					<Button
+						size="small"
+						type="primary"
+						onClick={() => setOpenCreateProjectModal(true)}
+					>
+						{t("hub.new-project", "New project")}
+					</Button>
+				</HubSectionHeader>
+
+				{rows.length ? (
+					<HubSectionBody flush>
+						<div className={sidebarStyles.list}>
+							{rows.map((project: UserProjectCard) => (
+								<HubSectionRow
+									key={project.id}
+									href={`/hub/projects/${project.slug}`}
+									title={project.name}
+									subtitle={authorLine(project)}
+									media={
+										<span
+											className={sidebarStyles.cover}
+											style={
+												project.coverImage
+													? { backgroundImage: `url(${project.coverImage})` }
+													: undefined
+											}
+											aria-hidden
+										/>
+									}
+								/>
+							))}
+						</div>
+					</HubSectionBody>
+				) : (
+					<HubSectionBody className={sidebarStyles.empty}>
+						<EmptyState
+							size="compact"
+							icon={IconDeviceGamepad2}
+							title={t("hub.my-projects.empty", "No projects yet")}
+							description={t(
+								"hub.my-projects.empty-hint",
+								"Start one and assemble the team it needs.",
+							)}
+						/>
+					</HubSectionBody>
+				)}
+
+				<CreateProjectModal
+					open={openCreateProjectModal}
+					onCancel={() => setOpenCreateProjectModal(false)}
+				/>
+			</section>
+		);
+	}
 
 	if (variant === "hub") {
 		const shell = getHubSectionShellClass(bundleInset ? "inset" : "main");

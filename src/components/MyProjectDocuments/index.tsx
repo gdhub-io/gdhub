@@ -1,5 +1,5 @@
 import type { TeamDocument, User } from "@gdhub-io/gdhub-prisma";
-import { HiOutlineTrash } from "@react-icons/all-files/hi/HiOutlineTrash";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -152,7 +152,7 @@ const MyProjectDocuments = () => {
 						}
 					>
 						<Button type="text" danger>
-							<HiOutlineTrash />
+							<IconTrash />
 						</Button>
 					</Popconfirm>
 				</Space>

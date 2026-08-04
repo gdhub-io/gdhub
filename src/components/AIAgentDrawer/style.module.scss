@@ -21,7 +21,7 @@ $drawer-border-radius: 16px;
 .agentDrawerInputWrapper {
   align-items: flex-end;
   border-radius: 28px;
-  box-shadow: 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0px 4px 4px 0px #0000000a, 0px 0px 1px 0px #0000009e;
+  box-shadow: var(--gd-elevation-e2);
 }
 
 .agentDrawerInputButton {
@@ -68,12 +68,12 @@ $drawer-border-radius: 16px;
 }
 
 .messageHuman .messageContent {
-  background: #fff1f0; /* light red */
+  background: var(--gd-danger-tint); /* light red */
   border-top-left-radius: 4px;
 }
 
 .messageOther .messageContent {
-  background: #f5f5f5; /* light gray */
+  background: var(--gd-color-surface-sunken); /* light gray */
   border-top-left-radius: 4px;
 }
 
@@ -85,21 +85,21 @@ $drawer-border-radius: 16px;
 
 .messageAuthor {
   font-size: 11px;
-  color: #999;
+  color: var(--gd-color-text-tertiary);
   padding-left: 4px;
   text-transform: lowercase;
 }
 
 .emptyMessages {
-  color: #999;
+  color: var(--gd-color-text-tertiary);
 }
 
 .thinking {
-  color: #999;
+  color: var(--gd-color-text-tertiary);
   margin-top: 8px;
 }
 
 .errorText {
-  color: #ff4d4f;
+  color: var(--gd-danger-solid);
   margin-top: 8px;
 }

@@ -4,9 +4,10 @@ import { FormatIcu } from "@tolgee/format-icu";
 import { Tolgee, TolgeeProvider } from "@tolgee/react";
 import { ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
-import type { ReactElement } from "react";
-import { geistFont } from "../src/assets/fonts/geist";
-import { appThemeConfig } from "../src/config/theme";
+import type { CSSProperties, ReactElement } from "react";
+import { productTheme } from "../src/config/design/antd";
+import { designCssVariables } from "../src/config/design/css";
+import { fontClassName, uiFont } from "../src/config/design/fonts";
 // App global styles (reset, CSS layers, variables) so components match the app.
 import "../src/styles/globals.scss";
 // Override the app's dark html/body background with a light canvas for stories.
@@ -30,6 +31,19 @@ const queryClient = new QueryClient({
 	},
 });
 
+// The root layout puts the `--gd-*` tokens, both font variables and the theme
+// flag on <body>. They go on <body> here too rather than on the decorator,
+// because antd portals its overlays (dropdown, select, modal, tooltip) to the
+// end of <body> — outside any decorator, where the tokens would not reach and
+// the overlay would fall back to an unstyled font on a colourless surface.
+if (typeof document !== "undefined") {
+	for (const [name, value] of Object.entries(designCssVariables())) {
+		document.body.style.setProperty(name, value);
+	}
+	document.body.classList.add(...fontClassName.split(" ").filter(Boolean));
+	document.body.dataset.gdTheme = "product";
+}
+
 const preview: Preview = {
 	parameters: {
 		controls: {
@@ -44,11 +58,17 @@ const preview: Preview = {
 		nextjs: { appDirectory: true },
 	},
 	decorators: [
+		// The root layout puts the `--gd-*` tokens and both font variables on
+		// <body>; without them here every SCSS module reading `var(--gd-…)`
+		// resolves to nothing — direction tints, status dots and surfaces all
+		// silently disappear in the canvas.
 		(Story: () => ReactElement) => (
 			<div
-				className={geistFont.className}
+				className={fontClassName}
+				data-gd-theme="product"
 				style={{
-					fontFamily: geistFont.style.fontFamily,
+					...(designCssVariables() as CSSProperties),
+					fontFamily: uiFont.style.fontFamily,
 					background: "#fff",
 					minHeight: "100vh",
 				}}
@@ -57,7 +77,10 @@ const preview: Preview = {
 				<SessionProvider session={null}>
 					<QueryClientProvider client={queryClient}>
 						<TolgeeProvider tolgee={tolgee} fallback={null}>
-							<ConfigProvider theme={appThemeConfig}>
+							{/* The canvas is the design system's reference, so it runs the
+							    token theme rather than the legacy one the public shells
+							    still use. */}
+							<ConfigProvider theme={productTheme}>
 								<Story />
 							</ConfigProvider>
 						</TolgeeProvider>

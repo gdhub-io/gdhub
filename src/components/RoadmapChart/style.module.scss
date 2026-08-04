@@ -11,7 +11,7 @@
 .centerLine {
   width: 100%;
   height: 2px;
-  background-color: #000;
+  background-color: var(--gd-neutral-950);
   position: absolute;
   top: 50%;
 
@@ -31,7 +31,7 @@
 
 
 .dateContainer {
-  border-left: 2px solid #000;
+  border-left: 2px solid var(--gd-neutral-950);
   margin-bottom: 4px;
   z-index: 0;
 }
@@ -61,7 +61,7 @@
   left: 0;
   width: 0%;
   height: 100%;
-  background: repeating-linear-gradient(135deg, #35aa3d33, #35aa3d33 3px, #00000000 3px, #00000000 6px);
+  background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--gd-success-solid) 20%, transparent), color-mix(in srgb, var(--gd-success-solid) 20%, transparent) 3px, transparent 3px, transparent 6px);
   height: calc(50% - 5px);
 }
 
@@ -71,7 +71,7 @@
   right: -2px;
   width: 2px;
   height: calc(100% + 10px);
-  background-color: #35aa3d;
+  background-color: var(--gd-success-solid);
   z-index: 1;
 }
 
@@ -79,7 +79,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #36aa3d;
+  color: var(--gd-success-solid);
   font-size: 10px;
   white-space: nowrap;
   position: absolute;

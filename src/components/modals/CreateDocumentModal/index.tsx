@@ -1,5 +1,5 @@
 import type { Project } from "@gdhub-io/gdhub-prisma";
-import { PiFileDuotone } from "@react-icons/all-files/pi/PiFileDuotone";
+import { IconFile } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Form, Input, Modal, message, Select, Spin } from "antd";
@@ -92,7 +92,7 @@ const CreateDocumentModal = ({
 			centered
 			title={
 				<Flex align="center" gap={8}>
-					<PiFileDuotone size={32} />
+					<IconFile size={32} />
 					{t("modal.create-document.title", "Add new team document")}
 				</Flex>
 			}

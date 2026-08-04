@@ -11,7 +11,7 @@
 .expertCard {
   position: relative;
   cursor: pointer;
-  // background-color: #FFF4CF;
+  // background-color: var(--gd-warning-tint);
   padding: 12px 12px 40px 24px;
   height: 100%;
   min-height: 214px;
@@ -37,14 +37,14 @@
 
     .projectName {
       padding: 8px 12px;
-      border: 1px solid #333;
+      border: 1px solid var(--gd-color-text);
     }
   }
 
   .validDate {
     text-align: right;
     font-size: 12px;
-    color: #17132C;
+    color: var(--gd-color-text);
   }
 
   .linkBtn {
@@ -57,10 +57,10 @@
 }
 
 .expertCard {
-  background: #fff;
+  background: var(--gd-color-surface);
   padding: 8px;
   border-radius: 12px;
-  border: 1px solid #d1d1d1;
+  border: 1px solid var(--gd-color-border-strong);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -82,7 +82,7 @@
     .expertCardAvatar {
       display: block;
       flex: none;
-      background-color: #ffffff;
+      background-color: var(--gd-color-surface);
       background-size: cover;
       background-position: center;
       border-radius: 8px;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { IconArrowLeft } from "@tabler/icons-react";
 import {
 	Breadcrumb,
 	type BreadcrumbProps,
@@ -45,7 +45,9 @@ export function ProtectedPageHeader({
 		<div className={styles.pageHeader}>
 			{breadcrumbs?.length ? (
 				<Breadcrumb
-					separator={<span style={{ color: "#00000033" }}>/</span>}
+					separator={
+						<span style={{ color: "var(--gd-color-text-tertiary)" }}>/</span>
+					}
 					items={breadcrumbs}
 					className={styles.breadcrumb}
 				/>
@@ -58,14 +60,14 @@ export function ProtectedPageHeader({
 							<Link href={backButtonUrl}>
 								<Button
 									type="text"
-									icon={<ArrowLeftOutlined />}
+									icon={<IconArrowLeft />}
 									style={{ padding: 0 }}
 								/>
 							</Link>
 						) : (
 							<Button
 								type="text"
-								icon={<ArrowLeftOutlined />}
+								icon={<IconArrowLeft />}
 								onClick={() => router.back()}
 								style={{ padding: 0 }}
 							/>

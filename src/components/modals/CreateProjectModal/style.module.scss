@@ -1,0 +1,19 @@
+// The error sits under the label, not under the checkbox: antd renders it at
+// the field's left edge, which lands it under the box and out of line with the
+// sentence it is about.
+.consentItem {
+	:global(.ant-form-item-explain) {
+		// Checkbox box (18px) plus antd's label gap (8px), so the message starts
+		// on the same pixel as the sentence above it.
+		padding-left: 26px;
+	}
+}
+
+.link {
+	color: var(--gd-color-link);
+	text-decoration: underline;
+
+	&:hover {
+		color: var(--gd-color-accent);
+	}
+}

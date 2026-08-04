@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import PublicHeaderBg from "@/assets/images/public-header-bg.png";
 import { MainHeader } from "@/components/MainHeader";
+import { InverseBand } from "@/components/ui/InverseBand";
 import styles from "./style.module.scss";
 
 const { Header } = Layout;
@@ -44,29 +45,34 @@ export function PublicPageHeader({
 		: `url(${PublicHeaderBg.src})`;
 
 	return (
-		<Header
-			className={styles.header}
-			style={{ backgroundImage: background, position: "relative" }}
-		>
-			<MainHeader />
-			<div className={styles.titleContainer}>
-				<Flex align="start" gap={8} vertical>
-					{(!!backTo || !!extra) && (
-						<Flex className={styles.extra} align="center" gap={8}>
-							{!!backTo && (
-								<Link href={backTo.href} className={styles.backLink}>
-									<IconArrowLeft size={16} />
-									<span>{backTo.label}</span>
-								</Link>
-							)}
-							{extra}
-						</Flex>
-					)}
-					{!!title && <Title className={styles.title}>{title}</Title>}
-				</Flex>
-				{!!subTitle && <div className={styles.subTitle}>{subTitle}</div>}
-				{!!subLine && subLine}
-			</div>
-		</Header>
+		// The hero is artwork-dark, so everything inside it — the nav, the CTA —
+		// has to read against a dark surface. `transparent` keeps the background
+		// image visible while the roles and the antd theme flip underneath.
+		<InverseBand transparent>
+			<Header
+				className={styles.header}
+				style={{ backgroundImage: background, position: "relative" }}
+			>
+				<MainHeader />
+				<div className={styles.titleContainer}>
+					<Flex align="start" gap={8} vertical>
+						{(!!backTo || !!extra) && (
+							<Flex className={styles.extra} align="center" gap={8}>
+								{!!backTo && (
+									<Link href={backTo.href} className={styles.backLink}>
+										<IconArrowLeft size={16} />
+										<span>{backTo.label}</span>
+									</Link>
+								)}
+								{extra}
+							</Flex>
+						)}
+						{!!title && <Title className={styles.title}>{title}</Title>}
+					</Flex>
+					{!!subTitle && <div className={styles.subTitle}>{subTitle}</div>}
+					{!!subLine && subLine}
+				</div>
+			</Header>
+		</InverseBand>
 	);
 }

@@ -1,0 +1,131 @@
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import {
+	IconCalendar,
+	IconChecks,
+	IconCode,
+	IconPlus,
+} from "@tabler/icons-react";
+import { Button } from "antd";
+import { WORK_DIRECTIONS } from "@/components/DirectionBadge";
+import { EmptyState } from "./EmptyState";
+import { IconTile } from "./IconTile";
+import { SectionHeading } from "./SectionHeading";
+import { StatusDot, type StatusTone } from "./StatusDot";
+import { ViewAllLink } from "./ViewAllLink";
+
+const meta: Meta = {
+	title: "Design system/Primitives",
+	parameters: { layout: "padded", controls: { disable: true } },
+};
+
+export default meta;
+
+const card: React.CSSProperties = {
+	background: "var(--gd-color-surface)",
+	borderRadius: "var(--gd-radius-card)",
+	padding: 20,
+};
+
+/** Tinted tiles carry the direction colour; the chrome around them stays grey. */
+export const Tiles: StoryObj = {
+	render: () => (
+		<div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+			{WORK_DIRECTIONS.slice(0, 8).map((d) => (
+				<IconTile key={d.slug} icon={d.icon} direction={d.slug} />
+			))}
+			<IconTile icon={IconPlus} size="sm" />
+			<IconTile icon={IconCalendar} size="lg" />
+		</div>
+	),
+};
+
+/** Statuses repeat down a list, so they are a dot and a word — never a filled pill. */
+export const Statuses: StoryObj = {
+	render: () => (
+		<div style={{ display: "flex", gap: 24 }}>
+			{(
+				[
+					["success", "Paid out"],
+					["warning", "Payment due"],
+					["danger", "Expired"],
+					["info", "In review"],
+					["neutral", "Draft"],
+				] as [StatusTone, string][]
+			).map(([tone, label]) => (
+				<StatusDot key={tone} tone={tone} label={label} />
+			))}
+		</div>
+	),
+};
+
+export const Heading: StoryObj = {
+	render: () => (
+		<div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+			<SectionHeading
+				title="Vacancies and applicants"
+				action={<ViewAllLink href="/hub/jobs" label="View all" />}
+			/>
+			<SectionHeading
+				level={3}
+				title="Team members"
+				description="Everyone with access to this project."
+			/>
+		</div>
+	),
+};
+
+export const Empty: StoryObj = {
+	render: () => (
+		<div style={card}>
+			<EmptyState
+				icon={IconChecks}
+				title="You're all caught up"
+				description="When an application or a contract needs you, it shows up here."
+			/>
+		</div>
+	),
+};
+
+/** The rules working together — the layout the guidelines describe. */
+export const Composed: StoryObj = {
+	render: () => (
+		<div
+			style={{
+				background: "var(--gd-color-bg)",
+				padding: 24,
+				display: "flex",
+				flexDirection: "column",
+				gap: 16,
+			}}
+		>
+			<SectionHeading
+				title="Open positions"
+				action={<ViewAllLink href="/hub/jobs" label="View all" />}
+			/>
+			<div style={{ ...card, padding: 0 }}>
+				{[
+					["development", "Unity Gameplay Programmer", "info", "In review"],
+					["2d-art-animation", "Character Artist", "success", "Open"],
+					["technical-art", "Technical Artist", "warning", "Closing"],
+				].map(([slug, title, tone, status]) => (
+					<div
+						key={title}
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: 14,
+							padding: "12px 20px",
+						}}
+					>
+						<IconTile icon={IconCode} direction={slug} />
+						<span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>
+							{title}
+						</span>
+						<StatusDot tone={tone as StatusTone} label={status} />
+					</div>
+				))}
+			</div>
+			<Button type="primary">Post a vacancy</Button>
+		</div>
+	),
+};

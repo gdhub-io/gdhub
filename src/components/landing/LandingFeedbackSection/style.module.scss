@@ -2,7 +2,7 @@
 @use '../../../styles/variables.scss';
 
 .section {
-  background-color: #F15541;
+  background-color: var(--gd-color-accent);
   position: relative;
   padding: 96px 165px;
   padding-bottom: 156px;
@@ -15,7 +15,7 @@
   max-width: variables.$wrapper-width;
 
   .preTitle {
-    color: #FFBB55;
+    color: var(--gd-color-accent-alt);
     font-size: 16px;
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -28,7 +28,7 @@
   }
 
   .subTitle {
-    color: #FFFDFC;
+    color: var(--gd-color-text);
     font-family: var(--second-font-family);
     font-style: italic;
     font-size: 18px;
@@ -47,23 +47,23 @@
   .content {
 
     :global(.ant-btn) {
-      outline: 0px solid #111;
+      outline: 0px solid var(--gd-color-text-inverse);
 
       &:hover,
       &:active,
       &:focus {
-        color: #fff;
-        outline: 2px solid #111;
+        color: var(--gd-color-text);
+        outline: 2px solid var(--gd-color-text-inverse);
         outline-offset: 2px;
       }
     }
 
     .feedbackCard {
-      background-color: #FFFDFC;
-      color: #111 !important;
+      background-color: var(--gd-color-surface-inverse);
+      color: var(--gd-color-text-inverse) !important;
       border: none;
       border-radius: 0px;
-      box-shadow: 0 0 30px -10px #33170D;
+      box-shadow: 0 0 30px -10px var(--gd-amber-900);
 
       :global(.ant-card-body) {
         padding: 40px;
@@ -75,7 +75,7 @@
       }
 
       :global(.ant-card-meta-detail>*) {
-        color: #111 !important;
+        color: var(--gd-color-text-inverse) !important;
       }
     }
 
@@ -102,7 +102,7 @@
 
       .feedbackDot {
         :global(li>button) {
-          background-color: #fff;
+          background-color: var(--gd-color-surface-inverse);
           width: 8px;
           height: 8px;
           border-radius: 8px;
@@ -123,11 +123,11 @@
     }
 
     .feedbackSlide {
-      background-color: #FFFDFC;
-      color: #111 !important;
+      background-color: var(--gd-color-surface-inverse);
+      color: var(--gd-color-text-inverse) !important;
       border: none;
       border-radius: 0px;
-      box-shadow: 0 0 30px -10px #33170D;
+      box-shadow: 0 0 30px -10px var(--gd-amber-900);
 
       :global(.ant-card-body) {
         padding: 24px;
@@ -139,7 +139,7 @@
       }
 
       :global(.ant-card-meta-detail>*) {
-        color: #111 !important;
+        color: var(--gd-color-text-inverse) !important;
       }
     }
   }
@@ -147,7 +147,7 @@
   .readMoreBtn {
     position: absolute;
     bottom: 90px;
-    background: #000;
+    background: var(--gd-neutral-950);
     width: 140px;
     left: calc(50% - 70px);
     outline: none !important;
@@ -155,8 +155,8 @@
 
     &:hover,
     &:active {
-      background-color: #000 !important;
-      box-shadow: 0 0 20px -6px #000;
+      background-color: var(--gd-neutral-950) !important;
+      box-shadow: 0 0 20px -6px var(--gd-neutral-950);
     }
   }
 }

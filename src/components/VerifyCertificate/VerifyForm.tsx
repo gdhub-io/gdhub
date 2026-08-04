@@ -45,7 +45,9 @@ export const VerifyForm = ({
 					<Flex gap={8}>
 						<Input
 							size="large"
-							prefix={<IconHash size={16} color="#a1a1aa" />}
+							prefix={
+								<IconHash size={16} color="var(--gd-color-text-tertiary)" />
+							}
 							placeholder={t("verify.form.placeholder", "GDH-XXXXXX")}
 							value={number}
 							onChange={(e) => setNumber(e.target.value)}
@@ -73,7 +75,11 @@ export const VerifyForm = ({
 						"verify.form.hint",
 						"You can also open gdhub.io/verify/<NUMBER> to see the result directly.",
 					)}
-					style={{ borderRadius: 10, background: "#fafafa", border: "none" }}
+					style={{
+						borderRadius: 10,
+						background: "var(--gd-neutral-25)",
+						border: "none",
+					}}
 				/>
 			</Form>
 		</Card>

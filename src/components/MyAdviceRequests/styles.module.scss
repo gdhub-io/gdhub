@@ -17,7 +17,7 @@
 
 .requestCard {
   background: transparent;
-  border: 1px solid #f4f4f5;
+  border: 1px solid var(--gd-color-surface-sunken);
   border-radius: 12px;
   padding: 16px;
 }
@@ -143,5 +143,5 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #888;
+  color: var(--gd-color-text-secondary);
 }

@@ -158,7 +158,12 @@ const AddEventMembersModal: React.FC<AddEventMembersModalProps> = ({
 									<div>
 										<div>{data.label}</div>
 										{data.email && data.email !== data.label && (
-											<div style={{ fontSize: 12, color: "#888" }}>
+											<div
+												style={{
+													fontSize: 12,
+													color: "var(--gd-color-text-secondary)",
+												}}
+											>
 												{data.email}
 											</div>
 										)}

@@ -12,7 +12,7 @@
 }
 
 .noConnectionContainer {
-	color: #fff;
+	color: var(--gd-color-text);
 	text-align: center;
 	display: flex;
 	flex-direction: column;
@@ -23,7 +23,7 @@
 	padding: 16px;
 
 	p {
-		color: #999;
+		color: var(--gd-color-text-tertiary);
 		text-align: center;
 		font-size: 16px;
 		max-width: 600px;

@@ -18,7 +18,7 @@
   }
 
   :global(.ant-typography) {
-    color: #000;
+    color: var(--gd-color-text);
   }
 
   :global(.login-box) {
@@ -38,7 +38,7 @@
   }
 
   :global(.login-form p.form-title) {
-    color: #333333;
+    color: var(--gd-color-text);
     font-size: 42px;
     font-weight: bold;
     margin-bottom: 0;
@@ -77,22 +77,22 @@
   border-bottom: 1px solid transparent;
 
   &:hover {
-    color: #F33921;
-    border-bottom: 1px solid #F33921;
+    color: var(--gd-color-accent-hover);
+    border-bottom: 1px solid var(--gd-color-accent-hover);
   }
 
 }
 
 .policyLink {
-  color: #f15541;
+  color: var(--gd-color-accent);
   text-decoration: underline;
   text-decoration-color: rgba(241, 85, 65, 0.4);
   text-underline-offset: 2px;
   transition: text-decoration-color 0.15s ease;
 
   &:hover {
-    color: #f15541;
-    text-decoration-color: #f15541;
+    color: var(--gd-color-accent);
+    text-decoration-color: var(--gd-color-accent);
   }
 }
 

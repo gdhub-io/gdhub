@@ -132,7 +132,7 @@ const EventDefaultView = ({
 							<div
 								key={item.id || idx}
 								style={{
-									background: "#fdfdfd",
+									background: "var(--gd-color-surface)",
 									paddingInline: 16,
 									borderRadius: 8,
 									paddingBlock: 16,
@@ -154,7 +154,7 @@ const EventDefaultView = ({
 												style={{
 													fontWeight: 600,
 													fontSize: 18,
-													color: "#222",
+													color: "var(--gd-color-text)",
 												}}
 											>
 												{item.title ||
@@ -165,7 +165,7 @@ const EventDefaultView = ({
 												style={{
 													fontWeight: 600,
 													fontSize: 15,
-													color: "#222",
+													color: "var(--gd-color-text)",
 													whiteSpace: "nowrap",
 												}}
 											>
@@ -211,8 +211,8 @@ const EventDefaultView = ({
 																src={speakerAvatar}
 																style={{
 																	minWidth: 64,
-																	background: "#eee",
-																	color: "#222",
+																	background: "var(--gd-color-border)",
+																	color: "var(--gd-color-text)",
 																	fontSize: 18,
 																}}
 															>
@@ -236,7 +236,12 @@ const EventDefaultView = ({
 																	</span>
 																)}
 																{speakerSummary && (
-																	<span style={{ fontSize: 13, color: "#888" }}>
+																	<span
+																		style={{
+																			fontSize: 13,
+																			color: "var(--gd-color-text-secondary)",
+																		}}
+																	>
 																		{speakerSummary}
 																	</span>
 																)}
@@ -248,7 +253,7 @@ const EventDefaultView = ({
 													<span
 														style={{
 															marginLeft: 8,
-															color: "#888",
+															color: "var(--gd-color-text-secondary)",
 															fontSize: 13,
 														}}
 													>
@@ -263,7 +268,7 @@ const EventDefaultView = ({
 												<Button
 													href={item.url}
 													target="_blank"
-													className="black-btn"
+													type="primary"
 													icon={
 														<IconExternalLink
 															size={18}
@@ -361,7 +366,7 @@ const EventDefaultView = ({
 							width: "100%",
 							maxWidth: 600,
 							aspectRatio: "4/5",
-							boxShadow: "0 4px 32px #0002",
+							boxShadow: "var(--gd-elevation-e3)",
 							borderRadius: 18,
 							overflow: "hidden",
 						}}

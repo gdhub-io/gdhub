@@ -47,7 +47,7 @@
 }
 
 .postCard {
-  background: #fff;
+  background: var(--gd-color-surface);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -159,7 +159,7 @@
   :global(blockquote) {
     margin: 16px 0;
     padding: 16px 24px;
-    border-left: 4px solid #1890ff;
+    border-left: 4px solid var(--gd-info-solid);
     background: rgba(24, 144, 255, 0.05);
     border-radius: 4px;
   }
@@ -185,7 +185,7 @@
   }
 
   :global(a) {
-    color: #1890ff;
+    color: var(--gd-info-solid);
     text-decoration: none;
 
     &:hover {
@@ -247,7 +247,7 @@
   width: 100%;
   aspect-ratio: 16/9;
   position: relative;
-  background: #000;
+  background: var(--gd-color-text);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 24px;
@@ -262,7 +262,7 @@
 .defaultCover {
   width: 100%;
   height: 300px;
-  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  background: linear-gradient(135deg, var(--gd-info-solid) 0%, var(--gd-color-link) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -315,7 +315,7 @@
 
     .anticon {
       font-size: 24px;
-      color: #fff;
+      color: var(--gd-color-surface);
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       opacity: 0;
       transition: opacity 0.3s;

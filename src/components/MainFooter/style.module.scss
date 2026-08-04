@@ -2,9 +2,9 @@
 @use "../../styles/variables.scss";
 
 .footer {
-	background-color: #0b0b0d;
+	background-color: var(--gd-neutral-950);
 	padding: 28px clamp(16px, 5vw, 70px) 16px;
-	color: #fffdfc;
+	color: var(--gd-color-text);
 }
 
 .container {
@@ -40,7 +40,7 @@
 	margin: 0;
 	font-size: 13px;
 	line-height: 1.5;
-	color: #fffdfc;
+	color: var(--gd-color-text);
 }
 
 .nav {
@@ -75,13 +75,13 @@
 .link {
 	font-size: 14px;
 	font-weight: 400;
-	color: #fffdfc;
+	color: var(--gd-color-text);
 	border-bottom: 1px solid transparent;
 	transition: border-color 0.15s ease;
 
 	&:hover {
-		color: #fffdfc;
-		border-bottom-color: #fffdfc;
+		color: var(--gd-color-text);
+		border-bottom-color: var(--gd-color-text);
 	}
 }
 
@@ -96,7 +96,7 @@
 	margin: 0;
 	text-align: center;
 	font-size: 14px;
-	color: #9f9f9f;
+	color: var(--gd-color-text-tertiary);
 }
 
 @include meta.load-css("styles/xs.scss"); // screen < 576px
