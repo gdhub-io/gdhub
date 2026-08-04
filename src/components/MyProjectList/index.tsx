@@ -222,7 +222,11 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 							{rows.map((project: UserProjectCard) => (
 								<HubSectionRow
 									key={project.id}
-									href={`/hub/projects/${project.slug}`}
+									// Everything in this list is a project the viewer works on —
+									// authored or joined as a team member — so every row opens the
+									// workspace. There is no /hub/projects/<slug> route; linking
+									// there is what 404'd.
+									href={`/user/project/${project.slug}`}
 									title={project.name}
 									subtitle={authorLine(project)}
 									media={
