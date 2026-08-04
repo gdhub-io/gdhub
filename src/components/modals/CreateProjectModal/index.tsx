@@ -1,5 +1,4 @@
 import type { Project } from "@gdhub-io/gdhub-prisma";
-import { PiRocketDuotone } from "@react-icons/all-files/pi/PiRocketDuotone";
 import { useMutation } from "@tanstack/react-query";
 import { T, useTolgee } from "@tolgee/react";
 import { Checkbox, Flex, Form, Input, Modal, message, Spin } from "antd";
@@ -44,8 +43,15 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 
 		if (!data) return;
 
+		// Both confirmations are gates, not project data.
+		const {
+			agree: _agree,
+			understandsNotAi: _understandsNotAi,
+			...payload
+		} = data;
+
 		try {
-			const project = await createProject(data);
+			const project = await createProject(payload);
 
 			// Advisory AI warnings (e.g. a weak description) — shown, not blocking.
 			const warnings = (project.data as any)?.validation?.warnings ?? [];
@@ -87,12 +93,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 	return (
 		<Modal
 			centered
-			title={
-				<Flex align="center" gap={8}>
-					<PiRocketDuotone size={32} />
-					{t("modal.create-project.title", "Create new game project")}
-				</Flex>
-			}
+			title={t("modal.create-project.title", "Create new game project")}
 			width={640}
 			destroyOnHidden
 			mask={{ closable: false }}
@@ -141,8 +142,42 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 						/>
 					</Form.Item>
 
+					{/* People have arrived here expecting to describe a game and have one
+					    generated. Saying so plainly, before the requirements checkbox,
+					    is cheaper than the support conversation afterwards. It gates
+					    the form and is deliberately not persisted. */}
+					<Form.Item
+						name="understandsNotAi"
+						className={styles.consentItem}
+						valuePropName="checked"
+						wrapperCol={{ xs: { span: 24, offset: 0 } }}
+						rules={[
+							{
+								validator: (_, value) =>
+									value
+										? Promise.resolve()
+										: Promise.reject(
+												new Error(
+													t(
+														"modal.create-project.field.not-ai.error",
+														"Please confirm you are making the game yourself",
+													),
+												),
+											),
+							},
+						]}
+					>
+						<Checkbox>
+							{t(
+								"modal.create-project.field.not-ai.label",
+								"I confirm that I am making this game myself or with my team, and I understand this form is not an AI prompt — describing a game here will not generate one :)",
+							)}
+						</Checkbox>
+					</Form.Item>
+
 					<Form.Item
 						name="agree"
+						className={styles.consentItem}
 						valuePropName="checked"
 						wrapperCol={{
 							xs: {
@@ -166,7 +201,7 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 							},
 						]}
 					>
-						<Checkbox className={styles.checkbox}>
+						<Checkbox>
 							{
 								<T
 									keyName="modal.create-project.field.agree.label"

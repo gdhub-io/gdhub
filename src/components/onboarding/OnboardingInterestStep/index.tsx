@@ -3,10 +3,12 @@ import type {
 	GameGenre,
 	GameSetting,
 } from "@gdhub-io/gdhub-prisma";
-import { LuFeather } from "@react-icons/all-files/lu/LuFeather";
-import { LuGraduationCap } from "@react-icons/all-files/lu/LuGraduationCap";
-import { LuUsers } from "@react-icons/all-files/lu/LuUsers";
-import { PiWarningCircleLight } from "@react-icons/all-files/pi/PiWarningCircleLight";
+import {
+	IconAlertCircle,
+	IconFeather,
+	IconSchool,
+	IconUsers,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -37,7 +39,7 @@ const { Paragraph, Title, Text } = Typography;
 const interestOptions = [
 	{
 		value: PrimaryInterest.Author,
-		icon: LuFeather,
+		icon: IconFeather,
 		titleKey: "onboarding.interests.wantToBe.author",
 		titleDefault: "Author",
 		subtitleKey: "onboarding.interests.author.description",
@@ -45,7 +47,7 @@ const interestOptions = [
 	},
 	{
 		value: PrimaryInterest.Specialist,
-		icon: LuUsers,
+		icon: IconUsers,
 		titleKey: "onboarding.interests.wantToBe.specialist",
 		titleDefault: "Specialist",
 		subtitleKey: "onboarding.interests.specialist.description",
@@ -53,7 +55,7 @@ const interestOptions = [
 	},
 	{
 		value: PrimaryInterest.Mentor,
-		icon: LuGraduationCap,
+		icon: IconSchool,
 		titleKey: "onboarding.interests.wantToBe.mentor",
 		titleDefault: "Mentor",
 		subtitleKey: "onboarding.interests.mentor.description",
@@ -164,7 +166,7 @@ export const OnboardingInterestStep = ({
 							{t("onboarding.interests.title", "Interests")}
 						</Title>
 						<Flex align="center" gap={4}>
-							<PiWarningCircleLight
+							<IconAlertCircle
 								size={20}
 								color="var(--gd-color-text-secondary)"
 								style={{ height: 20 }}

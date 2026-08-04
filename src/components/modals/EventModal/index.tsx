@@ -1,6 +1,5 @@
 import type { WorkDirection } from "@gdhub-io/gdhub-prisma";
-import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
-import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
+import { IconCalendarCheck, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
@@ -274,12 +273,12 @@ const EventModal: React.FC<EventModalProps> = ({
 			title={
 				eventId ? (
 					<Space>
-						<FaRegCalendarCheck size={24} />
+						<IconCalendarCheck size={24} />
 						{t("event.modal.edit", "Edit event")}
 					</Space>
 				) : (
 					<Space>
-						<FaRegCalendarCheck size={24} />
+						<IconCalendarCheck size={24} />
 						{t("event.modal.title", "Add {eventType}", {
 							eventType: eventLabel(eventType),
 						})}
@@ -356,7 +355,7 @@ const EventModal: React.FC<EventModalProps> = ({
 												type="primary"
 												className="remove-cover-btn"
 												onClick={handleImageDelete}
-												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+												icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
 											/>
 										</Popover>
 									</div>
@@ -409,7 +408,7 @@ const EventModal: React.FC<EventModalProps> = ({
 												type="primary"
 												className="remove-cover-btn"
 												onClick={handleImageDelete}
-												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+												icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
 											/>
 										</Popover>
 									</div>

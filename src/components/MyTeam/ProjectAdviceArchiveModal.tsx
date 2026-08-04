@@ -1,8 +1,10 @@
 import type { AdviceRequest, Profile, User } from "@gdhub-io/gdhub-prisma";
-import { FaBan } from "@react-icons/all-files/fa/FaBan";
-import { MdCancel } from "@react-icons/all-files/md/MdCancel";
-import { MdCheckCircle } from "@react-icons/all-files/md/MdCheckCircle";
-import { MdFiberManualRecord } from "@react-icons/all-files/md/MdFiberManualRecord";
+import {
+	IconBan,
+	IconCircleCheck,
+	IconCircleX,
+	IconPointFilled,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Modal, Tooltip, theme } from "antd";
@@ -61,7 +63,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 				switch (status) {
 					case "Approved":
 						icon = (
-							<MdCheckCircle
+							<IconCircleCheck
 								style={{ color: "var(--gd-success-solid)", fontSize: 22 }}
 							/>
 						);
@@ -69,7 +71,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 						break;
 					case "Rejected":
 						icon = (
-							<MdCancel
+							<IconCircleX
 								style={{ color: "var(--gd-danger-solid)", fontSize: 22 }}
 							/>
 						);
@@ -77,7 +79,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 						break;
 					case "Closed":
 						icon = (
-							<FaBan
+							<IconBan
 								style={{ color: themeToken.colorTextSecondary, fontSize: 16 }}
 							/>
 						);
@@ -85,7 +87,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 						break;
 					default:
 						icon = (
-							<MdFiberManualRecord
+							<IconPointFilled
 								style={{ color: "var(--gd-info-solid)", fontSize: 8 }}
 							/>
 						);

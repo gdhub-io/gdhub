@@ -1,6 +1,4 @@
-import { AiOutlineHistory } from "@react-icons/all-files/ai/AiOutlineHistory";
-import { AiOutlineInfoCircle } from "@react-icons/all-files/ai/AiOutlineInfoCircle";
-import { AiOutlineSetting } from "@react-icons/all-files/ai/AiOutlineSetting";
+import { IconHistory, IconInfoCircle, IconSettings } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Grid, Modal, Popover, Space, Typography } from "antd";
 import { useSession } from "next-auth/react";
@@ -93,7 +91,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 							trigger="hover"
 							placement="right"
 						>
-							<AiOutlineInfoCircle
+							<IconInfoCircle
 								size={16}
 								style={{
 									cursor: "pointer",
@@ -114,15 +112,15 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 							</Button>
 						)}
 						<Button
-							icon={<AiOutlineHistory />}
+							icon={<IconHistory />}
 							onClick={() => setTransactionsModalVisible(true)}
 							type="text"
 						></Button>
 						{canManageEquity &&
 							(screen.xs ? (
-								<Button onClick={onManageEquity} icon={<AiOutlineSetting />} />
+								<Button onClick={onManageEquity} icon={<IconSettings />} />
 							) : (
-								<Button onClick={onManageEquity} icon={<AiOutlineSetting />}>
+								<Button onClick={onManageEquity} icon={<IconSettings />}>
 									{t("Manage Equity")}
 								</Button>
 							))}

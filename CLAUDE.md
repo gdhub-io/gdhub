@@ -17,8 +17,7 @@ events, devlogs, equity, paid job listings). Single Next.js app.
 ## Tech stack
 
 - **Framework:** Next.js 16 (App Router, Turbopack), React 19, TypeScript (strict).
-- **UI:** Ant Design v6 (`antd`). Icons: `@react-icons/all-files` (subpath imports only,
-  e.g. `@react-icons/all-files/fa/FaUser`) and `@tabler/icons-react`. Styling: SCSS modules.
+- **UI:** Ant Design v6 (`antd`). Icons: `@tabler/icons-react` only. Styling: SCSS modules.
 - **Data fetching (client):** TanStack Query (`@tanstack/react-query`) + `axios`.
 - **State:** Jotai and Zustand (atoms/stores live next to their feature).
 - **Validation:** Zod. (`class-validator` / `next-api-decorators` are **removed** — do not use.)
@@ -133,8 +132,10 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
 - **Backend input validation:** always Zod via `withValidation`. Never trust raw body/query.
 - **Env vars:** read through the `env()` helper from `@/helpers/env` — it throws on missing
   required vars. Keep `.env.example` in sync when adding a variable.
-- **Icons:** import from `@react-icons/all-files/<pack>/<Icon>` (the full barrel import is
-  forbidden for bundle size).
+- **Icons:** `@tabler/icons-react` and nothing else — one family, one stroke weight,
+  one set of names. `@react-icons` and `@ant-design/icons` are **removed**; the only
+  survivors are antd's own `LoadingOutlined` (it drives the `indicator` prop) and its
+  `Icon` wrapper for custom SVG.
 - **i18n:** add user-facing strings as Tolgee keys, not hardcoded text; run
   `bun run refresh-translations` after adding keys.
 - **Formatting:** let Biome handle it (tabs, double quotes). Don't hand-format or fight it.

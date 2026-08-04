@@ -1,5 +1,5 @@
 import type { Speciality } from "@gdhub-io/gdhub-prisma";
-import { BsCheckLg } from "@react-icons/all-files/bs/BsCheckLg";
+import { IconCheck } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Input, List, Modal, Spin } from "antd";
@@ -83,7 +83,7 @@ const SpecialitySelectModal = ({ open = false, onOk, onCancel }: any) => {
 								actions={
 									selectedItem == speciality.id
 										? [
-												<BsCheckLg
+												<IconCheck
 													color="var(--gd-neutral-950)"
 													key="icon-check-speciality"
 												/>,

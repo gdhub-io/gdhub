@@ -1,6 +1,11 @@
 import type { AdviceRequest } from "@gdhub-io/gdhub-prisma";
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
-import { IconBan, IconCancel, IconCheck, IconClock } from "@tabler/icons-react";
+import {
+	IconBan,
+	IconCancel,
+	IconCheck,
+	IconClock,
+	IconExternalLink,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Modal, Tooltip, theme } from "antd";

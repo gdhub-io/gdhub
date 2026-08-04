@@ -13,6 +13,8 @@ export type EmptyStateProps = {
 	action?: ReactNode;
 	tint?: string;
 	ink?: string;
+	/** `compact` fits a sidebar card; the default fills a page. */
+	size?: "default" | "compact";
 	className?: string;
 };
 
@@ -30,11 +32,20 @@ export function EmptyState({
 	action,
 	tint,
 	ink,
+	size = "default",
 	className,
 }: EmptyStateProps) {
 	return (
-		<div className={`${styles.empty}${className ? ` ${className}` : ""}`}>
-			<IconTile icon={icon} size="lg" tint={tint} ink={ink} />
+		<div
+			className={`${styles.empty}${className ? ` ${className}` : ""}`}
+			data-size={size}
+		>
+			<IconTile
+				icon={icon}
+				size={size === "compact" ? "md" : "lg"}
+				tint={tint}
+				ink={ink}
+			/>
 			<div className={styles.text}>
 				<p className={styles.title}>{title}</p>
 				{description && <p className={styles.description}>{description}</p>}

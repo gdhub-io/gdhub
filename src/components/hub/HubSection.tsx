@@ -18,6 +18,8 @@ export function getHubSectionShellClass(shell: HubSectionShell) {
 
 type HubSectionHeaderProps = {
 	title: React.ReactNode;
+	/** Card headers sit a rank below page sections. */
+	level?: 3 | 4;
 	linkHref?: string;
 	linkLabel?: React.ReactNode;
 	className?: string;
@@ -37,6 +39,7 @@ type HubSectionHeaderProps = {
  */
 export function HubSectionHeader({
 	title,
+	level = 4,
 	linkHref,
 	linkLabel,
 	className,
@@ -59,7 +62,7 @@ export function HubSectionHeader({
 
 	return (
 		<SectionHeading
-			level={3}
+			level={level}
 			title={title}
 			action={action}
 			className={classNames(styles.sectionHead, className)}

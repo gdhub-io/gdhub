@@ -4,8 +4,7 @@ import type {
 	ProjectWorkflowStep,
 } from "@gdhub-io/gdhub-prisma";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
-import { TbInfoCircle } from "@react-icons/all-files/tb/TbInfoCircle";
-import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
+import { IconInfoCircle, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -299,7 +298,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 											className="remove-cover-btn"
 											disabled={isProjectArchived}
 											onClick={handleCoverDelete}
-											icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+											icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
 										/>
 									</Popover>
 								</div>
@@ -326,7 +325,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 									rel="noopener noreferrer"
 									className={styles.videoDocsLink}
 								>
-									<TbInfoCircle size={15} />
+									<IconInfoCircle size={15} />
 									{t(
 										"page.my.projects.settings.videoLink.docs",
 										"How to prepare",
@@ -361,7 +360,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 												className="remove-cover-btn"
 												disabled={isProjectArchived}
 												onClick={handleVideoRemove}
-												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+												icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
 											/>
 										</Popover>
 									</div>
@@ -499,7 +498,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 							"page.my.projects.settings.genre.tooltip",
 							"The gameplay genre your project belongs to. You can combine several.",
 						),
-						icon: <TbInfoCircle size={15} />,
+						icon: <IconInfoCircle size={15} />,
 					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}
@@ -521,7 +520,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 							"page.my.projects.settings.setting.tooltip",
 							"The world, theme and atmosphere of the game (e.g. post-apocalyptic, fantasy).",
 						),
-						icon: <TbInfoCircle size={15} />,
+						icon: <IconInfoCircle size={15} />,
 					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}
@@ -546,7 +545,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 							"page.my.projects.settings.visualStyle.tooltip",
 							"The art style and visual references (e.g. low poly, similar to Brawl Stars).",
 						),
-						icon: <TbInfoCircle size={15} />,
+						icon: <IconInfoCircle size={15} />,
 					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}
@@ -568,7 +567,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 							"page.my.projects.settings.audition.tooltip",
 							"The players you target by their interests and tastes — what they enjoy (e.g. people who love cooking).",
 						),
-						icon: <TbInfoCircle size={15} />,
+						icon: <IconInfoCircle size={15} />,
 					}}
 					wrapperCol={{ span: 24 }}
 					rules={[{ required: true }]}

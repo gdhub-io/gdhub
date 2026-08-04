@@ -1,5 +1,4 @@
-import { FiChevronDown } from "@react-icons/all-files/fi/FiChevronDown";
-import { GoInfo } from "@react-icons/all-files/go/GoInfo";
+import { IconChevronDown, IconInfoCircle } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -219,7 +218,7 @@ export const OnboardingProfileStep = ({
 										label={t("yearOfBirth")}
 										rules={[{ required: true }]}
 										tooltip={{
-											icon: <GoInfo />,
+											icon: <IconInfoCircle />,
 											title: t(
 												"onboarding.profile.yearOfBirth.tooltip",
 												"You should not be younger than 16 years",
@@ -245,7 +244,7 @@ export const OnboardingProfileStep = ({
 											allowClear
 											placeholder={t("country.placeholder", "Select country")}
 											suffixIcon={
-												<FiChevronDown
+												<IconChevronDown
 													size={24}
 													color="var(--gd-color-text-tertiary)"
 												/>

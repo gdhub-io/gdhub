@@ -1,7 +1,6 @@
 import type { ProjectReport } from "@gdhub-io/gdhub-prisma";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
-import { AiOutlineVideoCameraAdd } from "@react-icons/all-files/ai/AiOutlineVideoCameraAdd";
-import { IoMdClose } from "@react-icons/all-files/io/IoMdClose";
+import { IconVideoPlus, IconX } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -135,7 +134,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 							<Tooltip title={t("devlogwall.form.add-video", "Add video")}>
 								<Button
 									onClick={() => setShowAddVideoInput(true)}
-									icon={<AiOutlineVideoCameraAdd size={24} />}
+									icon={<IconVideoPlus size={24} />}
 									type="text"
 								></Button>
 							</Tooltip>
@@ -161,7 +160,7 @@ export const PostForm = ({ projectId, onCreate = () => {} }: any) => {
 									onClick={() => setShowAddVideoInput(false)}
 									style={{ paddingInline: 8 }}
 								>
-									<IoMdClose />
+									<IconX />
 								</Button>
 							</Flex>
 							<Flex justify="end">

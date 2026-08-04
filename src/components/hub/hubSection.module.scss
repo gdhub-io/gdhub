@@ -53,6 +53,12 @@
 	padding: var(--gd-space-4) var(--gd-space-6);
 }
 
+// For cards whose body is a list: the rows carry their own padding and run to
+// the card edges, so the body adds none.
+.sectionBodyFlush {
+	padding: 0;
+}
+
 /**
  * List wrapper inside `.sectionBody` — cancels horizontal padding so rows span full card width
  * (hover / separators edge-to-edge). Match row horizontal padding to `.sectionHead`.

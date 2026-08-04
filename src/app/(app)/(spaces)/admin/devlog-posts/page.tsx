@@ -1,12 +1,15 @@
 "use client";
 
-import { EllipsisOutlined, EyeOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
 import type { Project, ProjectReport, User } from "@gdhub-io/gdhub-prisma";
-import { FaDiscord } from "@react-icons/all-files/fa/FaDiscord";
-import { FaLinkedinIn } from "@react-icons/all-files/fa/FaLinkedinIn";
-import { FaTelegramPlane } from "@react-icons/all-files/fa/FaTelegramPlane";
-import { IconTrash } from "@tabler/icons-react";
+import {
+	IconBrandDiscord,
+	IconBrandLinkedin,
+	IconBrandTelegram,
+	IconDots,
+	IconEye,
+	IconTrash,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { MenuProps } from "antd";
 import {
@@ -226,7 +229,7 @@ export default function DevlogPostsAdminPage() {
 					<Text type="secondary">Generated</Text>
 				) : (
 					<Link href={`/devlog/${id}`} target="_blank">
-						<Button type="link" icon={<EyeOutlined />}>
+						<Button type="link" icon={<IconEye />}>
 							Open
 						</Button>
 					</Link>
@@ -255,17 +258,17 @@ export default function DevlogPostsAdminPage() {
 								{
 									key: "linkedin",
 									label: "Post to LinkedIn",
-									icon: <FaLinkedinIn />,
+									icon: <IconBrandLinkedin />,
 								},
 								{
 									key: "discord",
 									label: "Post to Discord",
-									icon: <FaDiscord />,
+									icon: <IconBrandDiscord />,
 								},
 								{
 									key: "telegram",
 									label: "Post to Telegram",
-									icon: <FaTelegramPlane />,
+									icon: <IconBrandTelegram />,
 								},
 								{ type: "divider" },
 							] satisfies MenuProps["items"])),
@@ -304,7 +307,7 @@ export default function DevlogPostsAdminPage() {
 							},
 						}}
 					>
-						<Button type="text" icon={<EllipsisOutlined />} />
+						<Button type="text" icon={<IconDots />} />
 					</Dropdown>
 				);
 			},

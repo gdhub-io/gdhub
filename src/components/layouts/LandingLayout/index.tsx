@@ -1,4 +1,4 @@
-import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
+import { IconX } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Avatar,
@@ -181,7 +181,7 @@ export const LandingLayout = ({ children }: any) => {
 					<Drawer
 						className={styles.mobileMenuDrawer}
 						afterOpenChange={handleOpenMobileMenu}
-						closeIcon={<AiOutlineClose size={24} />}
+						closeIcon={<IconX size={24} />}
 						title={
 							!!session && (
 								<Flex align="center" justify="space-between">

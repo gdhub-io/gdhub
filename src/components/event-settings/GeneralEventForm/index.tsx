@@ -1,5 +1,5 @@
 import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
-import { TbTrash } from "@react-icons/all-files/tb/TbTrash";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -235,7 +235,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 												type="primary"
 												className="remove-cover-btn"
 												onClick={handleCoverDelete}
-												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+												icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
 											/>
 										</Popover>
 									</div>
@@ -289,7 +289,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 												type="primary"
 												className="remove-cover-btn"
 												onClick={handleCoverDelete}
-												icon={<TbTrash size={18} style={{ marginTop: 2 }} />}
+												icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
 											/>
 										</Popover>
 									</div>

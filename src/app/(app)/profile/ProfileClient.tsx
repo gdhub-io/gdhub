@@ -1,11 +1,11 @@
 "use client";
 
 import {
-	QuestionCircleOutlined,
-	TrophyOutlined,
-	UserOutlined,
-} from "@ant-design/icons";
-import { IconTool } from "@tabler/icons-react";
+	IconHelpCircle,
+	IconTool,
+	IconTrophy,
+	IconUser,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -92,7 +92,7 @@ const StatTile = ({
 				{label}
 			</Text>
 			<Tooltip title={helpText}>
-				<QuestionCircleOutlined
+				<IconHelpCircle
 					style={{
 						color: disabled
 							? "var(--gd-color-text-tertiary)"
@@ -193,7 +193,7 @@ const ProfileClient = () => {
 								)}
 							>
 								<Text type="secondary" style={{ textAlign: "center" }}>
-									<QuestionCircleOutlined style={{ marginRight: 6 }} />
+									<IconHelpCircle style={{ marginRight: 6 }} />
 									{t(
 										"profile.page.skillCapital.note",
 										"Metrics are calculated from your project activity and will evolve.",
@@ -224,7 +224,7 @@ const ProfileClient = () => {
 										label={t("profile.page.skillCapital.lc", "Leadership")}
 										value={formatNumber(skillCapital?.leadershipCapital ?? 0)}
 										icon={
-											<TrophyOutlined
+											<IconTrophy
 												style={{ color: "var(--gd-warning-solid)" }}
 											/>
 										}
@@ -239,7 +239,7 @@ const ProfileClient = () => {
 										label={t("profile.page.skillCapital.ec", "Execution")}
 										value={formatNumber(skillCapital?.executionCapital ?? 0)}
 										icon={
-											<TrophyOutlined
+											<IconTrophy
 												style={{ color: "var(--gd-success-solid)" }}
 											/>
 										}
@@ -254,9 +254,7 @@ const ProfileClient = () => {
 										label={t("profile.page.skillCapital.mc", "Mentorship")}
 										value={formatNumber(skillCapital?.mentorshipCapital ?? 0)}
 										icon={
-											<TrophyOutlined
-												style={{ color: "var(--gd-info-solid)" }}
-											/>
+											<IconTrophy style={{ color: "var(--gd-info-solid)" }} />
 										}
 										helpText={t(
 											"profile.page.skillCapital.help.mc",
@@ -270,7 +268,7 @@ const ProfileClient = () => {
 										value="--"
 										disabled
 										icon={
-											<UserOutlined
+											<IconUser
 												style={{ color: "var(--gd-color-text-tertiary)" }}
 											/>
 										}

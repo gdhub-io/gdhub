@@ -1096,7 +1096,7 @@
 	"hours/week": "hours/week",
 	"hub": {
 		"activity-feed": {
-			"title": "Devlog posts from projects"
+			"title": "Activity Feed"
 		},
 		"hot-vacancies": {
 			"title": "Open positions"
@@ -1219,9 +1219,9 @@
 		"hero": {
 			"getStartedForFree": "Get started for free",
 			"noCreditCardRequired": "No credit card required",
-			"text1": "We help Authors of new video games to assemble a team of game designers, programmers, artists, animators, etc.",
-			"text2": "We help game industry professionals find an interesting role for investing their time in developing new video games.",
-			"title": "Community-driven platform for video game creators"
+			"text1": "Create your video game — find the people it is missing, or join a project that needs your craft.",
+			"text2": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
+			"title": "Ecosystem for video game creators"
 		},
 		"menu": {
 			"aboutUs": "About us",
@@ -2033,24 +2033,11 @@
 	"popup": {
 		"cookie": {
 			"accept": "I accept",
-			"acceptAll": "Accept all",
-			"analytics": "Analytics",
-			"analyticsText": "Google Tag Manager — helps us see which parts of GDHub get used.",
-			"back": "Back",
-			"description": "We use cookies to keep you signed in and to understand how the platform is used. Analytics stay off until you allow them.",
-			"essential": "Essential",
-			"essentialOnly": "Essential only",
-			"essentialText": "Sign-in, security and your session.",
 			"google": "Google services (Google Tag Manager) - Allow us to analyze website traffic and usage to improve your experience",
 			"manage": "Manage cookies",
 			"more": "Read more",
-			"policy": "Cookie policy",
 			"preferences": "Cookie Preferences",
-			"preferencesText": "Choose what GDHub may store on this device. You can change this later from the Cookie policy page.",
-			"required": "Required",
-			"save": "Save selection",
-			"text": "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy.",
-			"title": "Cookies on GDHub"
+			"text": "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy."
 		}
 	},
 	"present": "present",

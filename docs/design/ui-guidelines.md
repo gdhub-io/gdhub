@@ -45,10 +45,18 @@ belongs to a token.
 
 ## Layout
 
-1. **Separate by fill, not by border.** The page sits on `--gd-color-bg`; cards
-   are white with no stroke. Reach for a border only when two surfaces of the
-   same fill must be told apart. Near-black outlines are what made the old UI
-   read as a wireframe.
+1. **Panels are outlined, not filled.** The page carries the fill
+   (`--gd-color-bg`); a panel is transparent and separates with a hairline in
+   `--gd-color-border`. What made the old UI read as a wireframe was the *weight*
+   of those lines — near-black at full opacity — not the fact that they existed.
+
+   `--gd-color-surface` is for things that genuinely sit above the page: modals,
+   dropdowns, popovers, input fills. Using it for every card flattens that
+   distinction and leaves nothing to say "this floats".
+
+   The consequence to remember: a neutral fill inside a panel is read against the
+   *page*, not against white. `--gd-color-surface-sunken` disappears there — go a
+   step further to `--gd-neutral-100`.
 
 2. **Tinted icon tile.** A list row, a quick action or an empty state gets an
    `<IconTile>` — 32/40/56px, radius 10/12/16. Direction rows inherit the craft
@@ -63,8 +71,8 @@ belongs to a token.
    illustration.
 
 5. **Headings are large.** `<SectionHeading>` at 24/20px semibold against 14px
-   body. Few sizes, big contrast. Pick the rank by document structure; the
-   display font (Manrope) is applied by the theme.
+   body — or rank 4 (16px) inside a card, where a 20px title crowds the rows.
+   Few sizes, big contrast. Pick the rank by document structure.
 
 6. **One "more behind this" affordance.** `<ViewAllLink>` in a card header —
    not a ghost button, not a bare arrow.
@@ -72,7 +80,7 @@ belongs to a token.
 ## Spacing and shape
 
 Spacing is a 4-grid: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64. Radii are
-chip 6 / control 8 / card 12 / panel 16 / pill 999. Controls come in 32 / 40 / 48
+chip 6 / control 10 / card 12 / panel 16 / pill 999. Controls come in 32 / 40 / 48
 and the theme already picks the right ladder per density, so set a height only
 when you are fighting a genuine exception.
 

@@ -26,6 +26,11 @@
 	&[data-level="3"] {
 		font-size: var(--gd-font-size-h3);
 	}
+
+	// Card headers: a step down, so a narrow sidebar card is not all title.
+	&[data-level="4"] {
+		font-size: var(--gd-font-size-h4);
+	}
 }
 
 .description {

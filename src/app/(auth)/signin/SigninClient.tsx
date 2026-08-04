@@ -1,6 +1,6 @@
 "use client";
 
-import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
+import { IconBrandGoogle } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -115,7 +115,7 @@ export function SigninClient() {
 								<Button
 									type="primary"
 									style={{ width: "100%" }}
-									icon={<FaGoogle size={16} />}
+									icon={<IconBrandGoogle size={16} />}
 									onClick={() =>
 										signIn(
 											"google",
@@ -161,7 +161,7 @@ export function SigninClient() {
 											},
 										]}
 									>
-										<Input />
+										<Input variant="filled" />
 									</Form.Item>
 								</Form>
 

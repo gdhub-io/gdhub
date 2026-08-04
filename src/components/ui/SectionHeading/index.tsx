@@ -8,7 +8,7 @@ export type SectionHeadingProps = {
 	/** Usually a `<ViewAllLink>`, occasionally a single button. */
 	action?: ReactNode;
 	/** Heading rank. Pick by document structure, not by size. */
-	level?: 2 | 3;
+	level?: 2 | 3 | 4;
 	className?: string;
 };
 
@@ -27,7 +27,7 @@ export function SectionHeading({
 	level = 2,
 	className,
 }: SectionHeadingProps) {
-	const Title = level === 2 ? "h2" : "h3";
+	const Title = level === 2 ? "h2" : level === 3 ? "h3" : "h4";
 
 	return (
 		<div className={`${styles.heading}${className ? ` ${className}` : ""}`}>

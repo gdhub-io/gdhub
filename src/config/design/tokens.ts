@@ -168,7 +168,9 @@ export const letterSpacing = {
 
 export const radius = {
 	chip: 6,
-	control: 8,
+	// 10 rather than 8: the product is full of rounded squares — icon tiles,
+	// covers, avatars — and a tighter control radius read as a different family.
+	control: 10,
 	card: 12,
 	panel: 16,
 	pill: 9999,

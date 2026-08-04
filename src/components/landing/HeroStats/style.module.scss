@@ -16,7 +16,7 @@
 
     :global(span.ant-typography) {
       font-size: 14px;
-      color: var(--gd-color-border-strong);
+      color: var(--gd-color-text-secondary);
       line-height: 1.2;
     }
 
@@ -38,7 +38,7 @@
       word-wrap: normal;
       text-wrap: wrap;
       font-size: 14px;
-      color: var(--gd-color-border-strong);
+      color: var(--gd-color-text-secondary);
     }
 
     :global(span.ant-typography>strong) {

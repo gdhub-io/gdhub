@@ -1,7 +1,9 @@
 import type { Speciality, WorkDirection } from "@gdhub-io/gdhub-prisma";
-import { AiOutlineDown } from "@react-icons/all-files/ai/AiOutlineDown";
-import { AiOutlineUp } from "@react-icons/all-files/ai/AiOutlineUp";
-import { PiWarningCircleLight } from "@react-icons/all-files/pi/PiWarningCircleLight";
+import {
+	IconAlertCircle,
+	IconChevronDown,
+	IconChevronUp,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
@@ -277,7 +279,7 @@ export const OnboardingSpecialityStep = ({
 									)}
 								</Title>
 								<Flex align="center" gap={4}>
-									<PiWarningCircleLight
+									<IconAlertCircle
 										size={20}
 										color="var(--gd-color-text-secondary)"
 										style={{ height: 20 }}
@@ -482,7 +484,11 @@ export const OnboardingSpecialityStep = ({
 													"onboarding.speciality.fill-additional-fields",
 													"Fill additional fields",
 												)}
-										{showOptionalFields ? <AiOutlineUp /> : <AiOutlineDown />}
+										{showOptionalFields ? (
+											<IconChevronUp />
+										) : (
+											<IconChevronDown />
+										)}
 									</Space>
 								</a>
 							</Space>

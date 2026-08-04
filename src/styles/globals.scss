@@ -202,15 +202,20 @@
 
 
 
+	// Registration used to sit on artwork and needed its inputs forced light.
+	// The page is light now, so pinning them to white made the only field on it
+	// invisible and overrode the `filled` variant the form asks for. Keeping the
+	// label rule, dropping the fill.
 	.bright-container {
-		input {
-			background-color: var(--gd-color-surface);
-			color: var(--gd-color-text);
-		}
-
 		.ant-form-item .ant-form-item-label>label {
 			color: var(--gd-color-text);
 		}
+	}
+
+	// antd leaves the title sitting almost on top of the first field, so a modal
+	// reads as one block of text instead of a heading and its content.
+	.ant-modal-header {
+		margin-bottom: 20px;
 	}
 
 	.ant-modal-confirm {
@@ -280,9 +285,20 @@
 		}
 	}
 
+	// antd centres the box against the whole label, so a two-line consent line
+	// leaves it floating between the lines. `baseline` was the earlier attempt and
+	// sat it slightly too high. Align to the top and nudge it onto the centre of
+	// the first line instead.
 	.ant-checkbox-wrapper {
+		align-items: flex-start;
+
 		.ant-checkbox {
-			align-self: baseline;
+			align-self: auto;
+			top: calc((1.5em - 16px) / 2);
+		}
+
+		>span:last-child {
+			line-height: 1.5;
 		}
 	}
 

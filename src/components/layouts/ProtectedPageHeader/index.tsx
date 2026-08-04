@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { IconArrowLeft } from "@tabler/icons-react";
 import {
 	Breadcrumb,
 	type BreadcrumbProps,
@@ -60,14 +60,14 @@ export function ProtectedPageHeader({
 							<Link href={backButtonUrl}>
 								<Button
 									type="text"
-									icon={<ArrowLeftOutlined />}
+									icon={<IconArrowLeft />}
 									style={{ padding: 0 }}
 								/>
 							</Link>
 						) : (
 							<Button
 								type="text"
-								icon={<ArrowLeftOutlined />}
+								icon={<IconArrowLeft />}
 								onClick={() => router.back()}
 								style={{ padding: 0 }}
 							/>

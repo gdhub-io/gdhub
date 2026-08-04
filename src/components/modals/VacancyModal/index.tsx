@@ -1,6 +1,5 @@
 import type { TeamVacancy } from "@gdhub-io/gdhub-prisma";
-import { MdOutlineHandshake } from "@react-icons/all-files/md/MdOutlineHandshake";
-import { IconCashBanknote, IconTrash } from "@tabler/icons-react";
+import { IconCashBanknote, IconHandStop, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -439,7 +438,7 @@ const VacancyModal = ({
 										<Button
 											type="text"
 											disabled={adjustedMaxAvailableShare <= 0}
-											icon={<MdOutlineHandshake />}
+											icon={<IconHandStop />}
 											onClick={() => setShowPromiseFields(true)}
 										>
 											{t("Add equity promise")}

@@ -4,9 +4,14 @@ import type {
 	Project,
 	User,
 } from "@gdhub-io/gdhub-prisma";
-import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
-import { MdOutlineSupportAgent } from "@react-icons/all-files/md/MdOutlineSupportAgent";
-import { IconBan, IconCancel, IconCheck, IconClock } from "@tabler/icons-react";
+import {
+	IconBan,
+	IconCancel,
+	IconCheck,
+	IconChevronRight,
+	IconClock,
+	IconHeadset,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Button, Flex, message, Space, Spin, Typography } from "antd";
@@ -322,7 +327,7 @@ const MyAdviceRequests: React.FC<{
 				<Flex justify="space-between" align="center" wrap>
 					{showTitle && (
 						<Space>
-							<MdOutlineSupportAgent size={36} />
+							<IconHeadset size={36} />
 							<Title level={2}>
 								{t("page.hub.advice-requests", "Advice Requests")}
 							</Title>
@@ -446,7 +451,7 @@ const AdviceHubListRow: React.FC<{
 			onClick={handleRowActivate}
 		>
 			{main}
-			<FaChevronRight className={styles.hubItemIcon} aria-hidden />
+			<IconChevronRight className={styles.hubItemIcon} aria-hidden />
 		</button>
 	);
 };

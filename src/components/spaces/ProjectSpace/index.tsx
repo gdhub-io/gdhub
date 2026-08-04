@@ -1,6 +1,6 @@
 "use client";
 
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { IconExternalLink } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Grid, Space, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
@@ -145,7 +145,7 @@ export const ProjectSpace = ({
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						{t("Public page", "Public page")} <GoLinkExternal size={14} />
+						{t("Public page", "Public page")} <IconExternalLink size={14} />
 					</Link>
 				),
 			},

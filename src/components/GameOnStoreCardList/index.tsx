@@ -1,6 +1,6 @@
-import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
 import {
 	IconArrowRight,
+	IconBrandAppgallery,
 	IconBrandApple,
 	IconBrandGooglePlay,
 	IconBrandItch,
@@ -79,7 +79,7 @@ const STORE_META: Record<
 	},
 	"epic-store": {
 		badgeLabel: "on Epic Store",
-		icon: <SiEpicgames size={12} />,
+		icon: <IconBrandAppgallery size={12} />,
 		badgeClassName: styles.epicBadge,
 	},
 	"google-play": {

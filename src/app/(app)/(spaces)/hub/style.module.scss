@@ -25,12 +25,14 @@
 	align-items: stretch;
 	justify-content: space-between;
 	gap: 24px;
-	min-height: 100px;
+	min-height: 0;
 	overflow: hidden;
 	box-sizing: border-box;
 	padding-inline: 24px;
 	background: transparent;
-	padding-block: 52px;
+	// The greeting is a nameplate, not a section: 52px of air above and below it
+	// pushed the feed most of a screen down for no gain.
+	padding-block: 24px;
 }
 
 .welcomeContent {
@@ -41,7 +43,8 @@
 	flex-direction: column;
 	justify-content: center;
 	min-width: 0;
-	padding-block: 28px;
+	// The wrapper already pads the block; this second layer was doubling it.
+	padding-block: 0;
 }
 
 .welcomeTitle {
@@ -130,18 +133,21 @@
 }
 
 .sidebar {
-	position: sticky;
-	top: 24px;
 	width: 100%;
 	max-width: 320px;
 	margin-left: auto;
-	// The sidebar is usually taller than the viewport, and a pinned element
-	// taller than the viewport can never be scrolled to its end. Cap it to what
-	// is visible under the app header and give it its own scroll instead.
-	max-height: calc(100dvh - var(--gd-app-header-height, 105px) - 48px);
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	scrollbar-width: thin;
+	// Travels with the feed, then pins — but *where* it pins depends on whether
+	// it fits. Short sidebar: pins 24px under the header, fully visible. Taller
+	// than the viewport: `top` goes negative by exactly the overflow, so the
+	// column scrolls until its last card reaches the bottom edge and pins there,
+	// with the feed still moving underneath. `--hub-sidebar-height` is measured
+	// by the shell; without it the expression falls back to the plain top pin.
+	// `top` is set by useScrollAwareSticky: a single edge cannot be pinned in
+	// both directions, so the hook moves it with the reading direction. The
+	// fallback keeps the column sane if the script never runs.
+	position: sticky;
+	top: 36px;
+	align-self: flex-start;
 }
 
 @media (max-width: 991px) {

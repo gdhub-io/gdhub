@@ -1,4 +1,4 @@
-import { ClockCircleOutlined, HistoryOutlined } from "@ant-design/icons";
+import { IconClock, IconHistory } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Skeleton, Typography } from "antd";
@@ -158,7 +158,7 @@ const PostCard: React.FC<{
 								{post.project?.name}
 							</span>
 							<span>
-								<ClockCircleOutlined style={{ marginRight: 4 }} />
+								<IconClock style={{ marginRight: 4 }} />
 								{dayjs(post.publishedAt).fromNow()}
 							</span>
 							{post.applauseCount ? (
@@ -241,7 +241,7 @@ const ProjectDevlogPosts: React.FC<ProjectDevlogPostsProps> = ({
 			<div className={styles.devlogPostsContainer}>
 				<Flex justify="space-between" wrap>
 					<Title level={2}>
-						<HistoryOutlined style={{ marginRight: 8 }} />
+						<IconHistory style={{ marginRight: 8 }} />
 						{t("page.project.last-updates", "Last updates")}
 					</Title>
 				</Flex>
@@ -267,7 +267,7 @@ const ProjectDevlogPosts: React.FC<ProjectDevlogPostsProps> = ({
 		<div className={styles.devlogPostsContainer}>
 			<Flex justify="space-between" wrap>
 				<Title level={2}>
-					<HistoryOutlined style={{ marginRight: 8 }} />
+					<IconHistory style={{ marginRight: 8 }} />
 					{t("page.project.last-updates", "Last updates")}
 				</Title>
 			</Flex>

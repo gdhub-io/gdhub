@@ -6,6 +6,21 @@
 	gap: 16px;
 	padding: 48px 24px;
 	text-align: center;
+
+	// Sidebar cards are 320px wide; the page-sized version turns them into a
+	// column of whitespace.
+	&[data-size="compact"] {
+		gap: 10px;
+		padding: 20px 24px 24px;
+
+		.title {
+			font-size: 14px;
+		}
+
+		.description {
+			font-size: 12px;
+		}
+	}
 }
 
 .text {

@@ -1,7 +1,6 @@
 "use client";
 
-import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { TbBrandTelegram } from "@react-icons/all-files/tb/TbBrandTelegram";
+import { IconBrandTelegram, IconX } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
@@ -61,7 +60,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 						type="text"
 						style={{ top: "6px", position: "relative" }}
 					>
-						<TbBrandTelegram size={24} />
+						<IconBrandTelegram size={24} />
 					</Button>
 				</Link>
 			</Tooltip>
@@ -251,7 +250,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 					open={openMobileMenu}
 					extra={
 						<Button onClick={() => setOpenMobileMenu(false)} type="text">
-							<AiOutlineClose />
+							<IconX />
 						</Button>
 					}
 				>

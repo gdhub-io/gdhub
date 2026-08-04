@@ -1,4 +1,4 @@
-import { BsCheckLg } from "@react-icons/all-files/bs/BsCheckLg";
+import { IconCheck } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { List, Modal, Spin } from "antd";
@@ -110,7 +110,7 @@ const VacancyArchiveModal = ({
 							actions={
 								selectedItem == vacancy.id
 									? [
-											<BsCheckLg
+											<IconCheck
 												color="var(--gd-neutral-950)"
 												key="icon-check-speciality"
 											/>,

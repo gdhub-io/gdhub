@@ -1,9 +1,11 @@
 "use client";
 
-import { FaBook } from "@react-icons/all-files/fa/FaBook";
-import { FaCode } from "@react-icons/all-files/fa/FaCode";
-import { FaGamepad } from "@react-icons/all-files/fa/FaGamepad";
-import { FaPaintBrush } from "@react-icons/all-files/fa/FaPaintBrush";
+import {
+	IconBook,
+	IconBrush,
+	IconCode,
+	IconDeviceGamepad2,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Space, Tag, Typography } from "antd";
@@ -53,15 +55,15 @@ export default function CoursePage() {
 		switch (category?.toLowerCase()) {
 			case "programming":
 			case "development":
-				return <FaCode size={24} />;
+				return <IconCode size={24} />;
 			case "game design":
 			case "design":
-				return <FaGamepad size={24} />;
+				return <IconDeviceGamepad2 size={24} />;
 			case "art":
 			case "graphics":
-				return <FaPaintBrush size={24} />;
+				return <IconBrush size={24} />;
 			default:
-				return <FaBook size={24} />;
+				return <IconBook size={24} />;
 		}
 	}
 

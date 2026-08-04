@@ -1,6 +1,5 @@
 import type { Project, ProjectStatus } from "@gdhub-io/gdhub-prisma";
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
-import { GoTrash } from "@react-icons/all-files/go/GoTrash";
+import { IconExternalLink, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { T } from "@tolgee/react";
 import { Badge, Button, Grid, List, Popconfirm, Space, Typography } from "antd";
@@ -115,7 +114,7 @@ export const UserSeasonProjectsList = ({
 							{screens.md && !!userProject.conceptLink && (
 								<Badge
 									count={
-										<GoLinkExternal
+										<IconExternalLink
 											size={12}
 											color="var(--gd-color-text-tertiary)"
 										/>
@@ -140,7 +139,7 @@ export const UserSeasonProjectsList = ({
 								cancelText={<T keyName="no" />}
 								onConfirm={() => handleDeleteIdea(userProject.id)}
 							>
-								<Button type="text" danger icon={<GoTrash />} />
+								<Button type="text" danger icon={<IconTrash />} />
 							</Popconfirm>
 						</Space>
 					</List.Item>

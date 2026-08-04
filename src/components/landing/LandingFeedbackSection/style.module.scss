@@ -59,7 +59,7 @@
     }
 
     .feedbackCard {
-      background-color: var(--gd-color-text);
+      background-color: var(--gd-color-surface-inverse);
       color: var(--gd-color-text-inverse) !important;
       border: none;
       border-radius: 0px;
@@ -102,7 +102,7 @@
 
       .feedbackDot {
         :global(li>button) {
-          background-color: var(--gd-color-text);
+          background-color: var(--gd-color-surface-inverse);
           width: 8px;
           height: 8px;
           border-radius: 8px;
@@ -123,7 +123,7 @@
     }
 
     .feedbackSlide {
-      background-color: var(--gd-color-text);
+      background-color: var(--gd-color-surface-inverse);
       color: var(--gd-color-text-inverse) !important;
       border: none;
       border-radius: 0px;

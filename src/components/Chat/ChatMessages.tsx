@@ -1,4 +1,3 @@
-import { UserOutlined } from "@ant-design/icons";
 import { Bubble, type BubbleProps } from "@ant-design/x";
 import type { BubbleItemType } from "@ant-design/x/es/bubble/interface";
 import {
@@ -6,6 +5,7 @@ import {
 	IconCheck,
 	IconChecks,
 	IconClock,
+	IconUser,
 } from "@tabler/icons-react";
 import { Flex, type GetRef } from "antd";
 import dayjs from "dayjs";
@@ -379,7 +379,7 @@ export default function ChatMessages() {
 						mxcUrl={extra.avatarMxc}
 						style={{ background: "#fde3cf" }}
 					>
-						<UserOutlined />
+						<IconUser />
 					</MatrixAvatar>
 				),
 				typing: { step: 5, interval: 20 },
@@ -407,7 +407,7 @@ export default function ChatMessages() {
 						mxcUrl={extra.avatarMxc}
 						style={{ background: "#aad068" }}
 					>
-						<UserOutlined />
+						<IconUser />
 					</MatrixAvatar>
 				),
 				footer: (

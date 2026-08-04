@@ -1,7 +1,6 @@
 "use client";
 
-import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
+import { IconExternalLink, IconX } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import {
 	Avatar,
@@ -209,7 +208,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 					<Link href={linkToChat} target="_blank" title={t("Community Chat")}>
 						<Space align="center" size={16}>
 							<Text>{t("hub.menu.communityChat", "Community Chat")}</Text>
-							<GoLinkExternal size={12} color="gray" />
+							<IconExternalLink size={12} color="gray" />
 						</Space>
 					</Link>
 				),
@@ -220,7 +219,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 					<Link href="https://gdhub.io" target="_blank" title="Website">
 						<Space align="center" size={16}>
 							<Text>{t("hub.menu.website", "Website")}</Text>
-							<GoLinkExternal size={12} color="gray" />
+							<IconExternalLink size={12} color="gray" />
 						</Space>
 					</Link>
 				),
@@ -373,7 +372,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 								onClick={() => setOpenMobileMenu(false)}
 								type="text"
 							>
-								<AiOutlineClose />
+								<IconX />
 							</Button>
 						}
 					>

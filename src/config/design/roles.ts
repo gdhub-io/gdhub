@@ -47,7 +47,9 @@ export type DesignRoles = {
 
 export const roles: Record<DesignMode, DesignRoles> = {
 	light: {
-		bg: neutral[25],
+		// neutral-50 rather than 25: white cards need a floor to sit on, and the
+		// ramp's warmth only starts reading a step below near-white.
+		bg: neutral[50],
 		surface: neutral[0],
 		surfaceSunken: neutral[50],
 		surfaceInverse: neutral[900],
@@ -77,17 +79,20 @@ export const roles: Record<DesignMode, DesignRoles> = {
 		border: "#FFFFFF14",
 		borderStrong: "#FFFFFF29",
 		borderFocus: brand[500],
-		text: neutral[50],
+		// Pure white, not neutral-50: on a dark band the off-white reads as a
+		// slightly dirty grey at display sizes rather than as restraint.
+		text: neutral[0],
 		textSecondary: neutral[400],
 		textTertiary: neutral[500],
 		textInverse: neutral[900],
 		// The one context where the brand fills a button: on a dark band there is
 		// no error state to confuse it with, and the CTA has to carry the page.
-		// Its label is ink rather than white — white on brand-500 is 3.4:1, which
-		// fails at label sizes, while the dark ink reads at 5.5:1.
-		action: brand[500],
-		actionHover: brand[400],
-		onAction: neutral[950],
+		// Deep enough that a white label clears the 4.5:1 minimum: brand-500 gave
+		// 3.4:1 and brand-600 only 4.4:1, both of which the contrast test rejects
+		// at button-label sizes. brand-700 reaches 6.2:1.
+		action: brand[700],
+		actionHover: brand[600],
+		onAction: neutral[0],
 		accent: brand[500],
 		accentHover: brand[400],
 		accentSubtle: "#F1554124",

@@ -1,5 +1,5 @@
 import type { TeamVacancy, WorkDirection } from "@gdhub-io/gdhub-prisma";
-import { GoArrowDownRight } from "@react-icons/all-files/go/GoArrowDownRight";
+import { IconArrowDownRight } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Col, Row, Space, Typography } from "antd";
@@ -204,7 +204,7 @@ const ProjectVacancies = ({ teamId }: ProjectVacanciesArgs) => {
 											</div>
 										</div>
 										<div className={styles.linkBtn}>
-											<GoArrowDownRight size={24} />
+											<IconArrowDownRight size={24} />
 										</div>
 									</div>
 								</Col>

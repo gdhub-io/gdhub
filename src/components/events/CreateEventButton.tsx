@@ -1,9 +1,11 @@
-import { DownOutlined } from "@ant-design/icons";
-import { FaChalkboardTeacher } from "@react-icons/all-files/fa/FaChalkboardTeacher";
-import { FaMicroscope } from "@react-icons/all-files/fa/FaMicroscope";
-import { FaRegCalendarCheck } from "@react-icons/all-files/fa/FaRegCalendarCheck";
-import { FaUsers } from "@react-icons/all-files/fa/FaUsers";
-import { GiGamepad } from "@react-icons/all-files/gi/GiGamepad";
+import {
+	IconCalendarCheck,
+	IconChevronDown,
+	IconDeviceGamepad2,
+	IconMicroscope,
+	IconPresentation,
+	IconUsers,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Dropdown, type MenuProps, Space, theme } from "antd";
@@ -18,15 +20,15 @@ import { EventType, SkillLevel } from "@/config/prisma-enums";
 function getTypeIcon(type: EventType, args: { size: number; color: string }) {
 	switch (type) {
 		case EventType.Meetup:
-			return <FaUsers {...args} />;
+			return <IconUsers {...args} />;
 		case EventType.GameJam:
-			return <GiGamepad {...args} />;
+			return <IconDeviceGamepad2 {...args} />;
 		case EventType.Workshop:
-			return <FaChalkboardTeacher {...args} />;
+			return <IconPresentation {...args} />;
 		case EventType.GameLab:
-			return <FaMicroscope {...args} />;
+			return <IconMicroscope {...args} />;
 		case EventType.Conference:
-			return <FaRegCalendarCheck {...args} />;
+			return <IconCalendarCheck {...args} />;
 		default:
 			return null;
 	}
@@ -153,7 +155,7 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 				<Button type="primary">
 					<Space>
 						{t("page.events.createEvent", "Create Event")}
-						<DownOutlined />
+						<IconChevronDown />
 					</Space>
 				</Button>
 			</Dropdown>

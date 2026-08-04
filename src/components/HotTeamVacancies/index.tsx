@@ -1,23 +1,17 @@
-import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Skeleton } from "antd";
 import axios from "axios";
-import Link from "next/link";
+import { getWorkDirection } from "@/components/DirectionBadge";
 import {
 	getHubSectionShellClass,
 	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { HubSectionRow } from "@/components/hub/HubSectionRow";
+import { IconTile } from "@/components/ui";
 import styles from "./styles.module.scss";
-
-const VACANCY_DOT_COLORS = [
-	"var(--gd-color-accent)",
-	"var(--gd-neutral-800)",
-	"var(--gd-neutral-500)",
-	"var(--gd-neutral-300)",
-];
 
 interface HotVacancyItem {
 	id: string;
@@ -28,6 +22,7 @@ interface HotVacancyItem {
 		coverImage: string | null;
 		slug: string;
 	};
+	direction: string | null;
 }
 
 export default function HotTeamVacancies() {
@@ -57,32 +52,22 @@ export default function HotTeamVacancies() {
 					linkLabel={t("hub.view-all", "View all")}
 				/>
 
-				<HubSectionBody>
-					<HubSectionBleed className={styles.list}>
-						{vacancies?.slice(0, 5).map((v, index) => (
-							<Link key={v.id} href={`/job/${v.id}`} className={styles.item}>
-								<div className={styles.itemLeft}>
-									<span
-										className={styles.accentDot}
-										style={{
-											background:
-												VACANCY_DOT_COLORS[index % VACANCY_DOT_COLORS.length],
-										}}
-										aria-hidden
-									/>
-									<div className={styles.textWrap}>
-										<div className={styles.primary} title={v.title}>
-											{v.title}
-										</div>
-										<div className={styles.secondary} title={v.project.name}>
-											{v.project.name}
-										</div>
-									</div>
-								</div>
-								<FaChevronRight className={styles.itemIcon} />
-							</Link>
-						))}
-					</HubSectionBleed>
+				<HubSectionBody flush>
+					{vacancies?.slice(0, 5).map((v) => (
+						<HubSectionRow
+							key={v.id}
+							href={`/job/${v.id}`}
+							title={v.title}
+							subtitle={v.project.name}
+							media={
+								<IconTile
+									size="sm"
+									direction={v.direction ?? undefined}
+									icon={getWorkDirection(v.direction ?? "").icon}
+								/>
+							}
+						/>
+					))}
 				</HubSectionBody>
 			</section>
 		</Skeleton>

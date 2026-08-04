@@ -1,4 +1,4 @@
-import { EyeOutlined } from "@ant-design/icons";
+import { IconEye } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { Space } from "antd";
 import axios from "axios";
@@ -90,7 +90,7 @@ export const PageViews = ({
 
 	return (
 		<Space size={4} style={containerStyle}>
-			<EyeOutlined style={iconStyle} />
+			<IconEye style={iconStyle} />
 			<span style={textStyle}>{formattedViews}</span>
 		</Space>
 	);

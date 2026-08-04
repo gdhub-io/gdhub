@@ -100,10 +100,9 @@
 
 .appMenu {
 	line-height: 32px !important;
-	margin-left: -16px;
-	margin-right: -16px;
-	margin-bottom: 4px;
-	margin-top: 4px;
+	// Pulls the first item's padding back to the header's left edge, so the nav
+	// lines up with the logo above it in every space.
+	margin: 0 -6px 6px;
 	font-size: 14px;
 
 	:global(.ant-menu-item) {

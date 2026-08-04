@@ -4,7 +4,7 @@
 .footer {
 	background-color: var(--gd-neutral-950);
 	padding: 28px clamp(16px, 5vw, 70px) 16px;
-	color: var(--gd-color-text-inverse);
+	color: var(--gd-color-text);
 }
 
 .container {
@@ -40,7 +40,7 @@
 	margin: 0;
 	font-size: 13px;
 	line-height: 1.5;
-	color: var(--gd-color-text-inverse);
+	color: var(--gd-color-text);
 }
 
 .nav {
@@ -75,13 +75,13 @@
 .link {
 	font-size: 14px;
 	font-weight: 400;
-	color: var(--gd-color-text-inverse);
+	color: var(--gd-color-text);
 	border-bottom: 1px solid transparent;
 	transition: border-color 0.15s ease;
 
 	&:hover {
-		color: var(--gd-color-text-inverse);
-		border-bottom-color: var(--gd-color-text-inverse);
+		color: var(--gd-color-text);
+		border-bottom-color: var(--gd-color-text);
 	}
 }
 

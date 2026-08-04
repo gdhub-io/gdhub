@@ -1,7 +1,7 @@
 "use client";
 
 import type { WorkflowSchema } from "@gdhub-io/gdhub-prisma";
-import { GoTrash } from "@react-icons/all-files/go/GoTrash";
+import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	Button,
@@ -101,7 +101,7 @@ export default function WorkflowsAdminPage() {
 							title="Are you sure you want to delete this entry?"
 							onConfirm={() => handleDelete(record.id)}
 						>
-							<Button type="text" danger icon={<GoTrash />} />
+							<Button type="text" danger icon={<IconTrash />} />
 						</Popconfirm>
 					</Space>
 				);

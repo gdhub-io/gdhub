@@ -61,6 +61,8 @@ export function buildAntdTheme({
 			lineHeightHeading3: lineHeight.heading,
 
 			colorPrimary: r.action,
+			colorPrimaryHover: r.actionHover,
+			colorPrimaryActive: r.actionHover,
 			colorLink: r.link,
 			colorInfo: semantic.info.solid,
 			colorSuccess: semantic.success.solid,
@@ -68,6 +70,9 @@ export function buildAntdTheme({
 			colorError: semantic.danger.solid,
 
 			colorTextBase: r.text,
+			// antd derives headings as 85% of the base, which on a dark band reads
+			// as a dimmed grey rather than a heading.
+			colorTextHeading: r.text,
 			colorBgBase: r.bg,
 			colorBgContainer: r.surface,
 			colorBgElevated: r.surface,
@@ -78,6 +83,13 @@ export function buildAntdTheme({
 			// The single biggest visual fix: default borders used to be near-black,
 			// which made every finished screen read as a wireframe.
 			colorBorder: r.border,
+
+			// antd derives the `filled` variant from these. Left at the defaults
+			// they are near-white on a near-white page, which is how the auth forms
+			// ended up with invisible inputs.
+			colorFillTertiary: r.surfaceSunken,
+			colorFillSecondary: neutral[100],
+			colorFillQuaternary: r.surfaceSunken,
 			colorBorderSecondary: r.border,
 
 			borderRadius: radius.control,
@@ -169,6 +181,10 @@ export function buildAntdTheme({
 				itemSelectedBg: r.surfaceSunken,
 				horizontalItemSelectedColor: r.text,
 				horizontalItemSelectedBg: r.surfaceSunken,
+				// antd lets a horizontal menu stretch its items to the bar's own
+				// height, so a tall header turned each tab into a 96px hover slab.
+				horizontalLineHeight: `${d.controlHeight}px`,
+				horizontalItemBorderRadius: radius.control,
 				activeBarHeight: 0,
 			},
 			// Same argument as the nav above: the current tab is told apart by

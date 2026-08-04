@@ -1,4 +1,3 @@
-import { EditOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import type {
 	PaymentRateType,
 	Team,
@@ -8,12 +7,17 @@ import type {
 	TeamVacancy,
 	User,
 } from "@gdhub-io/gdhub-prisma";
-import { AiOutlinePlus } from "@react-icons/all-files/ai/AiOutlinePlus";
-import { BiTrash } from "@react-icons/all-files/bi/BiTrash";
-import { GoLinkExternal } from "@react-icons/all-files/go/GoLinkExternal";
-import { MdOutlineHandshake } from "@react-icons/all-files/md/MdOutlineHandshake";
-import { TbDotsVertical } from "@react-icons/all-files/tb/TbDotsVertical";
-import { IconCoin, IconUserSearch } from "@tabler/icons-react";
+import {
+	IconAlertCircle,
+	IconCoin,
+	IconDotsVertical,
+	IconExternalLink,
+	IconHandStop,
+	IconPencil,
+	IconPlus,
+	IconTrash,
+	IconUserSearch,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -206,7 +210,7 @@ const MyTeam = () => {
 				okText: "Yes",
 				okType: "primary",
 				cancelText: "No",
-				icon: <ExclamationCircleOutlined />,
+				icon: <IconAlertCircle />,
 				content: t(
 					"This action will dismisse the member from the team and delete all their equity promises.",
 				),
@@ -507,7 +511,7 @@ const MyTeam = () => {
 						<Button
 							type="text"
 							size="small"
-							icon={<MdOutlineHandshake />}
+							icon={<IconHandStop />}
 							onClick={() => handleOpenMemberEquityPromiseModal(member)}
 						>
 							{t("component.myTeam.makePromise", "Make Promise")}
@@ -548,7 +552,7 @@ const MyTeam = () => {
 						key: "edit-promise",
 						label: t("Change Promise"),
 						disabled: !getMemberShare(member.id)?.promises.length,
-						icon: <MdOutlineHandshake size={16} />,
+						icon: <IconHandStop size={16} />,
 						onClick: () => handleOpenMemberEquityPromiseModal(member),
 					},
 
@@ -564,7 +568,7 @@ const MyTeam = () => {
 					{
 						key: "fire-member",
 						label: t("Fire Member"),
-						icon: <BiTrash size={16} />,
+						icon: <IconTrash size={16} />,
 						disabled:
 							member.status === TeamMemberStatus.Founder ||
 							member.status === (TeamMemberStatus.Fired as any),
@@ -583,7 +587,7 @@ const MyTeam = () => {
 						}}
 						trigger={["click"]}
 					>
-						<Button icon={<TbDotsVertical />} type="text" />
+						<Button icon={<IconDotsVertical />} type="text" />
 					</Dropdown>
 				);
 			},
@@ -698,7 +702,7 @@ const MyTeam = () => {
 						rel="noopener noreferrer"
 					>
 						{t("New request")}
-						<GoLinkExternal style={{ marginLeft: 8 }} />
+						<IconExternalLink style={{ marginLeft: 8 }} />
 					</Button>
 					{can("project.members.remove") && (
 						<Button
@@ -766,7 +770,7 @@ const MyTeam = () => {
 						key: "edit",
 						label: (
 							<span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-								<EditOutlined style={{ fontSize: 16 }} />
+								<IconPencil style={{ fontSize: 16 }} />
 								{t("Edit")}
 							</span>
 						),
@@ -779,7 +783,7 @@ const MyTeam = () => {
 						key: "delete",
 						label: (
 							<Flex align="center" gap={8}>
-								<BiTrash style={{ fontSize: 16 }} />
+								<IconTrash style={{ fontSize: 16 }} />
 								{t("Delete")}
 							</Flex>
 						),
@@ -798,7 +802,7 @@ const MyTeam = () => {
 						}}
 						trigger={["click"]}
 					>
-						<Button icon={<TbDotsVertical />} type="text" />
+						<Button icon={<IconDotsVertical />} type="text" />
 					</Dropdown>
 				);
 			},
@@ -865,13 +869,13 @@ const MyTeam = () => {
 										<Button
 											type="primary"
 											onClick={handleOpenInviteModal}
-											icon={<AiOutlinePlus />}
+											icon={<IconPlus />}
 										/>
 									) : (
 										<Button
 											type="primary"
 											onClick={handleOpenInviteModal}
-											icon={<AiOutlinePlus />}
+											icon={<IconPlus />}
 										>
 											{t("component.myTeam.inviteMember", "Invite Member")}
 										</Button>
@@ -882,7 +886,7 @@ const MyTeam = () => {
 											<Button
 												type="primary"
 												style={{ marginLeft: 8 }}
-												icon={<AiOutlinePlus />}
+												icon={<IconPlus />}
 											/>
 										</Link>
 									) : (
@@ -890,7 +894,7 @@ const MyTeam = () => {
 											<Button
 												type="primary"
 												style={{ marginLeft: 8 }}
-												icon={<AiOutlinePlus />}
+												icon={<IconPlus />}
 											>
 												{t("component.myTeam.findMentors", "Find mentors")}
 											</Button>
@@ -909,7 +913,7 @@ const MyTeam = () => {
 											<Button
 												type="primary"
 												onClick={() => setIsAddInvestorModalOpen(true)}
-												icon={<AiOutlinePlus />}
+												icon={<IconPlus />}
 												disabled={noAvailableInvestorShare}
 											/>
 										</Popover>
@@ -925,7 +929,7 @@ const MyTeam = () => {
 											<Button
 												type="primary"
 												onClick={() => setIsAddInvestorModalOpen(true)}
-												icon={<AiOutlinePlus />}
+												icon={<IconPlus />}
 												disabled={noAvailableInvestorShare}
 											>
 												{t("component.myTeam.addInvestor", "Add investor")}

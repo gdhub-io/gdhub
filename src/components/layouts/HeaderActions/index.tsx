@@ -1,6 +1,6 @@
 "use client";
 
-import { AiOutlineMenu } from "@react-icons/all-files/ai/AiOutlineMenu";
+import { IconMenu2 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import type { MenuProps } from "antd";
 import { Avatar, Button, Dropdown, Grid, Space } from "antd";
@@ -70,7 +70,7 @@ export const HeaderActions = ({
 					style={{ top: 2 }}
 					onClick={onOpenMobileMenu}
 				>
-					<AiOutlineMenu />
+					<IconMenu2 />
 				</Button>
 			</Space>
 		);

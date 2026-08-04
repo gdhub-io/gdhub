@@ -3,10 +3,12 @@ import type {
 	PaymentStatus,
 	TeamVacancyStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { HiDotsVertical } from "@react-icons/all-files/hi/HiDotsVertical";
-import { HiOutlineDocumentDownload } from "@react-icons/all-files/hi/HiOutlineDocumentDownload";
-import { HiOutlineExternalLink } from "@react-icons/all-files/hi/HiOutlineExternalLink";
-import { HiOutlineLockClosed } from "@react-icons/all-files/hi/HiOutlineLockClosed";
+import {
+	IconDotsVertical,
+	IconExternalLink,
+	IconFileDownload,
+	IconLock,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -258,7 +260,7 @@ const MyProjectVacancies = () => {
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						<Button type="text" icon={<HiOutlineExternalLink size={18} />} />
+						<Button type="text" icon={<IconExternalLink size={18} />} />
 					</Link>
 				</Tooltip>
 			),
@@ -293,7 +295,7 @@ const MyProjectVacancies = () => {
 										? [
 												{
 													key: "receipt",
-													icon: <HiOutlineDocumentDownload />,
+													icon: <IconFileDownload />,
 													label: t(
 														"MyProjectVacancies.downloadReceipt",
 														"Download receipt",
@@ -305,7 +307,7 @@ const MyProjectVacancies = () => {
 									{
 										key: "archive",
 										danger: true,
-										icon: <HiOutlineLockClosed />,
+										icon: <IconLock />,
 										label: t("MyProjectVacancies.archiveVacancy", "Archive"),
 										onClick: () => confirmArchiveVacancy(record.id),
 									},
@@ -315,7 +317,7 @@ const MyProjectVacancies = () => {
 							<Button
 								type="text"
 								aria-label={t("MyProjectVacancies.actions", "Actions")}
-								icon={<HiDotsVertical />}
+								icon={<IconDotsVertical />}
 							/>
 						</Dropdown>
 					</Space>

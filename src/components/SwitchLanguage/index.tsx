@@ -1,4 +1,4 @@
-import { TbWorld } from "@react-icons/all-files/tb/TbWorld";
+import { IconWorld } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import { Button, Dropdown, type MenuProps, Typography } from "antd";
 import { usePathname, useRouter } from "next/navigation";
@@ -47,7 +47,7 @@ export const SwitchLanguage = ({
 			placement="bottomLeft"
 			trigger={["click"]}
 		>
-			<Button type="text" size={size} icon={<TbWorld />}>
+			<Button type="text" size={size} icon={<IconWorld />}>
 				{tolgee.getLanguage()}
 			</Button>
 		</Dropdown>

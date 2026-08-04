@@ -1,11 +1,11 @@
-import {
-	DeleteOutlined,
-	EditOutlined,
-	MenuOutlined,
-	PlusOutlined,
-	SettingOutlined,
-} from "@ant-design/icons";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import {
+	IconMenu2,
+	IconPencil,
+	IconPlus,
+	IconSettings,
+	IconTrash,
+} from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Breadcrumb,
@@ -518,7 +518,7 @@ export const WorkflowEditor = ({
 						)}
 						{!isProjectWorkflow && (
 							<Button
-								icon={<SettingOutlined />}
+								icon={<IconSettings />}
 								onClick={() => setSettingsModalVisible(true)}
 							>
 								Settings
@@ -548,7 +548,7 @@ export const WorkflowEditor = ({
 					<Title level={2} style={{ margin: 0 }}>
 						{isProjectWorkflow ? "Project steps" : "Steps"}
 					</Title>
-					<Button type="primary" icon={<PlusOutlined />} onClick={addStep}>
+					<Button type="primary" icon={<IconPlus />} onClick={addStep}>
 						Add step
 					</Button>
 				</div>
@@ -581,7 +581,7 @@ export const WorkflowEditor = ({
 																				{...provided.dragHandleProps}
 																				className={styles.dragHandle}
 																			>
-																				<MenuOutlined />
+																				<IconMenu2 />
 																			</div>
 																			<span>
 																				{form.getFieldValue([
@@ -599,7 +599,7 @@ export const WorkflowEditor = ({
 																			<div className={styles.stepActions}>
 																				<Button
 																					type="text"
-																					icon={<EditOutlined />}
+																					icon={<IconPencil />}
 																					onClick={() => editStep(stepIndex)}
 																					size="small"
 																				>
@@ -614,7 +614,7 @@ export const WorkflowEditor = ({
 																					<Button
 																						type="text"
 																						danger
-																						icon={<DeleteOutlined />}
+																						icon={<IconTrash />}
 																						size="small"
 																					/>
 																				</Popconfirm>
@@ -642,7 +642,7 @@ export const WorkflowEditor = ({
 																			<Button
 																				type="link"
 																				size="small"
-																				icon={<PlusOutlined />}
+																				icon={<IconPlus />}
 																				onClick={() => addTask(stepIndex)}
 																			>
 																				Add
@@ -736,7 +736,7 @@ export const WorkflowEditor = ({
 																						<Button
 																							type="text"
 																							size="small"
-																							icon={<EditOutlined />}
+																							icon={<IconPencil />}
 																							onClick={() =>
 																								editTask(stepIndex, taskIndex)
 																							}
@@ -751,7 +751,7 @@ export const WorkflowEditor = ({
 																								type="text"
 																								size="small"
 																								danger
-																								icon={<DeleteOutlined />}
+																								icon={<IconTrash />}
 																							/>
 																						</Popconfirm>
 																					</div>

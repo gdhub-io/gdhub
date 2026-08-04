@@ -5,11 +5,12 @@ import { Alert, Button, Col, Flex, Grid, Row, Space, Typography } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
 } from "@/components/hub/HubSection";
+import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import styles from "./style.module.scss";
 
 const DevlogPosts = dynamic(() => import("@/components/DevlogPosts"), {
@@ -45,6 +46,12 @@ export default function HubClient() {
 	const showMobileAdvice = isAuthenticated && isOnboardingDone && !showSidebar;
 	const showMainFeed = isAuthenticated && isOnboardingDone;
 	const showOnboardingAlert = isAuthenticated && !isOnboardingDone;
+
+	// The sidebar is taller than the viewport, so it follows the reading
+	// direction: down until its last card meets the bottom edge, back up until
+	// its first meets the top. 36px matches the content padding.
+	const sidebarRef = useRef<HTMLDivElement>(null);
+	useScrollAwareSticky(sidebarRef, { offset: 36, enabled: showSidebar });
 
 	const linkToChat = useMemo(() => {
 		switch (getLanguage()) {
@@ -121,12 +128,6 @@ export default function HubClient() {
 							</HubSectionBody>
 						</section>
 
-						{showMainFeed && (
-							<div className={styles.mainBundleSlot}>
-								<MyProjectList variant="hub" bundleInset />
-							</div>
-						)}
-
 						{showOnboardingAlert && (
 							<div
 								className={`${getHubSectionShellClass("inset")} ${styles.mainBundleSlot}`}
@@ -190,8 +191,9 @@ export default function HubClient() {
 			</Col>
 			{showSidebar && (
 				<Col xs={24} md={8} lg={7}>
-					<div className={styles.sidebar}>
+					<div className={styles.sidebar} ref={sidebarRef}>
 						<Flex vertical gap={16}>
+							{showMainFeed && <MyProjectList variant="hubSidebar" />}
 							<MyAdviceRequests variant="hubSidebar" />
 							<HotTeamVacancies />
 							<LatestEvents />
