@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 		const eventType = searchParams.get("type");
 		const eventDate = searchParams.get("date");
 
-		const fontData = await loadOgFont(request, "Mulish-Regular.ttf");
+		const fontData = await loadOgFont(request, "Onest-Regular.woff");
 
 		if (!coverImage)
 			return new ImageResponse(<>Error</>, {
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 					justifyContent: "center",
 					// alignItems: 'center',
 					position: "relative",
-					fontFamily: '"Mulish"',
+					fontFamily: '"Onest"',
 				}}
 			>
 				<img
@@ -303,7 +303,7 @@ export async function GET(request: NextRequest) {
 				height: 630,
 				fonts: [
 					{
-						name: "Mulish",
+						name: "Onest",
 						data: fontData,
 						style: "normal",
 					},

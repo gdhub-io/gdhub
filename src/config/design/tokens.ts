@@ -2,8 +2,9 @@
  * Design primitives.
  *
  * Nothing here knows about a component or a page — those decisions live in
- * `roles.ts` and `antd.ts`. The values mirror the "DS · 07 Proposal" page of
- * `docs/design/platform-design.pen`; keep the two in sync when either changes.
+ * `roles.ts` and `antd.ts`. The values mirror the "DS · Tokens — as shipped"
+ * page of `docs/design/platform-design.pen`; keep the two in sync when either
+ * changes.
  */
 
 /** Warm neutral ramp: constant hue (~40°), chroma tapering into the darks. */

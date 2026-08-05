@@ -7,9 +7,11 @@ import {
 } from "@tabler/icons-react";
 import { Button } from "antd";
 import { WORK_DIRECTIONS } from "@/components/DirectionBadge";
+import { SkillLevel } from "@/config/prisma-enums";
 import { EmptyState } from "./EmptyState";
 import { IconTile } from "./IconTile";
 import { SectionHeading } from "./SectionHeading";
+import { SkillLevelMeter } from "./SkillLevelMeter";
 import { StatusDot, type StatusTone } from "./StatusDot";
 import { ViewAllLink } from "./ViewAllLink";
 
@@ -53,6 +55,40 @@ export const Statuses: StoryObj = {
 				] as [StatusTone, string][]
 			).map(([tone, label]) => (
 				<StatusDot key={tone} tone={tone} label={label} />
+			))}
+		</div>
+	),
+};
+
+/**
+ * An ordinal scale drawn as a quantity: five blocks filled to the level, one
+ * colour. The name always travels with it — the blocks alone are a chart.
+ */
+export const SkillLevels: StoryObj = {
+	render: () => (
+		<div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+			{(
+				[
+					[SkillLevel.Novice, "Novice"],
+					[SkillLevel.Beginner, "Beginner"],
+					[SkillLevel.Skillful, "Skillful"],
+					[SkillLevel.Experienced, "Experienced"],
+					[SkillLevel.Expert, "Expert"],
+				] as [SkillLevel, string][]
+			).map(([level, label]) => (
+				<div
+					key={level}
+					style={{ display: "flex", alignItems: "center", gap: 12 }}
+				>
+					<SkillLevelMeter level={level} />
+					<span style={{ fontSize: 13 }}>{label}</span>
+					<SkillLevelMeter level={level} size="compact" />
+					<span
+						style={{ fontSize: 11, color: "var(--gd-color-text-secondary)" }}
+					>
+						compact
+					</span>
+				</div>
 			))}
 		</div>
 	),

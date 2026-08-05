@@ -189,14 +189,17 @@ const SpecialityModal = ({
 			skillLevelsList.map((item: any, indx: number) => {
 				return {
 					value: item.value,
+					// Compare on `value`: `label` is a <T> element, so the old
+					// comparison against the form value never matched and every
+					// option carried a tooltip, selected one included.
 					label:
-						item.label !== form.getFieldValue("Level") ? (
+						item.value !== form.getFieldValue("Level") ? (
 							<Tooltip title={item.description} placement="right">
-								{item.icon} {item.label}
+								{item.meter} {item.label}
 							</Tooltip>
 						) : (
 							<>
-								{item.icon} {item.label}
+								{item.meter} {item.label}
 							</>
 						),
 				};

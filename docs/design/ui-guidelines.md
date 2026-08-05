@@ -1,8 +1,11 @@
 # UI guidelines
 
-How a GDHub screen is put together. The visual reference is the `DS · 07 Proposal`
-page of [platform-design.pen](platform-design.pen); the values live in
-[`src/config/design`](../../src/config/design) and the primitives in
+How a GDHub screen is put together. This file is the rules; the visual reference
+is the `DS · Tokens — as shipped` frame in
+[platform-design.pen](platform-design.pen), which shows every ramp, role,
+direction, type step, radius, density, skill level, the logo and the direction
+icons, each row carrying the `--gd-*` name you type. The values themselves live
+in [`src/config/design`](../../src/config/design) and the primitives in
 [`src/components/ui`](../../src/components/ui).
 
 Read this before building a page. It is short on purpose — six layout rules and
@@ -89,10 +92,17 @@ floats above the page" (dropdown, modal), not "this is a card".
 
 ## Typography
 
-Plus Jakarta Sans runs everything. One family carries both roles, so a heading
-differs from a list row by weight and tracking, not by typeface. Weights are
-400 / 500 / 600, with 700 for display only. Numeric columns get
-`font-feature-settings: "tnum"` rather than a second font family.
+Onest runs everything. One family carries both roles, so a heading differs from
+a list row by weight and tracking, not by typeface. Weights are 400 / 500 / 600,
+with 700 for display only. Numeric columns get `font-feature-settings: "tnum"`
+rather than a second font family.
+
+**And both scripts.** Users write in Russian, and a Latin job title sits next to
+a Russian description inside the same line — so a family without Cyrillic would
+swap typefaces mid-sentence, not page by page. That is what retired Plus Jakarta
+Sans, which ships no Cyrillic subset. Any replacement has to cover
+`latin`, `latin-ext` and `cyrillic`; check the Google Fonts API before proposing
+one, and remember the OG cards have no fallback at all — satori draws tofu.
 
 Candidates are compared in Storybook under *Design system → Typography*, where
 each pair renders the same block of product UI. Judge a font on a list row, not

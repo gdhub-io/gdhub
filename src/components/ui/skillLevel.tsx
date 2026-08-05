@@ -1,29 +1,29 @@
 import { T } from "@tolgee/react";
 import { Tooltip } from "antd";
 import type { ReactElement } from "react";
-import SkillBeginnerIcon from "@/assets/images/skills/beginner.svg";
-import SkillExperiencedIcon from "@/assets/images/skills/experienced.svg";
-import SkillExpertIcon from "@/assets/images/skills/expert.svg";
-import SkillNoviceIcon from "@/assets/images/skills/novice.svg";
-import SkillSkillfulIcon from "@/assets/images/skills/skillful.svg";
+import { SkillLevelMeter } from "@/components/ui/SkillLevelMeter";
 import { SkillLevel } from "@/config/prisma-enums";
 
-// The level scale is content, not chrome: five steps that have to stay
-// distinguishable from each other, which no role in the system provides.
+/**
+ * The five-step skill scale.
+ *
+ * Rank is drawn by `SkillLevelMeter` as a filled count, not by colour: an
+ * ordinal scale is a quantity, and the previous red → green ramp encoded the
+ * order twice while painting a Novice in the colour the system reserves for
+ * failure.
+ */
 export const skillLevelsList: {
 	index: number;
-	value: string;
-	label: string | ReactElement;
-	icon: ReactElement;
-	color: string;
-	description: string | ReactElement;
+	value: SkillLevel;
+	label: ReactElement;
+	meter: ReactElement;
+	description: ReactElement;
 }[] = [
 	{
 		index: 1,
 		value: SkillLevel.Novice,
 		label: <T keyName={SkillLevel.Novice} />,
-		icon: <SkillNoviceIcon />,
-		color: "#ffeb3b",
+		meter: <SkillLevelMeter level={SkillLevel.Novice} />,
 		description: (
 			<T keyName="skill.novice.description">
 				You know how to do the job, but you don’t have experience yet
@@ -34,8 +34,7 @@ export const skillLevelsList: {
 		index: 2,
 		value: SkillLevel.Beginner,
 		label: <T keyName={SkillLevel.Beginner} />,
-		icon: <SkillBeginnerIcon />,
-		color: "#FF9159",
+		meter: <SkillLevelMeter level={SkillLevel.Beginner} />,
 		description: (
 			<T keyName="skill.beginner.description">
 				You know how to do the job, you already have some experience
@@ -46,8 +45,7 @@ export const skillLevelsList: {
 		index: 3,
 		value: SkillLevel.Skillful,
 		label: <T keyName={SkillLevel.Skillful} />,
-		icon: <SkillSkillfulIcon />,
-		color: "#F3B721",
+		meter: <SkillLevelMeter level={SkillLevel.Skillful} />,
 		description: (
 			<T keyName="skill.skillful.description">
 				Accept responsibility for choosing how work will be done and can
@@ -59,8 +57,7 @@ export const skillLevelsList: {
 		index: 4,
 		value: SkillLevel.Experienced,
 		label: <T keyName={SkillLevel.Experienced} />,
-		icon: <SkillExperiencedIcon />,
-		color: "#80CC14",
+		meter: <SkillLevelMeter level={SkillLevel.Experienced} />,
 		description: (
 			<T keyName="skill.experienced.description">
 				In your work you use intuition based on your experience
@@ -71,8 +68,7 @@ export const skillLevelsList: {
 		index: 5,
 		value: SkillLevel.Expert,
 		label: <T keyName={SkillLevel.Expert} />,
-		icon: <SkillExpertIcon />,
-		color: "#25B869",
+		meter: <SkillLevelMeter level={SkillLevel.Expert} />,
 		description: (
 			<T keyName="skill.expert.description">
 				You have a huge library of distinct situations (cases), built on the
@@ -82,11 +78,22 @@ export const skillLevelsList: {
 	},
 ];
 
+/**
+ * Meter plus name for a level.
+ *
+ * Matches on `value`: the previous version compared `label` — a `<T>` element —
+ * against the level string, so the lookup never hit and the helper rendered an
+ * empty tooltip.
+ */
 export const renderSkillLevel = (levelName: SkillLevel) => {
-	const level = skillLevelsList.find((i) => i.label == levelName);
+	const level = skillLevelsList.find((item) => item.value === levelName);
+	if (!level) return null;
+
 	return (
-		<Tooltip title={level?.description}>
-			{level?.icon} {level?.label}
+		<Tooltip title={level.description}>
+			<span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+				{level.meter} {level.label}
+			</span>
 		</Tooltip>
 	);
 };

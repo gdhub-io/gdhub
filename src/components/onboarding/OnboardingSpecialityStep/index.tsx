@@ -382,11 +382,11 @@ export const OnboardingSpecialityStep = ({
 																title={item.description}
 																placement="right"
 															>
-																{item.icon} {item.label}
+																{item.meter} {item.label}
 															</Tooltip>
 														) : (
 															<>
-																{item.icon} {item.label}
+																{item.meter} {item.label}
 															</>
 														)}
 													</Select.Option>

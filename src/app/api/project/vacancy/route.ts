@@ -26,6 +26,9 @@ export const GET = withAuth({ mode: "any" })(
 			where: { id },
 			include: {
 				promiseStep: true,
+				// Drives the colour and icon of the share card, the same way it drives
+				// VacancyCard on the jobs board.
+				direction: { select: { name: true } },
 				team: {
 					select: {
 						id: true,
@@ -81,6 +84,16 @@ export const GET = withAuth({ mode: "any" })(
 			});
 		}
 
-		return json({ ...data, myTeamMemberId: teamMember?.id });
+		// `offeredAmount` is stored in minor units (cents) to match the Payment
+		// money convention, and every consumer of this endpoint renders it as
+		// euros. Converting here rather than at each call site: the write path in
+		// /api/user/project/vacancy already does the mirror image of this, and the
+		// job page was printing cents with a € in front of them.
+		return json({
+			...data,
+			offeredAmount:
+				data.offeredAmount != null ? data.offeredAmount / 100 : null,
+			myTeamMemberId: teamMember?.id,
+		});
 	}),
 );

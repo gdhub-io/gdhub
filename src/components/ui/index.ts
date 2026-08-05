@@ -6,6 +6,12 @@ export {
 	type SectionHeadingProps,
 } from "./SectionHeading";
 export {
+	SKILL_LEVEL_STEP,
+	SKILL_LEVEL_STEPS,
+	SkillLevelMeter,
+	type SkillLevelMeterProps,
+} from "./SkillLevelMeter";
+export {
 	StatusDot,
 	type StatusDotProps,
 	type StatusTone,

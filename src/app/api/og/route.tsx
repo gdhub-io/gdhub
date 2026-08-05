@@ -17,13 +17,7 @@ export async function GET(request: NextRequest) {
 		const title = searchParams.get("t");
 		const subTitle = searchParams.get("st");
 
-		const fontData = await loadOgFont(request, "Mulish-Regular.ttf");
-
-		if (!coverImage)
-			return new ImageResponse(<>Error</>, {
-				width: 1200,
-				height: 630,
-			});
+		const fontData = await loadOgFont(request, "Onest-Regular.woff");
 
 		return new ImageResponse(
 			<div
@@ -38,24 +32,31 @@ export async function GET(request: NextRequest) {
 					justifyContent: "center",
 					// alignItems: 'center',
 					position: "relative",
-					fontFamily: '"Mulish"',
+					fontFamily: '"Onest"',
 				}}
 			>
-				<img
-					aria-label="OG Image"
-					width="1200"
-					height="630"
-					src={coverImage}
-					style={{ position: "absolute" }}
-				/>
+				{coverImage ? (
+					<img
+						aria-label="OG Image"
+						width="1200"
+						height="630"
+						src={coverImage}
+						style={{ position: "absolute" }}
+					/>
+				) : null}
 
 				<div
 					style={{
 						width: "100%",
 						height: "100%",
 						display: "flex",
-						background:
-							"linear-gradient(to right, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.2))",
+						// Without a cover the same dark wash would sit on nothing, so the
+						// card falls back to the brand gradient — the shape og-blog uses,
+						// so a project with no cover still shares as a GDHub card rather
+						// than as the word "Error".
+						background: coverImage
+							? "linear-gradient(to right, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.2))"
+							: "linear-gradient(135deg, rgb(10, 10, 10) 0%, rgb(30, 8, 24) 55%, rgba(117, 19, 93, 0.5))",
 						position: "absolute",
 					}}
 				></div>
@@ -244,7 +245,7 @@ export async function GET(request: NextRequest) {
 				height: 630,
 				fonts: [
 					{
-						name: "Mulish",
+						name: "Onest",
 						data: fontData,
 						style: "normal",
 					},
