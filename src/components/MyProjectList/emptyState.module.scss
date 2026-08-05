@@ -5,7 +5,7 @@
   justify-content: center;
   padding: 40px 20px;
   text-align: center;
-  border-radius: 8px;
+  border-radius: var(--gd-radius-card);
   margin: 20px 0;
 }
 
@@ -60,7 +60,7 @@
   align-items: flex-start;
   background-color: var(--gd-info-tint);
   border: 1px solid var(--gd-info-tint);
-  border-radius: 8px;
+  border-radius: var(--gd-radius-card);
   padding: 16px;
   max-width: 500px;
 }

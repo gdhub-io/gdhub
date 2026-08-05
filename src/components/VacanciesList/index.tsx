@@ -86,59 +86,36 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 	return (
 		<>
 			{isFetched && list.length > 0 && (
-				<ConfigProvider
-					theme={{
-						components: {
-							Segmented: {
-								trackBg: "rgba(0, 0, 0, 0.04)",
-								itemSelectedBg: "var(--gd-color-surface)",
-								itemColor: "rgba(0, 0, 0, 0.65)",
-								itemSelectedColor: "rgba(0, 0, 0, 0.88)",
-								itemHoverColor: "rgba(0, 0, 0, 0.88)",
-								controlHeight: 36,
-								controlPaddingHorizontal: 14,
-								trackPadding: 2,
-								borderRadius: 6,
-								borderRadiusSM: 4,
+				<div className={styles.filterBar}>
+					<Segmented<CooperationType | "all">
+						value={typeFilter}
+						onChange={setTypeFilter}
+						options={[
+							{ label: t("vacancies.filter.type.all", "All"), value: "all" },
+							{
+								label: t("vacancies.filter.type.paid", "Paid"),
+								value: "paid",
 							},
-							Select: { controlHeight: 36 },
-						},
-					}}
-				>
-					<div className={styles.filterBar}>
-						<Segmented<CooperationType | "all">
-							value={typeFilter}
-							onChange={setTypeFilter}
-							options={[
-								{ label: t("vacancies.filter.type.all", "All"), value: "all" },
-								{
-									label: t("vacancies.filter.type.paid", "Paid"),
-									value: "paid",
-								},
-								{
-									label: t("vacancies.filter.type.equity", "Equity"),
-									value: "equity",
-								},
-								{
-									label: t(
-										"vacancies.filter.type.experience",
-										"For experience",
-									),
-									value: "experience",
-								},
-							]}
-						/>
-						<DirectionSelect
-							variant="filled"
-							includeAll
-							allLabel={t("vacancies.filter.allDirections", "All directions")}
-							directions={directionNames}
-							value={directionFilter}
-							onChange={setDirectionFilter}
-							style={{ width: 220 }}
-						/>
-					</div>
-				</ConfigProvider>
+							{
+								label: t("vacancies.filter.type.equity", "Equity"),
+								value: "equity",
+							},
+							{
+								label: t("vacancies.filter.type.experience", "For experience"),
+								value: "experience",
+							},
+						]}
+					/>
+					<DirectionSelect
+						variant="filled"
+						includeAll
+						allLabel={t("vacancies.filter.allDirections", "All directions")}
+						directions={directionNames}
+						value={directionFilter}
+						onChange={setDirectionFilter}
+						style={{ width: 220 }}
+					/>
+				</div>
 			)}
 
 			{isFetched && filtered.length > 0 ? (

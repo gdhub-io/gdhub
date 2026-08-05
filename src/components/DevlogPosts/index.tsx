@@ -9,11 +9,9 @@ import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import ReactNiceAvatar from "react-nice-avatar";
 import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
 import { DevlogPostLink } from "@/components/DevlogPostLink";
 import {
@@ -55,7 +53,6 @@ const PostCard: React.FC<{
 	};
 	onClick: (e: React.MouseEvent) => void;
 }> = ({ post, onClick }) => {
-	const router = useRouter();
 	const { t } = useTranslate();
 	const { status: authStatus } = useSession();
 	const isUserAuthenticated = authStatus === "authenticated";
@@ -137,10 +134,16 @@ const PostCard: React.FC<{
 		}
 	};
 
-	const handleProjectClick = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		router.push(`/project/${post.project?.slug}`);
-	};
+	/** Two letters when there is no photo — a tinted circle beats a generated face. */
+	const authorInitials = useMemo(() => {
+		const name = post.author?.name?.trim();
+		if (!name) return "?";
+		return name
+			.split(/\s+/)
+			.slice(0, 2)
+			.map((part) => part[0]?.toUpperCase() ?? "")
+			.join("");
+	}, [post.author?.name]);
 
 	const getPreviewText = () => {
 		const raw = post.contentEditor
@@ -186,42 +189,28 @@ const PostCard: React.FC<{
 			>
 				<div className={styles.postContent}>
 					<div className={styles.postHeader}>
-						{/* author avatar */}
 						{post.author?.image ? (
 							<Image
 								src={post.author.image}
 								alt={post.author?.name || ""}
-								width={24}
-								height={24}
-								style={{ borderRadius: "50%" }}
+								width={36}
+								height={36}
+								className={styles.authorAvatar}
 								unoptimized
 							/>
 						) : (
-							<ReactNiceAvatar
-								style={{ width: "24px", height: "24px" }}
-								eyeStyle="circle"
-								faceColor="#F9C9B6"
-								glassesStyle="none"
-								mouthStyle="smile"
-								hatStyle="none"
-							/>
+							<span className={styles.authorAvatar} aria-hidden="true">
+								{authorInitials}
+							</span>
 						)}
-						<span>{post.author?.name}</span>
-						<span>@</span>
-						<span
-							role="link"
-							tabIndex={0}
-							onClick={handleProjectClick}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									handleProjectClick(e as unknown as React.MouseEvent);
-								}
-							}}
-						>
-							{post.project?.name}
+
+						{/* The project leads: in a hub feed the reader picks what to read by
+						    project, not by who typed it. The name is not a link here — the
+						    post it opens carries one. */}
+						<span className={styles.postIdentity}>
+							<span className={styles.postProject}>{post.project?.name}</span>
+							<span className={styles.postAuthor}>{post.author?.name}</span>
 						</span>
-						<span>•</span>
-						<span>{dayjs(post.publishedAt).fromNow()}</span>
 					</div>
 
 					<div className={styles.textContent}>
@@ -241,66 +230,72 @@ const PostCard: React.FC<{
 					) : null}
 
 					<div className={styles.postMeta}>
-						<Tooltip
-							title={
-								isUserAuthenticated
-									? t("page.devlog.applauseTooltip", "Rate the team's work")
-									: t(
-											"page.devlog.applauseAuthTooltip",
-											"Only authorized users can leave applause",
-										)
-							}
-						>
-							<span className={styles.applauseWrapper}>
-								<HappyProvider>
-									<Button
-										type="text"
-										shape="round"
-										size="small"
-										className={`${styles.applauseButton} ${
-											hasApplauded ? styles.applauseButtonActive : ""
-										}`}
-										icon={
-											<span
-												className={styles.applauseIcon}
-												style={{ width: 18, height: 18 }}
-											>
-												{isApplauseStateLoading ? (
-													<LoadingOutlined
-														spin
-														style={{ fontSize: 18, lineHeight: 1 }}
-													/>
-												) : (
-													<Lottie
-														key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
-														animationData={applauseDefaultAnimation}
-														autoplay={
-															hasApplauded && applauseAnimationToken > 0
-														}
-														loop={false}
-														className={styles.applauseIconAnimation}
-													/>
-												)}
-											</span>
-										}
-										onClick={handleApplauseToggle}
-										disabled={
-											!isUserAuthenticated ||
-											isApplauseLoading ||
-											isApplauseStateLoading
-										}
-									>
-										{applauseCount > 0 ? applauseCount : null}
-									</Button>
-								</HappyProvider>
-							</span>
-						</Tooltip>
-						{!post.isSystem && (
-							<PageViews
-								path={`/devlog/${post.id}`}
-								startDate={post.publishedAt.toString()}
-							/>
-						)}
+						<span className={styles.postStats}>
+							<Tooltip
+								title={
+									isUserAuthenticated
+										? t("page.devlog.applauseTooltip", "Rate the team's work")
+										: t(
+												"page.devlog.applauseAuthTooltip",
+												"Only authorized users can leave applause",
+											)
+								}
+							>
+								<span className={styles.applauseWrapper}>
+									<HappyProvider>
+										<Button
+											type="text"
+											shape="round"
+											size="small"
+											className={`${styles.applauseButton} ${
+												hasApplauded ? styles.applauseButtonActive : ""
+											}`}
+											icon={
+												<span
+													className={styles.applauseIcon}
+													style={{ width: 18, height: 18 }}
+												>
+													{isApplauseStateLoading ? (
+														<LoadingOutlined
+															spin
+															style={{ fontSize: 18, lineHeight: 1 }}
+														/>
+													) : (
+														<Lottie
+															key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
+															animationData={applauseDefaultAnimation}
+															autoplay={
+																hasApplauded && applauseAnimationToken > 0
+															}
+															loop={false}
+															className={styles.applauseIconAnimation}
+														/>
+													)}
+												</span>
+											}
+											onClick={handleApplauseToggle}
+											disabled={
+												!isUserAuthenticated ||
+												isApplauseLoading ||
+												isApplauseStateLoading
+											}
+										>
+											{applauseCount > 0 ? applauseCount : null}
+										</Button>
+									</HappyProvider>
+								</span>
+							</Tooltip>
+							{!post.isSystem && (
+								<PageViews
+									path={`/devlog/${post.id}`}
+									startDate={post.publishedAt.toString()}
+								/>
+							)}
+						</span>
+
+						<span className={styles.postTime}>
+							{dayjs(post.publishedAt).fromNow()}
+						</span>
 					</div>
 				</div>
 			</div>
@@ -313,8 +308,11 @@ const PostSkeleton = () => {
 		<div className={styles.postCard}>
 			<div className={styles.postContent}>
 				<div className={styles.postHeader}>
-					<Skeleton.Avatar active size={24} shape="circle" />
-					<Skeleton.Input active style={{ width: 180, height: 12 }} />
+					<Skeleton.Avatar active size={36} shape="circle" />
+					<div className={styles.postIdentity}>
+						<Skeleton.Input active style={{ width: 150, height: 14 }} />
+						<Skeleton.Input active style={{ width: 96, height: 12 }} />
+					</div>
 				</div>
 
 				<div className={styles.textContent}>
@@ -394,6 +392,7 @@ const DevlogPosts = ({
 
 	const headerNode = useSectionHeader ? (
 		<HubSectionHeader
+			className={styles.feedHeader}
 			title={
 				title ?? t("hub.activity-feed.title", "Devlog posts from projects")
 			}

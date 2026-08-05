@@ -12,8 +12,23 @@
   margin-bottom: 24px;
 }
 
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+// Grows to fill the row, wraps to its own line when 250px no longer fit — which
+// on a phone is immediately, so each filter ends up full width.
+.filterItem {
+  flex: 1 1 250px;
+  min-width: 0;
+}
+
 .filterSelect {
-  min-width: 250px;
+  width: 100%;
+  min-width: 0;
 }
 
 .mentorsGrid {
@@ -22,7 +37,7 @@
 
 .mentorCard {
   height: 100%;
-  border-radius: 8px;
+  border-radius: var(--gd-radius-card);
   overflow: hidden;
   border: 1px solid var(--gd-color-border-strong);
   transition: all 0.2s ease-in-out;

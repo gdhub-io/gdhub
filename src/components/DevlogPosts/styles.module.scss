@@ -10,6 +10,12 @@
 }
 
 .hubVariant {
+  // The section title owns the rule beneath it — a line above the title fences
+  // the heading off from the list it introduces.
+  .feedHeader {
+    border-bottom: 1px solid var(--gd-color-border-strong);
+  }
+
   .postsList {
     gap: 0;
   }
@@ -22,8 +28,10 @@
     background: transparent;
     border-bottom: 1px solid var(--gd-color-border-strong);
 
-    &:hover {
-      background: rgba(0, 0, 0, 0.03);
+    @media (hover: hover) {
+      &:hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
     }
   }
 
@@ -31,11 +39,36 @@
     flex-direction: column;
     gap: 12px;
 
+    .postHeader + .textContent {
+      margin-top: -4px;
+    }
+
     .postImage {
       width: 100%;
       height: 180px;
-      border-radius: 12px;
-      border: 1px solid rgb(0 0 0 / 17%);
+      border-radius: var(--gd-radius-card);
+      border: 1px solid var(--gd-color-border);
+    }
+  }
+
+  // A separator that stops short of the screen edge reads as a card that failed
+  // to fill the width. The row breaks out of the page gutter and pays it back as
+  // padding, so the rule spans the display while the content stays on the grid
+  // with everything above it.
+  @media screen and (max-width: 767px) {
+    // The section shell clips its content so the rounded corners hold on a wide
+    // screen. There are no rounded corners here — the rows run the full width of
+    // the display — and the clip was cutting the break-out straight back off.
+    overflow: visible;
+
+    // `width: 100%` pins the row to the container, so negative margins only slid
+    // it left instead of widening it — the rule reached the left edge and stopped
+    // 20px short on the right. `auto` lets the margins do their job.
+    .postCard,
+    .feedHeader {
+      width: auto;
+      margin-inline: calc(-1 * var(--app-content-gutter, 0px));
+      padding-inline: var(--app-content-gutter, 0px);
     }
   }
 }
@@ -72,8 +105,10 @@
   cursor: pointer;
   padding: 8px;
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.02);
+  @media (hover: hover) {
+    &:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
   }
 }
 
@@ -108,9 +143,48 @@
 .postHeader {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
+  min-width: 0;
+}
+
+// No photo: initials on a neutral tint. A generated face reads as a real person
+// who isn't there, and it competes with the project name for attention.
+.authorAvatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gd-neutral-100);
+  color: var(--gd-color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.postIdentity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+// The project leads and the author follows: in the feed the reader chooses what
+// to read by project. Both wrap rather than truncate — names get long.
+.postProject {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gd-color-text);
+  overflow-wrap: anywhere;
+}
+
+.postAuthor {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--gd-color-text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .postMeta {
@@ -118,6 +192,7 @@
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
+  justify-content: space-between;
   color: rgba(0, 0, 0, 0.45);
   font-size: 12px;
 
@@ -128,6 +203,18 @@
     &:hover {
       color: rgba(0, 0, 0, 0.85);
     }
+  }
+
+  .postStats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .postTime {
+    color: var(--gd-color-text-tertiary);
+    white-space: nowrap;
   }
 
   span {
@@ -209,14 +296,13 @@
 
 @media screen and (max-width: 576px) {
   .hubVariant {
-    .header,
-    .postCard {
-      padding-inline: 16px;
+    .header {
+      padding-inline: 0;
     }
 
     .postContent {
       .postImage {
-        height: 148px;
+        height: 170px;
       }
     }
   }
@@ -241,10 +327,10 @@
 }
 
 .postExcerpt {
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--gd-color-text);
   font-size: 14px;
   line-height: 1.6;
-  margin-bottom: 12px;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;

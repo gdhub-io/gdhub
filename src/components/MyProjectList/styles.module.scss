@@ -14,25 +14,6 @@
   gap: 12px;
 }
 
-.hubCreateBtn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  height: auto !important;
-  padding: 8px 16px !important;
-  border-radius: 8px !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  background: var(--gd-neutral-950) !important;
-  border-color: var(--gd-neutral-950) !important;
-  box-shadow: none !important;
-
-  &:hover {
-    background: var(--gd-neutral-800) !important;
-    border-color: var(--gd-neutral-800) !important;
-  }
-}
-
 .sectionTitle {
   margin-bottom: 24px !important;
   position: relative;
