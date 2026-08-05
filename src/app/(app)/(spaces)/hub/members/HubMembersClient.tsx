@@ -32,6 +32,12 @@ import {
 import { useAccess } from "@/components/access/AccessProvider";
 import { getWorkDirection } from "@/components/DirectionBadge";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import {
+	SKILL_LEVEL_STEP,
+	SKILL_LEVEL_STEPS,
+	SkillLevelMeter,
+} from "@/components/ui";
+import type { SkillLevel } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const SpecialistPreviewModal = dynamic(
@@ -42,12 +48,11 @@ const SpecialistPreviewModal = dynamic(
 // A specialist counts as "new" for two weeks after their card is created.
 const NEW_WINDOW_DAYS = 14;
 // Experience order + rank (drives the mini meter and dropdown ordering).
-const LEVEL_RANK: Record<string, number> = {
-	Novice: 1,
-	Beginner: 2,
-	Skillful: 3,
-	Expert: 4,
-};
+// Ranks come from the design system's five-step scale. The local copy this
+// replaced listed four and omitted `Experienced`, so that level drew an empty
+// meter and sorted below every other one.
+const levelRank = (label: string) =>
+	SKILL_LEVEL_STEP[label as SkillLevel] ?? SKILL_LEVEL_STEPS + 1;
 
 export function HubMembersClient({
 	usersCount,
@@ -204,9 +209,7 @@ function FilterDropdown({
 
 	const ordered =
 		variant === "level"
-			? [...items].sort(
-					(a, b) => (LEVEL_RANK[a.label] || 99) - (LEVEL_RANK[b.label] || 99),
-				)
+			? [...items].sort((a, b) => levelRank(a.label) - levelRank(b.label))
 			: items;
 	const selected = items.filter((i) => i.isRefined).length;
 
@@ -235,7 +238,10 @@ function FilterDropdown({
 							{variant === "direction" ? (
 								<DirectionChip name={item.label} />
 							) : (
-								<LevelMeter level={LEVEL_RANK[item.label] || 0} />
+								<SkillLevelMeter
+									level={item.label as SkillLevel}
+									size="compact"
+								/>
 							)}
 							<span className={styles.panelLabel}>{item.label}</span>
 						</span>
@@ -292,19 +298,6 @@ function DirectionChip({ name }: { name: string }) {
 	return (
 		<span className={styles.dirChip} style={{ background: color }}>
 			<Icon size={13} stroke={2} color={ink} />
-		</span>
-	);
-}
-
-function LevelMeter({ level }: { level: number }) {
-	return (
-		<span className={styles.meter}>
-			{[1, 2, 3, 4].map((i) => (
-				<span
-					key={i}
-					className={`${styles.dot} ${i <= level ? styles.dotOn : ""}`}
-				/>
-			))}
 		</span>
 	);
 }

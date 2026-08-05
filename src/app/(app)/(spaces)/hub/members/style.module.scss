@@ -164,24 +164,6 @@
 	flex-shrink: 0;
 }
 
-.meter {
-	display: inline-flex;
-	align-items: center;
-	gap: 3px;
-	flex-shrink: 0;
-}
-
-.dot {
-	width: 6px;
-	height: 6px;
-	border-radius: var(--gd-radius-pill);
-	background: var(--gd-color-border-strong);
-}
-
-.dotOn {
-	background: var(--gd-color-text);
-}
-
 .panelLabel {
 	font-size: 13px;
 	color: var(--gd-neutral-700);

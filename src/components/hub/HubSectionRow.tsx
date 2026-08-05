@@ -10,7 +10,9 @@ export type HubSectionRowProps = {
 	/** Already-translated. */
 	title: string;
 	/** Already-translated. Omitted when there is nothing useful to say. */
-	subtitle?: string | null;
+	/** ReactNode so a row can carry something richer than text — a level meter,
+	 * a status dot — without every card re-implementing the row. */
+	subtitle?: ReactNode;
 	target?: string;
 };
 
@@ -38,7 +40,10 @@ export function HubSectionRow({
 						{title}
 					</div>
 					{subtitle && (
-						<div className={styles.secondary} title={subtitle}>
+						<div
+							className={styles.secondary}
+							title={typeof subtitle === "string" ? subtitle : undefined}
+						>
 							{subtitle}
 						</div>
 					)}

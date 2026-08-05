@@ -15,12 +15,14 @@ export const GET = withAuth({ mode: "user" })(async () => {
 		select: {
 			id: true,
 			image: true,
+			createdAt: true,
 			specialities: {
 				where: {
 					specialization: { not: "" },
 				},
 				select: {
 					name: true,
+					level: true,
 				},
 				take: 1,
 				orderBy: { updatedAt: "desc" },
@@ -36,6 +38,11 @@ export const GET = withAuth({ mode: "user" })(async () => {
 			id: u.id,
 			image: u.image,
 			speciality: u.specialities[0]?.name || "",
+			// The hub card shows the level instead of a "recently joined" line that
+			// said the same thing on every row, and how long ago they actually
+			// joined — the list is already ordered by it.
+			level: u.specialities[0]?.level ?? null,
+			joinedAt: u.createdAt,
 		}));
 
 	return json(result);
