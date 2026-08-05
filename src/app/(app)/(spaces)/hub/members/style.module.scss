@@ -41,24 +41,28 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	background: var(--gd-color-surface);
-	border: 1px solid var(--gd-color-border-strong);
+	min-height: var(--gd-control-height);
+	background: var(--gd-neutral-100);
+	border: 1px solid transparent;
 	border-radius: var(--gd-radius-control);
-	padding: 10px 14px;
+	padding: 0 14px;
 	font-size: 13px;
 	font-weight: 500;
 	color: var(--gd-neutral-700);
 	cursor: pointer;
-	transition: border-color 0.15s ease;
+	transition: background-color 0.15s ease;
 
-	&:hover {
-		border-color: var(--gd-neutral-300);
+	@media (hover: hover) {
+		&:hover {
+			background: var(--gd-neutral-200);
+		}
 	}
 }
 
+// A filter that is on gets the orientation treatment, not a heavier box.
 .filterBtnActive {
-	border-color: var(--gd-color-text);
-	background: var(--gd-color-surface-sunken);
+	background: var(--gd-color-accent-subtle);
+	border-color: var(--gd-brand-200);
 	color: var(--gd-color-text);
 	font-weight: 600;
 }
@@ -160,24 +164,6 @@
 	flex-shrink: 0;
 }
 
-.meter {
-	display: inline-flex;
-	align-items: center;
-	gap: 3px;
-	flex-shrink: 0;
-}
-
-.dot {
-	width: 6px;
-	height: 6px;
-	border-radius: var(--gd-radius-pill);
-	background: var(--gd-color-border-strong);
-}
-
-.dotOn {
-	background: var(--gd-color-text);
-}
-
 .panelLabel {
 	font-size: 13px;
 	color: var(--gd-neutral-700);
@@ -231,15 +217,17 @@
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	background: var(--gd-color-surface);
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-card);
-	padding: 13px 16px;
+	min-height: var(--gd-control-height);
+	background: var(--gd-neutral-100);
+	border: 1px solid transparent;
+	border-radius: var(--gd-radius-control);
+	padding: 0 16px;
 	margin-bottom: 16px;
-	transition: border-color 0.15s ease;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
 
 	&:focus-within {
-		border-color: var(--gd-neutral-300);
+		background: var(--gd-color-surface);
+		border-color: var(--gd-color-border-focus);
 	}
 }
 

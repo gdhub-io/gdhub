@@ -30,6 +30,12 @@
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
 	background: transparent;
+
+	// Narrow layout: these cards stand alone above an infinite feed rather than
+	// inside a column, and a transparent panel on the page tint loses its edges.
+	@media (max-width: 767px) {
+		background: var(--gd-color-surface);
+	}
 }
 
 // Spacing only — the title and the action come from SectionHeading / ViewAllLink.

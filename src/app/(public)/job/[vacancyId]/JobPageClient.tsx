@@ -73,6 +73,8 @@ export interface JobPageProps {
 		myTeamMemberId?: string;
 		offeredAmount?: number | null;
 		offeredRateType?: PaymentRateType | null;
+		/** Work direction, used by the share card for its colour and icon. */
+		direction?: { name: string } | null;
 	};
 	pageCover: string | null;
 	isAuthenticated: boolean;

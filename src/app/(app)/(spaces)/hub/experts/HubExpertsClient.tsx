@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Button, ConfigProvider, Form, Row, Select, Space } from "antd";
+import { Button, ConfigProvider, Form, Select } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
@@ -55,7 +55,9 @@ export default function HubExpertsClient() {
 				<ConfigProvider
 					theme={{
 						components: {
-							Select: { controlHeight: 36 },
+							// Height comes from the theme's control ladder — a local 36
+							// here is how this page ended up with shorter controls than
+							// every other filter bar.
 							Form: { itemMarginBottom: 0 },
 						},
 					}}
@@ -70,8 +72,10 @@ export default function HubExpertsClient() {
 							});
 						}}
 					>
-						<Space size={16}>
-							<Form.Item name="lang">
+						{/* A fixed row of 250px-wide selects ran off the side of a
+						    phone. Wrapping row, each select free to grow. */}
+						<div className={styles.filterRow}>
+							<Form.Item name="lang" className={styles.filterItem}>
 								<Select
 									allowClear
 									placeholder={t(
@@ -98,7 +102,7 @@ export default function HubExpertsClient() {
 								/>
 							</Form.Item>
 
-							<Form.Item name="workDirectionId">
+							<Form.Item name="workDirectionId" className={styles.filterItem}>
 								<DirectionSelect
 									allowClear
 									placeholder={t("experts.page.filter", "Filter by direction")}
@@ -106,14 +110,17 @@ export default function HubExpertsClient() {
 									className={styles.filterSelect}
 								/>
 							</Form.Item>
-						</Space>
+						</div>
 					</Form>
 				</ConfigProvider>
 			</div>
 
-			<Row gutter={[24, 24]} className={styles.mentorsGrid}>
+			{/* No Row here: ExpertList renders its own grid, and two nested antd
+			    Rows stack their negative gutter margins — the cards ended up 20px
+			    outside the page gutter on each side, which is exactly the gutter. */}
+			<div className={styles.mentorsGrid}>
 				<ExpertList filter={filter} onClick={handleExpertClick} />
-			</Row>
+			</div>
 
 			<ExpertRequestModal
 				open={!!expertRequestModalOpen}

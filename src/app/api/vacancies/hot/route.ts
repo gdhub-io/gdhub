@@ -1,7 +1,11 @@
-import { json, withAuth } from "@/lib/api-handlers";
+import { json, pipe, withAuth } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
-export const GET = withAuth({ mode: "user" })(async () => {
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "hub.jobs.view" }),
+)(async () => {
 	const now = new Date();
 
 	const vacancies = await prisma.teamVacancy.findMany({

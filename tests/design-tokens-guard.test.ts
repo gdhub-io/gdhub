@@ -37,14 +37,11 @@ const ALLOWED: Record<string, string> = {
 	// Content, not chrome. A role would not improve any of these.
 	"src/components/GameOnStoreCardList/styles.module.scss":
 		"Steam / itch / Google Play / Epic brand colours",
-	"src/components/ui/skillLevel.tsx":
-		"five level steps that must stay distinguishable",
 	"src/components/profile/SkillCapitalIcon.tsx":
 		"brand gradient inside an illustration",
 	"src/components/GameCard/DefaultCover.tsx": "placeholder cover art gradients",
 	"src/components/landing/LandingFeedbackSection/index.tsx":
 		"generated avatar skin tone",
-	"src/components/DevlogPosts/index.tsx": "generated avatar skin tone",
 	"src/components/Chat/ChatMessages.tsx": "avatar identity fills",
 	"src/components/VerifyCertificate/VerifyResult.tsx": "avatar placeholder fill",
 	"src/components/event/EventScheduleGantt/index.tsx": "avatar group fill",

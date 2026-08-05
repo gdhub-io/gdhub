@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 		// Footer label — lets non-blog announcements (e.g. devlogs) reuse this card.
 		const urlLabel = searchParams.get("u") || "gdhub.io/blog";
 
-		const fontData = await loadOgFont(request, "Mulish-Regular.ttf");
+		const fontData = await loadOgFont(request, "Onest-Regular.woff");
 
 		return new ImageResponse(
 			<div
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 					flexDirection: "column",
 					justifyContent: "center",
 					position: "relative",
-					fontFamily: '"Mulish"',
+					fontFamily: '"Onest"',
 				}}
 			>
 				{coverImage ? (
@@ -247,7 +247,7 @@ export async function GET(request: NextRequest) {
 				height: 630,
 				fonts: [
 					{
-						name: "Mulish",
+						name: "Onest",
 						data: fontData,
 						style: "normal",
 					},

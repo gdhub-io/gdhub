@@ -1,0 +1,33 @@
+.meter {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+	vertical-align: middle;
+
+	&[data-size="default"] {
+		gap: 3px;
+
+		.segment {
+			width: 6px;
+			height: 14px;
+		}
+	}
+
+	&[data-size="compact"] {
+		gap: 2px;
+
+		.segment {
+			width: 5px;
+			height: 10px;
+		}
+	}
+}
+
+.segment {
+	border-radius: 2px;
+	background: var(--gd-color-border-strong);
+
+	&[data-filled="true"] {
+		background: var(--gd-color-text);
+	}
+}

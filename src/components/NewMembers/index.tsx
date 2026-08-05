@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Avatar } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
 import {
 	getHubSectionShellClass,
 	HubSectionBleed,
@@ -9,12 +10,16 @@ import {
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
 import { HubSectionRow } from "@/components/hub/HubSectionRow";
+import { SKILL_LEVEL_STEP } from "@/components/ui";
+import type { SkillLevel } from "@/config/prisma-enums";
 import styles from "./styles.module.scss";
 
 interface LatestUser {
 	id: string;
 	image: string | null;
 	speciality: string;
+	level: SkillLevel | null;
+	joinedAt: string;
 }
 
 export default function NewMembers() {
@@ -47,7 +52,18 @@ export default function NewMembers() {
 						key={user.id}
 						href="/hub/members"
 						title={user.speciality || t("page.hub.member", "Member")}
-						subtitle={t("page.hub.member-joined", "Recently joined")}
+						// "Recently joined" said the same thing on every row of a list
+						// whose whole premise is that everyone here joined recently.
+						// The level is the word only: a filled meter next to five names
+						// in a sidebar column pulls the eye away from the names.
+						subtitle={[
+							user.level && SKILL_LEVEL_STEP[user.level]
+								? t(user.level, user.level)
+								: null,
+							user.joinedAt ? dayjs(user.joinedAt).fromNow() : null,
+						]
+							.filter(Boolean)
+							.join(" · ")}
 						media={
 							<Avatar src={user.image} size={32} className={styles.avatar}>
 								{user.speciality?.charAt(0)?.toUpperCase()}

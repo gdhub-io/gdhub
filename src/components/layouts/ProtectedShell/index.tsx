@@ -29,6 +29,7 @@ import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
+import type { Permission } from "@/config/spaces";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
 
@@ -246,50 +247,69 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		linkToChat,
 	]);
 
-	const menuItems: MenuProps["items"] = [
-		{
-			key: "/hub",
-			label: <Link href="/hub">{t("hub.menu.overview", "Overview")}</Link>,
-		},
-		{
-			key: "/hub/jobs",
-			label: (
-				<Link href="/hub/jobs">{t("hub.menu.jobs", "Open positions")}</Link>
-			),
-		},
-		{
-			key: "/hub/members",
-			label: (
-				<Link href="/hub/members">
-					{t("hub.menu.talentPool", "Talent Pool")}
-				</Link>
-			),
-		},
-		{
-			key: "/hub/projects",
-			label: (
-				<Link href="/hub/projects">{t("hub.menu.projects", "Projects")}</Link>
-			),
-		},
-		{
-			key: "/hub/events",
-			label: <Link href="/hub/events">{t("hub.menu.events", "Events")}</Link>,
-		},
-		{
-			key: "/hub/experts",
-			label: (
-				<Link href="/hub/experts">{t("hub.menu.experts", "Experts")}</Link>
-			),
-		},
-		{
-			key: "/user/settings/general",
-			label: (
-				<Link href="/user/settings/general">
-					{t("hub.menu.settings", "Settings")}
-				</Link>
-			),
-		},
-	];
+	/**
+	 * A tab is drawn only for someone allowed to open what is behind it.
+	 *
+	 * The permission is the same one the page itself checks, so the nav and the
+	 * page can no longer disagree — a link that leads to a refusal is worse than
+	 * no link. Overview and Settings carry no gate: the space root and the user's
+	 * own settings belong to whoever is signed in.
+	 */
+	const menuItems: MenuProps["items"] = (
+		[
+			{
+				key: "/hub",
+				label: <Link href="/hub">{t("hub.menu.overview", "Overview")}</Link>,
+			},
+			{
+				key: "/hub/jobs",
+				permission: "hub.jobs.view",
+				label: (
+					<Link href="/hub/jobs">{t("hub.menu.jobs", "Open positions")}</Link>
+				),
+			},
+			{
+				key: "/hub/members",
+				permission: "hub.talent_pool.view",
+				label: (
+					<Link href="/hub/members">
+						{t("hub.menu.talentPool", "Talent Pool")}
+					</Link>
+				),
+			},
+			{
+				key: "/hub/projects",
+				permission: "hub.projects.view",
+				label: (
+					<Link href="/hub/projects">{t("hub.menu.projects", "Projects")}</Link>
+				),
+			},
+			{
+				key: "/hub/events",
+				permission: "hub.events.view",
+				label: <Link href="/hub/events">{t("hub.menu.events", "Events")}</Link>,
+			},
+			{
+				key: "/hub/experts",
+				permission: "hub.experts.view",
+				label: (
+					<Link href="/hub/experts">{t("hub.menu.experts", "Experts")}</Link>
+				),
+			},
+			{
+				key: "/user/settings/general",
+				label: (
+					<Link href="/user/settings/general">
+						{t("hub.menu.settings", "Settings")}
+					</Link>
+				),
+			},
+		] satisfies (NonNullable<MenuProps["items"]>[number] & {
+			permission?: Permission;
+		})[]
+	)
+		.filter((item) => !item.permission || can(item.permission))
+		.map(({ permission: _permission, ...item }) => item);
 
 	return (
 		<>

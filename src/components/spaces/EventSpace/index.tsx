@@ -130,15 +130,19 @@ export const EventSpace = ({
 					</Link>
 				),
 			},
-			{
-				key: `/user/event/${eventId}/settings/general`,
-				disabled: !can("event.info.edit"),
-				label: (
-					<Link href={`/user/event/${eventId}/settings/general`}>
-						{t("app.user.menu.settings", "Settings")}
-					</Link>
-				),
-			},
+			// Hidden rather than greyed out, same rule as everywhere else.
+			...(can("event.info.edit")
+				? [
+						{
+							key: `/user/event/${eventId}/settings/general`,
+							label: (
+								<Link href={`/user/event/${eventId}/settings/general`}>
+									{t("app.user.menu.settings", "Settings")}
+								</Link>
+							),
+						},
+					]
+				: []),
 			{
 				key: `/event/${event?.slug}`,
 				className: styles.publicPageMenuItem,

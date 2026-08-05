@@ -1,13 +1,14 @@
 "use client";
 
-import type { MenuProps } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useMemo } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import type { Permission } from "@/config/spaces";
 
 const resolveSelectedMenuKey = (pathname: string) => {
 	if (pathname.startsWith("/admin/post/")) return "/admin/posts";
@@ -22,20 +23,44 @@ const resolveSelectedMenuKey = (pathname: string) => {
 	return "/admin/users";
 };
 
-const MENU_ITEMS: MenuProps["items"] = [
-	{ key: "/admin/users", label: <Link href="/admin/users">Users</Link> },
-	{ key: "/admin/roles", label: <Link href="/admin/roles">Roles</Link> },
-	{ key: "/admin/posts", label: <Link href="/admin/posts">Posts</Link> },
+/**
+ * Every section with the permission that opens it. Staff is not one role — a
+ * marketer and an HR admin are meant to see different halves of this list, and
+ * a tab nobody in the room may open is noise at best.
+ */
+const MENU_ITEMS: {
+	key: string;
+	permission: Permission;
+	label: ReactNode;
+}[] = [
+	{
+		key: "/admin/users",
+		permission: "admin.users.view",
+		label: <Link href="/admin/users">Users</Link>,
+	},
+	{
+		key: "/admin/roles",
+		permission: "admin.roles.view",
+		label: <Link href="/admin/roles">Roles</Link>,
+	},
+	{
+		key: "/admin/posts",
+		permission: "admin.posts.view",
+		label: <Link href="/admin/posts">Posts</Link>,
+	},
 	{
 		key: "/admin/devlog-posts",
+		permission: "admin.devlog_posts.view",
 		label: <Link href="/admin/devlog-posts">DevLog Posts</Link>,
 	},
 	{
 		key: "/admin/workflows",
+		permission: "admin.workflow.view",
 		label: <Link href="/admin/workflows">Workflows</Link>,
 	},
 	{
 		key: "/admin/audit-logs",
+		permission: "admin.audit_logs.view",
 		label: <Link href="/admin/audit-logs">Audit logs</Link>,
 	},
 ];
@@ -47,13 +72,16 @@ const MENU_ITEMS: MenuProps["items"] = [
  */
 export const AdminSpace = ({ children }: { children: ReactNode }) => {
 	const pathname = usePathname() ?? "";
+	const { can } = useAccess();
 
 	const spaceHeader: SpaceHeaderConfig = useMemo(
 		() => ({
-			menuItems: MENU_ITEMS,
+			menuItems: MENU_ITEMS.filter((item) => can(item.permission)).map(
+				({ permission: _permission, ...item }) => item,
+			),
 			menuSelectedKeys: [resolveSelectedMenuKey(pathname)],
 		}),
-		[pathname],
+		[pathname, can],
 	);
 
 	useSetSpaceHeader(spaceHeader);

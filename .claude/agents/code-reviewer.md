@@ -15,8 +15,10 @@ Check, in priority order:
    `withTeamGuard`, no secret leakage, no SQL/Prisma injection via unchecked input, no
    missing `await ctx.params`.
 2. **Project conventions** — no `next-api-decorators`/`class-validator`; DB only via
-   `@/services/prisma`; env via `env()`; frontend data via TanStack Query + axios; antd for
-   UI; icons via `@react-icons/all-files` subpaths; i18n via Tolgee keys (no hardcoded
+   `@/services/prisma`; env via `env()`; frontend data via TanStack Query + axios; antd v6
+   for UI; icons from `@tabler/icons-react` only (`@react-icons/*` and `@ant-design/icons`
+   are removed — flag any reintroduction); no hard-coded colours/radii/control heights —
+   design tokens from `@/config/design` or `var(--gd-*)`; i18n via Tolgee keys (no hardcoded
    user-facing strings); comments/identifiers in English.
 3. **Quality** — clear naming, no dead code, reasonable error handling, no obvious N+1 or
    unbounded queries, tests added/updated for non-trivial logic.

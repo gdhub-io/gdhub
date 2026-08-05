@@ -30,8 +30,9 @@ worth doing. Stage 4 is where the count actually falls.
 
 Done so far: tokens / roles / themes / CSS variables / fonts, the five `ui`
 primitives, direction colours, `ProtectedShell` on `productTheme`, neutral
-navigation, Plus Jakarta Sans everywhere, and the Storybook canvas running the
-real theme with a browsable token reference.
+navigation, Onest everywhere (Latin and Cyrillic, in the app and in the OG
+cards), and the Storybook canvas running the real theme with a browsable token
+reference.
 
 ## The rule that keeps this finite
 

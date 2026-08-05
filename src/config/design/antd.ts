@@ -84,11 +84,23 @@ export function buildAntdTheme({
 			// which made every finished screen read as a wireframe.
 			colorBorder: r.border,
 
+			// `colorPrimary` is graphite here, and antd derives the "selected row"
+			// fills from it — so a picked option came out near-black with near-black
+			// text on it. Selection is orientation, which is the brand's job: a 4–8%
+			// tint and the text left alone.
+			controlItemBgActive: r.accentSubtle,
+			controlItemBgActiveHover: brand[100],
+			controlItemBgHover: r.surfaceSunken,
+			controlItemBgActiveDisabled: neutral[100],
+
 			// antd derives the `filled` variant from these. Left at the defaults
 			// they are near-white on a near-white page, which is how the auth forms
-			// ended up with invisible inputs.
-			colorFillTertiary: r.surfaceSunken,
-			colorFillSecondary: neutral[100],
+			// ended up with invisible inputs. `surfaceSunken` is the same value as
+			// the app page background, so inside the product a filled control was
+			// still invisible — the fill has to sit a step below the page, not on
+			// it. Same argument as the panel rule in the guidelines.
+			colorFillTertiary: neutral[100],
+			colorFillSecondary: neutral[200],
 			colorFillQuaternary: r.surfaceSunken,
 			colorBorderSecondary: r.border,
 
@@ -158,6 +170,21 @@ export function buildAntdTheme({
 				multipleItemHeight: 26,
 				hoverBorderColor: r.borderStrong,
 				activeBorderColor: r.accent,
+			},
+			// A segmented switch stands next to inputs and selects, so it has to be
+			// the same height and carry the same corner. The inner item nests
+			// exactly: chip radius plus the 4px track padding equals the control
+			// radius of the track around it.
+			Segmented: {
+				trackBg: neutral[100],
+				trackPadding: space[1],
+				borderRadius: radius.control,
+				borderRadiusSM: radius.chip,
+				controlHeight: d.controlHeight,
+				itemColor: r.textSecondary,
+				itemHoverColor: r.text,
+				itemSelectedBg: r.surface,
+				itemSelectedColor: r.text,
 			},
 			DatePicker: {
 				hoverBorderColor: r.borderStrong,
@@ -238,12 +265,6 @@ export function buildAntdTheme({
 				colorBgSpotlight: r.surfaceInverse,
 				colorTextLightSolid: r.textInverse,
 				borderRadius: radius.control,
-			},
-			Segmented: {
-				trackBg: r.surfaceSunken,
-				itemSelectedBg: r.surface,
-				itemSelectedColor: r.text,
-				itemColor: r.textSecondary,
 			},
 			Checkbox: {
 				controlInteractiveSize: 18,

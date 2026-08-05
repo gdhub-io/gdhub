@@ -1,23 +1,93 @@
-.container {
+/**
+ * One grid, three areas: greeting, your own blocks, the feed.
+ *
+ * The markup order is the phone order, so the wide layout is produced by
+ * `grid-template-areas` alone — no block is moved in the DOM and no component is
+ * swapped for another at a breakpoint. That matters here because the feed is
+ * infinite: on a phone nothing can live below it, so everything the user owns
+ * has to sit above it, while on a wide screen the same blocks belong in a column
+ * beside it.
+ */
+.hubGrid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas:
+		"welcome"
+		"aside"
+		"feed";
+	gap: 16px;
 	width: 100%;
 }
 
-.mainFeedColumn {
-	min-width: 0;
-}
-
-/**
- * Single rounded frame for all left-column primary sections (same radius as sidebar cards).
- */
-.mainSectionsBundle {
+.welcomeArea {
+	grid-area: welcome;
 	min-width: 0;
 	overflow: hidden;
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: 16px;
-	background: transparent;
 }
 
+.mainBundleSlot + .mainBundleSlot {
+	border-top: 1px solid var(--gd-color-border-strong);
+}
 
+.asideArea {
+	grid-area: aside;
+	min-width: 0;
+}
+
+.feedArea {
+	grid-area: feed;
+	min-width: 0;
+}
+
+/** Shown only where the sidebar column exists. */
+.wideOnly {
+	display: none;
+}
+
+/** Shown only where it does not — the counters stand in for those blocks. */
+.narrowOnly {
+	display: block;
+}
+
+@media (min-width: 768px) {
+	.hubGrid {
+		grid-template-columns: minmax(0, 1fr) 320px;
+		grid-template-areas:
+			"welcome aside"
+			"feed aside";
+		align-items: start;
+		gap: 24px;
+	}
+
+	.welcomeArea,
+	.feedArea {
+		overflow: hidden;
+		border: 1px solid var(--gd-color-border-strong);
+		border-radius: var(--gd-radius-panel);
+	}
+
+	// Travels with the feed, then pins — but *where* it pins depends on whether
+	// it fits. Short sidebar: pins 24px under the header, fully visible. Taller
+	// than the viewport: `top` goes negative by exactly the overflow, so the
+	// column scrolls until its last card reaches the bottom edge and pins there,
+	// with the feed still moving underneath. `top` is set by useScrollAwareSticky:
+	// a single edge cannot be pinned in both directions, so the hook moves it with
+	// the reading direction. Only here — pinning the block above an infinite feed
+	// on a phone would park it over the content the user is scrolling to.
+	.asideArea {
+		position: sticky;
+		top: 36px;
+		align-self: start;
+	}
+
+	.wideOnly {
+		display: block;
+	}
+
+	.narrowOnly {
+		display: none;
+	}
+}
 
 .welcomeHero {
 	position: relative;
@@ -113,43 +183,6 @@
 	background: rgba(139, 92, 246, 0.38);
 }
 
-.contentSections {
-	min-width: 0;
-}
-
-.mainFeed {
-	min-width: 0;
-}
-
-/** Below Ant Design `md` — activity feed last so infinite scroll does not trap other sections. */
-.mainFeedSlot {
-	@media (max-width: 767px) {
-		order: 10;
-	}
-}
-
-.mobileOnly {
-	width: 100%;
-}
-
-.sidebar {
-	width: 100%;
-	max-width: 320px;
-	margin-left: auto;
-	// Travels with the feed, then pins — but *where* it pins depends on whether
-	// it fits. Short sidebar: pins 24px under the header, fully visible. Taller
-	// than the viewport: `top` goes negative by exactly the overflow, so the
-	// column scrolls until its last card reaches the bottom edge and pins there,
-	// with the feed still moving underneath. `--hub-sidebar-height` is measured
-	// by the shell; without it the expression falls back to the plain top pin.
-	// `top` is set by useScrollAwareSticky: a single edge cannot be pinned in
-	// both directions, so the hook moves it with the reading direction. The
-	// fallback keeps the column sane if the script never runs.
-	position: sticky;
-	top: 36px;
-	align-self: flex-start;
-}
-
 @media (max-width: 991px) {
 	.welcomeHero {
 		flex-direction: column;
@@ -170,24 +203,8 @@
 }
 
 @media (max-width: 767px) {
-	.container:global(.ant-row) {
-		margin-inline: 0 !important;
-	}
-
-	.container > :global(.ant-col) {
-		padding-inline: 0 !important;
-	}
-
-	.mainSectionsBundle {
-		display: flex;
-		flex-direction: column;
-		border-left: none;
-		border-right: none;
-		border-radius: 0;
-
-		> * {
-			min-width: 0;
-		}
+	.welcomeHero {
+		padding-inline: 0;
 	}
 
 	.welcomeArtwork {
@@ -196,10 +213,6 @@
 }
 
 @media (max-width: 575px) {
-	.container {
-		margin-top: 0;
-	}
-
 	.welcomeSubtitle {
 		max-width: none;
 	}

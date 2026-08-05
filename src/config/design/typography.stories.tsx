@@ -1,17 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { IconCode, IconPalette, IconTool } from "@tabler/icons-react";
 import { Button, ConfigProvider } from "antd";
-import {
-	Bricolage_Grotesque,
-	Figtree,
-	Inter,
-	Manrope,
-	Plus_Jakarta_Sans,
-	Sora,
-	Space_Grotesk,
-	Wix_Madefor_Display,
-	Wix_Madefor_Text,
-} from "next/font/google";
 import type { CSSProperties } from "react";
 import { IconTile } from "@/components/ui/IconTile";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -26,82 +15,14 @@ const monoLabel: CSSProperties = {
 };
 
 /**
- * A bench for choosing the type pair. Every candidate is shown on the same
- * block of real product UI, because a font decides nothing in a specimen sheet
- * and everything in a list row.
+ * The shipped typography, on the layout the guidelines describe — a font decides
+ * nothing in a specimen sheet and everything in a list row.
  *
- * Loaders sit at module scope and repeat their options because `next/font`
- * only accepts literals — a shared options object fails the build. The
- * specimen applies them by overriding `--gd-font-ui` and `--gd-font-display`,
- * which is exactly how the tokens resolve in the app.
+ * Only the family in use is here. Candidates were compared while the decision
+ * was open and that bench is gone, because a Storybook full of fonts nobody can
+ * pick from is noise. If the question reopens, the constraint to start from is
+ * Cyrillic coverage — see the typography section of docs/design/ui-guidelines.md.
  */
-const inter = Inter({ subsets: ["latin"], display: "swap" });
-const manrope = Manrope({ subsets: ["latin"], display: "swap" });
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], display: "swap" });
-const figtree = Figtree({ subsets: ["latin"], display: "swap" });
-const sora = Sora({ subsets: ["latin"], display: "swap" });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], display: "swap" });
-const bricolage = Bricolage_Grotesque({ subsets: ["latin"], display: "swap" });
-const madeforText = Wix_Madefor_Text({ subsets: ["latin"], display: "swap" });
-const madeforDisplay = Wix_Madefor_Display({
-	subsets: ["latin"],
-	display: "swap",
-});
-
-type FontPair = {
-	id: string;
-	name: string;
-	/** Why this pair is on the bench — the tone it brings, not its history. */
-	note: string;
-	ui: string;
-	display: string;
-};
-
-const pairs: FontPair[] = [
-	{
-		id: "jakarta",
-		name: "Plus Jakarta Sans",
-		note: "In use. One family both roles — warmer than Inter, still neutral.",
-		ui: jakarta.style.fontFamily,
-		display: jakarta.style.fontFamily,
-	},
-	{
-		id: "inter-manrope",
-		name: "Inter + Manrope",
-		note: "The previous shape of the system: a neutral UI face under a separate display one.",
-		ui: inter.style.fontFamily,
-		display: manrope.style.fontFamily,
-	},
-	{
-		id: "inter-bricolage",
-		name: "Inter + Bricolage Grotesque",
-		note: "Inter disappears; Bricolage gives the headings a hand-cut edge.",
-		ui: inter.style.fontFamily,
-		display: bricolage.style.fontFamily,
-	},
-	{
-		id: "inter-space",
-		name: "Inter + Space Grotesk",
-		note: "A technical display face — the games tone, if the product ever wants it.",
-		ui: inter.style.fontFamily,
-		display: spaceGrotesk.style.fontFamily,
-	},
-	{
-		id: "madefor",
-		name: "Wix Madefor Text + Display",
-		note: "Drawn as a pair, so the two sizes tune to each other by design.",
-		ui: madeforText.style.fontFamily,
-		display: madeforDisplay.style.fontFamily,
-	},
-	{
-		id: "figtree-sora",
-		name: "Figtree + Sora",
-		note: "Friendliest body with the most geometric headings.",
-		ui: figtree.style.fontFamily,
-		display: sora.style.fontFamily,
-	},
-];
-
 const rows: [string, typeof IconCode, string, string][] = [
 	["development", IconCode, "Unity Gameplay Programmer", "$12,480"],
 	["2d-art-animation", IconPalette, "Character Artist", "$8,200"],
@@ -109,21 +30,17 @@ const rows: [string, typeof IconCode, string, string][] = [
 ];
 
 /**
- * One pair, shown on the layout the guidelines describe.
- *
  * The nested `ConfigProvider` matters: antd bakes a resolved family into its
- * generated CSS, so a theme set higher up pins every control to one font and
- * the buttons stop following the pair. Pointing antd at the variable puts them
- * back under the specimen's control.
+ * generated CSS, so a theme set higher up pins every control to one font and the
+ * buttons stop following the tokens. Pointing antd at the variable keeps them on
+ * the same family as everything else.
  */
-function Specimen({ pair }: { pair: FontPair }) {
+function Specimen() {
 	return (
 		<ConfigProvider theme={{ token: { fontFamily: "var(--gd-font-ui)" } }}>
 			<section
 				style={
 					{
-						"--gd-font-ui": pair.ui,
-						"--gd-font-display": pair.display,
 						fontFamily: "var(--gd-font-ui)",
 						background: "var(--gd-color-bg)",
 						borderRadius: "var(--gd-radius-panel)",
@@ -143,12 +60,13 @@ function Specimen({ pair }: { pair: FontPair }) {
 							textTransform: "uppercase",
 						}}
 					>
-						{pair.name}
+						Onest
 					</span>
 					<span
 						style={{ fontSize: 12, color: "var(--gd-color-text-tertiary)" }}
 					>
-						{pair.note}
+						One family, both roles, both scripts — latin, latin-ext and
+						cyrillic.
 					</span>
 				</header>
 
@@ -167,6 +85,14 @@ function Specimen({ pair }: { pair: FontPair }) {
 					A place for indie teams to find the people they are missing — eighteen
 					crafts, each with its own colour and icon, so a list of roles stays
 					scannable at a glance rather than turning into a wall of grey rows.
+				</p>
+				{/* The line that decides it: scripts mixed inside one sentence, which is
+				    how users actually write here. A family without Cyrillic changes
+				    typeface at the comma. */}
+				<p style={{ fontSize: 14, lineHeight: 1.55, margin: 0, maxWidth: 640 }}>
+					Ищем Unity Gameplay Programmer в команду Hollow Tide — 12 откликов,
+					5.0% эквити, опубликовано 29 апреля. Требуется опыт работы с Unreal
+					Engine 5 и знание C++.
 				</p>
 
 				<SectionHeading
@@ -219,16 +145,10 @@ const meta: Meta = {
 
 export default meta;
 
-/** Every candidate on the same block — scroll and compare, never judge in isolation. */
-export const Pairs: StoryObj = {
+/** The family on real product UI, including a line that mixes both scripts. */
+export const InUse: StoryObj = {
 	parameters: { controls: { disable: true } },
-	render: () => (
-		<div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-			{pairs.map((pair) => (
-				<Specimen key={pair.id} pair={pair} />
-			))}
-		</div>
-	),
+	render: () => <Specimen />,
 };
 
 /** The scale itself: few sizes, big jumps between them. */
@@ -290,20 +210,5 @@ export const Scale: StoryObj = {
 				</div>
 			</div>
 		</div>
-	),
-};
-
-/** One pair at a time, at full width — for the final call. */
-export const Pair: StoryObj<{ pair: string }> = {
-	argTypes: {
-		pair: {
-			control: "select",
-			options: pairs.map((p) => p.id),
-			name: "Font pair",
-		},
-	},
-	args: { pair: pairs[0].id },
-	render: ({ pair }) => (
-		<Specimen pair={pairs.find((p) => p.id === pair) ?? pairs[0]} />
 	),
 };
