@@ -1,7 +1,14 @@
-import { json, withAuth } from "@/lib/api-handlers";
+import { json, pipe, withAuth } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
-export const GET = withAuth({ mode: "user" })(async () => {
+// Specialities and levels of other members are exactly what the talent pool
+// gates, so the feed of new ones is gated by the same permission. Hiding the
+// card while the endpoint stayed open only moved the leak one fetch away.
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "hub.talent_pool.view" }),
+)(async () => {
 	const users = await prisma.user.findMany({
 		where: {
 			onboardingDone: true,

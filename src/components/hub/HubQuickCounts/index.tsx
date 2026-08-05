@@ -7,6 +7,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import qs from "qs";
+import { useAccess } from "@/components/access/AccessProvider";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 import styles from "./styles.module.scss";
 
@@ -30,6 +31,7 @@ type AdviceRequest = {
 export function HubQuickCounts({ className }: { className?: string }) {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
+	const { can } = useAccess();
 	const userId = session?.user?.id;
 
 	const { data: adviceRequests } = useQuery<AdviceRequest[]>({
@@ -44,7 +46,7 @@ export function HubQuickCounts({ className }: { className?: string }) {
 						qs.stringify(params, { arrayFormat: "repeat" }),
 				})
 				.then((res) => res.data),
-		enabled: !!userId,
+		enabled: !!userId && can("hub.experts.request"),
 	});
 
 	const { data: latestUsers } = useQuery<unknown[]>({
@@ -57,6 +59,7 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		queryKey: ["hot-team-vacancies"],
 		queryFn: () =>
 			axios.get<unknown[]>("/api/vacancies/hot").then((r) => r.data),
+		enabled: can("hub.jobs.view"),
 	});
 
 	const { data: latestEvents } = useQuery<unknown[]>({
@@ -68,6 +71,7 @@ export function HubQuickCounts({ className }: { className?: string }) {
 				})
 				.then((r) => r.data),
 		staleTime: 1000 * 60 * 3,
+		enabled: can("hub.events.view"),
 	});
 
 	// Only incoming: an outgoing request is one the user already sent, so it is
@@ -107,6 +111,8 @@ export function HubQuickCounts({ className }: { className?: string }) {
 			awaiting: false,
 		},
 		// A counter reading zero is noise, and the page behind it would be empty.
+		// The queries above are disabled without the permission, so a count the
+		// user may not see stays at 0 and the pill never appears.
 	].filter((item) => item.count > 0);
 
 	if (!counts.length) return null;

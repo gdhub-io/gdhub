@@ -5,7 +5,8 @@ import {
 	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
-import { json, withAuth, withValidation } from "@/lib/api-handlers";
+import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
 enum EventTimeStatus {
@@ -38,79 +39,78 @@ const GetEventsQuerySchema = z.object({
 
 type GetEventsQuery = z.infer<typeof GetEventsQuerySchema>;
 
-export const GET = withAuth({ mode: "user" })(
-	withValidation(
-		GetEventsQuerySchema,
-		"query",
-	)(async (_req, _ctx, { body }) => {
-		const query = body as GetEventsQuery;
-		const {
-			type,
-			status,
-			timeStatus = [
-				EventTimeStatus.Upcoming,
-				EventTimeStatus.Ongoing,
-				EventTimeStatus.Past,
-			],
-			withDates = false,
-			lang,
-		} = query;
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "hub.events.view" }),
+	withValidation(GetEventsQuerySchema, "query"),
+)(async (_req, _ctx, { body }) => {
+	const query = body as GetEventsQuery;
+	const {
+		type,
+		status,
+		timeStatus = [
+			EventTimeStatus.Upcoming,
+			EventTimeStatus.Ongoing,
+			EventTimeStatus.Past,
+		],
+		withDates = false,
+		lang,
+	} = query;
 
-		const timeWhere: Prisma.EventScheduleItemWhereInput = {
-			OR: [],
-		};
+	const timeWhere: Prisma.EventScheduleItemWhereInput = {
+		OR: [],
+	};
 
-		if (timeStatus?.includes(EventTimeStatus.Ongoing)) {
-			timeWhere.OR?.push({
-				startDate: {
-					lte: new Date(),
-				},
-				endDate: {
-					gte: new Date(),
-				},
-			});
-		}
-
-		if (timeStatus?.includes(EventTimeStatus.Past)) {
-			timeWhere.OR?.push({
-				endDate: {
-					lt: new Date(),
-				},
-			});
-		}
-
-		if (timeStatus?.includes(EventTimeStatus.Upcoming)) {
-			timeWhere.OR?.push({
-				startDate: {
-					gte: new Date(),
-				},
-			});
-		}
-
-		const preparedStatus = typeof status === "string" ? [status] : status;
-
-		const events = await prisma.event.findMany({
-			where: {
-				type: type ? { in: type as EventType[] } : undefined,
-				lang: lang ? { equals: lang as Language } : undefined,
-				status: preparedStatus
-					? { in: preparedStatus as EventStatus[] }
-					: {
-							notIn: [EventStatus.Closed, EventStatus.Draft],
-						},
-				schedule: timeWhere.OR?.length
-					? {
-							some: timeWhere,
-						}
-					: undefined,
+	if (timeStatus?.includes(EventTimeStatus.Ongoing)) {
+		timeWhere.OR?.push({
+			startDate: {
+				lte: new Date(),
 			},
-			include: withDates
+			endDate: {
+				gte: new Date(),
+			},
+		});
+	}
+
+	if (timeStatus?.includes(EventTimeStatus.Past)) {
+		timeWhere.OR?.push({
+			endDate: {
+				lt: new Date(),
+			},
+		});
+	}
+
+	if (timeStatus?.includes(EventTimeStatus.Upcoming)) {
+		timeWhere.OR?.push({
+			startDate: {
+				gte: new Date(),
+			},
+		});
+	}
+
+	const preparedStatus = typeof status === "string" ? [status] : status;
+
+	const events = await prisma.event.findMany({
+		where: {
+			type: type ? { in: type as EventType[] } : undefined,
+			lang: lang ? { equals: lang as Language } : undefined,
+			status: preparedStatus
+				? { in: preparedStatus as EventStatus[] }
+				: {
+						notIn: [EventStatus.Closed, EventStatus.Draft],
+					},
+			schedule: timeWhere.OR?.length
 				? {
-						schedule: { select: { startDate: true, endDate: true } },
+						some: timeWhere,
 					}
 				: undefined,
-		});
+		},
+		include: withDates
+			? {
+					schedule: { select: { startDate: true, endDate: true } },
+				}
+			: undefined,
+	});
 
-		return json(events);
-	}),
-);
+	return json(events);
+});

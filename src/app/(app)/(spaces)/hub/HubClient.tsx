@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useMemo, useRef } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
@@ -42,6 +43,7 @@ const { Title, Text } = Typography;
 
 export default function HubClient() {
 	const session = useSession();
+	const { can } = useAccess();
 	const { getLanguage, t } = useTolgee();
 	const screens = Grid.useBreakpoint();
 	const isAuthenticated = session.status === "authenticated";
@@ -179,18 +181,30 @@ export default function HubClient() {
 						</div>
 					)}
 
-					<div className={styles.wideOnly}>
-						<MyAdviceRequests variant="hubSidebar" />
-					</div>
-					<div className={styles.wideOnly}>
-						<HotTeamVacancies />
-					</div>
-					<div className={styles.wideOnly}>
-						<LatestEvents />
-					</div>
-					<div className={styles.wideOnly}>
-						<NewMembers />
-					</div>
+					{/* Each card is drawn for whoever may open what it links to. The
+					    page behind the card checks the same permission, so a card can no
+					    longer offer a door the user is refused at — and the card itself
+					    stops showing data the space gates. */}
+					{can("hub.experts.request") && (
+						<div className={styles.wideOnly}>
+							<MyAdviceRequests variant="hubSidebar" />
+						</div>
+					)}
+					{can("hub.jobs.view") && (
+						<div className={styles.wideOnly}>
+							<HotTeamVacancies />
+						</div>
+					)}
+					{can("hub.events.view") && (
+						<div className={styles.wideOnly}>
+							<LatestEvents />
+						</div>
+					)}
+					{can("hub.talent_pool.view") && (
+						<div className={styles.wideOnly}>
+							<NewMembers />
+						</div>
+					)}
 				</Flex>
 			</aside>
 

@@ -102,15 +102,20 @@ export const ProjectSpace = ({
 					</Link>
 				),
 			},
-			{
-				key: `/user/project/${projectSlug}/open-positions`,
-				disabled: !can("project.vacancies.manage"),
-				label: (
-					<Link href={`/user/project/${projectSlug}/open-positions`}>
-						{t("app.user-project.menu.open-positions", "Open positions")}
-					</Link>
-				),
-			},
+			// Shown to whoever may open it, rather than shown greyed out: a tab you
+			// can see but never use is a promise the space does not keep.
+			...(can("project.vacancies.manage")
+				? [
+						{
+							key: `/user/project/${projectSlug}/open-positions`,
+							label: (
+								<Link href={`/user/project/${projectSlug}/open-positions`}>
+									{t("app.user-project.menu.open-positions", "Open positions")}
+								</Link>
+							),
+						},
+					]
+				: []),
 			{
 				key: `/user/project/${projectSlug}/team`,
 				label: (
@@ -127,15 +132,18 @@ export const ProjectSpace = ({
 					</Link>
 				),
 			},
-			{
-				key: `/user/project/${projectSlug}/settings/general`,
-				disabled: !can("project.info.edit"),
-				label: (
-					<Link href={`/user/project/${projectSlug}/settings/general`}>
-						{t("app.user.menu.settings", "Settings")}
-					</Link>
-				),
-			},
+			...(can("project.info.edit")
+				? [
+						{
+							key: `/user/project/${projectSlug}/settings/general`,
+							label: (
+								<Link href={`/user/project/${projectSlug}/settings/general`}>
+									{t("app.user.menu.settings", "Settings")}
+								</Link>
+							),
+						},
+					]
+				: []),
 			{
 				key: `/project/${projectSlug}`,
 				className: styles.publicPageMenuItem,
