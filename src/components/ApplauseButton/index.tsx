@@ -117,7 +117,7 @@ export function ApplauseButton({
 		mutate(!hasApplauded);
 	};
 
-	const iconSize = size === "large" ? 24 : 16;
+	const iconSize = size === "large" ? 22 : 16;
 	const glyph = (
 		<ApplauseIcon size={iconSize} active={hasApplauded} playToken={playToken} />
 	);
@@ -127,7 +127,12 @@ export function ApplauseButton({
 		.join(" ");
 
 	return (
-		<span className={rootClass}>
+		// The count is sized from the glyph, not from a font scale of its own:
+		// whatever the icon measures, the number is 90% of it.
+		<span
+			className={rootClass}
+			style={{ "--applause-icon": `${iconSize}px` } as React.CSSProperties}
+		>
 			{/* Only the glyph is the target — the count reports, it does not act. */}
 			{isInteractive ? (
 				<button

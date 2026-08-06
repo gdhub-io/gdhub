@@ -11,7 +11,17 @@ const loadProject = cache(async (projectSlug: string) => {
 		where: { slug: projectSlug },
 		include: {
 			author: {
-				select: { name: true, profile: { select: { tgNickname: true } } },
+				select: {
+					name: true,
+					image: true,
+					profile: {
+						select: { name: true, tgNickname: true, motivation: true },
+					},
+					specialities: {
+						select: { name: true, specialization: true, level: true },
+						take: 1,
+					},
+				},
 			},
 			team: { select: { id: true } },
 			workflow: { select: { currentStep: { select: { name: true } } } },

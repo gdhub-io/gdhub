@@ -1,4 +1,5 @@
 import { apiError, json, withAuth } from "@/lib/api-handlers";
+import { getProjectCardFacts } from "@/repositories/project-card.repository";
 import { prisma } from "@/services/prisma";
 import {
 	getStoreLinks,
@@ -100,9 +101,11 @@ export const GET = withAuth({ mode: "user" })(async () => {
 			})
 			.slice(0, 4);
 
-		const applauseCounts = await prisma.project.getApplauseCounts({
-			projectIds: eligible.map(({ project }) => project.id),
-		});
+		const eligibleIds = eligible.map(({ project }) => project.id);
+		const [applauseCounts, cardFacts] = await Promise.all([
+			prisma.project.getApplauseCounts({ projectIds: eligibleIds }),
+			getProjectCardFacts(eligibleIds),
+		]);
 
 		const result = eligible.map(({ project, currentStep }) => ({
 			id: project.id,
@@ -115,6 +118,8 @@ export const GET = withAuth({ mode: "user" })(async () => {
 			applauseCount: applauseCounts.get(project.id) ?? 0,
 			hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
 			storeLinks: getStoreLinks(project.links),
+			author: cardFacts.get(project.id)?.author ?? null,
+			team: cardFacts.get(project.id)?.team ?? { count: 0, members: [] },
 			workflow: {
 				currentStep: {
 					name: currentStep.name,

@@ -248,7 +248,7 @@ const DevlogPosts = ({
 
 	const hubShell =
 		variant === "hub"
-			? getHubSectionShellClass(bundleInset ? "inset" : "main")
+			? getHubSectionShellClass(bundleInset ? "inset" : "standalone")
 			: "";
 
 	const useSectionHeader = variant === "hub" && headerStyle !== "title";

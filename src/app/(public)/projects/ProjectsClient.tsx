@@ -6,14 +6,18 @@ import type {
 	ProjectWorkflowStep,
 	User,
 } from "@gdhub-io/gdhub-prisma";
+import { IconDeviceGamepad2 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { ConfigProvider, Flex, Select, Typography } from "antd";
+import { Col, ConfigProvider, Flex, Row, Select, Typography } from "antd";
 import { useMemo, useState } from "react";
-import GameCardList from "@/components/GameCard/GameCardList";
-import GameOnStoreCardList, {
-	type GameOnStoreCardListItem,
-} from "@/components/GameOnStoreCardList";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import {
+	ProjectCard,
+	type ProjectCardTeam,
+	ProjectStoreCard,
+	type StorefrontLink,
+} from "@/components/project/cards";
+import { EmptyState } from "@/components/ui";
 import styles from "./style.module.scss";
 
 const { Paragraph } = Typography;
@@ -34,11 +38,28 @@ export type ProjectIncludeAll = Project & {
 	firstPostAt: Date;
 	applauseCount?: number;
 	hasOpenPositions?: boolean;
+	stage?: string | null;
+	team?: ProjectCardTeam;
+};
+
+export type PublishedProject = {
+	id: string;
+	name: string;
+	slug: string;
+	description: string | null;
+	genre: string | null;
+	platform: string | null;
+	coverImage: string | null;
+	applauseCount?: number;
+	storeLinks: StorefrontLink[];
+	team?: ProjectCardTeam;
+	author?: { name: string | null } | null;
+	workflow: { currentStep: { name: string; order: number } };
 };
 
 export interface ProjectsPageProps {
 	projects: ProjectIncludeAll[];
-	publishedProjects: GameOnStoreCardListItem[];
+	publishedProjects: PublishedProject[];
 }
 
 export function ProjectsClient({
@@ -96,18 +117,39 @@ export function ProjectsClient({
 						</Paragraph>
 					)}
 
-					<div className={styles.storeProjectsSection}>
-						<div className={styles.sectionHeader}>
-							<Typography.Title level={3} className={styles.sectionTitle}>
-								{t(
-									"page.hub.projects.availableOnStores",
-									"Available on Stores",
-								)}
-							</Typography.Title>
-						</div>
+					{publishedProjects.length > 0 && (
+						<div className={styles.storeProjectsSection}>
+							<div className={styles.sectionHeader}>
+								<Typography.Title level={3} className={styles.sectionTitle}>
+									{t(
+										"page.hub.projects.availableOnStores",
+										"Available on Stores",
+									)}
+								</Typography.Title>
+							</div>
 
-						<GameOnStoreCardList projects={publishedProjects} />
-					</div>
+							<Row gutter={[16, 16]}>
+								{publishedProjects.map((project) => (
+									<Col key={project.id} xs={24} md={12}>
+										<ProjectStoreCard
+											projectId={project.id}
+											slug={project.slug}
+											name={project.name}
+											description={project.description}
+											genre={project.genre}
+											platform={project.platform}
+											coverImage={project.coverImage}
+											stage={project.workflow?.currentStep?.name}
+											applauseCount={project.applauseCount}
+											storeLinks={project.storeLinks}
+											team={project.team}
+											authorName={project.author?.name}
+										/>
+									</Col>
+								))}
+							</Row>
+						</div>
+					)}
 
 					<div className={styles.projectsSection}>
 						<Flex
@@ -143,7 +185,37 @@ export function ProjectsClient({
 							</ConfigProvider>
 						</Flex>
 
-						<GameCardList games={filteredProjects} loading={false} />
+						{filteredProjects.length > 0 ? (
+							<Row gutter={[16, 16]}>
+								{filteredProjects.map((project) => (
+									<Col key={project.id} xs={24} sm={12} lg={8} xl={6}>
+										<ProjectCard
+											projectId={project.id}
+											slug={project.slug}
+											name={project.name}
+											description={project.description}
+											genre={project.genre}
+											platform={project.platform}
+											coverImage={project.coverImage}
+											stage={project.stage}
+											hasOpenPositions={project.hasOpenPositions}
+											applauseCount={project.applauseCount}
+											team={project.team}
+											authorName={project.author?.name}
+										/>
+									</Col>
+								))}
+							</Row>
+						) : (
+							<EmptyState
+								icon={IconDeviceGamepad2}
+								title={t("page.hub.projects.emptyTitle", "No projects found")}
+								description={t(
+									"page.hub.projects.emptyDescription",
+									"Projects matching your filters will appear here.",
+								)}
+							/>
+						)}
 					</div>
 				</div>
 			</div>

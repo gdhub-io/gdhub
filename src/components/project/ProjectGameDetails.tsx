@@ -51,7 +51,7 @@ export function ProjectGameDetails({
 
 	return (
 		<section className={getHubSectionShellClass("sidebar")}>
-			<HubSectionHeader title={t("page.project.aboutGame", "Game details")} />
+			<HubSectionHeader title={t("page.project.gameDetails", "Game details")} />
 			<HubSectionBody>
 				<HubSectionBleed>
 					<Flex vertical>

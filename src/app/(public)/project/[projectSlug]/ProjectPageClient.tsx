@@ -14,37 +14,41 @@ import {
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
-	Col,
 	ConfigProvider,
 	Flex,
 	Grid,
 	Modal,
 	QRCode,
-	Row,
-	Space,
 	Tooltip,
 	Typography,
 } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import type { Pluggable } from "unified";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import DevlogPosts from "@/components/DevlogPosts";
+import {
+	getHubSectionShellClass,
+	HubSectionBody,
+	HubSectionHeader,
+} from "@/components/hub/HubSection";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import ProjectVacancies from "@/components/ProjectVacancies";
+import { ProjectAuthorCard } from "@/components/project/ProjectAuthorCard";
 import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import TeamMembers from "@/components/TeamMembers";
 import { platformOptions } from "@/helpers/react-content";
+import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import type { ProjectLink } from "@/types/project";
 import styles from "./style.module.scss";
 
-const { Title, Paragraph, Text } = Typography;
+const { Text } = Typography;
 
 export type ProjectPageParams = {
 	project: Omit<
@@ -68,7 +72,17 @@ export type ProjectPageParams = {
 		statusChangedAt: string | null;
 		author: {
 			name: User["name"];
-			profile: { tgNickname: Profile["tgNickname"] } | null;
+			image: User["image"];
+			profile: {
+				name: Profile["name"];
+				tgNickname: Profile["tgNickname"];
+				motivation: Profile["motivation"];
+			} | null;
+			specialities: {
+				name: string;
+				specialization: string;
+				level: string;
+			}[];
 		};
 		workflow: {
 			currentStep: { name: ProjectWorkflowStep["name"] } | null;
@@ -90,6 +104,11 @@ export function ProjectPageClient({
 	const screens = Grid.useBreakpoint();
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
+	// The sidebar rides with the page and pins where the reading direction wants
+	// it — the same behaviour as the hub, from the same hook.
+	const sidebarRef = useRef<HTMLElement>(null);
+	useScrollAwareSticky(sidebarRef, { offset: 36, enabled: !!screens.lg });
+
 	const getCurrentPageUrl = () => {
 		if (typeof window !== "undefined") {
 			return window.location.href;
@@ -99,8 +118,6 @@ export function ProjectPageClient({
 	};
 
 	if (!project) return null;
-
-	const generalData = <ProjectGameDetails project={project} />;
 
 	const getPlatformIcon = (type: string) => {
 		const option = platformOptions.find((opt) => opt.value === type);
@@ -121,14 +138,16 @@ export function ProjectPageClient({
 				return link.isPrimary ? (
 					<Button
 						key={link.platform}
-						type={link.isPrimary ? "default" : "text"}
-						className={styles.projectLink}
+						type="default"
+						className={styles.storeButton}
 						href={link.link}
 						target="_blank"
 					>
 						<Flex align="center" gap={8}>
 							{getPlatformIcon(link.platform)}
-							Go to {getPlatformLabel(link.platform)}
+							{t("page.project.goToStore", "Go to {store}", {
+								store: getPlatformLabel(link.platform) ?? "",
+							})}
 						</Flex>
 					</Button>
 				) : (
@@ -201,87 +220,93 @@ export function ProjectPageClient({
 	return (
 		<>
 			<PublicPageHeader
+				sticky
 				title={project?.name}
-				subTitle={`${t("Author")} ${project.author.name}`}
+				subTitle={
+					<span className={styles.metaRow}>
+						<span>
+							{t("Author")} {project.author.name}
+						</span>
+						{!!project.workflow?.currentStep && (
+							<>
+								<span className={styles.metaSep} />
+								<span className={styles.stageChip}>
+									<span className={styles.stageDot} />
+									{project.workflow.currentStep.name}
+								</span>
+							</>
+						)}
+					</span>
+				}
 				subLine={renderProjectLinks(project.links as ProjectLink[])}
 				backgroundImage={project.coverImage || undefined}
 			/>
 
 			<div className="layout-background">
 				<div className={styles.container}>
-					<Row gutter={[32, 16]}>
-						<Col
-							xs={{ span: 24, order: 1 }}
-							md={{ span: 12, order: 0 }}
-							lg={{ span: 16, order: 0 }}
-						>
-							<Space orientation="vertical" size={64} style={{ width: "100%" }}>
-								<div className="project-description">
-									<Title level={2}>
-										{t("page.project.aboutGame", "About Game")}
-									</Title>
-									<Paragraph>
-										<ReactMarkdown rehypePlugins={markdownRehypePlugins}>
-											{project.description || ""}
-										</ReactMarkdown>
-									</Paragraph>
-									{!!project.workflow?.currentStep && (
-										<Paragraph type="secondary">
-											{t("page.project.developmentStage", "Development stage")}:{" "}
-											{project.workflow.currentStep.name}
-										</Paragraph>
-									)}
-								</div>
+					<div className={styles.pageGrid}>
+						<main className={styles.mainArea}>
+							{/* No pitch written yet is not a section with nothing in it. */}
+							{!!project.description?.trim() && (
+								<section className={getHubSectionShellClass("standalone")}>
+									<HubSectionHeader
+										className={styles.cardHeader}
+										title={t("page.project.description", "Description")}
+									/>
+									<HubSectionBody>
+										<div className={styles.descriptionBody}>
+											<ReactMarkdown rehypePlugins={markdownRehypePlugins}>
+												{project.description}
+											</ReactMarkdown>
+										</div>
+									</HubSectionBody>
+								</section>
+							)}
 
-								{!screens.md && generalData}
+							{project.team?.id && (
+								<ProjectVacancies teamId={project.team.id} />
+							)}
 
-								{project.team?.id && (
-									<ProjectVacancies teamId={project.team.id} />
-								)}
+							<DevlogPosts
+								projectId={project.id}
+								variant="hub"
+								title={t("page.hub.project-updates", "Project updates")}
+							/>
+						</main>
 
-								<DevlogPosts
-									projectId={project.id}
-									variant="hub"
-									headerStyle="title"
-									title={t("page.hub.project-updates", "Project updates")}
-								/>
-							</Space>
-						</Col>
-						<Col
-							xs={{ span: 24, order: 0 }}
-							md={{ span: 12, order: 1 }}
-							lg={{ span: 8, order: 1 }}
-						>
-							<Flex vertical gap={16}>
-								<ProjectVideoCover
-									coverImage={project.coverImage}
-									videoLink={project.videoLink}
-									alt="cover"
-								/>
-								{screens.md && generalData}
-								{session && project.author.profile?.tgNickname ? (
-									<Link
-										href={`https://t.me/${project.author.profile.tgNickname}`}
-										target="_blank"
-										style={{ display: "block", width: "fit-content" }}
+						<aside className={styles.asideArea} ref={sidebarRef}>
+							<ProjectVideoCover
+								coverImage={project.coverImage}
+								videoLink={project.videoLink}
+								alt="cover"
+							/>
+
+							<ProjectGameDetails project={project} />
+
+							<ProjectAuthorCard author={project.author} />
+
+							{session && project.author.profile?.tgNickname ? (
+								<Link
+									href={`https://t.me/${project.author.profile.tgNickname}`}
+									target="_blank"
+									className={styles.writeToAuthorLink}
+								>
+									<Button
+										shape="round"
+										type="dashed"
+										className={styles.writeToAuthorButton}
 									>
-										<Button
-											shape="round"
-											type="dashed"
-											className={styles.writeToAuthorButton}
-										>
-											<IconBrandTelegram size={16} />{" "}
-											{t("page.project.contactTheAuthor", "Contact the author")}
-										</Button>
-									</Link>
-								) : null}
+										<IconBrandTelegram size={16} />{" "}
+										{t("page.project.contactTheAuthor", "Contact the author")}
+									</Button>
+								</Link>
+							) : null}
 
-								{project.team?.id && (
-									<TeamMembers teamId={project.team.id} variant="hubSidebar" />
-								)}
-							</Flex>
-						</Col>
-					</Row>
+							{project.team?.id && (
+								<TeamMembers teamId={project.team.id} variant="hubSidebar" />
+							)}
+						</aside>
+					</div>
 				</div>
 
 				<Modal

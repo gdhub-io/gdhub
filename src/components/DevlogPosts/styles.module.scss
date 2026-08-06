@@ -10,11 +10,6 @@
 }
 
 .hubVariant {
-  // The section title owns the rule beneath it — a line above the title fences
-  // the heading off from the list it introduces.
-  .feedHeader {
-    border-bottom: 1px solid var(--gd-color-border-strong);
-  }
 
   .postsList {
     gap: 0;

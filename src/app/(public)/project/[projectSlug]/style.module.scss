@@ -97,10 +97,147 @@
 	word-break: break-word;
 }
 
+/**
+ * Two columns, like the hub: the story on the left, the facts on the right.
+ *
+ * Markup order is the phone order — cover and details belong under the pitch
+ * on a narrow screen — so the wide layout comes from `grid-template-areas`
+ * alone and nothing is moved in the DOM or swapped at a breakpoint.
+ */
+.pageGrid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas:
+		"main"
+		"aside";
+	gap: 24px;
+	width: 100%;
+	padding-block: 8px 32px;
+}
+
+.mainArea {
+	grid-area: main;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.asideArea {
+	grid-area: aside;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+@media (min-width: 992px) {
+	.pageGrid {
+		grid-template-columns: minmax(0, 1fr) 392px;
+		grid-template-areas: "main aside";
+		align-items: start;
+		gap: 32px;
+	}
+
+	// Travels with the page, then pins. `top` is driven by useScrollAwareSticky:
+	// a column taller than the viewport keeps scrolling until its last card
+	// reaches the bottom edge, then holds — see the hub, same hook.
+	.asideArea {
+		position: sticky;
+		top: 36px;
+		align-self: start;
+	}
+}
+
+// Every card in the column separates its header from its body the same way.
+.cardHeader {
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.descriptionBody {
+	font-size: 15px;
+	line-height: 1.6;
+	color: var(--gd-color-text-secondary);
+
+	> *:first-child {
+		margin-top: 0;
+	}
+
+	> *:last-child {
+		margin-bottom: 0;
+	}
+}
+
+/**
+ * The header's second line: who made it, and where it currently stands.
+ *
+ * The stage used to sit at the bottom of the pitch, where nobody read it — it
+ * belongs next to the author, because "who and how far along" is one thought.
+ */
+.metaRow {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.metaSep {
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.35);
+}
+
+.stageChip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: var(--gd-radius-pill);
+	background: rgba(255, 255, 255, 0.12);
+	font-family: var(--gd-font-ui);
+	font-size: 12px;
+	font-weight: 600;
+	// Inside the header's `InverseBand` these two roles are already flipped:
+	// `text` is the light ink, `text-inverse` the dark one.
+	color: var(--gd-color-text);
+	white-space: nowrap;
+}
+
+.stageDot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--gd-success-solid);
+}
+
+/** The one link that sells the game: white plate on the artwork, store's mark. */
+.storeButton {
+	&:global(.ant-btn) {
+		height: 36px;
+		padding-inline: 16px;
+		border: 0;
+		border-radius: var(--gd-radius-control);
+		background: var(--gd-color-text);
+		color: var(--gd-color-text-inverse);
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	&:global(.ant-btn:hover),
+	&:global(.ant-btn:focus) {
+		background: rgba(255, 255, 255, 0.88);
+		color: var(--gd-color-text-inverse);
+	}
+}
+
+.writeToAuthorLink {
+	display: block;
+	width: fit-content;
+}
+
 .writeToAuthorButton {
 	font-weight: lighter;
-	top: 4px;
-	position: relative;
 	display: flex;
 	align-items: center;
 
