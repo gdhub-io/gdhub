@@ -1,7 +1,5 @@
 "use client";
 
-import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
-import { LoadingOutlined } from "@ant-design/icons";
 import type {
 	Profile,
 	Project,
@@ -27,17 +25,15 @@ import {
 	Tooltip,
 	Typography,
 } from "antd";
-import axios from "axios";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import type { Pluggable } from "unified";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
-import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ApplauseButton } from "@/components/ApplauseButton";
 import DevlogPosts from "@/components/DevlogPosts";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import ProjectVacancies from "@/components/ProjectVacancies";
@@ -49,7 +45,6 @@ import type { ProjectLink } from "@/types/project";
 import styles from "./style.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export type ProjectPageParams = {
 	project: Omit<
@@ -81,72 +76,19 @@ export type ProjectPageParams = {
 		team: { id: string } | null;
 	};
 	projectApplauseCount: number;
-	isAuthenticated: boolean;
 	seo?: { title?: string | null; description?: string | null; image?: string };
 };
 
 export function ProjectPageClient({
 	project,
 	projectApplauseCount,
-	isAuthenticated,
 	seo,
 }: ProjectPageParams) {
 	const { t } = useTranslate();
-	const { data: session, status: authStatus } = useSession();
+	const { data: session } = useSession();
 	const pathname = usePathname();
 	const screens = Grid.useBreakpoint();
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-	const [applauseCount, setApplauseCount] = useState(projectApplauseCount || 0);
-	const [hasApplauded, setHasApplauded] = useState(false);
-	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
-	const [isApplauseStateLoading, setIsApplauseStateLoading] = useState(false);
-	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
-	const applauseRequestIdRef = useRef(0);
-
-	const isUserAuthenticated =
-		authStatus === "authenticated" ||
-		(authStatus === "loading" && isAuthenticated);
-
-	useEffect(() => {
-		setApplauseCount(projectApplauseCount || 0);
-	}, [projectApplauseCount]);
-
-	useEffect(() => {
-		if (!isUserAuthenticated) {
-			setHasApplauded(false);
-			setIsApplauseStateLoading(false);
-			return;
-		}
-
-		let isMounted = true;
-		const requestId = ++applauseRequestIdRef.current;
-		setIsApplauseStateLoading(true);
-
-		axios
-			.get(`/api/project/${project.id}/applause`)
-			.then(({ data }) => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) {
-					return;
-				}
-
-				setApplauseCount(data.count || 0);
-				setHasApplauded(!!data.hasApplauded);
-			})
-			.catch((error) => {
-				console.error("Error fetching project applause state:", error);
-			})
-			.finally(() => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) {
-					return;
-				}
-
-				setIsApplauseStateLoading(false);
-			});
-
-		return () => {
-			isMounted = false;
-		};
-	}, [isUserAuthenticated, project.id]);
 
 	const getCurrentPageUrl = () => {
 		if (typeof window !== "undefined") {
@@ -171,94 +113,6 @@ export function ProjectPageClient({
 	};
 
 	const markdownRehypePlugins = [rehypeRaw] as Pluggable[];
-
-	const handleApplauseToggle = async () => {
-		if (!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading) {
-			return;
-		}
-
-		applauseRequestIdRef.current += 1;
-
-		const nextHasApplauded = !hasApplauded;
-		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
-
-		setIsApplauseLoading(true);
-		setHasApplauded(nextHasApplauded);
-		setApplauseCount(nextCount);
-
-		if (nextHasApplauded) {
-			setApplauseAnimationToken((value) => value + 1);
-		}
-
-		try {
-			const { data } = await axios.request({
-				url: `/api/project/${project.id}/applause`,
-				method: nextHasApplauded ? "POST" : "DELETE",
-			});
-
-			setHasApplauded(!!data.hasApplauded);
-			setApplauseCount(data.count || 0);
-		} catch (error) {
-			console.error("Error toggling project applause:", error);
-			setHasApplauded(hasApplauded);
-			setApplauseCount(applauseCount);
-		} finally {
-			setIsApplauseLoading(false);
-		}
-	};
-
-	const applauseButton = (
-		<Tooltip
-			title={
-				isUserAuthenticated
-					? t("page.devlog.applauseTooltip", "Rate the team's work")
-					: t(
-							"page.devlog.applauseAuthTooltip",
-							"Only authorized users can leave applause",
-						)
-			}
-		>
-			<span className={styles.projectApplauseWrapper}>
-				<HappyProvider>
-					<Button
-						type="text"
-						className={`${styles.projectApplauseButton} ${
-							hasApplauded ? styles.projectApplauseButtonActive : ""
-						}`}
-						icon={
-							<span
-								className={styles.projectApplauseIcon}
-								style={{ width: 33, height: 33 }}
-							>
-								{isApplauseStateLoading ? (
-									<LoadingOutlined
-										spin
-										style={{ fontSize: 33, lineHeight: 1 }}
-									/>
-								) : (
-									<Lottie
-										key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
-										animationData={applauseDefaultAnimation}
-										autoplay={hasApplauded && applauseAnimationToken > 0}
-										loop={false}
-										className={styles.projectApplauseIconAnimation}
-									/>
-								)}
-							</span>
-						}
-						onClick={handleApplauseToggle}
-						disabled={
-							!isUserAuthenticated ||
-							isApplauseLoading ||
-							isApplauseStateLoading
-						}
-					>
-						{applauseCount > 0 ? applauseCount : null}
-					</Button>
-				</HappyProvider>
-			</span>
-		</Tooltip>
-	);
 
 	const renderProjectLinks = (links: ProjectLink[]) => {
 		const linkElements = links
@@ -313,7 +167,12 @@ export function ProjectPageClient({
 						/>
 					</Tooltip>
 
-					{applauseButton}
+					<ApplauseButton
+						subject={{ kind: "project", id: project.id }}
+						count={projectApplauseCount}
+						size="large"
+						className={styles.projectApplause}
+					/>
 				</Flex>
 			</ConfigProvider>
 		);

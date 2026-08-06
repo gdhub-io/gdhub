@@ -11,7 +11,7 @@ const { Title, Text } = Typography;
 
 interface EquityTransactionsProps {
 	projectId: string;
-	userId?: string; // Если указан, то показываем только транзакции пользователя
+	userId?: string; // When set, only this user's transactions are shown
 }
 
 interface Transaction {

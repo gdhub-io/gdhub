@@ -844,7 +844,7 @@ const MyTeam = () => {
 
 	return (
 		<>
-			{/* Отображение информации о долях проекта */}
+			{/* The project's equity breakdown */}
 			{projectEquity?.data && contextProject?.id && (
 				<EquitySection
 					projectId={contextProject.id}

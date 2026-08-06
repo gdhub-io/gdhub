@@ -24,22 +24,22 @@ dayjs.extend(weekday);
 dayjs.locale((process.env.NEXT_PUBLIC_APP_DEFAULT_LOCALE as string) || "en");
 
 const getCleanTextContent = (content: string) => {
-	// Удаляем markdown изображения
+	// Strip markdown images
 	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, "");
-	// Удаляем HTML изображения
+	// Strip HTML images
 	const withoutHtmlImages = withoutMarkdownImages.replace(/<img[^>]*>/g, "");
-	// Удаляем все HTML теги
+	// Strip every HTML tag
 	const withoutHtml = withoutHtmlImages.replace(/<[^>]*>/g, "");
-	// Удаляем markdown синтаксис
+	// Strip markdown syntax
 	const withoutMarkdown = withoutHtml
-		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1") // ссылки [text](url) -> text
-		.replace(/[*_~`]+/g, "") // жирный, курсив, зачеркнутый текст и код
-		.replace(/#{1,6}\s/g, "") // заголовки
-		.replace(/^\s*[-+*]\s/gm, "") // списки
-		.replace(/^\s*\d+\.\s/gm, "") // нумерованные списки
-		.replace(/\n\s*>\s*/g, " ") // цитаты
-		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, " "); // таблицы
-	// Удаляем лишние пробелы и переносы строк
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1") // links [text](url) -> text
+		.replace(/[*_~`]+/g, "") // bold, italic, strikethrough and code
+		.replace(/#{1,6}\s/g, "") // headings
+		.replace(/^\s*[-+*]\s/gm, "") // lists
+		.replace(/^\s*\d+\.\s/gm, "") // numbered lists
+		.replace(/\n\s*>\s*/g, " ") // quotes
+		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, " "); // tables
+	// Collapse extra spaces and line breaks
 	const cleanText = withoutMarkdown.replace(/\s+/g, " ").trim();
 	return cleanText.slice(0, 250);
 };

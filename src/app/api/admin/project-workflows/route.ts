@@ -63,7 +63,7 @@ export const GET = pipe(
 				completedTasks,
 				completionPercentage,
 				daysInProgress,
-				currentStepName: workflow.currentStep?.name || "Не начат",
+				currentStepName: workflow.currentStep?.name || "Not started",
 				currentStepOrder: workflow.currentStep?.order || 0,
 				totalSteps: workflow.steps.length,
 			},

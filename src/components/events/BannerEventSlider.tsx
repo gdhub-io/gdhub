@@ -195,7 +195,7 @@ export const BannerEventSlider = () => {
 					{t("events.banner.vertical_text", "SLIDES")}
 				</div>
 			</div>
-			{/* Left: Content (красный блок) */}
+			{/* Left: content (the red block) */}
 			<div className={styles.leftContent}>
 				<div
 					style={{

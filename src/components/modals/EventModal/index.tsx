@@ -196,7 +196,7 @@ const EventModal: React.FC<EventModalProps> = ({
 		setImageProcessing(false);
 	};
 
-	// Сохранить событие
+	// Save the event
 	const handleOk = async () => {
 		try {
 			const values = await form.validateFields();

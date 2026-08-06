@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { auth } from "@/auth";
 import { prisma } from "@/services/prisma";
 import { ProjectPageClient, type ProjectPageParams } from "./ProjectPageClient";
 
@@ -59,7 +58,6 @@ export default async function ProjectPage({ params }: { params: Params }) {
 
 	const result = await loadProject(projectSlug);
 	if (!result) notFound();
-	const session = await auth();
 	const { project, applauseSummary } = result;
 
 	const serialized: ProjectPageParams["project"] = {
@@ -88,7 +86,6 @@ export default async function ProjectPage({ params }: { params: Params }) {
 		<ProjectPageClient
 			project={serialized}
 			projectApplauseCount={applauseSummary.total}
-			isAuthenticated={!!session?.user}
 			seo={{
 				title: project.name || null,
 				description: project.description?.slice(0, 160) || null,

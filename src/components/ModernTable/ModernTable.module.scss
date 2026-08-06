@@ -48,7 +48,7 @@
     background: var(--gd-color-border) !important;
   }
 
-  // Отключаем hover-эффекты для tfoot
+  // No hover effects on tfoot
   :global(.ant-table-tfoot > tr:hover > td),
   :global(.ant-table-tfoot > tr:hover > th) {
     background: var(--gd-color-border) !important;

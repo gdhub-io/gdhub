@@ -95,7 +95,7 @@ const MyEventsClient = () => {
 		null,
 	);
 
-	// Получение событий пользователя
+	// Fetch the user's events
 	const {
 		data,
 		isLoading,
@@ -105,7 +105,7 @@ const MyEventsClient = () => {
 		queryFn: () => axios.get("/api/user/events").then((res) => res.data),
 	});
 
-	// Мутация для удаления события
+	// Mutation for deleting an event
 	const { mutateAsync: deleteEvent } = useMutation({
 		mutationFn: (id: string) => axios.delete(`/api/user/event/${id}`),
 		onSuccess: () => {

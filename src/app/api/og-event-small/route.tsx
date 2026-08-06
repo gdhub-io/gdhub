@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 					position: "relative",
 				}}
 			>
-				{/* Левая часть: текст */}
+				{/* Left side: text */}
 				<div
 					style={{
 						width: Math.round(1200 - 630 * 0.8),
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 						zIndex: 2,
 					}}
 				>
-					{/* Лого и тип мероприятия вверху слева */}
+					{/* Logo and event type, top left */}
 					<div
 						style={{
 							position: "absolute",
@@ -229,7 +229,7 @@ export async function GET(request: NextRequest) {
 							</span>
 						</span>
 					</div>
-					{/* Центрируем только текст */}
+					{/* Centre the text only */}
 					<div
 						style={{
 							flex: 1,
@@ -273,7 +273,7 @@ export async function GET(request: NextRequest) {
 					</div>
 				</div>
 
-				{/* Правая часть: картинка */}
+				{/* Right side: image */}
 				<div
 					style={{
 						width: Math.round(630 * 0.8),
@@ -300,7 +300,7 @@ export async function GET(request: NextRequest) {
 					/>
 				</div>
 
-				{/* Дата в правом верхнем углу */}
+				{/* Date, top right */}
 				{eventDate && (
 					<div
 						style={{

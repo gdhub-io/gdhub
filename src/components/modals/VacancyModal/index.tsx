@@ -282,7 +282,7 @@ const VacancyModal = ({
 		onCancel();
 	};
 
-	// Получаем доступные для выбора шаги (только следующие за текущим)
+	// Selectable steps (only the ones after the current step)
 	const availableSteps = workflowData?.data?.steps
 		? workflowData.data.steps
 				.filter(

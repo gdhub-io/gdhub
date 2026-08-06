@@ -1,10 +1,11 @@
 /**
- * matrix-js-sdk внутри использует AbortController для sync/HTTP-запросов.
- * При размонтировании компонента (в т.ч. дважды в React Strict Mode dev)
- * Next ловит эти отмены как unhandled rejection и показывает в overlay.
- * AbortError семантически — не ошибка, а штатный сигнал "операцию отменили".
+ * matrix-js-sdk uses an AbortController internally for its sync/HTTP calls.
+ * When a component unmounts (twice over in React Strict Mode dev) Next catches
+ * those cancellations as unhandled rejections and shows them in the overlay.
+ * An AbortError is not an error — it is the normal "the operation was
+ * cancelled" signal.
  *
- * Идемпотентно: повторные вызовы — no-op.
+ * Idempotent: calling it again is a no-op.
  */
 export function installAbortErrorSuppressor(): void {
 	if (typeof window === "undefined") return;

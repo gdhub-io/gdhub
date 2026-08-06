@@ -139,7 +139,7 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 	};
 
 	const handleModalSubmit = () => {
-		// TODO: реализовать отправку данных на сервер
+		// TODO: send the data to the server
 		setModalOpen(false);
 		setEventType(undefined);
 		onCreation();

@@ -63,21 +63,21 @@ const EquityShareModal = ({
 	const investmentReserve =
 		equity?.investmentReserve ?? projectEquity?.investmentReserve ?? 0;
 
-	// Свободные доли = 100 - (platform + mentorFund + investmentReserve + teamTotal)
+	// Free shares = 100 - (platform + mentorFund + investmentReserve + teamTotal)
 	const unallocated =
 		100 - platformShare - mentorFundShare - investmentReserve - teamTotal;
 
-	// Максимум для investmentReserve и mentorFundShare: свободные доли + текущее значение
+	// Cap for investmentReserve and mentorFundShare: free shares + the current value
 	const maxInvestmentReserve = Math.max(0, unallocated + investmentReserve);
 	const maxMentorFundShare = Math.max(0, unallocated + mentorFundShare);
 
-	// Формируем marks для mentorFundShare только в пределах min-max
+	// Build the mentorFundShare marks within min-max only
 	const mentorMarks: Record<number, string> = {};
 	[2, 5, 10, 15, 20].forEach((val) => {
 		if (val >= 2 && val <= maxMentorFundShare) mentorMarks[val] = `${val}%`;
 	});
 
-	// Формируем marks для investmentReserve только в пределах min-max
+	// Build the investmentReserve marks within min-max only
 	const investmentMarks: Record<number, string> = {};
 	[minInvestmentReserve, 20, 40, 60].forEach((val) => {
 		if (val >= minInvestmentReserve && val <= maxInvestmentReserve)

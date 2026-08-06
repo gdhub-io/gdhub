@@ -1,0 +1,130 @@
+.applause {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+	font-family: var(--gd-font-ui);
+	font-weight: 600;
+	line-height: 1;
+	color: inherit;
+}
+
+/*
+ * `font-size` here is the whole control's scale — the icon box matches it, and
+ * the count steps down from it. The gap is measured from the edge of the
+ * active disc, not from the icon glyph, so the number never touches the disc.
+ */
+.default {
+	gap: 4px;
+	font-size: 16px;
+}
+
+.large {
+	gap: 5px;
+	font-size: 24px;
+}
+
+/*
+ * Only the icon gets a disc, and only once you have applauded — the number
+ * stays outside it, so the count reads the same whether or not it is yours.
+ * The disc is `currentColor` at low alpha, so it tints itself from whatever
+ * the surrounding text colour happens to be, on a cover or on paper.
+ */
+.iconWrap {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: inherit;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: currentColor;
+		opacity: 0;
+		transition: opacity 0.15s ease;
+	}
+}
+
+.default .iconWrap {
+	padding: 4px;
+}
+
+.large .iconWrap {
+	padding: 6px;
+}
+
+.iconWrap[data-active]::before {
+	opacity: 0.16;
+}
+
+/* An optional pill for badges that sit on top of a cover image. */
+.chip {
+	border-radius: var(--gd-radius-chip);
+	background: rgba(255, 255, 255, 0.8);
+	color: var(--gd-color-text);
+	backdrop-filter: blur(4px);
+
+	&.default {
+		padding: 3px 12px 3px 6px;
+	}
+
+	&.large {
+		padding: 5px 16px 5px 8px;
+	}
+}
+
+.interactive {
+	cursor: pointer;
+
+	&:hover::before {
+		opacity: 0.1;
+	}
+
+	&[data-active]:hover::before {
+		opacity: 0.22;
+	}
+}
+
+/*
+ * A step below the icon in both size and weight: the glyph is what you press,
+ * the number only reports. Proportional figures — tabular ones pad every digit
+ * to the widest glyph, which pulls a four-digit count apart.
+ */
+.count {
+	font-size: 0.9em;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+}
+
+/* Sized to the digits it stands in for, on the same scale as `.count`. */
+.countSkeleton {
+	display: inline-block;
+	font-size: 0.9em;
+	width: 1.7em;
+	height: 0.74em;
+	border-radius: 3px;
+	background: currentColor;
+	opacity: 0.09;
+	animation: applause-count-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes applause-count-pulse {
+	0%,
+	100% {
+		opacity: 0.06;
+	}
+	50% {
+		opacity: 0.12;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.countSkeleton {
+		animation: none;
+	}
+}

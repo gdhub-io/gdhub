@@ -24,13 +24,13 @@ interface PublicPageHeaderProps {
 }
 
 /**
- * Hero-блок для публичной страницы: MainHeader (общая навигация) + фоновое
- * изображение + заголовок + subTitle + опциональный extra-слот.
- * Рендерится самой страницей в её JSX, а не layout'ом, чтобы каждая страница
- * сама задавала свой title/background.
+ * Hero block for a public page: MainHeader (the shared navigation) plus a
+ * background image, a title, a subTitle and an optional extra slot.
+ * The page renders it in its own JSX rather than the layout, so that each page
+ * sets its own title/background.
  *
- * MainHeader находится ВНУТРИ hero-блока — они визуально один тёмный блок
- * (как в оригинальном `PublicLayout`).
+ * MainHeader sits INSIDE the hero block — visually they are one dark band
+ * (as in the original `PublicLayout`).
  */
 export function PublicPageHeader({
 	title,

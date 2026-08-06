@@ -12,15 +12,15 @@ export const SpecialityCreated = () => {
 	const pendingInvitation = searchParams.get("pendingInvitation");
 	const [isProcessingInvitation, setIsProcessingInvitation] = useState(false);
 
-	// Проверяем, есть ли ожидающие приглашения
+	// Check for pending invitations
 	const { data: user, isLoading: isLoadingUser } = useQuery({
 		queryKey: ["user", "current"],
 		queryFn: () => axios.get("/api/user/me"),
-		enabled: !pendingInvitation, // Не запрашиваем, если есть pendingInvitation в URL
+		enabled: !pendingInvitation, // Skip the request when the URL carries a pendingInvitation
 		refetchOnWindowFocus: false,
 	});
 
-	// Мутация для обработки ожидающего приглашения
+	// Mutation that handles a pending invitation
 	const {
 		mutateAsync: completePendingInvitation,
 		isPending: isCompletingInvitation,
@@ -37,12 +37,12 @@ export const SpecialityCreated = () => {
 			}
 		},
 		onError: () => {
-			// В случае ошибки просто перенаправляем на страницу специализаций
+			// On error just redirect to the specialities page
 			router.push("/profile/specialities");
 		},
 	});
 
-	// Обрабатываем приглашение из URL параметра
+	// Handle the invitation from the URL parameter
 	useEffect(() => {
 		if (pendingInvitation && !isProcessingInvitation) {
 			setIsProcessingInvitation(true);
@@ -50,7 +50,7 @@ export const SpecialityCreated = () => {
 		}
 	}, [pendingInvitation]);
 
-	// Проверяем наличие ожидающих приглашений в профиле пользователя
+	// Check the user's profile for pending invitations
 	useEffect(() => {
 		if (
 			user?.data &&
@@ -65,7 +65,7 @@ export const SpecialityCreated = () => {
 		}
 	}, [user]);
 
-	// Если обрабатываем приглашение, показываем спиннер
+	// Show a spinner while the invitation is being handled
 	if (isProcessingInvitation || isCompletingInvitation || isLoadingUser) {
 		return (
 			<div

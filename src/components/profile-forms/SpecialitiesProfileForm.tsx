@@ -72,7 +72,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 			}
 		},
 		onError: () => {
-			// В случае ошибки просто перенаправляем на страницу специализаций
+			// On error just redirect to the specialities page
 			router.push("/profile/specialities");
 		},
 	});
