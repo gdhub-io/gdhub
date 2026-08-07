@@ -92,3 +92,27 @@
 	font-size: 11px;
 	color: var(--gd-color-text-secondary);
 }
+
+/* A selection is a state the page is in — it says so above the rows it acts on. */
+.bulkBar {
+	padding: 10px 16px;
+	margin-bottom: 12px;
+	border: 1px solid var(--gd-warning-tint);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-warning-tint);
+	font-size: 13px;
+	color: var(--gd-warning-on-tint);
+}
+
+.driftTag {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: 5px;
+	margin: 0;
+}
+
+.rowMuted {
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+}

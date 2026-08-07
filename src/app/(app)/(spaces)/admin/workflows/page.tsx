@@ -21,6 +21,10 @@ import { useState } from "react";
 import { CreateWorkflowModal } from "@/components/admin/CreateWorkflowModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import {
+	type ProjectWorkflowRow,
+	ProjectWorkflowsTable,
+} from "./ProjectWorkflowsTable";
 import styles from "./style.module.scss";
 import {
 	type WorkflowTemplateRow,
@@ -61,137 +65,9 @@ export default function WorkflowsAdminPage() {
 	};
 
 	// Columns for workflow schemas (templates)
-	const projectWorkflowColumns: ColumnsType<any> = [
-		{
-			title: "Project",
-			dataIndex: ["project", "name"],
-			key: "projectName",
-			width: "20%",
-			render: (value, record) => (
-				<div>
-					<Link href={`/admin/project-workflow/${record.id}`}>
-						<strong>{value}</strong>
-					</Link>
-					<div>
-						<Text type="secondary" style={{ fontSize: "12px" }}>
-							by {record.project?.author?.name}
-						</Text>
-					</div>
-				</div>
-			),
-		},
-		{
-			title: "Current Stage",
-			key: "currentStage",
-			width: "15%",
-			render: (_, record) => (
-				<div>
-					<div style={{ fontWeight: "bold", color: "var(--gd-info-solid)" }}>
-						{record.analytics?.currentStepName || "Not started"}
-					</div>
-					<Text type="secondary" style={{ fontSize: "12px" }}>
-						Step {(record.analytics?.currentStepOrder || 0) + 1} of{" "}
-						{record.analytics?.totalSteps || 0}
-					</Text>
-				</div>
-			),
-		},
-		{
-			title: "Tasks Progress",
-			key: "tasksProgress",
-			width: "15%",
-			render: (_, record) => {
-				const percentage = record.analytics?.completionPercentage || 0;
-				const completed = record.analytics?.completedTasks || 0;
-				const total = record.analytics?.totalTasks || 0;
-
-				return (
-					<div style={{ textAlign: "center" }}>
-						<div
-							style={{
-								fontSize: "16px",
-								fontWeight: "bold",
-								color:
-									percentage >= 80
-										? "var(--gd-success-solid)"
-										: percentage >= 50
-											? "var(--gd-warning-solid)"
-											: "var(--gd-danger-solid)",
-							}}
-						>
-							{completed}/{total}
-						</div>
-						<Text type="secondary" style={{ fontSize: "12px" }}>
-							{percentage}% done
-						</Text>
-					</div>
-				);
-			},
-		},
-		{
-			title: "Time Active",
-			key: "timeActive",
-			width: "12%",
-			render: (_, record) => {
-				const days = record.analytics?.daysInProgress || 0;
-				return (
-					<div style={{ textAlign: "center" }}>
-						<div
-							style={{
-								fontSize: "18px",
-								fontWeight: "bold",
-								color: "var(--gd-color-link)",
-							}}
-						>
-							{days}
-						</div>
-						<Text type="secondary" style={{ fontSize: "11px" }}>
-							{days === 1 ? "day" : "days"}
-						</Text>
-					</div>
-				);
-			},
-		},
-		{
-			title: "Workflow",
-			dataIndex: "title",
-			key: "workflowTitle",
-			width: "15%",
-			render: (value) => (
-				<div style={{ fontSize: "13px" }}>
-					{value || <Text type="secondary">No title</Text>}
-				</div>
-			),
-		},
-		{
-			title: "Created",
-			dataIndex: "createdAt",
-			key: "createdAt",
-			width: "12%",
-			render: (value) => (
-				<Popover content={dayjs(value).format("LLLL")}>
-					<div style={{ fontSize: "12px" }}>
-						{dayjs(value).format("DD/MM/YY")}
-					</div>
-				</Popover>
-			),
-		},
-		{
-			title: "Actions",
-			key: "actions",
-			width: "8%",
-			render: (_, record) => (
-				<Link href={`/admin/project-workflow/${record.id}`}>
-					<Button type="primary" size="small">
-						Edit
-					</Button>
-				</Link>
-			),
-		},
-	];
-
 	const templates: WorkflowTemplateRow[] = workflowsResponse?.data ?? [];
-	const projectWorkflows = projectWorkflowsResponse?.data ?? [];
+	const projectWorkflows: ProjectWorkflowRow[] =
+		projectWorkflowsResponse?.data ?? [];
 
 	const tabItems = [
 		{
@@ -210,10 +86,9 @@ export default function WorkflowsAdminPage() {
 				<TabLabel label="Project workflows" count={projectWorkflows.length} />
 			),
 			children: (
-				<ModernTable
+				<ProjectWorkflowsTable
+					workflows={projectWorkflows}
 					loading={isFetchingProjectWorkflows}
-					dataSource={projectWorkflows}
-					columns={projectWorkflowColumns}
 				/>
 			),
 		},
