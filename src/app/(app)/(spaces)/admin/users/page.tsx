@@ -1,5 +1,6 @@
 "use client";
 import {
+	IconArrowUpRight,
 	IconCircleCheck,
 	IconDotsVertical,
 	IconFilter,
@@ -28,6 +29,7 @@ import type { SortOrder } from "antd/es/table/interface";
 import axios from "axios";
 import dayjs from "dayjs";
 import debounce from "lodash/debounce";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { BrevoSyncModal } from "@/components/admin/BrevoSyncModal";
 import { UserRolesModal } from "@/components/admin/UserRolesModal";
@@ -38,6 +40,13 @@ import { SPACE_ROLES, type SpaceRole } from "@/config/permissions/roles";
 import { SPACE_TYPES, type SpaceType } from "@/config/spaces";
 import { permissionCatalog } from "@/services/access/role-catalog";
 import styles from "./style.module.scss";
+
+// Heavy and rarely opened: kept out of the table's bundle, as on the hub
+// members page.
+const SpecialistPreviewModal = dynamic(
+	() => import("@/components/modals/SpecialistPreviewModal"),
+	{ ssr: false },
+);
 
 const { Title, Text } = Typography;
 
@@ -50,7 +59,7 @@ type AdminUserRow = {
 	email: string | null;
 	createdAt: string;
 	lastModifiedAt: string;
-	specializations: string[];
+	specializations: { id: string; name: string }[];
 	skillCapital: {
 		scTotal: number;
 		leadershipCapital: number;
@@ -132,6 +141,7 @@ export default function UsersAdminPage() {
 	const [confirmingSyncAll, setConfirmingSyncAll] = useState(false);
 	const [confirmingSyncUser, setConfirmingSyncUser] =
 		useState<AdminUserRow | null>(null);
+	const [previewSpecialityId, setPreviewSpecialityId] = useState<string>();
 	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
 	const [spaceType, setSpaceType] = useState<SpaceType>();
@@ -307,11 +317,20 @@ export default function UsersAdminPage() {
 				title: "Specializations",
 				dataIndex: "specializations",
 				key: "specializations",
-				render: (specializations: string[]) =>
+				render: (specializations: AdminUserRow["specializations"]) =>
 					specializations.length ? (
 						<Space size={[4, 4]} wrap>
 							{specializations.map((specialization) => (
-								<Tag key={specialization}>{specialization}</Tag>
+								// The talent card is keyed by speciality, not by person, so
+								// the tag that was clicked is the one that opens.
+								<Tag
+									key={specialization.id}
+									className={styles.specialityTag}
+									onClick={() => setPreviewSpecialityId(specialization.id)}
+								>
+									{specialization.name}
+									<IconArrowUpRight size={13} className={styles.tagArrow} />
+								</Tag>
 							))}
 						</Space>
 					) : (
@@ -589,6 +608,12 @@ export default function UsersAdminPage() {
 				loading={syncAll.isPending}
 				onConfirm={() => syncAll.mutate()}
 				onCancel={() => setConfirmingSyncAll(false)}
+			/>
+
+			<SpecialistPreviewModal
+				open={!!previewSpecialityId}
+				specialistId={previewSpecialityId}
+				onCancel={() => setPreviewSpecialityId(undefined)}
 			/>
 
 			<BrevoSyncModal

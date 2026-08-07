@@ -50,7 +50,8 @@ type AdminUserListItem = {
 	email: string | null;
 	createdAt: Date;
 	lastModifiedAt: Date;
-	specializations: string[];
+	/** Id and name per speciality — the id opens that speciality's talent card. */
+	specializations: { id: string; name: string }[];
 	skillCapital: SkillCapitalSummary;
 	memberships: MembershipSummary[];
 	onboardingDone: boolean;
@@ -161,7 +162,7 @@ const USER_LIST_SELECT = {
 	updatedAt: true,
 	onboardingDone: true,
 	profile: { select: { name: true, updatedAt: true } },
-	specialities: { select: { name: true, updatedAt: true } },
+	specialities: { select: { id: true, name: true, updatedAt: true } },
 } satisfies Prisma.UserSelect;
 
 const toDisplayName = (user: {
@@ -597,7 +598,7 @@ type UserRecord = {
 	updatedAt: Date;
 	onboardingDone: boolean;
 	profile: { name: string; updatedAt: Date | string } | null;
-	specialities: { name: string; updatedAt: Date | string }[];
+	specialities: { id: string; name: string; updatedAt: Date | string }[];
 };
 
 const toListItem = (
@@ -611,7 +612,10 @@ const toListItem = (
 	email: user.email,
 	createdAt: user.createdAt,
 	lastModifiedAt: toLastModifiedAt(user),
-	specializations: user.specialities.map((speciality) => speciality.name),
+	specializations: user.specialities.map((speciality) => ({
+		id: speciality.id,
+		name: speciality.name,
+	})),
 	skillCapital: skillCapital.get(user.id) || EMPTY_CAPITAL,
 	memberships: memberships.get(user.id) || [],
 	onboardingDone: user.onboardingDone,

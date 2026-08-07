@@ -46,3 +46,36 @@
 .flagOn {
 	color: var(--gd-success-solid);
 }
+
+/*
+ * The tag is a control, not a label: it opens the speciality's talent card.
+ * A pill and a trailing arrow say so before the cursor gets there — the rest of
+ * the table is read-only, so a clickable cell has to announce itself.
+ */
+.specialityTag {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin: 0;
+	padding: 2px 8px 2px 10px;
+	border-radius: var(--gd-radius-pill);
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		border-color 0.15s ease;
+
+	&:hover {
+		border-color: var(--gd-color-border-strong);
+		background: var(--gd-neutral-100);
+
+		.tagArrow {
+			color: var(--gd-color-text);
+		}
+	}
+}
+
+.tagArrow {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+	transition: color 0.15s ease;
+}
