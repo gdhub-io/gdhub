@@ -23,6 +23,19 @@
 	color: var(--gd-color-text);
 }
 
+/* antd swaps the heading for a textarea while it is being renamed, and styles it
+   at the base font size — so the title visibly shrinks the moment you click the
+   pencil. Only the type is corrected; the field keeps antd's own background. The
+   class is doubled because antd's `.ant-typography-edit-content textarea` rule
+   has the same specificity, and load order would otherwise decide the winner. */
+.title.title,
+.stepTitle.stepTitle {
+	textarea {
+		font: inherit;
+		color: inherit;
+	}
+}
+
 .slugChip {
 	font-family: var(--gd-font-mono, monospace);
 	font-size: 11px;

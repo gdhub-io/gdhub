@@ -4,6 +4,8 @@ import {
 	brand,
 	directionColors,
 	elevation,
+	fill,
+	fillInverse,
 	fontSize,
 	lineHeight,
 	neutral,
@@ -34,6 +36,11 @@ export function designCssVariables(
 	}
 	for (const [name, value] of Object.entries(densities[density])) {
 		vars[`--gd-${kebab(name)}`] = `${value}px`;
+	}
+	for (const [name, value] of Object.entries(
+		mode === "inverse" ? fillInverse : fill,
+	)) {
+		vars[`--gd-fill-${name}`] = value;
 	}
 	for (const [step, value] of Object.entries(neutral)) {
 		vars[`--gd-neutral-${step}`] = value;

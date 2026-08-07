@@ -180,6 +180,21 @@ export function TemplateEditor({ id }: { id: string }) {
 		);
 	};
 
+	/** Inline rename: an empty title would leave the step unlabelled, so it is
+	 *  treated as a cancelled edit rather than a value. */
+	const renameStep = (value: string) => {
+		const name = value.trim();
+		if (name && name !== selected?.name) patchSelected({ name });
+	};
+
+	const renameTemplate = (value: string) => {
+		const title = value.trim();
+		if (title && title !== meta.title) {
+			setMeta((current) => ({ ...current, title }));
+			setDirty(true);
+		}
+	};
+
 	/**
 	 * A copy lands next to its original, not at the end of the flow, and the
 	 * editor follows it — you duplicated a step in order to work on the copy.
@@ -245,17 +260,21 @@ export function TemplateEditor({ id }: { id: string }) {
 				wrap
 			>
 				<Flex vertical gap={6} className={styles.titles}>
-					<Flex align="center" gap={8}>
-						<Title level={1} className={styles.title}>
-							{meta.title || meta.name}
-						</Title>
-						<Button
-							type="text"
-							size="small"
-							icon={<IconPencil size={16} />}
-							onClick={() => setSettingsOpen(true)}
-						/>
-					</Flex>
+					{/* The pencil renames the template and nothing else. Everything a
+					    rename is not — slug, description — lives behind Settings. */}
+					<Title
+						level={1}
+						className={styles.title}
+						editable={{
+							icon: <IconPencil size={16} />,
+							tooltip: "Rename template",
+							triggerType: ["icon", "text"],
+							maxLength: 120,
+							onChange: renameTemplate,
+						}}
+					>
+						{meta.title || meta.name}
+					</Title>
 					<Flex align="center" gap={10} wrap>
 						<Tag variant="filled" className={styles.slugChip}>
 							{meta.name}
@@ -416,17 +435,22 @@ export function TemplateEditor({ id }: { id: string }) {
 										<span className={styles.index}>
 											{steps.indexOf(selected) + 1}
 										</span>
-										<Title level={2} className={styles.stepTitle}>
+										{/* The step has exactly two editable things, and the
+										    description is already a field below — so the pencil
+										    can only mean the name. */}
+										<Title
+											level={2}
+											className={styles.stepTitle}
+											editable={{
+												icon: <IconPencil size={16} />,
+												tooltip: "Rename step",
+												triggerType: ["icon", "text"],
+												maxLength: 120,
+												onChange: renameStep,
+											}}
+										>
 											{selected.name}
 										</Title>
-										<Button
-											type="text"
-											size="small"
-											icon={<IconPencil size={16} />}
-											onClick={() =>
-												setStepModal({ open: true, step: selected })
-											}
-										/>
 									</Flex>
 									<Text type="secondary" className={styles.meta}>
 										{selected.tasks.length} tasks ·{" "}

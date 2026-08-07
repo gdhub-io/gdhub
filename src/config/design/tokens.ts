@@ -25,6 +25,30 @@ export const neutral = {
 } as const;
 
 /**
+ * Control fills, as tints rather than colours.
+ *
+ * A fill has one job: read a step below whatever it sits on. The product page,
+ * a white modal and a card are three different grounds, and an opaque grey tuned
+ * for one of them is too heavy or invisible on the others — so the fill is
+ * expressed as a relationship and resolved by the surface underneath it. The
+ * alphas reproduce the old neutral-100/200 greys over the page background.
+ */
+export const fill = {
+	subtle: "rgba(26, 25, 23, 0.02)",
+	base: "rgba(26, 25, 23, 0.045)",
+	strong: "rgba(26, 25, 23, 0.115)",
+} as const;
+
+/** The same steps for inverse surfaces, where a dark tint would vanish. */
+export const fillInverse = {
+	subtle: "rgba(255, 255, 255, 0.03)",
+	base: "rgba(255, 255, 255, 0.065)",
+	strong: "rgba(255, 255, 255, 0.16)",
+} as const;
+
+export type FillStep = keyof typeof fill;
+
+/**
  * Brand ramp. Inside the product this is an orientation colour — active tab,
  * selected row, focus ring, links — and never a button surface; a wall of
  * brand-filled buttons would read as errors. Filled brand belongs to marketing
