@@ -15,7 +15,12 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import {
+	type ResetTarget,
+	ResetWorkflowModal,
+} from "@/components/admin/workflow/ResetWorkflowModal";
 import ModernTable from "@/components/ModernTable";
+import type { ProjectWorkflowRow } from "./ProjectWorkflowsTable";
 import styles from "./style.module.scss";
 
 export type WorkflowTemplateRow = {
@@ -56,6 +61,8 @@ export function WorkflowTemplatesTable({
 	);
 	const [sort, setSort] = useState<SortKey>("updated");
 
+	const [resetTargets, setResetTargets] = useState<ResetTarget[]>([]);
+
 	const { mutateAsync: deleteTemplate } = useMutation({
 		mutationFn: (id: string) => axios.delete(`/api/admin/workflow/${id}`),
 		onSuccess: () => {
@@ -63,6 +70,51 @@ export function WorkflowTemplatesTable({
 			queryClient.invalidateQueries({ queryKey: ["admin", "workflows"] });
 		},
 	});
+
+	// Reading the same cache entry the page fills, so opening the menu costs
+	// nothing and the projects on a template are already known.
+	const { data: projectWorkflows } = useQuery<ProjectWorkflowRow[]>({
+		queryKey: ["admin", "project-workflows"],
+		queryFn: () =>
+			axios
+				.get<ProjectWorkflowRow[]>("/api/admin/project-workflows")
+				.then((res) => res.data),
+	});
+
+	const { mutateAsync: duplicate } = useMutation({
+		mutationFn: (template: WorkflowTemplateRow) =>
+			axios
+				.post("/api/admin/workflow", {
+					title: `${template.title ?? template.name} copy`,
+					// The identifier is unique, so the copy needs its own.
+					name: `${template.name}-copy-${Date.now().toString(36)}`,
+					description: template.description ?? undefined,
+					copyFromId: template.id,
+				})
+				.then((res) => res.data as { id: string }),
+		onSuccess: () => {
+			message.success("Template duplicated");
+			queryClient.invalidateQueries({ queryKey: ["admin", "workflows"] });
+		},
+		onError: () => message.error("Could not duplicate the template"),
+	});
+
+	const openReset = (template: WorkflowTemplateRow) => {
+		const affected = (projectWorkflows ?? []).filter(
+			(row) => row.template?.id === template.id,
+		);
+		if (!affected.length) {
+			message.info("No project is using this template yet");
+			return;
+		}
+		setResetTargets(
+			affected.map((row) => ({
+				id: row.id,
+				projectName: row.project.name,
+				templateId: template.id,
+			})),
+		);
+	};
 
 	const rows = useMemo(() => {
 		const query = search.trim().toLowerCase();
@@ -185,7 +237,7 @@ export function WorkflowTemplatesTable({
 								key: "duplicate",
 								icon: <IconCopy size={16} />,
 								label: "Duplicate",
-								disabled: true,
+								onClick: () => duplicate(record),
 							},
 							{
 								key: "export",
@@ -197,8 +249,11 @@ export function WorkflowTemplatesTable({
 							{
 								key: "reset",
 								icon: <IconRefresh size={16} />,
-								label: "Reset projects to this template…",
-								disabled: true,
+								label: `Reset ${record.usedBy || "no"} project${
+									record.usedBy === 1 ? "" : "s"
+								} to this template…`,
+								disabled: record.usedBy === 0,
+								onClick: () => openReset(record),
 							},
 							{ type: "divider" },
 							{
@@ -260,6 +315,11 @@ export function WorkflowTemplatesTable({
 					title: "No templates found",
 					description: "Templates matching your filters will appear here.",
 				}}
+			/>
+
+			<ResetWorkflowModal
+				targets={resetTargets}
+				onClose={() => setResetTargets([])}
 			/>
 		</>
 	);

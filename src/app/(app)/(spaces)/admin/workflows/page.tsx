@@ -16,7 +16,7 @@ import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { CreateWorkflowModal } from "@/components/admin/CreateWorkflowModal";
 import ModernTable from "@/components/ModernTable";
@@ -35,6 +35,8 @@ const { Title, Text } = Typography;
 
 export default function WorkflowsAdminPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const tab = searchParams.get("tab") === "projects" ? "projects" : "templates";
 	const [showModal, setShowModal] = useState(false);
 
 	// Workflow schemas (templates)
@@ -123,7 +125,20 @@ export default function WorkflowsAdminPage() {
 					</Button>
 				</div>
 
-				<Tabs defaultActiveKey="templates" items={tabItems} />
+				{/* The tab is part of the address, so a breadcrumb or a shared link
+				    can land on the list the reader meant. */}
+				<Tabs
+					activeKey={tab}
+					items={tabItems}
+					onChange={(key) =>
+						router.replace(
+							key === "templates"
+								? "/admin/workflows"
+								: `/admin/workflows?tab=${key}`,
+							{ scroll: false },
+						)
+					}
+				/>
 			</div>
 
 			<CreateWorkflowModal

@@ -103,6 +103,9 @@ export const GET = pipe(
 					name: projectWorkflow.schema.name,
 					title: projectWorkflow.schema.title,
 					updatedAt: projectWorkflow.schema.updatedAt,
+					// The editor marks each step and task that the template does not
+					// have, which it can only do against the template itself.
+					steps: templateSteps,
 				}
 			: null,
 		// What this project changed about its copy — the cost of a reset, stated

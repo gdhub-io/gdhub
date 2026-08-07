@@ -31,10 +31,12 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import type { ProjectWorkflowRow } from "@/app/(app)/(spaces)/admin/workflows/ProjectWorkflowsTable";
 import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
 import WorkflowSettingsModal from "@/components/admin/WorkflowEditor/WorkflowSettingsModal";
 import { describeCondition } from "@/services/workflow/describeCondition";
+import { type ResetTarget, ResetWorkflowModal } from "./ResetWorkflowModal";
 import styles from "./TemplateEditor.module.scss";
 
 const { Title, Text } = Typography;
@@ -114,6 +116,21 @@ export function TemplateEditor({ id }: { id: string }) {
 	const [dirty, setDirty] = useState(false);
 
 	const [settingsOpen, setSettingsOpen] = useState(false);
+	const [resetTargets, setResetTargets] = useState<ResetTarget[]>([]);
+
+	// Which projects a change here could be pushed onto. Shared cache entry with
+	// the workflows list, so this costs nothing extra.
+	const { data: projectWorkflows } = useQuery<ProjectWorkflowRow[]>({
+		queryKey: ["admin", "project-workflows"],
+		queryFn: () =>
+			axios
+				.get<ProjectWorkflowRow[]>("/api/admin/project-workflows")
+				.then((res) => res.data),
+	});
+	const usingProjects = (projectWorkflows ?? []).filter(
+		(row) => row.template?.id === id,
+	);
+
 	const [stepModal, setStepModal] = useState<{
 		open: boolean;
 		step: StepDraft | null;
@@ -318,9 +335,22 @@ export function TemplateEditor({ id }: { id: string }) {
 					<Button
 						size="small"
 						icon={<IconRotateClockwise size={14} />}
-						disabled
+						disabled={!usingProjects.length}
+						onClick={() =>
+							setResetTargets(
+								usingProjects.map((row) => ({
+									id: row.id,
+									projectName: row.project.name,
+									templateId: id,
+								})),
+							)
+						}
 					>
-						Reset projects to this template…
+						{usingProjects.length
+							? `Reset ${usingProjects.length} project${
+									usingProjects.length === 1 ? "" : "s"
+								} to this template…`
+							: "No projects use this template yet"}
 					</Button>
 				}
 			/>
@@ -687,6 +717,11 @@ export function TemplateEditor({ id }: { id: string }) {
 					}
 					setStepModal({ open: false, step: null });
 				}}
+			/>
+
+			<ResetWorkflowModal
+				targets={resetTargets}
+				onClose={() => setResetTargets([])}
 			/>
 
 			<TaskEditModal
