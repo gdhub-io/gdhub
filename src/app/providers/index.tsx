@@ -2,7 +2,7 @@
 
 import { StyleProvider } from "@ant-design/cssinjs";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider } from "antd";
+import { App, ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
 import { setupDayjs } from "@/config/dayjs-setup";
@@ -49,7 +49,15 @@ export function Providers({ children }: { children: ReactNode }) {
 						 * on a graphite product. Shells still override with their
 						 * own mode and density.
 						 */}
-						<ConfigProvider theme={productTheme}>{children}</ConfigProvider>
+						<ConfigProvider theme={productTheme}>
+							{/*
+							 * `App` is what makes `App.useApp()` return working `message`,
+							 * `modal` and `notification` — without it they are silent stubs,
+							 * and it is also the only way those surfaces inherit the theme
+							 * and the CSS layer instead of antd's raw defaults.
+							 */}
+							<App>{children}</App>
+						</ConfigProvider>
 					</AntdRegistry>
 				</QueryProvider>
 			</SessionProvider>

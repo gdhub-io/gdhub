@@ -23,7 +23,6 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 	React.useEffect(() => {
 		if (visible) {
 			form.setFieldsValue({
-				title: step?.title || "",
 				name: step?.name || "",
 				description: step?.description || "",
 			});
@@ -70,28 +69,20 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 				requiredMark="optional"
 			>
 				<Row gutter={[16, 16]}>
-					<Col xs={24} lg={12}>
+					{/*
+					 * One field, because the stored step has one: `name` is what the
+					 * platform shows as the project's stage — "Preparing a demo
+					 * version" — on the project page, the cards and the stage filter.
+					 * It used to be labelled "identifier" and validated as a slug,
+					 * which is neither what it holds nor what it is used for.
+					 */}
+					<Col span={24}>
 						<Form.Item
-							name="title"
+							name="name"
 							label="Step name"
 							rules={[{ required: true, message: "Enter a name" }]}
 						>
-							<Input placeholder="Step name" />
-						</Form.Item>
-					</Col>
-					<Col xs={24} lg={12}>
-						<Form.Item
-							name="name"
-							label="Step identifier"
-							rules={[
-								{ required: true, message: "Enter an identifier" },
-								{
-									pattern: /^[a-z0-9-]+$/,
-									message: "Only lowercase latin letters, digits and dashes",
-								},
-							]}
-						>
-							<Input placeholder="step-name" />
+							<Input placeholder="e.g. Prototype" />
 						</Form.Item>
 					</Col>
 					<Col span={24}>

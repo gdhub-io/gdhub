@@ -152,7 +152,7 @@ export function WorkflowTemplatesTable({
 			dataIndex: "status",
 			width: 140,
 			render: (value: WorkflowTemplateRow["status"]) => (
-				<Tag color={STATUS_META[value].color} bordered>
+				<Tag color={STATUS_META[value].color} variant="outlined">
 					{STATUS_META[value].label}
 				</Tag>
 			),
