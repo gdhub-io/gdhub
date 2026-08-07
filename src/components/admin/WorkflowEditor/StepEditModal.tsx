@@ -1,5 +1,6 @@
-import { Button, Col, Form, Input, Modal, Row, Space } from "antd";
+import { Button, Form, Input, Modal, Space } from "antd";
 import React from "react";
+import styles from "./TaskEditModal.module.scss";
 
 const { TextArea } = Input;
 
@@ -49,7 +50,7 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 			title={isNew ? "New step" : "Edit step"}
 			open={visible}
 			onCancel={handleClose}
-			width={800}
+			width={600}
 			centered
 			destroyOnHidden
 			mask={{ closable: false }}
@@ -62,35 +63,35 @@ export const StepEditModal: React.FC<StepEditModalProps> = ({
 				</Space>
 			}
 		>
-			<Form
-				form={form}
-				layout="vertical"
-				variant="filled"
-				requiredMark="optional"
-			>
-				<Row gutter={[16, 16]}>
-					{/*
-					 * One field, because the stored step has one: `name` is what the
-					 * platform shows as the project's stage — "Preparing a demo
-					 * version" — on the project page, the cards and the stage filter.
-					 * It used to be labelled "identifier" and validated as a slug,
-					 * which is neither what it holds nor what it is used for.
-					 */}
-					<Col span={24}>
-						<Form.Item
-							name="name"
-							label="Step name"
-							rules={[{ required: true, message: "Enter a name" }]}
-						>
-							<Input placeholder="e.g. Prototype" />
-						</Form.Item>
-					</Col>
-					<Col span={24}>
-						<Form.Item name="description" label="Step description">
-							<TextArea rows={3} placeholder="Step description" />
-						</Form.Item>
-					</Col>
-				</Row>
+			<Form form={form} layout="vertical" variant="filled" requiredMark={false}>
+				{/*
+				 * One field, because the stored step has one: `name` is what the
+				 * platform shows as the project's stage — "Preparing a demo version" —
+				 * on the project page, the cards and the stage filter. It used to be
+				 * labelled "identifier" and validated as a slug, which is neither what
+				 * it holds nor what it is used for.
+				 */}
+				<Form.Item
+					name="name"
+					label="Step name"
+					rules={[{ required: true, message: "Enter a name" }]}
+				>
+					<Input placeholder="e.g. Prototype" />
+				</Form.Item>
+				<Form.Item
+					name="description"
+					label={
+						<>
+							Step description&nbsp;
+							<span className={styles.optional}>(optional)</span>
+						</>
+					}
+				>
+					<TextArea
+						rows={3}
+						placeholder="What the project is working towards in this step"
+					/>
+				</Form.Item>
 			</Form>
 		</Modal>
 	);

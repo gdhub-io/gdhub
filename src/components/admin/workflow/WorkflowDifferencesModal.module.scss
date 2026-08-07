@@ -1,0 +1,26 @@
+.subtitle {
+	font-size: var(--gd-font-size-caption);
+}
+
+.change {
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-body);
+}
+
+.added {
+	flex: none;
+	margin-top: 2px;
+	color: var(--gd-success-solid);
+}
+
+.removed {
+	flex: none;
+	margin-top: 2px;
+	color: var(--gd-danger-solid);
+}
+
+.moved {
+	flex: none;
+	margin-top: 2px;
+	color: var(--gd-color-text-tertiary);
+}

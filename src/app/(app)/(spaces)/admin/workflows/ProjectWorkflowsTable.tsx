@@ -3,10 +3,12 @@
 import type { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import {
 	IconAlertTriangle,
+	IconArrowsShuffle,
 	IconDots,
 	IconExternalLink,
 	IconFolder,
 	IconGitBranch,
+	IconGitCompare,
 	IconRefresh,
 	IconTrash,
 } from "@tabler/icons-react";
@@ -31,6 +33,10 @@ import {
 	type ResetTarget,
 	ResetWorkflowModal,
 } from "@/components/admin/workflow/ResetWorkflowModal";
+import {
+	type DifferencesTarget,
+	WorkflowDifferencesModal,
+} from "@/components/admin/workflow/WorkflowDifferencesModal";
 import ModernTable from "@/components/ModernTable";
 import styles from "./style.module.scss";
 
@@ -97,6 +103,7 @@ export function ProjectWorkflowsTable({
 	const [life, setLife] = useState<"any" | "live" | "closed">("live");
 	const [selected, setSelected] = useState<string[]>([]);
 	const [resetTargets, setResetTargets] = useState<ResetTarget[]>([]);
+	const [diffTarget, setDiffTarget] = useState<DifferencesTarget | null>(null);
 
 	const { mutateAsync: deleteWorkflow } = useMutation({
 		mutationFn: (id: string) =>
@@ -288,11 +295,31 @@ export function ProjectWorkflowsTable({
 									</Link>
 								),
 							},
+							{
+								key: "differences",
+								icon: <IconGitCompare size={16} />,
+								label: "View differences",
+								disabled: !record.isModified,
+								onClick: () =>
+									setDiffTarget({
+										id: record.id,
+										projectName: record.project.name,
+									}),
+							},
 							{ type: "divider" },
 							{
 								key: "reset",
 								icon: <IconRefresh size={16} />,
 								label: "Reset to template…",
+								onClick: () => setResetTargets([toResetTarget(record)]),
+							},
+							{
+								// The reset modal already chooses the template, so moving a
+								// project is that flow entered with the choice in mind rather
+								// than a second path to the same writes.
+								key: "move",
+								icon: <IconArrowsShuffle size={16} />,
+								label: "Move to another template…",
 								onClick: () => setResetTargets([toResetTarget(record)]),
 							},
 							{ type: "divider" },
@@ -408,6 +435,11 @@ export function ProjectWorkflowsTable({
 			<ResetWorkflowModal
 				targets={resetTargets}
 				onClose={() => setResetTargets([])}
+			/>
+
+			<WorkflowDifferencesModal
+				target={diffTarget}
+				onClose={() => setDiffTarget(null)}
 			/>
 		</>
 	);
