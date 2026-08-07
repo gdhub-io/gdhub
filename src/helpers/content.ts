@@ -4,22 +4,22 @@ export const getCleanTextContent = (
 	content: string,
 	maxLength: number = 200,
 ) => {
-	// Удаляем markdown изображения
+	// Strip markdown images
 	const withoutMarkdownImages = content.replace(/!\[.*?\]\(.*?\)/g, "");
-	// Удаляем HTML изображения
+	// Strip HTML images
 	const withoutHtmlImages = withoutMarkdownImages.replace(/<img[^>]*>/g, "");
-	// Удаляем все HTML теги
+	// Strip every HTML tag
 	const withoutHtml = withoutHtmlImages.replace(/<[^>]*>/g, "");
-	// Удаляем markdown синтаксис
+	// Strip markdown syntax
 	const withoutMarkdown = withoutHtml
-		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1") // ссылки [text](url) -> text
-		.replace(/[*_~`]+/g, "") // жирный, курсив, зачеркнутый текст и код
-		.replace(/#{1,6}\s/g, "") // заголовки
-		.replace(/^\s*[-+*]\s/gm, "") // списки
-		.replace(/^\s*\d+\.\s/gm, "") // нумерованные списки
-		.replace(/\n\s*>\s*/g, " ") // цитаты
-		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, " "); // таблицы
-	// Удаляем лишние пробелы и переносы строк
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1") // links [text](url) -> text
+		.replace(/[*_~`]+/g, "") // bold, italic, strikethrough and code
+		.replace(/#{1,6}\s/g, "") // headings
+		.replace(/^\s*[-+*]\s/gm, "") // lists
+		.replace(/^\s*\d+\.\s/gm, "") // numbered lists
+		.replace(/\n\s*>\s*/g, " ") // quotes
+		.replace(/\n\s*\|\s*([^|]+\s*\|)+/g, " "); // tables
+	// Collapse extra spaces and line breaks
 	const cleanText = withoutMarkdown.replace(/\s+/g, " ").trim();
 	return cleanText.slice(0, maxLength);
 };
@@ -31,7 +31,7 @@ export const getPageCover = (post: {
 		coverImage?: string | null;
 	} | null;
 }): string | null => {
-	// Получаем изображения из контента
+	// Pull the images out of the content
 	const markdownImages = post.content.match(/!\[.*?\]\((.*?)\)/g) || [];
 	const htmlImages = post.content.match(/<img[^>]+src="([^">]+)"[^>]*>/g) || [];
 	const allImages = [...markdownImages, ...htmlImages];
@@ -40,11 +40,11 @@ export const getPageCover = (post: {
 		allImages.length > 0
 			? allImages
 					.map((match: string) => {
-						// Пробуем найти URL в markdown формате
+						// Try to find a markdown-formatted URL
 						const markdownMatch = match.match(/\((.*?)\)/);
 						if (markdownMatch) return markdownMatch[1];
 
-						// Пробуем найти URL в HTML формате
+						// Try to find an HTML-formatted URL
 						const htmlMatch = match.match(/src="([^">]+)"/);
 						if (htmlMatch) return htmlMatch[1];
 
@@ -53,10 +53,10 @@ export const getPageCover = (post: {
 					.filter(Boolean)[0]
 			: null;
 
-	// Получаем превью видео, если оно есть
+	// Take the video poster, when there is one
 	let videoThumbnail = null;
 	if (post.video) {
-		// Проверяем, является ли это YouTube видео
+		// Is it a YouTube video?
 		const youtubeMatch = post.video.match(
 			/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/,
 		);
@@ -64,20 +64,20 @@ export const getPageCover = (post: {
 			const videoId = youtubeMatch[1];
 			videoThumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 		}
-		// Проверяем, является ли это Vimeo видео
+		// Is it a Vimeo video?
 		const vimeoMatch = post.video.match(/vimeo\.com\/([0-9]+)/);
 		if (vimeoMatch) {
-			// Для Vimeo нужно делать API запрос, но пока используем статичное превью
+			// Vimeo would need an API call; use a static poster for now
 			videoThumbnail = `https://vumbnail.com/${vimeoMatch[1]}.jpg`;
 		}
-		// Проверяем, является ли это прямым URL видео
+		// Is it a direct video URL?
 		if (post.video.match(/\.(mp4|webm|ogg)$/i)) {
-			// Для прямых URL видео используем первое изображение из контента или обложку проекта
+			// For a direct video URL use the first image in the content, or the project cover
 			videoThumbnail = firstImageFromContent || post.project?.coverImage;
 		}
 	}
 
-	// Возвращаем pageCover с учетом приоритета
+	// Return the pageCover, honouring the priority order
 	const result =
 		videoThumbnail || firstImageFromContent || post.project?.coverImage || null;
 	return result;

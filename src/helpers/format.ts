@@ -148,3 +148,31 @@ export function formatDollar(amount: number) {
 
 	return formatter;
 }
+
+const COMPACT_UNITS = [
+	{ threshold: 1e9, divisor: 1e9, suffix: "B" },
+	{ threshold: 1e6, divisor: 1e6, suffix: "M" },
+	{ threshold: 1e3, divisor: 1e3, suffix: "k" },
+];
+
+/**
+ * A count as it reads on a badge: 1234 → "1.2k", 2_300_000 → "2.3M".
+ *
+ * The fraction is truncated rather than rounded — a badge should not show
+ * "1k" until the thousandth one has actually landed. The decimal separator
+ * follows the locale, so a Russian reader gets "1,2k".
+ */
+export function formatCompactCount(
+	value: number,
+	locale: string = defaultLocale,
+): string {
+	if (!Number.isFinite(value)) return "0";
+
+	const rounded = Math.trunc(value);
+	const abs = Math.abs(rounded);
+	const unit = COMPACT_UNITS.find((candidate) => abs >= candidate.threshold);
+	if (!unit) return String(rounded);
+
+	const scaled = Math.trunc((rounded / unit.divisor) * 10) / 10;
+	return `${scaled.toLocaleString(locale, { maximumFractionDigits: 1 })}${unit.suffix}`;
+}

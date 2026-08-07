@@ -3,7 +3,7 @@ import type React from "react";
 import { SectionHeading, ViewAllLink } from "@/components/ui";
 import styles from "./hubSection.module.scss";
 
-export type HubSectionShell = "main" | "inset" | "sidebar";
+export type HubSectionShell = "main" | "inset" | "sidebar" | "standalone";
 
 export function getHubSectionShellClass(shell: HubSectionShell) {
 	switch (shell) {
@@ -11,6 +11,8 @@ export function getHubSectionShellClass(shell: HubSectionShell) {
 			return styles.sectionCardInset;
 		case "sidebar":
 			return styles.sectionCardSidebar;
+		case "standalone":
+			return styles.sectionCardStandalone;
 		default:
 			return styles.sectionCard;
 	}

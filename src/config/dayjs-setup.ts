@@ -1,10 +1,10 @@
 /**
- * Расширяет глобальный dayjs необходимыми приложению плагинами и
- * выставляет дефолтную локаль. Раньше жило в src/pages/_app.tsx;
- * после перехода на App Router вызывается из app/layout.tsx (SSR)
- * и app/providers (клиент).
+ * Extends the global dayjs with the plugins the app needs and sets the
+ * default locale. This used to live in src/pages/_app.tsx; after the move to
+ * the App Router it is called from app/layout.tsx (SSR) and app/providers
+ * (client).
  *
- * Вызовы dayjs.extend идемпотентны — повторные setupDayjs() безопасны.
+ * dayjs.extend is idempotent — calling setupDayjs() again is safe.
  */
 
 import dayjs from "dayjs";

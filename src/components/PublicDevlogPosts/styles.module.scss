@@ -105,32 +105,6 @@
   }
 }
 
-.applauseCount {
-  gap: 4px;
-}
-
-.applauseIcon {
-  position: relative;
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.applauseIconAnimation {
-  width: 100%;
-  height: 100%;
-
-  :global(svg) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    shape-rendering: geometricPrecision;
-    text-rendering: geometricPrecision;
-  }
-}
-
 @media screen and (max-width: 576px) {
   .postMeta {
     // flex-direction: column;

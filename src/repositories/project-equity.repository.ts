@@ -362,7 +362,7 @@ export class ProjectEquityRepository {
 						percentage,
 						transactionType: EquityTransactionType.InitialAllocation,
 						reason: "Initial equity allocation",
-						createdById: teamMember.userId, // Или можно использовать ID автора проекта
+						createdById: teamMember.userId, // The project author's id would work here too
 					},
 				});
 			}
@@ -394,7 +394,7 @@ export class ProjectEquityRepository {
 							percentage,
 							targetStepId,
 							isExecuted: false,
-							createdById: teamMember.userId, // Или можно использовать ID автора проекта
+							createdById: teamMember.userId, // The project author's id would work here too
 						},
 					});
 				}

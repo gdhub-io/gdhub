@@ -86,7 +86,7 @@ const EventConferenceOrGamelabView = ({
 
 	return (
 		<div className={styles.contentContainer} style={{ position: "relative" }}>
-			{/* Картинка мероприятия по центру, перекрывает header */}
+			{/* The event image, centred, overlapping the header */}
 			{event.image && (
 				<div
 					style={{
@@ -119,7 +119,7 @@ const EventConferenceOrGamelabView = ({
 				</div>
 			)}
 
-			{/* Название и краткое описание */}
+			{/* Title and short description */}
 			<div style={{ textAlign: "center", marginBottom: 16 }}>
 				<Title level={1} style={{ marginBottom: 8 }}>
 					{event.title}
@@ -206,7 +206,7 @@ const EventConferenceOrGamelabView = ({
 							>
 								<Flex align="center" gap={32} justify="space-between">
 									<IconMeteor size={36} />
-									{/* Линия 1: дата и title */}
+									{/* Row 1: date and title */}
 									<Flex vertical gap={0} style={{ flex: 1 }}>
 										<Flex
 											align="center"
@@ -243,7 +243,7 @@ const EventConferenceOrGamelabView = ({
 											</span>
 										</Flex>
 
-										{/* Линия 2: описание */}
+										{/* Row 2: description */}
 										{item.description && (
 											<Text type="secondary" className={styles.itemDescription}>
 												<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
@@ -252,7 +252,7 @@ const EventConferenceOrGamelabView = ({
 											</Text>
 										)}
 
-										{/* Линия 3: спикеры */}
+										{/* Row 3: speakers */}
 										{item.speakers?.length > 0 && (
 											<Flex
 												gap={24}
@@ -354,7 +354,7 @@ const EventConferenceOrGamelabView = ({
 				</div>
 			</div>
 
-			{/* Кнопка регистрации внизу страницы */}
+			{/* Sign-up button at the bottom of the page */}
 			<div
 				style={{ maxWidth: 420, margin: "40px auto 0", textAlign: "center" }}
 			>

@@ -10,6 +10,23 @@
   position: relative;
 }
 
+/**
+ * The hero pins itself with the nav row pulled above the viewport: scrolling
+ * takes the logo and menu away, then the title, the meta and the store link
+ * hold at the top edge while the page keeps moving underneath.
+ *
+ * `top` is set inline from the measured nav height — the row grows on a phone
+ * and with breadcrumbs, so the offset cannot be a constant.
+ */
+.stickyBand {
+  position: sticky;
+  // The nav row is the part allowed to leave. Its height is published as a
+  // custom property once measured; the fallback keeps the effect right when the
+  // measurement has not landed yet, so the strip never pins the whole hero.
+  top: calc(-1 * var(--public-nav-height, 98px));
+  z-index: 20;
+}
+
 .titleContainer {
   padding: 42px 0 32px;
   position: relative;

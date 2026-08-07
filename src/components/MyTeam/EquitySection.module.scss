@@ -27,6 +27,6 @@
 }
 
 .plotContainer :global(.equity-plot-container) {
-  /* стили для глобального класса, но в контексте локального класса */
+  /* styles for a global class, scoped inside a local one */
   width: 100%;
 } 

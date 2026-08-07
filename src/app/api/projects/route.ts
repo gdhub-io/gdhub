@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
+import { getProjectCardFacts } from "@/repositories/project-card.repository";
 import { prisma } from "@/services/prisma";
 
 const ProjectsQuerySchema = z.object({
@@ -53,15 +54,23 @@ export const GET = withAuth({ mode: "user" })(
 				),
 			);
 
-			const applauseCounts = await prisma.project.getApplauseCounts({
-				projectIds,
-			});
+			const [applauseCounts, cardFacts] = await Promise.all([
+				prisma.project.getApplauseCounts({ projectIds }),
+				getProjectCardFacts(projectIds),
+			]);
 
-			const enriched = projects.map((project) => ({
-				...project,
-				applauseCount: applauseCounts.get(project.id) ?? 0,
-				hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
-			}));
+			const enriched = projects.map((project) => {
+				const facts = cardFacts.get(project.id);
+
+				return {
+					...project,
+					applauseCount: applauseCounts.get(project.id) ?? 0,
+					hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
+					author: facts?.author ?? null,
+					team: facts?.team ?? { count: 0, members: [] },
+					stage: facts?.stage ?? null,
+				};
+			});
 
 			return json(enriched);
 		} catch (error) {

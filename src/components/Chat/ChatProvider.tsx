@@ -24,11 +24,11 @@ import type { MatrixChatSessionResponse } from "@/types/chat";
 import { useChat } from "./useChat";
 
 /**
- * Глобальный bootstrap чата: поднимает единственный Matrix-клиент на сессию,
- * считает непрочитанные, регистрирует push и показывает in-app уведомления о
- * новых сообщениях. Монтируется один раз в `app/(protected)/layout.tsx`, поэтому
- * клиент переживает навигацию между hub / project / event / course layout —
- * любой из них может рендерить <ChatModal/> поверх этого же клиента.
+ * Global chat bootstrap: brings up the single Matrix client for the session,
+ * counts unread messages, registers push and shows in-app notifications about
+ * new messages. Mounted once in `app/(protected)/layout.tsx`, so the client
+ * survives navigation between the hub / project / event / course layouts —
+ * any of them can render <ChatModal/> on top of that same client.
  */
 export function ChatProvider({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();

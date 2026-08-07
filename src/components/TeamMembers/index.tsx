@@ -19,9 +19,15 @@ const { Title, Text } = Typography;
 interface TeamMembersArgs {
 	teamId: string;
 	variant?: "default" | "hubSidebar";
+	/** Render only the member rows — the caller supplies frame and title. */
+	bare?: boolean;
 }
 
-const TeamMembers = ({ teamId, variant = "default" }: TeamMembersArgs) => {
+const TeamMembers = ({
+	teamId,
+	variant = "default",
+	bare = false,
+}: TeamMembersArgs) => {
 	const { data: session } = useSession();
 	const { t } = useTranslate();
 
@@ -58,55 +64,59 @@ const TeamMembers = ({ teamId, variant = "default" }: TeamMembersArgs) => {
 	if (team && team?.data.members.length == 0) return null;
 
 	if (variant === "hubSidebar") {
+		const rows = (
+			<Flex vertical>
+				{data?.map((item, idx) => (
+					<Flex
+						key={`team-member-${idx.toString()}`}
+						align="center"
+						gap={12}
+						className={styles.item}
+					>
+						{session ? (
+							item.avatar ? (
+								<Avatar size={40} src={item.avatar} />
+							) : (
+								<Avatar size={40}>
+									{item.title?.charAt(0)?.toUpperCase()}
+								</Avatar>
+							)
+						) : (
+							<ReactNiceAvatar
+								style={{ width: 40, height: 40 }}
+								{...genConfig(item.description || "")}
+								earSize="big"
+								eyeStyle="circle"
+								hairStyle="normal"
+							/>
+						)}
+						<Flex vertical className={styles.textWrap}>
+							{session && (
+								<Text strong title={item.title || ""} ellipsis>
+									{item.title}
+								</Text>
+							)}
+							<Text
+								type="secondary"
+								title={item.description || ""}
+								ellipsis
+								className={styles.secondary}
+							>
+								{item.description}
+							</Text>
+						</Flex>
+					</Flex>
+				))}
+			</Flex>
+		);
+
+		if (bare) return rows;
+
 		return (
 			<section className={getHubSectionShellClass("sidebar")}>
 				<HubSectionHeader title={t("team-members.title", "Team")} />
 				<HubSectionBody>
-					<HubSectionBleed>
-						<Flex vertical>
-							{data?.map((item, idx) => (
-								<Flex
-									key={`team-member-${idx.toString()}`}
-									align="center"
-									gap={12}
-									className={styles.item}
-								>
-									{session ? (
-										item.avatar ? (
-											<Avatar size={40} src={item.avatar} />
-										) : (
-											<Avatar size={40}>
-												{item.title?.charAt(0)?.toUpperCase()}
-											</Avatar>
-										)
-									) : (
-										<ReactNiceAvatar
-											style={{ width: 40, height: 40 }}
-											{...genConfig(item.description || "")}
-											earSize="big"
-											eyeStyle="circle"
-											hairStyle="normal"
-										/>
-									)}
-									<Flex vertical className={styles.textWrap}>
-										{session && (
-											<Text strong title={item.title || ""} ellipsis>
-												{item.title}
-											</Text>
-										)}
-										<Text
-											type="secondary"
-											title={item.description || ""}
-											ellipsis
-											className={styles.secondary}
-										>
-											{item.description}
-										</Text>
-									</Flex>
-								</Flex>
-							))}
-						</Flex>
-					</HubSectionBleed>
+					<HubSectionBleed>{rows}</HubSectionBleed>
 				</HubSectionBody>
 			</section>
 		);

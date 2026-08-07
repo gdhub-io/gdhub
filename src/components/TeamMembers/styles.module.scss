@@ -1,5 +1,7 @@
 .item {
-  padding: 10px 24px;
+  // The row starts where the card's title starts: 16px on a phone, 24 inside
+  // the wider card.
+  padding: 10px 16px;
   border-bottom: 1px solid rgba(5, 5, 5, 0.08);
 
   &:last-child {
@@ -15,4 +17,10 @@
 .secondary {
   font-size: 12px;
   line-height: 1.25;
+}
+
+@media (min-width: 992px) {
+  .item {
+    padding: 10px 24px;
+  }
 }

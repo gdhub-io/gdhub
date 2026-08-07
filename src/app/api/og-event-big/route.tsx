@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 					}}
 				></div>
 
-				{/* Дата в правом верхнем углу */}
+				{/* Date, top right */}
 				{eventDate && (
 					<div
 						style={{
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
 						padding: 64,
 					}}
 				>
-					{/* Лого и тип мероприятия */}
+					{/* Logo and event type */}
 					<div style={{ display: "flex", alignItems: "center", gap: 24 }}>
 						<svg
 							role="img"

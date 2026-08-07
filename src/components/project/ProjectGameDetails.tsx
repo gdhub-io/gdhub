@@ -26,8 +26,11 @@ type GameDetailsProject = {
  */
 export function ProjectGameDetails({
 	project,
+	bare = false,
 }: {
 	project?: GameDetailsProject | null;
+	/** Render only the rows — the caller supplies the frame and the title. */
+	bare?: boolean;
 }) {
 	const { t } = useTranslate();
 
@@ -49,28 +52,32 @@ export function ProjectGameDetails({
 
 	if (!items.length) return null;
 
+	const rows = (
+		<Flex vertical>
+			{items.map((item) => (
+				<Flex
+					key={item.label}
+					justify="space-between"
+					align="flex-start"
+					gap={12}
+					className={styles.item}
+				>
+					<Text type="secondary" className={styles.label}>
+						{item.label}
+					</Text>
+					<Text className={styles.value}>{item.value}</Text>
+				</Flex>
+			))}
+		</Flex>
+	);
+
+	if (bare) return rows;
+
 	return (
 		<section className={getHubSectionShellClass("sidebar")}>
-			<HubSectionHeader title={t("page.project.aboutGame", "Game details")} />
+			<HubSectionHeader title={t("page.project.gameDetails", "Game details")} />
 			<HubSectionBody>
-				<HubSectionBleed>
-					<Flex vertical>
-						{items.map((item) => (
-							<Flex
-								key={item.label}
-								justify="space-between"
-								align="flex-start"
-								gap={12}
-								className={styles.item}
-							>
-								<Text type="secondary" className={styles.label}>
-									{item.label}
-								</Text>
-								<Text className={styles.value}>{item.value}</Text>
-							</Flex>
-						))}
-					</Flex>
-				</HubSectionBleed>
+				<HubSectionBleed>{rows}</HubSectionBleed>
 			</HubSectionBody>
 		</section>
 	);

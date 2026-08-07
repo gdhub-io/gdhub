@@ -34,7 +34,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 	const [transactionsModalVisible, setTransactionsModalVisible] =
 		useState<boolean>(false);
 
-	// Проверяем наличие аллокации доли для текущего пользователя
+	// Check whether the current user has an equity allocation
 	const userAllocation = equityData?.equityAllocations?.find(
 		(allocation: any) => allocation.ownerId === session?.user?.id,
 	);
@@ -135,10 +135,10 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 						investmentReserve={equityData?.investmentReserve}
 						teamShares={
 							equityData?.equityAllocations?.flatMap((allocation: any) => {
-								// Результирующий массив teamShares
+								// The resulting teamShares array
 								const shares = [];
 
-								// Добавляем основную (фактическую, vested) долю, если она есть
+								// Add the main (actual, vested) share when there is one
 								if (allocation.percentage > 0) {
 									shares.push({
 										id: allocation.id,
@@ -156,7 +156,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 									});
 								}
 
-								// Добавляем обещанную (promised) долю, если она есть
+								// Add the promised share when there is one
 								if (
 									allocation.promises &&
 									allocation.promises.length > 0 &&
@@ -185,7 +185,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 				</div>
 			</Space>
 
-			{/* Модальное окно для передачи доли */}
+			{/* Share transfer modal */}
 			<EquityTransferModal
 				open={transferModalVisible}
 				onCancel={() => setTransferModalVisible(false)}
@@ -194,7 +194,7 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 				teamMembers={teamMembers}
 			/>
 
-			{/* Модальное окно для истории транзакций */}
+			{/* Transaction history modal */}
 			<Modal
 				centered
 				title={t("Transactions History")}

@@ -27,11 +27,11 @@ import styles from "./style.module.scss";
 const { Footer, Content } = Layout;
 
 /**
- * Общая обвязка публичных страниц: AntD ConfigProvider, MainHeader, MainFooter,
- * мобильный Drawer. Используется в `app/(public)/layout.tsx`.
+ * The shared frame for public pages: AntD ConfigProvider, MainHeader,
+ * MainFooter and the mobile Drawer. Used by `app/(public)/layout.tsx`.
  *
- * Per-page hero (заголовок, фон, subTitle) рендерится не здесь —
- * страницы вставляют <PublicPageHeader> в своё содержимое.
+ * The per-page hero (title, background, subTitle) is not rendered here —
+ * pages put <PublicPageHeader> into their own content.
  */
 export function PublicShell({ children }: { children: ReactNode }) {
 	const { t, getLanguage } = useTolgee();

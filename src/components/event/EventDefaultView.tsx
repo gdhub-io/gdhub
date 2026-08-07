@@ -94,7 +94,7 @@ const EventDefaultView = ({
 
 	return (
 		<Flex gap={48} align="flex-start" className={styles.contentContainer}>
-			{/* Левая колонка: инфо */}
+			{/* Left column: info */}
 			<div style={{ flex: 1 }}>
 				<Title level={2}>{t("event.about", "About")}</Title>
 				{event.content ? (
@@ -141,7 +141,7 @@ const EventDefaultView = ({
 							>
 								<Flex align="center" gap={32} justify="space-between">
 									<IconMeteor size={36} />
-									{/* Линия 1: дата и title */}
+									{/* Row 1: date and title */}
 									<Flex vertical gap={0} style={{ flex: 1 }}>
 										<Flex
 											align="center"
@@ -178,7 +178,7 @@ const EventDefaultView = ({
 											</span>
 										</Flex>
 
-										{/* Линия 2: описание */}
+										{/* Row 2: description */}
 										{item.description && (
 											<Text type="secondary" className={styles.itemDescription}>
 												<ReactMarkdown rehypePlugins={[rehypeRaw as any]}>
@@ -187,7 +187,7 @@ const EventDefaultView = ({
 											</Text>
 										)}
 
-										{/* Линия 3: спикеры */}
+										{/* Row 3: speakers */}
 										{item.speakers?.length > 0 && (
 											<Flex
 												gap={24}
@@ -350,7 +350,7 @@ const EventDefaultView = ({
 					</div>
 				)}
 			</div>
-			{/* Правая колонка: картинка */}
+			{/* Right column: image */}
 			{event.image && screens.md && (
 				<div
 					style={{
