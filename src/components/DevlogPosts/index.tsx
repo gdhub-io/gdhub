@@ -1,18 +1,14 @@
-import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
-import { LoadingOutlined } from "@ant-design/icons";
 import type { OutputData } from "@editorjs/editorjs";
 import type { Project, ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Skeleton, Spin, Tooltip, Typography } from "antd";
+import { Skeleton, Spin, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ApplauseButton } from "@/components/ApplauseButton";
 import { DevlogPostLink } from "@/components/DevlogPostLink";
 import {
 	getHubSectionShellClass,
@@ -30,7 +26,6 @@ import type { DevlogFeedPage } from "@/types/devlog";
 import styles from "./styles.module.scss";
 
 const { Title } = Typography;
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface DevlogPostsProps {
 	projectId?: string;
@@ -40,6 +35,11 @@ interface DevlogPostsProps {
 	title?: React.ReactNode;
 	/** "section" — header inside hub shell (default for hub variant); "title" — `<Title level={2}>` above the shell */
 	headerStyle?: "section" | "title";
+	/**
+	 * Below the sidebar breakpoint, drop the frame and let the row rules run to
+	 * the edges of the display — a feed is a column of rows, not a card.
+	 */
+	edgeToEdgeOnMobile?: boolean;
 }
 
 const PostCard: React.FC<{
@@ -53,87 +53,6 @@ const PostCard: React.FC<{
 	};
 	onClick: (e: React.MouseEvent) => void;
 }> = ({ post, onClick }) => {
-	const { t } = useTranslate();
-	const { status: authStatus } = useSession();
-	const isUserAuthenticated = authStatus === "authenticated";
-
-	const [applauseCount, setApplauseCount] = useState(post.applauseCount || 0);
-	const [hasApplauded, setHasApplauded] = useState(false);
-	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
-	const [isApplauseStateLoading, setIsApplauseStateLoading] = useState(false);
-	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
-	const applauseRequestIdRef = useRef(0);
-
-	useEffect(() => {
-		setApplauseCount(post.applauseCount || 0);
-	}, [post.applauseCount]);
-
-	useEffect(() => {
-		if (!isUserAuthenticated) {
-			setHasApplauded(false);
-			setIsApplauseStateLoading(false);
-			return;
-		}
-
-		let isMounted = true;
-		const requestId = ++applauseRequestIdRef.current;
-		setIsApplauseStateLoading(true);
-
-		axios
-			.get(`/api/devlog/${post.id}/applause`)
-			.then(({ data }) => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) return;
-				setApplauseCount(data.count || 0);
-				setHasApplauded(!!data.hasApplauded);
-			})
-			.catch((error) => {
-				console.error("Error fetching post applause state:", error);
-			})
-			.finally(() => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) return;
-				setIsApplauseStateLoading(false);
-			});
-
-		return () => {
-			isMounted = false;
-		};
-	}, [isUserAuthenticated, post.id]);
-
-	const handleApplauseToggle = async (e: React.MouseEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		if (!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading) {
-			return;
-		}
-
-		applauseRequestIdRef.current += 1;
-
-		const nextHasApplauded = !hasApplauded;
-		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
-
-		setIsApplauseLoading(true);
-		setHasApplauded(nextHasApplauded);
-		setApplauseCount(nextCount);
-		if (nextHasApplauded) {
-			setApplauseAnimationToken((value) => value + 1);
-		}
-
-		try {
-			const { data } = await axios.request({
-				url: `/api/devlog/${post.id}/applause`,
-				method: nextHasApplauded ? "POST" : "DELETE",
-			});
-			setHasApplauded(!!data.hasApplauded);
-			setApplauseCount(data.count || 0);
-		} catch (error) {
-			console.error("Error toggling post applause:", error);
-			setHasApplauded(hasApplauded);
-			setApplauseCount(applauseCount);
-		} finally {
-			setIsApplauseLoading(false);
-		}
-	};
-
 	/** Two letters when there is no photo — a tinted circle beats a generated face. */
 	const authorInitials = useMemo(() => {
 		const name = post.author?.name?.trim();
@@ -231,60 +150,10 @@ const PostCard: React.FC<{
 
 					<div className={styles.postMeta}>
 						<span className={styles.postStats}>
-							<Tooltip
-								title={
-									isUserAuthenticated
-										? t("page.devlog.applauseTooltip", "Rate the team's work")
-										: t(
-												"page.devlog.applauseAuthTooltip",
-												"Only authorized users can leave applause",
-											)
-								}
-							>
-								<span className={styles.applauseWrapper}>
-									<HappyProvider>
-										<Button
-											type="text"
-											shape="round"
-											size="small"
-											className={`${styles.applauseButton} ${
-												hasApplauded ? styles.applauseButtonActive : ""
-											}`}
-											icon={
-												<span
-													className={styles.applauseIcon}
-													style={{ width: 18, height: 18 }}
-												>
-													{isApplauseStateLoading ? (
-														<LoadingOutlined
-															spin
-															style={{ fontSize: 18, lineHeight: 1 }}
-														/>
-													) : (
-														<Lottie
-															key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
-															animationData={applauseDefaultAnimation}
-															autoplay={
-																hasApplauded && applauseAnimationToken > 0
-															}
-															loop={false}
-															className={styles.applauseIconAnimation}
-														/>
-													)}
-												</span>
-											}
-											onClick={handleApplauseToggle}
-											disabled={
-												!isUserAuthenticated ||
-												isApplauseLoading ||
-												isApplauseStateLoading
-											}
-										>
-											{applauseCount > 0 ? applauseCount : null}
-										</Button>
-									</HappyProvider>
-								</span>
-							</Tooltip>
+							<ApplauseButton
+								subject={{ kind: "devlog", id: post.id }}
+								count={post.applauseCount}
+							/>
 							{!post.isSystem && (
 								<PageViews
 									path={`/devlog/${post.id}`}
@@ -337,6 +206,7 @@ const DevlogPosts = ({
 	bundleInset = false,
 	title,
 	headerStyle,
+	edgeToEdgeOnMobile = false,
 }: DevlogPostsProps) => {
 	const { t } = useTranslate();
 	const limit = 5;
@@ -384,7 +254,12 @@ const DevlogPosts = ({
 
 	const hubShell =
 		variant === "hub"
-			? getHubSectionShellClass(bundleInset ? "inset" : "main")
+			? [
+					getHubSectionShellClass(bundleInset ? "inset" : "standalone"),
+					edgeToEdgeOnMobile ? styles.edgeToEdge : "",
+				]
+					.filter(Boolean)
+					.join(" ")
 			: "";
 
 	const useSectionHeader = variant === "hub" && headerStyle !== "title";

@@ -45,7 +45,7 @@ const EquityTransferModal = ({
 	const queryClient = useQueryClient();
 	const [currentEquity, setCurrentEquity] = useState<number>(0);
 
-	// Получаем данные о долях текущего проекта
+	// Fetch the current project's shares
 	const { data: equityData, isLoading: isLoadingEquity } = useQuery({
 		queryKey: ["project-equity", projectId],
 		queryFn: () =>
@@ -62,7 +62,7 @@ const EquityTransferModal = ({
 		setCurrentEquity(currentUserShare?.percentage || 0);
 	}, [equityData]);
 
-	// Мутация для передачи доли
+	// Mutation for transferring a share
 	const { mutateAsync: transferEquity, isPending: isTransferring } =
 		useMutation({
 			mutationFn: (data: TransferFormData) =>
@@ -73,7 +73,7 @@ const EquityTransferModal = ({
 					reason: data.reason,
 				}),
 			onSuccess: () => {
-				// Инвалидируем запросы на получение долей и транзакций
+				// Invalidate the shares and transactions queries
 				queryClient.invalidateQueries({
 					queryKey: ["project-equity", projectId],
 				});
@@ -85,14 +85,14 @@ const EquityTransferModal = ({
 			},
 		});
 
-	// Сбрасываем форму при открытии модального окна
+	// Reset the form when the modal opens
 	useEffect(() => {
 		if (open) {
 			form.resetFields();
 		}
 	}, [open, form]);
 
-	// Обработчик отправки формы
+	// Form submit handler
 	const handleOk = async () => {
 		try {
 			const values = await form.validateFields();
@@ -102,7 +102,7 @@ const EquityTransferModal = ({
 		}
 	};
 
-	// Проверка доступной доли
+	// Check the available share
 	const validatePercentage = (_: any, value: number) => {
 		if (value <= 0) {
 			return Promise.reject(new Error(t("Доля должна быть больше 0")));
@@ -113,7 +113,7 @@ const EquityTransferModal = ({
 		return Promise.resolve();
 	};
 
-	// Получаем список участников команды без текущего пользователя
+	// Team members, without the current user
 	const filteredTeamMembers = teamMembers.filter(
 		(member) => member.userId !== currentUserId && member.status === "Active",
 	);

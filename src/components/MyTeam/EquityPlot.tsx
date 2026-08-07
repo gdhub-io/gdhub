@@ -267,10 +267,10 @@ const EquityPlot: React.FC<EquityPlotProps> = ({
 			],
 		});
 
-		// После создания графика находим все элементы и устраняем между ними зазоры
+		// Once the chart is built, find every element and close the gaps between them
 		const svgElement = chart.querySelector("svg");
 		if (svgElement) {
-			// Добавляем стиль, чтобы убрать все возможные зазоры между элементами
+			// Add a style that removes every possible gap between the elements
 			const styleElement = document.createElement("style");
 			styleElement.textContent = `
 				svg rect { 

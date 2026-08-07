@@ -192,19 +192,26 @@ export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 							{!session ? (
 								<div style={{ padding: 24, textAlign: "center" }}>
 									<p>
-										Чтобы отправить запрос, необходимо{" "}
-										<a href="/signin">авторизоваться</a> на GDHub.
+										{t(
+											"page.expert.signInToRequest",
+											"Sending a request needs a GDHub account.",
+										)}{" "}
+										<a href="/signin">
+											{t("page.expert.signInLink", "Sign in")}
+										</a>
 									</p>
 								</div>
 							) : projectsLoading ? (
 								<div style={{ padding: 24, textAlign: "center" }}>
-									Загрузка проектов...
+									{t("page.expert.loadingProjects", "Loading projects…")}
 								</div>
 							) : projects.length === 0 ? (
 								<div style={{ padding: 24, textAlign: "center" }}>
 									<p>
-										На данный момент помощь доступна только участникам проектов,
-										размещённых на GDHub.
+										{t(
+											"page.expert.membersOnly",
+											"For now, help is available only to members of projects hosted on GDHub.",
+										)}
 									</p>
 								</div>
 							) : (

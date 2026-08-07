@@ -8,16 +8,14 @@ import {
 	IconPacman,
 } from "@tabler/icons-react";
 import { Col, Row, Skeleton, Tag, Typography } from "antd";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ApplauseButton } from "@/components/ApplauseButton";
 import DefaultCover from "@/components/GameCard/DefaultCover";
 import type { ProjectLink } from "@/types/project";
 import styles from "./styles.module.scss";
 
 const { Paragraph, Title } = Typography;
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 type StorePlatform =
 	| "steam"
@@ -171,20 +169,10 @@ const GameOnStoreCardList = ({
 											<IconPacman size={18} /> <span>Hiring</span>
 										</div>
 									) : null}
-									<div className={styles.gameCardApplause}>
-										<span
-											className={styles.gameCardApplauseIcon}
-											style={{ width: 22, height: 22 }}
-										>
-											<Lottie
-												animationData={applauseDefaultAnimation}
-												autoplay={false}
-												loop={false}
-												className={styles.gameCardApplauseIconAnimation}
-											/>
-										</span>
-										<span>{project.applauseCount}</span>
-									</div>
+									<ApplauseButton
+										count={project.applauseCount}
+										variant="chip"
+									/>
 								</div>
 							) : null}
 

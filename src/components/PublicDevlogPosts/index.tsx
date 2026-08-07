@@ -4,12 +4,11 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Skeleton, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useMemo, useState } from "react";
-import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ApplauseButton } from "@/components/ApplauseButton";
 import { DevlogPostLink } from "@/components/DevlogPostLink";
 import { PageViews } from "@/components/PageViews";
 import { getPageCover } from "@/helpers/content";
@@ -17,7 +16,6 @@ import type { DevlogFeedPage } from "@/types/devlog";
 import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface DevlogPost {
 	id: string;
@@ -133,20 +131,7 @@ const PostCard: React.FC<{
 								{dayjs(post.publishedAt).fromNow()}
 							</span>
 							{post.applauseCount ? (
-								<span className={styles.applauseCount}>
-									<span
-										className={styles.applauseIcon}
-										style={{ width: 18, height: 18 }}
-									>
-										<Lottie
-											animationData={applauseDefaultAnimation}
-											autoplay={false}
-											loop={false}
-											className={styles.applauseIconAnimation}
-										/>
-									</span>
-									{post.applauseCount}
-								</span>
+								<ApplauseButton count={post.applauseCount} />
 							) : null}
 							{!post.isSystem && (
 								<PageViews

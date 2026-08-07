@@ -17,9 +17,10 @@
     color: var(--dark-grey);
   }
 
-  // Content само full-width; horizontal padding — на `:global(.layout-background)`.
-  // Так Hero (PublicPageHeader) тоже full-width до краёв viewport, а
-  // body-контент сидит внутри `:global(.layout-background)` с responsive padding.
+  // Content is full-width itself; the horizontal padding lives on
+  // `:global(.layout-background)`. That way the hero (PublicPageHeader) also
+  // runs full-width to the edges of the viewport, while the body content sits
+  // inside `:global(.layout-background)` with responsive padding.
   :global(.ant-layout-content) {
     padding: 0;
 

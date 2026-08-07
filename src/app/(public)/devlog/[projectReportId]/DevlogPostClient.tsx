@@ -2,8 +2,6 @@
 
 "use client";
 
-import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
-import { LoadingOutlined } from "@ant-design/icons";
 import type { OutputBlockData, OutputData } from "@editorjs/editorjs";
 import { IconArrowLeft, IconArrowRight, IconClock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
@@ -13,19 +11,16 @@ import {
 	Card,
 	Divider,
 	Flex,
-	Tooltip,
 	Typography,
 } from "antd";
-import axios from "axios";
 import Blocks from "editorjs-blocks-react-renderer";
 import dynamic from "next/dynamic";
-import { useSession } from "next-auth/react";
 import type { ComponentProps } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
-import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ApplauseButton } from "@/components/ApplauseButton";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { PageViews } from "@/components/PageViews";
 import { getCleanTextContent } from "@/helpers/content";
@@ -33,7 +28,6 @@ import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import styles from "./styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const { Text } = Typography;
 
@@ -86,34 +80,6 @@ export interface Post {
 interface PageProps {
 	post: Post;
 }
-
-const ApplauseIcon = ({
-	active = false,
-	playToken = 0,
-	size = 24,
-	loading = false,
-}: {
-	active?: boolean;
-	playToken?: number;
-	size?: number;
-	loading?: boolean;
-}) => {
-	return (
-		<span className={styles.applauseIcon} style={{ width: size, height: size }}>
-			{loading ? (
-				<LoadingOutlined spin style={{ fontSize: size, lineHeight: 1 }} />
-			) : (
-				<Lottie
-					key={`${active ? "active" : "default"}-${playToken}`}
-					animationData={applauseDefaultAnimation}
-					autoplay={active && playToken > 0}
-					loop={false}
-					className={styles.applauseIconAnimation}
-				/>
-			)}
-		</span>
-	);
-};
 
 const MarkdownImage = ({
 	src,
@@ -180,56 +146,6 @@ const MarkdownImage = ({
 
 export function DevlogPostClient({ post }: PageProps) {
 	const { t } = useTranslate();
-	const { status: authStatus } = useSession();
-	const [applauseCount, setApplauseCount] = useState(post.applauseCount || 0);
-	const [hasApplauded, setHasApplauded] = useState(false);
-	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
-	const [isApplauseStateLoading, setIsApplauseStateLoading] = useState(false);
-	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
-	const applauseRequestIdRef = useRef(0);
-
-	const isUserAuthenticated = authStatus === "authenticated";
-
-	useEffect(() => {
-		setApplauseCount(post.applauseCount || 0);
-	}, [post.applauseCount]);
-
-	useEffect(() => {
-		if (!isUserAuthenticated) {
-			setHasApplauded(false);
-			setIsApplauseStateLoading(false);
-			return;
-		}
-
-		let isMounted = true;
-		const requestId = ++applauseRequestIdRef.current;
-		setIsApplauseStateLoading(true);
-
-		axios
-			.get(`/api/devlog/${post.id}/applause`)
-			.then(({ data }) => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) {
-					return;
-				}
-
-				setApplauseCount(data.count || 0);
-				setHasApplauded(!!data.hasApplauded);
-			})
-			.catch((error) => {
-				console.error("Error fetching applause state:", error);
-			})
-			.finally(() => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) {
-					return;
-				}
-
-				setIsApplauseStateLoading(false);
-			});
-
-		return () => {
-			isMounted = false;
-		};
-	}, [isUserAuthenticated, post.id]);
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
@@ -258,113 +174,6 @@ export function DevlogPostClient({ post }: PageProps) {
 	if (!post) {
 		return null;
 	}
-
-	const handleApplauseToggle = async () => {
-		if (!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading) {
-			return;
-		}
-
-		applauseRequestIdRef.current += 1;
-
-		const nextHasApplauded = !hasApplauded;
-		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
-
-		setIsApplauseLoading(true);
-		setHasApplauded(nextHasApplauded);
-		setApplauseCount(nextCount);
-		if (nextHasApplauded) {
-			setApplauseAnimationToken((value) => value + 1);
-		}
-
-		try {
-			const { data } = await axios.request({
-				url: `/api/devlog/${post.id}/applause`,
-				method: nextHasApplauded ? "POST" : "DELETE",
-			});
-
-			setHasApplauded(!!data.hasApplauded);
-			setApplauseCount(data.count || 0);
-		} catch (error) {
-			console.error("Error toggling applause:", error);
-			setHasApplauded(hasApplauded);
-			setApplauseCount(applauseCount);
-		} finally {
-			setIsApplauseLoading(false);
-		}
-	};
-
-	const applauseButton = (
-		<HappyProvider>
-			<Button
-				type="text"
-				shape="round"
-				size="small"
-				className={`${styles.applauseButton} ${
-					hasApplauded ? styles.applauseButtonActive : ""
-				}`}
-				icon={
-					<ApplauseIcon
-						active={hasApplauded}
-						playToken={applauseAnimationToken}
-						size={22}
-						loading={isApplauseStateLoading}
-					/>
-				}
-				onClick={handleApplauseToggle}
-				disabled={
-					!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading
-				}
-			>
-				{applauseCount > 0 ? applauseCount : null}
-			</Button>
-		</HappyProvider>
-	);
-
-	const applauseBanner = (
-		<Tooltip
-			title={
-				isUserAuthenticated
-					? t("page.devlog.applauseTooltip", "Оцени работу команды")
-					: t(
-							"page.devlog.applauseAuthTooltip",
-							"Only authorized users can leave applause",
-						)
-			}
-		>
-			<span className={styles.applauseBannerWrapper}>
-				<HappyProvider>
-					<Button
-						type="text"
-						size="middle"
-						shape="round"
-						className={`${styles.applauseBanner} ${
-							hasApplauded ? styles.applauseBannerActive : ""
-						}`}
-						icon={
-							<ApplauseIcon
-								active={hasApplauded}
-								playToken={applauseAnimationToken}
-								size={40}
-								loading={isApplauseStateLoading}
-							/>
-						}
-						onClick={handleApplauseToggle}
-						disabled={
-							!isUserAuthenticated ||
-							isApplauseLoading ||
-							isApplauseStateLoading
-						}
-					>
-						{applauseCount > 0 ? (
-							<span className={styles.applauseBannerCount}>
-								{applauseCount}
-							</span>
-						) : null}
-					</Button>
-				</HappyProvider>
-			</span>
-		</Tooltip>
-	);
 
 	const markdownRehypePlugins = [
 		rehypeRaw,
@@ -416,23 +225,16 @@ export function DevlogPostClient({ post }: PageProps) {
 										preview={false}
 									/>
 								)}
-								<Text strong>{post?.author?.name || "Аноним"}</Text>
+								<Text strong>
+									{post?.author?.name ||
+										t("page.devlog.anonymousAuthor", "Anonymous")}
+								</Text>
 							</Flex>
 							<Flex align="center" gap={16}>
-								<Tooltip
-									title={
-										isUserAuthenticated
-											? undefined
-											: t(
-													"page.devlog.applauseAuthTooltip",
-													"Only authorized users can leave applause",
-												)
-									}
-								>
-									<span className={styles.applauseTooltipWrapper}>
-										{applauseButton}
-									</span>
-								</Tooltip>
+								<ApplauseButton
+									subject={{ kind: "devlog", id: post.id }}
+									count={post.applauseCount}
+								/>
 								<Flex align="center" gap={8}>
 									<IconClock style={{ fontSize: "12px" }} />
 									<Text type="secondary" style={{ fontSize: "12px" }}>
@@ -469,7 +271,7 @@ export function DevlogPostClient({ post }: PageProps) {
 									rehypePlugins={markdownRehypePlugins}
 									components={{
 										img: ({ node, ...props }) => {
-											// Проверяем, есть ли пробелы до и после тега img
+											// Check whether there are spaces before and after the img tag
 											const isInline =
 												(node?.position?.start?.column ?? 0) > 1 &&
 												post?.content?.charAt(
@@ -540,7 +342,11 @@ export function DevlogPostClient({ post }: PageProps) {
 					<div className={styles.postNavigation}>
 						{/* TODO(antd6): Divider's "center" orientation became the default; the prop was tightened to "left" | "right" in AntD 6. */}
 						<Divider className={styles.postNavigationDivider}>
-							{applauseBanner}
+							<ApplauseButton
+								subject={{ kind: "devlog", id: post.id }}
+								count={post.applauseCount}
+								size="large"
+							/>
 						</Divider>
 						<Flex justify="space-between" align="center" gap={12}>
 							<div className={styles.postNavigationSide}>

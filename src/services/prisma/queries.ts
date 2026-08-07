@@ -1,3 +1,4 @@
+import { getProjectCardFacts } from "@/repositories/project-card.repository";
 import type { ProjectActivityRow, ProjectLink } from "@/types/project";
 import { prisma } from ".";
 
@@ -104,13 +105,23 @@ export const getWorkedProjects = async () => {
 		),
 	);
 
-	const applauseCounts = await prisma.project.getApplauseCounts({ projectIds });
+	const [applauseCounts, cardFacts] = await Promise.all([
+		prisma.project.getApplauseCounts({ projectIds }),
+		getProjectCardFacts(projectIds),
+	]);
 
-	return projects.map((project) => ({
-		...project,
-		applauseCount: applauseCounts.get(project.id) ?? 0,
-		hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
-	}));
+	return projects.map((project) => {
+		const facts = cardFacts.get(project.id);
+
+		return {
+			...project,
+			applauseCount: applauseCounts.get(project.id) ?? 0,
+			hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
+			author: facts?.author ?? null,
+			team: facts?.team ?? { count: 0, members: [] },
+			stage: facts?.stage ?? null,
+		};
+	});
 };
 
 export const getPublishedStoreProjects = async () => {
@@ -193,9 +204,11 @@ export const getPublishedStoreProjects = async () => {
 		return currentStep ? [{ project, currentStep }] : [];
 	});
 
-	const applauseCounts = await prisma.project.getApplauseCounts({
-		projectIds: eligible.map(({ project }) => project.id),
-	});
+	const eligibleIds = eligible.map(({ project }) => project.id);
+	const [applauseCounts, cardFacts] = await Promise.all([
+		prisma.project.getApplauseCounts({ projectIds: eligibleIds }),
+		getProjectCardFacts(eligibleIds),
+	]);
 
 	return eligible.map(({ project, currentStep }) => ({
 		id: project.id,
@@ -208,6 +221,8 @@ export const getPublishedStoreProjects = async () => {
 		applauseCount: applauseCounts.get(project.id) ?? 0,
 		hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
 		storeLinks: getStoreLinks(project.links),
+		author: cardFacts.get(project.id)?.author ?? null,
+		team: cardFacts.get(project.id)?.team ?? { count: 0, members: [] },
 		workflow: {
 			currentStep: {
 				name: currentStep.name,

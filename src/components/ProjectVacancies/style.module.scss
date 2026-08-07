@@ -1,55 +1,5 @@
-.description {
-  font-family: var(--second-font-family);
-  font-style: italic;
-}
-
-.col:first-child {
-  padding-right: 16px !important;
-}
-
-.vacancyCard {
-  position: relative;
-  // background-color: var(--gd-warning-tint);
-  padding: 12px 12px 40px 24px;
-  height: 100%;
-  min-height: 214px;
-  cursor: pointer;
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
-  }
-
-  .content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    height: 100%;
-
-    h2 {
-      font-weight: 700;
-      margin-top: 8px;
-      margin-bottom: 0px;
-    }
-
-    .projectName {
-      padding: 8px 12px;
-      border: 1px solid var(--gd-color-text);
-    }
-  }
-
-  .validDate {
-    text-align: right;
-    font-size: 12px;
-    color: var(--gd-color-text);
-  }
-
-  .linkBtn {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 36px;
-    height: 36px;
-  }
+// The same rule the feed draws under its title: a standalone card separates its
+// header from the list it introduces.
+.header {
+	border-bottom: 1px solid var(--gd-color-border-strong);
 }

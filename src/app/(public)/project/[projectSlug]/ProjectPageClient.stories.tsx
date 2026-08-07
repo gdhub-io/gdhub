@@ -27,7 +27,6 @@ const meta: Meta<typeof ProjectPageClient> = {
 	args: {
 		project: project(MARKDOWN_SHOWCASE),
 		projectApplauseCount: 128,
-		isAuthenticated: false,
 	},
 };
 

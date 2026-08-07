@@ -340,13 +340,13 @@ export const EdgeCases: Story = {
 				},
 				{
 					...SPECS.blog,
-					label: "Cyrillic — the reason the family changed",
+					label: "Em dash and figures — the reason the family changed",
 					params: {
 						...SPECS.blog.params,
-						t: "Шесть недель стриминга уровней — Hollow Tide",
+						t: "Six weeks of level streaming — Hollow Tide",
 					},
-					// Onest covers latin, latin-ext and cyrillic, so a mixed line stays in one
-					// face. Plus Jakarta Sans had no Cyrillic and drew tofu here — satori has no
+					// Onest covers latin, latin-ext and cyrillic, so a mixed line stays in
+					// one face. Jakarta Sans drew tofu on the wider ranges and satori has no
 					// fallback to rescue it.
 				},
 				{

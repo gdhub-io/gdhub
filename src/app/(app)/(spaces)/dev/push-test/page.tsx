@@ -85,20 +85,20 @@ export default function DevPushTestPage() {
 					<div>
 						<Title level={3}>Push Notification Tester</Title>
 						<Paragraph>
-							Эта страница доступна только в dev и предназначена для быстрой
-							проверки FCM токена и отправки тестового пуша через Sygnal.
+							This page is dev-only. It exists to check an FCM token quickly and
+							to send a test push through Sygnal.
 						</Paragraph>
 					</div>
 
 					<Space orientation="vertical" style={{ width: "100%" }}>
 						<Text strong>FCM Token status</Text>
 						<Text>Permission: {permissionState}</Text>
-						{!ready && <Text type="secondary">Идёт регистрация…</Text>}
+						{!ready && <Text type="secondary">Registering…</Text>}
 						{error && (
 							<Alert
 								type="error"
 								showIcon
-								title="Не удалось получить FCM токен"
+								title="Could not obtain an FCM token"
 								description={error.message}
 							/>
 						)}
@@ -113,12 +113,12 @@ export default function DevPushTestPage() {
 							label="Push key (FCM token)"
 							required
 							validateStatus={!pushKey ? "error" : ""}
-							help={!pushKey ? "FCM токен обязателен" : undefined}
+							help={!pushKey ? "An FCM token is required" : undefined}
 						>
 							<Input.TextArea
 								value={pushKey}
 								autoSize={{ minRows: 3 }}
-								placeholder="Вставьте FCM токен"
+								placeholder="Paste an FCM token"
 								onChange={(event) => setPushKey(event.target.value)}
 							/>
 						</Form.Item>

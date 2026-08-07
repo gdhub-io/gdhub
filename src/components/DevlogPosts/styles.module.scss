@@ -10,8 +10,8 @@
 }
 
 .hubVariant {
-  // The section title owns the rule beneath it — a line above the title fences
-  // the heading off from the list it introduces.
+  // The section title owns the rule beneath it — the same weight as the
+  // separators between the posts it introduces.
   .feedHeader {
     border-bottom: 1px solid var(--gd-color-border-strong);
   }
@@ -223,77 +223,6 @@
   }
 }
 
-.applauseCount {
-  gap: 4px;
-}
-
-.applauseWrapper {
-  display: inline-flex;
-}
-
-.applauseButton {
-  &:global(.ant-btn) {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: normal;
-    height: auto;
-    padding-inline: 6px;
-    color: rgba(0, 0, 0, 0.65);
-    background: transparent;
-    box-shadow: none;
-  }
-
-  &:global(.ant-btn:hover),
-  &:global(.ant-btn:focus) {
-    color: rgba(0, 0, 0, 0.85);
-    // background: transparent;
-  }
-
-  &:global(.ant-btn:disabled),
-  &:global(.ant-btn[disabled]) {
-    color: rgba(0, 0, 0, 0.45);
-    background: transparent;
-    cursor: default;
-  }
-}
-
-.applauseButtonActive {
-  &:global(.ant-btn) {
-    color: rgba(0, 0, 0, 0.85);
-    background: rgba(255, 77, 79, 0.1);
-  }
-
-  &:global(.ant-btn:hover),
-  &:global(.ant-btn:focus) {
-    color: rgba(0, 0, 0, 0.85);
-    // background: rgba(255, 77, 79, 0.14);
-  }
-}
-
-.applauseIcon {
-  position: relative;
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.applauseIconAnimation {
-  width: 100%;
-  height: 100%;
-
-  :global(svg) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    shape-rendering: geometricPrecision;
-    text-rendering: geometricPrecision;
-  }
-}
-
 @media screen and (max-width: 576px) {
   .hubVariant {
     .header {
@@ -419,4 +348,38 @@
   font-size: 13px;
   color: var(--gd-color-text-tertiary);
   text-align: center;
+}
+
+/*
+ * A feed on a phone is a column of rows, not a card: the frame goes, and each
+ * rule spans the display rather than stopping at the page gutter. The rows pay
+ * the gutter back as padding, so the text stays on the grid with everything
+ * above it. Doubled class so it beats the shell it is layered on.
+ */
+@media (max-width: 991px) {
+  .edgeToEdge.edgeToEdge {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+
+    .feedHeader,
+    .postCard {
+      // The page publishes what it pays as horizontal padding; the row borrows
+      // exactly that back. Measuring against `100vw` instead would overshoot by
+      // the scrollbar, and a hardcoded number leaves the sliver it meant to cut.
+      width: auto;
+      margin-inline: calc(-1 * var(--gd-page-gutter, 0px));
+      padding-inline: var(--gd-page-gutter, 0px);
+      border-bottom: 0;
+      border-top: 1px solid var(--gd-color-border);
+    }
+
+    .feedHeader {
+      padding-block: 12px;
+    }
+
+    .postCard {
+      padding-block: 14px;
+    }
+  }
 }

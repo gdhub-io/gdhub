@@ -1,10 +1,9 @@
 import { IconPacman } from "@tabler/icons-react";
 import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
-import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ApplauseButton } from "@/components/ApplauseButton";
 import { ProjectStatus } from "@/config/prisma-enums";
 import DefaultCover from "./DefaultCover";
 import styles from "./styles.module.scss";
@@ -20,7 +19,6 @@ function accentForWorkflowStage(stage?: string): string {
 		return "var(--gd-warning-solid)";
 	return "var(--gd-info-solid)";
 }
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface GameCardProps {
 	id: string;
@@ -139,20 +137,7 @@ const GameCard: React.FC<GameCardProps> = ({
 									</div>
 								) : null}
 								{applauseCount ? (
-									<div className={styles.gameCardApplause}>
-										<span
-											className={styles.gameCardApplauseIcon}
-											style={{ width: 22, height: 22 }}
-										>
-											<Lottie
-												animationData={applauseDefaultAnimation}
-												autoplay={false}
-												loop={false}
-												className={styles.gameCardApplauseIconAnimation}
-											/>
-										</span>
-										<span>{applauseCount}</span>
-									</div>
+									<ApplauseButton count={applauseCount} variant="chip" />
 								) : null}
 							</div>
 						</div>

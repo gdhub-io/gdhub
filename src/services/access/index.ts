@@ -40,7 +40,7 @@ const noAccess = (type: SpaceType, id: string): SpaceAccess => ({
 /**
  * Shadow mode. With `RBAC_ENFORCE=false` a denial is logged but not applied —
  * used to watch a week of production traffic before permissions start blocking
- * anything (docs/roles-and-permissions-plan.md, фаза 2).
+ * anything (docs/roles-and-permissions-plan.md, phase 2).
  *
  * Enforcing is the default: forgetting to flip a flag must fail closed.
  */

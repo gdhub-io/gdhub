@@ -86,13 +86,13 @@ function Specimen() {
 					crafts, each with its own colour and icon, so a list of roles stays
 					scannable at a glance rather than turning into a wall of grey rows.
 				</p>
-				{/* The line that decides it: scripts mixed inside one sentence, which is
-				    how users actually write here. A family without Cyrillic changes
-				    typeface at the comma. */}
+				{/* Latin-ext, punctuation and figures in one sentence — the mix a vacancy
+				    line actually carries. Onest also covers Cyrillic, which is why the
+				    family was chosen; that coverage is not exercised here. */}
 				<p style={{ fontSize: 14, lineHeight: 1.55, margin: 0, maxWidth: 640 }}>
-					Ищем Unity Gameplay Programmer в команду Hollow Tide — 12 откликов,
-					5.0% эквити, опубликовано 29 апреля. Требуется опыт работы с Unreal
-					Engine 5 и знание C++.
+					Looking for a Unity Gameplay Programmer to join Hollow Tide — 12
+					applications, 5.0% equity, posted on 29 April. Unreal Engine 5
+					experience and solid C++ required.
 				</p>
 
 				<SectionHeading

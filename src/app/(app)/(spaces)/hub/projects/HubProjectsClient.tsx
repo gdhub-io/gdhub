@@ -1,22 +1,44 @@
 "use client";
 
+import { IconDeviceGamepad2 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { ConfigProvider, Flex, Select, Typography } from "antd";
+import { Col, ConfigProvider, Flex, Row, Select, Typography } from "antd";
 import axios from "axios";
-import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
-import GameOnStoreCardList from "@/components/GameOnStoreCardList";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import {
+	ProjectCard,
+	type ProjectCardTeam,
+	ProjectStoreCard,
+	type StorefrontLink,
+} from "@/components/project/cards";
+import { EmptyState } from "@/components/ui";
 import styles from "./style.module.scss";
 
-const GameCardList = dynamic(
-	() => import("@/components/GameCard/GameCardList"),
-	{ ssr: false },
-);
-
 const { Paragraph } = Typography;
+
+type ProjectListItem = {
+	id: string;
+	slug: string;
+	name: string;
+	description: string | null;
+	genre: string | null;
+	platform: string | null;
+	coverImage: string | null;
+	applauseCount?: number;
+	hasOpenPositions?: boolean;
+	stage?: string | null;
+	team?: ProjectCardTeam;
+	author?: { name: string | null } | null;
+	workflow?: { currentStep?: { name?: string } | null } | null;
+};
+
+type StoreProjectListItem = ProjectListItem & {
+	storeLinks: StorefrontLink[];
+	workflow: { currentStep: { name: string; order: number } };
+};
 
 export default function HubProjectsClient() {
 	const { t } = useTranslate();
@@ -32,7 +54,7 @@ export default function HubProjectsClient() {
 		isLoading,
 	} = useQuery({
 		queryKey: ["projects"],
-		queryFn: () => axios.get("/api/projects"),
+		queryFn: () => axios.get<ProjectListItem[]>("/api/projects"),
 		enabled: isAuthenticated,
 	});
 
@@ -42,22 +64,22 @@ export default function HubProjectsClient() {
 		enabled: isAuthenticated,
 	});
 
-	const { data: publishedProjects, isLoading: isPublishedProjectsLoading } =
-		useQuery({
-			queryKey: ["projects", "published"],
-			queryFn: () => axios.get("/api/projects/published"),
-			enabled: isAuthenticated,
-		});
+	const { data: publishedProjects } = useQuery({
+		queryKey: ["projects", "published"],
+		queryFn: () => axios.get<StoreProjectListItem[]>("/api/projects/published"),
+		enabled: isAuthenticated,
+	});
 
 	const filteredProjects = useMemo(() => {
 		const items = projects?.data || [];
 		if (!selectedStage) return items;
 		return items.filter(
-			(project: {
-				workflow?: { currentStep?: { name?: string } | null } | null;
-			}) => project.workflow?.currentStep?.name === selectedStage,
+			(project) => project.workflow?.currentStep?.name === selectedStage,
 		);
 	}, [projects?.data, selectedStage]);
+
+	const storeProjects = publishedProjects?.data ?? [];
+	const isListLoading = isSessionLoading || isLoading;
 
 	return (
 		<div className="layout-background">
@@ -71,22 +93,46 @@ export default function HubProjectsClient() {
 			<div className={styles.container}>
 				{!isSessionLoading && !isLoading && !isSuccess && (
 					<Paragraph type="secondary">
-						There are no projects available to view
+						{t(
+							"page.hub.projects.unavailable",
+							"There are no projects available to view",
+						)}
 					</Paragraph>
 				)}
 
-				<div className={styles.storeProjectsSection}>
-					<div className={styles.sectionHeader}>
-						<Typography.Title level={3} className={styles.sectionTitle}>
-							{t("page.hub.projects.availableOnStores", "Available on Stores")}
-						</Typography.Title>
-					</div>
+				{storeProjects.length > 0 && (
+					<div className={styles.storeProjectsSection}>
+						<div className={styles.sectionHeader}>
+							<Typography.Title level={3} className={styles.sectionTitle}>
+								{t(
+									"page.hub.projects.availableOnStores",
+									"Available on Stores",
+								)}
+							</Typography.Title>
+						</div>
 
-					<GameOnStoreCardList
-						projects={publishedProjects?.data || []}
-						loading={isSessionLoading || isPublishedProjectsLoading}
-					/>
-				</div>
+						<Row gutter={[16, 16]}>
+							{storeProjects.map((project) => (
+								<Col key={project.id} xs={24} md={12}>
+									<ProjectStoreCard
+										projectId={project.id}
+										slug={project.slug}
+										name={project.name}
+										description={project.description}
+										genre={project.genre}
+										platform={project.platform}
+										coverImage={project.coverImage}
+										stage={project.workflow?.currentStep?.name}
+										applauseCount={project.applauseCount}
+										storeLinks={project.storeLinks}
+										team={project.team}
+										authorName={project.author?.name}
+									/>
+								</Col>
+							))}
+						</Row>
+					</div>
+				)}
 
 				<div className={styles.projectsSection}>
 					<Flex
@@ -101,11 +147,7 @@ export default function HubProjectsClient() {
 						</Typography.Title>
 
 						<ConfigProvider
-							theme={{
-								components: {
-									Select: { controlHeight: 40 },
-								},
-							}}
+							theme={{ components: { Select: { controlHeight: 40 } } }}
 						>
 							<Select
 								allowClear
@@ -122,10 +164,37 @@ export default function HubProjectsClient() {
 						</ConfigProvider>
 					</Flex>
 
-					<GameCardList
-						games={filteredProjects}
-						loading={isSessionLoading || isLoading}
-					/>
+					{isListLoading ? null : filteredProjects.length > 0 ? (
+						<Row gutter={[16, 16]}>
+							{filteredProjects.map((project) => (
+								<Col key={project.id} xs={24} sm={12} lg={8} xl={6}>
+									<ProjectCard
+										projectId={project.id}
+										slug={project.slug}
+										name={project.name}
+										description={project.description}
+										genre={project.genre}
+										platform={project.platform}
+										coverImage={project.coverImage}
+										stage={project.stage}
+										hasOpenPositions={project.hasOpenPositions}
+										applauseCount={project.applauseCount}
+										team={project.team}
+										authorName={project.author?.name}
+									/>
+								</Col>
+							))}
+						</Row>
+					) : (
+						<EmptyState
+							icon={IconDeviceGamepad2}
+							title={t("page.hub.projects.emptyTitle", "No projects found")}
+							description={t(
+								"page.hub.projects.emptyDescription",
+								"Projects matching your filters will appear here.",
+							)}
+						/>
+					)}
 				</div>
 			</div>
 		</div>

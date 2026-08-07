@@ -1,0 +1,84 @@
+.coverImage {
+	object-fit: cover;
+}
+
+/*
+ * Chips read on top of artwork, so they carry their own translucent plate
+ * rather than trusting whatever the cover happens to be.
+ */
+.stageChip,
+.hiringChip {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+	border-radius: var(--gd-radius-pill);
+	font-family: var(--gd-font-ui);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.stageChip {
+	gap: 6px;
+	padding: 5px 10px;
+	background: rgba(255, 255, 255, 0.8);
+	color: var(--gd-color-text);
+	backdrop-filter: blur(4px);
+}
+
+.stageDot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--gd-success-solid);
+}
+
+.hiringChip {
+	padding: 5px 11px;
+	background: var(--gd-color-accent);
+	color: var(--gd-color-on-action);
+}
+
+.teamFacts {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.avatars {
+	position: relative;
+	height: 20px;
+	flex: 0 0 auto;
+}
+
+.avatar {
+	position: absolute;
+	top: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	overflow: hidden;
+	background: var(--gd-color-surface-sunken);
+	outline: 2px solid var(--gd-color-surface);
+	font-family: var(--gd-font-ui);
+	font-size: 9px;
+	font-weight: 700;
+	line-height: 1;
+	color: var(--gd-color-text-secondary);
+}
+
+.avatarImage {
+	object-fit: cover;
+}
+
+.teamCount {
+	font-family: var(--gd-font-ui);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+	white-space: nowrap;
+}

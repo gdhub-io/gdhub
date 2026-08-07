@@ -1,0 +1,140 @@
+/*
+ * Phone first: a white card that folds. The frame is what separates one block
+ * of facts from the next on a narrow screen, so it is not optional here.
+ */
+.section {
+	overflow: hidden;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--gd-color-border);
+	cursor: pointer;
+	list-style: none;
+
+	&::-webkit-details-marker {
+		display: none;
+	}
+}
+
+.label {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--gd-font-ui);
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.count {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 8px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-color-border);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+.chevron {
+	flex: 0 0 auto;
+	color: var(--gd-color-text-secondary);
+	transition: transform 0.15s ease;
+}
+
+/* Open points up; the rotation is the only state the row shows. */
+.section[open] .chevron {
+	transform: rotate(180deg);
+}
+
+.panel {
+	padding: 14px 16px 16px;
+}
+
+/* A list panel gives its padding to the rows, so their rules reach the edges. */
+.flush > .panel {
+	padding: 0;
+}
+
+/*
+ * The pitch is not a block of facts — it is what the page is about, so it runs
+ * on the page itself rather than inside a card of its own.
+ */
+.bare {
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+
+	.summary {
+		padding: 16px 0 0;
+		border-bottom: 0;
+	}
+
+	.panel {
+		padding: 10px 0 4px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.chevron {
+		transition: none;
+	}
+}
+
+/* From the sidebar breakpoint every block is a card, and none of them fold. */
+@media (min-width: 992px) {
+	// A card is never folded. Two engines hide a closed `details` differently:
+	// older ones set `display: none` on the children, Chrome 131+ hides the
+	// `::details-content` pseudo-element instead. Both have to be undone, or the
+	// card renders as a header with nothing under it.
+	.section:not([open]) > .panel {
+		display: block;
+	}
+
+	.section::details-content {
+		content-visibility: visible;
+	}
+
+	.section,
+	.bare {
+		overflow: hidden;
+		border: 1px solid var(--gd-color-border-strong);
+		border-radius: var(--gd-radius-panel);
+		background: transparent;
+	}
+
+	.summary,
+	.bare .summary {
+		padding: 12px 24px;
+		border-bottom: 1px solid var(--gd-color-border-strong);
+		// Inert rather than absent: the block stays open, and a stray click on
+		// the header cannot fold away a card that has no affordance to unfold.
+		pointer-events: none;
+	}
+
+	.label {
+		font-size: var(--gd-font-size-h3);
+	}
+
+	.chevron {
+		display: none;
+	}
+
+	.panel,
+	.bare .panel {
+		padding: 16px 24px;
+	}
+
+	.flush > .panel {
+		padding: 0;
+	}
+}

@@ -55,7 +55,7 @@ const MemberEquityPromiseModal = ({
 	);
 	const [deleteConfirmed, setDeleteConfirmed] = useState<boolean>(false);
 
-	// Получаем информацию о текущем шаге проекта и все возможные шаги
+	// Fetch the project's current step and every possible step
 	const { data: workflowData } = useQuery({
 		queryKey: ["project-workflow", projectId, open],
 		queryFn: () =>
@@ -81,7 +81,7 @@ const MemberEquityPromiseModal = ({
 		});
 	}, [projectPromiseData?.data]);
 
-	// Получаем доступные для выбора шаги (только следующие за текущим)
+	// Selectable steps (only the ones after the current step)
 	const availableSteps = workflowData?.data?.steps
 		? workflowData.data.steps
 				.filter(
@@ -97,7 +97,7 @@ const MemberEquityPromiseModal = ({
 				}))
 		: [];
 
-	// Сбрасываем значения при открытии модального окна
+	// Reset the values when the modal opens
 	useEffect(() => {
 		if (open) {
 			setPercentage(0);
@@ -108,12 +108,12 @@ const MemberEquityPromiseModal = ({
 		}
 	}, [open, form]);
 
-	// Обработчик изменения значения слайдера или инпута
+	// Slider / input change handler
 	const handlePercentageChange = (value: number | null) => {
 		setPercentage(value || 0);
 	};
 
-	// Обработчик изменения целевого шага
+	// Target step change handler
 	const handleTargetStepChange = (value: string) => {
 		setTargetStepId(value);
 	};
@@ -170,7 +170,7 @@ const MemberEquityPromiseModal = ({
 		},
 	);
 
-	// Обработчик сохранения
+	// Save handler
 	const handleOk = async () => {
 		try {
 			await form.validateFields();
@@ -194,7 +194,7 @@ const MemberEquityPromiseModal = ({
 		}
 	};
 
-	// Обработчик удаления
+	// Delete handler
 	const handleDelete = async (promiseId: string) => {
 		if (!deleteConfirmed) {
 			notification.error({

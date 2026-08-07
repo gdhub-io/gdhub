@@ -23,6 +23,18 @@
 }
 
 /**
+ * A section that carries its own frame — the project page column, where each
+ * block is a card in its own right rather than a stripe inside the hub's
+ * rounded bundle. `main` stays square because the bundle rounds it from outside.
+ */
+.sectionCardStandalone {
+	overflow: hidden;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: transparent;
+}
+
+/**
  * Right-column sidebar cards — rounded corners, stronger stroke.
  */
 .sectionCardSidebar {

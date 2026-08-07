@@ -4,6 +4,7 @@
       padding: 0;
 
       :global(.layout-background) {
+        --gd-page-gutter: 64px;
         padding: 32px 64px;
       }
     }

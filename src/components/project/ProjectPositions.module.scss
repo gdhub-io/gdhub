@@ -1,0 +1,142 @@
+/*
+ * Phone: one row that says what is open, and unfolds to the cards. Same frame
+ * as the blocks around it — it stands in the same column, so a different corner
+ * radius reads as a different kind of thing.
+ */
+.positions {
+	overflow: hidden;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	// Same metrics as `DisclosureSection`'s summary: the four blocks stand in one
+	// column, and a row that is a few pixels shorter reads as a mistake.
+	padding: 12px 16px;
+	cursor: pointer;
+	list-style: none;
+
+	&::-webkit-details-marker {
+		display: none;
+	}
+}
+
+.left {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+}
+
+.label {
+	font-family: var(--gd-font-ui);
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+	white-space: nowrap;
+}
+
+.directions {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+/* The direction's own mark and its count — the summary the pill exists for. */
+.direction {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-family: var(--gd-font-ui);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.tile {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	border-radius: var(--gd-radius-chip);
+}
+
+.others {
+	font-family: var(--gd-font-ui);
+	font-size: 12px;
+	color: var(--gd-color-text-secondary);
+	white-space: nowrap;
+}
+
+.chevron {
+	flex: 0 0 auto;
+	color: var(--gd-color-text-secondary);
+	transition: transform 0.15s ease;
+}
+
+.positions[open] {
+	.chevron {
+		transform: rotate(180deg);
+	}
+
+	.summary {
+		border-bottom: 1px solid var(--gd-color-border);
+	}
+}
+
+.panel {
+	padding: 14px 16px 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.chevron {
+		transition: none;
+	}
+}
+
+/* Wide: a card like the others, always open, with the cards on show. */
+@media (min-width: 992px) {
+	.positions,
+	.positions[open] {
+		overflow: hidden;
+		border: 1px solid var(--gd-color-border-strong);
+		border-radius: var(--gd-radius-panel);
+		background: transparent;
+	}
+
+	// Both ways a browser hides a closed `details` have to be undone — see
+	// DisclosureSection for why there are two.
+	.positions:not([open]) > .panel {
+		display: block;
+	}
+
+	.positions::details-content {
+		content-visibility: visible;
+	}
+
+	.summary,
+	.positions[open] .summary {
+		padding: 12px 24px;
+		border-bottom: 1px solid var(--gd-color-border-strong);
+		pointer-events: none;
+	}
+
+	.label {
+		font-size: var(--gd-font-size-h3);
+	}
+
+	.chevron {
+		display: none;
+	}
+
+	.panel {
+		padding: 16px 24px;
+	}
+}

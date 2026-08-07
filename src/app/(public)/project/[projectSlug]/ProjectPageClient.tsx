@@ -1,7 +1,5 @@
 "use client";
 
-import HappyProvider from "@ant-design/happy-work-theme/es/HappyProvider";
-import { LoadingOutlined } from "@ant-design/icons";
 import type {
 	Profile,
 	Project,
@@ -13,43 +11,42 @@ import {
 	IconDownload,
 	IconQrcode,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
-	Col,
 	ConfigProvider,
 	Flex,
 	Grid,
 	Modal,
 	QRCode,
-	Row,
-	Space,
 	Tooltip,
 	Typography,
 } from "antd";
 import axios from "axios";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import type { Pluggable } from "unified";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
-import applauseDefaultAnimation from "@/assets/images/icons/applaause-default.json";
+import { ApplauseButton } from "@/components/ApplauseButton";
 import DevlogPosts from "@/components/DevlogPosts";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
-import ProjectVacancies from "@/components/ProjectVacancies";
+import { ProjectAuthorCard } from "@/components/project/ProjectAuthorCard";
 import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
+import { ProjectPositions } from "@/components/project/ProjectPositions";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import TeamMembers from "@/components/TeamMembers";
+import { DisclosureSection } from "@/components/ui";
 import { platformOptions } from "@/helpers/react-content";
+import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import type { ProjectLink } from "@/types/project";
 import styles from "./style.module.scss";
 
-const { Title, Paragraph, Text } = Typography;
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+const { Text } = Typography;
 
 export type ProjectPageParams = {
 	project: Omit<
@@ -73,7 +70,17 @@ export type ProjectPageParams = {
 		statusChangedAt: string | null;
 		author: {
 			name: User["name"];
-			profile: { tgNickname: Profile["tgNickname"] } | null;
+			image: User["image"];
+			profile: {
+				name: Profile["name"];
+				tgNickname: Profile["tgNickname"];
+				motivation: Profile["motivation"];
+			} | null;
+			specialities: {
+				name: string;
+				specialization: string;
+				level: string;
+			}[];
 		};
 		workflow: {
 			currentStep: { name: ProjectWorkflowStep["name"] } | null;
@@ -81,72 +88,37 @@ export type ProjectPageParams = {
 		team: { id: string } | null;
 	};
 	projectApplauseCount: number;
-	isAuthenticated: boolean;
 	seo?: { title?: string | null; description?: string | null; image?: string };
 };
 
 export function ProjectPageClient({
 	project,
 	projectApplauseCount,
-	isAuthenticated,
 	seo,
 }: ProjectPageParams) {
 	const { t } = useTranslate();
-	const { data: session, status: authStatus } = useSession();
+	const { data: session } = useSession();
 	const pathname = usePathname();
 	const screens = Grid.useBreakpoint();
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-	const [applauseCount, setApplauseCount] = useState(projectApplauseCount || 0);
-	const [hasApplauded, setHasApplauded] = useState(false);
-	const [isApplauseLoading, setIsApplauseLoading] = useState(false);
-	const [isApplauseStateLoading, setIsApplauseStateLoading] = useState(false);
-	const [applauseAnimationToken, setApplauseAnimationToken] = useState(0);
-	const applauseRequestIdRef = useRef(0);
 
-	const isUserAuthenticated =
-		authStatus === "authenticated" ||
-		(authStatus === "loading" && isAuthenticated);
+	// The sidebar rides with the page and pins where the reading direction wants
+	// it — the same behaviour as the hub, from the same hook.
+	const sidebarRef = useRef<HTMLElement>(null);
+	useScrollAwareSticky(sidebarRef, { offset: 36, enabled: !!screens.lg });
 
-	useEffect(() => {
-		setApplauseCount(projectApplauseCount || 0);
-	}, [projectApplauseCount]);
-
-	useEffect(() => {
-		if (!isUserAuthenticated) {
-			setHasApplauded(false);
-			setIsApplauseStateLoading(false);
-			return;
-		}
-
-		let isMounted = true;
-		const requestId = ++applauseRequestIdRef.current;
-		setIsApplauseStateLoading(true);
-
-		axios
-			.get(`/api/project/${project.id}/applause`)
-			.then(({ data }) => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) {
-					return;
-				}
-
-				setApplauseCount(data.count || 0);
-				setHasApplauded(!!data.hasApplauded);
-			})
-			.catch((error) => {
-				console.error("Error fetching project applause state:", error);
-			})
-			.finally(() => {
-				if (!isMounted || requestId !== applauseRequestIdRef.current) {
-					return;
-				}
-
-				setIsApplauseStateLoading(false);
-			});
-
-		return () => {
-			isMounted = false;
-		};
-	}, [isUserAuthenticated, project.id]);
+	// Same key and fetcher as `TeamMembers`, so the count costs no extra request.
+	const teamId = project?.team?.id;
+	const { data: team } = useQuery({
+		queryKey: ["team-members", teamId],
+		queryFn: () =>
+			axios.get<{ members: unknown[] }>("/api/project/team", {
+				params: { teamId },
+			}),
+		enabled: !!teamId,
+		refetchOnWindowFocus: false,
+	});
+	const teamSize = team?.data.members.length;
 
 	const getCurrentPageUrl = () => {
 		if (typeof window !== "undefined") {
@@ -157,8 +129,6 @@ export function ProjectPageClient({
 	};
 
 	if (!project) return null;
-
-	const generalData = <ProjectGameDetails project={project} />;
 
 	const getPlatformIcon = (type: string) => {
 		const option = platformOptions.find((opt) => opt.value === type);
@@ -172,94 +142,6 @@ export function ProjectPageClient({
 
 	const markdownRehypePlugins = [rehypeRaw] as Pluggable[];
 
-	const handleApplauseToggle = async () => {
-		if (!isUserAuthenticated || isApplauseLoading || isApplauseStateLoading) {
-			return;
-		}
-
-		applauseRequestIdRef.current += 1;
-
-		const nextHasApplauded = !hasApplauded;
-		const nextCount = Math.max(0, applauseCount + (nextHasApplauded ? 1 : -1));
-
-		setIsApplauseLoading(true);
-		setHasApplauded(nextHasApplauded);
-		setApplauseCount(nextCount);
-
-		if (nextHasApplauded) {
-			setApplauseAnimationToken((value) => value + 1);
-		}
-
-		try {
-			const { data } = await axios.request({
-				url: `/api/project/${project.id}/applause`,
-				method: nextHasApplauded ? "POST" : "DELETE",
-			});
-
-			setHasApplauded(!!data.hasApplauded);
-			setApplauseCount(data.count || 0);
-		} catch (error) {
-			console.error("Error toggling project applause:", error);
-			setHasApplauded(hasApplauded);
-			setApplauseCount(applauseCount);
-		} finally {
-			setIsApplauseLoading(false);
-		}
-	};
-
-	const applauseButton = (
-		<Tooltip
-			title={
-				isUserAuthenticated
-					? t("page.devlog.applauseTooltip", "Rate the team's work")
-					: t(
-							"page.devlog.applauseAuthTooltip",
-							"Only authorized users can leave applause",
-						)
-			}
-		>
-			<span className={styles.projectApplauseWrapper}>
-				<HappyProvider>
-					<Button
-						type="text"
-						className={`${styles.projectApplauseButton} ${
-							hasApplauded ? styles.projectApplauseButtonActive : ""
-						}`}
-						icon={
-							<span
-								className={styles.projectApplauseIcon}
-								style={{ width: 33, height: 33 }}
-							>
-								{isApplauseStateLoading ? (
-									<LoadingOutlined
-										spin
-										style={{ fontSize: 33, lineHeight: 1 }}
-									/>
-								) : (
-									<Lottie
-										key={`${hasApplauded ? "active" : "default"}-${applauseAnimationToken}`}
-										animationData={applauseDefaultAnimation}
-										autoplay={hasApplauded && applauseAnimationToken > 0}
-										loop={false}
-										className={styles.projectApplauseIconAnimation}
-									/>
-								)}
-							</span>
-						}
-						onClick={handleApplauseToggle}
-						disabled={
-							!isUserAuthenticated ||
-							isApplauseLoading ||
-							isApplauseStateLoading
-						}
-					>
-						{applauseCount > 0 ? applauseCount : null}
-					</Button>
-				</HappyProvider>
-			</span>
-		</Tooltip>
-	);
-
 	const renderProjectLinks = (links: ProjectLink[]) => {
 		const linkElements = links
 			.sort((a, _b) => (a.isPrimary ? -1 : 1))
@@ -267,14 +149,19 @@ export function ProjectPageClient({
 				return link.isPrimary ? (
 					<Button
 						key={link.platform}
-						type={link.isPrimary ? "default" : "text"}
-						className={styles.projectLink}
+						type="default"
+						className={styles.storeButton}
 						href={link.link}
 						target="_blank"
 					>
 						<Flex align="center" gap={8}>
 							{getPlatformIcon(link.platform)}
-							Go to {getPlatformLabel(link.platform)}
+							{/* A phone has no width to spend on "Go to": next to a store
+							    mark on a button, the name alone already says it. */}
+							<span className={styles.goToPrefix}>
+								{t("page.project.goTo", "Go to")}
+							</span>
+							{getPlatformLabel(link.platform)}
 						</Flex>
 					</Button>
 				) : (
@@ -313,7 +200,12 @@ export function ProjectPageClient({
 						/>
 					</Tooltip>
 
-					{applauseButton}
+					<ApplauseButton
+						subject={{ kind: "project", id: project.id }}
+						count={projectApplauseCount}
+						size="large"
+						className={styles.projectApplause}
+					/>
 				</Flex>
 			</ConfigProvider>
 		);
@@ -341,88 +233,123 @@ export function ProjectPageClient({
 
 	return (
 		<>
+			{/* The stage leads the title: where the project stands is what tells you
+			    how to read everything under it. The author is not repeated in the
+			    header — the sidebar card below carries the name and the face. */}
 			<PublicPageHeader
+				sticky
 				title={project?.name}
-				subTitle={`${t("Author")} ${project.author.name}`}
+				extra={
+					project.workflow?.currentStep ? (
+						<span className={styles.stageChip}>
+							<span className={styles.stageDot} />
+							{project.workflow.currentStep.name}
+						</span>
+					) : undefined
+				}
 				subLine={renderProjectLinks(project.links as ProjectLink[])}
 				backgroundImage={project.coverImage || undefined}
 			/>
 
 			<div className="layout-background">
 				<div className={styles.container}>
-					<Row gutter={[32, 16]}>
-						<Col
-							xs={{ span: 24, order: 1 }}
-							md={{ span: 12, order: 0 }}
-							lg={{ span: 16, order: 0 }}
-						>
-							<Space orientation="vertical" size={64} style={{ width: "100%" }}>
-								<div className="project-description">
-									<Title level={2}>
-										{t("page.project.aboutGame", "About Game")}
-									</Title>
-									<Paragraph>
-										<ReactMarkdown rehypePlugins={markdownRehypePlugins}>
-											{project.description || ""}
-										</ReactMarkdown>
-									</Paragraph>
-									{!!project.workflow?.currentStep && (
-										<Paragraph type="secondary">
-											{t("page.project.developmentStage", "Development stage")}:{" "}
-											{project.workflow.currentStep.name}
-										</Paragraph>
-									)}
+					<div className={styles.pageGrid}>
+						<main className={styles.mainArea}>
+							{/* No pitch written yet is not a section with nothing in it. */}
+							{!!project.description?.trim() && (
+								<div className={styles.slotDescription}>
+									<DisclosureSection
+										collapsible={false}
+										bare
+										title={t("page.project.aboutTitle", "About Game")}
+									>
+										<div className={styles.descriptionBody}>
+											<ReactMarkdown rehypePlugins={markdownRehypePlugins}>
+												{project.description}
+											</ReactMarkdown>
+										</div>
+									</DisclosureSection>
 								</div>
+							)}
 
-								{!screens.md && generalData}
+							{project.team?.id && (
+								<div className={styles.slotPositions}>
+									<ProjectPositions teamId={project.team.id} />
+								</div>
+							)}
 
-								{project.team?.id && (
-									<ProjectVacancies teamId={project.team.id} />
-								)}
-
+							<div className={styles.slotFeed}>
 								<DevlogPosts
 									projectId={project.id}
 									variant="hub"
-									headerStyle="title"
+									edgeToEdgeOnMobile
 									title={t("page.hub.project-updates", "Project updates")}
 								/>
-							</Space>
-						</Col>
-						<Col
-							xs={{ span: 24, order: 0 }}
-							md={{ span: 12, order: 1 }}
-							lg={{ span: 8, order: 1 }}
-						>
-							<Flex vertical gap={16}>
+							</div>
+						</main>
+
+						<aside className={styles.asideArea} ref={sidebarRef}>
+							<div className={styles.slotVideo}>
 								<ProjectVideoCover
 									coverImage={project.coverImage}
 									videoLink={project.videoLink}
 									alt="cover"
 								/>
-								{screens.md && generalData}
-								{session && project.author.profile?.tgNickname ? (
-									<Link
-										href={`https://t.me/${project.author.profile.tgNickname}`}
-										target="_blank"
-										style={{ display: "block", width: "fit-content" }}
-									>
-										<Button
-											shape="round"
-											type="dashed"
-											className={styles.writeToAuthorButton}
-										>
-											<IconBrandTelegram size={16} />{" "}
-											{t("page.project.contactTheAuthor", "Contact the author")}
-										</Button>
-									</Link>
-								) : null}
+							</div>
 
-								{project.team?.id && (
-									<TeamMembers teamId={project.team.id} variant="hubSidebar" />
-								)}
-							</Flex>
-						</Col>
-					</Row>
+							<div className={styles.slotDetails}>
+								<DisclosureSection
+									flush
+									title={t("page.project.gameDetails", "Game details")}
+								>
+									<ProjectGameDetails project={project} bare />
+								</DisclosureSection>
+							</div>
+
+							<div className={styles.slotAuthor}>
+								<DisclosureSection
+									title={t("page.project.author", "Project author")}
+								>
+									<ProjectAuthorCard author={project.author} bare />
+									{session && project.author.profile?.tgNickname ? (
+										<Link
+											href={`https://t.me/${project.author.profile.tgNickname}`}
+											target="_blank"
+											className={styles.writeToAuthorLink}
+										>
+											<Button
+												shape="round"
+												type="dashed"
+												className={styles.writeToAuthorButton}
+											>
+												<IconBrandTelegram size={16} />{" "}
+												{t(
+													"page.project.contactTheAuthor",
+													"Contact the author",
+												)}
+											</Button>
+										</Link>
+									) : null}
+								</DisclosureSection>
+							</div>
+
+							{!!project.team?.id && !!teamSize && (
+								<div className={styles.slotTeam}>
+									<DisclosureSection
+										flush
+										title={t("team-members.title", "Team")}
+										count={teamSize}
+									>
+										<TeamMembers
+											teamId={project.team.id}
+											variant="hubSidebar"
+											bare
+										/>
+									</DisclosureSection>
+								</div>
+							)}
+						</aside>
+					</div>
 				</div>
 
 				<Modal

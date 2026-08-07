@@ -32,8 +32,11 @@ type ProjectAuthor = {
  */
 export function ProjectAuthorCard({
 	author,
+	bare = false,
 }: {
 	author?: ProjectAuthor | null;
+	/** Render only the body — the caller supplies the frame and the title. */
+	bare?: boolean;
 }) {
 	const { t } = useTranslate();
 
@@ -49,39 +52,45 @@ export function ProjectAuthorCard({
 	const motivation = author.profile?.motivation;
 	const initials = displayName.slice(0, 2).toUpperCase();
 
+	const body = (
+		<>
+			<div className={styles.row}>
+				<div className={styles.avatar}>
+					{author.image ? (
+						<Image
+							src={author.image}
+							alt={displayName}
+							fill
+							style={{ objectFit: "cover" }}
+						/>
+					) : (
+						<span>{initials}</span>
+					)}
+				</div>
+				<div className={styles.meta}>
+					<Text className={styles.name}>{displayName}</Text>
+					{position && (
+						<Text type="secondary" className={styles.position}>
+							{position}
+						</Text>
+					)}
+				</div>
+			</div>
+			{motivation && (
+				<div className={styles.motivation}>
+					<IconQuote size={16} className={styles.quoteIcon} />
+					<Text className={styles.motivationText}>{motivation}</Text>
+				</div>
+			)}
+		</>
+	);
+
+	if (bare) return body;
+
 	return (
 		<section className={getHubSectionShellClass("sidebar")}>
 			<HubSectionHeader title={t("page.project.author", "Project author")} />
-			<HubSectionBody>
-				<div className={styles.row}>
-					<div className={styles.avatar}>
-						{author.image ? (
-							<Image
-								src={author.image}
-								alt={displayName}
-								fill
-								style={{ objectFit: "cover" }}
-							/>
-						) : (
-							<span>{initials}</span>
-						)}
-					</div>
-					<div className={styles.meta}>
-						<Text className={styles.name}>{displayName}</Text>
-						{position && (
-							<Text type="secondary" className={styles.position}>
-								{position}
-							</Text>
-						)}
-					</div>
-				</div>
-				{motivation && (
-					<div className={styles.motivation}>
-						<IconQuote size={16} className={styles.quoteIcon} />
-						<Text className={styles.motivationText}>{motivation}</Text>
-					</div>
-				)}
-			</HubSectionBody>
+			<HubSectionBody>{body}</HubSectionBody>
 		</section>
 	);
 }

@@ -26,10 +26,11 @@ interface ProtectedPageHeaderProps {
 }
 
 /**
- * Per-page hero для защищённых страниц: optional breadcrumbs над заголовком,
- * back-button, title, extra-slot и subTitle. Не включает top-nav (logo,
- * dropdown и т.п.) — это часть `ProtectedShell`. Рендерится самой страницей
- * как первый ребёнок внутри `<div className="layout-background">`.
+ * Per-page hero for protected pages: optional breadcrumbs above the title, a
+ * back button, title, extra slot and subTitle. It does not include the top nav
+ * (logo, dropdown and so on) — that belongs to `ProtectedShell`. The page
+ * renders it itself, as the first child inside
+ * `<div className="layout-background">`.
  */
 export function ProtectedPageHeader({
 	title,

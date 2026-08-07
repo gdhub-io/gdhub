@@ -1,3 +1,8 @@
+export { ApplauseIcon, type ApplauseIconProps } from "./ApplauseIcon";
+export {
+	DisclosureSection,
+	type DisclosureSectionProps,
+} from "./DisclosureSection";
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
 export { IconTile, type IconTileProps } from "./IconTile";
 export { InverseBand, type InverseBandProps } from "./InverseBand";
