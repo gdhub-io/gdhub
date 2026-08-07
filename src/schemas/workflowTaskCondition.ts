@@ -155,6 +155,8 @@ export type ConditionSourceMeta = {
 	label: string;
 	/** Whether the source is a count-based check with a `min` threshold. */
 	hasMin: boolean;
+	/** Singular and plural, so a rule can be read back as a sentence. */
+	noun: [string, string];
 	filters: ConditionFilterMeta[];
 };
 
@@ -166,6 +168,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 		source: "project_fields",
 		label: "Project fields filled",
 		hasMin: false,
+		noun: ["project field", "project fields"],
 		filters: [
 			{
 				key: "fields",
@@ -177,11 +180,18 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			},
 		],
 	},
-	{ source: "devlog_posts", label: "Devlog posts", hasMin: true, filters: [] },
+	{
+		source: "devlog_posts",
+		label: "Devlog posts",
+		hasMin: true,
+		noun: ["devlog post", "devlog posts"],
+		filters: [],
+	},
 	{
 		source: "vacancies",
 		label: "Vacancies",
 		hasMin: true,
+		noun: ["vacancy", "vacancies"],
 		filters: [
 			{
 				key: "status",
@@ -194,6 +204,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 		source: "team_members",
 		label: "Team members",
 		hasMin: true,
+		noun: ["team member", "team members"],
 		filters: [
 			{
 				key: "status",
@@ -202,11 +213,18 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			},
 		],
 	},
-	{ source: "investors", label: "Investors", hasMin: true, filters: [] },
+	{
+		source: "investors",
+		label: "Investors",
+		hasMin: true,
+		noun: ["investor", "investors"],
+		filters: [],
+	},
 	{
 		source: "documents",
 		label: "Documents",
 		hasMin: true,
+		noun: ["document", "documents"],
 		filters: [
 			{
 				key: "type",
@@ -219,6 +237,7 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 		source: "advice_requests",
 		label: "Advice requests",
 		hasMin: true,
+		noun: ["advice request", "advice requests"],
 		filters: [
 			{
 				key: "status",
@@ -227,18 +246,33 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 			},
 		],
 	},
-	{ source: "estimations", label: "Estimations", hasMin: true, filters: [] },
-	{ source: "links", label: "Project links", hasMin: true, filters: [] },
+	{
+		source: "estimations",
+		label: "Estimations",
+		hasMin: true,
+		noun: ["estimation", "estimations"],
+		filters: [],
+	},
+	{
+		source: "links",
+		label: "Project links",
+		hasMin: true,
+		noun: ["project link", "project links"],
+		filters: [],
+	},
 	{
 		source: "equity_allocations",
 		label: "Equity allocations",
 		hasMin: true,
+		noun: ["equity allocation", "equity allocations"],
 		filters: [],
 	},
 	{
 		source: "applause",
 		label: "Applause",
 		hasMin: true,
+		// Uncountable, so the singular reads correctly at any threshold.
+		noun: ["applause", "applause"],
 		filters: [
 			{
 				key: "type",

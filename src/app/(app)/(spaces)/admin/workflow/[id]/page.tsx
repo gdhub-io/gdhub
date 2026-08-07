@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { WorkflowEditor } from "@/components/admin/WorkflowEditor";
+import { TemplateEditor } from "@/components/admin/workflow/TemplateEditor";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
 
 export default function WorkflowEditorAdminPage() {
@@ -10,7 +10,7 @@ export default function WorkflowEditorAdminPage() {
 
 	return (
 		<AdminSpace>
-			<WorkflowEditor id={workflowId} />
+			<TemplateEditor id={workflowId} />
 		</AdminSpace>
 	);
 }

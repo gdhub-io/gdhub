@@ -28,5 +28,18 @@ Hard rules:
 - i18n: user-facing text goes through Tolgee keys, not hardcoded strings.
 - Styling: SCSS modules. Tabs, double quotes — let Biome format.
 
-After changes run `bun run lint` and `bun run type-check` and report results. Comments and
+Before you call a screen done, check it back against the design system — drift happens one
+reasonable-looking exception at a time:
+- Every spacing, radius, colour and font size comes from a token. The spacing scale is
+  **1, 2, 3, 4, 6, 8, 12, 16** — there is no `--gd-space-5`, and a made-up name silently
+  voids the whole declaration (that is how a card lost all its padding once). Radii are
+  `chip | control | card | panel | pill`; sizes and roles live in `src/config/design`.
+- Reach for an existing primitive in `src/components/ui` and an antd component before
+  writing a new one. A hand-rolled chip, empty state or section heading is drift.
+- If the screen came from a Pencil design, re-read the node and compare: spacing, order,
+  labels, states. Where you deliberately depart from it — because the data does not exist,
+  or the macro would be a lie — say so to the user instead of quietly approximating.
+
+After changes run `bun run lint`, `bun run type-check` and
+`bun run test tests/design-tokens-guard.test.ts` and report results. Comments and
 identifiers in English; reply to the user in Russian.

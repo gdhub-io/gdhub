@@ -1,0 +1,245 @@
+.editor {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.titles {
+	min-width: 0;
+}
+
+.title {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 300;
+	line-height: 1.3;
+	color: var(--gd-color-text);
+}
+
+.stepTitle {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+/* antd swaps the heading for a textarea while it is being renamed, and styles it
+   at the base font size — so the title visibly shrinks the moment you click the
+   pencil. Only the type is corrected; the field keeps antd's own background. The
+   class is doubled because antd's `.ant-typography-edit-content textarea` rule
+   has the same specificity, and load order would otherwise decide the winner. */
+.title.title,
+.stepTitle.stepTitle {
+	textarea {
+		font: inherit;
+		color: inherit;
+	}
+}
+
+.slugChip {
+	font-family: var(--gd-font-mono, monospace);
+	font-size: 11px;
+}
+
+.meta {
+	font-size: 12px;
+	color: var(--gd-color-text-secondary);
+}
+
+/* An unsaved editor says so where the Save button is, not in a toast. */
+.unsaved {
+	font-size: 13px;
+	color: var(--gd-warning-solid);
+}
+
+.unsavedDot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--gd-warning-solid);
+}
+
+/* The rail carries the shape of the flow; the pane carries one step of it. */
+.panes {
+	display: grid;
+	grid-template-columns: 320px minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+}
+
+@media (max-width: 991px) {
+	.panes {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.rail,
+.detail {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	overflow: hidden;
+}
+
+.railHeader,
+.tasksHeader {
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.tasksHeader {
+	padding-inline: 0;
+	border-bottom: 0;
+}
+
+.railTitle {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.count {
+	display: inline-flex;
+	align-items: center;
+	padding: 1px 7px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-color-border);
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+.hint {
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+}
+
+.stepList {
+	display: flex;
+	flex-direction: column;
+}
+
+.stepRow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 10px 16px;
+	border: 0;
+	border-bottom: 1px solid var(--gd-color-border);
+	background: transparent;
+	text-align: left;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--gd-color-surface-sunken);
+	}
+}
+
+.stepRowActive {
+	background: var(--gd-color-surface-sunken);
+	box-shadow: inset 2px 0 0 var(--gd-color-accent);
+}
+
+.grip {
+	display: inline-flex;
+	color: var(--gd-color-text-tertiary);
+	cursor: grab;
+}
+
+.index {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background: var(--gd-color-border);
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+.stepTexts {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.stepName {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.stepSub {
+	font-size: 11px;
+	color: var(--gd-color-text-secondary);
+}
+
+.railFooter {
+	padding: 12px 16px;
+}
+
+.detailHeader {
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.detailBody {
+	padding: 20px;
+}
+
+.taskList {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.taskRow {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 12px;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface);
+}
+
+.taskTexts {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/*
+ * The chip states a rule, so the mark and the words are one line: antd lets the
+ * icon wrap onto its own row once the tag is narrow, which turns "Applause ≥ 10"
+ * into a stack. `inline-flex` + `nowrap` keeps them side by side.
+ */
+.conditionTag {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: 6px;
+	white-space: nowrap;
+}
+
+.taskName {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.taskDesc {
+	font-size: 12px;
+	color: var(--gd-color-text-secondary);
+}
+
+.emptyDetail {
+	padding: 48px 20px;
+	text-align: center;
+	font-size: 13px;
+	color: var(--gd-color-text-secondary);
+}

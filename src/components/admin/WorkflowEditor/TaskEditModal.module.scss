@@ -1,0 +1,57 @@
+.optional {
+	color: var(--gd-color-text-tertiary);
+	font-weight: 400;
+}
+
+.conditionHeader {
+	padding-top: var(--gd-space-2);
+}
+
+.conditionSubtitle {
+	font-size: var(--gd-font-size-caption);
+}
+
+/* The rule reads as a sentence, so the controls sit inline with the words that
+   join them rather than in a column of labelled fields. */
+.conditionPanel {
+	margin-top: var(--gd-space-3);
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+.sentence {
+	row-gap: var(--gd-space-3);
+	font-size: var(--gd-font-size-body);
+}
+
+.sourceSelect {
+	min-width: 170px;
+}
+
+.filterSelect {
+	min-width: 140px;
+}
+
+.minInput {
+	width: 88px;
+}
+
+.fieldsSelect {
+	flex: 1 1 240px;
+	min-width: 240px;
+}
+
+.explain {
+	margin-top: var(--gd-space-3);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-body);
+}
+
+.explainIcon {
+	flex: none;
+	margin-top: 2px;
+	color: var(--gd-color-accent);
+}
