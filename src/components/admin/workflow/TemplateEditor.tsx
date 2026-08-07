@@ -31,11 +31,11 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import type { ProjectWorkflowRow } from "@/app/(app)/(spaces)/admin/workflows/ProjectWorkflowsTable";
 import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
 import WorkflowSettingsModal from "@/components/admin/WorkflowEditor/WorkflowSettingsModal";
 import { describeCondition } from "@/services/workflow/describeCondition";
+import { useProjectWorkflows } from "./queries";
 import { type ResetTarget, ResetWorkflowModal } from "./ResetWorkflowModal";
 import styles from "./TemplateEditor.module.scss";
 
@@ -118,15 +118,8 @@ export function TemplateEditor({ id }: { id: string }) {
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const [resetTargets, setResetTargets] = useState<ResetTarget[]>([]);
 
-	// Which projects a change here could be pushed onto. Shared cache entry with
-	// the workflows list, so this costs nothing extra.
-	const { data: projectWorkflows } = useQuery<ProjectWorkflowRow[]>({
-		queryKey: ["admin", "project-workflows"],
-		queryFn: () =>
-			axios
-				.get<ProjectWorkflowRow[]>("/api/admin/project-workflows")
-				.then((res) => res.data),
-	});
+	// Which projects a change here could be pushed onto.
+	const { data: projectWorkflows } = useProjectWorkflows();
 	const usingProjects = (projectWorkflows ?? []).filter(
 		(row) => row.template?.id === id,
 	);

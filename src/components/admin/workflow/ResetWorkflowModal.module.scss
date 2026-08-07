@@ -78,25 +78,9 @@
 	color: var(--gd-color-text-tertiary);
 }
 
-.change {
+.bulkNote {
 	font-size: var(--gd-font-size-caption);
-}
-
-.changeIcon {
-	flex: none;
-	margin-top: 2px;
-}
-
-.added {
-	color: var(--gd-success-solid);
-}
-
-.removed {
-	color: var(--gd-danger-solid);
-}
-
-.neutral {
-	color: var(--gd-color-text-tertiary);
+	line-height: var(--gd-line-height-body);
 }
 
 .audit {

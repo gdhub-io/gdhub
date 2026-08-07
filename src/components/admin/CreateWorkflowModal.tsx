@@ -5,6 +5,7 @@ import { App, Flex, Form, Input, Modal, Radio, Select, Typography } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import styles from "./CreateWorkflowModal.module.scss";
+import { useWorkflowTemplates } from "./workflow/queries";
 
 const { Text } = Typography;
 
@@ -15,8 +16,6 @@ const slugify = (value: string) =>
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
-
-type TemplateOption = { id: string; name: string; title: string | null };
 
 export const CreateWorkflowModal = ({
 	open,
@@ -33,14 +32,7 @@ export const CreateWorkflowModal = ({
 	// Only until the admin types one: after that the identifier is theirs.
 	const [identifierTouched, setIdentifierTouched] = useState(false);
 
-	const { data: templates } = useQuery<TemplateOption[]>({
-		queryKey: ["admin", "workflows"],
-		queryFn: () =>
-			axios
-				.get<TemplateOption[]>("/api/admin/workflows")
-				.then((res) => res.data),
-		enabled: open,
-	});
+	const { data: templates } = useWorkflowTemplates(open);
 
 	const { mutateAsync: createWorkflow, isPending } = useMutation({
 		mutationFn: (values: {

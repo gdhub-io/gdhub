@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { glob } from "glob";
 import { describe, expect, it } from "vitest";
+import { designCssVariables } from "@/config/design/css";
 
 /**
  * The fence.
@@ -85,6 +86,68 @@ describe("design tokens guard", () => {
 				"If the colour is genuinely content (an illustration, a third-party",
 				"brand, a scale the system has no role for), add it to ALLOWED in",
 				"tests/design-tokens-guard.test.ts with the reason.",
+				"",
+				...offenders,
+			].join("\n"),
+		).toEqual([]);
+	});
+
+	/**
+	 * A misspelt custom property is silent: the browser drops the declaration and
+	 * the element simply renders without it. `--gd-space-5` (the scale has no 5)
+	 * cost a card its whole padding while types and tests stayed green — nothing
+	 * but a screenshot could catch it. So the names are checked against the ones
+	 * the theme actually emits.
+	 *
+	 * A fallback — `var(--gd-font-mono, monospace)` — is a deliberate opt-out and
+	 * passes: it renders correctly whether or not the variable exists.
+	 */
+	it("only uses design variables the theme emits", async () => {
+		// The font families come from `next/font`, which declares them on a wrapper
+		// class rather than through the token sheet — read from the source so the
+		// two cannot drift.
+		const fontVariables = readFileSync(
+			path.join(ROOT, "src/config/design/fonts.ts"),
+			"utf8",
+		).matchAll(/variable:\s*"(--gd-[a-z0-9-]+)"/g);
+
+		const emitted = new Set([
+			...Object.keys(designCssVariables("light")),
+			...Object.keys(designCssVariables("inverse")),
+			...Object.keys(designCssVariables("light", "marketing")),
+			...[...fontVariables].map(([, name]) => name),
+		]);
+
+		const files = await sourceFiles();
+		const offenders: string[] = [];
+
+		for (const file of files) {
+			const source = readFileSync(path.join(ROOT, file), "utf8");
+			const unknown = new Set<string>();
+
+			for (const [, name, next] of source.matchAll(
+				/var\(\s*(--gd-[a-z0-9-]+)\s*(,?)/g,
+			)) {
+				if (next === ",") continue;
+				// `var(--gd-direction-${slug}-tint)` — the name is built at runtime,
+				// so the match is a prefix and there is nothing to check.
+				if (name.endsWith("-")) continue;
+				if (!emitted.has(name)) unknown.add(name);
+			}
+
+			if (unknown.size) {
+				offenders.push(`${file} — ${[...unknown].join(", ")}`);
+			}
+		}
+
+		expect(
+			offenders,
+			[
+				"Unknown design variables. The browser drops these declarations",
+				"silently, so the styling just goes missing.",
+				"Check the name against src/config/design (the spacing scale is",
+				"1, 2, 3, 4, 6, 8, 12, 16 — there is no 5), or give it a fallback",
+				"if it is deliberately optional.",
 				"",
 				...offenders,
 			].join("\n"),

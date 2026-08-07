@@ -1,10 +1,10 @@
 "use client";
 
-import { IconArrowRight, IconMinus, IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { Empty, Flex, Modal, Skeleton, Typography } from "antd";
 import axios from "axios";
 import type { LocalChange } from "@/services/workflow/diffFromTemplate";
+import { LocalChangeList } from "./LocalChangeList";
 import styles from "./WorkflowDifferencesModal.module.scss";
 
 const { Text } = Typography;
@@ -67,27 +67,7 @@ export function WorkflowDifferencesModal({
 					description="This workflow still matches its template."
 				/>
 			) : (
-				<Flex vertical gap={8}>
-					{changes.map((change) => (
-						<Flex
-							align="flex-start"
-							gap={8}
-							key={change.text}
-							className={styles.change}
-						>
-							{change.kind === "added" && (
-								<IconPlus size={14} className={styles.added} />
-							)}
-							{change.kind === "removed" && (
-								<IconMinus size={14} className={styles.removed} />
-							)}
-							{change.kind === "moved" && (
-								<IconArrowRight size={14} className={styles.moved} />
-							)}
-							<span>{change.text}</span>
-						</Flex>
-					))}
-				</Flex>
+				<LocalChangeList changes={changes} />
 			)}
 		</Modal>
 	);

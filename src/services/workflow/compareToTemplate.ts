@@ -1,3 +1,5 @@
+import { matchKey } from "./matchKey";
+
 /** A project's step, reduced to what a comparison cares about. */
 export type ProjectStepShape = {
 	name: string;
@@ -9,9 +11,6 @@ export type TemplateStepShape = {
 	name: string;
 	tasks?: { name: string }[];
 };
-
-const normalise = (value: string | null | undefined) =>
-	(value ?? "").trim().toLowerCase();
 
 /**
  * Has this project's workflow drifted from the template it came from?
@@ -33,14 +32,14 @@ export function isModifiedFromTemplate(
 
 	return projectSteps.some((step, index) => {
 		const template = templateSteps[index];
-		if (normalise(step.name) !== normalise(template.name)) return true;
+		if (matchKey(step.name) !== matchKey(template.name)) return true;
 
 		const templateTasks = template.tasks ?? [];
 		if (step.tasks.length !== templateTasks.length) return true;
 
 		return step.tasks.some(
 			(task, taskIndex) =>
-				normalise(task.name) !== normalise(templateTasks[taskIndex]?.name),
+				matchKey(task.name) !== matchKey(templateTasks[taskIndex]?.name),
 		);
 	});
 }

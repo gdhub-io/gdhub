@@ -15,12 +15,12 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useProjectWorkflows } from "@/components/admin/workflow/queries";
 import {
 	type ResetTarget,
 	ResetWorkflowModal,
 } from "@/components/admin/workflow/ResetWorkflowModal";
 import ModernTable from "@/components/ModernTable";
-import type { ProjectWorkflowRow } from "./ProjectWorkflowsTable";
 import styles from "./style.module.scss";
 
 export type WorkflowTemplateRow = {
@@ -71,15 +71,8 @@ export function WorkflowTemplatesTable({
 		},
 	});
 
-	// Reading the same cache entry the page fills, so opening the menu costs
-	// nothing and the projects on a template are already known.
-	const { data: projectWorkflows } = useQuery<ProjectWorkflowRow[]>({
-		queryKey: ["admin", "project-workflows"],
-		queryFn: () =>
-			axios
-				.get<ProjectWorkflowRow[]>("/api/admin/project-workflows")
-				.then((res) => res.data),
-	});
+	// The projects on a template, for the reset entry in the row menu.
+	const { data: projectWorkflows } = useProjectWorkflows();
 
 	const { mutateAsync: duplicate } = useMutation({
 		mutationFn: (template: WorkflowTemplateRow) =>

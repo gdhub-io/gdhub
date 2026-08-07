@@ -6,6 +6,8 @@
  * reset is exactly this list.
  */
 
+import { matchKey } from "./matchKey";
+
 type ProjectTask = { name: string | null };
 type ProjectStep = { name: string; tasks: ProjectTask[] };
 type TemplateTask = { name: string };
@@ -15,9 +17,6 @@ export type LocalChange = {
 	kind: "added" | "removed" | "moved";
 	text: string;
 };
-
-const key = (value: string | null | undefined) =>
-	(value ?? "").trim().toLowerCase();
 
 export function diffFromTemplate(
 	steps: ProjectStep[],
@@ -29,12 +28,14 @@ export function diffFromTemplate(
 
 	const changes: LocalChange[] = [];
 	const templateByName = new Map(
-		template.map((step) => [key(step.name), step]),
+		template.map((step) => [matchKey(step.name), step]),
 	);
-	const projectByName = new Map(steps.map((step) => [key(step.name), step]));
+	const projectByName = new Map(
+		steps.map((step) => [matchKey(step.name), step]),
+	);
 
 	for (const step of steps) {
-		const templateStep = templateByName.get(key(step.name));
+		const templateStep = templateByName.get(matchKey(step.name));
 		if (!templateStep) {
 			changes.push({
 				kind: "added",
@@ -44,12 +45,12 @@ export function diffFromTemplate(
 		}
 
 		const templateTasks = new Set(
-			(templateStep.tasks ?? []).map((task) => key(task.name)),
+			(templateStep.tasks ?? []).map((task) => matchKey(task.name)),
 		);
-		const projectTasks = new Set(step.tasks.map((task) => key(task.name)));
+		const projectTasks = new Set(step.tasks.map((task) => matchKey(task.name)));
 
 		for (const task of step.tasks) {
-			if (!templateTasks.has(key(task.name))) {
+			if (!templateTasks.has(matchKey(task.name))) {
 				changes.push({
 					kind: "added",
 					text: `Task “${task.name ?? "Untitled"}” was added to “${step.name}”`,
@@ -57,7 +58,7 @@ export function diffFromTemplate(
 			}
 		}
 		for (const task of templateStep.tasks ?? []) {
-			if (!projectTasks.has(key(task.name))) {
+			if (!projectTasks.has(matchKey(task.name))) {
 				changes.push({
 					kind: "removed",
 					text: `Task “${task.name}” was removed from “${step.name}”`,
@@ -67,7 +68,7 @@ export function diffFromTemplate(
 	}
 
 	for (const templateStep of template) {
-		if (!projectByName.has(key(templateStep.name))) {
+		if (!projectByName.has(matchKey(templateStep.name))) {
 			changes.push({
 				kind: "removed",
 				text: `Step “${templateStep.name}” from the template is missing`,
@@ -78,10 +79,10 @@ export function diffFromTemplate(
 	// Order only counts as a change when both sides hold the same steps —
 	// otherwise every add or remove would also report a reshuffle.
 	const shared = steps
-		.map((step) => key(step.name))
+		.map((step) => matchKey(step.name))
 		.filter((name) => templateByName.has(name));
 	const sharedInTemplate = template
-		.map((step) => key(step.name))
+		.map((step) => matchKey(step.name))
 		.filter((name) => projectByName.has(name));
 
 	if (

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	IconAlertTriangle,
-	IconArrowRight,
-	IconMinus,
-	IconPlus,
-	IconShieldLock,
-} from "@tabler/icons-react";
+import { IconAlertTriangle, IconShieldLock } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Alert,
@@ -24,7 +18,10 @@ import {
 } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import type { LocalChange } from "@/services/workflow/diffFromTemplate";
 import type { ResetMode, ResetPlan } from "@/services/workflow/planReset";
+import { LocalChangeList } from "./LocalChangeList";
+import { useWorkflowTemplates } from "./queries";
 import styles from "./ResetWorkflowModal.module.scss";
 
 const { Text } = Typography;
@@ -97,11 +94,7 @@ export function ResetWorkflowModal({
 		setAcknowledged(false);
 	}, [open, single?.templateId]);
 
-	const { data: templates } = useQuery({
-		queryKey: ["admin", "workflows"],
-		queryFn: () => axios.get("/api/admin/workflows").then((res) => res.data),
-		enabled: open,
-	});
+	const { data: templates } = useWorkflowTemplates(open);
 
 	// Every project diffs against the template differently, so a preview only
 	// means something for one of them. In bulk the mode is the whole promise.
@@ -296,7 +289,7 @@ export function ResetWorkflowModal({
 					<Flex vertical gap={10}>
 						<span className={styles.changesTitle}>What will change</span>
 						{!single ? (
-							<Text type="secondary" className={styles.change}>
+							<Text type="secondary" className={styles.bulkNote}>
 								Each of the {targets.length} projects is compared with the
 								template on its own, so the exact changes differ per project.
 								Open one to see its plan before committing to all of them.
@@ -346,82 +339,61 @@ export function ResetWorkflowModal({
 	);
 }
 
-/** The plan in the terms an admin decides on: what appears, what disappears,
- *  what survives, and where the project ends up standing. */
+/**
+ * The plan in the terms an admin decides on: what appears, what disappears,
+ * what survives, and where the project ends up standing.
+ *
+ * Rendered by the same list as the differences elsewhere, so a reader who has
+ * seen one has seen them all.
+ */
 function ChangeList({ summary }: { summary: Summary }) {
-	const rows: { icon: "add" | "remove" | "neutral"; text: string }[] = [];
+	const plural = (count: number, noun: string) =>
+		`${count} ${noun}${count === 1 ? "" : "s"}`;
+
+	const changes: LocalChange[] = [];
 
 	for (const name of summary.stepsAdded) {
-		rows.push({ icon: "add", text: `Step added — “${name}”` });
+		changes.push({
+			kind: "added",
+			text: `Step added \u2014 \u201c${name}\u201d`,
+		});
 	}
 	for (const name of summary.stepsRemoved) {
-		rows.push({
-			icon: "remove",
-			text: `Step removed — “${name}” (not in the template)`,
+		changes.push({
+			kind: "removed",
+			text: `Step removed \u2014 \u201c${name}\u201d (not in the template)`,
 		});
 	}
 	if (summary.tasksAdded || summary.tasksRemoved) {
-		rows.push({
-			icon: summary.tasksRemoved ? "remove" : "add",
+		changes.push({
+			kind: summary.tasksRemoved ? "removed" : "added",
 			text: [
-				summary.tasksAdded ? `${summary.tasksAdded} task(s) added` : null,
-				summary.tasksRemoved ? `${summary.tasksRemoved} task(s) removed` : null,
+				summary.tasksAdded
+					? `${plural(summary.tasksAdded, "task")} added`
+					: null,
+				summary.tasksRemoved
+					? `${plural(summary.tasksRemoved, "task")} removed`
+					: null,
 			]
 				.filter(Boolean)
 				.join(", "),
 		});
 	}
 	if (summary.completedTotal) {
-		rows.push({
-			icon: summary.completedKept === summary.completedTotal ? "add" : "remove",
+		changes.push({
+			kind:
+				summary.completedKept === summary.completedTotal ? "added" : "removed",
 			text: `${summary.completedKept} of ${summary.completedTotal} completed tasks are kept`,
 		});
 	}
-	rows.push({
-		icon: "neutral",
+	changes.push({
+		kind: "moved",
 		text: summary.currentStep.kept
-			? `Current step stays on “${summary.currentStep.name ?? "—"}”`
-			: `Current step moves to “${summary.currentStep.name ?? "—"}”`,
+			? `Current step stays on \u201c${summary.currentStep.name ?? "\u2014"}\u201d`
+			: `Current step moves to \u201c${summary.currentStep.name ?? "\u2014"}\u201d`,
 	});
 
-	if (!rows.length) {
-		return (
-			<Text type="secondary">This project already matches the template.</Text>
-		);
-	}
-
-	return (
-		<Flex vertical gap={6}>
-			{rows.map((row) => (
-				<Flex
-					align="flex-start"
-					gap={8}
-					key={row.text}
-					className={styles.change}
-				>
-					{row.icon === "add" && (
-						<IconPlus
-							size={14}
-							className={`${styles.changeIcon} ${styles.added}`}
-						/>
-					)}
-					{row.icon === "remove" && (
-						<IconMinus
-							size={14}
-							className={`${styles.changeIcon} ${styles.removed}`}
-						/>
-					)}
-					{row.icon === "neutral" && (
-						<IconArrowRight
-							size={14}
-							className={`${styles.changeIcon} ${styles.neutral}`}
-						/>
-					)}
-					<span>{row.text}</span>
-				</Flex>
-			))}
-		</Flex>
-	);
+	return <LocalChangeList changes={changes} />;
 }
 
 export default ResetWorkflowModal;

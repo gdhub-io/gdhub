@@ -7,6 +7,8 @@
  * is therefore what happens, and the whole thing is testable without a database.
  */
 
+import { matchKey } from "./matchKey";
+
 export type ResetMode = "keep" | "sync" | "full";
 
 export type ExistingTask = { id: string; name: string | null; done: boolean };
@@ -65,9 +67,6 @@ export type ResetPlan = {
 	};
 };
 
-const key = (value: string | null | undefined) =>
-	(value ?? "").trim().toLowerCase();
-
 /**
  * Work out what a reset would do, without doing it.
  *
@@ -97,7 +96,7 @@ export function planReset(
 		return planSync(existing, template, completedTotal, currentName);
 
 	const existingByName = new Map(
-		existing.map((step) => [key(step.name), step]),
+		existing.map((step) => [matchKey(step.name), step]),
 	);
 	const usedStepIds = new Set<string>();
 	const stepsAdded: string[] = [];
@@ -106,18 +105,18 @@ export function planReset(
 	let completedKept = 0;
 
 	const steps: PlannedStep[] = template.map((templateStep) => {
-		const match = existingByName.get(key(templateStep.name));
+		const match = existingByName.get(matchKey(templateStep.name));
 		if (match) usedStepIds.add(match.id);
 		else stepsAdded.push(templateStep.name);
 
 		const existingTasks = new Map(
-			(match?.tasks ?? []).map((task) => [key(task.name), task]),
+			(match?.tasks ?? []).map((task) => [matchKey(task.name), task]),
 		);
 		const keptTaskIds = new Set<string>();
 
 		const tasks: PlannedTask[] = (templateStep.tasks ?? []).map(
 			(templateTask) => {
-				const existingTask = existingTasks.get(key(templateTask.name));
+				const existingTask = existingTasks.get(matchKey(templateTask.name));
 				if (existingTask) keptTaskIds.add(existingTask.id);
 				else tasksAdded++;
 
@@ -155,7 +154,7 @@ export function planReset(
 	const currentSurvives =
 		mode === "keep" &&
 		currentName !== null &&
-		steps.some((step) => key(step.name) === key(currentName));
+		steps.some((step) => matchKey(step.name) === matchKey(currentName));
 
 	return {
 		steps,
@@ -182,18 +181,18 @@ function planSync(
 	completedTotal: number,
 	currentName: string | null,
 ): ResetPlan {
-	const seen = new Set(existing.map((step) => key(step.name)));
+	const seen = new Set(existing.map((step) => matchKey(step.name)));
 	const stepsAdded: string[] = [];
 	let tasksAdded = 0;
 
 	const steps: PlannedStep[] = existing.map((step) => {
 		const templateStep = template.find(
-			(candidate) => key(candidate.name) === key(step.name),
+			(candidate) => matchKey(candidate.name) === matchKey(step.name),
 		);
-		const has = new Set(step.tasks.map((task) => key(task.name)));
+		const has = new Set(step.tasks.map((task) => matchKey(task.name)));
 
 		const missing = (templateStep?.tasks ?? []).filter(
-			(task) => !has.has(key(task.name)),
+			(task) => !has.has(matchKey(task.name)),
 		);
 		tasksAdded += missing.length;
 
@@ -219,7 +218,7 @@ function planSync(
 	});
 
 	for (const templateStep of template) {
-		if (seen.has(key(templateStep.name))) continue;
+		if (seen.has(matchKey(templateStep.name))) continue;
 		stepsAdded.push(templateStep.name);
 		tasksAdded += templateStep.tasks?.length ?? 0;
 		steps.push({

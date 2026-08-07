@@ -1,13 +1,11 @@
 "use client";
 
 import {
-	IconArrowRight,
 	IconBolt,
 	IconCheck,
 	IconExternalLink,
 	IconGitCompare,
 	IconHandStop,
-	IconMinus,
 	IconPencil,
 	IconPlus,
 	IconRotateClockwise,
@@ -35,6 +33,7 @@ import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
 import { describeCondition } from "@/services/workflow/describeCondition";
 import type { LocalChange } from "@/services/workflow/diffFromTemplate";
+import { LocalChangeList } from "./LocalChangeList";
 import styles from "./ProjectWorkflowEditor.module.scss";
 import { ResetWorkflowModal } from "./ResetWorkflowModal";
 
@@ -178,6 +177,38 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 			},
 		};
 	}, [data?.template?.steps]);
+
+	/**
+	 * Deleting a task the project already completed throws away a record of work
+	 * done, so that case asks first; an unfinished one just goes.
+	 */
+	const removeTask = (stepKey: string, task: TaskDraft) => {
+		const drop = () =>
+			patch(
+				steps.map((step) =>
+					step.key === stepKey
+						? {
+								...step,
+								tasks: step.tasks.filter((item) => item.key !== task.key),
+							}
+						: step,
+				),
+			);
+
+		if (!task.done) {
+			drop();
+			return;
+		}
+
+		modal.confirm({
+			title: `Delete “${task.name}”?`,
+			content:
+				"This task is marked done. Deleting it removes that from the project's progress when you save.",
+			okText: "Delete",
+			okButtonProps: { danger: true },
+			onOk: drop,
+		});
+	};
 
 	const handleSave = () => {
 		// The column is rewritten wholesale; an empty list would leave the project
@@ -502,6 +533,13 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 													setTaskModal({ stepKey: step.key, task })
 												}
 											/>
+											<Button
+												size="small"
+												type="text"
+												danger
+												icon={<IconTrash size={15} />}
+												onClick={() => removeTask(step.key, task)}
+											/>
 										</Flex>
 									</Flex>
 								))}
@@ -566,17 +604,7 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 							<div className={styles.changes}>
 								<Flex vertical gap={10}>
 									<span className={styles.changesTitle}>Local changes</span>
-									{data.localChanges.map((change) => (
-										<Flex
-											align="flex-start"
-											gap={8}
-											key={change.text}
-											className={styles.change}
-										>
-											<ChangeIcon kind={change.kind} />
-											<span>{change.text}</span>
-										</Flex>
-									))}
+									<LocalChangeList changes={data.localChanges} />
 								</Flex>
 							</div>
 						</div>
@@ -679,13 +707,6 @@ function Bullet({
 	return (
 		<span className={className}>{done ? <IconCheck size={13} /> : index}</span>
 	);
-}
-
-function ChangeIcon({ kind }: { kind: LocalChange["kind"] }) {
-	if (kind === "added") return <IconPlus size={14} className={styles.added} />;
-	if (kind === "removed")
-		return <IconMinus size={14} className={styles.removed} />;
-	return <IconArrowRight size={14} className={styles.moved} />;
 }
 
 type ProjectWorkflowResponse = {
