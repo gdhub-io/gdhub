@@ -8,13 +8,14 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { WorkflowStepsTemplateSchema } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
 
 const CreateWorkflowSchema = z.object({
 	name: z.string().min(1),
 	title: z.string().min(1),
 	description: z.string().optional(),
-	steps: z.array(z.any()).optional(),
+	steps: WorkflowStepsTemplateSchema.optional(),
 });
 
 type CreateWorkflowBody = z.infer<typeof CreateWorkflowSchema>;
@@ -33,7 +34,7 @@ export const POST = pipe(
 			name,
 			title,
 			description: description || undefined,
-			steps: (steps ?? []) as PrismaJson.WorkflowStep[],
+			steps: steps ?? [],
 		},
 	});
 

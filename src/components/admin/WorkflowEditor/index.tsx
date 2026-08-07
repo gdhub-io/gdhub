@@ -164,8 +164,21 @@ export const WorkflowEditor = ({
 	});
 
 	const handleSave = async () => {
+		// Saving before the query has filled the form would post an empty step
+		// list — which is exactly how a project lost its workflow. The server
+		// refuses that now; the button should never send it in the first place.
+		if (!isFormInitialized) {
+			message.warning("Workflow is still loading");
+			return;
+		}
+
 		try {
 			const values = await form.validateFields();
+
+			if (!values.steps?.length) {
+				message.error("A workflow needs at least one step");
+				return;
+			}
 
 			if (type === "project") {
 				// For ProjectWorkflow, save both title and steps structure
