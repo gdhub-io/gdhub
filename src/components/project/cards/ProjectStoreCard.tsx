@@ -105,11 +105,6 @@ export function ProjectStoreCard({
 								</a>
 							))}
 						</div>
-						<ApplauseButton
-							subject={{ kind: "project", id: projectId }}
-							count={applauseCount}
-							variant="chip"
-						/>
 					</div>
 				</div>
 			</div>
@@ -137,11 +132,18 @@ export function ProjectStoreCard({
 							</span>
 						)}
 					</div>
-					<Link href={`/project/${slug}`} className={styles.detailsLink}>
-						<Button type="primary" size="small" className={styles.details}>
-							{t("project-card.details", "Details")}
-						</Button>
-					</Link>
+					{/* With the action, not on the artwork — see `ProjectCard`. */}
+					<div className={styles.footActions}>
+						<ApplauseButton
+							subject={{ kind: "project", id: projectId }}
+							count={applauseCount}
+						/>
+						<Link href={`/project/${slug}`} className={styles.detailsLink}>
+							<Button type="primary" size="small" className={styles.details}>
+								{t("project-card.details", "Details")}
+							</Button>
+						</Link>
+					</div>
 				</div>
 			</div>
 		</article>

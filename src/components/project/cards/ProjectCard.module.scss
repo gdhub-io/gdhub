@@ -40,11 +40,6 @@
 	gap: 8px;
 }
 
-.reactionRow {
-	display: flex;
-	justify-content: flex-end;
-}
-
 .body {
 	display: flex;
 	flex: 1 1 auto;
@@ -114,6 +109,13 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+.footActions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex: 0 0 auto;
 }
 
 .detailsLink {

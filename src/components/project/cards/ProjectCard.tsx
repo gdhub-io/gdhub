@@ -64,13 +64,6 @@ export function ProjectCard({
 							<HiringChip label={t("project-card.hiring", "Hiring")} />
 						)}
 					</div>
-					<div className={styles.reactionRow}>
-						<ApplauseButton
-							subject={{ kind: "project", id: projectId }}
-							count={applauseCount}
-							variant="chip"
-						/>
-					</div>
 				</div>
 			</div>
 
@@ -98,11 +91,20 @@ export function ProjectCard({
 						</span>
 					)}
 				</div>
-				<Link href={`/project/${slug}`} className={styles.detailsLink}>
-					<Button type="primary" size="small" className={styles.details}>
-						{t("project-card.details", "Details")}
-					</Button>
-				</Link>
+				{/* Applause sits with the action, not on the artwork: it is a
+				    number about the project, and on a cover it had to carry a plate
+				    to stay legible. */}
+				<div className={styles.footActions}>
+					<ApplauseButton
+						subject={{ kind: "project", id: projectId }}
+						count={applauseCount}
+					/>
+					<Link href={`/project/${slug}`} className={styles.detailsLink}>
+						<Button type="primary" size="small" className={styles.details}>
+							{t("project-card.details", "Details")}
+						</Button>
+					</Link>
+				</div>
 			</div>
 		</article>
 	);

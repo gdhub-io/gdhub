@@ -290,20 +290,7 @@
 	}
 }
 
-.writeToAuthorLink {
-	display: block;
-	width: fit-content;
-}
 
-.writeToAuthorButton {
-	font-weight: lighter;
-	display: flex;
-	align-items: center;
-
-	svg {
-		margin-right: 8px;
-	}
-}
 
 // The header is an `InverseBand`, so `--gd-color-text` is already the light ink
 // there — taking it puts the applause at the same strength as the title, and
