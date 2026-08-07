@@ -6,11 +6,7 @@ import type {
 	ProjectWorkflowStep,
 	User,
 } from "@gdhub-io/gdhub-prisma";
-import {
-	IconBrandTelegram,
-	IconDownload,
-	IconQrcode,
-} from "@tabler/icons-react";
+import { IconDownload, IconQrcode } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -24,9 +20,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -97,7 +91,6 @@ export function ProjectPageClient({
 	seo,
 }: ProjectPageParams) {
 	const { t } = useTranslate();
-	const { data: session } = useSession();
 	const pathname = usePathname();
 	const screens = Grid.useBreakpoint();
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -311,25 +304,6 @@ export function ProjectPageClient({
 									title={t("page.project.author", "Project author")}
 								>
 									<ProjectAuthorCard author={project.author} bare />
-									{session && project.author.profile?.tgNickname ? (
-										<Link
-											href={`https://t.me/${project.author.profile.tgNickname}`}
-											target="_blank"
-											className={styles.writeToAuthorLink}
-										>
-											<Button
-												shape="round"
-												type="dashed"
-												className={styles.writeToAuthorButton}
-											>
-												<IconBrandTelegram size={16} />{" "}
-												{t(
-													"page.project.contactTheAuthor",
-													"Contact the author",
-												)}
-											</Button>
-										</Link>
-									) : null}
 								</DisclosureSection>
 							</div>
 
