@@ -16,6 +16,7 @@ import {
 	type WorkflowTaskInput,
 } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
+import { diffFromTemplate } from "@/services/workflow/diffFromTemplate";
 import {
 	planSteps,
 	planTasks,
@@ -54,6 +55,15 @@ export const GET = pipe(
 					author: { select: { name: true } },
 				},
 			},
+			schema: {
+				select: {
+					id: true,
+					name: true,
+					title: true,
+					steps: true,
+					updatedAt: true,
+				},
+			},
 			currentStep: { select: { id: true, name: true, order: true } },
 			steps: {
 				include: { tasks: { orderBy: { order: "asc" } } },
@@ -65,6 +75,9 @@ export const GET = pipe(
 	if (!projectWorkflow) {
 		return json(null);
 	}
+
+	const templateSteps = (projectWorkflow.schema?.steps ??
+		[]) as PrismaJson.WorkflowStep[];
 
 	const totalTasks = projectWorkflow.steps.reduce(
 		(total, step) => total + step.tasks.length,
@@ -84,6 +97,17 @@ export const GET = pipe(
 
 	return json({
 		...projectWorkflow,
+		template: projectWorkflow.schema
+			? {
+					id: projectWorkflow.schema.id,
+					name: projectWorkflow.schema.name,
+					title: projectWorkflow.schema.title,
+					updatedAt: projectWorkflow.schema.updatedAt,
+				}
+			: null,
+		// What this project changed about its copy — the cost of a reset, stated
+		// before anyone offers one.
+		localChanges: diffFromTemplate(projectWorkflow.steps, templateSteps),
 		analytics: {
 			totalTasks,
 			completedTasks,
