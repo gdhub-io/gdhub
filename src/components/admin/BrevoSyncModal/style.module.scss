@@ -1,0 +1,97 @@
+.target {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	margin-top: var(--gd-space-4);
+	padding: 10px 14px;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+.targetLabel {
+	font-size: 12px;
+	color: var(--gd-color-text-secondary);
+}
+
+.targetName {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.targetId {
+	font-weight: 400;
+	color: var(--gd-color-text-tertiary);
+}
+
+.warning {
+	margin-top: var(--gd-space-4);
+}
+
+.warningList {
+	margin: var(--gd-space-2) 0 0;
+	padding-left: 18px;
+}
+
+.counts {
+	display: flex;
+	gap: var(--gd-space-3);
+	margin-top: var(--gd-space-4);
+}
+
+.count {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+	padding: 12px 14px;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.countValue {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	line-height: 1.2;
+	color: var(--gd-color-text);
+}
+
+.countLabel {
+	font-size: 12px;
+	line-height: 1.35;
+	color: var(--gd-color-text-secondary);
+}
+
+.fields {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	margin: var(--gd-space-4) 0 0;
+	padding: 12px 14px;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+.field {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	margin: 0;
+}
+
+.attribute {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.source {
+	margin: 0;
+	font-size: 12px;
+	// Right-aligned so the eye reads a column of attributes, then a column of
+	// sources, instead of one ragged line per row.
+	text-align: right;
+	color: var(--gd-color-text-secondary);
+}

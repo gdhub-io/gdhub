@@ -34,3 +34,15 @@
     width: 100%;
   }
 }
+
+.flagCell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+// The one place a colour carries meaning in this table: a green tick reads as
+// "done" at a glance, where a neutral one would just be another glyph.
+.flagOn {
+	color: var(--gd-success-solid);
+}

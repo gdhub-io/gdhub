@@ -26,6 +26,7 @@ import {
 	parseAdminUsersFilters,
 	resolvePermissionGrants,
 } from "@/repositories/admin-users.repository";
+import { getBrevoContactEmails } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 
 type SkillCapitalSummary = {
@@ -52,6 +53,9 @@ type AdminUserListItem = {
 	specializations: string[];
 	skillCapital: SkillCapitalSummary;
 	memberships: MembershipSummary[];
+	onboardingDone: boolean;
+	/** Known to Brevo. `undefined` when Brevo could not be reached. */
+	inBrevo?: boolean;
 };
 
 type PaginatedAdminUsersResponse = {
@@ -155,6 +159,7 @@ const USER_LIST_SELECT = {
 	image: true,
 	createdAt: true,
 	updatedAt: true,
+	onboardingDone: true,
 	profile: { select: { name: true, updatedAt: true } },
 	specialities: { select: { name: true, updatedAt: true } },
 } satisfies Prisma.UserSelect;
@@ -590,6 +595,7 @@ type UserRecord = {
 	image: string | null;
 	createdAt: Date;
 	updatedAt: Date;
+	onboardingDone: boolean;
 	profile: { name: string; updatedAt: Date | string } | null;
 	specialities: { name: string; updatedAt: Date | string }[];
 };
@@ -608,6 +614,7 @@ const toListItem = (
 	specializations: user.specialities.map((speciality) => speciality.name),
 	skillCapital: skillCapital.get(user.id) || EMPTY_CAPITAL,
 	memberships: memberships.get(user.id) || [],
+	onboardingDone: user.onboardingDone,
 });
 
 /** Skill capital and memberships for one page, together. */
@@ -616,6 +623,38 @@ const loadPageData = async (users: UserRecord[]) =>
 		computeSkillCapitalForUsers(users.map((user) => user.id)),
 		loadMemberships(users.map((user) => user.id)),
 	]);
+
+/**
+ * Marks which rows Brevo already knows about.
+ *
+ * Brevo has no bulk "do these exist" call, so the whole contact list is read
+ * once (and cached) and matched here rather than asking per row — a page of a
+ * hundred users would otherwise be a hundred round trips.
+ *
+ * Fails soft: the admin table is about users, not about the mailing platform,
+ * and it must still render when Brevo is down. Rows then carry no flag at all,
+ * which the UI shows as unknown rather than as absent.
+ */
+const withBrevoPresence = async (
+	response: PaginatedAdminUsersResponse,
+): Promise<PaginatedAdminUsersResponse> => {
+	try {
+		const contacts = await getBrevoContactEmails();
+
+		return {
+			...response,
+			data: response.data.map((user) => ({
+				...user,
+				inBrevo: user.email
+					? contacts.has(user.email.toLowerCase())
+					: undefined,
+			})),
+		};
+	} catch (error) {
+		console.error("[brevo: presence lookup]", error);
+		return response;
+	}
+};
 
 export const GET = pipe(
 	withAuth({ mode: "user" }),
@@ -669,7 +708,7 @@ export const GET = pipe(
 				data: users.map((user) => toListItem(user, capital, memberships)),
 				meta,
 			};
-			return json(response);
+			return json(await withBrevoPresence(response));
 		}
 
 		const allUsers = await prisma.user.findMany({
@@ -708,7 +747,7 @@ export const GET = pipe(
 					totalCount,
 				},
 			};
-			return json(response);
+			return json(await withBrevoPresence(response));
 		}
 
 		const skillCapitalByUserId = await computeSkillCapitalForUsers(
@@ -744,7 +783,7 @@ export const GET = pipe(
 				totalCount,
 			},
 		};
-		return json(response);
+		return json(await withBrevoPresence(response));
 	}
 
 	const [users, meta] = await prisma.user
@@ -765,5 +804,5 @@ export const GET = pipe(
 		data: users.map((user) => toListItem(user, capital, memberships)),
 		meta,
 	};
-	return json(response);
+	return json(await withBrevoPresence(response));
 });
