@@ -1,7 +1,7 @@
 "use client";
 
 import type { WorkflowSchema } from "@gdhub-io/gdhub-prisma";
-import { IconTrash } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
 	Button,
@@ -22,13 +22,16 @@ import { CreateWorkflowModal } from "@/components/admin/CreateWorkflowModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
 import styles from "./style.module.scss";
+import {
+	type WorkflowTemplateRow,
+	WorkflowTemplatesTable,
+} from "./WorkflowTemplatesTable";
 
 const { Title, Text } = Typography;
 
 export default function WorkflowsAdminPage() {
 	const router = useRouter();
 	const [showModal, setShowModal] = useState(false);
-	const [workflowId, setWorkflowId] = useState<string | undefined>(undefined);
 
 	// Workflow schemas (templates)
 	const {
@@ -52,64 +55,12 @@ export default function WorkflowsAdminPage() {
 		refetchOnWindowFocus: false,
 	});
 
-	const { mutateAsync: deleteWorkflow } = useMutation({
-		mutationFn: ({ id }: { id: string }) =>
-			axios.delete(`/api/admin/workflow/${id}`),
-		onSuccess: () => {
-			refetchWorkflows();
-		},
-	});
-
-	const handleDelete = (recordId: string) => {
-		deleteWorkflow({ id: recordId });
-		setWorkflowId(undefined);
-	};
-
 	const handleCreateWorkflow = (id: string) => {
-		setWorkflowId(id);
 		setShowModal(false);
 		router.push(`/admin/workflow/${id}`);
 	};
 
 	// Columns for workflow schemas (templates)
-	const workflowColumns: ColumnsType<WorkflowSchema> = [
-		{
-			title: "Title",
-			dataIndex: "title",
-			key: "title",
-			render: (value, record) => (
-				<Link href={`/admin/workflow/${record.id}`}>{value}</Link>
-			),
-		},
-		{
-			title: "Created at",
-			dataIndex: "createdAt",
-			key: "createdAt",
-			render: (value) => (
-				<Popover content={dayjs(value).format("LLL")}>
-					<Text>{dayjs(value).fromNow()}</Text>
-				</Popover>
-			),
-		},
-		{
-			key: "actions",
-			width: "1%",
-			render(value, record) {
-				return (
-					<Space size="large">
-						<Popconfirm
-							title="Are you sure you want to delete this entry?"
-							onConfirm={() => handleDelete(record.id)}
-						>
-							<Button type="text" danger icon={<IconTrash />} />
-						</Popconfirm>
-					</Space>
-				);
-			},
-		},
-	];
-
-	// Columns for project workflows
 	const projectWorkflowColumns: ColumnsType<any> = [
 		{
 			title: "Project",
@@ -239,48 +190,31 @@ export default function WorkflowsAdminPage() {
 		},
 	];
 
+	const templates: WorkflowTemplateRow[] = workflowsResponse?.data ?? [];
+	const projectWorkflows = projectWorkflowsResponse?.data ?? [];
+
 	const tabItems = [
 		{
 			key: "templates",
-			label: "Workflow templates",
+			label: <TabLabel label="Workflow templates" count={templates.length} />,
 			children: (
-				<div>
-					<Row
-						justify="space-between"
-						align="middle"
-						style={{ marginBottom: 16 }}
-					>
-						<Title level={3}>Workflow templates</Title>
-						<Button onClick={() => setShowModal(true)} type="primary">
-							Add template
-						</Button>
-					</Row>
-					<ModernTable
-						loading={isFetchingWorkflows}
-						dataSource={workflowsResponse?.data}
-						columns={workflowColumns}
-					/>
-				</div>
+				<WorkflowTemplatesTable
+					templates={templates}
+					loading={isFetchingWorkflows}
+				/>
 			),
 		},
 		{
 			key: "projects",
-			label: "Project workflows",
+			label: (
+				<TabLabel label="Project workflows" count={projectWorkflows.length} />
+			),
 			children: (
-				<div>
-					<Row
-						justify="space-between"
-						align="middle"
-						style={{ marginBottom: 16 }}
-					>
-						<Title level={3}>Project workflows</Title>
-					</Row>
-					<ModernTable
-						loading={isFetchingProjectWorkflows}
-						dataSource={projectWorkflowsResponse?.data}
-						columns={projectWorkflowColumns}
-					/>
-				</div>
+				<ModernTable
+					loading={isFetchingProjectWorkflows}
+					dataSource={projectWorkflows}
+					columns={projectWorkflowColumns}
+				/>
 			),
 		},
 	];
@@ -288,7 +222,26 @@ export default function WorkflowsAdminPage() {
 	return (
 		<AdminSpace>
 			<div className={styles.main}>
-				<Title level={2}>Workflows</Title>
+				<div className={styles.pageHeader}>
+					<div className={styles.titles}>
+						<Title level={2} className={styles.pageTitle}>
+							Workflows
+						</Title>
+						<Text type="secondary" className={styles.pageSubtitle}>
+							Templates define the path a project follows. A project keeps its
+							own copy, so editing a template never rewrites work already under
+							way.
+						</Text>
+					</div>
+					<Button
+						type="primary"
+						icon={<IconPlus size={14} />}
+						onClick={() => setShowModal(true)}
+					>
+						New template
+					</Button>
+				</div>
+
 				<Tabs defaultActiveKey="templates" items={tabItems} />
 			</div>
 
@@ -298,5 +251,15 @@ export default function WorkflowsAdminPage() {
 				onOk={handleCreateWorkflow}
 			/>
 		</AdminSpace>
+	);
+}
+
+/** Tab title with the number of rows behind it. */
+function TabLabel({ label, count }: { label: string; count: number }) {
+	return (
+		<span className={styles.tabLabel}>
+			{label}
+			<span className={styles.tabCount}>{count}</span>
+		</span>
 	);
 }
