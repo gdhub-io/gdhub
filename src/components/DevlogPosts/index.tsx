@@ -35,6 +35,11 @@ interface DevlogPostsProps {
 	title?: React.ReactNode;
 	/** "section" — header inside hub shell (default for hub variant); "title" — `<Title level={2}>` above the shell */
 	headerStyle?: "section" | "title";
+	/**
+	 * Below the sidebar breakpoint, drop the frame and let the row rules run to
+	 * the edges of the display — a feed is a column of rows, not a card.
+	 */
+	edgeToEdgeOnMobile?: boolean;
 }
 
 const PostCard: React.FC<{
@@ -201,6 +206,7 @@ const DevlogPosts = ({
 	bundleInset = false,
 	title,
 	headerStyle,
+	edgeToEdgeOnMobile = false,
 }: DevlogPostsProps) => {
 	const { t } = useTranslate();
 	const limit = 5;
@@ -248,7 +254,12 @@ const DevlogPosts = ({
 
 	const hubShell =
 		variant === "hub"
-			? getHubSectionShellClass(bundleInset ? "inset" : "standalone")
+			? [
+					getHubSectionShellClass(bundleInset ? "inset" : "standalone"),
+					edgeToEdgeOnMobile ? styles.edgeToEdge : "",
+				]
+					.filter(Boolean)
+					.join(" ")
 			: "";
 
 	const useSectionHeader = variant === "hub" && headerStyle !== "title";

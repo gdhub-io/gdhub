@@ -14,13 +14,18 @@
  * active disc, not from the icon glyph, so the number never touches the disc.
  */
 .default {
+	--applause-icon: 16px;
 	gap: 4px;
-	font-size: 16px;
 }
 
 .large {
+	--applause-icon: 20px;
 	gap: 5px;
-	font-size: 22px;
+
+	// A hero on a wide screen can carry a bigger mark; a phone cannot.
+	@media (min-width: 992px) {
+		--applause-icon: 24px;
+	}
 }
 
 /*
@@ -96,15 +101,17 @@
  * to the widest glyph, which pulls a four-digit count apart.
  */
 .count {
-	font-size: calc(var(--applause-icon) * 0.9);
-	font-weight: 500;
+	// Sized and weighted off the glyph: 80% of the icon box, and regular rather
+	// than semibold — the number reports, the icon is what you press.
+	font-size: calc(var(--applause-icon) * 0.8);
+	font-weight: 400;
 	letter-spacing: -0.01em;
 }
 
 /* Sized to the digits it stands in for, on the same scale as `.count`. */
 .countSkeleton {
 	display: inline-block;
-	font-size: calc(var(--applause-icon) * 0.9);
+	font-size: calc(var(--applause-icon) * 0.8);
 	width: 1.7em;
 	height: 0.74em;
 	border-radius: 3px;

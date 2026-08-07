@@ -104,39 +104,100 @@
  * on a narrow screen — so the wide layout comes from `grid-template-areas`
  * alone and nothing is moved in the DOM or swapped at a breakpoint.
  */
+/**
+ * One tree, two readings.
+ *
+ * On a phone `main` and `aside` step out of the way (`display: contents`) and
+ * their blocks join a single column, ordered the way the phone wants them:
+ * pitch, cover, the folded facts, then the feed last because it never ends.
+ * From the sidebar breakpoint the two containers come back and the same blocks
+ * split into a column and a rail. Nothing is moved in the DOM or swapped for
+ * another component, so nothing flashes on hydration.
+ */
 .pageGrid {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-	grid-template-areas:
-		"main"
-		"aside";
-	gap: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
 	width: 100%;
-	padding-block: 8px 32px;
+	padding-block: 0 24px;
 }
 
-.mainArea {
-	grid-area: main;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 32px;
-}
-
+.mainArea,
 .asideArea {
-	grid-area: aside;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
+	display: contents;
+}
+
+// A block that renders nothing (no vacancies, no team) must not leave a gap
+// behind it — the blocks stand at one distance whichever of them is missing.
+// The slots are children of `main`/`aside`, which are `display: contents`, so
+// the grid never sees them directly.
+.mainArea > *:empty,
+.asideArea > *:empty {
+	display: none;
+}
+
+.slotDescription {
+	order: 1;
+}
+
+.slotVideo {
+	order: 2;
+}
+
+.slotDetails {
+	order: 3;
+}
+
+.slotAuthor {
+	order: 4;
+}
+
+.slotPositions {
+	order: 5;
+}
+
+.slotTeam {
+	order: 6;
+}
+
+.slotFeed {
+	order: 7;
 }
 
 @media (min-width: 992px) {
 	.pageGrid {
+		display: grid;
 		grid-template-columns: minmax(0, 1fr) 392px;
 		grid-template-areas: "main aside";
 		align-items: start;
 		gap: 32px;
+	}
+
+	.mainArea {
+		grid-area: main;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+
+	.asideArea {
+		grid-area: aside;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.slotDescription,
+	.slotVideo,
+	.slotDetails,
+	.slotAuthor,
+	.slotPositions,
+	.slotTeam,
+	.slotFeed {
+		order: 0;
+		padding: 0;
 	}
 
 	// Travels with the page, then pins. `top` is driven by useScrollAwareSticky:
@@ -151,7 +212,7 @@
 
 // Every card in the column separates its header from its body the same way.
 .cardHeader {
-	border-bottom: 1px solid var(--gd-color-border);
+	border-bottom: 1px solid var(--gd-color-border-strong);
 }
 
 .descriptionBody {
@@ -169,25 +230,13 @@
 }
 
 /**
- * The header's second line: who made it, and where it currently stands.
+ * Where the project stands, above its name.
  *
- * The stage used to sit at the bottom of the pitch, where nobody read it — it
- * belongs next to the author, because "who and how far along" is one thought.
+ * It used to sit at the bottom of the pitch, where nobody read it, then beside
+ * the author. Over the title it is the first thing taken in, and it colours how
+ * everything under it reads. The author is not repeated here — the sidebar card
+ * carries the name and the face.
  */
-.metaRow {
-	display: inline-flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 12px;
-}
-
-.metaSep {
-	width: 3px;
-	height: 3px;
-	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.35);
-}
-
 .stageChip {
 	display: inline-flex;
 	align-items: center;
@@ -209,6 +258,16 @@
 	height: 7px;
 	border-radius: 50%;
 	background: var(--gd-success-solid);
+}
+
+.goToPrefix {
+	display: none;
+}
+
+@media (min-width: 992px) {
+	.goToPrefix {
+		display: inline;
+	}
 }
 
 /** The one link that sells the game: white plate on the artwork, store's mark. */

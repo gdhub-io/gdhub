@@ -10,6 +10,11 @@
 }
 
 .hubVariant {
+  // The section title owns the rule beneath it — the same weight as the
+  // separators between the posts it introduces.
+  .feedHeader {
+    border-bottom: 1px solid var(--gd-color-border-strong);
+  }
 
   .postsList {
     gap: 0;
@@ -343,4 +348,38 @@
   font-size: 13px;
   color: var(--gd-color-text-tertiary);
   text-align: center;
+}
+
+/*
+ * A feed on a phone is a column of rows, not a card: the frame goes, and each
+ * rule spans the display rather than stopping at the page gutter. The rows pay
+ * the gutter back as padding, so the text stays on the grid with everything
+ * above it. Doubled class so it beats the shell it is layered on.
+ */
+@media (max-width: 991px) {
+  .edgeToEdge.edgeToEdge {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+
+    .feedHeader,
+    .postCard {
+      // The page publishes what it pays as horizontal padding; the row borrows
+      // exactly that back. Measuring against `100vw` instead would overshoot by
+      // the scrollbar, and a hardcoded number leaves the sliver it meant to cut.
+      width: auto;
+      margin-inline: calc(-1 * var(--gd-page-gutter, 0px));
+      padding-inline: var(--gd-page-gutter, 0px);
+      border-bottom: 0;
+      border-top: 1px solid var(--gd-color-border);
+    }
+
+    .feedHeader {
+      padding-block: 12px;
+    }
+
+    .postCard {
+      padding-block: 14px;
+    }
+  }
 }

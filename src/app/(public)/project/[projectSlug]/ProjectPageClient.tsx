@@ -11,6 +11,7 @@ import {
 	IconDownload,
 	IconQrcode,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -22,6 +23,7 @@ import {
 	Tooltip,
 	Typography,
 } from "antd";
+import axios from "axios";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -32,17 +34,13 @@ import type { Pluggable } from "unified";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import DevlogPosts from "@/components/DevlogPosts";
-import {
-	getHubSectionShellClass,
-	HubSectionBody,
-	HubSectionHeader,
-} from "@/components/hub/HubSection";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
-import ProjectVacancies from "@/components/ProjectVacancies";
 import { ProjectAuthorCard } from "@/components/project/ProjectAuthorCard";
 import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
+import { ProjectPositions } from "@/components/project/ProjectPositions";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import TeamMembers from "@/components/TeamMembers";
+import { DisclosureSection } from "@/components/ui";
 import { platformOptions } from "@/helpers/react-content";
 import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import type { ProjectLink } from "@/types/project";
@@ -109,6 +107,19 @@ export function ProjectPageClient({
 	const sidebarRef = useRef<HTMLElement>(null);
 	useScrollAwareSticky(sidebarRef, { offset: 36, enabled: !!screens.lg });
 
+	// Same key and fetcher as `TeamMembers`, so the count costs no extra request.
+	const teamId = project?.team?.id;
+	const { data: team } = useQuery({
+		queryKey: ["team-members", teamId],
+		queryFn: () =>
+			axios.get<{ members: unknown[] }>("/api/project/team", {
+				params: { teamId },
+			}),
+		enabled: !!teamId,
+		refetchOnWindowFocus: false,
+	});
+	const teamSize = team?.data.members.length;
+
 	const getCurrentPageUrl = () => {
 		if (typeof window !== "undefined") {
 			return window.location.href;
@@ -145,9 +156,12 @@ export function ProjectPageClient({
 					>
 						<Flex align="center" gap={8}>
 							{getPlatformIcon(link.platform)}
-							{t("page.project.goToStore", "Go to {store}", {
-								store: getPlatformLabel(link.platform) ?? "",
-							})}
+							{/* A phone has no width to spend on "Go to": next to a store
+							    mark on a button, the name alone already says it. */}
+							<span className={styles.goToPrefix}>
+								{t("page.project.goTo", "Go to")}
+							</span>
+							{getPlatformLabel(link.platform)}
 						</Flex>
 					</Button>
 				) : (
@@ -219,24 +233,19 @@ export function ProjectPageClient({
 
 	return (
 		<>
+			{/* The stage leads the title: where the project stands is what tells you
+			    how to read everything under it. The author is not repeated in the
+			    header — the sidebar card below carries the name and the face. */}
 			<PublicPageHeader
 				sticky
 				title={project?.name}
-				subTitle={
-					<span className={styles.metaRow}>
-						<span>
-							{t("Author")} {project.author.name}
+				extra={
+					project.workflow?.currentStep ? (
+						<span className={styles.stageChip}>
+							<span className={styles.stageDot} />
+							{project.workflow.currentStep.name}
 						</span>
-						{!!project.workflow?.currentStep && (
-							<>
-								<span className={styles.metaSep} />
-								<span className={styles.stageChip}>
-									<span className={styles.stageDot} />
-									{project.workflow.currentStep.name}
-								</span>
-							</>
-						)}
-					</span>
+					) : undefined
 				}
 				subLine={renderProjectLinks(project.links as ProjectLink[])}
 				backgroundImage={project.coverImage || undefined}
@@ -248,62 +257,96 @@ export function ProjectPageClient({
 						<main className={styles.mainArea}>
 							{/* No pitch written yet is not a section with nothing in it. */}
 							{!!project.description?.trim() && (
-								<section className={getHubSectionShellClass("standalone")}>
-									<HubSectionHeader
-										className={styles.cardHeader}
-										title={t("page.project.description", "Description")}
-									/>
-									<HubSectionBody>
+								<div className={styles.slotDescription}>
+									<DisclosureSection
+										collapsible={false}
+										bare
+										title={t("page.project.aboutTitle", "About Game")}
+									>
 										<div className={styles.descriptionBody}>
 											<ReactMarkdown rehypePlugins={markdownRehypePlugins}>
 												{project.description}
 											</ReactMarkdown>
 										</div>
-									</HubSectionBody>
-								</section>
+									</DisclosureSection>
+								</div>
 							)}
 
 							{project.team?.id && (
-								<ProjectVacancies teamId={project.team.id} />
+								<div className={styles.slotPositions}>
+									<ProjectPositions teamId={project.team.id} />
+								</div>
 							)}
 
-							<DevlogPosts
-								projectId={project.id}
-								variant="hub"
-								title={t("page.hub.project-updates", "Project updates")}
-							/>
+							<div className={styles.slotFeed}>
+								<DevlogPosts
+									projectId={project.id}
+									variant="hub"
+									edgeToEdgeOnMobile
+									title={t("page.hub.project-updates", "Project updates")}
+								/>
+							</div>
 						</main>
 
 						<aside className={styles.asideArea} ref={sidebarRef}>
-							<ProjectVideoCover
-								coverImage={project.coverImage}
-								videoLink={project.videoLink}
-								alt="cover"
-							/>
+							<div className={styles.slotVideo}>
+								<ProjectVideoCover
+									coverImage={project.coverImage}
+									videoLink={project.videoLink}
+									alt="cover"
+								/>
+							</div>
 
-							<ProjectGameDetails project={project} />
-
-							<ProjectAuthorCard author={project.author} />
-
-							{session && project.author.profile?.tgNickname ? (
-								<Link
-									href={`https://t.me/${project.author.profile.tgNickname}`}
-									target="_blank"
-									className={styles.writeToAuthorLink}
+							<div className={styles.slotDetails}>
+								<DisclosureSection
+									flush
+									title={t("page.project.gameDetails", "Game details")}
 								>
-									<Button
-										shape="round"
-										type="dashed"
-										className={styles.writeToAuthorButton}
-									>
-										<IconBrandTelegram size={16} />{" "}
-										{t("page.project.contactTheAuthor", "Contact the author")}
-									</Button>
-								</Link>
-							) : null}
+									<ProjectGameDetails project={project} bare />
+								</DisclosureSection>
+							</div>
 
-							{project.team?.id && (
-								<TeamMembers teamId={project.team.id} variant="hubSidebar" />
+							<div className={styles.slotAuthor}>
+								<DisclosureSection
+									title={t("page.project.author", "Project author")}
+								>
+									<ProjectAuthorCard author={project.author} bare />
+									{session && project.author.profile?.tgNickname ? (
+										<Link
+											href={`https://t.me/${project.author.profile.tgNickname}`}
+											target="_blank"
+											className={styles.writeToAuthorLink}
+										>
+											<Button
+												shape="round"
+												type="dashed"
+												className={styles.writeToAuthorButton}
+											>
+												<IconBrandTelegram size={16} />{" "}
+												{t(
+													"page.project.contactTheAuthor",
+													"Contact the author",
+												)}
+											</Button>
+										</Link>
+									) : null}
+								</DisclosureSection>
+							</div>
+
+							{!!project.team?.id && !!teamSize && (
+								<div className={styles.slotTeam}>
+									<DisclosureSection
+										flush
+										title={t("team-members.title", "Team")}
+										count={teamSize}
+									>
+										<TeamMembers
+											teamId={project.team.id}
+											variant="hubSidebar"
+											bare
+										/>
+									</DisclosureSection>
+								</div>
 							)}
 						</aside>
 					</div>
