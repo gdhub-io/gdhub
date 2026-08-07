@@ -106,6 +106,29 @@ describe("planReset — sync", () => {
 	});
 });
 
+describe("planReset — the current step", () => {
+	it("stays put when the template still has that step", () => {
+		const plan = planReset(existing, template, "keep", "s1");
+		expect(plan.summary.currentStep).toEqual({ kept: true, name: "Concept" });
+	});
+
+	it("falls back to the first step when its own step is dropped", () => {
+		// The project sat on "Playtest", which the template does not have.
+		const plan = planReset(existing, template, "keep", "s2");
+		expect(plan.summary.currentStep).toEqual({ kept: false, name: "Concept" });
+	});
+
+	it("always restarts from the first step on a full reset", () => {
+		const plan = planReset(existing, template, "full", "s1");
+		expect(plan.summary.currentStep).toEqual({ kept: false, name: "Concept" });
+	});
+
+	it("never moves the project when only syncing", () => {
+		const plan = planReset(existing, template, "sync", "s2");
+		expect(plan.summary.currentStep).toEqual({ kept: true, name: "Playtest" });
+	});
+});
+
 describe("planReset — matching", () => {
 	it("matches steps and tasks by name, ignoring case and spacing", () => {
 		const plan = planReset(

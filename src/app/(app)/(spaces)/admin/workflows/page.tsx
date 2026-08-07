@@ -44,7 +44,12 @@ export default function WorkflowsAdminPage() {
 		isFetching: isFetchingWorkflows,
 	} = useQuery({
 		queryKey: ["admin", "workflows"],
-		queryFn: () => axios.get("/api/admin/workflows"),
+		// The cache entry is shared with anything else asking for this key, so it
+		// holds the payload rather than the transport's envelope.
+		queryFn: () =>
+			axios
+				.get<WorkflowTemplateRow[]>("/api/admin/workflows")
+				.then((res) => res.data),
 		refetchOnWindowFocus: false,
 	});
 
@@ -55,7 +60,10 @@ export default function WorkflowsAdminPage() {
 		isFetching: isFetchingProjectWorkflows,
 	} = useQuery({
 		queryKey: ["admin", "project-workflows"],
-		queryFn: () => axios.get("/api/admin/project-workflows"),
+		queryFn: () =>
+			axios
+				.get<ProjectWorkflowRow[]>("/api/admin/project-workflows")
+				.then((res) => res.data),
 		refetchOnWindowFocus: false,
 	});
 
@@ -64,10 +72,8 @@ export default function WorkflowsAdminPage() {
 		router.push(`/admin/workflow/${id}`);
 	};
 
-	// Columns for workflow schemas (templates)
-	const templates: WorkflowTemplateRow[] = workflowsResponse?.data ?? [];
-	const projectWorkflows: ProjectWorkflowRow[] =
-		projectWorkflowsResponse?.data ?? [];
+	const templates: WorkflowTemplateRow[] = workflowsResponse ?? [];
+	const projectWorkflows: ProjectWorkflowRow[] = projectWorkflowsResponse ?? [];
 
 	const tabItems = [
 		{

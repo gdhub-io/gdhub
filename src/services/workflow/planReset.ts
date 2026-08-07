@@ -56,6 +56,12 @@ export type ResetPlan = {
 		tasksRemoved: number;
 		completedKept: number;
 		completedTotal: number;
+		/**
+		 * Where the project stands afterwards. `kept: false` means the project is
+		 * sent back to another step — the one consequence a progress bar will not
+		 * show you.
+		 */
+		currentStep: { kept: boolean; name: string | null };
 	};
 };
 
@@ -78,13 +84,17 @@ export function planReset(
 	existing: ExistingStep[],
 	template: TemplateStep[],
 	mode: ResetMode,
+	currentStepId?: string | null,
 ): ResetPlan {
 	const completedTotal = existing.reduce(
 		(total, step) => total + step.tasks.filter((task) => task.done).length,
 		0,
 	);
+	const currentName =
+		existing.find((step) => step.id === currentStepId)?.name ?? null;
 
-	if (mode === "sync") return planSync(existing, template, completedTotal);
+	if (mode === "sync")
+		return planSync(existing, template, completedTotal, currentName);
 
 	const existingByName = new Map(
 		existing.map((step) => [key(step.name), step]),
@@ -140,6 +150,13 @@ export function planReset(
 	const removed = existing.filter((step) => !usedStepIds.has(step.id));
 	tasksRemoved += removed.reduce((total, step) => total + step.tasks.length, 0);
 
+	// A full reset always sends the project back to the start; otherwise it only
+	// moves if the step it was on is not in the template.
+	const currentSurvives =
+		mode === "keep" &&
+		currentName !== null &&
+		steps.some((step) => key(step.name) === key(currentName));
+
 	return {
 		steps,
 		removedStepIds: removed.map((step) => step.id),
@@ -150,6 +167,10 @@ export function planReset(
 			tasksRemoved,
 			completedKept,
 			completedTotal,
+			currentStep: {
+				kept: currentSurvives,
+				name: currentSurvives ? currentName : (steps[0]?.name ?? null),
+			},
 		},
 	};
 }
@@ -159,6 +180,7 @@ function planSync(
 	existing: ExistingStep[],
 	template: TemplateStep[],
 	completedTotal: number,
+	currentName: string | null,
 ): ResetPlan {
 	const seen = new Set(existing.map((step) => key(step.name)));
 	const stepsAdded: string[] = [];
@@ -223,6 +245,8 @@ function planSync(
 			tasksRemoved: 0,
 			completedKept: completedTotal,
 			completedTotal,
+			// Nothing is removed, so the project cannot be moved off its step.
+			currentStep: { kept: true, name: currentName },
 		},
 	};
 }

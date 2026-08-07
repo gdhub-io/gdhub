@@ -1,0 +1,105 @@
+.subtitle {
+	font-size: var(--gd-font-size-caption);
+}
+
+.label {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+}
+
+.hint {
+	font-size: var(--gd-font-size-caption);
+}
+
+.modes {
+	width: 100%;
+}
+
+/* Each mode is a card, not a line of text: the difference between them is the
+   paragraph, and a bare radio label hides it. */
+.mode {
+	width: 100%;
+	align-items: flex-start;
+	margin-inline-end: 0;
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	transition: border-color 0.15s ease;
+
+	&:hover {
+		border-color: var(--gd-color-border-strong);
+	}
+
+	/* antd's wrapper caps the label at the text width; the card needs the row. */
+	> span:last-child {
+		display: block;
+		flex: 1;
+		padding-inline-end: 0;
+	}
+}
+
+.modeSelected {
+	border-color: var(--gd-color-accent);
+}
+
+.modeDangerSelected {
+	border-color: var(--gd-danger-solid);
+}
+
+.modeTitle {
+	font-weight: 500;
+}
+
+.modeTitleDanger {
+	color: var(--gd-danger-solid);
+}
+
+.modeText {
+	font-size: var(--gd-font-size-caption);
+}
+
+.changes {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+.changesDanger {
+	border-color: var(--gd-danger-tint);
+	background: var(--gd-danger-tint);
+}
+
+.changesTitle {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.change {
+	font-size: var(--gd-font-size-caption);
+}
+
+.changeIcon {
+	flex: none;
+	margin-top: 2px;
+}
+
+.added {
+	color: var(--gd-success-solid);
+}
+
+.removed {
+	color: var(--gd-danger-solid);
+}
+
+.neutral {
+	color: var(--gd-color-text-tertiary);
+}
+
+.audit {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}

@@ -27,6 +27,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import {
+	type ResetTarget,
+	ResetWorkflowModal,
+} from "@/components/admin/workflow/ResetWorkflowModal";
 import ModernTable from "@/components/ModernTable";
 import styles from "./style.module.scss";
 
@@ -49,6 +53,12 @@ const STATUS_TAG: Partial<
 };
 
 const LIVE_STATUSES: ProjectStatus[] = ["Approved", "Registered", "Released"];
+
+const toResetTarget = (row: ProjectWorkflowRow): ResetTarget => ({
+	id: row.id,
+	projectName: row.project.name,
+	templateId: row.template?.id ?? null,
+});
 
 /** Falls back to the raw value, so a status added to the enum still shows. */
 const statusTag = (status: ProjectStatus) =>
@@ -86,6 +96,7 @@ export function ProjectWorkflowsTable({
 	const [drift, setDrift] = useState<"any" | "modified" | "untouched">("any");
 	const [life, setLife] = useState<"any" | "live" | "closed">("live");
 	const [selected, setSelected] = useState<string[]>([]);
+	const [resetTargets, setResetTargets] = useState<ResetTarget[]>([]);
 
 	const { mutateAsync: deleteWorkflow } = useMutation({
 		mutationFn: (id: string) =>
@@ -251,9 +262,6 @@ export function ProjectWorkflowsTable({
 			key: "actions",
 			width: 64,
 			align: "right",
-			// Only what exists today. "View differences", "Reset to template…" and
-			// "Move to another template…" are in the design but have no endpoint
-			// yet, and a menu of dead entries is worse than a short menu.
 			render: (_value, record) => (
 				<Dropdown
 					trigger={["click"]}
@@ -279,6 +287,13 @@ export function ProjectWorkflowsTable({
 										Open project
 									</Link>
 								),
+							},
+							{ type: "divider" },
+							{
+								key: "reset",
+								icon: <IconRefresh size={16} />,
+								label: "Reset to template…",
+								onClick: () => setResetTargets([toResetTarget(record)]),
 							},
 							{ type: "divider" },
 							{
@@ -354,7 +369,17 @@ export function ProjectWorkflowsTable({
 						{selected.length === 1 ? "" : "s"} selected
 					</Flex>
 					<Flex align="center" gap={8}>
-						<Button size="small" icon={<IconRefresh size={14} />} disabled>
+						<Button
+							size="small"
+							icon={<IconRefresh size={14} />}
+							onClick={() =>
+								setResetTargets(
+									workflows
+										.filter((row) => selected.includes(row.id))
+										.map(toResetTarget),
+								)
+							}
+						>
 							Reset to template…
 						</Button>
 						<Button size="small" onClick={() => setSelected([])}>
@@ -378,6 +403,11 @@ export function ProjectWorkflowsTable({
 					title: "No project workflows found",
 					description: "Workflows matching your filters will appear here.",
 				}}
+			/>
+
+			<ResetWorkflowModal
+				targets={resetTargets}
+				onClose={() => setResetTargets([])}
 			/>
 		</>
 	);
