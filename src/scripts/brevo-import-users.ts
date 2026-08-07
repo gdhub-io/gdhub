@@ -1,5 +1,6 @@
 import type { GetContactDetails } from "@/services/brevo/api";
 import { brevoApi } from "../services/brevo";
+import { brevoSubscribersListId } from "../services/brevo/sync";
 import { prisma } from "../services/prisma";
 
 async function main() {
@@ -61,7 +62,7 @@ async function main() {
 
 			await brevoApi.contacts.createContact({
 				email: user.email!,
-				listIds: [2],
+				listIds: [brevoSubscribersListId()],
 				attributes: {
 					MAIN_LOCALE: user.lang,
 					MAIN_INTEREST: user.profile?.primaryInterest,

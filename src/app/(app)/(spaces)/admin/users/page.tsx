@@ -1,16 +1,27 @@
 "use client";
-import { IconFilter, IconSearch, IconShieldCheck } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import {
+	IconArrowUpRight,
+	IconCircleCheck,
+	IconDotsVertical,
+	IconFilter,
+	IconRefresh,
+	IconSearch,
+	IconShieldCheck,
+} from "@tabler/icons-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Avatar,
 	Badge,
 	Button,
+	Dropdown,
 	Input,
+	message,
 	Popover,
 	Row,
 	Select,
 	Space,
 	Tag,
+	Tooltip,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -18,7 +29,9 @@ import type { SortOrder } from "antd/es/table/interface";
 import axios from "axios";
 import dayjs from "dayjs";
 import debounce from "lodash/debounce";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
+import { BrevoSyncModal } from "@/components/admin/BrevoSyncModal";
 import { UserRolesModal } from "@/components/admin/UserRolesModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
@@ -27,6 +40,13 @@ import { SPACE_ROLES, type SpaceRole } from "@/config/permissions/roles";
 import { SPACE_TYPES, type SpaceType } from "@/config/spaces";
 import { permissionCatalog } from "@/services/access/role-catalog";
 import styles from "./style.module.scss";
+
+// Heavy and rarely opened: kept out of the table's bundle, as on the hub
+// members page.
+const SpecialistPreviewModal = dynamic(
+	() => import("@/components/modals/SpecialistPreviewModal"),
+	{ ssr: false },
+);
 
 const { Title, Text } = Typography;
 
@@ -39,7 +59,7 @@ type AdminUserRow = {
 	email: string | null;
 	createdAt: string;
 	lastModifiedAt: string;
-	specializations: string[];
+	specializations: { id: string; name: string }[];
 	skillCapital: {
 		scTotal: number;
 		leadershipCapital: number;
@@ -47,6 +67,8 @@ type AdminUserRow = {
 		mentorshipCapital: number;
 	};
 	memberships: MembershipSummary[];
+	/** Known to Brevo. `undefined` when Brevo could not be reached. */
+	inBrevo?: boolean;
 };
 
 type AdminUsersResponse = {
@@ -66,6 +88,38 @@ type SortField =
 	| "executionCapital"
 	| "mentorshipCapital";
 
+/**
+ * A yes/no column.
+ *
+ * Three states rather than two: `undefined` means we could not find out, and
+ * drawing that as "no" would send an admin chasing a problem that may not
+ * exist.
+ */
+const flagCell = (
+	value: boolean | undefined,
+	labels: { yes: string; no: string; unknown: string },
+) => {
+	const mark =
+		value === undefined ? (
+			<Tooltip title={labels.unknown}>
+				<Text type="secondary">?</Text>
+			</Tooltip>
+		) : value ? (
+			<Tooltip title={labels.yes}>
+				<IconCircleCheck size={18} className={styles.flagOn} />
+			</Tooltip>
+		) : (
+			<Tooltip title={labels.no}>
+				<Text type="secondary">—</Text>
+			</Tooltip>
+		);
+
+	// Centred by a flex wrapper rather than the column's `align`: globals.scss
+	// sets `svg { display: block }`, and a block-level icon ignores the cell's
+	// text-align and sits flush left.
+	return <span className={styles.flagCell}>{mark}</span>;
+};
+
 const isSortField = (value?: string): value is SortField =>
 	[
 		"createdAt",
@@ -84,6 +138,10 @@ export default function UsersAdminPage() {
 	);
 	const [sortOrder, setSortOrder] = useState<SortOrder>("descend");
 	const [editing, setEditing] = useState<AdminUserRow | null>(null);
+	const [confirmingSyncAll, setConfirmingSyncAll] = useState(false);
+	const [confirmingSyncUser, setConfirmingSyncUser] =
+		useState<AdminUserRow | null>(null);
+	const [previewSpecialityId, setPreviewSpecialityId] = useState<string>();
 	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
 	const [spaceType, setSpaceType] = useState<SpaceType>();
@@ -159,6 +217,58 @@ export default function UsersAdminPage() {
 		refetchOnWindowFocus: false,
 	});
 
+	const queryClient = useQueryClient();
+
+	// The table's Brevo column comes from the same contact list the sync writes
+	// to, so both mutations refetch the rows once the server has dropped its
+	// cache.
+	const refreshRows = () =>
+		queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+
+	const syncAll = useMutation({
+		mutationFn: () =>
+			axios
+				.post<{ contactCount: number; dryRun: boolean }>(
+					"/api/admin/users/brevo-sync",
+				)
+				.then((r) => r.data),
+		onSuccess: (result) => {
+			setConfirmingSyncAll(false);
+			if (!result.dryRun) refreshRows();
+			message.success(
+				result.dryRun
+					? `Dry run: ${result.contactCount} contacts prepared, nothing written to Brevo.`
+					: `Handed ${result.contactCount} contacts to Brevo. The import runs on their side and takes a few minutes.`,
+			);
+		},
+		onError: () => message.error("Could not sync users with Brevo"),
+	});
+
+	const syncUser = useMutation({
+		mutationFn: (user: AdminUserRow) =>
+			axios
+				.post<{ dryRun: boolean }>(`/api/admin/user/${user.id}/brevo-sync`)
+				.then((r) => ({
+					label: user.email ?? user.name,
+					dryRun: r.data.dryRun,
+				})),
+		onSuccess: ({ label, dryRun }) => {
+			setConfirmingSyncUser(null);
+			if (!dryRun) refreshRows();
+			message.success(
+				dryRun
+					? `Dry run: payload for ${label} prepared, nothing written to Brevo.`
+					: `Synced ${label} with Brevo`,
+			);
+		},
+		onError: (error) =>
+			message.error(
+				axios.isAxiosError(error) && error.response?.status === 400
+					? "This user has no email to sync"
+					: "Could not sync the user with Brevo",
+			),
+	});
+
 	const columns: ColumnsType<AdminUserRow> = useMemo(
 		() => [
 			{
@@ -207,11 +317,20 @@ export default function UsersAdminPage() {
 				title: "Specializations",
 				dataIndex: "specializations",
 				key: "specializations",
-				render: (specializations: string[]) =>
+				render: (specializations: AdminUserRow["specializations"]) =>
 					specializations.length ? (
 						<Space size={[4, 4]} wrap>
 							{specializations.map((specialization) => (
-								<Tag key={specialization}>{specialization}</Tag>
+								// The talent card is keyed by speciality, not by person, so
+								// the tag that was clicked is the one that opens.
+								<Tag
+									key={specialization.id}
+									className={styles.specialityTag}
+									onClick={() => setPreviewSpecialityId(specialization.id)}
+								>
+									{specialization.name}
+									<IconArrowUpRight size={13} className={styles.tagArrow} />
+								</Tag>
 							))}
 						</Space>
 					) : (
@@ -261,22 +380,73 @@ export default function UsersAdminPage() {
 				),
 			},
 			{
+				title: "Onboarded",
+				dataIndex: "onboardingDone",
+				key: "onboardingDone",
+				width: 100,
+				align: "center",
+				render: (onboardingDone: boolean | undefined) =>
+					flagCell(onboardingDone, {
+						yes: "Finished onboarding",
+						no: "Has not finished onboarding",
+						unknown: "Unknown",
+					}),
+			},
+			{
+				title: "Brevo",
+				dataIndex: "inBrevo",
+				key: "inBrevo",
+				width: 80,
+				align: "center",
+				render: (inBrevo: boolean | undefined) =>
+					flagCell(inBrevo, {
+						yes: "This contact exists in Brevo",
+						no: "Not in Brevo yet — sync to add",
+						unknown: "Brevo is unreachable — status unknown",
+					}),
+			},
+			{
 				title: "",
 				key: "actions",
-				width: 100,
+				width: 56,
 				align: "right",
 				render: (_, record) => (
-					<Button
-						size="small"
-						icon={<IconShieldCheck size={14} />}
-						onClick={() => setEditing(record)}
+					<Dropdown
+						trigger={["click"]}
+						placement="bottomRight"
+						menu={{
+							items: [
+								{
+									key: "roles",
+									icon: <IconShieldCheck size={14} />,
+									label: "Roles",
+									onClick: () => setEditing(record),
+								},
+								{
+									key: "brevo",
+									icon: <IconRefresh size={14} />,
+									label: "Sync with Brevo",
+									// Nothing to send without an address: Brevo keys contacts
+									// by email.
+									disabled: !record.email,
+									onClick: () => syncUser.mutate(record),
+								},
+							],
+						}}
 					>
-						Roles
-					</Button>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconDotsVertical size={16} />}
+							loading={
+								syncUser.isPending && syncUser.variables?.id === record.id
+							}
+						/>
+					</Dropdown>
 				),
 			},
 		],
-		[sortField, sortOrder],
+		[sortField, sortOrder, syncUser],
 	);
 
 	return (
@@ -375,6 +545,13 @@ export default function UsersAdminPage() {
 								) : null}
 							</Button>
 						</Popover>
+						<Button
+							icon={<IconRefresh size={16} />}
+							loading={syncAll.isPending}
+							onClick={() => setConfirmingSyncAll(true)}
+						>
+							Sync with Brevo
+						</Button>
 					</Space>
 				</Row>
 				<ModernTable
@@ -423,6 +600,30 @@ export default function UsersAdminPage() {
 				key={editing?.id}
 				user={editing}
 				onClose={() => setEditing(null)}
+			/>
+
+			<BrevoSyncModal
+				open={confirmingSyncAll}
+				userCount={response?.meta.totalCount}
+				loading={syncAll.isPending}
+				onConfirm={() => syncAll.mutate()}
+				onCancel={() => setConfirmingSyncAll(false)}
+			/>
+
+			<SpecialistPreviewModal
+				open={!!previewSpecialityId}
+				specialistId={previewSpecialityId}
+				onCancel={() => setPreviewSpecialityId(undefined)}
+			/>
+
+			<BrevoSyncModal
+				open={!!confirmingSyncUser}
+				subject={confirmingSyncUser}
+				loading={syncUser.isPending}
+				onConfirm={() =>
+					confirmingSyncUser && syncUser.mutate(confirmingSyncUser)
+				}
+				onCancel={() => setConfirmingSyncUser(null)}
 			/>
 		</AdminSpace>
 	);

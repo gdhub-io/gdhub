@@ -1,4 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { deleteBrevoContact } from "@/services/brevo/sync";
 import {
 	collectUserChatRooms,
 	deleteUserChats,
@@ -59,6 +60,14 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 				console.error("[user/privacy] chat collection failed", error);
 			}
 
+			// Read the address before it is wiped: Brevo keys contacts by email, so
+			// afterwards there is no way left to find what to remove.
+			const { email } =
+				(await prisma.user.findUnique({
+					where: { id: userId },
+					select: { email: true },
+				})) ?? {};
+
 			const result = await prisma.user.deletePersonalData({
 				userId,
 				requestedById,
@@ -78,6 +87,7 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 			} catch (error) {
 				console.error("[user/privacy] matrix deactivation failed", error);
 			}
+			if (email) await deleteBrevoContact(email);
 
 			return json(result);
 		}

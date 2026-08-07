@@ -9,6 +9,7 @@ import {
 } from "@/lib/api-handlers";
 import { joinSpace } from "@/services/access/membership";
 import { brevoApi } from "@/services/brevo";
+import { brevoSubscribersListId } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 
 const UpdateResourcesSchema = z.object({
@@ -75,7 +76,10 @@ export const PUT = withAuth({ mode: "user" })(
 
 			const response = await brevoApi.contacts.createContact({
 				email: profile.user.email as string,
-				listIds: [2],
+				// The same list the admin sync writes to. Hardcoding it here meant a
+				// developer could point the sync at a sandbox list while signups kept
+				// landing in the live one.
+				listIds: [brevoSubscribersListId()],
 				attributes: {
 					MAIN_LOCALE: profile.user.lang,
 					MAIN_INTEREST: profile.primaryInterest,
