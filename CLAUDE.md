@@ -128,6 +128,10 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
   `buildAntdTheme`, never hand-write a `ThemeConfig`); shared primitives — `IconTile`,
   `StatusDot`, `EmptyState`, `SectionHeading`, `ViewAllLink` — in `src/components/ui`.
   Never hard-code a colour, radius or control height: use a token or `var(--gd-*)`.
+  **Check finished screens back against the system** — `tests/design-tokens-guard.test.ts`
+  fails on hardcoded colours and on `var(--gd-*)` names the theme never emits (a misspelt
+  custom property is silent: the browser drops the declaration and the styling just goes
+  missing). The spacing scale is `1 2 3 4 6 8 12 16` — there is no `--gd-space-5`.
 - **Frontend data calls:** TanStack Query + axios. Don't call `fetch` ad-hoc in components.
 - **Backend input validation:** always Zod via `withValidation`. Never trust raw body/query.
 - **Env vars:** read through the `env()` helper from `@/helpers/env` — it throws on missing

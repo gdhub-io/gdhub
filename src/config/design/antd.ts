@@ -3,6 +3,8 @@ import { type DesignDensity, type DesignMode, densities, roles } from "./roles";
 import {
 	brand,
 	elevation,
+	fill,
+	fillInverse,
 	focusRingWidth,
 	fontFamily,
 	fontSize,
@@ -42,6 +44,7 @@ export function buildAntdTheme({
 	const r = roles[mode];
 	const d = densities[density];
 	const isInverse = mode === "inverse";
+	const fills = isInverse ? fillInverse : fill;
 
 	return {
 		algorithm: isInverse ? theme.darkAlgorithm : theme.defaultAlgorithm,
@@ -95,13 +98,11 @@ export function buildAntdTheme({
 
 			// antd derives the `filled` variant from these. Left at the defaults
 			// they are near-white on a near-white page, which is how the auth forms
-			// ended up with invisible inputs. `surfaceSunken` is the same value as
-			// the app page background, so inside the product a filled control was
-			// still invisible — the fill has to sit a step below the page, not on
-			// it. Same argument as the panel rule in the guidelines.
-			colorFillTertiary: neutral[100],
-			colorFillSecondary: neutral[200],
-			colorFillQuaternary: r.surfaceSunken,
+			// ended up with invisible inputs. See the `fill` tokens for why these
+			// are tints and not greys.
+			colorFillTertiary: fills.base,
+			colorFillSecondary: fills.strong,
+			colorFillQuaternary: fills.subtle,
 			colorBorderSecondary: r.border,
 
 			borderRadius: radius.control,

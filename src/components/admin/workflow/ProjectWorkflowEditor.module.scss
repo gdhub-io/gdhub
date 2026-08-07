@@ -1,0 +1,186 @@
+.titles {
+	min-width: 0;
+}
+
+.title {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 300;
+	line-height: 1.3;
+	color: var(--gd-color-text);
+}
+
+.meta,
+.hint {
+	font-size: var(--gd-font-size-caption);
+}
+
+.templateChip {
+	font-size: 11px;
+}
+
+.card {
+	border-radius: var(--gd-radius-card);
+}
+
+.cardHeader {
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.cardBody {
+	padding: var(--gd-space-6);
+}
+
+.cardTitle {
+	font-weight: 600;
+}
+
+.progressNumbers {
+	font-size: var(--gd-font-size-caption);
+}
+
+.percent {
+	font-size: 20px;
+	font-weight: 300;
+}
+
+/* The timeline is the one place the whole path is visible at once, so a step is
+   selectable from here rather than only from its own card.
+
+   A flow can hold nine steps or more, so the names wrap — and a wrapped name
+   would push that column's count and tag out of line with its neighbours. Fixed
+   heights per row keep the three bands readable straight across. */
+.stepper {
+	overflow-x: auto;
+	margin-top: var(--gd-space-4);
+	padding-bottom: var(--gd-space-1);
+}
+
+.stepperItem {
+	flex: 1 0 128px;
+	padding: var(--gd-space-2);
+}
+
+.stepperName {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	min-height: 2.6em;
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	line-height: 1.3;
+	color: var(--gd-color-text);
+}
+
+.stepperCount {
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+}
+
+/* Reserved whether or not this step carries a tag, so the row below the counts
+   does not jump. */
+.stepperTags {
+	min-height: 22px;
+}
+
+.bullet {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	flex: none;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: 50%;
+	font-size: 11px;
+	color: var(--gd-color-text-secondary);
+	background: var(--gd-color-surface);
+}
+
+.bulletDone {
+	border-color: var(--gd-success-solid);
+	color: var(--gd-success-on-tint);
+	background: var(--gd-success-solid);
+}
+
+.bulletCurrent {
+	border-color: var(--gd-color-accent);
+	color: var(--gd-color-accent);
+}
+
+.sectionHeading {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.stepPanel {
+	background: var(--gd-color-surface);
+}
+
+.stepName {
+	font-weight: 500;
+}
+
+.stepCount {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.taskRow {
+	padding: var(--gd-space-3) 0;
+	border-top: 1px solid var(--gd-color-border);
+}
+
+.taskName {
+	font-weight: 400;
+}
+
+.taskDone {
+	color: var(--gd-color-text-tertiary);
+	text-decoration: line-through;
+}
+
+.taskNote {
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+}
+
+/* A chip is one line: the global `svg { display: block }` otherwise stacks the
+   icon above its label. */
+.conditionTag {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	flex-wrap: nowrap;
+	margin: 0;
+	font-size: 11px;
+}
+
+.changes {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+.changesTitle {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.unsaved {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-warning-solid);
+}
+
+.unsavedDot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--gd-warning-solid);
+}

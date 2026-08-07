@@ -8,13 +8,17 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { WorkflowStepsTemplateSchema } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
 
 const UpdateWorkflowSchema = z.object({
 	name: z.string().optional(),
 	title: z.string().optional(),
 	description: z.string().optional(),
-	steps: z.array(z.any()).optional(),
+	// The template's steps are one JSON column: whatever arrives replaces the
+	// lot. An empty array would blank every project created from it afterwards,
+	// so the schema refuses one — a template is emptied by deleting it.
+	steps: WorkflowStepsTemplateSchema.optional(),
 });
 
 type UpdateWorkflowBody = z.infer<typeof UpdateWorkflowSchema>;
@@ -50,7 +54,8 @@ export const PUT = pipe(
 			name: name || undefined,
 			title: title || undefined,
 			description: description || undefined,
-			steps: steps as PrismaJson.WorkflowStep[] | undefined,
+			// Validated into the column's own declared shape, so no cast is needed.
+			steps,
 		},
 	});
 

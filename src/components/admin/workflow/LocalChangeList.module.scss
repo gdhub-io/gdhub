@@ -1,0 +1,21 @@
+.change {
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-body);
+}
+
+.icon {
+	flex: none;
+	margin-top: 2px;
+}
+
+.added {
+	color: var(--gd-success-solid);
+}
+
+.removed {
+	color: var(--gd-danger-solid);
+}
+
+.moved {
+	color: var(--gd-color-text-tertiary);
+}

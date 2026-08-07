@@ -1,15 +1,16 @@
+import { IconSparkles } from "@tabler/icons-react";
 import {
 	Button,
 	Checkbox,
-	Col,
-	Divider,
+	Flex,
 	Form,
 	Input,
 	InputNumber,
 	Modal,
-	Row,
 	Select,
 	Space,
+	Switch,
+	Typography,
 } from "antd";
 import React from "react";
 import {
@@ -18,6 +19,10 @@ import {
 	type WorkflowTaskCondition,
 	WorkflowTaskConditionSchema,
 } from "@/schemas/workflowTaskCondition";
+import { explainCondition } from "@/services/workflow/describeCondition";
+import styles from "./TaskEditModal.module.scss";
+
+const { Text } = Typography;
 
 /** Sources whose count can be scoped to the current workflow step. */
 const SCOPE_SOURCES = ["devlog_posts", "vacancies", "team_members"];
@@ -88,24 +93,56 @@ export const TaskEditModal: React.FC<TaskEditModalProps> = ({
 	isNew,
 }) => {
 	const [form] = Form.useForm();
-	const source = Form.useWatch("conditionSource", form);
+	const values = Form.useWatch([], form) as ConditionFormValues | undefined;
+	const source = values?.conditionSource;
 	const sourceMeta = CONDITION_SOURCE_META.find((m) => m.source === source);
 	const filterMeta = sourceMeta?.filters.find((f) => f.key !== "fields");
 
+	// The switch is the presence of a rule, not a field of its own: turning it on
+	// has to leave the panel in a state the admin can immediately read.
+	const [autoChecked, setAutoChecked] = React.useState(false);
+
 	React.useEffect(() => {
-		if (visible) {
-			form.setFieldsValue({
-				name: task?.name || task?.title || "",
-				description: task?.description || "",
-				required: task?.required || false,
-				...conditionToForm(task?.condition),
-			});
-		}
+		if (!visible) return;
+		const condition = conditionToForm(task?.condition);
+		setAutoChecked(Boolean(condition.conditionSource));
+		form.setFieldsValue({
+			name: task?.name || task?.title || "",
+			description: task?.description || "",
+			required: task?.required || false,
+			...condition,
+		});
 	}, [visible, task, form]);
+
+	const toggleAuto = (checked: boolean) => {
+		setAutoChecked(checked);
+		form.setFieldsValue(
+			checked
+				? { conditionSource: "devlog_posts", conditionMin: 1 }
+				: {
+						conditionSource: undefined,
+						conditionMin: undefined,
+						conditionScope: undefined,
+						conditionFields: undefined,
+						conditionFilter: undefined,
+					},
+		);
+	};
+
+	const preview = React.useMemo(() => {
+		if (!autoChecked) {
+			return "Nobody is watching this task — an admin marks it done by hand.";
+		}
+		const condition = formToCondition(values ?? {});
+		if (!condition) {
+			return "Finish the rule above and it will be checked automatically.";
+		}
+		return explainCondition(condition as PrismaJson.WorkflowTaskCondition);
+	}, [autoChecked, values]);
 
 	const handleSave = async () => {
 		try {
-			const values = await form.validateFields();
+			const submitted = await form.validateFields();
 			const {
 				conditionSource,
 				conditionMin,
@@ -113,16 +150,18 @@ export const TaskEditModal: React.FC<TaskEditModalProps> = ({
 				conditionFields,
 				conditionFilter,
 				...rest
-			} = values;
+			} = submitted;
 			onSave({
 				...rest,
-				condition: formToCondition({
-					conditionSource,
-					conditionMin,
-					conditionScope,
-					conditionFields,
-					conditionFilter,
-				}),
+				condition: autoChecked
+					? formToCondition({
+							conditionSource,
+							conditionMin,
+							conditionScope,
+							conditionFields,
+							conditionFilter,
+						})
+					: null,
 			});
 			onClose();
 		} catch (error) {
@@ -153,127 +192,135 @@ export const TaskEditModal: React.FC<TaskEditModalProps> = ({
 				</Space>
 			}
 		>
-			<Form
-				form={form}
-				layout="vertical"
-				variant="filled"
-				requiredMark="optional"
-			>
-				<Row gutter={[16, 16]}>
-					<Col span={24}>
-						<Form.Item
-							name="name"
-							label="Task name"
-							rules={[
-								{ required: true, message: "Enter a task name" },
-								{ max: 200, message: "Up to 200 characters" },
-							]}
-						>
-							<Input
-								maxLength={200}
-								showCount
-								placeholder="e.g. Publish a devlog about the prototype"
-							/>
-						</Form.Item>
-					</Col>
-					<Col span={24}>
-						<Form.Item
-							name="description"
-							label="Task description"
-							rules={[{ max: 500, message: "Up to 500 characters" }]}
-						>
-							<Input.TextArea
-								rows={2}
-								maxLength={500}
-								showCount
-								placeholder="Optional longer description shown under the task name"
-							/>
-						</Form.Item>
-					</Col>
-					<Col span={24}>
-						<Form.Item name="required" valuePropName="checked">
-							<Checkbox>Required task</Checkbox>
-						</Form.Item>
-					</Col>
-				</Row>
+			<Form form={form} layout="vertical" variant="filled" requiredMark={false}>
+				<Form.Item
+					name="name"
+					label="Task name"
+					rules={[
+						{ required: true, message: "Enter a task name" },
+						{ max: 200, message: "Up to 200 characters" },
+					]}
+				>
+					<Input
+						maxLength={200}
+						placeholder="e.g. Publish a devlog about the prototype"
+					/>
+				</Form.Item>
 
-				<Divider style={{ margin: "8px 0 16px" }}>
-					Completion condition (checked by the platform)
-				</Divider>
+				<Form.Item
+					name="description"
+					label={
+						<>
+							Task description&nbsp;
+							<span className={styles.optional}>(optional)</span>
+						</>
+					}
+					rules={[{ max: 600, message: "Up to 600 characters" }]}
+				>
+					<Input.TextArea
+						rows={3}
+						maxLength={600}
+						showCount
+						placeholder="Optional longer description shown under the task name"
+					/>
+				</Form.Item>
 
-				<Row gutter={[16, 16]}>
-					<Col span={24}>
-						<Form.Item
-							name="conditionSource"
-							label="Source (model)"
-							tooltip="The task is marked done automatically from project data. Empty — no auto-check."
-						>
-							<Select
-								allowClear
-								placeholder="No auto-check"
-								options={CONDITION_SOURCE_META.map((m) => ({
-									value: m.source,
-									label: m.label,
-								}))}
-							/>
-						</Form.Item>
-					</Col>
+				<Form.Item name="required" valuePropName="checked">
+					<Checkbox>Required task</Checkbox>
+				</Form.Item>
 
-					{source === "project_fields" && (
-						<Col span={24}>
-							<Form.Item name="conditionFields" label="Fields must be filled">
+				<Flex
+					align="flex-start"
+					justify="space-between"
+					gap={16}
+					className={styles.conditionHeader}
+				>
+					<Flex vertical gap={2}>
+						<Text strong>Completion condition</Text>
+						<Text type="secondary" className={styles.conditionSubtitle}>
+							The platform marks the task done from the project&rsquo;s own data
+						</Text>
+					</Flex>
+					<Switch checked={autoChecked} onChange={toggleAuto} />
+				</Flex>
+
+				{autoChecked && (
+					<div className={styles.conditionPanel}>
+						<Flex align="center" gap={8} wrap className={styles.sentence}>
+							<Text>Mark done when</Text>
+							<Form.Item name="conditionSource" noStyle>
 								<Select
-									mode="multiple"
-									allowClear
-									placeholder="Select fields"
-									options={PROJECT_CONDITION_FIELDS.map((f) => ({
-										value: f,
-										label: f,
+									className={styles.sourceSelect}
+									options={CONDITION_SOURCE_META.map((m) => ({
+										value: m.source,
+										label: m.label,
 									}))}
 								/>
 							</Form.Item>
-						</Col>
-					)}
 
-					{sourceMeta?.hasMin && (
-						<Col xs={24} lg={8}>
-							<Form.Item name="conditionMin" label="Minimum (≥)">
-								<InputNumber
-									min={1}
-									style={{ width: "100%" }}
-									placeholder="1"
-								/>
-							</Form.Item>
-						</Col>
-					)}
+							{source === "project_fields" ? (
+								<>
+									<Text>are all filled:</Text>
+									<Form.Item name="conditionFields" noStyle>
+										<Select
+											mode="multiple"
+											allowClear
+											placeholder="Select fields"
+											className={styles.fieldsSelect}
+											options={PROJECT_CONDITION_FIELDS.map((f) => ({
+												value: f,
+												label: f,
+											}))}
+										/>
+									</Form.Item>
+								</>
+							) : (
+								<>
+									<Text>count is at least</Text>
+									<Form.Item name="conditionMin" noStyle>
+										<InputNumber min={1} className={styles.minInput} />
+									</Form.Item>
+								</>
+							)}
 
-					{source && SCOPE_SOURCES.includes(source) && (
-						<Col xs={24} lg={8}>
-							<Form.Item name="conditionScope" label="Scope">
-								<Select
-									allowClear
-									placeholder="project"
-									options={[
-										{ value: "project", label: "Whole project" },
-										{ value: "step", label: "Current step" },
-									]}
-								/>
-							</Form.Item>
-						</Col>
-					)}
+							{source && SCOPE_SOURCES.includes(source) && (
+								<>
+									<Text>counted within</Text>
+									<Form.Item name="conditionScope" noStyle>
+										<Select
+											className={styles.filterSelect}
+											placeholder="the whole project"
+											allowClear
+											options={[
+												{ value: "project", label: "the whole project" },
+												{ value: "step", label: "the current step" },
+											]}
+										/>
+									</Form.Item>
+								</>
+							)}
 
-					{filterMeta && (
-						<Col xs={24} lg={8}>
-							<Form.Item name="conditionFilter" label={filterMeta.label}>
-								<Select
-									allowClear
-									placeholder="Any"
-									options={filterMeta.options}
-								/>
-							</Form.Item>
-						</Col>
-					)}
-				</Row>
+							{filterMeta && (
+								<>
+									<Text>and {filterMeta.label.toLowerCase()} is</Text>
+									<Form.Item name="conditionFilter" noStyle>
+										<Select
+											allowClear
+											placeholder="any"
+											className={styles.filterSelect}
+											options={filterMeta.options}
+										/>
+									</Form.Item>
+								</>
+							)}
+						</Flex>
+					</div>
+				)}
+
+				<Flex gap={8} align="flex-start" className={styles.explain}>
+					<IconSparkles size={14} className={styles.explainIcon} />
+					<span>{preview}</span>
+				</Flex>
 			</Form>
 		</Modal>
 	);

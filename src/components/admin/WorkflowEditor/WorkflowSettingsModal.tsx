@@ -1,5 +1,6 @@
 import { Button, Form, Input, Modal, Space } from "antd";
 import React from "react";
+import styles from "./TaskEditModal.module.scss";
 
 interface WorkflowSettingsModalProps {
 	visible: boolean;
@@ -62,30 +63,43 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 				</Space>
 			}
 		>
-			<Form
-				form={form}
-				layout="vertical"
-				variant="filled"
-				requiredMark="optional"
-			>
+			<Form form={form} layout="vertical" variant="filled" requiredMark={false}>
 				<Form.Item
 					name="title"
 					label="Workflow title"
 					rules={[{ required: true, message: "Enter a title" }]}
 				>
-					<Input placeholder="Workflow title" />
+					<Input placeholder="Indie game launch" />
 				</Form.Item>
 
 				<Form.Item
 					name="name"
 					label="System name"
-					rules={[{ required: true, message: "Enter a system name" }]}
+					extra="Used by the API and by task conditions."
+					rules={[
+						{ required: true, message: "Enter a system name" },
+						{
+							pattern: /^[a-z0-9-]+$/,
+							message: "Lowercase letters, digits and dashes only",
+						},
+					]}
 				>
-					<Input placeholder="workflow-name" />
+					<Input placeholder="indie-game-launch" />
 				</Form.Item>
 
-				<Form.Item name="description" label="Description">
-					<Input.TextArea rows={4} placeholder="Workflow description" />
+				<Form.Item
+					name="description"
+					label={
+						<>
+							Description&nbsp;
+							<span className={styles.optional}>(optional)</span>
+						</>
+					}
+				>
+					<Input.TextArea
+						rows={4}
+						placeholder="A step-by-step path from a raw concept to a published indie game."
+					/>
 				</Form.Item>
 			</Form>
 		</Modal>

@@ -1,0 +1,36 @@
+.starts {
+	width: 100%;
+}
+
+/* Two choices side by side: the difference between them is the second line, and
+   a plain radio label would drop it. */
+.start {
+	flex: 1 1 200px;
+	align-items: flex-start;
+	margin-inline-end: 0;
+	padding: var(--gd-space-3);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+
+	&:hover {
+		border-color: var(--gd-color-border-strong);
+	}
+
+	> span:last-child {
+		display: block;
+		flex: 1;
+		padding-inline-end: 0;
+	}
+}
+
+.start:has(:checked) {
+	border-color: var(--gd-color-accent);
+}
+
+.startTitle {
+	font-weight: 500;
+}
+
+.startText {
+	font-size: var(--gd-font-size-caption);
+}
