@@ -414,6 +414,11 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 								<span className={styles.stepCount}>
 									{step.tasks.filter((task) => task.done).length} /{" "}
 									{step.tasks.length} tasks
+									{step.tasks.some((task) => task.required)
+										? ` · ${
+												step.tasks.filter((task) => task.required).length
+											} required`
+										: ""}
 								</span>
 								{!isCurrent && step.id && (
 									<Button
@@ -486,15 +491,24 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 												}
 											/>
 											<Flex vertical gap={2}>
-												<span
-													className={
-														task.done
-															? `${styles.taskName} ${styles.taskDone}`
-															: styles.taskName
-													}
-												>
-													{task.name}
-												</span>
+												<Flex align="center" gap={8} wrap>
+													<span
+														className={
+															task.done
+																? `${styles.taskName} ${styles.taskDone}`
+																: styles.taskName
+														}
+													>
+														{task.name}
+													</span>
+													{/* What the step cannot be finished without — the
+													    difference between behind and blocked. */}
+													{task.required && (
+														<Tag color="orange" variant="outlined">
+															Required
+														</Tag>
+													)}
+												</Flex>
 												<span className={styles.taskNote}>
 													{task.done && task.finishedAt
 														? `Completed ${dayjs(task.finishedAt).fromNow()}`
@@ -599,15 +613,25 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 						</Flex>
 					</Flex>
 
+					{/* Folded by default: the header already says whether this copy
+					    drifted, and a list that is often meant to be there does not need
+					    to hold the foot of the page open to say so. */}
 					{data.localChanges.length > 0 && (
-						<div className={styles.cardBody}>
-							<div className={styles.changes}>
-								<Flex vertical gap={10}>
-									<span className={styles.changesTitle}>Local changes</span>
-									<LocalChangeList changes={data.localChanges} />
-								</Flex>
-							</div>
-						</div>
+						<Collapse
+							ghost
+							className={styles.changesPanel}
+							items={[
+								{
+									key: "changes",
+									label: (
+										<span className={styles.changesTitle}>
+											Local changes ({data.localChanges.length})
+										</span>
+									),
+									children: <LocalChangeList changes={data.localChanges} />,
+								},
+							]}
+						/>
 					)}
 				</Card>
 			)}

@@ -11,7 +11,8 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { WorkflowStepsTemplateSchema } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
-import { planReset, type ResetPlan } from "@/services/workflow/planReset";
+import { applyResetPlan } from "@/services/workflow/applyResetPlan";
+import { planReset } from "@/services/workflow/planReset";
 
 const ResetSchema = z.object({
 	mode: z.enum(["keep", "sync", "full"]),
@@ -96,7 +97,7 @@ export const POST = pipe(
 	}
 
 	await prisma.$transaction(async (tx) => {
-		const survivingStepIds = await applyPlan(tx, id, plan);
+		const survivingStepIds = await applyResetPlan(tx, id, plan, Prisma.DbNull);
 
 		// The pointer moves before the rows it could point at are deleted.
 		const nextCurrentId = plan.summary.currentStep.kept
@@ -117,73 +118,3 @@ export const POST = pipe(
 
 	return json({ success: true, summary: plan.summary });
 });
-
-/** The extended client's own transaction type — `Prisma.TransactionClient`
- *  describes the unextended one and does not match what `$transaction` hands us. */
-type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
-
-/** Writes the plan and returns the step ids that survive it, in order. */
-async function applyPlan(
-	tx: Tx,
-	workflowId: string,
-	plan: ResetPlan,
-): Promise<string[]> {
-	const survivingStepIds: string[] = [];
-
-	for (const [index, step] of plan.steps.entries()) {
-		let stepId = step.id;
-
-		// A step is finished when its tasks are, so clearing progress has to clear
-		// the flag too — otherwise a step stays marked done with nothing done in it.
-		const done = step.tasks.length > 0 && step.tasks.every((task) => task.done);
-		const stepData = {
-			name: step.name,
-			description: step.description ?? "",
-			order: index,
-			done,
-			...(done ? null : { finishedAt: null }),
-		};
-
-		if (stepId) {
-			await tx.projectWorkflowStep.update({
-				where: { id: stepId },
-				data: stepData,
-			});
-		} else {
-			const created = await tx.projectWorkflowStep.create({
-				data: { ...stepData, projectWorkflowId: workflowId },
-			});
-			stepId = created.id;
-		}
-
-		survivingStepIds.push(stepId);
-
-		const keptTaskIds: string[] = [];
-		for (const [taskIndex, task] of step.tasks.entries()) {
-			const data = {
-				name: task.name,
-				description: task.description ?? null,
-				required: task.required,
-				done: task.done,
-				order: taskIndex,
-				condition: task.condition ?? Prisma.DbNull,
-				...(task.done ? null : { finishedAt: null }),
-			};
-
-			if (task.id) {
-				await tx.projectWorkflowTask.update({ where: { id: task.id }, data });
-				keptTaskIds.push(task.id);
-			} else {
-				await tx.projectWorkflowTask.create({ data: { ...data, stepId } });
-			}
-		}
-
-		// Whatever the step still holds and the plan does not name is gone. On a
-		// sync the plan carries every existing task, so this deletes nothing.
-		await tx.projectWorkflowTask.deleteMany({
-			where: { stepId, id: { notIn: keptTaskIds } },
-		});
-	}
-
-	return survivingStepIds;
-}

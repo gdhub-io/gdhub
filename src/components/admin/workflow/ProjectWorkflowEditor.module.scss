@@ -158,11 +158,16 @@
 	font-size: 11px;
 }
 
-.changes {
-	padding: var(--gd-space-4);
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-card);
-	background: var(--gd-color-surface-sunken);
+/* A ghost collapse inside a card: antd's own padding would sit the header at a
+   different inset from the card's, which reads as a nested box. */
+.changesPanel {
+	:global(.ant-collapse-header) {
+		padding: var(--gd-space-3) var(--gd-space-6) !important;
+	}
+
+	:global(.ant-collapse-content-box) {
+		padding: 0 var(--gd-space-6) var(--gd-space-4) !important;
+	}
 }
 
 .changesTitle {
