@@ -1,4 +1,17 @@
+// The shell owns the full-height box; pages inside it stretch with `flex: 1`
+// rather than declaring `100vh` of their own. Two nested 100vh boxes stack in
+// this flex column, so the page's centre stopped being the viewport's centre.
 .shell {
+	position: relative;
+	display: flex;
+	flex-direction: column;
 	min-height: 100vh;
 	background-color: var(--gd-color-surface);
+}
+
+.logout {
+	position: absolute;
+	top: 24px;
+	right: 32px;
+	z-index: 10;
 }

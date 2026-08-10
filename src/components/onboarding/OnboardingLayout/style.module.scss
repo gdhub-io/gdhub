@@ -5,9 +5,9 @@
   --onb-gap: 24px;
 
   display: flex;
+  flex: 1;
   align-items: flex-start;
   justify-content: center;
-  min-height: 100vh;
   width: 100%;
   padding: var(--onb-padding-y) var(--onb-padding-x);
 
@@ -18,7 +18,7 @@
 
   :global(h1) {
     font-size: 40px;
-    font-weight: 800;
+    font-weight: 700;
     font-family: var(--gd-font-display), var(--gd-font-ui), sans-serif;
   }
 

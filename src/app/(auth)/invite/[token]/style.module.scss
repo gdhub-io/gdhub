@@ -1,0 +1,65 @@
+.page {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	padding: var(--gd-space-12) var(--gd-space-6);
+}
+
+.column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--gd-space-6);
+	width: 100%;
+	max-width: 440px;
+	text-align: center;
+}
+
+.logo {
+	width: 138px;
+	height: auto;
+}
+
+.copy {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	width: 100%;
+}
+
+.title {
+	margin: 0;
+	font-size: 26px;
+	font-weight: 700;
+	line-height: 1.25;
+	color: var(--gd-color-text);
+}
+
+.body {
+	margin: 0;
+	font-size: 15px;
+	line-height: 1.55;
+	color: var(--gd-color-text-secondary);
+}
+
+.meta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--gd-space-2);
+	font-size: 14px;
+	color: var(--gd-color-text-secondary);
+}
+
+.metaValue {
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.actions {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	width: 100%;
+}

@@ -2,21 +2,12 @@
 
 import { IconBrandGoogle } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import {
-	Button,
-	Flex,
-	Form,
-	Grid,
-	Input,
-	message,
-	Space,
-	Typography,
-} from "antd";
+import { Button, Flex, Form, Input, message, Space, Typography } from "antd";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import LogingBgImage from "@/assets/images/login-bg.jpg";
+import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
 
@@ -25,7 +16,6 @@ const { Paragraph, Title } = Typography;
 export function SigninClient() {
 	const searchParams = useSearchParams();
 	const { t } = useTranslate();
-	const screens = Grid.useBreakpoint();
 	const [form] = Form.useForm();
 	const [loginStep, setLoginStep] = useState(1);
 	const [email, setEmail] = useState<string>();
@@ -74,7 +64,7 @@ export function SigninClient() {
 				gtmEventTrigger("user_login", { provider: "email" });
 			}
 			if (response?.error) message.error(response?.error);
-		} catch (error) {
+		} catch {
 			message.error(
 				t("error_sending_email", "Error sending email. Please try again."),
 			);
@@ -84,15 +74,10 @@ export function SigninClient() {
 	};
 
 	return (
-		<div
-			className={`${styles.container}`}
-			// style={{
-			// 	backgroundImage: screens.sm ? `url(${LogingBgImage.src})` : undefined,
-			// }}
-		>
+		<div className={styles.container}>
 			<div className="login-box">
 				<div className="login-form">
-					<Space orientation="vertical" size={40}>
+					<Space orientation="vertical" size={40} style={{ width: "100%" }}>
 						{loginStep < 3 && (
 							<div>
 								<Title style={{ marginBottom: 4 }}>
@@ -104,7 +89,7 @@ export function SigninClient() {
 							</div>
 						)}
 						{loginStep === 1 && (
-							<Space orientation="vertical" size={24}>
+							<Space orientation="vertical" size={24} style={{ width: "100%" }}>
 								<Button
 									type="primary"
 									style={{ width: "100%" }}
@@ -141,7 +126,7 @@ export function SigninClient() {
 						)}
 
 						{loginStep === 2 && (
-							<Space orientation="vertical" size={24}>
+							<Space orientation="vertical" size={24} style={{ width: "100%" }}>
 								<Paragraph>
 									{t(
 										"signin.subtitle",
@@ -181,16 +166,19 @@ export function SigninClient() {
 						)}
 
 						{loginStep === 3 && (
-							<Space orientation="vertical" size={24}>
-								<Paragraph style={{ maxWidth: 400 }}>
-									{t(
-										"signin.email.complete",
-										"We have sent an email to {email} with an access link. Follow the link and complete the following registration steps.",
-										{ email },
-									)}
-								</Paragraph>
-
-								<Link href="/">
+							<MagicLinkSent
+								title={t("signin.email.sent.title", "Check your email")}
+								lead={t(
+									"signin.email.sent.lead",
+									"We have sent a sign-in link to",
+								)}
+								email={email}
+								hint={t(
+									"signin.email.sent.hint",
+									"Open the link to finish signing in — you will land straight in the platform. The link works once.",
+								)}
+							>
+								<Link href="/" style={{ width: "100%" }}>
 									<Button
 										className="btn-default-on-white"
 										style={{ width: "100%" }}
@@ -198,7 +186,7 @@ export function SigninClient() {
 										{t("signin.email.backToMain.title", "Return to main")}
 									</Button>
 								</Link>
-							</Space>
+							</MagicLinkSent>
 						)}
 					</Space>
 				</div>
