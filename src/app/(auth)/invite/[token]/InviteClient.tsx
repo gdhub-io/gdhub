@@ -2,13 +2,44 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Card, Result, Spin, Typography } from "antd";
+import { Button, Spin } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
+import styles from "./style.module.scss";
 
-const { Title, Text, Paragraph } = Typography;
+/**
+ * Shell every invite state shares.
+ *
+ * The logo leads instead of a status icon: an invitee arrives here straight from
+ * an email, on a page they have never seen and often without an account, so the
+ * first thing it has to answer is whose page this is.
+ */
+function InviteScreen({
+	title,
+	body,
+	children,
+}: {
+	title: string;
+	body: string;
+	children?: ReactNode;
+}) {
+	return (
+		<div className={styles.page}>
+			<div className={styles.column}>
+				<GdhubLogo className={styles.logo} />
+				<div className={styles.copy}>
+					<h1 className={styles.title}>{title}</h1>
+					<p className={styles.body}>{body}</p>
+				</div>
+				{children}
+			</div>
+		</div>
+	);
+}
 
 export function InviteClient({ token }: { token: string }) {
 	const router = useRouter();
@@ -63,24 +94,17 @@ export function InviteClient({ token }: { token: string }) {
 		}
 	}, [status, token]);
 
-	const handleAccept = () => {
-		acceptInvite();
-	};
-
-	const handleDecline = () => {
-		declineInvite();
-	};
+	const goHome = (
+		<div className={styles.actions}>
+			<Button type="primary" block onClick={() => router.push("/")}>
+				{t("page.invite.goHome", "Go Home")}
+			</Button>
+		</div>
+	);
 
 	if (status === "loading" || isLoadingInvitation) {
 		return (
-			<div
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					height: "100vh",
-				}}
-			>
+			<div className={styles.page}>
 				<Spin size="large" />
 			</div>
 		);
@@ -88,196 +112,103 @@ export function InviteClient({ token }: { token: string }) {
 
 	if (error || invitationError) {
 		return (
-			<div
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					height: "100vh",
-					padding: "20px",
-				}}
+			<InviteScreen
+				title={t(
+					"page.invite.error.title",
+					"We could not load this invitation",
+				)}
+				body={
+					error ||
+					t("page.invite.failedToLoadInvitation", "Failed to load invitation")
+				}
 			>
-				<Card style={{ maxWidth: 600, width: "100%" }}>
-					<Result
-						status="error"
-						title={t("page.invite.error", "Error")}
-						subTitle={
-							error ||
-							t(
-								"page.invite.failedToLoadInvitation",
-								"Failed to load invitation",
-							)
-						}
-						extra={[
-							<Button
-								key="home"
-								type="primary"
-								onClick={() => router.push("/")}
-							>
-								{t("page.invite.goHome", "Go Home")}
-							</Button>,
-						]}
-					/>
-				</Card>
-			</div>
+				{goHome}
+			</InviteScreen>
 		);
 	}
 
-	if (session && invitation?.data) {
-		const inviteData = invitation.data;
+	if (!session || !invitation?.data) return null;
 
-		if (inviteData.status === "Accepted") {
-			return (
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						height: "100vh",
-						padding: "20px",
-					}}
-				>
-					<Card style={{ maxWidth: 600, width: "100%" }}>
-						<Result
-							status="info"
-							title={t(
-								"page.invite.invitationAlreadyAccepted",
-								"Invitation Already Accepted",
-							)}
-							subTitle={t(
-								"page.invite.invitationAlreadyAcceptedSubtitle",
-								"This invitation has already been accepted.",
-							)}
-							extra={[
-								<Button
-									key="home"
-									type="primary"
-									onClick={() => router.push("/")}
-								>
-									{t("page.invite.goHome", "Go Home")}
-								</Button>,
-							]}
-						/>
-					</Card>
-				</div>
-			);
-		}
+	const inviteData = invitation.data;
 
-		if (inviteData.status === "Declined") {
-			return (
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						height: "100vh",
-						padding: "20px",
-					}}
-				>
-					<Card style={{ maxWidth: 600, width: "100%" }}>
-						<Result
-							status="warning"
-							title={t("page.invite.invitationDeclined", "Invitation Declined")}
-							subTitle={t(
-								"page.invite.invitationDeclinedSubtitle",
-								"This invitation has been declined.",
-							)}
-							extra={[
-								<Button
-									key="home"
-									type="primary"
-									onClick={() => router.push("/")}
-								>
-									{t("page.invite.goHome", "Go Home")}
-								</Button>,
-							]}
-						/>
-					</Card>
-				</div>
-			);
-		}
-
-		if (inviteData.expiresAt && new Date() > new Date(inviteData.expiresAt)) {
-			return (
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						height: "100vh",
-						padding: "20px",
-					}}
-				>
-					<Card style={{ maxWidth: 600, width: "100%" }}>
-						<Result
-							status="warning"
-							title={t("page.invite.invitationExpired", "Invitation Expired")}
-							subTitle={t(
-								"page.invite.invitationExpiredSubtitle",
-								"This invitation has expired.",
-							)}
-							extra={[
-								<Button
-									key="home"
-									type="primary"
-									onClick={() => router.push("/")}
-								>
-									{t("page.invite.goHome", "Go Home")}
-								</Button>,
-							]}
-						/>
-					</Card>
-				</div>
-			);
-		}
-
+	if (inviteData.status === "Accepted") {
 		return (
-			<div
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					height: "100vh",
-					padding: "20px",
-				}}
+			<InviteScreen
+				title={t(
+					"page.invite.invitationAlreadyAccepted",
+					"Invitation already accepted",
+				)}
+				body={t(
+					"page.invite.invitationAlreadyAccepted.body",
+					"You are already on this team — there is nothing left to confirm.",
+				)}
 			>
-				<Card style={{ maxWidth: 600, width: "100%" }}>
-					<Title level={2}>
-						{t("page.invite.teamInvitation", "Team Invitation")}
-					</Title>
-					<Paragraph>
-						{t(
-							"page.invite.invitationText",
-							"You have been invited by {inviterName} to join the team of project {projectName} as a {position}.",
-							{
-								inviterName: inviteData.invitedBy?.name || "Project founder",
-								projectName: inviteData.team?.project?.name || "Project",
-								position: inviteData.position,
-							},
-						)}
-					</Paragraph>
-					<Paragraph>
-						<Text strong>{t("page.invite.startDate", "Start Date")}:</Text>{" "}
-						{new Date(inviteData.startedAt).toLocaleDateString()}
-					</Paragraph>
-					<div
-						style={{
-							marginTop: 24,
-							display: "flex",
-							justifyContent: "space-between",
-						}}
-					>
-						<Button onClick={handleDecline} loading={isDeclining}>
-							{t("page.invite.decline", "Decline")}
-						</Button>
-						<Button type="primary" onClick={handleAccept} loading={isAccepting}>
-							{t("page.invite.acceptInvitation", "Accept Invitation")}
-						</Button>
-					</div>
-				</Card>
-			</div>
+				{goHome}
+			</InviteScreen>
 		);
 	}
 
-	return null;
+	if (inviteData.status === "Declined") {
+		return (
+			<InviteScreen
+				title={t("page.invite.invitationDeclined", "Invitation declined")}
+				body={t(
+					"page.invite.invitationDeclined.body",
+					"You turned this invitation down. The founder can send a new one.",
+				)}
+			>
+				{goHome}
+			</InviteScreen>
+		);
+	}
+
+	if (inviteData.expiresAt && new Date() > new Date(inviteData.expiresAt)) {
+		return (
+			<InviteScreen
+				title={t("page.invite.invitationExpired", "Invitation expired")}
+				body={t(
+					"page.invite.invitationExpired.body",
+					"This invitation is no longer valid. Ask the founder to invite you again.",
+				)}
+			>
+				{goHome}
+			</InviteScreen>
+		);
+	}
+
+	return (
+		<InviteScreen
+			title={t("page.invite.teamInvitation", "Team Invitation")}
+			body={t(
+				"page.invite.invitationText",
+				"You have been invited by {inviterName} to join the team of project {projectName} as a {position}.",
+				{
+					inviterName: inviteData.invitedBy?.name || "Project founder",
+					projectName: inviteData.team?.project?.name || "Project",
+					position: inviteData.position,
+				},
+			)}
+		>
+			<p className={styles.meta}>
+				{t("page.invite.startDate", "Start Date")}
+				<span className={styles.metaValue}>
+					{new Date(inviteData.startedAt).toLocaleDateString()}
+				</span>
+			</p>
+
+			<div className={styles.actions}>
+				<Button
+					type="primary"
+					block
+					loading={isAccepting}
+					onClick={() => acceptInvite()}
+				>
+					{t("page.invite.acceptInvitation", "Accept Invitation")}
+				</Button>
+				<Button block loading={isDeclining} onClick={() => declineInvite()}>
+					{t("page.invite.decline", "Decline")}
+				</Button>
+			</div>
+		</InviteScreen>
+	);
 }

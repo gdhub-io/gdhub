@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import { setCookie } from "@/helpers/cookie";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
@@ -123,7 +124,7 @@ export function RegistrationClient() {
 			// }}
 		>
 			<div className="login-form">
-				<Space orientation="vertical" size={40}>
+				<Space orientation="vertical" size={40} style={{ width: "100%" }}>
 					{registrationStep.step < 3 && (
 						<div>
 							<Title style={{ marginBottom: 4 }}>
@@ -138,7 +139,7 @@ export function RegistrationClient() {
 						</div>
 					)}
 					{registrationStep.step === 1 && (
-						<Space orientation="vertical" size={24}>
+						<Space orientation="vertical" size={24} style={{ width: "100%" }}>
 							<Button
 								type="primary"
 								style={{ width: "100%" }}
@@ -180,7 +181,7 @@ export function RegistrationClient() {
 
 					{registrationStep.step === 2 &&
 						registrationStep.provider === "google" && (
-							<Space orientation="vertical" size={24}>
+							<Space orientation="vertical" size={24} style={{ width: "100%" }}>
 								<Form variant="filled" form={formRegGoogle} layout="vertical">
 									<Flex vertical gap={12}>
 										<Form.Item
@@ -271,7 +272,7 @@ export function RegistrationClient() {
 
 					{registrationStep.step === 2 &&
 						registrationStep.provider === "email" && (
-							<Space orientation="vertical" size={24}>
+							<Space orientation="vertical" size={24} style={{ width: "100%" }}>
 								<Paragraph>
 									{t(
 										"page.registration.email.subtitle",
@@ -389,16 +390,22 @@ export function RegistrationClient() {
 
 					{registrationStep.step === 3 &&
 						registrationStep.provider === "email" && (
-							<Space orientation="vertical" size={24}>
-								<Paragraph style={{ maxWidth: 400 }}>
-									{t(
-										"page.registration.email.complete",
-										"We have sent an email to {email} with an access link. Follow the link and complete the following registration steps.",
-										{ email },
-									)}
-								</Paragraph>
-
-								<Link href="/">
+							<MagicLinkSent
+								title={t(
+									"page.registration.email.sent.title",
+									"Confirm your email",
+								)}
+								lead={t(
+									"page.registration.email.sent.lead",
+									"We have sent a confirmation link to",
+								)}
+								email={email}
+								hint={t(
+									"page.registration.email.sent.hint",
+									"Open the link to confirm your address. Registration continues right there — the remaining steps wait for you behind it.",
+								)}
+							>
+								<Link href="/" style={{ width: "100%" }}>
 									<Button
 										className="btn-default-on-white"
 										style={{ width: "100%" }}
@@ -406,7 +413,7 @@ export function RegistrationClient() {
 										{t("page.registration.backToMain", "Back to main")}
 									</Button>
 								</Link>
-							</Space>
+							</MagicLinkSent>
 						)}
 				</Space>
 			</div>

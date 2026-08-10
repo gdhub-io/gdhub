@@ -6,34 +6,34 @@
   text-align: center;
 
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  min-height: 100vh;
   width: 100%;
 
   :global(h1) {
     font-size: 48px;
-    font-weight: 800;
+    font-weight: 700;
   }
 
   :global(.ant-typography) {
     color: var(--gd-color-text);
   }
 
+  // The column is sized by the viewport, not by its own padding. The previous
+  // rule padded a fit-content box by 193px a side, so the form came out 571px
+  // wide at every screen size and hung off the left edge below ~600px.
   :global(.login-box) {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row-reverse;
-    background-color: white;
-    border-radius: 16px;
+    display: block;
+    width: 100%;
+    border-radius: var(--gd-radius-panel);
   }
 
   :global(.login-form) {
-    // flex: 1 0 100%;
     width: 100%;
-    padding: 96px 193px 123px;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: var(--gd-space-12) var(--gd-space-6);
   }
 
   :global(.login-form p.form-title) {
@@ -53,17 +53,6 @@
     font-size: 18px;
   }
 
-  @media screen and (max-width: 767px) {
-    :global(.login-box) {
-      flex-direction: column;
-      box-shadow: none;
-      border-radius: 16px;
-    }
-
-    :global(.login-form) {
-      max-width: 100%;
-    }
-  }
 }
 
 .createAccountLink {
