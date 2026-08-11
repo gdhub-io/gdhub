@@ -241,7 +241,7 @@ export const BannerEventSlider = () => {
 								</div>
 							</div>
 							<Link
-								href={`/${events.data[active].lang ? `${events.data[active].lang}/` : ""}event/${events.data[active].slug}`}
+								href={`/event/${events.data[active].slug}`}
 								target="_blank"
 								style={{ marginTop: "auto" }}
 							>

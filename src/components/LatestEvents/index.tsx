@@ -130,7 +130,7 @@ export default function LatestEvents() {
 					{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
 						<HubSectionRow
 							key={e.id}
-							href={`${e.lang ? `/${e.lang}` : ""}/event/${e.slug}`}
+							href={`/event/${e.slug}`}
 							target="_blank"
 							title={e.title}
 							subtitle={

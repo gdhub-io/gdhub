@@ -73,6 +73,35 @@ describe("event API — every route states what it lets you do", () => {
 	});
 });
 
+describe("event links point at a route that exists", () => {
+	// `/event/[slug]` is the only public event route: there is no middleware, no
+	// `[locale]` segment and no rewrite, so every `/en/event/…` or `/event/en/…`
+	// link the app built was a guaranteed 404.
+	const LINKING_FILES = [
+		"src/app/(app)/(spaces)/user/events/MyEventsClient.tsx",
+		"src/components/LatestEvents/index.tsx",
+		"src/components/spaces/EventSpace/index.tsx",
+		"src/components/events/BannerEventSlider.tsx",
+		"src/components/events/EventCard.tsx",
+	];
+
+	it.each(LINKING_FILES)("%s builds no locale segment", (file) => {
+		const source = readFileSync(file, "utf8");
+
+		// A locale either in front of `/event` or between it and the slug.
+		expect(source).not.toMatch(/lang[^\n]*\}\s*\/?`?\s*\/event\//);
+		expect(source).not.toMatch(/\/event\/\$\{[^}]*lang/);
+	});
+
+	it("keeps the public event route locale-free", () => {
+		const routes = readdirSync("src/app/(public)");
+
+		expect(routes).toContain("event");
+		expect(routes).not.toContain("[locale]");
+		expect(routes).not.toContain("[lang]");
+	});
+});
+
 describe("admin event routes", () => {
 	const ADMIN_ROUTES = [
 		["src/app/api/admin/events/route.ts", "admin.events.view"],

@@ -2,6 +2,7 @@ import { EventStatus } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { defaultLocale } from "@/config/locale";
 import { isHeadlineEvent } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
 import { prisma } from "@/services/prisma";
@@ -70,7 +71,12 @@ const loadEvent = cache(
 			// Public means published. Without this the page served drafts to anyone
 			// holding the slug, and an unpublished event stayed readable — the
 			// organiser's own preview goes through the event space, which is gated.
-			where: { slug, lang: "en", status: { in: PUBLIC_STATUSES } },
+			where: { slug, status: { in: PUBLIC_STATUSES } },
+			// A slug is unique per locale, and there is no locale segment in the URL
+			// to pick with — so the default locale wins where both exist, and an
+			// event that only exists in the other one is still reachable rather than
+			// a 404. Pinning this to `en` outright hid a published Russian event.
+			orderBy: { lang: defaultLocale === "en" ? "asc" : "desc" },
 			include: {
 				schedule: {
 					orderBy: { startDate: "asc" },
