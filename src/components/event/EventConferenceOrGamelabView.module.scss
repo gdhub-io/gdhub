@@ -1,7 +1,63 @@
 .contentContainer {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 0 24px 56px;
+
+  /* The cover overlaps the dark header band, so the two read as one block. */
+  .coverWrap {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    margin-top: -120px;
+    margin-bottom: 32px;
+
+    @media (max-width: 600px) {
+      margin-top: -64px;
+    }
+  }
+
+  .cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--gd-radius-panel);
+    overflow: hidden;
+    box-shadow: var(--gd-elevation-e3);
+  }
+
+  .titleBlock {
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .title {
+    margin: 0;
+  }
+
+  .subtitle {
+    font-size: var(--gd-font-size-body-lg);
+  }
+
+  .dates {
+    margin-top: var(--gd-space-4);
+  }
+
+  .datesLabel {
+    font-size: var(--gd-font-size-body-lg);
+  }
+
+  .datesValue {
+    font-size: 18px;
+  }
+
+  .register {
+    margin-top: var(--gd-space-2);
+  }
+
+  .finished {
+    max-width: 420px;
+  }
 
   h2 {
     font-size: 16px;

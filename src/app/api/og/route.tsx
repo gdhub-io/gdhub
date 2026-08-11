@@ -36,12 +36,22 @@ export async function GET(request: NextRequest) {
 				}}
 			>
 				{coverImage ? (
+					// Satori lays an absolutely positioned box out from its insets and
+					// drops it when there are none, so without `top`/`left` the cover
+					// was silently missing and the card came out as the gradient alone.
 					<img
 						aria-label="OG Image"
 						width="1200"
 						height="630"
 						src={coverImage}
-						style={{ position: "absolute" }}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							width: 1200,
+							height: 630,
+							objectFit: "cover",
+						}}
 					/>
 				) : null}
 

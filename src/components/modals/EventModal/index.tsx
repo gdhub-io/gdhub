@@ -51,6 +51,8 @@ export type ScheduleItemFormValues = {
 	format?: EventFormat;
 	language?: Language;
 	directionId: string;
+	/** Venue for an offline session; cleared when the format is online. */
+	address?: string | null;
 };
 
 const EventModal: React.FC<EventModalProps> = ({

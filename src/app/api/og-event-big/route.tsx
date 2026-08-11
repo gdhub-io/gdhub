@@ -47,12 +47,23 @@ export async function GET(request: NextRequest) {
 					fontFamily: '"Onest"',
 				}}
 			>
+				{/* Satori lays an absolutely positioned box out from its insets, and
+				    drops it when there are none — without `top`/`left` the cover was
+				    silently missing from every card. `objectFit` keeps a portrait
+				    cover from stretching across the 1200×630 frame. */}
 				<img
 					aria-label="OG Image"
 					width="1200"
 					height="630"
 					src={coverImage}
-					style={{ position: "absolute" }}
+					style={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						width: 1200,
+						height: 630,
+						objectFit: "cover",
+					}}
 				/>
 
 				<div

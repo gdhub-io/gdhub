@@ -9,11 +9,17 @@ import {
 } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
+/**
+ * The modal always submits the whole item, so this is a replace rather than a
+ * patch — and the optional text fields have to accept `null`, which is what
+ * clearing one produces.
+ */
 const UserEventScheduleItemSchema = z.object({
 	id: z.string().optional(),
-	title: z.string().optional(),
-	description: z.string().optional(),
-	url: z.string().optional(),
+	title: z.string().nullish(),
+	description: z.string().nullish(),
+	url: z.string().nullish(),
+	address: z.string().nullish(),
 	startDate: z.string().optional(),
 	endDate: z.string().optional(),
 	speakers: z.preprocess(
@@ -52,9 +58,13 @@ export const PUT = withAuth({ mode: "user" })(
 					eventId: id,
 				},
 				data: {
-					title: data.title,
-					description: data.description,
-					url: data.url,
+					// `?? null` rather than passing it straight through: Prisma skips an
+					// `undefined`, so emptying a field left the old value in the column
+					// and the edit looked like it had not saved at all.
+					title: data.title ?? null,
+					description: data.description ?? null,
+					url: data.url ?? null,
+					address: data.address ?? null,
 					directionId: data.directionId,
 					format: data.format as EventFormat,
 					language: data.language as Language,

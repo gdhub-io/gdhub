@@ -4,7 +4,7 @@ import type { EventFormat, Language } from "@gdhub-io/gdhub-prisma";
 import { IconPlus } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button } from "antd";
+import { App, Button } from "antd";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -22,6 +22,7 @@ interface EventScheduleItem {
 	title?: string;
 	description?: string;
 	url?: string;
+	address?: string | null;
 	startDate: string;
 	endDate: string;
 	directionId: string;
@@ -42,6 +43,7 @@ interface EventScheduleItem {
 export default function EventSchedulePage() {
 	const { data: session } = useSession();
 	const { t } = useTranslate();
+	const { message } = App.useApp();
 	const params = useParams<{ eventId?: string }>();
 	const eventId = params?.eventId as string;
 
@@ -66,6 +68,7 @@ export default function EventSchedulePage() {
 					title: item.title,
 					description: item.description,
 					url: item.url,
+					address: item.address,
 					startDate: item.startDate,
 					endDate: item.endDate,
 					directionId: item.directionId,
@@ -102,6 +105,12 @@ export default function EventSchedulePage() {
 		onSuccess: () => {
 			refetchEvent();
 		},
+		// The modal closes on submit either way, so without this a rejected save
+		// is indistinguishable from a successful one.
+		onError: () =>
+			message.error(
+				t("event.schedule.save.error", "Could not save the schedule item"),
+			),
 	});
 
 	const { mutateAsync: createScheduleItem } = useMutation({
@@ -121,6 +130,10 @@ export default function EventSchedulePage() {
 		onSuccess: () => {
 			refetchEvent();
 		},
+		onError: () =>
+			message.error(
+				t("event.schedule.save.error", "Could not save the schedule item"),
+			),
 	});
 
 	const { mutateAsync: deleteScheduleItem } = useMutation({

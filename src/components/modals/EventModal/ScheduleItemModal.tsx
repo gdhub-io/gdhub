@@ -48,6 +48,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 		{ label: string; value: string; avatar?: string; speciality?: string }[]
 	>([]);
 	const [isSubmitting, setIsSubmitting] = React.useState(false);
+	const format = Form.useWatch("format", form);
 
 	// on open modal, set initial values and refetch speakers
 	useEffect(() => {
@@ -144,6 +145,10 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 				directionId: values.directionId,
 				format: values.format,
 				language: values.language,
+				// An online session has no venue; keeping a stale address on one would
+				// put a room on the public page for a call.
+				address:
+					values.format === EventFormat.Offline ? values.address || null : null,
 			};
 
 			setIsSubmitting(true);
@@ -326,6 +331,23 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 						</Form.Item>
 					</Col>
 				</Row>
+
+				{/* Only an offline session has somewhere to be. The form's
+				    `requiredMark="optional"` tags the label by itself. */}
+				{format === EventFormat.Offline && (
+					<Form.Item
+						name="address"
+						label={t("event.schedule.address", "Address")}
+					>
+						<Input
+							placeholder={t(
+								"event.schedule.address.placeholder",
+								"e.g. Hall A · Riga Tech Hub",
+							)}
+							allowClear
+						/>
+					</Form.Item>
+				)}
 
 				<Form.Item
 					label={t("event.schedule.direction", "Direction")}
