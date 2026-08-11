@@ -201,12 +201,16 @@ export function buildAntdTheme({
 				itemPaddingInline: space[3],
 				itemColor: r.textSecondary,
 				itemHoverColor: r.text,
-				itemHoverBg: r.surfaceSunken,
+				// `surfaceSunken` is the same value as the page background, so a menu
+				// sitting on the page had an invisible hover and an invisible current
+				// item — the same trap the filled-control fills fell into. A tint
+				// reads a step down from whatever is actually underneath.
+				itemHoverBg: fills.base,
 				// Navigation is not a brand surface. Colouring the current tab
 				// orange reads as an alert on a bar the user looks at all day, so
 				// "you are here" is carried by a neutral fill and extra weight.
 				itemSelectedColor: r.text,
-				itemSelectedBg: r.surfaceSunken,
+				itemSelectedBg: fills.strong,
 				horizontalItemSelectedColor: r.text,
 				horizontalItemSelectedBg: r.surfaceSunken,
 				// antd lets a horizontal menu stretch its items to the bar's own

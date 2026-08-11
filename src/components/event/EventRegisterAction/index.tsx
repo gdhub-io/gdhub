@@ -64,7 +64,7 @@ export function EventRegisterAction({
 
 	if (isFinished) {
 		return (
-			<Flex vertical gap={4} className={styles.note}>
+			<Flex vertical gap={4} align="center" className={styles.note}>
 				<span className={styles.noteTitle}>
 					{t("event.finished.title", "This event has ended")}
 				</span>
@@ -80,22 +80,38 @@ export function EventRegisterAction({
 	// a gate that guards nothing.
 	if (event.url) {
 		return (
-			<Button
-				type="primary"
-				size="large"
-				href={event.url}
-				target="_blank"
-				onClick={track}
-			>
-				{t("event.bookNow", `Book Now ${event.isFree ? "Free" : ""}`)}
-			</Button>
+			<Flex vertical gap={8} align="center" className={styles.stack}>
+				{/* No "Free" here: the price lives on someone else's page, and this
+				    button cannot promise what it will say. */}
+				<Button
+					type="primary"
+					size="large"
+					className={styles.action}
+					href={event.url}
+					target="_blank"
+					onClick={track}
+				>
+					{t("event.action.book", "Book Now")}
+				</Button>
+				<span className={styles.hint}>
+					{t(
+						"event.action.book.externalHint",
+						"Registration happens on the organiser's site.",
+					)}
+				</span>
+			</Flex>
 		);
 	}
 
 	if (!session?.user) {
 		return (
-			<Flex vertical gap={8} align="flex-start">
-				<Button type="primary" size="large" href="/registration">
+			<Flex vertical gap={8} align="center" className={styles.stack}>
+				<Button
+					type="primary"
+					size="large"
+					href="/registration"
+					className={styles.action}
+				>
 					{t("event.signInRequired.action", "Sign in to register")}
 				</Button>
 				<span className={styles.hint}>
@@ -112,10 +128,13 @@ export function EventRegisterAction({
 		<Button
 			type="primary"
 			size="large"
+			className={styles.action}
 			loading={isPending}
 			onClick={() => registerToEvent()}
 		>
-			{t("event.bookNow", `Book Now ${event.isFree ? "Free" : ""}`)}
+			{event.isFree
+				? t("event.action.bookFree", "Book Now Free")
+				: t("event.action.book", "Book Now")}
 		</Button>
 	);
 }

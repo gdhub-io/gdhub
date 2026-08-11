@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { isHeadlineEvent } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
 import { prisma } from "@/services/prisma";
 import { EventPageClient, type EventPageProps } from "./EventPageClient";
@@ -10,7 +11,7 @@ type Params = Promise<{ slug: string }>;
 type LoadedEvent = NonNullable<EventPageProps["event"]>;
 
 /**
- * Share card for an event, rendered by `/api/og-event-big`.
+ * Share card for an event.
  *
  * The page was posting the uploaded cover as its own share image, so a shared
  * link showed artwork with no title, date or type on it — the three things that
@@ -18,9 +19,10 @@ type LoadedEvent = NonNullable<EventPageProps["event"]>;
  * period the page header shows, formatted by the same helper, so the preview
  * and the page cannot disagree.
  *
- * `og-event-big` draws the cover full-bleed under a gradient and refuses to
- * render without one, so an event with no cover falls back to the generic card,
- * which is built to work without an image.
+ * Which card depends on the billing: a conference or game lab gets the
+ * full-bleed `og-event-big`, everything else the split `og-event-small`. Both
+ * refuse to render without a cover, so an event with no image falls back to the
+ * generic card, which is built to work without one.
  */
 const buildEventOgImage = (event: LoadedEvent) => {
 	const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
@@ -28,6 +30,10 @@ const buildEventOgImage = (event: LoadedEvent) => {
 
 	if (event.shortDescription) params.set("st", event.shortDescription);
 	if (!event.image) return `${appUrl}/api/og?${params.toString()}`;
+
+	// Both event cards refuse to render without a cover, so the fallback above
+	// stays; which of the two applies is the same question the page asks.
+	const card = isHeadlineEvent(event.type) ? "og-event-big" : "og-event-small";
 
 	params.set("img", event.image);
 	if (event.type) params.set("type", event.type);
@@ -45,14 +51,38 @@ const buildEventOgImage = (event: LoadedEvent) => {
 		);
 	}
 
-	return `${appUrl}/api/og-event-big?${params.toString()}`;
+	return `${appUrl}/api/${card}?${params.toString()}`;
 };
 
 const loadEvent = cache(
 	async (slug: string): Promise<EventPageProps["event"] | null> => {
+		// Speakers were never loaded here, so the programme listed sessions with
+		// nobody attached to them. `level` and `specialization` come along because
+		// the speaker sheet introduces a person, not just a name.
 		const event = await prisma.event.findFirst({
 			where: { slug, lang: "en" },
-			include: { schedule: { orderBy: { startDate: "asc" } } },
+			include: {
+				schedule: {
+					orderBy: { startDate: "asc" },
+					include: {
+						speakers: {
+							select: {
+								id: true,
+								name: true,
+								summary: true,
+								specialization: true,
+								level: true,
+								user: {
+									select: {
+										image: true,
+										profile: { select: { name: true } },
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		});
 		if (!event) return null;
 		return {

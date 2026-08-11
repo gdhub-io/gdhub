@@ -1,10 +1,47 @@
 import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Card, Modal, message, Spin } from "antd";
+import { Button, Flex, Modal, message, Spin, Typography } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { EventStatus } from "@/config/prisma-enums";
+import styles from "./style.module.scss";
+
+/**
+ * One irreversible-ish action, stated plainly.
+ *
+ * A `Card` gave each of these a titled header with a rule under it, which reads
+ * as a section of a page rather than a single thing you can do. This is the row
+ * the design asks for: what it does on the left, the button that does it on the
+ * right.
+ */
+function DangerRow({
+	title,
+	description,
+	action,
+	danger = false,
+}: {
+	title: string;
+	description: string;
+	action: React.ReactNode;
+	danger?: boolean;
+}) {
+	return (
+		<Flex
+			align="center"
+			justify="space-between"
+			gap={24}
+			wrap
+			className={danger ? `${styles.row} ${styles.rowDanger}` : styles.row}
+		>
+			<Flex vertical gap={2}>
+				<Typography.Text strong>{title}</Typography.Text>
+				<Typography.Text type="secondary">{description}</Typography.Text>
+			</Flex>
+			{action}
+		</Flex>
+	);
+}
 
 type DangerEventFormArgs = {
 	eventId: string;
@@ -72,7 +109,8 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 
 	const handleConfirmDelete = () => {
 		modal.confirm({
-			title: t("event.settings.danger.archive", "Delete Event"),
+			// Was pointing at the archive key, so deleting asked to archive.
+			title: t("event.modal.danger", "Delete Event"),
 			centered: true,
 			content: t(
 				"event.settings.danger.delete.description",
@@ -130,90 +168,62 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 					isDeletingEvent
 				}
 			>
-				{event?.data?.status !== EventStatus.Archived ? (
-					<Card
-						extra={
-							<Button
-								type="primary"
-								loading={isArchivingEvent}
-								onClick={handleConfirmArchive}
-							>
-								{t("event.settings.danger.archive", "Archive")}
-							</Button>
-						}
-						title={t("event.settings.danger.archive", "Archive Event")}
-						variant="borderless"
-					>
-						<p>
-							{t(
+				<Flex vertical gap={16}>
+					{event?.data?.status !== EventStatus.Archived ? (
+						<DangerRow
+							title={t("event.settings.danger.archive", "Archive Event")}
+							description={t(
 								"event.settings.danger.archive.description",
-								"Are you sure you want to archive this event?",
+								"Moves the event to the archive and hides it from the public. You can restore it later.",
 							)}
-							<br />
-							{t(
-								"event.settings.danger.archive.description2",
-								"This will move the event to the archive and it will be hidden from the public.",
+							action={
+								<Button
+									type="primary"
+									loading={isArchivingEvent}
+									onClick={handleConfirmArchive}
+								>
+									{t("event.settings.danger.archive.button", "Archive")}
+								</Button>
+							}
+						/>
+					) : (
+						<DangerRow
+							title={t("event.settings.danger.restore", "Restore Event")}
+							description={t(
+								"event.settings.danger.restore.description",
+								"Brings the event back as a draft, so you can review it before publishing again.",
 							)}
-						</p>
-					</Card>
-				) : (
-					<Card
-						extra={
+							action={
+								<Button
+									type="primary"
+									loading={isRestoringEvent}
+									onClick={handleConfirmRestore}
+								>
+									{t("event.settings.danger.restore.button", "Restore")}
+								</Button>
+							}
+						/>
+					)}
+
+					<DangerRow
+						danger
+						title={t("event.modal.danger", "Delete Event")}
+						description={t(
+							"event.modal.danger.description",
+							"Removes the event, its schedule and its member list. This cannot be undone.",
+						)}
+						action={
 							<Button
 								type="primary"
-								loading={isRestoringEvent}
-								onClick={handleConfirmRestore}
+								danger
+								loading={isDeletingEvent}
+								onClick={handleConfirmDelete}
 							>
-								{t("event.settings.danger.restore", "Restore")}
+								{t("event.settings.danger.delete.button", "Delete")}
 							</Button>
 						}
-						title={t("event.settings.danger.restore", "Restore Event")}
-						variant="borderless"
-					>
-						<p>
-							{t(
-								"event.settings.danger.restore.description",
-								"Are you sure you want to restore this event?",
-							)}
-							<br />
-							{t(
-								"event.settings.danger.restore.description2",
-								"This will move the event to the draft status and will be visible to the your events list.",
-							)}
-						</p>
-					</Card>
-				)}
-				<Card
-					extra={
-						<Button
-							type="primary"
-							danger
-							loading={isDeletingEvent}
-							onClick={handleConfirmDelete}
-						>
-							{t("event.modal.danger.button", "Delete")}
-						</Button>
-					}
-					title={t("event.modal.danger", "Delete Event")}
-					variant="borderless"
-				>
-					<p>
-						{t(
-							"event.modal.danger.description",
-							"Are you sure you want to delete this event?",
-						)}
-						<br />
-						{t(
-							"event.modal.danger.description2",
-							"This action cannot be undone.",
-						)}
-						<br />
-						{t(
-							"event.modal.danger.description3",
-							"This will delete all the event data and all the event data will be lost.",
-						)}
-					</p>
-				</Card>
+					/>
+				</Flex>
 			</Spin>
 		</>
 	);

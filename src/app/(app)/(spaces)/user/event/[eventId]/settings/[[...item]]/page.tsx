@@ -24,7 +24,11 @@ export default function EventSettingsPage() {
 	);
 	const { t } = useTranslate();
 
-	const settingsMenu: { label: React.ReactNode; key: string }[] = [
+	const settingsMenu: {
+		label: React.ReactNode;
+		key: string;
+		danger?: boolean;
+	}[] = [
 		{
 			label: t("event.settings.menu.general", "General"),
 			key: "general",
@@ -34,8 +38,10 @@ export default function EventSettingsPage() {
 			key: "certification",
 		},
 		{
+			// The one section that can end the event carries the colour for it.
 			label: t("event.settings.menu.danger", "Danger"),
 			key: "danger",
+			danger: true,
 		},
 	];
 

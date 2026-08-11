@@ -22,6 +22,7 @@ import React, { useEffect } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import { EventFormat, Language } from "@/config/prisma-enums";
 import type { ScheduleItemFormValues } from ".";
+import styles from "./style.module.scss";
 
 const { RangePicker } = DatePicker;
 
@@ -178,6 +179,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 			cancelText={t("common.cancel", "Cancel")}
 			destroyOnHidden
 			confirmLoading={isSubmitting}
+			width={800}
 		>
 			<Form
 				form={form}
@@ -189,104 +191,63 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 					language: session?.user?.lang || Language.en,
 				}}
 			>
-				<Form.Item
-					label={t("event.schedule.dates", "Dates (local time)")}
-					name="dates"
-					rules={[
-						{
-							required: true,
-							message: t("event.schedule.dates.required", "Dates required"),
-						},
-					]}
-				>
-					<RangePicker
-						style={{ width: "100%" }}
-						showTime={{ format: "HH:mm", minuteStep: 5 }}
-						format="YYYY-MM-DD HH:mm"
-						id={{
-							start: "startDate",
-							end: "endDate",
-						}}
-						disabledTime={(date) => {
-							if (!date || isAdmin) return {};
+				<Row gutter={[24, 0]}>
+					<Col xs={24} md={12}>
+						<div className={styles.sectionLabel}>
+							{t("event.schedule.section.when", "When & where")}
+						</div>
+						<Form.Item
+							label={t("event.schedule.dates", "Dates (local time)")}
+							name="dates"
+							rules={[
+								{
+									required: true,
+									message: t("event.schedule.dates.required", "Dates required"),
+								},
+							]}
+						>
+							<RangePicker
+								style={{ width: "100%" }}
+								showTime={{ format: "HH:mm", minuteStep: 5 }}
+								format="YYYY-MM-DD HH:mm"
+								id={{
+									start: "startDate",
+									end: "endDate",
+								}}
+								disabledTime={(date) => {
+									if (!date || isAdmin) return {};
 
-							const now = dayjs();
+									const now = dayjs();
 
-							if (date.isSame(now, "day")) {
-								const currentHour = now.hour();
-								const currentMinute = now.minute();
-								return {
-									disabledHours: () =>
-										Array.from({ length: 24 }, (_, i) => i).filter(
-											(h) => h < currentHour,
-										),
-									disabledMinutes: () =>
-										date.hour() === currentHour
-											? Array.from({ length: 60 }, (_, i) => i).filter(
-													(m) => m < currentMinute,
-												)
-											: [],
-									disabledSeconds: () => [],
-								};
-							}
+									if (date.isSame(now, "day")) {
+										const currentHour = now.hour();
+										const currentMinute = now.minute();
+										return {
+											disabledHours: () =>
+												Array.from({ length: 24 }, (_, i) => i).filter(
+													(h) => h < currentHour,
+												),
+											disabledMinutes: () =>
+												date.hour() === currentHour
+													? Array.from({ length: 60 }, (_, i) => i).filter(
+															(m) => m < currentMinute,
+														)
+													: [],
+											disabledSeconds: () => [],
+										};
+									}
 
-							return {
-								disabledHours: () => [],
-								disabledMinutes: () => [],
-								disabledSeconds: () => [],
-							};
-						}}
-						disabledDate={(current) =>
-							current && !isAdmin && current < dayjs().startOf("day")
-						}
-					/>
-				</Form.Item>
-
-				<Form.Item
-					label={t("event.schedule.speakers", "Speakers")}
-					name="speakers"
-				>
-					<Select
-						mode="multiple"
-						allowClear
-						showSearch
-						placeholder={t(
-							"event.schedule.speakers.placeholder",
-							"Select speakers",
-						)}
-						filterOption={false}
-						onSearch={handleSearch}
-						options={speakerOptions}
-						loading={isFetching}
-						style={{ width: "100%" }}
-						optionLabelProp="label"
-						notFoundContent={isFetching ? <Spin size="small" /> : null}
-						optionRender={(option) => {
-							const { label, avatar, speciality } = option.data;
-							return (
-								<div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-									<Avatar size={24} src={avatar} style={{ marginRight: 8 }}>
-										{!avatar && label ? label[0] : null}
-									</Avatar>
-									<div>
-										<div>{label}</div>
-										<div
-											style={{
-												fontSize: 12,
-												color: "var(--gd-color-text-secondary)",
-											}}
-										>
-											{speciality || "No speciality"}
-										</div>
-									</div>
-								</div>
-							);
-						}}
-					/>
-				</Form.Item>
-
-				<Row gutter={16}>
-					<Col span={12}>
+									return {
+										disabledHours: () => [],
+										disabledMinutes: () => [],
+										disabledSeconds: () => [],
+									};
+								}}
+								disabledDate={(current) =>
+									current && !isAdmin && current < dayjs().startOf("day")
+								}
+							/>
+						</Form.Item>
 						<Form.Item
 							name="format"
 							rules={[
@@ -307,8 +268,24 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 								}))}
 							/>
 						</Form.Item>
-					</Col>
-					<Col span={12}>
+
+						{/* Only an offline session has somewhere to be. The form's
+					    `requiredMark="optional"` tags the label by itself. */}
+						{format === EventFormat.Offline && (
+							<Form.Item
+								name="address"
+								label={t("event.schedule.address", "Address")}
+							>
+								<Input
+									placeholder={t(
+										"event.schedule.address.placeholder",
+										"Room, venue or street address",
+									)}
+									allowClear
+								/>
+							</Form.Item>
+						)}
+
 						<Form.Item
 							name="language"
 							rules={[
@@ -330,77 +307,111 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 							/>
 						</Form.Item>
 					</Col>
+
+					<Col xs={24} md={12}>
+						<div className={styles.sectionLabel}>
+							{t("event.schedule.section.what", "What")}
+						</div>
+						<Form.Item label={t("event.schedule.title", "Title")} name="title">
+							<Input
+								placeholder={t(
+									"event.schedule.title.placeholder",
+									"Slot title",
+								)}
+								allowClear
+							/>
+						</Form.Item>
+						<Form.Item
+							label={t("event.schedule.direction", "Direction")}
+							name="directionId"
+							rules={[
+								{
+									required: true,
+									message: t(
+										"event.schedule.direction.required",
+										"Direction required",
+									),
+								},
+							]}
+						>
+							<DirectionSelect
+								options={
+									workDirections?.map((direction) => ({
+										label: direction.name,
+										value: direction.id,
+									})) ?? []
+								}
+								placeholder={t(
+									"event.schedule.direction.placeholder",
+									"Select direction",
+								)}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={t("event.schedule.speakers", "Speakers")}
+							name="speakers"
+						>
+							<Select
+								mode="multiple"
+								allowClear
+								showSearch
+								placeholder={t(
+									"event.schedule.speakers.placeholder",
+									"Select speakers",
+								)}
+								filterOption={false}
+								onSearch={handleSearch}
+								options={speakerOptions}
+								loading={isFetching}
+								style={{ width: "100%" }}
+								optionLabelProp="label"
+								notFoundContent={isFetching ? <Spin size="small" /> : null}
+								optionRender={(option) => {
+									const { label, avatar, speciality } = option.data;
+									return (
+										<div
+											style={{ display: "flex", alignItems: "center", gap: 8 }}
+										>
+											<Avatar size={24} src={avatar} style={{ marginRight: 8 }}>
+												{!avatar && label ? label[0] : null}
+											</Avatar>
+											<div>
+												<div>{label}</div>
+												<div
+													style={{
+														fontSize: 12,
+														color: "var(--gd-color-text-secondary)",
+													}}
+												>
+													{speciality || "No speciality"}
+												</div>
+											</div>
+										</div>
+									);
+								}}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={t("event.schedule.description", "Description")}
+							name="description"
+						>
+							<Input.TextArea
+								rows={2}
+								placeholder={t(
+									"event.schedule.description.placeholder",
+									"What happens in this slot, in a sentence or two.",
+								)}
+								allowClear
+							/>
+						</Form.Item>
+						<Form.Item label={t("event.schedule.link", "Link")} name="url">
+							<Input
+								placeholder={t("event.schedule.link.placeholder", "https://")}
+								allowClear
+							/>
+						</Form.Item>
+					</Col>
 				</Row>
-
-				{/* Only an offline session has somewhere to be. The form's
-				    `requiredMark="optional"` tags the label by itself. */}
-				{format === EventFormat.Offline && (
-					<Form.Item
-						name="address"
-						label={t("event.schedule.address", "Address")}
-					>
-						<Input
-							placeholder={t(
-								"event.schedule.address.placeholder",
-								"e.g. Hall A · Riga Tech Hub",
-							)}
-							allowClear
-						/>
-					</Form.Item>
-				)}
-
-				<Form.Item
-					label={t("event.schedule.direction", "Direction")}
-					name="directionId"
-					rules={[
-						{
-							required: true,
-							message: t(
-								"event.schedule.direction.required",
-								"Direction required",
-							),
-						},
-					]}
-				>
-					<DirectionSelect
-						options={
-							workDirections?.map((direction) => ({
-								label: direction.name,
-								value: direction.id,
-							})) ?? []
-						}
-						placeholder={t(
-							"event.schedule.direction.placeholder",
-							"Select direction",
-						)}
-					/>
-				</Form.Item>
-
-				<Form.Item label={t("event.schedule.title", "Title")} name="title">
-					<Input
-						placeholder={t("event.schedule.title.placeholder", "Item title")}
-						allowClear
-					/>
-				</Form.Item>
-				<Form.Item label={t("event.schedule.link", "Link")} name="url">
-					<Input
-						placeholder={t("event.schedule.link.placeholder", "https://")}
-						allowClear
-					/>
-				</Form.Item>
-				<Form.Item
-					label={t("event.schedule.description", "Description")}
-					name="description"
-				>
-					<Input.TextArea
-						rows={2}
-						placeholder={t(
-							"event.schedule.description.placeholder",
-							"Item description",
-						)}
-						allowClear
-					/>
-				</Form.Item>
 			</Form>
 		</Modal>
 	);

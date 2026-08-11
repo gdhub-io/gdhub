@@ -3,6 +3,7 @@ import { useTranslate } from "@tolgee/react";
 import {
 	Button,
 	Card,
+	Flex,
 	Form,
 	Input,
 	Modal,
@@ -15,6 +16,10 @@ import {
 import axios from "axios";
 import type React from "react";
 import { useEffect, useState } from "react";
+import styles from "./style.module.scss";
+
+/** The save button sits under the card, outside the form it submits. */
+const ORGANIZER_FORM_ID = "event-certification-organizer";
 
 type CertificationEventFormProps = {
 	eventId: string;
@@ -141,7 +146,10 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 	return (
 		<>
 			<Card
-				title={t("event.settings.certification.title", "Certification")}
+				title={t(
+					"event.settings.certification.title",
+					"Issue certificates for this event",
+				)}
 				variant="borderless"
 				extra={
 					<Switch
@@ -154,7 +162,7 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 				<Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
 					{t(
 						"event.settings.certification.description",
-						"When enabled, you can issue certificates to event participants from the Members page.",
+						"Participants can be given a certificate once the event is over.",
 					)}
 				</Typography.Paragraph>
 
@@ -182,8 +190,11 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 									)}
 								</Typography.Paragraph>
 								<Form
+									id={ORGANIZER_FORM_ID}
 									form={configForm}
 									layout="vertical"
+									variant="filled"
+									requiredMark="optional"
 									onFinish={(values) => saveConfig(values)}
 								>
 									<Form.Item
@@ -213,47 +224,71 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 											}
 										/>
 									</Form.Item>
-									<div
-										style={{
-											display: "flex",
-											justifyContent: "space-between",
-											alignItems: "center",
-										}}
+									{/* The template is a thing to look at, not a field to fill,
+									    so it gets its own row rather than sitting among the
+									    form's actions. */}
+									<Flex
+										align="center"
+										justify="space-between"
+										gap={16}
+										wrap
+										className={styles.templateRow}
 									>
-										<Space>
-											<Button
-												type="primary"
-												htmlType="submit"
-												loading={isSavingConfig}
-											>
+										<Flex vertical gap={2}>
+											<Typography.Text strong>
 												{t(
-													"event.settings.certification.organizer.save",
-													"Save",
+													"event.settings.certification.template.title",
+													"Certificate template",
 												)}
-											</Button>
-											<Button
-												onClick={handleResetOrganizer}
-												disabled={
-													!certificationConfig?.organizerName &&
-													!certificationConfig?.organizerTitle
-												}
-											>
+											</Typography.Text>
+											<Typography.Text type="secondary">
 												{t(
-													"event.settings.certification.organizer.reset",
-													"Reset to default",
+													"event.settings.certification.template.description",
+													"Check how the signature block looks before issuing anything.",
 												)}
-											</Button>
-										</Space>
+											</Typography.Text>
+										</Flex>
 										<Button onClick={() => setPreviewOpen(true)}>
-											{t("event.settings.certification.preview", "Preview PDF")}
+											{t("event.settings.certification.preview", "Preview")}
 										</Button>
-									</div>
+									</Flex>
 								</Form>
 							</div>
 						</Space>
 					</Spin>
 				)}
 			</Card>
+			{enabled && (
+				<Flex
+					align="center"
+					justify="space-between"
+					gap={16}
+					wrap
+					className={styles.actions}
+				>
+					<Button
+						type="primary"
+						htmlType="submit"
+						form={ORGANIZER_FORM_ID}
+						loading={isSavingConfig}
+					>
+						{t("event.settings.certification.organizer.save", "Save")}
+					</Button>
+					<Button
+						type="text"
+						onClick={handleResetOrganizer}
+						disabled={
+							!certificationConfig?.organizerName &&
+							!certificationConfig?.organizerTitle
+						}
+					>
+						{t(
+							"event.settings.certification.organizer.reset",
+							"Reset to defaults",
+						)}
+					</Button>
+				</Flex>
+			)}
 
 			<Modal
 				open={previewOpen}

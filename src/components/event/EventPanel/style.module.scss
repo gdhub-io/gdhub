@@ -1,25 +1,43 @@
+/*
+ * Phone first: prose belongs on the page, not in a box. A frame around every
+ * block on a narrow screen spends the width it costs and stacks border against
+ * border. From the sidebar breakpoint there is room for the card, and the frame
+ * starts doing its job — separating one block of facts from the next.
+ */
 .panel {
 	width: 100%;
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-panel);
-	overflow: hidden;
 }
 
 .header {
-	padding: var(--gd-space-3) var(--gd-space-6);
-	border-bottom: 1px solid var(--gd-color-border-strong);
+	padding: 0 0 var(--gd-space-2);
 	font-size: var(--gd-font-size-body);
 	font-weight: 600;
 	color: var(--gd-color-text);
 }
 
 .body {
-	padding: var(--gd-space-4) var(--gd-space-6);
 	font-size: var(--gd-font-size-body-lg);
 	line-height: 1.6;
 	color: var(--gd-color-text-secondary);
 
 	> :last-child {
 		margin-bottom: 0;
+	}
+}
+
+@media (min-width: 992px) {
+	.panel {
+		border: 1px solid var(--gd-color-border-strong);
+		border-radius: var(--gd-radius-panel);
+		overflow: hidden;
+	}
+
+	.header {
+		padding: var(--gd-space-3) var(--gd-space-6);
+		border-bottom: 1px solid var(--gd-color-border-strong);
+	}
+
+	.body {
+		padding: var(--gd-space-4) var(--gd-space-6);
 	}
 }

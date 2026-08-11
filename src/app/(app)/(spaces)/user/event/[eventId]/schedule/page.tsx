@@ -8,13 +8,14 @@ import { App, Button } from "antd";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import {
-	EventScheduleGantt,
-	type EventScheduleGanttRef,
-} from "@/components/event/EventScheduleGantt";
+	EventScheduleTimeline,
+	type TimelineItem,
+} from "@/components/event/EventScheduleTimeline";
 import type { ScheduleItemFormValues } from "@/components/modals/EventModal";
+import ScheduleItemModal from "@/components/modals/EventModal/ScheduleItemModal";
 import { EventSpace } from "@/components/spaces/EventSpace";
 
 interface EventScheduleItem {
@@ -48,7 +49,8 @@ export default function EventSchedulePage() {
 	const eventId = params?.eventId as string;
 
 	const [schedule, setSchedule] = useState<ScheduleItemFormValues[]>([]);
-	const ganttRef = useRef<EventScheduleGanttRef>(null);
+	// `null` closes the modal; an item with no id is a new one.
+	const [editing, setEditing] = useState<ScheduleItemFormValues | null>(null);
 
 	const { can } = useAccess();
 	const canEditSchedule = can("event.schedule.edit");
@@ -157,7 +159,7 @@ export default function EventSchedulePage() {
 	};
 
 	const handleAddScheduleItem = () => {
-		ganttRef.current?.openAddModal();
+		setEditing({ id: null } as ScheduleItemFormValues);
 	};
 
 	return (
@@ -172,18 +174,27 @@ export default function EventSchedulePage() {
 					{t("event.modal.schedule.add", "Add item")}
 				</Button>
 			}
-			customStyles={{
-				contentContainer: { height: "calc(100vh - 200px)" },
-				content: { height: "100%" },
-			}}
 		>
-			<EventScheduleGantt
-				ref={ganttRef}
-				schedule={schedule}
-				onScheduleUpdate={handleScheduleUpdate}
-				onScheduleCreate={handleScheduleCreate}
-				onScheduleDelete={handleScheduleDelete}
+			<EventScheduleTimeline
+				items={schedule as TimelineItem[]}
+				canEdit={canEditSchedule}
+				onEdit={(item) => {
+					const row = schedule.find((candidate) => candidate.id === item.id);
+					if (row) setEditing(row);
+				}}
+				onDelete={handleScheduleDelete}
+			/>
+
+			<ScheduleItemModal
+				open={Boolean(editing)}
 				isAdmin={canEditSchedule}
+				initialValues={editing ?? undefined}
+				onCancel={() => setEditing(null)}
+				onSubmit={async (item) => {
+					if (item.id) await handleScheduleUpdate(item);
+					else handleScheduleCreate(item);
+					setEditing(null);
+				}}
 			/>
 		</EventSpace>
 	);

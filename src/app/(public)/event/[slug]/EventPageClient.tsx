@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import EventConferenceOrGamelabView from "@/components/event/EventConferenceOrGamelabView";
 import EventDefaultView from "@/components/event/EventDefaultView";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { isHeadlineEvent } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
 import { useWorkDirections } from "@/hooks/library";
 import styles from "./style.module.scss";
@@ -65,9 +66,7 @@ export function EventPageClient({ event }: EventPageProps) {
 	const schedule = formattedSchedule.length
 		? formattedSchedule
 		: event.schedule || [];
-	const isConferenceOrGamelab = ["conference", "gamelab"].includes(
-		(event.type || "").toLowerCase(),
-	);
+	const isConferenceOrGamelab = isHeadlineEvent(event.type);
 
 	return (
 		<>

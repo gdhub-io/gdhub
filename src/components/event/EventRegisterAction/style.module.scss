@@ -1,6 +1,7 @@
 .note {
 	font-size: var(--gd-font-size-body);
 	color: var(--gd-color-text-secondary);
+	text-align: center;
 }
 
 .noteTitle {
@@ -11,4 +12,25 @@
 .hint {
 	font-size: var(--gd-font-size-caption);
 	color: var(--gd-color-text-tertiary);
+	text-align: center;
+}
+
+/* Full width on a phone — it is the one thing the page asks for, and a thumb
+   should not have to find it. From the sidebar breakpoint it hugs its label. */
+.action {
+	width: 100%;
+}
+
+.stack {
+	width: 100%;
+}
+
+@media (min-width: 992px) {
+	.action,
+	.stack {
+		width: auto;
+		// The bare button sits straight in a stretching flex column, so width
+		// alone is not enough — the other states are held by their wrapper.
+		align-self: center;
+	}
 }

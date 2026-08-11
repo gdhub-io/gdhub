@@ -3,7 +3,7 @@ import { WORK_DIRECTIONS } from "@/components/DirectionBadge/directions";
 import { buildAntdTheme } from "@/config/design/antd";
 import { designCssVariables } from "@/config/design/css";
 import { type DesignMode, roles } from "@/config/design/roles";
-import { directionColors, semantic } from "@/config/design/tokens";
+import { brand, directionColors, semantic } from "@/config/design/tokens";
 
 const channel = (value: number) => {
 	const c = value / 255;
@@ -123,9 +123,12 @@ describe("antd theme", () => {
 		expect(theme.components?.Menu?.horizontalItemSelectedColor).toBe(
 			roles.light.text,
 		);
-		expect(theme.components?.Menu?.itemSelectedBg).toBe(
-			roles.light.surfaceSunken,
-		);
+		// Neutral, and visible: this used to assert the fill equalled
+		// `surfaceSunken`, which is the page background — locking in a current
+		// item nobody could see.
+		const selected = String(theme.components?.Menu?.itemSelectedBg);
+		expect(selected).not.toBe(roles.light.bg);
+		expect(selected.toLowerCase()).not.toContain(brand[500].toLowerCase());
 	});
 
 	it("orders the control ladder correctly", () => {

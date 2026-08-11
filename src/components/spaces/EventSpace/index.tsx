@@ -3,7 +3,7 @@
 import { IconExternalLink } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Grid, message, Space, Typography } from "antd";
+import { Button, Flex, Grid, message, Space, Tag, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
 import axios from "axios";
 import Link from "next/link";
@@ -150,11 +150,20 @@ export const EventSpace = ({
 					<Space wrap={true}>
 						{event?.status === EventStatus.Draft &&
 							can("event.lifecycle.publish") && (
-								<Space wrap={true}>
-									<Text type="secondary">The event is not published yet</Text>
+								<Space size={8} wrap={true}>
+									{/* A chip, not a sentence: the state is a label on the bar,
+									    and the button next to it says what to do about it. */}
+									<Tag
+										color="warning"
+										variant="filled"
+										className={styles.draftChip}
+									>
+										{t("event.status.draft", "Draft")}
+									</Tag>
 									<Button
 										type="primary"
 										size="small"
+										className={styles.publishButton}
 										onClick={() => publishEvent(eventId)}
 										loading={isPublishingEvent}
 									>
@@ -166,11 +175,12 @@ export const EventSpace = ({
 						<Button
 							type="text"
 							size="small"
+							className={styles.publicPageLink}
 							href={`${event?.lang ? `/${event?.lang}` : ""}/event/${event?.slug}`}
 							target="_blank"
 						>
 							{t("event.button.publicPage", "Go to page")}
-							<IconExternalLink size={12} color="gray" />
+							<IconExternalLink size={14} />
 						</Button>
 
 						{event?.status === EventStatus.Published &&

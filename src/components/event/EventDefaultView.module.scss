@@ -1,11 +1,18 @@
 .contentContainer {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 40px 24px 56px;
+  /* No horizontal padding of its own: PublicShell already sets the page
+     gutter, and adding to it pushed the content in past the header. */
+  padding: 40px 0 56px;
   align-items: flex-start;
 
   @media (max-width: 991px) {
     flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 20px 0 32px;
   }
 
   h2 {
@@ -15,8 +22,6 @@
   }
 
   @media (max-width: 600px) {
-    padding: 8px;
-
     h2 {
       font-size: 15px;
     }

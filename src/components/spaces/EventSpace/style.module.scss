@@ -21,3 +21,37 @@
 		}
 	}
 }
+
+.draftChip {
+	margin: 0;
+	border-radius: var(--gd-radius-pill);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+/* The one place the brand fills a control inside the product: publishing is the
+   moment the event stops being yours and starts being everyone's, and the
+   design gives it the brand for that. Everywhere else `colorPrimary` stays
+   graphite — see docs/design/ui-guidelines.md. */
+.publishButton {
+	background: var(--gd-color-accent);
+	border-color: var(--gd-color-accent);
+
+	&:not(:disabled):hover {
+		background: var(--gd-color-accent-hover) !important;
+		border-color: var(--gd-color-accent-hover) !important;
+	}
+}
+
+.publicPageLink {
+	color: var(--gd-color-accent);
+	gap: 6px;
+
+	&:not(:disabled):hover {
+		color: var(--gd-color-accent-hover) !important;
+	}
+
+	svg {
+		display: inline-flex;
+	}
+}

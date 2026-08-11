@@ -1,0 +1,13 @@
+.row {
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+/* The one action that cannot be undone is outlined in the colour for it — the
+   surface stays white, so the row reads as a warning rather than an error that
+   has already happened. */
+.rowDanger {
+	border-color: var(--gd-danger-solid);
+}
