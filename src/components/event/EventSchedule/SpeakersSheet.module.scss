@@ -1,0 +1,68 @@
+/* The class lands on the panel itself (`.ant-drawer-section` in this antd
+   version), so the corners are rounded here rather than on a descendant. */
+.sheet {
+	border-top-left-radius: var(--gd-radius-panel);
+	border-top-right-radius: var(--gd-radius-panel);
+	overflow: hidden;
+
+	/* antd puts the close button before the title on a bottom drawer, which
+	   leaves it under the reader's thumb on the wrong side. */
+	:global(.ant-drawer-header-title) {
+		flex-direction: row-reverse;
+	}
+
+	:global(.ant-drawer-close) {
+		margin-inline: 0;
+	}
+}
+
+/* A long bill scrolls inside the sheet rather than pushing it off-screen. The
+   padding moves to the rows so their rules can reach both edges. */
+.body {
+	max-height: 60vh;
+	overflow-y: auto;
+	padding-inline: 0 !important;
+}
+
+.row {
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border-top: 1px solid var(--gd-color-border);
+
+	&:first-child {
+		border-top: none;
+	}
+}
+
+.when {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	color: var(--gd-color-text-tertiary);
+}
+
+.title {
+	font-size: 17px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.name {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.level {
+	margin: 0;
+	font-size: 11px;
+}
+
+.speciality {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+.specialization {
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.5;
+	color: var(--gd-color-text-tertiary);
+}

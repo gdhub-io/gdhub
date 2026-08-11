@@ -12,6 +12,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
+	App,
 	Button,
 	Dropdown,
 	Flex,
@@ -62,6 +63,11 @@ interface Vacancy {
 }
 
 const MyProjectVacancies = () => {
+	// `App.useApp()` rather than the static `Modal.confirm`: a detached root
+	// cannot see the ConfigProvider above it, so the static dialog ignored the
+	// app's theme.
+	const { modal } = App.useApp();
+
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
 	const params = useParams();
@@ -424,7 +430,7 @@ const MyProjectVacancies = () => {
 	};
 
 	const confirmArchiveVacancy = (id: string) => {
-		Modal.confirm({
+		modal.confirm({
 			title: t("You definitely want to close the open position?"),
 			okText: t("MyProjectVacancies.yes", "Yes"),
 			cancelText: t("MyProjectVacancies.no", "No"),

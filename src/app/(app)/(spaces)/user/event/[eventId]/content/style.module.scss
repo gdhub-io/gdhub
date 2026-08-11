@@ -1,0 +1,93 @@
+/* The editor is a panel, like every other block of work in the product — the
+   frame is what separates the writing surface from the page it sits on.
+   It owns its height and its scroll, so the toolbar stays put while the
+   document runs under it. */
+.editor {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: calc(100vh - 260px);
+	min-height: 420px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	// Sunken, so the white sheet inside has something to sit on. White on white
+	// left the writing column with no edge to read.
+	background: var(--gd-color-surface-sunken);
+}
+
+/* A tinted strip, so the tools read as chrome around the sheet rather than as
+   part of what is being written. */
+.toolbar {
+	padding: var(--gd-space-2) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border-strong);
+	background: var(--gd-color-surface-sunken);
+	border-top-left-radius: var(--gd-radius-panel);
+	border-top-right-radius: var(--gd-radius-panel);
+}
+
+.divider {
+	width: 1px;
+	height: 18px;
+	background: var(--gd-color-border);
+}
+
+/* The writing column is a sheet of a fixed measure, centred in the panel. On an
+   all-white surface the bounds cannot come from a fill, so they come from the
+   measure itself — text that runs the full width of a wide panel has no edge to
+   read. The left gutter is wider than the design's because Editor.js parks its
+   "+" and drag handles there. */
+/* No padding: the sheet meets the toolbar and runs to the foot of the panel, so
+   a short document leaves no hollow band around it. */
+.canvas {
+	display: flex;
+	flex: 1;
+	justify-content: center;
+	min-height: 0;
+	overflow-y: auto;
+	// Keeps the page still once the document reaches its end.
+	overscroll-behavior: contain;
+}
+
+.sheet {
+	width: 760px;
+	max-width: 100%;
+	// `stretch` would size it to the visible area, so a long document scrolled
+	// out of the white and on to the surface behind it. Aligned to the top and
+	// grown by its own content, the sheet stays under the text all the way down,
+	// and `min-height` keeps it filling the panel when there is little to say.
+	align-self: flex-start;
+	min-height: 100%;
+	height: auto;
+	// The left gutter is the design's 52px handle column: Editor.js parks its
+	// "+" and drag grips there, and a narrower inset pushes them off the sheet
+	// onto the surface behind it.
+	padding: var(--gd-space-8) var(--gd-space-12) var(--gd-space-12)
+		var(--gd-space-16);
+	background: var(--gd-color-surface);
+	box-shadow: var(--gd-elevation-e1);
+
+	@media (max-width: 767px) {
+		padding: var(--gd-space-6) var(--gd-space-4) var(--gd-space-8)
+			var(--gd-space-12);
+	}
+
+	// The grips belong to the sheet they sit on, so they take its colour rather
+	// than carrying a panel of their own.
+	:global(.ce-toolbar__plus),
+	:global(.ce-toolbar__settings-btn) {
+		background: var(--gd-color-surface);
+		color: var(--gd-color-text-tertiary);
+		border: none;
+		box-shadow: none;
+
+		&:hover {
+			background: var(--gd-fill-base);
+			color: var(--gd-color-text);
+		}
+	}
+}
+
+.saved {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}

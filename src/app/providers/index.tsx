@@ -25,6 +25,13 @@ installAbortErrorSuppressor();
  * those styles land in the same layer as the rest.
  */
 ConfigProvider.config({
+	// A `<ConfigProvider theme>` in the tree cannot reach a root the static
+	// methods mount themselves, so every `Modal.confirm` left in the codebase came
+	// up in antd's stock blue on a graphite product. This is the one place that
+	// theme can be handed to them. Prefer `App.useApp()` in new code — it also
+	// inherits the shell's own mode and density — but a leftover static call now
+	// at least looks like the app.
+	theme: productTheme,
 	holderRender: (children) => <StyleProvider layer>{children}</StyleProvider>,
 });
 

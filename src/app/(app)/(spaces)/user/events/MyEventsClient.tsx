@@ -1,42 +1,26 @@
 "use client";
 
 import type { Language } from "@gdhub-io/gdhub-prisma";
-import {
-	IconCalendarCheck,
-	IconDeviceGamepad2,
-	IconDotsVertical,
-	IconExternalLink,
-	IconMicroscope,
-	IconPresentation,
-	IconSettings,
-	IconUsers,
-} from "@tabler/icons-react";
+import { IconExternalLink, IconPencil } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
 	Alert,
-	Button,
 	Card,
 	Col,
-	Dropdown,
 	Flex,
-	Grid,
-	Image,
 	type MenuProps,
 	Modal,
 	message,
 	Row,
 	Space,
-	Tag,
-	Typography,
 } from "antd";
 import axios from "axios";
-import dayjs from "dayjs";
 import dynamic from "next/dynamic";
 import React from "react";
+import { MyEventCard } from "@/components/events/MyEventCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { EventStatus } from "@/config/prisma-enums";
-import { formatEventPeriod } from "@/helpers/format";
 import styles from "./style.module.scss";
 
 const CreateEventButton = dynamic(
@@ -60,29 +44,9 @@ const PageViews = dynamic(
 	{ ssr: false },
 );
 
-const { Text } = Typography;
-
-function getTypeIcon(type: string, size = 20) {
-	switch (type) {
-		case "MEETUP":
-			return <IconUsers size={size} />;
-		case "GAMEJAM":
-			return <IconDeviceGamepad2 size={size} />;
-		case "WORKSHOP":
-			return <IconPresentation size={size} />;
-		case "GAMELAB":
-			return <IconMicroscope size={size} />;
-		case "CONFERENCE":
-			return <IconCalendarCheck size={size} />;
-		default:
-			return null;
-	}
-}
-
 const MyEventsClient = () => {
-	const { t, getLanguage } = useTolgee();
+	const { t } = useTolgee();
 	const [modal, modalContextHolder] = Modal.useModal();
-	const screens = Grid.useBreakpoint();
 	const [editModalOpen, setEditModalOpen] = React.useState(false);
 	const [editingEvent, setEditingEvent] = React.useState<any | null>(null);
 	const [localeModalOpen, setLocaleModalOpen] = React.useState(false);
@@ -179,45 +143,59 @@ const MyEventsClient = () => {
 	};
 
 	const getEventMenu = (record: any): MenuProps["items"] => {
-		const menu: MenuProps["items"] = [];
-
-		if (!screens.md) {
-			menu.push({
+		// The card shows one button — Manage. Everything the old three-icon footer
+		// offered lives here, so nothing was lost in the move.
+		const menu: MenuProps["items"] = [
+			{
 				key: "edit",
 				label: t("event.edit", "Edit"),
+				icon: <IconPencil size={15} />,
 				onClick: () => handleEdit(record.id),
-			});
-		}
+			},
+			{
+				key: "view",
+				label: t("event.view", "View"),
+				icon: <IconExternalLink size={15} />,
+				disabled: !record.slug,
+				onClick: () =>
+					window.open(
+						`${record.lang ? `/${record.lang}` : ""}/event/${record.slug}`,
+						"_blank",
+					),
+			},
+			{ key: "view-divider", type: "divider" },
+		];
 
 		const startOfMenu: MenuProps["items"] = [
 			{
 				key: "generate-slug",
 				label: t("event.generateSlug", "Generate Slug"),
+				// `modal` from the hook, not the static `Modal.confirm`: the static
+				// method mounts its own React root outside the ConfigProvider, so it
+				// came up in antd's stock blue instead of the app's theme.
 				onClick: () =>
-					Modal.confirm({
+					modal.confirm({
+						centered: true,
 						title: t(
-							"event.generateSlug.confirm",
-							"Are you sure you want to generate a slug?",
+							"event.generateSlug.confirm.title",
+							"Generate a new link?",
 						),
-						content: (
-							<Space>
-								<Text>
-									{t(
-										"event.generateSlug.confirm",
-										"Old link will no longer be available",
-									)}
-								</Text>
-							</Space>
+						content: t(
+							"event.generateSlug.confirm.body",
+							"The current link will stop working, and anywhere it was shared will lead nowhere.",
 						),
+						okText: t("event.generateSlug.confirm.ok", "Generate"),
+						cancelText: t("common.cancel", "Cancel"),
 						onOk: () => generateSlug(record.id),
-						onCancel: () => {},
-						okText: t("event.generateSlug.confirm", "Generate"),
-						cancelText: t("event.generateSlug.cancel", "Cancel"),
 					}),
 			},
 			{
 				key: "new-locale-version",
 				label: t("event.newLocale", "New Locale version"),
+				// Off while the platform is English-only — the same reason the Language
+				// field in event settings is disabled. The modal below stays wired up,
+				// so re-enabling is one line.
+				disabled: true,
 				onClick: () => {
 					setLocaleModalEventId(record.id);
 					setLocaleModalEventLang(record.lang);
@@ -238,17 +216,17 @@ const MyEventsClient = () => {
 				onClick: () =>
 					modal.confirm({
 						centered: true,
-						title: t(
-							"event.delete.confirm",
-							"Are you sure you want to delete this event?",
+						// One key was doing duty as both the title and the body, so a
+						// translated build showed the same sentence twice.
+						title: t("event.delete.confirm.title", "Delete this event?"),
+						content: t(
+							"event.delete.confirm.body",
+							"The event, its schedule and its members go with it. This cannot be undone.",
 						),
-						content: (
-							<Text>
-								{t("event.delete.confirm", "This action cannot be undone")}
-							</Text>
-						),
+						okText: t("common.delete", "Delete"),
+						okButtonProps: { danger: true },
+						cancelText: t("common.cancel", "Cancel"),
 						onOk: () => deleteEvent(record.id),
-						onCancel: () => {},
 					}),
 			},
 		];
@@ -277,29 +255,6 @@ const MyEventsClient = () => {
 		menu.push(...endOfMenu);
 
 		return menu;
-	};
-
-	const getStatusTag = (status: EventStatus, record: any) => {
-		switch (status) {
-			case EventStatus.Draft:
-				return <Tag color="default">{t("event.status.draft", "Draft")}</Tag>;
-			case EventStatus.Published:
-				return (
-					<Tag color="success">
-						{t("event.status.published", "Published at {publishedAt}", {
-							publishedAt: dayjs(record.publishedAt).format("lll"),
-						})}
-					</Tag>
-				);
-			case EventStatus.Archived:
-				return (
-					<Tag color="error">{t("event.status.archived", "Archived")}</Tag>
-				);
-			case EventStatus.Closed:
-				return <Tag color="error">{t("event.status.closed", "Closed")}</Tag>;
-			default:
-				return null;
-		}
 	};
 
 	const handleLocaleModalCancel = () => {
@@ -374,11 +329,6 @@ const MyEventsClient = () => {
 				) : (
 					<Row gutter={[16, 16]}>
 						{events.map((event: any) => {
-							const schedule = event.schedule || [];
-							const hasSchedule = schedule.length > 0;
-							const first = hasSchedule ? schedule[0] : null;
-							const last = hasSchedule ? schedule[schedule.length - 1] : null;
-
 							const isHovered = hoveredEventId === event.id;
 							const relatedIds = hoveredEventId
 								? getRelatedEventIds(hoveredEventId)
@@ -403,112 +353,31 @@ const MyEventsClient = () => {
 								.join(" ");
 
 							return (
-								<Col key={event.id} xs={24} sm={12} md={12} lg={8} xl={6}>
-									<Card
+								<Col key={event.id} xs={24} sm={12} lg={8} xxl={6}>
+									<MyEventCard
+										event={event}
+										menu={getEventMenu(event)}
+										showLang={isParent || isChild}
 										className={cardClassName || undefined}
 										data-parent-label={t("event.parent", "Parent")}
 										data-child-label={t("event.child", "Child")}
 										onMouseEnter={() => setHoveredEventId(event.id)}
 										onMouseLeave={() => setHoveredEventId(null)}
-										cover={
-											event.image ? (
-												<Image
-													src={event.image}
-													alt={event.title}
-													height={200}
-													style={{ objectFit: "cover" }}
-													preview={false}
-												/>
+										views={
+											event.slug && event.publishedAt ? (
+												<>
+													{" \u00b7 "}
+													<PageViews
+														path={`/event/${event.slug}`}
+														locale={event.lang}
+														isUnique={!!event.parentId}
+														startDate={event.publishedAt}
+														minViews={0}
+													/>
+												</>
 											) : null
 										}
-										actions={[
-											<Button
-												key="manage"
-												type="text"
-												icon={<IconSettings />}
-												href={`/user/event/${event.id}`}
-												title={t("event.manage", "Manage")}
-											/>,
-											event.slug ? (
-												<Button
-													key="view"
-													type="text"
-													icon={<IconExternalLink />}
-													href={`${event.lang ? `/${event.lang}` : ""}/event/${event.slug}`}
-													target="_blank"
-													title={t("event.view", "View")}
-												/>
-											) : (
-												<Button
-													key="view"
-													type="text"
-													icon={<IconExternalLink />}
-													disabled
-													title={t("event.view", "View")}
-												/>
-											),
-											<Dropdown
-												key="more"
-												menu={{ items: getEventMenu(event) }}
-												trigger={["click"]}
-											>
-												<Button type="text" block icon={<IconDotsVertical />} />
-											</Dropdown>,
-										]}
-									>
-										<Card.Meta
-											avatar={getTypeIcon(event.type, 24)}
-											title={
-												<Text ellipsis style={{ fontWeight: 400 }}>
-													{event.title}
-												</Text>
-											}
-											description={
-												<Space
-													orientation="vertical"
-													size="small"
-													style={{ width: "100%" }}
-												>
-													{getStatusTag(event.status, event)}
-
-													<Flex gap={8} wrap="wrap">
-														<Tag bordered={false} color="blue">
-															{event.lang}
-														</Tag>
-														<Tag bordered={false}>{event.type}</Tag>
-													</Flex>
-													{hasSchedule ? (
-														<Text>
-															{formatEventPeriod(
-																first.startDate,
-																last.endDate,
-																getLanguage(),
-															)}
-														</Text>
-													) : (
-														<Alert
-															title={t(
-																"event.noDates",
-																"You need to set a schedule",
-															)}
-															banner
-															type="warning"
-															style={{ marginTop: 8 }}
-														/>
-													)}
-													{event.slug && event.publishedAt && (
-														<PageViews
-															path={`/event/${event.slug}`}
-															locale={event.lang}
-															isUnique={!!event.parentId}
-															startDate={event.publishedAt}
-															minViews={0}
-														/>
-													)}
-												</Space>
-											}
-										/>
-									</Card>
+									/>
 								</Col>
 							);
 						})}

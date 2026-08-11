@@ -3,17 +3,20 @@ import { z } from "zod";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { prisma } from "@/services/prisma";
 
 const UserEventScheduleItemSchema = z.object({
 	id: z.string().optional(),
 	title: z.string().optional(),
 	description: z.string().optional(),
-	url: z.string().optional(),
+	url: z.string().nullish(),
+	address: z.string().nullish(),
 	startDate: z.string().optional(),
 	endDate: z.string().optional(),
 	speakers: z.preprocess(
@@ -34,41 +37,42 @@ const UserEventScheduleItemSchema = z.object({
 
 type UserEventScheduleItemBody = z.infer<typeof UserEventScheduleItemSchema>;
 
-export const POST = withAuth({ mode: "user" })(
-	withValidation(UserEventScheduleItemSchema)(
-		async (_req, ctx, { user, body }) => {
-			const currentUser = user as SessionUser | undefined;
-			if (!currentUser) return apiError.unauthorized();
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "event.schedule.edit", idFrom: "params.id" }),
+	withValidation(UserEventScheduleItemSchema),
+)(async (_req, ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 
-			const { id } = (await ctx.params) as { id: string };
-			const data = body as UserEventScheduleItemBody;
+	const { id } = (await ctx.params) as { id: string };
+	const data = body as UserEventScheduleItemBody;
 
-			if (!data.startDate || !data.endDate) {
-				return apiError.badRequest("Start and end date are required");
-			}
+	if (!data.startDate || !data.endDate) {
+		return apiError.badRequest("Start and end date are required");
+	}
 
-			await prisma.eventScheduleItem.create({
-				data: {
-					eventId: id,
-					title: data.title,
-					description: data.description,
-					url: data.url,
-					directionId: data.directionId,
-					format: data.format as EventFormat,
-					language: data.language as Language,
-					startDate: data.startDate,
-					endDate: data.endDate,
-					speakers: data.speakers?.length
-						? {
-								connect: data.speakers.map((speaker) => ({
-									id: speaker,
-								})),
-							}
-						: undefined,
-				},
-			});
-
-			return json({ ok: true });
+	await prisma.eventScheduleItem.create({
+		data: {
+			eventId: id,
+			title: data.title,
+			description: data.description,
+			url: data.url ?? null,
+			address: data.address ?? null,
+			directionId: data.directionId,
+			format: data.format as EventFormat,
+			language: data.language as Language,
+			startDate: data.startDate,
+			endDate: data.endDate,
+			speakers: data.speakers?.length
+				? {
+						connect: data.speakers.map((speaker) => ({
+							id: speaker,
+						})),
+					}
+				: undefined,
 		},
-	),
-);
+	});
+
+	return json({ ok: true });
+});

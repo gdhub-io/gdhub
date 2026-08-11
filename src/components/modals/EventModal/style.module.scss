@@ -32,3 +32,30 @@
 	background: var(--gd-color-surface-sunken);
 	color: var(--gd-color-text);
 }
+.optional {
+	color: var(--gd-color-text-tertiary);
+	font-weight: 400;
+}
+
+/* Column headings inside the schedule-item modal: quiet labels that group the
+   fields, not headings that compete with them. */
+.sectionLabel {
+	margin-bottom: var(--gd-space-3);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+/* The address hint is a caption for its field, so it sits under it rather than
+   opening a gap wider than the rhythm between the controls. */
+.addressField {
+	:global(.ant-form-item-explain),
+	:global(.ant-form-item-extra) {
+		margin-top: 2px;
+		font-size: var(--gd-font-size-caption);
+		line-height: 1.4;
+		min-height: 0;
+	}
+}

@@ -44,6 +44,12 @@ export const tools: {
 	paragraph: {
 		class: Paragraph as unknown as ToolConstructable,
 		inlineToolbar: true,
+		config: {
+			// Editor.js drops empty blocks on save, so the spacing an author put in
+			// deliberately — a blank line between two thoughts — collapsed the
+			// moment the document was stored.
+			preserveBlank: true,
+		},
 	},
 	linkTool: {
 		class: LinkTool,

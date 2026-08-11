@@ -5,7 +5,7 @@ import {
 	type User,
 } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
-import { json } from "@/lib/api-handlers";
+import { json, withAuth } from "@/lib/api-handlers";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -48,7 +48,7 @@ async function notifyAuthor(
 	}
 }
 
-export async function GET() {
+export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	// 1) Remind authors whose listing expires in EXPIRY_REMINDER_DAYS days.
 	// A 1-day window keyed to the reminder day makes a daily cron fire once.
 	const reminderDay = dayjs().add(EXPIRY_REMINDER_DAYS, "day");
@@ -106,4 +106,4 @@ export async function GET() {
 		archived: updatedVacancies.count,
 		reminded: expiringSoon.length,
 	});
-}
+});

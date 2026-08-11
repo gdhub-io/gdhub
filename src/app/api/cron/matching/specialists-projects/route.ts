@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { formatNestedJson } from "@/helpers/format";
-import { json, withValidation } from "@/lib/api-handlers";
+import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { matchingQueue } from "@/queues/matching.queue";
 import { prisma } from "@/services/prisma";
 
@@ -15,9 +15,9 @@ const MatchingBodySchema = z.object({
 
 type MatchingBody = z.infer<typeof MatchingBodySchema>;
 
-export const POST = withValidation(
-	MatchingBodySchema,
-	"body",
+export const POST = pipe(
+	withAuth({ mode: "vercel_cron" }),
+	withValidation(MatchingBodySchema, "body"),
 )(async (_req, _ctx, { body }) => {
 	const { projectId, specialityId, take } = body as MatchingBody;
 

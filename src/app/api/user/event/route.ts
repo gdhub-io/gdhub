@@ -11,6 +11,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { hasQualifiedSpeciality } from "@/repositories/speciality.repository";
+import { can, getSpaceAccess, isStaff } from "@/services/access";
 import { joinSpace } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
 
@@ -60,6 +62,25 @@ export const POST = withAuth({ mode: "user" })(
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
 		const data = body as UserEventCreateBody;
+
+		const hub = await getSpaceAccess("hub", null, currentUser);
+		if (!can(hub, "hub.events.create")) return apiError.forbidden();
+
+		// A direction is not a label on the event, it is a claim of competence in
+		// it. The permission says "may create events"; this says "may create this
+		// one" — a domain rule, so it holds even where RBAC runs in shadow mode.
+		// Staff organise on the platform's behalf and are not held to it.
+		const qualified =
+			isStaff(hub) ||
+			(await hasQualifiedSpeciality(currentUser.id, {
+				directionId: data.directionId,
+			}));
+
+		if (!qualified) {
+			return apiError.forbidden(
+				"An event can only be created for a direction you are Experienced or Expert in",
+			);
+		}
 
 		const event = await prisma.event.create({
 			data: {

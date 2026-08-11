@@ -1,0 +1,222 @@
+/*
+ * Phone first: the sessions stack, and a day folds so the whole programme fits
+ * in a thumb's reach. From the sidebar breakpoint the days are held open by CSS
+ * and the row lays out across — the same tree, not a second component.
+ */
+
+/* A card per date: sessions that share a day share the card, separated by a
+   hairline, so the frame marks a day rather than repeating around every row. */
+.day {
+	margin-bottom: var(--gd-space-2);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	overflow: hidden;
+	background: var(--gd-color-surface);
+}
+
+.summary {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	cursor: pointer;
+	list-style: none;
+
+	&::-webkit-details-marker {
+		display: none;
+	}
+}
+
+.dayLabel {
+	flex: 1;
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+	letter-spacing: 0.4px;
+	color: var(--gd-color-text-secondary);
+}
+
+.count {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 8px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-color-border);
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+.chevron {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+	transition: transform 0.15s ease;
+}
+
+.day[open] .chevron {
+	transform: rotate(180deg);
+}
+
+.item {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-top: 1px solid var(--gd-color-border);
+}
+
+/* Stacked on a phone: the times read as one line above the title. */
+.when {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.end {
+	color: var(--gd-color-text-tertiary);
+	font-weight: 400;
+
+	&::before {
+		content: "—";
+		margin-inline-end: var(--gd-space-2);
+	}
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	flex: 1;
+	min-width: 0;
+}
+
+.title {
+	font-size: 17px;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--gd-color-text);
+}
+
+.description {
+	font-size: var(--gd-font-size-body);
+	line-height: 1.5;
+	color: var(--gd-color-text-secondary);
+
+	p {
+		margin: 0;
+	}
+}
+
+.place {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.placeIcon {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+/* Overlapped, with a ring in the page colour so they read as a stack. */
+.speakers {
+	display: flex;
+	align-items: center;
+	align-self: flex-start;
+	padding: var(--gd-space-1) 0 0;
+	border: none;
+	background: none;
+	cursor: pointer;
+
+	:global(.ant-avatar) {
+		margin-inline-start: -6px;
+		outline: 2px solid var(--gd-color-surface);
+
+		&:first-child {
+			margin-inline-start: 0;
+		}
+	}
+}
+
+.extra {
+	margin-inline-start: var(--gd-space-2);
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+}
+
+.open {
+	align-self: flex-start;
+}
+
+.empty {
+	padding: var(--gd-space-4) var(--gd-space-6);
+	color: var(--gd-color-text-secondary);
+}
+
+@media (min-width: 992px) {
+	// A day is never folded here. Two engines hide a closed `details`
+	// differently: older ones set `display: none` on the children, Chrome 131+
+	// hides the `::details-content` pseudo-element. Both have to be undone.
+	.day:not([open]) > .item {
+		display: flex;
+	}
+
+	.day::details-content {
+		content-visibility: visible;
+	}
+
+	// One panel holds every day up here, so the cards give way to hairlines.
+	// One panel holds every day up here, so the cards give way to hairlines.
+	.day {
+		margin-bottom: 0;
+		border: none;
+		border-top: 1px solid var(--gd-color-border);
+		border-radius: 0;
+		background: transparent;
+	}
+
+	.day:first-of-type {
+		border-top: none;
+	}
+
+	.summary {
+		padding: var(--gd-space-3) var(--gd-space-6) var(--gd-space-2);
+		// Inert rather than absent: the day stays open, and a stray click cannot
+		// fold away a group that has no affordance to unfold.
+		pointer-events: none;
+	}
+
+	.count,
+	.chevron {
+		display: none;
+	}
+
+	/* The row lays out across: times in their own column, action on the right. */
+	.item {
+		flex-direction: row;
+		align-items: flex-start;
+		gap: var(--gd-space-4);
+		padding: var(--gd-space-3) var(--gd-space-6);
+	}
+
+	.when {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2px;
+		width: 88px;
+		flex: none;
+	}
+
+	.end {
+		font-size: var(--gd-font-size-caption);
+
+		&::before {
+			content: none;
+		}
+	}
+
+	.open {
+		align-self: center;
+	}
+}

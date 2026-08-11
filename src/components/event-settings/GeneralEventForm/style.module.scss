@@ -29,3 +29,15 @@
 		}
 	}
 }
+/* The fields live in a panel, the same frame the rest of the product uses for
+   a block of facts. */
+.panel {
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.actions {
+	margin-top: var(--gd-space-4);
+}

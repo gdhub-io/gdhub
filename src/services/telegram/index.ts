@@ -24,6 +24,9 @@ import {
 	type DevlogPostForMessage,
 	devlogOgImage,
 	devlogPostMessageTelegram,
+	type EventForMessage,
+	eventMessageTelegram,
+	eventOgImage,
 	newProjectReportsMessageEn,
 	newProjectReportsMessageRu,
 	newSpecialitiesMessageEn,
@@ -539,6 +542,48 @@ export default class TelegramService {
 				} catch (textError) {
 					console.error(
 						`Error sending message to ${channel.label} Telegram chat (devlog post)`,
+						textError,
+					);
+				}
+			}
+		}
+
+		return { ok: true };
+	}
+
+	/**
+	 * Announces an event to the news channels.
+	 *
+	 * Same route as a blog post — the news channels rather than the community
+	 * chats' project topic — because an event is addressed to everyone, not to
+	 * the people following one project.
+	 */
+	async sendEvent(event: EventForMessage) {
+		const message = eventMessageTelegram(event);
+		const imageUrl = eventOgImage(event);
+
+		const channels: { id?: string; label: string }[] = [
+			{ id: process.env.TELEGRAM_NEWS_CHANNEL_ID, label: "RU" },
+			{ id: process.env.TELEGRAM_EN_NEWS_CHANNEL_ID, label: "EN" },
+		];
+
+		for (const channel of channels) {
+			if (!channel.id) continue;
+
+			try {
+				await this.sendPhoto({ chatId: channel.id, url: imageUrl, message });
+			} catch (photoError) {
+				// Telegram fetches the image itself, so a non-public APP_URL makes the
+				// photo call fail. The announcement still goes out as text.
+				console.error(
+					`Error sending photo to ${channel.label} Telegram channel (event), falling back to text`,
+					photoError,
+				);
+				try {
+					await this.sendMessage({ chatId: channel.id, message });
+				} catch (textError) {
+					console.error(
+						`Error sending message to ${channel.label} Telegram channel (event)`,
 						textError,
 					);
 				}

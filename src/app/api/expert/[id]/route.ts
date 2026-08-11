@@ -1,4 +1,5 @@
 import { SkillLevel } from "@gdhub-io/gdhub-prisma";
+import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -12,9 +13,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			id,
 			specialities: {
 				some: {
-					level: {
-						in: [SkillLevel.Experienced, SkillLevel.Expert],
-					},
+					level: { in: EXPERT_SKILL_LEVELS },
 					// `isOpenForMentoring` is the switch in the profile; a speciality
 					// with no questions has nothing to show on a card, and the
 					// migration flagged specialities that never had any.
@@ -48,9 +47,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			},
 			specialities: {
 				where: {
-					level: {
-						in: [SkillLevel.Experienced, SkillLevel.Expert],
-					},
+					level: { in: EXPERT_SKILL_LEVELS },
 					// `isOpenForMentoring` is the switch in the profile; a speciality
 					// with no questions has nothing to show on a card, and the
 					// migration flagged specialities that never had any.

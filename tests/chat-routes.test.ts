@@ -32,6 +32,9 @@ vi.mock("../src/services/prisma", () => ({
 		team: { findUnique: vi.fn() },
 		project: { findFirst: vi.fn(), findUnique: vi.fn() },
 		spaceMember: { findUnique: vi.fn() },
+		// The hub adapter checks the creator's speciality level; these tests are
+		// about chat, so the user is simply qualified.
+		speciality: { count: vi.fn().mockResolvedValue(1) },
 		auditLog: { create: vi.fn() },
 	},
 }));

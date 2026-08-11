@@ -13,6 +13,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { MenuProps } from "antd";
 import {
+	App,
 	Button,
 	Card,
 	Dropdown,
@@ -72,6 +73,11 @@ const DefaultCover = ({ title }: { title: string }) => (
 );
 
 export default function DevlogPostsAdminPage() {
+	// `App.useApp()` rather than the static `Modal.confirm`: a detached root
+	// cannot see the ConfigProvider above it, so the static dialog ignored the
+	// app's theme.
+	const { modal } = App.useApp();
+
 	const [selectedProjectId, setSelectedProjectId] = useState<string>();
 	const [announceTarget, setAnnounceTarget] = useState<AnnounceTarget | null>(
 		null,
@@ -114,7 +120,7 @@ export default function DevlogPostsAdminPage() {
 	});
 
 	const handleDelete = (id: string) => {
-		Modal.confirm({
+		modal.confirm({
 			title: "Delete this DevLog post?",
 			content: "This action cannot be undone.",
 			okText: "Delete",

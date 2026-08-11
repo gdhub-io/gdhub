@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, message, Typography } from "antd";
+import { App, Button, Flex, Modal, message, Typography } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import styles from "./ChatModal.module.scss";
@@ -28,6 +28,11 @@ type VacancyChatContext = {
 };
 
 export default function ChatTopic() {
+	// `App.useApp()` rather than the static `Modal.confirm`: a detached root
+	// cannot see the ConfigProvider above it, so the static dialog ignored the
+	// app's theme.
+	const { modal } = App.useApp();
+
 	const { t } = useTranslate();
 	const { chatContext, selectedRoomId, setChatContext } = useChat();
 	const queryClient = useQueryClient();
@@ -63,7 +68,7 @@ export default function ChatTopic() {
 
 	const handleResolveClick = () => {
 		if (!selectedRoomId) return;
-		Modal.confirm({
+		modal.confirm({
 			title: "Archive this chat?",
 			content:
 				"Once archived, the chat will move to the archive and new messages will be disabled.",

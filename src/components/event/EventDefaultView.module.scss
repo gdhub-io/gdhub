@@ -1,7 +1,19 @@
 .contentContainer {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  /* No horizontal padding of its own: PublicShell already sets the page
+     gutter, and adding to it pushed the content in past the header. */
+  padding: 40px 0 56px;
+  align-items: flex-start;
+
+  @media (max-width: 991px) {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 20px 0 32px;
+  }
 
   h2 {
     font-size: 18px;
@@ -10,8 +22,6 @@
   }
 
   @media (max-width: 600px) {
-    padding: 8px;
-
     h2 {
       font-size: 15px;
     }
@@ -47,6 +57,25 @@
         }
       }
     }
+  }
+
+  /* The panels carry the reading width; the cover takes what is left. */
+  .main {
+    min-width: 0;
+  }
+
+  .coverColumn {
+    width: 480px;
+    flex: none;
+  }
+
+  .cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--gd-radius-panel);
+    overflow: hidden;
+    box-shadow: var(--gd-elevation-e3);
   }
 
   .itemDescription {

@@ -1,7 +1,7 @@
 import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
-import { json } from "@/lib/api-handlers";
+import { json, withAuth } from "@/lib/api-handlers";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 import { isProjectAvailableOnStores } from "@/services/prisma/queries";
@@ -35,7 +35,7 @@ const toMaxDateMap = <TItem>(
 	return result;
 };
 
-export async function GET() {
+export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	const result = await runWithCronLog(
 		"project-status-maintenance",
 		async () => {
@@ -392,4 +392,4 @@ export async function GET() {
 	);
 
 	return json(result ?? null);
-}
+});

@@ -823,7 +823,7 @@ const MyTeam = () => {
 
 	const handleDeleteInvestor = async (id: string) => {
 		const investor = investors?.data?.find((inv) => inv.id === id);
-		Modal.confirm({
+		modal.confirm({
 			title: (
 				<span>
 					{t(
