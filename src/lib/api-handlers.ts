@@ -93,6 +93,12 @@ export interface AuthOptions {
 }
 
 function bearerMatches(req: NextRequest, expected: string) {
+	// An unset secret must never authenticate anyone. Without this, `expected`
+	// of "" compares against the literal header `Bearer ` — which any caller can
+	// send — so a missing environment variable would read as a guard while
+	// letting the whole world through.
+	if (!expected) return false;
+
 	const header = req.headers.get("authorization");
 	return header === `Bearer ${expected}`;
 }

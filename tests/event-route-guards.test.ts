@@ -73,6 +73,42 @@ describe("event API — every route states what it lets you do", () => {
 	});
 });
 
+describe("admin event routes", () => {
+	const ADMIN_ROUTES = [
+		["src/app/api/admin/events/route.ts", "admin.events.view"],
+		["src/app/api/admin/event/[id]/route.ts", "admin.events.manage"],
+	] as const;
+
+	it.each(ADMIN_ROUTES)("%s is guarded by %s", (route, permission) => {
+		expect(readFileSync(route, "utf8")).toContain(permission);
+	});
+
+	it("lets staff preview an announcement but only manage may send it", () => {
+		const source = readFileSync(
+			"src/app/api/admin/event/[id]/announce/route.ts",
+			"utf8",
+		);
+
+		// The GET is a preview and reads; the POST publishes to the outside world.
+		const [, get, post] = source.split(/export const (?:GET|POST) = pipe\(/);
+		expect(get).toContain("admin.events.view");
+		expect(post).toContain("admin.events.manage");
+	});
+
+	it("refuses to announce anything that is not on the public web", () => {
+		const source = readFileSync(
+			"src/app/api/admin/event/[id]/announce/route.ts",
+			"utf8",
+		);
+
+		// Both verbs check it: a preview of a draft would show a message linking
+		// to a 404, and sending one would publish that link.
+		expect(source.match(/EventStatus\.Published \|\| !event\.slug/g)).toHaveLength(
+			2,
+		);
+	});
+});
+
 describe("event listings — a draft belongs to its organiser", () => {
 	it("never lets a caller-supplied status reach past the published catalogue", () => {
 		for (const file of ["src/app/api/events/route.ts", "src/app/api/events-count/route.ts"]) {

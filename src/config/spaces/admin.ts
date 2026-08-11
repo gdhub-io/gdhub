@@ -15,6 +15,9 @@ export const adminSpace = defineSpace({
 		roles: ["view", "manage"],
 		posts: ["view", "manage"],
 		devlog_posts: ["view", "manage"],
+		// The whole catalogue, including drafts. Note this is not a role inside
+		// any event: staff moderate the listing, they do not join the space (§3.1).
+		events: ["view", "manage"],
 		projects: ["view", "manage"],
 		// Workflow from the platform side: the template library and editing any
 		// project's process. Not to be confused with `project.workflow` (§3.4).

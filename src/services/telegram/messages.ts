@@ -1,5 +1,10 @@
 import type { OutputData } from "@editorjs/editorjs";
-import type { BlogPost, Project, ProjectReport } from "@gdhub-io/gdhub-prisma";
+import type {
+	BlogPost,
+	Event,
+	Project,
+	ProjectReport,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -11,6 +16,8 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { isHeadlineEvent } from "@/helpers/event";
+import { formatEventPeriod } from "@/helpers/format";
 import {
 	escapeTelegramHtml,
 	htmlFragmentToPlainText,
@@ -351,6 +358,99 @@ export const blogPostMessageLinkedIn = (post: BlogPostForMessage) => {
 	let message = `📝 ${post.title}`;
 	if (short) message += `\n\n${short}`;
 	message += `\n\n${blogPostUrl(post)}`;
+
+	return message;
+};
+
+export type EventForMessage = Pick<
+	Event,
+	"title" | "slug" | "shortDescription" | "image" | "type"
+> & {
+	schedule?: Array<{ startDate: Date | string; endDate: Date | string }>;
+};
+
+const eventUrl = (event: EventForMessage) =>
+	`https://gdhub.io/event/${event.slug}`;
+
+/** When the event runs, in the same words its page and share card use. */
+const eventDates = (event: EventForMessage) => {
+	const schedule = event.schedule ?? [];
+	if (!schedule.length) return "";
+
+	return formatEventPeriod(
+		schedule[0].startDate,
+		schedule[schedule.length - 1].endDate,
+		"en",
+		"day",
+	);
+};
+
+/**
+ * Share card for an event announcement.
+ *
+ * The same two cards the public page picks between, chosen by the same rule —
+ * a conference or game lab gets the full-bleed one, everything else the split
+ * card. An announcement and the page it links to must not disagree about how
+ * big the event is. Both cards refuse to render without a cover, so an event
+ * with no image falls back to the generic card.
+ */
+export const eventOgImage = (event: EventForMessage) => {
+	const base = process.env.NEXT_PUBLIC_APP_URL || "https://gdhub.io";
+	const params = new URLSearchParams({ t: event.title });
+
+	if (event.shortDescription) params.set("st", event.shortDescription);
+	if (!event.image) return `${base}/api/og?${params.toString()}`;
+
+	params.set("img", event.image);
+	if (event.type) params.set("type", event.type);
+
+	const dates = eventDates(event);
+	if (dates) params.set("date", dates);
+
+	return `${base}/api/${isHeadlineEvent(event.type) ? "og-event-big" : "og-event-small"}?${params.toString()}`;
+};
+
+const eventLines = (event: EventForMessage) => {
+	const dates = eventDates(event);
+
+	return {
+		dates: dates ? `🗓 ${dates}` : "",
+		teaser: event.shortDescription?.trim() ?? "",
+	};
+};
+
+// Telegram HTML variant (news channels).
+export const eventMessageTelegram = (event: EventForMessage) => {
+	const { dates, teaser } = eventLines(event);
+
+	let message = `🎟 <b>${escapeTelegramHtml(event.title)}</b>`;
+	if (dates) message += `\n${escapeTelegramHtml(dates)}`;
+	if (teaser) message += `\n\n${escapeTelegramHtml(teaser)}`;
+	message += `\n\n<a href="${eventUrl(event)}">Join the event</a>`;
+
+	return message;
+};
+
+// Discord Markdown variant (no HTML).
+export const eventMessageDiscord = (event: EventForMessage) => {
+	const { dates, teaser } = eventLines(event);
+
+	let message = `🎟 **${event.title}**`;
+	if (dates) message += `\n${dates}`;
+	if (teaser) message += `\n\n${teaser}`;
+	message += `\n\n${eventUrl(event)}`;
+
+	return message;
+};
+
+// Plain-text variant for LinkedIn (no markup; URLs are auto-linked by LinkedIn).
+export const eventMessageLinkedIn = (event: EventForMessage) => {
+	const { dates, teaser } = eventLines(event);
+
+	let message = `🎟 ${event.title}`;
+	if (dates) message += `\n${dates}`;
+	if (teaser) message += `\n\n${teaser}`;
+	message += `\n\n${eventUrl(event)}`;
 
 	return message;
 };
