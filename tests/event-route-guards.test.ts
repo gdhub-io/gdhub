@@ -73,17 +73,30 @@ describe("event API — every route states what it lets you do", () => {
 	});
 });
 
+/** Every source file under a directory, recursively. */
+function sourceFiles(dir: string): string[] {
+	return readdirSync(dir).flatMap((entry) => {
+		const full = join(dir, entry);
+
+		if (statSync(full).isDirectory()) return sourceFiles(full);
+		return /\.tsx?$/.test(entry) ? [full] : [];
+	});
+}
+
 describe("event links point at a route that exists", () => {
 	// `/event/[slug]` is the only public event route: there is no middleware, no
 	// `[locale]` segment and no rewrite, so every `/en/event/…` or `/event/en/…`
 	// link the app built was a guaranteed 404.
-	const LINKING_FILES = [
-		"src/app/(app)/(spaces)/user/events/MyEventsClient.tsx",
-		"src/components/LatestEvents/index.tsx",
-		"src/components/spaces/EventSpace/index.tsx",
-		"src/components/events/BannerEventSlider.tsx",
-		"src/components/events/EventCard.tsx",
-	];
+	// Discovered rather than listed: a new component that links to an event is
+	// exactly the one likeliest to reintroduce the prefix, and a hand-kept list
+	// would not know about it.
+	const LINKING_FILES = sourceFiles("src").filter((file) =>
+		readFileSync(file, "utf8").includes("/event/${"),
+	);
+
+	it("finds the files that link to events", () => {
+		expect(LINKING_FILES.length).toBeGreaterThan(4);
+	});
 
 	it.each(LINKING_FILES)("%s builds no locale segment", (file) => {
 		const source = readFileSync(file, "utf8");

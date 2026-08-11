@@ -20,6 +20,7 @@ import {
 	message,
 	Select,
 	Space,
+	Switch,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -83,6 +84,15 @@ export default function EventsAdminPage() {
 				})
 				.then((res) => res.data),
 		refetchOnWindowFocus: false,
+	});
+
+	const { mutateAsync: setFeatured } = useMutation({
+		mutationFn: ({ id, isFeatured }: { id: string; isFeatured: boolean }) =>
+			axios.patch(`/api/admin/event/${id}`, { isFeatured }),
+		onSuccess: async () => {
+			await refetch();
+		},
+		onError: () => message.error("Could not change the featured flag"),
 	});
 
 	const { mutateAsync: deleteEvent } = useMutation({
@@ -179,6 +189,22 @@ export default function EventsAdminPage() {
 			key: "status",
 			render: (value) => (
 				<StatusDot tone={STATUS_TONE[value] ?? "neutral"} label={value} />
+			),
+		},
+		{
+			// The catalogue leads with one event; this is where it is chosen.
+			title: "Featured",
+			dataIndex: "isFeatured",
+			key: "isFeatured",
+			align: "center",
+			render: (isFeatured, record) => (
+				<Switch
+					size="small"
+					checked={!!isFeatured}
+					onChange={(checked) =>
+						setFeatured({ id: record.id, isFeatured: checked })
+					}
+				/>
 			),
 		},
 		{

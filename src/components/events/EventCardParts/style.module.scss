@@ -1,0 +1,56 @@
+/* The cover is the card's colour: a direction tint, or the organiser's own
+   image laid over it. The chips sit on top either way. */
+.cover {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	height: 160px;
+	padding: var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+/* What the old past-event cards did: colour drains out, so a finished event
+   reads as background next to the ones still to come. The chips keep their own
+   contrast — the date is the thing people scan for. */
+.muted {
+	filter: grayscale(1);
+
+	.typeChip,
+	.dateChip {
+		filter: none;
+	}
+}
+
+.typeChip {
+	padding: 4px 10px;
+	border-radius: var(--gd-radius-pill);
+	background: rgb(255 255 255 / 80%);
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+	color: var(--gd-color-text);
+}
+
+.dateChip {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 6px 10px;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+}
+
+.day {
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: -0.3px;
+	color: var(--gd-color-text);
+}
+
+.month {
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0.4px;
+	color: var(--gd-color-text-tertiary);
+}

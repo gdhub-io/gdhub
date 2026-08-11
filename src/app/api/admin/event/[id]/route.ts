@@ -1,13 +1,46 @@
+import { z } from "zod";
 import {
 	apiError,
 	json,
 	pipe,
 	type SessionUser,
 	withAuth,
+	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { deleteSpaceMembership } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
+
+const EventFlagsSchema = z.object({
+	isFeatured: z.boolean(),
+});
+
+/**
+ * Editorial flags — what the catalogue leads with.
+ *
+ * Featuring is a hub decision, not the organiser's: it is the platform putting
+ * one event at the top of a page everybody sees. So it lives here rather than
+ * in event settings, and needs `admin.events.manage`.
+ */
+export const PATCH = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "admin.events.manage" }),
+	withValidation(EventFlagsSchema),
+)(async (_req, ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+
+	const { id } = (await ctx.params) as { id: string };
+	const { isFeatured } = body as z.infer<typeof EventFlagsSchema>;
+
+	const event = await prisma.event.update({
+		where: { id },
+		data: { isFeatured },
+		select: { id: true, isFeatured: true },
+	});
+
+	return json(event);
+});
 
 /**
  * Moderation delete: staff run the catalogue but hold no role inside an event

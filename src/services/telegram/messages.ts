@@ -419,11 +419,21 @@ const eventLines = (event: EventForMessage) => {
 	};
 };
 
+/**
+ * The lead-in every channel opens with.
+ *
+ * An announcement lands in a feed among everything else, so it has to say where
+ * it comes from before it says what it is — the title alone reads as somebody
+ * else's event that happens to be linked.
+ */
+const EVENT_LEAD = "New event on gdhub.io";
+
 // Telegram HTML variant (news channels).
 export const eventMessageTelegram = (event: EventForMessage) => {
 	const { dates, teaser } = eventLines(event);
 
-	let message = `🎟 <b>${escapeTelegramHtml(event.title)}</b>`;
+	let message = `🎟 <b>${EVENT_LEAD}</b>`;
+	message += `\n\n<b>${escapeTelegramHtml(event.title)}</b>`;
 	if (dates) message += `\n${escapeTelegramHtml(dates)}`;
 	if (teaser) message += `\n\n${escapeTelegramHtml(teaser)}`;
 	message += `\n\n<a href="${eventUrl(event)}">Join the event</a>`;
@@ -435,7 +445,8 @@ export const eventMessageTelegram = (event: EventForMessage) => {
 export const eventMessageDiscord = (event: EventForMessage) => {
 	const { dates, teaser } = eventLines(event);
 
-	let message = `🎟 **${event.title}**`;
+	let message = `🎟 **${EVENT_LEAD}**`;
+	message += `\n\n**${event.title}**`;
 	if (dates) message += `\n${dates}`;
 	if (teaser) message += `\n\n${teaser}`;
 	message += `\n\n${eventUrl(event)}`;
@@ -447,7 +458,8 @@ export const eventMessageDiscord = (event: EventForMessage) => {
 export const eventMessageLinkedIn = (event: EventForMessage) => {
 	const { dates, teaser } = eventLines(event);
 
-	let message = `🎟 ${event.title}`;
+	let message = `🎟 ${EVENT_LEAD}`;
+	message += `\n\n${event.title}`;
 	if (dates) message += `\n${dates}`;
 	if (teaser) message += `\n\n${teaser}`;
 	message += `\n\n${eventUrl(event)}`;

@@ -1,0 +1,26 @@
+.catalogue {
+	width: 100%;
+}
+
+.sectionTitle {
+	margin: 0 0 var(--gd-space-3);
+	font-size: 20px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.sectionHead {
+	margin-bottom: var(--gd-space-3);
+
+	.sectionTitle {
+		margin-bottom: 0;
+	}
+}
+
+.typeFilter {
+	min-width: 180px;
+}
+
+.empty {
+	padding: var(--gd-space-12) 0;
+}

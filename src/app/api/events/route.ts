@@ -116,11 +116,18 @@ export const GET = pipe(
 					}
 				: undefined,
 		},
+		// `directionId` rides along with the dates: a card tints its cover by the
+		// craft of the first session, the same way the organiser's own list and
+		// the schedule timeline do.
 		include: withDates
 			? {
-					schedule: { select: { startDate: true, endDate: true } },
+					schedule: {
+						orderBy: { startDate: "asc" },
+						select: { startDate: true, endDate: true, directionId: true },
+					},
 				}
 			: undefined,
+		orderBy: { createdAt: "desc" },
 	});
 
 	return json(events);

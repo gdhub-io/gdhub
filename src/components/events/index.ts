@@ -1,5 +1,5 @@
-export * from "./BannerEventSlider";
-export { default as EmptyEventState } from "./EmptyEventState";
-export * from "./EventCard";
-export * from "./EventSection";
-export * from "./PastEventCard";
+export * from "./EventCardParts";
+export * from "./EventsCatalogue";
+export * from "./FeaturedEventCard";
+export * from "./MyEventCard";
+export * from "./PublicEventCard";
