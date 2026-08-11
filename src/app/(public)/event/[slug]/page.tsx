@@ -1,3 +1,4 @@
+import { EventStatus } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
@@ -54,13 +55,22 @@ const buildEventOgImage = (event: LoadedEvent) => {
 	return `${appUrl}/api/${card}?${params.toString()}`;
 };
 
+/** An event is on the public web once it is published; archiving leaves it up. */
+const PUBLIC_STATUSES: EventStatus[] = [
+	EventStatus.Published,
+	EventStatus.Archived,
+];
+
 const loadEvent = cache(
 	async (slug: string): Promise<EventPageProps["event"] | null> => {
 		// Speakers were never loaded here, so the programme listed sessions with
 		// nobody attached to them. `level` and `specialization` come along because
 		// the speaker sheet introduces a person, not just a name.
 		const event = await prisma.event.findFirst({
-			where: { slug, lang: "en" },
+			// Public means published. Without this the page served drafts to anyone
+			// holding the slug, and an unpublished event stayed readable — the
+			// organiser's own preview goes through the event space, which is gated.
+			where: { slug, lang: "en", status: { in: PUBLIC_STATUSES } },
 			include: {
 				schedule: {
 					orderBy: { startDate: "asc" },

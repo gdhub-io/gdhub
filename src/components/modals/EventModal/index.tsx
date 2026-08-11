@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import { EventFormat, EventType, Language } from "@/config/prisma-enums";
+import { useQualifiedDirections } from "@/hooks/speciality";
 import styles from "./style.module.scss";
 
 const { RangePicker } = DatePicker;
@@ -90,6 +91,13 @@ const EventModal: React.FC<EventModalProps> = ({
 				.get<WorkDirection[]>("/api/dictionary/work-directions")
 				.then((res) => res.data),
 	});
+
+	// Staff organise on the platform's behalf, so they get the full list; a
+	// member may only run an event in a direction they are expert in.
+	const { options: qualifiedDirections } = useQualifiedDirections(
+		{},
+		{ enabled: !isStaff },
+	);
 
 	useEffect(() => {
 		if (eventData?.data) {
@@ -523,10 +531,12 @@ const EventModal: React.FC<EventModalProps> = ({
 									"Select direction",
 								)}
 								options={
-									workDirections?.map((direction) => ({
-										label: direction.name,
-										value: direction.id,
-									})) ?? []
+									isStaff
+										? (workDirections?.map((direction) => ({
+												label: direction.name,
+												value: direction.id,
+											})) ?? [])
+										: qualifiedDirections
 								}
 							/>
 						</Form.Item>

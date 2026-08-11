@@ -9,6 +9,7 @@ import {
 	IconMail,
 	IconPencil,
 	IconTrash,
+	IconUserMinus,
 } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -344,6 +345,21 @@ export default function EventMembersPage() {
 		await sendMessage();
 	};
 
+	const { mutateAsync: removeMember } = useMutation({
+		mutationFn: (memberId: string) =>
+			axios.delete(`/api/user/event/${eventId}/members/${memberId}`),
+		onSuccess: () => {
+			message.success(
+				t("event.members.remove.success", "Member removed from the event"),
+			);
+			refetch();
+		},
+		onError: () =>
+			message.error(
+				t("event.members.remove.error", "Could not remove the member"),
+			),
+	});
+
 	const renderItems: (record: EventMember) => MenuProps["items"] = useCallback(
 		(record) => {
 			const items: NonNullable<MenuProps["items"]> = [
@@ -355,8 +371,30 @@ export default function EventMembersPage() {
 				},
 			];
 
+			const removeItem: NonNullable<MenuProps["items"]>[number][] = [
+				{ type: "divider", key: "remove-divider" },
+				{
+					key: "remove",
+					label: t("event.members.remove", "Remove from event"),
+					icon: <IconUserMinus />,
+					danger: true,
+					onClick: () =>
+						confirmModal.confirm({
+							title: t("event.members.remove", "Remove from event"),
+							centered: true,
+							content: t(
+								"event.members.remove.confirm",
+								"They lose their place on this event and the access that came with it. Their account is not affected.",
+							),
+							okText: t("event.members.remove.ok", "Remove"),
+							okButtonProps: { danger: true },
+							onOk: () => removeMember(record.id),
+						}),
+				},
+			];
+
 			if (!certificationEnabled) {
-				return items;
+				return [...items, ...removeItem];
 			}
 
 			const cert = record.certificate;
@@ -368,7 +406,7 @@ export default function EventMembersPage() {
 					icon: <IconFilePlus />,
 					onClick: () => createCertificate(record.id),
 				});
-				return items;
+				return [...items, ...removeItem];
 			}
 
 			const status = cert.status ?? "DRAFT";
@@ -460,7 +498,7 @@ export default function EventMembersPage() {
 				children,
 			});
 
-			return items;
+			return [...items, ...removeItem];
 		},
 		[
 			t,
@@ -471,6 +509,7 @@ export default function EventMembersPage() {
 			createCertificate,
 			distributeCertificate,
 			deleteCertificate,
+			removeMember,
 		],
 	);
 
