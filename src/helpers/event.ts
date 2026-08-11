@@ -63,6 +63,36 @@ export function formatScheduleDay(
 }
 
 /**
+ * The calendar chip over a card's cover: a day line and a month line.
+ *
+ * A single day is `11 / AUG`. A run of days keeps one month line and joins the
+ * numbers — `11-17 / AUG` — and only when the run crosses a month boundary does
+ * the month line double up: `25-7 / AUG-SEP`. Printing just the first day made a
+ * week-long conference look like a one-evening meetup.
+ */
+export function formatDateChip(
+	start: string | Date,
+	end: string | Date,
+	locale = "en",
+) {
+	const from = dayjs(start).locale(locale);
+	const to = dayjs(end).locale(locale);
+
+	const month = (value: dayjs.Dayjs) => value.format("MMM").toUpperCase();
+
+	if (from.isSame(to, "day")) {
+		return { day: from.format("D"), month: month(from) };
+	}
+
+	return {
+		day: `${from.format("D")}-${to.format("D")}`,
+		month: from.isSame(to, "month")
+			? month(from)
+			: `${month(from)}-${month(to)}`,
+	};
+}
+
+/**
  * Has the event finished?
  *
  * The last item's end is what ends an event, not the first one's — a three-day

@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { MenuProps } from "antd";
-import { Button, Dropdown, Modal, Popover, Row, Typography } from "antd";
+import { App, Button, Dropdown, Modal, Popover, Row, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -30,6 +30,11 @@ import styles from "./style.module.scss";
 const { Title, Text } = Typography;
 
 export default function BlogPostsAdminPage() {
+	// `App.useApp()` rather than the static `Modal.confirm`: a detached root
+	// cannot see the ConfigProvider above it, so the static dialog ignored the
+	// app's theme.
+	const { modal } = App.useApp();
+
 	const router = useRouter();
 	const [showModal, setShowModal] = useState(false);
 	const [postId, setPostId] = useState<string | undefined>(undefined);
@@ -55,7 +60,7 @@ export default function BlogPostsAdminPage() {
 	);
 
 	const handleDelete = (recordId: string) => {
-		Modal.confirm({
+		modal.confirm({
 			title: "Are you sure you want to delete this post?",
 			content: "This action cannot be undone.",
 			okText: "Delete",

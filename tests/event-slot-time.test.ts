@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+	formatDateChip,
 	formatScheduleDay,
 	formatSlotTime,
 	hasEventEnded,
@@ -73,5 +74,31 @@ describe("formatScheduleDay", () => {
 		expect(
 			formatScheduleDay("2026-08-11T06:00:00Z", "2026-11-26T06:00:00Z"),
 		).toBe("11 August – 26 November");
+	});
+});
+
+describe("formatDateChip", () => {
+	it("shows one number for a single-day event", () => {
+		expect(
+			formatDateChip("2026-08-11T09:00:00Z", "2026-08-11T18:00:00Z"),
+		).toEqual({ day: "11", month: "AUG" });
+	});
+
+	it("joins the days and keeps one month for a run inside it", () => {
+		expect(
+			formatDateChip("2026-08-11T09:00:00Z", "2026-08-17T18:00:00Z"),
+		).toEqual({ day: "11-17", month: "AUG" });
+	});
+
+	it("doubles the month line only when the run crosses one", () => {
+		expect(
+			formatDateChip("2026-08-25T09:00:00Z", "2026-09-07T18:00:00Z"),
+		).toEqual({ day: "25-7", month: "AUG-SEP" });
+	});
+
+	it("handles a run across the new year", () => {
+		expect(
+			formatDateChip("2026-12-28T09:00:00Z", "2027-01-03T18:00:00Z"),
+		).toEqual({ day: "28-3", month: "DEC-JAN" });
 	});
 });

@@ -9,7 +9,7 @@ import type {
 import { IconEdit, IconEye, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { T, useTranslate } from "@tolgee/react";
-import { Button, Modal, message, Space, Typography } from "antd";
+import { App, Button, Modal, message, Space, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -35,6 +35,11 @@ type ProjectReportWithProject = ProjectReport & {
 };
 
 export default function MyProjectDevlogPage() {
+	// `App.useApp()` rather than the static `Modal.confirm`: a detached root
+	// cannot see the ConfigProvider above it, so the static dialog ignored the
+	// app's theme.
+	const { modal } = App.useApp();
+
 	const { t } = useTranslate();
 	const [openDevlogPostModal, setOpenDevlogPostModal] = useState(false);
 	const { project } = useCurrentProject();
@@ -65,7 +70,7 @@ export default function MyProjectDevlogPage() {
 	const handleDeleteReport = async (id: string) => {
 		if (isProjectArchived) return;
 
-		Modal.confirm({
+		modal.confirm({
 			title: t(
 				"modal.dev-log-post.delete-confirm",
 				"Are you sure you want to delete this report?",

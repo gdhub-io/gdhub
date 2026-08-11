@@ -59,18 +59,16 @@ export function ProtectedPageHeader({
 					{showBackButton &&
 						(backButtonUrl ? (
 							<Link href={backButtonUrl}>
-								<Button
-									type="text"
-									icon={<IconArrowLeft />}
-									style={{ padding: 0 }}
-								/>
+								{/* No `padding: 0`: it shrank the button to the icon's own box,
+								    leaving the hover fill nowhere to show. The square tile is
+								    what the design draws, and antd's default size already is it. */}
+								<Button type="text" icon={<IconArrowLeft />} />
 							</Link>
 						) : (
 							<Button
 								type="text"
 								icon={<IconArrowLeft />}
 								onClick={() => router.back()}
-								style={{ padding: 0 }}
 							/>
 						))}
 					{!!title && (

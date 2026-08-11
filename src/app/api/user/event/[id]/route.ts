@@ -111,8 +111,16 @@ export const DELETE = pipe(
 
 	const { id } = (await ctx.params) as { id: string };
 
-	await prisma.event.delete({ where: { id } });
-	await deleteSpaceMembership("event", id);
+	// One transaction, because these two clean up the same thing from different
+	// sides. `EventMember` rows go with the event through the FK cascade, but
+	// `SpaceMember` — which is what actually grants access to the event space —
+	// is polymorphic and has no foreign key, so nothing removes it but this call.
+	// Run apart, a failure between them left memberships pointing at an event
+	// that no longer exists.
+	await prisma.$transaction(async (tx) => {
+		await deleteSpaceMembership("event", id, tx);
+		await tx.event.delete({ where: { id } });
+	});
 
 	return json({ success: true });
 });

@@ -136,14 +136,19 @@ export function buildAntdTheme({
 				defaultBg: "transparent",
 				defaultColor: r.text,
 				defaultBorderColor: r.borderStrong,
-				defaultHoverBg: r.surfaceSunken,
+				// Tints, not `surfaceSunken`: that token is the page background, so a
+				// button hovered on a page — the back arrow in a page header, a text
+				// button in a toolbar — lit up in exactly the colour it sat on and the
+				// feedback was invisible. A translucent fill darkens whatever is under
+				// it, which is what the fill scale is for.
+				defaultHoverBg: fills.base,
 				defaultHoverColor: r.text,
 				defaultHoverBorderColor: r.borderStrong,
-				defaultActiveBg: r.surfaceSunken,
+				defaultActiveBg: fills.strong,
 				defaultActiveColor: r.text,
 				defaultActiveBorderColor: r.borderFocus,
 				borderColorDisabled: r.border,
-				textHoverBg: r.surfaceSunken,
+				textHoverBg: fills.base,
 				primaryColor: r.onAction,
 			},
 			Input: {
