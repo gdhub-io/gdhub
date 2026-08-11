@@ -25,12 +25,30 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useCallback, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import ModernTable from "@/components/ModernTable";
+import { StatusDot, type StatusTone } from "@/components/ui/StatusDot";
+
+/**
+ * The four states a registration can be in.
+ *
+ * The design labels them "Attended", "Registered", "Certificate issued" and
+ * "No show", which is a richer lifecycle than `EventMemberStatus` has — the
+ * stored values are used here rather than renamed into states the model cannot
+ * tell apart.
+ */
+const MEMBER_STATUS_TONE: Record<string, StatusTone> = {
+	Approved: "success",
+	Pending: "warning",
+	Rejected: "danger",
+	Canceled: "neutral",
+};
+
 import AddEventMembersModal from "@/components/modals/AddEventMembersModal";
 import BatchAssignEventMembersModal from "@/components/modals/BatchAssignEventMembersModal";
 import EditEventMemberModal from "@/components/modals/EditEventMemberModal";
@@ -572,9 +590,10 @@ export default function EventMembersPage() {
 						dataIndex: "status",
 						key: "status",
 						render: (status: string) => (
-							<Tag color={status === "Approved" ? "green" : "default"}>
-								{status}
-							</Tag>
+							<StatusDot
+								tone={MEMBER_STATUS_TONE[status] ?? "neutral"}
+								label={status}
+							/>
 						),
 					},
 					...(certificationEnabled
@@ -610,14 +629,9 @@ export default function EventMembersPage() {
 						title: t("event.members.createdAt", "Registered at"),
 						dataIndex: "createdAt",
 						key: "createdAt",
-						render: (value: string) =>
-							new Date(value).toLocaleString(undefined, {
-								year: "numeric",
-								month: "2-digit",
-								day: "2-digit",
-								hour: "2-digit",
-								minute: "2-digit",
-							}),
+						// The day is what this column is scanned for; the minute it
+						// happened only makes the row harder to read.
+						render: (value: string) => dayjs(value).format("D MMM YYYY"),
 					},
 					{
 						title: t("event.members.actions", "Actions"),
