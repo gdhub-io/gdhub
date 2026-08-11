@@ -1,14 +1,14 @@
 import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
-import { json } from "@/lib/api-handlers";
+import { json, withAuth } from "@/lib/api-handlers";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
 const reminderDiffDays = [3, 14];
 const maxDaysWithoutResponse = 30;
 
-export async function GET() {
+export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	const result = await runWithCronLog("advice-request-reminder", async () => {
 		// REMINDER ADVICE REQUESTS
 		let needToNotifyAdviceRequests: typeof adviceRequestsToRemind = [];
@@ -169,4 +169,4 @@ export async function GET() {
 	});
 
 	return json(result ?? null);
-}
+});

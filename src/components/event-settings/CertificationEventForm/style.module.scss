@@ -1,0 +1,10 @@
+/* A row that separates the template from the fields above it. */
+.templateRow {
+	margin-top: var(--gd-space-4);
+	padding-top: var(--gd-space-4);
+	border-top: 1px solid var(--gd-color-border);
+}
+
+.actions {
+	margin-top: var(--gd-space-4);
+}

@@ -136,14 +136,19 @@ export function buildAntdTheme({
 				defaultBg: "transparent",
 				defaultColor: r.text,
 				defaultBorderColor: r.borderStrong,
-				defaultHoverBg: r.surfaceSunken,
+				// Tints, not `surfaceSunken`: that token is the page background, so a
+				// button hovered on a page — the back arrow in a page header, a text
+				// button in a toolbar — lit up in exactly the colour it sat on and the
+				// feedback was invisible. A translucent fill darkens whatever is under
+				// it, which is what the fill scale is for.
+				defaultHoverBg: fills.base,
 				defaultHoverColor: r.text,
 				defaultHoverBorderColor: r.borderStrong,
-				defaultActiveBg: r.surfaceSunken,
+				defaultActiveBg: fills.strong,
 				defaultActiveColor: r.text,
 				defaultActiveBorderColor: r.borderFocus,
 				borderColorDisabled: r.border,
-				textHoverBg: r.surfaceSunken,
+				textHoverBg: fills.base,
 				primaryColor: r.onAction,
 			},
 			Input: {
@@ -201,12 +206,16 @@ export function buildAntdTheme({
 				itemPaddingInline: space[3],
 				itemColor: r.textSecondary,
 				itemHoverColor: r.text,
-				itemHoverBg: r.surfaceSunken,
+				// `surfaceSunken` is the same value as the page background, so a menu
+				// sitting on the page had an invisible hover and an invisible current
+				// item — the same trap the filled-control fills fell into. A tint
+				// reads a step down from whatever is actually underneath.
+				itemHoverBg: fills.base,
 				// Navigation is not a brand surface. Colouring the current tab
 				// orange reads as an alert on a bar the user looks at all day, so
 				// "you are here" is carried by a neutral fill and extra weight.
 				itemSelectedColor: r.text,
-				itemSelectedBg: r.surfaceSunken,
+				itemSelectedBg: fills.strong,
 				horizontalItemSelectedColor: r.text,
 				horizontalItemSelectedBg: r.surfaceSunken,
 				// antd lets a horizontal menu stretch its items to the bar's own

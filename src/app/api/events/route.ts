@@ -7,7 +7,11 @@ import {
 import { z } from "zod";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { isStaff } from "@/services/access";
 import { prisma } from "@/services/prisma";
+
+/** The statuses the hub catalogue is allowed to show. */
+const LISTABLE: EventStatus[] = [EventStatus.Published, EventStatus.Archived];
 
 enum EventTimeStatus {
 	Upcoming = "upcoming",
@@ -43,7 +47,7 @@ export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "hub.events.view" }),
 	withValidation(GetEventsQuerySchema, "query"),
-)(async (_req, _ctx, { body }) => {
+)(async (_req, _ctx, { body, access }) => {
 	const query = body as GetEventsQuery;
 	const {
 		type,
@@ -90,15 +94,22 @@ export const GET = pipe(
 
 	const preparedStatus = typeof status === "string" ? [status] : status;
 
+	// `status` is a filter over what the hub shows, never a way to reach into it:
+	// asking for `Draft` used to return every organiser's unpublished event.
+	// Staff moderate the whole catalogue and are the exception.
+	const requested = (preparedStatus as EventStatus[] | undefined) ?? LISTABLE;
+	const visible =
+		access && isStaff(access)
+			? requested
+			: requested.filter((value) => LISTABLE.includes(value));
+
+	if (!visible.length) return json([]);
+
 	const events = await prisma.event.findMany({
 		where: {
 			type: type ? { in: type as EventType[] } : undefined,
 			lang: lang ? { equals: lang as Language } : undefined,
-			status: preparedStatus
-				? { in: preparedStatus as EventStatus[] }
-				: {
-						notIn: [EventStatus.Closed, EventStatus.Draft],
-					},
+			status: { in: visible },
 			schedule: timeWhere.OR?.length
 				? {
 						some: timeWhere,

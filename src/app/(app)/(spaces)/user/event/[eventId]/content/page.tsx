@@ -1,18 +1,29 @@
 "use client";
 
 import type { OutputData } from "@editorjs/editorjs";
-import { IconDeviceFloppy } from "@tabler/icons-react";
+import {
+	IconBrandYoutube,
+	IconCheck,
+	IconDeviceFloppy,
+	IconList,
+	IconListCheck,
+	IconListNumbers,
+	IconPhoto,
+	IconQuote,
+	IconSeparator,
+	IconTable,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, message, theme } from "antd";
+import { Button, Flex, message, Select, Tooltip } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { EventSpace } from "@/components/spaces/EventSpace";
 import styles from "./style.module.scss";
 
 export default function EventContentPage() {
-	const { token } = theme.useToken();
 	const { t } = useTranslate();
 	const params = useParams<{ eventId?: string }>();
 	const eventId = params?.eventId as string;
@@ -22,6 +33,7 @@ export default function EventContentPage() {
 		null,
 	);
 	const editorHolderRef = useRef<HTMLDivElement>(null);
+	const canvasRef = useRef<HTMLDivElement>(null);
 	const editorInitialized = useRef(false);
 
 	const { data: event, refetch: refetchEvent } = useQuery({
@@ -126,6 +138,51 @@ export default function EventContentPage() {
 		};
 	}, [initEditor, destroyEditor, event]);
 
+	/**
+	 * Keeps the caret in view while typing.
+	 *
+	 * The document scrolls inside the card rather than with the page, and a
+	 * browser only scrolls a caret into view for the scroller it considers the
+	 * document's own — so a line typed at the bottom edge walks out of sight.
+	 */
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+
+		const follow = () => {
+			const selection = window.getSelection();
+			if (!selection?.rangeCount) return;
+
+			const caret = selection.getRangeAt(0).getBoundingClientRect();
+			// A collapsed range at the start of an empty block has no box to read.
+			if (!caret.height) return;
+
+			const view = canvas.getBoundingClientRect();
+			const margin = 48;
+
+			if (caret.bottom > view.bottom - margin) {
+				canvas.scrollTop += caret.bottom - view.bottom + margin;
+			} else if (caret.top < view.top + margin) {
+				canvas.scrollTop -= view.top + margin - caret.top;
+			}
+		};
+
+		canvas.addEventListener("input", follow);
+		canvas.addEventListener("keyup", follow);
+		return () => {
+			canvas.removeEventListener("input", follow);
+			canvas.removeEventListener("keyup", follow);
+		};
+	}, []);
+
+	/**
+	 * Adds a block through Editor.js's public API, so the toolbar and the "+"
+	 * menu put the same thing in the document.
+	 */
+	const insertBlock = (type: string, data?: Record<string, unknown>) => {
+		editorInstance.current?.blocks.insert(type, data);
+	};
+
 	const handleSaveContent = async () => {
 		if (!editorInstance.current) return;
 
@@ -143,25 +200,119 @@ export default function EventContentPage() {
 			title={t("event.content.title", "Event description")}
 			description={t("event.content.hint", "Describe the event in detail.")}
 			actions={
-				<Button
-					icon={<IconDeviceFloppy />}
-					onClick={handleSaveContent}
-					loading={isSaving}
-					type="primary"
-				>
-					{t("event.content.saveButton", "Save")}
-				</Button>
+				<Flex align="center" gap={12}>
+					{/* When it was last written down: the one fact that decides
+					    whether it is safe to close the tab. */}
+					{event?.data?.updatedAt && (
+						<Flex align="center" gap={6} className={styles.saved}>
+							<IconCheck size={14} />
+							{t("event.content.savedAt", "Saved")}{" "}
+							{dayjs(event.data.updatedAt).fromNow()}
+						</Flex>
+					)}
+					<Button
+						icon={<IconDeviceFloppy />}
+						onClick={handleSaveContent}
+						loading={isSaving}
+						type="primary"
+					>
+						{t("event.content.saveButton", "Save")}
+					</Button>
+				</Flex>
 			}
 		>
-			<div className={styles.editorContainer}>
-				<div
-					className={styles.editor}
-					style={{
-						backgroundColor: token.colorBgBase,
-						borderRadius: token.borderRadius,
-					}}
+			<div className={styles.editor}>
+				{/* Only what the editor is actually configured with: the design also
+				    shows a code button, and there is no code tool to put behind it. */}
+				<Flex
+					align="center"
+					justify="center"
+					gap={4}
+					className={styles.toolbar}
 				>
-					<div id={editorHolderId} ref={editorHolderRef} />
+					<Select
+						size="small"
+						variant="borderless"
+						value="paragraph"
+						onChange={(value) => insertBlock(value)}
+						popupMatchSelectWidth={false}
+						options={[
+							{ value: "paragraph", label: t("editor.block.text", "Text") },
+							{ value: "header", label: t("editor.block.heading", "Heading") },
+						]}
+					/>
+					<span className={styles.divider} />
+					<Tooltip title={t("editor.block.list", "Bulleted list")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconList size={16} />}
+							onClick={() => insertBlock("list", { style: "unordered" })}
+						/>
+					</Tooltip>
+					<Tooltip title={t("editor.block.listOrdered", "Numbered list")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconListNumbers size={16} />}
+							onClick={() => insertBlock("list", { style: "ordered" })}
+						/>
+					</Tooltip>
+					<Tooltip title={t("editor.block.checklist", "Checklist")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconListCheck size={16} />}
+							onClick={() => insertBlock("checklist")}
+						/>
+					</Tooltip>
+					<Tooltip title={t("editor.block.quote", "Quote")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconQuote size={16} />}
+							onClick={() => insertBlock("quote")}
+						/>
+					</Tooltip>
+					<span className={styles.divider} />
+					<Tooltip title={t("editor.block.image", "Image")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconPhoto size={16} />}
+							onClick={() => insertBlock("image")}
+						/>
+					</Tooltip>
+					<Tooltip title={t("editor.block.table", "Table")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconTable size={16} />}
+							onClick={() => insertBlock("table")}
+						/>
+					</Tooltip>
+					<Tooltip title={t("editor.block.embed", "Embed")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconBrandYoutube size={16} />}
+							onClick={() => insertBlock("embed")}
+						/>
+					</Tooltip>
+					<Tooltip title={t("editor.block.delimiter", "Divider")}>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconSeparator size={16} />}
+							onClick={() => insertBlock("delimiter")}
+						/>
+					</Tooltip>
+				</Flex>
+
+				<div className={styles.canvas} ref={canvasRef}>
+					<div className={styles.sheet}>
+						<div id={editorHolderId} ref={editorHolderRef} />
+					</div>
 				</div>
 			</div>
 		</EventSpace>

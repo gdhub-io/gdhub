@@ -5,6 +5,7 @@ import { useTranslate } from "@tolgee/react";
 import {
 	Button,
 	Col,
+	Flex,
 	Form,
 	Grid,
 	Input,
@@ -185,200 +186,200 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 				initialValues={{ ...event?.data }}
 				requiredMark="optional"
 			>
-				<Row gutter={[16, 16]}>
-					{isBigEvent ? (
-						<Col span={24} style={{ marginBottom: 24 }}>
-							{!cover ? (
-								<Form.Item
-									label={t("event.modal.image", "Image")}
-									name="image"
-									valuePropName="image"
-									noStyle
-								>
-									<ImgCrop aspect={16 / 9} cropShape="rect" showGrid showReset>
-										<Upload.Dragger
-											{...uploadProps}
-											className={styles.cover}
-											style={{
-												aspectRatio: "16 / 9",
-												width: "100%",
-												maxHeight: 500,
-											}}
-										>
-											<p className="ant-upload-text">
-												{t("event.modal.image.add", "Add event image")}
-											</p>
-											<p className="ant-upload-hint">
-												{t(
-													"event.modal.image.hint",
-													"Click or drag image here. JPG, PNG. 16:9 recommended.",
-												)}
-											</p>
-										</Upload.Dragger>
-									</ImgCrop>
-								</Form.Item>
-							) : (
-								<Spin spinning={coverProcessing}>
-									<div
-										className={styles.cover}
-										style={{ aspectRatio: "16 / 9" }}
+				<div className={styles.panel}>
+					<Row gutter={[16, 16]}>
+						{isBigEvent ? (
+							<Col span={24} style={{ marginBottom: 24 }}>
+								{!cover ? (
+									<Form.Item
+										label={t("event.modal.image", "Image")}
+										name="image"
+										valuePropName="image"
+										noStyle
 									>
-										<Image src={cover + "?w=1200"} fill alt="" />
-										<Popover
-											content={t(
-												"event.modal.image.deletePopover",
-												"Remove image",
-											)}
+										<ImgCrop
+											aspect={16 / 9}
+											cropShape="rect"
+											showGrid
+											showReset
 										>
-											<Button
-												shape="circle"
-												type="primary"
-												className="remove-cover-btn"
-												onClick={handleCoverDelete}
-												icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
-											/>
-										</Popover>
-									</div>
-								</Spin>
-							)}
-						</Col>
-					) : null}
-
-					<Col span={isBigEvent || !screens.md ? 24 : 8}>
-						{!isBigEvent &&
-							(!cover ? (
-								<Form.Item
-									label={t("event.modal.image", "Image")}
-									name="image"
-									valuePropName="image"
-									noStyle
-								>
-									<ImgCrop aspect={4 / 5} cropShape="rect" showGrid showReset>
-										<Upload.Dragger
-											{...uploadProps}
+											<Upload.Dragger
+												{...uploadProps}
+												className={styles.cover}
+												style={{
+													aspectRatio: "16 / 9",
+													width: "100%",
+													maxHeight: 500,
+												}}
+											>
+												<p className="ant-upload-text">
+													{t("event.modal.image.add", "Add cover image")}
+												</p>
+												<p className="ant-upload-hint">
+													{t(
+														"event.modal.image.hint",
+														"Drop a 16:9 cover here, or click to upload",
+													)}
+												</p>
+											</Upload.Dragger>
+										</ImgCrop>
+									</Form.Item>
+								) : (
+									<Spin spinning={coverProcessing}>
+										<div
 											className={styles.cover}
-											style={{ aspectRatio: "4 / 5", maxHeight: 500 }}
+											style={{ aspectRatio: "16 / 9" }}
 										>
-											<p className="ant-upload-text">
-												{t("event.modal.image.add", "Add event image")}
-											</p>
-											<p className="ant-upload-hint">
-												{t(
-													"event.modal.image.hint",
-													"Click or drag image here. JPG, PNG. 4:5 recommended.",
+											<Image src={cover + "?w=1200"} fill alt="" />
+											<Popover
+												content={t(
+													"event.modal.image.deletePopover",
+													"Remove image",
 												)}
-											</p>
-										</Upload.Dragger>
-									</ImgCrop>
-								</Form.Item>
-							) : (
-								<Spin spinning={coverProcessing}>
-									<div
-										className={styles.cover}
-										style={{ aspectRatio: "4 / 5" }}
-									>
-										<Image src={cover + "?w=750"} fill alt="" />
-										<Popover
-											content={t(
-												"event.modal.image.deletePopover",
-												"Remove image",
-											)}
-										>
-											<Button
-												shape="circle"
-												type="primary"
-												className="remove-cover-btn"
-												onClick={handleCoverDelete}
-												icon={<IconTrash size={18} style={{ marginTop: 2 }} />}
-											/>
-										</Popover>
-									</div>
-								</Spin>
-							))}
-					</Col>
-					<Col span={isBigEvent || !screens.md ? 24 : 16}>
-						<Form.Item
-							label={t("event.modal.title.label", "Title")}
-							name="title"
-							rules={[
-								{
-									required: true,
-									message: t("event.modal.title.required", "Title is required"),
-								},
-							]}
-						>
-							<Input
-								placeholder={t("event.modal.title.placeholder", "Event title")}
-							/>
-						</Form.Item>
-						<Form.Item
-							label={t(
-								"event.modal.shortDescription.label",
-								"Short Description",
-							)}
-							name="shortDescription"
-						>
-							<Input.TextArea
-								rows={2}
-								maxLength={90}
-								showCount
-								autoSize={{ minRows: 2, maxRows: 3 }}
-								placeholder={t(
-									"event.modal.shortDescription.placeholder",
-									"Event short description",
+											>
+												<Button
+													shape="circle"
+													type="primary"
+													className="remove-cover-btn"
+													onClick={handleCoverDelete}
+													icon={
+														<IconTrash size={18} style={{ marginTop: 2 }} />
+													}
+												/>
+											</Popover>
+										</div>
+									</Spin>
 								)}
-							/>
-						</Form.Item>
+							</Col>
+						) : null}
 
-						<Form.Item
-							label={t("event.modal.language", "Language")}
-							name="lang"
-							rules={[
-								{
-									required: true,
-									message: t(
-										"event.modal.language.required",
-										"Language is required",
-									),
-								},
-							]}
-						>
-							{
-								<Select
-									options={[
-										...Object.values(Language).map((lang) => ({
-											label: lang,
-											value: lang,
-										})),
-									]}
+						<Col span={isBigEvent || !screens.md ? 24 : 8}>
+							{!isBigEvent &&
+								(!cover ? (
+									<Form.Item
+										label={t("event.modal.image", "Image")}
+										name="image"
+										valuePropName="image"
+										noStyle
+									>
+										<ImgCrop aspect={4 / 5} cropShape="rect" showGrid showReset>
+											<Upload.Dragger
+												{...uploadProps}
+												className={styles.cover}
+												style={{ aspectRatio: "4 / 5", maxHeight: 500 }}
+											>
+												<p className="ant-upload-text">
+													{t("event.modal.image.add", "Add cover image")}
+												</p>
+												<p className="ant-upload-hint">
+													{t(
+														"event.modal.image.hint",
+														"Click or drag image here. JPG, PNG. 4:5 recommended.",
+													)}
+												</p>
+											</Upload.Dragger>
+										</ImgCrop>
+									</Form.Item>
+								) : (
+									<Spin spinning={coverProcessing}>
+										<div
+											className={styles.cover}
+											style={{ aspectRatio: "4 / 5" }}
+										>
+											<Image src={cover + "?w=750"} fill alt="" />
+											<Popover
+												content={t(
+													"event.modal.image.deletePopover",
+													"Remove image",
+												)}
+											>
+												<Button
+													shape="circle"
+													type="primary"
+													className="remove-cover-btn"
+													onClick={handleCoverDelete}
+													icon={
+														<IconTrash size={18} style={{ marginTop: 2 }} />
+													}
+												/>
+											</Popover>
+										</div>
+									</Spin>
+								))}
+						</Col>
+						<Col span={isBigEvent || !screens.md ? 24 : 16}>
+							<Form.Item
+								label={t("event.modal.title.label", "Title")}
+								name="title"
+								rules={[
+									{
+										required: true,
+										message: t(
+											"event.modal.title.required",
+											"Title is required",
+										),
+									},
+								]}
+							>
+								<Input
+									placeholder={t(
+										"event.modal.title.placeholder",
+										"Event title",
+									)}
 								/>
-							}
-						</Form.Item>
+							</Form.Item>
+							<Form.Item
+								label={t(
+									"event.modal.shortDescription.label",
+									"Short Description",
+								)}
+								name="shortDescription"
+							>
+								<Input.TextArea
+									rows={2}
+									maxLength={90}
+									showCount
+									autoSize={{ minRows: 2, maxRows: 3 }}
+									placeholder={t(
+										"event.modal.shortDescription.placeholder",
+										"Event short description",
+									)}
+								/>
+							</Form.Item>
 
-						<Form.Item
-							label={t("event.modal.link", "Registration Link")}
-							name="url"
-							help={t(
-								"event.modal.link.help",
-								"The link to the external event registration page. Leave blank if you want use internal registration.",
-							)}
-						>
-							<Input
-								placeholder={t("event.modal.link.placeholder", "https://")}
-							/>
-						</Form.Item>
-					</Col>
-				</Row>
+							{/* One language for now, so the field states the fact instead of
+							    offering a choice that does not exist yet. */}
+							<Form.Item
+								label={t("event.modal.language", "Language")}
+								name="lang"
+							>
+								<Select
+									disabled
+									options={Object.values(Language).map((lang) => ({
+										label: lang,
+										value: lang,
+									}))}
+								/>
+							</Form.Item>
+
+							<Form.Item
+								label={t("event.modal.link", "Registration Link")}
+								name="url"
+							>
+								<Input
+									placeholder={t("event.modal.link.placeholder", "https://")}
+								/>
+							</Form.Item>
+						</Col>
+					</Row>
+				</div>
 			</Form>
 
-			<Button
-				type="primary"
-				onClick={handleOk}
-				loading={isUpdating}
-				style={{ marginTop: 16 }}
-			>
-				{t("page.my.projects.settings.button.save", "Save")}
-			</Button>
+			<Flex className={styles.actions}>
+				<Button type="primary" onClick={handleOk} loading={isUpdating}>
+					{t("page.my.projects.settings.button.save", "Save")}
+				</Button>
+			</Flex>
 		</Spin>
 	);
 };

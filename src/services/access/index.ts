@@ -174,7 +174,7 @@ export async function getSpaceAccess(
 	if (!role) return noAccess(type, spaceId);
 
 	const granted = await grantedPermissions({ type, spaceId, role, membership });
-	const revoked = adapter?.revoked ? await adapter.revoked(spaceId) : [];
+	const revoked = adapter?.revoked ? await adapter.revoked(spaceId, user) : [];
 
 	const permissions = new Set<string>();
 	const scopes = new Map<string, "own">();

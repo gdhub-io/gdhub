@@ -1,0 +1,37 @@
+.main {
+	width: 100%;
+}
+
+.cover {
+	border-radius: var(--gd-radius-card);
+	object-fit: cover;
+	aspect-ratio: 16 / 9;
+}
+
+/* Stands in for a missing cover: the event's initial on a tint, so a row
+   without an image still has something to recognise it by. */
+.defaultCover {
+	width: 80px;
+	height: 45px;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-secondary);
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.titleCell {
+	max-width: 280px;
+	width: 100%;
+}
+
+.filter {
+	min-width: 220px;
+	max-width: 320px;
+	width: 100%;
+}
+
+.filterLabel {
+	display: block;
+	margin-bottom: var(--gd-space-2);
+}

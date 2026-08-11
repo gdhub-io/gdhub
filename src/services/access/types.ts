@@ -64,8 +64,13 @@ export type SpaceAdapter = {
 	/**
 	 * Permissions the entity's current state takes away, as exact strings or
 	 * `*.action` patterns. State may only revoke, never grant.
+	 *
+	 * Gets the user as well as the space because "state" is not only the
+	 * entity's: a right the role grants can also be withheld by what the member
+	 * has not earned yet — an unqualified speciality, an unsigned agreement.
+	 * Revoking stays one-directional either way (§7).
 	 */
-	revoked?: (spaceId: string) => Promise<string[]>;
+	revoked?: (spaceId: string, user: AccessUser) => Promise<string[]>;
 };
 
 /** `*.edit` matches any permission ending in `.edit`. */

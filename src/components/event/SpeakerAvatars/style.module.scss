@@ -1,0 +1,10 @@
+/* The ring is the surface the stack sits on, so the discs read as overlapping
+   rather than as one blurred shape. */
+.group {
+	:global(.ant-avatar) {
+		outline: 2px solid var(--gd-color-surface);
+		background: var(--gd-color-border-strong);
+		color: var(--gd-color-text);
+		font-size: 11px;
+	}
+}

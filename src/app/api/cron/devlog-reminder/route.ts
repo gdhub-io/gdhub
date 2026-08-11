@@ -1,14 +1,14 @@
 import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
-import { json } from "@/lib/api-handlers";
+import { json, withAuth } from "@/lib/api-handlers";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
 const reminderMonth = 3;
 const diffBetweenLogsInMonths = 1;
 
-export async function GET() {
+export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	const result = await runWithCronLog("devlog-reminder", async () => {
 		const projects = await prisma.project.findMany({
 			where: {
@@ -122,4 +122,4 @@ export async function GET() {
 	});
 
 	return json(result ?? null);
-}
+});

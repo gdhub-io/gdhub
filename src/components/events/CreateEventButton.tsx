@@ -6,16 +6,12 @@ import {
 	IconPresentation,
 	IconUsers,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Dropdown, type MenuProps, Space, theme } from "antd";
-import axios from "axios";
-import { useSession } from "next-auth/react";
-import qs from "qs";
 import React, { useCallback } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import EventModal from "@/components/modals/EventModal";
-import { EventType, SkillLevel } from "@/config/prisma-enums";
+import { EventType } from "@/config/prisma-enums";
 
 function getTypeIcon(type: EventType, args: { size: number; color: string }) {
 	switch (type) {
@@ -37,10 +33,9 @@ function getTypeIcon(type: EventType, args: { size: number; color: string }) {
 const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 	onCreation = () => {},
 }) => {
-	const { data: session } = useSession();
 	const { t } = useTranslate();
 	const { token } = theme.useToken();
-	const { isIn } = useAccess();
+	const { can, isIn } = useAccess();
 	// Staff-only event kinds and the relaxed requirement below are a platform
 	// privilege, not a permission on a particular event — being able to enter the
 	// admin space is exactly what "staff" means now.
@@ -51,23 +46,10 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 		undefined,
 	);
 
-	const { data: specialityLevels } = useQuery({
-		queryKey: ["user-speciality-levels", session?.user?.id],
-		queryFn: () =>
-			axios
-				.get("/api/user/speciality-levels", {
-					params: {
-						level: [SkillLevel.Experienced, SkillLevel.Expert],
-					},
-					paramsSerializer: (params) =>
-						qs.stringify(params, { arrayFormat: "repeat" }),
-				})
-				.then((res) => res.data),
-		enabled: !!session?.user?.id,
-	});
-
-	const canCreateMeetupOrWorkshop =
-		isStaff || (Array.isArray(specialityLevels) && specialityLevels.length > 0);
+	// The speciality requirement lives in the permission itself: the hub adapter
+	// takes `hub.events.create` away from a member with no speciality at the
+	// expert threshold, so there is nothing extra to ask for here.
+	const canCreate = can("hub.events.create");
 
 	const eventLabel = useCallback(
 		(eventType: EventType) => {
@@ -93,12 +75,12 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 	);
 
 	const items: MenuProps["items"] = [
-		canCreateMeetupOrWorkshop && {
+		canCreate && {
 			label: eventLabel(EventType.Meetup),
 			key: EventType.Meetup,
 			icon: null,
 		},
-		canCreateMeetupOrWorkshop && {
+		canCreate && {
 			label: eventLabel(EventType.Workshop),
 			key: EventType.Workshop,
 			icon: null,
@@ -145,9 +127,7 @@ const CreateEventButton: React.FC<{ onCreation?: () => void }> = ({
 		onCreation();
 	};
 
-	if (specialityLevels?.length === 0) {
-		return null;
-	}
+	if (!canCreate) return null;
 
 	return (
 		<>

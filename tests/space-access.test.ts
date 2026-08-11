@@ -12,6 +12,7 @@ const spaceMemberFindUnique = vi.fn();
 const projectFindUnique = vi.fn();
 const eventFindUnique = vi.fn();
 const courseFindFirst = vi.fn();
+const specialityCount = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -24,6 +25,7 @@ vi.mock("@/services/prisma", () => ({
 		spaceMember: {
 			findUnique: (...args: unknown[]) => spaceMemberFindUnique(...args),
 		},
+		speciality: { count: (...args: unknown[]) => specialityCount(...args) },
 	},
 }));
 
@@ -72,6 +74,11 @@ beforeEach(() => {
 	eventFindUnique.mockReset();
 	courseFindFirst.mockReset();
 	projectFindUnique.mockResolvedValue({ status: ProjectStatus.Approved });
+	// The hub adapter revokes event creation from a member with no expert-level
+	// speciality. That rule has its own tests; here the user always qualifies, so
+	// these assertions stay about roles.
+	specialityCount.mockReset();
+	specialityCount.mockResolvedValue(1);
 });
 
 describe("hub — the role that doubles as the platform role", () => {
@@ -99,6 +106,31 @@ describe("hub — the role that doubles as the platform role", () => {
 		const access = await getSpaceAccess("hub", null, staff);
 
 		expect(access.role).toBe(SpaceRole.Admin);
+	});
+
+	// Running an event is a craft judgement rather than a platform privilege: the
+	// role hands out `hub.events.create`, the profile decides whether it is kept.
+	it("only lets a member create events once a speciality is expert enough", async () => {
+		specialityCount.mockResolvedValue(0);
+		const unqualified = await getSpaceAccess("hub", null, member);
+
+		expect(unqualified.role).toBe(SpaceRole.Member);
+		expect(can(unqualified, "hub.events.create")).toBe(false);
+		// Revoking is one right, not a blanket: everything else survives.
+		expect(can(unqualified, "hub.events.view")).toBe(true);
+		expect(can(unqualified, "hub.projects.create")).toBe(true);
+
+		specialityCount.mockResolvedValue(1);
+		const qualified = await getSpaceAccess("hub", null, member);
+
+		expect(can(qualified, "hub.events.create")).toBe(true);
+	});
+
+	it("does not hold staff to the speciality requirement", async () => {
+		specialityCount.mockResolvedValue(0);
+		const access = await getSpaceAccess("hub", null, staff);
+
+		expect(can(access, "hub.events.create")).toBe(true);
 	});
 
 	it("keeps the preview live room away from members", async () => {

@@ -20,8 +20,8 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
-import { SkillLevel } from "@/config/prisma-enums";
 import { resyncSession } from "@/helpers/session";
+import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
 
 const { Paragraph, Text } = Typography;
 
@@ -107,7 +107,7 @@ const MentorshipProfileForm = ({
 		queryFn: () =>
 			axios.get<any>("/api/user/specialities", {
 				params: {
-					level: [SkillLevel.Experienced, SkillLevel.Expert],
+					level: EXPERT_SKILL_LEVELS,
 				},
 			}),
 		enabled,

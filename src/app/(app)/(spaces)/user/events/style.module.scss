@@ -1,78 +1,14 @@
 .container {
 	width: 100%;
 
-	:global(.ant-card) {
-		background: var(--gd-color-surface);
-		border-radius: 12px;
-		border: 1px solid var(--gd-color-border-strong);
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
-		transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
-
-		&:hover {
-			box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08),
-				0 8px 6px rgba(0, 0, 0, 0.04);
-		}
-	}
-
-	:global(.ant-card-body) {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-
-	:global(.ant-card-meta) {
-		flex: 1;
-	}
-
-	:global(.ant-card-cover) {
-		padding: 8px;
-
-		img {
-			width: 100%;
-			height: 200px;
-			object-fit: cover;
-			border-radius: 8px;
-		}
-	}
-
-	:global(.ant-card-actions) {
-		border-top: 1px solid var(--gd-color-border);
-
-		li {
-			margin: 0;
-		}
-
-		button {
-			border: none;
-			background: transparent;
-			box-shadow: none;
-			padding: 8px;
-
-			&:hover {
-				background: rgba(0, 0, 0, 0.04);
-			}
-
-			&:disabled {
-				opacity: 0.3;
-				cursor: not-allowed;
-			}
-		}
-	}
-
 	.hoveredCard {
 		border: 1px solid var(--gd-color-border-strong) !important;
-		// box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3) !important;
-		// transform: translateY(-2px);
 		z-index: 10;
 		position: relative;
 	}
 
 	.relatedCard {
 		border: 1px solid var(--gd-color-border-strong) !important;
-		// box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2) !important;
 		opacity: 0.95;
 		position: relative;
 	}

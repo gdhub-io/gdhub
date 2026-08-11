@@ -1,0 +1,221 @@
+.panel {
+	width: 100%;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	overflow: hidden;
+	background: var(--gd-color-surface);
+}
+
+.toolbar {
+	padding: 10px var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border-strong);
+}
+
+.range {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+/*
+ * Two panes, two scrollbars. The facts keep their width and scroll on their own
+ * when a title is long; the graph keeps the rest and scrolls through time. One
+ * shared scroller let the left half squeeze the right one into a sliver.
+ */
+.labelPane {
+	width: 388px;
+	max-width: 60%;
+	flex: none;
+	border-right: 1px solid var(--gd-color-border-strong);
+}
+
+.trackPane {
+	flex: 1;
+	min-width: 0;
+}
+
+/*
+ * Each pane scrolls on its own, so a long title cannot squeeze the graph into a
+ * sliver. The bar only appears when the content actually overflows — a gutter
+ * drawn under a grid that fits reads as a broken row.
+ */
+.labelPane,
+.trackPane {
+	overflow-x: auto;
+	scrollbar-width: thin;
+
+	&::-webkit-scrollbar {
+		height: 8px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: var(--gd-radius-pill);
+		background: var(--gd-fill-strong);
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+}
+
+.paneInner {
+	min-width: max-content;
+}
+
+.head {
+	background: var(--gd-color-border);
+	border-bottom: 1px solid var(--gd-color-border-strong);
+}
+
+.headRow {
+	height: 48px;
+}
+
+.headCell {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.colItem {
+	width: 190px;
+	flex: none;
+	padding: 0 var(--gd-space-3);
+	min-width: 0;
+}
+
+.colSpeakers {
+	width: 96px;
+	flex: none;
+	padding: 0 var(--gd-space-2);
+}
+
+.colHours {
+	width: 62px;
+	flex: none;
+	padding: 0 var(--gd-space-2);
+}
+
+.colAction {
+	width: 40px;
+	flex: none;
+}
+
+.row {
+	height: 52px;
+	border-top: 1px solid var(--gd-color-border);
+}
+
+.title {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.subtitle {
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+	white-space: nowrap;
+}
+
+.hours {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+/* Overlapped with a ring, exactly as on the public page — the ring is the
+   surface colour, so the avatars read as a stack rather than as faded discs. */
+.speakers {
+	:global(.ant-avatar) {
+		flex: none;
+		margin-inline-start: -6px;
+		outline: 2px solid var(--gd-color-surface);
+		background: var(--gd-color-border-strong);
+		color: var(--gd-color-text);
+
+		&:first-child {
+			margin-inline-start: 0;
+		}
+	}
+
+	:global(.ant-avatar img) {
+		object-fit: cover;
+	}
+}
+
+.extra {
+	margin-inline-start: var(--gd-space-2);
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+}
+
+/* One column per unit; the bar is laid over them by grid position, so the ruler
+   above and the bar below cannot disagree. */
+.track {
+	display: grid;
+	align-items: center;
+}
+
+.tick,
+.tickHead {
+	grid-row: 1;
+	height: 100%;
+	border-left: 1px solid var(--gd-color-border);
+	min-width: 64px;
+}
+
+.tickHead {
+	display: flex;
+	align-items: center;
+}
+
+.tickLabel {
+	padding: 0 var(--gd-space-2);
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+	white-space: nowrap;
+}
+
+/* Flat: a bar on a chart is a mark, not a control that rises off the surface.
+   The reset is explicit because a bare `button` still inherits the app's own
+   button styling. */
+.bar {
+	grid-row: 1;
+	height: 28px;
+	margin: 0 2px;
+	padding: 0 var(--gd-space-2);
+	appearance: none;
+	border: none;
+	box-shadow: none;
+	text-align: center;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-info-tint);
+	color: var(--gd-info-on-tint);
+	font-size: 11px;
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	cursor: pointer;
+
+	transition: filter 0.15s ease;
+
+	&:hover {
+		filter: brightness(0.94);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--gd-color-border-focus);
+		outline-offset: 1px;
+	}
+}
+
+.empty {
+	padding: var(--gd-space-8) var(--gd-space-4);
+	text-align: center;
+	color: var(--gd-color-text-secondary);
+}
