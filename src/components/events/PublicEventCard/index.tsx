@@ -65,42 +65,48 @@ export function PublicEventCard({
 				<EventCover
 					image={event.image}
 					tint={tint}
-					when={when}
-					kind={kind}
+					// An event that is over keeps its cover but drops the chips: the
+					// date and the kind are already in the text below, and on a
+					// greyed-out card they only compete with the ones still to come.
+					when={isFinished ? null : when}
+					kind={isFinished ? "" : kind}
+					type={event.type}
 					muted={isFinished}
 				/>
 			</Link>
 
-			<div className={styles.body}>
-				<span className={styles.place}>{kind}</span>
-				<Link href={href} className={styles.titleLink}>
-					<h3 className={styles.title}>{event.title}</h3>
-				</Link>
-				<span className={styles.meta}>
-					{first
-						? formatEventPeriod(
-								first.startDate,
-								last.endDate,
-								event.lang ?? "en",
-								"day",
-							)
-						: (event.shortDescription ?? "")}
-				</span>
-			</div>
+			<div className={styles.main}>
+				<div className={styles.body}>
+					<span className={styles.place}>{kind}</span>
+					<Link href={href} className={styles.titleLink}>
+						<h3 className={styles.title}>{event.title}</h3>
+					</Link>
+					<span className={styles.meta}>
+						{first
+							? formatEventPeriod(
+									first.startDate,
+									last.endDate,
+									event.lang ?? "en",
+									"day",
+								)
+							: (event.shortDescription ?? "")}
+					</span>
+				</div>
 
-			<Flex
-				align="center"
-				justify="space-between"
-				gap={8}
-				className={styles.foot}
-			>
-				<StatusDot tone={attendance.tone} label={attendance.label} />
-				<Link href={href}>
-					<Button type="primary" size="small">
-						{t("event.details", "Details")}
-					</Button>
-				</Link>
-			</Flex>
+				<Flex
+					align="center"
+					justify="space-between"
+					gap={8}
+					className={styles.foot}
+				>
+					<StatusDot tone={attendance.tone} label={attendance.label} />
+					<Link href={href}>
+						<Button type="primary" size="small">
+							{t("event.details", "Details")}
+						</Button>
+					</Link>
+				</Flex>
+			</div>
 		</article>
 	);
 }

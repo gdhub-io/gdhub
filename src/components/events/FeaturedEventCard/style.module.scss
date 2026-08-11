@@ -8,20 +8,33 @@
 	background: var(--gd-color-surface);
 }
 
+/*
+ * The half-width cap only where there is width to spare — antd's `xxl`, the
+ * first breakpoint wide enough that half a row is still a card rather than a
+ * column. Below it the card takes the full width: a narrow lead card with a
+ * field of empty page beside it looks like something failed to load.
+ */
+@media (min-width: 1400px) {
+	.card {
+		max-width: 50%;
+	}
+}
+
 .coverLink {
 	display: block;
 	flex: none;
-	width: 384px;
-	max-width: 40%;
 	color: inherit;
+	/* Same rule as a grid card, one size up. */
+	--event-cover-height: 320px;
 }
 
-/* Taller than a grid card's cover and full height of the strip: this one is a
-   column beside the text, not a band above it. */
-.cover {
-	height: 100%;
-	min-height: 216px;
-}
+/*
+ * No aspect override here on purpose. `.card .cover` and `.cover[data-format]`
+ * weigh the same, so which one won came down to the order the two CSS modules
+ * happened to be inserted in — and that order differs between the server render
+ * and a client-side navigation. The cover came out cropped on reload and
+ * portrait when reached through the menu. The cover keeps its own shape.
+ */
 
 .body {
 	min-width: 0;
@@ -59,13 +72,29 @@
 		flex-direction: column;
 	}
 
-	.coverLink {
+	/*
+ * The half-width cap only where there is width to spare — antd's `xxl`, the
+ * first breakpoint wide enough that half a row is still a card rather than a
+ * column. Below it the card takes the full width: a narrow lead card with a
+ * field of empty page beside it looks like something failed to load.
+ */
+@media (min-width: 1400px) {
+	.card {
+		max-width: 50%;
+	}
+}
+
+.coverLink {
 		width: 100%;
-		max-width: none;
 	}
 
-	.cover {
-		min-height: 160px;
+	/* Full width, and the ratio gives the height — the fixed height that works
+	   beside text overflows a phone once the card turns upright. Written as a
+	   descendant selector so it outweighs the base rule outright rather than
+	   depending on which stylesheet was inserted first. */
+	.card .cover {
+		width: 100%;
+		height: auto;
 	}
 
 	.title {

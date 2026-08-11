@@ -1,7 +1,14 @@
+/*
+ * One layout for every event: cover on the left, text on the right.
+ *
+ * The cover keeps its own shape — 4:5 or 5:4 — and its height is what is fixed,
+ * so the width follows the ratio. A landscape cover is therefore wider than a
+ * portrait one and its card comes out a little wider too, which is the point:
+ * the artwork is shown as it was made rather than cropped to a common box.
+ */
 .card {
 	display: flex;
-	flex-direction: column;
-	height: 100%;
+	gap: var(--gd-space-3);
 	padding: var(--gd-space-2);
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
@@ -13,10 +20,25 @@
 	}
 }
 
-.coverLink,
+.coverLink {
+	display: block;
+	flex: none;
+	color: inherit;
+}
+
 .titleLink {
 	display: block;
 	color: inherit;
+}
+
+.main {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	/* Enough for a title and a date without the card turning into a column of
+	   single words; the cap stops one long name stretching the whole row. */
+	min-width: 200px;
+	max-width: 280px;
 }
 
 .body {
@@ -24,7 +46,7 @@
 	flex: 1;
 	flex-direction: column;
 	gap: 2px;
-	padding: var(--gd-space-3) var(--gd-space-1) var(--gd-space-2);
+	padding: var(--gd-space-2) var(--gd-space-1) var(--gd-space-2);
 }
 
 .place {
@@ -34,11 +56,9 @@
 
 .title {
 	margin: 0;
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: 700;
 	color: var(--gd-color-text);
-	/* Two lines, then an ellipsis: a long name must not push the footer out of
-	   line with the cards beside it. */
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
@@ -53,4 +73,30 @@
 
 .foot {
 	padding: var(--gd-space-1);
+	/* The status and the button sit on one line until they cannot: neither
+	   shrinks, so on a narrow card the button was pushed through the edge. */
+	flex-wrap: wrap;
+	row-gap: var(--gd-space-2);
+}
+
+@media (max-width: 575px) {
+	.card {
+		gap: var(--gd-space-2);
+	}
+
+	/* The cover's column. The cover fills it and its ratio sets the height. */
+	.coverLink {
+		width: 38%;
+	}
+
+	.main {
+		/* The cap exists to stop one card stretching a row; on a phone there is
+		   only ever one card across, so it would only waste the width. */
+		min-width: 0;
+		max-width: none;
+	}
+
+	.title {
+		font-size: 16px;
+	}
 }

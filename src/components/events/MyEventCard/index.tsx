@@ -4,12 +4,10 @@ import { IconDotsVertical } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Dropdown, Flex, type MenuProps } from "antd";
 import type { ReactNode } from "react";
-import { getWorkDirection } from "@/components/DirectionBadge/directions";
 import { StatusDot, type StatusTone } from "@/components/ui";
 import { EventStatus } from "@/config/prisma-enums";
-import { formatDateChip } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
-import { useWorkDirections } from "@/hooks/library";
+import { EventCover, useEventCover } from "../EventCardParts";
 import styles from "./style.module.scss";
 
 export type MyEventCardEvent = {
@@ -110,25 +108,10 @@ export function MyEventCard({
 	onMouseLeave?: () => void;
 }) {
 	const { t } = useTranslate();
-	const { data: directions } = useWorkDirections();
 
-	const schedule = event.schedule ?? [];
-	const first = schedule[0];
-	const last = schedule[schedule.length - 1];
-	// The chip spans the whole event — first session's start to last one's end.
-	const when = first
-		? formatDateChip(first.startDate, last.endDate, event.lang ?? "en")
-		: null;
-
-	const directionName = first?.directionId
-		? directions?.find((row) => row.id === first.directionId)?.name
-		: undefined;
-	const slug = directionName ? getWorkDirection(directionName).slug : null;
-
-	// The tint stands in for a cover, it does not sit under one: with an image
-	// uploaded the photo is the cover, and the chips read against it.
-	const tint = event.image ? null : slug;
-
+	// Cover, tint and date chip come from the shared parts — this card drew its
+	// own copy of them, which is how it missed the per-type aspect ratios.
+	const { first, last, tint, when } = useEventCover(event);
 	const kind = typeLabel(event.type, t);
 
 	return (
@@ -138,37 +121,13 @@ export function MyEventCard({
 			onMouseLeave={onMouseLeave}
 			{...rest}
 		>
-			<div
-				className={styles.cover}
-				style={
-					event.image
-						? {
-								backgroundImage: `url(${event.image})`,
-								backgroundSize: "cover",
-								backgroundPosition: "center",
-							}
-						: tint
-							? { background: `var(--gd-direction-${tint}-tint)` }
-							: undefined
-				}
-			>
-				{kind && (
-					<span
-						className={styles.typeChip}
-						style={
-							tint ? { color: `var(--gd-direction-${tint}-ink)` } : undefined
-						}
-					>
-						{kind}
-					</span>
-				)}
-				{when && (
-					<span className={styles.dateChip}>
-						<span className={styles.day}>{when.day}</span>
-						<span className={styles.month}>{when.month}</span>
-					</span>
-				)}
-			</div>
+			<EventCover
+				image={event.image}
+				tint={tint}
+				when={when}
+				kind={kind}
+				type={event.type}
+			/>
 
 			<div className={styles.body}>
 				<span className={styles.place}>

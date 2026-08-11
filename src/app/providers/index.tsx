@@ -5,6 +5,7 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { App, ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
+import { configureAxios } from "@/config/axios";
 import { setupDayjs } from "@/config/dayjs-setup";
 import { productTheme } from "@/config/design";
 import { installAbortErrorSuppressor } from "@/services/matrix/suppress-abort-errors";
@@ -12,6 +13,7 @@ import { QueryProvider } from "./QueryProvider";
 import { TolgeeClientProvider } from "./TolgeeClientProvider";
 
 setupDayjs();
+configureAxios();
 installAbortErrorSuppressor();
 
 /**

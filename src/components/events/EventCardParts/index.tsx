@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { useMemo } from "react";
 import { getWorkDirection } from "@/components/DirectionBadge/directions";
-import { formatDateChip } from "@/helpers/event";
+import { formatDateChip, isHeadlineEvent } from "@/helpers/event";
 import { useWorkDirections } from "@/hooks/library";
 import styles from "./style.module.scss";
 
@@ -56,6 +56,7 @@ export function EventCover({
 	tint,
 	when,
 	kind,
+	type,
 	muted = false,
 	className,
 }: {
@@ -63,12 +64,19 @@ export function EventCover({
 	tint: string | null;
 	when: { day: string; month: string } | null;
 	kind: string;
+	/**
+	 * Decides the shape. Covers are uploaded in two formats — 16:9 for the
+	 * events people travel for, 4:5 for the rest (see the crop in EventModal) —
+	 * and a card that draws both at one height crops somebody's artwork.
+	 */
+	type?: string | null;
 	/** An event that is over: drained of colour so it sits behind the live ones. */
 	muted?: boolean;
 	className?: string;
 }) {
 	return (
 		<div
+			data-format={isHeadlineEvent(type) ? "wide" : "tall"}
 			className={`${styles.cover}${muted ? ` ${styles.muted}` : ""}${className ? ` ${className}` : ""}`}
 			style={
 				image

@@ -1,0 +1,106 @@
+.row {
+	position: relative;
+}
+
+.track {
+	display: flex;
+	gap: var(--gd-space-4);
+	/* Every card in a row is as tall as the tallest: covers differ in shape and
+	   titles in length, and cards of five different heights read as a mistake. */
+	align-items: stretch;
+	overflow-x: auto;
+	/*
+	 * Explicitly, because `overflow-x: auto` computes the other axis to `auto`
+	 * too — which made the row a vertical scroll container with nothing to
+	 * scroll, and a downward swipe that started on a card was swallowed instead
+	 * of moving the page.
+	 */
+	overflow-y: hidden;
+	scroll-behavior: smooth;
+
+	/*
+	 * A drag settles on a card rather than wherever the finger let go, so the
+	 * row never rests showing two half cards.
+	 *
+	 * `scroll-padding-inline-start` is set from JS to the measured gutter, so a
+	 * snapped card lines up with the page's column rather than with the edge of
+	 * the screen — see the component for why it cannot be written here.
+	 */
+	scroll-snap-type: x mandatory;
+
+	/*
+	 * The row runs to the edge of the screen while its first card stays lined up
+	 * with the rest of the page: negative margins pull the scroller out to the
+	 * viewport, the matching padding puts the content back. Without this a card
+	 * waiting off-screen stopped at the page gutter, which reads as the end of
+	 * the list rather than as more to come.
+	 *
+	 * `main` clips horizontal overflow, so widening the scroller cannot give the
+	 * page a sideways scrollbar of its own.
+	 */
+	margin-inline: calc(50% - 50vw);
+	padding-inline: calc(50vw - 50%);
+
+	/* The arrows are the interface; the bar would only repeat them and steal a
+	   row of height. Wheel and touch still scroll, which is what people expect. */
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* The row is draggable, so it says so. */
+	cursor: grab;
+
+	&:active {
+		cursor: grabbing;
+	}
+
+	> * {
+		flex: none;
+		scroll-snap-align: start;
+		/* A drag over a card must not start selecting its text. */
+		user-select: none;
+	}
+}
+
+/* Over the row rather than beside it, so the track keeps the full content
+   width and the cards line up with everything else on the page. */
+.arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	transform: translateY(-50%);
+	background: var(--gd-color-surface);
+	/* A border rather than a shadow: shadows are design tokens but are not
+	   emitted as CSS variables, and a hardcoded one would drift. */
+	border: 1px solid var(--gd-color-border-strong);
+}
+
+/* At the content edge, not the screen edge: the arrows belong to the page's
+   column so they stay where the eye and the cursor expect them. */
+.prev {
+	left: calc(-1 * var(--gd-space-4));
+}
+
+.next {
+	right: calc(-1 * var(--gd-space-4));
+}
+
+/*
+ * A phone swipes the row instead of paging it; the arrows are not rendered at
+ * all there (see the component). The bleed stays — a card peeking past the edge
+ * is what says there is more.
+ */
+@media (max-width: 767px) {
+	.track {
+		gap: var(--gd-space-3);
+	}
+
+	/* A card is exactly the content column, so its right edge lines up with the
+	   heading and the filter above it. The next card starts one gap later and
+	   shows through the bleed, which is the hint that the row continues. */
+	.track > * {
+		width: 100%;
+	}
+}

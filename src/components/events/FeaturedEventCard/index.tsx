@@ -49,6 +49,7 @@ export function FeaturedEventCard({
 					tint={tint}
 					when={when}
 					kind={typeLabel(event.type)}
+					type={event.type}
 					className={styles.cover}
 				/>
 			</Link>

@@ -4,10 +4,50 @@
 	display: flex;
 	align-items: flex-start;
 	justify-content: space-between;
-	height: 160px;
 	padding: var(--gd-space-4);
 	border-radius: var(--gd-radius-card);
 	background: var(--gd-color-surface-sunken);
+	background-size: cover;
+	background-position: center;
+
+	/*
+	 * One box in two orientations: 4:5 stood up, 5:4 laid down. Turn either 90°
+	 * and you get the other, so both formats occupy the same amount of card and
+	 * a row of mixed types reads evenly.
+	 *
+	 * Note this is not the upload ratio for landscape covers (16:9) — those get
+	 * cropped at the sides. Matching the two boxes was worth more than showing
+	 * every pixel of the wider one.
+	 */
+	&[data-format="tall"] {
+		aspect-ratio: 4 / 5;
+	}
+
+	&[data-format="wide"] {
+		aspect-ratio: 5 / 4;
+	}
+
+	/* Height is what is fixed; the ratio decides the width. */
+	height: var(--event-cover-height, 200px);
+	width: auto;
+	/* …but never wider than the card. A phone has width to spare in neither
+	   direction, and a cover computed from its height overflowed the card. */
+	max-width: 100%;
+}
+
+/*
+ * Below this the scarce dimension flips: the card is as wide as the screen, so
+ * the cover fills the column the card gives it and the ratio decides the height.
+ *
+ * The share of the card is set on that column, not here — a percentage against
+ * a shrink-to-fit parent has nothing to measure against and collapsed the cover
+ * to a thumbnail.
+ */
+@media (max-width: 575px) {
+	.cover {
+		width: 100%;
+		height: auto;
+	}
 }
 
 /* What the old past-event cards did: colour drains out, so a finished event

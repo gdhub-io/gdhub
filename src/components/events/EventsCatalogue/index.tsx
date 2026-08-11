@@ -2,17 +2,43 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee, useTranslate } from "@tolgee/react";
-import { Col, Empty, Flex, Row, Select, Skeleton } from "antd";
+import { Empty, Flex, Select, Skeleton } from "antd";
 import axios from "axios";
 import { useMemo, useState } from "react";
 import { EventType } from "@/config/prisma-enums";
 import { hasEventEnded } from "@/helpers/event";
 import { useEventTypeLabel } from "../EventCardParts";
+import { EventRow } from "../EventRow";
 import { FeaturedEventCard } from "../FeaturedEventCard";
 import { type PublicEvent, PublicEventCard } from "../PublicEventCard";
 import styles from "./style.module.scss";
 
 export type CatalogueEvent = PublicEvent & { isFeatured?: boolean };
+
+/** Start of an event, for ordering. Undated events sort last. */
+const startsAt = (event: CatalogueEvent) => {
+	const first = event.schedule?.[0];
+	return first ? new Date(first.startDate).getTime() : Number.MAX_SAFE_INTEGER;
+};
+
+/**
+ * A section's events, as one row paged by arrows.
+ */
+function EventGrid({
+	events,
+	finished = false,
+}: {
+	events: CatalogueEvent[];
+	finished?: boolean;
+}) {
+	return (
+		<EventRow>
+			{events.map((event) => (
+				<PublicEventCard key={event.id} event={event} isFinished={finished} />
+			))}
+		</EventRow>
+	);
+}
 
 /**
  * The event catalogue: one featured event, then everything else in a grid.
@@ -23,30 +49,6 @@ export type CatalogueEvent = PublicEvent & { isFeatured?: boolean };
  * quiet month showed three headings over three empty rows. One grid with a type
  * filter says the same thing and stays honest when there is little on.
  */
-/** Start of an event, for ordering. Undated events sort last. */
-const startsAt = (event: CatalogueEvent) => {
-	const first = event.schedule?.[0];
-	return first ? new Date(first.startDate).getTime() : Number.MAX_SAFE_INTEGER;
-};
-
-function EventGrid({
-	events,
-	finished = false,
-}: {
-	events: CatalogueEvent[];
-	finished?: boolean;
-}) {
-	return (
-		<Row gutter={[16, 16]}>
-			{events.map((event) => (
-				<Col key={event.id} xs={24} sm={12} lg={8} xl={6}>
-					<PublicEventCard event={event} isFinished={finished} />
-				</Col>
-			))}
-		</Row>
-	);
-}
-
 export function EventsCatalogue({
 	events: provided,
 }: {
@@ -118,36 +120,41 @@ export function EventsCatalogue({
 
 	return (
 		<Flex vertical gap={24} className={styles.catalogue}>
-			<Flex justify="flex-end">
-				<Select
-					allowClear
-					variant="filled"
-					value={type}
-					onChange={setType}
-					placeholder={t("page.events.allTypes", "All types")}
-					className={styles.typeFilter}
-					options={Object.values(EventType).map((value) => ({
-						value,
-						label: typeLabel(value),
-					}))}
-				/>
-			</Flex>
-
 			{featured && (
 				<section>
-					<h2 className={styles.sectionTitle}>
-						{t("page.events.featured", "Featured")}
-					</h2>
 					<FeaturedEventCard event={featured} />
 				</section>
 			)}
 
-			{upcoming.length > 0 && (
+			{/* The header shows while a filter is on even with nothing to list —
+			    otherwise hiding the empty section takes the only way to clear it. */}
+			{(upcoming.length > 0 || !!type) && (
 				<section>
-					<h2 className={styles.sectionTitle}>
-						{t("page.events.upcoming", "Upcoming")}
-					</h2>
-					<EventGrid events={upcoming} />
+					<Flex
+						align="center"
+						justify="space-between"
+						gap={12}
+						wrap
+						className={styles.sectionHead}
+					>
+						<h2 className={styles.sectionTitle}>
+							{t("page.events.upcoming", "Upcoming")}
+						</h2>
+						<Select
+							allowClear
+							variant="filled"
+							value={type}
+							onChange={setType}
+							placeholder={t("page.events.allTypes", "All types")}
+							className={styles.typeFilter}
+							options={Object.values(EventType).map((value) => ({
+								value,
+								label: typeLabel(value),
+							}))}
+						/>
+					</Flex>
+
+					{upcoming.length > 0 && <EventGrid events={upcoming} />}
 				</section>
 			)}
 
