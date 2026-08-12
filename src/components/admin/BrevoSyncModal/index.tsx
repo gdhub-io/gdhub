@@ -2,8 +2,9 @@
 
 import { IconRefresh } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Button, Modal, Skeleton, Typography } from "antd";
+import { Alert, Button, Checkbox, Modal, Skeleton, Typography } from "antd";
 import axios from "axios";
+import { useState } from "react";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -34,6 +35,7 @@ const SYNCED_FIELDS: [attribute: string, source: string][] = [
 	["LEVEL", "First speciality level"],
 	["ONBOARDING_DONE", "Onboarding flag"],
 	["HAS_SUBSCRIBE_TO_NEWSLETTER", "Newsletter agreement"],
+	["AVAILABLE_FOR", "Open to offers, and to advising"],
 ];
 
 export type BrevoSyncSubject = {
@@ -50,7 +52,7 @@ export type BrevoSyncModalProps = {
 	/** Fallback for the confirm button until the preview arrives. */
 	userCount?: number;
 	loading?: boolean;
-	onConfirm: () => void;
+	onConfirm: (options: { onlyOnboarded: boolean }) => void;
 	onCancel: () => void;
 };
 
@@ -62,14 +64,23 @@ export function BrevoSyncModal({
 	onConfirm,
 	onCancel,
 }: BrevoSyncModalProps) {
+	// On by default: an account that never finished onboarding belongs to
+	// somebody who signed up and left, and carrying them into the mailing
+	// platform is how a list fills with addresses nobody will ever write to.
+	const [onlyOnboarded, setOnlyOnboarded] = useState(true);
+
 	// Reading Brevo's contact list is not free, so it happens when the dialog
 	// opens rather than on every page render. The single-user dialog asks for the
 	// same thing — it needs the list name, and the server cache makes the repeat
 	// call cheap.
 	const { data: preview, isPending: isPreviewPending } = useQuery({
-		queryKey: ["admin", "brevo-sync-preview"],
+		queryKey: ["admin", "brevo-sync-preview", onlyOnboarded],
 		queryFn: () =>
-			axios.get<SyncPreview>("/api/admin/users/brevo-sync").then((r) => r.data),
+			axios
+				.get<SyncPreview>("/api/admin/users/brevo-sync", {
+					params: { onlyOnboarded: onlyOnboarded ? "1" : "0" },
+				})
+				.then((r) => r.data),
 		enabled: open,
 		refetchOnWindowFocus: false,
 		staleTime: 60_000,
@@ -96,7 +107,7 @@ export function BrevoSyncModal({
 					type="primary"
 					loading={loading}
 					icon={<IconRefresh size={15} />}
-					onClick={onConfirm}
+					onClick={() => onConfirm({ onlyOnboarded })}
 				>
 					{subject
 						? "Sync this user"
@@ -152,6 +163,16 @@ export function BrevoSyncModal({
 					</div>
 				</div>
 			) : null}
+
+			{!subject && (
+				<Checkbox
+					className={styles.filter}
+					checked={onlyOnboarded}
+					onChange={(event) => setOnlyOnboarded(event.target.checked)}
+				>
+					Only users who finished onboarding
+				</Checkbox>
+			)}
 
 			<dl className={styles.fields}>
 				{SYNCED_FIELDS.map(([attribute, source]) => (

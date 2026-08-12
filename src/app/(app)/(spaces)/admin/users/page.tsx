@@ -226,10 +226,12 @@ export default function UsersAdminPage() {
 		queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
 
 	const syncAll = useMutation({
-		mutationFn: () =>
+		mutationFn: ({ onlyOnboarded }: { onlyOnboarded: boolean }) =>
 			axios
 				.post<{ contactCount: number; dryRun: boolean }>(
 					"/api/admin/users/brevo-sync",
+					null,
+					{ params: { onlyOnboarded: onlyOnboarded ? "1" : "0" } },
 				)
 				.then((r) => r.data),
 		onSuccess: (result) => {
@@ -606,7 +608,7 @@ export default function UsersAdminPage() {
 				open={confirmingSyncAll}
 				userCount={response?.meta.totalCount}
 				loading={syncAll.isPending}
-				onConfirm={() => syncAll.mutate()}
+				onConfirm={(options) => syncAll.mutate(options)}
 				onCancel={() => setConfirmingSyncAll(false)}
 			/>
 

@@ -9,7 +9,10 @@ import {
 } from "@/lib/api-handlers";
 import { joinSpace } from "@/services/access/membership";
 import { brevoApi } from "@/services/brevo";
-import { brevoSubscribersListId } from "@/services/brevo/sync";
+import {
+	brevoSubscribersListId,
+	buildAvailableFor,
+} from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 
 const UpdateResourcesSchema = z.object({
@@ -56,8 +59,15 @@ export const PUT = withAuth({ mode: "user" })(
 			select: {
 				primaryInterest: true,
 				name: true,
+				isActive: true,
 				user: {
-					select: { agreements: true, name: true, email: true, lang: true },
+					select: {
+						agreements: true,
+						name: true,
+						email: true,
+						lang: true,
+						specialities: { select: { isOpenForMentoring: true } },
+					},
 				},
 			},
 		});
@@ -80,12 +90,24 @@ export const PUT = withAuth({ mode: "user" })(
 				// developer could point the sync at a sandbox list while signups kept
 				// landing in the live one.
 				listIds: [brevoSubscribersListId()],
+				// An upsert. Without it this call fails for anyone whose contact
+				// already exists — which is every person who started onboarding,
+				// left, and came back to finish it days later. The 400 was caught
+				// and logged, so their `ONBOARDING_DONE` silently stayed unset.
+				updateEnabled: true,
 				attributes: {
 					MAIN_LOCALE: profile.user.lang,
 					MAIN_INTEREST: profile.primaryInterest,
 					FIRSTNAME: profile.name || profile.user.name,
 					HAS_SUBSCRIBE_TO_NEWSLETTER:
 						agreements?.needSubscribeToNewsletter || false,
+					// This request *is* the end of onboarding — the same update above
+					// sets `onboardingDone` in the database.
+					ONBOARDING_DONE: true,
+					AVAILABLE_FOR: buildAvailableFor({
+						profile: { isActive: profile.isActive },
+						specialities: profile.user.specialities,
+					}),
 				},
 			});
 

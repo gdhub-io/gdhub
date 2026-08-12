@@ -82,6 +82,19 @@ async function readCategoryLabels(): Promise<Map<string, Set<string>>> {
 	return labels;
 }
 
+/**
+ * Who a sync writes about.
+ *
+ * An address is the minimum — Brevo has nothing to write to without one. The
+ * onboarding filter is the admin's choice: half the accounts belong to people
+ * who signed up, looked around and never came back, and a sync that carries
+ * them along fills the mailing list with contacts nobody will ever mail.
+ */
+export const syncableUsersWhere = (onlyOnboarded?: boolean) => ({
+	email: { not: null },
+	...(onlyOnboarded ? { onboardingDone: true } : {}),
+});
+
 /** Everything the attribute mapping reads, and nothing else. */
 const userSelection = {
 	id: true,
@@ -89,12 +102,16 @@ const userSelection = {
 	email: true,
 	onboardingDone: true,
 	agreements: true,
-	profile: { select: { name: true, primaryInterest: true } },
+	profile: { select: { name: true, primaryInterest: true, isActive: true } },
 	specialities: {
 		// "First speciality" is the one the user filled in first — the same order
 		// the profile shows them in.
 		orderBy: { createdAt: "asc" },
-		select: { level: true, direction: { select: { name: true } } },
+		select: {
+			level: true,
+			isOpenForMentoring: true,
+			direction: { select: { name: true } },
+		},
 	},
 } satisfies Prisma.UserSelect;
 
@@ -104,9 +121,25 @@ type SyncableUser = {
 	email: string | null;
 	onboardingDone: boolean;
 	agreements: unknown;
-	profile: { name: string | null; primaryInterest: string | null } | null;
-	specialities: { level: SkillLevel; direction: { name: string } }[];
+	profile: {
+		name: string | null;
+		primaryInterest: string | null;
+		isActive: boolean;
+	} | null;
+	specialities: {
+		level: SkillLevel;
+		isOpenForMentoring: boolean;
+		direction: { name: string };
+	}[];
 };
+
+/**
+ * The two things a person can be available for, spelled the way Brevo's
+ * `AVAILABLE_FOR` enumerates them. It is a *multiple-choice* attribute, so a
+ * contact holds any subset of these — including none.
+ */
+export const AVAILABLE_FOR_OFFERS = "offers";
+export const AVAILABLE_FOR_ADVISING = "advising";
 
 export type BrevoContactAttributes = {
 	FIRSTNAME: string | null;
@@ -115,7 +148,27 @@ export type BrevoContactAttributes = {
 	LEVEL: string | null;
 	ONBOARDING_DONE: boolean;
 	HAS_SUBSCRIBE_TO_NEWSLETTER: boolean;
+	AVAILABLE_FOR: string[];
 };
+
+/**
+ * What the person currently offers, from the two switches that say so:
+ * "Available for offers" on the resources page, and mentorship on any of their
+ * specialities.
+ */
+export function buildAvailableFor(user: {
+	profile: { isActive: boolean } | null;
+	specialities: { isOpenForMentoring: boolean }[];
+}): string[] {
+	const available: string[] = [];
+
+	if (user.profile?.isActive) available.push(AVAILABLE_FOR_OFFERS);
+	if (user.specialities.some((speciality) => speciality.isOpenForMentoring)) {
+		available.push(AVAILABLE_FOR_ADVISING);
+	}
+
+	return available;
+}
 
 /**
  * Maps a user onto the Brevo contact.
@@ -140,6 +193,7 @@ export function buildContactAttributes(
 		LEVEL: firstSpeciality?.level ?? null,
 		ONBOARDING_DONE: user.onboardingDone,
 		HAS_SUBSCRIBE_TO_NEWSLETTER: agreements.needSubscribeToNewsletter ?? false,
+		AVAILABLE_FOR: buildAvailableFor(user),
 	};
 }
 
@@ -152,12 +206,19 @@ export function buildContactAttributes(
  * it is spelled `"Yes"` or `"No"`. The request still answers 202, so the field
  * simply never appears.
  *
+ * `AVAILABLE_FOR` is a *multiple-choice* attribute and travels as an array in
+ * both dialects — the comma-separated string a CSV import would take is dropped
+ * here just as silently. An empty array is not a delete: the import leaves the
+ * previous choices standing even with `emptyContactsAttributes`, so clearing
+ * someone's availability only works through the single-contact endpoint, which
+ * is the path every switch below takes anyway.
+ *
  * Verified against the account rather than the documentation, which does not
  * mention it.
  */
 export function toImportAttributes(
 	attributes: BrevoContactAttributes,
-): Record<string, string | null> {
+): Record<string, string | string[] | null> {
 	return Object.fromEntries(
 		Object.entries(attributes).map(([key, value]) => [
 			key,
@@ -192,18 +253,20 @@ async function ensureAttributes(): Promise<void> {
  * into the Brevo enumeration disappears on write without so much as a warning,
  * so the answer is worth surfacing before a sync rather than after.
  */
-async function findUnsupportedValues(): Promise<UnsupportedValue[]> {
+async function findUnsupportedValues(
+	onlyOnboarded?: boolean,
+): Promise<UnsupportedValue[]> {
 	const labels = await readCategoryLabels();
 
 	const [interests, levels] = await Promise.all([
 		prisma.profile.groupBy({
 			by: ["primaryInterest"],
-			where: { user: { email: { not: null } } },
+			where: { user: syncableUsersWhere(onlyOnboarded) },
 			_count: { _all: true },
 		}),
 		prisma.speciality.groupBy({
 			by: ["level"],
-			where: { user: { email: { not: null } } },
+			where: { user: syncableUsersWhere(onlyOnboarded) },
 			_count: { _all: true },
 		}),
 	]);
@@ -356,9 +419,54 @@ export async function deleteBrevoContact(email: string): Promise<void> {
 	}
 }
 
+/**
+ * Mirrors one person's availability into Brevo, and nothing else.
+ *
+ * Called from the two switches that decide it, so a segment built on
+ * `AVAILABLE_FOR` is right the moment someone flips one — waiting for the next
+ * admin sync would leave the mailing platform offering people who had just
+ * said they were not available.
+ *
+ * Best-effort: the setting is already saved, and a mailing platform that is
+ * down must not turn a successful save into an error. It also only ever
+ * *updates* — a contact Brevo has never heard of gets its attributes at
+ * registration or from the next full sync, and creating one here would add
+ * somebody to the mailing list from a settings page.
+ */
+export async function syncUserAvailabilityToBrevo(
+	userId: string,
+): Promise<void> {
+	if (isDryRunByDefault()) return;
+
+	try {
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+			select: {
+				email: true,
+				profile: { select: { isActive: true } },
+				specialities: { select: { isOpenForMentoring: true } },
+			},
+		});
+
+		if (!user?.email) return;
+
+		await brevoApi.contacts.updateContact(user.email, {
+			attributes: { AVAILABLE_FOR: buildAvailableFor(user) },
+		});
+	} catch (error) {
+		// 404 is not a failure — see above, this endpoint does not create.
+		const status = (error as { status?: number })?.status;
+		if (status === 404) return;
+
+		console.error("[brevo] failed to sync availability", error);
+	}
+}
+
 export type SyncOptions = {
 	/** Build the payload and return it without touching Brevo. */
 	dryRun?: boolean;
+	/** Leave out everyone who never finished onboarding. */
+	onlyOnboarded?: boolean;
 };
 
 export type SyncPreview = {
@@ -385,10 +493,12 @@ export type SyncPreview = {
  * contact that exists but sits in another list is an update, not a new
  * subscriber, and counting it as new would overstate the damage.
  */
-export async function previewBrevoSync(): Promise<SyncPreview> {
+export async function previewBrevoSync(
+	options: Pick<SyncOptions, "onlyOnboarded"> = {},
+): Promise<SyncPreview> {
 	const emails = (
 		await prisma.user.findMany({
-			where: { email: { not: null } },
+			where: syncableUsersWhere(options.onlyOnboarded),
 			select: { email: true },
 		})
 	)
@@ -407,7 +517,7 @@ export async function previewBrevoSync(): Promise<SyncPreview> {
 		total: emails.length,
 		toCreate,
 		toUpdate: emails.length - toCreate,
-		unsupportedValues: await findUnsupportedValues(),
+		unsupportedValues: await findUnsupportedValues(options.onlyOnboarded),
 	};
 }
 
@@ -495,7 +605,7 @@ export async function syncAllUsersToBrevo(
 
 	for (;;) {
 		const users = (await prisma.user.findMany({
-			where: { email: { not: null } },
+			where: syncableUsersWhere(options.onlyOnboarded),
 			select: userSelection,
 			orderBy: { id: "asc" },
 			take: chunkSize,

@@ -95,3 +95,9 @@
 	text-align: right;
 	color: var(--gd-color-text-secondary);
 }
+
+/* Between the counts it changes and the fields it does not. */
+.filter {
+	display: flex;
+	margin-block: var(--gd-space-4);
+}
