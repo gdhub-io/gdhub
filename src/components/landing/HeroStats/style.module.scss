@@ -1,64 +1,108 @@
-@use "sass:meta";
+/*
+ * The hero metrics, per the design frames (desktop `vXTKK`, mobile `c9AHa`).
+ *
+ * Whites carry an alpha rather than a token: this block always sits on the dark
+ * hero over the illustration, so the greys it needs are transparencies of the
+ * text colour and not roles the theme carries.
+ */
+
+/* Bottom of the column on a wide screen — the figures stand on the picture. */
 .container {
-  color: var(--gd-color-text);
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  width: 100%;
-  height: 100%;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
+	width: 100%;
+	height: 100%;
 }
 
-.component {
-  .members {
-    justify-content: space-around;
-    align-items: center;
-    text-align: center;
-
-    :global(span.ant-typography) {
-      font-size: 14px;
-      color: var(--gd-color-text-secondary);
-      line-height: 1.2;
-    }
-
-    :global(span.ant-typography>strong) {
-      color: var(--gd-color-text);
-      font-size: 48px;
-    }
-
-    :global(span.ant-avatar) {
-      border: 0;
-    }
-  }
-
-  .stats {
-    text-align: center;
-
-
-    :global(span.ant-typography) {
-      word-wrap: normal;
-      text-wrap: wrap;
-      font-size: 14px;
-      color: var(--gd-color-text-secondary);
-    }
-
-    :global(span.ant-typography>strong) {
-      color: var(--gd-color-text);
-      font-size: 48px;
-    }
-  }
-
-  :global(.ant-divider) {
-    border-color: var(--gd-color-text-secondary);
-  }
-
-  :global(.ant-space-item:has(.divider)) {
-    width: 100%;
-  }
+.stats {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 100%;
+	padding: 0 28px 28px;
 }
 
-@include meta.load-css('styles/xs.scss'); // screen < 576px
-@include meta.load-css('styles/sm.scss'); // screen ≥ 576px
-@include meta.load-css('styles/md.scss'); // screen ≥ 768px
-@include meta.load-css('styles/lg.scss'); // screen ≥ 992px
-@include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
-@include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px
+.figure {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+/*
+ * The figure lifts off the picture by growing brighter towards its baseline —
+ * a gradient painted into the glyphs, which is why it clips to the text.
+ */
+.value {
+	flex: none;
+	font-size: 44px;
+	font-weight: 700;
+	line-height: 1.15;
+	background: linear-gradient(
+		180deg,
+		rgba(255, 255, 255, 0.72) 0%,
+		rgba(255, 255, 255, 1) 100%
+	);
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+}
+
+.caption {
+	max-width: 360px;
+	font-size: 14px;
+	line-height: 1.35;
+	color: rgba(255, 255, 255, 0.54);
+}
+
+/* Fades out at both ends: a rule under a figure, not a table border. */
+.rule {
+	height: 1px;
+	background: linear-gradient(
+		90deg,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.24) 35%,
+		rgba(255, 255, 255, 0.24) 65%,
+		rgba(255, 255, 255, 0) 100%
+	);
+}
+
+.counts {
+	font-size: 15px;
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+/* Centred under the text, where there is no picture to stand on. */
+@media screen and (max-width: 991px) {
+	.container {
+		justify-content: center;
+	}
+
+	.stats {
+		align-items: center;
+		gap: 14px;
+		padding: 0;
+	}
+
+	.figure {
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.value {
+		font-size: 40px;
+	}
+
+	.caption {
+		max-width: 280px;
+		text-align: center;
+	}
+
+	.counts {
+		font-size: 14px;
+		text-align: center;
+	}
+}

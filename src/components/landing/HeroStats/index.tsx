@@ -1,15 +1,14 @@
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Divider, Flex, Grid, Space, Typography } from "antd";
-import heroStatsImage1 from "@/assets/images/landing/hero-stats-member-1.png";
-import heroStatsImage2 from "@/assets/images/landing/hero-stats-member-2.png";
-import heroStatsImage3 from "@/assets/images/landing/hero-stats-member-3.png";
-import heroStatsImage4 from "@/assets/images/landing/hero-stats-member-4.png";
-import heroStatsImage5 from "@/assets/images/landing/hero-stats-member-5.png";
 import { formatDollar } from "@/helpers/format";
 import styles from "./style.module.scss";
 
-const { Text } = Typography;
-
+/**
+ * The one number the hero leads with, and the three that give it scale.
+ *
+ * Stands at the foot of the illustration on a wide screen and centred under the
+ * text on a phone. No panel of its own: it reads as a caption on the picture,
+ * which is why the figures carry their own contrast rather than a backdrop.
+ */
 export const HeroStats = ({
 	stats,
 }: {
@@ -21,77 +20,36 @@ export const HeroStats = ({
 		investmentAmount: number;
 	};
 }) => {
-	const screen = Grid.useBreakpoint();
 	const { t } = useTranslate();
 
 	return (
 		<div className={styles.container}>
-			<div className={styles.component} style={{ position: "relative" }}>
-				<div
-					style={{
-						background: "var(--gd-neutral-950)",
-						width: "calc(100% + 32px)",
-						height: "calc(100% + 32px)",
-						position: "absolute",
-						top: -16,
-						left: -16,
-						filter: "blur(30px)",
-					}}
-				></div>
-				<Flex vertical style={{ position: "relative" }}>
-					<Flex style={{ width: "100%" }} gap={24} className={styles.members}>
-						<Flex vertical align="center">
-							<Text strong>{stats?.specialitiesCount}+</Text>
-							<Text>
-								{t("component.heroStats.communityMembers", "members")}
-							</Text>
-						</Flex>
+			<div className={styles.stats}>
+				<div className={styles.figure}>
+					<span className={styles.value}>
+						{formatDollar(stats?.investmentAmount || 0)}
+					</span>
+					<span className={styles.caption}>
+						{t(
+							"component.heroStats.caption",
+							"worth of time our members are ready to put into the creation of amazing video games",
+						)}
+					</span>
+				</div>
 
-						<Avatar.Group size={screen.md ? 64 : 56}>
-							<Avatar src={heroStatsImage1.src} />
-							<Avatar src={heroStatsImage2.src} />
-							<Avatar src={heroStatsImage3.src} />
-							{screen.lg && (
-								<>
-									<Avatar src={heroStatsImage4.src} />
-									<Avatar src={heroStatsImage5.src} />
-								</>
-							)}
-						</Avatar.Group>
-					</Flex>
-					<Divider style={{ margin: "24px 0 0" }} className="divider" />
-					<Flex className={styles.stats}>
-						<Space orientation="vertical" align="center" size={0}>
-							<Text strong>{formatDollar(stats?.investmentAmount || 0)}</Text>
-							<Text>
-								{t(
-									"component.heroStats.qualifiedSpecialists",
-									"ready to invest up to in the form of their time",
-								)}
-							</Text>
-						</Space>
-						<Divider
-							orientation="vertical"
-							style={{ height: 52, margin: "0 16px" }}
-						/>
-						<Space orientation="vertical" align="center" size={0}>
-							<Text strong>{stats?.projectsCount}</Text>
-							<Text>
-								{t("component.heroStats.currentProjects", "current projects")}
-							</Text>
-						</Space>
-						<Divider
-							orientation="vertical"
-							style={{ height: 52, margin: "0 16px" }}
-						/>
-						<Space orientation="vertical" align="center" size={0}>
-							<Text strong>{stats?.vacanciesCount}+</Text>
-							<Text>
-								{t("component.heroStats.actualVacancies", "actual vacancies")}
-							</Text>
-						</Space>
-					</Flex>
-				</Flex>
+				<div className={styles.rule} />
+
+				<div className={styles.counts}>
+					{t(
+						"component.heroStats.counts",
+						"{members}+ members · {projects} current projects · {vacancies}+ open positions",
+						{
+							members: stats?.specialitiesCount ?? 0,
+							projects: stats?.projectsCount ?? 0,
+							vacancies: stats?.vacanciesCount ?? 0,
+						},
+					)}
+				</div>
 			</div>
 		</div>
 	);

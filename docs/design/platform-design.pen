@@ -142521,9 +142521,9 @@
     },
     {
       "type": "frame",
-      "id": "Ut9H3",
-      "x": 3396,
-      "y": 3135,
+      "id": "amsUw",
+      "x": 0,
+      "y": 29420,
       "name": "Landing — header & hero",
       "clip": true,
       "width": 1714,
@@ -142532,7 +142532,7 @@
       "children": [
         {
           "type": "frame",
-          "id": "FktNc",
+          "id": "zv7Qs",
           "name": "topLine",
           "width": "fill_container",
           "height": 120,
@@ -142545,12 +142545,12 @@
           "children": [
             {
               "type": "frame",
-              "id": "yVKrj",
+              "id": "pLyrH",
               "name": "logo",
               "alignItems": "center",
               "children": [
                 {
-                  "id": "W6NtNX",
+                  "id": "MZNrl",
                   "type": "ref",
                   "ref": "S9E11",
                   "name": "Logo",
@@ -142561,13 +142561,13 @@
             },
             {
               "type": "frame",
-              "id": "hJree",
+              "id": "lDAP9",
               "name": "menu",
               "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "q9JL4j",
+                  "id": "gVylF",
                   "name": "For Authors",
                   "height": 40,
                   "cornerRadius": 10,
@@ -142580,7 +142580,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "OTTTT",
+                      "id": "Rajjb",
                       "name": "L",
                       "fill": "#FFFFFF",
                       "content": "For Authors",
@@ -142592,7 +142592,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "QR38L",
+                  "id": "LGj52",
                   "name": "For Specialists",
                   "height": 40,
                   "cornerRadius": 10,
@@ -142605,7 +142605,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "L9MdeO",
+                      "id": "TZIpp",
                       "name": "L",
                       "fill": "#FFFFFF",
                       "content": "For Specialists",
@@ -142617,7 +142617,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "pw5TR",
+                  "id": "YWSwI",
                   "name": "Video Games",
                   "height": 40,
                   "cornerRadius": 10,
@@ -142630,7 +142630,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "l3hcLC",
+                      "id": "WiDM7",
                       "name": "L",
                       "fill": "#FFFFFF",
                       "content": "Video Games",
@@ -142642,7 +142642,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "sVJgQ",
+                  "id": "wKyp4",
                   "name": "🔥 Open positions",
                   "height": 40,
                   "cornerRadius": 10,
@@ -142655,7 +142655,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "UXRtp",
+                      "id": "X36iZ",
                       "name": "L",
                       "fill": "#FFFFFF",
                       "content": "🔥 Open positions",
@@ -142667,7 +142667,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "ThwTn",
+                  "id": "O1yUcn",
                   "name": "Events",
                   "height": 40,
                   "cornerRadius": 10,
@@ -142680,7 +142680,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "Y98Au",
+                      "id": "VaHvW",
                       "name": "L",
                       "fill": "#FFFFFF",
                       "content": "Events",
@@ -142692,7 +142692,7 @@
                 },
                 {
                   "type": "frame",
-                  "id": "Lj3Ra",
+                  "id": "ZrvLz",
                   "name": "Contacts",
                   "height": 40,
                   "cornerRadius": 10,
@@ -142705,7 +142705,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "qnhHl",
+                      "id": "f1WSmW",
                       "name": "L",
                       "fill": "#FFFFFF",
                       "content": "Contacts",
@@ -142719,14 +142719,14 @@
             },
             {
               "type": "frame",
-              "id": "B5sddc",
+              "id": "CZ24X",
               "name": "rightControls",
               "gap": 12,
               "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "I7nzxO",
+                  "id": "LJAPY",
                   "name": "Go to app",
                   "height": 40,
                   "cornerRadius": 10,
@@ -142742,7 +142742,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "g1wC9",
+                      "id": "R9Xcq",
                       "name": "L",
                       "fill": "#FFFFFF",
                       "content": "Go to app",
@@ -142758,104 +142758,167 @@
         },
         {
           "type": "frame",
-          "id": "DqHvP",
+          "id": "cpcnP",
           "name": "Hero section",
           "width": "fill_container",
-          "gap": 64,
-          "padding": [
-            96,
-            165
-          ],
+          "layout": "vertical",
           "children": [
             {
               "type": "frame",
-              "id": "NPXHl",
-              "name": "heroMain",
+              "id": "RhGSU",
+              "name": "heroTop",
               "width": "fill_container",
-              "layout": "vertical",
               "gap": 64,
+              "padding": [
+                96,
+                165
+              ],
               "children": [
                 {
-                  "type": "text",
-                  "id": "m2ovk",
-                  "name": "Title",
-                  "fill": "#FFFFFF",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Ecosystem for video game creators",
-                  "lineHeight": 1,
-                  "fontFamily": "$font",
-                  "fontSize": 72,
-                  "fontWeight": "800"
-                },
-                {
                   "type": "frame",
-                  "id": "tAroJ",
-                  "name": "bullets",
+                  "id": "F7GB02",
+                  "name": "heroMain",
                   "width": "fill_container",
                   "layout": "vertical",
-                  "gap": 32,
+                  "gap": 64,
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "k0bnrT",
-                      "name": "li",
+                      "type": "text",
+                      "id": "ANyma",
+                      "name": "Title",
+                      "fill": "#FFFFFF",
+                      "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "gap": 16,
+                      "content": "Ecosystem for video game creators",
+                      "lineHeight": 1,
+                      "fontFamily": "$font",
+                      "fontSize": 72,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "MHhLX",
+                      "name": "bullets",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 32,
                       "children": [
                         {
-                          "type": "icon",
-                          "id": "ZtJ4k",
-                          "name": "Star",
-                          "width": 32,
-                          "height": 32,
-                          "icon": "sparkle",
-                          "library": "lucide",
-                          "fill": "#FFFFFF"
+                          "type": "frame",
+                          "id": "xhDkp",
+                          "name": "li",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "yxcxz",
+                              "name": "Star",
+                              "width": 32,
+                              "height": 32,
+                              "icon": "sparkle",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            },
+                            {
+                              "type": "text",
+                              "id": "QduH5",
+                              "name": "T",
+                              "fill": "#FFFFFFD9",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Make your game — find the people it is missing, or join a project that needs your craft.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         },
                         {
-                          "type": "text",
-                          "id": "dG4k7",
-                          "name": "T",
-                          "fill": "#FFFFFFD9",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "hyotH",
+                          "name": "li",
                           "width": "fill_container",
-                          "content": "Make your game — find the people it is missing, or join a project that needs your craft.",
-                          "lineHeight": 1.5,
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "normal"
+                          "gap": 16,
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "zOt2Q",
+                              "name": "Star",
+                              "width": 32,
+                              "height": 32,
+                              "icon": "sparkle",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            },
+                            {
+                              "type": "text",
+                              "id": "otguk",
+                              "name": "T",
+                              "fill": "#FFFFFFD9",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         }
                       ]
                     },
                     {
                       "type": "frame",
-                      "id": "K4tS35",
-                      "name": "li",
-                      "width": "fill_container",
+                      "id": "aJOq5",
+                      "name": "cta",
+                      "layout": "vertical",
                       "gap": 16,
                       "children": [
                         {
-                          "type": "icon",
-                          "id": "flesG",
-                          "name": "Star",
-                          "width": 32,
-                          "height": 32,
-                          "icon": "sparkle",
-                          "library": "lucide",
-                          "fill": "#FFFFFF"
+                          "type": "frame",
+                          "id": "mJzDV",
+                          "name": "actions",
+                          "gap": 20,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "B7d1yx",
+                              "name": "heroButton",
+                              "width": 236,
+                              "fill": "$brand-primary",
+                              "cornerRadius": 8,
+                              "padding": [
+                                24,
+                                62
+                              ],
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "SC8iF",
+                                  "name": "L",
+                                  "fill": "#FFFFFF",
+                                  "content": "Get started for free",
+                                  "fontFamily": "$font",
+                                  "fontSize": 20,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
-                          "id": "O3WXY",
-                          "name": "T",
-                          "fill": "#FFFFFFD9",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
-                          "lineHeight": 1.5,
+                          "id": "YwMTD",
+                          "name": "note",
+                          "fill": "#FFFFFF8A",
+                          "content": "No credit card required",
                           "fontFamily": "$font",
-                          "fontSize": 16,
+                          "fontSize": 15,
                           "fontWeight": "normal"
                         }
                       ]
@@ -142864,396 +142927,206 @@
                 },
                 {
                   "type": "frame",
-                  "id": "yMec5",
-                  "name": "cta",
+                  "id": "icV6o",
+                  "name": "heroArt",
+                  "width": "fill_container",
+                  "height": "fill_container",
                   "layout": "vertical",
-                  "gap": 12,
+                  "justifyContent": "end",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "lWfFh",
-                      "name": "heroButton",
-                      "width": 236,
-                      "fill": "$brand-primary",
-                      "cornerRadius": 8,
-                      "padding": [
-                        24,
-                        62
-                      ],
+                      "id": "O9Y0Ag",
+                      "name": "illustration",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 660,
+                      "fill": "#00000000",
+                      "cornerRadius": 12,
                       "justifyContent": "center",
                       "alignItems": "center",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "bH50E",
-                          "name": "L",
-                          "fill": "#FFFFFF",
-                          "content": "Get started for free",
-                          "fontFamily": "$font",
-                          "fontSize": 20,
-                          "fontWeight": "500"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "IrInU",
-                      "name": "note",
-                      "fill": "#FFFFFF8A",
-                      "content": "No credit card required",
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "pMRLy",
-              "name": "heroArt",
-              "width": "fill_container",
-              "layout": "vertical",
-              "justifyContent": "end",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "x7WpT",
-                  "name": "illustration",
-                  "clip": true,
-                  "width": "fill_container",
-                  "height": 620,
-                  "fill": {
-                    "type": "image",
-                    "enabled": true,
-                    "url": "../../src/assets/images/landing/gdhub-hero-image.png",
-                    "mode": "fill"
-                  },
-                  "cornerRadius": 12,
-                  "justifyContent": "center",
-                  "alignItems": "center"
-                },
-                {
-                  "type": "frame",
-                  "id": "uN95v",
-                  "layoutPosition": "absolute",
-                  "x": 0,
-                  "y": 392,
-                  "name": "HeroStats",
-                  "width": 660,
-                  "layout": "vertical",
-                  "gap": 20,
-                  "padding": [
-                    0,
-                    24,
-                    24,
-                    24
-                  ],
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "C0WRz",
-                      "name": "members",
-                      "width": "fill_container",
-                      "gap": 24,
-                      "alignItems": "center",
-                      "children": [
-                        {
                           "type": "frame",
-                          "id": "szNPM",
-                          "name": "Text",
-                          "layout": "vertical",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "JDaD3",
-                              "name": "V",
-                              "fill": "#FFFFFF",
-                              "content": "18+",
-                              "fontFamily": "$font",
-                              "fontSize": 48,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "text",
-                              "id": "mtTeZ",
-                              "name": "L",
-                              "fill": "#FFFFFF8A",
-                              "content": "members",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "h8Vx3e",
-                          "name": "Avatars",
-                          "width": 280,
-                          "height": 64,
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "c4esuT",
-                              "x": 0,
-                              "y": 0,
-                              "name": "Av0",
-                              "clip": true,
-                              "width": 64,
-                              "height": 64,
-                              "fill": {
-                                "type": "image",
-                                "enabled": true,
-                                "url": "../../src/assets/images/landing/hero-stats-member-1.png",
-                                "mode": "fill"
-                              },
-                              "cornerRadius": 999,
-                              "stroke": "#0A0A0A",
-                              "strokeWidth": 2,
-                              "strokeAlignment": "outer",
-                              "justifyContent": "center",
-                              "alignItems": "center"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "EM72I",
-                              "x": 54,
-                              "y": 0,
-                              "name": "Av1",
-                              "clip": true,
-                              "width": 64,
-                              "height": 64,
-                              "fill": {
-                                "type": "image",
-                                "enabled": true,
-                                "url": "../../src/assets/images/landing/hero-stats-member-2.png",
-                                "mode": "fill"
-                              },
-                              "cornerRadius": 999,
-                              "stroke": "#0A0A0A",
-                              "strokeWidth": 2,
-                              "strokeAlignment": "outer",
-                              "justifyContent": "center",
-                              "alignItems": "center"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "ISgnw",
-                              "x": 108,
-                              "y": 0,
-                              "name": "Av2",
-                              "clip": true,
-                              "width": 64,
-                              "height": 64,
-                              "fill": {
-                                "type": "image",
-                                "enabled": true,
-                                "url": "../../src/assets/images/landing/hero-stats-member-3.png",
-                                "mode": "fill"
-                              },
-                              "cornerRadius": 999,
-                              "stroke": "#0A0A0A",
-                              "strokeWidth": 2,
-                              "strokeAlignment": "outer",
-                              "justifyContent": "center",
-                              "alignItems": "center"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "ADsUg",
-                              "x": 162,
-                              "y": 0,
-                              "name": "Av3",
-                              "clip": true,
-                              "width": 64,
-                              "height": 64,
-                              "fill": {
-                                "type": "image",
-                                "enabled": true,
-                                "url": "../../src/assets/images/landing/hero-stats-member-4.png",
-                                "mode": "fill"
-                              },
-                              "cornerRadius": 999,
-                              "stroke": "#0A0A0A",
-                              "strokeWidth": 2,
-                              "strokeAlignment": "outer",
-                              "justifyContent": "center",
-                              "alignItems": "center"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "WWgLL",
-                              "x": 216,
-                              "y": 0,
-                              "name": "Av4",
-                              "clip": true,
-                              "width": 64,
-                              "height": 64,
-                              "fill": {
-                                "type": "image",
-                                "enabled": true,
-                                "url": "../../src/assets/images/landing/hero-stats-member-5.png",
-                                "mode": "fill"
-                              },
-                              "cornerRadius": 999,
-                              "stroke": "#0A0A0A",
-                              "strokeWidth": 2,
-                              "strokeAlignment": "outer",
-                              "justifyContent": "center",
-                              "alignItems": "center"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "rectangle",
-                      "id": "d7q5Sn",
-                      "name": "Rule",
-                      "fill": "#FFFFFF29",
-                      "width": "fill_container",
-                      "height": 1
-                    },
-                    {
-                      "type": "frame",
-                      "id": "h6SLB",
-                      "name": "numbers",
-                      "width": "fill_container",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "i2J3U",
-                          "name": "ready to invest up to in the form of their time",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "padding": [
-                            0,
-                            20
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "m0phRI",
-                              "name": "V",
-                              "fill": "#FFFFFF",
-                              "content": "$203.04K",
-                              "fontFamily": "$font",
-                              "fontSize": 44,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "text",
-                              "id": "e5t4NI",
-                              "name": "L",
-                              "fill": "#FFFFFF8A",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "ready to invest up to in the form of their time",
-                              "lineHeight": 1.35,
-                              "textAlign": "center",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
+                          "id": "YIgjp",
+                          "layoutPosition": "absolute",
+                          "x": 0,
+                          "y": 0,
+                          "name": "imageLayer",
+                          "width": 660,
+                          "height": 660,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "../../src/assets/images/landing/gdhub-hero-image.png",
+                            "mode": "fill"
+                          }
                         },
                         {
                           "type": "rectangle",
-                          "id": "w4uyvP",
-                          "name": "Div",
-                          "fill": "#FFFFFF29",
-                          "width": 1,
-                          "height": 70
+                          "id": "R5P8XI",
+                          "layoutPosition": "absolute",
+                          "x": 0,
+                          "y": 0,
+                          "name": "scrim",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 180,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "#0A0A0A00",
+                                "position": 0
+                              },
+                              {
+                                "color": "#0A0A0A00",
+                                "position": 0.5
+                              },
+                              {
+                                "color": "#0A0A0A59",
+                                "position": 0.66
+                              },
+                              {
+                                "color": "#0A0A0ACC",
+                                "position": 0.79
+                              },
+                              {
+                                "color": "#0A0A0A",
+                                "position": 0.91
+                              },
+                              {
+                                "color": "#0A0A0A",
+                                "position": 1
+                              }
+                            ]
+                          },
+                          "width": 660,
+                          "height": 660
                         },
                         {
                           "type": "frame",
-                          "id": "Ui3Sf",
-                          "name": "current projects",
-                          "width": "fill_container",
+                          "id": "vXTKK",
+                          "layoutPosition": "absolute",
+                          "x": 0,
+                          "y": 524,
+                          "name": "HeroStats",
+                          "width": 660,
+                          "fill": "#00000000",
                           "layout": "vertical",
-                          "gap": 4,
+                          "gap": 16,
                           "padding": [
                             0,
-                            20
+                            28,
+                            28,
+                            28
                           ],
-                          "alignItems": "center",
                           "children": [
                             {
-                              "type": "text",
-                              "id": "eIkBL",
-                              "name": "V",
-                              "fill": "#FFFFFF",
-                              "content": "19",
-                              "fontFamily": "$font",
-                              "fontSize": 48,
-                              "fontWeight": "700"
+                              "type": "frame",
+                              "id": "Gz3au",
+                              "name": "figure",
+                              "gap": 16,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "N40Sg7",
+                                  "name": "V",
+                                  "fill": {
+                                    "type": "gradient",
+                                    "gradientType": "linear",
+                                    "enabled": true,
+                                    "rotation": 180,
+                                    "size": {
+                                      "height": 1
+                                    },
+                                    "colors": [
+                                      {
+                                        "color": "#FFFFFFB8",
+                                        "position": 0
+                                      },
+                                      {
+                                        "color": "#FFFFFF",
+                                        "position": 1
+                                      }
+                                    ]
+                                  },
+                                  "content": "$203.04K",
+                                  "fontFamily": "$font",
+                                  "fontSize": 44,
+                                  "fontWeight": "700"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "n7SzA",
+                                  "name": "L",
+                                  "fill": "#FFFFFF8A",
+                                  "textGrowth": "fixed-width",
+                                  "width": 360,
+                                  "content": "worth of time our members are ready to put into the creation of amazing video games",
+                                  "lineHeight": 1.35,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             },
                             {
-                              "type": "text",
-                              "id": "y9Uzz",
-                              "name": "L",
-                              "fill": "#FFFFFF8A",
-                              "textGrowth": "fixed-width",
+                              "type": "frame",
+                              "id": "ueJ99",
+                              "name": "rule",
                               "width": "fill_container",
-                              "content": "current projects",
-                              "lineHeight": 1.35,
-                              "textAlign": "center",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "rectangle",
-                          "id": "QbdON",
-                          "name": "Div",
-                          "fill": "#FFFFFF29",
-                          "width": 1,
-                          "height": 70
-                        },
-                        {
-                          "type": "frame",
-                          "id": "H9sO9",
-                          "name": "actual vacancies",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "padding": [
-                            0,
-                            20
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "dU6Cf",
-                              "name": "V",
-                              "fill": "#FFFFFF",
-                              "content": "13+",
-                              "fontFamily": "$font",
-                              "fontSize": 48,
-                              "fontWeight": "700"
+                              "height": 1,
+                              "fill": {
+                                "type": "gradient",
+                                "gradientType": "linear",
+                                "enabled": true,
+                                "rotation": 90,
+                                "size": {
+                                  "height": 1
+                                },
+                                "colors": [
+                                  {
+                                    "color": "#FFFFFF00",
+                                    "position": 0
+                                  },
+                                  {
+                                    "color": "#FFFFFF3D",
+                                    "position": 0.35
+                                  },
+                                  {
+                                    "color": "#FFFFFF3D",
+                                    "position": 0.65
+                                  },
+                                  {
+                                    "color": "#FFFFFF00",
+                                    "position": 1
+                                  }
+                                ]
+                              }
                             },
                             {
-                              "type": "text",
-                              "id": "ILwuS",
-                              "name": "L",
-                              "fill": "#FFFFFF8A",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "actual vacancies",
-                              "lineHeight": 1.35,
-                              "textAlign": "center",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
+                              "type": "frame",
+                              "id": "j2tl4",
+                              "name": "counts",
+                              "gap": 16,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "dEGik",
+                                  "name": "S",
+                                  "fill": "#FFFFFFB3",
+                                  "content": "18+ members · 19 current projects · 13+ open positions",
+                                  "fontFamily": "$font",
+                                  "fontSize": 15,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             }
                           ]
                         }
@@ -143269,9 +143142,9 @@
     },
     {
       "type": "frame",
-      "id": "hBojG",
-      "x": 5230,
-      "y": 3135,
+      "id": "P5SK0m",
+      "x": 1843,
+      "y": 29447,
       "name": "Landing — header & hero · Mobile",
       "clip": true,
       "width": 390,
@@ -143280,7 +143153,7 @@
       "children": [
         {
           "type": "frame",
-          "id": "E6T5V",
+          "id": "Iqnfs",
           "name": "topLine",
           "width": "fill_container",
           "height": 96,
@@ -143292,7 +143165,7 @@
           "alignItems": "center",
           "children": [
             {
-              "id": "sRzct",
+              "id": "T4ZKw",
               "type": "ref",
               "ref": "S9E11",
               "name": "Logo",
@@ -143301,7 +143174,7 @@
             },
             {
               "type": "icon",
-              "id": "A8mKMF",
+              "id": "eowDP",
               "name": "Menu",
               "width": 24,
               "height": 24,
@@ -143313,420 +143186,313 @@
         },
         {
           "type": "frame",
-          "id": "sxWGN",
+          "id": "TJB5c",
           "name": "Hero section",
           "width": "fill_container",
           "layout": "vertical",
-          "gap": 48,
-          "padding": [
-            48,
-            16
-          ],
           "children": [
             {
-              "type": "text",
-              "id": "TYvAQ",
-              "name": "Title",
-              "fill": "#FFFFFF",
-              "textGrowth": "fixed-width",
-              "width": "fill_container",
-              "content": "Ecosystem for video game creators",
-              "lineHeight": 1.25,
-              "textAlign": "center",
-              "fontFamily": "$font",
-              "fontSize": 40,
-              "fontWeight": "800"
-            },
-            {
               "type": "frame",
-              "id": "h3xALn",
-              "name": "bullets",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 16,
+              "id": "hlc35",
+              "name": "illustration",
+              "clip": true,
+              "width": 390,
+              "height": 280,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../src/assets/images/landing/gdhub-hero-image.png",
+                "mode": "fit"
+              },
+              "layout": "none",
               "children": [
                 {
-                  "type": "frame",
-                  "id": "b3Hoq",
-                  "name": "li",
-                  "width": "fill_container",
-                  "gap": 8,
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "NGxTP",
-                      "name": "Star",
-                      "width": 19,
-                      "height": 19,
-                      "icon": "sparkle",
-                      "library": "lucide",
-                      "fill": "#FFFFFF"
+                  "type": "rectangle",
+                  "id": "qibbh",
+                  "x": 0,
+                  "y": 180,
+                  "name": "fade",
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 180,
+                    "size": {
+                      "height": 1
                     },
-                    {
-                      "type": "text",
-                      "id": "uhmfk",
-                      "name": "T",
-                      "fill": "#FFFFFFD9",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Make your game — find the people it is missing, or join a project that needs your craft.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "wfYGq",
-                  "name": "li",
-                  "width": "fill_container",
-                  "gap": 8,
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "EaKGJ",
-                      "name": "Star",
-                      "width": 19,
-                      "height": 19,
-                      "icon": "sparkle",
-                      "library": "lucide",
-                      "fill": "#FFFFFF"
-                    },
-                    {
-                      "type": "text",
-                      "id": "YaAuv",
-                      "name": "T",
-                      "fill": "#FFFFFFD9",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    }
-                  ]
+                    "colors": [
+                      {
+                        "color": "#0A0A0A00",
+                        "position": 0
+                      },
+                      {
+                        "color": "#0A0A0A66",
+                        "position": 0.45
+                      },
+                      {
+                        "color": "#0A0A0AE6",
+                        "position": 0.78
+                      },
+                      {
+                        "color": "#0A0A0A",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "width": 390,
+                  "height": 100
                 }
               ]
             },
             {
               "type": "frame",
-              "id": "Xidkl",
-              "name": "cta",
+              "id": "vkpHD",
+              "name": "Content",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 12,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "xEpfu",
-                  "name": "heroButton",
-                  "width": "fill_container",
-                  "fill": "$brand-primary",
-                  "cornerRadius": 8,
-                  "padding": [
-                    18,
-                    32
-                  ],
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "xQ5Hm",
-                      "name": "L",
-                      "fill": "#FFFFFF",
-                      "content": "Get started for free",
-                      "fontFamily": "$font",
-                      "fontSize": 20,
-                      "fontWeight": "500"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "id": "rkTx2",
-                  "name": "note",
-                  "fill": "#FFFFFF8A",
-                  "content": "No credit card required",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "LgZWP",
-              "name": "HeroStats",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 20,
+              "gap": 48,
               "padding": [
+                0,
                 16,
-                0,
-                0,
-                0
+                48,
+                16
               ],
               "children": [
                 {
-                  "type": "frame",
-                  "id": "R8Qg1T",
-                  "name": "members",
+                  "type": "text",
+                  "id": "T03hFG",
+                  "name": "Title",
+                  "fill": "#FFFFFF",
+                  "textGrowth": "fixed-width",
                   "width": "fill_container",
+                  "content": "Ecosystem for video game creators",
+                  "lineHeight": 1.25,
+                  "textAlign": "center",
+                  "fontFamily": "$font",
+                  "fontSize": 40,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "PZ9L5",
+                  "name": "bullets",
+                  "width": "fill_container",
+                  "layout": "vertical",
                   "gap": 16,
-                  "justifyContent": "space_around",
-                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "uhrrJ",
-                      "name": "Text",
-                      "layout": "vertical",
-                      "alignItems": "center",
+                      "id": "s9DWz",
+                      "name": "li",
+                      "width": "fill_container",
+                      "gap": 8,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "vISDi",
-                          "name": "V",
-                          "fill": "#FFFFFF",
-                          "content": "18+",
-                          "fontFamily": "$font",
-                          "fontSize": 20,
-                          "fontWeight": "700"
+                          "type": "icon",
+                          "id": "HDi3r",
+                          "name": "Star",
+                          "width": 19,
+                          "height": 19,
+                          "icon": "sparkle",
+                          "library": "lucide",
+                          "fill": "#FFFFFF"
                         },
                         {
                           "type": "text",
-                          "id": "foiVE",
-                          "name": "L",
-                          "fill": "#FFFFFF8A",
-                          "content": "members",
+                          "id": "zDJxC",
+                          "name": "T",
+                          "fill": "#FFFFFFD9",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Make your game — find the people it is missing, or join a project that needs your craft.",
+                          "lineHeight": 1.5,
                           "fontFamily": "$font",
-                          "fontSize": 12,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
                     },
                     {
                       "type": "frame",
-                      "id": "TCEsb",
-                      "name": "Avatars",
-                      "width": 150,
-                      "height": 56,
-                      "layout": "none",
+                      "id": "efpjf",
+                      "name": "li",
+                      "width": "fill_container",
+                      "gap": 8,
                       "children": [
                         {
-                          "type": "frame",
-                          "id": "mbQi7",
-                          "x": 0,
-                          "y": 0,
-                          "name": "Av0",
-                          "clip": true,
-                          "width": 56,
-                          "height": 56,
-                          "fill": {
-                            "type": "image",
-                            "enabled": true,
-                            "url": "../../src/assets/images/landing/hero-stats-member-1.png",
-                            "mode": "fill"
-                          },
-                          "cornerRadius": 999,
-                          "stroke": "#0A0A0A",
-                          "strokeWidth": 2,
-                          "strokeAlignment": "outer"
+                          "type": "icon",
+                          "id": "sd3MK",
+                          "name": "Star",
+                          "width": 19,
+                          "height": 19,
+                          "icon": "sparkle",
+                          "library": "lucide",
+                          "fill": "#FFFFFF"
                         },
                         {
-                          "type": "frame",
-                          "id": "Y8GAo1",
-                          "x": 47,
-                          "y": 0,
-                          "name": "Av1",
-                          "clip": true,
-                          "width": 56,
-                          "height": 56,
-                          "fill": {
-                            "type": "image",
-                            "enabled": true,
-                            "url": "../../src/assets/images/landing/hero-stats-member-2.png",
-                            "mode": "fill"
-                          },
-                          "cornerRadius": 999,
-                          "stroke": "#0A0A0A",
-                          "strokeWidth": 2,
-                          "strokeAlignment": "outer"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "A0PrD",
-                          "x": 94,
-                          "y": 0,
-                          "name": "Av2",
-                          "clip": true,
-                          "width": 56,
-                          "height": 56,
-                          "fill": {
-                            "type": "image",
-                            "enabled": true,
-                            "url": "../../src/assets/images/landing/hero-stats-member-3.png",
-                            "mode": "fill"
-                          },
-                          "cornerRadius": 999,
-                          "stroke": "#0A0A0A",
-                          "strokeWidth": 2,
-                          "strokeAlignment": "outer"
+                          "type": "text",
+                          "id": "lll2x",
+                          "name": "T",
+                          "fill": "#FFFFFFD9",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "type": "rectangle",
-                  "id": "S2VGug",
-                  "name": "Rule",
-                  "fill": "#FFFFFF29",
-                  "width": "fill_container",
-                  "height": 1
-                },
-                {
                   "type": "frame",
-                  "id": "xkQae",
-                  "name": "numbers",
+                  "id": "O5q75",
+                  "name": "cta",
                   "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "UAsMo",
-                      "name": "ready to invest up to in the form of their time",
+                      "id": "wtQuy",
+                      "name": "heroButton",
                       "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 4,
+                      "fill": "$brand-primary",
+                      "cornerRadius": 8,
                       "padding": [
-                        0,
-                        8
+                        18,
+                        32
                       ],
+                      "justifyContent": "center",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
-                          "id": "RBUFq",
-                          "name": "V",
-                          "fill": "#FFFFFF",
-                          "content": "$203.04K",
-                          "fontFamily": "$font",
-                          "fontSize": 32,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "rrp6r",
+                          "id": "SY72H",
                           "name": "L",
-                          "fill": "#FFFFFF8A",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "ready to invest up to in the form of their time",
-                          "lineHeight": 1.35,
-                          "textAlign": "center",
+                          "fill": "#FFFFFF",
+                          "content": "Get started for free",
                           "fontFamily": "$font",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
+                          "fontSize": 20,
+                          "fontWeight": "500"
                         }
                       ]
                     },
                     {
-                      "type": "rectangle",
-                      "id": "IkVyk",
-                      "name": "Div",
-                      "fill": "#FFFFFF29",
-                      "width": 1,
-                      "height": 64
+                      "type": "text",
+                      "id": "tNVBx",
+                      "name": "note",
+                      "fill": "#FFFFFF8A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "No credit card required",
+                      "textAlign": "center",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "c9AHa",
+                  "name": "HeroStats",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "rCI6x",
+                      "name": "V",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 180,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#FFFFFFB8",
+                            "position": 0
+                          },
+                          {
+                            "color": "#FFFFFF",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "content": "$203.04K",
+                      "fontFamily": "$font",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "qnYGf",
+                      "name": "L",
+                      "fill": "#FFFFFF8A",
+                      "textGrowth": "fixed-width",
+                      "width": 280,
+                      "content": "worth of time our members are ready to put into the creation of amazing video games",
+                      "lineHeight": 1.4,
+                      "textAlign": "center",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
-                      "id": "H9SiXv",
-                      "name": "current projects",
+                      "id": "Y1B3Iz",
+                      "name": "rule",
                       "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 4,
-                      "padding": [
-                        0,
-                        8
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "m43mf",
-                          "name": "V",
-                          "fill": "#FFFFFF",
-                          "content": "19",
-                          "fontFamily": "$font",
-                          "fontSize": 32,
-                          "fontWeight": "700"
+                      "height": 1,
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 90,
+                        "size": {
+                          "height": 1
                         },
-                        {
-                          "type": "text",
-                          "id": "XfBTr",
-                          "name": "L",
-                          "fill": "#FFFFFF8A",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "current projects",
-                          "lineHeight": 1.35,
-                          "textAlign": "center",
-                          "fontFamily": "$font",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        }
-                      ]
+                        "colors": [
+                          {
+                            "color": "#FFFFFF00",
+                            "position": 0
+                          },
+                          {
+                            "color": "#FFFFFF3D",
+                            "position": 0.35
+                          },
+                          {
+                            "color": "#FFFFFF3D",
+                            "position": 0.65
+                          },
+                          {
+                            "color": "#FFFFFF00",
+                            "position": 1
+                          }
+                        ]
+                      }
                     },
                     {
-                      "type": "rectangle",
-                      "id": "phIDH",
-                      "name": "Div",
-                      "fill": "#FFFFFF29",
-                      "width": 1,
-                      "height": 64
-                    },
-                    {
-                      "type": "frame",
-                      "id": "S8On6B",
-                      "name": "actual vacancies",
+                      "type": "text",
+                      "id": "wG2MJ",
+                      "name": "S",
+                      "fill": "#FFFFFFB3",
+                      "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 4,
-                      "padding": [
-                        0,
-                        8
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "L8s9zj",
-                          "name": "V",
-                          "fill": "#FFFFFF",
-                          "content": "13+",
-                          "fontFamily": "$font",
-                          "fontSize": 32,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "U1ccgg",
-                          "name": "L",
-                          "fill": "#FFFFFF8A",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "actual vacancies",
-                          "lineHeight": 1.35,
-                          "textAlign": "center",
-                          "fontFamily": "$font",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        }
-                      ]
+                      "content": "18+ members · 19 current projects · 13+ open positions",
+                      "lineHeight": 1.5,
+                      "textAlign": "center",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
                 }

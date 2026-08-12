@@ -12,7 +12,39 @@
   background-origin: content-box;
 }
 
+/*
+ * The illustration is the section's background image and it runs past the
+ * bottom of the columns, so the figures standing on it had the rest of the
+ * picture poking out below them.
+ *
+ * The fade is painted over the whole section rather than over the column: the
+ * image is wider than the column, and a scrim that stopped at the column's edge
+ * drew a visible rectangle across the picture. Its colour is spelled out
+ * because a gradient stop needs an alpha and an alpha cannot be applied to a
+ * `var()` — keep it in step with `--gd-color-bg`.
+ */
+@media screen and (min-width: 992px) {
+  .section::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 50%;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(15, 15, 14, 0) 0%,
+      rgba(15, 15, 14, 0.55) 45%,
+      rgba(15, 15, 14, 0.92) 72%,
+      rgba(15, 15, 14, 1) 88%,
+      rgba(15, 15, 14, 1) 100%
+    );
+  }
+}
+
 .container {
+  position: relative;
+  z-index: 1;
   max-width: variables.$wrapper-width;
 }
 
