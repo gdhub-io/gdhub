@@ -79,8 +79,13 @@
 /* A stacked tile rather than the shared sidebar row: the cover is the point
    here, so it runs the width of the card with the text under it. */
 .tile {
-	display: block;
-	padding: var(--gd-space-3) var(--gd-space-6);
+	/* A column with real spacing between the cover and the two lines under it.
+	   The gap used to live on the cover's own rule; that rule moved out with the
+	   shared component and the text ended up flush against the image. */
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-4) var(--gd-space-6);
 	color: inherit;
 	text-decoration: none;
 	border-bottom: 1px solid var(--gd-color-border);
@@ -95,22 +100,11 @@
 	}
 }
 
-.cover {
+/* The two lines belong together, tighter than they sit to the cover. */
+.text {
 	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 120px;
-	margin-bottom: var(--gd-space-2);
-	border-radius: var(--gd-radius-card);
-	background-color: var(--gd-color-surface-sunken);
-	background-size: cover;
-	background-position: center;
-}
-
-.coverLetter {
-	font-size: 28px;
-	font-weight: 700;
-	color: var(--gd-color-text-tertiary);
+	flex-direction: column;
+	gap: 2px;
 }
 
 .meta {
@@ -123,4 +117,7 @@
 	font-weight: 600;
 	line-height: 1.3;
 	color: var(--gd-color-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }

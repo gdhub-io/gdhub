@@ -9,6 +9,16 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { previewBrevoSync, syncAllUsersToBrevo } from "@/services/brevo/sync";
 
+/** `1` keeps only the users who finished onboarding. */
+const flag = z
+	.enum(["0", "1"])
+	.optional()
+	.transform((value) => (value === undefined ? undefined : value === "1"));
+
+const PreviewQuerySchema = z.object({ onlyOnboarded: flag });
+
+type PreviewQuery = z.infer<typeof PreviewQuerySchema>;
+
 /**
  * What a full sync would do, without doing it — the confirm dialog asks for
  * this so an admin sees how many contacts are about to be created.
@@ -16,9 +26,12 @@ import { previewBrevoSync, syncAllUsersToBrevo } from "@/services/brevo/sync";
 export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "admin.users.manage" }),
-)(async () => {
+	withValidation(PreviewQuerySchema, "query"),
+)(async (_req, _ctx, { body }) => {
 	try {
-		return json(await previewBrevoSync());
+		const { onlyOnboarded } = body as PreviewQuery;
+
+		return json(await previewBrevoSync({ onlyOnboarded }));
 	} catch (error) {
 		console.error("[brevo: sync-preview]", error);
 		return apiError.internal("Failed to read the Brevo contact list");
@@ -26,12 +39,7 @@ export const GET = pipe(
 });
 
 /** `dryRun` builds the payload and skips the write — see `isDryRunByDefault`. */
-const QuerySchema = z.object({
-	dryRun: z
-		.enum(["0", "1"])
-		.optional()
-		.transform((value) => (value === undefined ? undefined : value === "1")),
-});
+const QuerySchema = z.object({ dryRun: flag, onlyOnboarded: flag });
 
 type Query = z.infer<typeof QuerySchema>;
 
@@ -47,9 +55,9 @@ export const POST = pipe(
 	withValidation(QuerySchema, "query"),
 )(async (_req, _ctx, { body }) => {
 	try {
-		const { dryRun } = body as Query;
+		const { dryRun, onlyOnboarded } = body as Query;
 
-		return json(await syncAllUsersToBrevo({ dryRun }));
+		return json(await syncAllUsersToBrevo({ dryRun, onlyOnboarded }));
 	} catch (error) {
 		console.error("[brevo: sync-all]", error);
 		return apiError.internal("Failed to sync users with Brevo");

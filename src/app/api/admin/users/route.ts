@@ -74,6 +74,7 @@ type PaginatedAdminUsersResponse = {
 
 type AdminUsersSortField =
 	| "createdAt"
+	| "lastModifiedAt"
 	| "name"
 	| "scTotal"
 	| "leadershipCapital"
@@ -140,9 +141,39 @@ const toPositiveInt = (value: unknown, fallback: number) => {
 const clamp = (value: number, min: number, max: number) =>
 	Math.min(Math.max(value, min), max);
 
+/**
+ * Cuts one page out of an already-sorted list, and describes it the way
+ * `paginate().withPages()` would.
+ *
+ * The sorts that cannot be expressed in SQL — display name, last modified,
+ * skill capital — read the whole filtered set and order it here, so they also
+ * have to build the `meta` the client paginates by. That was three hand-written
+ * copies of the same seven fields, each with its own chance of an off-by-one.
+ */
+const paginateInMemory = <T>(rows: T[], page: number, limit: number) => {
+	const totalCount = rows.length;
+	const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
+	const currentPage = clamp(page, 1, pageCount);
+	const start = (currentPage - 1) * limit;
+
+	return {
+		rows: rows.slice(start, start + limit),
+		meta: {
+			currentPage,
+			isFirstPage: currentPage === 1,
+			isLastPage: currentPage >= pageCount,
+			previousPage: currentPage > 1 ? currentPage - 1 : null,
+			nextPage: currentPage < pageCount ? currentPage + 1 : null,
+			pageCount,
+			totalCount,
+		},
+	};
+};
+
 const isSortField = (value?: string): value is AdminUsersSortField =>
 	[
 		"createdAt",
+		"lastModifiedAt",
 		"name",
 		"scTotal",
 		"leadershipCapital",
@@ -724,32 +755,36 @@ export const GET = pipe(
 		const sortedUsers = [...allUsers];
 		const direction = sortOrder === "ascend" ? 1 : -1;
 
-		if (sortField === "name") {
-			sortedUsers.sort(
-				(a, b) =>
+		// Neither of these is a column: a display name falls back through three
+		// fields, and "last modified" is the newest of the user's own row, their
+		// profile and their specialities. Both are worked out here and sorted in
+		// memory, the way the skill capital sorts below already are.
+		if (sortField === "name" || sortField === "lastModifiedAt") {
+			sortedUsers.sort((a, b) => {
+				if (sortField === "lastModifiedAt") {
+					return (
+						(toLastModifiedAt(a).getTime() - toLastModifiedAt(b).getTime()) *
+						direction
+					);
+				}
+
+				return (
 					toDisplayName(a).localeCompare(toDisplayName(b), undefined, {
 						sensitivity: "base",
-					}) * direction,
-			);
+					}) * direction
+				);
+			});
 
-			const totalCount = sortedUsers.length;
-			const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
-			const safePage = clamp(page, 1, pageCount);
-			const start = (safePage - 1) * limit;
-			const pagedUsers = sortedUsers.slice(start, start + limit);
+			const { rows: pagedUsers, meta } = paginateInMemory(
+				sortedUsers,
+				page,
+				limit,
+			);
 			const [capital, memberships] = await loadPageData(pagedUsers);
 
 			const response: PaginatedAdminUsersResponse = {
 				data: pagedUsers.map((user) => toListItem(user, capital, memberships)),
-				meta: {
-					currentPage: safePage,
-					isFirstPage: safePage === 1,
-					isLastPage: safePage >= pageCount,
-					previousPage: safePage > 1 ? safePage - 1 : null,
-					nextPage: safePage < pageCount ? safePage + 1 : null,
-					pageCount,
-					totalCount,
-				},
+				meta,
 			};
 			return json(await withBrevoPresence(response));
 		}
@@ -764,11 +799,11 @@ export const GET = pipe(
 			return (aValue - bValue) * direction;
 		});
 
-		const totalCount = sortedUsers.length;
-		const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
-		const safePage = clamp(page, 1, pageCount);
-		const start = (safePage - 1) * limit;
-		const pagedUsers = sortedUsers.slice(start, start + limit);
+		const { rows: pagedUsers, meta } = paginateInMemory(
+			sortedUsers,
+			page,
+			limit,
+		);
 		const memberships = await loadMemberships(
 			pagedUsers.map((user) => user.id),
 		);
@@ -777,15 +812,7 @@ export const GET = pipe(
 			data: pagedUsers.map((user) =>
 				toListItem(user, skillCapitalByUserId, memberships),
 			),
-			meta: {
-				currentPage: safePage,
-				isFirstPage: safePage === 1,
-				isLastPage: safePage >= pageCount,
-				previousPage: safePage > 1 ? safePage - 1 : null,
-				nextPage: safePage < pageCount ? safePage + 1 : null,
-				pageCount,
-				totalCount,
-			},
+			meta,
 		};
 		return json(await withBrevoPresence(response));
 	}

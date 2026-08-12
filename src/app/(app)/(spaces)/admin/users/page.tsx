@@ -82,6 +82,7 @@ type AdminUsersResponse = {
 
 type SortField =
 	| "createdAt"
+	| "lastModifiedAt"
 	| "name"
 	| "scTotal"
 	| "leadershipCapital"
@@ -123,6 +124,7 @@ const flagCell = (
 const isSortField = (value?: string): value is SortField =>
 	[
 		"createdAt",
+		"lastModifiedAt",
 		"name",
 		"scTotal",
 		"leadershipCapital",
@@ -226,10 +228,12 @@ export default function UsersAdminPage() {
 		queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
 
 	const syncAll = useMutation({
-		mutationFn: () =>
+		mutationFn: ({ onlyOnboarded }: { onlyOnboarded: boolean }) =>
 			axios
 				.post<{ contactCount: number; dryRun: boolean }>(
 					"/api/admin/users/brevo-sync",
+					null,
+					{ params: { onlyOnboarded: onlyOnboarded ? "1" : "0" } },
 				)
 				.then((r) => r.data),
 		onSuccess: (result) => {
@@ -368,9 +372,11 @@ export default function UsersAdminPage() {
 			},
 			{
 				title: "Last Modified",
-				key: "lastModifiedAt",
+				key: "lastModifiedAt" as SortField,
 				width: 120,
 				align: "right",
+				sorter: true,
+				sortOrder: sortField === "lastModifiedAt" ? sortOrder : null,
 				render: (_, record) => (
 					<Popover content={dayjs(record.lastModifiedAt).format("LLL")}>
 						<Text type="secondary">
@@ -606,7 +612,7 @@ export default function UsersAdminPage() {
 				open={confirmingSyncAll}
 				userCount={response?.meta.totalCount}
 				loading={syncAll.isPending}
-				onConfirm={() => syncAll.mutate()}
+				onConfirm={(options) => syncAll.mutate(options)}
 				onCancel={() => setConfirmingSyncAll(false)}
 			/>
 

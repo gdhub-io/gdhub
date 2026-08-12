@@ -2,6 +2,7 @@ import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "voca/slugify";
 import { z } from "zod";
+import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
 import { SpaceRole } from "@/config/permissions/roles";
 import {
@@ -15,6 +16,7 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
+import { cacheDelete } from "@/services/cache";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
 import {
@@ -204,6 +206,10 @@ export const POST = withAuth({ mode: "user" })(
 			userId: currentUser.id,
 			role: SpaceRole.Owner,
 		});
+
+		// The switcher lists this now, and a cache that says otherwise for the
+		// next minute reads as the space not having been created.
+		await cacheDelete(userSpacesCacheKey(currentUser.id));
 
 		// `UserRole.Author` used to be stamped on the user here. Owning a project
 		// is the `SpaceMember(project, Owner)` row written just above — a fact,

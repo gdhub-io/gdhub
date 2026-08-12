@@ -29,45 +29,36 @@ const resolveSelectedMenuKey = (pathname: string) => {
  * marketer and an HR admin are meant to see different halves of this list, and
  * a tab nobody in the room may open is noise at best.
  */
+/**
+ * The admin sections, named once.
+ *
+ * The name is the data and the link is derived from it: the trail needs the
+ * plain word for the current crumb, and reading it back out of a rendered
+ * `<Link>` would be parsing our own markup.
+ */
 const MENU_ITEMS: {
 	key: string;
 	permission: Permission;
-	label: ReactNode;
+	name: string;
 }[] = [
-	{
-		key: "/admin/users",
-		permission: "admin.users.view",
-		label: <Link href="/admin/users">Users</Link>,
-	},
-	{
-		key: "/admin/roles",
-		permission: "admin.roles.view",
-		label: <Link href="/admin/roles">Roles</Link>,
-	},
-	{
-		key: "/admin/posts",
-		permission: "admin.posts.view",
-		label: <Link href="/admin/posts">Posts</Link>,
-	},
+	{ key: "/admin/users", permission: "admin.users.view", name: "Users" },
+	{ key: "/admin/roles", permission: "admin.roles.view", name: "Roles" },
+	{ key: "/admin/posts", permission: "admin.posts.view", name: "Posts" },
 	{
 		key: "/admin/devlog-posts",
 		permission: "admin.devlog_posts.view",
-		label: <Link href="/admin/devlog-posts">DevLog Posts</Link>,
+		name: "DevLog Posts",
 	},
-	{
-		key: "/admin/events",
-		permission: "admin.events.view",
-		label: <Link href="/admin/events">Events</Link>,
-	},
+	{ key: "/admin/events", permission: "admin.events.view", name: "Events" },
 	{
 		key: "/admin/workflows",
 		permission: "admin.workflow.view",
-		label: <Link href="/admin/workflows">Workflows</Link>,
+		name: "Workflows",
 	},
 	{
 		key: "/admin/audit-logs",
 		permission: "admin.audit_logs.view",
-		label: <Link href="/admin/audit-logs">Audit logs</Link>,
+		name: "Audit logs",
 	},
 ];
 
@@ -80,15 +71,23 @@ export const AdminSpace = ({ children }: { children: ReactNode }) => {
 	const pathname = usePathname() ?? "";
 	const { can } = useAccess();
 
-	const spaceHeader: SpaceHeaderConfig = useMemo(
-		() => ({
+	const spaceHeader: SpaceHeaderConfig = useMemo(() => {
+		const selectedKey = resolveSelectedMenuKey(pathname);
+		const section = MENU_ITEMS.find((item) => item.key === selectedKey);
+
+		return {
+			// Admin has a trail but no `space`: it belongs to the platform rather
+			// than to the person, so the switcher does not list it.
+			trail: {
+				parent: { href: "/admin/users", label: "Admin" },
+				current: { label: section?.name ?? "Admin" },
+			},
 			menuItems: MENU_ITEMS.filter((item) => can(item.permission)).map(
-				({ permission: _permission, ...item }) => item,
+				({ key, name }) => ({ key, label: <Link href={key}>{name}</Link> }),
 			),
-			menuSelectedKeys: [resolveSelectedMenuKey(pathname)],
-		}),
-		[pathname, can],
-	);
+			menuSelectedKeys: [selectedKey],
+		};
+	}, [pathname, can]);
 
 	useSetSpaceHeader(spaceHeader);
 

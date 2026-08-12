@@ -3,6 +3,7 @@ import { EventFormat, EventType, Language } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "slugify";
 import { z } from "zod";
+import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
@@ -14,6 +15,7 @@ import {
 import { hasQualifiedSpeciality } from "@/repositories/speciality.repository";
 import { can, getSpaceAccess, isStaff } from "@/services/access";
 import { joinSpace } from "@/services/access/membership";
+import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";
 
 const UserEventScheduleItemSchema = z.object({
@@ -106,6 +108,10 @@ export const POST = withAuth({ mode: "user" })(
 			userId: currentUser.id,
 			role: SpaceRole.Owner,
 		});
+
+		// The switcher lists this now, and a cache that says otherwise for the
+		// next minute reads as the space not having been created.
+		await cacheDelete(userSpacesCacheKey(currentUser.id));
 
 		if (data.startDate && data.endDate) {
 			await prisma.eventScheduleItem.create({

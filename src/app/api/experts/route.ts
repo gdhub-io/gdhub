@@ -1,4 +1,4 @@
-import { Language, SkillLevel } from "@gdhub-io/gdhub-prisma";
+import { Language } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";

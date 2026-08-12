@@ -60,6 +60,7 @@ export function EventCover({
 	kind,
 	type,
 	muted = false,
+	fit = "height",
 	className,
 }: {
 	image?: string | null;
@@ -74,11 +75,18 @@ export function EventCover({
 	type?: string | null;
 	/** An event that is over: drained of colour so it sits behind the live ones. */
 	muted?: boolean;
+	/**
+	 * Which dimension is given. `height` is the card default — the cover keeps a
+	 * fixed height beside its text and the ratio decides how wide it is. `width`
+	 * is for a tile that spans its column, where the ratio decides the height.
+	 */
+	fit?: "height" | "width";
 	className?: string;
 }) {
 	return (
 		<div
 			data-format={isHeadlineEvent(type) ? "wide" : "tall"}
+			data-fit={fit}
 			className={`${styles.cover}${muted ? ` ${styles.muted}` : ""}${className ? ` ${className}` : ""}`}
 			style={
 				image

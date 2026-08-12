@@ -304,6 +304,7 @@ export const PrimaryInterest = {
 	Specialist: "Specialist",
 	Author: "Author",
 	Mentor: "Mentor",
+	Scout: "Scout",
 } as const satisfies Record<PrimaryInterestType, PrimaryInterestType>;
 export type PrimaryInterest = PrimaryInterestType;
 

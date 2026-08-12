@@ -135,7 +135,11 @@ export function HubMembersClient({
 					}
 					future={{ preserveSharedStateOnUnmount: true }}
 				>
-					<Configure optionalFilters={["isActive:true"]} hitsPerPage={12} />
+					{/* `filters`, not `optionalFilters`: the latter only boosts matching
+					    documents up the ranking, so someone who had switched
+					    availability off was still listed here — just lower down. This
+					    is the setting the profile page promises. */}
+					<Configure filters="isActive:true" hitsPerPage={12} />
 
 					<div className={styles.header}>
 						<div className={styles.titleBlock}>

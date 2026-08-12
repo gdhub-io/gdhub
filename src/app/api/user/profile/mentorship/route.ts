@@ -6,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { syncUserAvailabilityToBrevo } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -62,6 +63,9 @@ export const PUT = withAuth({ mode: "user" })(
 				data: { isOpenForMentoring: false },
 			});
 
+			// The other half of Brevo's `AVAILABLE_FOR`.
+			await syncUserAvailabilityToBrevo(currentUser.id);
+
 			return json({ enabled: false });
 		}
 
@@ -85,6 +89,8 @@ export const PUT = withAuth({ mode: "user" })(
 		});
 
 		if (updated.count === 0) return apiError.notFound("Speciality not found");
+
+		await syncUserAvailabilityToBrevo(currentUser.id);
 
 		return json({ enabled: true });
 	}),

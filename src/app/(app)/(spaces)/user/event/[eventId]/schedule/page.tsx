@@ -6,7 +6,6 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button } from "antd";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import {
@@ -19,7 +18,6 @@ import { EventSpace } from "@/components/spaces/EventSpace";
 import { useEvent } from "@/hooks/event";
 
 export default function EventSchedulePage() {
-	const { data: session } = useSession();
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const params = useParams<{ eventId?: string }>();

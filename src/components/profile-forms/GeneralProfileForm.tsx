@@ -19,6 +19,7 @@ import {
 	defaultLocale,
 	isAvailableLocale,
 } from "@/config/locale";
+import { SettingsActions } from "./SettingsActions";
 
 type GeneralProfileFormArgs = {
 	profile: Profile & { user: Partial<User> };
@@ -209,12 +210,9 @@ const GeneralProfileForm = ({
 							<Input />
 						</Form.Item>
 					</Card>
-					<Card bordered={false} styles={{ body: { paddingTop: 0 } }}>
-						<Button type="primary" onClick={handleForm} loading={processing}>
-							{t("components.profile-forms.general.card.save", "Save")}
-						</Button>
-					</Card>
 				</Flex>
+
+				<SettingsActions onSave={handleForm} loading={processing} />
 			</Form>
 		</Spin>
 	);

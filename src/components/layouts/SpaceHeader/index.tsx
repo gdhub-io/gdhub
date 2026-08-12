@@ -1,6 +1,6 @@
 "use client";
 
-import type { BreadcrumbProps, MenuProps } from "antd";
+import type { MenuProps } from "antd";
 import {
 	createContext,
 	type ReactNode,
@@ -9,14 +9,20 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import type { SpaceTrailConfig } from "@/components/layouts/SpaceTrail/types";
 
 /**
  * The parts of the global app header a space (project, event, admin, …) can
- * replace with its own: the breadcrumbs after the logo and the top navigation.
+ * replace with its own: the trail after the logo and the top navigation.
  * Everything else in the header stays the same everywhere.
  */
 export type SpaceHeaderConfig = {
-	breadcrumbItems?: NonNullable<BreadcrumbProps["items"]>;
+	/**
+	 * Described rather than rendered: the header decides how a crumb looks, and
+	 * a space only knows where it sits and what it is called. Passing finished
+	 * antd items meant every space owned a copy of the styling.
+	 */
+	trail?: SpaceTrailConfig;
 	menuItems?: MenuProps["items"];
 	menuSelectedKeys?: string[];
 };

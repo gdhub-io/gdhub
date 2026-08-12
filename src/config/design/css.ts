@@ -60,6 +60,12 @@ export function designCssVariables(
 		vars[`--gd-direction-${slug}-tint`] = value.tint;
 		vars[`--gd-direction-${slug}-ink`] = value.ink;
 	}
+	// Shadows were the one scale the theme kept to itself, so a stylesheet that
+	// wanted elevation had to hardcode the value — and `var(--gd-shadow-e2)`,
+	// which reads like it exists, silently resolved to nothing.
+	for (const [name, value] of Object.entries(elevation)) {
+		vars[`--gd-shadow-${name}`] = value;
+	}
 	for (const [name, value] of Object.entries(radius)) {
 		vars[`--gd-radius-${name}`] = `${value}px`;
 	}

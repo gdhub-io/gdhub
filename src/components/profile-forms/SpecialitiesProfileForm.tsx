@@ -126,14 +126,14 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	return (
 		<Card
 			title={t("profile-forms.specialities.card.title", "Specialties")}
-			bordered={false}
+			variant="borderless"
 		>
 			<Spin spinning={processing}>
 				<Space orientation="vertical" size="large" style={{ width: "100%" }}>
 					<Text>
 						{t(
-							"profile-forms.specialities.card.description",
-							"Specialties allow you to respond to vacancies from existing projects and conduct lectures.",
+							"profile-forms.specialities.card.description.v2",
+							"Specialties are how the platform matches you: apply to other teams' openings, be listed among the experts and, as you grow, run your own events and courses.",
 						)}
 					</Text>
 					{specialities?.data && (

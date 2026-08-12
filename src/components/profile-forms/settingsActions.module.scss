@@ -1,0 +1,5 @@
+/* Save belongs to the page, not to the panel it saves — the same placement the
+   event settings use, so the two do not disagree about where the button lives. */
+.actions {
+	margin-top: var(--gd-space-4);
+}

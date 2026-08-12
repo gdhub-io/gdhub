@@ -30,6 +30,14 @@
 	/* Height is what is fixed; the ratio decides the width. */
 	height: var(--event-cover-height, 200px);
 	width: auto;
+
+	/* …unless the caller gives the width instead, for a tile that fills its
+	   column. Written as an attribute so it outweighs the rule above outright
+	   rather than depending on the order stylesheets happen to load in. */
+	&[data-fit="width"] {
+		width: 100%;
+		height: auto;
+	}
 	/* …but never wider than the card. A phone has width to spare in neither
 	   direction, and a cover computed from its height overflowed the card. */
 	max-width: 100%;

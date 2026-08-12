@@ -168,3 +168,10 @@
 @include meta.load-css('./styles/lg.scss'); // screen ≥ 992px
 @include meta.load-css('./styles/xl.scss'); // screen ≥ 1200px
 @include meta.load-css('./styles/xxl.scss'); // screen ≥ 1600px
+
+/* The signed-in user, standing where a space trail would be. */
+.identity {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}

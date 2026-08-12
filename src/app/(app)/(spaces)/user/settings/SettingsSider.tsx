@@ -34,10 +34,8 @@ export function SettingsSider() {
 				label: t("profile.settings.menu.resources", "Resources"),
 				key: "resources",
 			},
-			{
-				label: t("profile.settings.menu.connections", "Connections"),
-				key: "connections",
-			},
+			// Connections is hidden from the menu but still reachable by URL: the
+			// page works, it is simply not something to send people to yet.
 			{
 				label: t("profile.settings.menu.interests", "Interests"),
 				key: "interests",

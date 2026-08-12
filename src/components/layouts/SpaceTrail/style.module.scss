@@ -1,0 +1,250 @@
+/*
+ * The one literal in this file.
+ *
+ * The separator fades out at both ends, and a gradient stop needs an alpha —
+ * which cannot be applied to a `var()` colour without `color-mix`, whose
+ * support is not yet a given here. The same hue at zero alpha is used for the
+ * ends rather than white, so it fades to nothing on any background instead of
+ * glowing on a dark one.
+ */
+$separator-line: #c5c4c0;
+
+/* Full height, so the separator can reach both edges of the 64px row. */
+.nav {
+	display: flex;
+	align-self: stretch;
+	min-width: 0;
+}
+
+.trail {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	// The separator has to reach both edges of the row, so it cannot be inset by
+	// a gap. Each crumb carries its own spacing instead.
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	min-width: 0;
+
+	> li {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+	}
+}
+
+/* One chip shape for every link in the trail — the logo included. */
+.parent,
+.current {
+	display: inline-flex;
+	align-items: center;
+	border: none;
+	border-radius: var(--gd-radius-control);
+	background: transparent;
+	font-size: var(--gd-font-size-body);
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+
+	&:hover,
+	&:focus-visible {
+		background: var(--gd-color-border);
+	}
+}
+
+.parent {
+	padding: var(--gd-space-1) var(--gd-space-3);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
+.current {
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-1) var(--gd-space-2) var(--gd-space-1)
+		var(--gd-space-3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+	min-width: 0;
+}
+
+/* The same type as the switcher, without the affordances. */
+.currentStatic {
+	display: inline-flex;
+	align-items: center;
+	padding: var(--gd-space-1) var(--gd-space-3);
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+	white-space: nowrap;
+	min-width: 0;
+}
+
+.chevron {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+/*
+ * A hairline between the last two crumbs only.
+ *
+ * Half the row's height, centred: at the full 64px it read as a table rule
+ * dividing the header into columns rather than as a mark between two words.
+ * Still a gradient rather than a border, so the ends soften instead of stopping
+ * dead. The fade runs the whole way from the middle out — held solid across a
+ * band, the transition happened over a few pixels and read as a plain rule.
+ */
+.separator {
+	flex: none;
+	display: flex;
+	align-items: center;
+	margin-inline: var(--gd-space-2);
+	align-self: stretch;
+
+	> span {
+		display: block;
+		width: 1.5px;
+		height: 50%;
+		background: linear-gradient(
+			to bottom,
+			rgba($separator-line, 0) 0%,
+			rgba($separator-line, 0.55) 50%,
+			rgba($separator-line, 0) 100%
+		);
+	}
+}
+
+/* ── the switcher ─────────────────────────────────────────────────────── */
+
+.menu {
+	width: 340px;
+	max-width: calc(100vw - var(--gd-space-8));
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	box-shadow: var(--gd-shadow-e3);
+	overflow: hidden;
+
+	> * + * {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.groupHead {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3) var(--gd-space-4) var(--gd-space-2);
+}
+
+.groupTitle {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.6px;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.viewAll {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-link);
+	white-space: nowrap;
+}
+
+.groupList {
+	padding-bottom: var(--gd-space-2);
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-2) var(--gd-space-4);
+	color: inherit;
+	transition: background-color 0.15s ease;
+
+	&:hover {
+		background: var(--gd-fill-base);
+	}
+
+	/* The space you are already in, stated rather than merely hovered. */
+	&[data-current] {
+		background: var(--gd-color-border);
+
+		.rowName {
+			font-weight: 600;
+		}
+	}
+}
+
+.swatch {
+	flex: none;
+	width: 26px;
+	height: 26px;
+	border-radius: var(--gd-radius-chip);
+	object-fit: cover;
+}
+
+.swatchEmpty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+}
+
+.rowText {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	flex: 1;
+}
+
+.rowName {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--gd-color-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rowMeta {
+	font-size: 11px;
+	color: var(--gd-color-text-tertiary);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rowCheck {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}
+
+.homeRow {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body);
+	transition: background-color 0.15s ease;
+
+	&:hover {
+		background: var(--gd-fill-base);
+	}
+}
+
+.empty {
+	padding: var(--gd-space-4);
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-body);
+}
