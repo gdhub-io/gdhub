@@ -1,10 +1,5 @@
-import {
-	ChatRoomKind,
-	ChatRoomStatus,
-	TeamMemberStatus,
-} from "@gdhub-io/gdhub-prisma";
+import { ChatRoomKind, ChatRoomStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
-import { getCleanTextContent } from "@/helpers/content";
 import {
 	apiError,
 	json,
@@ -12,6 +7,12 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	mapPersonCardCertificates,
+	mapPersonCardProjects,
+	personCardCertificatesSelect,
+	personCardProjectsSelect,
+} from "@/repositories/person-card";
 import { getSpaceAccess, isStaff } from "@/services/access";
 import { getRoomMemberIds, matrixIdToUserId } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
@@ -24,16 +25,6 @@ const SpecialistQuerySchema = z.object({
 });
 
 type SpecialistQuery = z.infer<typeof SpecialistQuerySchema>;
-
-// The compact project card in the talent card clamps the pitch at this length.
-const DESCRIPTION_LIMIT = 500;
-
-// Confirmed memberships surface as "projects the specialist works on". An
-// applicant/rejected/fired row is not a real participation.
-const CONFIRMED_MEMBER_STATUSES = [
-	TeamMemberStatus.Hired,
-	TeamMemberStatus.Founder,
-];
 
 /**
  * Resolve an ACCEPTED vacancy-offer chat between the viewer (as project author)
@@ -135,66 +126,8 @@ export const GET = withAuth({ mode: "user" })(
 							},
 						},
 						// Projects the specialist actually participates in.
-						memberInTeams: {
-							where: { status: { in: CONFIRMED_MEMBER_STATUSES } },
-							orderBy: { startedAt: "desc" },
-							select: {
-								position: true,
-								status: true,
-								startedAt: true,
-								finishedAt: true,
-								team: {
-									select: {
-										_count: {
-											select: {
-												members: {
-													where: { status: { in: CONFIRMED_MEMBER_STATUSES } },
-												},
-											},
-										},
-										project: {
-											select: {
-												id: true,
-												name: true,
-												slug: true,
-												coverImage: true,
-												description: true,
-												videoLink: true,
-												genre: true,
-												platform: true,
-												status: true,
-												author: { select: { name: true, image: true } },
-											},
-										},
-									},
-								},
-							},
-						},
-						// Confirmed event certificates only — a `pending:` externalId is
-						// a placeholder before the document is actually issued.
-						memberInEvents: {
-							where: {
-								certificate: {
-									externalId: { not: { startsWith: "pending:" } },
-								},
-							},
-							orderBy: { createdAt: "desc" },
-							select: {
-								event: {
-									select: {
-										title: true,
-										type: true,
-										slug: true,
-										image: true,
-										certificationOrganizerName: true,
-									},
-								},
-								certificate: { select: { number: true, issuedAt: true } },
-								mentors: {
-									select: { name: true, user: { select: { name: true } } },
-								},
-							},
-						},
+						memberInTeams: personCardProjectsSelect,
+						memberInEvents: personCardCertificatesSelect,
 					},
 				},
 				direction: true,
@@ -219,59 +152,10 @@ export const GET = withAuth({ mode: "user" })(
 			? null
 			: await resolveAcceptedOfferRoom(currentUser.id, specialist.user.id);
 
-		const projects = specialist.user.memberInTeams
-			.map((member) => {
-				const project = member.team?.project;
-				if (!project) return null;
-				return {
-					id: project.id,
-					name: project.name,
-					slug: project.slug,
-					coverImage: project.coverImage,
-					// The compact card shows a short plain-text pitch — don't ship the
-					// whole description (or its markdown) for every membership.
-					description: project.description
-						? getCleanTextContent(project.description, DESCRIPTION_LIMIT)
-						: null,
-					videoLink: project.videoLink,
-					genre: project.genre,
-					platform: project.platform,
-					projectStatus: project.status,
-					author: project.author
-						? { name: project.author.name, image: project.author.image }
-						: null,
-					// Confirmed members only — matches the "team size" shown on the card.
-					teamSize: member.team?._count.members ?? 0,
-					role: member.position,
-					status: member.status,
-					startedAt: member.startedAt,
-					finishedAt: member.finishedAt,
-					active: !member.finishedAt,
-				};
-			})
-			.filter((p): p is NonNullable<typeof p> => !!p);
-
-		const certificates = specialist.user.memberInEvents
-			.map((member) => {
-				if (!member.certificate) return null;
-				return {
-					number: member.certificate.number,
-					issuedAt: member.certificate.issuedAt,
-					mentors: member.mentors
-						.map((mentor) => mentor.user?.name || mentor.name)
-						.filter(Boolean),
-					event: member.event
-						? {
-								title: member.event.title,
-								type: member.event.type,
-								slug: member.event.slug,
-								image: member.event.image,
-								organizerName: member.event.certificationOrganizerName,
-							}
-						: null,
-				};
-			})
-			.filter((c): c is NonNullable<typeof c> => !!c);
+		const projects = mapPersonCardProjects(specialist.user.memberInTeams);
+		const certificates = mapPersonCardCertificates(
+			specialist.user.memberInEvents,
+		);
 
 		return json({
 			...specialist,
