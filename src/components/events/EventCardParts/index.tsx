@@ -3,6 +3,8 @@
 import { useTranslate } from "@tolgee/react";
 import { useMemo } from "react";
 import { getWorkDirection } from "@/components/DirectionBadge/directions";
+import { StatusDot, type StatusTone } from "@/components/ui";
+import { EventStatus } from "@/config/prisma-enums";
 import { formatDateChip, isHeadlineEvent } from "@/helpers/event";
 import { useWorkDirections } from "@/hooks/library";
 import styles from "./style.module.scss";
@@ -134,6 +136,43 @@ export function useEventTypeLabel() {
 				return type ?? "";
 		}
 	};
+}
+
+const STATUS_TONE: Record<string, StatusTone> = {
+	[EventStatus.Published]: "success",
+	[EventStatus.Draft]: "neutral",
+	[EventStatus.Archived]: "danger",
+	[EventStatus.Closed]: "danger",
+};
+
+/**
+ * An event's publication status, as a dot and a word.
+ *
+ * The tone map lived in two places and the label in one, so the organiser's
+ * cards said "Published" while the admin table printed the raw enum. Wherever a
+ * status is shown it is shown the same way.
+ */
+export function EventStatusDot({ status }: { status?: string | null }) {
+	const { t } = useTranslate();
+
+	const label = (() => {
+		switch (status) {
+			case EventStatus.Published:
+				return t("event.status.published.short", "Published");
+			case EventStatus.Draft:
+				return t("event.status.draft", "Draft");
+			case EventStatus.Archived:
+				return t("event.status.archived", "Archived");
+			case EventStatus.Closed:
+				return t("event.status.closed", "Closed");
+			default:
+				return status ?? "";
+		}
+	})();
+
+	return (
+		<StatusDot tone={STATUS_TONE[status ?? ""] ?? "neutral"} label={label} />
+	);
 }
 
 export { styles as eventCardStyles };

@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 
 /** The save button sits under the card, outside the form it submits. */
@@ -52,15 +53,7 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 	const [previewOpen, setPreviewOpen] = useState(false);
 	const [configForm] = Form.useForm<CertificationConfigFormValues>();
 
-	const { data: eventResponse, isFetching: isFetchingEvent } = useQuery({
-		queryKey: ["event", eventId],
-		queryFn: () =>
-			axios.get<EventCertificationFields>(`/api/user/event/${eventId}`),
-		enabled: !!eventId,
-		refetchOnWindowFocus: false,
-	});
-
-	const event = eventResponse?.data;
+	const { event, isLoading: isFetchingEvent } = useEvent(eventId);
 	const enabled = !!event?.certificationEnabled;
 
 	const { data: certificationConfig, isFetching: isFetchingConfig } = useQuery({

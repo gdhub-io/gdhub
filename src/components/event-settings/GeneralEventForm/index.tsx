@@ -1,6 +1,6 @@
-import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
+import type { Event } from "@gdhub-io/gdhub-prisma";
 import { IconTrash } from "@tabler/icons-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -21,6 +21,7 @@ import axios from "axios";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { EventType, Language } from "@/config/prisma-enums";
+import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 import "@mdxeditor/editor/style.css";
 import ImgCrop from "antd-img-crop";
@@ -36,31 +37,19 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	const [cover, setCover] = useState<string | null>();
 	const [coverProcessing, setCoverProcessing] = useState(false);
 
-	const { data: event, isFetching } = useQuery({
-		queryKey: ["event", eventId],
-		queryFn: () =>
-			axios.get<
-				Event & {
-					schedule: EventScheduleItem[];
-				}
-			>(`/api/user/event/${eventId}`),
-		enabled: !!eventId,
-		refetchOnWindowFocus: false,
-		refetchInterval: false,
-	});
+	const { event, isLoading: isFetching } = useEvent(eventId);
 
 	const isBigEvent = useMemo(() => {
 		return (
-			event?.data?.type === EventType.GameLab ||
-			event?.data?.type === EventType.Conference
+			event?.type === EventType.GameLab || event?.type === EventType.Conference
 		);
-	}, [event?.data?.type]);
+	}, [event?.type]);
 
 	useEffect(() => {
-		if (event?.data) {
-			setCover(event.data.image);
+		if (event) {
+			setCover(event.image);
 		}
-	}, [event?.data]);
+	}, [event]);
 
 	const { mutateAsync: updateEvent, isPending: isUpdating } = useMutation({
 		mutationFn: (data: Partial<Event>) =>
@@ -70,7 +59,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	useEffect(() => {
 		if (event) {
 			form.setFieldsValue({
-				...event.data,
+				...event,
 			});
 		}
 	}, [event, form]);
@@ -183,7 +172,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 				form={form}
 				variant="filled"
 				layout="vertical"
-				initialValues={{ ...event?.data }}
+				initialValues={{ ...event }}
 				requiredMark="optional"
 			>
 				<div className={styles.panel}>
@@ -230,7 +219,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 											className={styles.cover}
 											style={{ aspectRatio: "16 / 9" }}
 										>
-											<Image src={cover + "?w=1200"} fill alt="" />
+											<Image src={`${cover}?w=1200`} fill alt="" />
 											<Popover
 												content={t(
 													"event.modal.image.deletePopover",
@@ -286,7 +275,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 											className={styles.cover}
 											style={{ aspectRatio: "4 / 5" }}
 										>
-											<Image src={cover + "?w=750"} fill alt="" />
+											<Image src={`${cover}?w=750`} fill alt="" />
 											<Popover
 												content={t(
 													"event.modal.image.deletePopover",

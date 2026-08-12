@@ -66,12 +66,6 @@ const nextConfig = {
 			cacheUnaffected: true,
 		};
 
-		config.ignoreWarnings = config.ignoreWarnings || [];
-		config.ignoreWarnings.push({
-			module: /@svar-ui\/react-gantt\/dist-full\/index\.css/,
-			message: /end value has mixed support, consider using flex-end instead/,
-		});
-
 		return config;
 	},
 	redirects: async () => [

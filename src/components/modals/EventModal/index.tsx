@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import { EventFormat, EventType, Language } from "@/config/prisma-enums";
+import { useEvent } from "@/hooks/event";
 import { useQualifiedDirections } from "@/hooks/speciality";
 import styles from "./style.module.scss";
 
@@ -78,11 +79,7 @@ const EventModal: React.FC<EventModalProps> = ({
 	const [imageProcessing, setImageProcessing] = useState(false);
 	const [fileList, setFileList] = useState<any[]>([]);
 
-	const { data: eventData } = useQuery({
-		queryKey: ["event", eventId],
-		queryFn: () => axios.get(`/api/user/event/${eventId}`),
-		enabled: !!eventId,
-	});
+	const { event: eventData } = useEvent(eventId);
 
 	const { data: workDirections } = useQuery({
 		queryKey: ["work-directions"],
@@ -100,28 +97,32 @@ const EventModal: React.FC<EventModalProps> = ({
 	);
 
 	useEffect(() => {
-		if (eventData?.data) {
+		if (eventData) {
 			form.resetFields();
 			form.setFieldsValue({
-				title: eventData.data.title,
-				shortDescription: eventData.data.shortDescription,
-				link: eventData.data.link,
-				image: eventData.data.image,
+				title: eventData.title,
+				shortDescription: eventData.shortDescription,
+				// `url`, not `link`: the field on the record and the name of the form
+				// item are both `url`. This read a property the event never had, so
+				// editing an event always opened with the link box empty and saving
+				// wiped whatever was there. The untyped fetch hid it.
+				url: eventData.url,
+				image: eventData.image,
 			});
 
-			if (eventData.data.image) {
-				setImageUrl(eventData.data.image);
+			if (eventData.image) {
+				setImageUrl(eventData.image);
 				setFileList([
 					{
-						uid: eventData.data.image,
-						name: eventData.data.image,
+						uid: eventData.image,
+						name: eventData.image,
 						status: "done",
-						url: eventData.data.image,
+						url: eventData.image,
 					},
 				]);
 			}
 		}
-	}, [eventData?.data, form]);
+	}, [eventData, form]);
 
 	const { mutateAsync: createEvent, isPending: isEventCreating } = useMutation({
 		mutationFn: (values: any) =>

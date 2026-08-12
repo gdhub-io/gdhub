@@ -47,7 +47,6 @@ const ALLOWED: Record<string, string> = {
 		"generated avatar skin tone",
 	"src/components/Chat/ChatMessages.tsx": "avatar identity fills",
 	"src/components/VerifyCertificate/VerifyResult.tsx": "avatar placeholder fill",
-	"src/components/event/EventScheduleGantt/index.tsx": "avatar group fill",
 	"src/components/layouts/Header/Header.stories.tsx": "avatar fill in a story",
 
 	// A printed document, rendered outside the browser by DocuSeal: it has its

@@ -1,11 +1,5 @@
-import { EventStatus } from "@gdhub-io/gdhub-prisma";
+import { PUBLIC_EVENT_STATUSES } from "@/helpers/event";
 import { prisma } from "@/services/prisma";
-
-/** The two statuses the event page itself treats as public. */
-const PUBLIC_STATUSES: EventStatus[] = [
-	EventStatus.Published,
-	EventStatus.Archived,
-];
 
 /**
  * The catalogue both events pages show.
@@ -17,7 +11,7 @@ const PUBLIC_STATUSES: EventStatus[] = [
  */
 export async function loadEventCatalogue() {
 	const events = await prisma.event.findMany({
-		where: { status: { in: PUBLIC_STATUSES } },
+		where: { status: { in: [...PUBLIC_EVENT_STATUSES] } },
 		orderBy: { createdAt: "desc" },
 		select: {
 			id: true,

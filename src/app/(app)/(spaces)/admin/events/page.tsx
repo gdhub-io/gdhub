@@ -33,10 +33,10 @@ import {
 	AnnouncePreviewModal,
 	type AnnounceTarget,
 } from "@/components/admin/AnnouncePreviewModal";
+import { EventStatusDot } from "@/components/events/EventCardParts";
 import ModernTable from "@/components/ModernTable";
 import { PageViews } from "@/components/PageViews";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
-import { StatusDot, type StatusTone } from "@/components/ui";
 import { EventStatus, EventType } from "@/config/prisma-enums";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./style.module.scss";
@@ -47,13 +47,6 @@ type AdminEvent = Event & {
 	createdBy: Pick<User, "id" | "name" | "image"> | null;
 	schedule: Array<{ startDate: string; endDate: string }>;
 	_count: { members: number };
-};
-
-const STATUS_TONE: Record<string, StatusTone> = {
-	[EventStatus.Published]: "success",
-	[EventStatus.Draft]: "neutral",
-	[EventStatus.Archived]: "danger",
-	[EventStatus.Closed]: "danger",
 };
 
 const DefaultCover = ({ title }: { title: string }) => (
@@ -187,9 +180,7 @@ export default function EventsAdminPage() {
 			title: "Status",
 			dataIndex: "status",
 			key: "status",
-			render: (value) => (
-				<StatusDot tone={STATUS_TONE[value] ?? "neutral"} label={value} />
-			),
+			render: (value) => <EventStatusDot status={value} />,
 		},
 		{
 			// The catalogue leads with one event; this is where it is chosen.

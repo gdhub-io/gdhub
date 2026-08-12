@@ -1,9 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useTolgee, useTranslate } from "@tolgee/react";
-import { Empty, Flex, Select, Skeleton } from "antd";
-import axios from "axios";
+import { useTranslate } from "@tolgee/react";
+import { Empty, Flex, Select } from "antd";
 import { useMemo, useState } from "react";
 import { EventType } from "@/config/prisma-enums";
 import { hasEventEnded } from "@/helpers/event";
@@ -50,43 +48,31 @@ function EventGrid({
  * filter says the same thing and stays honest when there is little on.
  */
 export function EventsCatalogue({
-	events: provided,
+	events: loaded,
 }: {
 	/**
-	 * Pre-loaded on the server. The public page passes this because its data
-	 * endpoint needs a session — `/api/events` is `withAuth`, so a logged-out
-	 * visitor got a 401 and an empty catalogue. Rendering it on the server also
-	 * puts the events in the HTML, where a crawler can see them.
+	 * Loaded on the server by both pages.
+	 *
+	 * The catalogue used to be able to fetch its own list as well, which is how
+	 * the public page came to show nothing: `/api/events` is behind `withAuth`,
+	 * so a logged-out visitor got a 401. Server-loading also puts the events in
+	 * the HTML, where a crawler can see them — there is no reason left to fetch.
 	 */
-	events?: CatalogueEvent[];
-} = {}) {
+	events: CatalogueEvent[];
+}) {
 	const { t } = useTranslate();
-	const { getLanguage } = useTolgee();
 	const typeLabel = useEventTypeLabel();
 	const [type, setType] = useState<string>();
 
-	const { data: fetched, isFetching } = useQuery<CatalogueEvent[]>({
-		queryKey: ["events", "catalogue"],
-		queryFn: () =>
-			axios
-				.get<CatalogueEvent[]>("/api/events", {
-					params: { withDates: true, lang: getLanguage() },
-				})
-				.then((res) => res.data),
-		enabled: !provided,
-	});
-
 	// Filtering in memory rather than refetching: the catalogue is one page of
 	// published events, and the dropdown should answer instantly.
-	const events = useMemo(() => {
-		const all = provided ?? fetched;
-		if (!all) return all;
-
-		return type ? all.filter((event) => event.type === type) : all;
-	}, [provided, fetched, type]);
+	const events = useMemo(
+		() => (type ? loaded.filter((event) => event.type === type) : loaded),
+		[loaded, type],
+	);
 
 	const { featured, upcoming, past } = useMemo(() => {
-		const all = events ?? [];
+		const all = events;
 		// Only an event still to come earns the top slot — leading the page with
 		// something that already happened is worse than leading with nothing.
 		const featured =
@@ -108,15 +94,6 @@ export function EventsCatalogue({
 				.sort((a, b) => startsAt(b) - startsAt(a)),
 		};
 	}, [events]);
-
-	if (!provided && isFetching && !events) {
-		return (
-			<Flex vertical gap={24} className={styles.catalogue}>
-				<Skeleton active paragraph={{ rows: 4 }} />
-				<Skeleton active paragraph={{ rows: 6 }} />
-			</Flex>
-		);
-	}
 
 	return (
 		<Flex vertical gap={24} className={styles.catalogue}>

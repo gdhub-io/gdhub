@@ -13,7 +13,7 @@ import {
 	IconSeparator,
 	IconTable,
 } from "@tabler/icons-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, message, Select, Tooltip } from "antd";
 import axios from "axios";
@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { EventSpace } from "@/components/spaces/EventSpace";
+import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 
 export default function EventContentPage() {
@@ -36,14 +37,7 @@ export default function EventContentPage() {
 	const canvasRef = useRef<HTMLDivElement>(null);
 	const editorInitialized = useRef(false);
 
-	const { data: event, refetch: refetchEvent } = useQuery({
-		queryKey: ["event", eventId],
-		queryFn: () => axios.get(`/api/user/event/${eventId}`),
-		enabled: !!eventId,
-		refetchOnWindowFocus: false,
-		refetchOnMount: false,
-		refetchOnReconnect: false,
-	});
+	const { event, refetch: refetchEvent } = useEvent(eventId);
 
 	const { mutateAsync: saveContent, isPending: isSaving } = useMutation({
 		mutationFn: (content: OutputData) => {
@@ -67,8 +61,11 @@ export default function EventContentPage() {
 			const EditorJS = (await import("@editorjs/editorjs")).default;
 			const { tools } = await import("@/components/admin/BlogPostEditor/tools");
 
-			// Determine initial content based on whether we have document data or not
-			const initialContent = event?.data?.content || {};
+			// The column holds an Editor.js document as JSON; an event with nothing
+			// written yet opens on an empty one. Typed now that the event comes back
+			// as a real record rather than `any`.
+			const initialContent =
+				(event?.content as OutputData | null) ?? ({ blocks: [] } as OutputData);
 
 			// Clear EditorJS cache to prevent showing stale data
 			if (typeof window !== "undefined" && window.localStorage) {
@@ -107,7 +104,7 @@ export default function EventContentPage() {
 			console.error("Error initializing editor:", error);
 			editorInitialized.current = false;
 		}
-	}, [event?.data?.content, t]);
+	}, [event?.content, t]);
 
 	const destroyEditor = useCallback(() => {
 		if (editorInstance.current) {
@@ -129,7 +126,7 @@ export default function EventContentPage() {
 		if (typeof window === "undefined") return;
 
 		// Only initialize editor if we have event data
-		if (event?.data) {
+		if (event) {
 			initEditor();
 		}
 
@@ -203,11 +200,11 @@ export default function EventContentPage() {
 				<Flex align="center" gap={12}>
 					{/* When it was last written down: the one fact that decides
 					    whether it is safe to close the tab. */}
-					{event?.data?.updatedAt && (
+					{event?.updatedAt && (
 						<Flex align="center" gap={6} className={styles.saved}>
 							<IconCheck size={14} />
 							{t("event.content.savedAt", "Saved")}{" "}
-							{dayjs(event.data.updatedAt).fromNow()}
+							{dayjs(event.updatedAt).fromNow()}
 						</Flex>
 					)}
 					<Button
