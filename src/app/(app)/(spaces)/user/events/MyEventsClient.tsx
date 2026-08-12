@@ -157,11 +157,7 @@ const MyEventsClient = () => {
 				label: t("event.view", "View"),
 				icon: <IconExternalLink size={15} />,
 				disabled: !record.slug,
-				onClick: () =>
-					window.open(
-						`${record.lang ? `/${record.lang}` : ""}/event/${record.slug}`,
-						"_blank",
-					),
+				onClick: () => window.open(`/event/${record.slug}`, "_blank"),
 			},
 			{ key: "view-divider", type: "divider" },
 		];

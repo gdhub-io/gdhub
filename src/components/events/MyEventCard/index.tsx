@@ -4,12 +4,13 @@ import { IconDotsVertical } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Dropdown, Flex, type MenuProps } from "antd";
 import type { ReactNode } from "react";
-import { getWorkDirection } from "@/components/DirectionBadge/directions";
-import { StatusDot, type StatusTone } from "@/components/ui";
-import { EventStatus } from "@/config/prisma-enums";
-import { formatDateChip } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
-import { useWorkDirections } from "@/hooks/library";
+import {
+	EventCover,
+	EventStatusDot,
+	useEventCover,
+	useEventTypeLabel,
+} from "../EventCardParts";
 import styles from "./style.module.scss";
 
 export type MyEventCardEvent = {
@@ -26,56 +27,6 @@ export type MyEventCardEvent = {
 		directionId?: string | null;
 	}> | null;
 };
-
-const STATUS_TONE: Record<string, StatusTone> = {
-	[EventStatus.Published]: "success",
-	[EventStatus.Draft]: "neutral",
-	[EventStatus.Archived]: "danger",
-	[EventStatus.Closed]: "danger",
-};
-
-/**
- * The event's kind, in the words the platform uses elsewhere. Kept beside the
- * card because the same five labels are spelled out in the create menu, and the
- * two must not drift apart.
- */
-function typeLabel(
-	type: string | null | undefined,
-	t: (k: string, d: string) => string,
-) {
-	switch ((type ?? "").toUpperCase()) {
-		case "MEETUP":
-			return t("event.format.meetup", "Meetup");
-		case "WORKSHOP":
-			return t("event.format.workshop", "Workshop");
-		case "GAMEJAM":
-			return t("event.format.gamejam", "Game Jam");
-		case "GAMELAB":
-			return t("event.format.gamelab", "Game Lab");
-		case "CONFERENCE":
-			return t("event.format.conference", "Conference");
-		default:
-			return type ?? "";
-	}
-}
-
-function statusLabel(
-	status: string | null | undefined,
-	t: (k: string, d: string) => string,
-) {
-	switch (status) {
-		case EventStatus.Published:
-			return t("event.status.published.short", "Published");
-		case EventStatus.Draft:
-			return t("event.status.draft", "Draft");
-		case EventStatus.Archived:
-			return t("event.status.archived", "Archived");
-		case EventStatus.Closed:
-			return t("event.status.closed", "Closed");
-		default:
-			return status ?? "";
-	}
-}
 
 /**
  * One of the organiser's own events.
@@ -110,26 +61,12 @@ export function MyEventCard({
 	onMouseLeave?: () => void;
 }) {
 	const { t } = useTranslate();
-	const { data: directions } = useWorkDirections();
+	const typeLabel = useEventTypeLabel();
 
-	const schedule = event.schedule ?? [];
-	const first = schedule[0];
-	const last = schedule[schedule.length - 1];
-	// The chip spans the whole event — first session's start to last one's end.
-	const when = first
-		? formatDateChip(first.startDate, last.endDate, event.lang ?? "en")
-		: null;
-
-	const directionName = first?.directionId
-		? directions?.find((row) => row.id === first.directionId)?.name
-		: undefined;
-	const slug = directionName ? getWorkDirection(directionName).slug : null;
-
-	// The tint stands in for a cover, it does not sit under one: with an image
-	// uploaded the photo is the cover, and the chips read against it.
-	const tint = event.image ? null : slug;
-
-	const kind = typeLabel(event.type, t);
+	// Cover, tint and date chip come from the shared parts — this card drew its
+	// own copy of them, which is how it missed the per-type aspect ratios.
+	const { first, last, tint, when } = useEventCover(event);
+	const kind = typeLabel(event.type);
 
 	return (
 		<article
@@ -138,37 +75,13 @@ export function MyEventCard({
 			onMouseLeave={onMouseLeave}
 			{...rest}
 		>
-			<div
-				className={styles.cover}
-				style={
-					event.image
-						? {
-								backgroundImage: `url(${event.image})`,
-								backgroundSize: "cover",
-								backgroundPosition: "center",
-							}
-						: tint
-							? { background: `var(--gd-direction-${tint}-tint)` }
-							: undefined
-				}
-			>
-				{kind && (
-					<span
-						className={styles.typeChip}
-						style={
-							tint ? { color: `var(--gd-direction-${tint}-ink)` } : undefined
-						}
-					>
-						{kind}
-					</span>
-				)}
-				{when && (
-					<span className={styles.dateChip}>
-						<span className={styles.day}>{when.day}</span>
-						<span className={styles.month}>{when.month}</span>
-					</span>
-				)}
-			</div>
+			<EventCover
+				image={event.image}
+				tint={tint}
+				when={when}
+				kind={kind}
+				type={event.type}
+			/>
 
 			<div className={styles.body}>
 				<span className={styles.place}>
@@ -201,10 +114,7 @@ export function MyEventCard({
 				gap={8}
 				className={styles.foot}
 			>
-				<StatusDot
-					tone={STATUS_TONE[event.status ?? ""] ?? "neutral"}
-					label={statusLabel(event.status, t)}
-				/>
+				<EventStatusDot status={event.status} />
 				<Flex align="center" gap={6}>
 					<Button type="primary" size="small" href={`/user/event/${event.id}`}>
 						{t("event.manage", "Manage")}

@@ -1,0 +1,96 @@
+/* The cover is the card's colour: a direction tint, or the organiser's own
+   image laid over it. The chips sit on top either way. */
+.cover {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	padding: var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+	background-size: cover;
+	background-position: center;
+
+	/*
+	 * One box in two orientations: 4:5 stood up, 5:4 laid down. Turn either 90°
+	 * and you get the other, so both formats occupy the same amount of card and
+	 * a row of mixed types reads evenly.
+	 *
+	 * Note this is not the upload ratio for landscape covers (16:9) — those get
+	 * cropped at the sides. Matching the two boxes was worth more than showing
+	 * every pixel of the wider one.
+	 */
+	&[data-format="tall"] {
+		aspect-ratio: 4 / 5;
+	}
+
+	&[data-format="wide"] {
+		aspect-ratio: 5 / 4;
+	}
+
+	/* Height is what is fixed; the ratio decides the width. */
+	height: var(--event-cover-height, 200px);
+	width: auto;
+	/* …but never wider than the card. A phone has width to spare in neither
+	   direction, and a cover computed from its height overflowed the card. */
+	max-width: 100%;
+}
+
+/*
+ * Below this the scarce dimension flips: the card is as wide as the screen, so
+ * the cover fills the column the card gives it and the ratio decides the height.
+ *
+ * The share of the card is set on that column, not here — a percentage against
+ * a shrink-to-fit parent has nothing to measure against and collapsed the cover
+ * to a thumbnail.
+ */
+@media (max-width: 575px) {
+	.cover {
+		width: 100%;
+		height: auto;
+	}
+}
+
+/* What the old past-event cards did: colour drains out, so a finished event
+   reads as background next to the ones still to come. The chips keep their own
+   contrast — the date is the thing people scan for. */
+.muted {
+	filter: grayscale(1);
+
+	.typeChip,
+	.dateChip {
+		filter: none;
+	}
+}
+
+.typeChip {
+	padding: 4px 10px;
+	border-radius: var(--gd-radius-pill);
+	background: rgb(255 255 255 / 80%);
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+	color: var(--gd-color-text);
+}
+
+.dateChip {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 6px 10px;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+}
+
+.day {
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: -0.3px;
+	color: var(--gd-color-text);
+}
+
+.month {
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0.4px;
+	color: var(--gd-color-text-tertiary);
+}

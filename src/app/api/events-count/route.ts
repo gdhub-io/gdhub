@@ -1,8 +1,5 @@
-import {
-	EventStatus,
-	type Language,
-	type Prisma,
-} from "@gdhub-io/gdhub-prisma";
+import type { EventStatus, Language, Prisma } from "@gdhub-io/gdhub-prisma";
+import { visibleEventStatuses } from "@/helpers/event";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
@@ -12,9 +9,6 @@ import {
 } from "@/schemas/events";
 import { isStaff } from "@/services/access";
 import { prisma } from "@/services/prisma";
-
-/** The statuses the hub catalogue is allowed to count, mirroring `/api/events`. */
-const LISTABLE: EventStatus[] = [EventStatus.Published, EventStatus.Archived];
 
 export const GET = pipe(
 	withAuth({ mode: "user" }),
@@ -65,11 +59,10 @@ export const GET = pipe(
 
 	// Same rule as the listing: a caller-chosen status filters what the hub
 	// shows, it does not open a count of everyone's drafts.
-	const requested = (status as EventStatus[] | undefined) ?? LISTABLE;
-	const visible =
-		access && isStaff(access)
-			? requested
-			: requested.filter((value) => LISTABLE.includes(value));
+	const visible = visibleEventStatuses(
+		status,
+		!!access && isStaff(access),
+	) as EventStatus[];
 
 	if (!visible.length) return json({ count: 0 });
 

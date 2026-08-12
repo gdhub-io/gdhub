@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { loadEventCatalogue } from "@/repositories/event-catalogue";
 import EventsClient from "./EventsClient";
 
 export const metadata: Metadata = {
@@ -8,6 +9,6 @@ export const metadata: Metadata = {
 	openGraph: { type: "website", url: "/hub/events", title: "Events" },
 };
 
-export default function HubEventsPage() {
-	return <EventsClient />;
+export default async function HubEventsPage() {
+	return <EventsClient events={await loadEventCatalogue()} />;
 }

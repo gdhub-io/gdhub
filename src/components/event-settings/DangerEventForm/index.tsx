@@ -1,10 +1,10 @@
-import type { Event, EventScheduleItem } from "@gdhub-io/gdhub-prisma";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Modal, message, Spin, Typography } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { EventStatus } from "@/config/prisma-enums";
+import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 
 /**
@@ -53,18 +53,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 	const [messageApi, messageContextHolder] = message.useMessage();
 	const { t } = useTranslate();
 
-	const { data: event, isFetching: isFetchingEvent } = useQuery({
-		queryKey: ["event", eventId],
-		queryFn: () =>
-			axios.get<
-				Event & {
-					schedule: EventScheduleItem[];
-				}
-			>(`/api/user/event/${eventId}`),
-		enabled: !!eventId,
-		refetchOnWindowFocus: false,
-		refetchInterval: false,
-	});
+	const { event, isLoading: isFetchingEvent } = useEvent(eventId);
 
 	const { mutateAsync: archiveEvent, isPending: isArchivingEvent } =
 		useMutation({
@@ -169,7 +158,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 				}
 			>
 				<Flex vertical gap={16}>
-					{event?.data?.status !== EventStatus.Archived ? (
+					{event?.status !== EventStatus.Archived ? (
 						<DangerRow
 							title={t("event.settings.danger.archive", "Archive Event")}
 							description={t(

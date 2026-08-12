@@ -75,3 +75,52 @@
   flex-shrink: 0;
   color: rgba(0, 0, 0, 0.35);
 }
+
+/* A stacked tile rather than the shared sidebar row: the cover is the point
+   here, so it runs the width of the card with the text under it. */
+.tile {
+	display: block;
+	padding: var(--gd-space-3) var(--gd-space-6);
+	color: inherit;
+	text-decoration: none;
+	border-bottom: 1px solid var(--gd-color-border);
+	transition: background-color 0.15s ease;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+
+	&:last-child {
+		border-bottom: 0;
+	}
+}
+
+.cover {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 120px;
+	margin-bottom: var(--gd-space-2);
+	border-radius: var(--gd-radius-card);
+	background-color: var(--gd-color-surface-sunken);
+	background-size: cover;
+	background-position: center;
+}
+
+.coverLetter {
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--gd-color-text-tertiary);
+}
+
+.meta {
+	font-size: 12px;
+	line-height: 1.3;
+	color: var(--gd-color-text-tertiary);
+}
+
+.name {
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--gd-color-text);
+}

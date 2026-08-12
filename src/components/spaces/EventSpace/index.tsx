@@ -176,7 +176,7 @@ export const EventSpace = ({
 							type="text"
 							size="small"
 							className={styles.publicPageLink}
-							href={`${event?.lang ? `/${event?.lang}` : ""}/event/${event?.slug}`}
+							href={`/event/${event?.slug}`}
 							target="_blank"
 						>
 							{t("event.button.publicPage", "Go to page")}

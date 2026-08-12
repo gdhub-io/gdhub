@@ -5,13 +5,11 @@ import {
 	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { visibleEventStatuses } from "@/helpers/event";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { isStaff } from "@/services/access";
 import { prisma } from "@/services/prisma";
-
-/** The statuses the hub catalogue is allowed to show. */
-const LISTABLE: EventStatus[] = [EventStatus.Published, EventStatus.Archived];
 
 enum EventTimeStatus {
 	Upcoming = "upcoming",
@@ -96,12 +94,10 @@ export const GET = pipe(
 
 	// `status` is a filter over what the hub shows, never a way to reach into it:
 	// asking for `Draft` used to return every organiser's unpublished event.
-	// Staff moderate the whole catalogue and are the exception.
-	const requested = (preparedStatus as EventStatus[] | undefined) ?? LISTABLE;
-	const visible =
-		access && isStaff(access)
-			? requested
-			: requested.filter((value) => LISTABLE.includes(value));
+	const visible = visibleEventStatuses(
+		preparedStatus,
+		!!access && isStaff(access),
+	) as EventStatus[];
 
 	if (!visible.length) return json([]);
 
@@ -116,11 +112,18 @@ export const GET = pipe(
 					}
 				: undefined,
 		},
+		// `directionId` rides along with the dates: a card tints its cover by the
+		// craft of the first session, the same way the organiser's own list and
+		// the schedule timeline do.
 		include: withDates
 			? {
-					schedule: { select: { startDate: true, endDate: true } },
+					schedule: {
+						orderBy: { startDate: "asc" },
+						select: { startDate: true, endDate: true, directionId: true },
+					},
 				}
 			: undefined,
+		orderBy: { createdAt: "desc" },
 	});
 
 	return json(events);

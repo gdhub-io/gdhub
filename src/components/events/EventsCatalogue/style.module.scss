@@ -1,0 +1,32 @@
+.catalogue {
+	width: 100%;
+	/*
+	 * The last row ended flush with the bottom of the scroll area, so it read as
+	 * cut off — and on a phone the browser's own bar sits over those last pixels.
+	 * `safe-area-inset-bottom` covers the home indicator on top of that.
+	 */
+	padding-bottom: calc(var(--gd-space-12) + env(safe-area-inset-bottom, 0px));
+}
+
+.sectionTitle {
+	margin: 0 0 var(--gd-space-3);
+	font-size: 20px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.sectionHead {
+	margin-bottom: var(--gd-space-3);
+
+	.sectionTitle {
+		margin-bottom: 0;
+	}
+}
+
+.typeFilter {
+	min-width: 180px;
+}
+
+.empty {
+	padding: var(--gd-space-12) 0;
+}

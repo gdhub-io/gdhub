@@ -1,6 +1,10 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import {
+	PUBLIC_EVENT_STATUSES,
+	visibleEventStatuses,
+} from "@/helpers/event";
 
 const EVENT_API = "src/app/api/user/event";
 
@@ -73,6 +77,48 @@ describe("event API — every route states what it lets you do", () => {
 	});
 });
 
+/** Every source file under a directory, recursively. */
+function sourceFiles(dir: string): string[] {
+	return readdirSync(dir).flatMap((entry) => {
+		const full = join(dir, entry);
+
+		if (statSync(full).isDirectory()) return sourceFiles(full);
+		return /\.tsx?$/.test(entry) ? [full] : [];
+	});
+}
+
+describe("event links point at a route that exists", () => {
+	// `/event/[slug]` is the only public event route: there is no middleware, no
+	// `[locale]` segment and no rewrite, so every `/en/event/…` or `/event/en/…`
+	// link the app built was a guaranteed 404.
+	// Discovered rather than listed: a new component that links to an event is
+	// exactly the one likeliest to reintroduce the prefix, and a hand-kept list
+	// would not know about it.
+	const LINKING_FILES = sourceFiles("src").filter((file) =>
+		readFileSync(file, "utf8").includes("/event/${"),
+	);
+
+	it("finds the files that link to events", () => {
+		expect(LINKING_FILES.length).toBeGreaterThan(4);
+	});
+
+	it.each(LINKING_FILES)("%s builds no locale segment", (file) => {
+		const source = readFileSync(file, "utf8");
+
+		// A locale either in front of `/event` or between it and the slug.
+		expect(source).not.toMatch(/lang[^\n]*\}\s*\/?`?\s*\/event\//);
+		expect(source).not.toMatch(/\/event\/\$\{[^}]*lang/);
+	});
+
+	it("keeps the public event route locale-free", () => {
+		const routes = readdirSync("src/app/(public)");
+
+		expect(routes).toContain("event");
+		expect(routes).not.toContain("[locale]");
+		expect(routes).not.toContain("[lang]");
+	});
+});
+
 describe("admin event routes", () => {
 	const ADMIN_ROUTES = [
 		["src/app/api/admin/events/route.ts", "admin.events.view"],
@@ -110,22 +156,50 @@ describe("admin event routes", () => {
 });
 
 describe("event listings — a draft belongs to its organiser", () => {
-	it("never lets a caller-supplied status reach past the published catalogue", () => {
-		for (const file of ["src/app/api/events/route.ts", "src/app/api/events-count/route.ts"]) {
-			const source = readFileSync(file, "utf8");
+	// The rule used to be written out four times; these tests pinned the names of
+	// two of those copies. Now it is one function, so the behaviour can be tested
+	// directly and the routes only have to be shown to use it.
+	it("defaults to the public statuses when nothing is asked for", () => {
+		expect(visibleEventStatuses(undefined)).toEqual([...PUBLIC_EVENT_STATUSES]);
+		expect(visibleEventStatuses([])).toEqual([...PUBLIC_EVENT_STATUSES]);
+	});
 
-			// The filter is intersected with what the hub may show, rather than
-			// handed to Prisma as the caller wrote it.
-			expect(source).toContain("LISTABLE");
-			expect(source).toMatch(/requested\.filter/);
+	it("narrows to what was asked for, within what is public", () => {
+		expect(visibleEventStatuses(["Published"])).toEqual(["Published"]);
+	});
+
+	it("drops a status the caller may not see", () => {
+		expect(visibleEventStatuses(["Draft"])).toEqual([]);
+		expect(visibleEventStatuses(["Published", "Draft"])).toEqual(["Published"]);
+	});
+
+	it("lets staff through to everything", () => {
+		expect(visibleEventStatuses(["Draft"], true)).toEqual(["Draft"]);
+	});
+
+	it("is what the listing, the count and the catalogue all use", () => {
+		for (const file of [
+			"src/app/api/events/route.ts",
+			"src/app/api/events-count/route.ts",
+		]) {
+			const source = readFileSync(file, "utf8");
+			expect(source).toContain("visibleEventStatuses");
+			// The old shape: a caller's status handed to Prisma as written.
 			expect(source).not.toMatch(/status: status\s*\?/);
 		}
+
+		expect(readFileSync("src/repositories/event-catalogue.ts", "utf8")).toContain(
+			"PUBLIC_EVENT_STATUSES",
+		);
 	});
 
 	it("keeps the public event page to published events", () => {
-		const source = readFileSync("src/app/(public)/event/[slug]/page.tsx", "utf8");
+		const source = readFileSync(
+			"src/app/(public)/event/[slug]/page.tsx",
+			"utf8",
+		);
 
-		expect(source).toContain("PUBLIC_STATUSES");
-		expect(source).toMatch(/status: \{ in: PUBLIC_STATUSES \}/);
+		expect(source).toContain("PUBLIC_EVENT_STATUSES");
+		expect(source).toMatch(/status: \{ in: \[\.\.\.PUBLIC_EVENT_STATUSES\] \}/);
 	});
 });

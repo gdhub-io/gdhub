@@ -1,8 +1,7 @@
 "use client";
 
-import type { EventFormat, Language } from "@gdhub-io/gdhub-prisma";
 import { IconPlus } from "@tabler/icons-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Button } from "antd";
 import axios from "axios";
@@ -17,29 +16,7 @@ import {
 import type { ScheduleItemFormValues } from "@/components/modals/EventModal";
 import ScheduleItemModal from "@/components/modals/EventModal/ScheduleItemModal";
 import { EventSpace } from "@/components/spaces/EventSpace";
-
-interface EventScheduleItem {
-	id: string;
-	title?: string;
-	description?: string;
-	url?: string;
-	address?: string | null;
-	startDate: string;
-	endDate: string;
-	directionId: string;
-	format?: EventFormat;
-	language?: Language;
-	speakers?: Array<{
-		id: string;
-		name?: string;
-		user?: {
-			image?: string;
-			profile?: {
-				name?: string;
-			};
-		};
-	}>;
-}
+import { useEvent } from "@/hooks/event";
 
 export default function EventSchedulePage() {
 	const { data: session } = useSession();
@@ -55,40 +32,35 @@ export default function EventSchedulePage() {
 	const { can } = useAccess();
 	const canEditSchedule = can("event.schedule.edit");
 
-	const { data: event, refetch: refetchEvent } = useQuery({
-		queryKey: ["event", eventId],
-		queryFn: () => axios.get(`/api/user/event/${eventId}`),
-		enabled: !!eventId,
-	});
+	const { event, refetch: refetchEvent } = useEvent(eventId);
 
 	// Load schedule from event data
 	useEffect(() => {
-		if (event?.data?.schedule) {
-			const scheduleData = event.data.schedule.map(
-				(item: EventScheduleItem) => ({
-					id: item.id,
-					title: item.title,
-					description: item.description,
-					url: item.url,
-					address: item.address,
-					startDate: item.startDate,
-					endDate: item.endDate,
-					directionId: item.directionId,
-					format: item.format,
-					language: item.language,
-					speakers: item.speakers?.length
-						? item.speakers.map((speaker) => ({
-								id: speaker.id,
-								name: speaker.user?.profile?.name || speaker.name || "",
-								speciality: speaker.name || "",
-								image: speaker.user?.image,
-							}))
-						: [],
-				}),
-			);
+		if (event?.schedule) {
+			// The form works in optional strings; the row carries nullable ones.
+			const scheduleData = event.schedule.map((item) => ({
+				id: item.id,
+				title: item.title ?? undefined,
+				description: item.description ?? undefined,
+				url: item.url ?? undefined,
+				address: item.address,
+				startDate: String(item.startDate),
+				endDate: String(item.endDate),
+				directionId: item.directionId,
+				format: item.format,
+				language: item.language,
+				speakers:
+					item.speakers?.map((speaker) => ({
+						id: speaker.id,
+						name: speaker.user?.profile?.name || speaker.name || "",
+						speciality: speaker.name || "",
+						image: speaker.user?.image ?? undefined,
+					})) ?? [],
+			}));
+
 			setSchedule(scheduleData);
 		}
-	}, [event?.data?.schedule]);
+	}, [event?.schedule]);
 
 	const { mutateAsync: updateScheduleItem } = useMutation({
 		mutationFn: (item: ScheduleItemFormValues) => {

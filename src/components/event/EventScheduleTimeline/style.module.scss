@@ -21,16 +21,22 @@
  * when a title is long; the graph keeps the rest and scrolls through time. One
  * shared scroller let the left half squeeze the right one into a sliver.
  */
+/*
+ * The divider belongs to the track pane, not to this one. As a `border-right`
+ * here it ate a pixel of the content box, so the columns (388px in total)
+ * overflowed 387px of space and the pane grew a scrollbar for one pixel it
+ * could not show.
+ */
 .labelPane {
 	width: 388px;
 	max-width: 60%;
 	flex: none;
-	border-right: 1px solid var(--gd-color-border-strong);
 }
 
 .trackPane {
 	flex: 1;
 	min-width: 0;
+	border-left: 1px solid var(--gd-color-border-strong);
 }
 
 /*

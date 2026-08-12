@@ -1,23 +1,22 @@
 import type { Event } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Skeleton } from "antd";
+import { Skeleton } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import Link from "next/link";
+import { useEventTypeLabel } from "@/components/events/EventCardParts";
 import {
 	getHubSectionShellClass,
 	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
-import { HubSectionRow } from "@/components/hub/HubSectionRow";
 import styles from "./styles.module.scss";
 
 type LatestEvent = Event & {
 	schedule?: { startDate: string; endDate: string }[];
 };
-
-const SOON_DAYS = 14;
 
 function parseDate(value: string) {
 	const d = new Date(value);
@@ -65,6 +64,7 @@ function getEventTiming(
 
 export default function LatestEvents() {
 	const { t } = useTranslate();
+	const typeLabel = useEventTypeLabel();
 
 	const {
 		data: events,
@@ -81,20 +81,13 @@ export default function LatestEvents() {
 		staleTime: 1000 * 60 * 3,
 	});
 
-	const now = Date.now();
-	const soonWindowMs = SOON_DAYS * 24 * 60 * 60 * 1000;
-
 	const candidates = (events || [])
-		.map((e) => {
-			const timing = getEventTiming(e.schedule);
-			const isSoon =
-				!!timing.nextStart &&
-				timing.nextStart.getTime() - now >= 0 &&
-				timing.nextStart.getTime() - now <= soonWindowMs;
-
-			return { e, ...timing, isSoon };
-		})
-		.filter((x) => x.isNotEnded && (x.isOngoing || x.isSoon))
+		.map((e) => ({ e, ...getEventTiming(e.schedule) }))
+		// Everything still to come, running now included. A fortnight window used
+		// to hide the rest, so a card headed "Upcoming events" went empty while
+		// upcoming events existed — the list is capped at five below anyway, and
+		// it is sorted soonest-first, so the near ones still lead.
+		.filter((x) => x.isNotEnded && (x.isOngoing || !!x.nextStart))
 		.sort((a, b) => {
 			// ongoing first
 			if (a.isOngoing !== b.isOngoing) return a.isOngoing ? -1 : 1;
@@ -128,27 +121,40 @@ export default function LatestEvents() {
 
 				<HubSectionBody flush>
 					{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
-						<HubSectionRow
+						<Link
 							key={e.id}
-							href={`${e.lang ? `/${e.lang}` : ""}/event/${e.slug}`}
+							href={`/event/${e.slug}`}
 							target="_blank"
-							title={e.title}
-							subtitle={
-								isOngoing
-									? `${t("hub.latest-events.ongoing", "Ongoing")} · ${t("hub.latest-events.until", "until")} ${dayjs(nearestEnd).format("ll")}`
-									: `${t("hub.latest-events.starts", "Starts")}: ${dayjs(nextStart).format("ll")}`
-							}
-							media={
-								<Avatar
-									src={e.image ?? undefined}
-									size={32}
-									shape="square"
-									className={styles.avatar}
-								>
-									{e.title?.charAt(0)?.toUpperCase()}
-								</Avatar>
-							}
-						/>
+							className={styles.tile}
+						>
+							{/* The cover leads, at a size worth looking at. A 32px square
+							    beside two lines of text showed nothing of the artwork,
+							    which is the part that makes someone click. */}
+							<div
+								className={styles.cover}
+								style={
+									e.image ? { backgroundImage: `url(${e.image})` } : undefined
+								}
+							>
+								{!e.image && (
+									<span className={styles.coverLetter}>
+										{e.title?.charAt(0)?.toUpperCase()}
+									</span>
+								)}
+							</div>
+
+							<div className={styles.meta}>
+								{[
+									typeLabel(e.type),
+									isOngoing
+										? `${t("hub.latest-events.ongoing", "Ongoing")} · ${t("hub.latest-events.until", "until")} ${dayjs(nearestEnd).format("ll")}`
+										: `${t("hub.latest-events.starts", "Starts")}: ${dayjs(nextStart).format("ll")}`,
+								]
+									.filter(Boolean)
+									.join(" · ")}
+							</div>
+							<div className={styles.name}>{e.title}</div>
+						</Link>
 					))}
 				</HubSectionBody>
 			</section>

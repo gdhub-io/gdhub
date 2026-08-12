@@ -1,8 +1,8 @@
-import { EventStatus } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { isHeadlineEvent } from "@/helpers/event";
+import { defaultLocale } from "@/config/locale";
+import { isHeadlineEvent, PUBLIC_EVENT_STATUSES } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
 import { prisma } from "@/services/prisma";
 import { EventPageClient, type EventPageProps } from "./EventPageClient";
@@ -55,12 +55,6 @@ const buildEventOgImage = (event: LoadedEvent) => {
 	return `${appUrl}/api/${card}?${params.toString()}`;
 };
 
-/** An event is on the public web once it is published; archiving leaves it up. */
-const PUBLIC_STATUSES: EventStatus[] = [
-	EventStatus.Published,
-	EventStatus.Archived,
-];
-
 const loadEvent = cache(
 	async (slug: string): Promise<EventPageProps["event"] | null> => {
 		// Speakers were never loaded here, so the programme listed sessions with
@@ -70,7 +64,12 @@ const loadEvent = cache(
 			// Public means published. Without this the page served drafts to anyone
 			// holding the slug, and an unpublished event stayed readable — the
 			// organiser's own preview goes through the event space, which is gated.
-			where: { slug, lang: "en", status: { in: PUBLIC_STATUSES } },
+			where: { slug, status: { in: [...PUBLIC_EVENT_STATUSES] } },
+			// A slug is unique per locale, and there is no locale segment in the URL
+			// to pick with — so the default locale wins where both exist, and an
+			// event that only exists in the other one is still reachable rather than
+			// a 404. Pinning this to `en` outright hid a published Russian event.
+			orderBy: { lang: defaultLocale === "en" ? "asc" : "desc" },
 			include: {
 				schedule: {
 					orderBy: { startDate: "asc" },

@@ -1,6 +1,43 @@
 import dayjs from "dayjs";
+import { EventStatus } from "@/config/prisma-enums";
 
 type ScheduleLike = { startDate: string | Date; endDate: string | Date };
+
+/**
+ * The statuses an event is public in.
+ *
+ * Published is the obvious one; archiving takes an event out of circulation but
+ * leaves its page up, because links to it are already out in the world. Drafts
+ * and closed events belong to their organiser alone.
+ *
+ * This list decides four separate things — the catalogue query, its count, the
+ * event page and the filter clamp on both endpoints — and it was written out
+ * four times. One of those copies was the hole that served other people's
+ * drafts, so it lives here now.
+ */
+export const PUBLIC_EVENT_STATUSES = [
+	EventStatus.Published,
+	EventStatus.Archived,
+] as const;
+
+/**
+ * The statuses a caller may actually be shown, given what they asked for.
+ *
+ * A `status` query parameter narrows the public list; it never widens it. Staff
+ * moderate the whole catalogue and are the exception.
+ */
+export function visibleEventStatuses(
+	requested: readonly string[] | undefined,
+	isStaff = false,
+): string[] {
+	const asked = requested?.length ? requested : [...PUBLIC_EVENT_STATUSES];
+
+	return isStaff
+		? [...asked]
+		: asked.filter((status) =>
+				(PUBLIC_EVENT_STATUSES as readonly string[]).includes(status),
+			);
+}
 
 /**
  * Which events get the billing.
