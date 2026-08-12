@@ -10,9 +10,25 @@
   }
 
   .heroMain {
+    /*
+     * The call to action is centred with everything else on a phone: the antd
+     * Space holding it is inline-flex, so it shrank to the button's own width
+     * and sat against the left edge under a centred heading.
+     *
+     * Reached by position rather than by `:has(.heroButton)` — inside
+     * `:global()` the module class is not hashed, so that selector matched
+     * nothing at all.
+     */
+    > :global(.ant-space-item:last-child) > :global(.ant-space) {
+      display: flex;
+      width: 100%;
+      align-items: center;
+    }
+
     .heroButton {
       padding: 18px 32px;
       max-width: inherit;
+      width: 100%;
     }
 
     .subTitle {
