@@ -2,10 +2,8 @@ import type { Profile } from "@gdhub-io/gdhub-prisma";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
-	Button,
 	Card,
 	Col,
-	Flex,
 	Form,
 	Input,
 	InputNumber,
@@ -18,7 +16,8 @@ import {
 	Typography,
 } from "antd";
 import { useEffect, useState } from "react";
-import actionStyles from "./settingsActions.module.scss";
+import styles from "./resourcesProfileForm.module.scss";
+import { SettingsActions } from "./SettingsActions";
 
 const { Text } = Typography;
 
@@ -115,7 +114,7 @@ const ResourcesProfileForm = ({
 							{/* A span, not the icon itself: antd attaches its hover handlers
 							    and ref to the child, and an SVG is an unreliable host for
 							    both. */}
-							<span className={actionStyles.hint}>
+							<span className={styles.hint}>
 								<IconInfoCircle size={15} />
 							</span>
 						</Tooltip>
@@ -229,11 +228,7 @@ const ResourcesProfileForm = ({
 				</Spin>
 			</Card>
 
-			<Flex className={actionStyles.actions}>
-				<Button type="primary" onClick={handleForm} loading={processing}>
-					{t("profile-forms.resources.card.save", "Save")}
-				</Button>
-			</Flex>
+			<SettingsActions onSave={handleForm} loading={processing} />
 		</>
 	);
 };

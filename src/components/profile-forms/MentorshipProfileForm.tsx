@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
 import { resyncSession } from "@/helpers/session";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
-import actionStyles from "./settingsActions.module.scss";
+import { SettingsActions } from "./SettingsActions";
 
 const { Paragraph, Text } = Typography;
 
@@ -319,11 +319,7 @@ const MentorshipProfileForm = ({
 				</Spin>
 			</Card>
 
-			<Flex className={actionStyles.actions}>
-				<Button type="primary" onClick={handleForm} loading={isSaving}>
-					{t("components.profile-forms.mentorship.card.save", "Save")}
-				</Button>
-			</Flex>
+			<SettingsActions onSave={handleForm} loading={isSaving} />
 		</>
 	);
 };

@@ -11,6 +11,7 @@ const user = (overrides: Partial<User> = {}): User =>
 		id: "u1",
 		name: "Account Name",
 		email: "dev@example.com",
+		lang: "en",
 		onboardingDone: true,
 		agreements: { needSubscribeToNewsletter: true },
 		profile: {
@@ -116,6 +117,10 @@ describe("buildContactAttributes", () => {
 		).toBe(false);
 	});
 
+	it("carries the reading language, so a sync stops undoing the signup", () => {
+		expect(buildContactAttributes(user()).MAIN_LOCALE).toBe("en");
+	});
+
 	it("carries the onboarding flag through unchanged", () => {
 		expect(
 			buildContactAttributes(user({ onboardingDone: false })).ONBOARDING_DONE,
@@ -131,6 +136,7 @@ describe("toImportAttributes", () => {
 	it("spells booleans the way the import endpoint understands", () => {
 		const encoded = toImportAttributes({
 			FIRSTNAME: "Probe",
+			MAIN_LOCALE: "en",
 			MAIN_INTEREST: "Mentor",
 			DIRECTIONS: "game design",
 			LEVEL: "Experienced",
@@ -146,6 +152,7 @@ describe("toImportAttributes", () => {
 	it("leaves everything else untouched, nulls included", () => {
 		const encoded = toImportAttributes({
 			FIRSTNAME: "Probe",
+			MAIN_LOCALE: "en",
 			MAIN_INTEREST: null,
 			DIRECTIONS: null,
 			LEVEL: null,
@@ -165,6 +172,7 @@ describe("toImportAttributes", () => {
 	it("keeps a multiple-choice attribute an array", () => {
 		const encoded = toImportAttributes({
 			FIRSTNAME: "Probe",
+			MAIN_LOCALE: "en",
 			MAIN_INTEREST: null,
 			DIRECTIONS: null,
 			LEVEL: null,

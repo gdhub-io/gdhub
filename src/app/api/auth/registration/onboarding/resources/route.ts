@@ -8,11 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { joinSpace } from "@/services/access/membership";
-import { brevoApi } from "@/services/brevo";
-import {
-	brevoSubscribersListId,
-	buildAvailableFor,
-} from "@/services/brevo/sync";
+import { syncUserToBrevo } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 
 const UpdateResourcesSchema = z.object({
@@ -48,27 +44,13 @@ export const PUT = withAuth({ mode: "user" })(
 		const { timeForWork, otherResources, isActive } =
 			body as UpdateResourcesBody;
 
-		const profile = await prisma.profile.update({
+		await prisma.profile.update({
 			where: { userId: currentUser.id },
 			data: {
 				timeForWork: timeForWork ?? undefined,
 				otherResources: otherResources ?? undefined,
 				isActive: isActive ?? undefined,
 				user: { update: { onboardingDone: true } },
-			},
-			select: {
-				primaryInterest: true,
-				name: true,
-				isActive: true,
-				user: {
-					select: {
-						agreements: true,
-						name: true,
-						email: true,
-						lang: true,
-						specialities: { select: { isOpenForMentoring: true } },
-					},
-				},
 			},
 		});
 
@@ -81,37 +63,17 @@ export const PUT = withAuth({ mode: "user" })(
 			role: SpaceRole.Member,
 		});
 
+		// The same write the admin sync makes, rather than a second description of
+		// what a contact is: this route used to assemble its own attributes, which
+		// is how `MAIN_LOCALE` ended up set only for people who signed up while
+		// that line existed, and `ONBOARDING_DONE` for nobody at all.
+		//
+		// It upserts, so somebody who started onboarding, left, and came back days
+		// later has their contact updated instead of hitting a 400 nobody saw.
 		try {
-			const agreements = profile.user.agreements as Record<string, boolean>;
+			const result = await syncUserToBrevo(currentUser.id);
 
-			const response = await brevoApi.contacts.createContact({
-				email: profile.user.email as string,
-				// The same list the admin sync writes to. Hardcoding it here meant a
-				// developer could point the sync at a sandbox list while signups kept
-				// landing in the live one.
-				listIds: [brevoSubscribersListId()],
-				// An upsert. Without it this call fails for anyone whose contact
-				// already exists — which is every person who started onboarding,
-				// left, and came back to finish it days later. The 400 was caught
-				// and logged, so their `ONBOARDING_DONE` silently stayed unset.
-				updateEnabled: true,
-				attributes: {
-					MAIN_LOCALE: profile.user.lang,
-					MAIN_INTEREST: profile.primaryInterest,
-					FIRSTNAME: profile.name || profile.user.name,
-					HAS_SUBSCRIBE_TO_NEWSLETTER:
-						agreements?.needSubscribeToNewsletter || false,
-					// This request *is* the end of onboarding — the same update above
-					// sets `onboardingDone` in the database.
-					ONBOARDING_DONE: true,
-					AVAILABLE_FOR: buildAvailableFor({
-						profile: { isActive: profile.isActive },
-						specialities: profile.user.specialities,
-					}),
-				},
-			});
-
-			console.log("[brevo: newSubscriber: response]", response);
+			console.log("[brevo: newSubscriber]", result);
 		} catch (error) {
 			console.error("[brevo: newSubscriber: error]", error);
 		}

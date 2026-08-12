@@ -19,7 +19,7 @@ import {
 	defaultLocale,
 	isAvailableLocale,
 } from "@/config/locale";
-import actionStyles from "./settingsActions.module.scss";
+import { SettingsActions } from "./SettingsActions";
 
 type GeneralProfileFormArgs = {
 	profile: Profile & { user: Partial<User> };
@@ -212,11 +212,7 @@ const GeneralProfileForm = ({
 					</Card>
 				</Flex>
 
-				<Flex className={actionStyles.actions}>
-					<Button type="primary" onClick={handleForm} loading={processing}>
-						{t("components.profile-forms.general.card.save", "Save")}
-					</Button>
-				</Flex>
+				<SettingsActions onSave={handleForm} loading={processing} />
 			</Form>
 		</Spin>
 	);

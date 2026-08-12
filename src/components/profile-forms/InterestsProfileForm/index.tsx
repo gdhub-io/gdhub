@@ -7,9 +7,7 @@ import type {
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Button,
 	Card,
-	Flex,
 	Form,
 	Input,
 	message,
@@ -23,7 +21,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { InterestPicker } from "@/components/profile/InterestPicker";
 import { resyncSession } from "@/helpers/session";
-import actionStyles from "../settingsActions.module.scss";
+import { SettingsActions } from "../SettingsActions";
 import styles from "./style.module.scss";
 
 type InterestsProfileFormArgs = {
@@ -222,11 +220,7 @@ const InterestsProfileForm = ({
 				</Spin>
 			</Card>
 
-			<Flex className={actionStyles.actions}>
-				<Button type="primary" onClick={handleForm} loading={processing}>
-					{t("Save", "Save")}
-				</Button>
-			</Flex>
+			<SettingsActions onSave={handleForm} loading={processing} />
 		</>
 	);
 };

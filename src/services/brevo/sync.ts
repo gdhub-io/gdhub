@@ -50,7 +50,7 @@ const PLAIN_ATTRIBUTES = [
  * auto-created (the enumeration is an editorial decision made in Brevo) and the
  * values we are about to send are checked against it instead.
  */
-const CATEGORY_ATTRIBUTES = ["MAIN_INTEREST", "LEVEL"] as const;
+const CATEGORY_ATTRIBUTES = ["MAIN_INTEREST", "LEVEL", "MAIN_LOCALE"] as const;
 
 type CategoryAttribute = (typeof CATEGORY_ATTRIBUTES)[number];
 
@@ -100,6 +100,7 @@ const userSelection = {
 	id: true,
 	name: true,
 	email: true,
+	lang: true,
 	onboardingDone: true,
 	agreements: true,
 	profile: { select: { name: true, primaryInterest: true, isActive: true } },
@@ -119,6 +120,7 @@ type SyncableUser = {
 	id: string;
 	name: string | null;
 	email: string | null;
+	lang: string | null;
 	onboardingDone: boolean;
 	agreements: unknown;
 	profile: {
@@ -144,6 +146,7 @@ export const AVAILABLE_FOR_ADVISING = "advising";
 export type BrevoContactAttributes = {
 	FIRSTNAME: string | null;
 	MAIN_INTEREST: string | null;
+	MAIN_LOCALE: string | null;
 	DIRECTIONS: string | null;
 	LEVEL: string | null;
 	ONBOARDING_DONE: boolean;
@@ -186,6 +189,10 @@ export function buildContactAttributes(
 	return {
 		FIRSTNAME: user.profile?.name || user.name,
 		MAIN_INTEREST: user.profile?.primaryInterest ?? null,
+		// The language the person reads the product in — the one attribute the
+		// registration route used to write on its own, which is how it ended up
+		// set for whoever signed up and missing for everyone else.
+		MAIN_LOCALE: user.lang ?? null,
 		// The first speciality only, and its direction alone — the level travels
 		// beside it in LEVEL rather than inside the string, so a segment can
 		// filter on either without parsing.
@@ -258,7 +265,7 @@ async function findUnsupportedValues(
 ): Promise<UnsupportedValue[]> {
 	const labels = await readCategoryLabels();
 
-	const [interests, levels] = await Promise.all([
+	const [interests, levels, locales] = await Promise.all([
 		prisma.profile.groupBy({
 			by: ["primaryInterest"],
 			where: { user: syncableUsersWhere(onlyOnboarded) },
@@ -267,6 +274,11 @@ async function findUnsupportedValues(
 		prisma.speciality.groupBy({
 			by: ["level"],
 			where: { user: syncableUsersWhere(onlyOnboarded) },
+			_count: { _all: true },
+		}),
+		prisma.user.groupBy({
+			by: ["lang"],
+			where: syncableUsersWhere(onlyOnboarded),
 			_count: { _all: true },
 		}),
 	]);
@@ -309,6 +321,10 @@ async function findUnsupportedValues(
 	check(
 		"LEVEL",
 		levels.map((row) => ({ value: row.level, count: row._count._all })),
+	);
+	check(
+		"MAIN_LOCALE",
+		locales.map((row) => ({ value: row.lang, count: row._count._all })),
 	);
 
 	return unsupported;
