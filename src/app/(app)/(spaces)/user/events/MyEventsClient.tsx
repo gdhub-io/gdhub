@@ -17,9 +17,10 @@ import {
 } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import React from "react";
+import React, { useMemo } from "react";
 import { MyEventCard } from "@/components/events/MyEventCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { useSetSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { EventStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
@@ -46,6 +47,18 @@ const PageViews = dynamic(
 
 const MyEventsClient = () => {
 	const { t } = useTolgee();
+
+	// A list page is not a space, but it is still "where you are": the trail
+	// names it after the logo, with no switcher because there is nothing here
+	// to switch between.
+	useSetSpaceHeader(
+		useMemo(
+			() => ({
+				trail: { current: { label: t("hub.menu.my-events", "My events") } },
+			}),
+			[t],
+		),
+	);
 	const [modal, modalContextHolder] = Modal.useModal();
 	const [editModalOpen, setEditModalOpen] = React.useState(false);
 	const [editingEvent, setEditingEvent] = React.useState<any | null>(null);

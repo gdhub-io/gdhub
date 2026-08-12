@@ -160,20 +160,17 @@ export const ProjectSpace = ({
 		];
 
 		return {
-			breadcrumbItems: [
-				{
-					title: screens.md ? (
-						<Link href="/hub">{t("hub.menu.home", "Hub")}</Link>
-					) : null,
+			// The parent crumb points at the hub: there is no "My projects" page,
+			// and the hub home is where a person's projects actually are. Point it
+			// elsewhere the day such a page exists.
+			trail: {
+				parent: {
+					href: "/hub",
+					label: t("hub.menu.my-projects", "My projects"),
 				},
-				{
-					title: (
-						<Text ellipsis={{ tooltip: true }}>
-							{project?.name || "Project"}
-						</Text>
-					),
-				},
-			],
+				current: { label: project?.name || t("project.untitled", "Project") },
+				space: project?.id ? { kind: "project", id: project.id } : undefined,
+			},
 			menuItems: menuItems.filter((item) => !item.disabled),
 			menuSelectedKeys: [pathname],
 		};

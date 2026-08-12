@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { CourseStatus, Language } from "@gdhub-io/gdhub-prisma";
 import slugify from "slugify";
 import { z } from "zod";
+import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
@@ -11,6 +12,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
+import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";
 
 const CreateCourseSchema = z.object({
@@ -64,6 +66,10 @@ export const POST = withAuth({ mode: "user" })(
 			userId: currentUser.id as string,
 			role: SpaceRole.Owner,
 		});
+
+		// The switcher lists this now, and a cache that says otherwise for the
+		// next minute reads as the space not having been created.
+		await cacheDelete(userSpacesCacheKey(currentUser.id));
 
 		// TODO(prisma): persist the author rate once the CourseTeacher model is
 		// added to the @gdhub-io/gdhub-prisma package (see proposal at the

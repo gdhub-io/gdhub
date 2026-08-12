@@ -200,24 +200,14 @@ export const EventSpace = ({
 		];
 
 		return {
-			breadcrumbItems: [
-				{
-					title: screens.md ? (
-						<Link href="/user/events">
-							{t("hub.menu.my-events", "My events")}
-						</Link>
-					) : null,
+			trail: {
+				parent: {
+					href: "/user/events",
+					label: t("hub.menu.my-events", "My events"),
 				},
-				{
-					title: (
-						<div style={{ display: "grid" }}>
-							<Text ellipsis={{ tooltip: true }}>
-								{event?.title || "Event"}
-							</Text>
-						</div>
-					),
-				},
-			],
+				current: { label: event?.title || t("event.untitled", "Event") },
+				space: { kind: "event", id: eventId },
+			},
 			menuItems: menuItems.filter((item) => !item.disabled),
 			menuSelectedKeys: [pathname],
 		};

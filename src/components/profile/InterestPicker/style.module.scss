@@ -1,0 +1,137 @@
+.cards {
+	display: flex;
+	gap: var(--gd-space-4);
+}
+
+/* The same choice on a phone, in one row instead of four stacked cards. */
+.select {
+	width: 100%;
+}
+
+.option {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding-block: var(--gd-space-1);
+}
+
+.optionIcon {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}
+
+.optionText {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.optionTitle {
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+/* The description has to wrap: antd truncates option rows to a single line. */
+.optionSubtitle {
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.35;
+	color: var(--gd-color-text-secondary);
+	white-space: normal;
+}
+
+.card {
+	flex: 1;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+	cursor: pointer;
+	transition:
+		border-color 0.2s,
+		box-shadow 0.2s;
+	outline: none;
+
+	&:hover {
+		border-color: var(--gd-color-accent-hover);
+	}
+
+	&:focus-visible {
+		box-shadow: 0 0 0 2px var(--gd-color-accent-subtle);
+	}
+}
+
+/*
+ * Selection is a 2px brand edge and a tint, not a brand-filled block: inside the
+ * product the brand orients, it never becomes a surface.
+ *
+ * The second px is a ring drawn outside the border rather than inset. Inset, it
+ * ran along the inside of the card and showed as a separate line against the
+ * white footer — a doubled border. Outside it merges with the border into one
+ * edge, and being a shadow it still costs no layout.
+ */
+.selected {
+	border-color: var(--gd-color-accent);
+	box-shadow: 0 0 0 1px var(--gd-color-accent);
+}
+
+.cardContent {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-6) var(--gd-space-3) var(--gd-space-4);
+}
+
+.selected .cardContent {
+	background-color: var(--gd-color-accent-subtle);
+	color: var(--gd-color-text);
+}
+
+.iconCircle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	background: var(--gd-neutral-25);
+	color: var(--gd-color-text);
+}
+
+.selectedIcon {
+	background: var(--gd-color-surface);
+	color: var(--gd-color-accent);
+}
+
+/* Four across leaves little width, so the phrase wraps rather than clips. */
+.cardTitle {
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: var(--gd-space-2);
+	text-align: center;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+
+	strong {
+		font-size: 16px;
+		font-style: italic;
+		font-weight: 700;
+	}
+}
+
+.cardFooter {
+	padding: var(--gd-space-2) var(--gd-space-3);
+	text-align: center;
+	font-size: 13px;
+	font-weight: 400;
+	color: var(--gd-color-text);
+	border-top: 1px solid var(--gd-color-border);
+	background: var(--gd-color-surface);
+}
+
+.selectedFooter {
+	color: var(--gd-color-accent);
+	font-weight: 600;
+	border-top-color: var(--gd-color-accent);
+}

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { IconBell, IconMessageCircle } from "@tabler/icons-react";
 import { Avatar, Button, Space, Typography } from "antd";
-import Link from "next/link";
 import { Header } from "./index";
 
 const { Text } = Typography;
@@ -52,56 +51,61 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** my/project → Logo / Hub / Project name */
+/** A project — no parent crumb: projects live on the hub home, not on a list. */
 export const Project: Story = {
 	args: {
-		breadcrumbItems: [
-			{ title: <Link href="/hub">Hub</Link> },
-			{ title: <Text ellipsis={{ tooltip: true }}>Echo Signal</Text> },
-		],
+		trail: {
+			current: { label: "Echo Signal" },
+			space: { kind: "project", id: "p1" },
+		},
 	},
 };
 
-/** my/event → Logo / My events / Event title */
+/** An event, with its list above it. */
 export const Event: Story = {
 	args: {
-		breadcrumbItems: [
-			{ title: <Link href="/user/events">My events</Link> },
-			{ title: <Text ellipsis={{ tooltip: true }}>GameDev Meetup 2026</Text> },
-		],
+		trail: {
+			parent: { href: "/user/events", label: "My events" },
+			current: { label: "GameDev Meetup 2026" },
+			space: { kind: "event", id: "e1" },
+		},
 	},
 };
 
-/** my/course → Logo / Courses / Direction / Course name */
+/** A course, likewise. */
 export const Course: Story = {
 	args: {
-		breadcrumbItems: [
-			{ title: <Link href="/hub/courses">Courses</Link> },
-			{ title: "Game Design" },
-			{ title: <Text ellipsis={{ tooltip: true }}>Unreal Engine Basics</Text> },
-		],
+		trail: {
+			parent: { href: "/user/courses", label: "My courses" },
+			current: { label: "Unreal Engine Basics" },
+			space: { kind: "course", id: "c1" },
+		},
 	},
 };
 
-/** hub → Logo / avatar + username (the global ProtectedShell header). */
+/** The admin space: a trail, but no entry in the switcher. */
+export const Admin: Story = {
+	args: {
+		trail: {
+			parent: { href: "/admin/users", label: "Admin" },
+			current: { label: "Users" },
+		},
+	},
+};
+
+/** No space — the hub and ordinary pages name who is signed in. */
 export const Hub: Story = {
 	args: {
-		breadcrumbItems: [
-			{
-				title: (
-					<Space size={8} align="center">
-						<Avatar size={24}>D</Avatar>
-						<Text>Dmitry Drynov</Text>
-					</Space>
-				),
-			},
-		],
+		fallback: (
+			<Space size={8} align="center">
+				<Avatar size={24}>D</Avatar>
+				<Text>Dmitry Drynov</Text>
+			</Space>
+		),
 	},
 };
 
-/** Logo only — no section breadcrumbs (e.g. the hub root). */
+/** Logo only. */
 export const LogoOnly: Story = {
-	args: {
-		breadcrumbItems: [],
-	},
+	args: {},
 };

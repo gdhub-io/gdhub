@@ -332,22 +332,16 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				<Layout ref={shellRef} className={styles.container}>
 					<AppHeader
 						className={styles.header}
-						breadcrumbItems={
-							spaceHeader?.breadcrumbItems ?? [
-								{
-									title: (
-										<Space>
-											<Avatar
-												src={session?.user?.image ?? undefined}
-												size={24}
-											/>
-											{screens.sm ? (
-												<Text className="username">{session?.user?.name}</Text>
-											) : null}
-										</Space>
-									),
-								},
-							]
+						trail={spaceHeader?.trail}
+						fallback={
+							/* No space: this names who is signed in, not where you are —
+							   so no switcher, no separator and no hover chip. */
+							<Space className={styles.identity}>
+								<Avatar src={session?.user?.image ?? undefined} size={24} />
+								{screens.sm ? (
+									<Text className="username">{session?.user?.name}</Text>
+								) : null}
+							</Space>
 						}
 						actions={
 							<HeaderActions

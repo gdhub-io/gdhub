@@ -10,9 +10,9 @@ import {
 	Form,
 	Input,
 	message,
+	Space,
 	Spin,
 	Switch,
-	Tooltip,
 	Typography,
 } from "antd";
 import Select from "antd/es/select";
@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
 import { resyncSession } from "@/helpers/session";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
+import actionStyles from "./settingsActions.module.scss";
 
 const { Paragraph, Text } = Typography;
 
@@ -165,176 +166,165 @@ const MentorshipProfileForm = ({
 	}));
 
 	return (
-		<Card
-			title={t("components.profile-forms.mentorship.card.title", "Mentorship")}
-			variant="borderless"
-			extra={
-				<Tooltip
-					title={
-						<Text>
+		<>
+			<Card
+				title={t(
+					"components.profile-forms.mentorship.card.title",
+					"Mentorship",
+				)}
+				variant="borderless"
+				extra={
+					<Space size={8}>
+						<Text type="secondary">
 							{t(
-								"components.profile-forms.mentorship.card.description",
-								"Turn on if you want other community members to contact you for advice.",
+								"components.profile-forms.mentorship.availability",
+								"Available for advice",
 							)}
 						</Text>
-					}
-				>
-					<Switch
-						checked={enabled}
-						loading={isSaving}
-						onChange={switchMentorshipStatus}
-					/>
-				</Tooltip>
-			}
-		>
-			<Spin spinning={isSaving}>
-				<Paragraph>
-					{t(
-						"components.profile-forms.mentorship.card.description",
-						"Allows you to contribute to game development through advising",
-					)}
-				</Paragraph>
-				{enabled && !!specialities?.data.length && (
-					<Form
-						form={form}
-						layout="vertical"
-						variant="filled"
-						name="profile-mentorship-form"
-						autoComplete="off"
-						requiredMark="optional"
-						initialValues={
-							{
-								/** some fileds */
-							}
-						}
-					>
-						<Form.Item
-							label={t(
-								"profile-forms.mentorship.field.speciality.label",
-								"Speciality in which you can help",
-							)}
-							rules={[{ required: true }]}
-							name="specialityId"
-						>
-							<Select
-								options={specialityListOptions}
-								style={{ width: "100%" }}
-								placeholder={t("Select")}
-								onChange={(value) => setSelectedSpecialityId(value)}
-								loading={isSpecialityFetching}
-							/>
-						</Form.Item>
-
-						{(() => {
-							return (
-								<Form.Item
-									label={
-										<Flex justify="space-between" align="center" gap={8}>
-											<span>
-												{t(
-													"profile-forms.mentorship.field.openForQuestions.label",
-													"A list of questions that can be addressed to you",
-												)}
-											</span>
-											<Text type="secondary">
-												({openForQuestions.length}/{maxQuestions})
-											</Text>
-										</Flex>
-									}
-									name="openForQuestions"
-									rules={[{ required: true }]}
-								>
-									<DynamicRowList<string>
-										maxItems={maxQuestions}
-										addPlaceholder={t(
-											"profile-forms.mentorship.field.openForQuestions.addPlaceholder",
-											"Add question",
-										)}
-										renderRow={({ value, onChange, remove }) => (
-											<Flex gap={8} align="center" style={{ width: "100%" }}>
-												<Input
-													value={value}
-													style={{ width: "100%" }}
-													placeholder={t(
-														"profile-forms.mentorship.field.openForQuestions.placeholder",
-														"Question",
-													)}
-													onChange={(event) => onChange(event.target.value)}
-													onPressEnter={(event) => {
-														event.preventDefault();
-													}}
-												/>
-												<Button
-													type="text"
-													danger
-													aria-label={t(
-														"profile-forms.mentorship.field.openForQuestions.remove",
-														"Remove question",
-													)}
-													icon={<IconTrash />}
-													onClick={remove}
-												/>
-											</Flex>
-										)}
-									/>
-								</Form.Item>
-							);
-						})()}
-
-						<Form.Item
-							label={t(
-								"profile-forms.mentorship.field.timeForMentoring.label",
-								"Query response rate",
-							)}
-							help={t(
-								"profile-forms.mentorship.field.timeForMentoring.help",
-								"How quickly do you plan to respond to new requests?",
-							)}
-							name="timeForMentoring"
-						>
-							<Input.TextArea
-								rows={1}
-								placeholder={t(
-									"profile-forms.mentorship.field.timeForMentoring.placeholder",
-									"I answer as much as possible",
-								)}
-							/>
-						</Form.Item>
-
-						<Button
-							type="primary"
-							style={{ marginTop: 32 }}
-							onClick={handleForm}
+						{/* No tooltip on the switch: the label beside it already says what
+					    the setting does, and hovering a control to find out what it
+					    controls is the worst place to hide an explanation. */}
+						<Switch
+							checked={enabled}
 							loading={isSaving}
-						>
-							{t("components.profile-forms.mentorship.card.save", "Save")}
-						</Button>
-					</Form>
-				)}
-
-				{enabled && !specialities?.data.length && (
-					<Alert
-						title={t(
-							"profile-forms.mentorship.card.no-specialities",
-							"To become a mentor, you must have at least one specialty of the Experienced or Expert level",
+							onChange={switchMentorshipStatus}
+						/>
+					</Space>
+				}
+			>
+				<Spin spinning={isSaving}>
+					<Paragraph>
+						{t(
+							"components.profile-forms.mentorship.card.description",
+							"Allows you to contribute to game development through advising",
 						)}
-					/>
-				)}
+					</Paragraph>
+					{enabled && !!specialities?.data.length && (
+						<Form
+							form={form}
+							layout="vertical"
+							variant="filled"
+							name="profile-mentorship-form"
+							autoComplete="off"
+							requiredMark="optional"
+							initialValues={
+								{
+									/** some fileds */
+								}
+							}
+						>
+							<Form.Item
+								label={t(
+									"profile-forms.mentorship.field.speciality.label",
+									"Speciality in which you can help",
+								)}
+								rules={[{ required: true }]}
+								name="specialityId"
+							>
+								<Select
+									options={specialityListOptions}
+									style={{ width: "100%" }}
+									placeholder={t("Select")}
+									onChange={(value) => setSelectedSpecialityId(value)}
+									loading={isSpecialityFetching}
+								/>
+							</Form.Item>
 
-				{/* Switching off hides the form, and with it the Save button — the
-				    choice still has to be confirmed, so it gets its own. */}
-				{!enabled && isDirty && (
-					<Button
-						type="primary"
-						style={{ marginTop: 16 }}
-						onClick={handleForm}
-						loading={isSaving}
-					>
-						{t("components.profile-forms.mentorship.card.save", "Save")}
-					</Button>
-				)}
-			</Spin>
-		</Card>
+							{(() => {
+								return (
+									<Form.Item
+										label={
+											<Flex justify="space-between" align="center" gap={8}>
+												<span>
+													{t(
+														"profile-forms.mentorship.field.openForQuestions.label",
+														"A list of questions that can be addressed to you",
+													)}
+												</span>
+												<Text type="secondary">
+													({openForQuestions.length}/{maxQuestions})
+												</Text>
+											</Flex>
+										}
+										name="openForQuestions"
+										rules={[{ required: true }]}
+									>
+										<DynamicRowList<string>
+											maxItems={maxQuestions}
+											addPlaceholder={t(
+												"profile-forms.mentorship.field.openForQuestions.addPlaceholder",
+												"Add question",
+											)}
+											renderRow={({ value, onChange, remove }) => (
+												<Flex gap={8} align="center" style={{ width: "100%" }}>
+													<Input
+														value={value}
+														style={{ width: "100%" }}
+														placeholder={t(
+															"profile-forms.mentorship.field.openForQuestions.placeholder",
+															"Question",
+														)}
+														onChange={(event) => onChange(event.target.value)}
+														onPressEnter={(event) => {
+															event.preventDefault();
+														}}
+													/>
+													<Button
+														type="text"
+														danger
+														aria-label={t(
+															"profile-forms.mentorship.field.openForQuestions.remove",
+															"Remove question",
+														)}
+														icon={<IconTrash />}
+														onClick={remove}
+													/>
+												</Flex>
+											)}
+										/>
+									</Form.Item>
+								);
+							})()}
+
+							<Form.Item
+								label={t(
+									"profile-forms.mentorship.field.timeForMentoring.label",
+									"Query response rate",
+								)}
+								help={t(
+									"profile-forms.mentorship.field.timeForMentoring.help",
+									"How quickly do you plan to respond to new requests?",
+								)}
+								name="timeForMentoring"
+							>
+								<Input.TextArea
+									rows={1}
+									placeholder={t(
+										"profile-forms.mentorship.field.timeForMentoring.placeholder",
+										"I answer as much as possible",
+									)}
+								/>
+							</Form.Item>
+						</Form>
+					)}
+
+					{enabled && !specialities?.data.length && (
+						<Alert
+							title={t(
+								"profile-forms.mentorship.card.no-specialities",
+								"To become a mentor, you must have at least one specialty of the Experienced or Expert level",
+							)}
+						/>
+					)}
+				</Spin>
+			</Card>
+
+			<Flex className={actionStyles.actions}>
+				<Button type="primary" onClick={handleForm} loading={isSaving}>
+					{t("components.profile-forms.mentorship.card.save", "Save")}
+				</Button>
+			</Flex>
+		</>
 	);
 };
 

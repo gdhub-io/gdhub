@@ -3,19 +3,13 @@ import type {
 	GameGenre,
 	GameSetting,
 } from "@gdhub-io/gdhub-prisma";
-import {
-	IconAlertCircle,
-	IconFeather,
-	IconSchool,
-	IconUsers,
-} from "@tabler/icons-react";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
 	Flex,
 	Form,
-	Grid,
 	Input,
 	message,
 	Select,
@@ -26,8 +20,8 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
+import { InterestPicker } from "@/components/profile/InterestPicker";
 import { PrimaryInterest } from "@/config/prisma-enums";
-import styles from "./style.module.scss";
 
 interface IOnboardingInterestStep {
 	onSave: () => void;
@@ -36,39 +30,11 @@ interface IOnboardingInterestStep {
 
 const { Paragraph, Title, Text } = Typography;
 
-const interestOptions = [
-	{
-		value: PrimaryInterest.Author,
-		icon: IconFeather,
-		titleKey: "onboarding.interests.wantToBe.author",
-		titleDefault: "Author",
-		subtitleKey: "onboarding.interests.author.description",
-		subtitleDefault: "I want to collect a team for development of my own game",
-	},
-	{
-		value: PrimaryInterest.Specialist,
-		icon: IconUsers,
-		titleKey: "onboarding.interests.wantToBe.specialist",
-		titleDefault: "Specialist",
-		subtitleKey: "onboarding.interests.specialist.description",
-		subtitleDefault: "I want to join the team",
-	},
-	{
-		value: PrimaryInterest.Mentor,
-		icon: IconSchool,
-		titleKey: "onboarding.interests.wantToBe.mentor",
-		titleDefault: "Mentor",
-		subtitleKey: "onboarding.interests.mentor.description",
-		subtitleDefault: "I want to share my expertise",
-	},
-];
-
 export const OnboardingInterestStep = ({
 	onSave,
 	onPreviousStep = () => {},
 }: IOnboardingInterestStep) => {
 	const searchParams = useSearchParams();
-	const screens = Grid.useBreakpoint();
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { data: session } = useSession();
@@ -82,6 +48,8 @@ export const OnboardingInterestStep = ({
 				return PrimaryInterest.Specialist;
 			case "mentor":
 				return PrimaryInterest.Mentor;
+			case "scout":
+				return PrimaryInterest.Scout;
 			default:
 				return undefined;
 		}
@@ -151,8 +119,6 @@ export const OnboardingInterestStep = ({
 		}
 	};
 
-	const selectedInterest = Form.useWatch("primaryInterest", form);
-
 	return (
 		<div className="onboarding-content">
 			<div className="onboarding-form">
@@ -203,53 +169,7 @@ export const OnboardingInterestStep = ({
 							label={t("interest")}
 							rules={[{ required: true }]}
 						>
-							<div
-								className={`${styles.interestCards} ${!screens.md ? styles.vertical : ""}`}
-							>
-								{interestOptions.map((opt) => {
-									const isSelected = selectedInterest === opt.value;
-									const Icon = opt.icon;
-									return (
-										<div
-											key={opt.value}
-											role="button"
-											tabIndex={0}
-											className={`${styles.card} ${isSelected ? styles.selected : ""}`}
-											onClick={() =>
-												form.setFieldsValue({ primaryInterest: opt.value })
-											}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" || e.key === " ") {
-													e.preventDefault();
-													form.setFieldsValue({ primaryInterest: opt.value });
-												}
-											}}
-										>
-											<div className={styles.cardContent}>
-												<div
-													className={`${styles.iconCircle} ${isSelected ? styles.selectedIcon : ""}`}
-												>
-													<Icon size={28} />
-												</div>
-												<div className={styles.cardTitle}>
-													<span>
-														{t(
-															"onboarding.interests.wantToBe.text",
-															"I want to be",
-														)}
-													</span>
-													<strong>{t(opt.titleKey, opt.titleDefault)}</strong>
-												</div>
-											</div>
-											<div
-												className={`${styles.cardFooter} ${isSelected ? styles.selectedFooter : ""}`}
-											>
-												{t(opt.subtitleKey, opt.subtitleDefault)}
-											</div>
-										</div>
-									);
-								})}
-							</div>
+							<InterestPicker />
 						</Form.Item>
 
 						<Form.Item

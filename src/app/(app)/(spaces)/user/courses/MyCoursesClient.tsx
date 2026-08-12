@@ -5,8 +5,9 @@ import { useTranslate } from "@tolgee/react";
 import { Button, theme } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { useSetSpaceHeader } from "@/components/layouts/SpaceHeader";
 import styles from "./style.module.scss";
 
 const CourseCard = dynamic(
@@ -25,6 +26,18 @@ const CreateCourseModal = dynamic(
 
 export default function MyCoursesClient() {
 	const { t } = useTranslate();
+
+	// A list page is not a space, but it is still "where you are": the trail
+	// names it after the logo, with no switcher because there is nothing here
+	// to switch between.
+	useSetSpaceHeader(
+		useMemo(
+			() => ({
+				trail: { current: { label: t("hub.menu.my-courses", "My courses") } },
+			}),
+			[t],
+		),
+	);
 	const { token } = theme.useToken();
 	const queryClient = useQueryClient();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);

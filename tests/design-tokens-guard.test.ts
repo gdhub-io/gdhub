@@ -35,6 +35,11 @@ const ALLOWED: Record<string, string> = {
 	"src/helpers/og-palette.ts":
 		"Satori cannot resolve custom properties; built from the tokens",
 
+	// A gradient stop needs an alpha, and alpha cannot be applied to a `var()`
+	// colour reference. The value is declared once at the top of the file.
+	"src/components/layouts/SpaceTrail/style.module.scss":
+		"the trail separator fades out, so its colour needs an alpha",
+
 	// Content, not chrome. A role would not improve any of these.
 	"src/components/GameOnStoreCardList/styles.module.scss":
 		"Steam / itch / Google Play / Epic brand colours",

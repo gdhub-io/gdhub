@@ -1,5 +1,6 @@
 import { Language, Prisma } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import {
 	apiError,
 	json,
@@ -10,6 +11,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { deleteSpaceMembership } from "@/services/access/membership";
+import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -121,6 +123,8 @@ export const DELETE = pipe(
 		await deleteSpaceMembership("event", id, tx);
 		await tx.event.delete({ where: { id } });
 	});
+
+	await cacheDelete(userSpacesCacheKey(currentUser.id));
 
 	return json({ success: true });
 });
