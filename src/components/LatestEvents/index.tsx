@@ -5,7 +5,11 @@ import { Skeleton } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useEventTypeLabel } from "@/components/events/EventCardParts";
+import {
+	EventCover,
+	useEventCover,
+	useEventTypeLabel,
+} from "@/components/events/EventCardParts";
 import {
 	getHubSectionShellClass,
 	HubSectionBleed,
@@ -15,8 +19,30 @@ import {
 import styles from "./styles.module.scss";
 
 type LatestEvent = Event & {
-	schedule?: { startDate: string; endDate: string }[];
+	// `directionId` rides along so the cover can take the craft's tint, the same
+	// way the catalogue's cards do.
+	schedule?: {
+		startDate: string;
+		endDate: string;
+		directionId?: string | null;
+	}[];
 };
+
+/** The cover of one row, sized by the event's own format. */
+function EventTileCover({ event }: { event: LatestEvent }) {
+	const { tint } = useEventCover(event);
+
+	return (
+		<EventCover
+			image={event.image}
+			tint={tint}
+			when={null}
+			kind=""
+			type={event.type}
+			fit="width"
+		/>
+	);
+}
 
 function parseDate(value: string) {
 	const d = new Date(value);
@@ -127,33 +153,28 @@ export default function LatestEvents() {
 							target="_blank"
 							className={styles.tile}
 						>
-							{/* The cover leads, at a size worth looking at. A 32px square
-							    beside two lines of text showed nothing of the artwork,
-							    which is the part that makes someone click. */}
-							<div
-								className={styles.cover}
-								style={
-									e.image ? { backgroundImage: `url(${e.image})` } : undefined
-								}
-							>
-								{!e.image && (
-									<span className={styles.coverLetter}>
-										{e.title?.charAt(0)?.toUpperCase()}
-									</span>
-								)}
-							</div>
+							{/* The same cover the catalogue draws, so the two upload formats
+							    keep their shapes here too: the tile gives the width and the
+							    ratio decides the height. No chips — the kind and the dates
+							    are already in the line below. */}
+							<EventTileCover event={e} />
 
-							<div className={styles.meta}>
-								{[
-									typeLabel(e.type),
-									isOngoing
-										? `${t("hub.latest-events.ongoing", "Ongoing")} · ${t("hub.latest-events.until", "until")} ${dayjs(nearestEnd).format("ll")}`
-										: `${t("hub.latest-events.starts", "Starts")}: ${dayjs(nextStart).format("ll")}`,
-								]
-									.filter(Boolean)
-									.join(" · ")}
+							<div className={styles.text}>
+								<div className={styles.meta}>
+									{/* No "Ongoing" label: the row already says when the event
+									    ends, which is the useful half, and the word only
+									    repeated what the date implies. */}
+									{[
+										typeLabel(e.type),
+										isOngoing
+											? `${t("hub.latest-events.until", "until")} ${dayjs(nearestEnd).format("ll")}`
+											: `${t("hub.latest-events.starts", "Starts")}: ${dayjs(nextStart).format("ll")}`,
+									]
+										.filter(Boolean)
+										.join(" · ")}
+								</div>
+								<div className={styles.name}>{e.title}</div>
 							</div>
-							<div className={styles.name}>{e.title}</div>
 						</Link>
 					))}
 				</HubSectionBody>
