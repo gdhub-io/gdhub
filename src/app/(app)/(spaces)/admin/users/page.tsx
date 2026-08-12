@@ -82,6 +82,7 @@ type AdminUsersResponse = {
 
 type SortField =
 	| "createdAt"
+	| "lastModifiedAt"
 	| "name"
 	| "scTotal"
 	| "leadershipCapital"
@@ -123,6 +124,7 @@ const flagCell = (
 const isSortField = (value?: string): value is SortField =>
 	[
 		"createdAt",
+		"lastModifiedAt",
 		"name",
 		"scTotal",
 		"leadershipCapital",
@@ -370,9 +372,11 @@ export default function UsersAdminPage() {
 			},
 			{
 				title: "Last Modified",
-				key: "lastModifiedAt",
+				key: "lastModifiedAt" as SortField,
 				width: 120,
 				align: "right",
+				sorter: true,
+				sortOrder: sortField === "lastModifiedAt" ? sortOrder : null,
 				render: (_, record) => (
 					<Popover content={dayjs(record.lastModifiedAt).format("LLL")}>
 						<Text type="secondary">

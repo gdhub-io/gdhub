@@ -74,6 +74,7 @@ type PaginatedAdminUsersResponse = {
 
 type AdminUsersSortField =
 	| "createdAt"
+	| "lastModifiedAt"
 	| "name"
 	| "scTotal"
 	| "leadershipCapital"
@@ -143,6 +144,7 @@ const clamp = (value: number, min: number, max: number) =>
 const isSortField = (value?: string): value is AdminUsersSortField =>
 	[
 		"createdAt",
+		"lastModifiedAt",
 		"name",
 		"scTotal",
 		"leadershipCapital",
@@ -724,13 +726,25 @@ export const GET = pipe(
 		const sortedUsers = [...allUsers];
 		const direction = sortOrder === "ascend" ? 1 : -1;
 
-		if (sortField === "name") {
-			sortedUsers.sort(
-				(a, b) =>
+		// Neither of these is a column: a display name falls back through three
+		// fields, and "last modified" is the newest of the user's own row, their
+		// profile and their specialities. Both are worked out here and sorted in
+		// memory, the way the skill capital sorts below already are.
+		if (sortField === "name" || sortField === "lastModifiedAt") {
+			sortedUsers.sort((a, b) => {
+				if (sortField === "lastModifiedAt") {
+					return (
+						(toLastModifiedAt(a).getTime() - toLastModifiedAt(b).getTime()) *
+						direction
+					);
+				}
+
+				return (
 					toDisplayName(a).localeCompare(toDisplayName(b), undefined, {
 						sensitivity: "base",
-					}) * direction,
-			);
+					}) * direction
+				);
+			});
 
 			const totalCount = sortedUsers.length;
 			const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
