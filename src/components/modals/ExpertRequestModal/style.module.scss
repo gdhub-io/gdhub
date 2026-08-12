@@ -1,31 +1,185 @@
-.cardHeader {
-	margin-bottom: 24px;
+/*
+ * What the expert card adds to the shared person card: the request form.
+ * Everything above it — header, rail, professional block — comes from
+ * `@/components/person-card/style.module.scss`, so nothing here repeats it.
+ */
+
+/*
+ * The specialization sits beside the role and drops to its own line when it
+ * does not fit. The row therefore wraps, and the fallen line indents past the
+ * direction chip so it reads as a continuation of the role rather than a new
+ * item.
+ */
+.roleRow {
+	flex-wrap: wrap;
+	row-gap: var(--gd-space-1);
 }
 
-.cardType {
-	font-size: 14px;
-	display: block;
-	margin-bottom: 8px;
+/* ── the rail ──────────────────────────────────────────────────────────── */
+
+/*
+ * Doubled to outweigh the shared rail's own padding without depending on which
+ * stylesheet the bundler happens to emit first. The padding moves onto the
+ * sections so their rules can run the full width of the column.
+ */
+.rail.rail {
+	position: relative;
+	padding: 0;
 }
 
-.expertTitle {
-	font-weight: bold;
+/*
+ * Absolute, so the rail contributes no height of its own: the row is as tall as
+ * the form beside it, and a person with more projects than the form has room
+ * for scrolls here instead of stretching the card.
+ */
+.railScroll {
+	position: absolute;
+	inset: 0;
 	display: flex;
-	align-items: center;
-	gap: 12px;
+	flex-direction: column;
+	overflow-y: auto;
+	overflow-x: hidden;
 
-	h1 {
-		margin: 0;
-		font-size: 28px;
+	/*
+	 * A hairline, not a system scrollbar: this is a panel inside a card.
+	 *
+	 * The standard properties are scoped to Firefox on purpose — setting them
+	 * in Chrome switches it to its own "thin" scrollbar (11px here) and makes
+	 * it ignore the `::-webkit-scrollbar` rules below, which are what actually
+	 * get it down to 6.
+	 */
+	@supports (-moz-appearance: none) {
+		scrollbar-width: thin;
+		scrollbar-color: var(--gd-color-border-strong) transparent;
+	}
+
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: 3px;
+		background: var(--gd-color-border-strong);
 	}
 }
 
-.cardWrapper {
-	border-radius: 8px;
-	margin-bottom: 16px;
-	overflow: hidden;
-	transition: all 0.3s ease;
-	background-color: var(--gd-color-surface);
+.railSection {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6);
+
+	/* Edge to edge: the rule belongs to the column, not to the text inside it. */
+	& + .railSection {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+/* A floor for the rail, so a short form does not squeeze it to a slit. */
+.body {
+	min-height: 420px;
+}
+
+/*
+ * The right column is the request itself, so it needs no card around it — and
+ * no padding either: the column already has its own, and a second one inside it
+ * pushed the form a full gutter away from every edge.
+ */
+.ask {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+}
+
+.askIntro {
+	margin-bottom: var(--gd-space-4);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.45;
+}
+
+.askForm {
+	:global(.ant-form-item) {
+		margin-bottom: var(--gd-space-4);
+	}
+
+	:global(.ant-form-item-label) {
+		padding-bottom: var(--gd-space-1);
+
+		> label {
+			height: auto;
+			color: var(--gd-color-text-secondary);
+			font-size: var(--gd-font-size-caption);
+		}
+	}
+}
+
+/* When the expert answers, said before the button rather than after it. */
+.responseNote {
+	display: flex;
+	/* Top, not centre: the note runs to several lines and a centred icon
+	   floats in the middle of them. */
+	align-items: flex-start;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-2) var(--gd-space-3);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.45;
+
+	/* A flex child with no basis of its own gets squeezed by the text beside
+	   it — the icon has a size, and it keeps it. */
+	> svg {
+		flex: none;
+		margin-top: 1px;
+	}
+}
+
+.askActions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: var(--gd-space-4);
+}
+
+/*
+ * The same shape as the talent card's offer button, in the accent that says
+ * "this sends something": one call to action per card, and this is it.
+ */
+.sendBtn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	height: 40px;
+	padding-inline: var(--gd-space-4);
 	border: none;
-	box-shadow: none;
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-text);
+	color: var(--gd-color-surface);
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		opacity 0.15s ease,
+		background-color 0.15s ease;
+
+	&:hover:not(:disabled) {
+		opacity: 0.88;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+}
+
+/* Withdrawing is the destructive twin of sending, and reads like it. */
+.withdrawBtn {
+	background: var(--gd-color-surface);
+	color: var(--gd-danger-solid);
+	box-shadow: inset 0 0 0 1px var(--gd-danger-solid);
 }
