@@ -43,15 +43,10 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 
 		if (!data) return;
 
-		// Both confirmations are gates, not project data.
-		const {
-			agree: _agree,
-			understandsNotAi: _understandsNotAi,
-			...payload
-		} = data;
-
 		try {
-			const project = await createProject(payload);
+			// Both confirmations are required by the API; `understandsNotAi` is a
+			// creation-time gate there too and is not stored.
+			const project = await createProject(data);
 
 			// Advisory AI warnings (e.g. a weak description) — shown, not blocking.
 			const warnings = (project.data as any)?.validation?.warnings ?? [];

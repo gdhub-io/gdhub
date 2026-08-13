@@ -31,6 +31,9 @@ const GetProjectQuerySchema = z.object({
 const CreateProjectSchema = z.object({
 	name: z.string(),
 	agree: z.boolean(),
+	// Creation-time gate only: the author confirms they are making the game
+	// themselves and that this form is not an AI prompt. Never persisted.
+	understandsNotAi: z.boolean(),
 	description: z.string().optional(),
 });
 
@@ -90,9 +93,14 @@ export const POST = withAuth({ mode: "user" })(
 	withValidation(CreateProjectSchema)(async (_req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
-		const { name, description, agree } = body as CreateProjectBody;
+		const { name, description, agree, understandsNotAi } =
+			body as CreateProjectBody;
 
 		if (!agree) return apiError.badRequest("Should accept requirements");
+		if (!understandsNotAi)
+			return apiError.badRequest(
+				"Should confirm the game is made by the author, not generated",
+			);
 
 		// AI checks: no offensive/forbidden content, name looks like a real
 		// project title, and the description (if any) is on-topic.

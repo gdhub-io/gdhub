@@ -74,6 +74,7 @@ describe("POST /api/user/project", () => {
 				name: "Test Project",
 				description: "Test Description",
 				agree: true,
+				understandsNotAi: true,
 			}),
 		});
 		const { NextRequest } = await import("next/server");
@@ -94,5 +95,50 @@ describe("POST /api/user/project", () => {
 
 		expect(status).toBe(200);
 		expect(prisma.project.create).toHaveBeenCalled();
+	});
+
+	it("rejects creation when the not-AI confirmation is missing", async () => {
+		const { POST } = await import("../src/app/api/user/project/route");
+		const request = new Request("http://test/api/user/project", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({
+				name: "Test Project",
+				description: "Test Description",
+				agree: true,
+			}),
+		});
+		const { NextRequest } = await import("next/server");
+		const nextReq = new NextRequest(request);
+
+		const response = await (POST as any)(nextReq, {
+			params: Promise.resolve({}),
+		});
+
+		expect(response.status).toBe(400);
+		expect(prisma.project.create).not.toHaveBeenCalled();
+	});
+
+	it("rejects creation when the not-AI confirmation is false", async () => {
+		const { POST } = await import("../src/app/api/user/project/route");
+		const request = new Request("http://test/api/user/project", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({
+				name: "Test Project",
+				description: "Test Description",
+				agree: true,
+				understandsNotAi: false,
+			}),
+		});
+		const { NextRequest } = await import("next/server");
+		const nextReq = new NextRequest(request);
+
+		const response = await (POST as any)(nextReq, {
+			params: Promise.resolve({}),
+		});
+
+		expect(response.status).toBe(400);
+		expect(prisma.project.create).not.toHaveBeenCalled();
 	});
 });
