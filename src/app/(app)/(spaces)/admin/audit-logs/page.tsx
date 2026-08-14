@@ -64,7 +64,15 @@ const changeSummary = (changes: NormalizedChanges): string => {
 const RANGE_PRESETS = [
 	{
 		label: "Today",
-		value: [dayjs().startOf("day"), dayjs()] as [Dayjs, Dayjs],
+		value: [dayjs().startOf("day"), dayjs().endOf("day")] as [Dayjs, Dayjs],
+	},
+	{
+		// Bounded on both sides: "yesterday" that ran to now would just be "2 days".
+		label: "Yesterday",
+		value: [
+			dayjs().subtract(1, "day").startOf("day"),
+			dayjs().subtract(1, "day").endOf("day"),
+		] as [Dayjs, Dayjs],
 	},
 	{
 		label: "7 days",
@@ -91,8 +99,6 @@ export default function AuditLogsAdminPage() {
 	const [range, setRange] = useState<[Dayjs, Dayjs] | null>(null);
 	const [selected, setSelected] = useState<AuditLogRow | null>(null);
 
-	// Rendered after mount: the offset is the viewer's, and computing it during
-	// SSR would hydrate a different string than the server produced.
 	const [timezone, setTimezone] = useState("");
 	useEffect(() => {
 		const offset = dayjs()
@@ -100,6 +106,7 @@ export default function AuditLogsAdminPage() {
 			.replace(/:00$/, "")
 			.replace(/^([+-])0/, "$1");
 		setTimezone(`GMT${offset}`);
+		setRange([dayjs().startOf("day"), dayjs().endOf("day")]);
 	}, []);
 
 	const applySearch = useMemo(
@@ -148,6 +155,7 @@ export default function AuditLogsAdminPage() {
 					},
 				})
 				.then((r) => r.data),
+		enabled: !!timezone,
 		// A log of what just happened is the one admin screen where coming back to
 		// the tab and seeing yesterday's data is a bug, not a saved request.
 		refetchOnWindowFocus: true,
@@ -424,7 +432,7 @@ export default function AuditLogsAdminPage() {
 					</Space>
 				</Row>
 				<ModernTable
-					loading={isFetching}
+					loading={isFetching || !timezone}
 					rowKey="id"
 					dataSource={response?.data || []}
 					columns={columns}
