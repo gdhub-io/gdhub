@@ -8,18 +8,6 @@ const projectFindUnique = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
-// The audit extension lives in the package; here we only care that the guard
-// runs the handler inside the context.
-vi.mock("@gdhub-io/gdhub-prisma", async (importOriginal) => ({
-	...(await importOriginal<Record<string, unknown>>()),
-	withAuditContext: (context: unknown, callback: () => unknown) => {
-		auditContexts.push(context);
-		return callback();
-	},
-}));
-
-const auditContexts: unknown[] = [];
-
 const auditCreate = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
@@ -71,7 +59,6 @@ const bodyRequest = (body: unknown) =>
 
 beforeEach(() => {
 	setMatrixSource(codeSource);
-	auditContexts.length = 0;
 	auditCreate.mockReset();
 	auditCreate.mockResolvedValue({ id: "audit-1" });
 	authMock.mockReset();
@@ -373,7 +360,57 @@ describe("audit trail", () => {
 		error.mockRestore();
 	});
 
-	it("attributes what the handler writes to the caller", async () => {
+});
+
+describe("withSpaceGuard — super-admin override logging", () => {
+	const superAdmin = { ...owner, id: "u-super", isSuperAdmin: true };
+
+	/** Audit rows the guard wrote for a break-glass use. */
+	const overrides = () =>
+		auditCreate.mock.calls.filter(
+			(call) =>
+				(call[0] as { data?: { action?: string } })?.data?.action ===
+				"ACCESS_OVERRIDE",
+		);
+
+	beforeEach(() => {
+		vi.spyOn(console, "error").mockImplementation(() => {});
+		authMock.mockResolvedValue({ user: superAdmin });
+	});
+
+	it("stays silent on a read", async () => {
+		// A super-admin trips the bypass on every guarded GET. Logging those is how
+		// ACCESS_OVERRIDE grew to 64% of the table without recording anything.
+		projectFindFirst.mockResolvedValue({
+			id: "p1",
+			authorId: "someone-else",
+			team: { members: [] },
+		});
+
+		const guarded = withSpaceGuard({
+			permission: "project.info.view",
+			idFrom: "query.id",
+		})(handler);
+
+		const response = await guarded(
+			new NextRequest("http://localhost/api/user/project?id=p1"),
+			{ params: Promise.resolve({}) },
+			{},
+		);
+
+		expect(response.status).toBe(200);
+		expect(overrides()).toHaveLength(0);
+	});
+
+	it("stays silent when the caller had the permission anyway", async () => {
+		// Owner of the project *and* a super-admin: nothing was bypassed, so there
+		// is no break-glass to record.
+		projectFindFirst.mockResolvedValue({
+			id: "p1",
+			authorId: superAdmin.id,
+			team: { members: [] },
+		});
+
 		const guarded = withSpaceGuard({
 			permission: "project.info.edit",
 			idFrom: "query.id",
@@ -381,8 +418,27 @@ describe("audit trail", () => {
 
 		await guarded(request(), { params: Promise.resolve({}) }, {});
 
-		// Nothing in the app was setting this context before, so audit rows were
-		// being written without an actor.
-		expect(auditContexts).toEqual([{ actorUserId: owner.id, source: "api" }]);
+		expect(overrides()).toHaveLength(0);
+	});
+
+	it("records a write the flag alone let through", async () => {
+		projectFindFirst.mockResolvedValue({
+			id: "p1",
+			authorId: "someone-else",
+			team: { members: [] },
+		});
+
+		const guarded = withSpaceGuard({
+			permission: "project.info.edit",
+			idFrom: "query.id",
+		})(handler);
+
+		const response = await guarded(request(), { params: Promise.resolve({}) }, {});
+
+		expect(response.status).toBe(200);
+		expect(overrides()).toHaveLength(1);
+		expect(overrides()[0][0]).toMatchObject({
+			data: { actorUserId: superAdmin.id, entity: "space_access" },
+		});
 	});
 });

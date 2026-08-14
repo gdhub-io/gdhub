@@ -7,6 +7,16 @@ import classNames from "classnames";
 import { EmptyState, type EmptyStateProps } from "@/components/ui";
 import styles from "./ModernTable.module.scss";
 
+/** A row that is in a state worth spotting before reading it. */
+export type RowTone = "danger" | "warning" | "success";
+
+const TONE_CLASS: Record<RowTone | "none", string | undefined> = {
+	danger: styles.toneDanger,
+	warning: styles.toneWarning,
+	success: styles.toneSuccess,
+	none: undefined,
+};
+
 interface ModernTableProps<T> extends TableProps<T> {
 	showHeader?: boolean;
 	className?: string;
@@ -15,6 +25,17 @@ interface ModernTableProps<T> extends TableProps<T> {
 	 * subject can say something useful, and the generic fallback cannot.
 	 */
 	emptyState?: Partial<EmptyStateProps>;
+	/**
+	 * Tints whole rows by state. Kept here rather than in each page's SCSS: the
+	 * hover/selected backgrounds below are `!important`, so a page-level rule
+	 * could only win by escalating too, losing the tint under the cursor.
+	 */
+	rowTone?: (record: T, index: number) => RowTone | undefined;
+	/**
+	 * `compact` tightens the rows vertically and nothing else — antd's
+	 * `size="small"` also shrinks the header, breaking alignment with other tables.
+	 */
+	density?: "default" | "compact";
 }
 
 export function ModernTable<T extends object>({
@@ -22,6 +43,8 @@ export function ModernTable<T extends object>({
 	showHeader = true,
 	rowClassName,
 	emptyState,
+	rowTone,
+	density = "default",
 	locale,
 	...props
 }: ModernTableProps<T>) {
@@ -43,6 +66,7 @@ export function ModernTable<T extends object>({
 			className={classNames(
 				styles.modernTableContainer,
 				!showHeader && styles.tableNoHeader,
+				density === "compact" && styles.tableCompact,
 				className,
 			)}
 		>
@@ -52,12 +76,14 @@ export function ModernTable<T extends object>({
 					locale={{ ...locale, emptyText }}
 					showHeader={showHeader}
 					scroll={{ x: "max-content" }}
-					rowClassName={(record, index) => {
-						const baseClassName = "table-row";
-						return typeof rowClassName === "function"
-							? `${baseClassName} ${rowClassName(record, index, 0)}`
-							: baseClassName;
-					}}
+					rowClassName={(record, index) =>
+						classNames(
+							"table-row",
+							TONE_CLASS[rowTone?.(record, index) ?? "none"],
+							typeof rowClassName === "function" &&
+								rowClassName(record, index, 0),
+						)
+					}
 				/>
 			</div>
 		</div>

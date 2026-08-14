@@ -11,6 +11,8 @@ vi.mock("@gdhub-io/gdhub-prisma", () => ({
 	UserRole: {
 		Author: "Author",
 	},
+	// `withAuth` runs every handler inside an audit context.
+	withAuditContext: (_context: unknown, callback: () => unknown) => callback(),
 }));
 
 vi.mock("../src/services/prisma", () => ({

@@ -1,4 +1,3 @@
-import { withAuditContext } from "@gdhub-io/gdhub-prisma";
 import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import type { Permission, SpaceType } from "@/config/spaces";
@@ -78,6 +77,13 @@ const spaceTypeOf = (permission: string): SpaceType =>
 	permission.split(".")[0] as SpaceType;
 
 /**
+ * Reading is not an event worth an audit row. A super-admin trips the bypass on
+ * every guarded GET, which is how `ACCESS_OVERRIDE` grew to 64% of the table —
+ * 559 of those 664 rows were plain `.view` permissions.
+ */
+const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+/**
  * Guards a route handler with a permission and injects the resolved access.
  *
  *   export const POST = pipe(
@@ -142,24 +148,29 @@ export function withSpaceGuard(options: SpaceGuardOptions) {
 				return apiError.forbidden();
 			}
 
-			if (access.viaSuperAdmin) {
-				await logSuperAdminOverride({
-					permission,
-					access,
-					userId: user.id,
-					route: new URL(req.url).pathname,
+			if (access.viaSuperAdmin && !READ_METHODS.has(req.method)) {
+				// Re-resolve without the flag: `getSpaceAccess` sets `viaSuperAdmin`
+				// for every request a super-admin makes, so on its own it means
+				// "a super-admin was here", not "someone used break-glass".
+				const withoutBypass = await getSpaceAccess(type, spaceId, {
+					...user,
+					isSuperAdmin: false,
 				});
+
+				if (!can(withoutBypass, permission)) {
+					await logSuperAdminOverride({
+						permission,
+						access,
+						userId: user.id,
+						route: new URL(req.url).pathname,
+					});
+				}
 			}
 
-			// Everything the handler writes from here on is attributed to this
-			// caller: the audit extension in the Prisma client takes the actor from
-			// this context, and nothing in the app was setting it before.
-			return withAuditContext({ actorUserId: user.id, source: "api" }, () =>
-				handler(req, ctx, { ...locals, user, access } as unknown as L & {
-					access: SpaceAccess;
-					user: SessionUser;
-				}),
-			);
+			return handler(req, ctx, { ...locals, user, access } as unknown as L & {
+				access: SpaceAccess;
+				user: SessionUser;
+			});
 		};
 	};
 }

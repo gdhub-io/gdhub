@@ -39,6 +39,28 @@
     background-color: rgba(241, 85, 65, 0.12) !important;
   }
 
+  // Declared after the hover rules above so tones win without escalating further —
+  // a tinted row must keep its tint under the cursor.
+  :global(.ant-table-tbody) > tr.toneDanger > td,
+  :global(.ant-table-tbody) > tr.toneDanger:hover > td {
+    background-color: var(--gd-danger-tint) !important;
+  }
+
+  :global(.ant-table-tbody) > tr.toneWarning > td,
+  :global(.ant-table-tbody) > tr.toneWarning:hover > td {
+    background-color: var(--gd-warning-tint) !important;
+  }
+
+  :global(.ant-table-tbody) > tr.toneSuccess > td,
+  :global(.ant-table-tbody) > tr.toneSuccess:hover > td {
+    background-color: var(--gd-success-tint) !important;
+  }
+
+  // A neutral chip on a tinted row disappears into it.
+  :global(.ant-table-tbody) > tr[class*="tone"] :global(.ant-tag) {
+    background: var(--gd-color-surface);
+  }
+
   :global(.ant-btn) {
     border-radius: 4px;
   }
@@ -99,6 +121,20 @@
 .tableNoHeader {
   :global(.ant-table-thead) {
     display: none;
+  }
+}
+
+// Vertical only — antd's `size="small"` would also shrink the header and
+// horizontal padding, putting columns out of line with the other tables.
+.tableCompact {
+  :global(.ant-table-tbody) > tr > td {
+    padding-top: var(--gd-space-2);
+    padding-bottom: var(--gd-space-2);
+  }
+
+  // antd's default is `16px 0`, which puts the controls hard against the sides.
+  :global(.ant-table-pagination.ant-pagination) {
+    margin: var(--gd-space-4) !important;
   }
 }
 
