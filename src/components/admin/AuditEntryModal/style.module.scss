@@ -1,0 +1,167 @@
+.header {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	// antd pins the close button to the top-right corner of the modal, over this
+	// row. The inset clears it with enough room that the two do not read as one
+	// control.
+	padding-right: var(--gd-space-12);
+	padding-bottom: var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+// Centred against the icon tile rather than sitting on the title's baseline.
+.headerStatus {
+	align-self: center;
+	flex-shrink: 0;
+}
+
+.headerText {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1;
+	min-width: 0;
+}
+
+.title {
+	font-size: var(--gd-font-size-h4);
+}
+
+.subtitle {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding-top: var(--gd-space-6);
+}
+
+.sectionTitle {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+	letter-spacing: 0.5px;
+}
+
+.sectionHeaderRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+}
+
+.fact {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.factKey {
+	flex: 0 0 104px;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.factValue {
+	min-width: 0;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.targetCard {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-neutral-50);
+}
+
+.targetInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	flex: 1;
+	min-width: 0;
+}
+
+.targetEntity {
+	font-size: var(--gd-font-size-caption);
+}
+
+.mono {
+	font-variant-numeric: tabular-nums;
+	font-size: var(--gd-font-size-body-sm);
+	word-break: break-all;
+}
+
+.diff {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+	overflow: hidden;
+
+	th {
+		padding: var(--gd-space-2) var(--gd-space-3);
+		background: var(--gd-neutral-50);
+		border-bottom: 1px solid var(--gd-color-border);
+		color: var(--gd-color-text-tertiary);
+		font-size: var(--gd-font-size-caption);
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		text-align: left;
+	}
+
+	td {
+		padding: var(--gd-space-2) var(--gd-space-3);
+		border-bottom: 1px solid var(--gd-color-border);
+		font-size: var(--gd-font-size-body-sm);
+		vertical-align: top;
+	}
+
+	tr:last-child td {
+		border-bottom: none;
+	}
+}
+
+.diffValue {
+	word-break: break-word;
+}
+
+.hint {
+	font-size: var(--gd-font-size-caption);
+}
+
+.json {
+	margin: 0;
+	padding: var(--gd-space-3);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-neutral-50);
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.6;
+	white-space: pre-wrap;
+	word-break: break-word;
+	max-height: 280px;
+	overflow: auto;
+}
+
+.iconButton,
+.textButton {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	border: none;
+	background: none;
+	color: var(--gd-color-text-secondary);
+	cursor: pointer;
+	font-size: var(--gd-font-size-caption);
+	padding: var(--gd-space-1);
+	border-radius: var(--gd-radius-chip);
+
+	&:hover {
+		color: var(--gd-color-text);
+		background: var(--gd-neutral-100);
+	}
+}

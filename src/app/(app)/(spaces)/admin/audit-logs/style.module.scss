@@ -1,0 +1,52 @@
+.pageTitle {
+  margin: 0 !important;
+}
+
+.searchInput {
+  width: 260px;
+  max-width: 100%;
+}
+
+.filtersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.filtersPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 320px;
+}
+
+.filtersField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  :global(.ant-select) {
+    width: 100%;
+  }
+}
+
+.headWithHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// The zone applies to every timestamp in the column, so it belongs in the header
+// rather than repeated on each row.
+.headHint {
+  color: var(--gd-color-text-tertiary);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.rowChevron {
+  color: var(--gd-color-text-tertiary);
+}
+

@@ -15,7 +15,11 @@
  *   )(async (req, ctx, { user, body }) => { ... });
  */
 
-import type { Team, UserRole } from "@gdhub-io/gdhub-prisma";
+import {
+	type Team,
+	type UserRole,
+	withAuditContext,
+} from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type { ZodSchema, z } from "zod";
 import { auth } from "@/auth";
@@ -103,6 +107,42 @@ function bearerMatches(req: NextRequest, expected: string) {
 	return header === `Bearer ${expected}`;
 }
 
+/**
+ * What `AuditLog.source` says about a write. The auth mode is how the caller
+ * proved itself, which is not the same thing — a signed-in web request and an
+ * anonymous one both come from the app.
+ */
+const AUDIT_SOURCE: Record<AuthMode, string> = {
+	user: "api",
+	any: "api",
+	api: "backend",
+	public_api: "public_api",
+	vercel_cron: "cron",
+	gumroad: "webhook",
+};
+
+/**
+ * Every write the handler performs is attributed to this caller: the audit
+ * extension in the Prisma client reads the actor from here. Set at the
+ * outermost wrapper so it covers the whole request — space-guarded admin
+ * routes alone are not enough; they account for only 9% of audit rows.
+ */
+function audited<T>(
+	req: NextRequest,
+	mode: AuthMode,
+	userId: string | null,
+	run: () => T,
+): T {
+	return withAuditContext(
+		{
+			actorUserId: userId,
+			source: AUDIT_SOURCE[mode],
+			requestId: req.headers.get("x-request-id") ?? undefined,
+		},
+		run,
+	);
+}
+
 export function withAuth(opts: AuthOptions = {}) {
 	const mode: AuthMode = opts.mode ?? "user";
 
@@ -115,23 +155,29 @@ export function withAuth(opts: AuthOptions = {}) {
 				const user = session?.user as SessionUser | undefined;
 
 				if (mode === "any") {
-					return handler(req, ctx, {
-						...locals,
-						user: user ?? (null as unknown as SessionUser),
-					} as L & { user: SessionUser });
+					return audited(req, mode, user?.id ?? null, () =>
+						handler(req, ctx, {
+							...locals,
+							user: user ?? (null as unknown as SessionUser),
+						} as L & { user: SessionUser }),
+					);
 				}
 
 				if (!user) return apiError.unauthorized();
 
-				return handler(req, ctx, { ...locals, user } as L & {
-					user: SessionUser;
-				});
+				return audited(req, mode, user.id, () =>
+					handler(req, ctx, { ...locals, user } as L & {
+						user: SessionUser;
+					}),
+				);
 			}
 
 			if (mode === "api") {
 				const token = Buffer.from(env("BACKEND_KEY")).toString("base64");
 				if (bearerMatches(req, token)) {
-					return handler(req, ctx, locals as L & { user: SessionUser });
+					return audited(req, mode, null, () =>
+						handler(req, ctx, locals as L & { user: SessionUser }),
+					);
 				}
 			}
 
@@ -140,7 +186,9 @@ export function withAuth(opts: AuthOptions = {}) {
 					"base64",
 				);
 				if (bearerMatches(req, token)) {
-					return handler(req, ctx, locals as L & { user: SessionUser });
+					return audited(req, mode, null, () =>
+						handler(req, ctx, locals as L & { user: SessionUser }),
+					);
 				}
 			}
 
@@ -150,7 +198,9 @@ export function withAuth(opts: AuthOptions = {}) {
 					"base64",
 				);
 				if (bearerMatches(req, cronSecret) || bearerMatches(req, publicToken)) {
-					return handler(req, ctx, locals as L & { user: SessionUser });
+					return audited(req, mode, null, () =>
+						handler(req, ctx, locals as L & { user: SessionUser }),
+					);
 				}
 			}
 
@@ -160,7 +210,9 @@ export function withAuth(opts: AuthOptions = {}) {
 					.json()
 					.catch(() => ({}))) as { access_token?: string };
 				if (body?.access_token === env("GUMROAD_ACCESS_TOKEN")) {
-					return handler(req, ctx, locals as L & { user: SessionUser });
+					return audited(req, mode, null, () =>
+						handler(req, ctx, locals as L & { user: SessionUser }),
+					);
 				}
 			}
 

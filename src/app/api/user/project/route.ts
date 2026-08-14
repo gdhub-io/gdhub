@@ -1,10 +1,11 @@
+import { randomUUID } from "node:crypto";
 import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
-import slugify from "voca/slugify";
 import { z } from "zod";
 import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
 import { SpaceRole } from "@/config/permissions/roles";
+import { nextFreeSlug, toSlug } from "@/helpers/slug";
 import {
 	apiError,
 	json,
@@ -125,86 +126,84 @@ export const POST = withAuth({ mode: "user" })(
 
 		const userRecord = await prisma.user.findUnique({
 			where: { id: currentUser.id },
-			include: {
-				specialities: true,
-				memberInTeams: {
-					where: { status: TeamMemberStatus.Founder },
-					include: {
-						team: {
-							include: {
-								project: { select: { id: true, name: true, slug: true } },
-							},
-						},
-					},
-				},
-			},
+			include: { specialities: true },
 		});
 
 		if (!userRecord) return apiError.notFound("User not found");
 
-		const existingProjectTeam = userRecord.memberInTeams.find(
-			(member: {
-				status: TeamMemberStatus;
-				team: { project: { slug: string } | null };
-			}) =>
-				member.status === TeamMemberStatus.Founder &&
-				member.team.project?.slug === slugify(name),
+		// Two teams may well be making a game called "Dungeon Crawler". The name
+		// is theirs to pick; only the slug has to be unique, so the second one
+		// becomes `dungeon-crawler-2` instead of a rejected request.
+		const baseSlug = toSlug(name, "project");
+		const takenSlugs = await prisma.project.findMany({
+			where: { slug: { startsWith: baseSlug } },
+			select: { slug: true },
+		});
+		const slug = nextFreeSlug(
+			baseSlug,
+			takenSlugs.map((project: { slug: string }) => project.slug),
 		);
 
-		const existingProject = await prisma.project.findUnique({
-			where: { slug: slugify(name) },
-		});
-
-		if (existingProject) {
-			return apiError.badRequest("Project with this name already exists");
-		}
-
-		const project = await prisma.project.create({
-			data: {
-				name,
-				agree,
-				slug: slugify(name),
-				description,
-				author: { connect: { id: currentUser.id } },
-				status: ProjectStatus.Approved,
-				team: existingProjectTeam
-					? { connect: { id: existingProjectTeam.teamId } }
-					: {
-							create: {
-								name: `${slugify(name)}'s Team`,
-								members: {
-									create: {
-										position: "Founder",
-										// biome-ignore lint/style/noNonNullAssertion: original semantics
-										specialityId: userRecord.specialities[0]!.id,
-										startedAt: dayjs().toISOString(),
-										status: TeamMemberStatus.Founder,
-										userId: currentUser.id,
-									},
+		// `Team.name` is unique too, so it is derived from the slug rather than
+		// from the raw name.
+		const createProjectWithSlug = (projectSlug: string) =>
+			prisma.project.create({
+				data: {
+					name,
+					agree,
+					slug: projectSlug,
+					description,
+					author: { connect: { id: currentUser.id } },
+					status: ProjectStatus.Approved,
+					team: {
+						create: {
+							name: `${projectSlug}'s Team`,
+							members: {
+								create: {
+									position: "Founder",
+									// biome-ignore lint/style/noNonNullAssertion: original semantics
+									specialityId: userRecord.specialities[0]!.id,
+									startedAt: dayjs().toISOString(),
+									status: TeamMemberStatus.Founder,
+									userId: currentUser.id,
 								},
 							},
 						},
-				reports: {
-					create: {
-						content: PROJECT_REGISTERED_DEVLOG_CONTENT,
-						isSystem: true,
-						publishedAt: dayjs().toISOString(),
-						authorId: currentUser.id,
+					},
+					reports: {
+						create: {
+							content: PROJECT_REGISTERED_DEVLOG_CONTENT,
+							isSystem: true,
+							publishedAt: dayjs().toISOString(),
+							authorId: currentUser.id,
+						},
 					},
 				},
-			},
-			include: {
-				team: { select: { id: true } },
-				author: {
-					select: {
-						name: true,
-						image: true,
-						id: true,
-						profile: { select: { id: true } },
+				include: {
+					team: { select: { id: true } },
+					author: {
+						select: {
+							name: true,
+							image: true,
+							id: true,
+							profile: { select: { id: true } },
+						},
 					},
 				},
-			},
-		});
+			});
+
+		let project: Awaited<ReturnType<typeof createProjectWithSlug>>;
+		try {
+			project = await createProjectWithSlug(slug);
+		} catch (error) {
+			// The counter is read and used in two steps, so two simultaneous
+			// creations of the same name can pick the same slug — the loser of
+			// that race gets a random suffix instead of an error.
+			if ((error as { code?: string }).code !== "P2002") throw error;
+			project = await createProjectWithSlug(
+				`${baseSlug}-${randomUUID().slice(-6)}`,
+			);
+		}
 
 		// Membership is what the space gates read; a project without its owner row
 		// would be unreachable for its own author.

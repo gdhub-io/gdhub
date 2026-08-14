@@ -11,12 +11,14 @@ vi.mock("@gdhub-io/gdhub-prisma", () => ({
 	UserRole: {
 		Author: "Author",
 	},
+	// `withAuth` runs every handler inside an audit context.
+	withAuditContext: (_context: unknown, callback: () => unknown) => callback(),
 }));
 
 vi.mock("../src/services/prisma", () => ({
 	prisma: {
 		user: { findUnique: vi.fn(), update: vi.fn() },
-		project: { findUnique: vi.fn(), create: vi.fn() },
+		project: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn() },
 		// Creating a project now also records its owner in SpaceMember.
 		spaceMember: { upsert: vi.fn(), findUnique: vi.fn() },
 	},
@@ -59,7 +61,7 @@ describe("POST /api/user/project", () => {
 			specialities: [{ id: "spec1" }],
 			memberInTeams: [],
 		});
-		(prisma.project.findUnique as any).mockResolvedValue(null);
+		(prisma.project.findMany as any).mockResolvedValue([]);
 		(prisma.project.create as any).mockResolvedValue({
 			id: "p1",
 			slug: "test-project",
@@ -95,6 +97,89 @@ describe("POST /api/user/project", () => {
 
 		expect(status).toBe(200);
 		expect(prisma.project.create).toHaveBeenCalled();
+		expect((prisma.project.create as any).mock.calls[0][0].data.slug).toBe(
+			"test-project",
+		);
+	});
+
+	it("suffixes the slug when the name is already taken", async () => {
+		(prisma.user.findUnique as any).mockResolvedValue({
+			id: "user1",
+			specialities: [{ id: "spec1" }],
+		});
+		(prisma.project.findMany as any).mockResolvedValue([
+			{ slug: "test-project" },
+			{ slug: "test-project-2" },
+			{ slug: "test-project-remake" },
+		]);
+		(prisma.project.create as any).mockResolvedValue({
+			id: "p2",
+			slug: "test-project-3",
+			author: { roles: [] },
+		});
+
+		const { POST } = await import("../src/app/api/user/project/route");
+		const request = new Request("http://test/api/user/project", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({
+				name: "Test Project",
+				description: "Test Description",
+				agree: true,
+				understandsNotAi: true,
+			}),
+		});
+		const { NextRequest } = await import("next/server");
+		const nextReq = new NextRequest(request);
+
+		const response = await (POST as any)(nextReq, {
+			params: Promise.resolve({}),
+		});
+
+		expect(response.status).toBe(200);
+		const { data } = (prisma.project.create as any).mock.calls[0][0];
+		expect(data.slug).toBe("test-project-3");
+		expect(data.team.create.name).toBe("test-project-3's Team");
+	});
+
+	it("falls back to a random suffix when the slug is taken mid-flight", async () => {
+		(prisma.user.findUnique as any).mockResolvedValue({
+			id: "user1",
+			specialities: [{ id: "spec1" }],
+		});
+		(prisma.project.findMany as any).mockResolvedValue([]);
+		(prisma.project.create as any)
+			.mockRejectedValueOnce(Object.assign(new Error("unique"), {
+				code: "P2002",
+			}))
+			.mockResolvedValueOnce({
+				id: "p3",
+				slug: "test-project-abc123",
+				author: { roles: [] },
+			});
+
+		const { POST } = await import("../src/app/api/user/project/route");
+		const request = new Request("http://test/api/user/project", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({
+				name: "Test Project",
+				agree: true,
+				understandsNotAi: true,
+			}),
+		});
+		const { NextRequest } = await import("next/server");
+		const nextReq = new NextRequest(request);
+
+		const response = await (POST as any)(nextReq, {
+			params: Promise.resolve({}),
+		});
+
+		expect(response.status).toBe(200);
+		expect(prisma.project.create).toHaveBeenCalledTimes(2);
+		expect((prisma.project.create as any).mock.calls[1][0].data.slug).toMatch(
+			/^test-project-[0-9a-f]{6}$/,
+		);
 	});
 
 	it("rejects creation when the not-AI confirmation is missing", async () => {
