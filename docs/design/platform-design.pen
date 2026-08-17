@@ -34691,11 +34691,496 @@
               "type": "frame",
               "id": "PraOQ",
               "name": "Sidebar",
-              "context": "Sidebar area on desktop. Order: My projects, quick counts (mobile only), Open positions, Upcoming events, New members.",
+              "context": "Sidebar area on desktop. Order: Scout Cabinet (scouts only), My projects, quick counts (mobile only), Open positions, Upcoming events, New members.",
               "width": 320,
               "layout": "vertical",
               "gap": 16,
               "children": [
+                {
+                  "type": "frame",
+                  "id": "WOiAa",
+                  "name": "Scout Cabinet",
+                  "context": "Only for a user who has a ScoutCabinet. Sits above My projects because it is the one block that is time-sensitive: a project that just appeared is worth a look before anything else on the page. Header link opens /scout/games. Three states, in priority order: saved searches (the scout said what they want explicitly), fresh projects by cabinet focus, empty focus. Hidden entirely when the cabinet exists but nothing matched this month — a card reading zero is noise.",
+                  "clip": true,
+                  "width": "fill_container",
+                  "cornerRadius": 16,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "QE7ti",
+                      "name": "Header",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "padding": [
+                        12,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "GVotk",
+                          "name": "TitleRow",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "iQmDf",
+                              "name": "Label",
+                              "fill": "#1A1917",
+                              "content": "Scout Cabinet",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "letterSpacing": -0.2
+                            },
+                            {
+                              "type": "text",
+                              "id": "gERqx",
+                              "name": "View all",
+                              "fill": "#F15541",
+                              "content": "View all ›",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "L3AT05",
+                      "name": "Echo Side",
+                      "context": "Opens the project page. Rows are ordered newest first; the age is the last segment of the meta line so the eye lands on the genre and stage first.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "xmtVF",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 10,
+                              "id": "UqWV2",
+                              "name": "Cover",
+                              "fill": "#C5C4C0",
+                              "width": 32,
+                              "height": 32
+                            },
+                            {
+                              "type": "frame",
+                              "id": "TUksl",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "T0KaD",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Echo Side",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "BIAa1",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Strategy · Prototype · 2d",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "uzKjt",
+                          "name": "Chevron",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "chevron-right",
+                          "library": "lucide",
+                          "fill": "#76756F"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lzI8h",
+                      "name": "Nightfall Drift",
+                      "context": "Opens the project page. Rows are ordered newest first; the age is the last segment of the meta line so the eye lands on the genre and stage first.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "YVamO",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 10,
+                              "id": "iksVs",
+                              "name": "Cover",
+                              "fill": "#C5C4C0",
+                              "width": 32,
+                              "height": 32
+                            },
+                            {
+                              "type": "frame",
+                              "id": "SFvoR",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "I4ik8",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Nightfall Drift",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "U0Ryy",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Racing · Vertical slice · 5d",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "Dlsij",
+                          "name": "Chevron",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "chevron-right",
+                          "library": "lucide",
+                          "fill": "#76756F"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "l0gHt",
+                      "name": "Paper Kingdoms",
+                      "context": "Opens the project page. Rows are ordered newest first; the age is the last segment of the meta line so the eye lands on the genre and stage first.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "KlgfT",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 10,
+                              "id": "XNv0u",
+                              "name": "Cover",
+                              "fill": "#C5C4C0",
+                              "width": 32,
+                              "height": 32
+                            },
+                            {
+                              "type": "frame",
+                              "id": "r5P0UK",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "iYuWy",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Paper Kingdoms",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "DNwsz",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Puzzle · Prototype · 1w",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "lRY8P",
+                          "name": "Chevron",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "chevron-right",
+                          "library": "lucide",
+                          "fill": "#76756F"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FGYF9",
+                      "name": "Orbital Cargo",
+                      "context": "Opens the project page. Rows are ordered newest first; the age is the last segment of the meta line so the eye lands on the genre and stage first.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "b9AxWB",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 10,
+                              "id": "rzB1P",
+                              "name": "Cover",
+                              "fill": "#C5C4C0",
+                              "width": 32,
+                              "height": 32
+                            },
+                            {
+                              "type": "frame",
+                              "id": "zzkWO",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "NeBMC",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Orbital Cargo",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "g6LgTp",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Simulation · Pre-production · 2w",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "fiLTA",
+                          "name": "Chevron",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "chevron-right",
+                          "library": "lucide",
+                          "fill": "#76756F"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "e4a2Ri",
+                      "name": "Miso & Mint",
+                      "context": "Opens the project page. Rows are ordered newest first; the age is the last segment of the meta line so the eye lands on the genre and stage first.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "wgRpa",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 10,
+                              "id": "cKQ5F",
+                              "name": "Cover",
+                              "fill": "#C5C4C0",
+                              "width": 32,
+                              "height": 32
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Re0VJ",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "fU0m3",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Miso & Mint",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "nDC6j",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Adventure · Prototype · 3w",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon",
+                          "id": "OUCAd",
+                          "name": "Chevron",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "chevron-right",
+                          "library": "lucide",
+                          "fill": "#76756F"
+                        }
+                      ]
+                    }
+                  ]
+                },
                 {
                   "type": "frame",
                   "id": "B1ad3",
@@ -150357,6 +150842,731 @@
       "width": 300,
       "height": 320,
       "content": "Admin — Audit log\n\nAdmin audit trail: who changed what and when. To the right: the entry detail modal, the column legend, the filters popover and the open event-type select.\n\nThe table answers when / who / what was touched / what changed — no JSON in the grid. Raw payloads live in the detail modal only.\n\nEntity type sits under the target name, matching the secondary line in WHEN and ACTOR. Failed rows carry an error tint. Times show the zone in the column header.\n\nPersonal fields are recorded by name only, never by value — the row for a Profile edit shows the field chips and \"values not stored\"."
+    },
+    {
+      "type": "frame",
+      "id": "mfg5I",
+      "x": 2999,
+      "y": 1184,
+      "name": "Scout Cabinet — states",
+      "clip": true,
+      "width": 420,
+      "fill": "#FAFAF9",
+      "layout": "vertical",
+      "gap": 28,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "bnLVS",
+          "name": "T",
+          "fill": "#1A1917",
+          "content": "Scout Cabinet — sidebar states",
+          "fontFamily": "$font",
+          "fontSize": 20,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "pIKUY",
+          "name": "D",
+          "fill": "#5A5955",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "One card at the top of the hub sidebar, rendered only for a user who has a ScoutCabinet. Which body it shows is decided in this order: saved searches first, then fresh projects by cabinet focus, then the empty focus prompt. The state in the sidebar frame is the middle one.",
+          "lineHeight": 1.55,
+          "fontFamily": "$font",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "iq5jw",
+          "name": "A · FRESH PROJECTS (IN THE SIDEBAR FRAME)",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "children": [
+            {
+              "type": "text",
+              "id": "fV6oa",
+              "name": "L",
+              "fill": "#1A1917",
+              "content": "A · FRESH PROJECTS (IN THE SIDEBAR FRAME)",
+              "fontFamily": "$font",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "letterSpacing": 0.6
+            },
+            {
+              "type": "text",
+              "id": "XwTDs",
+              "name": "N",
+              "fill": "#76756F",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Cabinet focus — platforms, genres, stages — turned into a query over projects created in the last 30 days, newest first, 5 rows. This is the state a scout sees before they have saved anything. The age sits last in the meta line so the genre and stage read first; a row opens the project page.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tmI0i",
+          "name": "B · SAVED SEARCHES (WINS WHEN THERE ARE ANY)",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "children": [
+            {
+              "type": "text",
+              "id": "sQIhO",
+              "name": "L",
+              "fill": "#1A1917",
+              "content": "B · SAVED SEARCHES (WINS WHEN THERE ARE ANY)",
+              "fontFamily": "$font",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "letterSpacing": 0.6
+            },
+            {
+              "type": "text",
+              "id": "xTiUS",
+              "name": "N",
+              "fill": "#76756F",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "A saved search is the scout stating what they want in their own words, so it outranks the focus-derived list. The badge is how many projects matched it this month, not the total — the total is on the games table behind the row. Neutral badge, not brand tint: these are things to browse, and the brand tint in this sidebar is reserved for what is waiting on an answer. Up to 5 rows, ordered by new matches.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "Ohk2V",
+              "name": "Demo",
+              "width": 320,
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "j4psuT",
+                  "name": "Scout Cabinet",
+                  "context": "Rendered when the cabinet has at least one SavedSearch with new matches. Each row opens /scout/games with that search applied.",
+                  "clip": true,
+                  "width": "fill_container",
+                  "cornerRadius": 16,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "yXoTI",
+                      "name": "Header",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "padding": [
+                        12,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "O7DGV",
+                          "name": "TitleRow",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Asn60",
+                              "name": "Label",
+                              "fill": "#1A1917",
+                              "content": "Scout Cabinet",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600",
+                              "letterSpacing": -0.2
+                            },
+                            {
+                              "type": "text",
+                              "id": "cbmYY",
+                              "name": "View all",
+                              "fill": "#F15541",
+                              "content": "View all ›",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "sYvVs",
+                          "name": "Caption",
+                          "fill": "#76756F",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "New this month in your saved searches",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wQsWg",
+                      "name": "Early PC strategy",
+                      "context": "Opens /scout/games with this saved search applied — same filters the scout stored, no extra state.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "P1opb7",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "I7zX5s",
+                              "name": "Tile",
+                              "width": 32,
+                              "height": 32,
+                              "fill": "#EBEAE8",
+                              "cornerRadius": 10,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "aVPbl",
+                                  "name": "Icon",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "bookmark",
+                                  "library": "lucide",
+                                  "fill": "#3C3B38"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "fvu4j",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "gDON1",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Early PC strategy",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "HNq52",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "PC · Strategy · Prototype",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "rpKIz",
+                          "name": "Right",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "bjGIP",
+                              "name": "Count",
+                              "fill": "#EBEAE8",
+                              "cornerRadius": 999,
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "I0g4ZD",
+                                  "name": "Value",
+                                  "fill": "#3C3B38",
+                                  "content": "5",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "foMzr",
+                              "name": "Chevron",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "#76756F"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fKYN8",
+                      "name": "Mobile puzzle",
+                      "context": "Opens /scout/games with this saved search applied — same filters the scout stored, no extra state.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ADr4d",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "My7l5",
+                              "name": "Tile",
+                              "width": 32,
+                              "height": 32,
+                              "fill": "#EBEAE8",
+                              "cornerRadius": 10,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "cCn2L",
+                                  "name": "Icon",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "bookmark",
+                                  "library": "lucide",
+                                  "fill": "#3C3B38"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hBfUW",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Rj8be",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Mobile puzzle",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "rEu6D",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Mobile · Puzzle",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "udKPB",
+                          "name": "Right",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "i07ojZ",
+                              "name": "Count",
+                              "fill": "#EBEAE8",
+                              "cornerRadius": 999,
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "g8xgy",
+                                  "name": "Value",
+                                  "fill": "#3C3B38",
+                                  "content": "3",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "feYxv",
+                              "name": "Chevron",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "#76756F"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "o2EN9",
+                      "name": "Console, vertical slice",
+                      "context": "Opens /scout/games with this saved search applied — same filters the scout stored, no extra state.",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "gap": 12,
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "YBpVM",
+                          "name": "Left",
+                          "width": "fill_container",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "qe7Uv",
+                              "name": "Tile",
+                              "width": 32,
+                              "height": 32,
+                              "fill": "#EBEAE8",
+                              "cornerRadius": 10,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "Phyz1",
+                                  "name": "Icon",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "bookmark",
+                                  "library": "lucide",
+                                  "fill": "#3C3B38"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "N7UiBw",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TWW3m",
+                                  "name": "Title",
+                                  "fill": "#1A1917",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Console, vertical slice",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "FEKMi",
+                                  "name": "Meta",
+                                  "fill": "#76756F",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Console · Vertical slice",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JwEtR",
+                          "name": "Right",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "U6avO",
+                              "name": "Count",
+                              "fill": "#EBEAE8",
+                              "cornerRadius": 999,
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "K9CTqc",
+                                  "name": "Value",
+                                  "fill": "#3C3B38",
+                                  "content": "1",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "fsHv1",
+                              "name": "Chevron",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "#76756F"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tUvzF",
+          "name": "C · FOCUS NOT SET",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "children": [
+            {
+              "type": "text",
+              "id": "mGCuG",
+              "name": "L",
+              "fill": "#1A1917",
+              "content": "C · FOCUS NOT SET",
+              "fontFamily": "$font",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "letterSpacing": 0.6
+            },
+            {
+              "type": "text",
+              "id": "OqfWR",
+              "name": "N",
+              "fill": "#76756F",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Without focus there is nothing to rank by, and a list of whatever is newest would teach the scout that the card is noise. So the card asks for the one thing it needs and links straight to the settings screen that sets it.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "nsiFm",
+              "name": "Demo",
+              "width": 320,
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "h7ZswF",
+                  "name": "Scout Cabinet",
+                  "context": "Rendered when the cabinet has no platforms, genres or stages and no saved searches. Replaced by state A or B as soon as either exists.",
+                  "clip": true,
+                  "width": "fill_container",
+                  "cornerRadius": 16,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "sIU44",
+                      "name": "Header",
+                      "width": "fill_container",
+                      "padding": [
+                        12,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "yCoPw",
+                          "name": "Label",
+                          "fill": "#1A1917",
+                          "content": "Scout Cabinet",
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600",
+                          "letterSpacing": -0.2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "E3lnx",
+                      "name": "Body",
+                      "width": "fill_container",
+                      "stroke": "#EBEAE8",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "strokeLinejoin": "round",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "i90xu",
+                          "name": "Text",
+                          "fill": "#5A5955",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Pick the platforms, genres and stages you invest in — fresh projects that match will show up here every month.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "QQXaD",
+                          "name": "Set focus button",
+                          "context": "antd Button size=\"small\" → borderRadiusSM = 6. Opens /scout/settings/focus.",
+                          "fill": "#1A1917",
+                          "cornerRadius": 6,
+                          "gap": 6,
+                          "padding": [
+                            6,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JaWjo",
+                              "name": "L",
+                              "fill": "#FFFFFF",
+                              "content": "Set your focus",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

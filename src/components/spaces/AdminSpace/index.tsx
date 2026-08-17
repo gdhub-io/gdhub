@@ -19,6 +19,7 @@ const resolveSelectedMenuKey = (pathname: string) => {
 	if (pathname.startsWith("/admin/audit-logs")) return "/admin/audit-logs";
 	if (pathname.startsWith("/admin/devlog-posts")) return "/admin/devlog-posts";
 	if (pathname.startsWith("/admin/events")) return "/admin/events";
+	if (pathname.startsWith("/admin/scouts")) return "/admin/scouts";
 	if (pathname.startsWith("/admin/posts")) return "/admin/posts";
 	if (pathname.startsWith("/admin/workflows")) return "/admin/workflows";
 	return "/admin/users";
@@ -50,6 +51,7 @@ const MENU_ITEMS: {
 		name: "DevLog Posts",
 	},
 	{ key: "/admin/events", permission: "admin.events.view", name: "Events" },
+	{ key: "/admin/scouts", permission: "admin.scouts.view", name: "Scouts" },
 	{
 		key: "/admin/workflows",
 		permission: "admin.workflow.view",

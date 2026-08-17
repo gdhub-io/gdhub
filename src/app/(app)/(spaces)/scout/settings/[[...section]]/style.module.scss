@@ -1,0 +1,29 @@
+.sider {
+	background: transparent;
+
+	:global(.ant-menu) {
+		background: transparent;
+	}
+
+	:global(.ant-menu-item) {
+		display: flex;
+		align-items: center;
+		margin-inline: 0;
+		width: 100%;
+	}
+}
+
+.content {
+	padding: 0;
+}
+
+@media (min-width: 992px) {
+	.content {
+		padding-left: 24px;
+	}
+}
+
+.sectionPicker {
+	width: 100%;
+	margin-bottom: var(--gd-space-4);
+}

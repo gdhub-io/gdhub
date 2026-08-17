@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import type { SpaceRole } from "@/config/permissions/roles";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
+import { paginateInMemory } from "@/lib/pagination";
 import {
 	ADVISOR_ROLE_COEF,
 	ADVISOR_SESSION_TO_DAY_EQUIVALENT,
@@ -140,35 +141,6 @@ const toPositiveInt = (value: unknown, fallback: number) => {
 
 const clamp = (value: number, min: number, max: number) =>
 	Math.min(Math.max(value, min), max);
-
-/**
- * Cuts one page out of an already-sorted list, and describes it the way
- * `paginate().withPages()` would.
- *
- * The sorts that cannot be expressed in SQL — display name, last modified,
- * skill capital — read the whole filtered set and order it here, so they also
- * have to build the `meta` the client paginates by. That was three hand-written
- * copies of the same seven fields, each with its own chance of an off-by-one.
- */
-const paginateInMemory = <T>(rows: T[], page: number, limit: number) => {
-	const totalCount = rows.length;
-	const pageCount = Math.max(Math.ceil(totalCount / limit), 1);
-	const currentPage = clamp(page, 1, pageCount);
-	const start = (currentPage - 1) * limit;
-
-	return {
-		rows: rows.slice(start, start + limit),
-		meta: {
-			currentPage,
-			isFirstPage: currentPage === 1,
-			isLastPage: currentPage >= pageCount,
-			previousPage: currentPage > 1 ? currentPage - 1 : null,
-			nextPage: currentPage < pageCount ? currentPage + 1 : null,
-			pageCount,
-			totalCount,
-		},
-	};
-};
 
 const isSortField = (value?: string): value is AdminUsersSortField =>
 	[
